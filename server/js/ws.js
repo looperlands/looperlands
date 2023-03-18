@@ -108,7 +108,8 @@ WS.socketIOServer = Server.extend({
         var app = require('express')();
         var http = require('http').Server(app);
         self.io = require('socket.io')(http, {
-            allowEIO3: true
+            allowEIO3: true,
+            cors: {origin: "http://localhost:8080", credentials: true}
         });
 
 

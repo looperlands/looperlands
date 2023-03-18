@@ -1,5 +1,5 @@
 {
-    "host": "127.0.0.1",
+    "host": "localhost",
     "port": 8000,
     "debug_level": "info",
     "nb_players_per_world": 200,

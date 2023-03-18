@@ -5,6 +5,21 @@ Steps to run locally
 3. Run the server: `node server/js/main.js`
 4. Load an insecure browser window to get around CORs: `brave-browser --args --user-data-dir="/tmp/chrome_dev_test" --disable-web-security`
 
+## Docker
+Build and run the server
+```bash
+docker build -f Dockerfile.server . -t server && docker run -p 8000:8000 -t server
+```
+Build and run the client
+```bash
+docker build -f Dockerfile.client . -t client && docker run -p 8080:8080 -t client
+```
+
+Kill all
+```bash
+docker kill $(docker ps -q)
+```
+
 BrowserQuest [updated & with Socket.IO]
 ============
 

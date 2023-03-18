@@ -1,0 +1,17 @@
+
+
+
+
+FROM ubuntu:latest
+EXPOSE 8080
+ENV DEBIAN_FRONTEND noninteractive
+RUN apt -y update
+RUN apt -q -y install nodejs npm
+RUN apt -q -y install php-cli
+COPY . /opt/app
+WORKDIR /opt/app
+COPY configs/config_build.json client/config
+WORKDIR /opt/app/bin
+RUN ./build.sh
+WORKDIR /opt/app
+CMD ["php", "-S", "0.0.0.0:8080", "-t", "client-build"]
