@@ -1,5 +1,5 @@
 {
-    "host": "http://seashell-app-2-mw2a6.ondigitalocean.app",
+    "host": "https://seashell-app-2-mw2a6.ondigitalocean.app",
     "port": 80,
     "debug_level": "info",
     "nb_players_per_world": 200,
