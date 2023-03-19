@@ -1,6 +1,6 @@
 {
     "host": "seashell-app-2-mw2a6.ondigitalocean.app",
-    "port": 80,
+    "port": 443,
     "debug_level": "info",
     "nb_players_per_world": 200,
     "nb_worlds": 5,
