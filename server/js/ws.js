@@ -105,11 +105,13 @@ WS.socketIOServer = Server.extend({
         self = this;
         self.host = host;
         self.port = port;
-        var app = require('express')();
+        var express = require('express');
+        var app = express();
+        app.use("/", express.static(__dirname + "/../../client-build"));
         var http = require('http').Server(app);
         self.io = require('socket.io')(http, {
             allowEIO3: true,
-            cors: {origin: "http://localhost:8080", credentials: true}
+            cors: {origin: "http://loopworms.io:8000", credentials: true}
         });
 
 
