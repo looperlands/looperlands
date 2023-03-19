@@ -111,7 +111,7 @@ WS.socketIOServer = Server.extend({
         var http = require('http').Server(app);
         self.io = require('socket.io')(http, {
             allowEIO3: true,
-            cors: {origin: "http://seashell-app-2-mw2a6.ondigitalocean.app", credentials: true}
+            cors: {origin: "https://seashell-app-2-mw2a6.ondigitalocean.app", credentials: true}
         });
 
 
