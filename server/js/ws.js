@@ -111,7 +111,7 @@ WS.socketIOServer = Server.extend({
         var http = require('http').Server(app);
         self.io = require('socket.io')(http, {
             allowEIO3: true,
-            cors: {origin: "http://loopworms.io:8000", credentials: true}
+            cors: {origin: "http://loopworms.io/DEV/Wormagotchi/RaidBoss/server", credentials: true}
         });
 
 

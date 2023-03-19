@@ -1,6 +1,6 @@
 {
-    "host": "http://loopworms.io",
-    "port": 8000,
+    "host": "http://loopworms.io/DEV/Wormagotchi/RaidBoss/server",
+    "port": 80,
     "debug_level": "info",
     "nb_players_per_world": 200,
     "nb_worlds": 5,
