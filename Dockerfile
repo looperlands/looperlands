@@ -1,5 +1,6 @@
 FROM ubuntu:latest
 EXPOSE 443
+EXPOSE 8000
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt -y update
 RUN apt -q -y install nodejs npm

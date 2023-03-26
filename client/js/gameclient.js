@@ -2,10 +2,13 @@
 define(['player', 'entityfactory', 'lib/bison'], function(Player, EntityFactory, BISON) {
 
     var GameClient = Class.extend({
-        init: function(host, port) {
+        init: function(host, port, protocol) {
             this.connection = null;
             this.host = host;
             this.port = port;
+            this.protocol = protocol;
+
+            console.log("Game client", this.host, this.port, this.protocol);
     
             this.connected_callback = null;
             this.spawn_callback = null;
@@ -45,8 +48,9 @@ define(['player', 'entityfactory', 'lib/bison'], function(Player, EntityFactory,
         },
         
         connect: function(dispatcherMode) {
-             var url = "https://" + this.host + ":" + this.port + "/",
-                self = this;
+             var url = this.protocol + "://" + this.host + ":" + this.port + "/",
+             self = this;
+             console.log(url);
 
              
             this.connection = io(url, {'force new connection':true});
