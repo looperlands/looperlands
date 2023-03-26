@@ -101,17 +101,20 @@ var Connection = cls.Class.extend({
  ***************/
 
 WS.socketIOServer = Server.extend({
-    init: function(host, port) {
+    init: function(host, port, protocol) {
         self = this;
+        self.protocol = protocol;
         self.host = host;
         self.port = port;
         var express = require('express');
         var app = express();
         app.use("/", express.static(__dirname + "/../../client-build"));
         var http = require('http').Server(app);
+
+        var corsAddress = self.protocol + "//" + self.host;
         self.io = require('socket.io')(http, {
             allowEIO3: true,
-            cors: {origin: "https://seashell-app-2-mw2a6.ondigitalocean.app", credentials: true}
+            cors: {origin: corsAddress, credentials: true}
         });
 
 
