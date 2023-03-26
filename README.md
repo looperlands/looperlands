@@ -1,9 +1,6 @@
 ## Loopworm Quest
 Steps to run locally
-1. Navigate to the build directory and bin directory and run `./build.sh`
-2. Run the following command to render the client: `php -S localhost:8080 -t client-build`
-3. Run the server: `node server/js/main.js`
-4. Load an insecure browser window to get around CORs: `brave-browser --args --user-data-dir="/tmp/chrome_dev_test" --disable-web-security`
+1) ./config_manager.py configs/dev_config.json && docker build . -t blah && docker run -t -i -p 8000:8000 -t blah
 
 ## Docker
 Build and run the server

@@ -1,8 +1,13 @@
 #!/usr/bin/python3
 import json
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('central_config', help='Path to central config JSON file')
+args = parser.parse_args()
 
 # Read in source JSON from disk
-with open('configs/central_config.json', 'r') as f:
+with open(args.central_config, 'r') as f:
     source = json.load(f)
 
 # Read in target1 JSON from disk
