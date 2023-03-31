@@ -4,6 +4,7 @@ var fs = require('fs'),
  
 
 function main(config) {
+    console.log(config);
     var ws = require("./ws"),
         WorldServer = require("./worldserver"),
         Log = require('log'),
@@ -119,8 +120,7 @@ function getConfigFile(path, callback) {
     });
 }
 
-var defaultConfigPath = './server/config.json',
-    customConfigPath = './server/config_local.json';
+var defaultConfigPath = './server/config.json';
 
 process.argv.forEach(function (val, index, array) {
     if(index === 2) {
@@ -129,14 +129,5 @@ process.argv.forEach(function (val, index, array) {
 });
 
 getConfigFile(defaultConfigPath, function(defaultConfig) {
-    getConfigFile(customConfigPath, function(localConfig) {
-        if(localConfig) {
-            main(localConfig);
-        } else if(defaultConfig) {
-            main(defaultConfig);
-        } else {
-            console.error("Server cannot start without any configuration file.");
-            process.exit(1);
-        }
-    });
+    main(defaultConfig);
 });

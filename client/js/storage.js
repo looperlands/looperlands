@@ -1,15 +1,25 @@
-
 define(function() {
 
     var Storage = Class.extend({
-        init: function() {
-            if(this.hasLocalStorage() && localStorage.data) {
-                this.data = JSON.parse(localStorage.data);
-            } else {
-                this.resetData();
-            }
+        init: function(walletId, nftId){
+            let _this = this;
+            this.walletId = walletId;
+            this.nftId = nftId;
         },
     
+        loadData: async function() {
+            console.log("In loadData(");
+            _this = this;
+            let response = await axios.get(`/wallets/${this.walletId}/nfts/${this.nftId}`)
+            if (response.data.hasAlreadyPlayed === undefined) {
+                _this.resetData();
+                return false;
+            } else {            
+                _this.data = response.data;
+                return true;
+            }
+
+        },
         resetData: function() {
             this.data = {
                 hasAlreadyPlayed: false,
@@ -35,9 +45,11 @@ define(function() {
         },
     
         save: function() {
-            if(this.hasLocalStorage()) {
-                localStorage.data = JSON.stringify(this.data);
-            }
+            axios.post(`/wallets/${this.walletId}/nfts/${this.nftId}`, this.data).then(function (response) {
+                console.log("Response from Loopworms: ", response.status, response.text, response.data);
+            }).catch(function (error) {
+                console.log(error);
+            });
         },
     
         clear: function() {
@@ -59,7 +71,7 @@ define(function() {
         },
         
         setPlayerName: function(name) {
-            this.data.player.name = name;
+            this.data.player.name = name.trim();
             this.save();
         },
     

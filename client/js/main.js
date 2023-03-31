@@ -5,162 +5,168 @@ define(['jquery', 'app'], function($, App) {
     var initApp = function() {
         $(document).ready(function() {
         	app = new App();
+
             app.center();
-        
-            if(Detect.isWindows()) {
-                // Workaround for graphical glitches on text
-                $('body').addClass('windows');
-            }
-            
-            if(Detect.isOpera()) {
-                // Fix for no pointer events
-                $('body').addClass('opera');
-            }
-        
-            $('body').click(function(event) {
-                if($('#parchment').hasClass('credits')) {
-                    app.toggleCredits();
+
+            app.storage.loadData().then((data) => {
+
+                if(Detect.isWindows()) {
+                    // Workaround for graphical glitches on text
+                    $('body').addClass('windows');
                 }
                 
-                if($('#parchment').hasClass('about')) {
+                if(Detect.isOpera()) {
+                    // Fix for no pointer events
+                    $('body').addClass('opera');
+                }
+            
+                $('body').click(function(event) {
+                    if($('#parchment').hasClass('credits')) {
+                        app.toggleCredits();
+                    }
+                    
+                    if($('#parchment').hasClass('about')) {
+                        app.toggleAbout();
+                    }
+                });
+        
+                $('.barbutton').click(function() {
+                    $(this).toggleClass('active');
+                });
+        
+                $('#chatbutton').click(function() {
+                    if($('#chatbutton').hasClass('active')) {
+                        app.showChat();
+                    } else {
+                        app.hideChat();
+                    }
+                });
+        
+                $('#helpbutton').click(function() {
                     app.toggleAbout();
-                }
-            });
-	
-        	$('.barbutton').click(function() {
-        	    $(this).toggleClass('active');
-        	});
-	
-        	$('#chatbutton').click(function() {
-        	    if($('#chatbutton').hasClass('active')) {
-        	        app.showChat();
-        	    } else {
-                    app.hideChat();
-        	    }
-        	});
-	
-        	$('#helpbutton').click(function() {
-                app.toggleAbout();
-        	});
-	
-        	$('#achievementsbutton').click(function() {
-                app.toggleAchievements();
-                if(app.blinkInterval) {
-                    clearInterval(app.blinkInterval);
-                }
-                $(this).removeClass('blink');
-        	});
-	
-        	$('#instructions').click(function() {
-                app.hideWindows();
-        	});
-        	
-        	$('#playercount').click(function() {
-        	    app.togglePopulationInfo();
-        	});
-        	
-        	$('#population').click(function() {
-        	    app.togglePopulationInfo();
-        	});
-	
-        	$('.clickable').click(function(event) {
-                event.stopPropagation();
-        	});
-	
-        	$('#toggle-credits').click(function() {
-        	    app.toggleCredits();
-        	});
-	
-        	$('#create-new span').click(function() {
-        	    app.animateParchment('loadcharacter', 'confirmation');
-        	});
-	
-        	$('.delete').click(function() {
-                app.storage.clear();
-        	    app.animateParchment('confirmation', 'createcharacter');
-        	});
-	
-        	$('#cancel span').click(function() {
-        	    app.animateParchment('confirmation', 'loadcharacter');
-        	});
-        	
-        	$('.ribbon').click(function() {
-        	    app.toggleAbout();
-        	});
-
-            $('#nameinput').bind("keyup", function() {
-                app.toggleButton();
-            });
-    
-            $('#previous').click(function() {
-                var $achievements = $('#achievements');
+                });
         
-                if(app.currentPage === 1) {
-                    return false;
-                } else {
-                    app.currentPage -= 1;
-                    $achievements.removeClass().addClass('active page' + app.currentPage);
-                }
-            });
-    
-            $('#next').click(function() {
-                var $achievements = $('#achievements'),
-                    $lists = $('#lists'),
-                    nbPages = $lists.children('ul').length;
+                $('#achievementsbutton').click(function() {
+                    app.toggleAchievements();
+                    if(app.blinkInterval) {
+                        clearInterval(app.blinkInterval);
+                    }
+                    $(this).removeClass('blink');
+                });
         
-                if(app.currentPage === nbPages) {
-                    return false;
-                } else {
-                    app.currentPage += 1;
-                    $achievements.removeClass().addClass('active page' + app.currentPage);
-                }
-            });
-
-            $('#notifications div').bind(TRANSITIONEND, app.resetMessagesPosition.bind(app));
-    
-            $('.close').click(function() {
-                app.hideWindows();
-            });
-        
-            $('.twitter').click(function() {
-                var url = $(this).attr('href');
-
-               app.openPopup('twitter', url);
-               return false;
-            });
-
-            $('.facebook').click(function() {
-                var url = $(this).attr('href');
-
-               app.openPopup('facebook', url);
-               return false;
-            });
-        
-            var data = app.storage.data;
-    		if(data.hasAlreadyPlayed) {
-    		    if(data.player.name && data.player.name !== "") {
-		            $('#playername').html(data.player.name);
-    		        $('#playerimage').attr('src', data.player.image);
-    		    }
-    		}
-    		
-    		$('.play div').click(function(event) {
-                var nameFromInput = $('#nameinput').val(),
-                    nameFromStorage = $('#playername').html(),
-                    name = nameFromInput || nameFromStorage;
+                $('#instructions').click(function() {
+                    app.hideWindows();
+                });
                 
-                app.tryStartingGame(name);
-            });
+                $('#playercount').click(function() {
+                    app.togglePopulationInfo();
+                });
+                
+                $('#population').click(function() {
+                    app.togglePopulationInfo();
+                });
         
-            document.addEventListener("touchstart", function() {},false);
+                $('.clickable').click(function(event) {
+                    event.stopPropagation();
+                });
+        
+                $('#toggle-credits').click(function() {
+                    app.toggleCredits();
+                });
+        
+                $('#create-new span').click(function() {
+                    app.animateParchment('loadcharacter', 'confirmation');
+                });
+        
+                $('.delete').click(function() {
+                    app.storage.clear();
+                    app.animateParchment('confirmation', 'createcharacter');
+                });
+        
+                $('#cancel span').click(function() {
+                    app.animateParchment('confirmation', 'loadcharacter');
+                });
+                
+                $('.ribbon').click(function() {
+                    app.toggleAbout();
+                });
+
+                $('#nameinput').bind("keyup", function() {
+                    app.toggleButton();
+                });
+        
+                $('#previous').click(function() {
+                    var $achievements = $('#achievements');
             
-            $('#resize-check').bind("transitionend", app.resizeUi.bind(app));
-            $('#resize-check').bind("webkitTransitionEnd", app.resizeUi.bind(app));
-            $('#resize-check').bind("oTransitionEnd", app.resizeUi.bind(app));
+                    if(app.currentPage === 1) {
+                        return false;
+                    } else {
+                        app.currentPage -= 1;
+                        $achievements.removeClass().addClass('active page' + app.currentPage);
+                    }
+                });
         
-            console.log("App initialized.");
+                $('#next').click(function() {
+                    var $achievements = $('#achievements'),
+                        $lists = $('#lists'),
+                        nbPages = $lists.children('ul').length;
+            
+                    if(app.currentPage === nbPages) {
+                        return false;
+                    } else {
+                        app.currentPage += 1;
+                        $achievements.removeClass().addClass('active page' + app.currentPage);
+                    }
+                });
+
+                $('#notifications div').bind(TRANSITIONEND, app.resetMessagesPosition.bind(app));
         
-            initGame();
+                $('.close').click(function() {
+                    app.hideWindows();
+                });
+            
+                $('.twitter').click(function() {
+                    var url = $(this).attr('href');
+
+                app.openPopup('twitter', url);
+                return false;
+                });
+
+                $('.facebook').click(function() {
+                    var url = $(this).attr('href');
+
+                app.openPopup('facebook', url);
+                return false;
+                });
+            
+                var data = app.storage.data;
+                if(data.hasAlreadyPlayed) {
+                    if(data.player.name && data.player.name !== "") {
+                        $('#playername').html(data.player.name);
+                        $('#playerimage').attr('src', data.player.image);
+                    }
+                }
+                
+                $('.play div').click(function(event) {
+                    var nameFromInput = $('#nameinput').val(),
+                        nameFromStorage = $('#playername').html(),
+                        name = nameFromInput || nameFromStorage;
+                    
+                    app.tryStartingGame(name);
+                });
+            
+                document.addEventListener("touchstart", function() {},false);
+                
+                $('#resize-check').bind("transitionend", app.resizeUi.bind(app));
+                $('#resize-check').bind("webkitTransitionEnd", app.resizeUi.bind(app));
+                $('#resize-check').bind("oTransitionEnd", app.resizeUi.bind(app));
+            
+                console.log("App initialized.");
+            
+                initGame();
+            }).error((error) => { 
+                console.log(error);
+            });
         });
     };
     
