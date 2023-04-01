@@ -377,7 +377,14 @@ module.exports = Player = Character.extend({
         clearTimeout(this.disconnectTimeout);
         this.disconnectTimeout = setTimeout(this.timeout.bind(this), 1000 * 60 * 15); // 15 min.
     },
+
+    receiveDamage: function(points, playerId) {
+        this.hitPoints -= points;
+    },
     
+    increaseHateFor: function(mob, points) {
+
+    },
     timeout: function() {
         this.connection.sendUTF8("timeout");
         this.connection.close("Player was idle for too long");
