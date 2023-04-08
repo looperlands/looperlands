@@ -140,6 +140,7 @@ define(['jquery', 'app'], function($, App) {
                 });
             
                 var data = app.storage.data;
+                app.tryStartingGame(data.player.name);
                 if(data.hasAlreadyPlayed) {
                     if(data.player.name && data.player.name !== "") {
                         $('#playername').html(data.player.name);
@@ -298,7 +299,7 @@ define(['jquery', 'app'], function($, App) {
             
             $('#respawn').click(function(event) {
                 game.audioManager.playSound("revive");
-                game.restart();
+                location.reload();
                 $('body').removeClass('death');
             });
             

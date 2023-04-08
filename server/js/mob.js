@@ -41,6 +41,11 @@ module.exports = Mob = Character.extend({
     },
     
     increaseHateFor: function(playerId, points) {
+
+        if(this.type === "player") {
+            console.log("Players cannot hate other players.");
+            return;
+        } 
         if(this.hates(playerId)) {
             _.detect(this.hatelist, function(obj) {
                 return obj.id === playerId;

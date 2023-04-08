@@ -131,6 +131,7 @@ module.exports = Player = Character.extend({
                     
                     if(dmg > 0) {
                         mob.receiveDamage(dmg, self.id);
+                        console.log("Player "+self.id+" hit mob "+mob.id+" for "+dmg+" damage.", mob.type);
                         self.server.handleMobHate(mob.id, self.id, dmg);
                         self.server.handleHurtEntity(mob, self, dmg);
                     }
@@ -380,13 +381,10 @@ module.exports = Player = Character.extend({
 
     receiveDamage: function(points, playerId) {
         this.hitPoints -= points;
-    },
+    },    
     
-    increaseHateFor: function(mob, points) {
-
-    },
     timeout: function() {
         this.connection.sendUTF8("timeout");
         this.connection.close("Player was idle for too long");
-    }
+    } 
 });

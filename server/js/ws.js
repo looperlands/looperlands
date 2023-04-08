@@ -13,6 +13,7 @@ var cls = require("./lib/class"),
 
 module.exports = WS;
 
+const axios = require('axios');
 
 /**
  * Abstract Server and Connection classes
@@ -104,7 +105,6 @@ getCharacterData = async function(wallet, nft, apiKey) {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
     };
-    const axios = require('axios');
     try {
         const responseData = await axios.post('https://loopworms.io/DEV/Wormagotchi/RaidBoss/LoadPost.php', data, options);
         //console.debug("ResponseData from Loopworms: ", responseData.status, responseData.text, responseData.data);
@@ -167,6 +167,18 @@ WS.socketIOServer = Server.extend({
             const nftId = req.params.nftId;
             const saveData = await getCharacterData(walletId, nftId, process.env.LOOPWORMS_API_KEY)
             const parsedSaveData = JSON.parse(saveData[0]);
+
+            let name = walletId.substring(0,6);
+            try {
+                let ensLookup = await axios.get(`https://api3.loopring.io/api/wallet/v3/resolveName?owner=${walletId}`);
+                console.log(ensLookup.data.data);
+                name = ensLookup.data.data.split(".")[0];
+            } catch {
+                console.error("Error while looking up ENS name");
+            }
+            parsedSaveData.player.name = name;
+            
+
             if(parsedSaveData.hasAlreadyPlayed == true && parsedSaveData.player.armor === "") {
                 parsedSaveData.hasAlreadyPlayed = false;
             }

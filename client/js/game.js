@@ -1332,6 +1332,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             
                 self.client.onPlayerDamageMob(function(mobId, points) {
                     var mob = self.getEntityById(mobId);
+                    console.log("Mob ID + ", mob)
                     if(mob && points) {
                         self.infoManager.addDamageInfo(points, mob.x, mob.y - 15, "inflicted");
                     }
