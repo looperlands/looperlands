@@ -45,18 +45,15 @@ function main() {
 
 // Loads the temporary JSON Tiled map converted by tmx2json.py
 function getTiledJSONmap(filename, callback) {
-    var self = this;
-    
-    fs.path.exists(filename, function(exists) {
-        if(!exists) {  
-            console.error(filename + " doesn't exist.")
-            return;
-        }
+    if (fs.existsSync(filename)) { 
     
         fs.readFile(source, function(err, file) {
             callback(JSON.parse(file.toString()));
         });
-    });
+    } else {
+        console.error(filename + " doesn't exist.")
+        return;
+    };
 }
 
 main();

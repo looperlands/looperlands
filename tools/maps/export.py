@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python2
 import commands
 import sys
 
@@ -22,4 +22,4 @@ print commands.getoutput('./exportmap.js '+TEMP_FILE+' '+DEST_FILE+' '+mode)
 print commands.getoutput('rm '+TEMP_FILE)
 
 # Send a Growl notification when the export process is complete
-print commands.getoutput('growlnotify --appIcon Tiled -name "Map export complete" -m "'+DEST_FILE+' was saved"')
+print("Map export complete")
