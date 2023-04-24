@@ -18,10 +18,10 @@ Kill all
 docker kill $(docker ps -q)
 ```
 
-BrowserQuest [updated & with Socket.IO]
+LoopQuest [updated & with Socket.IO]
 ============
 
-![alt tag](https://raw.github.com/nenuadrian/BrowserQuest/master/screens/1.png)
+![alt tag](https://raw.github.com/nenuadrian/LoopQuest/master/screens/1.png)
 
 Changes
 ============
@@ -30,7 +30,7 @@ Changes
   * Updated dependencies such as requirejs and jQuery to their latest versions
   * Fixed build script
   * Created a mini-dispatcher on the server side that provides the IP and Port in the configs as the ones for the game server.
-  * Added a demo to http://browserquest.codevolution.com
+  * Added a demo to http://LoopQuest.codevolution.com
   * A few minor edits to server side handling
 
 TODO
@@ -43,13 +43,13 @@ This is my take on Mozilla's amazing multiplayer open source game.
 
 I've yet to find any other game that's so well done from graphics, implementation and features point of view (did I mention open source, multiplayer and browser based?).
 
-![alt tag](https://raw.github.com/nenuadrian/BrowserQuest/master/screens/2.png)
+![alt tag](https://raw.github.com/nenuadrian/LoopQuest/master/screens/2.png)
 
 I've wanted to use the game for a while and found many of its dependencies to be deprecated and even obsolete.
 
 I've just taken the time to understand the code and thank you guys for making it so well structured.
 
-![alt tag](https://raw.github.com/nenuadrian/BrowserQuest/master/screens/3.png)
+![alt tag](https://raw.github.com/nenuadrian/LoopQuest/master/screens/3.png)
 
 This now works on the latest Socket.IO. Everything should work just as in the original developers intended.
 
@@ -74,7 +74,7 @@ Also read the original README files you'll find inside the Client and Server fol
 
 Original README
 ============
-BrowserQuest is a HTML5/JavaScript multiplayer game experiment.
+LoopQuest is a HTML5/JavaScript multiplayer game experiment.
 
 
 Documentation

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Script to generate an optimized client build of BrowserQuest
+# Script to generate an optimized client build of LoopQuest
 
 BUILDDIR="../client-build"
 PROJECTDIR="../client/js"

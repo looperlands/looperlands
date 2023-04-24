@@ -29,7 +29,7 @@ define(['character'], function(Character) {
             "It's all happening in a single web page! Isn't it crazy?",
             "It's all made possible thanks to WebSockets.",
             "I don't know much about it, after all I'm just a program.",
-            'Why don&#x27;t you read this <a target="_blank" href="http://hacks.mozilla.org/2012/03/browserquest/">blog post</a> and learn all about it?'
+            'Why don&#x27;t you read this <a target="_blank" href="http://hacks.mozilla.org/2012/03/LoopQuest/">blog post</a> and learn all about it?'
         ],
     
         "villager": [
@@ -110,7 +110,7 @@ define(['character'], function(Character) {
             "The tougher the enemy, the higher the potential rewards.",
             "You can also unlock achievements by exploring and hunting.",
             "Click on the small cup icon to see a list of all the achievements.",
-            "Please stay a while and enjoy the many surprises of BrowserQuest",
+            "Please stay a while and enjoy the many surprises of LoopQuest",
             "Farewell, young friend."
         ],
         
@@ -129,13 +129,13 @@ define(['character'], function(Character) {
         ],
         
         "octocat": [
-            "Welcome to BrowserQuest!",
+            "Welcome to LoopQuest!",
             "Want to see the source code?",
-            'Check out <a target="_blank" href="http://github.com/nenuadrian/BrowserQuest">the repository on GitHub</a>'
+            'Check out <a target="_blank" href="http://github.com/nenuadrian/LoopQuest">the repository on GitHub</a>'
         ],
         
         "coder": [
-            "Hi! Do you know that you can also play BrowserQuest on your tablet or mobile?",
+            "Hi! Do you know that you can also play LoopQuest on your tablet or mobile?",
             "That's the beauty of HTML5!",
             "Give it a try..."
         ],
