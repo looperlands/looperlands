@@ -89,7 +89,10 @@ Types = {
         GOLDENSWORD: 63,
         MORNINGSTAR: 64,
         AXE: 65,
-        BLUESWORD: 66
+        BLUESWORD: 66,
+
+        // NFTs
+        GILLSPRITE: 70
     },
     
     Orientations: {
@@ -154,7 +157,10 @@ var kinds = {
     beachnpc: [Types.Entities.BEACHNPC, "npc"],
     forestnpc: [Types.Entities.FORESTNPC, "npc"],
     desertnpc: [Types.Entities.DESERTNPC, "npc"],
-    lavanpc: [Types.Entities.LAVANPC, "npc"],
+    lavanpc: [Types.Entities.LAVANPC, "npc"], 
+
+    //NFT
+    gillsprite: [Types.Entities.GILLSPRITE, "armor"],
     
     getType: function(kind) {
         return kinds[Types.getKindAsString(kind)][1];

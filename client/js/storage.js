@@ -16,6 +16,7 @@ define(function() {
                 return false;
             } else {            
                 _this.data = response.data;
+                _this.data.player.armor = "gillsprite";
                 return true;
             }
 
@@ -26,7 +27,7 @@ define(function() {
                 player: {
                     name: "",
                     weapon: "",
-                    armor: "",
+                    armor: "gillsprite",
                     image: ""
                 },
                 achievements: {

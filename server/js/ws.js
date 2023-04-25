@@ -165,8 +165,14 @@ WS.socketIOServer = Server.extend({
         app.get('/wallets/:walletId/nfts/:nftId', async (req, res) => {
             const walletId = req.params.walletId;
             const nftId = req.params.nftId;
-            const saveData = await getCharacterData(walletId, nftId, process.env.LOOPWORMS_API_KEY)
-            const parsedSaveData = JSON.parse(saveData[0]);
+            const saveData = await getCharacterData(walletId, nftId, process.env.LOOPWORMS_API_KEY);
+            let parsedSaveData;
+            try {
+                parsedSaveData = JSON.parse(saveData[0]);
+            } catch {
+                console.error("Error parsing save data " + saveData);
+            }
+            
 
             let name = walletId.substring(0,6);
             try {
