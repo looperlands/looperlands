@@ -12,5 +12,4 @@ jobs:
         username: ${{ secrets.USERNAME }}
         password: ${{ secrets.PASSWORD }}
         port: 22
-        script: pwd
-        #script: bash ./loopquest/update.sh
+        script: bash /home/loopquest/update.sh
