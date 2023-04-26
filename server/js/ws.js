@@ -189,7 +189,7 @@ WS.socketIOServer = Server.extend({
                     player: {
                         name: "",
                         weapon: "",
-                        armor: "",
+                        armor: nftId.replace("0x", "NFT_"),
                         image: ""
                     },
                     achievements: {
