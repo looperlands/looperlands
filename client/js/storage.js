@@ -13,10 +13,12 @@ define(function() {
             let response = await axios.get(`/wallets/${this.walletId}/nfts/${this.nftId}`)
             if (response.data.hasAlreadyPlayed === undefined) {
                 _this.resetData();
+                _this.data.player.armor = this.nftId.replace("0x", "NFT_");
                 return false;
             } else {            
                 _this.data = response.data;
-                _this.data.player.armor = "gillsprite";
+                // Remove the 0x from the nftId
+                _this.data.player.armor = this.nftId.replace("0x", "NFT_");
                 return true;
             }
 
@@ -27,7 +29,7 @@ define(function() {
                 player: {
                     name: "",
                     weapon: "",
-                    armor: "gillsprite",
+                    armor: "",
                     image: ""
                 },
                 achievements: {

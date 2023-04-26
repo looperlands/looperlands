@@ -13,7 +13,7 @@ define(['character', 'exceptions'], function(Character, Exceptions) {
      		this.nameOffsetY = -10;
         
             // sprites
-            this.spriteName = "gillsprite";
+            this.spriteName = "clotharmor";
             this.weaponName = "sword1";
         
             // modes

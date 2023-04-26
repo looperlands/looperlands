@@ -92,7 +92,8 @@ Types = {
         BLUESWORD: 66,
 
         // NFTs
-        GILLSPRITE: 70
+        NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6: 70,
+        NFT_38278eacc7d1c86fdbc85d798dca146fbca59a2e5e567dc15898ce2edac21f5f: 71
     },
     
     Orientations: {
@@ -160,7 +161,9 @@ var kinds = {
     lavanpc: [Types.Entities.LAVANPC, "npc"], 
 
     //NFT
-    gillsprite: [Types.Entities.GILLSPRITE, "armor"],
+    NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6: [Types.Entities.NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6, "armor"],
+    NFT_38278eacc7d1c86fdbc85d798dca146fbca59a2e5e567dc15898ce2edac21f5f: [Types.Entities.NFT_38278eacc7d1c86fdbc85d798dca146fbca59a2e5e567dc15898ce2edac21f5f, "armor"],
+
     
     getType: function(kind) {
         return kinds[Types.getKindAsString(kind)][1];

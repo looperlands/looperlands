@@ -182,6 +182,26 @@ WS.socketIOServer = Server.extend({
             } catch {
                 console.error("Error while looking up ENS name");
             }
+
+            if (parsedSaveData === undefined) {
+                parsedSaveData = {
+                    hasAlreadyPlayed: undefined,
+                    player: {
+                        name: "",
+                        weapon: "",
+                        armor: "",
+                        image: ""
+                    },
+                    achievements: {
+                        unlocked: [],
+                        ratCount: 0,
+                        skeletonCount: 0,
+                        totalKills: 0,
+                        totalDmg: 0,
+                        totalRevives: 0
+                    }
+                };                
+            }
             parsedSaveData.player.name = name;
             
 
