@@ -1053,7 +1053,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 });
                 
                 self.player.onArmorLoot(function(armorName) {
-                    self.player.switchArmor(self.sprites[armorName]);
+                    return;
                 });
             
                 self.player.onSwitchItem(function() {
