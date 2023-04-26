@@ -3,6 +3,8 @@ Steps to run locally
 1) ./config_manager.py configs/dev_config.json && docker build . -t blah && docker run -t -i -p 8000:8000 -t blah
 Make sure to not commit dev changes
 
+NFT Image scales: https://imgur.com/a/2WQ9ZOt
+
 ## Docker
 Build and run the server
 ```bash
