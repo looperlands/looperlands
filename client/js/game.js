@@ -1219,7 +1219,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                         self.assignBubbleTo(entity); // Make chat bubbles follow moving entities
                                     });
 
-                                    if(entity instanceof Mob || entity instanceof Character) {
+                                    if(entity instanceof Mob || entity instanceof Player) {
                                         if(targetId) {
                                             var player = self.getEntityById(targetId);
                                             if(player) {
@@ -1928,7 +1928,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
     	    && !this.hoveringPlateauTile) {
         	    entity = this.getEntityAt(pos.x, pos.y);
     	    
-        	    if(entity instanceof Mob || entity instanceof Character) {
+        	    if(entity instanceof Mob || entity instanceof Player) {
         	        this.makePlayerAttack(entity);
                 }
         	    else if(entity instanceof Item) {
