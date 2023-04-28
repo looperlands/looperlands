@@ -117,8 +117,8 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         },
     
         initPlayer: function() {
+            this.player.setSpriteName(this.storage.data.player.armor);
             if(this.storage.hasAlreadyPlayed()) {
-                this.player.setSpriteName(this.storage.data.player.armor);
                 this.player.setWeaponName(this.storage.data.player.weapon);
             }
         
@@ -747,7 +747,9 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 console.log("Starting client/server handshake");
                 
                 self.player.name = self.username;
+                self.player.setSpriteName(self.storage.data.player.armor);
                 self.started = true;
+
             
                 self.sendHello(self.player);
             });

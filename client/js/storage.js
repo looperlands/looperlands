@@ -2,45 +2,25 @@ define(function() {
 
     var Storage = Class.extend({
         init: function(walletId, nftId){
-            let _this = this;
             this.walletId = walletId;
             this.nftId = nftId;
         },
-    
+        saveWorker: new Worker("js/saveworker.js"),
+        dirty: false,
         loadData: async function() {
-            console.log("In loadData(");
+            console.log("Loading data");
+            let response = await axios.get(`/wallets/${this.walletId}/nfts/${this.nftId}`);
+            this.data = response.data;
             _this = this;
-            let response = await axios.get(`/wallets/${this.walletId}/nfts/${this.nftId}`)
-            if (response.data.hasAlreadyPlayed === undefined) {
-                _this.resetData();
-                _this.data.player.armor = this.nftId.replace("0x", "NFT_");
-                return false;
-            } else {            
-                _this.data = response.data;
-                // Remove the 0x from the nftId
-                _this.data.player.armor = this.nftId.replace("0x", "NFT_");
-                return true;
-            }
-
+            setInterval(function() {
+                if (_this.dirty === true) {
+                    _this.saveWorker.postMessage(_this.data);
+                    _this.dirty = false;
+                }
+            }, 5000);
         },
         resetData: function() {
-            this.data = {
-                hasAlreadyPlayed: false,
-                player: {
-                    name: "",
-                    weapon: "",
-                    armor: "",
-                    image: ""
-                },
-                achievements: {
-                    unlocked: [],
-                    ratCount: 0,
-                    skeletonCount: 0,
-                    totalKills: 0,
-                    totalDmg: 0,
-                    totalRevives: 0
-                }
-            };
+            return;
         },
     
         hasLocalStorage: function() {
@@ -48,11 +28,8 @@ define(function() {
         },
     
         save: function() {
-            axios.post(`/wallets/${this.walletId}/nfts/${this.nftId}`, this.data).then(function (response) {
-                console.log("Response from Loopworms: ", response.status, response.text, response.data);
-            }).catch(function (error) {
-                console.log(error);
-            });
+            console.debug("setting dirty");
+            this.dirty = true;
         },
     
         clear: function() {

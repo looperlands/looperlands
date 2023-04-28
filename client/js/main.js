@@ -165,8 +165,6 @@ define(['jquery', 'app'], function($, App) {
                 console.log("App initialized.");
             
                 initGame();
-            }).error((error) => { 
-                console.log(error);
             });
         });
     };
@@ -330,6 +328,7 @@ define(['jquery', 'app'], function($, App) {
                     if(chat_el.val().replace(/\s/g, '').length) {
                         if(game.player) {
                             game.say(chat_el.val());
+                            chat_el.val("");
                         }
                         app.hideChat();
                         $('#foreground').focus();

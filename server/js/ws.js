@@ -165,6 +165,7 @@ WS.socketIOServer = Server.extend({
         app.get('/wallets/:walletId/nfts/:nftId', async (req, res) => {
             const walletId = req.params.walletId;
             const nftId = req.params.nftId;
+            console.log("GET /wallets/" + walletId + "/nfts/" + nftId);
             const saveData = await getCharacterData(walletId, nftId, process.env.LOOPWORMS_API_KEY);
             let parsedSaveData;
             try {
@@ -174,20 +175,28 @@ WS.socketIOServer = Server.extend({
             }
             
 
-            let name = walletId.substring(0,6);
+            const shortEthAddressName = walletId.replace("0x", "").substring(0,6);
+            let name = shortEthAddressName;
             try {
                 let ensLookup = await axios.get(`https://api3.loopring.io/api/wallet/v3/resolveName?owner=${walletId}`);
-                console.log(ensLookup.data.data);
+                console.debug("ENS data", ensLookup);
                 name = ensLookup.data.data.split(".")[0];
+                if (name === "") {
+                    name = shortEthAddressName;
+                }
             } catch {
                 console.error("Error while looking up ENS name");
             }
 
             if (parsedSaveData === undefined) {
+                console.log("Save data is undefined, creating new save data for " + name);
                 parsedSaveData = {
-                    hasAlreadyPlayed: undefined,
+                    loopquest: true,
+                    nftId: nftId,
+                    walletId: walletId,
+                    hasAlreadyPlayed: false,
                     player: {
-                        name: "",
+                        name: name,
                         weapon: "",
                         armor: nftId.replace("0x", "NFT_"),
                         image: ""
@@ -203,11 +212,8 @@ WS.socketIOServer = Server.extend({
                 };                
             }
             parsedSaveData.player.name = name;
+            parsedSaveData.player.armor = nftId.replace("0x", "NFT_");
             
-
-            if(parsedSaveData.hasAlreadyPlayed == true && parsedSaveData.player.armor === "") {
-                parsedSaveData.hasAlreadyPlayed = false;
-            }
             res.status(200).json(parsedSaveData);
         });
         

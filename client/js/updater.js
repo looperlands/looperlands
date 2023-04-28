@@ -65,6 +65,9 @@ define(['character', 'timer'], function(Character, Timer) {
                 z = this.game.currentZoning;
     
             this.game.forEachEntity(function(entity) {
+                if (entity === undefined) {
+                    return;
+                }
                 m = entity.movement;
                 if(m) {
                     if(m.inProgress) {
