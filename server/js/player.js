@@ -117,7 +117,6 @@ module.exports = Player = Character.extend({
             }
             else if(action === Types.Messages.ATTACK) {
                 var mob = self.server.getEntityById(message[1]);
-                
                 if(mob) {
                     self.setTarget(mob);
                     self.server.broadcastAttacker(self);
@@ -185,7 +184,7 @@ module.exports = Player = Character.extend({
                                 self.regenHealthBy(amount);
                                 self.server.pushToPlayer(self, self.health());
                             }
-                        } else if(Types.isArmor(kind) || Types.isWeapon(kind)) {
+                        } else if(Types.isWeapon(kind)) {
                             self.equipItem(item);
                             self.broadcast(self.equip(kind));
                         }
@@ -204,6 +203,8 @@ module.exports = Player = Character.extend({
                     
                     self.server.handlePlayerVanish(self);
                     self.server.pushRelevantEntityListTo(self);
+                } else {
+                    console.error("Invalid teleport position : "+x+", "+y);
                 }
             }
             else if(action === Types.Messages.OPEN) {
