@@ -1931,8 +1931,14 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
     	    && !this.hoveringPlateauTile) {
         	    entity = this.getEntityAt(pos.x, pos.y);
     	    
-        	    if(entity instanceof Mob || entity instanceof Player) {
+        	    if(entity instanceof Mob) {
         	        this.makePlayerAttack(entity);
+                } else if (entity instanceof Player) {
+                    let pvpZone = {top: {x: 14, y: 326}, bottom: {x: 39, y: 348}}
+                    let inPvpZone = entity.gridX > pvpZone.top.x && entity.gridX < pvpZone.bottom.x && entity.gridY > pvpZone.top.y && entity.gridY < pvpZone.bottom.y;
+                    if (inPvpZone) {
+                        this.makePlayerAttack(entity);
+                    }
                 }
         	    else if(entity instanceof Item) {
         	        this.makePlayerGoToItem(entity);
