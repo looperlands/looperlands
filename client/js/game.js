@@ -1934,8 +1934,8 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         	    if(entity instanceof Mob) {
         	        this.makePlayerAttack(entity);
                 } else if (entity instanceof Player) {
-                    let pvpZone = {top: {x: 14, y: 326}, bottom: {x: 39, y: 348}}
-                    let inPvpZone = entity.gridX > pvpZone.top.x && entity.gridX < pvpZone.bottom.x && entity.gridY > pvpZone.top.y && entity.gridY < pvpZone.bottom.y;
+                    var pvpZone = {top: {x: 14, y: 326}, bottom: {x: 39, y: 348}}
+                    var inPvpZone = entity.gridX > pvpZone.top.x && entity.gridX < pvpZone.bottom.x && entity.gridY > pvpZone.top.y && entity.gridY < pvpZone.bottom.y;
                     if (inPvpZone) {
                         this.makePlayerAttack(entity);
                     }
