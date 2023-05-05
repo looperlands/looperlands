@@ -198,7 +198,7 @@ WS.socketIOServer = Server.extend({
             let name = shortEthAddressName;
             try {
                 let ensLookup = await axios.get(`https://api3.loopring.io/api/wallet/v3/resolveName?owner=${walletId}`);
-                console.debug("ENS data", ensLookup);
+                //console.debug("ENS data", ensLookup);
                 name = ensLookup.data.data.split(".")[0];
                 if (name === "") {
                     name = shortEthAddressName;
