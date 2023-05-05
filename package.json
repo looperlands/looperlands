@@ -8,6 +8,7 @@
         "express": ">0",
         "log": ">0",
         "memcache": "0.3.0",
+        "node-cache": "^5.1.2",
         "sanitizer": "0.1.2",
         "socket.io": ">0",
         "underscore": ">0"

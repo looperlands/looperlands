@@ -5,15 +5,14 @@ define(['jquery', 'storage'], function($, Storage) {
         init: function() {
 
             const urlParams = new URLSearchParams(window.location.search);
-            const nftId = urlParams.get('NFTID');
-            const walletId = urlParams.get('WalletID');
+            const sessionId = urlParams.get('sessionId');
 
             this.currentPage = 1;
             this.blinkInterval = null;
             this.previousState = null;
             this.isParchmentReady = true;
             this.ready = false;
-            this.storage = new Storage(walletId, nftId);
+            this.storage = new Storage(sessionId);
             this.watchNameInputInterval = setInterval(this.toggleButton.bind(this), 100);
             this.$playButton = $('.play'),
             this.$playDiv = $('.play div');

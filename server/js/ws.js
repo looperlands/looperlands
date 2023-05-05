@@ -14,6 +14,10 @@ var cls = require("./lib/class"),
 module.exports = WS;
 
 const axios = require('axios');
+const crypto = require('crypto');
+const NodeCache = require( "node-cache" );
+
+const cache = new NodeCache();
 
 /**
  * Abstract Server and Connection classes
@@ -162,9 +166,25 @@ WS.socketIOServer = Server.extend({
 
         app.use(express.json())
 
-        app.get('/wallets/:walletId/nfts/:nftId', async (req, res) => {
-            const walletId = req.params.walletId;
-            const nftId = req.params.nftId;
+        app.post('/session', (req, res) => {
+            const body = req.body;
+            const apiKey = req.headers['x-api-key'];
+            if (apiKey !== process.env.LOOPWORMS_API_KEY) {
+                res.status(401).send(false);
+            } else {
+                const id = crypto.randomBytes(20).toString('hex')
+                cache.set(id, body, 60 * 60 * 24);
+                res.status(200).send(id);
+            }
+        });
+
+        app.get('/session/:sessionId', async (req, res) => {
+            const sessionId = req.params.sessionId;
+            console.log("Session ID", sessionId);
+            const sessionData = cache.get(sessionId);
+            const nftId = sessionData.nftId;
+            const walletId = sessionData.walletId;
+
             console.log("GET /wallets/" + walletId + "/nfts/" + nftId);
             const saveData = await getCharacterData(walletId, nftId, process.env.LOOPWORMS_API_KEY);
             let parsedSaveData;
@@ -217,9 +237,11 @@ WS.socketIOServer = Server.extend({
             res.status(200).json(parsedSaveData);
         });
         
-        app.post('/wallets/:walletId/nfts/:nftId', (req, res) => {
-            const walletId = req.params.walletId;
-            const nftId = req.params.nftId;
+        app.put('/session/:sessionId', (req, res) => {
+            const sessionId = req.params.sessionId;
+            const sessionData = cache.get(sessionId);
+            const nftId = sessionData.nftId;
+            const walletId = sessionData.walletId;
 
             const body = req.body;
             const data = saveCharacterData(walletId, nftId, process.env.LOOPWORMS_API_KEY, body);

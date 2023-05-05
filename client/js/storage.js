@@ -1,19 +1,22 @@
 define(function() {
 
     var Storage = Class.extend({
-        init: function(walletId, nftId){
-            this.walletId = walletId;
-            this.nftId = nftId;
+        init: function(sessionId){
+            this.sessionId = sessionId;
         },
         saveWorker: new Worker("js/saveworker.js"),
         dirty: false,
         loadData: async function() {
             console.log("Loading data");
-            let response = await axios.get(`/wallets/${this.walletId}/nfts/${this.nftId}`);
+            let response = await axios.get(`/session/${this.sessionId}`);
             this.data = response.data;
+            this.nftId = this.data.nftId;
+            this.walletId = this.data.walletId;
+
             _this = this;
             setInterval(function() {
                 if (_this.dirty === true) {
+                    _this.data['sessionId'] = _this.sessionId;
                     _this.saveWorker.postMessage(_this.data);
                     _this.dirty = false;
                 }
