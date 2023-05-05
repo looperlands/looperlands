@@ -180,12 +180,11 @@ WS.socketIOServer = Server.extend({
 
         app.get('/session/:sessionId', async (req, res) => {
             const sessionId = req.params.sessionId;
-            console.log("Session ID", sessionId);
             const sessionData = cache.get(sessionId);
             const nftId = sessionData.nftId;
             const walletId = sessionData.walletId;
 
-            console.log("GET /wallets/" + walletId + "/nfts/" + nftId);
+            console.log("Session ID", sessionId, "Wallet ID", walletId, "NFT ID", nftId);
             const saveData = await getCharacterData(walletId, nftId, process.env.LOOPWORMS_API_KEY);
             let parsedSaveData;
             try {
