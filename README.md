@@ -15,6 +15,13 @@ Build and run the client
 docker build -f Dockerfile.client . -t client && docker run -p 8080:8080 -t client
 ```
 
+# Create session
+1) ```bash
+curl -X POST -H "Content-Type: application/json" -H "x-api-key: <api-key-here>" -d '{"walletId": "0xd26053b502ce7865106c421d22532ba5d5567783", "nftId" : "0xc762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6"}' http://127.0.0.1:8000/session
+```
+2) Navigate to http://127.0.0.1:8000/?sessionId=<sessionIdFromStep1>
+
+
 Kill all
 ```bash
 docker kill $(docker ps -q)
