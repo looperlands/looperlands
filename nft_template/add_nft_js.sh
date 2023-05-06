@@ -3,7 +3,6 @@ echo $1
 NFT_ID=NFT_$1
 type=$2
 
-
 if [ -z "$1" ]
   then
     echo "NFT ID minus the 0x missing"
@@ -36,3 +35,8 @@ update_gametypes() {
 
 update_gametypes "../client/js/gametypes.js"
 update_gametypes "../shared/js/gametypes.js"
+
+echo Add the NFT sprite
+newLine="        'text!../sprites/$NFT_ID.json',\n        // @nextSpriteImport@"
+sed -e "s#.*@nextSpriteImport@.*#$newLine#g" ../client/js/sprites.js > tmp.js
+mv tmp.js ../client/js/sprites.js
