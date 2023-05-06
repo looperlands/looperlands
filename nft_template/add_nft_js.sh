@@ -1,5 +1,4 @@
 #!/bin/bash
-echo $1
 NFT_ID=NFT_$1
 type=$2
 
