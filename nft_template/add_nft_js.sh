@@ -25,7 +25,7 @@ update_gametypes() {
     gameTypePath=$1
     echo "Game type path: $gameTypePath"
     # Add the NFT id
-    newLine="        $NFT_ID: $nextId, // @lastid@\n        //@nextIdLine@"
+    newLine="        $NFT_ID: $nextId // @lastid@\n        //@nextIdLine@"
     sed -e "s! // @lastid@!,!g" -e "s!.*@nextIdLine@.*!$newLine!g" $gameTypePath > tmp.js
     # Add the NFT sprite
     newLine="    $NFT_ID: [Types.Entities.$NFT_ID, \"$type\"],\n    // @nextSpriteLine@"
