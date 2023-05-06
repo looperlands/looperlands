@@ -96,7 +96,8 @@ Types = {
         // Worm Sprite
         NFT_38278eacc7d1c86fdbc85d798dca146fbca59a2e5e567dc15898ce2edac21f5f: 71,
         // cyber crew
-        NFT_d2fb1ad9308803ea4df2ba6b1fe0930ad4d6443b3ac6468eaedbc9e2c214e57a: 72
+        NFT_d2fb1ad9308803ea4df2ba6b1fe0930ad4d6443b3ac6468eaedbc9e2c214e57a: 72, // @lastid@
+        //@nextIdLine@
     },
     
     Orientations: {
@@ -168,6 +169,7 @@ var kinds = {
     // Worm Sprite
     NFT_38278eacc7d1c86fdbc85d798dca146fbca59a2e5e567dc15898ce2edac21f5f: [Types.Entities.NFT_38278eacc7d1c86fdbc85d798dca146fbca59a2e5e567dc15898ce2edac21f5f, "armor"],
     NFT_d2fb1ad9308803ea4df2ba6b1fe0930ad4d6443b3ac6468eaedbc9e2c214e57a: [Types.Entities.NFT_d2fb1ad9308803ea4df2ba6b1fe0930ad4d6443b3ac6468eaedbc9e2c214e57a, "armor"],
+    // @nextSpriteLine@
 
     getType: function(kind) {
         return kinds[Types.getKindAsString(kind)][1];
