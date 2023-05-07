@@ -59,6 +59,7 @@ module.exports = Player = Character.extend({
                 self.orientation = Utils.randomOrientation();
                 self.updateHitPoints();
                 self.updatePosition();
+                self.sessionId = message[4];
                 
                 self.server.addPlayer(self);
                 self.server.enter_callback(self);
