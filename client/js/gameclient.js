@@ -2,11 +2,12 @@
 define(['player', 'entityfactory', 'lib/bison'], function(Player, EntityFactory, BISON) {
 
     var GameClient = Class.extend({
-        init: function(host, port, protocol) {
+        init: function(host, port, protocol, sessionId) {
             this.connection = null;
             this.host = host;
             this.port = port;
             this.protocol = protocol;
+            this.sessionId = sessionId;
 
             console.log("Game client", this.host, this.port, this.protocol);
     
@@ -464,7 +465,8 @@ define(['player', 'entityfactory', 'lib/bison'], function(Player, EntityFactory,
             this.sendMessage([Types.Messages.HELLO,
                               player.name,
                               Types.getKindFromString(player.getSpriteName()),
-                              Types.getKindFromString(player.getWeaponName())]);
+                              Types.getKindFromString(player.getWeaponName()),
+                              this.sessionId]);
         },
 
         sendMove: function(x, y) {

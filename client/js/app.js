@@ -6,13 +6,16 @@ define(['jquery', 'storage'], function($, Storage) {
 
             const urlParams = new URLSearchParams(window.location.search);
             const sessionId = urlParams.get('sessionId');
-
+            if (sessionId === null || sessionId === undefined) {
+                alert("No session id provided. Please go to the NFT picker page and select an NFT to play with.");
+            }
             this.currentPage = 1;
             this.blinkInterval = null;
             this.previousState = null;
             this.isParchmentReady = true;
             this.ready = false;
             this.storage = new Storage(sessionId);
+            this.sessionId = sessionId;
             this.watchNameInputInterval = setInterval(this.toggleButton.bind(this), 100);
             this.$playButton = $('.play'),
             this.$playDiv = $('.play div');
@@ -25,6 +28,7 @@ define(['jquery', 'storage'], function($, Storage) {
             this.isDesktop = !(this.isMobile || this.isTablet);
             this.supportsWorkers = !!window.Worker;
             this.ready = true;
+            this.game.sessionId = this.sessionId;
         },
     
         center: function() {

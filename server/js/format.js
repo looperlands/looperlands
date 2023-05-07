@@ -6,7 +6,7 @@ var _ = require('underscore'),
     FormatChecker = Class.extend({
         init: function() {
             this.formats = [];
-            this.formats[Types.Messages.HELLO] = ['s', 'n', 'n'],
+            this.formats[Types.Messages.HELLO] = ['s', 'n', 'n', 's'],
             this.formats[Types.Messages.MOVE] = ['n', 'n'],
             this.formats[Types.Messages.LOOTMOVE] = ['n', 'n', 'n'],
             this.formats[Types.Messages.AGGRO] = ['n'],
