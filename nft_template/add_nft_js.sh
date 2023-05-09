@@ -39,3 +39,6 @@ echo Add the NFT sprite
 newLine="        'text!../sprites/$NFT_ID.json',\n        // @nextSpriteImport@"
 sed -e "s#.*@nextSpriteImport@.*#$newLine#g" ../client/js/sprites.js > tmp.js
 mv tmp.js ../client/js/sprites.js
+
+newLine="                                \"$NFT_ID\",\n                                // @nextSpriteLine@"
+sed -e "s#.*@nextSpriteLine@.*#$newLine#g" ../client/js/game.js > tmp2.js
