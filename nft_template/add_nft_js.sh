@@ -42,3 +42,4 @@ mv tmp.js ../client/js/sprites.js
 
 newLine="                                \"$NFT_ID\",\n                                // @nextSpriteLine@"
 sed -e "s#.*@nextSpriteLine@.*#$newLine#g" ../client/js/game.js > tmp2.js
+mv tmp2.js ../client/js/game.js
