@@ -1,4 +1,5 @@
 #!/bin/bash
+./config_manager.py configs/dev_config.json
 cd tools/maps
 ./export.py server && ./export.py client
 cd ../..
