@@ -27,4 +27,4 @@ for i in {1..3}; do
     cp $IMAGE_DIR/$i.png ../client/img/$i/$NFT_ID.png
     cp armor$i.png ../client/img/$i/item-$NFT_ID.png
 done
-add_nft_js.sh $MINUS_0X $3
+./add_nft_js.sh $MINUS_0X $3
