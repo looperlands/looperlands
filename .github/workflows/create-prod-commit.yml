@@ -5,10 +5,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # Checkout the branch
-      - name: checkout
-        uses: actions/checkout@v2
-        with:
-          ref: 'prod'
+      - uses: actions/checkout@v2
+        name: checkout
 
       - name: make prod change
         run: |
