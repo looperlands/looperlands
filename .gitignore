@@ -6,5 +6,3 @@ client/audio/music
 .DS_Store
 *.swp
 configs/*
-configs/config_build.json
-server/config.json
