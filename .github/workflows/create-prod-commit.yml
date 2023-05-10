@@ -17,7 +17,6 @@ jobs:
       - name: commit
         run: |
           # Stage the file, commit and push
-          ./config_manager.py configs/prod_config.json
-          git add .
-          git commit -m "prod commit"
-          git push origin prod
+          ./config_manager.py configs/prod_config.json && git commit -am "prod commit" &&  git push origin prod
+
+ 
