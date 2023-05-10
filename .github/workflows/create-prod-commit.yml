@@ -23,7 +23,8 @@ jobs:
           git config user.name "GitHub Actions Bot"
           git config user.email "<>"
           ./config_manager.py configs/prod_config.json
+          git checkout prod
           git commit -am "prod commit" 
-          git push origin prod
+          git push
 
  
