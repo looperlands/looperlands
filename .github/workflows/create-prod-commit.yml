@@ -3,7 +3,7 @@ on: [push, workflow_dispatch]
 permissions:
   contents: write
 jobs:
-  report:
+  make-prod-commit:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
