@@ -2,17 +2,9 @@
 Steps to run locally
 1) ./config_manager.py configs/dev_config.json && docker build . -t blah && docker run -t -i -p 8000:8000 -t blah
 
-NFT Image scales: https://imgur.com/a/2WQ9ZOt
+NFT Image scales for armor: https://imgur.com/a/2WQ9ZOt
+NFT Image scales for sprite: https://imgur.com/a/jNT3dFh
 
-## Docker
-Build and run the server
-```bash
-docker build -f Dockerfile.server . -t server && docker run -p 8000:8000 -t server
-```
-Build and run the client
-```bash
-docker build -f Dockerfile.client . -t client && docker run -p 8080:8080 -t client
-```
 
 # Create session
 1) Create a session with a POST
@@ -26,7 +18,8 @@ The following script will build the client and server and run them locally, so y
 ```bash
 LOOPWORMS_API_KEY=<api-key-here> ./run-local.sh
 ```
-To kill it, press Ctrl+C
+To kill it, press Ctrl+C.
+
 To get a new session run:
 ```bash
 LOOPWORMS_API_KEY=<api-key-here> ./local-session.sh
