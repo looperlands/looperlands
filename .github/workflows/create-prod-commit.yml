@@ -7,7 +7,8 @@ jobs:
       # Checkout the branch
       - uses: actions/checkout@v2
         name: checkout
-
+        with:
+          fetch-depth: 0
       - name: make prod change
         run: |
           # Stage the file, commit and push
@@ -23,8 +24,8 @@ jobs:
           git config user.name "GitHub Actions Bot"
           git config user.email "<>"
           ./config_manager.py configs/prod_config.json
-          git checkout origin/prod
+          git checkout prod
           git commit -am "prod commit" 
-          git push origin/prod
+          git push
 
  
