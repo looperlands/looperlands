@@ -1,23 +1,25 @@
-name: Prod commit
+name: Push commit
 on: [push, workflow_dispatch]
+permissions:
+  contents: write
 jobs:
-  date:
+  make-prod-commit:
     runs-on: ubuntu-latest
     steps:
-      # Checkout the branch
-      - name: checkout
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
+          fetch-depth: 0
           ref: 'prod'
-
-      - name: apply prod config
+      - name: Merge staging -> uat
+        uses: devmasx/merge-branch@master
+        with:
+          type: now
+          target_branch: prod
+          github_token: ${{ secrets.GITHUB_TOKEN }}          
+      - name: Create local changes
         run: |
-          # do some operation that changes a file in the git repo
-          ./config_manager.py configs/prod_config.json
-
-      - name: commit
-        run: |
-          # Stage the file, commit and push
-          git add .
-          git commit -m "prod commit"
-          git push origin prod
+          ./config_manager.py configs/prod_config.json   
+      - name: Commit & Push changes
+        uses: actions-js/push@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
