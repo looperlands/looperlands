@@ -7,6 +7,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - name: Commit report
         run: |
           git config user.name "GitHub Actions Bot"
@@ -16,5 +18,3 @@ jobs:
           ./config_manager.py configs/prod_config.json
           git commit -am "Automated commit"
           git push
-
- 
