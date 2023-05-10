@@ -21,6 +21,18 @@ curl -X POST -H "Content-Type: application/json" -H "x-api-key: <api-key-here>" 
 ```
 2) Navigate to http://127.0.0.1:8000/?sessionId=<sessionIdFromStep1>
 
+# Local development
+The following script will build the client and server and run them locally
+```bash
+LOOPWORMS_API_KEY=<api-key-here> ./run-local.sh
+```
+To kill it, press Ctrl+C
+To get a new session run:
+```bash
+LOOPWORMS_API_KEY=<api-key-here> ./local-session.sh
+```
+This will print out a URL and open up the URL in your browser
+
 
 Kill all
 ```bash
