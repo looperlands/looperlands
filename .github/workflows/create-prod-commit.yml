@@ -10,9 +10,14 @@ jobs:
         with:
           fetch-depth: 0
           ref: 'prod'
+      - name: Merge staging -> uat
+        uses: devmasx/merge-branch@master
+        with:
+          type: now
+          target_branch: prod
+          github_token: ${{ secrets.GITHUB_TOKEN }}          
       - name: Create local changes
         run: |
-          git merge origin/main
           ./config_manager.py configs/prod_config.json   
       - name: Commit & Push changes
         uses: actions-js/push@master
