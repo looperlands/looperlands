@@ -12,7 +12,7 @@ jobs:
           ref: 'prod'
       - name: Create local changes
         run: |
-          git merge main
+          git merge origin/main
           ./config_manager.py configs/prod_config.json   
       - name: Commit & Push changes
         uses: actions-js/push@master
