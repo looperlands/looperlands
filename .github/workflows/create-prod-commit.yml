@@ -1,0 +1,23 @@
+name: Prod commit
+on: [workflow_dispatch]
+jobs:
+  date:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the branch
+      - name: checkout
+        uses: actions/checkout@v2
+        with:
+          ref: 'prod'
+
+      - name: apply prod config
+        run: |
+          # do some operation that changes a file in the git repo
+          ./config_manager.py configs/prod_config.json
+
+      - name: commit
+        run: |
+          # Stage the file, commit and push
+          git add .
+          git commit -m "prod commit"
+          git push origin prod
