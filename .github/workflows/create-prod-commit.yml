@@ -10,7 +10,7 @@ jobs:
         with:
           fetch-depth: 0
           ref: 'prod'
-      - name: Merge staging -> uat
+      - name: Merge main -> prod
         uses: devmasx/merge-branch@master
         with:
           type: now
