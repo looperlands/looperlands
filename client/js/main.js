@@ -10,6 +10,8 @@ define(['jquery', 'app'], function($, App) {
 
             app.storage.loadData().then((data) => {
 
+                $("#welcome").hide();
+
                 if(Detect.isWindows()) {
                     // Workaround for graphical glitches on text
                     $('body').addClass('windows');
