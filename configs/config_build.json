@@ -1,5 +1,5 @@
 {
-    "host": "127.0.0.1",
-    "port": 8000,
-    "protocol": "http"
+    "host": "loopquest.loopworms.io",
+    "port": 443,
+    "protocol": "https"
 }
