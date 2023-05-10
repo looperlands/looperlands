@@ -1,7 +1,7 @@
 name: Prod commit
 on: [push, workflow_dispatch]
 jobs:
-  date:
+  prod-commit:
     runs-on: ubuntu-latest
     steps:
       # Checkout the branch
