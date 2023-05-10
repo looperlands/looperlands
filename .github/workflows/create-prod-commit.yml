@@ -1,23 +1,20 @@
-name: Prod commit
+name: Push commit
 on: [push, workflow_dispatch]
+permissions:
+  contents: write
 jobs:
-  prod-commit:
+  report:
     runs-on: ubuntu-latest
     steps:
-      # Checkout the branch
       - uses: actions/checkout@v3
-        name: checkout
-        with:
-          fetch-depth: 0
-          ref: 'main'
-      - name: Commit
+      - name: Commit report
         run: |
-          # setup the username and email. I tend to use 'GitHub Actions Bot' with no email by default
           git config user.name "GitHub Actions Bot"
           git config user.email "<>"
           git checkout prod
+          git merge main
           ./config_manager.py configs/prod_config.json
-          git commit -am "prod commit" 
+          git commit -am "Automated commit"
           git push
 
  
