@@ -9,12 +9,12 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Commit report
+          ref: 'prod'
+      - name: Create local changes
         run: |
-          git config user.name "GitHub Actions Bot"
-          git config user.email "<>"
-          git checkout prod
           git merge main
-          ./config_manager.py configs/prod_config.json
-          git commit -am "Automated commit"
-          git push
+          ./config_manager.py configs/prod_config.json   
+      - name: Commit & Push changes
+        uses: actions-js/push@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
