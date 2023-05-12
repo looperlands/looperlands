@@ -205,6 +205,7 @@ WS.socketIOServer = Server.extend({
                 const id = crypto.randomBytes(20).toString('hex');
                 // this prevents failed logins not being able to login again
                 body.isDirty = false;
+                console.log("New Session", id, body);
                 cache.set(id, body, 60 * 60 * 24);
                 let responseJson = {
                     "sessionId" : id
