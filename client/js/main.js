@@ -302,7 +302,7 @@ define(['jquery', 'app'], function($, App) {
             
             $('#respawn').click(function(event) {
                 game.audioManager.playSound("revive");
-                location.reload();
+                location.href = window.opener.location.href;
                 $('body').removeClass('death');
             });
             
