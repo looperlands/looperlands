@@ -64,6 +64,10 @@ module.exports = Player = Character.extend({
                 self.server.addPlayer(self);
                 self.server.enter_callback(self);
 
+                let playerCache = self.server.server.cache.get(self.sessionId);
+                playerCache.isDirty = true;
+                self.server.server.cache.set(self.sessionId, playerCache);
+
                 self.send([Types.Messages.WELCOME, self.id, self.name, self.x, self.y, self.hitPoints]);
                 self.hasEnteredGame = true;
                 self.isDead = false;

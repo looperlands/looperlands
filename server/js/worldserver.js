@@ -352,13 +352,15 @@ module.exports = World = cls.Class.extend({
     
     addPlayer: function(player) {
         this.addEntity(player);
+        
         this.players[player.id] = player;
         this.outgoingQueues[player.id] = [];
-        
+
         //console.log("Added player : " + player.id);
     },
     
     removePlayer: function(player) {
+        this.server.cache.del(player.sessionId);
         player.broadcast(player.despawn());
         this.removeEntity(player);
         delete this.players[player.id];
