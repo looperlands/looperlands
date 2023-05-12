@@ -220,6 +220,16 @@ WS.socketIOServer = Server.extend({
             console.log("Session Data for session id", sessionId, sessionData);
             const nftId = sessionData.nftId;
             const walletId = sessionData.walletId;
+            const isDirty = sessionData.isDirty;
+
+            if (isDirty === true) {
+                res.status(409).json({
+                    status: false,
+                    error: "Your wallet has an active session",
+                    user: null
+                });
+                return;
+            }
 
             console.log("Session ID", sessionId, "Wallet ID", walletId, "NFT ID", nftId);
             const saveData = await getCharacterData(walletId, nftId, process.env.LOOPWORMS_API_KEY);

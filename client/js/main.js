@@ -167,6 +167,9 @@ define(['jquery', 'app'], function($, App) {
                 console.log("App initialized.");
             
                 initGame();
+            }).catch((error) => {
+                console.error(error);
+                $("#welcomeMessage").text("Error loading your user data. Please try again later.");
             });
         });
     };
