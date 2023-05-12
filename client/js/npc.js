@@ -26,10 +26,9 @@ define(['character'], function(Character) {
         "villagegirl": [
             "Hi there, adventurer!",
             "How do you like this game?",
-            "It's all happening in a single web page! Isn't it crazy?",
-            "It's all made possible thanks to WebSockets.",
-            "I don't know much about it, after all I'm just a program.",
-            'Why don&#x27;t you read this <a target="_blank" href="http://hacks.mozilla.org/2012/03/LoopQuest/">blog post</a> and learn all about it?'
+            "I'm Bstrat515",
+            "I'm a twitter influencer for the Layer 2 protocol Loopring on the Ethereum blockchain.",
+            'Check out <a target="_blank" href="https://twitter.com/bstrat515">my twitter</a> and give me a follow!'
         ],
     
         "villager": [
