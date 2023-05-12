@@ -153,6 +153,7 @@ WS.socketIOServer = Server.extend({
         self.protocol = protocol;
         self.host = host;
         self.port = port;
+        this.cache = cache;
         var express = require('express');
         var app = express();
         app.use("/", express.static(__dirname + "/../../client-build"));
@@ -169,12 +170,46 @@ WS.socketIOServer = Server.extend({
         app.post('/session', (req, res) => {
             const body = req.body;
             const apiKey = req.headers['x-api-key'];
+
+
             if (apiKey !== process.env.LOOPWORMS_API_KEY) {
-                res.status(401).send(false);
+                res.status(401).json({
+                    status: false,
+                    "error" : "invalid api key",
+                    user: null
+                });
+            }
+
+            let walletAlreadyPlaying = false;
+            let cacheKeys = cache.keys();
+            for (i in cacheKeys) {
+                let key = cacheKeys[i];
+                let cachedBody = cache.get(key);
+                let activeSession = cachedBody.walletId === body.walletId && cachedBody.isDirty === true;
+                if(activeSession) {
+                    walletAlreadyPlaying = true;
+                    break;
+                } else {
+                    console.log("deleting a session that never connected: " + key)
+                    cache.del(key);
+                }
+            }
+
+            if (walletAlreadyPlaying) {
+                res.status(409).json({
+                    status: false,
+                    error: "Your wallet has an active session",
+                    user: null
+                });
             } else {
-                const id = crypto.randomBytes(20).toString('hex')
+                const id = crypto.randomBytes(20).toString('hex');
+                // this prevents failed logins not being able to login again
+                body.isDirty = false;
                 cache.set(id, body, 60 * 60 * 24);
-                res.status(200).send(id);
+                let responseJson = {
+                    "sessionId" : id
+                }
+                res.status(200).send(responseJson);
             }
         });
 
