@@ -4,6 +4,7 @@ Steps to run locally
 
 NFT Image scales for armor: https://imgur.com/a/2WQ9ZOt
 NFT Image scales for sprite: https://imgur.com/a/jNT3dFh
+NFT Image scales for weapon: https://imgur.com/a/sKIRgha
 
 
 # Create session
