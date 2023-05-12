@@ -217,6 +217,7 @@ WS.socketIOServer = Server.extend({
         app.get('/session/:sessionId', async (req, res) => {
             const sessionId = req.params.sessionId;
             const sessionData = cache.get(sessionId);
+            console.log("Session Data for session id", sessionId, sessionData);
             const nftId = sessionData.nftId;
             const walletId = sessionData.walletId;
 
