@@ -24,11 +24,10 @@ define(['character'], function(Character) {
         ],
     
         "villagegirl": [
-            "Hi there, poop head!",
+            "Hi there, adventurer!",
             "How do you like this game?",
             "I'm Bstrat515",
             "I'm a twitter influencer for the Layer 2 protocol Loopring on the Ethereum blockchain.",
-            "Poop.",
             'Check out <a target="_blank" href="https://twitter.com/bstrat515">my twitter</a> and give me a follow!'
         ],
     
