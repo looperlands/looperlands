@@ -196,7 +196,7 @@ define(['jquery', 'app'], function($, App) {
     		});
     		
     		game.onDisconnect(function(message) {
-    		    $('#death').find('p').html(message+"<em>Please reload the page.</em>");
+    		    $('#death').find('p').html(message+"<em>Please press backspace or go back to the LoopQuest Avatar picker.</em>");
     		    $('#respawn').hide();
     		});
 	
