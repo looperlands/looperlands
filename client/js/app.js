@@ -435,7 +435,6 @@ define(['jquery', 'storage'], function($, Storage) {
                 }                
             }).catch(function(error) {
                 console.error(error);
-                alert("Error loading inventory.");
             });
         },
 
