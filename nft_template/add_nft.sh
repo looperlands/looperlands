@@ -21,12 +21,12 @@ MINUS_0X=`echo $2 | cut -c 3-`
 NFT_ID=NFT_$MINUS_0X
 type=$3
 echo Adding NFT with id $NFT_ID, type $type
-jq ".id=\"${NFT_ID}\"" spritemap.json > ../client/sprites/$NFT_ID.json
 if [ "$3" = "weapon" ]; then
-  jq ".id=\"item-${NFT_ID}\"" weaponspritemap.json > ../client/sprites/item-$NFT_ID.json
+  jq ".id=\"${NFT_ID}\"" weaponspritemap.json > ../client/sprites/$NFT_ID.json
 else
-  jq ".id=\"item-${NFT_ID}\"" armorspritemap.json > ../client/sprites/item-$NFT_ID.json
+  jq ".id=\"${NFT_ID}\"" armorspritemap.json > ../client/sprites/$NFT_ID.json
 fi
+jq ".id=\"item-${NFT_ID}\"" itemspritemap.json > ../client/sprites/item-$NFT_ID.json
 
 for i in {1..3}; do
     cp $IMAGE_DIR/$i.png ../client/img/$i/$NFT_ID.png
