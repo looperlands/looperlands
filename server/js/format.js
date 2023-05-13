@@ -18,7 +18,8 @@ var _ = require('underscore'),
             this.formats[Types.Messages.TELEPORT] = ['n', 'n'],
             this.formats[Types.Messages.ZONE] = [],
             this.formats[Types.Messages.OPEN] = ['n'],
-            this.formats[Types.Messages.CHECK] = ['n']
+            this.formats[Types.Messages.CHECK] = ['n'],
+            this.formats[Types.Messages.EQUIP_INVENTORY] = ['n']
         },
         
         check: function(msg) {

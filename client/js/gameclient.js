@@ -535,6 +535,11 @@ define(['player', 'entityfactory', 'lib/bison'], function(Player, EntityFactory,
         sendCheck: function(id) {
             this.sendMessage([Types.Messages.CHECK,
                               id]);
+        },
+
+        sendEquipInventory: function(kind) {
+            this.sendMessage([Types.Messages.EQUIP_INVENTORY,
+                              kind]);
         }
     });
     

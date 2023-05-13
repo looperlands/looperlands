@@ -195,6 +195,10 @@ module.exports = Player = Character.extend({
                         }
                     }
                 }
+            } else if (action === Types.Messages.EQUIP_INVENTORY) {
+                item = {kind: message[1]};
+                self.equipItem(item);
+                self.broadcast(self.equip(item.kind));
             }
             else if(action === Types.Messages.TELEPORT) {
                 var x = message[1],
