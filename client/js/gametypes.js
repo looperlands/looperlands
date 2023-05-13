@@ -102,7 +102,8 @@ Types = {
         NFT_cfd9a7ae82698da0da065befb2b39f3bfe3eca509febdb9da865fafd4d98e543: 75,
         NFT_b131df57290a3c656d6cf35b10e4d342e147345ca01c9cf34ad13205d0e43e50: 76,
         NFT_9f051ae4b657a07bc82d8d1fac5a5263ca0cb33e3be717c29814d06fa4860487: 77,
-        NFT_01346618000000000000000002386f26fc10000000000000000000000000037b: 78 // @lastid@
+        NFT_01346618000000000000000002386f26fc10000000000000000000000000037b: 78,
+        NFT_82e68ef0bee270d142ae3ec162490c0fa2e88a273bb768687f2fee4f6930c741: 79 // @lastid@
         //@nextIdLine@
     },
     
@@ -181,6 +182,7 @@ var kinds = {
     NFT_b131df57290a3c656d6cf35b10e4d342e147345ca01c9cf34ad13205d0e43e50: [Types.Entities.NFT_b131df57290a3c656d6cf35b10e4d342e147345ca01c9cf34ad13205d0e43e50, "armor"],
     NFT_9f051ae4b657a07bc82d8d1fac5a5263ca0cb33e3be717c29814d06fa4860487: [Types.Entities.NFT_9f051ae4b657a07bc82d8d1fac5a5263ca0cb33e3be717c29814d06fa4860487, "armor"],
     NFT_01346618000000000000000002386f26fc10000000000000000000000000037b: [Types.Entities.NFT_01346618000000000000000002386f26fc10000000000000000000000000037b, "armor"],
+    NFT_82e68ef0bee270d142ae3ec162490c0fa2e88a273bb768687f2fee4f6930c741: [Types.Entities.NFT_82e68ef0bee270d142ae3ec162490c0fa2e88a273bb768687f2fee4f6930c741, "weapon"],
     // @nextSpriteLine@
 
     getType: function(kind) {
@@ -195,7 +197,8 @@ Types.rankedWeapons = [
     Types.Entities.MORNINGSTAR,
     Types.Entities.BLUESWORD,
     Types.Entities.REDSWORD,
-    Types.Entities.GOLDENSWORD
+    Types.Entities.GOLDENSWORD,
+    Types.Entities.NFT_82e68ef0bee270d142ae3ec162490c0fa2e88a273bb768687f2fee4f6930c741
 ];
 
 Types.rankedArmors = [

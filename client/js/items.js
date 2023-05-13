@@ -80,6 +80,13 @@ define(['item'], function(Item) {
             },
         }),
 
+        NFT_82e68ef0bee270d142ae3ec162490c0fa2e88a273bb768687f2fee4f6930c741: Item.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.NFT_82e68ef0bee270d142ae3ec162490c0fa2e88a273bb768687f2fee4f6930c741, "armor");
+                this.lootMessage = "You equip a NFT weapon.";
+            },
+        }),
+
         Flask: Item.extend({
             init: function(id) {
                 this._super(id, Types.Entities.FLASK, "object");

@@ -390,29 +390,53 @@ define(['jquery', 'storage'], function($, Storage) {
         toggleAbout: function() {
             var currentState = $('#parchment').attr('class');
 
-            if(this.game.started) {
-                $('#parchment').removeClass().addClass('about');
-                $('body').toggleClass('about');
-                if(!this.game.player) {
-                    $('body').toggleClass('death');
-                }
-                if($('body').hasClass('credits')) {
-                    this.closeInGameCredits();
-                }
-            } else {
-                if(currentState !== 'animate') {
-                    if(currentState === 'about') {
-                        if(localStorage && localStorage.data) {
-                            this.animateParchment(currentState, 'loadcharacter');
+            _this = this;
+
+            var inventoryQuery = "https://loopworms.io/DEV/LoopQuest/selectLoopQuest_Item.php?WalletID=" + _this.storage.walletId;
+            axios.get(inventoryQuery).then(function(response) {
+                var inventory = response.data.map(function(item) {
+                    return item.replace("0x", "NFT_");
+                });
+
+                var inventoryHtml = "";
+                inventory.forEach(function(item) {
+                    equip = function() {
+                        _this.game.player.switchWeapon(item);
+                    }                    
+                    imgTag = "<img onclick='equip()' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0;' src='img/3/item-" + item + ".png' />";
+                    inventoryHtml += imgTag;
+                });
+
+                $("#inventory").html(inventoryHtml);
+
+                if(_this.game.started) {
+                    $('#parchment').removeClass().addClass('about');
+
+                    $('body').toggleClass('about');
+                    if(!_this.game.player) {
+                        $('body').toggleClass('death');
+                    }
+                    if($('body').hasClass('credits')) {
+                        _this.closeInGameCredits();
+                    }
+                } else {
+                    if(currentState !== 'animate') {
+                        if(currentState === 'about') {
+                            if(localStorage && localStorage.data) {
+                                _this.animateParchment(currentState, 'loadcharacter');
+                            } else {
+                                _this.animateParchment(currentState, 'createcharacter');
+                            }
                         } else {
-                            this.animateParchment(currentState, 'createcharacter');
+                            _this.animateParchment(currentState, 'about');
+                            _this.previousState = currentState;
                         }
-                    } else {
-            	        this.animateParchment(currentState, 'about');
-            	        this.previousState = currentState;
-            	    }
-                }
-            }
+                    }
+                }                
+            }).catch(function(error) {
+                console.error(error);
+                alert("Error loading inventory.");
+            });
         },
 
         closeInGameCredits: function() {
