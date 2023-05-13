@@ -279,6 +279,8 @@ WS.socketIOServer = Server.extend({
             }
             parsedSaveData.player.name = name;
             parsedSaveData.player.armor = nftId.replace("0x", "NFT_");
+            parsedSaveData.nftId = nftId;
+            parsedSaveData.walletId = walletId;
             
             res.status(200).json(parsedSaveData);
         });
