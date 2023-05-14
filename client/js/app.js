@@ -394,22 +394,24 @@ define(['jquery', 'storage'], function($, Storage) {
 
             var inventoryQuery = "https://loopworms.io/DEV/LoopQuest/selectLoopQuest_Item.php?WalletID=" + _this.storage.walletId;
             axios.get(inventoryQuery).then(function(response) {
-                var inventory = response.data.map(function(item) {
-                    return item.replace("0x", "NFT_");
-                });
+                if (response.data !== null) {
+                    var inventory = response.data.map(function(item) {
+                        return item.replace("0x", "NFT_");
+                    });
 
-                var inventoryHtml = "";
-                inventory.forEach(function(item) {
-                    equip = function() {
-                        var itemId = Types.Entities[item];
-                        _this.game.client.sendEquipInventory(itemId);
-                        _this.game.player.switchWeapon(item);
-                    }                    
-                    imgTag = "<img onclick='equip()' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0;' src='img/3/item-" + item + ".png' />";
-                    inventoryHtml += imgTag;
-                });
+                    var inventoryHtml = "";
+                    inventory.forEach(function(item) {
+                        equip = function() {
+                            var itemId = Types.Entities[item];
+                            _this.game.client.sendEquipInventory(itemId);
+                            _this.game.player.switchWeapon(item);
+                        }
+                        imgTag = "<img onclick='equip()' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0;' src='img/3/item-" + item + ".png' />";
+                        inventoryHtml += imgTag;
+                    });
 
-                $("#inventory").html(inventoryHtml);
+                    $("#inventory").html(inventoryHtml);
+                }
 
                 if(_this.game.started) {
                     $('#parchment').removeClass().addClass('about');
