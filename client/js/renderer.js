@@ -352,9 +352,7 @@ function(Camera, Item, Character, Player, Timer) {
                     this.context.globalAlpha = entity.fadingAlpha;
                 }
             
-                if(!this.mobile && !this.tablet) {
-                    this.drawEntityName(entity);
-                }
+                this.drawEntityName(entity);
             
                 this.context.save();
                 if(entity.flipSpriteX) {
@@ -560,6 +558,7 @@ function(Camera, Item, Character, Player, Timer) {
                               (entity.y + entity.nameOffsetY) * this.scale,
                               true,
                               color);
+                //this.drawText("Benevolent Dictator", (entity.x + 8) * this.scale, (entity.y + entity.nameOffsetY + 5) * this.scale, true, "#702963");
             }
             this.context.restore();
         },
