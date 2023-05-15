@@ -11,7 +11,7 @@ module.exports = MobArea = Area.extend({
         this.respawns = [];
         this.setNumberOfEntities(this.nb);
         
-        //this.initRoaming();
+        this.initRoaming();
     },
     
     spawnMobs: function() {
