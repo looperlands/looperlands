@@ -392,7 +392,7 @@ define(['jquery', 'storage'], function($, Storage) {
 
             _this = this;
 
-            var inventoryQuery = "https://loopworms.io/DEV/LoopQuest/selectLoopQuest_Item.php?WalletID=" + _this.storage.walletId;
+            var inventoryQuery = "/session/" + _this.storage.sessionId + "/inventory";
             axios.get(inventoryQuery).then(function(response) {
                 if (response.data !== null) {
                     var inventory = response.data.map(function(item) {

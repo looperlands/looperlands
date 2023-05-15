@@ -294,7 +294,16 @@ WS.socketIOServer = Server.extend({
             const body = req.body;
             const data = saveCharacterData(walletId, nftId, process.env.LOOPWORMS_API_KEY, body);
             res.status(200).send(true);
-        });            
+        });
+
+        app.get("/session/:sessionId/inventory", async (req, res) => {
+            const sessionId = req.params.sessionId;
+            const sessionData = cache.get(sessionId);
+            const walletId = sessionData.walletId;
+
+            const inventory = await axios.get(`https://loopworms.io/DEV/LoopQuest/selectLoopQuest_Item.php?WalletID=${walletId}&APIKEY=${process.env.LOOPWORMS_API_KEY}`);
+            res.status(200).json(inventory.data);
+        });
 
 
         self.io.on('connection', function(connection){
