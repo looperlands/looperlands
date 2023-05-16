@@ -164,9 +164,10 @@ define(['player', 'entityfactory', 'lib/bison'], function(Player, EntityFactory,
                 x = data[3],
                 y = data[4],
                 hp = data[5];
+                title = data[6]
         
             if(this.welcome_callback) {
-                this.welcome_callback(id, name, x, y, hp);
+                this.welcome_callback(id, name, x, y, hp, title);
             }
         },
     

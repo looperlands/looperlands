@@ -130,11 +130,11 @@ function(Camera, Item, Character, Player, Timer) {
             this.background.font = font;
         },
 
-        drawText: function(text, x, y, centered, color, strokeColor) {
+        drawText: function(text, x, y, centered, color, strokeColor, title) {
             var ctx = this.context;
             
-            var strokeSize;
-        
+            let strokeSize;
+
             switch(this.scale) {
                 case 1:
                     strokeSize = 3; break;
@@ -143,11 +143,18 @@ function(Camera, Item, Character, Player, Timer) {
                 case 3:
                     strokeSize = 5;
             }
-            
+
             if(text && x && y) {
                 ctx.save();
                 if(centered) {
                     ctx.textAlign = "center";
+                }
+                if (title) {
+                    switch(this.scale) {
+                        case 1: this.setFontSize(5); break;
+                        case 2: this.setFontSize(10); break;
+                        case 3: this.setFontSize(15); break;
+                    }
                 }
                 ctx.strokeStyle = strokeColor || "#373737";
                 ctx.lineWidth = strokeSize;
@@ -558,7 +565,9 @@ function(Camera, Item, Character, Player, Timer) {
                               (entity.y + entity.nameOffsetY) * this.scale,
                               true,
                               color);
-                //this.drawText("Benevolent Dictator", (entity.x + 8) * this.scale, (entity.y + entity.nameOffsetY + 5) * this.scale, true, "#702963");
+                if (entity.title !== undefined) {
+                    this.drawText(entity.title, (entity.x + 8) * this.scale, (entity.y + entity.nameOffsetY + 5) * this.scale, true, "#702963", 1, true);
+                }
             }
             this.context.restore();
         },

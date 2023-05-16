@@ -47,7 +47,7 @@ module.exports = Player = Character.extend({
             
             if(action === Types.Messages.HELLO) {
                 var name = Utils.sanitize(message[1]);
-                
+
                 // If name was cleared by the sanitizer, give a default name.
                 // Always ensure that the name is not longer than a maximum length.
                 // (also enforced by the maxlength attribute of the name input element).
@@ -67,8 +67,9 @@ module.exports = Player = Character.extend({
                 let playerCache = self.server.server.cache.get(self.sessionId);
                 playerCache.isDirty = true;
                 self.server.server.cache.set(self.sessionId, playerCache);
+                self.title = playerCache.title;
 
-                self.send([Types.Messages.WELCOME, self.id, self.name, self.x, self.y, self.hitPoints]);
+                self.send([Types.Messages.WELCOME, self.id, self.name, self.x, self.y, self.hitPoints, self.title]);
                 self.hasEnteredGame = true;
                 self.isDead = false;
             }

@@ -166,7 +166,6 @@ WS.socketIOServer = Server.extend({
             const body = req.body;
             const apiKey = req.headers['x-api-key'];
 
-
             if (apiKey !== process.env.LOOPWORMS_API_KEY) {
                 res.status(401).json({
                     status: false,

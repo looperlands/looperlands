@@ -783,7 +783,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 }
             });
         
-            this.client.onWelcome(function(id, name, x, y, hp) {
+            this.client.onWelcome(function(id, name, x, y, hp, title) {
                 console.log("Received player ID from server : "+ id);
                 self.player.id = id;
                 self.playerId = id;
@@ -792,6 +792,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 self.player.name = name;
                 self.player.setGridPosition(x, y);
                 self.player.setMaxHitPoints(hp);
+                self.player.title = title;
             
                 self.updateBars();
                 self.resetCamera();
