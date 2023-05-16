@@ -540,9 +540,10 @@ define(['player', 'entityfactory', 'lib/bison'], function(Player, EntityFactory,
                               id]);
         },
 
-        sendEquipInventory: function(kind) {
+        sendEquipInventory: function(kind, nftId) {
             this.sendMessage([Types.Messages.EQUIP_INVENTORY,
-                              kind]);
+                              kind,
+                              nftId]);
         }
     });
     

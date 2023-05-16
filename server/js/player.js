@@ -8,6 +8,9 @@ var cls = require("./lib/class"),
     check = require("./format").check,
     Types = require("../../shared/js/gametypes");
 
+const axios = require('axios');
+const LOOPWORMS_LOOPQUEST_BASE_URL = process.env.LOOPWORMS_LOOPQUEST_BASE_URL;
+
 module.exports = Player = Character.extend({
     init: function(connection, worldServer) {
         var self = this;
@@ -197,9 +200,22 @@ module.exports = Player = Character.extend({
                     }
                 }
             } else if (action === Types.Messages.EQUIP_INVENTORY) {
-                item = {kind: message[1]};
-                self.equipItem(item);
-                self.broadcast(self.equip(item.kind));
+                let playerCache = self.server.server.cache.get(self.sessionId);
+                let _self = self;
+                let nftId = message[2];
+                let url = `${LOOPWORMS_LOOPQUEST_BASE_URL}/AssetValidation.php?WalletID=${playerCache.walletId}&NFTID=${nftId}`;
+                axios.get(url).then(function (response) {
+                    if (response.data === true) {
+                        item = {kind: message[1]};
+                        _self.equipItem(item);
+                        _self.broadcast(_self.equip(item.kind));
+                    } else {
+                        console.error("Asset validation failed for player " + _self.name + " and nftId " + nftId);
+                    }
+                })
+                .catch(function (error) {
+                    log.error("Asset validation error: " + error);
+                });
             }
             else if(action === Types.Messages.TELEPORT) {
                 var x = message[1],

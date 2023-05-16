@@ -403,7 +403,8 @@ define(['jquery', 'storage'], function($, Storage) {
                     inventory.forEach(function(item) {
                         equip = function() {
                             var itemId = Types.Entities[item];
-                            _this.game.client.sendEquipInventory(itemId);
+                            var nftId = item.replace("NFT_", "0x");
+                            _this.game.client.sendEquipInventory(itemId, nftId);
                             _this.game.player.switchWeapon(item);
                         }
                         imgTag = "<img onclick='equip()' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0;' src='img/3/item-" + item + ".png' />";
