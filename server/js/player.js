@@ -244,7 +244,7 @@ module.exports = Player = Character.extend({
                         if (response.data === true) {
                             teleport();
                         } else {
-                            console.error("Asset validation failed for player " + _self.name + " and nftId " + nftId);
+                            console.error("Asset validation failed for player " + _self.name + " and nftId " + nftId, url);
                         }
                     })
                     .catch(function (error) {
