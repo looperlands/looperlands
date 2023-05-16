@@ -218,20 +218,42 @@ module.exports = Player = Character.extend({
                 });
             }
             else if(action === Types.Messages.TELEPORT) {
+                let _self = self;
                 var x = message[1],
                     y = message[2];
                 
-                if(self.server.isValidPosition(x, y)) {
-                    self.setPosition(x, y);
-                    self.clearTarget();
-                    
-                    self.broadcast(new Messages.Teleport(self));
-                    
-                    self.server.handlePlayerVanish(self);
-                    self.server.pushRelevantEntityListTo(self);
-                } else {
-                    console.error("Invalid teleport position : "+x+", "+y);
+                let requiredNft = self.server.map.getRequiredNFT(x, y);
+
+                function teleport() {
+                    if(_self.server.isValidPosition(x, y)) {
+                        _self.setPosition(x, y);
+                        _self.clearTarget();
+                        
+                        _self.broadcast(new Messages.Teleport(_self));
+                        
+                        _self.server.handlePlayerVanish(_self);
+                        _self.server.pushRelevantEntityListTo(_self);
+                    } else {
+                        console.error("Invalid teleport position : "+x+", "+y);
+                    }
                 }
+                if (requiredNft !== undefined) {
+                    let playerCache = self.server.server.cache.get(self.sessionId);
+                    let url = `${LOOPWORMS_LOOPQUEST_BASE_URL}/AssetValidation.php?WalletID=${playerCache.walletId}&NFTID=${requiredNft}`;
+                    axios.get(url).then(function (response) {
+                        if (response.data === true) {
+                            teleport();
+                        } else {
+                            console.error("Asset validation failed for player " + _self.name + " and nftId " + nftId);
+                        }
+                    })
+                    .catch(function (error) {
+                        log.error("Asset validation error: " + error);
+                    });                    
+                } else {
+                    teleport();
+                }
+
             }
             else if(action === Types.Messages.OPEN) {
                 var chest = self.server.getEntityById(message[1]);
