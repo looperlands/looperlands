@@ -1015,7 +1015,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                         if (dest.nft !== undefined) {
                             var url = '/session/' + self.sessionId + '/owns/' + dest.nft;
                             axios.get(url).then(function (response) {
-                                console.log(response.data);
                                 if (response.data === true) {
                                     goInside();
                                 } else {
