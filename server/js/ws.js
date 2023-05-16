@@ -19,6 +19,8 @@ const NodeCache = require( "node-cache" );
 
 const cache = new NodeCache();
 
+const LOOPWORMS_LOOPQUEST_BASE_URL = process.env.LOOPWORMS_LOOPQUEST_BASE_URL;
+
 /**
  * Abstract Server and Connection classes
  */
@@ -99,44 +101,37 @@ var Connection = cls.Class.extend({
 });
 
 getCharacterData = async function(wallet, nft, apiKey) {
-    const data = new URLSearchParams();
-    data.append('WalletID', wallet);
-    data.append('NFTID', nft);
-    data.append('APIKEY', apiKey);
     const options = {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-Api-Key': apiKey
       },
     };
     try {
-        const responseData = await axios.post('https://loopworms.io/DEV/Wormagotchi/RaidBoss/LoadPost.php', data, options);
-        //console.debug("ResponseData from Loopworms: ", responseData.status, responseData.text, responseData.data);
+        const responseData = await axios.get(`${LOOPWORMS_LOOPQUEST_BASE_URL}/Load.php?NFTID=${nft}&WalletID=${wallet}`, options);
+        //console.log("ResponseData from Loopworms: ", responseData.status, responseData.text, responseData.data);
         return responseData.data;
-    } catch {
+    } catch (error) {
+        console.error(error);
         return {"error": "Error loading character data"};
     }
 
 }
 
 saveCharacterData = async function(wallet, nft, apiKey, saveGame) {
-    const data = new URLSearchParams();
-    data.append('WalletID', wallet);
-    data.append('NFTID', nft);
-    data.append('APIKEY', apiKey);
-    data.append('SaveGame', JSON.stringify(saveGame));
     const options = {
-      method: 'POST',
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-Api-Key': apiKey,
+        'Content-Type': 'application/json'
       }
     };
-    const axios = require('axios');
     try {
-        const responseData = await axios.post('https://loopworms.io/DEV/Wormagotchi/RaidBoss/SavePost.php', data, options);
-        //console.debug("ResponseData from Loopworms: ", responseData.status, responseData.text, responseData.data);
+        const url = `${LOOPWORMS_LOOPQUEST_BASE_URL}/Save.php?NFTID=${nft}&WalletID=${wallet}`
+        const responseData = await axios.post(url, saveGame, options);
+        //console.log("ResponseData from Loopworms: ", responseData.status, responseData.text, responseData.data);
         return responseData.data;
-    } catch {
+    } catch (error) {
+        console.error(error);
         return {"error": "Error saving character data"};
     }
 }
@@ -235,9 +230,9 @@ WS.socketIOServer = Server.extend({
             const saveData = await getCharacterData(walletId, nftId, process.env.LOOPWORMS_API_KEY);
             let parsedSaveData;
             try {
-                parsedSaveData = JSON.parse(saveData[0]);
-            } catch {
-                console.error("Error parsing save data " + saveData);
+                parsedSaveData = JSON.parse(saveData[1]);
+            } catch (error) {
+                console.error("Error parsing save data ", error, saveData);
             }
             
 
@@ -301,7 +296,7 @@ WS.socketIOServer = Server.extend({
             const sessionData = cache.get(sessionId);
             const walletId = sessionData.walletId;
 
-            const inventory = await axios.get(`https://loopworms.io/DEV/LoopQuest/selectLoopQuest_Item.php?WalletID=${walletId}&APIKEY=${process.env.LOOPWORMS_API_KEY}`);
+            const inventory = await axios.get(`${LOOPWORMS_LOOPQUEST_BASE_URL}/selectLoopQuest_Item.php?WalletID=${walletId}&APIKEY=${process.env.LOOPWORMS_API_KEY}`);
             res.status(200).json(inventory.data);
         });
 
