@@ -299,6 +299,18 @@ WS.socketIOServer = Server.extend({
             res.status(200).json(inventory.data);
         });
 
+        app.get("/session/:sessionId/owns/:nftId", async (req, res) => {
+            const sessionId = req.params.sessionId;
+            const nftId = req.params.nftId;
+            const sessionData = cache.get(sessionId);
+            const walletId = sessionData.walletId;
+            
+            let url = `${LOOPWORMS_LOOPQUEST_BASE_URL}/AssetValidation.php?WalletID=${walletId}&NFTID=${nftId}`
+            console.log(url);
+            const result = await axios.get(url);
+            res.status(200).json(result.data);
+        });        
+
 
         self.io.on('connection', function(connection){
           console.log('a user connected');

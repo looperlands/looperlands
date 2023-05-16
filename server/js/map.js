@@ -43,6 +43,7 @@ module.exports = Mapx = cls.Class.extend({
     
         this.initConnectedGroups(map.doors);
         this.initCheckpoints(map.checkpoints);
+        this.initTokenizedDoors(map.doors);
     
         if(this.ready_func) {
             this.ready_func();
@@ -179,7 +180,20 @@ module.exports = Mapx = cls.Class.extend({
             }
         });
     },
-    
+
+    initTokenizedDoors: function(doors) {
+        let self = this;
+        this.tokenizedDoors = {};
+        doors.forEach(function(door) {
+            if (door.tnft !== undefined) {
+                self.tokenizedDoors[{
+                    x: door.x,
+                    y: door.y,
+                }] = door.tnft;
+            }
+        });
+    },
+
     initCheckpoints: function(cpList) {
         var self = this;
         
@@ -205,6 +219,10 @@ module.exports = Mapx = cls.Class.extend({
             area = this.startingAreas[i];
         
         return area.getRandomPosition();
+    },
+
+    getRequiredNFT: function(x, y) {
+        return this.tokenizedDoors[{x: x, y: y}];
     }
 });
 

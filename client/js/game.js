@@ -964,48 +964,70 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 
                     if(!self.player.hasTarget() && self.map.isDoor(x, y)) {
                         var dest = self.map.getDoorDestination(x, y);
-                    
-                        self.player.setGridPosition(dest.x, dest.y);
-                        self.player.nextGridX = dest.x;
-                        self.player.nextGridY = dest.y;
-                        self.player.turnTo(dest.orientation);
-                        self.client.sendTeleport(dest.x, dest.y);
-                        
-                        if(self.renderer.mobile && dest.cameraX && dest.cameraY) {
-                            self.camera.setGridPosition(dest.cameraX, dest.cameraY);
-                            self.resetZone();
-                        } else {
-                            if(dest.portal) {
-                                self.assignBubbleTo(self.player);
+                        var _self = self;
+
+                        function goInside() {
+
+                            _self.player.setGridPosition(dest.x, dest.y);
+                            _self.player.nextGridX = dest.x;
+                            _self.player.nextGridY = dest.y;
+                            _self.player.turnTo(dest.orientation);
+                            _self.client.sendTeleport(dest.x, dest.y);
+                            
+                            if(_self.renderer.mobile && dest.cameraX && dest.cameraY) {
+                                _self.camera.setGridPosition(dest.cameraX, dest.cameraY);
+                                _self.resetZone();
                             } else {
-                                self.camera.focusEntity(self.player);
-                                self.resetZone();
+                                if(dest.portal) {
+                                    _self.assignBubbleTo(_self.player);
+                                } else {
+                                    _self.camera.focusEntity(_self.player);
+                                    _self.resetZone();
+                                }
+                            }
+                            
+                            if(_.size(_self.player.attackers) > 0) {
+                                setTimeout(function() { _self.tryUnlockingAchievement("COWARD"); }, 500);
+                            }
+                            _self.player.forEachAttacker(function(attacker) {
+                                attacker.disengage();
+                                attacker.idle();
+                            });
+                        
+                            _self.updatePlateauMode();
+                            
+                            _self.checkUndergroundAchievement();
+                            
+                            if(_self.renderer.mobile || _self.renderer.tablet) {
+                                // When rendering with dirty rects, clear the whole screen when entering a door.
+                                _self.renderer.clearScreen(_self.renderer.context);
+                            }
+                            
+                            if(dest.portal) {
+                                _self.audioManager.playSound("teleport");
+                            }
+                            
+                            if(!_self.player.isDead) {
+                                _self.audioManager.updateMusic();
                             }
                         }
-                        
-                        if(_.size(self.player.attackers) > 0) {
-                            setTimeout(function() { self.tryUnlockingAchievement("COWARD"); }, 500);
-                        }
-                        self.player.forEachAttacker(function(attacker) {
-                            attacker.disengage();
-                            attacker.idle();
-                        });
-                    
-                        self.updatePlateauMode();
-                        
-                        self.checkUndergroundAchievement();
-                        
-                        if(self.renderer.mobile || self.renderer.tablet) {
-                            // When rendering with dirty rects, clear the whole screen when entering a door.
-                            self.renderer.clearScreen(self.renderer.context);
-                        }
-                        
-                        if(dest.portal) {
-                            self.audioManager.playSound("teleport");
-                        }
-                        
-                        if(!self.player.isDead) {
-                            self.audioManager.updateMusic();
+
+                        if (dest.nft !== undefined) {
+                            console.log("NFT gate: " + dest.nft);
+                            var url = '/session/' + self.sessionId + '/owns/' + dest.nft;
+                            console.log("owns url " + url);
+                            axios.get(url).then(function (response) {
+                                console.log(response.data);
+                                if (response.data === true) {
+                                    goInside();
+                                } else {
+                                    _self.showNotification("You don't own the required NFT to enter.");
+                                }
+                            }).catch(function (error) {
+                                console.error("Error while checking ownership of token gate.");
+                            });
+                        } else {
+                            goInside();
                         }
                     }
                 
