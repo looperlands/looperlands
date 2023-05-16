@@ -1013,9 +1013,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                         }
 
                         if (dest.nft !== undefined) {
-                            console.log("NFT gate: " + dest.nft);
                             var url = '/session/' + self.sessionId + '/owns/' + dest.nft;
-                            console.log("owns url " + url);
                             axios.get(url).then(function (response) {
                                 console.log(response.data);
                                 if (response.data === true) {
