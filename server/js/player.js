@@ -214,7 +214,7 @@ module.exports = Player = Character.extend({
                     }
                 })
                 .catch(function (error) {
-                    log.error("Asset validation error: " + error);
+                    console.error("Asset validation error: " + error);
                 });
             }
             else if(action === Types.Messages.TELEPORT) {
@@ -248,7 +248,7 @@ module.exports = Player = Character.extend({
                         }
                     })
                     .catch(function (error) {
-                        log.error("Asset validation error: " + error);
+                        console.error("Asset validation error: " + error);
                     });                    
                 } else {
                     teleport();
