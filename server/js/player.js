@@ -248,7 +248,7 @@ module.exports = Player = Character.extend({
                         }
                     })
                     .catch(function (error) {
-                        console.error("Asset validation error: " + error);
+                        console.error("Asset validation error: " + error, url);
                     });                    
                 } else {
                     teleport();
