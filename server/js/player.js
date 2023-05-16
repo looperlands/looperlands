@@ -265,7 +265,7 @@ module.exports = Player = Character.extend({
     
     getState: function() {
         var basestate = this._getBaseState(),
-            state = [this.name, this.orientation, this.armor, this.weapon];
+            state = [this.name, this.orientation, this.armor, this.weapon, this.title];
 
         if(this.target) {
             state.push(this.target);

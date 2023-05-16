@@ -218,13 +218,14 @@ define(['player', 'entityfactory', 'lib/bison'], function(Player, EntityFactory,
                     this.spawn_chest_callback(item, x, y);
                 }
             } else {
-                var name, orientation, target, weapon, armor;
+                var name, orientation, target, weapon, armor, title;
             
                 if(Types.isPlayer(kind)) {
                     name = data[5];
                     orientation = data[6];
                     armor = data[7];
                     weapon = data[8];
+                    title = data[9];
                     if(data.length > 9) {
                         target = data[9];
                     }
@@ -241,6 +242,7 @@ define(['player', 'entityfactory', 'lib/bison'], function(Player, EntityFactory,
                 if(character instanceof Player) {
                     character.weaponName = Types.getKindAsString(weapon);
                     character.spriteName = Types.getKindAsString(armor);
+                    character.title = title;
                 }
             
                 if(this.spawn_character_callback) {
