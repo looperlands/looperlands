@@ -566,7 +566,7 @@ function(Camera, Item, Character, Player, Timer) {
                               true,
                               color);
                 if (entity.title !== undefined) {
-                    this.drawText(entity.title, (entity.x + 8) * this.scale, (entity.y + entity.nameOffsetY + 5) * this.scale, true, "#702963", 1, true);
+                    this.drawText(entity.title, (entity.x + 8) * this.scale, (entity.y + entity.nameOffsetY + 5) * this.scale, true, "white", 1, true);
                 }
             }
             this.context.restore();
