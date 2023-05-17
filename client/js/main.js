@@ -169,7 +169,11 @@ define(['jquery', 'app'], function($, App) {
                 initGame();
             }).catch((error) => {
                 console.error(error);
-                $("#welcomeMessage").text("Error loading your user data. Please try again later.");
+                if (error.response.status === 404) {
+                    $("#welcomeMessage").text("Session not found. Make sure you don't have two LoopQuests open.");
+                } else {
+                    $("#welcomeMessage").text("Error loading your user data. Please try again later.");
+                }
             });
         });
     };
