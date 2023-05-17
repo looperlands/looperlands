@@ -703,28 +703,10 @@ function(Camera, Item, Character, Player, Timer) {
                 this.setCameraView(this.background);
                 this.drawTerrain();
             this.background.restore();
-        
-            /*
-            if(this.mobile || this.tablet) {
-                this.clearScreen(this.foreground);
-                this.foreground.save();
-                    this.setCameraView(this.foreground);
-                    this.drawHighTiles(this.foreground);
-                this.foreground.restore();
-            }
-            */
         },
 
         renderFrame: function() {
             this.renderFrameDesktop();
-            /*
-            if(this.mobile || this.tablet) {
-                this.renderFrameMobile();
-            }
-            else {
-                this.renderFrameDesktop();
-            }
-            */
         },
     
         renderFrameDesktop: function() {
