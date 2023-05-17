@@ -236,35 +236,23 @@ function(Camera, Item, Character, Player, Timer) {
                 ds = this.upscaledRendering ? this.scale : 1;
         
             if(this.game.selectedCellVisible) {
-                if(this.mobile || this.tablet) {
-                    if(this.game.drawTarget) {
-                        var x = this.game.selectedX,
-                            y = this.game.selectedY;
-                        
-                        this.drawCellHighlight(this.game.selectedX, this.game.selectedY, "rgb(51, 255, 0)");
-                        this.lastTargetPos = { x: x,
-                                               y: y };
-                        this.game.drawTarget = false;
-                    }
-                } else {
-                    if(sprite && anim) {
-                        var	frame = anim.currentFrame,
-                            s = this.scale,
-                            x = frame.x * os,
-                            y = frame.y * os,
-                            w = sprite.width * os,
-                            h = sprite.height * os,
-                            ts = 16,
-                            dx = this.game.selectedX * ts * s,
-                            dy = this.game.selectedY * ts * s,
-                            dw = w * ds,
-                            dh = h * ds;
+                if(sprite && anim) {
+                    var	frame = anim.currentFrame,
+                        s = this.scale,
+                        x = frame.x * os,
+                        y = frame.y * os,
+                        w = sprite.width * os,
+                        h = sprite.height * os,
+                        ts = 16,
+                        dx = this.game.selectedX * ts * s,
+                        dy = this.game.selectedY * ts * s,
+                        dw = w * ds,
+                        dh = h * ds;
 
-                        this.context.save();
-                        this.context.translate(dx, dy);
-                        this.context.drawImage(sprite.image, x, y, w, h, 0, 0, dw, dh);
-                        this.context.restore();
-                    }
+                    this.context.save();
+                    this.context.translate(dx, dy);
+                    this.context.drawImage(sprite.image, x, y, w, h, 0, 0, dw, dh);
+                    this.context.restore();
                 }
             }
         },
@@ -359,9 +347,7 @@ function(Camera, Item, Character, Player, Timer) {
                     this.context.globalAlpha = entity.fadingAlpha;
                 }
             
-                if (!this.mobile && !this.tablet) {
-                    this.drawEntityName(entity);
-                }
+                this.drawEntityName(entity);
                 
                 this.context.save();
                 if(entity.flipSpriteX) {
@@ -718,6 +704,7 @@ function(Camera, Item, Character, Player, Timer) {
                 this.drawTerrain();
             this.background.restore();
         
+            /*
             if(this.mobile || this.tablet) {
                 this.clearScreen(this.foreground);
                 this.foreground.save();
@@ -725,15 +712,19 @@ function(Camera, Item, Character, Player, Timer) {
                     this.drawHighTiles(this.foreground);
                 this.foreground.restore();
             }
+            */
         },
 
         renderFrame: function() {
+            this.renderFrameDesktop();
+            /*
             if(this.mobile || this.tablet) {
                 this.renderFrameMobile();
             }
             else {
                 this.renderFrameDesktop();
             }
+            */
         },
     
         renderFrameDesktop: function() {
@@ -762,7 +753,7 @@ function(Camera, Item, Character, Player, Timer) {
     
         renderFrameMobile: function() {
             this.clearDirtyRects();
-            this.preventFlickeringBug();
+            //this.preventFlickeringBug();
 
             this.context.save();
                 this.setCameraView(this.context);
