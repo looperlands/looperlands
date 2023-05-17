@@ -303,12 +303,21 @@ WS.socketIOServer = Server.extend({
             const sessionId = req.params.sessionId;
             const nftId = req.params.nftId;
             const sessionData = cache.get(sessionId);
-            const walletId = sessionData.walletId;
+            if (sessionData === undefined) {
+                console.error("Session data is undefined for session id, params: ", sessionId, req.params);
+                res.status(404).json({
+                    status: false,
+                    "error" : "session not found",
+                    user: null
+                });
+            } else {
+                const walletId = sessionData.walletId;
+                let url = `${LOOPWORMS_LOOPQUEST_BASE_URL}/AssetValidation.php?WalletID=${walletId}&NFTID=${nftId}`
+                console.log(url);
+                const result = await axios.get(url);
+                res.status(200).json(result.data);
+            }
             
-            let url = `${LOOPWORMS_LOOPQUEST_BASE_URL}/AssetValidation.php?WalletID=${walletId}&NFTID=${nftId}`
-            console.log(url);
-            const result = await axios.get(url);
-            res.status(200).json(result.data);
         });        
 
 
