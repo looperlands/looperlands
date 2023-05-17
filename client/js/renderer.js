@@ -359,7 +359,9 @@ function(Camera, Item, Character, Player, Timer) {
                     this.context.globalAlpha = entity.fadingAlpha;
                 }
             
-                this.drawEntityName(entity);
+                if (!this.mobile && !this.tablet) {
+                    this.drawEntityName(entity);
+                }
                 
                 this.context.save();
                 if(entity.flipSpriteX) {
