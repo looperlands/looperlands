@@ -179,11 +179,11 @@ WS.socketIOServer = Server.extend({
             for (i in cacheKeys) {
                 let key = cacheKeys[i];
                 let cachedBody = cache.get(key);
-                let activeSession = cachedBody.walletId === body.walletId && cachedBody.isDirty === true;
-                if(activeSession) {
+                let sameWallet = cachedBody.walletId === body.walletId;
+                if(sameWallet && cachedBody.isDirty === true) {
                     walletAlreadyPlaying = true;
                     break;
-                } else {
+                } else if (sameWallet && cachedBody.isDirty === false){
                     console.log("deleting a session that never connected: " + key)
                     cache.del(key);
                 }
