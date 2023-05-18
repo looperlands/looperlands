@@ -43,6 +43,7 @@ define(['character'], function(Character) {
     
         "agent": [
             "Don't believe everything you see.",
+            'Check out <a target="_blank" href="https://twitter.com/heydomoshi">my twitter</a> and give me a follow!'
         ],
     
         "rick": [
@@ -98,8 +99,8 @@ define(['character'], function(Character) {
         ],
     
         "priest": [
-            "Placeholder dialogue",
             "Boo!",
+            'Check out <a target="_blank" href="https://twitter.com/onevincesuarez">my twitter</a> and give me a follow!'
         ],
         
         "sorcerer": [
