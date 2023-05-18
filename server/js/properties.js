@@ -16,7 +16,6 @@ var Properties = {
     skeleton: {
         drops: {
             flask: 40,
-            mailarmor: 10,
             axe: 20,
             firepotion: 5
         },
@@ -28,7 +27,6 @@ var Properties = {
     goblin: {
         drops: {
             flask: 50,
-            leatherarmor: 20,
             axe: 10,
             firepotion: 5
         },
@@ -41,7 +39,6 @@ var Properties = {
         drops: {
             burger: 10,
             flask: 50,
-            platearmor: 20,
             morningstar: 20,
             firepotion: 5
         },
@@ -53,7 +50,6 @@ var Properties = {
     spectre: {
         drops: {
             flask: 30,
-            redarmor: 40,
             redsword: 30,
             firepotion: 5
         },
@@ -76,7 +72,6 @@ var Properties = {
         drops: {
             flask: 50,
             axe: 20,
-            leatherarmor: 10,
             firepotion: 5
         },
         hp: 60,
@@ -87,7 +82,6 @@ var Properties = {
     snake: {
         drops: {
             flask: 50,
-            mailarmor: 10,
             morningstar: 10,
             firepotion: 5
         },
@@ -99,7 +93,6 @@ var Properties = {
     skeleton2: {
         drops: {
             flask: 60,
-            platearmor: 15,
             bluesword: 15,
             firepotion: 5
         },
@@ -111,7 +104,6 @@ var Properties = {
     eye: {
         drops: {
             flask: 50,
-            redarmor: 20,
             redsword: 10,
             firepotion: 5
         },
@@ -134,7 +126,6 @@ var Properties = {
     wizard: {
         drops: {
             flask: 50,
-            platearmor: 20,
             firepotion: 5
         },
         hp: 100,
