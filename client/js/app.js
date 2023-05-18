@@ -361,16 +361,19 @@ define(['jquery', 'storage'], function($, Storage) {
         },
 
         toggleCredits: function() {
+            $('body').removeClass('death');
             var currentState = $('#parchment').attr('class');
 
             if(this.game.started) {
                 $('#parchment').removeClass().addClass('credits');
                 
                 $('body').toggleClass('credits');
-                    
+                
+                /*
                 if(!this.game.player) {
                     $('body').toggleClass('death');
                 }
+                */
                 if($('body').hasClass('about')) {
                     this.closeInGameAbout();
                     $('#helpbutton').removeClass('active');

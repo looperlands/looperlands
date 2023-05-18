@@ -73,7 +73,7 @@ define(['jquery', 'app'], function($, App) {
                 });
         
                 $('#toggle-credits').click(function() {
-                    app.toggleCredits();
+                    $('body').removeClass('death').addClass('credits');
                 });
         
                 $('#create-new span').click(function() {

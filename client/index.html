@@ -78,32 +78,16 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
     	            <article id="credits">
         	            <h1>
          	               <span class="left-ornament"></span>
-         	               <span class="title">
-         	                   Made for Mozilla by <a target="_blank" class="stroke clickable" href="http://www.littleworkshop.fr/">Little Workshop</a>
-         	               </span>
+         	               <span class="title">LoopQuest</span>
          	               <span class="right-ornament"></span>
                         </h1>
                         <div id="authors">
-                            <div id="guillaume">
-                                <div class="avatar"></div>
-                                Pixels by
-                                <a class="stroke clickable" target="_blank" href="http://twitter.com/glecollinet">Guillaume Lecollinet</a>
-                            </div>
-                            <div id="franck">
-                                <div class="avatar"></div>
-                                Code by
-                                <a class="stroke clickable" target="_blank" href="http://twitter.com/whatthefranck">Franck Lecollinet</a>
-                            </div>
+							<p>LoopQuest is based on <a href='https://github.com/mozilla/BrowserQuest'>BrowserQuest</a></p>
+							<p><strong>Lead Developer/Architect</strong> - <a href='https://twitter.com/balkshamster'>BalksHamster</a></p>
+							<p><strong>LoopWorms Founder, Web3 Platform, architect/developer</strong> - <a href='https://twitter.com/SmileyphaseLW'>SmileyphaseLW</a></p>
                         </div>
-                        <div id="seb">
-                            <br/>
-                            <span id="note"></span>
-                            Music by <a class="clickable" target="_blank" href="http://soundcloud.com/gyrowolf/sets/gyrowolfs-rpg-maker-music-pack/">Gyrowolf</a>, <a class="clickable" target="_blank" href="http://blog.dayjo.org/?p=335">Dayjo</a>, <a class="clickable" target="_blank" href="http://soundcloud.com/freakified/what-dangers-await-campus-map">Freakified</a>, &amp; <a target="_blank" class="clickable" href="http://www.newgrounds.com/audio/listen/349734">Camoshark</a>
-                           <br/><br/>
-                           SocketIO upgrade by <a class="clickable" target="_blank" href="http://nenuadrian.com">Adrian Nenu</a>
-                        </div>
-	                    <div id="close-credits">
-	                        <span>- click anywhere to close -</span>
+	                    <div id="close-credits" onclick="$('body').removeClass('credits').addClass('death');">
+	                        <span>Close</span>
                         </div>
     	            </article>
     	            <article id="about">
@@ -124,6 +108,7 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
     	            <article id="death">
                         <p>You are dead...</p>
     					<div id="respawn" class="button"></div>
+						<h3 id="toggle-credits" style="color: blue">Credits</h3>
     	            </article>
                     <article id="error">
           	           <h1>
