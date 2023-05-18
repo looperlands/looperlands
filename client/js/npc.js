@@ -42,10 +42,8 @@ define(['character'], function(Character) {
         ],
     
         "agent": [
-            "Do not try to bend the sword",
-            "That's impossible",
-            "Instead, only try to realize the truth...",
-            "There is no sword."
+            "Don't believe everything you see.",
+            'Check out <a target="_blank" href="https://twitter.com/heydomoshi">my twitter</a> and give me a follow!'
         ],
     
         "rick": [
@@ -101,16 +99,8 @@ define(['character'], function(Character) {
         ],
     
         "priest": [
-            "Oh, hello, young man.",
-            "Wisdom is everything, so I'll share a few guidelines with you.",
-            "You are free to go wherever you like in this world",
-            "but beware of the many foes that await you.",
-            "You can find many weapons and armors by killing enemies.",
-            "The tougher the enemy, the higher the potential rewards.",
-            "You can also unlock achievements by exploring and hunting.",
-            "Click on the small cup icon to see a list of all the achievements.",
-            "Please stay a while and enjoy the many surprises of LoopQuest",
-            "Farewell, young friend."
+            "Boo!",
+            'Check out <a target="_blank" href="https://twitter.com/onevincesuarez">my twitter</a> and give me a follow!'
         ],
         
         "sorcerer": [
