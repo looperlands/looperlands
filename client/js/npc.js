@@ -32,13 +32,8 @@ define(['character'], function(Character) {
         ],
     
         "villager": [
-            "Howdy stranger. Do you like poetry?",
-            "Roses are red, violets are blue...",
-            "I like hunting rats, and so do you...",
-            "The rats are dead, now what to do?",
-            "To be honest, I have no clue.",
-            "Maybe the forest, could interest you...",
-            "or instead, cook a rat stew."
+            "Howdy stranger, the name's Ordinary Adam.",
+            'Check out <a target="_blank" href="https://twitter.com/Ordinary_Adam">my twitter</a> and give me a follow!'
         ],
     
         "agent": [
