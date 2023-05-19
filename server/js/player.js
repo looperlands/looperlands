@@ -8,6 +8,7 @@ var cls = require("./lib/class"),
     check = require("./format").check,
     Types = require("../../shared/js/gametypes");
 
+const discord = require('./discord.js');    
 const axios = require('axios');
 const LOOPWORMS_LOOPQUEST_BASE_URL = process.env.LOOPWORMS_LOOPQUEST_BASE_URL;
 
@@ -75,6 +76,7 @@ module.exports = Player = Character.extend({
                 self.send([Types.Messages.WELCOME, self.id, self.name, self.x, self.y, self.hitPoints, self.title]);
                 self.hasEnteredGame = true;
                 self.isDead = false;
+                discord.sendMessage(`Player ${self.name} has joined the game.`);
             }
             else if(action === Types.Messages.WHO) {
                 message.shift();
@@ -152,6 +154,7 @@ module.exports = Player = Character.extend({
                     self.server.handleHurtEntity(self, mob);
                     
                     if(self.hitPoints <= 0) {
+                        discord.sendMessage(`Player ${self.name} died.`);
                         self.isDead = true;
                         if(self.firepotionTimeout) {
                             clearTimeout(self.firepotionTimeout);

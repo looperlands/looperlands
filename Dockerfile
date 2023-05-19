@@ -3,8 +3,12 @@ EXPOSE 443
 EXPOSE 8000
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt -y update
-RUN apt -q -y install nodejs npm
 RUN apt -q -y install curl vim
+RUN apt-get update -yq \
+    && apt-get install curl gnupg -yq \
+    && curl -sL https://deb.nodesource.com/setup_16.x | bash \
+    && apt-get install nodejs -yq
+
 COPY . /opt/app
 WORKDIR /opt/app
 RUN npm install

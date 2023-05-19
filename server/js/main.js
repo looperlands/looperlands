@@ -1,7 +1,6 @@
 
 var fs = require('fs'),
     Metrics = require('./metrics');
- 
 
 function main(config) {
     console.log(config);
