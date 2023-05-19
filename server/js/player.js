@@ -144,6 +144,9 @@ module.exports = Player = Character.extend({
                         console.log("Player "+self.id+" hit mob "+mob.id+" for "+dmg+" damage.", mob.type);
                         self.server.handleMobHate(mob.id, self.id, dmg);
                         self.server.handleHurtEntity(mob, self, dmg);
+                        if (mob.hitPoints <= 0 && mob instanceof Player)  {
+                            discord.sendMessage(`Player ${self.name} killed ${mob.name}.`);
+                        }
                     }
                 }
             }
@@ -154,7 +157,8 @@ module.exports = Player = Character.extend({
                     self.server.handleHurtEntity(self, mob);
                     
                     if(self.hitPoints <= 0) {
-                        discord.sendMessage(`Player ${self.name} died.`);
+                        let killer = Types.getKindAsString(mob.kind);
+                        discord.sendMessage(`Player ${self.name} killed by ${killer}.`);
                         self.isDead = true;
                         if(self.firepotionTimeout) {
                             clearTimeout(self.firepotionTimeout);
@@ -438,5 +442,8 @@ module.exports = Player = Character.extend({
     timeout: function() {
         this.connection.sendUTF8("timeout");
         this.connection.close("Player was idle for too long");
-    } 
+    },
+    increaseHateFor: function(mobId, points) {
+        return;
+    }
 });

@@ -25,7 +25,7 @@ sendMessage = (message) => {
         try {
             channel.send(message);
         } catch (e) {
-            console.log(e);
+            console.log(message, e);
         }
     } catch (e) {
         console.log(e);
