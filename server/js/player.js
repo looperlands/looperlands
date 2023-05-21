@@ -137,34 +137,24 @@ module.exports = Player = Character.extend({
                 var mob = self.server.getEntityById(message[1]);
 
                 if(mob) {
-                    var dmg = Formulas.dmg(self.weaponLevel, mob.armorLevel);
+                    if (mob instanceof Player) {
+                        mob.handleHurt(self);
+                    } else {
+                        var dmg = Formulas.dmg(self.weaponLevel, mob.armorLevel);
                     
-                    if(dmg > 0) {
-                        mob.receiveDamage(dmg, self.id);
-                        console.log("Player "+self.id+" hit mob "+mob.id+" for "+dmg+" damage.", mob.type);
-                        self.server.handleMobHate(mob.id, self.id, dmg);
-                        self.server.handleHurtEntity(mob, self, dmg);
-                        if (mob.hitPoints <= 0 && mob instanceof Player)  {
-                            discord.sendMessage(`Player ${self.name} killed ${mob.name}.`);
+                        if(dmg > 0) {
+                            mob.receiveDamage(dmg, self.id);
+                            console.log("Player "+self.id+" hit mob "+mob.id+" for "+dmg+" damage.", mob.type);
+                            self.server.handleMobHate(mob.id, self.id, dmg);
+                            self.server.handleHurtEntity(mob, self, dmg);
                         }
                     }
+
                 }
             }
             else if(action === Types.Messages.HURT) {
                 var mob = self.server.getEntityById(message[1]);
-                if(mob && self.hitPoints > 0) {
-                    self.hitPoints -= Formulas.dmg(mob.weaponLevel, self.armorLevel);
-                    self.server.handleHurtEntity(self, mob);
-                    
-                    if(self.hitPoints <= 0) {
-                        let killer = Types.getKindAsString(mob.kind);
-                        discord.sendMessage(`Player ${self.name} killed by ${killer}.`);
-                        self.isDead = true;
-                        if(self.firepotionTimeout) {
-                            clearTimeout(self.firepotionTimeout);
-                        }
-                    }
-                }
+                self.handleHurt(mob);
             }
             else if(action === Types.Messages.LOOT) {
                 var item = self.server.getEntityById(message[1]);
@@ -292,6 +282,27 @@ module.exports = Player = Character.extend({
         });
         
         this.connection.sendUTF8("go"); // Notify client that the HELLO/WELCOME handshake can start
+    },
+
+    handleHurt: function(mob) {
+        if(mob && this.hitPoints > 0) {
+            this.hitPoints -= Formulas.dmg(mob.weaponLevel, this.armorLevel);
+            this.server.handleHurtEntity(this, mob);
+            
+            if(this.hitPoints <= 0) {
+                let killer = Types.getKindAsString(mob.kind);
+                if (mob instanceof Player)  {
+                    discord.sendMessage(`Player ${this.name} ganked by ${mob.name}.`);
+                } else {
+                    discord.sendMessage(`Player ${this.name} killed by ${killer}.`);
+                }
+                
+                this.isDead = true;
+                if(this.firepotionTimeout) {
+                    clearTimeout(this.firepotionTimeout);
+                }
+            }
+        }        
     },
     
     destroy: function() {
