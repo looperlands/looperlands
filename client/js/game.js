@@ -1967,7 +1967,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         	    if(entity instanceof Mob) {
         	        this.makePlayerAttack(entity);
                 } else if (entity instanceof Player) {
-                    var pvpZone = {top: {x: 14, y: 326}, bottom: {x: 39, y: 348}}
+                    var pvpZone = {top: {x: 0, y: 316}, bottom: {x: 92, y: 369}}
                     var inPvpZone = entity.gridX > pvpZone.top.x && entity.gridX < pvpZone.bottom.x && entity.gridY > pvpZone.top.y && entity.gridY < pvpZone.bottom.y;
                     if (inPvpZone) {
                         this.makePlayerAttack(entity);
