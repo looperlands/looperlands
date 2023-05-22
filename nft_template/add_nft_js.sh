@@ -17,7 +17,7 @@ fi
 id=`egrep -oh "\:.*([[:digit:]]+)*@lastid@" ../client/js/gametypes.js | cut -d " " -f 2`
 echo id: $id
 nextId=$((id+1))
-randNum=$((1 + $RANDOM % 10))
+randNum=$((1 + $RANDOM % 4))
 echo Adding $NFT_ID, $type, $nextId, Random number: $randNum
 
 update_gametypes() {
