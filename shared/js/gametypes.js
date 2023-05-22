@@ -270,6 +270,7 @@ Types.getArmorRank = function(armorKind) {
             return 1;
         case Types.Entities.NFT_691b67e4466879e4de582f765b85a5bbc1cacc087b9c0f410a86f00d32081ea7:
             return 4;
+        // @nextarmorrank@
         default:
             console.error("Unknown armor rank");
             return 0;

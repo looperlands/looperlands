@@ -28,8 +28,13 @@ update_gametypes() {
     # Add the NFT sprite
     newLine="    $NFT_ID: [Types.Entities.$NFT_ID, \"$type\"],\n    // @nextSpriteLine@"
     sed -e "s!.*@nextSpriteLine@.*!$newLine!g" tmp.js > tmp2.js
-    mv tmp2.js $1
+    # Add the armor rank
+    randNum=$((1 + $RANDOM % 10))
+    newLine="            case Types.Entities.$NFT_ID:            return $randNum;\n            // @nextarmorrank@"
+    sed -e "s!.*@nextarmorrank@.*!$newLine!g" tmp.js > tmp3.js
+    mv tmp3.js $1
     rm tmp.js
+    rm tmp2.js
 }
 
 update_gametypes "../client/js/gametypes.js"
