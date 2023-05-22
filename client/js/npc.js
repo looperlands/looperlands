@@ -126,8 +126,7 @@ define(['character'], function(Character) {
         "beachnpc": [
             "Don't mind me, I'm just here on vacation.",
             "I have to say...",
-            "These giant crabs are somewhat annoying.",
-            "Could you please get rid of them for me?"
+            'Check out <a target="_blank" href="https://twitter.com/theobewhoturnz">my twitter</a> and give me a follow!'
         ],
         
         "desertnpc": [
