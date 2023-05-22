@@ -118,9 +118,8 @@ define(['character'], function(Character) {
         ],
         
         "coder": [
-            "Hi! Do you know that you can also play LooperQuest on your tablet or mobile?",
-            "That's the beauty of HTML5!",
-            "Give it a try..."
+            "It's YaBoyNancy",
+            'Check out <a target="_blank" href="https://twitter.com/yaboynancy">my twitter</a> and give me a follow!'
         ],
     
         "beachnpc": [
