@@ -28,7 +28,7 @@ update_gametypes() {
     # Add the NFT sprite
     newLine="    $NFT_ID: [Types.Entities.$NFT_ID, \"$type\"],\n    // @nextSpriteLine@"
     sed -e "s!.*@nextSpriteLine@.*!$newLine!g" tmp.js > tmp2.js
-    if [ "type" = "weapon" ]; then    
+    if [ "$type" = "armor" ]; then    
       # Add the armor rank
       randNum=$((1 + $RANDOM % 10))
       newLine="            case Types.Entities.$NFT_ID:            return $randNum;\n            // @nextarmorrank@"
