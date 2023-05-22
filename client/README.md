@@ -1,4 +1,4 @@
-LoopQuest client documentation
+LooperQuest client documentation
 =================================
 
 The client directory should never be directly deployed to staging/production. Deployment steps:
@@ -16,7 +16,7 @@ Edit the contents of this file to change host/port settings.
 * chmod +x build.sh
 * ./build.sh
 
-This will use the RequireJS optimizer tool to create a client-build/ directory containing a production-ready version of LoopQuest. 
+This will use the RequireJS optimizer tool to create a client-build/ directory containing a production-ready version of LooperQuest. 
 
 A build log file will also be created at bin/build.txt.
 

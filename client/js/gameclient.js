@@ -73,9 +73,9 @@ define(['player', 'entityfactory', 'lib/bison'], function(Player, EntityFactory,
                     if(reply.status === 'OK') {
                         self.dispatched_callback(reply.host, reply.port);
                     } else if(reply.status === 'FULL') {
-                        console.log("LoopQuest is currently at maximum player population. Please retry later.");
+                        console.log("LooerpQuest is currently at maximum player population. Please retry later.");
                     } else {
-                        console.log("Unknown error while connecting to LoopQuest.");
+                        console.log("Unknown error while connecting to LooperQuest.");
                     }
                 });
                 
@@ -109,7 +109,7 @@ define(['player', 'entityfactory', 'lib/bison'], function(Player, EntityFactory,
                         if(self.isTimeout) {
                             self.disconnected_callback("You have been disconnected for being inactive for too long");
                         } else {
-                            self.disconnected_callback("The connection to LoopQuest has been lost");
+                            self.disconnected_callback("The connection to LooperQuest has been lost");
                         }
                     }
                 });

@@ -113,13 +113,12 @@ define(['character'], function(Character) {
         ],
         
         "octocat": [
-            "Welcome to LoopQuest!",
+            "Welcome to LooperQuest!",
             "Want to see the source code?",
-            'Check out <a target="_blank" href="http://github.com/nenuadrian/LoopQuest">the repository on GitHub</a>'
         ],
         
         "coder": [
-            "Hi! Do you know that you can also play LoopQuest on your tablet or mobile?",
+            "Hi! Do you know that you can also play LooperQuest on your tablet or mobile?",
             "That's the beauty of HTML5!",
             "Give it a try..."
         ],

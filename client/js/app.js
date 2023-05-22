@@ -324,7 +324,7 @@ define(['jquery', 'storage'], function($, Storage) {
                 if(!achievement.hidden) {
                     self.setAchievementData($a, achievement.name, achievement.desc);
                 }
-                $a.find('.twitter').attr('href', 'http://twitter.com/share?url=https%3A%2F%2Floopworms.io%2FMetaverse%2F&text=I%20unlocked%20the%20achivement%20%27'+ achievement.name +'%27%20on%20%23Loopquest');
+                $a.find('.twitter').attr('href', 'http://twitter.com/share?url=https%3A%2F%2Floopworms.io%2FMetaverse%2F&text=I%20unlocked%20the%20achivement%20%27'+ achievement.name +'%27%20on%20%23Looperquest');
                 $a.show();
                 $a.find('a').click(function() {
                      var url = $(this).attr('href');
