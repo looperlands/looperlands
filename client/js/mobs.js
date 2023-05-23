@@ -74,6 +74,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.atkSpeed = 60;
                 this.idleSpeed = 600;
                 this.setAttackRate(700);
+                this.aggroRange = 5;
             }
         }),
 
