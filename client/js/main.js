@@ -74,6 +74,35 @@ define(['jquery', 'app'], function($, App) {
         
                 $('#toggle-credits').click(function() {
                     $('body').removeClass('death').addClass('credits');
+
+                    let canvas = document.getElementById('creditsCanvas'),
+                    context = canvas.getContext('2d'),
+                    namesPosition = -50,
+                    scrollUp = setInterval(function(){
+                        namesPosition-= 1;
+                        context.clearRect(0, 0, canvas.width, canvas.height);
+                        context.beginPath();
+                        ctx.globalAlpha = 0.2;
+                        ctx.globalAlpha = 1.0;
+                        context.closePath();
+            
+                        context.beginPath();
+                        context.shadowColor = '#000';
+                        context.shadowBlur = 5;
+                        context.shadowOffsetX = 3;
+                        context.shadowOffsetY = 3;
+                        context.fillStyle = 'black';
+                        context.fillText('Kofit - LoopWorms Founder',100,200+namesPosition);                        
+                        context.fillText('Balkshamster - Lead Developer',100,230+namesPosition);
+                        context.fillText('Smileyphase - LoopWorms Platform',100,260+namesPosition);
+                        context.fillText('Peteszah - Community Growth',100,290+namesPosition);
+                        context.fillText('izitnu - Technical Documentation',100,320+namesPosition);
+                        context.fillText('ADammmHill - Tester',100,350+namesPosition);
+                        context.closePath();
+                        if(namesPosition <= -380){
+                            namesPosition = -50;
+                        }
+                    },62);                    
                 });
         
                 $('#create-new span').click(function() {
