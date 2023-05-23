@@ -114,7 +114,8 @@ Types = {
         NFT_20fdfc6fa49d9001f154ef03129ba66a6bc606489631fbc181751bd17fb1d520: 86,
         NFT_426754b71f8ac324122c64c541a99e1888602a06c2e7a203568d3a9fb0281263: 87,
         NFT_691b67e4466879e4de582f765b85a5bbc1cacc087b9c0f410a86f00d32081ea7: 88,
-        NFT_ee40d44f7847999cb4d7d1e3fc7681e1390fc5acc5e835d1e8f0ed717d4dc200: 89 // @lastid@
+        NFT_ee40d44f7847999cb4d7d1e3fc7681e1390fc5acc5e835d1e8f0ed717d4dc200: 89,
+        NFT_d1570dc356007d297c8ee63716d38d264a621516f44e3305839fc29ca36e2ce2: 90 // @lastid@
         //@nextIdLine@
     },
     
@@ -204,6 +205,7 @@ var kinds = {
     NFT_426754b71f8ac324122c64c541a99e1888602a06c2e7a203568d3a9fb0281263: [Types.Entities.NFT_426754b71f8ac324122c64c541a99e1888602a06c2e7a203568d3a9fb0281263, "armor"],
     NFT_691b67e4466879e4de582f765b85a5bbc1cacc087b9c0f410a86f00d32081ea7: [Types.Entities.NFT_691b67e4466879e4de582f765b85a5bbc1cacc087b9c0f410a86f00d32081ea7, "armor"],
     NFT_ee40d44f7847999cb4d7d1e3fc7681e1390fc5acc5e835d1e8f0ed717d4dc200: [Types.Entities.NFT_ee40d44f7847999cb4d7d1e3fc7681e1390fc5acc5e835d1e8f0ed717d4dc200, "armor"],
+    NFT_d1570dc356007d297c8ee63716d38d264a621516f44e3305839fc29ca36e2ce2: [Types.Entities.NFT_d1570dc356007d297c8ee63716d38d264a621516f44e3305839fc29ca36e2ce2, "armor"],
     // @nextSpriteLine@
 
     getType: function(kind) {
@@ -237,7 +239,6 @@ Types.getWeaponRank = function(weaponKind) {
 };
 
 Types.getArmorRank = function(armorKind) {
-    return _.indexOf(Types.rankedArmors, armorKind);
     switch(armorKind) {
         case Types.Entities.NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6:
             return 4;
@@ -277,6 +278,8 @@ Types.getArmorRank = function(armorKind) {
             return 1;
         case Types.Entities.NFT_ee40d44f7847999cb4d7d1e3fc7681e1390fc5acc5e835d1e8f0ed717d4dc200:
             return 1;
+        case Types.Entities.NFT_d1570dc356007d297c8ee63716d38d264a621516f44e3305839fc29ca36e2ce2:
+            return 3;
         // @nextarmorrank@
         default:
             console.error("Unknown armor rank");
