@@ -235,6 +235,7 @@ Types.getWeaponRank = function(weaponKind) {
 };
 
 Types.getArmorRank = function(armorKind) {
+    return _.indexOf(Types.rankedArmors, armorKind);
     switch(armorKind) {
         case Types.Entities.NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6:
             return 4;
