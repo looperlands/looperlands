@@ -122,7 +122,8 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.atkSpeed = 90;
                 this.idleSpeed = 90;
                 this.walkSpeed = 85;
-                this.isAggressive = false;
+                this.isAggressive = true;
+                this.aggroRange = 3;
             }
         }),
 
