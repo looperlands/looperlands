@@ -219,11 +219,11 @@ Types.rankedWeapons = [
     Types.Entities.SWORD1,
     Types.Entities.SWORD2,
     Types.Entities.AXE,
+    Types.Entities.NFT_82e68ef0bee270d142ae3ec162490c0fa2e88a273bb768687f2fee4f6930c741,
     Types.Entities.MORNINGSTAR,
     Types.Entities.BLUESWORD,
     Types.Entities.REDSWORD,
-    Types.Entities.GOLDENSWORD,
-    Types.Entities.NFT_82e68ef0bee270d142ae3ec162490c0fa2e88a273bb768687f2fee4f6930c741
+    Types.Entities.GOLDENSWORD
 ];
 
 Types.rankedArmors = [
