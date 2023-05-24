@@ -1101,6 +1101,11 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 });
             
                 self.player.onSwitchItem(function() {
+                    var weaponName = self.player.getWeaponName();
+                    if (!weaponName.startsWith("NFT_")) {
+                        self.storage.setPlayerWeapon(self.player.getWeaponName());
+                    }
+
                     if(self.equipment_callback) {
                         self.equipment_callback();
                     }
