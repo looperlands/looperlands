@@ -424,7 +424,6 @@ module.exports = Player = Character.extend({
             if(Types.isArmor(item.kind)) {
                 this.equipArmor(item.kind);
                 this.updateHitPoints();
-                this.send(new Messages.HitPoints(this.maxHitPoints).serialize());
             } else if(Types.isWeapon(item.kind)) {
                 this.equipWeapon(item.kind);
             }
@@ -433,7 +432,9 @@ module.exports = Player = Character.extend({
     
     updateHitPoints: function() {
         let level = this.getLevel();
-        this.resetHitPoints(Formulas.hp(level));
+        let hp = Formulas.hp(level);
+        this.resetHitPoints(hp);
+        this.send(new Messages.HitPoints(this.maxHitPoints).serialize());
     },
     
     updatePosition: function() {

@@ -17,6 +17,7 @@ const axios = require('axios');
 const crypto = require('crypto');
 const NodeCache = require( "node-cache" );
 const dao = require('./dao.js');
+const Formulas = require('./formulas.js');
 
 const cache = new NodeCache();
 
@@ -283,7 +284,31 @@ WS.socketIOServer = Server.extend({
                 res.status(200).json(result.data);
             }
             
-        });        
+        });
+        
+        
+
+        app.get("/session/:sessionId/statistics", async (req, res) => {
+            const sessionId = req.params.sessionId;
+            const nftId = req.params.nftId;
+            const sessionData = cache.get(sessionId);
+            if (sessionData === undefined) {
+                console.error("Session data is undefined for session id, params: ", sessionId, req.params);
+                res.status(404).json({
+                    status: false,
+                    "error" : "session not found",
+                    user: null
+                });
+            } else {
+                let levelInfo = Formulas.calculatePercentageToNextLevel(sessionData.xp);
+                let maxHp = Formulas.hp(levelInfo.currentLevel);
+                let ret = {
+                    levelInfo: levelInfo,
+                    maxHp: maxHp
+                }
+                res.status(200).json(ret);
+            }
+        });
 
 
         self.io.on('connection', function(connection){

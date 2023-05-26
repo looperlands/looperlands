@@ -17,7 +17,8 @@ var cls = require("./lib/class"),
     Properties = require("./properties"),
     Utils = require("./utils"),
     Types = require("../../shared/js/gametypes"),
-    dao = require("./dao.js");
+    dao = require("./dao.js"),
+    discord = require("./discord.js");
 
 // ======= GAME SERVER ========
 
@@ -572,16 +573,20 @@ module.exports = World = cls.Class.extend({
         }
     },
     handleExperience: async function(mob, player) {
-
         let kind = Types.getKindAsString(mob.kind);
         let xp = Formulas.xp(Properties[kind]);
-
         let session = this.server.cache.get(player.sessionId);
-        console.log(session)
+        let currentLevel = Formulas.level(session.xp);
 
         let updatedXp = await dao.updateExperience(session.walletId, session.nftId, xp);
         session.xp = updatedXp;
         this.server.cache.set(player.sessionId, session);
+        updatedLevel = Formulas.level(updatedXp);
+        if (currentLevel != updatedLevel) {
+            let message = `${player.name} advanced to level ${updatedLevel}`;
+            discord.sendMessage(message);
+            player.updateHitPoints();
+        }
     },
     
     despawn: function(entity) {

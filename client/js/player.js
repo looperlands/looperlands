@@ -19,6 +19,7 @@ define(['character', 'exceptions'], function(Character, Exceptions) {
             // modes
             this.isLootMoving = false;
             this.isSwitchingWeapon = true;
+            this.level = null;
         },
     
         loot: function(item) {
