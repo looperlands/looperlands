@@ -16,7 +16,8 @@ var cls = require("./lib/class"),
     Messages = require('./message'),
     Properties = require("./properties"),
     Utils = require("./utils"),
-    Types = require("../../shared/js/gametypes");
+    Types = require("../../shared/js/gametypes"),
+    dao = require("./dao.js");
 
 // ======= GAME SERVER ========
 
@@ -557,9 +558,9 @@ module.exports = World = cls.Class.extend({
                     this.pushToAdjacentGroups(mob.group, mob.drop(item));
                     this.handleItemDespawn(item);
                 }
-                let kind = Types.getKindAsString(mob.kind);
-                let xp = Formulas.xp(Properties[kind]);
-                console.log(xp);
+                if (attacker.type === "player") {
+                    this.handleExperience(entity, attacker);
+                }
             }
     
             if(entity.type === "player") {
@@ -569,6 +570,15 @@ module.exports = World = cls.Class.extend({
     
             this.removeEntity(entity);
         }
+    },
+    handleExperience: function(mob, player) {
+
+        let kind = Types.getKindAsString(mob.kind);
+        let xp = Formulas.xp(Properties[kind]);
+
+        let session = this.server.cache.get(player.sessionId);
+
+        dao.updateExperience(session.walletId, session.nftId, xp);
     },
     
     despawn: function(entity) {
