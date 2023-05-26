@@ -61,7 +61,6 @@ module.exports = Player = Character.extend({
                 self.equipArmor(message[2]);
                 self.equipWeapon(message[3]);
                 self.orientation = Utils.randomOrientation();
-                self.updateHitPoints();
                 self.updatePosition();
                 self.sessionId = message[4];
                 
@@ -72,7 +71,7 @@ module.exports = Player = Character.extend({
                 playerCache.isDirty = true;
                 self.server.server.cache.set(self.sessionId, playerCache);
                 self.title = playerCache.title;
-
+                self.updateHitPoints();
                 self.send([Types.Messages.WELCOME, self.id, self.name, self.x, self.y, self.hitPoints, self.title]);
                 self.hasEnteredGame = true;
                 self.isDead = false;
@@ -140,7 +139,10 @@ module.exports = Player = Character.extend({
                     if (mob instanceof Player) {
                         mob.handleHurt(self);
                     } else {
-                        var dmg = Formulas.dmg(self.weaponLevel, mob.armorLevel);
+                        let level = self.getLevel();
+                        let totalLevel = (self.weaponLevel + level) - 1;
+                        //console.log("Total level ", totalLevel, "Level", level, "Weapon level", self.weaponLevel );
+                        var dmg = Formulas.dmg(totalLevel, mob.armorLevel);
                     
                         if(dmg > 0) {
                             mob.receiveDamage(dmg, self.id);
@@ -286,7 +288,10 @@ module.exports = Player = Character.extend({
 
     handleHurt: function(mob) {
         if(mob && this.hitPoints > 0) {
-            this.hitPoints -= Formulas.dmg(mob.weaponLevel, this.armorLevel);
+            let level = this.getLevel();
+            let totalLevel = (this.armorLevel + level) - 1;
+            //console.log("Level " + level, "Armor level", this.armorLevel, "Total level", totalLevel);
+            this.hitPoints -= Formulas.dmg(mob.weaponLevel, totalLevel);
             this.server.handleHurtEntity(this, mob);
             
             if(this.hitPoints <= 0) {
@@ -419,7 +424,6 @@ module.exports = Player = Character.extend({
             if(Types.isArmor(item.kind)) {
                 this.equipArmor(item.kind);
                 this.updateHitPoints();
-                this.send(new Messages.HitPoints(this.maxHitPoints).serialize());
             } else if(Types.isWeapon(item.kind)) {
                 this.equipWeapon(item.kind);
             }
@@ -427,7 +431,10 @@ module.exports = Player = Character.extend({
     },
     
     updateHitPoints: function() {
-        this.resetHitPoints(Formulas.hp(this.armorLevel));
+        let level = this.getLevel();
+        let hp = Formulas.hp(level);
+        this.resetHitPoints(hp);
+        this.send(new Messages.HitPoints(this.maxHitPoints).serialize());
     },
     
     updatePosition: function() {
@@ -456,5 +463,9 @@ module.exports = Player = Character.extend({
     },
     increaseHateFor: function(mobId, points) {
         return;
+    },
+    getLevel: function(){
+        let playerCache = this.server.server.cache.get(this.sessionId);
+        return Formulas.level(playerCache.xp);
     }
 });

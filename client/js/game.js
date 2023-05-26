@@ -741,6 +741,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 connecting = false; // always in dispatcher mode in the build version
     
             this.client = new GameClient(this.host, this.port, this.protocol, this.sessionId);
+            this.renderStatistics();
             
             //>>excludeStart("prodHost", pragmas.prodHost);
             var config = this.app.config.local || this.app.config.dev;
@@ -1388,7 +1389,9 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             
                 self.client.onPlayerKillMob(function(kind) {
                     var mobName = Types.getKindAsString(kind);
-                    
+
+                    self.renderStatistics();
+
                     if(mobName === 'skeleton2') {
                         mobName = 'greater skeleton';
                     }
@@ -2504,6 +2507,30 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     this.renderer.targetRect = targetRect;
                 }
             }
+        },
+
+        renderStatistics: function () {
+            self = this;
+            axios.get("/session/" + this.sessionId + "/statistics").then(function(response){
+                if (response.data !== null && response.data !== undefined) {
+                    console.log("Statistics", response.data);
+                    if (self.player.level == null) {
+                        self.player.level = response.data.levelInfo.currentLevel;
+                    }
+                    
+                    var levelInfoHTML = "Level: " + response.data.levelInfo.currentLevel + ". " + response.data.levelInfo.percentage + "%";
+                    $("#levelInfo").html(levelInfoHTML);
+
+                    if (self.player.level !== response.data.levelInfo.currentLevel) {
+                        self.player.setMaxHitPoints(response.data.maxHp);
+                        self.app.initHealthBar();
+                        self.updateBars();
+                        console.log("LEVEL UP");
+                    }
+                }
+            }).catch(function (error) {
+                console.error("Error while getting updated level", error);
+            });            
         }
     });
     

@@ -90,7 +90,6 @@ define(['character', 'timer'], function(Character, Timer) {
                 s = 3,
                 ts = 16,
                 speed = 0;
-            console.log("updateZoning", g, c, z, ts, speed); 
             if(z && z.inProgress === false) {
                 var orientation = this.game.zoningOrientation,
                     startValue = endValue = offset = 0,
