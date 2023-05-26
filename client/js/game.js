@@ -2527,9 +2527,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     $("#levelInfo").html(levelInfoHTML);
 
                     if (self.player.level !== response.data.levelInfo.currentLevel) {
-                        self.player.setMaxHitPoints(response.data.maxHp);
-                        self.app.initHealthBar();
-                        self.updateBars();
                         console.log("LEVEL UP");
                     }
                 }
