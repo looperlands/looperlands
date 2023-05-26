@@ -582,7 +582,7 @@ module.exports = World = cls.Class.extend({
         session.xp = updatedXp;
         this.server.cache.set(player.sessionId, session);
         updatedLevel = Formulas.level(updatedXp);
-        if (currentLevel != updatedLevel) {
+        if (currentLevel < updatedLevel) {
             let message = `${player.name} advanced to level ${updatedLevel}`;
             discord.sendMessage(message);
             player.updateHitPoints();
