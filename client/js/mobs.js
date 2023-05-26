@@ -8,7 +8,8 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.moveSpeed = 350;
                 this.idleSpeed = 700;
                 this.shadowOffsetY = -2;
-                this.isAggressive = false;
+                this.isAggressive = true;
+                this.aggroRange = 1;
             }
         }),
 
