@@ -21,6 +21,10 @@ Formulas.hp = function(armorLevel) {
     return hp;
 };
 
+Formulas.xp = function(mobProperties) {
+    return (Math.round(Math.round((mobProperties.hp + mobProperties.armor + mobProperties.weapon)/2)/10) * 10)/2;
+}
+
 if(!(typeof exports === 'undefined')) {
     module.exports = Formulas;
 }

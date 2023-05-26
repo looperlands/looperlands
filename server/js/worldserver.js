@@ -1,4 +1,5 @@
 
+const Formulas = require("./formulas");
 var cls = require("./lib/class"),
     _ = require("underscore"),
     Log = require('log'),
@@ -556,6 +557,9 @@ module.exports = World = cls.Class.extend({
                     this.pushToAdjacentGroups(mob.group, mob.drop(item));
                     this.handleItemDespawn(item);
                 }
+                let kind = Types.getKindAsString(mob.kind);
+                let xp = Formulas.xp(Properties[kind]);
+                console.log(xp);
             }
     
             if(entity.type === "player") {
