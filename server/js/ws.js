@@ -16,6 +16,7 @@ module.exports = WS;
 const axios = require('axios');
 const crypto = require('crypto');
 const NodeCache = require( "node-cache" );
+const dao = require('./dao.js');
 
 const cache = new NodeCache();
 
@@ -99,42 +100,6 @@ var Connection = cls.Class.extend({
         this._connection.close();
     }
 });
-
-getCharacterData = async function(wallet, nft, apiKey) {
-    const options = {
-      method: 'POST',
-      headers: {
-        'X-Api-Key': apiKey
-      },
-    };
-    try {
-        const responseData = await axios.get(`${LOOPWORMS_LOOPQUEST_BASE_URL}/Load.php?NFTID=${nft}&WalletID=${wallet}`, options);
-        //console.log("ResponseData from Loopworms: ", responseData.status, responseData.text, responseData.data);
-        return responseData.data;
-    } catch (error) {
-        console.error(error);
-        return {"error": "Error loading character data"};
-    }
-
-}
-
-saveCharacterData = async function(wallet, nft, apiKey, saveGame) {
-    const options = {
-      headers: {
-        'X-Api-Key': apiKey,
-        'Content-Type': 'application/json'
-      }
-    };
-    try {
-        const url = `${LOOPWORMS_LOOPQUEST_BASE_URL}/Save.php?NFTID=${nft}&WalletID=${wallet}`
-        const responseData = await axios.post(url, saveGame, options);
-        //console.log("ResponseData from Loopworms: ", responseData.status, responseData.text, responseData.data);
-        return responseData.data;
-    } catch (error) {
-        console.error(error);
-        return {"error": "Error saving character data"};
-    }
-}
 
 /***************
     SOCKET.IO
@@ -226,7 +191,7 @@ WS.socketIOServer = Server.extend({
             }
 
             console.log("Session ID", sessionId, "Wallet ID", walletId, "NFT ID", nftId);
-            const saveData = await getCharacterData(walletId, nftId, process.env.LOOPWORMS_API_KEY);
+            const saveData = await dao.getCharacterData(walletId, nftId);
             let parsedSaveData;
             try {
                 parsedSaveData = JSON.parse(saveData[1]);
@@ -286,7 +251,7 @@ WS.socketIOServer = Server.extend({
             const walletId = sessionData.walletId;
 
             const body = req.body;
-            const data = saveCharacterData(walletId, nftId, process.env.LOOPWORMS_API_KEY, body);
+            const data = dao.saveCharacterData(walletId, nftId, body);
             res.status(200).send(true);
         });
 

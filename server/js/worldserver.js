@@ -571,14 +571,17 @@ module.exports = World = cls.Class.extend({
             this.removeEntity(entity);
         }
     },
-    handleExperience: function(mob, player) {
+    handleExperience: async function(mob, player) {
 
         let kind = Types.getKindAsString(mob.kind);
         let xp = Formulas.xp(Properties[kind]);
 
         let session = this.server.cache.get(player.sessionId);
+        console.log(session)
 
-        dao.updateExperience(session.walletId, session.nftId, xp);
+        let updatedXp = await dao.updateExperience(session.walletId, session.nftId, xp);
+        session.xp = updatedXp;
+        this.server.cache.set(player.sessionId, session);
     },
     
     despawn: function(entity) {
