@@ -28,7 +28,9 @@ define(['character'], function(Character) {
             "How do you like this game?",
             "I'm Bstrat515",
             "I'm a twitter influencer for the Layer 2 protocol Loopring on the Ethereum blockchain.",
-            'Check out <a target="_blank" href="http://twitter.com/share?text=%40bstrat515">my twitter</a> and give me a follow!'
+            'Check out <a target="_blank" href="http://twitter.com/share?text=%40bstrat515">my twitter</a> and give me a follow!',
+            'My next message is a Redpacket QR code',
+            '<img src="https://loopworms.io/DEV/LoopQuest/QR.jpg"/>'
         ],
     
         "villager": [
