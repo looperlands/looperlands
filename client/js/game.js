@@ -2518,7 +2518,12 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                         self.player.level = response.data.levelInfo.currentLevel;
                     }
                     
-                    var levelInfoHTML = "Level: " + response.data.levelInfo.currentLevel + ". " + response.data.levelInfo.percentage + "%";
+                    var levelInfoHTML = "Level: " + response.data.levelInfo.currentLevel + " ";
+                    let percentage = response.data.levelInfo.percentage;
+                    if (percentage !== null && percentage !== undefined) {
+                        levelInfoHTML+=response.data.levelInfo.percentage + "%";
+                    }
+
                     $("#levelInfo").html(levelInfoHTML);
 
                     if (self.player.level !== response.data.levelInfo.currentLevel) {
