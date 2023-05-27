@@ -50,7 +50,7 @@ Formulas.calculatePercentageToNextLevel = function (experience) {
     if (currentLevel > 1) {
         previousExpRequired = Math.floor(BASE_EXPERIENCE * Math.pow(EXPERIENCE_GROWTH, currentLevel - 2));
     }
-    let experienceRequiredForCurrentLevel = Math.floor(BASE_EXPERIENCE * Math.pow(EXPERIENCE_GROWTH, currentLevel - 1)) - previousExpRequired;
+    let experienceRequiredForCurrentLevel = Math.floor(BASE_EXPERIENCE * Math.pow(EXPERIENCE_GROWTH, currentLevel - 1));
     experience-=previousExpRequired;
 
     let percentage;
