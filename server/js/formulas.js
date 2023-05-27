@@ -58,7 +58,7 @@ Formulas.level = function (experience) {
     }
     let levels = Object.keys(EXPERIENCE_MAP);
     let level = levels.find(function(level) {
-        console.log(level, EXPERIENCE_MAP[level], experience);
+        //console.log(level, EXPERIENCE_MAP[level], experience);
         return EXPERIENCE_MAP[level] >= experience;
     });
     level = Number(level) - 1
