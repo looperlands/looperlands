@@ -1,6 +1,12 @@
 
 var Detect = {};
 
+function isIpadOS() {
+    return navigator.maxTouchPoints &&
+        navigator.maxTouchPoints > 2 &&
+        /MacIntel/.test(navigator.platform);
+}
+
 Detect.supportsWebSocket = function() {
     return window.WebSocket || window.MozWebSocket;
 };
@@ -12,7 +18,7 @@ Detect.userAgentContains = function(string) {
 Detect.isTablet = function(screenWidth) {
     if(screenWidth > 640) {
         if((Detect.userAgentContains('Android') && Detect.userAgentContains('Firefox'))
-        || Detect.userAgentContains('Mobile')) {
+        || Detect.userAgentContains('Mobile') || isIpadOS()) {
             return true;
         }
     }
