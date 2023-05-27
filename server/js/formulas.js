@@ -53,13 +53,15 @@ const numLevels = 20;
 const EXPERIENCE_MAP = Formulas.calculateExperienceMap(numLevels);
 
 Formulas.level = function (experience) {
-    let level = 1;
-
-    while (experience >= EXPERIENCE_MAP[level]) {
-        experience -= EXPERIENCE_MAP[level];
-        level++;
+    if (experience <= BASE_EXPERIENCE) {
+        return 1;
     }
-
+    let levels = Object.keys(EXPERIENCE_MAP);
+    let level = levels.find(function(level) {
+        console.log(level, EXPERIENCE_MAP[level], experience);
+        return EXPERIENCE_MAP[level] >= experience;
+    });
+    level = Number(level) - 1
     return level;
 };
 
@@ -69,8 +71,17 @@ Formulas.calculatePercentageToNextLevel = function (experience) {
     const currentLevel = Formulas.level(experience);
     const currentLevelExperience = EXPERIENCE_MAP[currentLevel];
     const nextLevelExperience = EXPERIENCE_MAP[currentLevel + 1];
-    const experienceToNextLevel = experience - currentLevelExperience;
-    const experienceRequiredToLevel = nextLevelExperience - currentLevelExperience;
+
+    let experienceToNextLevel;
+    let experienceRequiredToLevel;
+    if (experience <= BASE_EXPERIENCE) {
+        experienceToNextLevel = experience;
+        experienceRequiredToLevel = BASE_EXPERIENCE;
+    } else {
+        experienceToNextLevel = experience - currentLevelExperience;
+        experienceRequiredToLevel = nextLevelExperience - currentLevelExperience;
+    }
+
     let percentage = (experienceToNextLevel / experienceRequiredToLevel) * 100;
     percentage = percentage.toFixed(2);
     return {
