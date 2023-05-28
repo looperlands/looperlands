@@ -80,7 +80,12 @@ loadWeapon = async function(wallet, nft) {
   try {
       const responseData = await axios.get(`${LOOPWORMS_LOOPQUEST_BASE_URL}/LoadWeapon.php?NFTID=${nft}&WalletID=${wallet}`, options);
       //console.log("ResponseData from Loopworms: ", responseData.status, responseData.text, responseData.data);
-      return JSON.parse(responseData.data[0]);
+      try {
+        return JSON.parse(responseData.data[0]);
+      } catch (e) {
+        return 'sword1';
+      }
+      
   } catch (error) {
       console.error(error);
       return {"error": "Error loading weapon"};
