@@ -111,7 +111,7 @@ define(['item'], function(Item) {
         FirePotion: Item.extend({
             init: function(id) {
                 this._super(id, Types.Entities.FIREPOTION, "object");
-                this.lootMessage = "You feel the power of Firefox!";
+                this.lootMessage = "You feel the power of Loopring!";
             },
     
             onLoot: function(player) {
