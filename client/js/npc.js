@@ -10,17 +10,11 @@ define(['character'], function(Character) {
         ],
     
         "king": [
-            "Hi, I'm the King",
-            "I run this place",
-            "Like a boss",
-            "I talk to people",
-            "Like a boss",
-            "I wear a crown",
-            "Like a boss",
-            "I do nothing all day",
-            "Like a boss",
-            "Now leave me alone",
-            "Like a boss"
+            "Hi, I'm the LoopWorm King",
+            "Welcome to my kingdom",
+            'Check out <a target="_blank" href="https://twitter.com/LoopWorms">my twitter</a> and give me a follow!',
+            "Stay wormy",
+            "or else..."
         ],
     
         "villagegirl": [
