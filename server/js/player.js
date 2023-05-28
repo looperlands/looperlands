@@ -6,7 +6,8 @@ var cls = require("./lib/class"),
     Properties = require("./properties"),
     Formulas = require("./formulas"),
     check = require("./format").check,
-    Types = require("../../shared/js/gametypes");
+    Types = require("../../shared/js/gametypes"),
+    dao = require('./dao.js');
 
 const discord = require('./discord.js');    
 const axios = require('axios');
@@ -426,6 +427,8 @@ module.exports = Player = Character.extend({
                 this.updateHitPoints();
             } else if(Types.isWeapon(item.kind)) {
                 this.equipWeapon(item.kind);
+                let playerCache = this.server.server.cache.get(this.sessionId);
+                dao.saveWeapon(playerCache.walletId, playerCache.nftId,Types.getKindAsString(item.kind));
             }
         }
     },

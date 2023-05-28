@@ -50,6 +50,51 @@ saveCharacterData = async function(wallet, nft, saveGame) {
     }
 }
 
+saveWeapon = async function(wallet, nft, weaponName) {
+
+  const options = {
+    headers: {
+      'X-Api-Key': API_KEY,
+      'Content-Type': 'application/json'
+    }
+  };
+  try {
+      const url = `${LOOPWORMS_LOOPQUEST_BASE_URL}/SaveWeapon.php?NFTID=${nft}&WalletID=${wallet}`
+      const responseData = await axios.post(url, weaponName, options);
+      //console.log("ResponseData from Loopworms: ", responseData.status, responseData.text, responseData.data);
+      return responseData.data;
+  } catch (error) {
+      console.error(error);
+      return {"error": "Error saving weapon data"};
+  }
+}
+
+
+loadWeapon = async function(wallet, nft) {
+  const options = {
+    method: 'POST',
+    headers: {
+      'X-Api-Key': API_KEY
+    },
+  };
+  try {
+      const responseData = await axios.get(`${LOOPWORMS_LOOPQUEST_BASE_URL}/LoadWeapon.php?NFTID=${nft}&WalletID=${wallet}`, options);
+      //console.log("ResponseData from Loopworms: ", responseData.status, responseData.text, responseData.data);
+      try {
+        return JSON.parse(responseData.data[0]);
+      } catch (e) {
+        return 'sword1';
+      }
+      
+  } catch (error) {
+      console.error(error);
+      return {"error": "Error loading weapon"};
+  }
+}
+
+
 exports.updateExperience = updateExperience;
 exports.saveCharacterData = saveCharacterData;
 exports.getCharacterData = getCharacterData;
+exports.saveWeapon = saveWeapon;
+exports.loadWeapon = loadWeapon;

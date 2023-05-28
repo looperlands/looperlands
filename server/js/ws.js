@@ -193,6 +193,7 @@ WS.socketIOServer = Server.extend({
 
             console.log("Session ID", sessionId, "Wallet ID", walletId, "NFT ID", nftId);
             const saveData = await dao.getCharacterData(walletId, nftId);
+            let weapon = await dao.loadWeapon(walletId, nftId);
             let parsedSaveData;
             try {
                 parsedSaveData = JSON.parse(saveData[1]);
@@ -239,6 +240,7 @@ WS.socketIOServer = Server.extend({
             }
             parsedSaveData.player.name = name;
             parsedSaveData.player.armor = nftId.replace("0x", "NFT_");
+            parsedSaveData.player.weapon = weapon;
             parsedSaveData.nftId = nftId;
             parsedSaveData.walletId = walletId;
             
