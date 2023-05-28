@@ -56,7 +56,7 @@ define(['character'], function(Character) {
             "Greetings.",
             "I am the inventor of these two potions.",
             "The red one will replenish your health points...",
-            "The orange one will turn you into a firefox and make you invincible...",
+            "The blue one will make you invincible with the power of Loopring...",
             "But it only lasts for a short while.",
             "So make good use of it!",
             "Now if you'll excuse me, I need to get back to my experiments..."
