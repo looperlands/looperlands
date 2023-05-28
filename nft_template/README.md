@@ -4,13 +4,45 @@ Example of adding a new NFT to the NFT template.
 The first argument assumes the directory contains 1.png, 2.png, and 3.png where n (1-3) is the scale.
 The second argument is the NFT ID.
 The third argument is the NFT type.
+
+Command arguments.
 ```bash
-./add_nft.sh /home/yuno/Downloads/Spritesheet_2 0x3c1fa300af2deef916ade14eb6ca68dd14913e4adc4a4d174ea98f1f878ef733 armor
+./add_nft.sh <folder location> <short nft id> armor
 ```
 
 
---
-Smileyphase steps:
+## Example Steps:
+1) Extract the zip somewhere. 
+
+2) Setup the branch.
+```
+git checkout main
+git pull
+checkout -b new_nft_name
+```
+Run the add_nft command
+```bash
+cd nft_template # if you are not already here
+./add_nft.sh "/mnt/c/Users/username/OneDrive/Documents/loopquest/Punk_Cyborg_268" 0xee40d44f7847999cb4d7d1e3fc7681e1390fc5acc5e835d1e8f0ed717d4dc200 armor
+```
+You should see a command with no errors.
+
+Note that the second argument is a WSL path. If you are using WSL, replace the parts after /mnt/ with 
+the directory you created in step 1 but change the `\` to `/`.
+
+3) Commit the changes
+```bash
+git commit -am "add new nft. put something descriptive here"
+git push
+```
+4) Open a pull request on your branch on Github.com
+
+5) Next, ask an admin to merge your pull request and run the backend process.
+
+
+
+
+## Smileyphase steps:
 Steps - assumes loopquest has been pulled from github to /home/[user]/loopquest/
 
 1. Copy Avatar .png files to \\wsl.localhost\Ubuntu\home\[user]\[project]
