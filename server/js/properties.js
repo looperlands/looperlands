@@ -139,8 +139,8 @@ var Properties = {
             flask: 50
         },
         hp: 5000,
-        armor: 10,
-        weapon: 10
+        armor: 5,
+        weapon: 8
     }
 };
 
