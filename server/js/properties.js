@@ -135,11 +135,12 @@ var Properties = {
     
     boss: {
         drops: {
-            goldensword: 100
+            goldensword: 10,
+            flask: 50
         },
-        hp: 1400,
-        armor: 6,
-        weapon: 7
+        hp: 5000,
+        armor: 10,
+        weapon: 10
     }
 };
 
