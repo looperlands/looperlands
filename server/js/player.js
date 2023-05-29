@@ -28,6 +28,8 @@ module.exports = Player = Character.extend({
         this.lastCheckpoint = null;
         this.formatChecker = new FormatChecker();
         this.disconnectTimeout = null;
+
+
         
         this.connection.listen(function(message) {
 
@@ -77,6 +79,10 @@ module.exports = Player = Character.extend({
                 self.hasEnteredGame = true;
                 self.isDead = false;
                 discord.sendMessage(`Player ${self.name} has joined the game.`);
+
+                setInterval(function(){
+                    self.server.pushRelevantEntityListTo(self);
+                }, 50);
             }
             else if(action === Types.Messages.WHO) {
                 message.shift();
