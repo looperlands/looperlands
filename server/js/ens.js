@@ -13,8 +13,6 @@ const alchemyLib = new alchemy.Alchemy(config);
 const NodeCache = require( "node-cache" );
 const cache = new NodeCache();
 
-
-
 getEnsAlchemy = async function(walletId) {
     const ensContractAddress = "0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85";
     const nfts = await alchemyLib.nft.getNftsForOwner(walletId, {
