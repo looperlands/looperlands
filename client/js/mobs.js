@@ -85,6 +85,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.moveSpeed = 300;
                 this.atkSpeed = 100;
                 this.idleSpeed = 600;
+                this.aggroRange = 5;
             }
         }),
 
@@ -105,6 +106,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.idleSpeed = 250;
                 this.walkSpeed = 100;
                 this.shadowOffsetY = -4;
+                this.aggroRange = 5;
             }
         }),
 
@@ -146,7 +148,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.idleSpeed = 400;
                 this.atkRate = 2000;
                 this.attackCooldown = new Timer(this.atkRate);
-        		this.aggroRange = 3;
+        		this.aggroRange = 10;
             },
             
             idle: function(orientation) {
