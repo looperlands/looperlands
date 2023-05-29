@@ -38,6 +38,11 @@ git push
 4) Open a pull request on your branch on Github.com
 
 5) Next, ask an admin to merge your pull request and run the backend process.
+```bash
+sudo su
+cd /home/root
+./add_looperquest_nft.sh 0x675a39b27b2ddbdb2d18485562efbe2b2772987a-0-0x3add4c3824813b2d4e9fdd3ed678857aa6bcdd4d-0xeac17febcaf13e4f2a07aab923d7e527a8414712b9f6732465970e16853f0daa-10 "Art Magic"
+```
 
 
 
