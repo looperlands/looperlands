@@ -18,6 +18,7 @@ const crypto = require('crypto');
 const NodeCache = require( "node-cache" );
 const dao = require('./dao.js');
 const Formulas = require('./formulas.js');
+const ens = require("./ens.js");
 
 const cache = new NodeCache();
 
@@ -192,28 +193,10 @@ WS.socketIOServer = Server.extend({
             }
 
             console.log("Session ID", sessionId, "Wallet ID", walletId, "NFT ID", nftId);
-            const saveData = await dao.getCharacterData(walletId, nftId);
+            const parsedSaveData = await dao.getCharacterData(walletId, nftId);
             let weapon = await dao.loadWeapon(walletId, nftId);
-            let parsedSaveData;
-            try {
-                parsedSaveData = JSON.parse(saveData[1]);
-            } catch (error) {
-                console.error("Error parsing save data ", error, saveData);
-            }
             
-
-            const shortEthAddressName = walletId.replace("0x", "").substring(0,6);
-            let name = shortEthAddressName;
-            try {
-                let ensLookup = await axios.get(`https://api3.loopring.io/api/wallet/v3/resolveName?owner=${walletId}`);
-                //console.debug("ENS data", ensLookup);
-                name = ensLookup.data.data.split(".")[0];
-                if (name === "") {
-                    name = shortEthAddressName;
-                }
-            } catch {
-                console.error("Error while looking up ENS name");
-            }
+            let name = await ens.getEns(walletId);
 
             if (parsedSaveData === undefined) {
                 console.log("Save data is undefined, creating new save data for " + name);

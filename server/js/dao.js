@@ -24,7 +24,14 @@ getCharacterData = async function(wallet, nft) {
     try {
         const responseData = await axios.get(`${LOOPWORMS_LOOPQUEST_BASE_URL}/Load.php?NFTID=${nft}&WalletID=${wallet}`, options);
         //console.log("ResponseData from Loopworms: ", responseData.status, responseData.text, responseData.data);
-        return responseData.data;
+
+        let parsedSaveData;
+        try {
+            parsedSaveData = JSON.parse(responseData.data[1]);
+        } catch (error) {
+            console.error("Error parsing save data ", error, saveData);
+        }
+        return parsedSaveData;
     } catch (error) {
         console.error(error);
         return {"error": "Error loading character data"};
