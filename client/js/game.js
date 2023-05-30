@@ -1034,6 +1034,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
                         if (dest.nft !== undefined) {
                             var url = '/session/' + self.sessionId + '/owns/' + dest.nft;
+                            _self.tokengating = true;
                             axios.get(url).then(function (response) {
                                 if (response.data === true) {
                                     goInside();
@@ -1042,6 +1043,8 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 }
                             }).catch(function (error) {
                                 console.error("Error while checking ownership of token gate.");
+                            }).finally(function(e) {
+                                _self.tokengating = false;
                             });
                         } else {
                             goInside();
@@ -1982,7 +1985,8 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
     	    && !this.isZoningTile(this.player.nextGridX, this.player.nextGridY)
     	    && !this.player.isDead
     	    && !this.hoveringCollidingTile
-    	    && !this.hoveringPlateauTile) {
+    	    && !this.hoveringPlateauTile
+            && !(this.tokengating === true)) {
         	    entity = this.getEntityAt(pos.x, pos.y);
     	    
         	    if(entity instanceof Mob) {
