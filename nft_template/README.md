@@ -33,7 +33,7 @@ the directory you created in step 1 but change the `\` to `/`.
 3) Commit the changes
 ```bash
 git commit -am "add new nft. put something descriptive here"
-git push
+git push --set-upstream origin new_nft_name
 ```
 4) Open a pull request on your branch on Github.com
 
@@ -41,7 +41,7 @@ git push
 ```bash
 sudo su
 cd /home/root
-./add_looperquest_nft.sh 0x675a39b27b2ddbdb2d18485562efbe2b2772987a-0-0x3add4c3824813b2d4e9fdd3ed678857aa6bcdd4d-0xeac17febcaf13e4f2a07aab923d7e527a8414712b9f6732465970e16853f0daa-10 "Art Magic"
+./add_looplands_nft.sh 0x675a39b27b2ddbdb2d18485562efbe2b2772987a-0-0x3add4c3824813b2d4e9fdd3ed678857aa6bcdd4d-0xeac17febcaf13e4f2a07aab923d7e527a8414712b9f6732465970e16853f0daa-10 "Art Magic"
 ```
 
 
