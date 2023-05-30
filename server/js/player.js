@@ -485,7 +485,7 @@ module.exports = Player = Character.extend({
             if (level !== NaN) {
                 return level;
             } else {
-                console.error(this.name, "Invalid level calculation")
+                console.error(this.name, "Invalid level calculation", playerCache);
             }
         }
         return NaN;
