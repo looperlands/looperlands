@@ -29,7 +29,7 @@ getCharacterData = async function(wallet, nft) {
         try {
             parsedSaveData = JSON.parse(responseData.data[1]);
         } catch (error) {
-            console.error("Error parsing save data ", error, saveData);
+            console.error("Error parsing save data ", error, responseData.data);
         }
         return parsedSaveData;
     } catch (error) {
