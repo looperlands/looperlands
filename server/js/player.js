@@ -301,10 +301,11 @@ module.exports = Player = Character.extend({
 
             let totalLevel = (this.armorLevel + level) - 1;
            
-            this.hitPoints -= Formulas.dmg(mob.weaponLevel, totalLevel);
-            this.server.handleHurtEntity(this, mob);
+            let damage = Formulas.dmg(mob.weaponLevel, totalLevel);
+            this.hitPoints -= damage;
+            this.server.handleHurtEntity(this, mob, damage);
             console.log(this.name, "Level " + level, "Armor level", this.armorLevel, "Total level", totalLevel, "Hitpoints", this.hitPoints);
-            
+
             if(this.hitPoints <= 0) {
                 let killer = Types.getKindAsString(mob.kind);
                 if (mob instanceof Player)  {

@@ -543,11 +543,8 @@ module.exports = World = cls.Class.extend({
             this.pushToPlayer(entity, entity.health());
         }
         
-        if(entity.type === 'mob') {
-            // Let the mob's attacker (player) know how much damage was inflicted
-            this.pushToPlayer(attacker, new Messages.Damage(entity, damage));
-        }
-
+        this.pushToPlayer(attacker, new Messages.Damage(entity, damage));
+        
         // If the entity is about to die
         if(entity.hitPoints <= 0) {
             if(entity.type === "mob") {
