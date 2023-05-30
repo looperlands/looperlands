@@ -80,9 +80,11 @@ module.exports = Player = Character.extend({
                 self.isDead = false;
                 discord.sendMessage(`Player ${self.name} has joined the game.`);
 
+                /*
                 setInterval(function(){
                     self.server.pushRelevantEntityListTo(self);
                 }, 50);
+                */
             }
             else if(action === Types.Messages.WHO) {
                 message.shift();
@@ -296,10 +298,12 @@ module.exports = Player = Character.extend({
     handleHurt: function(mob) {
         if(mob && this.hitPoints > 0) {
             let level = this.getLevel();
+
             let totalLevel = (this.armorLevel + level) - 1;
-            //console.log("Level " + level, "Armor level", this.armorLevel, "Total level", totalLevel);
+           
             this.hitPoints -= Formulas.dmg(mob.weaponLevel, totalLevel);
             this.server.handleHurtEntity(this, mob);
+            console.log(this.name, "Level " + level, "Armor level", this.armorLevel, "Total level", totalLevel, "Hitpoints", this.hitPoints);
             
             if(this.hitPoints <= 0) {
                 let killer = Types.getKindAsString(mob.kind);
@@ -474,7 +478,16 @@ module.exports = Player = Character.extend({
         return;
     },
     getLevel: function(){
-        let playerCache = this.server.server.cache.get(this.sessionId);
-        return Formulas.level(playerCache.xp);
+        for (let i = 0; i < 10; i++) {
+            let playerCache = this.server.server.cache.get(this.sessionId);
+
+            let level = Formulas.level(playerCache.xp);
+            if (level !== NaN) {
+                return level;
+            } else {
+                console.error(this.name, "Invalid level calculation")
+            }
+        }
+        return NaN;
     }
 });
