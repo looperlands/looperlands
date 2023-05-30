@@ -20,7 +20,7 @@ Formulas.dmg = function (weaponLevel, armorLevel) {
 };
 
 Formulas.hp = function (level) {
-    var hp = 80 + ((level - 1) * 15);
+    var hp = 80 + ((level - 1) * 30);
     return hp;
 };
 
