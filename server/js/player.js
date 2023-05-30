@@ -150,7 +150,7 @@ module.exports = Player = Character.extend({
                     } else {
                         let level = self.getLevel();
                         let totalLevel = (self.weaponLevel + level) - 1;
-                        //console.log("Total level ", totalLevel, "Level", level, "Weapon level", self.weaponLevel );
+                        console.log(self.name, "Total level ", totalLevel, "Level", level, "Weapon level", self.weaponLevel );
                         var dmg = Formulas.dmg(totalLevel, mob.armorLevel);
                     
                         if(dmg > 0) {
@@ -482,8 +482,19 @@ module.exports = Player = Character.extend({
         for (let i = 0; i < 10; i++) {
             let playerCache = this.server.server.cache.get(this.sessionId);
 
+            if (Number.isNaN(playerCache.xp)) {
+                console.log("XP is NaN in getLevel", this.name, playerCache)
+                _this = this;
+                dao.loadExperience(playerCache.walletId, playerCache.nftId).then(function(e){
+                    console.log("Experience from load experience", e);
+                    playerCache.xp = e;
+                    _this.server.server.cache.set(_this.sessionId, playerCache);
+                });
+            }
+            
             let level = Formulas.level(playerCache.xp);
-            if (level !== NaN) {
+
+            if (!Number.isNaN(level)) {
                 return level;
             } else {
                 console.error(this.name, "Invalid level calculation", playerCache);
