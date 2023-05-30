@@ -124,7 +124,9 @@ Types = {
         NFT_eac17febcaf13e4f2a07aab923d7e527a8414712b9f6732465970e16853f0daa: 96,
         NFT_119a557bf20a9105348c45deda0f96308bd6b20c1680dbcf7ac3c0439e96fc08: 97,
         NFT_fab0c923caef4d9666e41097512bb02ed1283afa0199e10031a0a24a00008daa: 98,
-        NFT_fab0c923caef4d9666e41097512bb02ed1283afa0199e10031a0a24a00008daa: 99 // @lastid@
+        NFT_fab0c923caef4d9666e41097512bb02ed1283afa0199e10031a0a24a00008daa: 99,
+        NFT_fab0c923caef4d9666e41097512bb02ed1283afa0199e10031a0a24a00008daa: 100,
+        NFT_fab0c923caef4d9666e41097512bb02ed1283afa0199e10031a0a24a00008daa: 101 // @lastid@
         //@nextIdLine@
     },
     
@@ -224,6 +226,8 @@ var kinds = {
     NFT_119a557bf20a9105348c45deda0f96308bd6b20c1680dbcf7ac3c0439e96fc08: [Types.Entities.NFT_119a557bf20a9105348c45deda0f96308bd6b20c1680dbcf7ac3c0439e96fc08, "armor"],
     NFT_fab0c923caef4d9666e41097512bb02ed1283afa0199e10031a0a24a00008daa: [Types.Entities.NFT_fab0c923caef4d9666e41097512bb02ed1283afa0199e10031a0a24a00008daa, "armor"],
     NFT_fab0c923caef4d9666e41097512bb02ed1283afa0199e10031a0a24a00008daa: [Types.Entities.NFT_fab0c923caef4d9666e41097512bb02ed1283afa0199e10031a0a24a00008daa, "armor"],
+    NFT_fab0c923caef4d9666e41097512bb02ed1283afa0199e10031a0a24a00008daa: [Types.Entities.NFT_fab0c923caef4d9666e41097512bb02ed1283afa0199e10031a0a24a00008daa, "armor"],
+    NFT_fab0c923caef4d9666e41097512bb02ed1283afa0199e10031a0a24a00008daa: [Types.Entities.NFT_fab0c923caef4d9666e41097512bb02ed1283afa0199e10031a0a24a00008daa, "armor"],
     // @nextSpriteLine@
 
     getType: function(kind) {
@@ -316,6 +320,10 @@ Types.getArmorRank = function(armorKind) {
             return 1;
         case Types.Entities.NFT_fab0c923caef4d9666e41097512bb02ed1283afa0199e10031a0a24a00008daa:
             return 0;
+        case Types.Entities.NFT_fab0c923caef4d9666e41097512bb02ed1283afa0199e10031a0a24a00008daa:
+            return 1;
+        case Types.Entities.NFT_fab0c923caef4d9666e41097512bb02ed1283afa0199e10031a0a24a00008daa:
+            return 1;
         // @nextarmorrank@
         default:
             console.error("Unknown armor rank");
