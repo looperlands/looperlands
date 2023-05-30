@@ -2,7 +2,9 @@ const LOOPWORMS_LOOPQUEST_BASE_URL = process.env.LOOPWORMS_LOOPQUEST_BASE_URL;
 const API_KEY = process.env.LOOPWORMS_API_KEY;
 const axios = require('axios');
 
-updateExperience = async function(walletId, nftId, xp) {
+const EXP_UPDATE_RETRIES = 5;
+
+updateExperience = async function(walletId, nftId, xp, retry) {
     const options = {
         headers: {
           'X-Api-Key': API_KEY
@@ -11,6 +13,16 @@ updateExperience = async function(walletId, nftId, xp) {
     let url = `${LOOPWORMS_LOOPQUEST_BASE_URL}/SaveExperience.php?WalletID=${walletId}&NFTID=${nftId}&Experience=${xp}`;
     const responseData = await axios.get(url, options);
     const updatedXp = parseInt(responseData.data);
+    if (updatedXp === NaN) {
+      console.error("Error updating experience", walletId, nftId, xp, responseData.data);
+      if (retry === undefined) {
+        retry = EXP_UPDATE_RETRIES;
+      }
+      retry-=1;
+      if (retry > 0) {
+        updateExperience(walletId, nftId, xp, retry);
+      }
+    }
     return updatedXp;
 }
 
