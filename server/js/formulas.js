@@ -3,7 +3,7 @@ var Utils = require("./utils");
 
 var Formulas = {};
 
-const EXPERIENCE_GROWTH = 4;
+const EXPERIENCE_GROWTH = 3;
 const BASE_EXPERIENCE = 1000;
 
 Formulas.dmg = function (weaponLevel, armorLevel) {
