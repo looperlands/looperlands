@@ -18,7 +18,7 @@ Command arguments.
 ```
 git checkout main
 git pull
-checkout -b new_nft_name
+git checkout -b new_nft_name
 ```
 Run the add_nft command
 ```bash
