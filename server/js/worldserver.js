@@ -544,7 +544,10 @@ module.exports = World = cls.Class.extend({
             this.pushToPlayer(entity, entity.health());
         }
         
-        this.pushToPlayer(attacker, new Messages.Damage(entity, damage));
+        if (attacker.type === 'player') {
+            this.pushToPlayer(attacker, new Messages.Damage(entity, damage));
+        }
+        
         
         // If the entity is about to die
         if(entity.hitPoints <= 0) {
