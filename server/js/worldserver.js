@@ -322,6 +322,9 @@ module.exports = World = cls.Class.extend({
         for(var id in this.outgoingQueues) {
             if(this.outgoingQueues[id].length > 0) {
                 connection = this.server.getConnection(id);
+                if (connected === undefined) {
+                    console.error("Server connection not found " + id);
+                }
                 connection.send(this.outgoingQueues[id]);
                 this.outgoingQueues[id] = [];
             }
