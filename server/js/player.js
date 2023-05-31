@@ -80,10 +80,12 @@ module.exports = Player = Character.extend({
                 self.isDead = false;
                 discord.sendMessage(`Player ${self.name} has joined the game.`);
 
-
+ 
+                /*
                 setInterval(function(){
                     self.server.pushRelevantEntityListTo(self);
                 }, 100);
+                */
                 
             }
             else if(action === Types.Messages.WHO) {
