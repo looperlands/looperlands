@@ -109,7 +109,7 @@ define(['character'], function(Character) {
         ],
         
         "octocat": [
-            "Welcome to LooperQuest!",
+            "Welcome to LooperLands!",
             "Want to see the source code?",
         ],
         

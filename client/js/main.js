@@ -199,7 +199,7 @@ define(['jquery', 'app'], function($, App) {
             }).catch((error) => {
                 console.error(error);
                 if (error.response.status === 404) {
-                    $("#welcomeMessage").text("Session not found. Make sure you don't have two LooperQuests open.");
+                    $("#welcomeMessage").text("Session not found. Make sure you don't have two LooperLands open.");
                 } else {
                     $("#welcomeMessage").text("Error loading your user data. Please try again later.");
                 }

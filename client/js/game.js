@@ -832,9 +832,9 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     self.storage.savePlayer(self.renderer.getPlayerImage(),
                                             self.player.getSpriteName(),
                                             self.player.getWeaponName());
-                    self.showNotification("Welcome to LooperQuest!");
+                    self.showNotification("Welcome to LooperLands!");
                 } else {
-                    self.showNotification("Welcome back to LooperQuest!");
+                    self.showNotification("Welcome back to LooperLands!");
                     self.storage.setPlayerName(name);
                 }
         
