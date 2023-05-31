@@ -491,6 +491,9 @@ module.exports = Player = Character.extend({
                 playerCache.xp = e;
                 _this.server.server.cache.set(_this.sessionId, playerCache);
             });
+        } else {
+            console.error(this.name, "Invalid level calculation", playerCache);
+            return this.level;
         }
         
         let level = Formulas.level(playerCache.xp);
