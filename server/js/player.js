@@ -486,7 +486,7 @@ module.exports = Player = Character.extend({
                 console.log("XP is NaN in getLevel", this.name, playerCache)
                 _this = this;
                 dao.loadExperience(playerCache.walletId, playerCache.nftId).then(function(e){
-                    console.log("Experience from load experience", e);
+                    console.log("Experience from load experience", e, playerCache);
                     playerCache.xp = e;
                     _this.server.server.cache.set(_this.sessionId, playerCache);
                 });
@@ -495,9 +495,11 @@ module.exports = Player = Character.extend({
             let level = Formulas.level(playerCache.xp);
 
             if (!Number.isNaN(level)) {
+                this.level = level;
                 return level;
             } else {
                 console.error(this.name, "Invalid level calculation", playerCache);
+                return this.level;
             }
         }
         return NaN;
