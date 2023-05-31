@@ -479,29 +479,26 @@ module.exports = Player = Character.extend({
         return;
     },
     getLevel: function(){
-        for (let i = 0; i < 10; i++) {
-            let playerCache = this.server.server.cache.get(this.sessionId);
+        let playerCache = this.server.server.cache.get(this.sessionId);
 
-            if (Number.isNaN(playerCache.xp)) {
-                console.log("XP is NaN in getLevel", this.name, playerCache)
-                _this = this;
-                dao.loadExperience(playerCache.walletId, playerCache.nftId).then(function(e){
-                    console.log("Experience from load experience", e, playerCache);
-                    playerCache.xp = e;
-                    _this.server.server.cache.set(_this.sessionId, playerCache);
-                });
-            }
-            
-            let level = Formulas.level(playerCache.xp);
-
-            if (!Number.isNaN(level)) {
-                this.level = level;
-                return level;
-            } else {
-                console.error(this.name, "Invalid level calculation", playerCache);
-                return this.level;
-            }
+        if (Number.isNaN(playerCache.xp)) {
+            console.log("XP is NaN in getLevel", this.name, playerCache)
+            _this = this;
+            dao.loadExperience(playerCache.walletId, playerCache.nftId).then(function(e){
+                console.log("Experience from load experience", e, playerCache);
+                playerCache.xp = e;
+                _this.server.server.cache.set(_this.sessionId, playerCache);
+            });
         }
-        return NaN;
+        
+        let level = Formulas.level(playerCache.xp);
+
+        if (!Number.isNaN(level)) {
+            this.level = level;
+            return level;
+        } else {
+            console.error(this.name, "Invalid level calculation", playerCache);
+            return this.level;
+        }
     }
 });
