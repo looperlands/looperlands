@@ -2528,19 +2528,26 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             axios.get("/session/" + this.sessionId + "/statistics").then(function(response){
                 if (response.data !== null && response.data !== undefined) {
                     console.log("Statistics", response.data);
+
+                    level = response.data.levelInfo.currentLevel;
+                    percentage = response.data.levelInfo.percentage;
+
+                    if (!level || Number.isNaN(level) || !percentage || Number.isNaN(percentage)) {
+                        console.error("Invalid level or percentage");
+                        return;
+                    }
+
                     if (self.player.level == null) {
-                        self.player.level = response.data.levelInfo.currentLevel;
+                        self.player.level = level;
                     }
                     
-                    var levelInfoHTML = "Level: " + response.data.levelInfo.currentLevel + " ";
-                    let percentage = response.data.levelInfo.percentage;
-                    if (percentage !== null && percentage !== undefined) {
-                        levelInfoHTML+=response.data.levelInfo.percentage + "%";
-                    }
+                    
+                    var levelInfoHTML = "Level: " + level + " ";
+                    levelInfoHTML+=percentage + "%";
 
                     $("#levelInfo").html(levelInfoHTML);
 
-                    if (self.player.level !== response.data.levelInfo.currentLevel) {
+                    if (self.player.level !== level) {
                         console.log("LEVEL UP");
                     }
                 }
