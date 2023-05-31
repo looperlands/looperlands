@@ -1975,6 +1975,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             
             if(pos.x === this.previousClickPosition.x
             && pos.y === this.previousClickPosition.y) {
+                this.previousClickPosition = {};
                 return;
             } else {
                 this.previousClickPosition = pos;
