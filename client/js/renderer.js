@@ -230,6 +230,9 @@ function(Camera, Item, Character, Player, Timer) {
         },
 
         drawSelectedCell: function() {
+            if (this.game.keyboardMovement === true) {
+                return;
+            }
             var sprite = this.game.cursors["target"],
                 anim = this.game.targetAnimation,
                 os = this.upscaledRendering ? 1 : this.scale,
