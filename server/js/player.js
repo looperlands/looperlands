@@ -140,6 +140,7 @@ module.exports = Player = Character.extend({
             }
             else if(action === Types.Messages.ATTACK) {
                 var mob = self.server.getEntityById(message[1]);
+                console.log(self.name + "attacking " + mob.id);
                 if(mob) {
                     self.setTarget(mob);
                     self.server.broadcastAttacker(self);
