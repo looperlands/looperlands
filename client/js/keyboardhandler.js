@@ -32,27 +32,22 @@ class KeyBoardHandler {
 
     handleMovement() {
         console.log(this.game.player);
+        if (this.game.player.path != null || $('#chatbox').hasClass("active")) {
+            return;
+        }
         var x = this.game.player.gridX;
         var y = this.game.player.gridY;
         if (this.keys.w) {
-            console.log("Moving forward");
-            this.game.makePlayerGoTo(x, y-1);
-            // Add your code here for moving forward
+            this.game.click({x: x, y: y-1, keyboard: true});
         }
         if (this.keys.a) {
-            console.log("Moving left");
-            this.game.makePlayerGoTo(x-1, y);
-            // Add your code here for moving left
+            this.game.click({x: x-1, y: y, keyboard: true});
         }
         if (this.keys.s) {
-            console.log("Moving backward");
-            this.game.makePlayerGoTo(x, y+1);
-            // Add your code here for moving backward
+            this.game.click({x: x, y: y+1, keyboard: true});
         }
         if (this.keys.d) {
-            console.log("Moving right");
-            this.game.makePlayerGoTo(x+1, y);
-            // Add your code here for moving right
+            this.game.click({x: x+1, y: y, keyboard: true});
         }
     }
 }

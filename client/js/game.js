@@ -1972,9 +1972,17 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         /**
          * Processes game logic when the user triggers a click/touch event during the game.
          */
-        click: function() {
-            var pos = this.getMouseGridPosition(),
-                entity;
+        click: function(pos) {
+            if (pos === undefined) {
+                pos = this.getMouseGridPosition();
+            }
+            var entity;
+
+            if (pos.keyboard) {
+                this.keyboardMovement = true;
+            } else {
+                this.keyboardMovement = false;
+            }
             
             if(pos.x === this.previousClickPosition.x
             && pos.y === this.previousClickPosition.y) {
