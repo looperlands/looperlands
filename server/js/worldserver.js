@@ -584,14 +584,20 @@ module.exports = World = cls.Class.extend({
         let currentLevel = Formulas.level(session.xp);
 
         let updatedXp = await dao.updateExperience(session.walletId, session.nftId, xp);
-        session.xp = updatedXp;
-        this.server.cache.set(player.sessionId, session);
-        updatedLevel = Formulas.level(updatedXp);
-        if (currentLevel < updatedLevel) {
-            let message = `${player.name} advanced to level ${updatedLevel}`;
-            discord.sendMessage(message);
-            player.updateHitPoints();
+        if (!Number.isNaN(updatedXp)) {
+            session.xp = updatedXp;
+            this.server.cache.set(player.sessionId, session);
+            updatedLevel = Formulas.level(updatedXp);
+            player.level = updatedLevel;
+            if (currentLevel < updatedLevel) {
+                let message = `${player.name} advanced to level ${updatedLevel}`;
+                discord.sendMessage(message);
+                player.updateHitPoints();
+            }
+        } else {
+            console.error("Updated experience is NaN", player.name, session);
         }
+
     },
     
     despawn: function(entity) {

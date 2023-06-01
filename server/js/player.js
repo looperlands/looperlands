@@ -9,6 +9,7 @@ var cls = require("./lib/class"),
     Types = require("../../shared/js/gametypes"),
     dao = require('./dao.js');
 
+const { ThreadMemberFlagsBitField } = require("discord.js");
 const discord = require('./discord.js');    
 const axios = require('axios');
 const LOOPWORMS_LOOPQUEST_BASE_URL = process.env.LOOPWORMS_LOOPQUEST_BASE_URL;
@@ -74,6 +75,7 @@ module.exports = Player = Character.extend({
                 playerCache.isDirty = true;
                 self.server.server.cache.set(self.sessionId, playerCache);
                 self.title = playerCache.title;
+                self.level = Formulas.level(playerCache.xp);
                 self.updateHitPoints();
                 self.send([Types.Messages.WELCOME, self.id, self.name, self.x, self.y, self.hitPoints, self.title]);
                 self.hasEnteredGame = true;
@@ -481,26 +483,6 @@ module.exports = Player = Character.extend({
         return;
     },
     getLevel: function(){
-        let playerCache = this.server.server.cache.get(this.sessionId);
-
-        if (Number.isNaN(playerCache.xp)) {
-            console.log("XP is NaN in getLevel", this.name, playerCache)
-            _this = this;
-            dao.loadExperience(playerCache.walletId, playerCache.nftId).then(function(e){
-                console.log("Experience from load experience", e, playerCache);
-                playerCache.xp = e;
-                _this.server.server.cache.set(_this.sessionId, playerCache);
-            });
-        }
-        
-        let level = Formulas.level(playerCache.xp);
-
-        if (!Number.isNaN(level)) {
-            this.level = level;
-            return level;
-        } else {
-            console.error(this.name, "Invalid level calculation", playerCache);
-            return this.level;
-        }
+        return this.level;
     }
 });
