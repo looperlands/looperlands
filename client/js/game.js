@@ -900,7 +900,9 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                         if(attacker.isAdjacent(attacker.target)) {
                             attacker.lookAtTarget();
                         } else {
-                            attacker.follow(self.player);
+                            if (!(attacker instanceof Player)) {
+                                attacker.follow(self.player);
+                            }
                         }
                     });
                 
@@ -1060,7 +1062,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     }
                     
                     self.player.forEachAttacker(function(attacker) {
-                        if(!attacker.isAdjacentNonDiagonal(self.player)) {
+                        if(!attacker.isAdjacentNonDiagonal(self.player) && !(attacker instanceof Player)) {
                             attacker.follow(self.player);
                         }
                     });
@@ -1668,6 +1670,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
          * 
          */
         makePlayerAttack: function(mob) {
+            this.player.disengage();
             this.createAttackLink(this.player, mob);
             this.client.sendAttack(mob);
         },

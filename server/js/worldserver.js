@@ -133,7 +133,7 @@ module.exports = World = cls.Class.extend({
         this.onEntityAttack(function(attacker) {
             var target = self.getEntityById(attacker.target);
             console.log("Attacking target ", attacker.name, attacker.target);
-            if(target && attacker.type === "mob") {
+            if(target) {
                 var pos = self.findPositionNextTo(attacker, target);
                 self.moveEntity(attacker, pos.x, pos.y);
             }
@@ -529,7 +529,6 @@ module.exports = World = cls.Class.extend({
     
     broadcastAttacker: function(character) {
         if(character) {
-            console.log("Push to adjacent Groups", character.group, character.attack(), character.id);
             this.pushToAdjacentGroups(character.group, character.attack(), character.id);
         }
         if(this.attack_callback) {
