@@ -490,10 +490,6 @@ module.exports = World = cls.Class.extend({
     },
     
     chooseMobTarget: function(mob, hateRank) {
-        if (mob instanceof Player) {
-            this.broadcastAttacker(mob);
-            return;
-        }
         var player = this.getEntityById(mob.getHatedPlayerId(hateRank));
         
         // If the mob is not already attacking the player, create an attack link between them.
