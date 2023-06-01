@@ -1997,8 +1997,8 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
     	    && !this.isZoning()
     	    && !this.isZoningTile(this.player.nextGridX, this.player.nextGridY)
     	    && !this.player.isDead
-    	    && !this.hoveringCollidingTile
-    	    && !this.hoveringPlateauTile
+    	    && (!this.hoveringCollidingTile || pos.keyboard)
+    	    && (!this.hoveringPlateauTile || pos.keyboard)
             && !(this.tokengating === true)) {
         	    entity = this.getEntityAt(pos.x, pos.y);
     	    
