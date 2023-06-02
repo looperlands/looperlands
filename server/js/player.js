@@ -73,6 +73,7 @@ module.exports = Player = Character.extend({
 
                 let playerCache = self.server.server.cache.get(self.sessionId);
                 playerCache.isDirty = true;
+                playerCache.entityId = self.id;
                 self.server.server.cache.set(self.sessionId, playerCache);
                 self.title = playerCache.title;
                 self.level = Formulas.level(playerCache.xp);

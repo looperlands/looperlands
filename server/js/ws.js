@@ -295,6 +295,15 @@ WS.socketIOServer = Server.extend({
             }
         });
 
+        app.get("/session/:sessionId/hp", async(req, res) => {
+            const sessionId = req.params.sessionId;
+            const sessionData = cache.get(sessionId);
+
+            const playerId = sessionData.entityId;
+            let ret = self.worldserver.getHpForCharactersInPlayerGroup(playerId);
+            res.status(200).json(ret);
+        });
+
 
         self.io.on('connection', function(connection){
           console.log('a user connected');
