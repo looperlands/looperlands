@@ -60,7 +60,7 @@ getCharacterData = async function (wallet, nft, retry) {
       }
       retry -= 1;
       if (retry > 0) {
-        getCharacterData(walletId, nftId, xp, retry);
+        getCharacterData(wallet, nft, xp, retry);
       }
     }
     return parsedSaveData;
