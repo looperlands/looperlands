@@ -1672,6 +1672,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
          * 
          */
         makePlayerAttack: function(mob) {
+            this.player.previousTarget = null;
             this.player.disengage();
             this.createAttackLink(this.player, mob);
             this.client.sendAttack(mob);
@@ -2011,7 +2012,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     var pvpZone = {top: {x: 0, y: 316}, bottom: {x: 92, y: 369}}
                     var inPvpZone = entity.gridX > pvpZone.top.x && entity.gridX < pvpZone.bottom.x && entity.gridY > pvpZone.top.y && entity.gridY < pvpZone.bottom.y;
                     if (inPvpZone) {
-                        this.player.previousTarget = null;
                         this.makePlayerAttack(entity);
                     }
                 }
