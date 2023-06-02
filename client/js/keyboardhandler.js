@@ -31,7 +31,6 @@ class KeyBoardHandler {
     }
 
     handleMovement() {
-        console.log(this.game.player);
         if (this.game.player.path != null || $('#chatbox').hasClass("active")) {
             return;
         }
