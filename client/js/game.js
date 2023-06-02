@@ -875,6 +875,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 });
             
                 self.player.onAggro(function(mob) {
+                    self.updateEntitiesHP();
                     if(!mob.isWaitingToAttack(self.player) && !self.player.isAttackedBy(mob)) {
                         self.player.log_info("Aggroed by " + mob.id + " at ("+self.player.gridX+", "+self.player.gridY+")");
                         self.client.sendAggro(mob);
@@ -1167,8 +1168,14 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 entity.setGridPosition(x, y);
                                 entity.setOrientation(orientation);
                                 entity.idle();
+                                if (entity.name === undefined) {
+                                    entity.name = entity.normalSprite.name;
+                                    entity.name.replace(/[0-9]+/, "");
+                                }                                
 
                                 self.addEntity(entity);
+                                self.updateEntitiesHP();
+
                         
                                 console.debug("Spawned " + Types.getKindAsString(entity.kind) + " (" + entity.id + ") at "+entity.gridX+", "+entity.gridY);
                         
@@ -1381,6 +1388,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 });
             
                 self.client.onEntityAttack(function(attackerId, targetId) {
+                    self.updateEntitiesHP();
                     var attacker = self.getEntityById(attackerId),
                         target = self.getEntityById(targetId);
                 
@@ -1398,14 +1406,15 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 });
             
                 self.client.onPlayerDamageMob(function(mobId, points) {
+                    self.updateEntitiesHP();
                     var mob = self.getEntityById(mobId);
-                    console.log("Mob ID + ", mob)
                     if(mob && points) {
                         self.infoManager.addDamageInfo(points, mob.x, mob.y - 15, "inflicted");
                     }
                 });
             
                 self.client.onPlayerKillMob(function(kind) {
+                    self.updateEntitiesHP();
                     var mobName = Types.getKindAsString(kind);
 
                     self.renderStatistics();
@@ -1451,6 +1460,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 });
             
                 self.client.onPlayerChangeHealth(function(points, isRegen) {
+                    self.updateEntitiesHP();
                     var player = self.player,
                         diff,
                         isHurt;
@@ -1483,6 +1493,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     self.player.maxHitPoints = hp;
                     self.player.hitPoints = hp;
                     self.updateBars();
+                    self.updateEntitiesHP();
                 });
             
                 self.client.onPlayerEquipItem(function(playerId, itemKind) {
@@ -1677,6 +1688,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             this.player.disengage();
             this.createAttackLink(this.player, mob);
             this.client.sendAttack(mob);
+            self.updateEntitiesHP();
         },
     
         /**
@@ -2544,7 +2556,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             self = this;
             axios.get("/session/" + this.sessionId + "/statistics").then(function(response){
                 if (response.data !== null && response.data !== undefined) {
-                    console.log("Statistics", response.data);
 
                     level = response.data.levelInfo.currentLevel;
                     percentage = response.data.levelInfo.percentage;
@@ -2571,6 +2582,39 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             }).catch(function (error) {
                 console.error("Error while getting updated level", error);
             });            
+        },
+
+        updateEntitiesHP: function () {
+            self = this;
+
+            now = new Date().getTime();
+
+            if (self.lastHPCall !== undefined) {
+                if (now - self.lastHPCall < 250) {
+                    return;
+                }
+            }
+            self.lastHPCall = now;
+
+            axios.get("/session/" + self.sessionId + "/hp").then(function (response) {
+                if (response.data !== null && response.data !== undefined) {
+                    console.log("Entity HP", response.data);
+
+                    Object.keys(response.data).forEach(function (id) {
+                        toUpdateEntity = response.data[id];
+                        if (self.entities[id] !== undefined) {
+                            self.entities[id].hitPoints = toUpdateEntity.hitPoints;
+                            self.entities[id].maxHitPoints = toUpdateEntity.maxHitPoints;
+                        } else {
+                            console.debug("Unknown entity " + id);
+                        }
+                    });
+                }
+            }).catch(function (error) {
+                console.error("Error while getting entity hp info", error);
+            }).finally(function(e){
+                self.updateEntitiesHPFlag = false;
+            })
         }
     });
     

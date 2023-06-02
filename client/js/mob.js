@@ -7,6 +7,8 @@ define(['character'], function(Character) {
         
             this.aggroRange = 1;
             this.isAggressive = true;
+
+            this.nameOffsetY = -10;
         }
     });
     

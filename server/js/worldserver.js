@@ -893,5 +893,23 @@ module.exports = World = cls.Class.extend({
         
         console.log("Updating population: " + this.playerCount + " " + totalPlayers)
         this.pushBroadcast(new Messages.Population(this.playerCount, totalPlayers));
+    },
+
+    getHpForCharactersInPlayerGroup: function(playerId) {
+        const player = this.getEntityById(playerId);
+        const group = this.groups[player.group];
+        let entityIds = Object.keys(group.entities);
+        
+        let ret = {}
+        entityIds.forEach(function(id) {
+            let entity = group.entities[id];
+            if (entity.type === 'mob' || entity.type === 'player') {
+                ret[id] = {
+                    maxHitPoints: entity.maxHitPoints,
+                    hitPoints: entity.hitPoints
+                } 
+            }
+        });
+        return ret;
     }
 });

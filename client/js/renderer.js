@@ -1,6 +1,6 @@
 
-define(['camera', 'item', 'character', 'player', 'timer'], 
-function(Camera, Item, Character, Player, Timer) {
+define(['camera', 'item', 'character', 'player', 'timer', 'mob'], 
+function(Camera, Item, Character, Player, Timer, Mob) {
 
     var Renderer = Class.extend({
         init: function(game, canvas, background, foreground) {
@@ -350,7 +350,7 @@ function(Camera, Item, Character, Player, Timer) {
                     this.context.globalAlpha = entity.fadingAlpha;
                 }
             
-                this.drawEntityName(entity);
+                this.drawEntityName(entity, sprite.offsetY);
                 
                 this.context.save();
                 if(entity.flipSpriteX) {
@@ -547,13 +547,13 @@ function(Camera, Item, Character, Player, Timer) {
                      (rect2.bottom < rect1.top));
         },
         
-        drawEntityName: function(entity) {
+        drawEntityName: function(entity, oy) {
             this.context.save();
-            if(entity.name && entity instanceof Player) {
-                var color = (entity.id === this.game.playerId) ? "#fcda5c" : "white";
+            if(entity.name && (entity instanceof Player || entity instanceof Mob)) {
+                var color = (entity.id === this.game.playerId) ? "#fcda5c" : this.getHpIndicatorColor(entity);
                 this.drawText(entity.name,
                               (entity.x + 8) * this.scale,
-                              (entity.y + entity.nameOffsetY) * this.scale,
+                              (entity.y + oy) * this.scale,
                               true,
                               color);
                 if (entity.title !== undefined) {
@@ -561,6 +561,30 @@ function(Camera, Item, Character, Player, Timer) {
                 }
             }
             this.context.restore();
+        },
+        
+        getHpIndicatorColor: function(entity) {
+            if (entity.maxHitPoints !== undefined && entity.hitPoints !== undefined) {
+                lifePercentage = entity.hitPoints/entity.maxHitPoints * 100;
+
+                if (lifePercentage >= 95) {
+                    return "green";
+                } else if (lifePercentage >= 90) {
+                    return "forestgreen";
+                } else if (lifePercentage >= 80) {
+                    return "greenyellow"
+                } else if (lifePercentage >= 50) {
+                    return "yellow";
+                } else if (lifePercentage >= 25) {
+                    return "orange";
+                } else if (lifePercentage >= 10) {
+                    return "orangered";
+                } else if (lifePercentage >= 5) {
+                    return "red";
+                } else if (lifePercentage >= 0) {
+                    return "black";
+                }
+            }
         },
 
         drawTerrain: function() {

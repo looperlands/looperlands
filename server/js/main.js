@@ -76,6 +76,7 @@ function main(config) {
 
     _.each(_.range(config.nb_worlds), function(i) {
         var world = new WorldServer('world'+ (i+1), config.nb_players_per_world, server);
+        server.worldserver = world;
         world.run(config.map_filepath);
         worlds.push(world);
         if(metrics) {
