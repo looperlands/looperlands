@@ -2004,6 +2004,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             && !(this.tokengating === true)) {
         	    entity = this.getEntityAt(pos.x, pos.y);
     	    
+                this.player.previousTarget = null;
         	    if(entity instanceof Mob) {
         	        this.makePlayerAttack(entity);
                 } else if (entity instanceof Player) {
