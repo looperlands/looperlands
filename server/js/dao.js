@@ -2,7 +2,7 @@ const LOOPWORMS_LOOPQUEST_BASE_URL = process.env.LOOPWORMS_LOOPQUEST_BASE_URL;
 const API_KEY = process.env.LOOPWORMS_API_KEY;
 const axios = require('axios');
 
-const EXP_UPDATE_RETRIES = 5;
+const MAX_RETRY_COUNT = 5;
 
 updateExperience = async function (walletId, nftId, xp, retry) {
   const options = {
@@ -16,7 +16,7 @@ updateExperience = async function (walletId, nftId, xp, retry) {
   if (Number.isNaN(updatedXp)) {
     console.error("Error updating experience", walletId, nftId, xp, responseData.data);
     if (retry === undefined) {
-      retry = EXP_UPDATE_RETRIES;
+      retry = MAX_RETRY_COUNT;
     }
     retry -= 1;
     if (retry > 0) {
@@ -39,7 +39,7 @@ loadExperience = async function (walletId, nftId) {
   return xp;
 }
 
-getCharacterData = async function (wallet, nft) {
+getCharacterData = async function (wallet, nft, retry) {
   const options = {
     method: 'POST',
     headers: {
@@ -55,6 +55,13 @@ getCharacterData = async function (wallet, nft) {
       parsedSaveData = JSON.parse(responseData.data[1]);
     } catch (error) {
       console.error("Error parsing save data ", error, responseData.data);
+      if (retry === undefined) {
+        retry = MAX_RETRY_COUNT;
+      }
+      retry -= 1;
+      if (retry > 0) {
+        getCharacterData(walletId, nftId, xp, retry);
+      }
     }
     return parsedSaveData;
   } catch (error) {
