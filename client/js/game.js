@@ -2004,13 +2004,14 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             && !(this.tokengating === true)) {
         	    entity = this.getEntityAt(pos.x, pos.y);
     	    
-                this.player.previousTarget = null;
+
         	    if(entity instanceof Mob) {
         	        this.makePlayerAttack(entity);
                 } else if (entity instanceof Player) {
                     var pvpZone = {top: {x: 0, y: 316}, bottom: {x: 92, y: 369}}
                     var inPvpZone = entity.gridX > pvpZone.top.x && entity.gridX < pvpZone.bottom.x && entity.gridY > pvpZone.top.y && entity.gridY < pvpZone.bottom.y;
                     if (inPvpZone) {
+                        this.player.previousTarget = null;
                         this.makePlayerAttack(entity);
                     }
                 }
