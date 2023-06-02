@@ -52,7 +52,9 @@ getCharacterData = async function (wallet, nft, retry) {
 
     let parsedSaveData;
     try {
-      parsedSaveData = JSON.parse(responseData.data[1]);
+      if (responseData[1] !== '') {
+        parsedSaveData = JSON.parse(responseData.data[1]);
+      }
     } catch (error) {
       console.error("Error parsing save data ", error, responseData.data);
       if (retry === undefined) {
