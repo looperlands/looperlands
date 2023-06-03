@@ -246,7 +246,7 @@ WS.socketIOServer = Server.extend({
             const sessionData = cache.get(sessionId);
             const walletId = sessionData.walletId;
 
-            const inventory = await axios.get(`${LOOPWORMS_LOOPERLANDS_BASE_URL}/selectLoopQuest_Item.php?WalletID=${walletId}&APIKEY=${process.env.LOOPWORMS_API_KEY}`);
+            const inventory = await axios.get(`${LOOPWORMS_LOOPERLANDS_BASE_URL}/selectLooperLands_Item.php?WalletID=${walletId}&APIKEY=${process.env.LOOPWORMS_API_KEY}`);
             res.status(200).json(inventory.data);
         });
 
