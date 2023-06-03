@@ -167,7 +167,7 @@ WS.socketIOServer = Server.extend({
                 // this prevents failed logins not being able to login again
                 body.isDirty = false;
                 console.log("New Session", id, body);
-                cache.set(id, body, 60 * 60 * 24);
+                cache.set(id, body);
                 let responseJson = {
                     "sessionId" : id
                 }
@@ -271,8 +271,6 @@ WS.socketIOServer = Server.extend({
             
         });
         
-        
-
         app.get("/session/:sessionId/statistics", async (req, res) => {
             const sessionId = req.params.sessionId;
             const nftId = req.params.nftId;
