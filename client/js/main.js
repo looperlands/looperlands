@@ -98,8 +98,10 @@ define(['jquery', 'app'], function($, App) {
                         context.fillText('Peteszah - Community Growth',100,290+namesPosition);
                         context.fillText('izitnu - Technical Documentation',100,320+namesPosition);
                         context.fillText('ADammmHill - Tester',100,350+namesPosition);
+                        context.fillText('Oracle - Hype Queen',100,380+namesPosition);
+                        context.fillText('WizKing - Artist Tester',100,410+namesPosition);
                         context.closePath();
-                        if(namesPosition <= -380){
+                        if(namesPosition <= -440){
                             namesPosition = -50;
                         }
                     },62);                    
