@@ -284,6 +284,7 @@ module.exports = Player = Character.extend({
                     self.message_callback(message);
                 }
             }
+            self.pushRelevantEntityListTo(player);
         });
         
         this.connection.onClose(function() {
