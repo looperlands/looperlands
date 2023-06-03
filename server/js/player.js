@@ -117,6 +117,7 @@ module.exports = Player = Character.extend({
                         
                         self.broadcast(new Messages.Move(self));
                         self.move_callback(self.x, self.y);
+                        self.pushRelevantEntityListTo(player);
                     }
                 }
             }
@@ -136,6 +137,7 @@ module.exports = Player = Character.extend({
             else if(action === Types.Messages.AGGRO) {
                 if(self.move_callback) {
                     self.server.handleMobHate(message[1], self.id, 5);
+                    self.pushRelevantEntityListTo(player);
                 }
             }
             else if(action === Types.Messages.ATTACK) {
@@ -143,6 +145,7 @@ module.exports = Player = Character.extend({
                 if(mob) {
                     self.setTarget(mob);
                     self.server.broadcastAttacker(self);
+                    self.pushRelevantEntityListTo(player);
                 }
             }
             else if(action === Types.Messages.HIT) {
@@ -210,6 +213,7 @@ module.exports = Player = Character.extend({
                             self.broadcast(self.equip(kind));
                         }
                     }
+                    self.pushRelevantEntityListTo(player);
                 }
             } else if (action === Types.Messages.EQUIP_INVENTORY) {
                 let playerCache = self.server.server.cache.get(self.sessionId);
@@ -271,6 +275,7 @@ module.exports = Player = Character.extend({
                 var chest = self.server.getEntityById(message[1]);
                 if(chest && chest instanceof Chest) {
                     self.server.handleOpenedChest(chest, self);
+                    self.pushRelevantEntityListTo(player);
                 }
             }
             else if(action === Types.Messages.CHECK) {
@@ -284,7 +289,6 @@ module.exports = Player = Character.extend({
                     self.message_callback(message);
                 }
             }
-            self.pushRelevantEntityListTo(player);
         });
         
         this.connection.onClose(function() {
