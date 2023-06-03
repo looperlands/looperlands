@@ -22,7 +22,7 @@ const ens = require("./ens.js");
 
 const cache = new NodeCache();
 
-const LOOPWORMS_LOOPQUEST_BASE_URL = process.env.LOOPWORMS_LOOPQUEST_BASE_URL;
+const LOOPWORMS_LOOPERLANDS_BASE_URL = process.env.LOOPWORMS_LOOPERLANDS_BASE_URL;
 
 /**
  * Abstract Server and Connection classes
@@ -201,7 +201,7 @@ WS.socketIOServer = Server.extend({
             if (parsedSaveData === undefined) {
                 console.log("Save data is undefined, creating new save data for " + name);
                 parsedSaveData = {
-                    loopquest: true,
+                    looperlands: true,
                     nftId: nftId,
                     walletId: walletId,
                     hasAlreadyPlayed: false,
@@ -246,7 +246,7 @@ WS.socketIOServer = Server.extend({
             const sessionData = cache.get(sessionId);
             const walletId = sessionData.walletId;
 
-            const inventory = await axios.get(`${LOOPWORMS_LOOPQUEST_BASE_URL}/selectLoopQuest_Item.php?WalletID=${walletId}&APIKEY=${process.env.LOOPWORMS_API_KEY}`);
+            const inventory = await axios.get(`${LOOPWORMS_LOOPERLANDS_BASE_URL}/selectLooperLands_Item.php?WalletID=${walletId}&APIKEY=${process.env.LOOPWORMS_API_KEY}`);
             res.status(200).json(inventory.data);
         });
 
@@ -263,7 +263,7 @@ WS.socketIOServer = Server.extend({
                 });
             } else {
                 const walletId = sessionData.walletId;
-                let url = `${LOOPWORMS_LOOPQUEST_BASE_URL}/AssetValidation.php?WalletID=${walletId}&NFTID=${nftId}`
+                let url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/AssetValidation.php?WalletID=${walletId}&NFTID=${nftId}`
                 console.log(url);
                 const result = await axios.get(url);
                 res.status(200).json(result.data);

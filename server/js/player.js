@@ -12,7 +12,7 @@ var cls = require("./lib/class"),
 const { ThreadMemberFlagsBitField } = require("discord.js");
 const discord = require('./discord.js');    
 const axios = require('axios');
-const LOOPWORMS_LOOPQUEST_BASE_URL = process.env.LOOPWORMS_LOOPQUEST_BASE_URL;
+const LOOPWORMS_LOOPERLANDS_BASE_URL = process.env.LOOPWORMS_LOOPERLANDS_BASE_URL;
 
 module.exports = Player = Character.extend({
     init: function(connection, worldServer) {
@@ -215,7 +215,7 @@ module.exports = Player = Character.extend({
                 let playerCache = self.server.server.cache.get(self.sessionId);
                 let _self = self;
                 let nftId = message[2];
-                let url = `${LOOPWORMS_LOOPQUEST_BASE_URL}/AssetValidation.php?WalletID=${playerCache.walletId}&NFTID=${nftId}`;
+                let url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/AssetValidation.php?WalletID=${playerCache.walletId}&NFTID=${nftId}`;
                 axios.get(url).then(function (response) {
                     if (response.data === true) {
                         item = {kind: message[1]};
@@ -251,7 +251,7 @@ module.exports = Player = Character.extend({
                 }
                 if (requiredNft !== undefined) {
                     let playerCache = self.server.server.cache.get(self.sessionId);
-                    let url = `${LOOPWORMS_LOOPQUEST_BASE_URL}/AssetValidation.php?WalletID=${playerCache.walletId}&NFTID=${requiredNft}`;
+                    let url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/AssetValidation.php?WalletID=${playerCache.walletId}&NFTID=${requiredNft}`;
                     axios.get(url).then(function (response) {
                         if (response.data === true) {
                             teleport();

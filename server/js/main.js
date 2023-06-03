@@ -34,7 +34,7 @@ function main(config) {
             log = new Log(console.log); break;
     };
     
-    console.log("Starting LoopQuest game server...");
+    console.log("Starting LOOPERLANDS game server...");
     
     server.onConnect(function(connection) {
         var world, // the one in which the player will be spawned
