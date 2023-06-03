@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Script to generate an optimized client build of LoopQuest
+# Script to generate an optimized client build of LOOPERLANDS
 
 BUILDDIR="../client-build"
 PROJECTDIR="../client/js"

@@ -1,4 +1,4 @@
-LoopQuest map exporter
+LOOPERLANDS map exporter
 =========================
 
 ***Disclaimer: due to popular demand we are open sourcing this tool, but please be aware that it was never meant to be publicly released. Therefore the code is messy/non-optimized and the exporting process can be very slow with large map files.***
@@ -11,7 +11,7 @@ Install the Tiled editor: http://www.mapeditor.org/
 
 Open the `tmx/map.tmx` file in Tiled and start editing.
 
-**Note:** there currently is no documentation on how to edit LoopQuest-specific objects/layers in Tiled. Please refer to `tmx/map.tmx` as an example if you want to create your own map.
+**Note:** there currently is no documentation on how to edit LOOPERLANDS-specific objects/layers in Tiled. Please refer to `tmx/map.tmx` as an example if you want to create your own map.
 
 
 Using the exporter
@@ -75,9 +75,9 @@ Here are a few ideas for anyone who might want to help make this tool better:
 
 - Write documentation on how to use the exporter on Windows.
 
-- Write documentation about map editing in the Tiled editor (ie. editing LoopQuest-specific properties of doors, chests, spawning areas, etc.)
+- Write documentation about map editing in the Tiled editor (ie. editing LOOPERLANDS-specific properties of doors, chests, spawning areas, etc.)
 
-- Write documentation about the LoopQuest map JSON format, both for client and server map types.
+- Write documentation about the LOOPERLANDS map JSON format, both for client and server map types.
 
 - Get rid of the `tmx2json.py` step which can currently take up to several minutes. Note: There is a JSON exporter built in Tiled since version 0.8.0 which could be useful. We didn't use it because our tool was written before the 0.8.0 release.
 

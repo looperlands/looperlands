@@ -1,4 +1,4 @@
-const LOOPWORMS_LOOPQUEST_BASE_URL = process.env.LOOPWORMS_LOOPQUEST_BASE_URL;
+const LOOPWORMS_LOOPERLANDS_BASE_URL = process.env.LOOPWORMS_LOOPERLANDS_BASE_URL;
 const API_KEY = process.env.LOOPWORMS_API_KEY;
 const axios = require('axios');
 
@@ -10,7 +10,7 @@ updateExperience = async function (walletId, nftId, xp, retry) {
       'X-Api-Key': API_KEY
     },
   };
-  let url = `${LOOPWORMS_LOOPQUEST_BASE_URL}/SaveExperience.php?WalletID=${walletId}&NFTID=${nftId}&Experience=${xp}`;
+  let url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/SaveExperience.php?WalletID=${walletId}&NFTID=${nftId}&Experience=${xp}`;
   const responseData = await axios.get(url, options);
   const updatedXp = parseInt(responseData.data);
   if (Number.isNaN(updatedXp)) {
@@ -26,14 +26,13 @@ updateExperience = async function (walletId, nftId, xp, retry) {
   return updatedXp;
 }
 
-//https://loopworms.io/DEV/LoopQuest/LoadExperience.php?WalletID=0x4e8b18c394b2b49ef694d63d406411051bbd5d1b&NFTID=0xd2fb1ad9308803ea4df2ba6b1fe0930ad4d6443b3ac6468eaedbc9e2c214e57a
 loadExperience = async function (walletId, nftId) {
   const options = {
     headers: {
       'X-Api-Key': API_KEY
     },
   };
-  let url = `${LOOPWORMS_LOOPQUEST_BASE_URL}/LoadExperience.php?WalletID=${walletId}&NFTID=${nftId}`;
+  let url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/LoadExperience.php?WalletID=${walletId}&NFTID=${nftId}`;
   const responseData = await axios.get(url, options);
   const xp = parseInt(responseData.data);
   return xp;
@@ -47,7 +46,7 @@ getCharacterData = async function (wallet, nft, retry) {
     },
   };
   try {
-    const responseData = await axios.get(`${LOOPWORMS_LOOPQUEST_BASE_URL}/Load.php?NFTID=${nft}&WalletID=${wallet}`, options);
+    const responseData = await axios.get(`${LOOPWORMS_LOOPERLANDS_BASE_URL}/Load.php?NFTID=${nft}&WalletID=${wallet}`, options);
     //console.log("ResponseData from Loopworms: ", responseData.status, responseData.text, responseData.data);
 
     let parsedSaveData;
@@ -81,7 +80,7 @@ saveCharacterData = async function (wallet, nft, saveGame) {
     }
   };
   try {
-    const url = `${LOOPWORMS_LOOPQUEST_BASE_URL}/Save.php?NFTID=${nft}&WalletID=${wallet}`
+    const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/Save.php?NFTID=${nft}&WalletID=${wallet}`
     const responseData = await axios.post(url, saveGame, options);
     //console.log("ResponseData from Loopworms: ", responseData.status, responseData.text, responseData.data);
     return responseData.data;
@@ -100,7 +99,7 @@ saveWeapon = async function (wallet, nft, weaponName) {
     }
   };
   try {
-    const url = `${LOOPWORMS_LOOPQUEST_BASE_URL}/SaveWeapon.php?NFTID=${nft}&WalletID=${wallet}`
+    const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/SaveWeapon.php?NFTID=${nft}&WalletID=${wallet}`
     const responseData = await axios.post(url, weaponName, options);
     //console.log("ResponseData from Loopworms: ", responseData.status, responseData.text, responseData.data);
     return responseData.data;
@@ -119,7 +118,7 @@ loadWeapon = async function (wallet, nft) {
     },
   };
   try {
-    const responseData = await axios.get(`${LOOPWORMS_LOOPQUEST_BASE_URL}/LoadWeapon.php?NFTID=${nft}&WalletID=${wallet}`, options);
+    const responseData = await axios.get(`${LOOPWORMS_LOOPERLANDS_BASE_URL}/LoadWeapon.php?NFTID=${nft}&WalletID=${wallet}`, options);
     //console.log("ResponseData from Loopworms: ", responseData.status, responseData.text, responseData.data);
     try {
       return JSON.parse(responseData.data[0]);

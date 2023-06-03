@@ -1,6 +1,6 @@
 importScripts("lib/axios.min.js");
 onmessage = function (e) {
-    if (e.data.loopquest) {
+    if (e.data.looperlands) {
         console.debug("saving..", e.data);
         let sessionId = e.data.sessionId;
         delete e.data.sessionId;

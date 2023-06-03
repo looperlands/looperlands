@@ -1,4 +1,4 @@
-LoopQuest server documentation
+LOOPERLANDS server documentation
 =================================
 
 The game server currently runs on nodejs v0.4.7 (but should run fine on the latest stable as well) and requires the latest versions of the following npm libraries:
