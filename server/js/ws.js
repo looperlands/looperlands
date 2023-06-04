@@ -125,7 +125,8 @@ WS.socketIOServer = Server.extend({
         if (self.protocol === "https") {
             http = https.createServer({
                 key: fs.readFileSync("/certs/privkey.pem"),
-                cert: fs.readFileSync("/certs/fullchain.pem")
+                cert: fs.readFileSync("/certs/fullchain.pem"),
+                keepAlive : true
             }, app);
         } else {
             http = require('http').Server(app);
