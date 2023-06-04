@@ -12,4 +12,4 @@ jobs:
         username: ${{ secrets.USERNAME }}
         password: ${{ secrets.PASSWORD }}
         port: 22
-        script: /home/looperlands/looperlands/deploy/update.sh
+        script: /bin/bash /home/looperlands/looperlands/deploy/update.sh
