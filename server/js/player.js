@@ -74,7 +74,7 @@ module.exports = Player = Character.extend({
                 let playerCache = self.server.server.cache.get(self.sessionId);
                 playerCache.isDirty = true;
                 playerCache.entityId = self.id;
-                self.server.server.cache.set(self.sessionId, playerCache);
+                self.server.server.cache.set(new String(self.sessionId).toString(), playerCache);
                 self.title = playerCache.title;
                 self.level = Formulas.level(playerCache.xp);
                 self.updateHitPoints();
@@ -252,7 +252,7 @@ module.exports = Player = Character.extend({
                         if (response.data === true) {
                             teleport();
                         } else {
-                            console.error("Asset validation failed for player " + _self.name + " and nftId " + nftId, url);
+                            console.error("Asset validation failed for player " + _self.name + " and nftId " + requiredNft, url);
                         }
                     })
                     .catch(function (error) {
