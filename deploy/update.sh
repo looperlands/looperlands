@@ -1,4 +1,5 @@
 #!/bin/bash
 today=`date --iso-8601`
+logFile=/home/looperlands/logs/$today
 cd looperlands
-./deploy/build.sh && nohup ./deploy/run.sh >> /home/looperlands/logs/$today 2>&1
+./deploy/build.sh && nohup ./deploy/run.sh >> $logFile 2>&1
