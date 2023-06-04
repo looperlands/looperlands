@@ -211,17 +211,11 @@ module.exports = Player = Character.extend({
                 let playerCache = self.server.server.cache.get(self.sessionId);
                 let _self = self;
                 let nftId = message[2];
-                let url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/AssetValidation.php?WalletID=${playerCache.walletId}&NFTID=${nftId}`;
-                axios.get(url).then(function (response) {
-                    if (response.data === true) {
-                        item = {kind: message[1]};
-                        _self.equipItem(item);
-                        _self.broadcast(_self.equip(item.kind));
-                    } else {
-                        console.error("Asset validation failed for player " + _self.name + " and nftId " + nftId);
-                    }
-                })
-                .catch(function (error) {
+                dao.walletHasNFT(playerCache.walletId, nftId).then(function (result) {
+                    item = {kind: message[1]};
+                    _self.equipItem(item);
+                    _self.broadcast(_self.equip(item.kind));
+                }).catch(function (error) {
                     console.error("Asset validation error: " + error);
                 });
             }
