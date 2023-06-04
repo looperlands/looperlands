@@ -13,6 +13,7 @@ updateExperience = async function (walletId, nftId, xp, retry) {
   let url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/SaveExperience.php?WalletID=${walletId}&NFTID=${nftId}&Experience=${xp}`;
   const responseData = await axios.get(url, options);
   const updatedXp = parseInt(responseData.data);
+  console.log("Updated XP: ", xp, updatedXp, walletId, nftId);
   if (Number.isNaN(updatedXp)) {
     console.error("Error updating experience", walletId, nftId, xp, responseData.data);
     if (retry === undefined) {

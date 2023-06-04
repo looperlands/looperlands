@@ -178,7 +178,7 @@ WS.socketIOServer = Server.extend({
                 // this prevents failed logins not being able to login again
                 body.isDirty = false;
                 console.log("New Session", id, body);
-                cache.set(id, body);
+                cache.set(new String(id).toString(), body);
                 let responseJson = {
                     "sessionId" : id
                 }
