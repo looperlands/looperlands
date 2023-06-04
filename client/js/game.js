@@ -2605,7 +2605,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
             axios.get("/session/" + self.sessionId + "/hp").then(function (response) {
                 if (response.data !== null && response.data !== undefined) {
-                    console.log("Entity HP", response.data);
 
                     Object.keys(response.data).forEach(function (id) {
                         toUpdateEntity = response.data[id];
