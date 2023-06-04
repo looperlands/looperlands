@@ -66,7 +66,7 @@ module.exports = Player = Character.extend({
                 self.equipWeapon(message[3]);
                 self.orientation = Utils.randomOrientation();
                 self.updatePosition();
-                self.sessionId = message[4];
+                self.sessionId = new String(message[4]).toString();
                 
                 self.server.addPlayer(self);
                 self.server.enter_callback(self);
@@ -74,7 +74,7 @@ module.exports = Player = Character.extend({
                 let playerCache = self.server.server.cache.get(self.sessionId);
                 playerCache.isDirty = true;
                 playerCache.entityId = self.id;
-                self.server.server.cache.set(new String(self.sessionId).toString(), playerCache);
+                self.server.server.cache.set(self.sessionId, playerCache);
                 self.title = playerCache.title;
                 self.level = Formulas.level(playerCache.xp);
                 self.updateHitPoints();
