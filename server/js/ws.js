@@ -321,8 +321,13 @@ WS.socketIOServer = Server.extend({
 
         app.get("/session/:sessionId/disconnected", async(req, res) => {
             const sessionId = req.params.sessionId;
-            const sessionData = cache.get(sessionId);            
-            const disconnected = sessionData.disconnected !== undefined && sessionData.disconnected;
+            const sessionData = cache.get(sessionId);
+            let disconnected = false;
+            if (sessionData !== undefined) {
+                disconnected = sessionData.disconnected !== undefined && sessionData.disconnected;
+            } else {
+                console.warn("Session data is undefined disconnect check ", sessionId);
+            }
             res.status(200).json(disconnected);
         });
 
