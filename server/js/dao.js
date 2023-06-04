@@ -53,6 +53,8 @@ getCharacterData = async function (wallet, nft, retry) {
     try {
       if (responseData[1] !== '') {
         parsedSaveData = JSON.parse(responseData.data[1]);
+      } else {
+        return;
       }
     } catch (error) {
       console.error("Error parsing save data ", error, responseData.data);
@@ -62,6 +64,8 @@ getCharacterData = async function (wallet, nft, retry) {
       retry -= 1;
       if (retry > 0) {
         getCharacterData(wallet, nft, retry);
+      } else {
+        return { "error": "Error loading character data" }
       }
     }
     return parsedSaveData;
