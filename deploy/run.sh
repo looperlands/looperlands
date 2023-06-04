@@ -1,5 +1,4 @@
 #!/bin/bash
-today=`date --iso-8601`
 export $(cat /home/looperlands/.env | xargs)
 
 # Kill looperlands containers
