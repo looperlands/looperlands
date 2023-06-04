@@ -220,6 +220,9 @@ WS.socketIOServer = Server.extend({
                         totalRevives: 0
                     }
                 };                
+            } else if (parsedSaveData.error !== undefined) {
+                res.status(500).json(parsedSaveData);
+                return;
             }
             parsedSaveData.player.name = name;
             parsedSaveData.player.armor = nftId.replace("0x", "NFT_");
