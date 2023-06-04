@@ -1,0 +1,27 @@
+name: deploy
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - name: executing remote ssh commands using password
+      uses: appleboy/ssh-action@v0.1.7
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        port: 22
+        script: |
+          today=`date +"%s"`
+          export $(cat /home/looperlands/.env | xargs)        
+          cd looperlands
+          git checkout .
+          git pull
+          ./config_manager.py configs/loopworms_config.json
+          docker build . -t looperlands
+          docker ps  | grep looperlands | cut -d " " -f 1 | xargs docker stop
+          docker run --name looperlands-$today -d -e LOOPWORMS_API_KEY=$LOOPWORMS_API_KEY -e LOOPWORMS_LOOPERLANDS_BASE_URL=$LOOPWORMS_LOOPERLANDS_BASE_URL -e DISCORD_TOKEN=$DISCORD_TOKEN -v /etc/letsencrypt/live/loopworms.io:/certs -p 8000:8000 -t looperlands           

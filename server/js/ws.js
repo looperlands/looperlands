@@ -5,6 +5,7 @@ var cls = require("./lib/class"),
    // miksagoConnection = require('websocket-server/lib/ws/connection'),
    // worlizeRequest = require('websocket').request,
     http = require('http'),
+    https = require('https'),
     Utils = require('./utils'),
     _ = require('underscore'),
     BISON = require('bison'),
@@ -119,7 +120,17 @@ WS.socketIOServer = Server.extend({
         var express = require('express');
         var app = express();
         app.use("/", express.static(__dirname + "/../../client-build"));
-        var http = require('http').Server(app);
+
+        let http;
+        if (self.protocol === "https") {
+            http = https.createServer({
+                key: fs.readFileSync("/certs/privkey.pem"),
+                cert: fs.readFileSync("/certs/fullchain.pem")
+            }, app);
+        } else {
+            http = require('http').Server(app);
+        }
+        
 
         var corsAddress = self.protocol + "://" + self.host;
         self.io = require('socket.io')(http, {
