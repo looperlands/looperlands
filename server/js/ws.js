@@ -132,7 +132,7 @@ WS.socketIOServer = Server.extend({
 
         app.use(express.json())
 
-        app.post('/session', (req, res) => {
+        app.post('/session', async (req, res) => {
             const body = req.body;
             const apiKey = req.headers['x-api-key'];
 
@@ -144,8 +144,9 @@ WS.socketIOServer = Server.extend({
                 });
             }
 
-            let walletAllowed = dao.walletHasNFT(body.walletId, body.nftId);
+            let walletAllowed = await dao.walletHasNFT(body.walletId, body.nftId);
             if (!walletAllowed) {
+                console.error("Wallet not allowed", body.walletId, body.nftId);
                 res.status(401).json({
                     status: false,
                     error: "Your wallet does not own the avatar you are trying to play with",

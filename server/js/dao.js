@@ -138,7 +138,7 @@ loadWeapon = async function (wallet, nft) {
 }
 
 exports.walletHasNFT = async function (wallet, nft) {
-    let url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/AssetValidation.php?WalletID=${playerCache.walletId}&NFTID=${nftId}`;
+    let url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/AssetValidation.php?WalletID=${wallet}&NFTID=${nft}`;
     try {
         const responseData = await axios.get(url);
         return responseData.data;
