@@ -121,16 +121,7 @@ WS.socketIOServer = Server.extend({
         var app = express();
         app.use("/", express.static(__dirname + "/../../client-build"));
 
-        let http;
-        if (self.protocol === "https") {
-            http = https.createServer({
-                key: fs.readFileSync("/certs/privkey.pem"),
-                cert: fs.readFileSync("/certs/fullchain.pem"),
-                keepAlive : true
-            }, app);
-        } else {
-            http = require('http').Server(app);
-        }
+        let http = require('http').Server(app);
         
 
         var corsAddress = self.protocol + "://" + self.host;
