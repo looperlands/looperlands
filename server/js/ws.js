@@ -144,6 +144,16 @@ WS.socketIOServer = Server.extend({
                 });
             }
 
+            let walletAllowed = dao.walletHasNFT(body.walletId, body.nftId);
+            if (!walletAllowed) {
+                res.status(401).json({
+                    status: false,
+                    error: "Your wallet does not own the avatar you are trying to play with",
+                    user: null
+                });
+                return;
+            };
+
             let walletAlreadyPlaying = false;
             let cacheKeys = cache.keys();
             for (i in cacheKeys) {
@@ -160,6 +170,7 @@ WS.socketIOServer = Server.extend({
             }
 
             if (walletAlreadyPlaying) {
+                console.log("Wallet already playing", body.walletId, body.nftId);
                 res.status(409).json({
                     status: false,
                     error: "Your wallet has an active session",

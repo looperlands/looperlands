@@ -137,6 +137,17 @@ loadWeapon = async function (wallet, nft) {
   }
 }
 
+exports.walletHasNFT = async function (wallet, nft) {
+    let url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/AssetValidation.php?WalletID=${playerCache.walletId}&NFTID=${nftId}`;
+    try {
+        const responseData = await axios.get(url);
+        return responseData.data;
+    } catch (error) {
+      console.error("Error while validating ownership", error, wallet, nft);
+      throw error;
+    }
+};
+
 
 exports.updateExperience = updateExperience;
 exports.saveCharacterData = saveCharacterData;
