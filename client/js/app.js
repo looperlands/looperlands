@@ -29,6 +29,15 @@ define(['jquery', 'storage'], function($, Storage) {
             this.supportsWorkers = !!window.Worker;
             this.ready = true;
             this.game.sessionId = this.sessionId;
+            var self = this;
+            setInterval(function() {
+                axios.get("/session/"+self.sessionId+"/disconnected").then(function(response) {
+                    if (response.data) {
+                        self.game.player.isDead = true;
+                        self.game.disconnect_callback("You have been disconnected.");
+                    }
+                });
+            }, 5000);
         },
     
         center: function() {
