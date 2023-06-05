@@ -68,6 +68,7 @@ Types = {
         // NPCs
         GUARD: 40,
         KING: 41,
+        KING2: 1000041,        
         OCTOCAT: 42,
         VILLAGEGIRL: 43,
         VILLAGER: 44,
@@ -194,6 +195,7 @@ var kinds = {
     scientist: [Types.Entities.SCIENTIST, "npc"],
     priest: [Types.Entities.PRIEST, "npc"],
     king: [Types.Entities.KING, "npc"],
+    king2: [Types.Entities.KING2, "npc"],
     rick: [Types.Entities.RICK, "npc"],
     nyan: [Types.Entities.NYAN, "npc"],
     sorcerer: [Types.Entities.SORCERER, "npc"],

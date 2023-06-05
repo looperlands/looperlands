@@ -15,6 +15,13 @@ define(['npc'], function(Npc) {
             }
         }),
 
+        King2: Npc.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.KING2, 1);
+            }
+        }),
+
+
         Agent: Npc.extend({
             init: function(id) {
                 this._super(id, Types.Entities.AGENT, 1);
