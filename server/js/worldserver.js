@@ -594,7 +594,7 @@ module.exports = World = cls.Class.extend({
         let updatedXp = await dao.updateExperience(session.walletId, session.nftId, xp);
         if (!Number.isNaN(updatedXp)) {
             session.xp = updatedXp;
-            this.server.cache.set(self.sessionId, session);
+            this.server.cache.set(player.sessionId, session);
             updatedLevel = Formulas.level(updatedXp);
             player.level = updatedLevel;
             if (currentLevel < updatedLevel) {
