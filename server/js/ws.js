@@ -182,7 +182,7 @@ WS.socketIOServer = Server.extend({
                 // this prevents failed logins not being able to login again
                 body.isDirty = false;
                 console.log("New Session", id, body);
-                cache.set(new String(id).toString(), body);
+                cache.set(id, body);
                 let responseJson = {
                     "sessionId" : id
                 }
@@ -325,8 +325,6 @@ WS.socketIOServer = Server.extend({
             let disconnected = false;
             if (sessionData !== undefined) {
                 disconnected = sessionData.disconnected !== undefined && sessionData.disconnected;
-            } else {
-                console.warn("Session data is undefined disconnect check ", sessionId);
             }
             res.status(200).json(disconnected);
         });

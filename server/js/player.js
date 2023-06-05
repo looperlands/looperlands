@@ -66,7 +66,7 @@ module.exports = Player = Character.extend({
                 self.equipWeapon(message[3]);
                 self.orientation = Utils.randomOrientation();
                 self.updatePosition();
-                self.sessionId = new String(message[4]).toString();
+                self.sessionId = message[4];
                 
                 self.server.addPlayer(self);
                 self.server.enter_callback(self);
