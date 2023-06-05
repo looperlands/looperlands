@@ -16,6 +16,10 @@ define(['character'], function(Character) {
             "Stay wormy",
             "or else..."
         ],
+
+        "king2": [
+            "Hi, I'm the LoopWorm King2. Eventually I'll have a reward for you.",
+        ],        
     
         "villagegirl": [
             "Hi there, adventurer!",
