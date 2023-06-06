@@ -566,14 +566,16 @@ module.exports = World = cls.Class.extend({
                 var mob = entity,
                     item = this.getDroppedItem(mob);
                 
-                this.pushToPlayer(attacker, new Messages.Kill(mob));
+                let kind = Types.getKindAsString(mob.kind);
+                let xp = Formulas.xp(Properties[kind]);
+                this.pushToPlayer(attacker, new Messages.Kill(mob, xp));
                 this.pushToAdjacentGroups(mob.group, mob.despawn()); // Despawn must be enqueued before the item drop
                 if(item) {
                     this.pushToAdjacentGroups(mob.group, mob.drop(item));
                     this.handleItemDespawn(item);
                 }
                 if (attacker.type === "player") {
-                    this.handleExperience(entity, attacker);
+                    this.handleExperience(attacker, xp);
                 }
             }
     
@@ -585,9 +587,7 @@ module.exports = World = cls.Class.extend({
             this.removeEntity(entity);
         }
     },
-    handleExperience: async function(mob, player) {
-        let kind = Types.getKindAsString(mob.kind);
-        let xp = Formulas.xp(Properties[kind]);
+    handleExperience: async function(player, xp) {
         let session = this.server.cache.get(player.sessionId);
         let currentLevel = Formulas.level(session.xp);
 

@@ -333,10 +333,12 @@ define(['player', 'entityfactory', 'lib/bison'], function(Player, EntityFactory,
         },
     
         receiveKill: function(data) {
-            var mobKind = data[1];
+            let mobKind = data[1],
+                xp = data[2];
+
         
             if(this.kill_callback) {
-                this.kill_callback(mobKind);
+                this.kill_callback(mobKind, xp);
             }
         },
     
