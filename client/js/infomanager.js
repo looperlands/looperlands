@@ -55,6 +55,10 @@ define(function() {
         "healed": {
             fill: "rgb(80, 255, 80)",
             stroke: "rgb(50, 120, 50)"
+        },
+        "xp": {
+            fill: "rgb(0, 0, 255)",
+            stroke: "white",
         }
     };
 

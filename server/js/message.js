@@ -168,12 +168,13 @@ Messages.Population = Message.extend({
 });
 
 Messages.Kill = Message.extend({
-    init: function(mob) {
+    init: function(mob, xp) {
         this.mob = mob;
+        this.xp = xp;
     },
     serialize: function() {
         return [Types.Messages.KILL,
-                this.mob.kind];
+                this.mob.kind, this.xp];
     }
 });
 

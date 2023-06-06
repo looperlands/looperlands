@@ -1422,9 +1422,13 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     }
                 });
             
-                self.client.onPlayerKillMob(function(kind) {
+                self.client.onPlayerKillMob(function(kind, xp) {
                     self.updateEntitiesHP();
                     var mobName = Types.getKindAsString(kind);
+
+                    setTimeout(function() {
+                        self.infoManager.addDamageInfo("+"+xp+" XP", self.player.x, self.player.y - 15, "xp");
+                    }, 200);
 
                     self.renderStatistics();
 
