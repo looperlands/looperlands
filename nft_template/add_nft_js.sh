@@ -14,7 +14,7 @@ if [ -z "$2" ]
     exit 1
 fi
 
-id=`egrep -oh "\:.*([[:digit:]]+)*@lastid@" ../client/js/gametypes.js | cut -d " " -f 2`
+id=`egrep -oh "\:.*([[:digit:]]+)*@lastid@" ../shared/js/gametypes.js | cut -d " " -f 2`
 echo id: $id
 nextId=$((id+1))
 randNum=$(($RANDOM % 2))
