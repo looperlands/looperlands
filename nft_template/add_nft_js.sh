@@ -41,7 +41,6 @@ update_gametypes() {
     rm tmp2.js
 }
 
-update_gametypes "../client/js/gametypes.js"
 update_gametypes "../shared/js/gametypes.js"
 
 echo Add the NFT sprite

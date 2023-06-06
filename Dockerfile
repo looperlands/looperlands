@@ -11,6 +11,7 @@ RUN apt-get update -yq \
 
 COPY . /opt/app
 WORKDIR /opt/app
+COPY shared/js/gametypes.js client/js/gametypes.js
 RUN npm install
 RUN mkdir -p client/config
 COPY configs/config_build.json client/config
