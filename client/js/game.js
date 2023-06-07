@@ -886,7 +886,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 });
             
                 self.player.onAggro(function(mob) {
-                    self.updateEntitiesHP();
                     if(!mob.isWaitingToAttack(self.player) && !self.player.isAttackedBy(mob)) {
                         self.player.log_info("Aggroed by " + mob.id + " at ("+self.player.gridX+", "+self.player.gridY+")");
                         self.client.sendAggro(mob);
