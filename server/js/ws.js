@@ -316,6 +316,14 @@ WS.socketIOServer = Server.extend({
             const sessionData = cache.get(sessionId);
             const playerId = sessionData.entityId;
             let ret = self.worldserver.getHpForCharactersInPlayerGroup(playerId);
+            if (ret === undefined) {
+                res.status(500).json({
+                    status: false,
+                    error: "Could not get hp for characters in player group",
+                    user: null
+                });
+                return;
+            }
             res.status(200).json(ret);
         });
 

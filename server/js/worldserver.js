@@ -908,6 +908,9 @@ module.exports = World = cls.Class.extend({
 
     getHpForCharactersInPlayerGroup: function(playerId) {
         const player = this.getEntityById(playerId);
+        if (player.group === null) {
+            return;
+        }
         const group = this.groups[player.group];
         let entityIds = Object.keys(group.entities);
         
