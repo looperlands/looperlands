@@ -505,7 +505,7 @@ module.exports = World = cls.Class.extend({
         var player = this.getEntityById(mob.getHatedPlayerId(hateRank));
         
         // If the mob is not already attacking the player, create an attack link between them.
-        if(player && !(mob.id in player.attackers)) {
+        if(player) {
             this.clearMobAggroLink(mob);
             
             player.addAttacker(mob);
