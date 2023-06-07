@@ -131,3 +131,8 @@ process.argv.forEach(function (val, index, array) {
 getConfigFile(defaultConfigPath, function(defaultConfig) {
     main(defaultConfig);
 });
+
+process.on('uncaughtException', function(err) {
+    // Handle the error safely
+    console.log(err, err.stack);
+});
