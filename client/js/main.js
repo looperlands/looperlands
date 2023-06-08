@@ -194,7 +194,16 @@ define(['jquery', 'app'], function($, App) {
                 $('#resize-check').bind("transitionend", app.resizeUi.bind(app));
                 $('#resize-check').bind("webkitTransitionEnd", app.resizeUi.bind(app));
                 $('#resize-check').bind("oTransitionEnd", app.resizeUi.bind(app));
-            
+
+                document.addEventListener("visibilitychange", () => {
+                    if (document.visibilityState === 'hidden') {
+                        app.game.windowHidden = true;
+                        setTimeout(app.game.tick.bind(app.game), 60);
+                    } else {
+                        app.game.windowHidden = false;
+                    }
+                });
+
                 console.log("App initialized.");
             
                 initGame();
