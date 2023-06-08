@@ -132,7 +132,6 @@ module.exports = World = cls.Class.extend({
         // Called when an entity is attacked by another entity
         this.onEntityAttack(function(attacker) {
             var target = self.getEntityById(attacker.target);
-            console.log("Attacking target ", attacker.name, attacker.target);
             if(target) {
                 var pos = self.findPositionNextTo(attacker, target);
                 self.moveEntity(attacker, pos.x, pos.y);
@@ -280,11 +279,23 @@ module.exports = World = cls.Class.extend({
             group = this.groups[groupId];
         
         if(group) {
+            let removeList = [];
             _.each(group.players, function(playerId) {
                 if(playerId != ignoredPlayer) {
-                    self.pushToPlayer(self.getEntityById(playerId), message);
+                    let entity = self.getEntityById(playerId);
+                    if (entity === undefined) {
+                        removeList.push(playerId);
+                    } else {
+                        self.pushToPlayer(entity, message);
+                    }
                 }
             });
+            if (removeList.length > 0) {
+                console.log("Removing undefined players from group:", removeList);
+                removeList.forEach(function(playerId) {
+                    group.players = _.reject(group.players, function(id) { return id === playerId; });
+                });
+            }
         } else {
             console.error("groupId: "+groupId+" is not a valid group");
         }
