@@ -593,9 +593,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                 tilesetwidth = this.tileset.width / m.tilesize;
         
             this.game.forEachVisibleTile(function (id, index) {
-                if(!m.isHighTile(id) && !m.isAnimatedTile(id)) { // Don't draw unnecessary tiles
-                    self.drawTile(self.background, id, self.tileset, tilesetwidth, m.width, index);
-                }
+                self.drawTile(self.background, id, self.tileset, tilesetwidth, m.width, index);
             }, 1);
         },
     
@@ -727,8 +725,8 @@ function(Camera, Item, Character, Player, Timer, Mob) {
     
         renderStaticCanvases: function() {
             this.background.save();
-                this.setCameraView(this.background);
-                this.drawTerrain();
+            this.setCameraView(this.background);
+            this.drawTerrain();
             this.background.restore();
         },
 
