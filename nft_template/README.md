@@ -32,7 +32,8 @@ the directory you created in step 1 but change the `\` to `/`.
 
 3) Commit the changes
 ```bash
-git commit -am "add new nft. put something descriptive here"
+git add ..
+git commit -m "add new nft. put something descriptive here"
 git push --set-upstream origin new_nft_name
 ```
 4) Open a pull request on your branch on Github.com
