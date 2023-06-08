@@ -739,7 +739,11 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             }
 
             if(!this.isStopped) {
-                requestAnimFrame(this.tick.bind(this));
+                if (this.windowHidden) {
+                    setTimeout(this.tick.bind(this), 1000/60);
+                } else {
+                    requestAnimFrame(this.tick.bind(this));
+                }
             }
         },
 
