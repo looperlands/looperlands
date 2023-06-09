@@ -72,10 +72,7 @@ module.exports = Player = Character.extend({
                 self.server.enter_callback(self);
 
                 let playerCache = self.server.server.cache.get(self.sessionId);
-                if (playerCache.isDirty === false) {
-                    playerCache.isDirty = true;
-                    discord.sendMessage(`Player ${self.name} has joined the game.`);
-                }
+                playerCache.isDirty = true;
                 playerCache.entityId = self.id;
                 self.server.server.cache.set(self.sessionId, playerCache);
                 self.title = playerCache.title;
@@ -84,6 +81,7 @@ module.exports = Player = Character.extend({
                 self.send([Types.Messages.WELCOME, self.id, self.name, self.x, self.y, self.hitPoints, self.title]);
                 self.hasEnteredGame = true;
                 self.isDead = false;
+                discord.sendMessage(`Player ${self.name} has joined the game.`);
                 
             }
             else if(action === Types.Messages.WHO) {
