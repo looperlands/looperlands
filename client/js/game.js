@@ -2431,6 +2431,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 this.camera.setPosition(x, y);
 
                 this.renderer.renderStaticCanvases();
+                this.app.initEquipmentIcons();
         },
     
         updateBars: function() {

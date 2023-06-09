@@ -254,11 +254,15 @@ define(['jquery', 'storage'], function($, Storage) {
                 weapon = this.game.player.getWeaponName(),
                 armor = this.game.player.getSpriteName(),
                 weaponPath = getIconPath(weapon),
-                armorPath = getIconPath(armor);
+                armorPath = 'img/3/' + armor + '.png';
 
             $('#weapon').css('background-image', 'url("' + weaponPath + '")');
             if(armor !== 'firefox') {
-                $('#armor').css('background-image', 'url("' + armorPath + '")');
+                if (scale === 2) {
+                    $('#armor').css('background-image', 'url("' + armorPath + '")').css('object-fit', 'cover').css('background-position','-4px -311px');
+                } else if (scale === 3) {
+                    $("#armor").css('background-image', 'url("' + armorPath + '")').css('background-position','-4px -408px');
+                }
             }
         },
 
