@@ -155,14 +155,16 @@ WS.socketIOServer = Server.extend({
                 return;
             };
 
-            let walletAlreadyPlaying = false;
             let cacheKeys = cache.keys();
             for (i in cacheKeys) {
                 let key = cacheKeys[i];
                 let cachedBody = cache.get(key);
                 let sameWallet = cachedBody.walletId === body.walletId;
                 if(sameWallet && cachedBody.isDirty === true) {
-                    walletAlreadyPlaying = true;
+                    console.log("Disconnecting other session");
+                    let player = self.worldserver.getEntityById(cachedBody.entityId);
+                    cache.del(key);
+                    player.connection.close('A new session from another device created');
                     break;
                 } else if (sameWallet && cachedBody.isDirty === false){
                     console.log("deleting a session that never connected: " + key)
@@ -170,24 +172,16 @@ WS.socketIOServer = Server.extend({
                 }
             }
 
-            if (walletAlreadyPlaying) {
-                console.log("Wallet already playing", body.walletId, body.nftId);
-                res.status(409).json({
-                    status: false,
-                    error: "Your wallet has an active session",
-                    user: null
-                });
-            } else {
-                const id = crypto.randomBytes(20).toString('hex');
-                // this prevents failed logins not being able to login again
-                body.isDirty = false;
-                console.log("New Session", id, body);
-                cache.set(id, body);
-                let responseJson = {
-                    "sessionId" : id
-                }
-                res.status(200).send(responseJson);
+
+            const id = crypto.randomBytes(20).toString('hex');
+            // this prevents failed logins not being able to login again
+            body.isDirty = false;
+            console.log("New Session", id, body);
+            cache.set(id, body);
+            let responseJson = {
+                "sessionId" : id
             }
+            res.status(200).send(responseJson);
         });
 
         app.get('/session/:sessionId', async (req, res) => {
