@@ -279,6 +279,9 @@ module.exports = Player = Character.extend({
                 clearTimeout(self.firepotionTimeout);
             }
             clearTimeout(self.disconnectTimeout);
+            if (self.name !== null && self.name !== undefined) {
+                discord.sendMessage(self.name + " left the game.");
+            }
             if(self.exit_callback) {
                 self.exit_callback();
             }
