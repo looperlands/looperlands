@@ -83,6 +83,7 @@ Types = {
         DESERTNPC: 53,
         LAVANPC: 54,
         CODER: 55,
+        GOOSE: 1000042,
         
         // Weapons
         SWORD1: 60,
@@ -213,7 +214,8 @@ var kinds = {
     beachnpc: [Types.Entities.BEACHNPC, "npc"],
     forestnpc: [Types.Entities.FORESTNPC, "npc"],
     desertnpc: [Types.Entities.DESERTNPC, "npc"],
-    lavanpc: [Types.Entities.LAVANPC, "npc"], 
+    lavanpc: [Types.Entities.LAVANPC, "npc"],
+    goose: [Types.Entities.GOOSE, "npc"],
 
     //NFT
     NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6: [Types.Entities.NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6, "armor"],

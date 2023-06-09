@@ -211,6 +211,10 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest'], function(Mobs, Items, NPCs
     EntityFactory.builders[Types.Entities.LAVANPC] = function(id) {
         return new NPCs.LavaNpc(id);
     };
+
+    EntityFactory.builders[Types.Entities.GOOSE] = function(id) {
+        return new NPCs.Goose(id);
+    };    
     
     return EntityFactory;
 });

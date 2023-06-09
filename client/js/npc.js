@@ -139,7 +139,12 @@ define(['character'], function(Character) {
         "othernpc": [
             "lorem ipsum",
             "lorem ipsum"
-        ]
+        ],
+
+        "goose": [
+            "Honk!",
+            'Check out <a target="_blank" href="https://twitter.com/RSKAGY">my twitter</a> and give me a follow or <a target="_blank" href="http://twitter.com/share?text=%40RSKAGY">tweet me</a>'
+        ]        
     };
 
     var Npc = Character.extend({
