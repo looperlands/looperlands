@@ -2055,6 +2055,8 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     var inPvpZone = entity.gridX > pvpZone.top.x && entity.gridX < pvpZone.bottom.x && entity.gridY > pvpZone.top.y && entity.gridY < pvpZone.bottom.y;
                     if (inPvpZone) {
                         this.makePlayerAttack(entity);
+                    } else {
+                        this.makePlayerGoTo(pos.x, pos.y);
                     }
                 }
         	    else if(entity instanceof Item) {
@@ -2278,6 +2280,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             else {
                 this.currentZoning = new Transition();
             }
+            this.resize();
             this.bubbleManager.clean();
             this.client.sendZone();
         },
