@@ -831,9 +831,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 if(_.size(newIds) > 0) {
                     self.client.sendWho(newIds);
                 }
-                setTimeout(function() {
-                    self.updateEntitiesHP();
-                }, 250);
             });
         
             this.client.onWelcome(function(id, name, x, y, hp, title) {
@@ -2383,8 +2380,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             if(this.renderer.mobile || this.renderer.tablet) {
                 this.renderer.clearScreen(this.renderer.context);
             }
-
-            this.lastHPCall = undefined;
         
             console.debug("Finished restart");
         },
