@@ -111,7 +111,6 @@ module.exports = Player = Character.extend({
                         
                         self.broadcast(new Messages.Move(self));
                         self.move_callback(self.x, self.y);
-                        self.server.pushRelevantEntityListTo(self);
                     }
                 }
             }
@@ -138,7 +137,6 @@ module.exports = Player = Character.extend({
                 if(mob) {
                     self.setTarget(mob);
                     self.server.broadcastAttacker(self);
-                    self.server.pushRelevantEntityListTo(self);
                 }
             }
             else if(action === Types.Messages.HIT) {
