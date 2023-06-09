@@ -21,7 +21,6 @@ define(['npc'], function(Npc) {
             }
         }),
 
-
         Agent: Npc.extend({
             init: function(id) {
                 this._super(id, Types.Entities.AGENT, 1);
@@ -106,7 +105,13 @@ define(['npc'], function(Npc) {
             init: function(id) {
                 this._super(id, Types.Entities.OCTOCAT, 1);
             }
-        })
+        }),
+
+        Goose: Npc.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.GOOSE, 1);
+            }
+        }),        
     };
     
     return NPCs;
