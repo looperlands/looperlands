@@ -2180,6 +2180,8 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     character.previousTarget = null;
                     this.createAttackLink(character, t);
                     return;
+                } else {
+                    this.unregisterEntityPosition(t);
                 }
             }
         
