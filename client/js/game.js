@@ -2261,28 +2261,33 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         startZoningFrom: function(x, y) {
             this.zoningOrientation = this.getZoningOrientation(x, y);
         
-            var z = this.zoningOrientation,
-                c = this.camera,
-                ts = this.renderer.tilesize,
-                x = c.x,
-                y = c.y,
-                xoffset = (c.gridW - 2) * ts,
-                yoffset = (c.gridH - 2) * ts;
+            if(this.renderer.mobile || this.renderer.tablet) {
+                var z = this.zoningOrientation,
+                    c = this.camera,
+                    ts = this.renderer.tilesize,
+                    x = c.x,
+                    y = c.y,
+                    xoffset = (c.gridW - 2) * ts,
+                    yoffset = (c.gridH - 2) * ts;
 
-            if(z === Types.Orientations.LEFT || z === Types.Orientations.RIGHT) {
-                x = (z === Types.Orientations.LEFT) ? c.x - xoffset : c.x + xoffset;
-            } else if(z === Types.Orientations.UP || z === Types.Orientations.DOWN) {
-                y = (z === Types.Orientations.UP) ? c.y - yoffset : c.y + yoffset;
+                if(z === Types.Orientations.LEFT || z === Types.Orientations.RIGHT) {
+                    x = (z === Types.Orientations.LEFT) ? c.x - xoffset : c.x + xoffset;
+                } else if(z === Types.Orientations.UP || z === Types.Orientations.DOWN) {
+                    y = (z === Types.Orientations.UP) ? c.y - yoffset : c.y + yoffset;
+                }
+                c.setPosition(x, y);
+
+                this.renderer.clearScreen(this.renderer.context);
+                this.endZoning();
+
+                // Force immediate drawing of all visible entities in the new zone
+                this.forEachVisibleEntityByDepth(function(entity) {
+                    entity.setDirty();
+                });
             }
-            c.setPosition(x, y);
-
-            this.renderer.clearScreen(this.renderer.context);
-            this.endZoning();
-
-            // Force immediate drawing of all visible entities in the new zone
-            this.forEachVisibleEntityByDepth(function(entity) {
-                entity.setDirty();
-            });
+            else {
+                this.currentZoning = new Transition();
+            }
 
             this.bubbleManager.clean();
             this.client.sendZone();
