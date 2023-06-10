@@ -226,8 +226,8 @@ define(['player', 'entityfactory', 'lib/bison'], function(Player, EntityFactory,
                     armor = data[7];
                     weapon = data[8];
                     title = data[9];
-                    if(data.length > 9) {
-                        target = data[9];
+                    if(data.length > 10) {
+                        target = data[10];
                     }
                 }
                 else if(Types.isMob(kind)) {
