@@ -2026,9 +2026,17 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             if (pos.keyboard) {
                 this.keyboardMovement = true;
             } else {
+                now = new Date().getTime();
+
+                if (this.lastClick !== undefined) {
+                    if (now - self.lastClick < 500) {
+                        return;
+                    }
+                }
+                self.lastClick = now;
                 this.keyboardMovement = false;
             }
-            
+
             if(pos.x === this.previousClickPosition.x
             && pos.y === this.previousClickPosition.y) {
                 this.previousClickPosition = {};
@@ -2276,7 +2284,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 entity.setDirty();
             });
 
-            this.resize();
             this.bubbleManager.clean();
             this.client.sendZone();
         },
