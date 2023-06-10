@@ -580,7 +580,9 @@ module.exports = World = cls.Class.extend({
                 let kind = Types.getKindAsString(mob.kind);
                 let xp = Formulas.xp(Properties[kind]);
                 this.pushToPlayer(attacker, new Messages.Kill(mob, xp));
-                this.pushToAdjacentGroups(mob.group, mob.despawn()); // Despawn must be enqueued before the item drop
+                this.pushToAdjacentGroups(mob.group, mob.despawn());
+                this.pushToGroup(mob.group, mob.despawn());
+                // Despawn must be enqueued before the item drop
                 if(item) {
                     this.pushToAdjacentGroups(mob.group, mob.drop(item));
                     this.handleItemDespawn(item);

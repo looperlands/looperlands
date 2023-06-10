@@ -2262,7 +2262,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
     
         startZoningFrom: function(x, y) {
             this.zoningOrientation = this.getZoningOrientation(x, y);
-        
+                        
             if(this.renderer.mobile || this.renderer.tablet) {
                 var z = this.zoningOrientation,
                     c = this.camera,
@@ -2288,6 +2288,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 });
             }
             else {
+                
                 this.currentZoning = new Transition();
             }
 
