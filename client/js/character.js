@@ -319,6 +319,7 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
                 this.followingMode = false;
                 this.target = null;
             }
+            this.stopHurting();
             this.moveTo_(x, y);
         },
     
