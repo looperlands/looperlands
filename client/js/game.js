@@ -2072,7 +2072,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         	    entity = this.getEntityAt(pos.x, pos.y);
 
                 // an entity is not in the entity grid but is on the pathing grid
-                if (entity == null && this.pathingGrid[pos.y][pos.x] > 1) {
+                if (entity == null && this.pathingGrid[pos.y][pos.x] >= 1 && this.pathingGridBackup[pos.y][pos.x] === 0) {
                     console.log("Cleaning up entity on pathing grid at " + pos.x + ", " + pos.y, this.pathingGrid[pos.y][pos.x]);
                     this.removeFromPathingGrid(pos.x, pos.y, null);
                 }
