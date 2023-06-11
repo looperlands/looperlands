@@ -6,6 +6,8 @@ var Formulas = {};
 const EXPERIENCE_GROWTH = 3;
 const BASE_EXPERIENCE = 1000;
 
+let XP_MULTIPLIER = 1;
+
 Formulas.dmg = function (weaponLevel, armorLevel) {
     var dealt = weaponLevel * Utils.randomInt(5, 10),
         absorbed = armorLevel * Utils.randomInt(1, 3),
@@ -25,9 +27,19 @@ Formulas.hp = function (level) {
 };
 
 Formulas.xp = function (mobProperties) {
-    return (Math.round(Math.round((mobProperties.hp + mobProperties.armor + mobProperties.weapon) / 2) / 10) * 10) / 2;
+    let baseXp = (Math.round(Math.round((mobProperties.hp + mobProperties.armor + mobProperties.weapon) / 2) / 10) * 10) / 2;
+    let xp = baseXp * XP_MULTIPLIER;
+    return xp;
 }
 
+Formulas.setXPMultiplier = function (multiplier, timeout) {
+    console.log("XP multiplier set to " + multiplier + " for " + timeout + " seconds");
+    XP_MULTIPLIER = multiplier;
+    setTimeout(function () {
+        console.log("XP multiplier reset to 1");
+        XP_MULTIPLIER = 1;
+    }, timeout * 1000);
+}
 
 
 Formulas.calculateExperienceMap = function (numLevels) {

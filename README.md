@@ -14,6 +14,20 @@ curl -X POST -H "Content-Type: application/json" -H "x-api-key: <api-key-here>" 
 ```
 2) Navigate to http://127.0.0.1:8000/?sessionId=<sessionIdFromStep1>
 
+# Set XP Multiplier
+The following endpoint multiplies the experience gained by multiplier for duration.
+Post to /setxpmultiplier with the following body:
+```json
+{
+    "multiplier": y,
+    "duration": x
+}
+```
+Where Y is an integer, and X is seconds.
+The following example will double the experience for 60 seconds after posting to the endpoint:
+```bash
+curl -X POST -H "Content-Type: application/json" -H "x-api-key: $LOOPWORMS_API_KEY" -d "{\"multiplier\": 2, \"duration\":60}" http://127.0.0.1:8000/setxpmultiplier
+```
 # Local development
 The following script will build the client and server and run them locally, so you do not have to run the above steps.
 ```bash
