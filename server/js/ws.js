@@ -331,6 +331,23 @@ WS.socketIOServer = Server.extend({
             res.status(200).json(disconnected);
         });
 
+        app.post('/setxpmultiplier', async (req, res) => {
+            const body = req.body;
+            const apiKey = req.headers['x-api-key'];
+
+            if (apiKey !== process.env.LOOPWORMS_API_KEY) {
+                res.status(401).json({
+                    status: false,
+                    "error" : "invalid api key",
+                    user: null
+                });
+                return;
+            }
+
+            Formulas.setXPMultiplier(body.multiplier, body.duration);
+            res.status(200).send(true);
+        });
+
         self.io.on('connection', function(connection){
           console.log('a user connected');
 
