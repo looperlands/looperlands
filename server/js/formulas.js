@@ -35,11 +35,11 @@ Formulas.xp = function (mobProperties) {
 }
 
 Formulas.setXPMultiplier = function (multiplier, timeout) {
-
-    var duration = moment.duration(timeout * 1000);
+    let duration = moment.duration(timeout * 1000);
 
     discord.sendMessage("XP is " + multiplier + "x for " + duration.humanize());
     console.log("XP multiplier set to " + multiplier + " for " + timeout + " seconds");
+    
     XP_MULTIPLIER = multiplier;
     setTimeout(function () {
         discord.sendMessage("XP is back to normal");
