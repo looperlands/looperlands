@@ -528,9 +528,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             }
             console.log("Initialized the pathing grid with static colliding cells.");
             _self = this;
-            setInterval(function() {
-                _self.pathingGrid = _self.pathingGridBackup;
-            }, 5000);
         },
     
         initEntityGrid: function() {
@@ -611,8 +608,14 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             }
         },
     
-        removeFromPathingGrid: function(x, y) {
+        removeFromPathingGrid: function(x, y, entityId) {
             this.pathingGrid[y][x] = 0;
+            self = this;
+            this.camera.forEachVisiblePosition(function(x, y) {
+                if (self.pathingGrid[y][x] === entityId) {
+                    self.pathingGrid[y][x] = 0;
+                }
+            }, this.renderer.mobile ? 0 : 2);
         },
     
         /**
@@ -631,7 +634,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 if(entity.nextGridX >= 0 && entity.nextGridY >= 0) {
                     this.entityGrid[entity.nextGridY][entity.nextGridX][entity.id] = entity;
                     if(!(entity instanceof Player)) {
-                        this.pathingGrid[entity.nextGridY][entity.nextGridX] = 1;
+                        this.pathingGrid[entity.nextGridY][entity.nextGridX] = entity.id;
                     }
                 }
             }
@@ -645,13 +648,13 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         unregisterEntityPosition: function(entity) {
             if(entity) {
                 this.removeFromEntityGrid(entity, entity.gridX, entity.gridY);
-                this.removeFromPathingGrid(entity.gridX, entity.gridY);
+                this.removeFromPathingGrid(entity.gridX, entity.gridY, entity.id);
             
                 this.removeFromRenderingGrid(entity, entity.gridX, entity.gridY);
             
                 if(entity.nextGridX >= 0 && entity.nextGridY >= 0) {
                     this.removeFromEntityGrid(entity, entity.nextGridX, entity.nextGridY);
-                    this.removeFromPathingGrid(entity.nextGridX, entity.nextGridY);
+                    this.removeFromPathingGrid(entity.nextGridX, entity.nextGridY, entity.id);
                 }
             }
         },
@@ -664,7 +667,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 if(entity instanceof Character || entity instanceof Chest) {
                     this.entityGrid[y][x][entity.id] = entity;
                     if(!(entity instanceof Player)) {
-                        this.pathingGrid[y][x] = 1;
+                        this.pathingGrid[y][x] = entity.id;
                     }
                 }
                 if(entity instanceof Item) {
@@ -1309,7 +1312,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                         // to click very fast in order to loot the dropped item and not be blocked.
                                         // The entity is completely removed only after the death animation has ended.
                                         self.removeFromEntityGrid(entity, entity.gridX, entity.gridY);
-                                        self.removeFromPathingGrid(entity.gridX, entity.gridY);
+                                        self.removeFromPathingGrid(entity.gridX, entity.gridY, entity.id);
                                     
                                         if(self.camera.isVisible(entity)) {
                                             self.audioManager.playSound("kill"+Math.floor(Math.random()*2+1));
@@ -1343,6 +1346,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
                 self.client.onDespawnEntity(function(entityId) {
                     var entity = self.getEntityById(entityId);
+
             
                     if(entity) {
                         console.log("Despawning " + Types.getKindAsString(entity.kind) + " (" + entity.id+ ")");
@@ -2061,7 +2065,12 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
     	    && (!this.hoveringPlateauTile || pos.keyboard)
             && !(this.tokengating === true)) {
         	    entity = this.getEntityAt(pos.x, pos.y);
-    	    
+
+                // an entity is not in the entity grid but is on the pathing grid
+                if (entity == null && this.pathingGrid[pos.y][pos.x] > 1) {
+                    console.log("Cleaning up entity on pathing grid at " + pos.x + ", " + pos.y, this.pathingGrid[pos.y][pos.x]);
+                    this.removeFromPathingGrid(pos.x, pos.y, null);
+                }
 
         	    if(entity instanceof Mob) {
         	        this.makePlayerAttack(entity);
@@ -2320,6 +2329,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 var pos = this.zoningQueue[0];
                 this.startZoningFrom(pos.x, pos.y);
             }
+            this.pathingGrid = this.pathingGridBackup;
         },
     
         isZoning: function() {
