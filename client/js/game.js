@@ -1346,6 +1346,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
                 self.client.onDespawnEntity(function(entityId) {
                     var entity = self.getEntityById(entityId);
+
             
                     if(entity) {
                         console.log("Despawning " + Types.getKindAsString(entity.kind) + " (" + entity.id+ ")");
@@ -2064,7 +2065,12 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
     	    && (!this.hoveringPlateauTile || pos.keyboard)
             && !(this.tokengating === true)) {
         	    entity = this.getEntityAt(pos.x, pos.y);
-    	    
+
+                // an entity is not in the entity grid but is on the pathing grid
+                if (entity == null && this.pathingGrid[pos.y][pos.x] > 1) {
+                    console.log("Cleaning up entity on pathing grid at " + pos.x + ", " + pos.y, this.pathingGrid[pos.y][pos.x]);
+                    this.removeFromPathingGrid(pos.x, pos.y, null);
+                }
 
         	    if(entity instanceof Mob) {
         	        this.makePlayerAttack(entity);
