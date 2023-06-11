@@ -613,8 +613,12 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             this.pathingGrid[y][x] = 0;
             self = this;
             this.camera.forEachVisiblePosition(function(x, y) {
-                if (self.pathingGrid[y][x] === entityId) {
-                    self.pathingGrid[y][x] = 0;
+                try {
+                    if (self.pathingGrid[y][x] === entityId) {
+                        self.pathingGrid[y][x] = 0;
+                    }
+                } catch (e) {
+                    console.log("Error removing entity from pathing grid: " + e, y,x);
                 }
             }, this.renderer.mobile ? 0 : 2);
         },
@@ -2330,7 +2334,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 var pos = this.zoningQueue[0];
                 this.startZoningFrom(pos.x, pos.y);
             }
-            this.pathingGrid = this.pathingGridBackup;
+            //this.pathingGrid = this.pathingGridBackup;
         },
     
         isZoning: function() {
