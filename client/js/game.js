@@ -517,13 +517,20 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
     
         initPathingGrid: function() {
             this.pathingGrid = [];
+            this.pathingGridBackup = [];
             for(var i=0; i < this.map.height; i += 1) {
                 this.pathingGrid[i] = [];
+                this.pathingGridBackup[i] = [];
                 for(var j=0; j < this.map.width; j += 1) {
                     this.pathingGrid[i][j] = this.map.grid[i][j];
+                    this.pathingGridBackup[i][j] = this.map.grid[i][j];
                 }
             }
             console.log("Initialized the pathing grid with static colliding cells.");
+            _self = this;
+            setInterval(function() {
+                _self.pathingGrid = _self.pathingGridBackup;
+            }, 5000);
         },
     
         initEntityGrid: function() {
