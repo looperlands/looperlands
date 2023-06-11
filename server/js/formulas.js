@@ -1,5 +1,7 @@
 
 var Utils = require("./utils");
+let discord = require("./discord");
+let moment = require("moment");
 
 var Formulas = {};
 
@@ -33,9 +35,14 @@ Formulas.xp = function (mobProperties) {
 }
 
 Formulas.setXPMultiplier = function (multiplier, timeout) {
+    let duration = moment.duration(timeout * 1000);
+
+    discord.sendMessage("XP is " + multiplier + "x for " + duration.humanize());
     console.log("XP multiplier set to " + multiplier + " for " + timeout + " seconds");
+    
     XP_MULTIPLIER = multiplier;
     setTimeout(function () {
+        discord.sendMessage("XP is back to normal");
         console.log("XP multiplier reset to 1");
         XP_MULTIPLIER = 1;
     }, timeout * 1000);
