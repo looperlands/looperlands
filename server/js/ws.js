@@ -172,7 +172,6 @@ WS.socketIOServer = Server.extend({
                 }
             }
 
-
             const id = crypto.randomBytes(20).toString('hex');
             // this prevents failed logins not being able to login again
             body.isDirty = false;
