@@ -104,7 +104,7 @@ define(['item'], function(Item) {
         Burger: Item.extend({
             init: function(id) {
                 this._super(id, Types.Entities.BURGER, "object");
-                this.lootMessage = "You can haz rat burger";
+                this.lootMessage = "Loopring Layer 3 Taiko Boost!";
             },
         }),
 
