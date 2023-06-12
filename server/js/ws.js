@@ -304,15 +304,15 @@ WS.socketIOServer = Server.extend({
             }
         });
 
-        app.get("/session/:sessionId/hp", async(req, res) => {
+        app.get("/session/:sessionId/polling", async(req, res) => {
             const sessionId = req.params.sessionId;
             const sessionData = cache.get(sessionId);
             const playerId = sessionData.entityId;
-            let ret = self.worldserver.getHpForCharactersInPlayerGroup(playerId);
+            let ret = self.worldserver.getPollingInfo(playerId);
             if (ret === undefined) {
                 res.status(500).json({
                     status: false,
-                    error: "Could not get hp for characters in player group",
+                    error: "Could not get polling information",
                     user: null
                 });
                 return;

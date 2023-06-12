@@ -919,6 +919,22 @@ module.exports = World = cls.Class.extend({
         this.pushBroadcast(new Messages.Population(this.playerCount, totalPlayers));
     },
 
+
+    getPollingInfo: function(playerId) {
+        let player = this.getEntityById(playerId);
+
+        let playerInfo = {
+            armor: Types.getKindAsString(player.armor),
+            powerUpActive: player.getPowerUpActive()
+        }
+
+        let entitiesHp = this.getHpForCharactersInPlayerGroup(playerId);
+        return {
+            entitiesHp: entitiesHp,
+            playerInfo: playerInfo
+        }
+    },
+
     getHpForCharactersInPlayerGroup: function(playerId) {
         const player = this.getEntityById(playerId);
         if (player === undefined) {
