@@ -30,7 +30,6 @@ module.exports = Player = Character.extend({
         this.formatChecker = new FormatChecker();
         this.disconnectTimeout = null;
 
-
         
         this.connection.listen(function(message) {
 
@@ -110,6 +109,7 @@ module.exports = Player = Character.extend({
                         self.clearTarget();
                         
                         self.broadcast(new Messages.Move(self));
+                        self.pushEntityList();
                         self.move_callback(self.x, self.y);
                     }
                 }
@@ -476,5 +476,15 @@ module.exports = Player = Character.extend({
 
     getPowerUpActive: function() {
         return this.firepotionTimeout !== null && this.firepotionTimeout !== undefined;
+    },
+
+    pushEntityList: function() {
+        let now = new Date().getTime();
+        if (this.entityListPush !== undefined) {
+            if (now - this.entityListPush > 250) {
+                this.server.pushRelevantEntityListTo(this);
+            }
+        }
+        this.entityListPush = now;
     }
 });
