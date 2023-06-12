@@ -611,18 +611,8 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             }
         },
     
-        removeFromPathingGrid: function(x, y, entityId) {
+        removeFromPathingGrid: function(x, y) {
             this.pathingGrid[y][x] = 0;
-            self = this;
-            this.camera.forEachVisiblePosition(function(x, y) {
-                try {
-                    if (self.pathingGrid[y][x] === entityId) {
-                        self.pathingGrid[y][x] = 0;
-                    }
-                } catch (e) {
-                    console.log("Error removing entity from pathing grid: " + e, y,x);
-                }
-            }, this.renderer.mobile ? 0 : 2);
         },
     
         /**
@@ -655,13 +645,13 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         unregisterEntityPosition: function(entity) {
             if(entity) {
                 this.removeFromEntityGrid(entity, entity.gridX, entity.gridY);
-                this.removeFromPathingGrid(entity.gridX, entity.gridY, entity.id);
+                this.removeFromPathingGrid(entity.gridX, entity.gridY);
             
                 this.removeFromRenderingGrid(entity, entity.gridX, entity.gridY);
             
                 if(entity.nextGridX >= 0 && entity.nextGridY >= 0) {
                     this.removeFromEntityGrid(entity, entity.nextGridX, entity.nextGridY);
-                    this.removeFromPathingGrid(entity.nextGridX, entity.nextGridY, entity.id);
+                    this.removeFromPathingGrid(entity.nextGridX, entity.nextGridY);
                 }
             }
         },
@@ -1319,7 +1309,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                         // to click very fast in order to loot the dropped item and not be blocked.
                                         // The entity is completely removed only after the death animation has ended.
                                         self.removeFromEntityGrid(entity, entity.gridX, entity.gridY);
-                                        self.removeFromPathingGrid(entity.gridX, entity.gridY, entity.id);
+                                        self.removeFromPathingGrid(entity.gridX, entity.gridY);
                                     
                                         if(self.camera.isVisible(entity)) {
                                             self.audioManager.playSound("kill"+Math.floor(Math.random()*2+1));
@@ -2076,7 +2066,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 // an entity is not in the entity grid but is on the pathing grid
                 if (entity == null && this.pathingGrid[pos.y][pos.x] >= 1 && this.pathingGridBackup[pos.y][pos.x] === 0) {
                     console.log("Cleaning up entity on pathing grid at " + pos.x + ", " + pos.y, this.pathingGrid[pos.y][pos.x]);
-                    this.removeFromPathingGrid(pos.x, pos.y, null);
+                    this.removeFromPathingGrid(pos.x, pos.y);
                 }
 
         	    if(entity instanceof Mob) {
