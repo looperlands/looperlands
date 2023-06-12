@@ -2512,6 +2512,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 _.each(this.obsoleteEntities, function(entity) {
                     if(entity.id != self.player.id) { // never remove yourself
                         self.removeEntity(entity);
+                        self.removeFromRenderingGrid(entity, entity.gridX, entity.gridY);
                     }
                 });
                 console.debug("Removed "+nb+" entities: "+_.pluck(_.reject(this.obsoleteEntities, function(id) { return id === self.player.id }), 'id'));
