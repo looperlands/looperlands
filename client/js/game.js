@@ -611,18 +611,8 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             }
         },
     
-        removeFromPathingGrid: function(x, y, entityId) {
+        removeFromPathingGrid: function(x, y) {
             this.pathingGrid[y][x] = 0;
-            self = this;
-            this.camera.forEachVisiblePosition(function(x, y) {
-                try {
-                    if (self.pathingGrid[y][x] === entityId) {
-                        self.pathingGrid[y][x] = 0;
-                    }
-                } catch (e) {
-                    console.log("Error removing entity from pathing grid: " + e, y,x);
-                }
-            }, this.renderer.mobile ? 0 : 2);
         },
     
         /**
@@ -655,13 +645,13 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         unregisterEntityPosition: function(entity) {
             if(entity) {
                 this.removeFromEntityGrid(entity, entity.gridX, entity.gridY);
-                this.removeFromPathingGrid(entity.gridX, entity.gridY, entity.id);
+                this.removeFromPathingGrid(entity.gridX, entity.gridY);
             
                 this.removeFromRenderingGrid(entity, entity.gridX, entity.gridY);
             
                 if(entity.nextGridX >= 0 && entity.nextGridY >= 0) {
                     this.removeFromEntityGrid(entity, entity.nextGridX, entity.nextGridY);
-                    this.removeFromPathingGrid(entity.nextGridX, entity.nextGridY, entity.id);
+                    this.removeFromPathingGrid(entity.nextGridX, entity.nextGridY);
                 }
             }
         },
@@ -1216,7 +1206,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 }                                
 
                                 self.addEntity(entity);
-                                self.updateEntitiesHP();
+                                self.getServerInfo();
 
                         
                                 console.debug("Spawned " + Types.getKindAsString(entity.kind) + " (" + entity.id + ") at "+entity.gridX+", "+entity.gridY);
@@ -1319,7 +1309,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                         // to click very fast in order to loot the dropped item and not be blocked.
                                         // The entity is completely removed only after the death animation has ended.
                                         self.removeFromEntityGrid(entity, entity.gridX, entity.gridY);
-                                        self.removeFromPathingGrid(entity.gridX, entity.gridY, entity.id);
+                                        self.removeFromPathingGrid(entity.gridX, entity.gridY);
                                     
                                         if(self.camera.isVisible(entity)) {
                                             self.audioManager.playSound("kill"+Math.floor(Math.random()*2+1));
@@ -1431,7 +1421,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 });
             
                 self.client.onEntityAttack(function(attackerId, targetId) {
-                    self.updateEntitiesHP();
+                    self.getServerInfo();
                     var attacker = self.getEntityById(attackerId),
                         target = self.getEntityById(targetId);
                 
@@ -1449,7 +1439,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 });
             
                 self.client.onPlayerDamageMob(function(mobId, points) {
-                    self.updateEntitiesHP();
+                    self.getServerInfo();
                     var mob = self.getEntityById(mobId);
                     if(mob && points) {
                         self.infoManager.addDamageInfo(points, mob.x, mob.y - 15, "inflicted");
@@ -1457,7 +1447,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 });
             
                 self.client.onPlayerKillMob(function(kind, xp) {
-                    self.updateEntitiesHP();
+                    self.getServerInfo();
                     var mobName = Types.getKindAsString(kind);
 
                     setTimeout(function() {
@@ -1507,7 +1497,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 });
             
                 self.client.onPlayerChangeHealth(function(points, isRegen) {
-                    self.updateEntitiesHP();
+                    self.getServerInfo();
                     var player = self.player,
                         diff,
                         isHurt;
@@ -1540,7 +1530,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     self.player.maxHitPoints = hp;
                     self.player.hitPoints = hp;
                     self.updateBars();
-                    self.updateEntitiesHP();
+                    self.getServerInfo();
                 });
             
                 self.client.onPlayerEquipItem(function(playerId, itemKind) {
@@ -1735,7 +1725,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             this.player.disengage();
             this.createAttackLink(this.player, mob);
             this.client.sendAttack(mob);
-            self.updateEntitiesHP();
+            self.getServerInfo();
         },
     
         /**
@@ -2076,7 +2066,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 // an entity is not in the entity grid but is on the pathing grid
                 if (entity == null && this.pathingGrid[pos.y][pos.x] >= 1 && this.pathingGridBackup[pos.y][pos.x] === 0) {
                     console.log("Cleaning up entity on pathing grid at " + pos.x + ", " + pos.y, this.pathingGrid[pos.y][pos.x]);
-                    this.removeFromPathingGrid(pos.x, pos.y, null);
+                    this.removeFromPathingGrid(pos.x, pos.y);
                 }
 
         	    if(entity instanceof Mob) {
@@ -2652,7 +2642,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             });            
         },
 
-        updateEntitiesHP: function () {
+        getServerInfo: function () {
             self = this;
 
             now = new Date().getTime();
@@ -2664,11 +2654,17 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             }
             self.lastHPCall = now;
 
-            axios.get("/session/" + self.sessionId + "/hp").then(function (response) {
+            axios.get("/session/" + self.sessionId + "/polling").then(function (response) {
                 if (response.data !== null && response.data !== undefined) {
 
-                    Object.keys(response.data).forEach(function (id) {
-                        toUpdateEntity = response.data[id];
+                    if (response.data.playerInfo !== undefined) {
+                        if (response.data.playerInfo.powerUpActive === false && self.player.spriteName !== response.data.playerInfo.armor) {
+                            self.player.switchArmor(self.sprites[response.data.playerInfo.armor]);
+                        }
+                    }
+
+                    Object.keys(response.data.entitiesHp).forEach(function (id) {
+                        toUpdateEntity = response.data.entitiesHp[id];
                         if (self.entities[id] !== undefined) {
                             self.entities[id].hitPoints = toUpdateEntity.hitPoints;
                             self.entities[id].maxHitPoints = toUpdateEntity.maxHitPoints;
@@ -2679,9 +2675,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 }
             }).catch(function (error) {
                 console.error("Error while getting entity hp info", error);
-            }).finally(function(e){
-                self.updateEntitiesHPFlag = false;
-            })
+            });
         }
     });
     

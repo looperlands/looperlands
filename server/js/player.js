@@ -472,5 +472,9 @@ module.exports = Player = Character.extend({
     },
     getLevel: function(){
         return this.level;
+    },
+
+    getPowerUpActive: function() {
+        return this.firepotionTimeout !== null && this.firepotionTimeout !== undefined;
     }
 });
