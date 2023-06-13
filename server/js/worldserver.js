@@ -932,14 +932,14 @@ module.exports = World = cls.Class.extend({
             powerUpActive: player.getPowerUpActive()
         }
 
-        let entitiesHp = this.getHpForCharactersInPlayerGroup(playerId);
+        let characterInfo = this.getCharactersInfoInPlayerGroup(playerId);
         return {
-            entitiesHp: entitiesHp,
+            characterInfo: characterInfo,
             playerInfo: playerInfo
         }
     },
 
-    getHpForCharactersInPlayerGroup: function(playerId) {
+    getCharactersInfoInPlayerGroup: function(playerId) {
         const player = this.getEntityById(playerId);
         if (player === undefined) {
             return;
@@ -953,7 +953,9 @@ module.exports = World = cls.Class.extend({
             if (entity.type === 'mob' || entity.type === 'player') {
                 ret[id] = {
                     maxHitPoints: entity.maxHitPoints,
-                    hitPoints: entity.hitPoints
+                    hitPoints: entity.hitPoints,
+                    moveSpeed: entity.getMoveSpeed(),
+                    attackRate: entity.getAttackRate()
                 } 
             }
         });
