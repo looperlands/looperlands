@@ -90,5 +90,13 @@ module.exports = Character = Entity.extend({
         for(var id in this.attackers) {
             callback(this.attackers[id]);
         }
+    },
+
+    getMoveSpeed: function() {
+        return;
+    },
+
+    getAttackRate: function() {
+        return;
     }
 });

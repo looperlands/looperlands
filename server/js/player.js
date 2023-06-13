@@ -13,6 +13,7 @@ const { ThreadMemberFlagsBitField } = require("discord.js");
 const discord = require('./discord.js');    
 const axios = require('axios');
 const LOOPWORMS_LOOPERLANDS_BASE_URL = process.env.LOOPWORMS_LOOPERLANDS_BASE_URL;
+const BASE_SPEED = 120;
 
 module.exports = Player = Character.extend({
     init: function(connection, worldServer) {
@@ -29,6 +30,9 @@ module.exports = Player = Character.extend({
         this.lastCheckpoint = null;
         this.formatChecker = new FormatChecker();
         this.disconnectTimeout = null;
+
+        this.moveSpeed = BASE_SPEED;
+        this.attackRate = 800;
 
         
         this.connection.listen(function(message) {
@@ -473,12 +477,25 @@ module.exports = Player = Character.extend({
     increaseHateFor: function(mobId, points) {
         return;
     },
+
     getLevel: function(){
         return this.level;
     },
 
     getPowerUpActive: function() {
         return this.firepotionTimeout !== null && this.firepotionTimeout !== undefined;
+    },
+
+    getAttackRate: function() {
+        return this.attackRate;
+    },
+
+    getMoveSpeed: function() {
+        if (this.getLevel() === 1) {
+            return BASE_SPEED;
+        } else {
+            return BASE_SPEED - (this.getLevel() - 1) * 4;
+        }
     },
 
     pushEntityList: function() {

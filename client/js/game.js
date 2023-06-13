@@ -2662,18 +2662,21 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
             axios.get("/session/" + self.sessionId + "/polling").then(function (response) {
                 if (response.data !== null && response.data !== undefined) {
-
                     if (response.data.playerInfo !== undefined) {
                         if (response.data.playerInfo.powerUpActive === false && self.player.spriteName !== response.data.playerInfo.armor) {
                             self.player.switchArmor(self.sprites[response.data.playerInfo.armor]);
                         }
                     }
 
-                    Object.keys(response.data.entitiesHp).forEach(function (id) {
-                        toUpdateEntity = response.data.entitiesHp[id];
+                    Object.keys(response.data.characterInfo).forEach(function (id) {
+                        toUpdateEntity = response.data.characterInfo[id];
                         if (self.entities[id] !== undefined) {
                             self.entities[id].hitPoints = toUpdateEntity.hitPoints;
                             self.entities[id].maxHitPoints = toUpdateEntity.maxHitPoints;
+                            if (toUpdateEntity.moveSpeed !== undefined && toUpdateEntity.attackRate !== undefined) {
+                                self.entities[id].moveSpeed = toUpdateEntity.moveSpeed;
+                                self.entities[id].setAttackRate(toUpdateEntity.attackRate);
+                            }
                         } else {
                             console.debug("Unknown entity " + id);
                         }
