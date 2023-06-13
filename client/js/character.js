@@ -546,7 +546,13 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
         },
     
         setAttackRate: function(rate) {
-            this.attackCooldown = new Timer(rate);
+            if (this.attackCooldown === undefined) {
+                this.attackCooldown = new Timer(rate);
+                return;
+            }
+            else if (this.attackCooldown !== undefined && this.attackCooldown.duration !== rate) {
+                this.attackCooldown = new Timer(rate);
+            }
         }
     });
     
