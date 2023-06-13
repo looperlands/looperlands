@@ -347,6 +347,24 @@ WS.socketIOServer = Server.extend({
             res.status(200).send(true);
         });
 
+        app.get("/players", async (req, res) => {
+            let players = []
+            let cacheKeys = cache.keys();
+            for (i in cacheKeys) {
+                let key = cacheKeys[i];
+                let cachedBody = cache.get(key);
+                if(cachedBody.isDirty === true) {
+                    let player = {
+                        name: await ens.getEns(cachedBody.walletId),
+                        wallet: cachedBody.walletId,
+                        avatar: cachedBody.nftId
+                    }
+                    players.push(player);
+                }
+            }
+            res.status(200).json(players);
+        });
+
         self.io.on('connection', function(connection){
           console.log('a user connected');
 
