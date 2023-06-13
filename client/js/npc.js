@@ -3,27 +3,30 @@ define(['character'], function(Character) {
 
     var NpcTalk = {
         "guard": [
-            "Hello there",
-            "We don't need to see your identification",
-            "You are not the player we're looking for",
-            "Move along, move along..."
+            "Hello there, Looper",
+            'You can learn more about <a target="_blank" href="https://medium.loopring.io/loopring-taiko-ready-layer-3-d9657327f908">Loopring and Taiko on Layer 3</a>.',
+            "Layer 3 means we can build customized applications (like privacy) with scalability",
+            'Vitalik Butarin <a target="_blank" href="https://vitalik.ca/general/2022/09/17/layer_3.html">said</a> L2 is for general-purpose scaling, L3 is for customized scaling',
+            'My next message is a Redpacket QR code',
+            '<img src="https://loopworms.io/DEV/LooperLands/WebAmpNFT.jpg" width="75%"/>',
+            "Now go about your adventure, Looper!"
         ],
     
         "king": [
-            "Hi, I'm the LoopWorm King",
+            "Hi Looper, I'm the LoopWorm King",
             "Welcome to my kingdom",
+            'You can buy our <a target="_blank" href="https://loopexchange.art/collection/web3-pets">Web3 Pets</a> to support us.',
             'Check out <a target="_blank" href="https://twitter.com/LoopWorms">my twitter</a> and give me a follow!',
             "Stay wormy",
             "or else..."
         ],
 
         "king2": [
-            "Hi, I'm the LoopWorm King2. Eventually I'll have a reward for you.",
+            "Hi Looper, I'm the LoopWorm King2. Eventually I'll have a reward for you.",
         ],        
     
         "villagegirl": [
-            "Hi there, adventurer!",
-            "How do you like this game?",
+            "Hi there, Looper!",
             "I'm Bstrat515",
             "I'm a twitter influencer for the Layer 2 protocol Loopring on the Ethereum blockchain.",
             'Check out <a target="_blank" href="http://twitter.com/share?text=%40bstrat515">my twitter</a> and give me a follow!',
@@ -32,13 +35,14 @@ define(['character'], function(Character) {
         ],
     
         "villager": [
-            "Howdy stranger, the name's Ordinary Adam.",
-            'Check out <a target="_blank" href="https://twitter.com/Ordinary_Adam">my twitter</a> and give me a follow!'
+            "Good day, eh, Looper, the name's Ordinary Adam.",
+            'Check out my Loopring L2 <a target="_blank" href="https://loopexchange.art/collection/ordinaryadam">collection</a>.',
+            'Visit <a target="_blank" href="https://twitter.com/Ordinary_Adam">my twitter</a> and give me a follow!'
         ],
     
         "agent": [
-            "Don't believe everything you see.",
-            'Check out <a target="_blank" href="https://twitter.com/heydomoshi">my twitter</a> and give me a follow!'
+            "Don't believe everything you see, Looper.",
+            'Visit <a target="_blank" href="https://twitter.com/heydomoshi">my twitter</a> and give me a follow!'
         ],
     
         "rick": [
@@ -57,7 +61,7 @@ define(['character'], function(Character) {
         ],
         
         "scientist": [
-            "Greetings.",
+            "Greetings, Looper.",
             "I am the inventor of these two potions.",
             "The red one will replenish your health points...",
             "The blue one will make you invincible with the power of Loopring...",
@@ -95,45 +99,47 @@ define(['character'], function(Character) {
     
         "priest": [
             "Boo!",
-            'Check out <a target="_blank" href="https://twitter.com/onevincesuarez">my twitter</a> and give me a follow!'
+            'Check out my Loopring L2 <a target="_blank" href="https://nft.gamestop.com/collection/ghostlytales">collection</a>.',
+            'Visit <a target="_blank" href="https://twitter.com/onevincesuarez">my twitter</a> and give me a follow!'
         ],
         
         "sorcerer": [
-            "Ah... I had foreseen you would come to see me.",
-            "Well? How do you like my new staff?",
-            "Pretty cool, eh?",
-            "Where did I get it, you ask?",
-            "I understand. It's easy to get envious.",
-            "I actually crafted it myself, using my mad wizard skills.",
-            "But let me tell you one thing...",
-            "There are lots of items in this game.",
-            "Some more powerful than others.",
-            "In order to find them, exploration is key.",
+            "Welcome to LooperLands...",
+            "Wondering how to get cool in-game weapons?",
+            "You'll need to earn them by tasks",
+            "Like visiting NPCs for Red Packets",
+            "And daily gauntlets",
+            "And PvP contests",
+            "You can also sell and trade them on L2 marketplaces",
+            "Weapons will gain experience as you use them.",
+            "And progress is tranasactable.",
+            "#OwnYourAssets #WeMakeOurOwnUtility",
             "Good luck."
         ],
         
         "octocat": [
             "Welcome to LooperLands!",
-            "Want to see the source code?",
+            'Want to see the  <a target="_blank" href="https://github.com/balkshamster/looperlands">source code</a>?'
         ],
         
         "coder": [
             "It's YaBoyNancy",
-            'Check out <a target="_blank" href="https://twitter.com/yaboynancy">my twitter</a> and give me a follow!'
+            'You should check out my <a target="_blank" href="https://nft.gamestop.com/collection/yaboynancysignaturecollection">Signature Collection</a> on GSMP',
+            'Visit <a target="_blank" href="https://twitter.com/yaboynancy">my twitter</a> and give me a follow!'
         ],
     
         "beachnpc": [
-            "Don't mind me, I'm just here on vacation.",
-            "I have to say...",
-            'Check out <a target="_blank" href="https://twitter.com/theobewhoturnz">my twitter</a> and give me a follow!'
+            "TurntManJimi needs no introduction, Looper.",
+            'You should check out my <a target="_blank" href="https://loopexchange.art/collection/interdemintionalsamurais">InterdeMINTional Samurais</a> collection',
+            'Visit <a target="_blank" href="https://twitter.com/theobewhoturnz">my twitter</a> and give me a follow!'
         ],
         
         "desertnpc": [
-            "One does not simply walk into these mountains...",
-            "An ancient undead lord is said to dwell here.",
-            "Nobody knows exactly what he looks like...",
-            "...for none has lived to tell the tale.",
-            "It's not too late to turn around and go home, kid."
+            "Gauntlet this way, Looper!",
+            "Only the power of Loopring can save you",
+            "It is dangerous to go alone! Take this.",
+            "Haha, fooled you. But the Skeleton King may offer a prize",
+            "in the form of a Red Packet if you and your friends are brave and strong."
         ],
     
         "othernpc": [
@@ -143,6 +149,7 @@ define(['character'], function(Character) {
 
         "goose": [
             "Honk!",
+            'I raise funds #ForTheChildren - <a target="_blank" href="https://twitter.com/hashtag/ForTheChildren?src=hashtag_click">click here</a> to help',
             'Check out <a target="_blank" href="https://twitter.com/RSKAGY">my twitter</a> and give me a follow or <a target="_blank" href="http://twitter.com/share?text=%40RSKAGY">tweet me</a>'
         ]        
     };
