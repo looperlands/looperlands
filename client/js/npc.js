@@ -8,7 +8,7 @@ define(['character'], function(Character) {
             "Layer 3 means we can build customized applications (like privacy) with scalability",
             'Vitalik Butarin <a target="_blank" href="https://vitalik.ca/general/2022/09/17/layer_3.html">said</a> L2 is for general-purpose scaling, L3 is for customized scaling',
             'My next message is a Redpacket QR code',
-            '<img src="https://loopworms.io/DEV/LooperLands/WebAmpNFT.jpg" width="75%"/>'
+            '<img src="https://loopworms.io/DEV/LooperLands/WebAmpNFT.jpg" width="75%"/>',
             "Now go about your adventure, Looper!"
         ],
     
@@ -36,7 +36,7 @@ define(['character'], function(Character) {
     
         "villager": [
             "Good day, eh, Looper, the name's Ordinary Adam.",
-            'Check out my Loopring L2 <a target="_blank" href="https://loopexchange.art/collection/ordinaryadam">collection</a>.'
+            'Check out my Loopring L2 <a target="_blank" href="https://loopexchange.art/collection/ordinaryadam">collection</a>.',
             'Visit <a target="_blank" href="https://twitter.com/Ordinary_Adam">my twitter</a> and give me a follow!'
         ],
     
@@ -99,7 +99,7 @@ define(['character'], function(Character) {
     
         "priest": [
             "Boo!",
-            'Check out my Loopring L2 <a target="_blank" href="https://nft.gamestop.com/collection/ghostlytales">collection</a>.'
+            'Check out my Loopring L2 <a target="_blank" href="https://nft.gamestop.com/collection/ghostlytales">collection</a>.',
             'Visit <a target="_blank" href="https://twitter.com/onevincesuarez">my twitter</a> and give me a follow!'
         ],
         
@@ -124,13 +124,13 @@ define(['character'], function(Character) {
         
         "coder": [
             "It's YaBoyNancy",
-            'You should check out my <a target="_blank" href="https://nft.gamestop.com/collection/yaboynancysignaturecollection">Signature Collection</a> on GSMP'
+            'You should check out my <a target="_blank" href="https://nft.gamestop.com/collection/yaboynancysignaturecollection">Signature Collection</a> on GSMP',
             'Visit <a target="_blank" href="https://twitter.com/yaboynancy">my twitter</a> and give me a follow!'
         ],
     
         "beachnpc": [
             "TurntManJimi needs no introduction, Looper.",
-            'You should check out my <a target="_blank" href="https://loopexchange.art/collection/interdemintionalsamurais">InterdeMINTional Samurais</a> collection'
+            'You should check out my <a target="_blank" href="https://loopexchange.art/collection/interdemintionalsamurais">InterdeMINTional Samurais</a> collection',
             'Visit <a target="_blank" href="https://twitter.com/theobewhoturnz">my twitter</a> and give me a follow!'
         ],
         
@@ -149,7 +149,7 @@ define(['character'], function(Character) {
 
         "goose": [
             "Honk!",
-            'I raise funds #ForTheChildren - <a target="_blank" href="https://twitter.com/hashtag/ForTheChildren?src=hashtag_click">click here</a> to help'
+            'I raise funds #ForTheChildren - <a target="_blank" href="https://twitter.com/hashtag/ForTheChildren?src=hashtag_click">click here</a> to help',
             'Check out <a target="_blank" href="https://twitter.com/RSKAGY">my twitter</a> and give me a follow or <a target="_blank" href="http://twitter.com/share?text=%40RSKAGY">tweet me</a>'
         ]        
     };
