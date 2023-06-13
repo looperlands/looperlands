@@ -76,6 +76,8 @@ module.exports = Player = Character.extend({
                 self.server.server.cache.set(self.sessionId, playerCache);
                 self.title = playerCache.title;
                 self.level = Formulas.level(playerCache.xp);
+                self.walletId = playerCache.walletId;
+                self.nftId = playerCache.nftId;
                 self.updateHitPoints();
                 self.send([Types.Messages.WELCOME, self.id, self.name, self.x, self.y, self.hitPoints, self.title]);
                 self.hasEnteredGame = true;
@@ -302,6 +304,7 @@ module.exports = Player = Character.extend({
                 let killer = Types.getKindAsString(mob.kind);
                 if (mob instanceof Player)  {
                     discord.sendMessage(`Player ${this.name} ganked by ${mob.name}.`);
+                    this.updatePVPStats(mob);
                 } else {
                     discord.sendMessage(`Player ${this.name} killed by ${killer}.`);
                 }
@@ -486,5 +489,10 @@ module.exports = Player = Character.extend({
             }
         }
         this.entityListPush = now;
+    },
+
+    updatePVPStats: async function(playerKiller) {
+        await dao.updatePVPStats(this.walletId, this.nftId, 0, 1);
+        dao.updatePVPStats(playerKiller.walletId, playerKiller.nftId, 1, 0);
     }
 });

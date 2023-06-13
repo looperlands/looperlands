@@ -148,6 +148,23 @@ exports.walletHasNFT = async function (wallet, nft) {
     }
 };
 
+exports.updatePVPStats = async function (wallet, nft, killIncrement, deathIncrement) {
+  const options = {
+    headers: {
+      'X-Api-Key': API_KEY
+    }
+  };
+  try {
+    const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/SavePvP.php?NFTID=${nft}&WalletID=${wallet}&PvPKills=${killIncrement}&PvPDeaths=${deathIncrement}`
+    const responseData = await axios.get(url, options);
+    console.log("ResponseData from Loopworms: ", responseData.status, responseData.text, responseData.data);
+    return responseData.data;
+  } catch (error) {
+    console.error(error);
+    return { "error": "Error saving PVP stats" };
+  }
+};
+
 
 exports.updateExperience = updateExperience;
 exports.saveCharacterData = saveCharacterData;

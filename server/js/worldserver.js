@@ -923,6 +923,10 @@ module.exports = World = cls.Class.extend({
     getPollingInfo: function(playerId) {
         let player = this.getEntityById(playerId);
 
+        if (!player) {
+            return;
+        }
+
         let playerInfo = {
             armor: Types.getKindAsString(player.armor),
             powerUpActive: player.getPowerUpActive()
