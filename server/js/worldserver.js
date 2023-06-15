@@ -318,6 +318,13 @@ module.exports = World = cls.Class.extend({
         });
         player.recentlyLeftGroups = [];
     },
+
+    pushToAllGroups: function(message, ignoredPlayer) {
+        let self = this;
+        this.map.forEachGroup(function(id) {
+            self.pushToGroup(id, message, ignoredPlayer);
+        });
+    },
     
     pushBroadcast: function(message, ignoredPlayer) {
         for(var id in this.outgoingQueues) {
@@ -681,7 +688,7 @@ module.exports = World = cls.Class.extend({
             mob.clearTarget();
             mob.forgetPlayer(player.id, 1000);
         });
-        
+
         this.handleEntityGroupMembership(player);
     },
     

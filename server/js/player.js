@@ -234,9 +234,8 @@ module.exports = Player = Character.extend({
                     if(_self.server.isValidPosition(x, y)) {
                         _self.setPosition(x, y);
                         _self.clearTarget();
-                        
-                        _self.broadcast(new Messages.Teleport(_self));
-                        
+
+                        _self.server.pushToAllGroups(new Messages.Teleport(_self));
                         _self.server.handlePlayerVanish(_self);
                         _self.server.pushRelevantEntityListTo(_self);
                     } else {
@@ -361,6 +360,7 @@ module.exports = Player = Character.extend({
             this.broadcastzone_callback(message, ignoreSelf === undefined ? true : ignoreSelf);
         }
     },
+
     
     onExit: function(callback) {
         this.exit_callback = callback;
