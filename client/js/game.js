@@ -1212,6 +1212,16 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 });
             
                 self.client.onSpawnCharacter(function(entity, x, y, orientation, targetId) {
+
+                    if (self.entityIdExists(entity.id) ) {
+                        existingEntity = self.entities[entity.id];
+                        if(!self.camera.isVisiblePosition(existingEntity.gridX, existingEntity.gridY)) {
+                            console.log("Entity "+existingEntity.id+" is outside of the camera view so removing for respawn.");
+                            self.removeEntity(existingEntity);
+                            self.removeFromRenderingGrid(existingEntity, existingEntity.gridX, existingEntity.gridY);
+                        }
+                    }
+
                     if(!self.entityIdExists(entity.id)) {
                         try {
                             if(entity.id !== self.playerId) {
@@ -1220,8 +1230,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 entity.setOrientation(orientation);
                                 entity.idle();
                                 if (entity.name === undefined) {
-                                    entity.name = entity.normalSprite.name;
-                                    entity.name.replace(/[0-9]+/, "");
+                                    entity.name = entity.normalSprite.name.replace(/[0-9]+/, "");
                                 }                                
 
                                 self.addEntity(entity);
