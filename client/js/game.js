@@ -1354,7 +1354,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                             console.error(e);
                         }
                     } else {
-                        console.debug("Character "+entity.id+" already exists. Don't respawn.");
+                        console.log("Character "+entity.id+" already exists. Don't respawn.");
                     }
                 });
 

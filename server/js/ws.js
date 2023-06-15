@@ -424,7 +424,6 @@ WS.socketIOConnection = Connection.extend({
         });
 
         connection.on("message", function (message) {
-            console.log("Received: " + message)
             if (self.listen_callback)
                 self.listen_callback(message)
         });
