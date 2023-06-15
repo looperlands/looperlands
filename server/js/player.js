@@ -235,7 +235,7 @@ module.exports = Player = Character.extend({
                         _self.setPosition(x, y);
                         _self.clearTarget();
 
-                        _self.server.pushToAllGroups(new Messages.Teleport(_self));
+                        _self.broadcast(new Messages.Teleport(_self));
                         _self.server.handlePlayerVanish(_self);
                         _self.server.pushRelevantEntityListTo(_self);
                     } else {
