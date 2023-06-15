@@ -1215,7 +1215,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             
                 self.client.onSpawnCharacter(function(entity, x, y, orientation, targetId) {
 
-                    if (self.entityIdExists(entity.id) ) {
+                    if (self.entityIdExists(entity.id) && entity instanceof Player) {
                         existingEntity = self.entities[entity.id];
                         if(!self.camera.isVisiblePosition(existingEntity.gridX, existingEntity.gridY)) {
                             console.log("Entity "+existingEntity.id+" is outside of the camera view so removing for respawn.");
