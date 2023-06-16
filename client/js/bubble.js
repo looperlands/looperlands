@@ -2,7 +2,7 @@
 define(['jquery', 'timer'], function($, Timer) {
 
     var Bubble = Class.extend({
-        init: function(id, element, time, global) {
+        init: function(id, element, time) {
             this.id = id;
             this.element = element;
             timeout = 5000;
