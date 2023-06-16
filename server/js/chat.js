@@ -17,7 +17,7 @@ exports.addMessage = function(playerName, message) {
     if (messages.length > MAX_MESSAGES) {
         messages.shift();
     }
-    let discordMessage = `${playerName}: ${message}`;
+    let discordMessage = `${playerName}: ${message.message}`;
     discord.sendMessage(discordMessage);
     cache.set("logs", messages);
 }
