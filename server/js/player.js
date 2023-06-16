@@ -12,6 +12,7 @@ var cls = require("./lib/class"),
 const { ThreadMemberFlagsBitField } = require("discord.js");
 const discord = require('./discord.js');    
 const axios = require('axios');
+const chat = require("./chat.js");
 const LOOPWORMS_LOOPERLANDS_BASE_URL = process.env.LOOPWORMS_LOOPERLANDS_BASE_URL;
 const BASE_SPEED = 120;
 
@@ -103,6 +104,7 @@ module.exports = Player = Character.extend({
                 if(msg && msg !== "") {
                     msg = msg.substr(0, 60); // Enforce maxlength of chat input
                     self.broadcastToZone(new Messages.Chat(self, msg), false);
+                    chat.addMessage(self.name, msg);
                 }
             }
             else if(action === Types.Messages.MOVE) {
