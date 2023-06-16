@@ -210,7 +210,7 @@ define(['jquery', 'storage'], function($, Storage) {
                     if (response.data === undefined) {
                         return;
                     }
-                    $("#chatlog").show();
+                    self.game.destroyBubble("global");
                     chatHTML = "<div>";
                     response.data.forEach(function(message) {
                         date = new Date(message.epoch);
@@ -228,7 +228,6 @@ define(['jquery', 'storage'], function($, Storage) {
                 $('#chatbox').removeClass('active');
                 $('#chatinput').blur();
                 $('#chatbutton').removeClass('active');
-                $("#chatlog").hide();
                 self.game.destroyBubble("global");
             }
         },
