@@ -20,6 +20,7 @@ const NodeCache = require( "node-cache" );
 const dao = require('./dao.js');
 const Formulas = require('./formulas.js');
 const ens = require("./ens.js");
+const chat = require("./chat.js");
 
 const cache = new NodeCache();
 
@@ -363,6 +364,11 @@ WS.socketIOServer = Server.extend({
                 }
             }
             res.status(200).json(players);
+        });
+
+        app.get("/chat", async (req, res) => {
+            let msgs = chat.getMessages();
+            res.status(200).json(msgs);
         });
 
         self.io.on('connection', function(connection){

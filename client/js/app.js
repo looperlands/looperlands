@@ -205,6 +205,21 @@ define(['jquery', 'storage'], function($, Storage) {
                 $('#chatbox').addClass('active');
                 $('#chatinput').focus();
                 $('#chatbutton').addClass('active');
+                self = this;
+                axios.get("/chat").then(function(response){
+                    if (response.data === undefined) {
+                        return;
+                    }
+                    $("#chatlog").show();
+                    chatHTML = "<div>";
+                    response.data.forEach(function(message) {
+                        date = new Date(message.epoch);
+                        time = date.getHours() + ":" + date.getMinutes();
+                        chatHTML += `<p><b>${message.playerName}</b>&nbsp;[${time}]:&nbsp;${message.message}</p>`
+                    });
+                    chatHTML += "</div>";
+                    self.game.createBubble("global", chatHTML);
+                });
             }
         },
 
@@ -213,6 +228,8 @@ define(['jquery', 'storage'], function($, Storage) {
                 $('#chatbox').removeClass('active');
                 $('#chatinput').blur();
                 $('#chatbutton').removeClass('active');
+                $("#chatlog").hide();
+                self.game.destroyBubble("global");
             }
         },
 

@@ -5,7 +5,11 @@ define(['jquery', 'timer'], function($, Timer) {
         init: function(id, element, time) {
             this.id = id;
             this.element = element;
-            this.timer = new Timer(5000, time);
+            timeout = 5000;
+            if (id === "global") {
+                timeout = 1000 * 60 * 15;
+            }
+            this.timer = new Timer(timeout, time);
         },
     
         isOver: function(time) {
@@ -43,9 +47,12 @@ define(['jquery', 'timer'], function($, Timer) {
                 $("#"+id+" p").html(message);
             }
             else {
-                var el = $("<div id=\""+id+"\" class=\"bubble\"><p>"+message+"</p><div class=\"thingy\"></div></div>"); //.attr('id', id);
+                if (id === "global") {
+                    var el = $("<div id=\""+id+"\" class=\"bubbleglobal\"><p>"+message+"</p></div>"); //.attr('id', id);
+                } else {
+                    var el = $("<div id=\""+id+"\" class=\"bubble\"><p>"+message+"</p><div class=\"thingy\"></div></div>"); //.attr('id', id);
+                }
                 $(el).appendTo(this.container);
-            
                 this.bubbles[id] = new Bubble(id, el, time);
             }
         },
