@@ -1,7 +1,7 @@
 const Formulas = require('./formulas.js');
 const axios = require('axios');
 
-class Weapon {
+class NFTWeapon {
     constructor(trait, xp, nftId) {
         this.nftId = nftId;
         this.trait = trait || this.chooseRandomTrait();
