@@ -1,8 +1,10 @@
 const Formulas = require('./formulas.js');
 const dao = require('./dao.js');
 
-export class NFTWeapon {
+
+class NFTWeapon {
     constructor(nftId, walletId) {
+        console.log("Creating NFTWeapon: ", nftId, walletId);
         this.nftId = nftId;
         this.walletId = walletId;
         this.trait = undefined;
@@ -54,3 +56,5 @@ export class NFTWeapon {
         return this.trait;
     }
 }
+
+exports.NFTWeapon = NFTWeapon;
