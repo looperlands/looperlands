@@ -98,5 +98,9 @@ module.exports = Character = Entity.extend({
 
     getAttackRate: function() {
         return;
+    },
+
+    getWeaponLevel: function () {
+        return this.weaponLevel;
     }
 });

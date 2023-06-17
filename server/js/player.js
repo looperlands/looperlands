@@ -155,7 +155,8 @@ module.exports = Player = Character.extend({
                         mob.handleHurt(self);
                     } else {
                         let level = self.getLevel();
-                        let totalLevel = (self.weaponLevel + level) - 1;
+                        console.log(self.getWeaponLevel());
+                        let totalLevel = (self.getWeaponLevel() + level) - 1;
                         console.log(self.name, "Total level ", totalLevel, "Level", level, "Weapon level", self.weaponLevel );
                         var dmg = Formulas.dmg(totalLevel, mob.armorLevel);
                     
@@ -300,7 +301,7 @@ module.exports = Player = Character.extend({
 
             let totalLevel = (this.armorLevel + level) - 1;
            
-            let damage = Formulas.dmg(mob.weaponLevel, totalLevel);
+            let damage = Formulas.dmg(mob.getWeaponLevel(), totalLevel);
             this.hitPoints -= damage;
             this.server.handleHurtEntity(this, mob, damage);
             console.log(this.name, "Level " + level, "Armor level", this.armorLevel, "Total level", totalLevel, "Hitpoints", this.hitPoints);
