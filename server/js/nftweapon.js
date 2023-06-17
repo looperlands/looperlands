@@ -1,23 +1,33 @@
 const Formulas = require('./formulas.js');
-const axios = require('axios');
+const dao = require('./dao.js');
 
-class NFTWeapon {
-    constructor(trait, xp, nftId) {
+export class NFTWeapon {
+    constructor(nftId, walletId) {
         this.nftId = nftId;
-        this.trait = trait || this.chooseRandomTrait();
-        this.level = Formulas.level(this.xp);
+        this.walletId = walletId;
+        this.trait = undefined;
+        this.experience = undefined;
+        this.level = undefined;
     }
 
-    chooseRandomTrait() {
-        const traits = ['aoe', 'crit'];
-        const randomIndex = Math.floor(Math.random() * traits.length);
-        let trait = traits[randomIndex];
-        this.#setTraitInServer(trait);
-        return trait;
+    async loadWeaponData() {
+        const response = await dao.loadNFTWeapon(this.walletId, this.nftId);
+        this.experience = response.experience;
+        this.trait = response.trait;
+        if (!this.trait) {
+            await this.#setTraitInServer();
+        }
+        this.level = Formulas.getLevelFromExperience(this.experience);
     }
 
-    #setTraitInServer(trait) {
-        //todo: dao call to set trait
+    async #setTraitInServer() {
+        try {
+            const trait = await dao.setNFTWeaponTrait(this.walletId, this.nftId, trait);
+            console.log("Got trait: ", trait, this.walletId, this.nftId);
+            this.trait = trait;
+        } catch (error) {
+            console.error(error);
+        }
     }
 
     isTraitActive() {
@@ -26,8 +36,21 @@ class NFTWeapon {
         return chance >= 89; // base level is 1, so base chance of trait is 10%
     }
 
-    incrementExperience(damageDealt) {
-        // todo: dao call here to update and set the level based on the returned xp
+    async incrementExperience(damageDealt) {
+        try {
+            const updatedExperience = await dao.saveNFTWeaponExperience(this.walletId, this.nftId, damageDealt);
+            this.experience = updatedExperience;
+            this.level = Formulas.getLevelFromExperience(updatedExperience);
+        } catch(error) {
+            console.error(error);
+        }
     }
 
+    getLevel() {
+        return this.level;
+    }
+    
+    getTrait() {
+        return this.trait;
+    }
 }

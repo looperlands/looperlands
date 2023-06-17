@@ -9,10 +9,12 @@ var cls = require("./lib/class"),
     Types = require("../../shared/js/gametypes"),
     dao = require('./dao.js');
 
-const { ThreadMemberFlagsBitField } = require("discord.js");
+
 const discord = require('./discord.js');    
 const axios = require('axios');
 const chat = require("./chat.js");
+const NFTWeapon = require("./nftweapon.js");
+
 const LOOPWORMS_LOOPERLANDS_BASE_URL = process.env.LOOPWORMS_LOOPERLANDS_BASE_URL;
 const BASE_SPEED = 120;
 
@@ -155,11 +157,12 @@ module.exports = Player = Character.extend({
                         mob.handleHurt(self);
                     } else {
                         let level = self.getLevel();
-                        console.log(self.getWeaponLevel());
                         let totalLevel = (self.getWeaponLevel() + level) - 1;
                         console.log(self.name, "Total level ", totalLevel, "Level", level, "Weapon level", self.weaponLevel );
-                        var dmg = Formulas.dmg(totalLevel, mob.armorLevel);
-                    
+                        let dmg = Formulas.dmg(totalLevel, mob.armorLevel);
+                        
+                        self.incrementNFTWeaponExperience(dmg);
+
                         if(dmg > 0) {
                             mob.receiveDamage(dmg, self.id);
                             console.log("Player "+self.id+" hit mob "+mob.id+" for "+dmg+" damage.", mob.type);
@@ -295,6 +298,13 @@ module.exports = Player = Character.extend({
         this.connection.sendUTF8("go"); // Notify client that the HELLO/WELCOME handshake can start
     },
 
+    incrementNFTWeaponExperience: function (damage) {
+        let nftWeapon = this.getNFTWeapon();
+        if (nftWeapon !== undefined) {
+            nftWeapon.incrementExperience(damage);
+        }
+    },
+
     handleHurt: function(mob) {
         if(mob && this.hitPoints > 0) {
             let level = this.getLevel();
@@ -305,6 +315,10 @@ module.exports = Player = Character.extend({
             this.hitPoints -= damage;
             this.server.handleHurtEntity(this, mob, damage);
             console.log(this.name, "Level " + level, "Armor level", this.armorLevel, "Total level", totalLevel, "Hitpoints", this.hitPoints);
+
+            if (mob instanceof Player) {
+                mob.incrementNFTWeaponExperience(damage);
+            }
 
             if(this.hitPoints <= 0) {
                 let killer = Types.getKindAsString(mob.kind);
@@ -428,7 +442,12 @@ module.exports = Player = Character.extend({
     
     equipWeapon: function(kind) {
         this.weapon = kind;
-        this.weaponLevel = Properties.getWeaponLevel(kind);
+        if (kind.startsWith("NFT")) {
+            this.nftWeapon = new NFTWeapon(this.walletId, kind);
+            this.nftWeapon.loadWeaponData();
+        } else {
+            this.weaponLevel = Properties.getWeaponLevel(kind);
+        }
     },
     
     equipItem: function(item) {
@@ -510,5 +529,18 @@ module.exports = Player = Character.extend({
     updatePVPStats: async function(playerKiller) {
         await dao.updatePVPStats(this.walletId, this.nftId, 0, 1);
         dao.updatePVPStats(playerKiller.walletId, playerKiller.nftId, 1, 0);
+    },
+
+    getWeaponLevel: function() {
+        const nftWeapon = this.getNFTWeapon();
+        if (nftWeapon !== undefined) {
+            return nftWeapon.getLevel();
+        } else {
+            return this.weaponLevel;
+        }
+    },
+
+    getNFTWeapon: function() {
+        return this.nftWeapon;
     }
 });

@@ -166,6 +166,58 @@ exports.updatePVPStats = async function (wallet, nft, killIncrement, deathIncrem
 };
 
 
+exports.setNFTWeaponTrait = async function(wallet, nft) {
+  const options = {
+    headers: {
+      'X-Api-Key': API_KEY
+    }
+  }
+
+  const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/SetWeaponTrait.php?WalletID=${wallet}&NFTID=${nft}`;
+  try {
+    const response = axios.get(url, options);
+    const updatedTrait = response.data.trait;
+    return updatedTrait;
+  } catch(error) {
+    console.error(error);
+    return { "error": "Error saving weapon trait" };
+  }
+}
+
+exports.saveNFTWeaponExperience = async function(wallet, nft, experience) {
+  const options = {
+    headers: {
+      'X-Api-Key': API_KEY
+    }
+  }
+  const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/SaveWeaponExperience.php?WalletID=${wallet}&NFTID=${nft}&Experience=${experience}`;
+  try {
+    const response = axios.get(url, options);
+    const updatedExperience = parseInt(response.data);
+    return updatedExperience;
+  } catch (error) {
+    console.error(error);
+    return { "error": "Error saving weapon experience" };
+  }
+}
+
+exports.loadNFTWeapon = async function (wallet, nft) {
+  const options = {
+    headers: {
+      'X-Api-Key': API_KEY
+    }
+  }
+
+  const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/LoadNFTWeapon.php?WalletID=${wallet}&NFTID=${nft}`;
+  try {
+    const response = await axios.get(url, options);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    return { "error": "Error loading weapon" };
+  }
+}
+
 exports.updateExperience = updateExperience;
 exports.saveCharacterData = saveCharacterData;
 exports.getCharacterData = getCharacterData;
