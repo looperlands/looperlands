@@ -4,10 +4,16 @@ var Utils = {},
     Types = require("../../shared/js/gametypes");
 
 module.exports = Utils;
+const bad_words = require("profane-words");
 
 Utils.sanitize = function(string) {
     // Strip unsafe tags, then escape as html entities.
-    return sanitizer.escape(sanitizer.sanitize(string));
+    let injectSafe = sanitizer.escape(sanitizer.sanitize(string));
+    // Replace bad words with asterisks
+    for (let i = 0; i < bad_words.length; i++) {
+        injectSafe = injectSafe.replace(new RegExp(bad_words[i], "gi"), "*".repeat(bad_words[i].length));
+    }
+    return injectSafe;
 };
 
 Utils.random = function(range) {

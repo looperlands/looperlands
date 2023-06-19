@@ -33,8 +33,6 @@ update_gametypes() {
       # Add the armor rank
       newLine="        case Types.Entities.$NFT_ID:\n            return $randNum;\n        // @nextarmorrank@"
       sed -e "s!.*@nextarmorrank@.*!$newLine!g" tmp2.js > tmp3.js
-    else
-      echo "todo"
     fi
     mv tmp3.js $1
     rm tmp.js
