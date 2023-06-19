@@ -3,9 +3,9 @@ const dao = require('./dao.js');
 
 
 class NFTWeapon {
-    constructor(nftId, walletId) {
+    constructor(walletId, nftId) {
         console.log("Creating NFTWeapon: ", nftId, walletId);
-        this.nftId = nftId;
+        this.nftId = nftId.replace("NFT_", "0x");
         this.walletId = walletId;
         this.trait = undefined;
         this.experience = undefined;
@@ -19,12 +19,12 @@ class NFTWeapon {
         if (!this.trait) {
             await this.#setTraitInServer();
         }
-        this.level = Formulas.getLevelFromExperience(this.experience);
+        this.level = Formulas.level(this.experience);
     }
 
     async #setTraitInServer() {
         try {
-            const trait = await dao.setNFTWeaponTrait(this.walletId, this.nftId, trait);
+            const trait = await dao.saveNFTWeaponTrait(this.walletId, this.nftId);
             console.log("Got trait: ", trait, this.walletId, this.nftId);
             this.trait = trait;
         } catch (error) {
@@ -42,7 +42,7 @@ class NFTWeapon {
         try {
             const updatedExperience = await dao.saveNFTWeaponExperience(this.walletId, this.nftId, damageDealt);
             this.experience = updatedExperience;
-            this.level = Formulas.getLevelFromExperience(updatedExperience);
+            this.level = Formulas.level(updatedExperience);
         } catch(error) {
             console.error(error);
         }
