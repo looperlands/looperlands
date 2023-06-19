@@ -1,6 +1,7 @@
 const LOOPWORMS_LOOPERLANDS_BASE_URL = process.env.LOOPWORMS_LOOPERLANDS_BASE_URL;
 const API_KEY = process.env.LOOPWORMS_API_KEY;
 const axios = require('axios');
+const { response } = require('express');
 
 const MAX_RETRY_COUNT = 5;
 
@@ -166,20 +167,20 @@ exports.updatePVPStats = async function (wallet, nft, killIncrement, deathIncrem
 };
 
 
-exports.setNFTWeaponTrait = async function(wallet, nft) {
+exports.saveNFTWeaponTrait = async function(wallet, nft) {
   const options = {
     headers: {
       'X-Api-Key': API_KEY
     }
   }
 
-  const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/SetWeaponTrait.php?WalletID=${wallet}&NFTID=${nft}`;
+  const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/SaveWeaponTrait.php?WalletID=${wallet}&NFTID=${nft}`;
   try {
-    const response = axios.get(url, options);
-    const updatedTrait = response.data.trait;
+    const response = await axios.get(url, options);
+    const updatedTrait = response.data;
     return updatedTrait;
   } catch(error) {
-    console.error(error);
+    console.error(error, response.data, response.status, response.text);
     return { "error": "Error saving weapon trait" };
   }
 }
@@ -192,11 +193,12 @@ exports.saveNFTWeaponExperience = async function(wallet, nft, experience) {
   }
   const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/SaveWeaponExperience.php?WalletID=${wallet}&NFTID=${nft}&Experience=${experience}`;
   try {
-    const response = axios.get(url, options);
-    const updatedExperience = parseInt(response.data);
+    const response = await axios.get(url, options);
+    //console.log("ResponseData from Loopworms: ", response.status, response.text, response.data);
+    const updatedExperience = parseInt(response.data.experience);
     return updatedExperience;
   } catch (error) {
-    console.error(error);
+    console.error(error, response.data, response.status, response.text);
     return { "error": "Error saving weapon experience" };
   }
 }
@@ -213,7 +215,7 @@ exports.loadNFTWeapon = async function (wallet, nft) {
     const response = await axios.get(url, options);
     return response.data;
   } catch (error) {
-    console.error(error);
+    console.error(error, response.data, response.status, response.text);
     return { "error": "Error loading weapon" };
   }
 }

@@ -66,25 +66,26 @@ module.exports = Player = Character.extend({
                 // Always ensure that the name is not longer than a maximum length.
                 // (also enforced by the maxlength attribute of the name input element).
                 self.name = (name === "") ? "lorem ipsum" : name.substr(0, 15);
+                self.sessionId = message[4];
+                let playerCache = self.server.server.cache.get(self.sessionId);
+                self.walletId = playerCache.walletId;
+                self.nftId = playerCache.nftId;
                 
                 self.kind = Types.Entities.WARRIOR;
                 self.equipArmor(message[2]);
                 self.equipWeapon(message[3]);
                 self.orientation = Utils.randomOrientation();
                 self.updatePosition();
-                self.sessionId = message[4];
                 
                 self.server.addPlayer(self);
                 self.server.enter_callback(self);
 
-                let playerCache = self.server.server.cache.get(self.sessionId);
+
                 playerCache.isDirty = true;
                 playerCache.entityId = self.id;
                 self.server.server.cache.set(self.sessionId, playerCache);
                 self.title = playerCache.title;
                 self.level = Formulas.level(playerCache.xp);
-                self.walletId = playerCache.walletId;
-                self.nftId = playerCache.nftId;
                 self.updateHitPoints();
                 self.send([Types.Messages.WELCOME, self.id, self.name, self.x, self.y, self.hitPoints, self.title]);
                 self.hasEnteredGame = true;
@@ -131,9 +132,13 @@ module.exports = Player = Character.extend({
                     var item = self.server.getEntityById(message[3]);
                     if(item) {
                         self.clearTarget();
+                        if (Types.isWeapon(item.kind) && self.getNFTWeapon() !== undefined) {
+                            console.log("Todo: increment NFT item experience")
+                        } else {
+                            self.broadcast(new Messages.LootMove(self, item));
+                            self.lootmove_callback(self.x, self.y);
+                        }
 
-                        self.broadcast(new Messages.LootMove(self, item));
-                        self.lootmove_callback(self.x, self.y);
                     }
                 }
             }
@@ -158,7 +163,7 @@ module.exports = Player = Character.extend({
                     } else {
                         let level = self.getLevel();
                         let totalLevel = (self.getWeaponLevel() + level) - 1;
-                        console.log(self.name, "Total level ", totalLevel, "Level", level, "Weapon level", self.weaponLevel );
+                        console.log(self.name, "Total level ", totalLevel, "Level", level, "Weapon level", self.getWeaponLevel());
                         let dmg = Formulas.dmg(totalLevel, mob.armorLevel);
                         
                         self.incrementNFTWeaponExperience(dmg);
@@ -211,7 +216,7 @@ module.exports = Player = Character.extend({
                                 self.regenHealthBy(amount);
                                 self.server.pushToPlayer(self, self.health());
                             }
-                        } else if(Types.isWeapon(kind)) {
+                        } else if(Types.isWeapon(kind) && self.getNFTWeapon() === undefined) {
                             self.equipItem(item);
                             self.broadcast(self.equip(kind));
                         }
@@ -444,10 +449,12 @@ module.exports = Player = Character.extend({
         this.weapon = kind;
         const kindString = Types.getKindAsString(kind);
         if (kindString.startsWith("NFT")) {
-            this.nftWeapon = new NFTWeapon(this.walletId, kindString);
+            this.nftWeapon = new NFTWeapon.NFTWeapon(this.walletId, kindString);
             this.nftWeapon.loadWeaponData();
         } else {
-            this.weaponLevel = Properties.getWeaponLevel(kind);
+            if (this.nftWeapon === undefined) {
+                this.weaponLevel = Properties.getWeaponLevel(kind);
+            }
         }
     },
     

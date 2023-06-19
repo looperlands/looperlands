@@ -185,6 +185,9 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 "NFT_3de4d3e7aa4d280fae7b3b79832204fb5b0fbd78d3170d7f600bf12908378eb2",
                                 "NFT_3a2cf0d1409f9c7ece5e43db69145926f6e1cdbb2786f30b71ea0f2757e12cee",
                                 "NFT_33d866318659169f2183641e2890f7bc5ffa750f0a89bc70ee967b7b5db4eff6",
+                                "NFT_da7cd78f666a0c355fb136f78afb112db1babda7cecab64a87ffb4e11dfea69f",
+                                "NFT_4082aabb234aaf694a740dd4c981da3abd69c897766a7cacb44b6b687ac2190c",
+                                "NFT_c57d08ad0bb352bad9157b1c9eee33d058e4f0b7e0c772e513789e64d8c4d628",
                                 // @nextSpriteLine@
                             ];
         },
@@ -1034,38 +1037,43 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 
                     if(self.isItemAt(x, y)) {
                         var item = self.getItemAt(x, y);
-                    
-                        try {
-                            self.player.loot(item);
-                            self.client.sendLoot(item); // Notify the server that this item has been looted
-                            self.removeItem(item);
-                            self.showNotification(item.getLootMessage());
-                        
-                            if(item.type === "armor") {
-                                self.tryUnlockingAchievement("FAT_LOOT");
-                            }
-                            
-                            if(item.type === "weapon") {
-                                self.tryUnlockingAchievement("A_TRUE_WARRIOR");
-                            }
 
-                            if(item.kind === Types.Entities.CAKE) {
-                                self.tryUnlockingAchievement("FOR_SCIENCE");
-                            }
+                        try {
+                            let aboutToEquipWeaponButHasNFTWeapon = item.type === "weapon" && self.player.getWeaponName().startsWith("NFT_");
+                            if (!aboutToEquipWeaponButHasNFTWeapon) {
+                                self.player.loot(item);
+                                self.client.sendLoot(item); // Notify the server that this item has been looted
+                                self.removeItem(item);
+                                self.showNotification(item.getLootMessage());
                             
-                            if(item.kind === Types.Entities.FIREPOTION) {
-                                self.tryUnlockingAchievement("FOXY");
-                                self.audioManager.playSound("firefox");
-                            }
-                        
-                            if(Types.isHealingItem(item.kind)) {
-                                self.audioManager.playSound("heal");
+                                if(item.type === "armor") {
+                                    self.tryUnlockingAchievement("FAT_LOOT");
+                                }
+                                
+                                if(item.type === "weapon") {
+                                    self.tryUnlockingAchievement("A_TRUE_WARRIOR");
+                                }
+
+                                if(item.kind === Types.Entities.CAKE) {
+                                    self.tryUnlockingAchievement("FOR_SCIENCE");
+                                }
+                                
+                                if(item.kind === Types.Entities.FIREPOTION) {
+                                    self.tryUnlockingAchievement("FOXY");
+                                    self.audioManager.playSound("firefox");
+                                }
+                            
+                                if(Types.isHealingItem(item.kind)) {
+                                    self.audioManager.playSound("heal");
+                                } else {
+                                    self.audioManager.playSound("loot");
+                                }
+                                
+                                if(item.wasDropped && !_(item.playersInvolved).include(self.playerId)) {
+                                    self.tryUnlockingAchievement("NINJA_LOOT");
+                                }
                             } else {
-                                self.audioManager.playSound("loot");
-                            }
-                            
-                            if(item.wasDropped && !_(item.playersInvolved).include(self.playerId)) {
-                                self.tryUnlockingAchievement("NINJA_LOOT");
+                                console.log("You can't loot weapons because you have a NFT weapon equipped.");
                             }
                         } catch(e) {
                             if(e instanceof Exceptions.LootException) {
@@ -1759,9 +1767,13 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
          */
         makePlayerGoToItem: function(item) {
             if(item) {
-                this.player.isLootMoving = true;
-                this.makePlayerGoTo(item.gridX, item.gridY);
-                this.client.sendLootMove(item, item.gridX, item.gridY);
+                if (item.type === "weapon" && this.player.getWeaponName().startsWith("NFT_")) {
+                    this.makePlayerGoTo(item.gridX, item.gridY);
+                } else {
+                    this.player.isLootMoving = true;
+                    this.makePlayerGoTo(item.gridX, item.gridY);
+                    this.client.sendLootMove(item, item.gridX, item.gridY);
+                }
             }
         },
     
