@@ -295,11 +295,17 @@ WS.socketIOServer = Server.extend({
                     user: null
                 });
             } else {
-                let levelInfo = Formulas.calculatePercentageToNextLevel(sessionData.xp);
-                let maxHp = Formulas.hp(levelInfo.currentLevel);
+                let avatarLevelInfo = Formulas.calculatePercentageToNextLevel(sessionData.xp);
+                let maxHp = Formulas.hp(avatarLevelInfo.currentLevel);
+                let weaponInfo = self.worldserver.getNFTWeaponStatistics(sessionData.entityId);
+                if (weaponInfo !== undefined) {
+                    weaponInfo['weaponLevelInfo'] = Formulas.calculatePercentageToNextLevel(weaponInfo.experience);
+                }
+
                 let ret = {
-                    levelInfo: levelInfo,
-                    maxHp: maxHp
+                    avatarLevelInfo: avatarLevelInfo,
+                    maxHp: maxHp,
+                    weaponInfo: weaponInfo
                 }
                 res.status(200).json(ret);
             }
