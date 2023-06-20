@@ -2103,6 +2103,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
          * Processes game logic when the user triggers a click/touch event during the game.
          */
         click: function(pos) {
+            this.destroyBubble("global");
             if (pos === undefined) {
                 pos = this.getMouseGridPosition();
             }
@@ -2693,8 +2694,8 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             axios.get("/session/" + this.sessionId + "/statistics").then(function(response){
                 if (response.data !== null && response.data !== undefined) {
 
-                    level = response.data.levelInfo.currentLevel;
-                    percentage = response.data.levelInfo.percentage;
+                    level = response.data.avatarLevelInfo.currentLevel;
+                    percentage = response.data.avatarLevelInfo.percentage;
 
                     if (!level || Number.isNaN(level) || !percentage || Number.isNaN(percentage)) {
                         console.error("Invalid level or percentage");
@@ -2706,9 +2707,15 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     }
                     
                     
-                    var levelInfoHTML = "Level: " + level + " ";
+                    var levelInfoHTML = "Avatar Level: " + level + " ";
                     levelInfoHTML+=percentage + "%";
 
+                    if (response.data.weaponInfo !== null && response.data.weaponInfo !== undefined) {
+                        weaponPercentage = response.data.weaponInfo.weaponLevelInfo.percentage;
+                        weaponLevel = response.data.weaponInfo.weaponLevelInfo.currentLevel;
+                        levelInfoHTML+=", Weapon Level: " + weaponLevel + " ";
+                        levelInfoHTML+=weaponPercentage + "%";
+                    }
                     $("#levelInfo").html(levelInfoHTML);
 
                     if (self.player.level !== level) {

@@ -967,5 +967,24 @@ module.exports = World = cls.Class.extend({
             }
         });
         return ret;
+    },
+
+    getNFTWeaponStatistics: function(playerId) {
+        const player = this.getEntityById(playerId);
+        if (player === undefined) {
+            return;
+        }
+
+        let nftWeapon = player.getNFTWeapon();
+        if (nftWeapon === undefined) {
+            return;
+        }
+
+
+        let weaponInfo = {
+            experience: nftWeapon.experience,
+            trait: nftWeapon.trait
+        }
+        return weaponInfo;
     }
 });
