@@ -11,7 +11,7 @@ Utils.sanitize = function(string) {
     let injectSafe = sanitizer.escape(sanitizer.sanitize(string));
     // Replace bad words with asterisks
     for (let i = 0; i < bad_words.length; i++) {
-        injectSafe = injectSafe.replace(new RegExp(bad_words[i], "gi"), "*".repeat(bad_words[i].length));
+        injectSafe = injectSafe.replace(new RegExp("\\b"+bad_words[i]+"\\b", "ig"), "*".repeat(bad_words[i].length));
     }
     return injectSafe;
 };
