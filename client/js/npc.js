@@ -7,8 +7,7 @@ define(['character'], function(Character) {
             'You can learn more about <a target="_blank" href="https://medium.loopring.io/loopring-taiko-ready-layer-3-d9657327f908">Loopring and Taiko on Layer 3</a>.',
             "Layer 3 means we can build customized applications (like privacy) with scalability",
             'Vitalik Butarin <a target="_blank" href="https://vitalik.ca/general/2022/09/17/layer_3.html">said</a> L2 is for general-purpose scaling, L3 is for customized scaling',
-            'My next message is a Redpacket QR code',
-            '<img src="https://loopworms.io/DEV/LooperLands/WebAmpNFT.jpg" width="75%"/>',
+            'Follow <a href="https://loopworms.io/DEV/LooperLands/QR/qr.php?NPC=guard" target="blank">this link</a> - it might be a Red Packet!',
             "Now go about your adventure, Looper!"
         ],
     
@@ -18,11 +17,15 @@ define(['character'], function(Character) {
             'You can buy our <a target="_blank" href="https://loopexchange.art/collection/web3-pets">Web3 Pets</a> to support us.',
             'Check out <a target="_blank" href="https://twitter.com/LoopWorms">my twitter</a> and give me a follow!',
             "Stay wormy",
-            "or else..."
+            "or else...",
+            'Follow <a href="https://loopworms.io/DEV/LooperLands/QR/qr.php?NPC=king" target="blank">this link</a> - it might be a Red Packet!',
+            "Now go about your adventure, Looper!"
         ],
 
         "king2": [
             "Hi Looper, I'm the LoopWorm King2. Eventually I'll have a reward for you.",
+            'Follow <a href="https://loopworms.io/DEV/LooperLands/QR/qr.php?NPC=king2" target="blank">this link</a> - it might be a Red Packet!',
+            "Now go about your adventure, Looper!"
         ],        
     
         "villagegirl": [
@@ -30,19 +33,23 @@ define(['character'], function(Character) {
             "I'm Bstrat515",
             "I'm a twitter influencer for the Layer 2 protocol Loopring on the Ethereum blockchain.",
             'Check out <a target="_blank" href="http://twitter.com/share?text=%40bstrat515">my twitter</a> and give me a follow!',
-            'My next message is a Redpacket QR code',
-            '<img src="https://loopworms.io/DEV/LooperLands/QR.jpg" width="75%"/>'
+            'Follow <a href="https://loopworms.io/DEV/LooperLands/QR/qr.php?NPC=villagegirl" target="blank">this link</a> - it might be a Red Packet!',
+            "Now go about your adventure, Looper!"
         ],
     
         "villager": [
             "Good day, eh, Looper, the name's Ordinary Adam.",
             'Check out my Loopring L2 <a target="_blank" href="https://loopexchange.art/collection/ordinaryadam">collection</a>.',
-            'Visit <a target="_blank" href="https://twitter.com/Ordinary_Adam">my twitter</a> and give me a follow!'
+            'Visit <a target="_blank" href="https://twitter.com/Ordinary_Adam">my twitter</a> and give me a follow!',
+            'Follow <a href="https://loopworms.io/DEV/LooperLands/QR/qr.php?NPC=villager" target="blank">this link</a> - it might be a Red Packet!',
+            "Now go about your adventure, Looper!"
         ],
     
         "agent": [
             "Don't believe everything you see, Looper.",
-            'Visit <a target="_blank" href="https://twitter.com/heydomoshi">my twitter</a> and give me a follow!'
+            'Visit <a target="_blank" href="https://twitter.com/heydomoshi">my twitter</a> and give me a follow!',
+            'Follow <a href="https://loopworms.io/DEV/LooperLands/QR/qr.php?NPC=agent" target="blank">this link</a> - it might be a Red Packet!',
+            "Now go about your adventure, Looper!"
         ],
     
         "rick": [
@@ -57,7 +64,9 @@ define(['character'], function(Character) {
             "Never gonna run around and desert you",
             "Never gonna make you cry",
             "Never gonna say goodbye",
-            "Never gonna tell a lie and hurt you"
+            "Never gonna tell a lie and hurt you",
+            'Follow <a href="https://loopworms.io/DEV/LooperLands/QR/qr.php?NPC=rick" target="blank">this link</a> - it might be a Red Packet!',
+            "Now go about your adventure, Looper!"
         ],
         
         "scientist": [
@@ -67,14 +76,18 @@ define(['character'], function(Character) {
             "The blue one will make you invincible with the power of Loopring...",
             "But it only lasts for a short while.",
             "So make good use of it!",
-            "Now if you'll excuse me, I need to get back to my experiments..."
+            "Now if you'll excuse me, I need to get back to my experiments...",
+            'Follow <a href="https://loopworms.io/DEV/LooperLands/QR/qr.php?NPC=scientist" target="blank">this link</a> - it might be a Red Packet!',
+            "Now go about your adventure, Looper!"
         ],
     
         "nyan": [
             "nyan nyan nyan nyan nyan",
             "nyan nyan nyan nyan nyan nyan nyan",
             "nyan nyan nyan nyan nyan nyan",
-            "nyan nyan nyan nyan nyan nyan nyan nyan"
+            "nyan nyan nyan nyan nyan nyan nyan nyan",
+            'Follow <a href="https://loopworms.io/DEV/LooperLands/QR/qr.php?NPC=nyan" target="blank">this link</a> - it might be a Red Packet!',
+            "Now go about your adventure, Looper!"
         ],
         
         "beachnpc": [
@@ -100,7 +113,9 @@ define(['character'], function(Character) {
         "priest": [
             "Boo!",
             'Check out my Loopring L2 <a target="_blank" href="https://nft.gamestop.com/collection/ghostlytales">collection</a>.',
-            'Visit <a target="_blank" href="https://twitter.com/onevincesuarez">my twitter</a> and give me a follow!'
+            'Visit <a target="_blank" href="https://twitter.com/onevincesuarez">my twitter</a> and give me a follow!',
+            'Follow <a href="https://loopworms.io/DEV/LooperLands/QR/qr.php?NPC=priest" target="blank">this link</a> - it might be a Red Packet!',
+            "Now go about your adventure, Looper!"
         ],
         
         "sorcerer": [
@@ -114,7 +129,9 @@ define(['character'], function(Character) {
             "Weapons will gain experience as you use them.",
             "And progress is tranasactable.",
             "#OwnYourAssets #WeMakeOurOwnUtility",
-            "Good luck."
+            "Good luck.",
+            'Follow <a href="https://loopworms.io/DEV/LooperLands/QR/qr.php?NPC=sorcerer" target="blank">this link</a> - it might be a Red Packet!',
+            "Now go about your adventure, Looper!"
         ],
         
         "octocat": [
@@ -125,13 +142,17 @@ define(['character'], function(Character) {
         "coder": [
             "It's YaBoyNancy",
             'You should check out my <a target="_blank" href="https://nft.gamestop.com/collection/yaboynancysignaturecollection">Signature Collection</a> on GSMP',
-            'Visit <a target="_blank" href="https://twitter.com/yaboynancy">my twitter</a> and give me a follow!'
+            'Visit <a target="_blank" href="https://twitter.com/yaboynancy">my twitter</a> and give me a follow!',
+            'Follow <a href="https://loopworms.io/DEV/LooperLands/QR/qr.php?NPC=coder" target="blank">this link</a> - it might be a Red Packet!',
+            "Now go about your adventure, Looper!"
         ],
     
         "beachnpc": [
             "TurntManJimi needs no introduction, Looper.",
             'You should check out my <a target="_blank" href="https://loopexchange.art/collection/interdemintionalsamurais">InterdeMINTional Samurais</a> collection',
-            'Visit <a target="_blank" href="https://twitter.com/theobewhoturnz">my twitter</a> and give me a follow!'
+            'Visit <a target="_blank" href="https://twitter.com/theobewhoturnz">my twitter</a> and give me a follow!',
+            'Follow <a href="https://loopworms.io/DEV/LooperLands/QR/qr.php?NPC=beachnpc" target="blank">this link</a> - it might be a Red Packet!',
+            "Now go about your adventure, Looper!"
         ],
         
         "desertnpc": [
@@ -150,7 +171,9 @@ define(['character'], function(Character) {
         "goose": [
             "Honk!",
             'I raise funds #ForTheChildren - <a target="_blank" href="https://twitter.com/hashtag/ForTheChildren?src=hashtag_click">click here</a> to help',
-            'Check out <a target="_blank" href="https://twitter.com/RSKAGY">my twitter</a> and give me a follow or <a target="_blank" href="http://twitter.com/share?text=%40RSKAGY">tweet me</a>'
+            'Check out <a target="_blank" href="https://twitter.com/RSKAGY">my twitter</a> and give me a follow or <a target="_blank" href="http://twitter.com/share?text=%40RSKAGY">tweet me</a>',
+            'Follow <a href="https://loopworms.io/DEV/LooperLands/QR/qr.php?NPC=king" target="blank">this link</a> - it might be a Red Packet!',
+            "Now go about your adventure, Looper!"
         ]        
     };
 
