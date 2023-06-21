@@ -163,16 +163,45 @@ module.exports = Player = Character.extend({
                     } else {
                         let level = self.getLevel();
                         let totalLevel = (self.getWeaponLevel() + level) - 1;
-                        console.log(self.name, "Total level ", totalLevel, "Level", level, "Weapon level", self.getWeaponLevel());
-                        let dmg = Formulas.dmg(totalLevel, mob.armorLevel);
-                        
-                        self.incrementNFTWeaponExperience(dmg);
 
-                        if(dmg > 0) {
-                            mob.receiveDamage(dmg, self.id);
-                            console.log("Player "+self.id+" hit mob "+mob.id+" for "+dmg+" damage.", mob.type);
-                            self.server.handleMobHate(mob.id, self.id, dmg);
-                            self.server.handleHurtEntity(mob, self, dmg);
+                        let weaponTrait = self.getNFTWeaponActiveTrait();
+
+                        console.log(self.name, "Total level ", totalLevel, "Level", level, "Weapon level", self.getWeaponLevel(), "Active Trait", weaponTrait);
+                
+                        function handleDamage(mob, totalLevel, multiplier) {
+                            let dmg = Formulas.dmg(totalLevel, mob.armorLevel);
+                            dmg *= multiplier;
+                
+                            self.incrementNFTWeaponExperience(dmg);
+                
+                            if(dmg > 0) {
+                                mob.receiveDamage(dmg, self.id);
+                                console.log("Player "+self.id+" hit mob "+mob.id+" for "+dmg+" damage.", mob.type);
+                                self.server.handleMobHate(mob.id, self.id, dmg);
+                                self.server.handleHurtEntity(mob, self, dmg);
+                            }
+                        }
+
+                        if (weaponTrait === "aoe") {
+                            const group = self.server.groups[self.group];
+                            let entityIds = Object.keys(group.entities);
+                            entityIds.forEach(function(id) {
+                                let entity = group.entities[id];
+                                if (entity.type === 'mob') {
+                                    let distance = Utils.distanceTo(self.x, self.y, entity.x, entity.y);
+                                    if (distance === 1) {
+                                        handleDamage(entity, totalLevel, 1);
+                                    }
+                                }
+                            });
+                        } else if (weaponTrait === "crit") {
+                            handleDamage(mob, totalLevel, 3);
+                        } else if (weaponTrait === "speed") {
+                            for (i = 0 ; i < 2; i++) {
+                                handleDamage(mob, totalLevel, 1);
+                            }
+                        } else {
+                            handleDamage(mob, totalLevel, 1);
                         }
                     }
 
@@ -550,5 +579,15 @@ module.exports = Player = Character.extend({
 
     getNFTWeapon: function() {
         return this.nftWeapon;
+    },
+
+    getNFTWeaponActiveTrait: function() {
+        let nftWeapon = this.getNFTWeapon();
+        if (nftWeapon !== undefined && nftWeapon.isTraitActive()) {
+            return nftWeapon.getTrait();
+        } else {
+            return undefined;
+        }
     }
+    
 });
