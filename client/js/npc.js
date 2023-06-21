@@ -174,7 +174,11 @@ define(['character'], function(Character) {
             'Check out <a target="_blank" href="https://twitter.com/RSKAGY">my twitter</a> and give me a follow or <a target="_blank" href="http://twitter.com/share?text=%40RSKAGY">tweet me</a>',
             'Follow <a href="https://loopworms.io/DEV/LooperLands/QR/qr.php?NPC=king" target="blank">this link</a> - it might be a Red Packet!',
             "Now go about your adventure, Looper!"
-        ]        
+        ],
+
+        "tanashi": [
+            "Hi, I'm Tanashi!",
+        ]
     };
 
     var Npc = Character.extend({

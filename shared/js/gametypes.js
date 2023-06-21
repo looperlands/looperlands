@@ -84,6 +84,7 @@ Types = {
         LAVANPC: 54,
         CODER: 55,
         GOOSE: 1000042,
+        TANASHI: 1000043,
         
         // Weapons
         SWORD1: 60,
@@ -285,6 +286,7 @@ var kinds = {
     desertnpc: [Types.Entities.DESERTNPC, "npc"],
     lavanpc: [Types.Entities.LAVANPC, "npc"],
     goose: [Types.Entities.GOOSE, "npc"],
+    tanashi: [Types.Entities.TANASHI, "npc"],
 
     //NFT
     NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6: [Types.Entities.NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6, "armor"],

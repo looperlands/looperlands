@@ -111,7 +111,14 @@ define(['npc'], function(Npc) {
             init: function(id) {
                 this._super(id, Types.Entities.GOOSE, 1);
             }
-        }),        
+        }),
+
+        Tanashi: Npc.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.TANASHI, 1);
+            }
+        })
+
     };
     
     return NPCs;
