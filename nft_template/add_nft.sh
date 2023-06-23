@@ -27,9 +27,9 @@ MINUS_0X=`echo $2 | cut -c 3-`
 NFT_ID=NFT_$MINUS_0X
 type=$3
 
-stat $IMAGE_DIR/1.png ||  missingFile $IMAGE_DIR/1.png
-stat $IMAGE_DIR/2.png ||  missingFile $IMAGE_DIR/2.png
-stat $IMAGE_DIR/3.png ||  missingFile $IMAGE_DIR/3.png
+stat $IMAGE_DIR/1.png 1> /dev/null ||  missingFile $IMAGE_DIR/1.png
+stat $IMAGE_DIR/2.png 1> /dev/null ||  missingFile $IMAGE_DIR/2.png
+stat $IMAGE_DIR/3.png 1> /dev/null ||  missingFile $IMAGE_DIR/3.png
 
 echo Adding NFT with id $NFT_ID, type $type
 if [ "$3" = "weapon" ]; then
