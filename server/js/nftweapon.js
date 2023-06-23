@@ -35,6 +35,9 @@ class NFTWeapon {
     isTraitActive() {
         let chance = Math.floor(Math.random() * 100);
         chance += this.level;
+        if (this.getTrait() === "speed") {
+            chance += 10;
+        }
         return chance >= 89; // base level is 1, so base chance of trait is 10%
     }
 

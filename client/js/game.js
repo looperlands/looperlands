@@ -2781,8 +2781,9 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     if (response.data.weaponInfo !== null && response.data.weaponInfo !== undefined) {
                         weaponPercentage = response.data.weaponInfo.weaponLevelInfo.percentage;
                         weaponLevel = response.data.weaponInfo.weaponLevelInfo.currentLevel;
-                        levelInfoHTML+=", Weapon Level: " + weaponLevel + " ";
+                        levelInfoHTML+=" - Weapon Level: " + weaponLevel + " ";
                         levelInfoHTML+=weaponPercentage + "%";
+                        levelInfoHTML+=", Trait: " + response.data.weaponInfo.trait;
                     }
                     $("#levelInfo").html(levelInfoHTML);
 
