@@ -118,7 +118,6 @@ module.exports = Player = Character.extend({
                     if(self.server.isValidPosition(x, y)) {
                         self.setPosition(x, y);
                         self.clearTarget();
-                        
                         self.broadcast(new Messages.Move(self));
                         self.move_callback(self.x, self.y);
                     }
