@@ -16,10 +16,21 @@ if [ -z "$3" ]
     echo "Sprite type (armor or weapon) missing"
     exit 1
 fi
+
+function missingFile() {
+  echo "missing file $1. not adding NFT"
+  exit 1
+}
+
 IMAGE_DIR=$1
 MINUS_0X=`echo $2 | cut -c 3-`
 NFT_ID=NFT_$MINUS_0X
 type=$3
+
+stat $IMAGE_DIR/1.png 1> /dev/null ||  missingFile $IMAGE_DIR/1.png
+stat $IMAGE_DIR/2.png 1> /dev/null ||  missingFile $IMAGE_DIR/2.png
+stat $IMAGE_DIR/3.png 1> /dev/null ||  missingFile $IMAGE_DIR/3.png
+
 echo Adding NFT with id $NFT_ID, type $type
 if [ "$3" = "weapon" ]; then
   jq ".id=\"${NFT_ID}\"" weaponspritemap.json > ../client/sprites/$NFT_ID.json
