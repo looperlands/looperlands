@@ -12,6 +12,7 @@ function add_nft() {
     type=$2
     looperName=$3
     echo $nftID $type
+    rm -rf /tmp/$nftID
     mkdir /tmp/$nftID
     cp /home/loopworms.io/public_html/DEV/LooperLands/AddNewLooper/images/1/$nftID.png /tmp/$nftID/1.png
     cp /home/loopworms.io/public_html/DEV/LooperLands/AddNewLooper/images/2/$nftID.png /tmp/$nftID/2.png
@@ -47,7 +48,7 @@ if [ "$nftsToAddJSON" = "null" ]; then
     exit 1
 fi
 
-branchName=add_nfts_`date +"%Y-%m-%dT%H:%M:%S%z"`
+branchName=add_nfts_`date +"%Y_%m_%dT%H_%M_%S%z"`
 git checkout -b $branchName
 echo $nftsToAddJSON | jq -r '.[] | {short_nftid, asset_type, looper_name} | join(" ")' | while read -r line; do
     add_nft $line
