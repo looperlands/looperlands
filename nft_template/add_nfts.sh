@@ -48,6 +48,8 @@ if [ "$nftsToAddJSON" = "null" ]; then
     exit 1
 fi
 
+git checkout main
+git pull
 branchName=add_nfts_`date +"%Y_%m_%dT%H_%M_%S%z"`
 git checkout -b $branchName
 echo $nftsToAddJSON | jq -r '.[] | {short_nftid, asset_type, looper_name} | join(" ")' | while read -r line; do
