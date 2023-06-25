@@ -157,7 +157,7 @@ exports.updatePVPStats = async function (wallet, nft, killIncrement, deathIncrem
   try {
     const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/SavePvP.php?NFTID=${nft}&WalletID=${wallet}&PvPKills=${killIncrement}&PvPDeaths=${deathIncrement}`
     const responseData = await axios.get(url, options);
-    console.log("ResponseData from Loopworms: ", responseData.status, responseData.text, responseData.data);
+    //console.log("ResponseData from Loopworms: ", responseData.status, responseData.text, responseData.data);
     return responseData.data;
   } catch (error) {
     console.error(error);

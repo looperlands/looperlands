@@ -134,5 +134,9 @@ getConfigFile(defaultConfigPath, function(defaultConfig) {
 
 process.on('uncaughtException', function(err) {
     // Handle the error safely
-    console.log(err, err.stack);
+    console.error(err, err.stack);
 });
+
+if (process.env.NODE_ENV === 'production') {
+    console.log = function () { };
+}

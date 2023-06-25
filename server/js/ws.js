@@ -10,7 +10,8 @@ var cls = require("./lib/class"),
     _ = require('underscore'),
     BISON = require('bison'),
     WS = {},
-    useBison = false;
+    useBison = false
+    cors = require('cors');
 
 module.exports = WS;
 
@@ -377,10 +378,18 @@ WS.socketIOServer = Server.extend({
             res.status(200).json(msgs);
         });
 
+        const corsOptions = {
+            origin: '*',
+            methods: [],
+            allowedHeaders: [],
+            exposedHeaders: [],
+            credentials: true
+        };
 
-        app.get("/nftcommited/:shortnftid", async (req, res) => {
+        app.get("/nftcommited/:shortnftid", cors(corsOptions), async (req, res) => {
             let nftId = req.params.shortnftid;
             nftId = nftId.replace("0x", "NFT_");
+            console.log("Checking for existence of " + nftId);
             if (fs.existsSync('./client/img/3/' + nftId + '.png')) {
                 res.status(200).send(true);
             } else {
