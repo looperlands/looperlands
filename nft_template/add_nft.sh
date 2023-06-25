@@ -48,3 +48,4 @@ for i in {1..3}; do
     fi
 done
 ./add_nft_js.sh $MINUS_0X $3
+exit 0
