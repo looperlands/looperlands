@@ -1,10 +1,21 @@
 #!/bin/bash
 
+if [ -z "$LOOPWORMS_API_KEY" ]
+  then
+    echo "Missing LOOPWORMS_API_KEY environment variable"
+    exit 1
+fi
+
+if [ -z "$LOOPWORMS_LOOPERLANDS_BASE_URL" ]
+  then
+    echo "Missing LOOPWORMS_LOOPERLANDS_BASE_URL environment variable"
+    exit 1
+fi
 
 function updateStatus() {
     nftID=$1
     status=$2
-    curl -s -X POST -H "Content-Type: application/json" -d "{\"nftID\": \"$nftID\", \"status\": \"$status\"}" $LOOPWORMS_LOOPERLANDS_BASE_URL/AddNewLooper/UpdateStatus.php
+    curl -s -X POST -H "x-api-key: $LOOPWORMS_API_KEY" -H "Content-Type: application/json" -d "{\"nftID\": \"$nftID\", \"status\": \"$status\"}" $LOOPWORMS_LOOPERLANDS_BASE_URL/AddNewLooper/UpdateStatus.php
 }
 
 function add_nft() {
@@ -28,18 +39,6 @@ function add_nft() {
     updateStatus $nftID "added"
     rm -rf /tmp/$nftID
 }
-
-if [ -z "$LOOPWORMS_API_KEY" ]
-  then
-    echo "Missing LOOPWORMS_API_KEY environment variable"
-    exit 1
-fi
-
-if [ -z "$LOOPWORMS_LOOPERLANDS_BASE_URL" ]
-  then
-    echo "Missing LOOPWORMS_LOOPERLANDS_BASE_URL environment variable"
-    exit 1
-fi
 
 nftsToAddURL=$LOOPWORMS_LOOPERLANDS_BASE_URL/AddNewLooper/AddLooperDaily.php
 nftsToAddJSON=$(curl -s $nftsToAddURL)
