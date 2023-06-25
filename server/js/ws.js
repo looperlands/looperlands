@@ -381,6 +381,7 @@ WS.socketIOServer = Server.extend({
         app.get("/nftcommited/:shortnftid", async (req, res) => {
             let nftId = req.params.shortnftid;
             nftId = nftId.replace("0x", "NFT_");
+            console.log("Checking for existence of " + nftId);
             if (fs.existsSync('./client/img/3/' + nftId + '.png')) {
                 res.status(200).send(true);
             } else {
