@@ -377,6 +377,17 @@ WS.socketIOServer = Server.extend({
             res.status(200).json(msgs);
         });
 
+
+        app.get("/nftcommited/:shortnftid", async (req, res) => {
+            let nftId = req.params.shortnftid;
+            nftId = nftId.replace("0x", "NFT_");
+            if (fs.existsSync('./client/img/3/' + nftId + '.png')) {
+                res.status(200).send(true);
+            } else {
+                res.status(404).send(false);
+            }
+        });
+
         self.io.on('connection', function(connection){
           console.log('a user connected');
 
