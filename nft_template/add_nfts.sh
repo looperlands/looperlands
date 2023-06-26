@@ -18,7 +18,7 @@ function updateStatus() {
     curl -s -X POST -H "X-Api-Key: $LOOPWORMS_API_KEY" $url
 }
 
-BRANCH_NAME=""
+BRANCH_NAME=add_nfts_`date +"%Y_%m_%dT%H_%M_%S%z"`
 
 function add_nft() {
     nftID=$1
@@ -63,8 +63,7 @@ git clean . -f
 git checkout .
 git checkout main
 git pull
-BRANCH_NAME=add_nfts_`date +"%Y_%m_%dT%H_%M_%S%z"`
-git checkout -b $branchName
+git checkout -b $BRANCH_NAME
 
 #loop through each nft and add it
 echo $nftsToAddJSON | jq -r '.[] | {short_nftid, asset_type, looper_name, project_name, long_nftid} | join(" ")' | while read -r line; do
