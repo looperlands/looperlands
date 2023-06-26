@@ -41,6 +41,7 @@ function add_nft() {
     git commit -m "added $looperName, $nftID, $type, $BRANCH_NAME"
     # add the NFT to the loopworms platform
     /root/add_looplands_nft.sh $long_nftid $project_name $type
+    rm sqlscript.sql
     # add the picker
     cp /home/loopworms.io/public_html/DEV/LooperLands/AddNewLooper/images/profilepic/$nftID.png /home/loopworms.io/public_html/DEV/LooperLands/img/$nftID.png
     chown loopw4130 /home/loopworms.io/public_html/DEV/LoopQuest/img/$nftID.png
