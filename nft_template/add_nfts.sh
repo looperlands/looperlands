@@ -24,8 +24,8 @@ function add_nft() {
     nftID=$1
     type=$2
     looperName=$3
-    project_name=$3
-    long_nftid=$4
+    project_name=$4
+    long_nftid=$5
     echo "Adding " $nftID $type $looperName $project_name $long_nftid
     # Prepare the tmp directory to add the NFT spritesheet to git
     rm -rf /tmp/$nftID
