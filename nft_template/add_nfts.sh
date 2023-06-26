@@ -39,7 +39,6 @@ function add_nft() {
     }
     git add ..
     git commit -m "added $looperName, $nftID, $type, $BRANCH_NAME"
-    git push --set-upstream origin $BRANCH_NAME
     # add the NFT to the loopworms platform
     /root/add_looplands_nft.sh $long_nftid $project_name $type
     # add the picker
@@ -70,6 +69,4 @@ echo $nftsToAddJSON | jq -r '.[] | {short_nftid, asset_type, looper_name, projec
     add_nft $line
 done
 
-echo "\nCreated Branch $BRANCH_NAME. Please open a PR into main on github.com"
-# check out main again for good measure
-git checkout main
+git push --set-upstream origin $BRANCH_NAME
