@@ -9,7 +9,7 @@ class NFTWeapon {
         this.walletId = walletId;
         this.trait = undefined;
         this.experience = undefined;
-        this.level = undefined;
+        this.level = 1;
     }
 
     async loadWeaponData() {
