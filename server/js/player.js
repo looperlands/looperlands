@@ -118,6 +118,7 @@ module.exports = Player = Character.extend({
                     if(self.server.isValidPosition(x, y)) {
                         self.setPosition(x, y);
                         self.clearTarget();
+                        self.pushEntityList();
                         self.broadcast(new Messages.Move(self));
                         self.move_callback(self.x, self.y);
                     }
@@ -554,7 +555,7 @@ module.exports = Player = Character.extend({
     pushEntityList: function() {
         let now = new Date().getTime();
         if (this.entityListPush !== undefined) {
-            if (now - this.entityListPush > 250) {
+            if (now - this.entityListPush > 500) {
                 this.server.pushRelevantEntityListTo(this);
             }
         }
