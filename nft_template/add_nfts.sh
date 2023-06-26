@@ -18,7 +18,7 @@ function updateStatus() {
     curl -s -X POST -H "X-Api-Key: $LOOPWORMS_API_KEY" $url
 }
 
-BRANCH_NAME=add_nfts_`date +"%Y_%m_%dT%H_%M_%S%z"`
+BRANCH_NAME=bot_add_nfts_`date +"%Y_%m_%dT%H_%M_%S"`
 
 function add_nft() {
     nftID=$1
