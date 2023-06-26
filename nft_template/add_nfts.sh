@@ -66,8 +66,7 @@ git checkout -b $BRANCH_NAME
 
 #loop through each nft and add it
 echo $nftsToAddJSON | jq -r '.[] | {short_nftid, asset_type, looper_name, project_name, long_nftid} | join(",")' | while IFS=, read short_nftid asset_type looper_name project_name long_nftid; do
-    echo "before add nft $short_nftid $asset_type $looper_name $project_name $long_nftid"
-    add_nft $short_nftid $asset_type $looper_name $project_name $long_nftid
+    add_nft "$short_nftid" "$asset_type" "$looper_name" "$project_name" "$long_nftid"
 done
 
 git push --set-upstream origin $BRANCH_NAME
