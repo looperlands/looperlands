@@ -18,6 +18,8 @@ function updateStatus() {
     curl -s -X POST -H "X-Api-Key: $LOOPWORMS_API_KEY" $url
 }
 
+BRANCH_NAME=""
+
 function add_nft() {
     nftID=$1
     type=$2
@@ -36,8 +38,8 @@ function add_nft() {
         exit 1
     }
     git add .
-    git commit -m "added $looperName, $nftID, $type"
-    git push
+    git commit -m "added $looperName, $nftID, $type, $BRANCH_NAME"
+    git push --set-upstream origin $BRANCH_NAME
     # add the NFT to the loopworms platform
     /root/add_looplands_nft.sh $long_nftid $project_name $type
     # add the picker
@@ -61,7 +63,7 @@ git clean . -f
 git checkout .
 git checkout main
 git pull
-branchName=add_nfts_`date +"%Y_%m_%dT%H_%M_%S%z"`
+BRANCH_NAME=add_nfts_`date +"%Y_%m_%dT%H_%M_%S%z"`
 git checkout -b $branchName
 
 #loop through each nft and add it
