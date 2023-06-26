@@ -37,7 +37,7 @@ function add_nft() {
         echo "exiting due to add_nft.sh error"
         exit 1
     }
-    git add .
+    git add ..
     git commit -m "added $looperName, $nftID, $type, $BRANCH_NAME"
     git push --set-upstream origin $BRANCH_NAME
     # add the NFT to the loopworms platform
