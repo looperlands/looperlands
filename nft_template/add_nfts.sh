@@ -70,3 +70,6 @@ git checkout -b $branchName
 echo $nftsToAddJSON | jq -r '.[] | {short_nftid, asset_type, looper_name, project_name, long_nftid} | join(" ")' | while read -r line; do
     add_nft $line
 done
+
+# check out main again for good measure
+git checkout main
