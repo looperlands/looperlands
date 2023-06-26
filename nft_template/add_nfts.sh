@@ -70,5 +70,6 @@ echo $nftsToAddJSON | jq -r '.[] | {short_nftid, asset_type, looper_name, projec
     add_nft $line
 done
 
+echo "Created Branch $BRANCH_NAME. Please open a PR into main on github.com"
 # check out main again for good measure
 git checkout main
