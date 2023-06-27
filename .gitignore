@@ -6,3 +6,4 @@ client/audio/music
 .DS_Store
 *.swp
 configs/*
+nft_template/sqlscript.sql
