@@ -214,7 +214,7 @@ define(['jquery', 'storage'], function($, Storage) {
                     chatHTML = "<div>";
                     response.data.forEach(function(message) {
                         date = new Date(message.epoch);
-                        time = date.getHours() + ":" + date.getMinutes();
+                        time = date.toLocaleTimeString();
                         chatHTML += `<p><b>${message.playerName}</b>&nbsp;[${time}]:&nbsp;${message.message}</p>`
                     });
                     chatHTML += "</div>";
