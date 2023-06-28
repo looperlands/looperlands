@@ -77,7 +77,7 @@ module.exports = World = cls.Class.extend({
             self.pushRelevantEntityListTo(player);
     
             var move_callback = function(x, y) {
-                console.debug(player.name + " is moving to (" + x + ", " + y + ").");
+                //console.debug(player.name + " is moving to (" + x + ", " + y + ").");
                 
                 player.forEachAttacker(function(mob) {
                     var target = self.getEntityById(mob.target);
@@ -262,7 +262,7 @@ module.exports = World = cls.Class.extend({
             }
         });
         
-        console.debug("Pushed "+_.size(ids)+" new spawns to "+player.id);
+        //console.debug("Pushed "+_.size(ids)+" new spawns to "+player.id);
     },
     
     pushToPlayer: function(player, message) {
@@ -384,7 +384,7 @@ module.exports = World = cls.Class.extend({
         
         entity.destroy();
         this.removeFromGroups(entity);
-        console.debug("Removed "+ Types.getKindAsString(entity.kind) +" : "+ entity.id);
+        //console.debug("Removed "+ Types.getKindAsString(entity.kind) +" : "+ entity.id);
     },
     
     addPlayer: function(player) {
@@ -530,7 +530,7 @@ module.exports = World = cls.Class.extend({
             mob.setTarget(player);
             
             this.broadcastAttacker(mob);
-            console.debug(mob.id + " is now attacking " + player.id);
+            //console.debug(mob.id + " is now attacking " + player.id);
         }
     },
     
@@ -837,7 +837,7 @@ module.exports = World = cls.Class.extend({
                 
                 if(_.size(oldGroups) > 0) {
                     entity.recentlyLeftGroups = _.difference(oldGroups, newGroups);
-                    console.debug("group diff: " + entity.recentlyLeftGroups);
+                    //console.debug("group diff: " + entity.recentlyLeftGroups);
                 }
             }
         }

@@ -42,7 +42,7 @@ module.exports = Player = Character.extend({
 
             var action = parseInt(message[0]);
             
-            console.debug("Received: " + message, "from " + self.connection.id);
+            //console.debug("Received: " + message, "from " + self.connection.id);
             if(!check(message)) {
                 self.connection.close("Invalid "+Types.getMessageTypeAsString(action)+" message format: "+message);
                 return;
@@ -165,7 +165,7 @@ module.exports = Player = Character.extend({
 
                         let weaponTrait = self.getNFTWeaponActiveTrait();
 
-                        console.log(self.name, "Total level ", totalLevel, "Level", level, "Weapon level", self.getWeaponLevel(), "Active Trait", weaponTrait);
+                        //console.log(self.name, "Total level ", totalLevel, "Level", level, "Weapon level", self.getWeaponLevel(), "Active Trait", weaponTrait);
                 
                         function handleDamage(mob, totalLevel, multiplier) {
                             let dmg = Formulas.dmg(totalLevel, mob.armorLevel);
@@ -175,7 +175,7 @@ module.exports = Player = Character.extend({
                 
                             if(dmg > 0) {
                                 mob.receiveDamage(dmg, self.id);
-                                console.log("Player "+self.id+" hit mob "+mob.id+" for "+dmg+" damage.", mob.type);
+                                //console.log("Player "+self.id+" hit mob "+mob.id+" for "+dmg+" damage.", mob.type);
                                 self.server.handleMobHate(mob.id, self.id, dmg);
                                 self.server.handleHurtEntity(mob, self, dmg);
                             }
@@ -347,7 +347,7 @@ module.exports = Player = Character.extend({
             let damage = Formulas.dmg(mob.getWeaponLevel(), totalLevel);
             this.hitPoints -= damage;
             this.server.handleHurtEntity(this, mob, damage);
-            console.log(this.name, "Level " + level, "Armor level", this.armorLevel, "Total level", totalLevel, "Hitpoints", this.hitPoints);
+            //console.log(this.name, "Level " + level, "Armor level", this.armorLevel, "Total level", totalLevel, "Hitpoints", this.hitPoints);
 
             if (mob instanceof Player) {
                 mob.incrementNFTWeaponExperience(damage);
@@ -488,7 +488,7 @@ module.exports = Player = Character.extend({
     
     equipItem: function(item) {
         if(item) {
-            console.debug(this.name + " equips " + Types.getKindAsString(item.kind));
+            //console.debug(this.name + " equips " + Types.getKindAsString(item.kind));
             
             if(Types.isArmor(item.kind)) {
                 this.equipArmor(item.kind);

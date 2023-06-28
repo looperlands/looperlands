@@ -4,7 +4,7 @@ const dao = require('./dao.js');
 
 class NFTWeapon {
     constructor(walletId, nftId) {
-        console.log("Creating NFTWeapon: ", nftId, walletId);
+        //console.log("Creating NFTWeapon: ", nftId, walletId);
         this.nftId = nftId.replace("NFT_", "0x");
         this.walletId = walletId;
         this.trait = undefined;
@@ -25,7 +25,7 @@ class NFTWeapon {
     async #setTraitInServer() {
         try {
             const trait = await dao.saveNFTWeaponTrait(this.walletId, this.nftId);
-            console.log("Got trait: ", trait, this.walletId, this.nftId);
+            //console.log("Got trait: ", trait, this.walletId, this.nftId);
             this.trait = trait;
         } catch (error) {
             console.error(error);
