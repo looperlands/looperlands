@@ -2414,6 +2414,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             var time = this.currentTime,
                 self = this;
             
+            character.lastUpdate = time;
             // If mob has finished moving to a different tile in order to avoid stacking, attack again from the new position.
             if(character.previousTarget && !character.isMoving() && character instanceof Mob) {
                 var t = character.previousTarget;
