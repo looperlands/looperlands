@@ -188,7 +188,7 @@ WS.socketIOServer = Server.extend({
         app.get('/session/:sessionId', async (req, res) => {
             const sessionId = req.params.sessionId;
             const sessionData = cache.get(sessionId);
-            console.log("Session Data for session id", sessionId, sessionData);
+            // console.log("Session Data for session id", sessionId, sessionData);
             const nftId = sessionData.nftId;
             const walletId = sessionData.walletId;
             const isDirty = sessionData.isDirty;
@@ -202,7 +202,7 @@ WS.socketIOServer = Server.extend({
                 return;
             }
 
-            console.log("Session ID", sessionId, "Wallet ID", walletId, "NFT ID", nftId);
+            // console.log("Session ID", sessionId, "Wallet ID", walletId, "NFT ID", nftId);
             let parsedSaveData = await dao.getCharacterData(walletId, nftId);
             let weapon = await dao.loadWeapon(walletId, nftId);
             
@@ -277,7 +277,6 @@ WS.socketIOServer = Server.extend({
             } else {
                 const walletId = sessionData.walletId;
                 let url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/AssetValidation.php?WalletID=${walletId}&NFTID=${nftId}`
-                console.log(url);
                 const result = await axios.get(url);
                 res.status(200).json(result.data);
             }
@@ -389,7 +388,6 @@ WS.socketIOServer = Server.extend({
         app.get("/nftcommited/:shortnftid", cors(corsOptions), async (req, res) => {
             let nftId = req.params.shortnftid;
             nftId = nftId.replace("0x", "NFT_");
-            console.log("Checking for existence of " + nftId);
             if (fs.existsSync('./client/img/3/' + nftId + '.png')) {
                 res.status(200).send(true);
             } else {

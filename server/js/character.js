@@ -82,7 +82,7 @@ module.exports = Character = Entity.extend({
     removeAttacker: function(entity) {
         if(entity && entity.id in this.attackers) {
             delete this.attackers[entity.id];
-            console.debug(this.id +" REMOVED ATTACKER "+ entity.id);
+            //console.debug(this.id +" REMOVED ATTACKER "+ entity.id);
         }
     },
     
