@@ -496,7 +496,10 @@ module.exports = Player = Character.extend({
             } else if(Types.isWeapon(item.kind)) {
                 this.equipWeapon(item.kind);
                 let playerCache = this.server.server.cache.get(this.sessionId);
-                dao.saveWeapon(playerCache.walletId, playerCache.nftId,Types.getKindAsString(item.kind));
+                let kind = Types.getKindAsString(item.kind);
+                if(!kind.startsWith("NFT")) {
+                    dao.saveWeapon(playerCache.walletId, playerCache.nftId,Types.getKindAsString(item.kind));
+                }
             }
         }
     },
