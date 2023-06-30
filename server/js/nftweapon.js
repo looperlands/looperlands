@@ -45,7 +45,10 @@ class NFTWeapon {
         try {
             const updatedExperience = await dao.saveNFTWeaponExperience(this.walletId, this.nftId, damageDealt);
             this.experience = updatedExperience;
-            this.level = Formulas.level(updatedExperience);
+            let updatedLevel = Formulas.level(updatedExperience);
+            if (updatedLevel > this.level) {
+                this.level = updatedLevel;
+            }
         } catch(error) {
             console.error(error);
         }

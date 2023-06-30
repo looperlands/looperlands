@@ -26,6 +26,7 @@ function add_nft() {
     looperName=$3
     project_name=$4
     long_nftid=$5
+    operation=$6
     echo "Adding " $nftID $type $looperName $project_name $long_nftid
     # Prepare the tmp directory to add the NFT spritesheet to git
     rm -rf /tmp/$nftID
@@ -33,15 +34,29 @@ function add_nft() {
     cp /home/loopworms.io/public_html/DEV/LooperLands/AddNewLooper/images/1/$nftID.png /tmp/$nftID/1.png
     cp /home/loopworms.io/public_html/DEV/LooperLands/AddNewLooper/images/2/$nftID.png /tmp/$nftID/2.png
     cp /home/loopworms.io/public_html/DEV/LooperLands/AddNewLooper/images/3/$nftID.png /tmp/$nftID/3.png
-    ./add_nft.sh /tmp/$nftID $nftID $type || {
-        echo "exiting due to add_nft.sh error"
-        exit 1
-    }
+    if [ "$operation" = "add" ]; then
+        ./add_nft.sh /tmp/$nftID $nftID $type || {
+            echo "returning due to add_nft.sh error: $nfID $type"
+            return 1
+        }
+    elif [ "$operation" = "update" ]; then
+        ./update_nft.sh /tmp/$nftID $nftID $type || {
+            echo "returning due to update_nft.sh error: $nfID $type"
+            return 1
+        }
+    else
+        echo "Unknown operation $operation for $nftID"
+        return 1
+    fi
+
     git add ..
-    git commit -m "added $looperName, $nftID, $type, $BRANCH_NAME"
-    # add the NFT to the loopworms platform
-    /root/add_looplands_nft.sh "$long_nftid" "$project_name" "$type"
-    rm sqlscript.sql
+    git commit -m "$operation $looperName, $nftID, $type, $BRANCH_NAME"
+    if [ "$operation" = "add" ]; then
+        # add the NFT to the loopworms platform
+        echo "adding nft"
+        /root/add_looplands_nft.sh "$long_nftid" "$project_name" "$type"
+        rm sqlscript.sql
+    fi
     # add the picker
     cp /home/loopworms.io/public_html/DEV/LooperLands/AddNewLooper/images/profilepic/$nftID.png /home/loopworms.io/public_html/DEV/LooperLands/img/$nftID.png
     chown loopw4130 /home/loopworms.io/public_html/DEV/LooperLands/img/$nftID.png
@@ -66,8 +81,8 @@ git pull
 git checkout -b $BRANCH_NAME
 
 #loop through each nft and add it
-echo $nftsToAddJSON | jq -r '.[] | {short_nftid, asset_type, looper_name, project_name, long_nftid} | join(",")' | while IFS=, read short_nftid asset_type looper_name project_name long_nftid; do
-    add_nft "$short_nftid" "$asset_type" "$looper_name" "$project_name" "$long_nftid"
+echo $nftsToAddJSON | jq -r '.[] | {short_nftid, asset_type, looper_name, project_name, long_nftid, operation} | join(",")' | while IFS=, read short_nftid asset_type looper_name project_name long_nftid operation; do
+    add_nft "$short_nftid" "$asset_type" "$looper_name" "$project_name" "$long_nftid" "$operation"
 done
 
 git push --set-upstream origin $BRANCH_NAME
