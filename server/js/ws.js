@@ -200,6 +200,9 @@ WS.socketIOServer = Server.extend({
                     user: null
                 });
                 return;
+            } else {
+                sessionData.isDirty = true;
+                cache.set(sessionId, sessionData);
             }
 
             // console.log("Session ID", sessionId, "Wallet ID", walletId, "NFT ID", nftId);
