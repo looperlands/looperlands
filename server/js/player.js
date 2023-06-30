@@ -171,14 +171,13 @@ module.exports = Player = Character.extend({
                             let dmg = Formulas.dmg(totalLevel, mob.armorLevel);
                             dmg *= multiplier;
                 
-                            self.incrementNFTWeaponExperience(dmg);
-                
                             if(dmg > 0) {
                                 mob.receiveDamage(dmg, self.id);
                                 //console.log("Player "+self.id+" hit mob "+mob.id+" for "+dmg+" damage.", mob.type);
                                 self.server.handleMobHate(mob.id, self.id, dmg);
                                 self.server.handleHurtEntity(mob, self, dmg);
                             }
+                            self.incrementNFTWeaponExperience(dmg);
                         }
 
                         if (weaponTrait === "aoe") {
