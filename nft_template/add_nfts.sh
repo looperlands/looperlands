@@ -86,7 +86,7 @@ fi
 # prepare the git repo
 git clean . -f
 git checkout .
-git checkout main
+#git checkout main
 git pull
 git checkout -b $BRANCH_NAME
 
