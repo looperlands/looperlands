@@ -39,11 +39,9 @@ fi
 echo Updating NFT with id $NFT_ID, type $type
 
 cp $IMAGE_DIR/1.png ../client/img/1/$NFT_ID.png
-
-
-
 cp $IMAGE_DIR/2.png ../client/img/2/$NFT_ID.png
 cp $IMAGE_DIR/3.png ../client/img/3/$NFT_ID.png
+
 if [ "$type" = "weapon" ]; then
   cp $IMAGE_DIR/item-1.png ../client/img/1/item-$NFT_ID.png
   cp $IMAGE_DIR/item-2.png ../client/img/2/item-$NFT_ID.png
