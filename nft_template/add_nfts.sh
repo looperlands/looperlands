@@ -64,8 +64,8 @@ function add_nft() {
     if [ "$operation" = "add" ]; then
         # add the NFT to the loopworms platform
         echo "adding nft"
-        #/root/add_looplands_nft.sh "$long_nftid" "$project_name" "$type"
-        #rm sqlscript.sql
+        /root/add_looplands_nft.sh "$long_nftid" "$project_name" "$type"
+        rm sqlscript.sql
     fi
     
     # add the picker for avatars
@@ -76,7 +76,7 @@ function add_nft() {
         chgrp loopw4130 /home/loopworms.io/public_html/DEV/LooperLands/img/$nftID.png
     fi
     # update the status so it's not added again
-    #updateStatus $nftID
+    updateStatus $nftID
     rm -rf /tmp/$nftID
 }
 
@@ -90,7 +90,7 @@ fi
 # prepare the git repo
 git clean . -f
 git checkout .
-#git checkout main
+git checkout main
 git pull
 git checkout -b $BRANCH_NAME
 
