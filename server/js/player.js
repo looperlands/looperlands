@@ -259,6 +259,9 @@ module.exports = Player = Character.extend({
                     _self.broadcast(_self.equip(item.kind));
                 }).catch(function (error) {
                     console.error("Asset validation error: " + error);
+                    item = {kind: Types.Entities.SWORD1};
+                    _self.equipItem(item);
+                    _self.broadcast(_self.equip(item.kind));
                 });
             }
             else if(action === Types.Messages.TELEPORT) {
@@ -496,9 +499,7 @@ module.exports = Player = Character.extend({
                 this.equipWeapon(item.kind);
                 let playerCache = this.server.server.cache.get(this.sessionId);
                 let kind = Types.getKindAsString(item.kind);
-                if(!kind.startsWith("NFT")) {
-                    dao.saveWeapon(playerCache.walletId, playerCache.nftId,Types.getKindAsString(item.kind));
-                }
+                dao.saveWeapon(playerCache.walletId, playerCache.nftId,Types.getKindAsString(item.kind));
             }
         }
     },

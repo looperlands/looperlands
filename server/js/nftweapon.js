@@ -44,10 +44,14 @@ class NFTWeapon {
     async incrementExperience(damageDealt) {
         try {
             const updatedExperience = await dao.saveNFTWeaponExperience(this.walletId, this.nftId, damageDealt);
-            this.experience = updatedExperience;
-            let updatedLevel = Formulas.level(updatedExperience);
-            if (updatedLevel > this.level) {
-                this.level = updatedLevel;
+            if (!Number.isNaN(updatedExperience)) {
+                this.experience = updatedExperience;
+                let updatedLevel = Formulas.level(updatedExperience);
+                if (updatedLevel > this.level) {
+                    this.level = updatedLevel;
+                }
+            } else {
+                console.error("Error updating experience", this.walletId, this.nftId, damageDealt, updatedExperience);
             }
         } catch(error) {
             console.error(error);
