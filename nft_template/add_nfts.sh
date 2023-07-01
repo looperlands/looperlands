@@ -70,6 +70,7 @@ function add_nft() {
     
     # add the picker for avatars
     if [ "$type" = "armor" ]; then
+        echo "Adding avatar picker"
         cp /home/loopworms.io/public_html/DEV/LooperLands/AddNewLooper/images/profilepic/$nftID.png /home/loopworms.io/public_html/DEV/LooperLands/img/$nftID.png
         chown loopw4130 /home/loopworms.io/public_html/DEV/LooperLands/img/$nftID.png
         chgrp loopw4130 /home/loopworms.io/public_html/DEV/LooperLands/img/$nftID.png
