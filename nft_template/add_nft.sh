@@ -32,9 +32,9 @@ stat $IMAGE_DIR/2.png 1> /dev/null ||  missingFile $IMAGE_DIR/2.png
 stat $IMAGE_DIR/3.png 1> /dev/null ||  missingFile $IMAGE_DIR/3.png
 
 if [ "$type" = "weapon" ]; then
-  stat $IMAGE_DIR/item-4.png 1> /dev/null ||  missingFile $IMAGE_DIR/item-4.png
-  stat $IMAGE_DIR/item-5.png 1> /dev/null ||  missingFile $IMAGE_DIR/item-5.png
-  stat $IMAGE_DIR/item-6.png 1> /dev/null ||  missingFile $IMAGE_DIR/item-6.png
+  stat $IMAGE_DIR/item-1.png 1> /dev/null ||  missingFile $IMAGE_DIR/item-1.png
+  stat $IMAGE_DIR/item-2.png 1> /dev/null ||  missingFile $IMAGE_DIR/item-2.png
+  stat $IMAGE_DIR/item-3.png 1> /dev/null ||  missingFile $IMAGE_DIR/item-3.png
 fi
 
 echo Adding NFT with id $NFT_ID, type $type

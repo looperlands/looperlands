@@ -39,9 +39,9 @@ function add_nft() {
 
 
     if [ "$type" = "weapon" ]; then
-        cp /home/loopworms.io/public_html/DEV/LooperLands/AddNewLooper/images/4/$nftID.png /tmp/$nftID/item-4.png
-        cp /home/loopworms.io/public_html/DEV/LooperLands/AddNewLooper/images/5/$nftID.png /tmp/$nftID/item-5.png
-        cp /home/loopworms.io/public_html/DEV/LooperLands/AddNewLooper/images/6/$nftID.png /tmp/$nftID/item-6.png
+        cp /home/loopworms.io/public_html/DEV/LooperLands/AddNewLooper/images/4/$nftID.png /tmp/$nftID/item-1.png
+        cp /home/loopworms.io/public_html/DEV/LooperLands/AddNewLooper/images/5/$nftID.png /tmp/$nftID/item-2.png
+        cp /home/loopworms.io/public_html/DEV/LooperLands/AddNewLooper/images/6/$nftID.png /tmp/$nftID/item-3.png
     fi
 
     if [ "$operation" = "add" ]; then
@@ -67,10 +67,13 @@ function add_nft() {
         #/root/add_looplands_nft.sh "$long_nftid" "$project_name" "$type"
         #rm sqlscript.sql
     fi
-    # add the picker
-    cp /home/loopworms.io/public_html/DEV/LooperLands/AddNewLooper/images/profilepic/$nftID.png /home/loopworms.io/public_html/DEV/LooperLands/img/$nftID.png
-    chown loopw4130 /home/loopworms.io/public_html/DEV/LooperLands/img/$nftID.png
-    chgrp loopw4130 /home/loopworms.io/public_html/DEV/LooperLands/img/$nftID.png
+    
+    # add the picker for avatars
+    if [ "$type" = "armor" ]; then
+        cp /home/loopworms.io/public_html/DEV/LooperLands/AddNewLooper/images/profilepic/$nftID.png /home/loopworms.io/public_html/DEV/LooperLands/img/$nftID.png
+        chown loopw4130 /home/loopworms.io/public_html/DEV/LooperLands/img/$nftID.png
+        chgrp loopw4130 /home/loopworms.io/public_html/DEV/LooperLands/img/$nftID.png
+    fi
     # update the status so it's not added again
     #updateStatus $nftID
     rm -rf /tmp/$nftID
