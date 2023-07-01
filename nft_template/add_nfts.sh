@@ -31,9 +31,19 @@ function add_nft() {
     # Prepare the tmp directory to add the NFT spritesheet to git
     rm -rf /tmp/$nftID
     mkdir /tmp/$nftID
+    
+    # copy the spritesheet to the tmp directory
     cp /home/loopworms.io/public_html/DEV/LooperLands/AddNewLooper/images/1/$nftID.png /tmp/$nftID/1.png
     cp /home/loopworms.io/public_html/DEV/LooperLands/AddNewLooper/images/2/$nftID.png /tmp/$nftID/2.png
     cp /home/loopworms.io/public_html/DEV/LooperLands/AddNewLooper/images/3/$nftID.png /tmp/$nftID/3.png
+
+
+    if [ "$type" = "weapon" ]; then
+        cp /home/loopworms.io/public_html/DEV/LooperLands/AddNewLooper/images/4/$nftID.png /tmp/$nftID/item-4.png
+        cp /home/loopworms.io/public_html/DEV/LooperLands/AddNewLooper/images/5/$nftID.png /tmp/$nftID/item-5.png
+        cp /home/loopworms.io/public_html/DEV/LooperLands/AddNewLooper/images/6/$nftID.png /tmp/$nftID/item-6.png
+    fi
+
     if [ "$operation" = "add" ]; then
         ./add_nft.sh /tmp/$nftID $nftID $type || {
             echo "returning due to add_nft.sh error: $nfID $type"
@@ -54,15 +64,15 @@ function add_nft() {
     if [ "$operation" = "add" ]; then
         # add the NFT to the loopworms platform
         echo "adding nft"
-        /root/add_looplands_nft.sh "$long_nftid" "$project_name" "$type"
-        rm sqlscript.sql
+        #/root/add_looplands_nft.sh "$long_nftid" "$project_name" "$type"
+        #rm sqlscript.sql
     fi
     # add the picker
     cp /home/loopworms.io/public_html/DEV/LooperLands/AddNewLooper/images/profilepic/$nftID.png /home/loopworms.io/public_html/DEV/LooperLands/img/$nftID.png
     chown loopw4130 /home/loopworms.io/public_html/DEV/LooperLands/img/$nftID.png
     chgrp loopw4130 /home/loopworms.io/public_html/DEV/LooperLands/img/$nftID.png
     # update the status so it's not added again
-    updateStatus $nftID
+    #updateStatus $nftID
     rm -rf /tmp/$nftID
 }
 

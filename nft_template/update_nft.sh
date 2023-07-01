@@ -30,9 +30,19 @@ type=$3
 stat $IMAGE_DIR/1.png 1> /dev/null ||  missingFile $IMAGE_DIR/1.png
 stat $IMAGE_DIR/2.png 1> /dev/null ||  missingFile $IMAGE_DIR/2.png
 stat $IMAGE_DIR/3.png 1> /dev/null ||  missingFile $IMAGE_DIR/3.png
+if [ "$type" = "weapon" ]; then
+  stat $IMAGE_DIR/item-4.png 1> /dev/null ||  missingFile $IMAGE_DIR/item-4.png
+  stat $IMAGE_DIR/item-5.png 1> /dev/null ||  missingFile $IMAGE_DIR/item-5.png
+  stat $IMAGE_DIR/item-6.png 1> /dev/null ||  missingFile $IMAGE_DIR/item-6.png
+fi
 
 echo Updating NFT with id $NFT_ID, type $type
 
 cp $IMAGE_DIR/1.png ../client/img/1/$NFT_ID.png
 cp $IMAGE_DIR/2.png ../client/img/2/$NFT_ID.png
 cp $IMAGE_DIR/3.png ../client/img/3/$NFT_ID.png
+if [ "$type" = "weapon" ]; then
+  cp $IMAGE_DIR/item-4.png ../client/img/4/item-$NFT_ID.png
+  cp $IMAGE_DIR/item-5.png ../client/img/5/item-$NFT_ID.png
+  cp $IMAGE_DIR/item-6.png ../client/img/6/item-$NFT_ID.png
+fi
