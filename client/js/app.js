@@ -442,7 +442,6 @@ define(['jquery', 'storage'], function($, Storage) {
                         let equip = function() {
                             let itemId = Types.Entities[item];
                             let nftId = item.replace("NFT_", "0x");
-                            console.log("equip",  nftId);
                             _this.game.client.sendEquipInventory(itemId, nftId);
                             _this.game.player.switchWeapon(item);
                         }
