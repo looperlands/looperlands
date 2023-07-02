@@ -170,6 +170,7 @@ module.exports = Player = Character.extend({
                         function handleDamage(mob, totalLevel, multiplier) {
                             let dmg = Formulas.dmg(totalLevel, mob.armorLevel);
                             dmg *= multiplier;
+                            dmg = Math.round(dmg);
                 
                             if(dmg > 0) {
                                 mob.receiveDamage(dmg, self.id);
@@ -188,7 +189,7 @@ module.exports = Player = Character.extend({
                                 if (entity.type === 'mob') {
                                     let distance = Utils.distanceTo(self.x, self.y, entity.x, entity.y);
                                     if (distance === 1) {
-                                        handleDamage(entity, totalLevel, 1);
+                                        handleDamage(entity, totalLevel, 0.5);
                                     }
                                 }
                             });
