@@ -432,17 +432,21 @@ define(['jquery', 'storage'], function($, Storage) {
 
                     var inventoryHtml = "";
                     inventory.forEach(function(item) {
-                        equip = function() {
-                            var itemId = Types.Entities[item];
-                            var nftId = item.replace("NFT_", "0x");
-                            _this.game.client.sendEquipInventory(itemId, nftId);
-                            _this.game.player.switchWeapon(item);
-                        }
-                        imgTag = "<img onclick='equip()' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0;' src='img/3/item-" + item + ".png' />";
+                        imgTag = "<img id='"+item+"' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0;' src='img/3/item-" + item + ".png' />";
                         inventoryHtml += imgTag;
                     });
 
                     $("#inventory").html(inventoryHtml);
+
+                    inventory.forEach(function(item) {
+                        let equip = function() {
+                            let itemId = Types.Entities[item];
+                            let nftId = item.replace("NFT_", "0x");
+                            _this.game.client.sendEquipInventory(itemId, nftId);
+                            _this.game.player.switchWeapon(item);
+                        }
+                        document.getElementById(item).addEventListener("click", equip);
+                    });
                 }
 
                 if(_this.game.started) {
