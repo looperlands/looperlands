@@ -43,6 +43,8 @@ class NFTWeapon {
 
     async incrementExperience(damageDealt) {
         try {
+            damageDealt = damageDealt/4;
+            damageDealt = Math.round(damageDealt);
             const updatedExperience = await dao.saveNFTWeaponExperience(this.walletId, this.nftId, damageDealt);
             if (!Number.isNaN(updatedExperience)) {
                 this.experience = updatedExperience;
