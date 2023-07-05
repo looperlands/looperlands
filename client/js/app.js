@@ -52,7 +52,7 @@ define(['jquery', 'storage'], function($, Storage) {
             }
         },
         
-        tryStartingGame: function(username, starting_callback) {
+        tryStartingGame: function(username, mapId, starting_callback) {
             var self = this,
                 $play = this.$playButton;
             
@@ -72,17 +72,17 @@ define(['jquery', 'storage'], function($, Storage) {
                                 }
                             }, 1500);
                             clearInterval(watchCanStart);
-                            self.startGame(username, starting_callback);
+                            self.startGame(username, mapId, starting_callback);
                         }
                     }, 100);
                 } else {
                     this.$playDiv.unbind('click');
-                    this.startGame(username, starting_callback);
+                    this.startGame(username, mapId, starting_callback);
                 }      
             }
         },
         
-        startGame: function(username, starting_callback) {
+        startGame: function(username, mapId, starting_callback) {
             var self = this;
             
             if(starting_callback) {
@@ -92,7 +92,7 @@ define(['jquery', 'storage'], function($, Storage) {
                 if(!self.isDesktop) {
                     // On mobile and tablet we load the map after the player has clicked
                     // on the PLAY button instead of loading it in a web worker.
-                    self.game.loadMap();
+                    self.game.loadMap(mapId);
                 }
                 self.start(username);
             });

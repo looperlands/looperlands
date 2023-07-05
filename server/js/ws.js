@@ -164,7 +164,7 @@ WS.socketIOServer = Server.extend({
                 let sameWallet = cachedBody.walletId === body.walletId;
                 if(sameWallet && cachedBody.isDirty === true) {
                     console.log("Disconnecting other session");
-                    let player = self.worldserver.getEntityById(cachedBody.entityId);
+                    let player = self.worldsMap[cachedBody.mapId].getEntityById(cachedBody.entityId);
                     cache.del(key);
                     player.connection.close('A new session from another device created');
                     break;
@@ -178,6 +178,9 @@ WS.socketIOServer = Server.extend({
             // this prevents failed logins not being able to login again
             body.isDirty = false;
             console.log("New Session", id, body);
+            if (body.mapId === undefined) {
+                body.mapId = "main";
+            }
             cache.set(id, body);
             let responseJson = {
                 "sessionId" : id
@@ -242,6 +245,7 @@ WS.socketIOServer = Server.extend({
             parsedSaveData.player.weapon = weapon;
             parsedSaveData.nftId = nftId;
             parsedSaveData.walletId = walletId;
+            parsedSaveData.mapId = sessionData.mapId;
             
             res.status(200).json(parsedSaveData);
         });
@@ -300,7 +304,7 @@ WS.socketIOServer = Server.extend({
             } else {
                 let avatarLevelInfo = Formulas.calculatePercentageToNextLevel(sessionData.xp);
                 let maxHp = Formulas.hp(avatarLevelInfo.currentLevel);
-                let weaponInfo = self.worldserver.getNFTWeaponStatistics(sessionData.entityId);
+                let weaponInfo = self.worldsMap[sessionData.mapId].getNFTWeaponStatistics(sessionData.entityId);
                 if (weaponInfo !== undefined) {
                     weaponInfo['weaponLevelInfo'] = Formulas.calculatePercentageToNextLevel(weaponInfo.experience);
                 }
@@ -318,7 +322,7 @@ WS.socketIOServer = Server.extend({
             const sessionId = req.params.sessionId;
             const sessionData = cache.get(sessionId);
             const playerId = sessionData.entityId;
-            let ret = self.worldserver.getPollingInfo(playerId);
+            let ret = self.worldsMap[sessionData.mapId].getPollingInfo(playerId);
             if (ret === undefined) {
                 res.status(500).json({
                     status: false,

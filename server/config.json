@@ -4,7 +4,10 @@
     "debug_level": "info",
     "nb_players_per_world": 1000,
     "nb_worlds": 1,
-    "map_filepath": "./server/maps/world_server.json",
+    "maps" : [
+        "main"
+    ],
+    "map_directory": "./server/maps/",
     "metrics_enabled": false,
     "protocol": "http"
 }
