@@ -3,7 +3,6 @@ define(['jquery', 'area'], function($, Area) {
     
     var Mapx = Class.extend({
         init: function(loadMultiTilesheets, game, mapId) {
-            console.log(loadMultiTilesheets, game, mapId);
             this.game = game;
             this.mapId = mapId;
         	this.data = [];

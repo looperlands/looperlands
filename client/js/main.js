@@ -173,7 +173,6 @@ define(['jquery', 'app'], function($, App) {
                 });
             
                 var data = app.storage.data;
-                console.log(data);
                 app.tryStartingGame(data.player.name, data.mapId);
                 if(data.hasAlreadyPlayed) {
                     if(data.player.name && data.player.name !== "") {
