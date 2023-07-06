@@ -16,6 +16,6 @@
         "profane-words": "^1.5.9",
         "sanitizer": "0.1.2",
         "socket.io": ">0",
-        "underscore": ">0"
+        "underscore": "^1.13.6"
     }
 }
