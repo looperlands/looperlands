@@ -1,0 +1,2 @@
+Do not delete this file. 
+This is here to insure the maps directory is included in git.
