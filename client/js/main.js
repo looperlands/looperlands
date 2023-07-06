@@ -173,7 +173,7 @@ define(['jquery', 'app'], function($, App) {
                 });
             
                 var data = app.storage.data;
-                app.tryStartingGame(data.player.name);
+                app.tryStartingGame(data.player.name, data.mapId);
                 if(data.hasAlreadyPlayed) {
                     if(data.player.name && data.player.name !== "") {
                         $('#playername').html(data.player.name);
@@ -186,7 +186,7 @@ define(['jquery', 'app'], function($, App) {
                         nameFromStorage = $('#playername').html(),
                         name = nameFromInput || nameFromStorage;
                     
-                    app.tryStartingGame(name);
+                    app.tryStartingGame(name, data.mapId);
                 });
             
                 document.addEventListener("touchstart", function() {},false);
@@ -206,7 +206,7 @@ define(['jquery', 'app'], function($, App) {
 
                 console.log("App initialized.");
             
-                initGame();
+                initGame(data.mapId);
             }).catch((error) => {
                 console.error(error);
                 if (error.response.status === 404) {
@@ -218,7 +218,7 @@ define(['jquery', 'app'], function($, App) {
         });
     };
     
-    var initGame = function() {
+    var initGame = function(mapId) {
         require(['game'], function(Game) {
             
             var canvas = document.getElementById("entities"),
@@ -232,7 +232,7 @@ define(['jquery', 'app'], function($, App) {
     		app.setGame(game);
     		
     		if(app.isDesktop && app.supportsWorkers) {
-    		    game.loadMap();
+    		    game.loadMap(mapId);
     		}
 	
     		game.onGameStart(function() {

@@ -480,10 +480,10 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             this.bubbleManager = bubbleManager;
         },
 
-        loadMap: function() {
+        loadMap: function(mapId) {
             var self = this;
     
-            this.map = new Mapx(!this.renderer.upscaledRendering, this);
+            this.map = new Mapx(!this.renderer.upscaledRendering, this, mapId);
     
         	this.map.ready(function() {
                 console.log("Map loaded.");

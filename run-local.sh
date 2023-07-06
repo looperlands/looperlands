@@ -11,7 +11,7 @@ if [ -z "$LOOPWORMS_LOOPERLANDS_BASE_URL" ]
     exit 1
 fi
 
-cd tools/maps
-./export.py server && ./export.py client
-cd ../..
+#cd tools/maps
+#./export.py server && ./export.py client
+#cd ../..
 docker build . -t blah && docker run -e LOOPWORMS_API_KEY=$LOOPWORMS_API_KEY -e LOOPWORMS_LOOPERLANDS_BASE_URL=$LOOPWORMS_LOOPERLANDS_BASE_URL -e DISCORD_TOKEN=$DISCORD_TOKEN -t -i -p 8000:8000 -t blah

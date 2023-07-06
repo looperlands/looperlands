@@ -2,8 +2,9 @@
 define(['jquery', 'area'], function($, Area) {
     
     var Mapx = Class.extend({
-        init: function(loadMultiTilesheets, game) {
+        init: function(loadMultiTilesheets, game, mapId) {
             this.game = game;
+            this.mapId = mapId;
         	this.data = [];
         	this.isLoaded = false;
         	this.tilesetsLoaded = false;
@@ -27,12 +28,12 @@ define(['jquery', 'area'], function($, Area) {
 
         _loadMap: function(useWorker) {
         	var self = this,
-        	    filepath = "maps/world_client.json";
+        	    filepath = "maps/world_client_" + this.mapId + ".json";
         	
         	if(useWorker) {
-        	    console.log("Loading map with web worker.");
+        	    console.log("Loading map with web worker." + this.mapId);
                 var worker = new Worker('js/mapworker.js');
-                worker.postMessage(1);
+                worker.postMessage(this.mapId);
             
                 worker.onmessage = function(event) {
                     var map = event.data;
@@ -59,15 +60,15 @@ define(['jquery', 'area'], function($, Area) {
             
             if(!this.loadMultiTilesheets) {
                 this.tilesetCount = 1;
-                tileset1 = this._loadTileset('img/1/tilesheet.png');
+                tileset1 = this._loadTileset('img/1/tilesheet_' + this.mapId + '.png');
             } else {
                 if(this.game.renderer.mobile || this.game.renderer.tablet) {
                     this.tilesetCount = 1;
-                    tileset2 = this._loadTileset('img/2/tilesheet.png');
+                    tileset2 = this._loadTileset('img/2/tilesheet_' + this.mapId + '.png');
                 } else {
                     this.tilesetCount = 2;
-                    tileset2 = this._loadTileset('img/2/tilesheet.png');
-                    tileset3 = this._loadTileset('img/3/tilesheet.png');
+                    tileset2 = this._loadTileset('img/2/tilesheet_' + this.mapId + '.png');
+                    tileset3 = this._loadTileset('img/3/tilesheet_' + this.mapId + '.png');
                 }
             }
         
