@@ -1,5 +1,5 @@
 
-define(['character', 'exceptions'], function(Character, Exceptions) {
+define(['character', 'exceptions', '../../shared/js/gametypes'], function(Character, Exceptions) {
 
     var Player = Character.extend({
         MAX_LEVEL: 10,
@@ -197,7 +197,7 @@ define(['character', 'exceptions'], function(Character, Exceptions) {
             this.invincibleTimeout = setTimeout(function() {
                 self.stopInvincibility();
                 self.idle();
-            }, 15000);
+            }, Types.timeouts[Types.Entities.FIREFOX]);
         },
     
         stopInvincibility: function() {

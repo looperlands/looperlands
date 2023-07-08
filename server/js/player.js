@@ -228,9 +228,9 @@ module.exports = Player = Character.extend({
                             self.updateHitPoints();
                             self.broadcast(self.equip(Types.Entities.FIREFOX));
                             self.firepotionTimeout = setTimeout(function() {
-                                self.broadcast(self.equip(self.armor)); // return to normal after 15 sec
+                                self.broadcast(self.equip(self.armor)); // return to normal
                                 self.firepotionTimeout = null;
-                            }, 5000);
+                            }, Types.timeouts[Types.Entities.FIREFOX]);
                             self.send(new Messages.HitPoints(self.maxHitPoints).serialize());
                         } else if(Types.isHealingItem(kind)) {
                             var amount;

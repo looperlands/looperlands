@@ -1886,3 +1886,6 @@ Types.getMessageTypeAsString = function(type) {
 if(!(typeof exports === 'undefined')) {
     module.exports = Types;
 }
+
+Types.timeouts = {};
+Types.timeouts[Types.Entities.FIREFOX] = 5000;
