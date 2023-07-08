@@ -230,7 +230,7 @@ module.exports = Player = Character.extend({
                             self.firepotionTimeout = setTimeout(function() {
                                 self.broadcast(self.equip(self.armor)); // return to normal after 15 sec
                                 self.firepotionTimeout = null;
-                            }, 15000);
+                            }, 5000);
                             self.send(new Messages.HitPoints(self.maxHitPoints).serialize());
                         } else if(Types.isHealingItem(kind)) {
                             var amount;
