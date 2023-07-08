@@ -2108,6 +2108,16 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
          *
          */
         makeNpcTalk: function(npc) {
+
+            now = new Date().getTime();
+
+            if (this.lastNPCTalk !== undefined) {
+                if (now - this.lastNPCTalk < 500) {
+                    return;
+                }
+            }
+            this.lastNPCTalk = now;
+
             var msg;
         
             if(npc) {
