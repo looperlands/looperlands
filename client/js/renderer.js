@@ -321,7 +321,10 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                 w = ts * s,
                 h = w;
         
-            ctx.clearRect(x, y, h, w);
+            ctx.beginPath();
+            ctx.fillStyle = "rgba(0, 0, 0, 255)";
+            ctx.fillRect(x, y, h, w);
+            ctx.stroke();
         },
 
         drawEntity: function(entity) {
@@ -593,7 +596,9 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                 tilesetwidth = this.tileset.width / m.tilesize;
         
             this.game.forEachVisibleTile(function (id, index) {
-                self.drawTile(self.background, id, self.tileset, tilesetwidth, m.width, index);
+                if (!m.isAnimatedTile(id)) {
+                    self.drawTile(self.background, id, self.tileset, tilesetwidth, m.width, index);
+                }
             }, 1);
         },
     
