@@ -17,6 +17,7 @@ const NFTWeapon = require("./nftweapon.js");
 
 const LOOPWORMS_LOOPERLANDS_BASE_URL = process.env.LOOPWORMS_LOOPERLANDS_BASE_URL;
 const BASE_SPEED = 120;
+const BASE_ATTACK_RATE = 800;
 
 module.exports = Player = Character.extend({
     init: function(connection, worldServer) {
@@ -35,7 +36,8 @@ module.exports = Player = Character.extend({
         this.disconnectTimeout = null;
 
         this.moveSpeed = BASE_SPEED;
-        this.attackRate = 800;
+        this.attackRate = BASE_ATTACK_RATE;
+        
 
         
         this.connection.listen(function(message) {
@@ -160,6 +162,9 @@ module.exports = Player = Character.extend({
                     if (mob instanceof Player) {
                         mob.handleHurt(self);
                     } else {
+                        // reset attack speed so if it is increased via the trait it will be reset if a weapon with it is not equiped
+                        self.setAttackRate(BASE_ATTACK_RATE);
+
                         let level = self.getLevel();
                         let totalLevel = (self.getWeaponLevel() + level) - 1;
 
@@ -189,16 +194,15 @@ module.exports = Player = Character.extend({
                                 if (entity.type === 'mob') {
                                     let distance = Utils.distanceTo(self.x, self.y, entity.x, entity.y);
                                     if (distance === 1) {
-                                        handleDamage(entity, totalLevel, 0.5);
+                                        handleDamage(entity, totalLevel, 0.67);
                                     }
                                 }
                             });
                         } else if (weaponTrait === "crit") {
                             handleDamage(mob, totalLevel, 3);
                         } else if (weaponTrait === "speed") {
-                            for (i = 0 ; i < 2; i++) {
-                                handleDamage(mob, totalLevel, 1);
-                            }
+                            self.setAttackRate(self.getAttackRate() - (25 * self.getWeaponLevel()));
+                            handleDamage(mob, totalLevel, 1);
                         } else {
                             handleDamage(mob, totalLevel, 1);
                         }
@@ -224,9 +228,9 @@ module.exports = Player = Character.extend({
                             self.updateHitPoints();
                             self.broadcast(self.equip(Types.Entities.FIREFOX));
                             self.firepotionTimeout = setTimeout(function() {
-                                self.broadcast(self.equip(self.armor)); // return to normal after 15 sec
+                                self.broadcast(self.equip(self.armor)); // return to normal
                                 self.firepotionTimeout = null;
-                            }, 15000);
+                            }, Types.timeouts[Types.Entities.FIREFOX]);
                             self.send(new Messages.HitPoints(self.maxHitPoints).serialize());
                         } else if(Types.isHealingItem(kind)) {
                             var amount;
@@ -550,6 +554,10 @@ module.exports = Player = Character.extend({
 
     getAttackRate: function() {
         return this.attackRate;
+    },
+
+    setAttackRate: function(rate) {
+        return this.attackRate = rate;
     },
 
     getMoveSpeed: function() {

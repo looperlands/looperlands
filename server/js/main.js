@@ -74,10 +74,11 @@ function main(config) {
         metrics.updateWorldDistribution(getWorldDistribution(worlds));
     };
 
-    _.each(_.range(config.nb_worlds), function(i) {
-        var world = new WorldServer('world'+ (i+1), config.nb_players_per_world, server);
-        server.worldserver = world;
-        world.run(config.map_filepath);
+    server.worldsMap = {};
+    _.each(config.maps, function(map) {
+        var world = new WorldServer('world_'+ map, config.nb_players_per_world, server);
+        server.worldsMap[map] = world;
+        world.run(config.map_directory+"world_server_"+ map + ".json");
         worlds.push(world);
         if(metrics) {
             world.onPlayerAdded(onPopulationChange);

@@ -33,16 +33,18 @@ class NFTWeapon {
     }
 
     isTraitActive() {
-        let chance = Math.floor(Math.random() * 100);
-        chance += this.level;
         if (this.getTrait() === "speed") {
-            chance += 10;
+            return true;
         }
+        let chance = Math.floor(Math.random() * 100);
+        chance += this.level
         return chance >= 89; // base level is 1, so base chance of trait is 10%
     }
 
     async incrementExperience(damageDealt) {
         try {
+            damageDealt = damageDealt/4;
+            damageDealt = Math.round(damageDealt);
             const updatedExperience = await dao.saveNFTWeaponExperience(this.walletId, this.nftId, damageDealt);
             if (!Number.isNaN(updatedExperience)) {
                 this.experience = updatedExperience;
