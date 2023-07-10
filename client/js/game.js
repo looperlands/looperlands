@@ -58,6 +58,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         
             // tile animation
             this.animatedTiles = null;
+            this.highAnimatedTiles = null;
         
             // debug
             this.debugPathing = false;
@@ -858,6 +859,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 m = this.map;
 
             this.animatedTiles = [];
+            this.highAnimatedTiles = [];
             this.forEachVisibleTile(function (id, index) {
                 if(m.isAnimatedTile(id)) {
                     var tile = new AnimatedTile(id, m.getTileAnimationLength(id), m.getTileAnimationDelay(id), index),
@@ -865,7 +867,11 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     
                     tile.x = pos.x;
                     tile.y = pos.y;
-                    self.animatedTiles.push(tile);
+                    if (m.isHighTile(id)) {
+                        self.highAnimatedTiles.push(tile);
+                    } else {
+                        self.animatedTiles.push(tile);
+                    }
                 }
             }, 1);
             //console.log("Initialized animated tiles.");
@@ -2145,6 +2151,14 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 });
             }
         },
+
+        forEachHighAnimatedTile: function(callback) {
+            if(this.highAnimatedTiles) {
+                _.each(this.highAnimatedTiles, function(tile) {
+                    callback(tile);
+                });
+            }
+        },
     
         /**
          * Returns the entity located at the given position on the world grid.
@@ -2896,14 +2910,16 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             });
             
             if(source && !(source.hasOwnProperty("index"))) {
-                this.forEachAnimatedTile(function(tile) {
+                let animatedTileUpdate = function(tile) {
                     if(!tile.isDirty) {
                         var r2 = r.getTileBoundingRect(tile);
                         if(r.isIntersecting(r1, r2)) {
                             tile.isDirty = true;
                         }
                     }
-                });
+                }
+                this.forEachAnimatedTile(animatedTileUpdate);
+                this.forEachHighAnimatedTile(animatedTileUpdate);
             }
             
             if(!this.drawTarget && this.selectedCellVisible) {

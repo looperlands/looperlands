@@ -226,7 +226,7 @@ define(['character', 'timer'], function(Character, Timer) {
             var self = this,
                 t = this.game.currentTime;
         
-            this.game.forEachAnimatedTile(function (tile) {
+            let updateAnimatedTilesFn = function (tile) {
                 if(tile.animate(t)) {
                     tile.isDirty = true;
                     tile.dirtyRect = self.game.renderer.getTileBoundingRect(tile);
@@ -235,7 +235,9 @@ define(['character', 'timer'], function(Character, Timer) {
                         self.game.checkOtherDirtyRects(tile.dirtyRect, tile, tile.x, tile.y);
                     }
                 }
-            });
+            }
+            this.game.forEachAnimatedTile(updateAnimatedTilesFn);
+            this.game.forEachHighAnimatedTile(updateAnimatedTilesFn);
         },
     
         updateChatBubbles: function() {

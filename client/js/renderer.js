@@ -459,12 +459,14 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                 }
             });
             
-            this.game.forEachAnimatedTile(function(tile) {
+            let animatedTileUpdate = function(tile) {
                 if(tile.isDirty) {
                     self.clearDirtyRect(tile.dirtyRect);
                     count += 1;
                 }
-            });
+            }
+            this.game.forEachAnimatedTile(animatedTileUpdate);
+            this.game.forEachHighAnimatedTile(animatedTileUpdate);
             
             if(this.game.clearTarget && this.lastTargetPos) {
                 var last = this.lastTargetPos;
@@ -596,7 +598,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                 tilesetwidth = this.tileset.width / m.tilesize;
         
             this.game.forEachVisibleTile(function (id, index) {
-                if (!m.isAnimatedTile(id)) {
+                if(!m.isHighTile(id) && !m.isAnimatedTile(id))  {
                     self.drawTile(self.background, id, self.tileset, tilesetwidth, m.width, index);
                 }
             }, 1);
@@ -606,9 +608,28 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             var self = this,
                 m = this.game.map,
                 tilesetwidth = this.tileset.width / m.tilesize;
-        
+
             this.animatedTileCount = 0;
             this.game.forEachAnimatedTile(function (tile) {
+                if(dirtyOnly) {
+                    if(tile.isDirty) {
+                        self.drawTile(self.context, tile.id, self.tileset, tilesetwidth, m.width, tile.index);
+                        tile.isDirty = false;
+                    }
+                } else {
+                    self.drawTile(self.context, tile.id, self.tileset, tilesetwidth, m.width, tile.index);
+                    self.animatedTileCount += 1;
+                }
+            });
+        },
+
+        drawHighAnimatedTiles: function(dirtyOnly) {
+            var self = this,
+                m = this.game.map,
+                tilesetwidth = this.tileset.width / m.tilesize;
+
+            this.animatedTileCount = 0;
+            this.game.forEachHighAnimatedTile(function (tile) {
                 if(dirtyOnly) {
                     if(tile.isDirty) {
                         self.drawTile(self.context, tile.id, self.tileset, tilesetwidth, m.width, tile.index);
@@ -632,7 +653,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
         
             this.highTileCount = 0;
             this.game.forEachVisibleTile(function (id, index) {
-                if(m.isHighTile(id)) {
+                if(m.isHighTile(id) && !m.isAnimatedTile(id)) {
                     self.drawTile(ctx, id, self.tileset, tilesetwidth, m.width, index);
                     self.highTileCount += 1;
                 }
@@ -756,6 +777,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                 this.drawEntities();
                 this.drawCombatInfo();
                 this.drawHighTiles(this.context);
+                this.drawHighAnimatedTiles();
             this.context.restore();
         
             // Overlay UI elements
