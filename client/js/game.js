@@ -574,6 +574,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
         loadMap: function(mapId) {
             var self = this;
+            this.mapId = mapId;
     
             this.map = new Mapx(!this.renderer.upscaledRendering, this, mapId);
     
@@ -1200,7 +1201,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             var self = this,
                 connecting = false; // always in dispatcher mode in the build version
     
-            this.client = new GameClient(this.host, this.port, this.protocol, this.sessionId);
+            this.client = new GameClient(this.host, this.port, this.protocol, this.sessionId, this.mapId);
             this.renderStatistics();
             
             //>>excludeStart("prodHost", pragmas.prodHost);
