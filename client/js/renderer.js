@@ -421,6 +421,11 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             var self = this;
         
             this.game.forEachVisibleEntityByDepth(function(entity) {
+                let stuckEntity = entity.lastUpdate !== undefined ? self.game.currentTime - entity.lastUpdate > 1000 : false;
+                if (stuckEntity) {
+                    self.game.unregisterEntityPosition(entity);
+                    return;
+                }
                 if(entity.isLoaded) {
                     if(dirtyOnly) {
                         if(entity.isDirty) {
