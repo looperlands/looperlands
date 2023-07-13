@@ -259,14 +259,15 @@ module.exports = Player = Character.extend({
                 let _self = self;
                 let nftId = message[2];
                 dao.walletHasNFT(playerCache.walletId, nftId).then(function (result) {
-                    item = {kind: message[1]};
-                    _self.equipItem(item);
-                    _self.broadcast(_self.equip(item.kind));
+                    if (result === true) {
+                        item = {kind: message[1]};
+                        _self.equipItem(item);
+                        _self.broadcast(_self.equip(item.kind));
+                    } else {
+                        console.error(`Player ${_self.walletId} tried to equip an item they don't own.`, nftId);
+                    }
                 }).catch(function (error) {
-                    console.error("Asset validation error: " + error);
-                    item = {kind: Types.Entities.SWORD1};
-                    _self.equipItem(item);
-                    _self.broadcast(_self.equip(item.kind));
+                    console.error(`Error checking if player ${_self.walletId} has NFT ${nftId}`, error);
                 });
             }
             else if(action === Types.Messages.TELEPORT) {
@@ -481,16 +482,38 @@ module.exports = Player = Character.extend({
     },
     
     equipWeapon: function(kind) {
-        this.weapon = kind;
+        let self = this;
         const kindString = Types.getKindAsString(kind);
         if (kindString.startsWith("NFT")) {
-            this.nftWeapon = new NFTWeapon.NFTWeapon(this.walletId, kindString);
-            this.nftWeapon.loadWeaponData();
+            let playerCache = this.server.server.cache.get(this.sessionId);
+            let nftId = kindString.replace("NFT_", "0x");
+            dao.walletHasNFT(playerCache.walletId, nftId).then(function (result) {
+                console.log(`Player ${playerCache.walletId} has NFT ${nftId}: ${result}`);
+                if (result === true) {
+                    self.weapon = kind;
+                    self.nftWeapon = new NFTWeapon.NFTWeapon(playerCache.walletId, kindString);
+                    self.nftWeapon.loadWeaponData();
+                } else {
+                    setTimeout(self.equipStartWeapon.bind(self), 1000);
+                }
+            }).catch(function (error) {
+                console.log(`Error loading weapon NFT ${nftId} for player ${playerCache.walletId}. Resetting to sword1`, error);
+                self.equipStartWeapon();
+            });
         } else {
+            this.weapon = kind;
             if (this.nftWeapon === undefined) {
+
                 this.weaponLevel = Properties.getWeaponLevel(kind);
             }
         }
+    },
+
+    equipStartWeapon: function() {
+        item = {kind: Types.Entities.SWORD1};
+        this.weapon = Types.Entities.SWORD1;
+        this.equipItem(item);
+        this.broadcast(this.equip(item.kind));
     },
     
     equipItem: function(item) {

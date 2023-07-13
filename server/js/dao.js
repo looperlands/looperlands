@@ -48,7 +48,7 @@ getCharacterData = async function (wallet, nft, retry) {
   };
   try {
     const responseData = await axios.get(`${LOOPWORMS_LOOPERLANDS_BASE_URL}/Load.php?NFTID=${nft}&WalletID=${wallet}`, options);
-    console.log("ResponseData from Loopworms: ", responseData.status, responseData.text, responseData.data, `${LOOPWORMS_LOOPERLANDS_BASE_URL}/Load.php?NFTID=${nft}&WalletID=${wallet}`);
+    //console.log("ResponseData from Loopworms: ", responseData.status, responseData.text, responseData.data, `${LOOPWORMS_LOOPERLANDS_BASE_URL}/Load.php?NFTID=${nft}&WalletID=${wallet}`);
 
     let parsedSaveData;
     try {
@@ -137,14 +137,22 @@ loadWeapon = async function (wallet, nft) {
   }
 }
 
-exports.walletHasNFT = async function (wallet, nft) {
+exports.walletHasNFT = async function (wallet, nft, retry) {
     let url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/AssetValidation.php?WalletID=${wallet}&NFTID=${nft}`;
     try {
         const responseData = await axios.get(url);
         return responseData.data;
     } catch (error) {
       console.error("Error while validating ownership", error, wallet, nft);
-      throw error;
+      if (retry === undefined) {
+        retry = MAX_RETRY_COUNT;
+      }
+      retry -= 1;
+      if (retry > 0) {
+        return walletHasNFT(wallet, nft, retry);
+      } else {
+        throw error;
+      }
     }
 };
 
