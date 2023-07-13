@@ -126,7 +126,17 @@ loadWeapon = async function (wallet, nft) {
     const responseData = await axios.get(`${LOOPWORMS_LOOPERLANDS_BASE_URL}/LoadWeapon.php?NFTID=${nft}&WalletID=${wallet}`, options);
     //console.log("ResponseData from Loopworms: ", responseData.status, responseData.text, responseData.data);
     try {
-      return JSON.parse(responseData.data[0]);
+      let weapon = JSON.parse(responseData.data[0]);
+      if (weapon.startsWith("NFT_")) {
+        let ownsWeapon = this.walletHasNFT(walletId, nftId);
+        if (ownsWeapon === true) {
+          return weapon;
+        } else {
+          return 'sword1';
+        }
+      } else {
+        return weapon;
+      }
     } catch (e) {
       return 'sword1';
     }
