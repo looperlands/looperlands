@@ -493,8 +493,9 @@ module.exports = Player = Character.extend({
                     self.weapon = kind;
                     self.nftWeapon = new NFTWeapon.NFTWeapon(playerCache.walletId, kindString);
                     self.nftWeapon.loadWeaponData();
+                    dao.saveWeapon(playerCache.walletId, playerCache.nftId,Types.getKindAsString(item.kind));
                 } else {
-                    setTimeout(self.equipStartWeapon.bind(self), 1000);
+                    self.equipStartWeapon();
                 }
             }).catch(function (error) {
                 console.log(`Error loading weapon NFT ${nftId} for player ${playerCache.walletId}. Resetting to sword1`, error);
@@ -510,10 +511,12 @@ module.exports = Player = Character.extend({
     },
 
     equipStartWeapon: function() {
+        let playerCache = this.server.server.cache.get(this.sessionId);
         item = {kind: Types.Entities.SWORD1};
         this.weapon = Types.Entities.SWORD1;
         this.equipItem(item);
         this.broadcast(this.equip(item.kind));
+        dao.saveWeapon(playerCache.walletId, playerCache.nftId,Types.getKindAsString(item.kind));
     },
     
     equipItem: function(item) {
