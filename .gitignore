@@ -7,3 +7,4 @@ client/audio/music
 *.swp
 configs/*
 nft_template/sqlscript.sql
+*Zone.Identifier

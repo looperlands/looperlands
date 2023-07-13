@@ -2,12 +2,13 @@
 define(['player', 'entityfactory', 'lib/bison'], function(Player, EntityFactory, BISON) {
 
     var GameClient = Class.extend({
-        init: function(host, port, protocol, sessionId) {
+        init: function(host, port, protocol, sessionId, mapId) {
             this.connection = null;
             this.host = host;
             this.port = port;
             this.protocol = protocol;
             this.sessionId = sessionId;
+            this.mapId = mapId;
 
             console.log("Game client", this.host, this.port, this.protocol);
     
@@ -54,7 +55,7 @@ define(['player', 'entityfactory', 'lib/bison'], function(Player, EntityFactory,
              console.log(url);
 
              
-            this.connection = io(url, {'force new connection':true});
+            this.connection = io(url, {'force new connection':true, query : "mapId=" + this.mapId});
             this.connection.on('connection', function(socket){
                 console.log("Connected to server " + url);
             });

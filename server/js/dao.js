@@ -48,7 +48,7 @@ getCharacterData = async function (wallet, nft, retry) {
   };
   try {
     const responseData = await axios.get(`${LOOPWORMS_LOOPERLANDS_BASE_URL}/Load.php?NFTID=${nft}&WalletID=${wallet}`, options);
-    //console.log("ResponseData from Loopworms: ", responseData.status, responseData.text, responseData.data);
+    console.log("ResponseData from Loopworms: ", responseData.status, responseData.text, responseData.data, `${LOOPWORMS_LOOPERLANDS_BASE_URL}/Load.php?NFTID=${nft}&WalletID=${wallet}`);
 
     let parsedSaveData;
     try {

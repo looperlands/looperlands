@@ -43,22 +43,9 @@ function main(config) {
                     world.connect_callback(new Player(connection, world));
                 }
             };
-        
-        if(metrics) {
-            metrics.getOpenWorldCount(function(open_world_count) {
-                // choose the least populated world among open worlds
-                world = _.min(_.first(worlds, open_world_count), function(w) { return w.playerCount; });
-                connect();
-            });
-        }
-        else {
-            // simply fill each world sequentially until they are full
-            world = _.detect(worlds, function(world) {
-                return world.playerCount < config.nb_players_per_world;
-            });
-            world.updatePopulation();
-            connect();
-        }
+        let mapId = connection._connection.handshake.query.mapId;
+        world = this.worldsMap[mapId];
+        connect();
     });
 
     server.onError(function() {
