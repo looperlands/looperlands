@@ -159,7 +159,7 @@ exports.walletHasNFT = async function (wallet, nft, retry) {
       }
       retry -= 1;
       if (retry > 0) {
-        return walletHasNFT(wallet, nft, retry);
+        return this.walletHasNFT(wallet, nft, retry);
       } else {
         throw error;
       }
