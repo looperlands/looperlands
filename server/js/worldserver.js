@@ -631,7 +631,9 @@ module.exports = World = cls.Class.extend({
 
     handleRedPacket: function(mob, kind) {
         if (Properties[kind].redpacket) {
-            this.pushToGroup(mob.group, new Messages.Chat(mob, "msg"), false);
+            let url = "https://loopworms.io/DEV/LooperLands/QR/qr.php?NPC=" + kind;
+            let msg = `Follow <a href='${url}' target="blank">this link</a> for a reward</a>`;
+            this.pushToGroup(mob.group, new Messages.Chat(mob, msg), false);
         }
     },
     

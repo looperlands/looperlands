@@ -10,8 +10,7 @@ var Properties = {
         },
         hp: 25,
         armor: 1,
-        weapon: 1,
-        redpacket: true
+        weapon: 1
     },
     
     skeleton: {
@@ -141,7 +140,8 @@ var Properties = {
         },
         hp: 5000,
         armor: 5,
-        weapon: 8
+        weapon: 8,
+        redpacket: true
     }
 };
 
