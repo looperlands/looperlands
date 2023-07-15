@@ -2,6 +2,7 @@
 import commands
 import sys
 import os
+from threading import Thread
 
 files = os.listdir('tmx/')
 map_files = []
@@ -9,8 +10,7 @@ for file in files:
     if file.endswith('.tmx'):
         map_files.append(file)
 
-for tmx_file in map_files:
-
+def export_map(tmx_file):
     SRC_FILE = 'tmx'+'/'+tmx_file
     map_id = tmx_file.replace(".tmx","")
     print(tmx_file  + " is being exported", map_id)
@@ -34,3 +34,12 @@ for tmx_file in map_files:
 
     # Send a Growl notification when the export process is complete
     print("Map export complete")
+
+threads = []
+for tmx_file in map_files:
+    t = Thread(target=export_map,args=(tmx_file,))
+    threads.append(t)
+    t.start()
+for thread in threads:
+    thread.join()
+
