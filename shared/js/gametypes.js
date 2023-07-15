@@ -48,6 +48,7 @@ Types = {
         SKELETON2: 12,
         BOSS: 13,
         DEATHKNIGHT: 14,
+        SLIME: 200001,
         
         // Armors
         FIREFOX: 20,
@@ -696,6 +697,7 @@ var kinds = {
     eye: [Types.Entities.EYE, "mob"],
     skeleton2: [Types.Entities.SKELETON2, "mob"],
     boss: [Types.Entities.BOSS, "mob"],
+    slime: [Types.Entities.SLIME, "mob"],
 
     sword1: [Types.Entities.SWORD1, "weapon"],
     sword2: [Types.Entities.SWORD2, "weapon"],
