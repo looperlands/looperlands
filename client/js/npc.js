@@ -111,7 +111,7 @@ define(['character'], function(Character) {
         ],
     
         "priest": [
-            "Boo!",
+            "Boo! I'm Vince Suarez' REAL Ghost",
             'Check out my Loopring L2 <a target="_blank" href="https://nft.gamestop.com/collection/ghostlytales">collection</a>.',
             'Visit <a target="_blank" href="https://twitter.com/onevincesuarez">my twitter</a> and give me a follow!',
             'Follow <a href="https://loopworms.io/DEV/LooperLands/QR/qr.php?NPC=priest" target="blank">this link</a> - it might be a Red Packet!',
@@ -119,7 +119,8 @@ define(['character'], function(Character) {
         ],
         
         "sorcerer": [
-            "Welcome to LooperLands...",
+            "Welcome to LooperLands, I'm NickMan",
+            'Visit <a target="_blank" href="https://twitter.com/NickManL2">my twitter</a> and give me a follow!',
             "Wondering how to get cool in-game weapons?",
             "You'll need to earn them by tasks",
             "Like visiting NPCs for Red Packets",
@@ -178,6 +179,9 @@ define(['character'], function(Character) {
 
         "tanashi": [
             "Hi, I'm Tanashi!",
+            "https://twitter.com/CyberTanashi",
+            'Check out <a target="_blank" href="https://twitter.com/CyberTanashi">my twitter</a> and give me a follow or <a target="_blank" href="http://twitter.com/share?text=%40CyberTanashi">tweet me</a>',
+            "Now go about your adventure, Looper!"
         ]
     };
 
