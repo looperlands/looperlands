@@ -4,43 +4,43 @@
 	"height": 48,
 	"animations": {
 		"death": {
-			"length": 4,
+			"length": 6,
 			"row": 0
 		},
 		"atk_right": {
-			"length": 6,
+			"length": 5,
 			"row": 1
 		},
 		"walk_right": {
-			"length": 3,
+			"length": 5,
 			"row": 2
 		},
 		"idle_right": {
-			"length": 2,
+			"length": 5,
 			"row": 3
 		},
 		"atk_up": {
-			"length": 4,
+			"length": 5,
 			"row": 4
 		},
 		"walk_up": {
-			"length": 4,
+			"length": 5,
 			"row": 5
 		},
 		"idle_up": {
-			"length": 4,
+			"length": 5,
 			"row": 6
 		},
 		"atk_down": {
-			"length": 4,
+			"length": 5,
 			"row": 7
 		},
 		"walk_down": {
-			"length": 4,
+			"length": 5,
 			"row": 8
 		},
 		"idle_down": {
-			"length": 4,
+			"length": 5,
 			"row": 9
 		}
 	}

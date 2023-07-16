@@ -146,12 +146,10 @@ var Properties = {
     slime: {
         drops: {
             flask: 40,
-            burger: 10,
-            firepotion: 5
         },
-        hp: 1000,
-        armor: 1,
-        weapon: 10
+        hp: 50,
+        armor: 2,
+        weapon: 2
     }
 };
 
