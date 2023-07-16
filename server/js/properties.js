@@ -140,7 +140,8 @@ var Properties = {
         },
         hp: 5000,
         armor: 5,
-        weapon: 8
+        weapon: 8,
+        redpacket: true
     }
 };
 

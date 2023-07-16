@@ -586,6 +586,7 @@ module.exports = World = cls.Class.extend({
                 
                 let kind = Types.getKindAsString(mob.kind);
                 let xp = Formulas.xp(Properties[kind]);
+                this.handleRedPacket(mob, kind);
                 this.pushToPlayer(attacker, new Messages.Kill(mob, xp));
                 this.pushToAdjacentGroups(mob.group, mob.despawn());
                 this.pushToGroup(mob.group, mob.despawn());
@@ -626,6 +627,14 @@ module.exports = World = cls.Class.extend({
             console.error("Updated experience is NaN", player.name, session);
         }
 
+    },
+
+    handleRedPacket: function(mob, kind) {
+        if (Properties[kind].redpacket) {
+            let url = "https://loopworms.io/DEV/LooperLands/QR/qr.php?NPC=" + kind;
+            let msg = `Follow <a href='${url}' target="blank">this link</a> for a reward</a>`;
+            this.pushToGroup(mob.group, new Messages.Chat(mob, msg), false);
+        }
     },
     
     despawn: function(entity) {
