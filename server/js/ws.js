@@ -177,7 +177,7 @@ WS.socketIOServer = Server.extend({
             const id = crypto.randomBytes(20).toString('hex');
             // this prevents failed logins not being able to login again
             body.isDirty = false;
-            console.log("New Session", id, body);
+            //console.log("New Session", id, body);
             if (body.mapId === undefined) {
                 body.mapId = "main";
             }
@@ -403,7 +403,7 @@ WS.socketIOServer = Server.extend({
         });
 
         self.io.on('connection', function(connection){
-          console.log('a user connected');
+          //console.log('a user connected');
 
           connection.remoteAddress = connection.handshake.address.address
 
@@ -456,7 +456,7 @@ WS.socketIOConnection = Connection.extend({
 
         // HANDLE DISPATCHER IN HERE
         connection.on("dispatch", function (message) {
-            console.log("Received dispatch request")
+            //console.log("Received dispatch request")
             self._connection.emit("dispatched",  { "status" : "OK", host : server.host, port : server.port } )
         });
 
