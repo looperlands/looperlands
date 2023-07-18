@@ -63,7 +63,7 @@ module.exports = World = cls.Class.extend({
         });
          
         this.onPlayerEnter(function(player) {
-            console.log(player.name + " has joined "+ self.id, "Player ID " + player.id);
+            //console.log(player.name + " has joined "+ self.id, "Player ID " + player.id);
             
             if(!player.hasEnteredGame) {
                 self.incrementPlayerCount();
@@ -115,7 +115,7 @@ module.exports = World = cls.Class.extend({
             });
     
             player.onExit(function() {
-                console.log(player.name + " has left the game.");
+                //console.log(player.name + " has left the game.");
                 self.removePlayer(player);
                 self.decrementPlayerCount();
                 
@@ -542,7 +542,7 @@ module.exports = World = cls.Class.extend({
         if(id in this.entities) {
             return this.entities[id];
         } else {
-            console.error("Unknown entity : " + id);
+            //console.error("Unknown entity : " + id);
         }
     },
     
@@ -931,7 +931,7 @@ module.exports = World = cls.Class.extend({
     updatePopulation: function(totalPlayers) {
         totalPlayers = totalPlayers ? totalPlayers : this.server.connectionsCount();
         
-        console.log("Updating population: " + this.playerCount + " " + totalPlayers)
+        //console.log("Updating population: " + this.playerCount + " " + totalPlayers)
         this.pushBroadcast(new Messages.Population(this.playerCount, totalPlayers));
     },
 
