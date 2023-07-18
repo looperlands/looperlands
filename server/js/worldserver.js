@@ -542,7 +542,7 @@ module.exports = World = cls.Class.extend({
         if(id in this.entities) {
             return this.entities[id];
         } else {
-            console.error("Unknown entity : " + id);
+            //console.error("Unknown entity : " + id);
         }
     },
     
