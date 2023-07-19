@@ -330,7 +330,6 @@ WS.socketIOServer = Server.extend({
         app.get("/session/:sessionId/polling", async(req, res) => {
             const sessionId = req.params.sessionId;
             const sessionData = cache.get(sessionId);
-            const playerId = sessionData.entityId;
             if (sessionData === undefined) {
                 res.status(404).json({
                     status: false,
@@ -339,6 +338,7 @@ WS.socketIOServer = Server.extend({
                 });
                 return;
             }
+            const playerId = sessionData.entityId;
             let ret = self.worldsMap[sessionData.mapId].getPollingInfo(playerId);
             if (ret === undefined) {
                 res.status(500).json({
