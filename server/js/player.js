@@ -188,16 +188,20 @@ module.exports = Player = Character.extend({
 
                         if (weaponTrait === "aoe") {
                             const group = self.server.groups[self.group];
-                            let entityIds = Object.keys(group.entities);
-                            entityIds.forEach(function(id) {
-                                let entity = group.entities[id];
-                                if (entity.type === 'mob') {
-                                    let distance = Utils.distanceTo(self.x, self.y, entity.x, entity.y);
-                                    if (distance === 1) {
-                                        handleDamage(entity, totalLevel, 0.67);
+                            if (group === undefined) {
+                                handleDamage(mob, totalLevel, 1);
+                            } else {
+                                let entityIds = Object.keys(group.entities);
+                                entityIds.forEach(function(id) {
+                                    let entity = group.entities[id];
+                                    if (entity.type === 'mob') {
+                                        let distance = Utils.distanceTo(self.x, self.y, entity.x, entity.y);
+                                        if (distance === 1) {
+                                            handleDamage(entity, totalLevel, 0.67);
+                                        }
                                     }
-                                }
-                            });
+                                });
+                            }
                         } else if (weaponTrait === "crit") {
                             handleDamage(mob, totalLevel, 3);
                         } else if (weaponTrait === "speed") {
