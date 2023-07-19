@@ -284,7 +284,7 @@ WS.socketIOServer = Server.extend({
             const nftId = req.params.nftId;
             const sessionData = cache.get(sessionId);
             if (sessionData === undefined) {
-                console.error("Session data is undefined for session id, params: ", sessionId, req.params);
+                //console.error("Session data is undefined for session id, params: ", sessionId, req.params);
                 res.status(404).json({
                     status: false,
                     "error" : "session not found",
@@ -304,7 +304,7 @@ WS.socketIOServer = Server.extend({
             const nftId = req.params.nftId;
             const sessionData = cache.get(sessionId);
             if (sessionData === undefined) {
-                console.error("Session data is undefined for session id, params: ", sessionId, req.params);
+                //console.error("Session data is undefined for session id, params: ", sessionId, req.params);
                 res.status(404).json({
                     status: false,
                     "error" : "session not found",
