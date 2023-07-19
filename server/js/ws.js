@@ -163,10 +163,11 @@ WS.socketIOServer = Server.extend({
                 let cachedBody = cache.get(key);
                 let sameWallet = cachedBody.walletId === body.walletId;
                 if(sameWallet && cachedBody.isDirty === true) {
-                    console.log("Disconnecting other session");
                     let player = self.worldsMap[cachedBody.mapId].getEntityById(cachedBody.entityId);
                     cache.del(key);
-                    player.connection.close('A new session from another device created');
+                    if (player !== undefined) {
+                        player.connection.close('A new session from another device created');
+                    }
                     break;
                 } else if (sameWallet && cachedBody.isDirty === false){
                     console.log("deleting a session that never connected: " + key)
@@ -191,6 +192,14 @@ WS.socketIOServer = Server.extend({
         app.get('/session/:sessionId', async (req, res) => {
             const sessionId = req.params.sessionId;
             const sessionData = cache.get(sessionId);
+            if (sessionData === undefined) {
+                res.status(404).json({
+                    status: false,
+                    error: "No session with id " + sessionId + " found",
+                    user: null
+                });
+                return;
+            }
             // console.log("Session Data for session id", sessionId, sessionData);
             const nftId = sessionData.nftId;
             const walletId = sessionData.walletId;
@@ -275,7 +284,7 @@ WS.socketIOServer = Server.extend({
             const nftId = req.params.nftId;
             const sessionData = cache.get(sessionId);
             if (sessionData === undefined) {
-                console.error("Session data is undefined for session id, params: ", sessionId, req.params);
+                //console.error("Session data is undefined for session id, params: ", sessionId, req.params);
                 res.status(404).json({
                     status: false,
                     "error" : "session not found",
@@ -295,7 +304,7 @@ WS.socketIOServer = Server.extend({
             const nftId = req.params.nftId;
             const sessionData = cache.get(sessionId);
             if (sessionData === undefined) {
-                console.error("Session data is undefined for session id, params: ", sessionId, req.params);
+                //console.error("Session data is undefined for session id, params: ", sessionId, req.params);
                 res.status(404).json({
                     status: false,
                     "error" : "session not found",
@@ -322,6 +331,14 @@ WS.socketIOServer = Server.extend({
             const sessionId = req.params.sessionId;
             const sessionData = cache.get(sessionId);
             const playerId = sessionData.entityId;
+            if (sessionData === undefined) {
+                res.status(404).json({
+                    status: false,
+                    error: "No session with id " + sessionId + " found",
+                    user: null
+                });
+                return;
+            }
             let ret = self.worldsMap[sessionData.mapId].getPollingInfo(playerId);
             if (ret === undefined) {
                 res.status(500).json({
@@ -487,7 +504,7 @@ WS.socketIOConnection = Connection.extend({
     },
 
     close: function(logError) {
-        console.log("Closing connection to socket"+". Error: " + logError);
+        //console.log("Closing connection to socket"+". Error: " + logError);
         this._connection.disconnect();
     }
     

@@ -342,7 +342,7 @@ module.exports = World = cls.Class.extend({
             if(this.outgoingQueues[id].length > 0) {
                 connection = this.server.getConnection(id);
                 if (connection === undefined) {
-                    console.error("Server connection not found for player ", id);
+                    //console.error("Server connection not found for player ", id);
                     let cacheKeys = this.server.cache.keys();
                     for (i in cacheKeys) {
                         let key = cacheKeys[i];
