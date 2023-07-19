@@ -226,7 +226,18 @@ module.exports = Player = Character.extend({
                         
                         if(kind === Types.Entities.FIREPOTION) {
                             self.updateHitPoints();
-                            self.broadcast(self.equip(Types.Entities.FIREFOX));
+
+                            if (self.firepotionTimeout != null) {
+                                /* Issue #195: If the player is already a firefox when picking a firepotion
+                                Then cancel the queued "return to normal"
+                                New timeout will start and refresh the duration */
+                                clearTimeout(self.firepotionTimeout);
+                                self.firepotionTimeout = null;
+                            }
+                            else {
+                                self.broadcast(self.equip(Types.Entities.FIREFOX));
+                            }
+
                             self.firepotionTimeout = setTimeout(function() {
                                 self.broadcast(self.equip(self.armor)); // return to normal
                                 self.firepotionTimeout = null;
