@@ -331,6 +331,14 @@ WS.socketIOServer = Server.extend({
             const sessionId = req.params.sessionId;
             const sessionData = cache.get(sessionId);
             const playerId = sessionData.entityId;
+            if (sessionData === undefined) {
+                res.status(404).json({
+                    status: false,
+                    error: "No session with id " + sessionId + " found",
+                    user: null
+                });
+                return;
+            }
             let ret = self.worldsMap[sessionData.mapId].getPollingInfo(playerId);
             if (ret === undefined) {
                 res.status(500).json({
@@ -496,7 +504,7 @@ WS.socketIOConnection = Connection.extend({
     },
 
     close: function(logError) {
-        console.log("Closing connection to socket"+". Error: " + logError);
+        //console.log("Closing connection to socket"+". Error: " + logError);
         this._connection.disconnect();
     }
     
