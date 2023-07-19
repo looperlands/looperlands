@@ -58,20 +58,20 @@ getCharacterData = async function (wallet, nft, retry) {
         return;
       }
     } catch (error) {
-      console.error("Error parsing save data ", error, responseData.data);
+      //console.error("Error parsing save data ", error, responseData.data);
       if (retry === undefined) {
         retry = MAX_RETRY_COUNT;
       }
       retry -= 1;
       if (retry > 0) {
-        getCharacterData(wallet, nft, retry);
+        return getCharacterData(wallet, nft, retry);
       } else {
         return { "error": "Error loading character data" }
       }
     }
     return parsedSaveData;
   } catch (error) {
-    console.error(error);
+    //console.error(error);
     return { "error": "Error loading character data" };
   }
 

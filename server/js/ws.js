@@ -224,7 +224,7 @@ WS.socketIOServer = Server.extend({
             let name = await ens.getEns(walletId);
 
             if (parsedSaveData === undefined) {
-                console.log("Save data is undefined, creating new save data for " + name);
+                //console.log("Save data is undefined, creating new save data for " + name);
                 parsedSaveData = {
                     looperlands: true,
                     nftId: nftId,
