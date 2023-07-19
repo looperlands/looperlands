@@ -2835,7 +2835,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                             pos = {x: target.gridX + 1, y: target.gridY, o: target.orientation}; break;
                     }
                     
-                    if(pos) {
+                    if(pos && !this.map.isColliding(pos.x, pos.y) && !this.map.isPlateau(pos.x, pos.y)) {
                         attacker.previousTarget = target;
                         attacker.disengage();
                         attacker.idle();
