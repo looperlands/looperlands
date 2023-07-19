@@ -170,7 +170,7 @@ WS.socketIOServer = Server.extend({
                     }
                     break;
                 } else if (sameWallet && cachedBody.isDirty === false){
-                    console.log("deleting a session that never connected: " + key)
+                    //console.log("deleting a session that never connected: " + key)
                     cache.del(key);
                 }
             }
