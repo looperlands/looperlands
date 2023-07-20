@@ -623,10 +623,7 @@ module.exports = World = cls.Class.extend({
                 discord.sendMessage(message);
                 player.updateHitPoints();
             }
-        } else {
-            console.error("Updated experience is NaN", player.name, session);
         }
-
     },
 
     handleRedPacket: function(mob, kind) {

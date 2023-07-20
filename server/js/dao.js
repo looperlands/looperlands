@@ -15,13 +15,14 @@ updateExperience = async function (walletId, nftId, xp, retry) {
   const responseData = await axios.get(url, options);
   const updatedXp = parseInt(responseData.data);
   if (Number.isNaN(updatedXp)) {
-    console.error("Error updating experience", walletId, nftId, xp, responseData.data);
     if (retry === undefined) {
       retry = MAX_RETRY_COUNT;
     }
     retry -= 1;
     if (retry > 0) {
-      updateExperience(walletId, nftId, xp, retry);
+      return updateExperience(walletId, nftId, xp, retry);
+    } else {
+      console.error("Error updating avatar experience", walletId, nftId, xp, responseData.data);
     }
   }
   return updatedXp;
