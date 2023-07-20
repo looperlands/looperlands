@@ -801,7 +801,24 @@ Types = {
         NFT_debf15594b438ebeba7e1cd09b8a239095e8af23b15581fcbb6f177c1e764c7c: 772,
         NFT_e457bf87d38ed4d9178d80fafa82086d0be89e1bff96d342bcd3730dfec6cb78: 773,
         NFT_eea13da8173ac2d033c8b468f8b05f5406210d244d4e778c3250fbd2ab1fb77e: 774,
-        NFT_fb6426f81c9929969dc02d83ebf02a8a0c2f9ebf622c1c1fe99bf82ed1f7e948: 775 // @lastid@
+        NFT_fb6426f81c9929969dc02d83ebf02a8a0c2f9ebf622c1c1fe99bf82ed1f7e948: 775,
+        NFT_0d0e9259292742ca45872648a36e543bcac0c6145c16deb65dfab5c73da6224b: 776,
+        NFT_32b8d0e973e23e4768efd1b40ffeaf2e064d80e95940eea81ef83be156375c85: 777,
+        NFT_35dba405c0690866f38c14b87dd6a495d276970a523ea056c07ad34cfc88ac98: 778,
+        NFT_39b30e2c9527c9758fb45f261d7fd7dbf4d78b2415c5c7d0734cfba7c141c5ae: 779,
+        NFT_492f0a8db55bc65bf038da58c850ae28eaac4364b8fbe8922d2d1f968417525e: 780,
+        NFT_49e1c660b374c30c10da34aac33bfe1cd529267fa38519e9365e3025bd4840cb: 781,
+        NFT_4c7e8c82c0f1496f637e43594f028b8e7c3ed5df53cd573f1751a22c39dd003d: 782,
+        NFT_5794aaede358b6385e472c4870506add6a16e8425c17a256e89f9a50f800fff6: 783,
+        NFT_6428f19edfdbb9bca9794f36faa45790584a1167e5b5a7aecffbb2c0512bb2be: 784,
+        NFT_6be83f72664a0a35bed6aba2615649eb5a4091e9181d8a122569cca450669e7b: 785,
+        NFT_747e58dbb8dda552cd1a9a95fea3ae50813d238e5ce941efa1cf0dc48492a6d2: 786,
+        NFT_926c22798199ef0cc5c3805a4b846f547ff31186027ecfd9e9bb60728bf3bf20: 787,
+        NFT_bc869c7544427908ce593fe43fe3e0c922458eb3313fab7acf00e84de729771e: 788,
+        NFT_d6014669c2e2f3f210bf79526f827be1fc4c96a98cedf1aef8687549260b3820: 789,
+        NFT_d9d86676b8189f4a431977d8e483aaab5711eee4041c465c81947d3effb0cec0: 790,
+        NFT_dfc44edf98cfe15940db487784605e32f3c216323646e06d143c25af33a9a391: 791,
+        NFT_e90d219bbcdda92a02e73ea1140c236ba4af754bb4d3ffdec0030b9460a3e46b: 792 // @lastid@
         //@nextIdLine@
     },
     
@@ -1579,6 +1596,23 @@ var kinds = {
     NFT_e457bf87d38ed4d9178d80fafa82086d0be89e1bff96d342bcd3730dfec6cb78: [Types.Entities.NFT_e457bf87d38ed4d9178d80fafa82086d0be89e1bff96d342bcd3730dfec6cb78, "armor"],
     NFT_eea13da8173ac2d033c8b468f8b05f5406210d244d4e778c3250fbd2ab1fb77e: [Types.Entities.NFT_eea13da8173ac2d033c8b468f8b05f5406210d244d4e778c3250fbd2ab1fb77e, "armor"],
     NFT_fb6426f81c9929969dc02d83ebf02a8a0c2f9ebf622c1c1fe99bf82ed1f7e948: [Types.Entities.NFT_fb6426f81c9929969dc02d83ebf02a8a0c2f9ebf622c1c1fe99bf82ed1f7e948, "armor"],
+    NFT_0d0e9259292742ca45872648a36e543bcac0c6145c16deb65dfab5c73da6224b: [Types.Entities.NFT_0d0e9259292742ca45872648a36e543bcac0c6145c16deb65dfab5c73da6224b, "weapon"],
+    NFT_32b8d0e973e23e4768efd1b40ffeaf2e064d80e95940eea81ef83be156375c85: [Types.Entities.NFT_32b8d0e973e23e4768efd1b40ffeaf2e064d80e95940eea81ef83be156375c85, "weapon"],
+    NFT_35dba405c0690866f38c14b87dd6a495d276970a523ea056c07ad34cfc88ac98: [Types.Entities.NFT_35dba405c0690866f38c14b87dd6a495d276970a523ea056c07ad34cfc88ac98, "weapon"],
+    NFT_39b30e2c9527c9758fb45f261d7fd7dbf4d78b2415c5c7d0734cfba7c141c5ae: [Types.Entities.NFT_39b30e2c9527c9758fb45f261d7fd7dbf4d78b2415c5c7d0734cfba7c141c5ae, "weapon"],
+    NFT_492f0a8db55bc65bf038da58c850ae28eaac4364b8fbe8922d2d1f968417525e: [Types.Entities.NFT_492f0a8db55bc65bf038da58c850ae28eaac4364b8fbe8922d2d1f968417525e, "weapon"],
+    NFT_49e1c660b374c30c10da34aac33bfe1cd529267fa38519e9365e3025bd4840cb: [Types.Entities.NFT_49e1c660b374c30c10da34aac33bfe1cd529267fa38519e9365e3025bd4840cb, "weapon"],
+    NFT_4c7e8c82c0f1496f637e43594f028b8e7c3ed5df53cd573f1751a22c39dd003d: [Types.Entities.NFT_4c7e8c82c0f1496f637e43594f028b8e7c3ed5df53cd573f1751a22c39dd003d, "armor"],
+    NFT_5794aaede358b6385e472c4870506add6a16e8425c17a256e89f9a50f800fff6: [Types.Entities.NFT_5794aaede358b6385e472c4870506add6a16e8425c17a256e89f9a50f800fff6, "armor"],
+    NFT_6428f19edfdbb9bca9794f36faa45790584a1167e5b5a7aecffbb2c0512bb2be: [Types.Entities.NFT_6428f19edfdbb9bca9794f36faa45790584a1167e5b5a7aecffbb2c0512bb2be, "weapon"],
+    NFT_6be83f72664a0a35bed6aba2615649eb5a4091e9181d8a122569cca450669e7b: [Types.Entities.NFT_6be83f72664a0a35bed6aba2615649eb5a4091e9181d8a122569cca450669e7b, "armor"],
+    NFT_747e58dbb8dda552cd1a9a95fea3ae50813d238e5ce941efa1cf0dc48492a6d2: [Types.Entities.NFT_747e58dbb8dda552cd1a9a95fea3ae50813d238e5ce941efa1cf0dc48492a6d2, "weapon"],
+    NFT_926c22798199ef0cc5c3805a4b846f547ff31186027ecfd9e9bb60728bf3bf20: [Types.Entities.NFT_926c22798199ef0cc5c3805a4b846f547ff31186027ecfd9e9bb60728bf3bf20, "weapon"],
+    NFT_bc869c7544427908ce593fe43fe3e0c922458eb3313fab7acf00e84de729771e: [Types.Entities.NFT_bc869c7544427908ce593fe43fe3e0c922458eb3313fab7acf00e84de729771e, "armor"],
+    NFT_d6014669c2e2f3f210bf79526f827be1fc4c96a98cedf1aef8687549260b3820: [Types.Entities.NFT_d6014669c2e2f3f210bf79526f827be1fc4c96a98cedf1aef8687549260b3820, "weapon"],
+    NFT_d9d86676b8189f4a431977d8e483aaab5711eee4041c465c81947d3effb0cec0: [Types.Entities.NFT_d9d86676b8189f4a431977d8e483aaab5711eee4041c465c81947d3effb0cec0, "armor"],
+    NFT_dfc44edf98cfe15940db487784605e32f3c216323646e06d143c25af33a9a391: [Types.Entities.NFT_dfc44edf98cfe15940db487784605e32f3c216323646e06d143c25af33a9a391, "armor"],
+    NFT_e90d219bbcdda92a02e73ea1140c236ba4af754bb4d3ffdec0030b9460a3e46b: [Types.Entities.NFT_e90d219bbcdda92a02e73ea1140c236ba4af754bb4d3ffdec0030b9460a3e46b, "armor"],
     // @nextSpriteLine@
 
     
@@ -2611,6 +2645,20 @@ Types.getArmorRank = function(armorKind) {
         case Types.Entities.NFT_eea13da8173ac2d033c8b468f8b05f5406210d244d4e778c3250fbd2ab1fb77e:
             return 1;
         case Types.Entities.NFT_fb6426f81c9929969dc02d83ebf02a8a0c2f9ebf622c1c1fe99bf82ed1f7e948:
+            return 1;
+        case Types.Entities.NFT_4c7e8c82c0f1496f637e43594f028b8e7c3ed5df53cd573f1751a22c39dd003d:
+            return 0;
+        case Types.Entities.NFT_5794aaede358b6385e472c4870506add6a16e8425c17a256e89f9a50f800fff6:
+            return 0;
+        case Types.Entities.NFT_6be83f72664a0a35bed6aba2615649eb5a4091e9181d8a122569cca450669e7b:
+            return 0;
+        case Types.Entities.NFT_bc869c7544427908ce593fe43fe3e0c922458eb3313fab7acf00e84de729771e:
+            return 0;
+        case Types.Entities.NFT_d9d86676b8189f4a431977d8e483aaab5711eee4041c465c81947d3effb0cec0:
+            return 1;
+        case Types.Entities.NFT_dfc44edf98cfe15940db487784605e32f3c216323646e06d143c25af33a9a391:
+            return 1;
+        case Types.Entities.NFT_e90d219bbcdda92a02e73ea1140c236ba4af754bb4d3ffdec0030b9460a3e46b:
             return 1;
         // @nextarmorrank@
         default:
