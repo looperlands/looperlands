@@ -291,7 +291,7 @@ module.exports = World = cls.Class.extend({
                 }
             });
             if (removeList.length > 0) {
-                console.log("Removing undefined players from group:", removeList);
+                //console.log("Removing undefined players from group:", removeList);
                 removeList.forEach(function(playerId) {
                     group.players = _.reject(group.players, function(id) { return id === playerId; });
                 });

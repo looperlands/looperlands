@@ -70,6 +70,10 @@ module.exports = Player = Character.extend({
                 self.name = (name === "") ? "lorem ipsum" : name.substr(0, 15);
                 self.sessionId = message[4];
                 let playerCache = self.server.server.cache.get(self.sessionId);
+                if (playerCache === undefined) {
+                    connection.close("Invalid session id: " + self.sessionId);
+                    return;
+                }
                 self.walletId = playerCache.walletId;
                 self.nftId = playerCache.nftId;
                 
