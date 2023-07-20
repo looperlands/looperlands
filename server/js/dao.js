@@ -15,13 +15,14 @@ updateExperience = async function (walletId, nftId, xp, retry) {
   const responseData = await axios.get(url, options);
   const updatedXp = parseInt(responseData.data);
   if (Number.isNaN(updatedXp)) {
-    console.error("Error updating experience", walletId, nftId, xp, responseData.data);
     if (retry === undefined) {
       retry = MAX_RETRY_COUNT;
     }
     retry -= 1;
     if (retry > 0) {
-      updateExperience(walletId, nftId, xp, retry);
+      return updateExperience(walletId, nftId, xp, retry);
+    } else {
+      console.error("Error updating avatar experience", walletId, nftId, xp, responseData.data);
     }
   }
   return updatedXp;
@@ -178,7 +179,7 @@ exports.updatePVPStats = async function (wallet, nft, killIncrement, deathIncrem
     //console.log("ResponseData from Loopworms: ", responseData.status, responseData.text, responseData.data);
     return responseData.data;
   } catch (error) {
-    console.error(error);
+    console.error("updatePVPStats error", error);
     return { "error": "Error saving PVP stats" };
   }
 };
@@ -197,7 +198,7 @@ exports.saveNFTWeaponTrait = async function(wallet, nft) {
     const updatedTrait = response.data;
     return updatedTrait;
   } catch(error) {
-    console.error(error, response.data, response.status, response.text);
+    console.error("saveNFTWeaponTrait error", error);
     return { "error": "Error saving weapon trait" };
   }
 }
@@ -215,7 +216,7 @@ exports.saveNFTWeaponExperience = async function(wallet, nft, experience) {
     const updatedExperience = parseInt(response.data.experience);
     return updatedExperience;
   } catch (error) {
-    console.error("SaveNFTWeaponExperience Error", error, response.data, response.status, response.text);
+    console.error("SaveNFTWeaponExperience Error", error);
     return { "error": "Error saving weapon experience" };
   }
 }
@@ -232,7 +233,7 @@ exports.loadNFTWeapon = async function (wallet, nft) {
     const response = await axios.get(url, options);
     return response.data;
   } catch (error) {
-    console.error(error, response.data, response.status, response.text);
+    console.error("loadNFTWeapon", error);
     return { "error": "Error loading weapon" };
   }
 }

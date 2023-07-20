@@ -291,7 +291,7 @@ module.exports = World = cls.Class.extend({
                 }
             });
             if (removeList.length > 0) {
-                console.log("Removing undefined players from group:", removeList);
+                //console.log("Removing undefined players from group:", removeList);
                 removeList.forEach(function(playerId) {
                     group.players = _.reject(group.players, function(id) { return id === playerId; });
                 });
@@ -623,10 +623,7 @@ module.exports = World = cls.Class.extend({
                 discord.sendMessage(message);
                 player.updateHitPoints();
             }
-        } else {
-            console.error("Updated experience is NaN", player.name, session);
         }
-
     },
 
     handleRedPacket: function(mob, kind) {

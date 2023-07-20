@@ -30,10 +30,24 @@ sendMessage = (message) => {
     } catch (e) {
         console.log(e);
     }
-    
 }
+
 exports.sendMessage = sendMessage;
 exports.ready = ready
+
+exports.sendToDevChannel = (message) => {
+    try {
+        let channel = client.channels.cache.get('1127223763990224957');
+        try {
+            channel.send(message);
+        } catch (e) {
+            console.log(message, e);
+        }
+    } catch (e) {
+        console.log(e);
+    }
+}
+
 try {
     client.login(process.env.DISCORD_TOKEN);
 } catch (e) {
