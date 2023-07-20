@@ -170,7 +170,7 @@ WS.socketIOServer = Server.extend({
                     }
                     break;
                 } else if (sameWallet && cachedBody.isDirty === false){
-                    console.log("deleting a session that never connected: " + key)
+                    //console.log("deleting a session that never connected: " + key)
                     cache.del(key);
                 }
             }
@@ -224,7 +224,7 @@ WS.socketIOServer = Server.extend({
             let name = await ens.getEns(walletId);
 
             if (parsedSaveData === undefined) {
-                console.log("Save data is undefined, creating new save data for " + name);
+                //console.log("Save data is undefined, creating new save data for " + name);
                 parsedSaveData = {
                     looperlands: true,
                     nftId: nftId,
