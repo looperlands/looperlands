@@ -24,7 +24,7 @@ getEnsAlchemy = async function(walletId) {
         let name = nfts["ownedNfts"][0]["title"];
         return name;
     } catch (e) {
-        console.log("Error getting ENS with alchemy", e);
+        //console.log("Error getting ENS with alchemy", e);
         return "";
     }
 }
@@ -50,7 +50,7 @@ getEns = async function(walletId) {
         // display the sub domain
         name = name.split(".")[0];
     } catch (e) {
-        console.error("Error while looking up ENS name", e);
+        //console.error("Error while looking up ENS name", e);
     }
     cache.set(walletId, name, 60 * 60 * 24);
     return name;

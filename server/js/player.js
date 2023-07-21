@@ -70,6 +70,10 @@ module.exports = Player = Character.extend({
                 self.name = (name === "") ? "lorem ipsum" : name.substr(0, 15);
                 self.sessionId = message[4];
                 let playerCache = self.server.server.cache.get(self.sessionId);
+                if (playerCache === undefined) {
+                    connection.close("Invalid session id: " + self.sessionId);
+                    return;
+                }
                 self.walletId = playerCache.walletId;
                 self.nftId = playerCache.nftId;
                 
@@ -188,16 +192,20 @@ module.exports = Player = Character.extend({
 
                         if (weaponTrait === "aoe") {
                             const group = self.server.groups[self.group];
-                            let entityIds = Object.keys(group.entities);
-                            entityIds.forEach(function(id) {
-                                let entity = group.entities[id];
-                                if (entity.type === 'mob') {
-                                    let distance = Utils.distanceTo(self.x, self.y, entity.x, entity.y);
-                                    if (distance === 1) {
-                                        handleDamage(entity, totalLevel, 0.67);
+                            if (group === undefined) {
+                                handleDamage(mob, totalLevel, 1);
+                            } else {
+                                let entityIds = Object.keys(group.entities);
+                                entityIds.forEach(function(id) {
+                                    let entity = group.entities[id];
+                                    if (entity.type === 'mob') {
+                                        let distance = Utils.distanceTo(self.x, self.y, entity.x, entity.y);
+                                        if (distance === 1) {
+                                            handleDamage(entity, totalLevel, 0.67);
+                                        }
                                     }
-                                }
-                            });
+                                });
+                            }
                         } else if (weaponTrait === "crit") {
                             handleDamage(mob, totalLevel, 3);
                         } else if (weaponTrait === "speed") {
@@ -226,7 +234,18 @@ module.exports = Player = Character.extend({
                         
                         if(kind === Types.Entities.FIREPOTION) {
                             self.updateHitPoints();
-                            self.broadcast(self.equip(Types.Entities.FIREFOX));
+
+                            if (self.firepotionTimeout != null) {
+                                /* Issue #195: If the player is already a firefox when picking a firepotion
+                                Then cancel the queued "return to normal"
+                                New timeout will start and refresh the duration */
+                                clearTimeout(self.firepotionTimeout);
+                                self.firepotionTimeout = null;
+                            }
+                            else {
+                                self.broadcast(self.equip(Types.Entities.FIREFOX));
+                            }
+
                             self.firepotionTimeout = setTimeout(function() {
                                 self.broadcast(self.equip(self.armor)); // return to normal
                                 self.firepotionTimeout = null;
@@ -295,7 +314,7 @@ module.exports = Player = Character.extend({
                         if (response.data === true) {
                             teleport();
                         } else {
-                            console.error("Asset validation failed for player " + _self.name + " and nftId " + requiredNft, url);
+                            //console.error("Asset validation failed for player " + _self.name + " and nftId " + requiredNft, url);
                         }
                     })
                     .catch(function (error) {

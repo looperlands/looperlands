@@ -2,6 +2,8 @@
 var fs = require('fs'),
     Metrics = require('./metrics');
 
+const discord = require("./discord.js");
+
 function main(config) {
     console.log(config);
     var ws = require("./ws"),
@@ -123,4 +125,5 @@ getConfigFile(defaultConfigPath, function(defaultConfig) {
 process.on('uncaughtException', function(err) {
     // Handle the error safely
     console.error(err, err.stack);
+    discord.sendToDevChannel(err + "\n" + err.stack);
 });

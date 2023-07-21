@@ -228,7 +228,7 @@ define(['jquery', 'storage'], function($, Storage) {
                 $('#chatbox').removeClass('active');
                 $('#chatinput').blur();
                 $('#chatbutton').removeClass('active');
-                self.game.destroyBubble("global");
+                this.game.destroyBubble("global");
             }
         },
 

@@ -163,13 +163,14 @@ WS.socketIOServer = Server.extend({
                 let cachedBody = cache.get(key);
                 let sameWallet = cachedBody.walletId === body.walletId;
                 if(sameWallet && cachedBody.isDirty === true) {
-                    console.log("Disconnecting other session");
                     let player = self.worldsMap[cachedBody.mapId].getEntityById(cachedBody.entityId);
                     cache.del(key);
-                    player.connection.close('A new session from another device created');
+                    if (player !== undefined) {
+                        player.connection.close('A new session from another device created');
+                    }
                     break;
                 } else if (sameWallet && cachedBody.isDirty === false){
-                    console.log("deleting a session that never connected: " + key)
+                    //console.log("deleting a session that never connected: " + key)
                     cache.del(key);
                 }
             }
@@ -177,7 +178,7 @@ WS.socketIOServer = Server.extend({
             const id = crypto.randomBytes(20).toString('hex');
             // this prevents failed logins not being able to login again
             body.isDirty = false;
-            console.log("New Session", id, body);
+            //console.log("New Session", id, body);
             if (body.mapId === undefined) {
                 body.mapId = "main";
             }
@@ -191,7 +192,15 @@ WS.socketIOServer = Server.extend({
         app.get('/session/:sessionId', async (req, res) => {
             const sessionId = req.params.sessionId;
             const sessionData = cache.get(sessionId);
-            // console.log("Session Data for session id", sessionId, sessionData);
+            if (sessionData === undefined) {
+                res.status(404).json({
+                    status: false,
+                    error: "No session with id " + sessionId + " found",
+                    user: null
+                });
+                return;
+            }
+            //console.log("Session Data for session id", sessionId, sessionData);
             const nftId = sessionData.nftId;
             const walletId = sessionData.walletId;
             const isDirty = sessionData.isDirty;
@@ -208,14 +217,14 @@ WS.socketIOServer = Server.extend({
                 cache.set(sessionId, sessionData);
             }
 
-            // console.log("Session ID", sessionId, "Wallet ID", walletId, "NFT ID", nftId);
+            //console.log("Session ID", sessionId, "Wallet ID", walletId, "NFT ID", nftId);
             let parsedSaveData = await dao.getCharacterData(walletId, nftId);
             let weapon = await dao.loadWeapon(walletId, nftId);
             
             let name = await ens.getEns(walletId);
 
             if (parsedSaveData === undefined) {
-                console.log("Save data is undefined, creating new save data for " + name);
+                //console.log("Save data is undefined, creating new save data for " + name);
                 parsedSaveData = {
                     looperlands: true,
                     nftId: nftId,
@@ -236,9 +245,6 @@ WS.socketIOServer = Server.extend({
                         totalRevives: 0
                     }
                 };                
-            } else if (parsedSaveData.error !== undefined) {
-                res.status(500).json(parsedSaveData);
-                return;
             }
             parsedSaveData.player.name = name;
             parsedSaveData.player.armor = nftId.replace("0x", "NFT_");
@@ -275,7 +281,7 @@ WS.socketIOServer = Server.extend({
             const nftId = req.params.nftId;
             const sessionData = cache.get(sessionId);
             if (sessionData === undefined) {
-                console.error("Session data is undefined for session id, params: ", sessionId, req.params);
+                //console.error("Session data is undefined for session id, params: ", sessionId, req.params);
                 res.status(404).json({
                     status: false,
                     "error" : "session not found",
@@ -295,7 +301,7 @@ WS.socketIOServer = Server.extend({
             const nftId = req.params.nftId;
             const sessionData = cache.get(sessionId);
             if (sessionData === undefined) {
-                console.error("Session data is undefined for session id, params: ", sessionId, req.params);
+                //console.error("Session data is undefined for session id, params: ", sessionId, req.params);
                 res.status(404).json({
                     status: false,
                     "error" : "session not found",
@@ -321,6 +327,14 @@ WS.socketIOServer = Server.extend({
         app.get("/session/:sessionId/polling", async(req, res) => {
             const sessionId = req.params.sessionId;
             const sessionData = cache.get(sessionId);
+            if (sessionData === undefined) {
+                res.status(404).json({
+                    status: false,
+                    error: "No session with id " + sessionId + " found",
+                    user: null
+                });
+                return;
+            }
             const playerId = sessionData.entityId;
             let ret = self.worldsMap[sessionData.mapId].getPollingInfo(playerId);
             if (ret === undefined) {
@@ -403,7 +417,7 @@ WS.socketIOServer = Server.extend({
         });
 
         self.io.on('connection', function(connection){
-          console.log('a user connected');
+          //console.log('a user connected');
 
           connection.remoteAddress = connection.handshake.address.address
 
@@ -456,7 +470,7 @@ WS.socketIOConnection = Connection.extend({
 
         // HANDLE DISPATCHER IN HERE
         connection.on("dispatch", function (message) {
-            console.log("Received dispatch request")
+            //console.log("Received dispatch request")
             self._connection.emit("dispatched",  { "status" : "OK", host : server.host, port : server.port } )
         });
 
@@ -487,7 +501,7 @@ WS.socketIOConnection = Connection.extend({
     },
 
     close: function(logError) {
-        console.log("Closing connection to socket"+". Error: " + logError);
+        //console.log("Closing connection to socket"+". Error: " + logError);
         this._connection.disconnect();
     }
     
