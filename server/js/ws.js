@@ -200,7 +200,7 @@ WS.socketIOServer = Server.extend({
                 });
                 return;
             }
-            // console.log("Session Data for session id", sessionId, sessionData);
+            //console.log("Session Data for session id", sessionId, sessionData);
             const nftId = sessionData.nftId;
             const walletId = sessionData.walletId;
             const isDirty = sessionData.isDirty;
@@ -217,7 +217,7 @@ WS.socketIOServer = Server.extend({
                 cache.set(sessionId, sessionData);
             }
 
-            // console.log("Session ID", sessionId, "Wallet ID", walletId, "NFT ID", nftId);
+            //console.log("Session ID", sessionId, "Wallet ID", walletId, "NFT ID", nftId);
             let parsedSaveData = await dao.getCharacterData(walletId, nftId);
             let weapon = await dao.loadWeapon(walletId, nftId);
             
@@ -245,9 +245,6 @@ WS.socketIOServer = Server.extend({
                         totalRevives: 0
                     }
                 };                
-            } else if (parsedSaveData.error !== undefined) {
-                res.status(500).json(parsedSaveData);
-                return;
             }
             parsedSaveData.player.name = name;
             parsedSaveData.player.armor = nftId.replace("0x", "NFT_");
