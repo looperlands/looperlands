@@ -132,7 +132,8 @@ define(['jquery', 'area'], function($, Area) {
                     cameraX: door.tcx,
                     cameraY: door.tcy,
                     portal: door.p === 1,
-                    nft: door.tnft
+                    nft: door.tnft,
+                    map: door.tmap
                 };
             });
         
