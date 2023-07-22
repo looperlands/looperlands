@@ -406,7 +406,6 @@ module.exports = Player = Character.extend({
         let currentLevel = Formulas.level(session.xp);
         this.accumulatedExperience += xp;
         if (this.accumulatedExperience > XP_BATCH_SIZE) {
-            console.log("Updating experience for player ", this.name, this.accumulatedExperience);
             let updatedXp = await dao.updateExperience(session.walletId, session.nftId, this.accumulatedExperience);
             if (!Number.isNaN(updatedXp)) {
                 session.xp = updatedXp;
