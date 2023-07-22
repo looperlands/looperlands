@@ -91,7 +91,6 @@ module.exports = Player = Character.extend({
                 self.server.addPlayer(self);
                 self.server.enter_callback(self);
 
-
                 playerCache.isDirty = true;
                 playerCache.entityId = self.id;
                 self.server.server.cache.set(self.sessionId, playerCache);

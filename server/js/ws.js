@@ -221,6 +221,7 @@ WS.socketIOServer = Server.extend({
             body.nftId = sessionData.nftId;
             body.walletId = sessionData.walletId;
             body.mapId = body.map;
+            body.xp = sessionData.xp;
             delete body.map;
 
             let responseJson = newSession(body);
