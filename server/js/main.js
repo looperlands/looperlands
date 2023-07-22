@@ -125,5 +125,5 @@ getConfigFile(defaultConfigPath, function(defaultConfig) {
 process.on('uncaughtException', function(err) {
     // Handle the error safely
     console.error(err, err.stack);
-    //discord.sendToDevChannel(err + "\n" + err.stack);
+    discord.sendToDevChannel(err + "\n" + err.stack);
 });
