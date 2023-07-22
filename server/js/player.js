@@ -81,7 +81,12 @@ module.exports = Player = Character.extend({
                 self.equipArmor(message[2]);
                 self.equipWeapon(message[3]);
                 self.orientation = Utils.randomOrientation();
-                self.updatePosition();
+
+                if (playerCache.x !== undefined && playerCache.y !== undefined) {
+                    self.setPosition(playerCache.x, playerCache.y);
+                } else {
+                    self.updatePosition();
+                }
                 
                 self.server.addPlayer(self);
                 self.server.enter_callback(self);
@@ -96,7 +101,7 @@ module.exports = Player = Character.extend({
                 self.send([Types.Messages.WELCOME, self.id, self.name, self.x, self.y, self.hitPoints, self.title]);
                 self.hasEnteredGame = true;
                 self.isDead = false;
-                discord.sendMessage(`Player ${self.name} has joined the game.`);
+                discord.sendMessage(`Player ${self.name} joined the game.`);
                 
             }
             else if(action === Types.Messages.WHO) {
@@ -559,6 +564,7 @@ module.exports = Player = Character.extend({
         this.connection.sendUTF8("timeout");
         this.connection.close("Player was idle for too long");
     },
+
     increaseHateFor: function(mobId, points) {
         return;
     },

@@ -134,6 +134,22 @@ WS.socketIOServer = Server.extend({
 
         app.use(express.json())
 
+
+        function newSession(body) {
+            const id = crypto.randomBytes(20).toString('hex');
+            // this prevents failed logins not being able to login again
+            body.isDirty = false;
+            //console.log("New Session", id, body);
+            if (body.mapId === undefined) {
+                body.mapId = "main";
+            }
+            cache.set(id, body);
+            let responseJson = {
+                "sessionId" : id
+            }
+            return responseJson;
+        }
+
         app.post('/session', async (req, res) => {
             const body = req.body;
             const apiKey = req.headers['x-api-key'];
@@ -175,17 +191,40 @@ WS.socketIOServer = Server.extend({
                 }
             }
 
-            const id = crypto.randomBytes(20).toString('hex');
-            // this prevents failed logins not being able to login again
-            body.isDirty = false;
-            //console.log("New Session", id, body);
-            if (body.mapId === undefined) {
-                body.mapId = "main";
+            let responseJson = newSession(body);
+
+            res.status(200).send(responseJson);
+        });
+
+        app.post('/session/:sessionId/teleport', async (req, res) => {
+            const sessionId = req.params.sessionId;
+            const sessionData = cache.get(sessionId);
+            if (sessionData === undefined) {
+                res.status(404).json({
+                    status: false,
+                    error: "No session with id " + sessionId + " found",
+                    user: null
+                });
+                return;
             }
-            cache.set(id, body);
-            let responseJson = {
-                "sessionId" : id
+
+            const body = req.body;
+            if (body.x === undefined || body.y === undefined || body.map === undefined) {
+                res.status(400).json({
+                    status: false,  
+                    error: "Invalid teleport request",
+                    user: null  
+                });
+                return;
             }
+
+            body.nftId = sessionData.nftId;
+            body.walletId = sessionData.walletId;
+            body.mapId = body.map;
+            delete body.map;
+
+            let responseJson = newSession(body);
+
             res.status(200).send(responseJson);
         });
 

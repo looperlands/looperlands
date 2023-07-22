@@ -1814,6 +1814,21 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                             }).finally(function(e) {
                                 _self.tokengating = false;
                             });
+                        } else if (dest.map !== undefined) {
+                            let url = '/session/' + self.sessionId + '/teleport';
+                            axios.post(url, dest).then(function (response) {
+                                if (response.status === 200) {
+                                    let newSessionID = response.data.sessionId;
+                                    window.location.href = '/?sessionId=' + newSessionID;
+                                } else {
+                                    console.error(response);
+                                }
+                            }).catch(function (error) {
+                                console.log(error);
+                            }).finally(function(e) {
+
+                            });
+                            
                         } else {
                             goInside();
                         }
