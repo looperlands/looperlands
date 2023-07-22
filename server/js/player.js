@@ -402,12 +402,12 @@ module.exports = Player = Character.extend({
     },
 
     handleExperience: async function(xp) {
-        let session =  this.server.server.cache.get(this.sessionId);
-        let currentLevel = Formulas.level(session.xp);
         this.accumulatedExperience += xp;
         if (this.accumulatedExperience > XP_BATCH_SIZE) {
+            let session = this.server.server.cache.get(this.sessionId);
             let updatedXp = await dao.updateExperience(session.walletId, session.nftId, this.accumulatedExperience);
             if (!Number.isNaN(updatedXp)) {
+                let currentLevel = Formulas.level(session.xp);
                 session.xp = updatedXp;
                 this.server.server.cache.set(this.sessionId, session);
                 updatedLevel = Formulas.level(updatedXp);
