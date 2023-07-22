@@ -3,25 +3,6 @@ const dao = require('./dao.js');
 
 
 class NFTWeapon {
-
-    static xp_update_queue = [];
-
-    static {
-        async function processXpUpdateQueue() {
-            try {
-                let next = NFTWeapon.xp_update_queue.shift();
-                if (next !== undefined) {
-                    const updatedExperience = await dao.saveNFTWeaponExperience(next.walletId, next.nftId, next.damageDealt);
-                    next.weapon.setExperience(updatedExperience);
-                }
-            } finally {
-                setTimeout(processXpUpdateQueue, 100);
-            }
-        }
-
-        processXpUpdateQueue();
-    }
-
     constructor(walletId, nftId) {
         //console.log("Creating NFTWeapon: ", nftId, walletId);
         this.nftId = nftId.replace("NFT_", "0x");
@@ -64,7 +45,16 @@ class NFTWeapon {
         try {
             damageDealt = damageDealt/4;
             damageDealt = Math.round(damageDealt);
-            NFTWeapon.xp_update_queue.push({walletId: this.walletId, nftId: this.nftId, damageDealt: damageDealt, weapon: this});
+            const updatedExperience = await dao.saveNFTWeaponExperience(this.walletId, this.nftId, damageDealt);
+            if (!Number.isNaN(updatedExperience)) {
+                this.experience = updatedExperience;
+                let updatedLevel = Formulas.level(updatedExperience);
+                if (updatedLevel > this.level) {
+                    this.level = updatedLevel;
+                }
+            } else {
+                console.error("Error updating experience", this.walletId, this.nftId, damageDealt, updatedExperience);
+            }
         } catch(error) {
             console.error(error);
         }
@@ -76,18 +66,6 @@ class NFTWeapon {
     
     getTrait() {
         return this.trait;
-    }
-
-    setExperience(updatedExperience) {
-        if (!Number.isNaN(updatedExperience)) {
-            this.experience = updatedExperience;
-            let updatedLevel = Formulas.level(updatedExperience);
-            if (updatedLevel > this.level) {
-                this.level = updatedLevel;
-            }
-        } else {
-            console.error("Error updating experience", this.walletId, this.nftId, damageDealt, updatedExperience);
-        }
     }
 }
 
