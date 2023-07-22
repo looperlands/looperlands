@@ -61,7 +61,6 @@ class NFTWeapon {
                 } else {
                     console.error("Error updating experience", this.walletId, this.nftId, damageDealt, updatedExperience);
                 }
-
             }
         } catch(error) {
             console.error(error);

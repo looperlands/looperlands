@@ -596,7 +596,7 @@ module.exports = World = cls.Class.extend({
                     this.handleItemDespawn(item);
                 }
                 if (attacker.type === "player") {
-                    this.handleExperience(attacker, xp);
+                    attacker.handleExperience(xp);
                 }
             }
     
@@ -606,23 +606,6 @@ module.exports = World = cls.Class.extend({
             }
     
             this.removeEntity(entity);
-        }
-    },
-    handleExperience: async function(player, xp) {
-        let session = this.server.cache.get(player.sessionId);
-        let currentLevel = Formulas.level(session.xp);
-
-        let updatedXp = await dao.updateExperience(session.walletId, session.nftId, xp);
-        if (!Number.isNaN(updatedXp)) {
-            session.xp = updatedXp;
-            this.server.cache.set(player.sessionId, session);
-            updatedLevel = Formulas.level(updatedXp);
-            player.level = updatedLevel;
-            if (currentLevel < updatedLevel) {
-                let message = `${player.name} advanced to level ${updatedLevel}`;
-                discord.sendMessage(message);
-                player.updateHitPoints();
-            }
         }
     },
 
