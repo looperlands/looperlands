@@ -908,11 +908,14 @@ module.exports = World = cls.Class.extend({
         });
     },
     
-    updatePopulation: function(totalPlayers) {
-        totalPlayers = totalPlayers ? totalPlayers : this.server.connectionsCount();
-        
+    updatePopulation: function() {
+        let totalCount = 0;
+
+        for (let wordId in this.server.worldsMap) {
+            totalCount+=this.server.worldsMap[wordId].playerCount;
+        }
         //console.log("Updating population: " + this.playerCount + " " + totalPlayers)
-        this.pushBroadcast(new Messages.Population(this.playerCount, totalPlayers));
+        this.pushBroadcast(new Messages.Population(this.playerCount, totalCount));
     },
 
 
