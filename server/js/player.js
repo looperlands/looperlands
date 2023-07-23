@@ -409,7 +409,7 @@ module.exports = Player = Character.extend({
         this.accumulatedExperience += experience;
         session.xp = session.xp + experience;
 
-        console.log("Player experience update", session.xp, experience);
+        console.log("Player experience update", session.xp, experience, this.sessionId, this.name);
         this.server.server.cache.set(this.sessionId, session);
 
         let updatedLevel = Formulas.level(session.xp);
