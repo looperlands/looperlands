@@ -419,15 +419,28 @@ module.exports = Player = Character.extend({
         }
 
         if (this.accumulatedExperience > XP_BATCH_SIZE) {
-            let updatedXp = await dao.updateExperience(session.walletId, session.nftId, this.accumulatedExperience);
-            if (!Number.isNaN(updatedXp)) {
+            this.syncExperience(session);
+        }
+    },
+
+    syncExperience: async function(session) {
+        let updatedXp = await dao.updateExperience(this.walletId, this.nftId, this.accumulatedExperience);
+        if (!Number.isNaN(updatedXp)) {
+            if (session !== undefined) {
                 session.xp = updatedXp;
                 this.server.server.cache.set(this.sessionId, session);
-                this.accumulatedExperience = 0;
             }
+            this.accumulatedExperience = 0;
         }
-    },    
+    },
     
+    syncAvatarAndWeaponExperience: async function() {
+        this.syncExperience();
+        if (this.getNFTWeapon() !== undefined) {
+            this.getNFTWeapon().syncExperience();
+        }
+    },
+
     destroy: function() {
         var self = this;
         
@@ -440,6 +453,7 @@ module.exports = Player = Character.extend({
             mob.forgetPlayer(self.id);
         });
         this.haters = {};
+        this.syncAvatarAndWeaponExperience();
     },
     
     getState: function() {

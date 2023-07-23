@@ -55,17 +55,26 @@ class NFTWeapon {
                 this.level = updatedLevel;
             }
             if (this.accumulatedExperience > XP_BATCH_SIZE) {
-                const updatedExperience = await dao.saveNFTWeaponExperience(this.walletId, this.nftId, this.accumulatedExperience);
-                if (!Number.isNaN(updatedExperience)) {
-                    this.experience = updatedExperience;
-                    this.accumulatedExperience = 0;
-                } else {
-                    console.error("Error synching experience", this.walletId, this.nftId, damageDealt, updatedExperience);
-                }
+                this.syncExperience();
             }
         } catch(error) {
             console.error(error);
         }
+    }
+
+    async syncExperience() {
+        try {
+            const updatedExperience = await dao.saveNFTWeaponExperience(this.walletId, this.nftId, this.accumulatedExperience);
+            if (!Number.isNaN(updatedExperience)) {
+                this.experience = updatedExperience;
+                this.accumulatedExperience = 0;
+            } else {
+                console.error("Error synching experience", this.walletId, this.nftId, this.accumulatedExperience, updatedExperience);
+            }
+        } catch(error) {
+            console.error(error);
+        }
+
     }
 
     getLevel() {
