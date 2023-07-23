@@ -402,25 +402,30 @@ module.exports = Player = Character.extend({
     },
 
     handleExperience: async function(xp) {
+
+        let session = this.server.server.cache.get(this.sessionId);
+
         this.accumulatedExperience += xp;
+        session.xp += xp;
+
+        this.server.server.cache.set(this.sessionId, session);
+
+        let updatedLevel = Formulas.level(session.xp);
+        if (this.level < updatedLevel) {
+            this.level = updatedLevel;
+            let message = `${this.name} advanced to level ${updatedLevel}`;
+            discord.sendMessage(message);
+            this.updateHitPoints();
+        }
+
         if (this.accumulatedExperience > XP_BATCH_SIZE) {
-            let session = this.server.server.cache.get(this.sessionId);
             let updatedXp = await dao.updateExperience(session.walletId, session.nftId, this.accumulatedExperience);
             if (!Number.isNaN(updatedXp)) {
-                let currentLevel = Formulas.level(session.xp);
                 session.xp = updatedXp;
                 this.server.server.cache.set(this.sessionId, session);
-                updatedLevel = Formulas.level(updatedXp);
-                this.level = updatedLevel;
-                if (currentLevel < updatedLevel) {
-                    let message = `${this.name} advanced to level ${updatedLevel}`;
-                    discord.sendMessage(message);
-                    this.updateHitPoints();
-                }
                 this.accumulatedExperience = 0;
             }
         }
-
     },    
     
     destroy: function() {
