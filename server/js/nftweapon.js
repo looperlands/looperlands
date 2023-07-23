@@ -1,9 +1,8 @@
 const Formulas = require('./formulas.js');
 const dao = require('./dao.js');
 
-const XP_BATCH_SIZE = 500;
-class NFTWeapon {
 
+class NFTWeapon {
     constructor(walletId, nftId) {
         //console.log("Creating NFTWeapon: ", nftId, walletId);
         this.nftId = nftId.replace("NFT_", "0x");
@@ -11,7 +10,6 @@ class NFTWeapon {
         this.trait = undefined;
         this.experience = undefined;
         this.level = 1;
-        this.accumulatedExperience = 0;
     }
 
     async loadWeaponData() {
@@ -47,20 +45,15 @@ class NFTWeapon {
         try {
             damageDealt = damageDealt/4;
             damageDealt = Math.round(damageDealt);
-
-            this.accumulatedExperience += damageDealt;
-            if (this.accumulatedExperience > XP_BATCH_SIZE) {
-                const updatedExperience = await dao.saveNFTWeaponExperience(this.walletId, this.nftId, this.accumulatedExperience);
-                if (!Number.isNaN(updatedExperience)) {
-                    this.experience = updatedExperience;
-                    let updatedLevel = Formulas.level(updatedExperience);
-                    if (updatedLevel > this.level) {
-                        this.level = updatedLevel;
-                    }
-                    this.accumulatedExperience = 0;
-                } else {
-                    console.error("Error updating experience", this.walletId, this.nftId, damageDealt, updatedExperience);
+            const updatedExperience = await dao.saveNFTWeaponExperience(this.walletId, this.nftId, damageDealt);
+            if (!Number.isNaN(updatedExperience)) {
+                this.experience = updatedExperience;
+                let updatedLevel = Formulas.level(updatedExperience);
+                if (updatedLevel > this.level) {
+                    this.level = updatedLevel;
                 }
+            } else {
+                console.error("Error updating experience", this.walletId, this.nftId, damageDealt, updatedExperience);
             }
         } catch(error) {
             console.error(error);
