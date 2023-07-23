@@ -91,6 +91,7 @@ module.exports = Player = Character.extend({
 
                 playerCache.isDirty = true;
                 playerCache.entityId = self.id;
+                playerCache.xp = parseInt(playerCache.xp);
                 self.server.server.cache.set(self.sessionId, playerCache);
                 self.title = playerCache.title;
                 self.level = Formulas.level(playerCache.xp);
@@ -404,17 +405,15 @@ module.exports = Player = Character.extend({
     handleExperience: async function(experience) {
 
         let session = this.server.server.cache.get(this.sessionId);
-        let currentLevel = Formulas.level(session.xp);
 
         this.accumulatedExperience += experience;
         session.xp = session.xp + experience;
 
-        console.log("Player experience update", session.xp, experience, this.sessionId, this.name);
         this.server.server.cache.set(this.sessionId, session);
 
         let updatedLevel = Formulas.level(session.xp);
-        this.level = updatedLevel;
-        if (currentLevel < updatedLevel) {
+        if (this.level < updatedLevel) {
+            this.level = updatedLevel;
             let message = `${this.name} advanced to level ${updatedLevel}`;
             discord.sendMessage(message);
             this.updateHitPoints();
