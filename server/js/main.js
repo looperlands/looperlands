@@ -69,10 +69,8 @@ function main(config) {
         server.worldsMap[map] = world;
         world.run(config.map_directory+"world_server_"+ map + ".json");
         worlds.push(world);
-        if(metrics) {
-            world.onPlayerAdded(onPopulationChange);
-            world.onPlayerRemoved(onPopulationChange);
-        }
+        world.onPlayerAdded(world.updatePopulation);
+        world.onPlayerRemoved(world.updatePopulation);
     });
     
     server.onRequestStatus(function() {
