@@ -83,7 +83,7 @@ module.exports = World = cls.Class.extend({
                     var target = self.getEntityById(mob.target);
                     if(target) {
                         var pos = self.findPositionNextTo(mob, target);
-                        if(mob.distanceToSpawningPoint(pos.x, pos.y) > 10) {
+                        if(mob.distanceToSpawningPoint(pos.x, pos.y) > 25) {
                             mob.clearTarget();
                             mob.forgetEveryone();
                             player.removeAttacker(mob);
