@@ -404,15 +404,15 @@ module.exports = Player = Character.extend({
     handleExperience: async function(xp) {
 
         let session = this.server.server.cache.get(this.sessionId);
+        let currentLevel = Formulas.level(session.xp);
 
         this.accumulatedExperience += xp;
         session.xp += xp;
-
         this.server.server.cache.set(this.sessionId, session);
 
         let updatedLevel = Formulas.level(session.xp);
-        if (this.level < updatedLevel) {
-            this.level = updatedLevel;
+        this.level = updatedLevel;
+        if (currentLevel < updatedLevel) {
             let message = `${this.name} advanced to level ${updatedLevel}`;
             discord.sendMessage(message);
             this.updateHitPoints();
