@@ -118,6 +118,7 @@ module.exports = World = cls.Class.extend({
                 //console.log(player.name + " has left the game.");
                 self.removePlayer(player);
                 self.decrementPlayerCount();
+                
                 if(self.removed_callback) {
                     self.removed_callback();
                 }
