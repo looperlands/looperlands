@@ -91,6 +91,7 @@ module.exports = Player = Character.extend({
 
                 playerCache.isDirty = true;
                 playerCache.entityId = self.id;
+                playerCache.xp = parseInt(playerCache.xp);
                 self.server.server.cache.set(self.sessionId, playerCache);
                 self.title = playerCache.title;
                 self.level = Formulas.level(playerCache.xp);
@@ -401,28 +402,46 @@ module.exports = Player = Character.extend({
         }        
     },
 
-    handleExperience: async function(xp) {
-        this.accumulatedExperience += xp;
-        if (this.accumulatedExperience > XP_BATCH_SIZE) {
-            let session = this.server.server.cache.get(this.sessionId);
-            let updatedXp = await dao.updateExperience(session.walletId, session.nftId, this.accumulatedExperience);
-            if (!Number.isNaN(updatedXp)) {
-                let currentLevel = Formulas.level(session.xp);
-                session.xp = updatedXp;
-                this.server.server.cache.set(this.sessionId, session);
-                updatedLevel = Formulas.level(updatedXp);
-                this.level = updatedLevel;
-                if (currentLevel < updatedLevel) {
-                    let message = `${this.name} advanced to level ${updatedLevel}`;
-                    discord.sendMessage(message);
-                    this.updateHitPoints();
-                }
-                this.accumulatedExperience = 0;
-            }
+    handleExperience: async function(experience) {
+
+        let session = this.server.server.cache.get(this.sessionId);
+
+        this.accumulatedExperience += experience;
+        session.xp = session.xp + experience;
+
+        this.server.server.cache.set(this.sessionId, session);
+
+        let updatedLevel = Formulas.level(session.xp);
+        if (this.level < updatedLevel) {
+            this.level = updatedLevel;
+            let message = `${this.name} advanced to level ${updatedLevel}`;
+            discord.sendMessage(message);
+            this.updateHitPoints();
         }
 
-    },    
+        if (this.accumulatedExperience > XP_BATCH_SIZE) {
+            this.syncExperience(session);
+        }
+    },
+
+    syncExperience: async function(session) {
+        let updatedXp = await dao.updateExperience(this.walletId, this.nftId, this.accumulatedExperience);
+        if (!Number.isNaN(updatedXp)) {
+            if (session !== undefined) {
+                session.xp = updatedXp;
+                this.server.server.cache.set(this.sessionId, session);
+            }
+            this.accumulatedExperience = 0;
+        }
+    },
     
+    syncAvatarAndWeaponExperience: async function() {
+        this.syncExperience();
+        if (this.getNFTWeapon() !== undefined) {
+            this.getNFTWeapon().syncExperience();
+        }
+    },
+
     destroy: function() {
         var self = this;
         
@@ -435,6 +454,7 @@ module.exports = Player = Character.extend({
             mob.forgetPlayer(self.id);
         });
         this.haters = {};
+        this.syncAvatarAndWeaponExperience();
     },
     
     getState: function() {
