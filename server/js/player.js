@@ -19,6 +19,9 @@ const LOOPWORMS_LOOPERLANDS_BASE_URL = process.env.LOOPWORMS_LOOPERLANDS_BASE_UR
 const BASE_SPEED = 120;
 const BASE_ATTACK_RATE = 800;
 
+
+const XP_BATCH_SIZE = 500;
+
 module.exports = Player = Character.extend({
     init: function(connection, worldServer) {
         var self = this;
@@ -37,9 +40,8 @@ module.exports = Player = Character.extend({
 
         this.moveSpeed = BASE_SPEED;
         this.attackRate = BASE_ATTACK_RATE;
-        
+        this.accumulatedExperience = 0;
 
-        
         this.connection.listen(function(message) {
 
             var action = parseInt(message[0]);
@@ -398,6 +400,28 @@ module.exports = Player = Character.extend({
             }
         }        
     },
+
+    handleExperience: async function(xp) {
+        this.accumulatedExperience += xp;
+        if (this.accumulatedExperience > XP_BATCH_SIZE) {
+            let session = this.server.server.cache.get(this.sessionId);
+            let updatedXp = await dao.updateExperience(session.walletId, session.nftId, this.accumulatedExperience);
+            if (!Number.isNaN(updatedXp)) {
+                let currentLevel = Formulas.level(session.xp);
+                session.xp = updatedXp;
+                this.server.server.cache.set(this.sessionId, session);
+                updatedLevel = Formulas.level(updatedXp);
+                this.level = updatedLevel;
+                if (currentLevel < updatedLevel) {
+                    let message = `${this.name} advanced to level ${updatedLevel}`;
+                    discord.sendMessage(message);
+                    this.updateHitPoints();
+                }
+                this.accumulatedExperience = 0;
+            }
+        }
+
+    },    
     
     destroy: function() {
         var self = this;

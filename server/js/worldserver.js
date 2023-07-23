@@ -83,7 +83,7 @@ module.exports = World = cls.Class.extend({
                     var target = self.getEntityById(mob.target);
                     if(target) {
                         var pos = self.findPositionNextTo(mob, target);
-                        if(mob.distanceToSpawningPoint(pos.x, pos.y) > 50) {
+                        if(mob.distanceToSpawningPoint(pos.x, pos.y) > 25) {
                             mob.clearTarget();
                             mob.forgetEveryone();
                             player.removeAttacker(mob);
@@ -596,7 +596,7 @@ module.exports = World = cls.Class.extend({
                     this.handleItemDespawn(item);
                 }
                 if (attacker.type === "player") {
-                    this.handleExperience(attacker, xp);
+                    attacker.handleExperience(xp);
                 }
             }
     
@@ -606,23 +606,6 @@ module.exports = World = cls.Class.extend({
             }
     
             this.removeEntity(entity);
-        }
-    },
-    handleExperience: async function(player, xp) {
-        let session = this.server.cache.get(player.sessionId);
-        let currentLevel = Formulas.level(session.xp);
-
-        let updatedXp = await dao.updateExperience(session.walletId, session.nftId, xp);
-        if (!Number.isNaN(updatedXp)) {
-            session.xp = updatedXp;
-            this.server.cache.set(player.sessionId, session);
-            updatedLevel = Formulas.level(updatedXp);
-            player.level = updatedLevel;
-            if (currentLevel < updatedLevel) {
-                let message = `${player.name} advanced to level ${updatedLevel}`;
-                discord.sendMessage(message);
-                player.updateHitPoints();
-            }
         }
     },
 
@@ -925,11 +908,14 @@ module.exports = World = cls.Class.extend({
         });
     },
     
-    updatePopulation: function(totalPlayers) {
-        totalPlayers = totalPlayers ? totalPlayers : this.server.connectionsCount();
-        
+    updatePopulation: function() {
+        let totalCount = 0;
+
+        for (let wordId in this.server.worldsMap) {
+            totalCount+=this.server.worldsMap[wordId].playerCount;
+        }
         //console.log("Updating population: " + this.playerCount + " " + totalPlayers)
-        this.pushBroadcast(new Messages.Population(this.playerCount, totalPlayers));
+        this.pushBroadcast(new Messages.Population(this.playerCount, totalCount));
     },
 
 
