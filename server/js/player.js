@@ -401,13 +401,15 @@ module.exports = Player = Character.extend({
         }        
     },
 
-    handleExperience: async function(xp) {
+    handleExperience: async function(experience) {
 
         let session = this.server.server.cache.get(this.sessionId);
         let currentLevel = Formulas.level(session.xp);
 
-        this.accumulatedExperience += xp;
-        session.xp += xp;
+        this.accumulatedExperience += experience;
+        session.xp = session.xp + experience;
+
+        console.log("Player experience update", session.xp, experience);
         this.server.server.cache.set(this.sessionId, session);
 
         let updatedLevel = Formulas.level(session.xp);
