@@ -49,17 +49,18 @@ class NFTWeapon {
             damageDealt = Math.round(damageDealt);
 
             this.accumulatedExperience += damageDealt;
+            this.experience += damageDealt;
+            let updatedLevel = Formulas.level(this.experience);
+            if (updatedLevel > this.level) {
+                this.level = updatedLevel;
+            }
             if (this.accumulatedExperience > XP_BATCH_SIZE) {
                 const updatedExperience = await dao.saveNFTWeaponExperience(this.walletId, this.nftId, this.accumulatedExperience);
                 if (!Number.isNaN(updatedExperience)) {
                     this.experience = updatedExperience;
-                    let updatedLevel = Formulas.level(updatedExperience);
-                    if (updatedLevel > this.level) {
-                        this.level = updatedLevel;
-                    }
                     this.accumulatedExperience = 0;
                 } else {
-                    console.error("Error updating experience", this.walletId, this.nftId, damageDealt, updatedExperience);
+                    console.error("Error synching experience", this.walletId, this.nftId, damageDealt, updatedExperience);
                 }
             }
         } catch(error) {
