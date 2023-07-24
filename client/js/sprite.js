@@ -8,12 +8,17 @@ define(['jquery', 'animation', 'sprites'], function($, Animation, sprites) {
         	this.isLoaded = false;
         	this.offsetX = 0;
         	this.offsetY = 0;
+			if (window.location.href.indexOf("127.0.0.1") > -1) {
+				this.baseImageURL = 'img/';
+			} else {
+				this.baseImageURL = 'https://cdn.jsdelivr.net/gh/balkshamster/looperlands@main/client/img/';
+			}
             this.loadJSON(sprites[name]);
         },
         
         loadJSON: function(data) {
     		this.id = data.id;
-    		this.filepath = "img/" + this.scale + "/" + this.id + ".png";
+			this.filepath = this.baseImageURL   + this.scale + "/" + this.id + ".png";
     		this.animationData = data.animations;
     		this.width = data.width;
     		this.height = data.height;
