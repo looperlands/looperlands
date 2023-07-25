@@ -33,6 +33,7 @@ define(['jquery', 'animation', 'sprites'], function($, Animation, sprites) {
 
         	this.image = new Image();
         	this.image.src = this.filepath;
+			this.image.crossOrigin = "Anonymous";
 
         	this.image.onload = function() {
         		self.isLoaded = true;
