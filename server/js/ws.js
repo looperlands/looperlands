@@ -299,6 +299,15 @@ WS.socketIOServer = Server.extend({
         app.put('/session/:sessionId', (req, res) => {
             const sessionId = req.params.sessionId;
             const sessionData = cache.get(sessionId);
+            if (sessionData === undefined) {
+                //console.error("Session data is undefined for session id, params: ", sessionId, req.params);
+                res.status(404).json({
+                    status: false,
+                    "error" : "session not found",
+                    user: null
+                });
+                return;
+            }
             const nftId = sessionData.nftId;
             const walletId = sessionData.walletId;
 
@@ -310,6 +319,15 @@ WS.socketIOServer = Server.extend({
         app.get("/session/:sessionId/inventory", async (req, res) => {
             const sessionId = req.params.sessionId;
             const sessionData = cache.get(sessionId);
+            if (sessionData === undefined) {
+                //console.error("Session data is undefined for session id, params: ", sessionId, req.params);
+                res.status(404).json({
+                    status: false,
+                    "error" : "session not found",
+                    user: null
+                });
+                return;
+            }
             const walletId = sessionData.walletId;
 
             const inventory = await axios.get(`${LOOPWORMS_LOOPERLANDS_BASE_URL}/selectLooperLands_Item.php?WalletID=${walletId}&APIKEY=${process.env.LOOPWORMS_API_KEY}`);
@@ -327,6 +345,7 @@ WS.socketIOServer = Server.extend({
                     "error" : "session not found",
                     user: null
                 });
+
             } else {
                 const walletId = sessionData.walletId;
                 let url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/AssetValidation.php?WalletID=${walletId}&NFTID=${nftId}`
