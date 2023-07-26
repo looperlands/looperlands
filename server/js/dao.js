@@ -128,7 +128,8 @@ loadWeapon = async function (wallet, nft) {
     try {
       let weapon = JSON.parse(responseData.data[0]);
       if (weapon.startsWith("NFT_")) {
-        let ownsWeapon = this.walletHasNFT(walletId, nftId);
+        let weaponNFT = weapon.replace("NFT_", "0x");
+        let ownsWeapon = await this.walletHasNFT(wallet, weaponNFT);
         if (ownsWeapon === true) {
           return weapon;
         } else {
