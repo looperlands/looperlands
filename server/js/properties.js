@@ -148,9 +148,9 @@ var Properties = {
         drops: {
             flask: 40,
         },
-        hp: 50,
+        hp: 100,
         armor: 2,
-        weapon: 2
+        weapon: 3
     }
 };
 
