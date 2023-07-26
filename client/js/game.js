@@ -1274,7 +1274,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     entity.sprite = null;
                     entity.setSprite(self.sprites[entity.getSpriteName()]);
                 });
-                this.initHurtSprites();
+                //this.initHurtSprites();
                 this.initShadows();
                 this.initCursors();
             }
@@ -1594,7 +1594,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     self.initCursors();
                     self.initAnimations();
                     self.initShadows();
-                    self.initHurtSprites();
+                    //self.initHurtSprites();
                 
                     if(!self.renderer.mobile
                     && !self.renderer.tablet 
