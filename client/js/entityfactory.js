@@ -76,6 +76,10 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest'], function(Mobs, Items, NPCs
         return new Mobs.Boss(id);
     };
 
+    EntityFactory.builders[Types.Entities.SLIME] = function(id) {
+        return new Mobs.Slime(id);
+    };
+
     //===== items ======
  
     EntityFactory.builders[Types.Entities.SWORD2] = function(id) {

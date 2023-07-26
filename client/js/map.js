@@ -58,17 +58,32 @@ define(['jquery', 'area'], function($, Area) {
         _initTilesets: function() {
             var tileset1, tileset2, tileset3;
             
+            /**
+             * This allows for shared tilesheets among maps.
+             */
+            let mapIdToTileset = {
+                "oa": "oa",
+                "oadungeon": "oa",
+                "oaoverworld": "oa",
+            }
+
+            let tilesetId = mapIdToTileset[this.mapId];
+
+            if (tilesetId === undefined) {
+                tilesetId = this.mapId;
+            }
+
             if(!this.loadMultiTilesheets) {
                 this.tilesetCount = 1;
-                tileset1 = this._loadTileset('img/1/tilesheet_' + this.mapId + '.png');
+                tileset1 = this._loadTileset('img/1/tilesheet_' + tilesetId + '.png');
             } else {
                 if(this.game.renderer.mobile || this.game.renderer.tablet) {
                     this.tilesetCount = 1;
-                    tileset2 = this._loadTileset('img/2/tilesheet_' + this.mapId + '.png');
+                    tileset2 = this._loadTileset('img/2/tilesheet_' + tilesetId + '.png');
                 } else {
                     this.tilesetCount = 2;
-                    tileset2 = this._loadTileset('img/2/tilesheet_' + this.mapId + '.png');
-                    tileset3 = this._loadTileset('img/3/tilesheet_' + this.mapId + '.png');
+                    tileset2 = this._loadTileset('img/2/tilesheet_' + tilesetId + '.png');
+                    tileset3 = this._loadTileset('img/3/tilesheet_' + tilesetId + '.png');
                 }
             }
         
@@ -117,7 +132,8 @@ define(['jquery', 'area'], function($, Area) {
                     cameraX: door.tcx,
                     cameraY: door.tcy,
                     portal: door.p === 1,
-                    nft: door.tnft
+                    nft: door.tnft,
+                    map: door.tmap
                 };
             });
         

@@ -142,6 +142,15 @@ var Properties = {
         armor: 5,
         weapon: 8,
         redpacket: true
+    },
+
+    slime: {
+        drops: {
+            flask: 40,
+        },
+        hp: 100,
+        armor: 2,
+        weapon: 3
     }
 };
 

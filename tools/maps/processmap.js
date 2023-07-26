@@ -117,6 +117,7 @@ module.exports = function processMap(json, options) {
                     x: doors[j].x / map.tilesize,
                     y: doors[j].y / map.tilesize,
                     p: (doors[j].type === 'portal') ? 1 : 0,
+                    map: doors[j].map
                 }
                 var doorprops = doors[j].properties.property;
                 for(var k=0; k < doorprops.length; k += 1) {

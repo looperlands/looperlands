@@ -66,7 +66,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             // sprites
             this.spriteNames = ["hand", "sword", "loot", "target", "talk", "sparks", "shadow16", "rat", "skeleton", "skeleton2", "spectre", "boss", "deathknight", 
                                 "ogre", "crab", "snake", "eye", "bat", "goblin", "wizard", "guard", "king", "villagegirl", "villager", "coder", "agent", "rick", "scientist", "nyan", "priest", 
-                                "king2", "goose", "tanashi",
+                                "king2", "goose", "tanashi", "slime",
                                 "sorcerer", "octocat", "beachnpc", "forestnpc", "desertnpc", "lavanpc", "clotharmor", "leatherarmor", "mailarmor",
                                 "platearmor", "redarmor", "goldenarmor", "firefox", "death", "sword1", "axe", "chest",
                                 "sword2", "redsword", "bluesword", "goldensword", "item-sword2", "item-axe", "item-redsword", "item-bluesword", "item-goldensword", "item-leatherarmor", "item-mailarmor", 
@@ -1855,47 +1855,63 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
                         function goInside() {
 
-                            _self.player.setGridPosition(dest.x, dest.y);
-                            _self.player.nextGridX = dest.x;
-                            _self.player.nextGridY = dest.y;
-                            _self.player.turnTo(dest.orientation);
-                            _self.client.sendTeleport(dest.x, dest.y);
-                            
-                            if(_self.renderer.mobile && dest.cameraX && dest.cameraY) {
-                                _self.camera.setGridPosition(dest.cameraX, dest.cameraY);
-                                _self.resetZone();
+                            if (dest.map !== undefined) {
+                                let url = '/session/' + self.sessionId + '/teleport';
+                                axios.post(url, dest).then(function (response) {
+                                    if (response.status === 200) {
+                                        let newSessionID = response.data.sessionId;
+                                        window.location.href = '/?sessionId=' + newSessionID;
+                                    } else {
+                                        console.error(response);
+                                    }
+                                }).catch(function (error) {
+                                    console.log(error);
+                                }).finally(function(e) {
+    
+                                });
                             } else {
-                                if(dest.portal) {
-                                    _self.assignBubbleTo(_self.player);
-                                } else {
-                                    _self.camera.focusEntity(_self.player);
+                                _self.player.setGridPosition(dest.x, dest.y);
+                                _self.player.nextGridX = dest.x;
+                                _self.player.nextGridY = dest.y;
+                                _self.player.turnTo(dest.orientation);
+                                _self.client.sendTeleport(dest.x, dest.y);
+                                
+                                if(_self.renderer.mobile && dest.cameraX && dest.cameraY) {
+                                    _self.camera.setGridPosition(dest.cameraX, dest.cameraY);
                                     _self.resetZone();
+                                } else {
+                                    if(dest.portal) {
+                                        _self.assignBubbleTo(_self.player);
+                                    } else {
+                                        _self.camera.focusEntity(_self.player);
+                                        _self.resetZone();
+                                    }
                                 }
-                            }
+                                
+                                if(_.size(_self.player.attackers) > 0) {
+                                    setTimeout(function() { _self.tryUnlockingAchievement("COWARD"); }, 500);
+                                }
+                                _self.player.forEachAttacker(function(attacker) {
+                                    attacker.disengage();
+                                    attacker.idle();
+                                });
                             
-                            if(_.size(_self.player.attackers) > 0) {
-                                setTimeout(function() { _self.tryUnlockingAchievement("COWARD"); }, 500);
-                            }
-                            _self.player.forEachAttacker(function(attacker) {
-                                attacker.disengage();
-                                attacker.idle();
-                            });
-                        
-                            _self.updatePlateauMode();
-                            
-                            _self.checkUndergroundAchievement();
-                            
-                            if(_self.renderer.mobile || _self.renderer.tablet) {
-                                // When rendering with dirty rects, clear the whole screen when entering a door.
-                                _self.renderer.clearScreen(_self.renderer.context);
-                            }
-                            
-                            if(dest.portal) {
-                                _self.audioManager.playSound("teleport");
-                            }
-                            
-                            if(!_self.player.isDead) {
-                                _self.audioManager.updateMusic();
+                                _self.updatePlateauMode();
+                                
+                                _self.checkUndergroundAchievement();
+                                
+                                if(_self.renderer.mobile || _self.renderer.tablet) {
+                                    // When rendering with dirty rects, clear the whole screen when entering a door.
+                                    _self.renderer.clearScreen(_self.renderer.context);
+                                }
+                                
+                                if(dest.portal) {
+                                    _self.audioManager.playSound("teleport");
+                                }
+                                
+                                if(!_self.player.isDead) {
+                                    _self.audioManager.updateMusic();
+                                }
                             }
                         }
 

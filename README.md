@@ -41,3 +41,15 @@ LOOPWORMS_API_KEY=<api-key-here> ./local-session.sh
 ```
 This will print out a URL and open up the URL in your browser
 
+# Add a mob
+
+* Add each scale image to client/img/n
+* Create a sprite.json under client/sprites for the mob with the same name as the scale image. Make sure the ID inside the JSON matches
+* Add sprite.json (with the correct name) to sprites.js
+* Add the new id to game.js array `this.spriteNames`
+* Add new mob entity to gametypes.js
+* Add a new mob class in mobs.js
+* Add the new entity factory in entityfactory.js
+* Add the new mob to properties.js
+* Add the mob to mobset_oa.png. Reopen tiled and note the id.
+* Add the mob to the .tmx file noting the id in tiled. 
