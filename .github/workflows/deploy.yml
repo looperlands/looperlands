@@ -15,4 +15,4 @@ jobs:
         username: ${{ secrets.USERNAME }}
         password: ${{ secrets.PASSWORD }}
         port: 22
-        script: systemctl restart looperlands
+        script: sudo systemctl restart looperlands
