@@ -157,10 +157,11 @@ define(['character'], function(Character) {
         ],
         
         "desertnpc": [
-            "Gauntlet this way, Looper!",
-            "Only the power of Loopring can save you",
-            "It is dangerous to go alone! Take this.",
-            "Haha, fooled you. But the Skeleton King may offer a prize",
+            "I'm NFTSpike and should need no introduction.",
+            "I make Web3 games on Loopring that are dope AF",
+            'You should check out my <a target="_blank" href="https://www.spikedrollups.com/">Spiked Rollups</a> games',
+            'Visit <a target="_blank" href="https://twitter.com/nftspike">my twitter</a> and give me a follow!',
+            "The Skeleton King may offer a prize",
             "in the form of a Red Packet if you and your friends are brave and strong."
         ],
     
