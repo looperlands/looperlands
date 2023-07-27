@@ -18,5 +18,5 @@ jobs:
         script: |
           cd /home/looperlands/git/looperlands
           git pull
-          docker-compose build --no-cache
+          docker-compose build
           sudo systemctl restart looperlands
