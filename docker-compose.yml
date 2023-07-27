@@ -1,0 +1,7 @@
+services:
+  gameserver:
+    build: 
+      context: .
+      dockerfile: Dockerfile.prod
+    ports:
+      - "8000:8000"
