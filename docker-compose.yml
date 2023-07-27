@@ -5,3 +5,5 @@ services:
       dockerfile: Dockerfile.prod
     ports:
       - "8000:8000"
+    env_file:
+      - /home/looperlands/.env
