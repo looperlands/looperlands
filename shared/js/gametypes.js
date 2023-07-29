@@ -2213,7 +2213,12 @@ Types.isArmor = function(kind) {
 };
 
 Types.isWeapon = function(kind) {
-    return kinds.getType(kind) === "weapon";
+    try {
+        return kinds.getType(kind) === "weapon";
+    } catch (error) {
+        console.log("Unknown kind: " + kind, error);
+        return false;
+    }
 };
 
 Types.isObject = function(kind) {

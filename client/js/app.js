@@ -421,25 +421,27 @@ define(['jquery', 'storage'], function($, Storage) {
                         return item.replace("0x", "NFT_");
                     });
 
-                    var inventoryHtml = "<div>";
+                    var inventoryHtml = "";
 
 
-                    inventoryHtml += "<div>";
+                    inventoryHtml += "<strong>Weapons</strong><div>";
                     inventory.forEach(function(item) {
-                        imgTag = "<img id='"+item+"' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0;' src='img/3/item-" + item + ".png' />";
-                        inventoryHtml += imgTag;
+                        if (Types.isWeapon(item)) {
+                            imgTag = "<img id='"+item+"' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0;' src='img/3/item-" + item + ".png' />";
+                            inventoryHtml += imgTag;
+                        }
+
                     });
                     inventoryHtml += "</div>";
 
                     inventoryHtml += "<div>";
                     inventory.forEach(function(item) {
-                        imgTag = "<img id='"+item+"' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0;' src='img/3/item-" + item + ".png' />";
-                        inventoryHtml += imgTag;
+                        if (!Types.isWeapon(item)) {
+                            imgTag = "<img id='"+item+"' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0;' src='img/3/item-" + item + ".png' />";
+                            inventoryHtml += imgTag;
+                        }
                     });
                     inventoryHtml += "</div>";
-
-                    inventoryHtml += "</div>";
-                    
 
                     $("#inventory").html(inventoryHtml);
 
