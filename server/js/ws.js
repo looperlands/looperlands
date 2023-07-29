@@ -407,16 +407,6 @@ WS.socketIOServer = Server.extend({
             res.status(200).json(ret);
         });
 
-        app.get("/session/:sessionId/disconnected", async(req, res) => {
-            const sessionId = req.params.sessionId;
-            const sessionData = cache.get(sessionId);
-            let disconnected = false;
-            if (sessionData !== undefined) {
-                disconnected = sessionData.disconnected !== undefined && sessionData.disconnected;
-            }
-            res.status(200).json(disconnected);
-        });
-
         app.post('/setxpmultiplier', async (req, res) => {
             const body = req.body;
             const apiKey = req.headers['x-api-key'];
