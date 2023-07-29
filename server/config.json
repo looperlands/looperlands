@@ -1,6 +1,6 @@
 {
     "host": "looperlands-na.loopworms.io",
-    "port": 8000,
+    "port": 443,
     "debug_level": "info",
     "nb_players_per_world": 1000,
     "nb_worlds": 1,
