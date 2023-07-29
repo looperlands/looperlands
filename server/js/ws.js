@@ -129,7 +129,7 @@ WS.socketIOServer = Server.extend({
         var corsAddress = self.protocol + "://" + self.host;
         self.io = require('socket.io')(http, {
             allowEIO3: true,
-            cors: {origin: "*"}
+            cors: {origin: corsAddress, credentials: true}
         });
 
         app.use(express.json())
