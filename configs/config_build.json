@@ -1,5 +1,5 @@
 {
-    "host": "127.0.0.1",
+    "host": "looperlands-na.loopworms.io",
     "port": 8000,
-    "protocol": "http"
+    "protocol": "https"
 }
