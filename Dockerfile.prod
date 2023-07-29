@@ -14,6 +14,7 @@ RUN python2 -m pip install lxml
 
 COPY . /opt/app
 WORKDIR /opt/app
+RUN python3 config_manager.py configs/prod_config_na.json
 COPY shared/js/gametypes.js client/js/gametypes.js
 RUN npm install
 WORKDIR /opt/app/tools/maps
