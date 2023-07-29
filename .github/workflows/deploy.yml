@@ -1,0 +1,22 @@
+name: deploy
+on:
+  push:
+    branches:
+      - hostinger_migration
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - name: executing remote ssh commands using password
+      uses: appleboy/ssh-action@v0.1.7
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        port: 22
+        script: |
+          cd /home/looperlands/git/looperlands
+          git pull
+          docker-compose build
+          sudo systemctl restart looperlands
