@@ -1103,6 +1103,8 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             this.mapId = mapId;
     
             this.map = new Mapx(!this.renderer.upscaledRendering, this, mapId);
+
+            this.storage.setMapId(mapId);
     
         	this.map.ready(function() {
                 console.log("Map loaded.");

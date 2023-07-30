@@ -157,6 +157,11 @@ define(function() {
                 this.save();
             }
         },
+
+        setMapId(mapId) {
+            this.data.mapId = mapId;
+            this.save();
+        }
     });
     
     return Storage;
