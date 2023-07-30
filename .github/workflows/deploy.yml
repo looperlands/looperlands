@@ -17,6 +17,8 @@ jobs:
         port: 22
         script: |
           cd /home/looperlands/git/looperlands
+          git checkout .
+          git checkout main
           git pull
           docker-compose build
           sudo systemctl restart looperlands
