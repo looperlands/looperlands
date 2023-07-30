@@ -92,14 +92,19 @@ define(['jquery', 'app'], function($, App) {
                         context.shadowOffsetX = 3;
                         context.shadowOffsetY = 3;
                         context.fillStyle = 'black';
-                        context.fillText('Kofit - LoopWorms Founder',100,200+namesPosition);                        
+                        context.fillText('Smileyphase - LoopWorms Lead/Platform',100,200+namesPosition);
                         context.fillText('Balkshamster - Lead Developer',100,230+namesPosition);
-                        context.fillText('Smileyphase - LoopWorms Platform',100,260+namesPosition);
+                        context.fillText('Kofit - LoopWorms Founder',100,260+namesPosition);                        
                         context.fillText('Peteszah - Community Growth',100,290+namesPosition);
-                        context.fillText('izitnu - Technical Documentation',100,320+namesPosition);
-                        context.fillText('ADammmHill - Tester',100,350+namesPosition);
-                        context.fillText('Oracle - Hype Queen',100,380+namesPosition);
-                        context.fillText('WizKing - Artist Tester',100,410+namesPosition);
+                        context.fillText('ADammmHill - Head of Events/Tester',100,320+namesPosition);
+                        context.fillText('Oracle - Hype Queen',100,350+namesPosition);
+                        context.fillText('WizKing - Artist Tester',100,380+namesPosition);
+                        context.fillText('Veni - Game Developer',100,410+namesPosition);
+                        context.fillText('Bertle - Community Engagement',100,440+namesPosition);
+                        context.fillText('Art Magic - Community Help',100,470+namesPosition);
+                        context.fillText('Izitnu - Creator Advisory Board/Documentation',100,500+namesPosition);
+                        context.fillText('Ordinary Adam - Creator Advisory Board',100,530+namesPosition);
+                        context.fillText('Sage - Creator Advisory Board',100,560+namesPosition);
                         context.closePath();
                         if(namesPosition <= -440){
                             namesPosition = -50;
