@@ -155,6 +155,15 @@ var Properties = {
 };
 
 Properties.getArmorLevel = function(kind) {
+    try {
+        if(Types.isMob(kind)) {
+            return Properties[Types.getKindAsString(kind)].armor;
+        } else {
+            return 1;
+        }
+    } catch(e) {
+        console.error("No level found for armor: "+Types.getKindAsString(kind));
+    }
     return 1;
 };
 
