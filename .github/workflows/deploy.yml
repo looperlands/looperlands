@@ -2,7 +2,7 @@ name: deploy
 on:
   push:
     branches:
-      - hostinger_migration
+      - main
 jobs:
   build:
     name: Build
