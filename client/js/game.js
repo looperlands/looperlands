@@ -1103,6 +1103,8 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             this.mapId = mapId;
     
             this.map = new Mapx(!this.renderer.upscaledRendering, this, mapId);
+
+            this.storage.setMapId(mapId);
     
         	this.map.ready(function() {
                 console.log("Map loaded.");
@@ -1788,10 +1790,10 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 // Always accept name received from the server which will
                 // sanitize and shorten names exceeding the allowed length.
                 self.player.name = name;
+                console.log(self.storage);
                 self.player.setGridPosition(x, y);
                 self.player.setMaxHitPoints(hp);
                 self.player.title = title;
-            
                 self.updateBars();
                 self.resetCamera();
                 self.updatePlateauMode();
@@ -2656,6 +2658,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
          * @see makeCharacterGoTo
          */
         makePlayerGoTo: function(x, y) {
+            this.storage.saveXY(x, y);
             this.makeCharacterGoTo(this.player, x, y);
         },
     
