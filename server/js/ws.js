@@ -143,8 +143,6 @@ WS.socketIOServer = Server.extend({
             if (body.mapId === undefined) {
                 body.mapId = "main";
             }
-
-
             cache.set(id, body);
             let responseJson = {
                 "sessionId" : id
@@ -194,7 +192,7 @@ WS.socketIOServer = Server.extend({
             }
 
             let avatarCharacterData = await dao.getCharacterData(body.walletId, body.nftId);
-
+            //console.log("RLS load: ", avatarCharacterData.mapId, body.mapId, avatarCharacterData.x, avatarCharacterData.y, body.x, body.y);
             if (avatarCharacterData.mapId !== undefined && body.mapId === avatarCharacterData.mapId && avatarCharacterData.x !== undefined && avatarCharacterData.y !== undefined) {
                 body.mapId = avatarCharacterData.mapId;
                 body.x = avatarCharacterData.x;

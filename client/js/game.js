@@ -2096,7 +2096,8 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             
                 self.player.onDeath(function() {
                     console.log(self.playerId + " is dead");
-                
+                    self.storage.resetXY()
+
                     self.player.stopBlinking();
                     self.player.setSprite(self.sprites["death"]);
                     self.player.animate("death", 120, 1, function() {
