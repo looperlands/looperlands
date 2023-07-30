@@ -143,6 +143,8 @@ WS.socketIOServer = Server.extend({
             if (body.mapId === undefined) {
                 body.mapId = "main";
             }
+
+
             cache.set(id, body);
             let responseJson = {
                 "sessionId" : id
@@ -189,6 +191,14 @@ WS.socketIOServer = Server.extend({
                     //console.log("deleting a session that never connected: " + key)
                     cache.del(key);
                 }
+            }
+
+            let avatarCharacterData = await dao.getCharacterData(body.walletId, body.nftId);
+
+            if (avatarCharacterData.mapId !== undefined && body.mapId === avatarCharacterData.mapId && avatarCharacterData.x !== undefined && avatarCharacterData.y !== undefined) {
+                body.mapId = avatarCharacterData.mapId;
+                body.x = avatarCharacterData.x;
+                body.y = avatarCharacterData.y;
             }
 
             let responseJson = newSession(body);
