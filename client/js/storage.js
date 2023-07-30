@@ -161,6 +161,12 @@ define(function() {
         setMapId(mapId) {
             this.data.mapId = mapId;
             this.save();
+        },
+
+        saveXY(x, y) {
+            this.data.x = x;
+            this.data.y = y;
+            this.save();
         }
     });
     
