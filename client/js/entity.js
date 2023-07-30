@@ -57,7 +57,7 @@ define(function() {
             this.normalSprite = this.sprite;
         
             if(Types.isMob(this.kind) || Types.isPlayer(this.kind)) {
-            	this.hurtSprite = sprite.getHurtSprite();
+            	this.hurtSprite = sprite;
             }
 		
     		this.animations = sprite.createAnimations();

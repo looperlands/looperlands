@@ -191,6 +191,14 @@ WS.socketIOServer = Server.extend({
                 }
             }
 
+            let avatarCharacterData = await dao.getCharacterData(body.walletId, body.nftId);
+            //console.log("RLS load: ", avatarCharacterData.mapId, body.mapId, avatarCharacterData.x, avatarCharacterData.y, body.x, body.y);
+            if (avatarCharacterData.mapId !== undefined && body.mapId === avatarCharacterData.mapId && avatarCharacterData.x !== undefined && avatarCharacterData.y !== undefined) {
+                body.mapId = avatarCharacterData.mapId;
+                body.x = avatarCharacterData.x;
+                body.y = avatarCharacterData.y;
+            }
+
             let responseJson = newSession(body);
 
             res.status(200).send(responseJson);
@@ -405,16 +413,6 @@ WS.socketIOServer = Server.extend({
                 return;
             }
             res.status(200).json(ret);
-        });
-
-        app.get("/session/:sessionId/disconnected", async(req, res) => {
-            const sessionId = req.params.sessionId;
-            const sessionData = cache.get(sessionId);
-            let disconnected = false;
-            if (sessionData !== undefined) {
-                disconnected = sessionData.disconnected !== undefined && sessionData.disconnected;
-            }
-            res.status(200).json(disconnected);
         });
 
         app.post('/setxpmultiplier', async (req, res) => {

@@ -29,15 +29,6 @@ define(['jquery', 'storage'], function($, Storage) {
             this.supportsWorkers = !!window.Worker;
             this.ready = true;
             this.game.sessionId = this.sessionId;
-            var self = this;
-            setInterval(function() {
-                axios.get("/session/"+self.sessionId+"/disconnected").then(function(response) {
-                    if (response.data) {
-                        self.game.player.isDead = true;
-                        self.game.disconnect_callback("You have been disconnected.");
-                    }
-                });
-            }, 5000);
         },
     
         center: function() {
@@ -431,10 +422,26 @@ define(['jquery', 'storage'], function($, Storage) {
                     });
 
                     var inventoryHtml = "";
+
+
+                    inventoryHtml += "<strong>Weapons</strong><div>";
                     inventory.forEach(function(item) {
-                        imgTag = "<img id='"+item+"' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0;' src='img/3/item-" + item + ".png' />";
-                        inventoryHtml += imgTag;
+                        if (Types.isWeapon(item)) {
+                            imgTag = "<img id='"+item+"' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0;' src='img/3/item-" + item + ".png' />";
+                            inventoryHtml += imgTag;
+                        }
+
                     });
+                    inventoryHtml += "</div>";
+
+                    inventoryHtml += "<div>";
+                    inventory.forEach(function(item) {
+                        if (!Types.isWeapon(item)) {
+                            imgTag = "<img id='"+item+"' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0;' src='img/3/item-" + item + ".png' />";
+                            inventoryHtml += imgTag;
+                        }
+                    });
+                    inventoryHtml += "</div>";
 
                     $("#inventory").html(inventoryHtml);
 

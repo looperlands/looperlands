@@ -35,11 +35,16 @@ def export_map(tmx_file):
     # Send a Growl notification when the export process is complete
     print("Map export complete")
 
-threads = []
-for tmx_file in map_files:
-    t = Thread(target=export_map,args=(tmx_file,))
-    threads.append(t)
-    t.start()
-for thread in threads:
-    thread.join()
+
+if sys.argv[2] == "onethread":
+    for tmx_file in map_files:
+        export_map(tmx_file)
+else:
+    threads = []
+    for tmx_file in map_files:
+        t = Thread(target=export_map,args=(tmx_file,))
+        threads.append(t)
+        t.start()
+    for thread in threads:
+        thread.join()
 

@@ -1,0 +1,9 @@
+services:
+  gameserver:
+    build: 
+      context: .
+      dockerfile: Dockerfile.prod
+    ports:
+      - "8000:443"
+    env_file:
+      - /home/looperlands/.env

@@ -157,6 +157,23 @@ define(function() {
                 this.save();
             }
         },
+
+        setMapId(mapId) {
+            this.data.mapId = mapId;
+            this.save();
+        },
+
+        saveXY(x, y) {
+            this.data.x = x;
+            this.data.y = y;
+            this.save();
+        },
+
+        resetXY() {
+            delete this.data.x;
+            delete this.data.y;
+            this.save();
+        }
     });
     
     return Storage;
