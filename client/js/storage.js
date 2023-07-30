@@ -167,6 +167,12 @@ define(function() {
             this.data.x = x;
             this.data.y = y;
             this.save();
+        },
+
+        resetXY() {
+            delete this.data.x;
+            delete this.data.y;
+            this.save();
         }
     });
     
