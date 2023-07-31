@@ -599,7 +599,7 @@ module.exports = Player = Character.extend({
     
     resetTimeout: function() {
         clearTimeout(this.disconnectTimeout);
-        this.disconnectTimeout = setTimeout(this.timeout.bind(this), 1000 * 60 * 15); // 15 min.
+        this.disconnectTimeout = setTimeout(this.timeout.bind(this), 1000 * 60 * 60); // 60 min.
     },
 
     receiveDamage: function(points, playerId) {
