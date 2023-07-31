@@ -227,6 +227,10 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest'], function(Mobs, Items, NPCs
     EntityFactory.builders[Types.Entities.TANASHI] = function(id) {
         return new NPCs.Tanashi(id);
     };    
+
+    EntityFactory.builders[Types.Entities.MINER] = function(id) {
+        return new NPCs.Miner(id);
+    };    
     
     return EntityFactory;
 });

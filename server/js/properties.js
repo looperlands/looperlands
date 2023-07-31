@@ -155,12 +155,11 @@ var Properties = {
 
     minimag: {
         drops: {
-            flask: 50,
-            burger: 25
+            flask: 50
         },
         hp: 500,
-        armor: 20,
-        weapon: 5
+        armor: 25,
+        weapon: 4
     },
 };
 

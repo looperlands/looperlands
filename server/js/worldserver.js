@@ -589,6 +589,11 @@ module.exports = World = cls.Class.extend({
                 this.pushToPlayer(attacker, new Messages.Kill(mob, xp));
                 this.pushToAdjacentGroups(mob.group, mob.despawn());
                 this.pushToGroup(mob.group, mob.despawn());
+
+                if (mob.kind === Types.Entities.MINIMAG) {
+                    this.doAoe(mob, 75);
+                 }
+
                 // Despawn must be enqueued before the item drop
                 if(item) {
                     this.pushToAdjacentGroups(mob.group, mob.drop(item));
@@ -977,5 +982,22 @@ module.exports = World = cls.Class.extend({
             trait: nftWeapon.trait
         }
         return weaponInfo;
+    },
+
+    doAoe: function(mob, aoeDmg, aoeDist=1) {
+        const group = this.groups[mob.group];
+        if (group !== undefined){
+            let entityIds = Object.keys(group.entities);
+            entityIds.forEach(function(id) {
+                let nearbyEntity = group.entities[id];
+                if (nearbyEntity.type === 'player') {
+                    let distance = Utils.distanceTo(mob.x, mob.y, nearbyEntity.x, nearbyEntity.y);
+                    if (distance <= aoeDist) {
+                        nearbyEntity.receiveDamage(aoeDmg, mob.id);
+                        this.handleHurtEntity(nearbyEntity, mob, aoeDmg);
+                    }
+                }
+            })
+        }
     }
 });

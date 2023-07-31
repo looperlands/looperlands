@@ -117,6 +117,12 @@ define(['npc'], function(Npc) {
             init: function(id) {
                 this._super(id, Types.Entities.TANASHI, 1);
             }
+        }),
+
+        Miner: Npc.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.MINER, 1);
+            }
         })
 
     };

@@ -175,10 +175,10 @@ define(['mob', 'timer'], function(Mob, Timer) {
         Minimag: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.MINIMAG);
-                this.moveSpeed = 200;
                 this.idleSpeed = 1000;
                 this.walkSpeed = 125;
-                this.atkSpeed = 100;
+                this.atkSpeed = 75;
+                this.moveSpeed = 150;
                 this.aggroRange = 3;
         		this.setAttackRate(1000);
                 this.deathAnimated = true;
