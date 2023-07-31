@@ -590,9 +590,12 @@ module.exports = World = cls.Class.extend({
                 this.pushToAdjacentGroups(mob.group, mob.despawn());
                 this.pushToGroup(mob.group, mob.despawn());
 
-                if (mob.kind === Types.Entities.MINIMAG) {
-                    this.doAoe(mob, 60);
-                 }
+                // On death AoE explosion handling
+                let aoeDamage = Properties[kind].aoedamage;
+                if (aoeDamage !== undefined) {
+                    let aoeRadius = Properties[kind].aoeradius;
+                    this.doAoe(mob, aoeDamage, aoeRadius);
+                }
 
                 // Despawn must be enqueued before the item drop
                 if(item) {
@@ -984,7 +987,9 @@ module.exports = World = cls.Class.extend({
         return weaponInfo;
     },
 
-    doAoe: function(mob, aoeDmg, aoeDist=1) {
+    doAoe: function(mob, aoeDmg, aoeRange) {
+        aoeRange = aoeRange !== undefined ? aoeRange : 1;
+
         const group = this.groups[mob.group];
         if (group !== undefined){
             let self = this;
@@ -993,7 +998,7 @@ module.exports = World = cls.Class.extend({
                 let nearbyEntity = group.entities[id];
                 if (nearbyEntity.type === 'player') {
                     let distance = Utils.distanceTo(mob.x, mob.y, nearbyEntity.x, nearbyEntity.y);
-                    if (distance <= aoeDist) {
+                    if (distance <= aoeRange) {
                         nearbyEntity.receiveDamage(aoeDmg, mob.id);
                         self.handleHurtEntity(nearbyEntity, mob, aoeDmg);
                     }
