@@ -591,7 +591,7 @@ module.exports = World = cls.Class.extend({
                 this.pushToGroup(mob.group, mob.despawn());
 
                 if (mob.kind === Types.Entities.MINIMAG) {
-                    this.doAoe(mob, 75);
+                    this.doAoe(mob, 60);
                  }
 
                 // Despawn must be enqueued before the item drop
@@ -987,6 +987,7 @@ module.exports = World = cls.Class.extend({
     doAoe: function(mob, aoeDmg, aoeDist=1) {
         const group = this.groups[mob.group];
         if (group !== undefined){
+            let self = this;
             let entityIds = Object.keys(group.entities);
             entityIds.forEach(function(id) {
                 let nearbyEntity = group.entities[id];
@@ -994,7 +995,7 @@ module.exports = World = cls.Class.extend({
                     let distance = Utils.distanceTo(mob.x, mob.y, nearbyEntity.x, nearbyEntity.y);
                     if (distance <= aoeDist) {
                         nearbyEntity.receiveDamage(aoeDmg, mob.id);
-                        this.handleHurtEntity(nearbyEntity, mob, aoeDmg);
+                        self.handleHurtEntity(nearbyEntity, mob, aoeDmg);
                     }
                 }
             })
