@@ -15,6 +15,7 @@ define(['jquery', 'area'], function($, Area) {
 
         	this._loadMap(useWorker);
         	this._initTilesets();
+            this._initStreamCheck();
         },
         
         _checkReady: function() {
@@ -25,6 +26,21 @@ define(['jquery', 'area'], function($, Area) {
         	    }
         	}
         },
+
+        _initStreamCheck: function() {
+            let url = 'https://loopworms.io/DEV/LooperLands/music.php?mapID=' + this.mapId;
+            axios.get(url).then(function(response) {
+                
+                console.log(response);
+                let youtubeId = response.data[0]['youtubeId'];
+                let HTML = '<iframe width="560" height="315" src="https://www.youtube.com/embed/' + youtubeId + '?autoplay=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+
+                $("#music-stream").html(HTML);
+                console.log(response.data);
+            }).catch(function(error) {
+                console.log(error);
+            });
+        },        
 
         _loadMap: function(useWorker) {
         	var self = this,
