@@ -183,6 +183,14 @@ define(['character'], function(Character) {
             "https://twitter.com/CyberTanashi",
             'Check out <a target="_blank" href="https://twitter.com/CyberTanashi">my twitter</a> and give me a follow or <a target="_blank" href="http://twitter.com/share?text=%40CyberTanashi">tweet me</a>',
             "Now go about your adventure, Looper!"
+        ],
+
+        "miner": [
+            "Huh, looking for a red packet?",
+            "I may have something better.",
+            "I keep hearing noises behind this wall. I bet these Minimags guard their treasure.",
+            "It is thin enough to dig through, I just need a few days!",
+            "Meanwhile, keep these pesky Minimags away from me! I can't work under these conditions!"
         ]
     };
 

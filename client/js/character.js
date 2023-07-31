@@ -38,6 +38,9 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
             this.isDead = false;
             this.attackingMode = false;
             this.followingMode = false;
+
+            // Other
+            this.deathAnimated = false;
     	},
 	
     	clean: function() {

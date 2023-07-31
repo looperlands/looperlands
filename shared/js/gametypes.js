@@ -49,6 +49,7 @@ Types = {
         BOSS: 13,
         DEATHKNIGHT: 14,
         SLIME: 200001,
+        MINIMAG: 200002,
         
         // Armors
         FIREFOX: 20,
@@ -86,6 +87,7 @@ Types = {
         CODER: 55,
         GOOSE: 1000042,
         TANASHI: 1000043,
+        MINER: 1000044,
         
         // Weapons
         SWORD1: 60,
@@ -1169,6 +1171,7 @@ var kinds = {
     skeleton2: [Types.Entities.SKELETON2, "mob"],
     boss: [Types.Entities.BOSS, "mob"],
     slime: [Types.Entities.SLIME, "mob"],
+    minimag: [Types.Entities.MINIMAG, "mob"],
 
     sword1: [Types.Entities.SWORD1, "weapon"],
     sword2: [Types.Entities.SWORD2, "weapon"],
@@ -1211,6 +1214,7 @@ var kinds = {
     lavanpc: [Types.Entities.LAVANPC, "npc"],
     goose: [Types.Entities.GOOSE, "npc"],
     tanashi: [Types.Entities.TANASHI, "npc"],
+    miner: [Types.Entities.MINER, "npc"],
 
     //NFT
     NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6: [Types.Entities.NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6, "armor"],

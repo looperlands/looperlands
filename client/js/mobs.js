@@ -10,6 +10,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.shadowOffsetY = -2;
                 this.isAggressive = false;
                 this.aggroRange = 1;
+                this.deathAnimated = true;
             }
         }),
 
@@ -168,6 +169,19 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.shadowOffsetY = -2;
                 this.isAggressive = false;
                 this.aggroRange = 2;
+            }
+        }),
+
+        Minimag: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.MINIMAG);
+                this.idleSpeed = 1000;
+                this.walkSpeed = 125;
+                this.atkSpeed = 75;
+                this.moveSpeed = 150;
+                this.aggroRange = 3;
+        		this.setAttackRate(1000);
+                this.deathAnimated = true;
             }
         }),
 
