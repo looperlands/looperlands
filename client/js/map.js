@@ -33,11 +33,14 @@ define(['jquery', 'area'], function($, Area) {
             let self = this;
             setInterval(function() {
                 axios.get(url).then(function(response) {
-                    console.log("music php response", response)
-                    
-                    // todo
+                    //console.log("music php response", response)
+
+                    if (response.data.length > 0) {
+                        self.game.audioManager.disable();
+                    }
+
                     let parsedSong = response.data[0]['youtubeId'];
-                    console.log("parsedSong", parsedSong, "song", song);
+                    //console.log("parsedSong", parsedSong, "song", song);
                     if (song !== parsedSong) {
                         console.log("playing song", parsedSong);
                         let audio = new Audio(parsedSong);
@@ -53,7 +56,6 @@ define(['jquery', 'area'], function($, Area) {
                 });
 
             }, 1000);
-
         },        
 
         _loadMap: function(useWorker) {
