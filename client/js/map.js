@@ -39,7 +39,7 @@ define(['jquery', 'area'], function($, Area) {
                         self.game.audioManager.disable();
                     }
 
-                    let parsedSong = response.data[0]['youtubeId'];
+                    let parsedSong = response.data[0]['mp3URL'];
                     //console.log("parsedSong", parsedSong, "song", song);
                     if (song !== parsedSong) {
                         console.log("playing song", parsedSong);
