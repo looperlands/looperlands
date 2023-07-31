@@ -592,7 +592,7 @@ module.exports = World = cls.Class.extend({
 
                 // On death AoE explosion handling
                 let aoeDamage = Properties[kind].aoedamage;
-                if (aoeDamage !== undefined) {
+                if (aoeDamage !== undefined && aoeDamage > 0) {
                     let aoeRadius = Properties[kind].aoeradius;
                     this.doAoe(mob, aoeDamage, aoeRadius);
                 }
