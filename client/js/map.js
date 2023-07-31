@@ -29,17 +29,31 @@ define(['jquery', 'area'], function($, Area) {
 
         _initStreamCheck: function() {
             let url = 'https://loopworms.io/DEV/LooperLands/music.php?mapID=' + this.mapId;
-            axios.get(url).then(function(response) {
-                
-                console.log(response);
-                let youtubeId = response.data[0]['youtubeId'];
-                let HTML = '<iframe width="560" height="315" src="https://www.youtube.com/embed/' + youtubeId + '?autoplay=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+            let song = "";
+            let self = this;
+            setInterval(function() {
+                axios.get(url).then(function(response) {
+                    console.log("music php response", response)
+                    
+                    // todo
+                    let parsedSong = response.data[0]['youtubeId'];
+                    console.log("parsedSong", parsedSong, "song", song);
+                    if (song !== parsedSong) {
+                        console.log("playing song", parsedSong);
+                        let audio = new Audio(parsedSong);
 
-                $("#music-stream").html(HTML);
-                console.log(response.data);
-            }).catch(function(error) {
-                console.log(error);
-            });
+                        document.body.addEventListener("mousemove", function () {
+                            audio.play();
+                        })
+                        song = parsedSong;
+                    }
+    
+                }).catch(function(error) {
+                    console.log(error);
+                });
+
+            }, 1000);
+
         },        
 
         _loadMap: function(useWorker) {
