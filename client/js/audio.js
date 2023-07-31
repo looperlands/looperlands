@@ -47,21 +47,28 @@ define(['area'], function(Area) {
                 this.enabled = false; // Disable audio on Safari Windows
             }
         },
+
+        disable: function() {
+            this.enabled = false;
+
+            if(this.currentMusic) {
+                this.resetMusic(this.currentMusic);
+            }
+        },
+
+        enable: function() {
+            this.enabled = false;
+
+            if(this.currentMusic) {
+                this.resetMusic(this.currentMusic);
+            }
+        },        
     
         toggle: function() {
             if(this.enabled) {
-                this.enabled = false;
-            
-                if(this.currentMusic) {
-                    this.resetMusic(this.currentMusic);
-                }
+                this.disable();
             } else {
-                this.enabled = true;
-            
-                if(this.currentMusic) {
-                    this.currentMusic = null;
-                }
-                this.updateMusic();
+                this.enable();
             }
         },
     
