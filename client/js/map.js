@@ -39,9 +39,7 @@ define(['jquery', 'area'], function($, Area) {
                     let mp3URL = response.data[0]['mp3URL'];
 
                     if(mp3URL === 'null') {
-                        if (!self.game.audioManager.enabled) {
-                            self.game.audioManager.enable();
-                        }
+                        audio.pause();
                         return;
                     }
 
