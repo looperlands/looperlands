@@ -159,7 +159,8 @@ var Properties = {
         },
         hp: 500,
         armor: 25,
-        weapon: 4
+        weapon: 4,
+        aoedamage: 60
     },
 };
 
