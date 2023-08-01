@@ -60,6 +60,7 @@ define(['jquery', 'area'], function($, Area) {
                             audio.pause();
                         }
                         audio = new Audio(parsedSong);
+                        audio.loop = true;
 
                         document.body.addEventListener("mousemove", function () {
                             console.log("playing song", parsedSong);
