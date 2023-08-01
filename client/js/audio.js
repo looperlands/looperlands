@@ -57,11 +57,12 @@ define(['area'], function(Area) {
         },
 
         enable: function() {
-            this.enabled = false;
+            this.enabled = true;
 
             if(this.currentMusic) {
-                this.resetMusic(this.currentMusic);
+                this.currentMusic = null;
             }
+            this.updateMusic();
         },        
     
         toggle: function() {
