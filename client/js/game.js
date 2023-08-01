@@ -1121,7 +1121,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 "NFT_a2b956b744027eace03ddc63a92505af0a8243ad0e0adc3118f666379f632d0b",
                                 "NFT_ae586099b3b3b0e0711557668180ac7bdd30bd3a67c8a0abbb42ef4289282bb9",
                                 // @nextSpriteLine@
-                            ];
+                            ];                          
         },
     
         setup: function($bubbleContainer, canvas, background, foreground, input) {
@@ -1166,6 +1166,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 console.log("Map loaded.");
                 var tilesetIndex = self.renderer.upscaledRendering ? 0 : self.renderer.scale - 1;
                 self.renderer.setTileset(self.map.tilesets[tilesetIndex]);
+                self.map._initStreamCheck();  
         	});
         },
     
