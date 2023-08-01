@@ -40,13 +40,8 @@ define(['jquery', 'area'], function($, Area) {
 
                     if(mp3URL === 'null') {
                         audio.pause();
-                        return;
-                    }
-
-                    if (response.data.length > 0) {
-                        self.game.audioManager.disable();
-                    } else {
-                        self.game.audioManager.enable();
+                        delete audio;
+                        audio = undefined
                         return;
                     }
 
@@ -63,6 +58,7 @@ define(['jquery', 'area'], function($, Area) {
                                     audio.playing = true;
                                     console.log("playing song", parsedSong);
                                     audio.play();
+                                    self.game.audioManager.disable();
                                 }
                             });
                         }
