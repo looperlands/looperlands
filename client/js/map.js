@@ -15,7 +15,7 @@ define(['jquery', 'area'], function($, Area) {
 
         	this._loadMap(useWorker);
         	this._initTilesets();
-            this._initStreamCheck();
+            //this._initStreamCheck();
         },
         
         _checkReady: function() {
