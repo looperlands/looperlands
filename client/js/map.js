@@ -54,16 +54,19 @@ define(['jquery', 'area'], function($, Area) {
                     //console.log("parsedSong", parsedSong, "song", song);
                     if (song !== parsedSong) {
 
-                        if (audio !== undefined) {
-                            audio.pause();
+                        if (audio === undefined) {
+                            audio = new Audio(parsedSong);
+                            audio.loop = true;
+    
+                            document.body.addEventListener("mousemove", function () {
+                                if (audio.playing === undefined) {
+                                    audio.playing = true;
+                                    console.log("playing song", parsedSong);
+                                    audio.play();
+                                }
+                            });
                         }
-                        audio = new Audio(parsedSong);
-                        audio.loop = true;
 
-                        document.body.addEventListener("mousemove", function () {
-                            console.log("playing song", parsedSong);
-                            audio.play();
-                        })
                         song = parsedSong;
                     }
     
