@@ -34,36 +34,38 @@ define(['jquery', 'area'], function($, Area) {
             let audio;
             setInterval(function() {
                 axios.get(url).then(function(response) {
-                    console.log("music php response", response)
-
                     let mp3URL = response.data[0]['mp3URL'];
 
-                    if(mp3URL === 'null') {
+                    if(mp3URL === 'null' && audio !== undefined) {
                         audio.pause();
                         delete audio;
-                        audio = undefined
                         return;
                     }
 
-                    let parsedSong = response.data[0]['mp3URL'];
-                    //console.log("parsedSong", parsedSong, "song", song);
-                    if (song !== parsedSong) {
+                    if (song !== mp3URL) {
+  
+                        if (audio !== undefined) {
+                            audio.pause();
+                        }
+                        audio = new Audio(mp3URL);
+                        audio.loop = true;
 
-                        if (audio === undefined) {
-                            audio = new Audio(parsedSong);
-                            audio.loop = true;
-    
-                            document.body.addEventListener("mousemove", function () {
-                                if (audio.playing === undefined) {
-                                    audio.playing = true;
-                                    console.log("playing song", parsedSong);
+                        document.body.addEventListener("mousemove", function () {
+                            if (audio.playing === undefined) {
+                                audio.playing = true;
+                                console.log("playing song", mp3URL);
+                                try {
                                     audio.play();
                                     self.game.audioManager.disable();
+                                } catch (e) {
+                                    song = undefined;
+                                    audio = undefined;
+                                    console.log(e);
                                 }
-                            });
-                        }
+                            }
+                        });
 
-                        song = parsedSong;
+                        song = mp3URL;
                     }
     
                 }).catch(function(error) {
