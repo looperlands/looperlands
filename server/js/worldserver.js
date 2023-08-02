@@ -605,6 +605,9 @@ module.exports = World = cls.Class.extend({
                 let allDmgTaken = mob.dmgTakenArray.reduce((partialSum, currElem) => partialSum + currElem.dmg, 0);
                 mob.dmgTakenArray.forEach( function(arrElem) { 
                     let accomplice = self.getEntityById(arrElem.id);
+                    if (accomplice === undefined) {
+                        return;
+                    }
                     let accompliceDmg = arrElem.dmg;
                     if (accomplice.type === "player" && allDmgTaken > 0 && accompliceDmg > 0) {
                         let accompliceShare = Formulas.xpShare(xp, allDmgTaken, accompliceDmg);
