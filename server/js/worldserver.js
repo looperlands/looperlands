@@ -586,7 +586,6 @@ module.exports = World = cls.Class.extend({
                 let kind = Types.getKindAsString(mob.kind);
                 let xp = Formulas.xp(Properties[kind]);
                 this.handleRedPacket(mob, kind);
-                this.pushToPlayer(attacker, new Messages.Kill(mob, xp));
                 this.pushToAdjacentGroups(mob.group, mob.despawn());
                 this.pushToGroup(mob.group, mob.despawn());
 
@@ -602,9 +601,17 @@ module.exports = World = cls.Class.extend({
                     this.pushToAdjacentGroups(mob.group, mob.drop(item));
                     this.handleItemDespawn(item);
                 }
-                if (attacker.type === "player") {
-                    attacker.handleExperience(xp);
-                }
+                
+                let allDmgTaken = mob.dmgTakenArray.reduce((partialSum, currElem) => partialSum + currElem.dmg, 0);
+                mob.dmgTakenArray.forEach( function(arrElem) { 
+                    let accomplice = self.getEntityById(arrElem.id);
+                    let accompliceDmg = arrElem.dmg;
+                    if (accomplice.type === "player" && allDmgTaken > 0 && accompliceDmg > 0) {
+                        let accompliceShare = Formulas.xpShare(xp, allDmgTaken, accompliceDmg);
+                        accomplice.handleExperience(accompliceShare);
+                        self.pushToPlayer(accomplice, new Messages.Kill(mob, accompliceShare));
+                    }
+                })
             }
     
             if(entity.type === "player") {

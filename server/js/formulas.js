@@ -109,6 +109,10 @@ Formulas.calculatePercentageToNextLevel = function (experience) {
     }
 }
 
+Formulas.xpShare = function (xp, allDmgTaken, partialDmgTaken) {
+    let xpShare = Math.round((xp * partialDmgTaken) / allDmgTaken);
+    return xpShare;
+}
 
 if (!(typeof exports === 'undefined')) {
     module.exports = Formulas;
