@@ -605,6 +605,10 @@ module.exports = World = cls.Class.extend({
                 let allDmgTaken = mob.dmgTakenArray.reduce((partialSum, currElem) => partialSum + currElem.dmg, 0);
                 mob.dmgTakenArray.forEach( function(arrElem) { 
                     let accomplice = self.getEntityById(arrElem.id);
+                    if (accomplice === undefined) {
+                        discord.sendToDevChannel("Undefined accomplice ID: " + arrElem.id + ", registered DMG: " + arrElem.dmg);
+                        return;
+                    }
                     let accompliceDmg = arrElem.dmg;
                     if (accomplice.type === "player" && allDmgTaken > 0 && accompliceDmg > 0) {
                         let accompliceShare = Formulas.xpShare(xp, allDmgTaken, accompliceDmg);
@@ -1006,8 +1010,7 @@ module.exports = World = cls.Class.extend({
                 if (nearbyEntity.type === 'player') {
                     let distance = Utils.distanceTo(mob.x, mob.y, nearbyEntity.x, nearbyEntity.y);
                     if (distance <= aoeRange) {
-                        nearbyEntity.receiveDamage(aoeDmg, mob.id);
-                        self.handleHurtEntity(nearbyEntity, mob, aoeDmg);
+                        nearbyEntity.handleHurt(mob, aoeDmg);
                     }
                 }
             })
