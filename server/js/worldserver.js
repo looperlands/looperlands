@@ -1009,8 +1009,7 @@ module.exports = World = cls.Class.extend({
                 if (nearbyEntity.type === 'player') {
                     let distance = Utils.distanceTo(mob.x, mob.y, nearbyEntity.x, nearbyEntity.y);
                     if (distance <= aoeRange) {
-                        nearbyEntity.receiveDamage(aoeDmg, mob.id);
-                        self.handleHurtEntity(nearbyEntity, mob, aoeDmg);
+                        nearbyEntity.handleHurt(mob, aoeDmg);
                     }
                 }
             })
