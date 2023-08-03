@@ -36,9 +36,11 @@ define(['jquery', 'area'], function($, Area) {
                 axios.get(url).then(function(response) {
                     let mp3URL = response.data[0]['mp3URL'];
 
-                    if(mp3URL === 'null' && audio !== undefined) {
-                        audio.pause();
-                        delete audio;
+                    if(mp3URL === 'null') {
+                        if (audio !== undefined) {
+                            audio.pause();
+                            delete audio;
+                        }
                         return;
                     }
 
