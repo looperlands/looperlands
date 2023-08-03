@@ -18,20 +18,37 @@ module.exports = Mob = Character.extend({
         this.respawnTimeout = null;
         this.returnTimeout = null;
         this.isDead = false;
+        this.dmgTakenArray = [];
     },
     
     destroy: function() {
         this.isDead = true;
         this.hatelist = [];
+        this.dmgTakenArray = [];
         this.clearTarget();
         this.updateHitPoints();
         this.resetPosition();
         
         this.handleRespawn();
     },
+
+    wasDamagedBy: function(playerId) {
+        return _.any(this.dmgTakenArray, function(obj) { 
+            return obj.id === playerId; 
+        });
+    },
     
     receiveDamage: function(points, playerId) {
         this.hitPoints -= points;
+
+        if(this.wasDamagedBy(playerId)) {
+            _.detect(this.dmgTakenArray, function(obj) {
+                return obj.id === playerId;
+            }).dmg += points;
+        }
+        else {
+            this.dmgTakenArray.push({ id: playerId, dmg: points });
+        }
     },
     
     hates: function(playerId) {
@@ -89,7 +106,8 @@ module.exports = Mob = Character.extend({
     
     forgetPlayer: function(playerId, duration) {
         this.hatelist = _.reject(this.hatelist, function(obj) { return obj.id === playerId; });
-        
+        this.dmgTakenArray = _.reject(this.dmgTakenArray, function(obj) { return obj.id === playerId; });
+
         if(this.hatelist.length === 0) {
             this.returnToSpawningPosition(duration);
         }
@@ -97,6 +115,7 @@ module.exports = Mob = Character.extend({
     
     forgetEveryone: function() {
         this.hatelist = [];
+        this.dmgTakenArray = [];
         this.returnToSpawningPosition(1);
     },
     

@@ -15,6 +15,7 @@ define(['jquery', 'area'], function($, Area) {
 
         	this._loadMap(useWorker);
         	this._initTilesets();
+            //this._initStreamCheck();
         },
         
         _checkReady: function() {
@@ -25,6 +26,52 @@ define(['jquery', 'area'], function($, Area) {
         	    }
         	}
         },
+
+        _initStreamCheck: function() {
+            let url = 'https://loopworms.io/DEV/LooperLands/music.php?mapID=' + this.mapId;
+            let song = "";
+            let self = this;
+            let audio;
+            setInterval(function() {
+                axios.get(url).then(function(response) {
+                    console.log("music php response", response)
+
+                    let mp3URL = response.data[0]['mp3URL'];
+
+                    if(mp3URL === 'null') {
+                        audio.pause();
+                        delete audio;
+                        audio = undefined
+                        return;
+                    }
+
+                    let parsedSong = response.data[0]['mp3URL'];
+                    //console.log("parsedSong", parsedSong, "song", song);
+                    if (song !== parsedSong) {
+
+                        if (audio === undefined) {
+                            audio = new Audio(parsedSong);
+                            audio.loop = true;
+    
+                            document.body.addEventListener("mousemove", function () {
+                                if (audio.playing === undefined) {
+                                    audio.playing = true;
+                                    console.log("playing song", parsedSong);
+                                    audio.play();
+                                    self.game.audioManager.disable();
+                                }
+                            });
+                        }
+
+                        song = parsedSong;
+                    }
+    
+                }).catch(function(error) {
+                    console.log(error);
+                });
+
+            }, 1000);
+        },        
 
         _loadMap: function(useWorker) {
         	var self = this,

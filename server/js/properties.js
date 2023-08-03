@@ -151,7 +151,17 @@ var Properties = {
         hp: 100,
         armor: 2,
         weapon: 3
-    }
+    },
+
+    minimag: {
+        drops: {
+            flask: 50
+        },
+        hp: 500,
+        armor: 25,
+        weapon: 4,
+        aoedamage: 60
+    },
 };
 
 Properties.getArmorLevel = function(kind) {
