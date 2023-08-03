@@ -606,6 +606,7 @@ module.exports = World = cls.Class.extend({
                 mob.dmgTakenArray.forEach( function(arrElem) { 
                     let accomplice = self.getEntityById(arrElem.id);
                     if (accomplice === undefined) {
+                        discord.sendToDevChannel("Undefined accomplice ID: " + arrElem.id + ", registered DMG: " + arrElem.dmg);
                         return;
                     }
                     let accompliceDmg = arrElem.dmg;
