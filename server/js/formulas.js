@@ -29,9 +29,13 @@ Formulas.hp = function (level) {
 };
 
 Formulas.xp = function (mobProperties) {
-    let baseXp = (Math.round(Math.round((mobProperties.hp + mobProperties.armor + mobProperties.weapon) / 2) / 10) * 10) / 2;
-    let xp = baseXp * XP_MULTIPLIER;
-    return xp;
+    if (mobProperties.xp != undefined) {
+        return mobProperties.xp;
+    } else {
+        let baseXp = (Math.round(Math.round((mobProperties.hp + mobProperties.armor + mobProperties.weapon) / 2) / 10) * 10) / 2;
+        let xp = baseXp * XP_MULTIPLIER;
+        return xp;
+    }
 }
 
 Formulas.setXPMultiplier = function (multiplier, timeout) {
