@@ -165,12 +165,24 @@ define(['mob', 'timer'], function(Mob, Timer) {
             init: function(id) {
                 this._super(id, Types.Entities.SLIME);
                 this.moveSpeed = 350;
-                this.idleSpeed = 700;
+                this.idleSpeed = 1300;
                 this.shadowOffsetY = -2;
                 this.isAggressive = false;
                 this.aggroRange = 2;
             }
         }),
+
+        Spider: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.SPIDER);
+                this.moveSpeed = 350;
+                this.idleSpeed = 700;
+                this.shadowOffsetY = -2;
+                this.isAggressive = true;
+                this.aggroRange = 3;
+            }
+        }),
+
 
         Minimag: Mob.extend({
             init: function(id) {

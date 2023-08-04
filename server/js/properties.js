@@ -153,6 +153,16 @@ var Properties = {
         weapon: 3
     },
 
+    spider: {
+        drops: {
+            flask: 40,
+        },
+        hp: 300,
+        armor: 4,
+        weapon: 3
+    },
+
+
     minimag: {
         drops: {
             flask: 50

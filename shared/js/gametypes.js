@@ -50,6 +50,7 @@ Types = {
         DEATHKNIGHT: 14,
         SLIME: 200001,
         MINIMAG: 200002,
+        SPIDER: 200003,
         
         // Armors
         FIREFOX: 20,
@@ -1195,6 +1196,7 @@ var kinds = {
     skeleton2: [Types.Entities.SKELETON2, "mob"],
     boss: [Types.Entities.BOSS, "mob"],
     slime: [Types.Entities.SLIME, "mob"],
+    spider: [Types.Entities.SPIDER, "mob"],
     minimag: [Types.Entities.MINIMAG, "mob"],
 
     sword1: [Types.Entities.SWORD1, "weapon"],
