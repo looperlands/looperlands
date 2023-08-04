@@ -150,7 +150,8 @@ var Properties = {
         },
         hp: 100,
         armor: 2,
-        weapon: 3
+        weapon: 3,
+        xp: 1
     },
 
     minimag: {
