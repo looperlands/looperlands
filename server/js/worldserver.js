@@ -605,10 +605,13 @@ module.exports = World = cls.Class.extend({
                 let allDmgTaken = mob.dmgTakenArray.reduce((partialSum, currElem) => partialSum + currElem.dmg, 0);
                 mob.dmgTakenArray.forEach( function(arrElem) { 
                     let accomplice = self.getEntityById(arrElem.id);
+                    /* Occasionally the entity is not found based on the ID.
+                    The only outcome is that a share of mob's exp is given to nobody; 
+                    therefore it can simply be ignored by returning on undefined entity*/
                     if (accomplice === undefined) {
-                        discord.sendToDevChannel("Undefined accomplice ID: " + arrElem.id + ", registered DMG: " + arrElem.dmg);
                         return;
                     }
+
                     let accompliceDmg = arrElem.dmg;
                     if (accomplice.type === "player" && allDmgTaken > 0 && accompliceDmg > 0) {
                         let accompliceShare = Formulas.xpShare(xp, allDmgTaken, accompliceDmg);
