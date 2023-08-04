@@ -17,9 +17,6 @@ COPY . /opt/app
 WORKDIR /opt/app
 COPY shared/js/gametypes.js client/js/gametypes.js
 RUN npm install
-WORKDIR /opt/app/tools/maps
-RUN python2 ./export.py server onethread && python2 ./export.py client onethread
-WORKDIR /opt/app
 RUN mkdir -p client/config
 RUN python3 ./config_manager.py configs/prod_config_na.json
 RUN cp configs/config_build.json client/config
