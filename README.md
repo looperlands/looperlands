@@ -69,8 +69,11 @@ Run build-maps.sh command and commit
 ./build-maps.sh
 
 # Looks good, lets push it up to prod
+# Create a new branch if one is not already created
+git checkout -b new_branch
 git add .
 git commit -m "this is good!"
+git push
 
 # Looks bad, lets revert
 git checkout .
