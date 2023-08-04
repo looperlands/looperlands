@@ -53,3 +53,25 @@ This will print out a URL and open up the URL in your browser
 * Add the new mob to properties.js
 * Add the mob to mobset_oa.png. Reopen tiled and note the id.
 * Add the mob to the .tmx file noting the id in tiled. 
+
+# Build Maps
+Install python 2 and lxml
+```bash
+sudo apt-get install jq
+sudo apt-get install python2
+curl https://bootstrap.pypa.io/pip/2.7/get-pip.py --output get-pip.py
+python2 get-pip.py
+python2 -m pip install lxml
+```
+
+Run build-maps.sh command and commit
+```bash
+./build-maps.sh
+
+# Looks good, lets push it up to prod
+git add .
+git commit -m "this is good!"
+
+# Looks bad, lets revert
+git checkout .
+```
