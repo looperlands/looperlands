@@ -34,6 +34,9 @@ define(['jquery', 'area'], function($, Area) {
             let audio;
             setInterval(function() {
                 axios.get(url).then(function(response) {
+                    if (response.data === undefined || response.data.length === 0) {
+                        return;
+                    }
                     let mp3URL = response.data[0]['mp3URL'];
 
                     if(mp3URL === 'null') {
