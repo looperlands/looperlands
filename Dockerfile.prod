@@ -8,6 +8,7 @@ RUN apt-get update -yq \
     && apt-get install curl gnupg python2 -yq \
     && curl -sL https://deb.nodesource.com/setup_20.x | bash \
     && apt-get install nodejs -yq \
+    && apt-get install python3 -yq \
     && curl https://bootstrap.pypa.io/pip/2.7/get-pip.py --output get-pip.py \
     && python2 get-pip.py \
     && python2 -m pip install lxml
