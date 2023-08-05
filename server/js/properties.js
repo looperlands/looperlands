@@ -156,11 +156,11 @@ var Properties = {
 
     spider: {
         drops: {
-            flask: 40,
+            flask: 65,
         },
-        hp: 300,
-        armor: 4,
-        weapon: 3
+        hp: 2,
+        armor: 11,
+        weapon: 1
     },
 
 
