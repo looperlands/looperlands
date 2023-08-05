@@ -15,7 +15,7 @@ RUN python2 -m pip install lxml
 COPY . /opt/app
 WORKDIR /opt/app
 COPY shared/js/gametypes.js client/js/gametypes.js
-RUN npm install
+RUN npm ci
 WORKDIR /opt/app/tools/maps
 RUN python2 ./export.py server multi && python2 ./export.py client multi
 WORKDIR /opt/app
