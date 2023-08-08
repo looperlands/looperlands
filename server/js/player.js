@@ -104,7 +104,7 @@ module.exports = Player = Character.extend({
                 self.hasEnteredGame = true;
                 self.isDead = false;
                 discord.sendMessage(`Player ${self.name} joined the game.`);
-                
+                dao.saveAvatarMapId(playerCache.nftId, playerCache.mapId);
             }
             else if(action === Types.Messages.WHO) {
                 message.shift();

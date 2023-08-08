@@ -84,6 +84,7 @@ saveCharacterData = async function (wallet, nft, saveGame) {
       'Content-Type': 'application/json'
     }
   };
+
   try {
     const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/Save.php?NFTID=${nft}&WalletID=${wallet}`
     const responseData = await axios.post(url, saveGame, options);
@@ -235,6 +236,24 @@ exports.loadNFTWeapon = async function (wallet, nft) {
   } catch (error) {
     console.error("loadNFTWeapon", error);
     return { "error": "Error loading weapon" };
+  }
+}
+
+exports.saveAvatarMapId = async function(nft, mapId) {
+  const options = {
+    headers: {
+      'X-Api-Key': API_KEY
+    }
+  }
+  console.log(nft, mapId, options);
+  const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/SaveMap.php?NFTID=${nft}&mapId=${mapId}`;
+  try {
+    const response = await axios.post(url, options);
+    console.log("ResponseData from Loopworms: ", response.status, response.text, response.data);
+    return response.data;
+  } catch (error) {
+    console.error("saveAvatarMapId", error);
+    return { "error": "Error saving avatar map id" };
   }
 }
 
