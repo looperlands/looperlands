@@ -245,11 +245,9 @@ exports.saveAvatarMapId = async function(nft, mapId) {
       'X-Api-Key': API_KEY
     }
   }
-  console.log(nft, mapId, options);
   const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/SaveMap.php?NFTID=${nft}&mapId=${mapId}`;
   try {
-    const response = await axios.post(url, options);
-    console.log("ResponseData from Loopworms: ", response.status, response.text, response.data);
+    const response = await axios.get(url, options);
     return response.data;
   } catch (error) {
     console.error("saveAvatarMapId", error);
