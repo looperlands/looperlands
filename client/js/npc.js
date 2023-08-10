@@ -71,12 +71,9 @@ define(['character'], function(Character) {
         
         "scientist": [
             "Greetings, Looper.",
-            "I am the inventor of these two potions.",
-            "The red one will replenish your health points...",
-            "The blue one will make you invincible with the power of Loopring...",
-            "But it only lasts for a short while.",
-            "So make good use of it!",
-            "Now if you'll excuse me, I need to get back to my experiments...",
+            "I'm Cobmin (Jacob Huber), the PvP champion of LooperLands",
+            'I also made <a href="https://github.com/cobmin/Maize" target="blank">Maize</a>',
+            "It handles analytics and airdrops for NFTs for Loopring",
             'Follow <a href="https://loopworms.io/DEV/LooperLands/QR/qr.php?NPC=scientist" target="blank">this link</a> - it might be a Red Packet!',
             "Now go about your adventure, Looper!"
         ],
