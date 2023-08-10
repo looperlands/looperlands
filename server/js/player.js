@@ -346,6 +346,7 @@ module.exports = Player = Character.extend({
             else if(action === Types.Messages.CHECK) {
                 var checkpoint = self.server.map.getCheckpoint(message[1]);
                 if(checkpoint) {
+                    dao.saveAvatarCheckpointId(self.nftId, checkpoint.id);
                     self.lastCheckpoint = checkpoint;
                 }
             }
