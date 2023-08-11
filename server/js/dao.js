@@ -255,6 +255,24 @@ exports.saveAvatarMapId = async function(nft, mapId) {
   }
 }
 
+exports.saveAvatarCheckpointId = async function(nft, checkpointId) {
+
+  //console.log("saveAvatarCheckpointId", nft, checkpointId);
+  const options = {
+    headers: {
+      'X-Api-Key': API_KEY
+    }
+  }
+  const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/SaveCheckpoint.php?NFTID=${nft}&checkpointId=${checkpointId}`;
+  try {
+    const response = await axios.get(url, options);
+    return response.data;
+  } catch (error) {
+    console.error("saveAvatarCheckpoint", error);
+    return { "error": "Error saving avatar checkpoint id" };
+  }
+}
+
 exports.updateExperience = updateExperience;
 exports.saveCharacterData = saveCharacterData;
 exports.getCharacterData = getCharacterData;
