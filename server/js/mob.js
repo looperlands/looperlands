@@ -17,6 +17,7 @@ module.exports = Mob = Character.extend({
         this.hatelist = [];
         this.respawnTimeout = null;
         this.returnTimeout = null;
+        this.specialTimeout = null;
         this.isDead = false;
         this.dmgTakenArray = [];
     },
@@ -28,7 +29,8 @@ module.exports = Mob = Character.extend({
         this.clearTarget();
         this.updateHitPoints();
         this.resetPosition();
-        
+        this.clearSpecialInterval();
+
         this.handleRespawn();
     },
 
@@ -110,6 +112,7 @@ module.exports = Mob = Character.extend({
 
         if(this.hatelist.length === 0) {
             this.returnToSpawningPosition(duration);
+            this.clearSpecialInterval();
         }
     },
     
@@ -117,6 +120,7 @@ module.exports = Mob = Character.extend({
         this.hatelist = [];
         this.dmgTakenArray = [];
         this.returnToSpawningPosition(1);
+        this.clearSpecialInterval();
     },
     
     drop: function(item) {
@@ -183,5 +187,10 @@ module.exports = Mob = Character.extend({
     
     distanceToSpawningPoint: function(x, y) {
         return Utils.distanceTo(x, y, this.spawningX, this.spawningY);
+    },
+
+    clearSpecialInterval: function() {
+        clearInterval(this.specialInterval);
+        this.specialInterval = null;
     }
 });

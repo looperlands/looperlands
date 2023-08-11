@@ -186,11 +186,11 @@ define(['character'], function(Character) {
         ],
 
         "miner": [
-            "Huh, looking for a red packet?",
-            "I may have something better.",
-            "I keep hearing noises behind this wall. I bet these Minimags guard their treasure.",
-            "It is thin enough to dig through, I just need a few days!",
-            "Meanwhile, keep these pesky Minimags away from me! I can't work under these conditions!"
+            "WHAT HAVE WE UNLEASHED?",
+            "THE MEGAMAG IS HERE!",
+            "Dug our own grave...",
+            "Stay away from those caves Looper!",
+            "It isn't safe out there..."
         ]
     };
 

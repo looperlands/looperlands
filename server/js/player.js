@@ -154,9 +154,15 @@ module.exports = Player = Character.extend({
                     }
                 }
             }
-            else if(action === Types.Messages.AGGRO) {
+            else if(action === Types.Messages.AGGRO) {  
                 if(self.move_callback) {
                     self.server.handleMobHate(message[1], self.id, 5);
+
+                    // Handle special attack timeouts on encounter start
+                    let mob = self.server.getEntityById(message[1]);
+                    if(mob) {
+                        self.server.handleMobSpecial(mob);
+                    }
                 }
             }
             else if(action === Types.Messages.ATTACK) {

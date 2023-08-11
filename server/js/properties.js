@@ -163,7 +163,6 @@ var Properties = {
         weapon: 1
     },
 
-
     minimag: {
         drops: {
             flask: 50
@@ -171,8 +170,30 @@ var Properties = {
         hp: 500,
         armor: 25,
         weapon: 4,
-        aoedamage: 60
+        aoe: {
+            damage: 60,
+            ondeath: true
+        }
     },
+
+    megamag: {
+        drops: {
+            burger: 100
+        },
+        hp: 15000,
+        armor: 50,
+        weapon: 8,
+        aoe: {
+            damage: 100,
+            range: 2
+        },
+        redpacket: true,
+        xp: 10000,  
+        expMultiplier: {
+            duration: 900
+        },
+        messages: ['Perish!', 'Be gone!', 'Burn!', 'Wither!', 'Suffer!']
+    }
 };
 
 Properties.getArmorLevel = function(kind) {

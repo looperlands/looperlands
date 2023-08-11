@@ -36,6 +36,7 @@ define(['player', 'entityfactory', 'lib/bison'], function(Player, EntityFactory,
             this.handlers[Types.Messages.KILL] = this.receiveKill;
             this.handlers[Types.Messages.HP] = this.receiveHitPoints;
             this.handlers[Types.Messages.BLINK] = this.receiveBlink;
+            this.handlers[Types.Messages.MOBDOSPECIAL] = this.receiveMobDoSpecial;
         
             this.useBison = false;
             this.enable();
@@ -374,6 +375,14 @@ define(['player', 'entityfactory', 'lib/bison'], function(Player, EntityFactory,
                 this.blink_callback(id);
             }
         },
+
+        receiveMobDoSpecial: function(data) {
+            var id = data[1];
+        
+            if(this.mobDoSpecial_callback) {
+                this.mobDoSpecial_callback(id);
+            }
+        },
         
         onDispatched: function(callback) {
             this.dispatched_callback = callback;
@@ -465,6 +474,10 @@ define(['player', 'entityfactory', 'lib/bison'], function(Player, EntityFactory,
     
         onItemBlink: function(callback) {
             this.blink_callback = callback;
+        },
+
+        onMobDoSpecial: function(callback) {
+            this.mobDoSpecial_callback = callback;
         },
 
         sendHello: function(player) {

@@ -28,7 +28,8 @@ Types = {
         BLINK: 24,
         OPEN: 25,
         CHECK: 26,
-        EQUIP_INVENTORY: 27
+        EQUIP_INVENTORY: 27,
+        MOBDOSPECIAL: 28
     },
     
     Entities: {
@@ -51,6 +52,7 @@ Types = {
         SLIME: 200001,
         MINIMAG: 200002,
         SPIDER: 200003,
+        MEGAMAG: 200004,
         
         // Armors
         FIREFOX: 20,
@@ -1265,6 +1267,7 @@ var kinds = {
     slime: [Types.Entities.SLIME, "mob"],
     spider: [Types.Entities.SPIDER, "mob"],
     minimag: [Types.Entities.MINIMAG, "mob"],
+    megamag: [Types.Entities.MEGAMAG, "mob"],
 
     sword1: [Types.Entities.SWORD1, "weapon"],
     sword2: [Types.Entities.SWORD2, "weapon"],
@@ -2617,3 +2620,4 @@ if(!(typeof exports === 'undefined')) {
 
 Types.timeouts = {};
 Types.timeouts[Types.Entities.FIREFOX] = 5000;
+Types.timeouts[Types.Entities.MEGAMAG] = 12000;
