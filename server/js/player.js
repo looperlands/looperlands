@@ -84,12 +84,20 @@ module.exports = Player = Character.extend({
                 self.equipWeapon(message[3]);
                 self.orientation = Utils.randomOrientation();
 
+                if (playerCache.checkpointId !== undefined) {
+                    let checkpoint = self.server.map.getCheckpoint(playerCache.checkpointId);
+                    if (checkpoint !== undefined) {
+                        self.lastCheckpoint = checkpoint;
+                    }
+                }
+
                 if (playerCache.x !== undefined && playerCache.y !== undefined) {
                     self.setPosition(playerCache.x, playerCache.y);
                 } else {
                     self.updatePosition();
                 }
-                
+
+
                 self.server.addPlayer(self);
                 self.server.enter_callback(self);
 
@@ -346,6 +354,7 @@ module.exports = Player = Character.extend({
             else if(action === Types.Messages.CHECK) {
                 var checkpoint = self.server.map.getCheckpoint(message[1]);
                 if(checkpoint) {
+                    dao.saveAvatarCheckpointId(self.nftId, checkpoint.id);
                     self.lastCheckpoint = checkpoint;
                 }
             }
