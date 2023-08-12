@@ -183,7 +183,6 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
 
-
         Minimag: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.MINIMAG);
@@ -197,7 +196,53 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
 
-    };
+        Megamag: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.MEGAMAG);
+                this.idleSpeed = 1000;
+                this.restoreDefaultMovement();
+                this.aggroRange = 4;
+                this.atkSpeed = 100;
+        		this.setAttackRate(2000);
+                this.deathAnimated = true;
+            },
 
+            restoreDefaultMovement: function () {
+                this.moveSpeed = 250;
+                this.walkSpeed = 150;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            },
+
+            doSpecial: function() {
+                let self=this;
+
+                self.moveSpeed = 100; // Charge at the target
+                self.walkSpeed = 75; 
+                if (self.hasTarget()){
+                    self.target.root();
+                }
+                
+                setTimeout(function () {
+                    self.target.unroot();
+
+                    self.root();
+                    self.animationLock = true; // Prevent special animation from being cancelled by movement
+                    self.animate("special", 150, 1, function () {
+                        self.animationLock = false;
+                        self.unroot();
+                        self.restoreDefaultMovement();
+                        self.idle();
+                    });
+                }, 2000); // Change this duration also in server/worldserver.js      
+            }
+        }) 
+    };
     return Mobs;
 });

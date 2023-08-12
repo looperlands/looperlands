@@ -88,6 +88,10 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest'], function(Mobs, Items, NPCs
         return new Mobs.Minimag(id);
     };
 
+    EntityFactory.builders[Types.Entities.MEGAMAG] = function(id) {
+        return new Mobs.Megamag(id);
+    };
+
     //===== items ======
  
     EntityFactory.builders[Types.Entities.SWORD2] = function(id) {

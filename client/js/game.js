@@ -66,7 +66,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             // sprites
             this.spriteNames = ["hand", "sword", "loot", "target", "talk", "sparks", "shadow16", "rat", "skeleton", "skeleton2", "spectre", "boss", "deathknight", 
                                 "ogre", "crab", "snake", "eye", "bat", "goblin", "wizard", "guard", "king", "villagegirl", "villager", "coder", "agent", "rick", "scientist", "nyan", "priest", 
-                                "king2", "goose", "tanashi", "slime","spider", "minimag", "miner",
+                                "king2", "goose", "tanashi", "slime","spider", "minimag", "miner", "megamag",
                                 "sorcerer", "octocat", "beachnpc", "forestnpc", "desertnpc", "lavanpc", "clotharmor", "leatherarmor", "mailarmor",
                                 "platearmor", "redarmor", "goldenarmor", "firefox", "death", "sword1", "axe", "chest",
                                 "sword2", "redsword", "bluesword", "goldensword", "item-sword2", "item-axe", "item-redsword", "item-bluesword", "item-goldensword", "item-leatherarmor", "item-mailarmor", 
@@ -2056,7 +2056,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 });
             
                 self.player.onAggro(function(mob) {
-                    if(!mob.isWaitingToAttack(self.player) && !self.player.isAttackedBy(mob)) {
+                    if(!mob.isWaitingToAttack(self.player) && !self.player.isAttackedBy(mob) && !self.player.isDead) {
                         self.player.log_info("Aggroed by " + mob.id + " at ("+self.player.gridX+", "+self.player.gridY+")");
                         self.client.sendAggro(mob);
                         mob.waitToAttack(self.player);
@@ -2777,6 +2777,14 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     }
                     if(self.disconnect_callback) {
                         self.disconnect_callback(message);
+                    }
+                });
+
+                self.client.onMobDoSpecial(function(id) {
+                    let mob = self.getEntityById(id);
+
+                    if (typeof mob.doSpecial === 'function') {
+                        mob.doSpecial();
                     }
                 });
             

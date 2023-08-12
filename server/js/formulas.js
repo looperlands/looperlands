@@ -9,6 +9,8 @@ const EXPERIENCE_GROWTH = 3;
 const BASE_EXPERIENCE = 1000;
 
 let XP_MULTIPLIER = 1;
+let XP_END_TIME = 0;
+let XP_TIMEOUT = null;
 
 Formulas.dmg = function (weaponLevel, armorLevel) {
     var dealt = weaponLevel * Utils.randomInt(5, 10),
@@ -39,17 +41,24 @@ Formulas.xp = function (mobProperties) {
 }
 
 Formulas.setXPMultiplier = function (multiplier, timeout) {
+    // Only set multiplier if the duration is greater than the current bonus
+    let calledEndTime = Date.now() + timeout * 1000;
     let duration = moment.duration(timeout * 1000);
 
-    discord.sendMessage("XP is " + multiplier + "x for " + duration.humanize());
-    console.log("XP multiplier set to " + multiplier + " for " + timeout + " seconds");
-    
-    XP_MULTIPLIER = multiplier;
-    setTimeout(function () {
-        discord.sendMessage("XP is back to normal");
-        console.log("XP multiplier reset to 1");
-        XP_MULTIPLIER = 1;
-    }, timeout * 1000);
+    if (calledEndTime > XP_END_TIME)
+    {
+        discord.sendMessage("XP is " + multiplier + "x for " + duration.humanize());
+        console.log("XP multiplier set to " + multiplier + " for " + timeout + " seconds");
+        
+        XP_MULTIPLIER = multiplier;
+        XP_END_TIME = calledEndTime;
+        clearTimeout(XP_TIMEOUT);
+        XP_TIMEOUT = setTimeout(function () {
+            discord.sendMessage("XP is back to normal");
+            console.log("XP multiplier reset to 1");
+            XP_MULTIPLIER = 1;
+        }, timeout * 1000);
+    }
 }
 
 
