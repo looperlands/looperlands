@@ -145,10 +145,10 @@ var Properties = {
     },
 
     slime: {
-        hp: 350,
+        hp: 50,
         armor: 2,
-        weapon: 4,
-        xp: 1
+        weapon: 1,
+        xp: 10
     },
 
     spider: {
