@@ -3,14 +3,15 @@ if [ -z "$LOOPWORMS_API_KEY" ]
     echo "Missing LOOPWORMS_API_KEY environment variable"
     exit 1
 fi
-if [ $# -ne 4 ]; then
-    echo "Usage: $0 <walletId> <nftId> <mapId> <checkpointId>"
+if [ $# -ne 5 ]; then
+    echo "Usage: $0 <walletId> <nftId> <mapId> <checkpointId> <xp>"
     exit 1
 fi
 walletId=$1
 nftId=$2
 mapId=$3
 checkpointId=$4
+xp=$5
 echo $walletId $nftId $mapId $checkpointId
 sessionId=`curl -X POST -H "Content-Type: application/json" -H "x-api-key: $LOOPWORMS_API_KEY" -d "{\"walletId\": \"$walletId\", \"nftId\" : \"$nftId\", \"title\": \"Title 🏛️\", \"xp\":16240, \"mapId\": \"$mapId\", \"checkpointId\": \"$checkpointId\"}" http://127.0.0.1:8000/session | jq -r '.sessionId'`
 url=http://127.0.0.1:8000/?sessionId=$sessionId
