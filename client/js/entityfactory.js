@@ -80,6 +80,17 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest'], function(Mobs, Items, NPCs
         return new Mobs.Slime(id);
     };
 
+    EntityFactory.builders[Types.Entities.REDSLIME] = function(id) {
+        return new Mobs.Redslime(id);
+    };
+
+    EntityFactory.builders[Types.Entities.KINGSLIME] = function(id) {
+        return new Mobs.Kingslime(id);
+    };
+    EntityFactory.builders[Types.Entities.SILKSHADE] = function(id) {
+        return new Mobs.Silkshade(id);
+    };    
+
     EntityFactory.builders[Types.Entities.SPIDER] = function(id) {
         return new Mobs.Spider(id);
     };    

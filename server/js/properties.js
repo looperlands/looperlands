@@ -150,6 +150,29 @@ var Properties = {
         weapon: 1,
         xp: 10
     },
+    
+    kingslime: {
+        hp: 50,
+        armor: 2,
+        weapon: 1,
+        xp: 10
+    },
+
+    silkshade: {
+        hp: 1000,
+        armor: 2,
+        weapon: 1,
+        xp: 10
+    },
+
+    
+
+    redslime: {
+        hp: 50,
+        armor: 2,
+        weapon: 1,
+        xp: 10
+    },    
 
     spider: {
         drops: {

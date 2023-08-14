@@ -173,6 +173,42 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
 
+        Redslime: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.REDSLIME);
+                this.moveSpeed = 250;
+                this.idleSpeed = 700;
+                this.shadowOffsetY = -2;
+                this.isAggressive = true;
+                this.aggroRange = 1;
+                this.deathAnimated = true;
+            }
+        }),
+
+        Kingslime: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.KINGSLIME);
+                this.moveSpeed = 250;
+                this.idleSpeed = 700;
+                this.shadowOffsetY = -2;
+                this.isAggressive = true;
+                this.aggroRange = 1;
+                this.deathAnimated = true;
+            }
+        }),       
+        
+        Silkshade: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.SILKSHADE);
+                this.moveSpeed = 500;
+                this.idleSpeed = 700;
+                this.shadowOffsetY = -2;
+                this.isAggressive = true;
+                this.aggroRange = 3;
+                this.deathAnimated = true;
+            }
+        }),         
+
         Spider: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.SPIDER);

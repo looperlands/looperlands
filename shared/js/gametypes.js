@@ -51,7 +51,9 @@ Types = {
         SLIME: 200001,
         MINIMAG: 200002,
         SPIDER: 200003,
-        
+        KINGSLIME: 200004,
+        REDSLIME: 200005,
+        SILKSHADE: 200006,        
         // Armors
         FIREFOX: 20,
         CLOTHARMOR: 21,
@@ -1325,6 +1327,9 @@ var kinds = {
     skeleton2: [Types.Entities.SKELETON2, "mob"],
     boss: [Types.Entities.BOSS, "mob"],
     slime: [Types.Entities.SLIME, "mob"],
+    redslime: [Types.Entities.REDSLIME, "mob"],
+    kingslime: [Types.Entities.KINGSLIME, "mob"],    
+    silkshade: [Types.Entities.SILKSHADE, "mob"],      
     spider: [Types.Entities.SPIDER, "mob"],
     minimag: [Types.Entities.MINIMAG, "mob"],
 
