@@ -1,7 +1,7 @@
 {
 	"id": "kingslime",
-	"width": 48,
-	"height": 48,
+	"width": 64,
+	"height": 64,
 	"animations": {
 		"death": {
 			"length": 6,
@@ -44,6 +44,6 @@
 			"row": 9
 		}
 	},
-	"offset_x": -16,
-	"offset_y": -24
+	"offset_x": -24,
+	"offset_y": -32
 }
