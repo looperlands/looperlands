@@ -209,3 +209,13 @@ Messages.Blink = Message.extend({
                 this.item.id];
     }
 });
+
+Messages.MobDoSpecial = Message.extend({
+    init: function(mob) {
+        this.mob = mob;
+    },
+    serialize: function() {
+        return [Types.Messages.MOBDOSPECIAL,
+                this.mob.id];
+    }
+});
