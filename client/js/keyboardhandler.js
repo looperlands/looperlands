@@ -1,32 +1,40 @@
 class KeyBoardHandler {
     constructor(game) {
         this.keys = {
-            w: false,
-            a: false,
-            s: false,
-            d: false
+            w: 0,
+            a: 0,
+            s: 0,
+            d: 0
         };
         this.game = game;
+        this.interval = false;
 
         console.log("Created keyboard handler");
         
         document.addEventListener('keydown', (event) => this.handleKeyDown(event));
         document.addEventListener('keyup', (event) => this.handleKeyUp(event));
+        window.addEventListener('blur', this.handleBlur.bind(this));
     }
 
     handleKeyDown(event) {
         const key = event.key.toLowerCase();
         if (this.keys.hasOwnProperty(key)) {
-            this.keys[key] = true;
-            this.handleMovement();
+            this.keys[key] = 1;
+            if (!this.interval) {
+                this.handleMovement(); // Execute one instantly so there's no interval delay
+                this.interval = setInterval(this.handleMovement.bind(this), 25);
+            }
         }
     }
 
     handleKeyUp(event) {
         const key = event.key.toLowerCase();
         if (this.keys.hasOwnProperty(key)) {
-            this.keys[key] = false;
-            this.handleMovement();
+            this.keys[key] = 0;
+            if (this.interval && Object.values(this.keys).every((v) => v === 0)) {
+                clearInterval(this.interval);
+                this.interval = false;
+            }
         }
     }
 
@@ -36,17 +44,20 @@ class KeyBoardHandler {
         }
         var x = this.game.player.gridX;
         var y = this.game.player.gridY;
-        if (this.keys.w) {
-            this.game.click({x: x, y: y-1, keyboard: true});
+        this.game.click({ x: x + this.keys.d - this.keys.a, 
+                          y: y + this.keys.s - this.keys.w, 
+                          keyboard: true});
+    }
+
+    handleBlur() {
+        for (let k in this.keys) {
+            if(this.keys.hasOwnProperty(k)) {
+                this.keys[k] = 0;
+            }
         }
-        if (this.keys.a) {
-            this.game.click({x: x-1, y: y, keyboard: true});
-        }
-        if (this.keys.s) {
-            this.game.click({x: x, y: y+1, keyboard: true});
-        }
-        if (this.keys.d) {
-            this.game.click({x: x+1, y: y, keyboard: true});
+        if (this.interval) {
+            clearInterval(this.interval);
+            this.interval = false;
         }
     }
 }

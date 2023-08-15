@@ -38,6 +38,7 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
             this.isDead = false;
             this.attackingMode = false;
             this.followingMode = false;
+            this.isRooted = false;
 
             // Other
             this.deathAnimated = false;
@@ -71,7 +72,8 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
     	    var oriented = ['atk', 'walk', 'idle'];
     	        o = this.orientation;
             
-            if(!(this.currentAnimation && this.currentAnimation.name === "death")) { // don't change animation if the character is dying
+            if(!(this.currentAnimation && this.currentAnimation.name === "death") // don't change animation if the character is dying
+                && !(this.currentAnimation && this.currentAnimation.name === "special" && this.animationLock)) { // don't change animation if the character is doing a special
             	this.flipSpriteX = false;
         	    this.flipSpriteY = false;
 	    
@@ -113,15 +115,18 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
         moveTo_: function(x, y, callback) {
             this.destination = { gridX: x, gridY: y };
             this.adjacentTiles = {};
-        
-            if(this.isMoving()) {
-                this.continueTo(x, y);
-            }
-            else {
-                var path = this.requestPathfindingTo(x, y);
             
-                this.followPath(path);
-            }
+            if(!this.isRooted)
+            {
+                if(this.isMoving()) {
+                    this.continueTo(x, y);
+                }
+                else {
+                    var path = this.requestPathfindingTo(x, y);
+                
+                    this.followPath(path);
+                }
+        }   
         },
     
         requestPathfindingTo: function(x, y) {
@@ -556,6 +561,15 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
             else if (this.attackCooldown !== undefined && this.attackCooldown.duration !== rate) {
                 this.attackCooldown = new Timer(rate);
             }
+        },
+
+        root: function (){
+            this.stop();
+            this.isRooted = true;
+        },
+
+        unroot: function (){
+            this.isRooted = false;
         }
     });
     

@@ -584,41 +584,24 @@ module.exports = World = cls.Class.extend({
                     item = this.getDroppedItem(mob);
                 
                 let kind = Types.getKindAsString(mob.kind);
-                let xp = Formulas.xp(Properties[kind]);
                 this.handleRedPacket(mob, kind);
                 this.pushToAdjacentGroups(mob.group, mob.despawn());
                 this.pushToGroup(mob.group, mob.despawn());
-
-                // On death AoE explosion handling
-                let aoeDamage = Properties[kind].aoedamage;
-                if (aoeDamage !== undefined && aoeDamage > 0) {
-                    let aoeRadius = Properties[kind].aoeradius;
-                    this.doAoe(mob, aoeDamage, aoeRadius);
+                //On death AoE handling
+                let aoeProps = Properties[kind].aoe;
+                if (aoeProps !== undefined && aoeProps.ondeath) {
+                    this.doAoe(mob);
                 }
-
+                
                 // Despawn must be enqueued before the item drop
                 if(item) {
                     this.pushToAdjacentGroups(mob.group, mob.drop(item));
                     this.handleItemDespawn(item);
                 }
-                
-                let allDmgTaken = mob.dmgTakenArray.reduce((partialSum, currElem) => partialSum + currElem.dmg, 0);
-                mob.dmgTakenArray.forEach( function(arrElem) { 
-                    let accomplice = self.getEntityById(arrElem.id);
-                    /* Occasionally the entity is not found based on the ID.
-                    The only outcome is that a share of mob's exp is given to nobody; 
-                    therefore it can simply be ignored by returning on undefined entity*/
-                    if (accomplice === undefined) {
-                        return;
-                    }
 
-                    let accompliceDmg = arrElem.dmg;
-                    if (accomplice.type === "player" && allDmgTaken > 0 && accompliceDmg > 0) {
-                        let accompliceShare = Formulas.xpShare(xp, allDmgTaken, accompliceDmg);
-                        accomplice.handleExperience(accompliceShare);
-                        self.pushToPlayer(accomplice, new Messages.Kill(mob, accompliceShare));
-                    }
-                })
+                this.distributeExp(mob);
+                // Distribute exp first, so the multiplier doesnt apply to this kill (that would be OP)
+                this.handleExpMultiplierOnDeath(mob);
             }
     
             if(entity.type === "player") {
@@ -1001,22 +984,102 @@ module.exports = World = cls.Class.extend({
         return weaponInfo;
     },
 
-    doAoe: function(mob, aoeDmg, aoeRange) {
-        aoeRange = aoeRange !== undefined ? aoeRange : 1;
+    doAoe: function(mob) {
+        let kind = Types.getKindAsString(mob.kind);
+        let aoeProps = Properties[kind].aoe;
 
-        const group = this.groups[mob.group];
-        if (group !== undefined){
-            let self = this;
-            let entityIds = Object.keys(group.entities);
-            entityIds.forEach(function(id) {
-                let nearbyEntity = group.entities[id];
-                if (nearbyEntity.type === 'player') {
-                    let distance = Utils.distanceTo(mob.x, mob.y, nearbyEntity.x, nearbyEntity.y);
-                    if (distance <= aoeRange) {
-                        nearbyEntity.handleHurt(mob, aoeDmg);
-                    }
+        if (aoeProps !== undefined) {
+            let aoeDamage = aoeProps.damage;
+            let aoeRange = aoeProps.range !== undefined ? aoeProps.range : 1; //default AoE range is 1
+
+            if (aoeDamage !== undefined && aoeDamage > 0) {
+                const group = this.groups[mob.group];
+                if (group !== undefined){
+                    let entityIds = Object.keys(group.entities);
+
+                    entityIds.forEach(function(id) {
+                        let nearbyEntity = group.entities[id];
+                        if (nearbyEntity.type === 'player') {
+                            let distance = Utils.distanceTo(mob.x, mob.y, nearbyEntity.x, nearbyEntity.y);
+                            if (distance <= aoeRange) {
+                                nearbyEntity.handleHurt(mob, aoeDamage);
+                            }
+                        }
+                    })
                 }
-            })
+            }
         }
+    },
+
+    distributeExp: function(mob) {
+        let self=this;
+
+        let kind = Types.getKindAsString(mob.kind);
+        let xp = Formulas.xp(Properties[kind]);
+        let allDmgTaken = mob.dmgTakenArray.reduce((partialSum, currElem) => partialSum + currElem.dmg, 0);
+
+        mob.dmgTakenArray.forEach( function(arrElem) { 
+            let accomplice = self.getEntityById(arrElem.id);
+            /* Occasionally the entity is not found based on the ID.
+            The only outcome is that a share of mob's exp is given to nobody; 
+            therefore it can simply be ignored by returning on undefined entity*/
+            if (accomplice === undefined) {
+                return;
+            }
+
+            let accompliceDmg = arrElem.dmg;
+            if (accomplice.type === "player" && allDmgTaken > 0 && accompliceDmg > 0) {
+                let accompliceShare = Formulas.xpShare(xp, allDmgTaken, accompliceDmg);
+                accomplice.handleExperience(accompliceShare);
+                self.pushToPlayer(accomplice, new Messages.Kill(mob, accompliceShare));
+            }
+        })
+    },
+
+    handleExpMultiplierOnDeath: function(mob) {
+        let self=this;
+
+        let kind = Types.getKindAsString(mob.kind);
+        let expProps = Properties[kind].expMultiplier;
+        if (expProps !== undefined) {
+            let expDuration = expProps.duration;
+            let expMultiplier = expProps.multiplier !== undefined ? expProps.multiplier : 2; //default EXP multiplier is 2
+
+            if (expDuration !== undefined && expDuration > 0 &&
+                expMultiplier !== undefined && expMultiplier > 0) {
+                
+                let killersList = "";
+                mob.dmgTakenArray.forEach( function(arrElem) { 
+                    let killer = self.getEntityById(arrElem.id);
+                    if (killer.type === "player") {
+                        if (killersList !== "") {killersList += ", "};
+                        killersList += killer.name;
+                    }
+                })
+                discord.sendMessage(kind + " has been slain by " + killersList + "!");
+                Formulas.setXPMultiplier(expMultiplier, expDuration);
+            }
+        }
+    },
+
+    handleMobSpecial: function (mob) {
+        //In the future with more specials consider creating server mobs.js and extending mob kinds
+        //Megamag (repeating AoE)
+        if (mob.kind === Types.Entities.MEGAMAG) {
+            let self = this;
+            if (mob.specialInterval == null) {
+                mob.specialInterval = setInterval(function() {
+                    let kind = Types.getKindAsString(mob.kind);
+                    let msg = Properties[kind].messages[Utils.random(Properties[kind].messages.length)]; // Fetch random message from properties
+                    self.pushToGroup(mob.group, new Messages.Chat(mob, msg), false); // Warn players Special incoming
+
+                    self.pushToGroup(mob.group, new Messages.MobDoSpecial(mob), false);
+                    setTimeout(function() {
+                        self.doAoe(mob);
+                        }, 2000); // Change this duration also in client/mobs.js
+                }, Types.timeouts[Types.Entities.MEGAMAG]);
+            }   
+        }
+        //END Megamag
     }
 });
