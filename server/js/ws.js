@@ -441,6 +441,68 @@ WS.socketIOServer = Server.extend({
             }
             res.status(200).json(players);
         });
+        
+        app.get("/session/:sessionId/requestTeleport/:triggerId", async (req, res) => {
+            const sessionId = req.params.sessionId;
+            const triggerId = req.params.triggerId;
+            const sessionData = cache.get(sessionId);
+            if (sessionData === undefined) {
+                res.status(404).json({
+                    status: false,
+                    "error" : "session not found",
+                    user: null
+                });
+            } else {
+                let triggerState = self.worldsMap[sessionData.mapId].checkTriggerActive(triggerId);
+                if (triggerState === undefined) {
+                    res.status(400).json({
+                        status: false,
+                        error: "Could not get trigger state",
+                        user: null
+                    });
+                    return;
+                }
+                res.status(200).send(triggerState);
+            }
+        });
+
+        app.post('/activateTrigger', async (req, res) => {
+            const body = req.body;
+            const apiKey = req.headers['x-api-key'];
+
+            if (apiKey !== process.env.LOOPWORMS_API_KEY) {
+                res.status(401).json({
+                    status: false,
+                    "error" : "invalid api key",
+                    user: null
+                });
+                return;
+            } 
+            if (body.mapId === undefined) {
+                body.mapId = "main";
+            }
+            self.worldsMap[body.mapId].activateTrigger(body.triggerId);
+            res.status(200).send(true);
+        });
+
+        app.post('/deactivateTrigger', async (req, res) => {
+            const body = req.body;
+            const apiKey = req.headers['x-api-key'];
+
+            if (apiKey !== process.env.LOOPWORMS_API_KEY) {
+                res.status(401).json({
+                    status: false,
+                    "error" : "invalid api key",
+                    user: null
+                });
+                return;
+            } 
+            if (body.mapId === undefined) {
+                body.mapId = "main";
+            }
+            self.worldsMap[body.mapId].deactivateTrigger(body.triggerId);
+            res.status(200).send(true);
+        });
 
         app.get("/chat", async (req, res) => {
             let msgs = chat.getMessages();

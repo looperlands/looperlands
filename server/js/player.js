@@ -320,6 +320,7 @@ module.exports = Player = Character.extend({
                     y = message[2];
                 
                 let requiredNft = self.server.map.getRequiredNFT(x, y);
+                let requiredTrigger = self.server.map.getDoorTrigger(x, y);
 
                 function teleport() {
                     if(_self.server.isValidPosition(x, y)) {
@@ -333,12 +334,19 @@ module.exports = Player = Character.extend({
                         console.error("Invalid teleport position : "+x+", "+y);
                     }
                 }
+
+                let triggerActive = true;
+                if (requiredTrigger !== undefined){
+                    triggerActive = self.server.checkTriggerActive(requiredTrigger);
+                }
                 if (requiredNft !== undefined) {
                     let playerCache = self.server.server.cache.get(self.sessionId);
                     let url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/AssetValidation.php?WalletID=${playerCache.walletId}&NFTID=${requiredNft}`;
                     axios.get(url).then(function (response) {
                         if (response.data === true) {
-                            teleport();
+                            if (triggerActive) {
+                                teleport();
+                            }
                         } else {
                             //console.error("Asset validation failed for player " + _self.name + " and nftId " + requiredNft, url);
                         }
@@ -347,9 +355,10 @@ module.exports = Player = Character.extend({
                         console.error("Asset validation error: " + error, url);
                     });                    
                 } else {
-                    teleport();
+                    if (triggerActive) {
+                        teleport();
+                    }
                 }
-
             }
             else if(action === Types.Messages.OPEN) {
                 var chest = self.server.getEntityById(message[1]);

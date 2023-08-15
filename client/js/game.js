@@ -45,6 +45,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             this.hoveringMob = false;
             this.hoveringItem = false;
             this.hoveringCollidingTile = false;
+            this.doorCheck = false;
         
             // combat
             this.infoManager = new InfoManager(this);
@@ -2196,7 +2197,12 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     }
                 
                     self.selectedCellVisible = false;
-                
+
+                    function updatePos() {
+                        self.unregisterEntityPosition(self.player);
+                        self.registerEntityPosition(self.player);
+                    }
+                    
                     if(self.isItemAt(x, y)) {
                         var item = self.getItemAt(x, y);
 
@@ -2252,7 +2258,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                         var _self = self;
 
                         function goInside() {
-
                             if (dest.map !== undefined) {
                                 let url = '/session/' + self.sessionId + '/teleport';
                                 axios.post(url, dest).then(function (response) {
@@ -2313,22 +2318,44 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                             }
                         }
 
+                        function checkTrigger() {
+                            if (dest.triggerId !== undefined) {    
+                                let trUrl = '/session/' + self.sessionId + '/requestTeleport/' + dest.triggerId;
+                                _self.doorCheck = true;
+                                axios.get(trUrl).then(function (response) {
+                                    if (response.data === true) {
+                                        goInside();
+                                        updatePos();
+                                    } else {
+                                        _self.showNotification("This entrance is currently inactive.");
+                                    }
+                                }).catch(function (error) {
+                                    console.error("Error while checking the trigger.");
+                                }).finally(function(e) {
+                                    _self.doorCheck = false;
+                                });
+                            } else {
+                                goInside();
+                                updatePos();
+                            }
+                        }
+
                         if (dest.nft !== undefined) {
                             var url = '/session/' + self.sessionId + '/owns/' + dest.nft;
-                            _self.tokengating = true;
+                            _self.doorCheck = true;
                             axios.get(url).then(function (response) {
                                 if (response.data === true) {
-                                    goInside();
+                                    checkTrigger()
                                 } else {
                                     _self.showNotification("You don't own the required NFT to enter.");
                                 }
                             }).catch(function (error) {
                                 console.error("Error while checking ownership of token gate.");
                             }).finally(function(e) {
-                                _self.tokengating = false;
+                                _self.doorCheck = false;
                             });
                         } else {
-                            goInside();
+                            checkTrigger();
                         }
                     }
                 
@@ -2338,15 +2365,14 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                         self.client.sendOpen(self.player.target);
                         self.audioManager.playSound("chest");
                     }
-                    
+
                     self.player.forEachAttacker(function(attacker) {
                         if(!attacker.isAdjacentNonDiagonal(self.player) && !(attacker instanceof Player)) {
                             attacker.follow(self.player);
                         }
                     });
-                
-                    self.unregisterEntityPosition(self.player);
-                    self.registerEntityPosition(self.player);
+                    
+                    updatePos();
                 });
             
                 self.player.onRequestPath(function(x, y) {
@@ -3346,7 +3372,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
     	    && !this.player.isDead
     	    && (!this.hoveringCollidingTile || pos.keyboard)
     	    && (!this.hoveringPlateauTile || pos.keyboard)
-            && !(this.tokengating === true)) {
+            && !(this.doorCheck)) {
         	    entity = this.getEntityAt(pos.x, pos.y);
 
                 // an entity is not in the entity grid but is on the pathing grid
@@ -3358,8 +3384,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         	    if(entity instanceof Mob) {
         	        this.makePlayerAttack(entity);
                 } else if (entity instanceof Player && entity.id !== this.player.id) {
-                    var pvpZone = {top: {x: 0, y: 316}, bottom: {x: 92, y: 348}}
-                    var inPvpZone = entity.gridX > pvpZone.top.x && entity.gridX < pvpZone.bottom.x && entity.gridY > pvpZone.top.y && entity.gridY < pvpZone.bottom.y;
+                    var inPvpZone = this.map.isInsidePvpZone(entity.gridX, entity.gridY);
                     if (inPvpZone) {
                         this.makePlayerAttack(entity);
                     } else {

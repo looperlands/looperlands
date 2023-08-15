@@ -44,6 +44,7 @@ module.exports = World = cls.Class.extend({
         this.mobAreas = [];
         this.chestAreas = [];
         this.groups = {};
+        this.doorTriggers = {};
         
         this.outgoingQueues = {};
         
@@ -157,6 +158,7 @@ module.exports = World = cls.Class.extend({
 
         this.map.ready(function() {
             self.initZoneGroups();
+            self.initDoorTriggers();
             
             self.map.generateCollisionGrid();
             
@@ -745,6 +747,11 @@ module.exports = World = cls.Class.extend({
         });
         this.zoneGroupsReady = true;
     },
+
+    initDoorTriggers: function() {
+        var self = this;
+        Object.keys(self.map.triggerDoors).forEach(door => {self.doorTriggers[door] = false});
+    },
     
     removeFromGroups: function(entity) {
         var self = this,
@@ -1081,5 +1088,25 @@ module.exports = World = cls.Class.extend({
             }   
         }
         //END Megamag
+    },
+
+    checkTriggerActive: function(triggerId) {
+        triggerState = this.doorTriggers[triggerId];
+        return triggerState !== undefined ? triggerState : false;
+    },
+
+    activateTrigger: function(triggerId) {
+        if (this.doorTriggers.hasOwnProperty(triggerId)) {
+            this.doorTriggers[triggerId] = true;
+            console.log("Trigger " + triggerId + " activated!");
+        }
+    },
+
+    deactivateTrigger: function(triggerId) {
+        if (this.doorTriggers.hasOwnProperty(triggerId)) {
+            this.doorTriggers[triggerId] = false;
+            console.log("Trigger " + triggerId + " deactivated!");
+        }
     }
+
 });
