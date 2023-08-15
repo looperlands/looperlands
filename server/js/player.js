@@ -649,7 +649,7 @@ module.exports = Player = Character.extend({
     },
 
     getMoveSpeed: function() {
-        return BASE_SPEED - (this.getLevel() - 1) * 3;
+        return BASE_SPEED - (this.getLevel() - 1) * 2;
     },
 
     pushEntityList: function() {
