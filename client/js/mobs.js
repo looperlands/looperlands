@@ -175,11 +175,12 @@ define(['mob', 'timer'], function(Mob, Timer) {
         Gnashling: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.GNASHLING);
-                this.moveSpeed = 250;
+                this.moveSpeed = 300;
                 this.idleSpeed = 700;
+                this.atkSpeed = 50;                
                 this.shadowOffsetY = -2;
                 this.isAggressive = true;
-                this.aggroRange = 1;
+                this.aggroRange = 3;
                 this.deathAnimated = true;
             }
         }),        
