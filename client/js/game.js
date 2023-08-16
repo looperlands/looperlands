@@ -1908,6 +1908,11 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 this.addToRenderingGrid(entity, x, y);
             }
         },
+
+        updatePos: function(entity) {
+            this.unregisterEntityPosition(entity);
+            this.registerEntityPosition(entity);
+        },
     
         setServerOptions: function(host, port, username, protocol) {
             console.log(host, port, protocol)
@@ -2210,11 +2215,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 
                     self.selectedCellVisible = false;
 
-                    function updatePos() {
-                        self.unregisterEntityPosition(self.player);
-                        self.registerEntityPosition(self.player);
-                    }
-                    
                     if(self.isItemAt(x, y)) {
                         var item = self.getItemAt(x, y);
 
@@ -2337,7 +2337,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 axios.get(trUrl).then(function (response) {
                                     if (response.data === true) {
                                         goInside();
-                                        updatePos();
+                                        _self.updatePos(self.player);
                                     } else {
                                         _self.showNotification("This entrance is currently inactive.");
                                     }
@@ -2348,7 +2348,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 });
                             } else {
                                 goInside();
-                                updatePos();
+                                _self.updatePos(self.player);
                             }
                         }
 
@@ -2384,7 +2384,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                         }
                     });
                     
-                    updatePos();
+                    self.updatePos(self.player);
                 });
             
                 self.player.onRequestPath(function(x, y) {
@@ -2531,7 +2531,20 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
                                                 if(self.map.isDoor(gridX, gridY)) {
                                                     var dest = self.map.getDoorDestination(gridX, gridY);
-                                                    entity.setGridPosition(dest.x, dest.y);
+                                                    if (dest.triggerId !== undefined) {    
+                                                        let trUrl = '/session/' + self.sessionId + '/requestTeleport/' + dest.triggerId;
+                                                        axios.get(trUrl).then(function (response) {
+                                                            if (response.data === true) {
+                                                                entity.setGridPosition(dest.x, dest.y);
+                                                                self.updatePos(entity);
+                                                            }
+                                                        }).catch(function (error) {
+                                                            console.error("Error while checking the trigger.");
+                                                        });
+                                                    } else {
+                                                        entity.setGridPosition(dest.x, dest.y);
+                                                        self.updatePos(entity);
+                                                    }
                                                 }
                                             }
                                         
@@ -2541,8 +2554,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                                 }
                                             });
                                 
-                                            self.unregisterEntityPosition(entity);
-                                            self.registerEntityPosition(entity);
+                                            self.updatePos(entity);
                                         }
                                     });
 
