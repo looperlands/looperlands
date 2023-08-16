@@ -546,6 +546,14 @@ module.exports = World = cls.Class.extend({
             //console.error("Unknown entity : " + id);
         }
     },
+
+    getPlayerById: function(id) {
+        if(id in this.players) {
+            return this.players[id];
+        } else {
+            console.error("Unknown player: " + id);
+        }
+    },
     
     getPlayerCount: function() {
         var count = 0;

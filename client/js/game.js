@@ -2528,22 +2528,38 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                             if(entity instanceof Player) {
                                                 var gridX = entity.destination.gridX,
                                                     gridY = entity.destination.gridY;
-
+                                                
                                                 if(self.map.isDoor(gridX, gridY)) {
                                                     var dest = self.map.getDoorDestination(gridX, gridY);
-                                                    if (dest.triggerId !== undefined) {    
-                                                        let trUrl = '/session/' + self.sessionId + '/requestTeleport/' + dest.triggerId;
-                                                        axios.get(trUrl).then(function (response) {
+
+                                                    function checkTrigger() {
+                                                        if (dest.triggerId !== undefined) {    
+                                                            let trUrl = '/session/' + self.sessionId + '/requestTeleport/' + dest.triggerId;
+                                                            axios.get(trUrl).then(function (response) {
+                                                                if (response.data === true) {
+                                                                    entity.setGridPosition(dest.x, dest.y);
+                                                                    self.updatePos(entity);
+                                                                }
+                                                            }).catch(function (error) {
+                                                                console.error("Error while checking the trigger.");
+                                                            });
+                                                        } else {
+                                                            entity.setGridPosition(dest.x, dest.y);
+                                                            self.updatePos(entity);
+                                                        }
+                                                    }
+                                                    
+                                                    if (dest.nft !== undefined) {
+                                                        var url = self.map.mapId + '/player/' + entity.id + '/owns/' + dest.nft;
+                                                        axios.get(url).then(function (response) {
                                                             if (response.data === true) {
-                                                                entity.setGridPosition(dest.x, dest.y);
-                                                                self.updatePos(entity);
+                                                                checkTrigger()
                                                             }
                                                         }).catch(function (error) {
-                                                            console.error("Error while checking the trigger.");
+                                                            console.error("Error while checking ownership of token gate.");
                                                         });
                                                     } else {
-                                                        entity.setGridPosition(dest.x, dest.y);
-                                                        self.updatePos(entity);
+                                                        checkTrigger();
                                                     }
                                                 }
                                             }
