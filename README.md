@@ -28,6 +28,19 @@ The following example will double the experience for 60 seconds after posting to
 ```bash
 curl -X POST -H "Content-Type: application/json" -H "x-api-key: $LOOPWORMS_API_KEY" -d "{\"multiplier\": 2, \"duration\":60}" http://127.0.0.1:8000/setxpmultiplier
 ```
+# Activate/deactivate trigger
+The following endpoint activates/deactivates triggers (for example event doors).
+Post to /activateTrigger or /deactivateTrigger with the following body:
+```json
+{
+    "triggerId": "triggerId",
+    "mapId": "mapId" // mapId is optional = defaults to main!
+}
+```
+The following example will activate the doors with triggerId = Fight Night:
+```bash
+curl -X POST -H "Content-Type: application/json" -H "x-api-key: $LOOPWORMS_API_KEY" -d "{\"triggerId\": \"Fight Night\"}" http://127.0.0.1:8000/activateTrigger
+```
 # Local development
 The following script will build the client and server and run them locally, so you do not have to run the above steps.
 ```bash

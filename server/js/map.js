@@ -43,7 +43,7 @@ module.exports = Mapx = cls.Class.extend({
     
         this.initConnectedGroups(map.doors);
         this.initCheckpoints(map.checkpoints);
-        this.initTokenizedDoors(map.doors);
+        this.initDoors(map.doors);
     
         if(this.ready_func) {
             this.ready_func();
@@ -181,15 +181,27 @@ module.exports = Mapx = cls.Class.extend({
         });
     },
 
-    initTokenizedDoors: function(doors) {
+    initDoors: function(doors) {
         let self = this;
         this.tokenizedDoors = {};
+        this.triggerDoors = {};
+
         doors.forEach(function(door) {
+            //Tokenized doors
             if (door.tnft !== undefined) {
-                self.tokenizedDoors[{
-                    x: door.x,
-                    y: door.y,
-                }] = door.tnft;
+                if (self.tokenizedDoors[door.tnft] === undefined){
+                    self.tokenizedDoors[door.tnft] = []; // can only push to a defined array
+                }
+                let tDoor = {x: door.x, y: door.y}
+                self.tokenizedDoors[door.tnft].push(tDoor);
+            }
+            // Trigger doors
+            if (door.ttid !== undefined) {
+                if (self.triggerDoors[door.ttid] === undefined){
+                    self.triggerDoors[door.ttid] = []; // can only push to a defined array
+                }
+                let tDoor = {x: door.x, y: door.y}
+                self.triggerDoors[door.ttid].push(tDoor);
             }
         });
     },
@@ -222,7 +234,15 @@ module.exports = Mapx = cls.Class.extend({
     },
 
     getRequiredNFT: function(x, y) {
-        return this.tokenizedDoors[{x: x, y: y}];
+        return Object.keys(this.tokenizedDoors).find(key => 
+            this.tokenizedDoors[key].find((element) => 
+            element.x === x && element.y === y));
+    },
+
+    getDoorTrigger: function(x, y) {
+        return Object.keys(this.triggerDoors).find(key => 
+            this.triggerDoors[key].find((element) => 
+            element.x === x && element.y === y));
     }
 });
 
