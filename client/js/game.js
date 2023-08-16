@@ -1342,6 +1342,18 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 "NFT_e5742ffc75757faf7847b7a5cbf8858484163c433f77959e0de97a5b74b31123",
                                 "NFT_f66d6d532cf7cb0a9e8609b3900ee22bbc6606e7710f07f5838cf0d31bc4f337",
                                 "NFT_fc2eec4e08efa809dd52176aba2d347a8e626fa4e8ace907c954f7e304c577c3",
+                                "NFT_5d88e765ce64bedbf94bd478e06d3db3fda6b18b11743489830863530199d458",
+                                "NFT_69c202749fa76fa0ffbc506050fd6c7ad0f25e792a76598136741a63bc1db9ad",
+                                "NFT_7a5559a927ddad7a479d026d256179683335b1ce94c897b114ffbebd02cbe78b",
+                                "NFT_8920bfd1f13b642598ec51f8f0a7668a515c83c3087252c73ddd5db7c8074a4f",
+                                "NFT_b0b0fa6126d29ce0333f1da7b09fed9ed154d260abb53a8958f78a76ffe004e0",
+                                "NFT_c0532bc870d625a8f55915b8e703939044eea0694bca90d57e42b4935e0060b7",
+                                "NFT_c2a412d2ea58f9542692f0b260569bd0ebe01ee2b3cf1942c8685c0e2be685d3",
+                                "NFT_decadc336cdd318937f60d187c2c90fd5dd6c2280ff4745f3042f7b9c225ee36",
+                                "NFT_e85235851068119543f1251ee0884f050ec0afa206478f47418cbdf694d5ff69",
+                                "NFT_ea31a2881e994c91d45c9c752d7316b8fa878509b3f149023e64a2f87c254d09",
+                                "NFT_ee5e8a356632113d1d894d0d8fc20fa103700aaaa406e4749cb9d5c8f026db2d",
+                                "NFT_f0f532b9d5659808e7193dbc119eebd6d5be487a9ae4ace3a4b8026000285f9a",
                                 // @nextSpriteLine@
                             ];                          
         },
