@@ -150,6 +150,13 @@ var Properties = {
         weapon: 2,
         xp: 10
     },
+
+    gnashling: {
+        hp: 100,
+        armor: 2,
+        weapon: 2,
+        xp: 10
+    },
     
     kingslime: {
         hp: 50,

@@ -54,6 +54,7 @@ Types = {
         KINGSLIME: 300004,
         REDSLIME: 300005,
         SILKSHADE: 300006,        
+        GNASHLING: 300007,  
         MINIMAG: 200002,
         MEGAMAG: 200004,
         
@@ -1403,6 +1404,7 @@ var kinds = {
     skeleton2: [Types.Entities.SKELETON2, "mob"],
     boss: [Types.Entities.BOSS, "mob"],
     slime: [Types.Entities.SLIME, "mob"],
+    gnashling: [Types.Entities.GNASHLING, "mob"],
     redslime: [Types.Entities.REDSLIME, "mob"],
     kingslime: [Types.Entities.KINGSLIME, "mob"],    
     silkshade: [Types.Entities.SILKSHADE, "mob"],      

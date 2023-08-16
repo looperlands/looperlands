@@ -172,6 +172,17 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.deathAnimated = true;
             }
         }),
+        Gnashling: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.GNASHLING);
+                this.moveSpeed = 250;
+                this.idleSpeed = 700;
+                this.shadowOffsetY = -2;
+                this.isAggressive = true;
+                this.aggroRange = 1;
+                this.deathAnimated = true;
+            }
+        }),        
 
         Redslime: Mob.extend({
             init: function(id) {
