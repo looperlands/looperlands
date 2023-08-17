@@ -77,7 +77,7 @@ define(['jquery', 'area'], function($, Area) {
                     console.log(error);
                 });
 
-            }, 1000);
+            }, 5000);
         },        
 
         _loadMap: function(useWorker) {
