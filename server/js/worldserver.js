@@ -950,23 +950,18 @@ module.exports = World = cls.Class.extend({
             powerUpActive: player.getPowerUpActive()
         }
 
-        let characterInfo = this.getCharactersInfoInPlayerGroup(playerId);
+        let characterInfo = this.getCharactersInfoInPlayerGroup(player);
         return {
             characterInfo: characterInfo,
             playerInfo: playerInfo
         }
     },
 
-    getCharactersInfoInPlayerGroup: function(playerId) {
-        const player = this.getEntityById(playerId);
-        if (player === undefined) {
-            return;
-        }
+    getCharactersInfoInPlayerGroup: function(player) {
         const group = this.groups[player.group];
-        let entityIds = Object.keys(group.entities);
         
         let ret = {}
-        entityIds.forEach(function(id) {
+        for (const id in group.entities) {
             let entity = group.entities[id];
             if (entity.type === 'mob' || entity.type === 'player') {
                 ret[id] = {
@@ -976,7 +971,7 @@ module.exports = World = cls.Class.extend({
                     attackRate: entity.getAttackRate()
                 } 
             }
-        });
+        }
         return ret;
     },
 

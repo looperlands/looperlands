@@ -2849,9 +2849,16 @@ Types.getKindFromString = function(kind) {
     }
 };
 
+const getKindAsStringCache = {}
 Types.getKindAsString = function(kind) {
+    let cached = getKindAsStringCache[kind];
+    if (cached !== undefined) {
+        return cached;
+    }
+
     for(var k in kinds) {
         if(kinds[k][0] === kind) {
+            getKindAsStringCache[kind] = k;
             return k;
         }
     }
