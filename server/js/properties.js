@@ -10,7 +10,8 @@ var Properties = {
         },
         hp: 25,
         armor: 1,
-        weapon: 1
+        weapon: 1,
+        respawnDelay: 5000
     },
     
     skeleton: {
@@ -141,7 +142,8 @@ var Properties = {
         hp: 5000,
         armor: 5,
         weapon: 8,
-        redpacket: true
+        redpacket: true,
+        respawnDelay: 60000
     },
 
     slime: {
@@ -210,9 +212,10 @@ var Properties = {
         redpacket: true,
         xp: 50000,  
         expMultiplier: {
-            duration: 1800
+            duration: 1200
         },
-        messages: ['Perish!', 'Be gone!', 'Burn!', 'Wither!', 'Suffer!']
+        messages: ['Perish!', 'Be gone!', 'Burn!', 'Wither!', 'Suffer!'],
+        respawnDelay: 1800000
     }
 };
 
