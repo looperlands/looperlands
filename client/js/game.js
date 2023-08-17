@@ -3526,6 +3526,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 var isMoving = this.tryMovingToADifferentTile(character); // Don't let multiple mobs stack on the same tile when attacking a player.
                 
                 if(character.canAttack(time)) {
+                    console.log(Date.now() + " Reset timer");
                     if(!isMoving) { // don't hit target if moving to a different tile.
                         if(character.hasTarget() && character.getOrientationTo(character.target) !== character.orientation) {
                             character.lookAtTarget();
@@ -3535,14 +3536,22 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                         
                         if(character.id === this.playerId) {
                             this.client.sendHit(character.target);
+                            console.log(Date.now() + " Hit");
                         }
                         
                         if(character instanceof Player && this.camera.isVisible(character)) {
                             this.audioManager.playSound("hit"+Math.floor(Math.random()*2+1));
                         }
-                        
-                        if(character.hasTarget() && character.target.id === this.playerId && this.player && !this.player.invincible) {
+
+                        console.log(character.hasTarget());
+                        console.log(character.target.id === this.playerId);
+                        console.log(this.player);
+                        console.log(!this.player.invincible);
+                        console.log(!(character instanceof Player));
+
+                        if(character.hasTarget() && character.target.id === this.playerId && this.player && !this.player.invincible & !(character instanceof Player)) {
                             this.client.sendHurt(character);
+                            console.log(Date.now() + " Hurt");
                         }
                     }
                 } else {
