@@ -664,7 +664,7 @@ module.exports = Player = Character.extend({
     pushEntityList: function() {
         let now = new Date().getTime();
         if (this.entityListPush !== undefined) {
-            if (now - this.entityListPush > 500) {
+            if (now - this.entityListPush > 1000) {
                 this.server.pushRelevantEntityListTo(this);
             }
         }
