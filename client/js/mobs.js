@@ -263,12 +263,17 @@ define(['mob', 'timer'], function(Mob, Timer) {
 
                 self.moveSpeed = 100; // Charge at the target
                 self.walkSpeed = 75; 
+                let rootTarget;
+
                 if (self.hasTarget()){
-                    self.target.root();
+                    rootTarget = self.target;
+                    rootTarget.root();
                 }
                 
-                setTimeout(function () {
-                    self.target.unroot();
+                function smashAoe(unrootTarget){
+                    if (unrootTarget) {
+                    unrootTarget.unroot();
+                    }
 
                     self.root();
                     self.animationLock = true; // Prevent special animation from being cancelled by movement
@@ -278,6 +283,10 @@ define(['mob', 'timer'], function(Mob, Timer) {
                         self.restoreDefaultMovement();
                         self.idle();
                     });
+                }
+
+                setTimeout(function () {
+                    smashAoe(rootTarget);
                 }, 2000); // Change this duration also in server/worldserver.js      
             }
         }) 
