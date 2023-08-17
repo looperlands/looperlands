@@ -559,7 +559,7 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
                 return;
             }
             else if (this.attackCooldown !== undefined && this.attackCooldown.duration !== rate) {
-                this.attackCooldown = new Timer(rate);
+                this.attackCooldown.duration = rate;
             }
         },
 
