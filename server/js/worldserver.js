@@ -540,11 +540,7 @@ module.exports = World = cls.Class.extend({
     },
     
     getEntityById: function(id) {
-        if(id in this.entities) {
-            return this.entities[id];
-        } else {
-            //console.error("Unknown entity : " + id);
-        }
+        return this.entities[id];
     },
 
     getPlayerById: function(id) {
