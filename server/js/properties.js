@@ -201,16 +201,16 @@ var Properties = {
             burger: 100
         },
         hp: 15000,
-        armor: 50,
+        armor: 40,
         weapon: 8,
         aoe: {
             damage: 100,
             range: 2
         },
         redpacket: true,
-        xp: 10000,  
+        xp: 50000,  
         expMultiplier: {
-            duration: 900
+            duration: 1800
         },
         messages: ['Perish!', 'Be gone!', 'Burn!', 'Wither!', 'Suffer!']
     }
