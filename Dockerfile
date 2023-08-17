@@ -6,7 +6,7 @@ RUN apt -y update
 RUN apt -q -y install curl
 RUN apt-get update -yq \
     && apt-get install curl gnupg python2 -yq \
-    && curl -sL https://deb.nodesource.com/setup_20.x | bash \
+    && curl -sL https://deb.nodesource.com/setup_16.x | bash \
     && apt-get install nodejs -yq \
     && apt-get install python3 -yq \
     && curl https://bootstrap.pypa.io/pip/2.7/get-pip.py --output get-pip.py \
