@@ -4012,7 +4012,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             now = new Date().getTime();
 
             if (self.lastHPCall !== undefined) {
-                if (now - self.lastHPCall < 250) {
+                if (now - self.lastHPCall < 500) {
                     return;
                 }
             }
