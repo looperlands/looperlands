@@ -355,6 +355,25 @@ WS.socketIOServer = Server.extend({
             }
             
         });
+
+        app.get("/:mapId/player/:playerId/owns/:nftId", async (req, res) => {
+            const mapId = req.params.mapId;
+            const playerId = req.params.playerId;
+            const nftId = req.params.nftId;
+            
+            let player = self.worldsMap[mapId].getPlayerById(playerId);
+            let result = dao.walletHasNFT(player.walletId, nftId);
+            if (result === undefined) {
+                res.status(400).json({
+                    status: false,
+                    error: "Could not get player NFT info",
+                    user: null
+                });
+                return;
+            }
+
+            res.status(200).json(result);            
+        });
         
         app.get("/session/:sessionId/statistics", async (req, res) => {
             const sessionId = req.params.sessionId;
