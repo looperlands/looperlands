@@ -551,7 +551,7 @@ module.exports = World = cls.Class.extend({
         if(id in this.players) {
             return this.players[id];
         } else {
-            console.error("Unknown player: " + id);
+            //console.error("Unknown player: " + id);
         }
     },
     

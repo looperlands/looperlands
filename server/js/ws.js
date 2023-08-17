@@ -363,7 +363,6 @@ WS.socketIOServer = Server.extend({
             
             let player = self.worldsMap[mapId].getPlayerById(playerId);
             let result = dao.walletHasNFT(player.walletId, nftId);
-            console.log(result);
             if (result === undefined) {
                 res.status(400).json({
                     status: false,
