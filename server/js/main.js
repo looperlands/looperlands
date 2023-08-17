@@ -1,4 +1,4 @@
-
+require('newrelic');
 var fs = require('fs'),
     Metrics = require('./metrics');
 
