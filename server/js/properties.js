@@ -161,6 +161,7 @@ var Properties = {
         armor: 2,
         weapon: 2,
     },
+
     
     kingslime: {
         drops: {
@@ -177,6 +178,12 @@ var Properties = {
         weapon: 1,
     },
 
+
+    wildgrin: {
+        hp: 140,
+        armor: 2,
+        weapon: 2,
+    },        
     
 
     redslime: {

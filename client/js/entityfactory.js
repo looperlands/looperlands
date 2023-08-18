@@ -84,6 +84,10 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest'], function(Mobs, Items, NPCs
         return new Mobs.Gnashling(id);
     };    
 
+    EntityFactory.builders[Types.Entities.WILDGRIN] = function(id) {
+        return new Mobs.Wildgrin(id);
+    };      
+
     EntityFactory.builders[Types.Entities.REDSLIME] = function(id) {
         return new Mobs.Redslime(id);
     };

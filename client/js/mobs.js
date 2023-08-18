@@ -185,6 +185,19 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),        
 
+        Wildgrin: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.WILDGRIN);
+                this.moveSpeed = 300;
+                this.idleSpeed = 700;
+                this.atkSpeed = 50;                
+                this.shadowOffsetY = -2;
+                this.isAggressive = true;
+                this.aggroRange = 3;
+                this.deathAnimated = true;
+            }
+        }),
+
         Redslime: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.REDSLIME);

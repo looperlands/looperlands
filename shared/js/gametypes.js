@@ -54,9 +54,10 @@ Types = {
         KINGSLIME: 300004,
         REDSLIME: 300005,
         SILKSHADE: 300006,        
-        GNASHLING: 300007,  
+        GNASHLING: 300007,
         MINIMAG: 200002,
         MEGAMAG: 200004,
+        WILDGRIN: 300010,
         
         // Armors
         FIREFOX: 20,
@@ -1412,7 +1413,7 @@ var kinds = {
     spider: [Types.Entities.SPIDER, "mob"],
     minimag: [Types.Entities.MINIMAG, "mob"],
     megamag: [Types.Entities.MEGAMAG, "mob"],
-
+    wildgrin: [Types.Entities.WILDGRIN, "mob"],
     sword1: [Types.Entities.SWORD1, "weapon"],
     sword2: [Types.Entities.SWORD2, "weapon"],
     axe: [Types.Entities.AXE, "weapon"],
