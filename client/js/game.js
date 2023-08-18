@@ -3573,8 +3573,8 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                         if(character instanceof Player && this.camera.isVisible(character)) {
                             this.audioManager.playSound("hit"+Math.floor(Math.random()*2+1));
                         }
-                        
-                        if(character.hasTarget() && character.target.id === this.playerId && this.player && !this.player.invincible) {
+
+                        if(character.hasTarget() && character.target.id === this.playerId && this.player && !this.player.invincible & !(character instanceof Player)) {
                             this.client.sendHurt(character);
                         }
                     }
