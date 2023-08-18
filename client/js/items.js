@@ -93,7 +93,14 @@ define(['item'], function(Item) {
                 this.lootMessage = "You drink a health potion";
             },
         }),
-        
+
+        Potion: Item.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.POTION, "object");
+                this.lootMessage = "You drink a health potion";
+            },
+        }),
+
         Cake: Item.extend({
             init: function(id) {
                 this._super(id, Types.Entities.CAKE, "object");

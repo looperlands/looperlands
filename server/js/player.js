@@ -278,9 +278,10 @@ module.exports = Player = Character.extend({
                             }, Types.timeouts[Types.Entities.FIREFOX]);
                             self.send(new Messages.HitPoints(self.maxHitPoints).serialize());
                         } else if(Types.isHealingItem(kind)) {
-                            var amount;
+                            let amount;
                             
                             switch(kind) {
+                                case Types.Entities.POTION:
                                 case Types.Entities.FLASK: 
                                     amount = 40;
                                     break;
