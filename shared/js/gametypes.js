@@ -69,6 +69,7 @@ Types = {
         
         // Objects
         FLASK: 35,
+        POTION: 300008,
         BURGER: 36,
         CHEST: 37,
         FIREPOTION: 38,
@@ -95,7 +96,7 @@ Types = {
         GOOSE: 1000042,
         TANASHI: 1000043,
         MINER: 1000044,
-        
+        VILLAGESIGN1: 30000001,        
         // Weapons
         SWORD1: 60,
         SWORD2: 61,
@@ -1429,6 +1430,7 @@ var kinds = {
     goldenarmor: [Types.Entities.GOLDENARMOR, "armor"],
 
     flask: [Types.Entities.FLASK, "object"],
+    potion: [Types.Entities.POTION, "object"],
     cake: [Types.Entities.CAKE, "object"],
     burger: [Types.Entities.BURGER, "object"],
     chest: [Types.Entities.CHEST, "object"],
@@ -1454,6 +1456,7 @@ var kinds = {
     goose: [Types.Entities.GOOSE, "npc"],
     tanashi: [Types.Entities.TANASHI, "npc"],
     miner: [Types.Entities.MINER, "npc"],
+    villagesign1: [Types.Entities.VILLAGESIGN1, "npc"],
 
     //NFT
     NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6: [Types.Entities.NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6, "armor"],
@@ -2808,7 +2811,8 @@ Types.isItem = function(kind) {
 
 Types.isHealingItem = function(kind) {
     return kind === Types.Entities.FLASK 
-        || kind === Types.Entities.BURGER;
+        || kind === Types.Entities.BURGER
+        || kind === Types.Entities.POTION;
 };
 
 Types.isExpendableItem = function(kind) {

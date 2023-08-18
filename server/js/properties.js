@@ -146,7 +146,7 @@ var Properties = {
 
     slime: {
         drops: {
-            flask: 50,
+            potion: 50,
         },        
         hp: 100,
         armor: 2,

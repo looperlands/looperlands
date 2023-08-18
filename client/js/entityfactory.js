@@ -156,6 +156,9 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest'], function(Mobs, Items, NPCs
     EntityFactory.builders[Types.Entities.FLASK] = function(id) {
         return new Items.Flask(id);
     };
+    EntityFactory.builders[Types.Entities.POTION] = function(id) {
+        return new Items.Potion(id);
+    };
     
     EntityFactory.builders[Types.Entities.FIREPOTION] = function(id) {
         return new Items.FirePotion(id);
@@ -254,6 +257,10 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest'], function(Mobs, Items, NPCs
     EntityFactory.builders[Types.Entities.MINER] = function(id) {
         return new NPCs.Miner(id);
     };    
+
+    EntityFactory.builders[Types.Entities.VILLAGESIGN1] = function(id) {
+        return new NPCs.Villagesign1(id);
+    };   
     
     return EntityFactory;
 });
