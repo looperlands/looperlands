@@ -447,9 +447,9 @@ define(['jquery', 'app'], function($, App) {
                     }
                     if(key === 27) { // ESC
                         app.hideWindows();
-                        _.each(game.player.attackers, function(attacker) {
+                        /*_.each(game.player.attackers, function(attacker) {
                             attacker.stop();
-                        });
+                        });*/
                         return false;
                     }
                     if(key === 65) { // a
