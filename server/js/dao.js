@@ -1,7 +1,8 @@
 const LOOPWORMS_LOOPERLANDS_BASE_URL = process.env.LOOPWORMS_LOOPERLANDS_BASE_URL;
 const API_KEY = process.env.LOOPWORMS_API_KEY;
 const axios = require('axios');
-const { response } = require('express');
+const NodeCache = require( "node-cache" );
+const daoCache = new NodeCache();
 
 const MAX_RETRY_COUNT = 5;
 
@@ -150,9 +151,19 @@ loadWeapon = async function (wallet, nft) {
 }
 
 exports.walletHasNFT = async function (wallet, nft, retry) {
+
+    let cached = daoCache.get(`${wallet}_${nft}`);
+    //console.log("Cached value for ", wallet, nft, cached);
+    if(cached !== undefined) {
+      //console.log("Returning cached value for ", wallet, nft);
+      return cached;
+    }
+
     let url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/AssetValidation.php?WalletID=${wallet}&NFTID=${nft}`;
     try {
         const responseData = await axios.get(url);
+        // Cache ownership for 30 minutes because that is the L2 delay
+        daoCache.set(`${wallet}_${nft}`, responseData.data, 60 * 30);
         return responseData.data;
     } catch (error) {
       console.error("Error while validating ownership", error, wallet, nft);
