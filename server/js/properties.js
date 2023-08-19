@@ -153,71 +153,86 @@ var Properties = {
         hp: 50,
         armor: 2,
         weapon: 1,
+        XP: 25,
     },
 
     gnashling: {
         drops: {
-            flask: 50,
+            potion: 50,
         },                
         hp: 130,
         armor: 3,
         weapon: 2,
+        XP: 160,
     },
 
     loomleaf: {
         drops: {
-            flask: 50,
+            potion: 100,
         },                
         hp: 3300,
         armor: 16,
         weapon: 6,
+        XP: 1600,
     },
 
     thudlord: {
         drops: {
-            flask: 50,
+            potion: 150,
         },                
         hp: 1100,
-        armor: 7,
-        weapon: 4,
+        armor: 4,
+        weapon: 3,
+        XP: 480,
     },
     
     kingslime: {
         drops: {
-            flask: 50,
+            potion: 100,
         },                
         hp: 400,
         armor: 3,
         weapon: 3,
+        XP: 250,
     },
 
     silkshade: {
         hp: 2000,
-        armor: 7,
-        weapon: 6,
+        armor: 5,
+        weapon: 4,
+        XP: 960,
     },
 
 
     wildgrin: {
+        drops: {
+            potion: 100,
+        },
         hp: 140,
-        armor: 3,
-        weapon: 3,
+        armor: 6,
+        weapon: 4,
+        XP: 640
     },        
     
 
     redslime: {
+        drops: {
+            potion: 100,
+        },        
         hp: 140,
         armor: 2,
         weapon: 2,
+        XP: 35,
     },    
 
     spider: {
         drops: {
-            flask: 65,
+            potion: 65,
         },
         hp: 300,
-        armor: 5,
-        weapon: 6
+        armor: 4,
+        weapon: 3,
+        xp: 320,
     },
 
     minimag: {

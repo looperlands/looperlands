@@ -169,7 +169,6 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.shadowOffsetY = -2;
                 this.isAggressive = true;
                 this.aggroRange = 1;
-                this.deathAnimated = true;
             }
         }),
         Gnashling: Mob.extend({
@@ -181,7 +180,6 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.shadowOffsetY = -2;
                 this.isAggressive = true;
                 this.aggroRange = 3;
-                this.deathAnimated = true;
             }
         }),        
 
@@ -194,7 +192,6 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.shadowOffsetY = -2;
                 this.isAggressive = true;
                 this.aggroRange = 3;
-                this.deathAnimated = true;
             }
         }),
 
@@ -232,7 +229,6 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.shadowOffsetY = -2;
                 this.isAggressive = true;
                 this.aggroRange = 1;
-                this.deathAnimated = true;
             }
         }),
 
@@ -268,7 +264,6 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.shadowOffsetY = -2;
                 this.isAggressive = true;
                 this.aggroRange = 3;
-                this.deathAnimated = true;
             }
         }),
 
