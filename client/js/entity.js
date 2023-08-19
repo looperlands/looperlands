@@ -72,7 +72,7 @@ define(function() {
     	    return this.sprite;
     	},
 	
-    	getSpriteName: function() {
+    	getSpriteName: function() {
     	    return Types.getKindAsString(this.kind);
     	},
 	
@@ -87,7 +87,11 @@ define(function() {
             }
             return animation;
         },
-    
+
+        hasAnimation: function(name) {
+            return (name in this.animations);
+        },
+
     	setAnimation: function(name, speed, count, onEndCount) {
     	    var self = this;
 	    

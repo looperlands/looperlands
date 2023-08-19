@@ -7,3 +7,4 @@ config_local*
 configs/*
 nft_template/sqlscript.sql
 *Zone.Identifier
+.idea
