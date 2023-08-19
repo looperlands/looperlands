@@ -33,6 +33,7 @@ module.exports = function processMap(json, options) {
         map.blocking = [];
         map.plateau = [];
         map.musicAreas = [];
+        map.pvpZones = [];
     }
     if(mode === "server") {
         map.roamingAreas = [];
@@ -211,6 +212,18 @@ module.exports = function processMap(json, options) {
                     cp.s = checkpoint.type ? 1 : 0;
                 }
                 map.checkpoints.push(cp);
+            });
+        }
+        else if(objectlayer.name === "pvpzones" && mode === "client") {
+            console.log("Processing PvP zones...");
+            _.each(objectlayer.object, function(pvp) {
+                var pvpZone = {
+                    x: pvp.x / map.tilesize,
+                    y: pvp.y / map.tilesize,
+                    w: pvp.width / map.tilesize,
+                    h: pvp.height / map.tilesize
+                };
+                map.pvpZones.push(pvpZone);
             });
         }
     });

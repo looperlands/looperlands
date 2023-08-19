@@ -5,7 +5,7 @@ let moment = require("moment");
 
 var Formulas = {};
 
-const EXPERIENCE_GROWTH = 3;
+const EXPERIENCE_GROWTH = 2.5;
 const BASE_EXPERIENCE = 1000;
 
 let XP_MULTIPLIER = 1;

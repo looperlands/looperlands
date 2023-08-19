@@ -77,7 +77,7 @@ define(['jquery', 'area'], function($, Area) {
                     console.log(error);
                 });
 
-            }, 1000);
+            }, 5000);
         },        
 
         _loadMap: function(useWorker) {
@@ -152,6 +152,7 @@ define(['jquery', 'area'], function($, Area) {
             this.blocking = map.blocking || [];
             this.plateau = map.plateau || [];
             this.musicAreas = map.musicAreas || [];
+            this.pvpZones = map.pvpZones || [];
             this.collisions = map.collisions;
             this.high = map.high;
             this.animated = map.animated;
@@ -187,7 +188,8 @@ define(['jquery', 'area'], function($, Area) {
                     cameraY: door.tcy,
                     portal: door.p === 1,
                     nft: door.tnft,
-                    map: door.tmap
+                    map: door.tmap,
+                    triggerId: door.ttid
                 };
             });
         
@@ -374,6 +376,14 @@ define(['jquery', 'area'], function($, Area) {
             return _.detect(this.checkpoints, function(checkpoint) {
                 return checkpoint.contains(entity);
             });
+        },
+
+        isInsidePvpZone: function(x, y){
+            const inZone = (element) => x >= element.x && 
+                                        x < element.x + element.w &&
+                                        y >= element.y && 
+                                        y < element.y + element.h;
+            return this.pvpZones.some(inZone);
         }
     });
     

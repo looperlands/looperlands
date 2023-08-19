@@ -45,6 +45,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             this.hoveringMob = false;
             this.hoveringItem = false;
             this.hoveringCollidingTile = false;
+            this.doorCheck = false;
         
             // combat
             this.infoManager = new InfoManager(this);
@@ -1341,6 +1342,36 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 "NFT_e5742ffc75757faf7847b7a5cbf8858484163c433f77959e0de97a5b74b31123",
                                 "NFT_f66d6d532cf7cb0a9e8609b3900ee22bbc6606e7710f07f5838cf0d31bc4f337",
                                 "NFT_fc2eec4e08efa809dd52176aba2d347a8e626fa4e8ace907c954f7e304c577c3",
+                                "NFT_5d88e765ce64bedbf94bd478e06d3db3fda6b18b11743489830863530199d458",
+                                "NFT_69c202749fa76fa0ffbc506050fd6c7ad0f25e792a76598136741a63bc1db9ad",
+                                "NFT_7a5559a927ddad7a479d026d256179683335b1ce94c897b114ffbebd02cbe78b",
+                                "NFT_8920bfd1f13b642598ec51f8f0a7668a515c83c3087252c73ddd5db7c8074a4f",
+                                "NFT_b0b0fa6126d29ce0333f1da7b09fed9ed154d260abb53a8958f78a76ffe004e0",
+                                "NFT_c0532bc870d625a8f55915b8e703939044eea0694bca90d57e42b4935e0060b7",
+                                "NFT_c2a412d2ea58f9542692f0b260569bd0ebe01ee2b3cf1942c8685c0e2be685d3",
+                                "NFT_decadc336cdd318937f60d187c2c90fd5dd6c2280ff4745f3042f7b9c225ee36",
+                                "NFT_e85235851068119543f1251ee0884f050ec0afa206478f47418cbdf694d5ff69",
+                                "NFT_ea31a2881e994c91d45c9c752d7316b8fa878509b3f149023e64a2f87c254d09",
+                                "NFT_ee5e8a356632113d1d894d0d8fc20fa103700aaaa406e4749cb9d5c8f026db2d",
+                                "NFT_f0f532b9d5659808e7193dbc119eebd6d5be487a9ae4ace3a4b8026000285f9a",
+                                "NFT_3204c5baba08fb3450a9018f43a82de1540bf3e8c3fefb8b553dbb7581a49f84",
+                                "NFT_9069ac8ac3a958d4f37cd63d588f76bd3dd23df4f236f49547ff49bf06d992e0",
+                                "NFT_48a246cf2e89db8dae25ac5ee43d0fb2bca45b33e117f01c8a1d6babde69eaac",
+                                "NFT_dcf7b1adde5f11e4705a9938c2b64c28b18718886c3c79ccda2d1cb04f454011",
+                                "NFT_fbe35b710f29c61b0852898bc50c1fe2ccd788ee3a481ac3286aaab8f353a664",
+                                "NFT_0365d9643e96f6fb50951170680f8a404b1577103c221e04939ae156842b34de",
+                                "NFT_055c9303a29a4b3b02eb040ea34ccabe6eb85a10308cb2f6495f1a8ce924037a",
+                                "NFT_0d70d5a484c1e2157682885997435a317ee9a0f548775252eb79573f87a40e97",
+                                "NFT_14c184feb4cdd7b4ebfa8d398c56415a4ddb67d163553a06f307f94c9548cc29",
+                                "NFT_18550b18a30fb14c737c8dba28e8ec46527d0d5241d09e401e4787d037d5b561",
+                                "NFT_1aef66d3c31693557cc02992b7f43955ffba941144ebbb2a49a37ca3997fc87d",
+                                "NFT_1b7ba3f69d91235ca02245a239d110250f20848561d13dc3cbd57cefcb57f508",
+                                "NFT_2fa3f18159e3005bfe4f14918c2f770179bc993a267b0d5d82ab6090572f188b",
+                                "NFT_5f6fad593317dbd9800c8a8bb3295101c1d05a7ccbbce129dbf263aa95b97c91",
+                                "NFT_93786133312348528e39425f80197ffa36d6937b02d6b7fa5835395c91b849c8",
+                                "NFT_a79b617342f173ed1bef7356bc0e6ca80c18a12d0384ecf097d3d950b211bf5f",
+                                "NFT_b5d4f59c3107a004380f04ccdb208e26b16eb13f4c27460e4730fa36496cd3f0",
+                                "NFT_e836a2b252e0fb20393893d5c78c056d4185a21618411b8d06c87748e3674c66",
                                 // @nextSpriteLine@
                             ];                          
         },
@@ -1895,6 +1926,11 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 this.addToRenderingGrid(entity, x, y);
             }
         },
+
+        updatePos: function(entity) {
+            this.unregisterEntityPosition(entity);
+            this.registerEntityPosition(entity);
+        },
     
         setServerOptions: function(host, port, username, protocol) {
             console.log(host, port, protocol)
@@ -2196,7 +2232,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     }
                 
                     self.selectedCellVisible = false;
-                
+
                     if(self.isItemAt(x, y)) {
                         var item = self.getItemAt(x, y);
 
@@ -2252,7 +2288,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                         var _self = self;
 
                         function goInside() {
-
                             if (dest.map !== undefined) {
                                 let url = '/session/' + self.sessionId + '/teleport';
                                 axios.post(url, dest).then(function (response) {
@@ -2313,22 +2348,44 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                             }
                         }
 
+                        function checkTrigger() {
+                            if (dest.triggerId !== undefined) {    
+                                let trUrl = '/session/' + self.sessionId + '/requestTeleport/' + dest.triggerId;
+                                _self.doorCheck = true;
+                                axios.get(trUrl).then(function (response) {
+                                    if (response.data === true) {
+                                        goInside();
+                                        _self.updatePos(self.player);
+                                    } else {
+                                        _self.showNotification("This entrance is currently inactive.");
+                                    }
+                                }).catch(function (error) {
+                                    console.error("Error while checking the trigger.");
+                                }).finally(function(e) {
+                                    _self.doorCheck = false;
+                                });
+                            } else {
+                                goInside();
+                                _self.updatePos(self.player);
+                            }
+                        }
+
                         if (dest.nft !== undefined) {
                             var url = '/session/' + self.sessionId + '/owns/' + dest.nft;
-                            _self.tokengating = true;
+                            _self.doorCheck = true;
                             axios.get(url).then(function (response) {
                                 if (response.data === true) {
-                                    goInside();
+                                    checkTrigger()
                                 } else {
                                     _self.showNotification("You don't own the required NFT to enter.");
                                 }
                             }).catch(function (error) {
                                 console.error("Error while checking ownership of token gate.");
                             }).finally(function(e) {
-                                _self.tokengating = false;
+                                _self.doorCheck = false;
                             });
                         } else {
-                            goInside();
+                            checkTrigger();
                         }
                     }
                 
@@ -2338,15 +2395,14 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                         self.client.sendOpen(self.player.target);
                         self.audioManager.playSound("chest");
                     }
-                    
+
                     self.player.forEachAttacker(function(attacker) {
                         if(!attacker.isAdjacentNonDiagonal(self.player) && !(attacker instanceof Player)) {
                             attacker.follow(self.player);
                         }
                     });
-                
-                    self.unregisterEntityPosition(self.player);
-                    self.registerEntityPosition(self.player);
+                    
+                    self.updatePos(self.player);
                 });
             
                 self.player.onRequestPath(function(x, y) {
@@ -2490,10 +2546,39 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                             if(entity instanceof Player) {
                                                 var gridX = entity.destination.gridX,
                                                     gridY = entity.destination.gridY;
-
+                                                
                                                 if(self.map.isDoor(gridX, gridY)) {
                                                     var dest = self.map.getDoorDestination(gridX, gridY);
-                                                    entity.setGridPosition(dest.x, dest.y);
+
+                                                    function checkTrigger() {
+                                                        if (dest.triggerId !== undefined) {    
+                                                            let trUrl = '/session/' + self.sessionId + '/requestTeleport/' + dest.triggerId;
+                                                            axios.get(trUrl).then(function (response) {
+                                                                if (response.data === true) {
+                                                                    entity.setGridPosition(dest.x, dest.y);
+                                                                    self.updatePos(entity);
+                                                                }
+                                                            }).catch(function (error) {
+                                                                console.error("Error while checking the trigger.");
+                                                            });
+                                                        } else {
+                                                            entity.setGridPosition(dest.x, dest.y);
+                                                            self.updatePos(entity);
+                                                        }
+                                                    }
+                                                    
+                                                    if (dest.nft !== undefined) {
+                                                        var url = self.map.mapId + '/player/' + entity.id + '/owns/' + dest.nft;
+                                                        axios.get(url).then(function (response) {
+                                                            if (response.data === true) {
+                                                                checkTrigger()
+                                                            }
+                                                        }).catch(function (error) {
+                                                            console.error("Error while checking ownership of token gate.");
+                                                        });
+                                                    } else {
+                                                        checkTrigger();
+                                                    }
                                                 }
                                             }
                                         
@@ -2503,8 +2588,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                                 }
                                             });
                                 
-                                            self.unregisterEntityPosition(entity);
-                                            self.registerEntityPosition(entity);
+                                            self.updatePos(entity);
                                         }
                                     });
 
@@ -3346,7 +3430,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
     	    && !this.player.isDead
     	    && (!this.hoveringCollidingTile || pos.keyboard)
     	    && (!this.hoveringPlateauTile || pos.keyboard)
-            && !(this.tokengating === true)) {
+            && !(this.doorCheck)) {
         	    entity = this.getEntityAt(pos.x, pos.y);
 
                 // an entity is not in the entity grid but is on the pathing grid
@@ -3358,8 +3442,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         	    if(entity instanceof Mob) {
         	        this.makePlayerAttack(entity);
                 } else if (entity instanceof Player && entity.id !== this.player.id) {
-                    var pvpZone = {top: {x: 0, y: 316}, bottom: {x: 92, y: 348}}
-                    var inPvpZone = entity.gridX > pvpZone.top.x && entity.gridX < pvpZone.bottom.x && entity.gridY > pvpZone.top.y && entity.gridY < pvpZone.bottom.y;
+                    var inPvpZone = this.map.isInsidePvpZone(entity.gridX, entity.gridY);
                     if (inPvpZone) {
                         this.makePlayerAttack(entity);
                     } else {
@@ -3503,8 +3586,8 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                         if(character instanceof Player && this.camera.isVisible(character)) {
                             this.audioManager.playSound("hit"+Math.floor(Math.random()*2+1));
                         }
-                        
-                        if(character.hasTarget() && character.target.id === this.playerId && this.player && !this.player.invincible) {
+
+                        if(character.hasTarget() && character.target.id === this.playerId && this.player && !this.player.invincible & !(character instanceof Player)) {
                             this.client.sendHurt(character);
                         }
                     }
@@ -3945,7 +4028,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             now = new Date().getTime();
 
             if (self.lastHPCall !== undefined) {
-                if (now - self.lastHPCall < 250) {
+                if (now - self.lastHPCall < 500) {
                     return;
                 }
             }

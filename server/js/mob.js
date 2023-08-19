@@ -130,8 +130,12 @@ module.exports = Mob = Character.extend({
     },
     
     handleRespawn: function() {
-        var delay = 30000,
-            self = this;
+        var self = this;
+
+        let delay = Properties[Types.getKindAsString(this.kind)].respawnDelay;
+        if (delay === undefined) {
+            delay = 30000;
+        }
         
         if(this.area && this.area instanceof MobArea) {
             // Respawn inside the area if part of a MobArea

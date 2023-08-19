@@ -186,12 +186,11 @@ module.exports = Player = Character.extend({
                 var mob = self.server.getEntityById(message[1]);
 
                 if(mob) {
+                    let newAttackRate = BASE_ATTACK_RATE;
+                    
                     if (mob instanceof Player) {
                         mob.handleHurt(self);
                     } else {
-                        // reset attack speed so if it is increased via the trait it will be reset if a weapon with it is not equiped
-                        self.setAttackRate(BASE_ATTACK_RATE);
-
                         let level = self.getLevel();
                         let totalLevel = (self.getWeaponLevel() + level) - 1;
 
@@ -235,13 +234,16 @@ module.exports = Player = Character.extend({
                         } else if (weaponTrait === "crit") {
                             handleDamage(mob, totalLevel, 3);
                         } else if (weaponTrait === "speed") {
-                            self.setAttackRate(self.getAttackRate() - (25 * self.getWeaponLevel()));
                             handleDamage(mob, totalLevel, 1);
+                            newAttackRate = BASE_ATTACK_RATE - (25 * self.getWeaponLevel());
                         } else {
                             handleDamage(mob, totalLevel, 1);
                         }
                     }
 
+                    if (newAttackRate != self.getAttackRate()){
+                        self.setAttackRate(newAttackRate);
+                    }
                 }
             }
             else if(action === Types.Messages.HURT) {
@@ -321,6 +323,7 @@ module.exports = Player = Character.extend({
                     y = message[2];
                 
                 let requiredNft = self.server.map.getRequiredNFT(x, y);
+                let requiredTrigger = self.server.map.getDoorTrigger(x, y);
 
                 function teleport() {
                     if(_self.server.isValidPosition(x, y)) {
@@ -334,12 +337,19 @@ module.exports = Player = Character.extend({
                         console.error("Invalid teleport position : "+x+", "+y);
                     }
                 }
+
+                let triggerActive = true;
+                if (requiredTrigger !== undefined){
+                    triggerActive = self.server.checkTriggerActive(requiredTrigger);
+                }
                 if (requiredNft !== undefined) {
                     let playerCache = self.server.server.cache.get(self.sessionId);
                     let url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/AssetValidation.php?WalletID=${playerCache.walletId}&NFTID=${requiredNft}`;
                     axios.get(url).then(function (response) {
                         if (response.data === true) {
-                            teleport();
+                            if (triggerActive) {
+                                teleport();
+                            }
                         } else {
                             //console.error("Asset validation failed for player " + _self.name + " and nftId " + requiredNft, url);
                         }
@@ -348,9 +358,10 @@ module.exports = Player = Character.extend({
                         console.error("Asset validation error: " + error, url);
                     });                    
                 } else {
-                    teleport();
+                    if (triggerActive) {
+                        teleport();
+                    }
                 }
-
             }
             else if(action === Types.Messages.OPEN) {
                 var chest = self.server.getEntityById(message[1]);
@@ -650,13 +661,13 @@ module.exports = Player = Character.extend({
     },
 
     getMoveSpeed: function() {
-        return BASE_SPEED - (this.getLevel() - 1) * 3;
+        return BASE_SPEED - (this.getLevel() - 1) * 2;
     },
 
     pushEntityList: function() {
         let now = new Date().getTime();
         if (this.entityListPush !== undefined) {
-            if (now - this.entityListPush > 500) {
+            if (now - this.entityListPush > 1000) {
                 this.server.pushRelevantEntityListTo(this);
             }
         }

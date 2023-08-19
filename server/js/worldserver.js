@@ -44,6 +44,7 @@ module.exports = World = cls.Class.extend({
         this.mobAreas = [];
         this.chestAreas = [];
         this.groups = {};
+        this.doorTriggers = {};
         
         this.outgoingQueues = {};
         
@@ -157,6 +158,7 @@ module.exports = World = cls.Class.extend({
 
         this.map.ready(function() {
             self.initZoneGroups();
+            self.initDoorTriggers();
             
             self.map.generateCollisionGrid();
             
@@ -538,10 +540,14 @@ module.exports = World = cls.Class.extend({
     },
     
     getEntityById: function(id) {
-        if(id in this.entities) {
-            return this.entities[id];
+        return this.entities[id];
+    },
+
+    getPlayerById: function(id) {
+        if(id in this.players) {
+            return this.players[id];
         } else {
-            //console.error("Unknown entity : " + id);
+            //console.error("Unknown player: " + id);
         }
     },
     
@@ -745,6 +751,11 @@ module.exports = World = cls.Class.extend({
         });
         this.zoneGroupsReady = true;
     },
+
+    initDoorTriggers: function() {
+        var self = this;
+        Object.keys(self.map.triggerDoors).forEach(door => {self.doorTriggers[door] = false});
+    },
     
     removeFromGroups: function(entity) {
         var self = this,
@@ -935,23 +946,18 @@ module.exports = World = cls.Class.extend({
             powerUpActive: player.getPowerUpActive()
         }
 
-        let characterInfo = this.getCharactersInfoInPlayerGroup(playerId);
+        let characterInfo = this.getCharactersInfoInPlayerGroup(player);
         return {
             characterInfo: characterInfo,
             playerInfo: playerInfo
         }
     },
 
-    getCharactersInfoInPlayerGroup: function(playerId) {
-        const player = this.getEntityById(playerId);
-        if (player === undefined) {
-            return;
-        }
+    getCharactersInfoInPlayerGroup: function(player) {
         const group = this.groups[player.group];
-        let entityIds = Object.keys(group.entities);
         
         let ret = {}
-        entityIds.forEach(function(id) {
+        for (const id in group.entities) {
             let entity = group.entities[id];
             if (entity.type === 'mob' || entity.type === 'player') {
                 ret[id] = {
@@ -961,7 +967,7 @@ module.exports = World = cls.Class.extend({
                     attackRate: entity.getAttackRate()
                 } 
             }
-        });
+        }
         return ret;
     },
 
@@ -1081,5 +1087,25 @@ module.exports = World = cls.Class.extend({
             }   
         }
         //END Megamag
+    },
+
+    checkTriggerActive: function(triggerId) {
+        triggerState = this.doorTriggers[triggerId];
+        return triggerState !== undefined ? triggerState : false;
+    },
+
+    activateTrigger: function(triggerId) {
+        if (this.doorTriggers.hasOwnProperty(triggerId)) {
+            this.doorTriggers[triggerId] = true;
+            console.log("Trigger " + triggerId + " activated!");
+        }
+    },
+
+    deactivateTrigger: function(triggerId) {
+        if (this.doorTriggers.hasOwnProperty(triggerId)) {
+            this.doorTriggers[triggerId] = false;
+            console.log("Trigger " + triggerId + " deactivated!");
+        }
     }
+
 });

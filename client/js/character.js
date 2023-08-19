@@ -71,21 +71,32 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
     	animate: function(animation, speed, count, onEndCount) {
     	    var oriented = ['atk', 'walk', 'idle'];
     	        o = this.orientation;
-            
-            if(!(this.currentAnimation && this.currentAnimation.name === "death") // don't change animation if the character is dying
-                && !(this.currentAnimation && this.currentAnimation.name === "special" && this.animationLock)) { // don't change animation if the character is doing a special
-            	this.flipSpriteX = false;
-        	    this.flipSpriteY = false;
-	    
-        	    if(_.indexOf(oriented, animation) >= 0) {
-        	        animation += "_" + (o === Types.Orientations.LEFT ? "right" : Types.getOrientationAsString(o));
-        	        this.flipSpriteX = (this.orientation === Types.Orientations.LEFT) ? true : false;
-        	    }
 
-        		this.setAnimation(animation, speed, count, onEndCount);
-        	}
+            // don't change animation if the character is dying
+            if(this.currentAnimation && this.currentAnimation.name === "death") {
+                return;
+            }
+
+            // don't change animation if the character is doing a special
+            if(this.currentAnimation && this.currentAnimation.name === "special" && this.animationLock) {
+                return
+            }
+
+            this.flipSpriteX = false;
+            this.flipSpriteY = false;
+
+            if(_.indexOf(oriented, animation) >= 0) {
+                if(o === Types.Orientations.LEFT && !this.hasAnimation(animation + '_' + Types.getOrientationAsString(o))) {
+                    animation += "_right";
+                    this.flipSpriteX = true
+                } else {
+                    animation += "_" + Types.getOrientationAsString(o);
+                }
+            }
+
+            this.setAnimation(animation, speed, count, onEndCount);
     	},
-    
+
         turnTo: function(orientation) {
             this.orientation = orientation;
             this.idle();
@@ -559,7 +570,7 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
                 return;
             }
             else if (this.attackCooldown !== undefined && this.attackCooldown.duration !== rate) {
-                this.attackCooldown = new Timer(rate);
+                this.attackCooldown.duration = rate;
             }
         },
 
