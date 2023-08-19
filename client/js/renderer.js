@@ -762,29 +762,25 @@ function(Camera, Item, Character, Player, Timer, Mob) {
         },
 
         renderFrame: function() {
-            this.renderFrameDesktop();
-        },
-    
-        renderFrameDesktop: function() {
             this.clearScreen(this.context);
         
             this.context.save();
-                this.setCameraView(this.context);
-                this.drawAnimatedTiles();
-            
-                if(this.game.started) {
-                    this.drawSelectedCell();
-                    this.drawTargetCell();
-                }
+            this.setCameraView(this.context);
+            this.drawAnimatedTiles();
 
-                //this.drawOccupiedCells();
-                this.drawPathingCells();
-                this.drawEntities();
-                this.drawCombatInfo();
-                this.drawHighTiles(this.context);
-                this.drawHighAnimatedTiles();
+            if(this.game.started) {
+                this.drawSelectedCell();
+                this.drawTargetCell();
+            }
+
+            //this.drawOccupiedCells();
+            this.drawPathingCells();
+            this.drawEntities();
+            this.drawCombatInfo();
+            this.drawHighTiles(this.context);
+            this.drawHighAnimatedTiles();
             this.context.restore();
-        
+
             // Overlay UI elements
             this.drawCursor();
             this.drawDebugInfo();
