@@ -2767,7 +2767,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     self.getServerInfo();
                     var attacker = self.getEntityById(attackerId),
                         target = self.getEntityById(targetId);
-                
                     if(attacker && target && attacker.id !== self.playerId) {
                         console.debug(attacker.id + " attacks " + target.id);
                         
@@ -2782,7 +2781,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 });
             
                 self.client.onPlayerDamageMob(function(mobId, points) {
-                    self.getServerInfo();
                     var mob = self.getEntityById(mobId);
                     if(mob && points) {
                         self.infoManager.addDamageInfo(points, mob.x, mob.y - 15, "inflicted");
@@ -2790,7 +2788,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 });
             
                 self.client.onPlayerKillMob(function(kind, xp) {
-                    self.getServerInfo();
                     var mobName = Types.getKindAsString(kind);
 
                     setTimeout(function() {
@@ -2840,7 +2837,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 });
             
                 self.client.onPlayerChangeHealth(function(points, isRegen) {
-                    self.getServerInfo();
                     var player = self.player,
                         diff,
                         isHurt;
@@ -2873,7 +2869,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     self.player.maxHitPoints = hp;
                     self.player.hitPoints = hp;
                     self.updateBars();
-                    self.getServerInfo();
                 });
             
                 self.client.onPlayerEquipItem(function(playerId, itemKind) {
@@ -3081,7 +3076,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             this.player.disengage();
             this.createAttackLink(this.player, mob);
             this.client.sendAttack(mob);
-            self.getServerInfo();
         },
     
         /**
