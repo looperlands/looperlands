@@ -198,6 +198,32 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
 
+        Thudlord: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.THUDLORD);
+                this.moveSpeed = 300;
+                this.idleSpeed = 700;
+                this.atkSpeed = 50;                
+                this.shadowOffsetY = -2;
+                this.isAggressive = true;
+                this.aggroRange = 3;
+                this.deathAnimated = true;
+            }
+        }),
+
+        Loomleaf: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.LOOMLEAF);
+                this.moveSpeed = 300;
+                this.idleSpeed = 700;
+                this.atkSpeed = 50;                
+                this.shadowOffsetY = -2;
+                this.isAggressive = true;
+                this.aggroRange = 3;
+                this.deathAnimated = true;
+            }
+        }),        
+
         Redslime: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.REDSLIME);

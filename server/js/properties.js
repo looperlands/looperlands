@@ -148,7 +148,7 @@ var Properties = {
         drops: {
             potion: 50,
         },        
-        hp: 100,
+        hp: 50,
         armor: 2,
         weapon: 1,
     },
@@ -157,32 +157,49 @@ var Properties = {
         drops: {
             flask: 50,
         },                
-        hp: 100,
-        armor: 2,
+        hp: 130,
+        armor: 3,
         weapon: 2,
     },
 
+    loomleaf: {
+        drops: {
+            flask: 50,
+        },                
+        hp: 3300,
+        armor: 16,
+        weapon: 6,
+    },
+
+    thudlord: {
+        drops: {
+            flask: 50,
+        },                
+        hp: 1100,
+        armor: 7,
+        weapon: 4,
+    },
     
     kingslime: {
         drops: {
             flask: 50,
         },                
-        hp: 300,
-        armor: 4,
+        hp: 400,
+        armor: 3,
         weapon: 3,
     },
 
     silkshade: {
-        hp: 1000,
-        armor: 2,
-        weapon: 1,
+        hp: 2000,
+        armor: 7,
+        weapon: 6,
     },
 
 
     wildgrin: {
         hp: 140,
-        armor: 2,
-        weapon: 2,
+        armor: 3,
+        weapon: 3,
     },        
     
 
@@ -196,9 +213,9 @@ var Properties = {
         drops: {
             flask: 65,
         },
-        hp: 2,
-        armor: 11,
-        weapon: 1
+        hp: 300,
+        armor: 5,
+        weapon: 6
     },
 
     minimag: {

@@ -79,9 +79,16 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest'], function(Mobs, Items, NPCs
     EntityFactory.builders[Types.Entities.SLIME] = function(id) {
         return new Mobs.Slime(id);
     };
+    EntityFactory.builders[Types.Entities.THUDLORD] = function(id) {
+        return new Mobs.Thudlord(id);
+    };
  
     EntityFactory.builders[Types.Entities.GNASHLING] = function(id) {
         return new Mobs.Gnashling(id);
+    };    
+
+    EntityFactory.builders[Types.Entities.LOOMLEAF] = function(id) {
+        return new Mobs.Loomleaf(id);
     };    
 
     EntityFactory.builders[Types.Entities.WILDGRIN] = function(id) {

@@ -58,6 +58,8 @@ Types = {
         MINIMAG: 200002,
         MEGAMAG: 200004,
         WILDGRIN: 300010,
+        THUDLORD: 300011,
+        LOOMLEAF: 300012,
         
         // Armors
         FIREFOX: 20,
@@ -1407,6 +1409,8 @@ var kinds = {
     boss: [Types.Entities.BOSS, "mob"],
     slime: [Types.Entities.SLIME, "mob"],
     gnashling: [Types.Entities.GNASHLING, "mob"],
+    thudlord: [Types.Entities.THUDLORD, "mob"],
+    loomleaf: [Types.Entities.LOOMLEAF, "mob"],
     redslime: [Types.Entities.REDSLIME, "mob"],
     kingslime: [Types.Entities.KINGSLIME, "mob"],    
     silkshade: [Types.Entities.SILKSHADE, "mob"],      
