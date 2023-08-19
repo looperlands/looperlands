@@ -342,19 +342,7 @@ module.exports = World = cls.Class.extend({
         for(var id in this.outgoingQueues) {
             if(this.outgoingQueues[id].length > 0) {
                 connection = this.server.getConnection(id);
-                if (connection === undefined) {
-                    //console.error("Server connection not found for player ", id);
-                    let cacheKeys = this.server.cache.keys();
-                    for (i in cacheKeys) {
-                        let key = cacheKeys[i];
-                        let cachedBody = this.server.cache.get(key);
-                        if(cachedBody.entityId == id) {
-                            console.error("Found disconnected session for ", id, cachedBody);
-                            cachedBody.disconnected = true;
-                            this.server.cache.set(key, cachedBody);
-                        }
-                    }
-                } else {
+                if (connection !== undefined) {
                     connection.send(this.outgoingQueues[id]);
                 }
                 this.outgoingQueues[id] = [];
