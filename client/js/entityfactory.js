@@ -79,6 +79,21 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest'], function(Mobs, Items, NPCs
     EntityFactory.builders[Types.Entities.SLIME] = function(id) {
         return new Mobs.Slime(id);
     };
+    EntityFactory.builders[Types.Entities.THUDLORD] = function(id) {
+        return new Mobs.Thudlord(id);
+    };
+ 
+    EntityFactory.builders[Types.Entities.GNASHLING] = function(id) {
+        return new Mobs.Gnashling(id);
+    };    
+
+    EntityFactory.builders[Types.Entities.LOOMLEAF] = function(id) {
+        return new Mobs.Loomleaf(id);
+    };    
+
+    EntityFactory.builders[Types.Entities.WILDGRIN] = function(id) {
+        return new Mobs.Wildgrin(id);
+    };      
 
     EntityFactory.builders[Types.Entities.REDSLIME] = function(id) {
         return new Mobs.Redslime(id);
@@ -151,6 +166,9 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest'], function(Mobs, Items, NPCs
 
     EntityFactory.builders[Types.Entities.FLASK] = function(id) {
         return new Items.Flask(id);
+    };
+    EntityFactory.builders[Types.Entities.POTION] = function(id) {
+        return new Items.Potion(id);
     };
     
     EntityFactory.builders[Types.Entities.FIREPOTION] = function(id) {
@@ -250,6 +268,10 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest'], function(Mobs, Items, NPCs
     EntityFactory.builders[Types.Entities.MINER] = function(id) {
         return new NPCs.Miner(id);
     };    
+
+    EntityFactory.builders[Types.Entities.VILLAGESIGN1] = function(id) {
+        return new NPCs.Villagesign1(id);
+    };   
     
     return EntityFactory;
 });

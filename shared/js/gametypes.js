@@ -54,8 +54,12 @@ Types = {
         KINGSLIME: 300004,
         REDSLIME: 300005,
         SILKSHADE: 300006,        
+        GNASHLING: 300007,
         MINIMAG: 200002,
         MEGAMAG: 200004,
+        WILDGRIN: 300010,
+        THUDLORD: 300011,
+        LOOMLEAF: 300012,
         
         // Armors
         FIREFOX: 20,
@@ -68,6 +72,7 @@ Types = {
         
         // Objects
         FLASK: 35,
+        POTION: 300008,
         BURGER: 36,
         CHEST: 37,
         FIREPOTION: 38,
@@ -94,7 +99,7 @@ Types = {
         GOOSE: 1000042,
         TANASHI: 1000043,
         MINER: 1000044,
-        
+        VILLAGESIGN1: 30000001,        
         // Weapons
         SWORD1: 60,
         SWORD2: 61,
@@ -1433,13 +1438,16 @@ var kinds = {
     skeleton2: [Types.Entities.SKELETON2, "mob"],
     boss: [Types.Entities.BOSS, "mob"],
     slime: [Types.Entities.SLIME, "mob"],
+    gnashling: [Types.Entities.GNASHLING, "mob"],
+    thudlord: [Types.Entities.THUDLORD, "mob"],
+    loomleaf: [Types.Entities.LOOMLEAF, "mob"],
     redslime: [Types.Entities.REDSLIME, "mob"],
     kingslime: [Types.Entities.KINGSLIME, "mob"],    
     silkshade: [Types.Entities.SILKSHADE, "mob"],      
     spider: [Types.Entities.SPIDER, "mob"],
     minimag: [Types.Entities.MINIMAG, "mob"],
     megamag: [Types.Entities.MEGAMAG, "mob"],
-
+    wildgrin: [Types.Entities.WILDGRIN, "mob"],
     sword1: [Types.Entities.SWORD1, "weapon"],
     sword2: [Types.Entities.SWORD2, "weapon"],
     axe: [Types.Entities.AXE, "weapon"],
@@ -1457,6 +1465,7 @@ var kinds = {
     goldenarmor: [Types.Entities.GOLDENARMOR, "armor"],
 
     flask: [Types.Entities.FLASK, "object"],
+    potion: [Types.Entities.POTION, "object"],
     cake: [Types.Entities.CAKE, "object"],
     burger: [Types.Entities.BURGER, "object"],
     chest: [Types.Entities.CHEST, "object"],
@@ -1482,6 +1491,7 @@ var kinds = {
     goose: [Types.Entities.GOOSE, "npc"],
     tanashi: [Types.Entities.TANASHI, "npc"],
     miner: [Types.Entities.MINER, "npc"],
+    villagesign1: [Types.Entities.VILLAGESIGN1, "npc"],
 
     //NFT
     NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6: [Types.Entities.NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6, "armor"],
@@ -2866,7 +2876,8 @@ Types.isItem = function(kind) {
 
 Types.isHealingItem = function(kind) {
     return kind === Types.Entities.FLASK 
-        || kind === Types.Entities.BURGER;
+        || kind === Types.Entities.BURGER
+        || kind === Types.Entities.POTION;
 };
 
 Types.isExpendableItem = function(kind) {

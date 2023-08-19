@@ -182,6 +182,11 @@ define(['character'], function(Character) {
             "Now go about your adventure, Looper!"
         ],
 
+        "villagesign1": [
+            "Hushwind Village"
+        ],
+
+
         "miner": [
             "WHAT HAVE WE UNLEASHED?",
             "THE MEGAMAG IS HERE!",

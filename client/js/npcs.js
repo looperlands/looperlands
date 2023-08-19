@@ -123,7 +123,15 @@ define(['npc'], function(Npc) {
             init: function(id) {
                 this._super(id, Types.Entities.MINER, 1);
             }
+        }),
+
+        Villagesign1: Npc.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.VILLAGESIGN1, 1);
+            }
         })
+
+        
 
     };
     
