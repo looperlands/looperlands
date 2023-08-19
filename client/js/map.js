@@ -16,6 +16,7 @@ define(['jquery', 'area'], function($, Area) {
         	this._loadMap(useWorker);
         	this._initTilesets();
             //this._initStreamCheck();
+            this.highTileCache = {};
         },
         
         _checkReady: function() {
@@ -324,7 +325,14 @@ define(['jquery', 'area'], function($, Area) {
          * @see Renderer.drawHighTiles
          */
         isHighTile: function(id) {
-            return _.indexOf(this.high, id+1) >= 0;
+            let cached = this.highTileCache[id];
+            if (cached !== undefined) {
+                return cached;
+            } else {
+                let isHigh = _.indexOf(this.high, id+1) >= 0;
+                this.highTileCache[id] = isHigh;
+                return isHigh;
+            }
         },
     
         /**
