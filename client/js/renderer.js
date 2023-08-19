@@ -635,15 +635,8 @@ function(Camera, Item, Character, Player, Timer, Mob) {
 
             this.animatedTileCount = 0;
             this.game.forEachHighAnimatedTile(function (tile) {
-                if(dirtyOnly) {
-                    if(tile.isDirty) {
-                        self.drawTile(self.context, tile.id, self.tileset, tilesetwidth, m.width, tile.index);
-                        tile.isDirty = false;
-                    }
-                } else {
-                    self.drawTile(self.context, tile.id, self.tileset, tilesetwidth, m.width, tile.index);
-                    self.animatedTileCount += 1;
-                }
+                self.drawTile(self.context, tile.id, self.tileset, tilesetwidth, m.width, tile.index);
+                self.animatedTileCount += 1;
             });
         },
         
