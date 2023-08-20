@@ -152,8 +152,7 @@ var Properties = {
         },        
         hp: 50,
         armor: 2,
-        weapon: 1,
-        XP: 25,
+        weapon: 1
     },
 
     gnashling: {
@@ -162,8 +161,7 @@ var Properties = {
         },                
         hp: 130,
         armor: 3,
-        weapon: 2,
-        XP: 160,
+        weapon: 2
     },
 
     loomleaf: {
@@ -172,8 +170,7 @@ var Properties = {
         },                
         hp: 3300,
         armor: 16,
-        weapon: 6,
-        XP: 1600,
+        weapon: 6
     },
 
     thudlord: {
@@ -182,8 +179,7 @@ var Properties = {
         },                
         hp: 1100,
         armor: 4,
-        weapon: 3,
-        XP: 480,
+        weapon: 3
     },
     
     kingslime: {
@@ -192,15 +188,13 @@ var Properties = {
         },                
         hp: 400,
         armor: 3,
-        weapon: 3,
-        XP: 250,
+        weapon: 3
     },
 
     silkshade: {
         hp: 2000,
         armor: 5,
-        weapon: 4,
-        XP: 960,
+        weapon: 4
     },
 
 
@@ -210,8 +204,7 @@ var Properties = {
         },
         hp: 140,
         armor: 6,
-        weapon: 4,
-        XP: 640
+        weapon: 4
     },        
     
 
@@ -221,8 +214,7 @@ var Properties = {
         },        
         hp: 140,
         armor: 2,
-        weapon: 2,
-        XP: 35,
+        weapon: 2
     },    
 
     spider: {
@@ -231,8 +223,7 @@ var Properties = {
         },
         hp: 300,
         armor: 4,
-        weapon: 3,
-        xp: 320,
+        weapon: 3
     },
 
     minimag: {
