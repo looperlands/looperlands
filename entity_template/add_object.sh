@@ -15,6 +15,8 @@ IMAGE_DIR=$1
 OBJECT_ID=${2^^}
 type=object
 
+grep -q "$OBJECT_ID:" ../shared/js/gametypes.js && echo "Object id already exists" && exit 1
+
 jq ".id=\"${OBJECT_ID}\"" objectspritemap.json > ../client/sprites/$OBJECT_ID.json
 
 for i in {1..3}; do
