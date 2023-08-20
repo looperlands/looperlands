@@ -4,3 +4,4 @@ ID: Item.extend({
         this.lootMessage = "";
     }
 }),
+// @nextItemLine@
