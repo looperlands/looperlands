@@ -76,7 +76,7 @@ Types = {
         BURGER: 36,
         CHEST: 37,
         FIREPOTION: 38,
-        CAKE: 39,// @lastidObject@
+        CAKE: 21300012, // @lastidObject@
         //@nextIdLineObject@
         
         // NPCs
