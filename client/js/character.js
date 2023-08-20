@@ -87,7 +87,7 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
 
             if(_.indexOf(oriented, animation) >= 0) {
                 if(o === Types.Orientations.LEFT) {
-                    this.flipSpriteX = true
+                    this.flipSpriteX = true;
                 }
 
                 if(o === Types.Orientations.LEFT && !this.hasAnimation(animation + '_' + Types.getOrientationAsString(o))) {
