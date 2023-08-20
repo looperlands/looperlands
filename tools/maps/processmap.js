@@ -13,19 +13,19 @@ var map,
 module.exports = function processMap(json, options) {
     var self = this,
         Tiled = json.map,
-		layerIndex = 0,
-		tileIndex = 0,
-		tilesetFilepath = "";
-	
+        layerIndex = 0,
+        tileIndex = 0,
+        tilesetFilepath = "";
+
     map = {
-            width: 0,
-            height: 0,
-            collisions: [],
-            doors: [],
-            checkpoints: []
-        };
+        width: 0,
+        height: 0,
+        collisions: [],
+        doors: [],
+        checkpoints: []
+    };
     mode = options.mode;
-    
+
     if(mode === "client") {
         map.data = [];
         map.high = [];
@@ -41,7 +41,7 @@ module.exports = function processMap(json, options) {
         map.staticChests = [];
         map.staticEntities = {};
     }
-    
+
     console.log("Processing map info...");
     map.width = Tiled.width;
     map.height = Tiled.height;
@@ -53,7 +53,7 @@ module.exports = function processMap(json, options) {
         if(property.name === "c") {
             collidingTiles[id] = true;
         }
-        
+
         if(mode === "client") {
             if(property.name === "v") {
                 map.high.push(id);
@@ -72,7 +72,36 @@ module.exports = function processMap(json, options) {
             }
         }
     }
-    
+
+    var getObjectGroupByName = function(groupName) {
+        for(var i=0; i < Tiled.objectgroup.length; i += 1) {
+            var group = Tiled.objectgroup[i];
+            if(group.name !== groupName) {
+                continue;
+            }
+
+            let objects = group.object;
+            if(objects === undefined) {
+                return null;
+            }
+            if(objects[0] === undefined) {
+                objects = [objects];
+            }
+
+            return objects;
+        }
+    }
+
+    var processGroup = function(groupName, callback) {
+        console.log("Processing " + groupName + "...");
+        var group = getObjectGroupByName(groupName);
+        if(group) {
+            _.each(group, function(object, idx) {
+                callback(object, idx);
+            });
+        }
+    }
+
     if(Tiled.tileset instanceof Array) {
         _.each(Tiled.tileset, function(tileset) {
             if(tileset.name === "tilesheet") {
@@ -106,127 +135,121 @@ module.exports = function processMap(json, options) {
     } else {
         console.error("A tileset is missing");
     }
-    
-    
-    for(var i=0; i < Tiled.objectgroup.length; i += 1) {
-        var group = Tiled.objectgroup[i];
-        if(group.name === 'doors') {
-            var doors = group.object;
-            console.log("Processing doors...");
-            for(var j=0; j < doors.length; j += 1) {
-                map.doors[j] = {
-                    x: doors[j].x / map.tilesize,
-                    y: doors[j].y / map.tilesize,
-                    p: (doors[j].type === 'portal') ? 1 : 0,
-                    map: doors[j].map
-                }
-                var doorprops = doors[j].properties.property;
-                for(var k=0; k < doorprops.length; k += 1) {
-                    map.doors[j]['t'+doorprops[k].name] = doorprops[k].value;
-                }
-            }
+
+    var processDoor = function(door) {
+        let newDoor = {
+            x: door.x / map.tilesize,
+            y: door.y / map.tilesize,
+            p: (door.type === 'portal') ? 1 : 0,
+            map: door.map
         }
+        var doorProps = door.properties.property;
+        for(var k=0; k < doorProps.length; k += 1) {
+            newDoor['t'+doorProps[k].name] = doorProps[k].value;
+        }
+
+        map.doors.push(newDoor);
+    }
+
+    var processRoamingArea = function(area) {
+        var nb = null;
+        if(area.properties) {
+            nb = area.properties.property.value;
+        }
+
+        map.roamingAreas.push({
+            id: i,
+            x: area.x / 16,
+            y: area.y / 16,
+            width: area.width / 16,
+            height: area.height / 16,
+            type: area.type,
+            nb: nb
+        });
+    }
+
+    var processChestArea = function(area) {
+        var chestArea = {
+            x: area.x / map.tilesize,
+            y: area.y / map.tilesize,
+            w: area.width / map.tilesize,
+            h: area.height / map.tilesize
+        };
+        _.each(area.properties.property, function(prop) {
+            if(prop.name === 'items') {
+                chestArea['i'] = _.map(prop.value.split(','), function(name) {
+                    return Types.getKindFromString(name);
+                });
+            } else {
+                chestArea['t'+prop.name] = prop.value;
+            }
+        });
+        map.chestAreas.push(chestArea);
+    }
+
+    var processChest = function(chest) {
+        var items = chest.properties.property.value;
+        var newChest = {
+            x: chest.x / map.tilesize,
+            y: chest.y / map.tilesize,
+            i: _.map(items.split(','), function(name) {
+                return Types.getKindFromString(name);
+            })
+        };
+        map.staticChests.push(newChest);
+    }
+
+    var processMusic = function (music) {
+        var musicArea = {
+            x: music.x / map.tilesize,
+            y: music.y / map.tilesize,
+            w: music.width / map.tilesize,
+            h: music.height / map.tilesize,
+            id: music.properties.property.value
+        };
+        map.musicAreas.push(musicArea);
+    }
+
+    var processCheckpoint = function(checkpoint, idx) {
+        var cp = {
+            id: idx + 1,
+            x: checkpoint.x / map.tilesize,
+            y: checkpoint.y / map.tilesize,
+            w: checkpoint.width / map.tilesize,
+            h: checkpoint.height / map.tilesize
+        };
+
+        if(mode === "server") {
+            cp.s = checkpoint.type ? 1 : 0;
+        }
+
+        map.checkpoints.push(cp);
+    }
+
+    var processPvpZone = function(pvp) {
+        var pvpZone = {
+            x: pvp.x / map.tilesize,
+            y: pvp.y / map.tilesize,
+            w: pvp.width / map.tilesize,
+            h: pvp.height / map.tilesize
+        };
+        map.pvpZones.push(pvpZone);
     }
 
     // Object layers
-    _.each(Tiled.objectgroup, function(objectlayer) {
-        if(objectlayer.name === "roaming" && mode === "server") {
-            console.log("Processing roaming areas...");
-            var areas = objectlayer.object;
-    
-            for(var i=0; i < areas.length; i += 1) {
-                if(areas[i].properties) {
-                    var nb = areas[i].properties.property.value;
-                }
-        
-                map.roamingAreas[i] = {  id: i,
-                                         x: areas[i].x / 16,
-                                         y: areas[i].y / 16,
-                                         width: areas[i].width / 16,
-                                         height: areas[i].height / 16,
-                                         type: areas[i].type,
-                                         nb: nb
-                                       };
-            }
-        }
-        else if(objectlayer.name === "chestareas" && mode === "server") {
-            console.log("Processing chest areas...");
-            _.each(objectlayer.object, function(area) {
-                var chestArea = {
-                    x: area.x / map.tilesize,
-                    y: area.y / map.tilesize,
-                    w: area.width / map.tilesize,
-                    h: area.height / map.tilesize
-                };
-                _.each(area.properties.property, function(prop) {
-                    if(prop.name === 'items') {
-                        chestArea['i'] = _.map(prop.value.split(','), function(name) { 
-                            return Types.getKindFromString(name);
-                        });
-                    } else {
-                        chestArea['t'+prop.name] = prop.value;
-                    }
-                });
-                map.chestAreas.push(chestArea);
-            });
-        }
-        else if(objectlayer.name === "chests" && mode === "server") {
-            console.log("Processing static chests...");
-            _.each(objectlayer.object, function(chest) {
-                var items = chest.properties.property.value;
-                var newChest = {
-                    x: chest.x / map.tilesize,
-                    y: chest.y / map.tilesize,
-                    i: _.map(items.split(','), function(name) {
-                        return Types.getKindFromString(name);
-                    })
-                };
-                map.staticChests.push(newChest);
-            });
-        }
-        else if(objectlayer.name === "music" && mode === "client") {
-            console.log("Processing music areas...");
-            _.each(objectlayer.object, function(music) {
-                var musicArea = {
-                    x: music.x / map.tilesize,
-                    y: music.y / map.tilesize,
-                    w: music.width / map.tilesize,
-                    h: music.height / map.tilesize,
-                    id: music.properties.property.value
-                };
-                map.musicAreas.push(musicArea);
-            });
-        }
-        else if(objectlayer.name === "checkpoints") {
-            console.log("Processing check points...");
-            var count = 0;
-            _.each(objectlayer.object, function(checkpoint) {
-                var cp = {
-                    id: ++count,
-                    x: checkpoint.x / map.tilesize,
-                    y: checkpoint.y / map.tilesize,
-                    w: checkpoint.width / map.tilesize,
-                    h: checkpoint.height / map.tilesize
-                };
-                if(mode === "server") {
-                    cp.s = checkpoint.type ? 1 : 0;
-                }
-                map.checkpoints.push(cp);
-            });
-        }
-        else if(objectlayer.name === "pvpzones" && mode === "client") {
-            console.log("Processing PvP zones...");
-            _.each(objectlayer.object, function(pvp) {
-                var pvpZone = {
-                    x: pvp.x / map.tilesize,
-                    y: pvp.y / map.tilesize,
-                    w: pvp.width / map.tilesize,
-                    h: pvp.height / map.tilesize
-                };
-                map.pvpZones.push(pvpZone);
-            });
-        }
-    });
+    processGroup('doors', processDoor);
+    if (mode === 'server') {
+        processGroup('reaming', processRoamingArea);
+        processGroup('chestareas', processChestArea);
+        processGroup('chests', processChest);
+    }
+
+    if (mode === "client") {
+        processGroup('music', processMusic);
+        processGroup('pvpzones', processPvpZone);
+    }
+
+    processGroup('checkpoints', processCheckpoint);
 
     // Layers
     if(Tiled.layer instanceof Array) {
@@ -236,7 +259,7 @@ module.exports = function processMap(json, options) {
     } else {
         processLayer(Tiled.layer);
     }
-    
+
     if(mode === "client") {
         // Set all undefined tiles to 0
         for(var i=0, max=map.data.length; i < max; i+=1) {
@@ -245,7 +268,7 @@ module.exports = function processMap(json, options) {
             }
         }
     }
-      
+
     return map;
 };
 
@@ -255,7 +278,7 @@ var processLayer = function processLayer(layer) {
         if(layer.name === "entities") {
             console.log("Processing positions of static entities ...");
             var tiles = layer.data.tile;
-            
+
             for(var j=0; j < tiles.length; j += 1) {
                 var gid = tiles[j].gid - mobsFirstgid + 1;
                 if(gid && gid > 0) {
@@ -264,14 +287,14 @@ var processLayer = function processLayer(layer) {
             }
         }
     }
-    
+
     var tiles = layer.data.tile;
-    
+
     if(mode === "client" && layer.name === "blocking") {
         console.log("Processing blocking tiles...");
         for(var i=0; i < tiles.length; i += 1) {
             var gid = tiles[i].gid;
-            
+
             if(gid && gid > 0) {
                 map.blocking.push(i);
             }
@@ -281,7 +304,7 @@ var processLayer = function processLayer(layer) {
         console.log("Processing plateau tiles...");
         for(var i=0; i < tiles.length; i += 1) {
             var gid = tiles[i].gid;
-            
+
             if(gid && gid > 0) {
                 map.plateau.push(i);
             }
@@ -289,7 +312,7 @@ var processLayer = function processLayer(layer) {
     }
     else if(layer.visible !== 0 && layer.name !== "entities") {
         console.log("Processing layer: "+ layer.name);
-        
+
         for(var j=0; j < tiles.length; j += 1) {
             var gid = tiles[j].gid;
 
@@ -307,7 +330,7 @@ var processLayer = function processLayer(layer) {
                     }
                 }
             }
-            
+
             // Colliding tiles
             if(gid in collidingTiles) {
                 map.collisions.push(j);
