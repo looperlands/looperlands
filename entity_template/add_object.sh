@@ -20,7 +20,7 @@ grep -q "$OBJECT_ID:" ../shared/js/gametypes.js && echo "Error: Object id($OBJEC
 jq ".id=\"${OBJECT_ID}\"" objectspritemap.json > ../client/sprites/item-$OBJECT_ID.json
 
 for i in {1..3}; do
-    cp $IMAGE_DIR/$i.png ../client/img/$i/$OBJECT_ID.png
+    cp $IMAGE_DIR/$i.png ../client/img/$i/item-$OBJECT_ID.png
 done
 
 id=`egrep -oh "\:.*([[:digit:]]+)*,.*@lastidObject@" ../shared/js/gametypes.js | cut -d " " -f 2 | cut -d "," -f 1`
@@ -37,7 +37,7 @@ sed -e "s!.*@nextObjectLine@.*!$newLine!g" tmp.js > tmp2.js
 mv tmp2.js ../shared/js/gametypes.js
 rm tmp.js
 
-echo Add the NFT sprite
-newLine="        'text!../sprites/$NFT_ID.json',\n        // @nextSpriteImport@"
-sed -e "s#.*@nextSpriteImport@.*#$newLine#g" ../client/js/sprites.js > tmp.js
+echo Add the object sprite
+newLine="        'text!../sprites/item-$OBJECT_ID.json',\n        // @nextObjectImport@"
+sed -e "s#.*@nextObjectImport@.*#$newLine#g" ../client/js/sprites.js > tmp.js
 mv tmp.js ../client/js/sprites.js
