@@ -28,7 +28,7 @@ echo Adding $OBJECT_ID, $nextId
 
 # Add the objectid
 newLine=",\n        $OBJECT_ID: $nextId // @lastidObject@\n        //@nextIdLineObject@"
-sed -e "s! // @lastidObject@!,!g" -e "s!.*@nextIdLineObject@.*!$newLine!g" ../shared/js/gametypes.js > tmp.js
+sed -e "s! // @lastidObject@!!g" -e "s!.*@nextIdLineObject@.*!$newLine!g" ../shared/js/gametypes.js > tmp.js
 # Add the object type
 newLine="    $OBJECT_ID: [Types.Entities.$OBJECT_ID, \"$type\"],\n    // @nextObjectLine@"
 sed -e "s!.*@nextObjectLine@.*!$newLine!g" tmp.js > tmp2.js
