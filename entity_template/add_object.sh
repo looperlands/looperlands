@@ -17,7 +17,7 @@ type=object
 
 grep -q "$OBJECT_ID:" ../shared/js/gametypes.js && echo "Error: Object id($OBJECT_ID) already exists in gametypes.js" && exit 1
 
-jq ".id=\"${OBJECT_ID}\"" objectspritemap.json > ../client/sprites/$OBJECT_ID.json
+jq ".id=\"${OBJECT_ID}\"" objectspritemap.json > ../client/sprites/item-$OBJECT_ID.json
 
 for i in {1..3}; do
     cp $IMAGE_DIR/$i.png ../client/img/$i/$OBJECT_ID.png
@@ -36,3 +36,8 @@ newLine="    $OBJECT_ID: [Types.Entities.$OBJECT_ID, \"$type\"],\n    // @nextOb
 sed -e "s!.*@nextObjectLine@.*!$newLine!g" tmp.js > tmp2.js
 mv tmp2.js ../shared/js/gametypes.js
 rm tmp.js
+
+echo Add the NFT sprite
+newLine="        'text!../sprites/$NFT_ID.json',\n        // @nextSpriteImport@"
+sed -e "s#.*@nextSpriteImport@.*#$newLine#g" ../client/js/sprites.js > tmp.js
+mv tmp.js ../client/js/sprites.js
