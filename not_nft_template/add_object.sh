@@ -14,4 +14,4 @@ fi
 IMAGE_DIR=$1
 OBJECT_ID=$2
 
-jq ".id=\"${OBJECT_ID}\"" objectspritemap.json > test.txt #../client/sprites/$OBJECT_ID.json
+jq ".id=\"${OBJECT_ID}\"" objectspritemap.json > ../client/sprites/$OBJECT_ID.json
