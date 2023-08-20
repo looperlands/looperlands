@@ -44,3 +44,8 @@ mv tmp.js ../client/js/sprites.js
 newLine="                                \"$OBJECT_ID\",\n                                // @nextObjectLine@"
 sed -e "s#.*@nextObjectLine@.*#$newLine#g" ../client/js/game.js > tmp2.js
 mv tmp2.js ../client/js/game.js
+
+
+newLine="                                \"$OBJECT_ID\",\n                                // @nextItemLine@"
+sed -e "s#.*@nextItemLine@.*#$newLine#g" ../client/js/game.js > tmp2.js
+mv tmp2.js ../client/js/items.js
