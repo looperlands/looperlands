@@ -12,7 +12,7 @@ if [ -z "$2" ]
     exit 1
 fi
 IMAGE_DIR=$1
-OBJECT_ID=$2
+OBJECT_ID=${2^^}
 type=object
 
 jq ".id=\"${OBJECT_ID}\"" objectspritemap.json > ../client/sprites/$OBJECT_ID.json
