@@ -1479,6 +1479,7 @@ var kinds = {
     burger: [Types.Entities.BURGER, "object"],
     chest: [Types.Entities.CHEST, "object"],
     firepotion: [Types.Entities.FIREPOTION, "object"],
+    // @nextObjectLine@
 
     guard: [Types.Entities.GUARD, "npc"],
     villagegirl: [Types.Entities.VILLAGEGIRL, "npc"],
