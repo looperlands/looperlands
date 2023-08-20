@@ -221,6 +221,14 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest'], function(Mobs, Items, NPCs
         return new NPCs.Rick(id);
     };
 
+    EntityFactory.builders[Types.Entities.TORIN] = function(id) {
+        return new NPCs.Torin(id);
+    };    
+
+    EntityFactory.builders[Types.Entities.ELRIC] = function(id) {
+        return new NPCs.Elric(id);
+    };    
+
     EntityFactory.builders[Types.Entities.SCIENTIST] = function(id) {
         return new NPCs.Scientist(id);
     };

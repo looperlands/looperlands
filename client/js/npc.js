@@ -68,6 +68,22 @@ define(['character'], function(Character) {
             'Follow <a href="https://loopworms.io/DEV/LooperLands/QR/qr.php?NPC=rick" target="blank">this link</a> - it might be a Red Packet!',
             "Now go about your adventure, Looper!"
         ],
+
+        "torin": [
+            "Slimes are encroaching on our lands!",
+            "during a misguided attempt to push them back",
+            "our guards lost some of our finest weapons in their gelatinous bodies",
+            "Could you lend us your strength",
+            "and reclaim our village's honor?",
+        ],
+        "elric": [
+            "I'd advise against entering, friend.",
+            "I've been tracking down the cause of the rising slime numbers around here.",
+            "Seems I've discovered it; a fiend of sorts lurks within.",
+            "It appears to be the origin of this mess.",
+            "I'll manage... Just steer clear of that place.",
+        ],
+
         
         "scientist": [
             "Greetings, Looper.",

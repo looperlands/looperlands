@@ -33,6 +33,18 @@ define(['npc'], function(Npc) {
             }
         }),
 
+        Torin: Npc.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.TORIN, 1);
+            }
+        }),
+
+        Elric: Npc.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.ELRIC, 1);
+            }
+        }),        
+        
         VillageGirl: Npc.extend({
             init: function(id) {
                 this._super(id, Types.Entities.VILLAGEGIRL, 1);
