@@ -609,41 +609,27 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             }, 1);
         },
     
-        drawAnimatedTiles: function(dirtyOnly) {
+        drawAnimatedTiles: function() {
             var self = this,
                 m = this.game.map,
                 tilesetwidth = this.tileset.width / m.tilesize;
 
             this.animatedTileCount = 0;
             this.game.forEachAnimatedTile(function (tile) {
-                if(dirtyOnly) {
-                    if(tile.isDirty) {
-                        self.drawTile(self.context, tile.id, self.tileset, tilesetwidth, m.width, tile.index);
-                        tile.isDirty = false;
-                    }
-                } else {
-                    self.drawTile(self.context, tile.id, self.tileset, tilesetwidth, m.width, tile.index);
-                    self.animatedTileCount += 1;
-                }
+                self.drawTile(self.context, tile.id, self.tileset, tilesetwidth, m.width, tile.index);
+                self.animatedTileCount += 1;
             });
         },
 
-        drawHighAnimatedTiles: function(dirtyOnly) {
+        drawHighAnimatedTiles: function() {
             var self = this,
                 m = this.game.map,
                 tilesetwidth = this.tileset.width / m.tilesize;
 
             this.animatedTileCount = 0;
             this.game.forEachHighAnimatedTile(function (tile) {
-                if(dirtyOnly) {
-                    if(tile.isDirty) {
-                        self.drawTile(self.context, tile.id, self.tileset, tilesetwidth, m.width, tile.index);
-                        tile.isDirty = false;
-                    }
-                } else {
-                    self.drawTile(self.context, tile.id, self.tileset, tilesetwidth, m.width, tile.index);
-                    self.animatedTileCount += 1;
-                }
+                self.drawTile(self.context, tile.id, self.tileset, tilesetwidth, m.width, tile.index);
+                self.animatedTileCount += 1;
             });
         },
         
@@ -762,45 +748,28 @@ function(Camera, Item, Character, Player, Timer, Mob) {
         },
 
         renderFrame: function() {
-            this.renderFrameDesktop();
-        },
-    
-        renderFrameDesktop: function() {
             this.clearScreen(this.context);
         
             this.context.save();
-                this.setCameraView(this.context);
-                this.drawAnimatedTiles();
-            
-                if(this.game.started) {
-                    this.drawSelectedCell();
-                    this.drawTargetCell();
-                }
+            this.setCameraView(this.context);
+            this.drawAnimatedTiles();
 
-                //this.drawOccupiedCells();
-                this.drawPathingCells();
-                this.drawEntities();
-                this.drawCombatInfo();
-                this.drawHighTiles(this.context);
-                this.drawHighAnimatedTiles();
+            if(this.game.started) {
+                this.drawSelectedCell();
+                this.drawTargetCell();
+            }
+
+            //this.drawOccupiedCells();
+            this.drawPathingCells();
+            this.drawEntities();
+            this.drawCombatInfo();
+            this.drawHighTiles(this.context);
+            this.drawHighAnimatedTiles();
             this.context.restore();
-        
+
             // Overlay UI elements
             this.drawCursor();
             this.drawDebugInfo();
-        },
-    
-        renderFrameMobile: function() {
-            this.clearDirtyRects();
-            //this.preventFlickeringBug();
-
-            this.context.save();
-                this.setCameraView(this.context);
-                
-                this.drawDirtyAnimatedTiles();
-                this.drawSelectedCell();
-                this.drawDirtyEntities();
-            this.context.restore();
         },
         
         preventFlickeringBug: function() {
