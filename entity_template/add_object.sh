@@ -13,6 +13,7 @@ if [ -z "$2" ]
 fi
 IMAGE_DIR=$1
 OBJECT_ID=$2
+$type=object
 
 jq ".id=\"${OBJECT_ID}\"" objectspritemap.json > ../client/sprites/$OBJECT_ID.json
 
@@ -24,3 +25,12 @@ id=`egrep -oh "\:.*([[:digit:]]+)*,.*@lastidObject@" ../shared/js/gametypes.js |
 echo id: $id
 nextId=$((id+1))
 echo Adding $OBJECT_ID, $nextId
+
+# Add the objectid
+newLine="        $OBJECT_ID: $nextId // @lastidObject@\n        //@nextIdLineObject@"
+sed -e "s! // @lastidObject@!,!g" -e "s!.*@nextIdLineObject@.*!$newLine!g" ../shared/js/gametypes.js > tmp.js
+# Add the object type
+newLine="    $OBJECT_ID: [Types.Entities.$OBJECT_ID, \"$type\"],\n    // @nextIdLineObject@"
+sed -e "s!.*@nextIdLineObject@.*!$newLine!g" tmp.js > tmp2.js
+mv tmp2.js ../shared/js/gametypes.js
+rm tmp.js
