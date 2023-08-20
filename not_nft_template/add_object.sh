@@ -20,7 +20,7 @@ for i in {1..3}; do
     cp $IMAGE_DIR/$i.png ../client/img/$i/$OBJECT_ID.png
 done
 
-id=`egrep -oh "\:.*([[:digit:]]+),*@lastidObject@" ../shared/js/gametypes.js | cut -d " " -f 2`
+id=`egrep -oh "\:.*([[:digit:]]+)*,.*@lastidObject@" ../shared/js/gametypes.js | cut -d " " -f 2 | cut -d "," -f 1`
 echo id: $id
 nextId=$((id+1))
-echo Adding $OBJECT_ID, $type, $nextId
+echo Adding $OBJECT_ID, $nextId
