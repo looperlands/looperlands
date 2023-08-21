@@ -67,10 +67,10 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
     	hasShadow: function() {
     	    return true;
     	},
-	
-    	animate: function(animation, speed, count, onEndCount) {
-    	    var oriented = ['atk', 'walk', 'idle'];
-    	        o = this.orientation;
+
+        animate: function(animation, speed, count, onEndCount) {
+            var oriented = ['atk', 'walk', 'idle'];
+            o = this.orientation;
 
             // don't change animation if the character is dying
             if(this.currentAnimation && this.currentAnimation.name === "death") {
@@ -86,16 +86,19 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
             this.flipSpriteY = false;
 
             if(_.indexOf(oriented, animation) >= 0) {
+                if(o === Types.Orientations.LEFT) {
+                    this.flipSpriteX = true;
+                }
+
                 if(o === Types.Orientations.LEFT && !this.hasAnimation(animation + '_' + Types.getOrientationAsString(o))) {
                     animation += "_right";
-                    this.flipSpriteX = true
                 } else {
                     animation += "_" + Types.getOrientationAsString(o);
                 }
             }
 
             this.setAnimation(animation, speed, count, onEndCount);
-    	},
+        },
 
         turnTo: function(orientation) {
             this.orientation = orientation;
