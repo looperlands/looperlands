@@ -187,6 +187,8 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest'], function(Mobs, Items, NPCs
         return new Chest(id);
     };
 
+    // @nextObjectLine@
+
     //====== NPCs ======
 
     EntityFactory.builders[Types.Entities.GUARD] = function(id) {

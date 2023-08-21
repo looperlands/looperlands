@@ -76,7 +76,8 @@ Types = {
         BURGER: 36,
         CHEST: 37,
         FIREPOTION: 38,
-        CAKE: 39,
+        CAKE: 21300012, // @lastidObject@
+        //@nextIdLineObject@
         
         // NPCs
         GUARD: 40,
@@ -1491,6 +1492,7 @@ var kinds = {
     burger: [Types.Entities.BURGER, "object"],
     chest: [Types.Entities.CHEST, "object"],
     firepotion: [Types.Entities.FIREPOTION, "object"],
+    // @nextObjectLine@
 
     guard: [Types.Entities.GUARD, "npc"],
     villagegirl: [Types.Entities.VILLAGEGIRL, "npc"],

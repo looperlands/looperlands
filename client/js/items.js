@@ -125,6 +125,8 @@ define(['item'], function(Item) {
                 player.startInvincibility();
             },
         }),
+
+        // @nextItemLine@
     };
 
     return Items;
