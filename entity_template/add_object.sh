@@ -1,4 +1,10 @@
 #!/bin/bash
+
+function missingFile() {
+  echo "missing file $1. not adding object"
+  exit 1
+}
+
 if [ -z "$1" ]
   then
     echo "Missing IMG_DIR argument"
@@ -14,6 +20,11 @@ fi
 IMAGE_DIR=$1
 OBJECT_ID=${2^^}
 type=object
+
+stat $IMAGE_DIR/1.png 1> /dev/null ||  missingFile $IMAGE_DIR/1.png
+stat $IMAGE_DIR/2.png 1> /dev/null ||  missingFile $IMAGE_DIR/2.png
+stat $IMAGE_DIR/3.png 1> /dev/null ||  missingFile $IMAGE_DIR/3.png
+
 
 grep -q "$OBJECT_ID:" ../shared/js/gametypes.js && echo "Error: Object id($OBJECT_ID) already exists in gametypes.js" && exit 1
 
