@@ -45,7 +45,11 @@ newLine="                                \"$OBJECT_ID\",\n                      
 sed -e "s#.*@nextObjectLine@.*#$newLine#g" ../client/js/game.js > tmp2.js
 mv tmp2.js ../client/js/game.js
 
-newLine=`sed -e "s/ID/$OBJECT_ID/g" ./item-template.js` 
-echo $newLine
+newLine=`sed -e "s/ID/$OBJECT_ID/g" ./item-template.js`
 sed -e "s#.*@nextItemLine@.*#$newLine#g" ../client/js/items.js > tmp2.js
+mv tmp2.js ../client/js/items.js
+
+newLine=`sed -e "s/ID/$OBJECT_ID/g" ./builder-template.js`
+echo $newLine
+sed -e "s#.*@nextObjectLine@.*#$newLine#g" ../client/js/entityfactory.js > tmp2.js
 mv tmp2.js ../client/js/items.js
