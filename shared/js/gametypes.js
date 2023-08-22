@@ -76,7 +76,8 @@ Types = {
         BURGER: 36,
         CHEST: 37,
         FIREPOTION: 38,
-        CAKE: 21300012, // @lastidObject@
+        CAKE: 21300012,
+        KEY_ARACHWEAVE: 21300013, // @lastidObject@
         //@nextIdLineObject@
         
         // NPCs
@@ -1503,6 +1504,7 @@ var kinds = {
     burger: [Types.Entities.BURGER, "object"],
     chest: [Types.Entities.CHEST, "object"],
     firepotion: [Types.Entities.FIREPOTION, "object"],
+    KEY_ARACHWEAVE: [Types.Entities.KEY_ARACHWEAVE, "object"],
     // @nextObjectLine@
 
     guard: [Types.Entities.GUARD, "npc"],
