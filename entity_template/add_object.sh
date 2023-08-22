@@ -28,7 +28,7 @@ stat $IMAGE_DIR/3.png 1> /dev/null ||  missingFile $IMAGE_DIR/3.png
 
 grep -q "$OBJECT_ID:" ../shared/js/gametypes.js && echo "Error: Object id($OBJECT_ID) already exists in gametypes.js" && exit 1
 
-jq ".id=\"${OBJECT_ID}\"" objectspritemap.json > ../client/sprites/item-$OBJECT_ID.json
+jq ".id=\"item-${OBJECT_ID}\"" objectspritemap.json > ../client/sprites/item-$OBJECT_ID.json
 
 for i in {1..3}; do
     cp $IMAGE_DIR/$i.png ../client/img/$i/item-$OBJECT_ID.png
