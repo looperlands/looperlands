@@ -118,6 +118,10 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest'], function(Mobs, Items, NPCs
         return new Mobs.Megamag(id);
     };
 
+    EntityFactory.builders[Types.Entities.COBCHICKEN] = function(id) {
+        return new Mobs.Cobchicken(id);
+    };
+
     //===== items ======
  
     EntityFactory.builders[Types.Entities.SWORD2] = function(id) {

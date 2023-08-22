@@ -1,0 +1,45 @@
+{
+	"id": "cobchicken",
+	"width": 16,
+	"height": 16,
+	"animations": {
+		"walk_down": {
+			"length": 4,
+			"row": 0
+		},
+		"atk_down": {
+			"length": 4,
+			"row": 0
+		},
+		"walk_up": {
+			"length": 4,
+			"row": 1
+		},
+		"atk_up": {
+			"length": 4,
+			"row": 1
+		},
+		"walk_right": {
+			"length": 4,
+			"row": 2
+		},
+		"atk_right": {
+			"length": 4,
+			"row": 2
+		},
+		"idle_down": {
+			"length": 4,
+			"row": 3
+		},
+		"idle_right": {
+			"length": 4,
+			"row": 3
+		},
+		"idle_up": {
+			"length": 4,
+			"row": 3
+		}
+	},
+	"offset_x": 0,
+	"offset_y": 0
+}

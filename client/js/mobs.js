@@ -335,7 +335,16 @@ define(['mob', 'timer'], function(Mob, Timer) {
                     smashAoe(rootTarget);
                 }, 2000); // Change this duration also in server/worldserver.js      
             }
-        }) 
+        }),
+        
+        Cobchicken: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.COBCHICKEN);
+                this.idleSpeed = 500;
+                this.walkSpeed = 125;
+                this.moveSpeed = 150;
+            }
+        })
     };
     return Mobs;
 });

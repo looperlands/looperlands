@@ -257,6 +257,12 @@ var Properties = {
         },
         messages: ['Perish!', 'Be gone!', 'Burn!', 'Wither!', 'Suffer!'],
         respawnDelay: 1800000
+    },
+
+    cobchicken: {
+        hp: 10,
+        armor: 1,
+        weapon: 1
     }
 };
 

@@ -60,6 +60,7 @@ Types = {
         WILDGRIN: 300010,
         THUDLORD: 300011,
         LOOMLEAF: 300012,
+        COBCHICKEN: 400001,
         
         // Armors
         FIREFOX: 20,
@@ -1469,6 +1470,7 @@ var kinds = {
     minimag: [Types.Entities.MINIMAG, "mob"],
     megamag: [Types.Entities.MEGAMAG, "mob"],
     wildgrin: [Types.Entities.WILDGRIN, "mob"],
+    cobchicken: [Types.Entities.COBCHICKEN, "mob"],
     sword1: [Types.Entities.SWORD1, "weapon"],
     sword2: [Types.Entities.SWORD2, "weapon"],
     axe: [Types.Entities.AXE, "weapon"],
