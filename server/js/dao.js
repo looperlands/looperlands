@@ -284,6 +284,27 @@ exports.saveAvatarCheckpointId = async function(nft, checkpointId) {
   }
 }
 
+LOOT_EVENTS_QUEUE = []
+
+processLootEventQueue = async function() {
+  //console.log("Clearing loot event queue with length: ", LOOT_EVENTS_QUEUE.length, LOOT_EVENTS_QUEUE);
+  LOOT_EVENTS_QUEUE = []
+}
+
+let LOOT_QUEUE_INTERVAL = undefined;
+
+exports.saveLootEvent = async function(avatarId, itemId) {
+  if (LOOT_QUEUE_INTERVAL === undefined) {
+    // save the loot event queue every 30 seconds
+    LOOT_QUEUE_INTERVAL = setInterval(processLootEventQueue, 1000 * 30);
+  }
+
+  LOOT_EVENTS_QUEUE.push({avatarId: avatarId, itemId: itemId});
+  //console.log("Queue length: ", LOOT_EVENTS_QUEUE.length, LOOT_EVENTS_QUEUE);
+}
+
+
+
 exports.updateExperience = updateExperience;
 exports.saveCharacterData = saveCharacterData;
 exports.getCharacterData = getCharacterData;
