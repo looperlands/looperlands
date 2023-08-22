@@ -1,0 +1,1 @@
+    EntityFactory.builders[Types.Entities.ID]=function(id){return new ID(id);};\n    // @nextObjectLine@
