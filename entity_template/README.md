@@ -9,9 +9,10 @@ An entity can be the following:
 
 # Add an Item
 Example add:
+The following commands require being in the `looperlands/entity_template` directory.
 
 ```bash
-./add_object.sh template_key_image/ key_69
+./add_object.sh template_key_image/ key_example
 ```
 
 Run this if you are not happy with the output of the above or there was an error.
