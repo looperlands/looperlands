@@ -286,9 +286,32 @@ exports.saveAvatarCheckpointId = async function(nft, checkpointId) {
 
 LOOT_EVENTS_QUEUE = []
 
-processLootEventQueue = async function() {
-  //console.log("Clearing loot event queue with length: ", LOOT_EVENTS_QUEUE.length, LOOT_EVENTS_QUEUE);
-  LOOT_EVENTS_QUEUE = []
+processLootEventQueue = async function(retry) {
+  if (!LOOT_EVENTS_QUEUE?.length) {
+    return;
+  }
+
+  const options = {
+    headers: {
+      'X-Api-Key': API_KEY,
+      'Content-Type': 'application/json'
+    }
+  }
+
+  const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/saveItemJson.php`;
+
+  try {
+    let response = await axios.post(url, LOOT_EVENTS_QUEUE, options);
+    LOOT_EVENTS_QUEUE = [];
+  } catch (error) {
+    if (retry === undefined) {
+      retry = MAX_RETRY_COUNT;
+    }
+    retry -= 1;
+    if (retry > 0) {
+      processLootEventQueue(retry);
+    }
+  }
 }
 
 let LOOT_QUEUE_INTERVAL = undefined;
@@ -300,7 +323,6 @@ exports.saveLootEvent = async function(avatarId, itemId) {
   }
 
   LOOT_EVENTS_QUEUE.push({avatarId: avatarId, itemId: itemId});
-  //console.log("Queue length: ", LOOT_EVENTS_QUEUE.length, LOOT_EVENTS_QUEUE);
 }
 
 
