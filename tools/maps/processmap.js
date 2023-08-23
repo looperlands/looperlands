@@ -138,8 +138,8 @@ module.exports = function processMap(json, options) {
 
     var processDoor = function(door) {
         let newDoor = {
-            x: door.x / map.tilesize,
-            y: door.y / map.tilesize,
+            x: Math.round(door.x / map.tilesize),
+            y: Math.round(door.y / map.tilesize),
             p: (door.type === 'portal') ? 1 : 0,
             map: door.map
         }
@@ -159,10 +159,10 @@ module.exports = function processMap(json, options) {
 
         map.roamingAreas.push({
             id: i,
-            x: area.x / 16,
-            y: area.y / 16,
-            width: area.width / 16,
-            height: area.height / 16,
+            x: Math.round(area.x / 16),
+            y: Math.round(area.y / 16),
+            width: Math.round(area.width / 16),
+            height: Math.round((area.height / 16),
             type: area.type,
             nb: nb
         });
@@ -170,10 +170,10 @@ module.exports = function processMap(json, options) {
 
     var processChestArea = function(area) {
         var chestArea = {
-            x: area.x / map.tilesize,
-            y: area.y / map.tilesize,
-            w: area.width / map.tilesize,
-            h: area.height / map.tilesize
+            x: Math.round(area.x / map.tilesize),
+            y: Math.round(area.y / map.tilesize),
+            w: Math.round(area.width / map.tilesize),
+            h: Math.round(area.height / map.tilesize)
         };
         _.each(area.properties.property, function(prop) {
             if(prop.name === 'items') {
@@ -190,8 +190,8 @@ module.exports = function processMap(json, options) {
     var processChest = function(chest) {
         var items = chest.properties.property.value;
         var newChest = {
-            x: chest.x / map.tilesize,
-            y: chest.y / map.tilesize,
+            x: Math.round(chest.x / map.tilesize),
+            y: Math.round(chest.y / map.tilesize),
             i: _.map(items.split(','), function(name) {
                 return Types.getKindFromString(name);
             })
@@ -201,10 +201,10 @@ module.exports = function processMap(json, options) {
 
     var processMusic = function (music) {
         var musicArea = {
-            x: music.x / map.tilesize,
-            y: music.y / map.tilesize,
-            w: music.width / map.tilesize,
-            h: music.height / map.tilesize,
+            x: Math.round(music.x / map.tilesize),
+            y: Math.round(music.y / map.tilesize),
+            w: Math.round(music.width / map.tilesize),
+            h: Math.round(music.height / map.tilesize),
             id: music.properties.property.value
         };
         map.musicAreas.push(musicArea);
@@ -213,10 +213,10 @@ module.exports = function processMap(json, options) {
     var processCheckpoint = function(checkpoint, idx) {
         var cp = {
             id: idx + 1,
-            x: checkpoint.x / map.tilesize,
-            y: checkpoint.y / map.tilesize,
-            w: checkpoint.width / map.tilesize,
-            h: checkpoint.height / map.tilesize
+            x: Math.round(checkpoint.x / map.tilesize,
+            y: Math.round(checkpoint.y / map.tilesize,
+            w: Math.round(checkpoint.width / map.tilesize,
+            h: Math.round(checkpoint.height / map.tilesize)
         };
 
         if(mode === "server") {
@@ -228,10 +228,10 @@ module.exports = function processMap(json, options) {
 
     var processPvpZone = function(pvp) {
         var pvpZone = {
-            x: pvp.x / map.tilesize,
-            y: pvp.y / map.tilesize,
-            w: pvp.width / map.tilesize,
-            h: pvp.height / map.tilesize
+            x: Math.round(pvp.x / map.tilesize),
+            y: Math.round(pvp.y / map.tilesize),
+            w: Math.round(pvp.width / map.tilesize),
+            h: Math.round(pvp.height / map.tilesize)
         };
         map.pvpZones.push(pvpZone);
     }
