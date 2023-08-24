@@ -100,3 +100,6 @@ echo $nftsToAddJSON | jq -r '.[] | {short_nftid, asset_type, looper_name, projec
 done
 
 git push --set-upstream origin $BRANCH_NAME
+git checkout main
+git merge $BRANCH_NAME
+git push
