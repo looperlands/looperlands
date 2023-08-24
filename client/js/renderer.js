@@ -352,8 +352,10 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                     this.context.save();
                     this.context.globalAlpha = entity.fadingAlpha;
                 }
-            
+                
+                if(!(entity instanceof Mob && entity.isFriendly)) { // friendly mobs render nameless
                 this.drawEntityName(entity, sprite.offsetY);
+                }
                 
                 this.context.save();
                 if(entity.flipSpriteX) {

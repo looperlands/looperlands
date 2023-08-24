@@ -219,7 +219,7 @@ module.exports = Player = Character.extend({
                                 let entityIds = Object.keys(group.entities);
                                 entityIds.forEach(function(id) {
                                     let entity = group.entities[id];
-                                    if (entity.type !== undefined && entity.type === 'mob') {
+                                    if (entity.type !== undefined && entity.type === 'mob' && !Properties[Types.getKindAsString(entity.kind)].friendly) {
                                         let distance = Utils.distanceTo(self.x, self.y, entity.x, entity.y);
                                         if (mob.id === entity.id) {
                                             handleDamage(mob, totalLevel, 1);

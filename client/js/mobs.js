@@ -341,8 +341,17 @@ define(['mob', 'timer'], function(Mob, Timer) {
             init: function(id) {
                 this._super(id, Types.Entities.COBCHICKEN);
                 this.idleSpeed = 500;
-                this.walkSpeed = 125;
-                this.moveSpeed = 150;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
             }
         })
     };

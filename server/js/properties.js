@@ -262,7 +262,8 @@ var Properties = {
     cobchicken: {
         hp: 10,
         armor: 1,
-        weapon: 1
+        weapon: 1,
+        friendly: true
     }
 };
 
