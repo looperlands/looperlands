@@ -213,9 +213,9 @@ module.exports = function processMap(json, options) {
     var processCheckpoint = function(checkpoint, idx) {
         var cp = {
             id: idx + 1,
-            x: Math.round(checkpoint.x / map.tilesize,
-            y: Math.round(checkpoint.y / map.tilesize,
-            w: Math.round(checkpoint.width / map.tilesize,
+            x: Math.round(checkpoint.x / map.tilesize),
+            y: Math.round(checkpoint.y / map.tilesize),
+            w: Math.round(checkpoint.width / map.tilesize),
             h: Math.round(checkpoint.height / map.tilesize)
         };
 
