@@ -596,6 +596,9 @@ module.exports = World = cls.Class.extend({
                 this.distributeExp(mob);
                 // Distribute exp first, so the multiplier doesnt apply to this kill (that would be OP)
                 this.handleExpMultiplierOnDeath(mob);
+                if (attacker.type === 'player') {
+                    dao.saveMobKillEvent(attacker.nftId, mob.kind);
+                }
             }
     
             if(entity.type === "player") {
