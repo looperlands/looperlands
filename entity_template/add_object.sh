@@ -14,7 +14,7 @@ fi
 if [ -z "$2" ]
   then
     echo "Missing new object id argument"
-    echo "Object id examples: superpotion,key_55 where 55 is the id of the key stored in the DB and checked against a door"
+    echo "Object id examples: SUPERPOTION, PANDACLAW"
     exit 1
 fi
 IMAGE_DIR=$1

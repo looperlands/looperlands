@@ -2428,6 +2428,20 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                             }).finally(function(e) {
                                 _self.doorCheck = false;
                             });
+                        } else if (dest.item !== undefined) {
+                            let url = '/session/' + self.sessionId + '/ownsItem/' + dest.item;
+                            _self.doorCheck = true;
+                            axios.get(url).then(function (response) {
+                                if (response.data === true) {
+                                    checkTrigger();
+                                } else {
+                                    _self.showNotification("You do not have the required item to enter.");
+                                }
+                            }).catch(function (error) {
+                                console.error("Error while checking ownership of token gate.");
+                            }).finally(function(e) {
+                                _self.doorCheck = false;
+                            });
                         } else {
                             checkTrigger();
                         }

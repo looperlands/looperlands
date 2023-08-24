@@ -325,7 +325,46 @@ exports.saveLootEvent = async function(avatarId, itemId) {
   LOOT_EVENTS_QUEUE.push({avatarId: avatarId, itemId: itemId});
 }
 
+exports.getItemCount = async function(avatarId, itemId, retry) {
 
+  const options = {
+    headers: {
+      'X-Api-Key': API_KEY
+    }
+  }
+
+  const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/loadItem.php?NFTID=${avatarId}&itemId=${itemId}`;
+
+  try {
+    const response = await axios.get(url, options);
+    return response.data;
+  } catch (error) {
+    if (retry === undefined) {
+      retry = MAX_RETRY_COUNT;
+    }
+    retry -= 1;
+    if (retry > 0) {
+      return this.getItemCount(avatarId, itemId, retry);
+    } else {
+      console.error("getItemCount", error);
+    }
+  }
+}
+
+exports.avatarHasItem = async function(avatarId, itemId) {
+  let cached = daoCache.get(`${avatarId}_${itemId}`);
+  //console.log("Cached value for ", avatarId, itemId, cached);
+  if (cached !== undefined) {
+    return cached;
+  }
+
+  const itemCount = await this.getItemCount(avatarId, itemId);
+
+  let result = itemCount !== undefined && itemCount > 0;
+  daoCache.set(`${avatarId}_${itemId}`, result, 30);
+  //console.log("avatarHasItem", avatarId, itemId, result)
+  return result;
+}
 
 exports.updateExperience = updateExperience;
 exports.saveCharacterData = saveCharacterData;
