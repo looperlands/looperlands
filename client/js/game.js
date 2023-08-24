@@ -72,6 +72,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 "platearmor", "redarmor", "goldenarmor", "firefox", "death", "sword1","torin","elric", "axe", "chest",
                                 "sword2", "redsword", "bluesword", "goldensword", "item-sword2", "item-axe", "item-redsword", "item-bluesword", "item-goldensword", "item-leatherarmor", "item-mailarmor", 
                                 "item-platearmor", "item-redarmor", "item-goldenarmor", "item-flask", "item-potion","item-cake", "item-burger", "morningstar", "item-morningstar", "item-firepotion",
+                                "item-KEY_ARACHWEAVE",
                                 // @nextObjectLine@
                                 "NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6",
                                 "NFT_38278eacc7d1c86fdbc85d798dca146fbca59a2e5e567dc15898ce2edac21f5f",
@@ -1403,6 +1404,23 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 "NFT_c0ebcde38a48651f1125c376f51094c6bcfef7494f5da0b6f7d9829b0e0df4dc",
                                 "NFT_cab59f1e0e4728b987342a5c27b7cffecc7e06c235c9df1e825bda399a233d87",
                                 "NFT_e35d91ee21c1110447790dde046abe498c74172ba6f87905001d28bda5441cf4",
+                                "NFT_056ae6fa15596c23c69628f5f09ad2c6c85072b4453d0ec4bb5ee550825055ed",
+                                "NFT_10d2ce6cfe0f235b1cdb3d4cf828251bfd1cc5c605f1e0282d8b83723aece50d",
+                                "NFT_23566c5b2912c093859d03be76d8c486d929bb3a9a807169da778618e4dbe3b5",
+                                "NFT_4acbbd4fc6a187d3aa9c904acfadd29d311f3701c33808a395cc584217f3a449",
+                                "NFT_4fc4ef65c43106724a9e31df69c370909628043b8c392979bfb2ad8fbf00dd2f",
+                                "NFT_5e1c5f1ba951966beb1e8c16b7bc9c7312c0a3c5700d32981cbc6abd79d8f5b1",
+                                "NFT_617a95a4b0c9e4b03f5bc00936aaa50c39c58b40c46e86c78e641927782696ef",
+                                "NFT_792e952caeb65024a0e503221d6e9e3ba0e7267bf5313ea663143494ffb3af0d",
+                                "NFT_81e1a02bdf6f984569508c5c8797f238254e351a334f5a748a83d6bfbf165751",
+                                "NFT_b5159ee16b347aa7ad18f2aaea46312a8e5ca7334d4ac677814c98dc2a524498",
+                                "NFT_d57b2fe25a9ba7dc91bf160a14cb51b61f37a6c551687655c9a3587f4e1fdcd9",
+                                "NFT_ea879b7be3e3876dda4ceab3031718904fb27d2463df153ceb83dcb7578278f3",
+                                "NFT_01348c01000000000000000002386f26fc1000000000000000000000000003d3",
+                                "NFT_222d56c3ef463b685a6c2fa413ee8ef7e010f66d935a97668a002d644c794b5b",
+                                "NFT_229e065ad1a2261f837b42ef797a113b449988f30e07f0ca0d61e03fce146fcc",
+                                "NFT_75507fe93104e10d92728fdc2bd1f278f3430565493dd582a7110e41563148e6",
+                                "NFT_9a2391f19fe124609c39895f3f3d01be02e4810e8696e4a927a847947650fa83",
                                 // @nextSpriteLine@
                             ];                          
         },
@@ -2409,6 +2427,20 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                     checkTrigger()
                                 } else {
                                     _self.showNotification("You don't own the required NFT to enter.");
+                                }
+                            }).catch(function (error) {
+                                console.error("Error while checking ownership of token gate.");
+                            }).finally(function(e) {
+                                _self.doorCheck = false;
+                            });
+                        } else if (dest.item !== undefined) {
+                            let url = '/session/' + self.sessionId + '/ownsItem/' + dest.item;
+                            _self.doorCheck = true;
+                            axios.get(url).then(function (response) {
+                                if (response.data === true) {
+                                    checkTrigger();
+                                } else {
+                                    _self.showNotification("You do not have the required item to enter.");
                                 }
                             }).catch(function (error) {
                                 console.error("Error while checking ownership of token gate.");

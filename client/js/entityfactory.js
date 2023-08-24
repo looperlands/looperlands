@@ -191,6 +191,7 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest'], function(Mobs, Items, NPCs
         return new Chest(id);
     };
 
+    EntityFactory.builders[Types.Entities.KEY_ARACHWEAVE]=function(id){return new Items.KEY_ARACHWEAVE(id);};
     // @nextObjectLine@
 
     //====== NPCs ======

@@ -126,6 +126,7 @@ define(['item'], function(Item) {
             },
         }),
 
+        KEY_ARACHWEAVE:Item.extend({init:function(id){this._super(id,Types.Entities.KEY_ARACHWEAVE,"object");this.lootMessage="";}}),
         // @nextItemLine@
     };
 

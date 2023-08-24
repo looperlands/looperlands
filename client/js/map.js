@@ -191,7 +191,8 @@ define(['jquery', 'area'], function($, Area) {
                     portal: door.p === 1,
                     nft: door.tnft,
                     map: door.tmap,
-                    triggerId: door.ttid
+                    triggerId: door.ttid,
+                    item: door.titem,
                 };
             });
         

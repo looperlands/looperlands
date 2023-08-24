@@ -353,7 +353,28 @@ WS.socketIOServer = Server.extend({
                 const result = await axios.get(url);
                 res.status(200).json(result.data);
             }
-            
+
+        });
+
+        app.get("/session/:sessionId/ownsItem/:itemId", async (req, res) => {
+            const sessionId = req.params.sessionId;
+            const itemId = req.params.itemId;
+            const entityItemId = Types.getKindFromString(itemId);
+
+            const sessionData = cache.get(sessionId);
+            if (sessionData === undefined) {
+                //console.error("Session data is undefined for session id, params: ", sessionId, req.params);
+                res.status(404).json({
+                    status: false,
+                    "error" : "session not found",
+                    user: null
+                });
+
+            } else {
+                const nftId = sessionData.nftId;
+                let owned = await dao.avatarHasItem(nftId, entityItemId)
+                res.status(200).json(owned);
+            }
         });
 
         app.get("/:mapId/player/:playerId/owns/:nftId", async (req, res) => {

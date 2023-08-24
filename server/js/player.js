@@ -298,6 +298,9 @@ module.exports = Player = Character.extend({
                         } else if(Types.isWeapon(kind) && self.getNFTWeapon() === undefined) {
                             self.equipItem(item);
                             self.broadcast(self.equip(kind));
+                        } else {
+                            // All other items are considered collectible and can be stacked
+                            dao.saveLootEvent(self.nftId, kind);
                         }
                     }
                 }

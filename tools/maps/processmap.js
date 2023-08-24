@@ -239,7 +239,7 @@ module.exports = function processMap(json, options) {
     // Object layers
     processGroup('doors', processDoor);
     if (mode === 'server') {
-        processGroup('reaming', processRoamingArea);
+        processGroup('roaming', processRoamingArea);
         processGroup('chestareas', processChestArea);
         processGroup('chests', processChest);
     }
