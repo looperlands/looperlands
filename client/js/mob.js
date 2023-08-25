@@ -7,10 +7,13 @@ define(['character'], function(Character) {
         
             this.aggroRange = 1;
             this.isAggressive = true;
-            this.isFriendly = false;
 
             this.animationLock = false;
             this.nameOffsetY = -10;
+        },
+
+        breakFriendly: function(){
+            return;
         }
     });
     

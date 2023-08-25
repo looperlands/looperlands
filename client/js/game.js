@@ -67,7 +67,8 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             // sprites
             this.spriteNames = ["hand", "sword", "loot", "target", "talk", "sparks", "shadow16", "rat", "skeleton", "skeleton2", "spectre", "boss", "deathknight", 
                                 "ogre", "crab", "snake", "eye", "bat", "goblin", "wizard", "guard", "king", "villagegirl", "villager", "coder", "agent", "rick", "scientist", "nyan", "priest", 
-                                "king2", "goose", "tanashi", "slime","kingslime","silkshade","redslime","villagesign1","wildgrin","loomleaf","gnashling","spider", "minimag", "miner", "megamag", "cobchicken",
+                                "king2", "goose", "tanashi", "slime","kingslime","silkshade","redslime","villagesign1","wildgrin","loomleaf","gnashling","spider", "minimag", "miner", "megamag", 
+                                "cobchicken", "cobcow", "cobpig", "cobgoat", "ghostie",
                                 "sorcerer", "octocat", "beachnpc", "forestnpc", "desertnpc", "lavanpc","thudlord", "clotharmor", "leatherarmor", "mailarmor",
                                 "platearmor", "redarmor", "goldenarmor", "firefox", "death", "sword1","torin","elric", "axe", "chest",
                                 "sword2", "redsword", "bluesword", "goldensword", "item-sword2", "item-axe", "item-redsword", "item-bluesword", "item-goldensword", "item-leatherarmor", "item-mailarmor", 
@@ -2207,7 +2208,11 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 
                 self.player.onCheckAggro(function() {
                     self.forEachMob(function(mob) {
-                        if(mob.isAggressive && !mob.isFriendly && !mob.isAttacking() && self.player.isNear(mob, mob.aggroRange)) {
+                        if(mob.isAggressive 
+                        && (!mob.isFriendly || mob.breakFriendly(self.player)) 
+                        && !mob.isAttacking() 
+                        && self.player.isNear(mob, mob.aggroRange)) 
+                        {
                             self.player.aggro(mob);
                         }
                     });
@@ -2216,6 +2221,10 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 self.player.onAggro(function(mob) {
                     if(!mob.isWaitingToAttack(self.player) && !self.player.isAttackedBy(mob) && !self.player.isDead) {
                         self.player.log_info("Aggroed by " + mob.id + " at ("+self.player.gridX+", "+self.player.gridY+")");
+                        if(mob.aggroMessage != undefined) {
+                            self.createBubble(mob.id, mob.aggroMessage);
+                            self.assignBubbleTo(mob);
+                        }
                         self.client.sendAggro(mob);
                         mob.waitToAttack(self.player);
                     }

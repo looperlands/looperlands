@@ -61,6 +61,10 @@ Types = {
         THUDLORD: 300011,
         LOOMLEAF: 300012,
         COBCHICKEN: 400001,
+        COBCOW: 400002,
+        COBPIG: 400003,
+        COBGOAT: 400004,
+        GHOSTIE: 400005,
         
         // Armors
         FIREFOX: 20,
@@ -1501,6 +1505,10 @@ var kinds = {
     megamag: [Types.Entities.MEGAMAG, "mob"],
     wildgrin: [Types.Entities.WILDGRIN, "mob"],
     cobchicken: [Types.Entities.COBCHICKEN, "mob"],
+    cobcow: [Types.Entities.COBCOW, "mob"],
+    cobpig: [Types.Entities.COBPIG, "mob"],
+    cobgoat: [Types.Entities.COBGOAT, "mob"],
+    ghostie: [Types.Entities.GHOSTIE, "mob"],
     sword1: [Types.Entities.SWORD1, "weapon"],
     sword2: [Types.Entities.SWORD2, "weapon"],
     axe: [Types.Entities.AXE, "weapon"],

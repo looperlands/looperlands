@@ -122,6 +122,22 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest'], function(Mobs, Items, NPCs
         return new Mobs.Cobchicken(id);
     };
 
+    EntityFactory.builders[Types.Entities.COBCOW] = function(id) {
+        return new Mobs.Cobcow(id);
+    };
+
+    EntityFactory.builders[Types.Entities.COBPIG] = function(id) {
+        return new Mobs.Cobpig(id);
+    };
+
+    EntityFactory.builders[Types.Entities.COBGOAT] = function(id) {
+        return new Mobs.Cobgoat(id);
+    };
+
+    EntityFactory.builders[Types.Entities.GHOSTIE] = function(id) {
+        return new Mobs.Ghostie(id);
+    };
+
     //===== items ======
  
     EntityFactory.builders[Types.Entities.SWORD2] = function(id) {

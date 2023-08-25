@@ -353,7 +353,101 @@ define(['mob', 'timer'], function(Mob, Timer) {
                     this._super(orientation);
                 }
             }
-        })
+        }),
+
+        Cobcow: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.COBCOW);
+                this.idleSpeed = 500;
+                this.walkSpeed = 350;
+                this.moveSpeed = 500;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
+        Cobpig: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.COBPIG);
+                this.idleSpeed = 500;
+                this.walkSpeed = 300;
+                this.moveSpeed = 400;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
+        Cobgoat: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.COBGOAT);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
+        Ghostie: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.GHOSTIE);
+                this.idleSpeed = 500;
+                this.walkSpeed = 200;
+                this.atkSpeed = 100;
+                this.moveSpeed = 250;
+                this.aggroRange = 3;
+        		this.setAttackRate(1250);
+                this.deathAnimated = true;
+                this.isFriendly = true;
+                this.setVisible(false);
+                this.aggroMessage = "Boo!";
+            },
+
+            breakFriendly: function(player) {
+                if (this.isFriendly && this.isNear(player, 2) && !this.disengaging){
+                    this.isFriendly = false;
+                    this.setVisible(true);
+                    this.fadeIn(new Date().getTime());
+                    return true;
+                }
+                return false;
+            },
+
+            disengage: function() {
+                let self = this;
+
+                this.attackingMode = false;
+                this.followingMode = false;
+                this.removeTarget();
+                this.isFriendly = true;
+                
+                this.disengaging = setTimeout(function() {
+                    self.setVisible(false);
+                    self.disengaging = null;
+                }, 1000)  
+            }
+        }),
     };
     return Mobs;
 });

@@ -264,6 +264,36 @@ var Properties = {
         armor: 1,
         weapon: 1,
         friendly: true
+    },
+
+    cobcow: {
+        hp: 100,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    
+    cobpig: {
+        hp: 60,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    
+    cobgoat: {
+        hp: 35,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+
+    ghostie: {
+        drops: {
+            flask: 50
+        },
+        hp: 300,
+        armor: 3,
+        weapon: 3,
     }
 };
 
