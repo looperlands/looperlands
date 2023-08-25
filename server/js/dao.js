@@ -366,6 +366,48 @@ exports.avatarHasItem = async function(avatarId, itemId) {
   return result;
 }
 
+
+MOB_KILL_QUEUE = []
+processMobKillEventQueue = async function(retry) {
+  if (!MOB_KILL_QUEUE?.length) {
+    return;
+  }
+
+  const options = {
+    headers: {
+      'X-Api-Key': API_KEY,
+      'Content-Type': 'application/json'
+    }
+  }
+
+  const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/saveMobJson.php`;
+
+  try {
+    let response = await axios.post(url, MOB_KILL_QUEUE, options);
+    MOB_KILL_QUEUE = [];
+  } catch (error) {
+    if (retry === undefined) {
+      retry = MAX_RETRY_COUNT;
+    }
+    retry -= 1;
+    if (retry > 0) {
+      processMobKillEventQueue(retry);
+    }
+  }
+}
+
+let MOB_KILL_QUEUE_INTERVAL = undefined;
+
+exports.saveMobKillEvent = async function(avatarId, mobId) {
+  if (MOB_KILL_QUEUE_INTERVAL === undefined) {
+    // save the loot event queue every 30 seconds
+    MOB_KILL_QUEUE_INTERVAL = setInterval(processMobKillEventQueue, 1000 * 30);
+  }
+
+  MOB_KILL_QUEUE.push({avatarId: avatarId, mobId: mobId});
+}
+
+
 exports.updateExperience = updateExperience;
 exports.saveCharacterData = saveCharacterData;
 exports.getCharacterData = getCharacterData;
