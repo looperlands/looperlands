@@ -151,14 +151,14 @@ module.exports = function processMap(json, options) {
         map.doors.push(newDoor);
     }
 
-    var processRoamingArea = function(area) {
+    var processRoamingArea = function(area, idx) {
         var nb = null;
         if(area.properties) {
             nb = area.properties.property.value;
         }
 
         map.roamingAreas.push({
-            id: i,
+            id: idx,
             x: area.x / 16,
             y: area.y / 16,
             width: area.width / 16,

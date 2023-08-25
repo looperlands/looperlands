@@ -10,6 +10,10 @@ define(['character'], function(Character) {
 
             this.animationLock = false;
             this.nameOffsetY = -10;
+        },
+
+        breakFriendly: function(){
+            return;
         }
     });
     

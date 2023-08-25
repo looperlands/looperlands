@@ -120,6 +120,7 @@ define(['jquery', 'area'], function($, Area) {
                 "oa": "oa",
                 "oadungeon": "oa",
                 "oaoverworld": "oa",
+                "cobsfarm": "cobsfarm"
             }
 
             let tilesetId = mapIdToTileset[this.mapId];

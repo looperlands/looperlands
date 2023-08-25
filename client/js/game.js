@@ -67,7 +67,8 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             // sprites
             this.spriteNames = ["hand", "sword", "loot", "target", "talk", "sparks", "shadow16", "rat", "skeleton", "skeleton2", "spectre", "boss", "deathknight", 
                                 "ogre", "crab", "snake", "eye", "bat", "goblin", "wizard", "guard", "king", "villagegirl", "villager", "coder", "agent", "rick", "scientist", "nyan", "priest", 
-                                "king2", "goose", "tanashi", "slime","kingslime","silkshade","redslime","villagesign1","wildgrin","loomleaf","gnashling","spider", "minimag", "miner", "megamag",
+                                "king2", "goose", "tanashi", "slime","kingslime","silkshade","redslime","villagesign1","wildgrin","loomleaf","gnashling","spider", "minimag", "miner", "megamag", 
+                                "cobchicken", "cobcow", "cobpig", "cobgoat", "ghostie",
                                 "sorcerer", "octocat", "beachnpc", "forestnpc", "desertnpc", "lavanpc","thudlord", "clotharmor", "leatherarmor", "mailarmor",
                                 "platearmor", "redarmor", "goldenarmor", "firefox", "death", "sword1","torin","elric", "axe", "chest",
                                 "sword2", "redsword", "bluesword", "goldensword", "item-sword2", "item-axe", "item-redsword", "item-bluesword", "item-goldensword", "item-leatherarmor", "item-mailarmor", 
@@ -1946,7 +1947,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             
                 if(entity.nextGridX >= 0 && entity.nextGridY >= 0) {
                     this.entityGrid[entity.nextGridY][entity.nextGridX][entity.id] = entity;
-                    if(!(entity instanceof Player)) {
+                    if(!(entity instanceof Player) && !(entity instanceof Mob && entity.isFriendly)) {
                         this.pathingGrid[entity.nextGridY][entity.nextGridX] = entity.id;
                     }
                 }
@@ -1979,7 +1980,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             if(entity) {
                 if(entity instanceof Character || entity instanceof Chest) {
                     this.entityGrid[y][x][entity.id] = entity;
-                    if(!(entity instanceof Player)) {
+                    if(!(entity instanceof Player) && !(entity instanceof Mob && entity.isFriendly)) {
                         this.pathingGrid[y][x] = entity.id;
                     }
                 }
@@ -2222,7 +2223,11 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 
                 self.player.onCheckAggro(function() {
                     self.forEachMob(function(mob) {
-                        if(mob.isAggressive && !mob.isAttacking() && self.player.isNear(mob, mob.aggroRange)) {
+                        if(mob.isAggressive 
+                        && (!mob.isFriendly || mob.breakFriendly(self.player)) 
+                        && !mob.isAttacking() 
+                        && self.player.isNear(mob, mob.aggroRange)) 
+                        {
                             self.player.aggro(mob);
                         }
                     });
@@ -2231,6 +2236,10 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 self.player.onAggro(function(mob) {
                     if(!mob.isWaitingToAttack(self.player) && !self.player.isAttackedBy(mob) && !self.player.isDead) {
                         self.player.log_info("Aggroed by " + mob.id + " at ("+self.player.gridX+", "+self.player.gridY+")");
+                        if(mob.aggroMessage != undefined) {
+                            self.createBubble(mob.id, mob.aggroMessage);
+                            self.assignBubbleTo(mob);
+                        }
                         self.client.sendAggro(mob);
                         mob.waitToAttack(self.player);
                     }
@@ -3306,7 +3315,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
         getMobAt: function(x, y) {
             var entity = this.getEntityAt(x, y);
-            if(entity && (entity instanceof Mob)) {
+            if(entity && (entity instanceof Mob) && !entity.isFriendly) {
                 return entity;
             }
             return null;
@@ -3511,7 +3520,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     this.removeFromPathingGrid(pos.x, pos.y);
                 }
 
-        	    if(entity instanceof Mob) {
+        	    if(entity instanceof Mob && !entity.isFriendly) {
         	        this.makePlayerAttack(entity);
                 } else if (entity instanceof Player && entity.id !== this.player.id) {
                     var inPvpZone = this.map.isInsidePvpZone(entity.gridX, entity.gridY);
