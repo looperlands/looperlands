@@ -67,7 +67,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             // sprites
             this.spriteNames = ["hand", "sword", "loot", "target", "talk", "sparks", "shadow16", "rat", "skeleton", "skeleton2", "spectre", "boss", "deathknight", 
                                 "ogre", "crab", "snake", "eye", "bat", "goblin", "wizard", "guard", "king", "villagegirl", "villager", "coder", "agent", "rick", "scientist", "nyan", "priest", 
-                                "king2", "goose", "tanashi", "slime","kingslime","silkshade","redslime","villagesign1","wildgrin","loomleaf","gnashling","spider", "minimag", "miner", "megamag", 
+                                "king2", "goose", "tanashi", "slime","kingslime","silkshade","redslime","villagesign1","wildgrin","loomleaf","gnashling","arachweave","spider", "minimag", "miner", "megamag", 
                                 "cobchicken", "cobcow", "cobpig", "cobgoat", "ghostie",
                                 "sorcerer", "octocat", "beachnpc", "forestnpc", "desertnpc", "lavanpc","thudlord", "clotharmor", "leatherarmor", "mailarmor",
                                 "platearmor", "redarmor", "goldenarmor", "firefox", "death", "sword1","torin","elric", "axe", "chest",

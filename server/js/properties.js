@@ -226,6 +226,15 @@ var Properties = {
         weapon: 3
     },
 
+    arachweave: {
+        drops: {
+            KEY_ARACHWEAVE: 100,
+        },
+        hp: 300,
+        armor: 4,
+        weapon: 3
+    },
+    
     minimag: {
         drops: {
             flask: 50
