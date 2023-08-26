@@ -88,9 +88,7 @@ saveCharacterData = async function (wallet, nft, saveGame) {
 
   try {
     const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/Save.php?NFTID=${nft}&WalletID=${wallet}`
-    const responseData = await axios.post(url, saveGame, options);
-    //console.log("ResponseData from Loopworms: ", responseData.status, responseData.text, responseData.data);
-    return responseData.data;
+    axios.post(url, saveGame, options);
   } catch (error) {
     console.error(error);
     return { "error": "Error saving character data" };

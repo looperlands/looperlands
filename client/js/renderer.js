@@ -73,9 +73,9 @@ function(Camera, Item, Character, Player, Timer, Mob) {
         
             this.createCamera();
         
-            this.context.mozImageSmoothingEnabled = false;
-            this.background.mozImageSmoothingEnabled = false;
-            this.foreground.mozImageSmoothingEnabled = false;
+            this.context.imageSmoothingEnabled  = false;
+            this.background.imageSmoothingEnabled  = false;
+            this.foreground.imageSmoothingEnabled  = false;
         
             this.initFont();
             this.initFPS();

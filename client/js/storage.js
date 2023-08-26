@@ -14,6 +14,7 @@ define(function() {
             this.walletId = this.data.walletId;
 
             _this = this;
+
             setInterval(function() {
                 if (_this.dirty === true) {
                     _this.data['sessionId'] = _this.sessionId;

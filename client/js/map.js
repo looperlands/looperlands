@@ -17,6 +17,7 @@ define(['jquery', 'area'], function($, Area) {
         	this._initTilesets();
             //this._initStreamCheck();
             this.highTileCache = {};
+            this.animatedTileCache = {};
         },
         
         _checkReady: function() {
@@ -342,7 +343,14 @@ define(['jquery', 'area'], function($, Area) {
          * @param {Number} id The tile id in the tileset
          */
         isAnimatedTile: function(id) {
-            return id+1 in this.animated;
+            let cached = this.animatedTileCache[id];
+            if (cached !== undefined) {
+                return cached;
+            } else {
+                let isAnimatedTile = id+1 in this.animated;
+                this.animatedTileCache[id] = isAnimatedTile;
+                return isAnimatedTile;
+            }
         },
     
         /**

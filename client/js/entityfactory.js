@@ -108,7 +108,11 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest'], function(Mobs, Items, NPCs
 
     EntityFactory.builders[Types.Entities.SPIDER] = function(id) {
         return new Mobs.Spider(id);
-    };    
+    };   
+
+    EntityFactory.builders[Types.Entities.ARACHWEAVE] = function(id) {
+        return new Mobs.Arachweave(id);
+    };   
 
     EntityFactory.builders[Types.Entities.MINIMAG] = function(id) {
         return new Mobs.Minimag(id);
