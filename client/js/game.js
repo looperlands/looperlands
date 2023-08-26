@@ -2475,7 +2475,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 if (response.data === true) {
                                     checkTrigger();
                                 } else {
-                                    _self.showNotification("You do not have the required item to enter.");
+                                    _self.showNotification("You do not have the required key to enter.");
                                 }
                             }).catch(function (error) {
                                 console.error("Error while checking ownership of token gate.");
