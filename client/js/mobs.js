@@ -436,7 +436,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
             },
 
             breakFriendly: function(player) {
-                if (this.isFriendly && this.isNear(player, 2) && !this.disengaging){
+                if (this.isFriendly && this.isNear(player, 2) && !this.exitingCombat){
                     this.isFriendly = false;
                     this.setVisible(true);
                     this.fadeIn(new Date().getTime());
@@ -445,17 +445,13 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 return false;
             },
 
-            disengage: function() {
+            exitCombat: function() {
                 let self = this;
-
-                this.attackingMode = false;
-                this.followingMode = false;
-                this.removeTarget();
                 this.isFriendly = true;
                 
-                this.disengaging = setTimeout(function() {
+                this.exitingCombat = setTimeout(function() {
                     self.setVisible(false);
-                    self.disengaging = null;
+                    self.exitingCombat = null;
                 }, 1000)  
             }
         }),

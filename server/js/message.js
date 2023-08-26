@@ -219,3 +219,13 @@ Messages.MobDoSpecial = Message.extend({
                 this.mob.id];
     }
 });
+
+Messages.MobExitCombat = Message.extend({
+    init: function(mob) {
+        this.mob = mob;
+    },
+    serialize: function() {
+        return [Types.Messages.MOBEXITCOMBAT,
+                this.mob.id];
+    }
+});

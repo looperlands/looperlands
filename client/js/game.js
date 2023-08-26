@@ -3037,6 +3037,14 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                         mob.doSpecial();
                     }
                 });
+
+                self.client.onMobExitCombat(function(id) {
+                    let mob = self.getEntityById(id);
+
+                    if (typeof mob.exitCombat === 'function') {
+                        mob.exitCombat();
+                    }
+                });
             
                 self.gamestart_callback();
             

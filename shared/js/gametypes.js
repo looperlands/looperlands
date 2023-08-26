@@ -29,7 +29,8 @@ Types = {
         OPEN: 25,
         CHECK: 26,
         EQUIP_INVENTORY: 27,
-        MOBDOSPECIAL: 28
+        MOBDOSPECIAL: 28,
+        MOBEXITCOMBAT: 29,
     },
     
     Entities: {
