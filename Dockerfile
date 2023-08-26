@@ -6,13 +6,14 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN apt -y update
 RUN apt -q -y install curl
 RUN apt-get update -yq \
-    && apt-get install curl gnupg python2 -yq \
+    && apt-get install curl gnupg python2 libxml2-dev libxslt1-dev zlib1g-dev gcc-aarch64-linux-gnu g++-aarch64-linux-gnu python2.7-dev -yq \
     && curl -sL https://deb.nodesource.com/setup_16.x | bash \
     && apt-get install nodejs -yq \
     && apt-get install python3 -yq \
     && curl https://bootstrap.pypa.io/pip/2.7/get-pip.py --output get-pip.py \
     && python2 get-pip.py \
     && python2 -m pip install lxml
+RUN apt-get install make
 
 COPY . /opt/app
 WORKDIR /opt/app
