@@ -313,7 +313,7 @@ WS.socketIOServer = Server.extend({
             const walletId = sessionData.walletId;
 
             const body = req.body;
-            const data = dao.saveCharacterData(walletId, nftId, body);
+            dao.saveCharacterData(walletId, nftId, body);
             res.status(200).send(true);
         });
 
