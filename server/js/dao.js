@@ -405,6 +405,59 @@ exports.saveMobKillEvent = async function(avatarId, mobId) {
   MOB_KILL_QUEUE.push({avatarId: avatarId, mobId: mobId});
 }
 
+exports.loadAvatarGameData = async function(avatarId, retry) {
+  const options = {
+    headers: {
+      'X-Api-Key': API_KEY
+    }
+  }
+
+  const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/loadItemMob.php?NFTID=${avatarId}`;
+
+  try {
+    const response = await axios.get(url, options);
+
+    let responseData = response.data[0];
+
+    let mobKills = responseData.mobJson.reduce((avatarMobKills, mobKills) => {
+      const mobId = mobKills.mobId;
+      if (mobId) {
+        avatarMobKills[mobId] = mobKills.iCount;
+      }
+      return avatarMobKills;
+    }, {});
+
+    let items = responseData.itemJson.reduce((avatarItems, itemCount) => {
+      const itemId = avatarItems.itemId;
+      if (itemId) {
+        itemCount[itemId] = avatarItems.iCount;
+      }
+      return itemCount;
+    }, {});
+
+    let equipedWeapon = responseData.equipedWeapon.replace(/"/g, '');
+
+    const data = {
+      mobKills: mobKills,
+      items: items,
+      equipedWeapon: equipedWeapon
+    }
+
+    return data;
+  } catch (error) {
+    if (retry === undefined) {
+      retry = MAX_RETRY_COUNT;
+    }
+    retry -= 1;
+    if (retry > 0) {
+      console.log("Retry " + retry);
+      return this.loadAvatarGameData(avatarId, retry);
+    } else {
+      console.error("loadAvatarGameData", error);
+    }
+  }
+}
+
 
 exports.updateExperience = updateExperience;
 exports.saveCharacterData = saveCharacterData;
