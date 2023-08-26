@@ -263,6 +263,7 @@ define(['jquery', 'storage'], function($, Storage) {
                 weaponPath = getIconPath(weapon),
                 armorPath = 'img/3/' + armor + '.png';
 
+            /*
             $('#weapon').css('background-image', 'url("' + weaponPath + '")');
             if(armor !== 'firefox') {
                 if (scale === 2) {
@@ -271,6 +272,7 @@ define(['jquery', 'storage'], function($, Storage) {
                     $("#armor").css('background-image', 'url("' + armorPath + '")').css('background-position','-4px -408px');
                 }
             }
+            */
         },
 
         hideWindows: function() {
