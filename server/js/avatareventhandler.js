@@ -11,21 +11,20 @@ class AvatarEventHandler {
     }
 
     async lootEvent(player, item) {
-        dao.saveLootEvent(self.nftId, kind);
+        dao.saveLootEvent(player.nftId, item.kind);
 
         let sessionId = player.sessionId;
         let playerCache = this.cache.get(sessionId);
         let gameData = playerCache.gameData;
-        let itemCount = gameData.items[item.id];
+        let itemCount = gameData.items[item.kind];
         if (itemCount) {
-            gameData.items[item.id] = itemCount + 1;
+            gameData.items[item.kind] = itemCount + 1;
         } else {
-            gameData.items[item.id] = 1;
+            gameData.items[item.kind] = 1;
         }
 
         playerCache.gameData = gameData;
         this.cache.set(sessionId, playerCache);
-        console.log(playerCache);
     }
 }
 

@@ -43,7 +43,7 @@ module.exports = Player = Character.extend({
         this.attackRate = BASE_ATTACK_RATE;
         this.accumulatedExperience = 0;
 
-        this.avatarEventHandler = new AvatarEventHandler.AvatarEventHandler(dao, this.server.server.cache);
+        this.avatarEventHandler = new AvatarEventHandler.AvatarEventHandler(this.server.server.cache);
 
         this.connection.listen(function(message) {
 

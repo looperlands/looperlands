@@ -428,11 +428,11 @@ exports.loadAvatarGameData = async function(avatarId, retry) {
     }, {});
 
     let items = responseData.itemJson.reduce((avatarItems, itemCount) => {
-      const itemId = avatarItems.itemId;
+      const itemId = itemCount.itemId;
       if (itemId) {
-        itemCount[itemId] = avatarItems.iCount;
+        avatarItems[itemId] = itemCount.iCount;
       }
-      return itemCount;
+      return avatarItems;
     }, {});
 
     const data = {
