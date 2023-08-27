@@ -648,6 +648,7 @@ module.exports = World = cls.Class.extend({
                     }
                 });
                 mob.onMove(self.onMobMoveCallback.bind(self));
+                mob.onExitCombat(self.onMobExitCombatCallback.bind(self));
                 self.addMob(mob);
                 self.tryAddingMobToChestArea(mob);
             }
@@ -956,7 +957,8 @@ module.exports = World = cls.Class.extend({
                     maxHitPoints: entity.maxHitPoints,
                     hitPoints: entity.hitPoints,
                     moveSpeed: entity.getMoveSpeed(),
-                    attackRate: entity.getAttackRate()
+                    attackRate: entity.getAttackRate(),
+                    inCombat: entity.isInCombat()
                 } 
             }
         }
@@ -1098,6 +1100,10 @@ module.exports = World = cls.Class.extend({
             this.doorTriggers[triggerId] = false;
             console.log("Trigger " + triggerId + " deactivated!");
         }
+    },
+
+    onMobExitCombatCallback: function(mob) {
+        this.pushToAdjacentGroups(mob.group, new Messages.MobExitCombat(mob));
     }
 
 });

@@ -1448,6 +1448,19 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 "NFT_c99b69ab980391147400a2d33537966c46a3bd8f777a869fed561402f6cba147",
                                 "NFT_e4158f38b1c9c4dbc32a8f981e232886fcb1440852c7228dbde115a4b31c6d5c",
                                 "NFT_f12427ef1ebec2bbf37d780563c708be78a1f51a89231e2aaed6b52975912c26",
+                                "NFT_x631bab060d483af3aa9257a912238001824f5b44aa682d20c30035c9aea8c2c",
+                                "NFT_559b38b88758d56f38e065bcc938a9e5e187f423701996d2ac4f30163f736d78",
+                                "NFT_661b7d72ae763c77497454e84e685547a9dfd6ffc8b740485cd6807aa959aca5",
+                                "NFT_740ff9329edf4cae8b8cf05043d5518cdec4166370aad61db926ba1007eef072",
+                                "NFT_751e88722d7d318484059f4fff69ba749839d6398a0bdd901b60668bfcb619ce",
+                                "NFT_7ee2569a615db46b35118533d06d872d137dfdd9942c8bd369800bc3e10a21f7",
+                                "NFT_94cdc1c2947b4754a1b36ef3712c058b2ce3891584839783585afac2330c5779",
+                                "NFT_b491a3f6f31c5edb063103770e2a1208d5445229e1dc6246ebbc00c2fc8f87f3",
+                                "NFT_ba7dcfd3df32b6c72bda9557a1fad17dc971c16f009d6346f4d6d88d5b8ead32",
+                                "NFT_bf70b390d87950d70be1073e67c2e06a718bc530cced46d2070a7b0282caa4f8",
+                                "NFT_c3febe36240fcc9c3d86869ffe41f0338069ab8fa50fa744f12984a71b2cf554",
+                                "NFT_e940ee83e756c7ce988f032a3d703278f2a0ff19c5f322795a873d04be72f763",
+                                "NFT_f7c4137e55376a5784d419398e14247e78e6358c7f38f9cad68f698090f3cf81",
                                 // @nextSpriteLine@
                             ];                          
         },
@@ -2236,7 +2249,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     self.forEachMob(function(mob) {
                         if(mob.isAggressive 
                         && (!mob.isFriendly || mob.breakFriendly(self.player)) 
-                        && !mob.isAttacking() 
+                        && !mob.inCombat 
                         && self.player.isNear(mob, mob.aggroRange)) 
                         {
                             self.player.aggro(mob);
@@ -2251,6 +2264,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                             self.createBubble(mob.id, mob.aggroMessage);
                             self.assignBubbleTo(mob);
                         }
+                        mob.joinCombat();
                         self.client.sendAggro(mob);
                         mob.waitToAttack(self.player);
                     }
@@ -3035,6 +3049,14 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
                     if (typeof mob.doSpecial === 'function') {
                         mob.doSpecial();
+                    }
+                });
+
+                self.client.onMobExitCombat(function(id) {
+                    let mob = self.getEntityById(id);
+
+                    if (typeof mob.exitCombat === 'function') {
+                        mob.exitCombat();
                     }
                 });
             
@@ -4142,6 +4164,13 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                             if (toUpdateEntity.moveSpeed !== undefined && toUpdateEntity.attackRate !== undefined) {
                                 self.entities[id].moveSpeed = toUpdateEntity.moveSpeed;
                                 self.entities[id].setAttackRate(toUpdateEntity.attackRate);
+                            }
+                            if (toUpdateEntity.inCombat !== undefined) {
+                                if (!self.entities[id].inCombat && toUpdateEntity.inCombat){
+                                    self.entities[id].joinCombat();
+                                } else if (self.entities[id].inCombat && !toUpdateEntity.inCombat) {
+                                    self.entities[id].exitCombat();
+                                }
                             }
                         } else {
                             console.debug("Unknown entity " + id);
