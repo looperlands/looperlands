@@ -171,6 +171,7 @@ module.exports = Mob = Character.extend({
         this.returnTimeout = setTimeout(function() {
             self.resetPosition();
             self.move(self.x, self.y);
+            self.exitCombat();
         }, delay);
     },
     
@@ -196,5 +197,19 @@ module.exports = Mob = Character.extend({
     clearSpecialInterval: function() {
         clearInterval(this.specialInterval);
         this.specialInterval = null;
-    }
+    },
+
+    onExitCombat: function(callback) {
+        this.exitCombat_callback = callback;
+    },
+
+    exitCombat: function() {
+        if(this.exitCombat_callback) {
+            this.exitCombat_callback(this);
+        }
+    },
+
+    isInCombat: function() {
+        return this.hatelist.length > 0 ? true : false;
+    },
 });

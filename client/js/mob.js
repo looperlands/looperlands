@@ -7,6 +7,7 @@ define(['character'], function(Character) {
         
             this.aggroRange = 1;
             this.isAggressive = true;
+            this.inCombat = false;
 
             this.animationLock = false;
             this.nameOffsetY = -10;
@@ -14,6 +15,14 @@ define(['character'], function(Character) {
 
         breakFriendly: function(){
             return;
+        },
+
+        joinCombat: function() {
+            this.inCombat = true;
+        },
+
+        exitCombat: function() {
+            this.inCombat = false;
         }
     });
     

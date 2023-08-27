@@ -102,5 +102,9 @@ module.exports = Character = Entity.extend({
 
     getWeaponLevel: function () {
         return this.weaponLevel;
-    }
+    },
+
+    isInCombat: function() {
+        return;
+    },
 });

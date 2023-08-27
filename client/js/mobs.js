@@ -435,28 +435,36 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.aggroMessage = "Boo!";
             },
 
+            appear: function() {
+                this.isFriendly = false;
+                this.setVisible(true);
+                this.fadeIn(new Date().getTime());
+            },
+
             breakFriendly: function(player) {
-                if (this.isFriendly && this.isNear(player, 2) && !this.disengaging){
-                    this.isFriendly = false;
-                    this.setVisible(true);
-                    this.fadeIn(new Date().getTime());
+                if (this.isFriendly && this.isNear(player, this.aggroRange - 1) && !this.exitingCombat) {
+                    this.appear()
                     return true;
                 }
                 return false;
             },
 
-            disengage: function() {
-                let self = this;
+            joinCombat: function() {
+                this._super();
+                if (this.inCombat && this.isFriendly) {
+                    this.appear();
+                }
+            },
 
-                this.attackingMode = false;
-                this.followingMode = false;
-                this.removeTarget();
+            exitCombat: function() {
+                this._super();
+                let self = this;
                 this.isFriendly = true;
                 
-                this.disengaging = setTimeout(function() {
+                this.exitingCombat = setTimeout(function() {
                     self.setVisible(false);
-                    self.disengaging = null;
-                }, 1000)  
+                    self.exitingCombat = null;
+                }, 1500)  
             }
         }),
     };
