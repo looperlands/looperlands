@@ -378,9 +378,9 @@ WS.socketIOServer = Server.extend({
                 });
 
             } else {
-                const nftId = sessionData.nftId;
-                let owned = await dao.avatarHasItem(nftId, entityItemId)
-                res.status(200).json(owned);
+                let owns = sessionData.gameData.items[entityItemId] !== undefined;
+                res.status(200).json(owns);
+                return;
             }
         });
 
