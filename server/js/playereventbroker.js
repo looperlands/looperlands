@@ -1,5 +1,5 @@
 const dao = require('./dao.js');
-
+const PlayerQuestEventConsumer = require('./playerquesteventconsumer.js');
 class PlayerEventBroker {
     static Events = {
         KILL_MOB: 'KILL_MOB',
@@ -8,12 +8,48 @@ class PlayerEventBroker {
 
 
     static playerEventBrokers = {};
+    static events = new Set();
+    static playerEventConsumers = [];
+    static cache;
+
+
+    static {
+        setInterval(PlayerEventBroker.processEvents, 60000);
+    }
 
     constructor(player) {
         this.player = player;
         this.cache = player.server.server.cache;
         PlayerEventBroker.playerEventBrokers[player.sessionId] = this;
     }
+
+    static addEvent(eventType, sessionId, playerCache) {
+
+        const event = {
+            sessionId: sessionId,
+            event: eventType,
+            playerCache: playerCache
+        }
+
+        if(!PlayerEventBroker.events.has(event)) {
+            PlayerEventBroker.events.add(event);
+        }
+    }
+    
+    static async processEvents() {
+        if (PlayerEventBroker.events.size > 0) {
+            let events = Array.from(PlayerEventBroker.events);
+
+            PlayerEventBroker.events.clear();
+            PlayerEventBroker.playerEventConsumers.forEach(consumer => {
+                events.forEach(event => {
+                    consumer.consume(event);
+                });
+            });
+        }
+
+    }
+
 
     async lootEvent(item) {
         dao.saveLootEvent(this.player.nftId, item.kind);
@@ -30,6 +66,7 @@ class PlayerEventBroker {
 
         playerCache.gameData = gameData;
         this.cache.set(sessionId, playerCache);
+        PlayerEventBroker.addEvent(PlayerEventBroker.Events.LOOT_ITEM, sessionId, playerCache);
     }
     
     destroy() {
@@ -40,11 +77,4 @@ class PlayerEventBroker {
 
 exports.PlayerEventBroker = PlayerEventBroker;
 
-/*
-onmessage = (e) => {
-    console.log("Message received from main script");
-    const workerResult = `Result: ${e.data[0] * e.data[1]}`;
-    console.log("Posting message back to main script");
-    postMessage(workerResult);
-};
-*/
+PlayerEventBroker.playerEventConsumers.push(new PlayerQuestEventConsumer.PlayerQuestEventConsumer());
