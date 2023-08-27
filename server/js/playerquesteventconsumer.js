@@ -9,24 +9,24 @@ class PlayerQuestEventConsumer extends PlayerEventConsumer {
 
     consume(event) {
         //console.log("PlayerQuestEventConsumer Consuming event: ", event, Date.now());
-        switch(event.event) {
+        switch(event.eventType) {
             case "KILL_MOB":
-                this.processKillMobEvent(event);
+                this.processKillMobEvent(event.playerCache);
                 break;
             case "LOOT_ITEM":
-                this.processLootEvent(event);
+                this.processLootEvent(event.playerCache);
                 break;
             default:
-                throw new Error("Unknown event type: ", event.event);
+                throw new Error("Unknown event type: ", event.eventType);
         }
     }
 
-    processLootEvent(event) {
-        console.log("Processing Loot event for session: ", event.sessionId);
+    processLootEvent(playerCache) {
+        //console.log("Processing Loot event for session: ", playerCache);
     }
 
-    processKillMobEvent(event) {
-        console.log("Processing Loot event for session: ", event.sessionId);
+    processKillMobEvent(playerCache) {
+        //console.log("Processing Mob kill event for session: ", playerCache);
     }    
 }
 

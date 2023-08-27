@@ -8,13 +8,13 @@ class PlayerEventBroker {
 
 
     static playerEventBrokers = {};
-    static events = new Set();
+    static events = {};
     static playerEventConsumers = [];
     static cache;
 
 
     static {
-        setInterval(PlayerEventBroker.processEvents, 60000);
+        setInterval(PlayerEventBroker.processEvents, 10000);
     }
 
     constructor(player) {
@@ -24,27 +24,22 @@ class PlayerEventBroker {
     }
 
     static addEvent(eventType, sessionId, playerCache) {
-
-        const event = {
-            sessionId: sessionId,
-            event: eventType,
-            playerCache: playerCache
-        }
-
-        if(!PlayerEventBroker.events.has(event)) {
-            PlayerEventBroker.events.add(event);
-        }
+        let eventId = eventType + ',' + sessionId;
+        PlayerEventBroker.events[eventId] = playerCache;
     }
     
     static async processEvents() {
-        if (PlayerEventBroker.events.size > 0) {
-            let events = Array.from(PlayerEventBroker.events);
+        let hasEvents = Object.keys(PlayerEventBroker.events).length !== 0;
+        if (hasEvents) {
+            // copy all the events before deleting them
+            let events = {... PlayerEventBroker.events};
+            PlayerEventBroker.events = {};
 
-            PlayerEventBroker.events.clear();
             PlayerEventBroker.playerEventConsumers.forEach(consumer => {
-                events.forEach(event => {
-                    consumer.consume(event);
-                });
+                for (const [eventId, playerCache] of Object.entries(events)) {
+                    let [eventType, sessionId] = eventId.split(',');
+                    consumer.consume({eventType: eventType, playerCache: playerCache});
+                }
             });
         }
 
@@ -68,9 +63,28 @@ class PlayerEventBroker {
         this.cache.set(sessionId, playerCache);
         PlayerEventBroker.addEvent(PlayerEventBroker.Events.LOOT_ITEM, sessionId, playerCache);
     }
+
+    async killMobEvent(mob) {
+        dao.saveMobKillEvent(this.player.nftId, mob.kind);
+
+        let sessionId = this.player.sessionId;
+        let playerCache = this.cache.get(sessionId);
+        let gameData = playerCache.gameData;
+
+
+        let killCount = gameData.mobKills[mob.kind]
+        if (killCount) {
+            gameData.mobKills[mob.kind] = killCount + 1;
+        } else {
+            gameData.mobKills[mob.kind] = 1;
+        }
+
+        playerCache.gameData = gameData;
+        this.cache.set(sessionId, playerCache);
+        PlayerEventBroker.addEvent(PlayerEventBroker.Events.KILL_MOB, sessionId, playerCache);
+    }
     
     destroy() {
-        console.log("Destroying PlayerEventBroker for: ", this.player.sessionId);
         delete PlayerEventBroker.playerEventBrokers[this.player.sessionId];
     }
 }
