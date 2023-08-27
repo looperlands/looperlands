@@ -14,7 +14,7 @@ const discord = require('./discord.js');
 const axios = require('axios');
 const chat = require("./chat.js");
 const NFTWeapon = require("./nftweapon.js");
-const AvatarEventHandler = require("./avatareventhandler.js");
+const PlayerEventBroker = require("./playereventbroker.js");
 
 const LOOPWORMS_LOOPERLANDS_BASE_URL = process.env.LOOPWORMS_LOOPERLANDS_BASE_URL;
 const BASE_SPEED = 120;
@@ -43,7 +43,7 @@ module.exports = Player = Character.extend({
         this.attackRate = BASE_ATTACK_RATE;
         this.accumulatedExperience = 0;
 
-        this.avatarEventHandler = new AvatarEventHandler.AvatarEventHandler(this);
+        this.playerEventBroker = new PlayerEventBroker.PlayerEventBroker(this);
 
         this.connection.listen(function(message) {
 
@@ -259,6 +259,7 @@ module.exports = Player = Character.extend({
                     var kind = item.kind;
                     
                     if(Types.isItem(kind)) {
+                        self.playerEventBroker.lootEvent(item);
                         self.broadcast(item.despawn());
                         self.server.removeEntity(item);
                         
@@ -301,9 +302,6 @@ module.exports = Player = Character.extend({
                         } else if(Types.isWeapon(kind) && self.getNFTWeapon() === undefined) {
                             self.equipItem(item);
                             self.broadcast(self.equip(kind));
-                        } else {
-                            // All other items are considered collectible and can be stacked
-                            self.avatarEventHandler.lootEvent(item);
                         }
                     }
                 }

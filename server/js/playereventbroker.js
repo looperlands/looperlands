@@ -1,17 +1,18 @@
 const dao = require('./dao.js');
 
-class AvatarEventHandler {
+class PlayerEventBroker {
     static Events = {
         KILL_MOB: 'KILL_MOB',
         LOOT_ITEM: 'LOOT_ITEM'
     };
 
 
-    static avatarEventHandlers = {};
+    static playerEventBrokers = {};
 
     constructor(player) {
         this.player = player;
         this.cache = player.server.server.cache;
+        PlayerEventBroker.playerEventBrokers[player.sessionId] = this;
     }
 
     async lootEvent(item) {
@@ -30,9 +31,14 @@ class AvatarEventHandler {
         playerCache.gameData = gameData;
         this.cache.set(sessionId, playerCache);
     }
+    
+    destroy() {
+        console.log("Destroying PlayerEventBroker for: ", this.player.sessionId);
+        delete PlayerEventBroker.playerEventBrokers[this.player.sessionId];
+    }
 }
 
-exports.AvatarEventHandler = AvatarEventHandler;
+exports.PlayerEventBroker = PlayerEventBroker;
 
 /*
 onmessage = (e) => {

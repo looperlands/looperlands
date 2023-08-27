@@ -391,6 +391,7 @@ module.exports = World = cls.Class.extend({
         this.removeEntity(player);
         delete this.players[player.id];
         delete this.outgoingQueues[player.id];
+        player.playerEventBroker.destroy();
     },
     
     addMob: function(mob) {
