@@ -2236,7 +2236,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     self.forEachMob(function(mob) {
                         if(mob.isAggressive 
                         && (!mob.isFriendly || mob.breakFriendly(self.player)) 
-                        && !mob.isAttacking() 
+                        && !mob.inCombat 
                         && self.player.isNear(mob, mob.aggroRange)) 
                         {
                             self.player.aggro(mob);
@@ -2251,6 +2251,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                             self.createBubble(mob.id, mob.aggroMessage);
                             self.assignBubbleTo(mob);
                         }
+                        mob.joinCombat();
                         self.client.sendAggro(mob);
                         mob.waitToAttack(self.player);
                     }
@@ -4150,6 +4151,13 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                             if (toUpdateEntity.moveSpeed !== undefined && toUpdateEntity.attackRate !== undefined) {
                                 self.entities[id].moveSpeed = toUpdateEntity.moveSpeed;
                                 self.entities[id].setAttackRate(toUpdateEntity.attackRate);
+                            }
+                            if (toUpdateEntity.inCombat !== undefined) {
+                                if (!self.entities[id].inCombat && toUpdateEntity.inCombat){
+                                    self.entities[id].joinCombat();
+                                } else if (self.entities[id].inCombat && !toUpdateEntity.inCombat) {
+                                    self.entities[id].exitCombat();
+                                }
                             }
                         } else {
                             console.debug("Unknown entity " + id);

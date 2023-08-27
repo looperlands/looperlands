@@ -207,5 +207,9 @@ module.exports = Mob = Character.extend({
         if(this.exitCombat_callback) {
             this.exitCombat_callback(this);
         }
-    }
+    },
+
+    isInCombat: function() {
+        return this.hatelist.length > 0 ? true : false;
+    },
 });
