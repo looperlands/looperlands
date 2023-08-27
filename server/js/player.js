@@ -14,6 +14,7 @@ const discord = require('./discord.js');
 const axios = require('axios');
 const chat = require("./chat.js");
 const NFTWeapon = require("./nftweapon.js");
+const AvatarEventHandler = require("./avatareventhandler.js");
 
 const LOOPWORMS_LOOPERLANDS_BASE_URL = process.env.LOOPWORMS_LOOPERLANDS_BASE_URL;
 const BASE_SPEED = 120;
@@ -41,6 +42,8 @@ module.exports = Player = Character.extend({
         this.moveSpeed = BASE_SPEED;
         this.attackRate = BASE_ATTACK_RATE;
         this.accumulatedExperience = 0;
+
+        this.avatarEventHandler = new AvatarEventHandler.AvatarEventHandler(dao, this.server.server.cache);
 
         this.connection.listen(function(message) {
 
@@ -300,7 +303,7 @@ module.exports = Player = Character.extend({
                             self.broadcast(self.equip(kind));
                         } else {
                             // All other items are considered collectible and can be stacked
-                            dao.saveLootEvent(self.nftId, kind);
+                            self.avatarEventHandler.lootEvent(self, item);
                         }
                     }
                 }
