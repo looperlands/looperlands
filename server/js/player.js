@@ -43,7 +43,7 @@ module.exports = Player = Character.extend({
         this.attackRate = BASE_ATTACK_RATE;
         this.accumulatedExperience = 0;
 
-        this.avatarEventHandler = new AvatarEventHandler.AvatarEventHandler(this.server.server.cache);
+        this.avatarEventHandler = new AvatarEventHandler.AvatarEventHandler(this);
 
         this.connection.listen(function(message) {
 
@@ -303,7 +303,7 @@ module.exports = Player = Character.extend({
                             self.broadcast(self.equip(kind));
                         } else {
                             // All other items are considered collectible and can be stacked
-                            self.avatarEventHandler.lootEvent(self, item);
+                            self.avatarEventHandler.lootEvent(item);
                         }
                     }
                 }
