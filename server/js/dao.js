@@ -435,12 +435,9 @@ exports.loadAvatarGameData = async function(avatarId, retry) {
       return itemCount;
     }, {});
 
-    let equipedWeapon = responseData.equipedWeapon.replace(/"/g, '');
-
     const data = {
       mobKills: mobKills,
-      items: items,
-      equipedWeapon: equipedWeapon
+      items: items
     }
 
     return data;

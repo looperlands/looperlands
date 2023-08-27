@@ -246,6 +246,10 @@ WS.socketIOServer = Server.extend({
             const walletId = sessionData.walletId;
             const isDirty = sessionData.isDirty;
 
+            let parsedSaveData;
+            let weapon;
+            let avatarGameData;
+
             if (isDirty === true) {
                 res.status(409).json({
                     status: false,
@@ -254,15 +258,16 @@ WS.socketIOServer = Server.extend({
                 });
                 return;
             } else {
+                //console.log("Session ID", sessionId, "Wallet ID", walletId, "NFT ID", nftId);
+                parsedSaveData = await dao.getCharacterData(walletId, nftId);
+                weapon = await dao.loadWeapon(walletId, nftId);
+                avatarGameData = await dao.loadAvatarGameData(nftId);
+
                 sessionData.isDirty = true;
+                sessionData.gameData = avatarGameData;
                 cache.set(sessionId, sessionData);
             }
 
-            //console.log("Session ID", sessionId, "Wallet ID", walletId, "NFT ID", nftId);
-            let parsedSaveData = await dao.getCharacterData(walletId, nftId);
-            let weapon = await dao.loadWeapon(walletId, nftId);
-
-            let avatarGameData = dao.loadAvatarGameData(nftId);
             
             let name = await ens.getEns(walletId);
 
