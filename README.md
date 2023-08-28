@@ -42,6 +42,11 @@ The following example will activate the doors with triggerId = Fight Night:
 curl -X POST -H "Content-Type: application/json" -H "x-api-key: $LOOPWORMS_API_KEY" -d "{\"triggerId\": \"Fight Night\"}" http://127.0.0.1:8000/activateTrigger
 ```
 # Local development
+Build maps
+```bash
+./build-maps.sh
+```
+
 The following script will build the client and server and run them locally, so you do not have to run the above steps.
 ```bash
 LOOPWORMS_API_KEY=<api-key-here> ./run-local.sh
@@ -53,6 +58,7 @@ To get a new session run:
 LOOPWORMS_API_KEY=<api-key-here> ./local-session.sh
 ```
 This will print out a URL and open up the URL in your browser
+
 
 # Add a mob
 
