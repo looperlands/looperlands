@@ -310,7 +310,21 @@ var Properties = {
         armor: 1,
         weapon: 1,
         friendly: true
+    },
+
+    jayce: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    orlan: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
     }
+
 
 };
 

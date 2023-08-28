@@ -250,6 +250,42 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
 
+        Jayce: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.JAYCE);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
+        Orlan: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.ORLAN);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
         Kingslime: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.KINGSLIME);
