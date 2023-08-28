@@ -1028,6 +1028,11 @@ module.exports = World = cls.Class.extend({
             let accompliceDmg = arrElem.dmg;
             if (accomplice.type === "player" && allDmgTaken > 0 && accompliceDmg > 0) {
                 let accompliceShare = Formulas.xpShare(xp, allDmgTaken, accompliceDmg);
+                let accompliceLevel = accomplice.getLevel();
+                let mobLevel = mob.level;
+                if (accompliceLevel > mobLevel + 3){
+                    accompliceShare = Math.round(accompliceShare * Math.max(1 - (accompliceLevel - (mobLevel + 3)) * 0.1, 0.5));
+                }
                 accomplice.handleExperience(accompliceShare);
                 self.pushToPlayer(accomplice, new Messages.Kill(mob, accompliceShare));
             }

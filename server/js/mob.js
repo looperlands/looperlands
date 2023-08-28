@@ -12,8 +12,8 @@ module.exports = Mob = Character.extend({
         this.updateHitPoints();
         this.spawningX = x;
         this.spawningY = y;
-        this.armorLevel = Properties.getArmorLevel(this.kind, this.level);
-        this.weaponLevel = Properties.getWeaponLevel(this.kind, this.level);
+        this.armorLevel = Properties.getArmorLevel(this.kind, 0);
+        this.weaponLevel = Properties.getWeaponLevel(this.kind, 0);
         this.hatelist = [];
         this.respawnTimeout = null;
         this.returnTimeout = null;
@@ -187,7 +187,7 @@ module.exports = Mob = Character.extend({
     },
     
     updateHitPoints: function() {
-        this.resetHitPoints(Properties.getHitPoints(this.kind, this.level));
+        this.resetHitPoints(Properties.getHitPoints(this.kind, 0));
     },
     
     distanceToSpawningPoint: function(x, y) {

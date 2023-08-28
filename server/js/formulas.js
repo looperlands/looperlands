@@ -17,7 +17,7 @@ Formulas.dmg = function (weaponLevel, armorLevel) {
 
     //console.log("abs: "+absorbed+"   dealt: "+ dealt+"   dmg: "+ (dealt - absorbed));
     if (dmg <= 0) {
-        return Utils.randomInt(0, 3);
+        return Utils.randomInt(0, Math.round(weaponLevel/2));
     } else {
         return dmg;
     }
@@ -59,7 +59,6 @@ Formulas.setXPMultiplier = function (multiplier, timeout) {
     }
 }
 
-
 Formulas.calculateExperienceMap = function (numLevels) {
     const experienceMap = {};
 
@@ -68,15 +67,29 @@ Formulas.calculateExperienceMap = function (numLevels) {
         let experienceRequired = 0;
         experienceRequired = Math.floor(100 * (9 * Math.pow(level, 3) - 51 * Math.pow(level, 2) + 126 * level - 108));
         experienceMap[level] = experienceRequired;
-        console.log("Level " + level + " exp req: " + experienceRequired);
     }
 
     return experienceMap;
 };
 
+//Speed formula is tuned for base speed of 800. If you ever change player base speed value, the formula needs to be adapted.
+Formulas.calculateSpeedTraitMap = function (numLevels) {
+    const speedTraitMap = {};
+
+    speedTraitMap[1] = 200;
+    for (let level = 2; level <= numLevels; level++) {
+        let speedBonus;
+        speedBonus = (650 - speedTraitMap[level-1]) * 0.0083 + speedTraitMap[level-1];
+        speedTraitMap[level] = speedBonus;
+    }
+
+    return speedTraitMap;
+};
+
 // Usage example:
-const numLevels = 50;
+const numLevels = 100;
 const EXPERIENCE_MAP = Formulas.calculateExperienceMap(numLevels);
+const SPEEDTRAIT_MAP = Formulas.calculateSpeedTraitMap(numLevels);
 
 Formulas.level = function (experience) {
     let levels = Object.keys(EXPERIENCE_MAP);
@@ -111,6 +124,10 @@ Formulas.calculatePercentageToNextLevel = function (experience) {
 Formulas.xpShare = function (xp, allDmgTaken, partialDmgTaken) {
     let xpShare = Math.round((xp * partialDmgTaken) / allDmgTaken);
     return xpShare;
+}
+
+Formulas.getSpeedTraitBonus = function (weaponLevel) {
+    return SPEEDTRAIT_MAP[weaponLevel];
 }
 
 if (!(typeof exports === 'undefined')) {

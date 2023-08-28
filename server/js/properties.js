@@ -54,7 +54,7 @@ var Properties = {
     },
     
     deathknight: {
-        level: 10,
+        level: 12,
         drops: {
             burger: 95,
             firepotion: 5
@@ -119,13 +119,14 @@ var Properties = {
     },
     
     boss: {
+        level: 13,
         drops: {
             goldensword: 10,
             flask: 50
         },
-        hp: 5000,
-        armor: 5,
-        weapon: 8,
+        hpMod: 15,
+        armor: 1.5,
+        weapon: 1.5,
         redpacket: true,
         respawnDelay: 120000
     },
@@ -220,7 +221,7 @@ var Properties = {
     },
     
     minimag: {
-        level: 15,
+        level: 16,
         drops: {
             flask: 50
         },
@@ -229,7 +230,7 @@ var Properties = {
             ondeath: true
         },
         armorMod: 2,
-        weaponMod: 0.75
+        weaponMod: 0.8
     },
 
     megamag: {
@@ -237,9 +238,9 @@ var Properties = {
         drops: {
             burger: 100
         },
-        hp: 15000,
-        armor: 40,
-        weapon: 8,
+        armorMod: 2.5,
+        weaponMod: 2,
+        hpMod: 20,
         aoe: {
             damage: 100,
             range: 2
