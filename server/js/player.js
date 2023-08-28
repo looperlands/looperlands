@@ -225,7 +225,7 @@ module.exports = Player = Character.extend({
                                             handleDamage(mob, totalLevel, 1);
                                         }
                                         else if (distance === 1) {
-                                            handleDamage(entity, totalLevel, 0.67);
+                                            handleDamage(entity, totalLevel, 0.8);
                                         }
                                     }
                                 });
@@ -409,8 +409,14 @@ module.exports = Player = Character.extend({
         if(mob && this.hitPoints > 0) {
             if (damage === undefined) {
                 let level = this.getLevel();
-                let totalLevel = (this.armorLevel + level) - 1;
-                damage = Formulas.dmg(mob.getWeaponLevel(), totalLevel);
+                let totalLevel =  Math.round(level * 0.5);
+                let attackerLevel;
+                if (mob instanceof Player) {
+                    attackerLevel = mob.getWeaponLevel() + mob.getLevel();
+                } else {
+                    attackerLevel = mob.getWeaponLevel();
+                }
+                damage = Formulas.dmg(attackerLevel, totalLevel);
             }
             this.hitPoints -= damage;
             this.server.handleHurtEntity(this, mob, damage);
@@ -663,7 +669,7 @@ module.exports = Player = Character.extend({
     },
 
     getMoveSpeed: function() {
-        return BASE_SPEED - (this.getLevel() - 1) * 2;
+        return Math.max(BASE_SPEED - (this.getLevel() - 1) * 0.5, 90);
     },
 
     pushEntityList: function() {

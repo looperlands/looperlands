@@ -1013,8 +1013,7 @@ module.exports = World = cls.Class.extend({
     distributeExp: function(mob) {
         let self=this;
 
-        let kind = Types.getKindAsString(mob.kind);
-        let xp = Formulas.xp(Properties[kind]);
+        let xp = Formulas.xp(mob);
         let allDmgTaken = mob.dmgTakenArray.reduce((partialSum, currElem) => partialSum + currElem.dmg, 0);
 
         mob.dmgTakenArray.forEach( function(arrElem) { 
