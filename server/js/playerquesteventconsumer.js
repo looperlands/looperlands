@@ -1,3 +1,4 @@
+const player = require('./player.js');
 
 const PlayerEventConsumer = require('./playereventconsumer.js').PlayerEventConsumer;
 
@@ -22,11 +23,26 @@ class PlayerQuestEventConsumer extends PlayerEventConsumer {
     }
 
     processLootEvent(playerCache) {
+
+        ;
         //console.log("Processing Loot event for session: ", playerCache);
     }
 
+    
+
     processKillMobEvent(playerCache) {
-        //console.log("Processing Mob kill event for session: ", playerCache);
+        for (const [npc, quests] of Object.entries(Types.quests)) {
+            quests.forEach(quest => {
+                if (quest.eventType === "KILL_MOB"){
+                    let mobId = quest.target;
+                    let killCount = playerCache.gameData.mobKills[mobId] || 0;
+
+                    if (killCount > quest.amount) {
+                        console.log("Quest complete: ", quest);
+                    }
+                }
+            });
+        }
     }    
 }
 
