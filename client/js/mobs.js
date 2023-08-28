@@ -232,6 +232,24 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
 
+        Alaric: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.ALARIC);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
         Kingslime: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.KINGSLIME);
@@ -365,6 +383,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 }
             }
         }),
+        
 
         Cobcow: Mob.extend({
             init: function(id) {
