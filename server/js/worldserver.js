@@ -998,7 +998,7 @@ module.exports = World = cls.Class.extend({
 
                     entityIds.forEach(function(id) {
                         let nearbyEntity = group.entities[id];
-                        if (nearbyEntity.type === 'player') {
+                        if (nearbyEntity.type !== undefined && nearbyEntity.type === 'player') {
                             let distance = Utils.distanceTo(mob.x, mob.y, nearbyEntity.x, nearbyEntity.y);
                             if (distance <= aoeRange) {
                                 nearbyEntity.handleHurt(mob, aoeDamage);
@@ -1050,7 +1050,7 @@ module.exports = World = cls.Class.extend({
                 let killersList = "";
                 mob.dmgTakenArray.forEach( function(arrElem) { 
                     let killer = self.getEntityById(arrElem.id);
-                    if (killer.type === "player") {
+                    if (killer.type !== undefined && killer.type === "player") {
                         if (killersList !== "") {killersList += ", "};
                         killersList += killer.name;
                     }
