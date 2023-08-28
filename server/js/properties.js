@@ -303,7 +303,29 @@ var Properties = {
         hp: 300,
         armor: 3,
         weapon: 3,
+    },
+
+    alaric: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+
+    jayce: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    orlan: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
     }
+
+
 };
 
 Properties.getArmorLevel = function(kind) {
