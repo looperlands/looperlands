@@ -142,6 +142,16 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest'], function(Mobs, Items, NPCs
         return new Mobs.Ghostie(id);
     };
 
+    EntityFactory.builders[Types.Entities.ALARIC] = function(id) {
+        return new Mobs.Alaric(id);
+    };
+    EntityFactory.builders[Types.Entities.JAYCE] = function(id) {
+        return new Mobs.Jayce(id);
+    };
+    EntityFactory.builders[Types.Entities.ORLAN] = function(id) {
+        return new Mobs.Orlan(id);
+    };
+
     //===== items ======
  
     EntityFactory.builders[Types.Entities.SWORD2] = function(id) {

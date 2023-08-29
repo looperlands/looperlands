@@ -279,7 +279,29 @@ var Properties = {
         drops: {
             flask: 50
         }
+    },
+
+    alaric: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+
+    jayce: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    orlan: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
     }
+
+
 };
 
 Properties.getArmorLevel = function(kind, levelOffset) {
