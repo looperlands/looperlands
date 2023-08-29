@@ -18,9 +18,6 @@ COPY . /opt/app
 WORKDIR /opt/app
 COPY shared/js/gametypes.js client/js/gametypes.js
 RUN npm ci
-WORKDIR /opt/app/tools/maps
-RUN python2 ./export.py server multi && python2 ./export.py client multi
-WORKDIR /opt/app
 RUN mkdir -p client/config
 COPY configs/config_build.json client/config
 WORKDIR /opt/app/bin

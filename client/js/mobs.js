@@ -323,6 +323,17 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
 
+        Fangwing: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.FANGWING);
+                this.moveSpeed = 350;
+                this.idleSpeed = 700;
+                this.shadowOffsetY = -2;
+                this.isAggressive = true;
+                this.aggroRange = 3;
+            }
+        }),
+
         Arachweave: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.ARACHWEAVE);
