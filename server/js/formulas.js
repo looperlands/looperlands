@@ -130,6 +130,18 @@ Formulas.getSpeedTraitBonus = function (weaponLevel) {
     return SPEEDTRAIT_MAP[weaponLevel];
 }
 
+Formulas.gaussianRand = function() {
+    var rand = 0;
+    for (var i = 0; i < 6; i += 1) {
+      rand += Math.random();
+    }
+    return rand / 6;
+}
+  
+Formulas.gaussianRangeRandom = function(start, end) {
+    return Math.floor(start + Formulas.gaussianRand() * (end - start + 1));
+}
+
 if (!(typeof exports === 'undefined')) {
     module.exports = Formulas;
 }
