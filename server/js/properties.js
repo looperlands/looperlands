@@ -226,6 +226,15 @@ var Properties = {
         weapon: 3
     },
 
+    fangwing: {
+        drops: {
+            potion: 65,
+        },
+        hp: 300,
+        armor: 4,
+        weapon: 3
+    },
+
     arachweave: {
         drops: {
             KEY_ARACHWEAVE: 100,

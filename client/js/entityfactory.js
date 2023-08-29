@@ -110,6 +110,9 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest'], function(Mobs, Items, NPCs
         return new Mobs.Spider(id);
     };   
 
+    EntityFactory.builders[Types.Entities.FANGWING] = function(id) {
+        return new Mobs.Fangwing(id);
+    };   
     EntityFactory.builders[Types.Entities.ARACHWEAVE] = function(id) {
         return new Mobs.Arachweave(id);
     };   
