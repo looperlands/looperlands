@@ -23,14 +23,13 @@ class PlayerQuestEventConsumer extends PlayerEventConsumer {
     }
 
     processLootEvent(playerCache) {
-
-        ;
         //console.log("Processing Loot event for session: ", playerCache);
     }
 
     
 
     processKillMobEvent(playerCache) {
+        /*
         for (const [npc, quests] of Object.entries(Types.quests)) {
             quests.forEach(quest => {
                 if (quest.eventType === "KILL_MOB"){
@@ -43,6 +42,7 @@ class PlayerQuestEventConsumer extends PlayerEventConsumer {
                 }
             });
         }
+        */
     }    
 }
 
