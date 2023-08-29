@@ -232,6 +232,60 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
 
+        Alaric: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.ALARIC);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
+        Jayce: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.JAYCE);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
+        Orlan: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.ORLAN);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
         Kingslime: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.KINGSLIME);
@@ -259,6 +313,17 @@ define(['mob', 'timer'], function(Mob, Timer) {
         Spider: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.SPIDER);
+                this.moveSpeed = 350;
+                this.idleSpeed = 700;
+                this.shadowOffsetY = -2;
+                this.isAggressive = true;
+                this.aggroRange = 3;
+            }
+        }),
+
+        Fangwing: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.FANGWING);
                 this.moveSpeed = 350;
                 this.idleSpeed = 700;
                 this.shadowOffsetY = -2;
@@ -365,6 +430,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 }
             }
         }),
+        
 
         Cobcow: Mob.extend({
             init: function(id) {
