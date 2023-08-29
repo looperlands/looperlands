@@ -233,7 +233,12 @@ module.exports = Player = Character.extend({
                                 });
                                 if (totalCleaveDmg > 0) {
                                     let hpHealed = Math.round(Math.min(totalCleaveDmg * 0.25, self.maxHitPoints * 0.1))
-                                    self.hitPoints += hpHealed; 
+
+                                    if (self.hitPoints + hpHealed > self.maxHitPoints) {
+                                        self.hitPoints = self.maxHitPoints;
+                                    } else {
+                                        self.hitPoints += hpHealed;
+                                    }
                                     self.server.pushToPlayer(self, self.health());
                                 }
                             }
@@ -416,7 +421,7 @@ module.exports = Player = Character.extend({
         if(mob && this.hitPoints > 0) {
             if (damage === undefined) {
                 let level = this.getLevel();
-                let totalLevel =  Math.round(level * 0.5);
+                let totalLevel =  Math.round(level * 0.5); //this is armor
                 let attackerLevel;
                 if (mob instanceof Player) {
                     attackerLevel = mob.getWeaponLevel() + mob.getLevel();

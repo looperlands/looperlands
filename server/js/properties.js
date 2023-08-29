@@ -4,7 +4,6 @@ var Types = require("../../shared/js/gametypes");
 var Properties = {
     rat: {
         level: 1,
-        
         drops: {
             flask: 40,
             burger: 10,
@@ -15,12 +14,13 @@ var Properties = {
     
     skeleton: {
         level: 4,
-
         drops: {
             flask: 40,
             axe: 20,
             firepotion: 5
-        }
+        },
+        weaponMod: 1.5, //bgger mod cause attack rate is 50% slower
+        respawnDelay: 45000,
     },
     
     goblin: {
@@ -37,7 +37,7 @@ var Properties = {
         drops: {
             burger: 10,
             flask: 50,
-            morningstar: 20,
+            bluesword: 5,
             firepotion: 5
         }
     },
@@ -56,7 +56,7 @@ var Properties = {
     deathknight: {
         level: 12,
         drops: {
-            burger: 95,
+            burger: 50,
             firepotion: 5
         },
         weaponMod: 0.9,
@@ -84,12 +84,13 @@ var Properties = {
     },
     
     skeleton2: {
-        level: 7,
+        level: 20,
         drops: {
-            flask: 60,
-            bluesword: 15,
-            firepotion: 5
-        }
+            burger: 30,
+            firepotion: 10
+        },
+        weaponMod: 1.5, //bgger mod cause attack rate is 50% slower
+        respawnDelay: 30000
     },
     
     eye: {
@@ -125,8 +126,8 @@ var Properties = {
             flask: 50
         },
         hpMod: 15,
-        armor: 1.5,
-        weapon: 1.5,
+        armorMod: 1.5,
+        weaponMod: 2.5,
         redpacket: true,
         respawnDelay: 120000
     },
@@ -239,7 +240,7 @@ var Properties = {
             burger: 100
         },
         armorMod: 2.5,
-        weaponMod: 2,
+        weaponMod: 2.5,
         hpMod: 20,
         aoe: {
             damage: 100,

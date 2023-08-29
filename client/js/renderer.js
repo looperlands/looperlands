@@ -564,7 +564,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             if(entity.name && (entity instanceof Player || entity instanceof Mob)) {
                 var color = (entity.id === this.game.playerId) ? "#fcda5c" : this.getHpIndicatorColor(entity);
                 let entityData = entity.name;
-                if (entity.level !== undefined) {
+                if (entity.level !== undefined && entity.level !== null) { //currently it's null on revive, as the player doesn't get welcome message from the server
                     entityData = entity.level + " " + entityData;
                 }
                 
@@ -573,9 +573,13 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                               (entity.y + oy) * this.scale,
                               true,
                               color);
-    
+
                 if (entity.title !== undefined) {
-                    this.drawText(entity.title, (entity.x + 8) * this.scale, (entity.y + entity.nameOffsetY + 5) * this.scale, true, "white", 1, true);
+                    if (entity instanceof Player){
+                        this.drawText(entity.title, (entity.x + 8) * this.scale, (entity.y + entity.nameOffsetY + 5) * this.scale, true, "white", 1, true);
+                    } else {
+                        this.drawText(entity.title, (entity.x + 8) * this.scale, (entity.y + oy + 6) * this.scale, true, "orange", 1, true);
+                    }
                 }
             }
             this.context.restore();
