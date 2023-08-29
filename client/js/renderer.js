@@ -563,11 +563,17 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             this.context.save();
             if(entity.name && (entity instanceof Player || entity instanceof Mob)) {
                 var color = (entity.id === this.game.playerId) ? "#fcda5c" : this.getHpIndicatorColor(entity);
-                this.drawText(entity.name,
+                let entityData = entity.name;
+                if (entity.level !== undefined) {
+                    entityData = entity.level + " " + entityData;
+                }
+                
+                this.drawText(entityData,
                               (entity.x + 8) * this.scale,
                               (entity.y + oy) * this.scale,
                               true,
                               color);
+    
                 if (entity.title !== undefined) {
                     this.drawText(entity.title, (entity.x + 8) * this.scale, (entity.y + entity.nameOffsetY + 5) * this.scale, true, "white", 1, true);
                 }

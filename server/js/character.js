@@ -19,6 +19,7 @@ module.exports = Character = Entity.extend({
             state = [];
         
         state.push(this.orientation);
+        state.push(this.level);
         if(this.target) {
             state.push(this.target);
         }
