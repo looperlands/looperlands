@@ -44,7 +44,7 @@ curl -X POST -H "Content-Type: application/json" -H "x-api-key: $LOOPWORMS_API_K
 # Local development
 Build maps
 ```bash
-./build-maps.sh
+./build_maps.sh
 ```
 
 The following script will build the client and server and run them locally, so you do not have to run the above steps.
