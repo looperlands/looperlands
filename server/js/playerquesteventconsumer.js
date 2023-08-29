@@ -1,4 +1,6 @@
-const player = require('./player.js');
+const quests = require('./quests/quests.js').quests;
+
+console.log("Quests: ", quests);
 
 const PlayerEventConsumer = require('./playereventconsumer.js').PlayerEventConsumer;
 
@@ -29,20 +31,16 @@ class PlayerQuestEventConsumer extends PlayerEventConsumer {
     
 
     processKillMobEvent(playerCache) {
-        /*
-        for (const [npc, quests] of Object.entries(Types.quests)) {
-            quests.forEach(quest => {
-                if (quest.eventType === "KILL_MOB"){
-                    let mobId = quest.target;
-                    let killCount = playerCache.gameData.mobKills[mobId] || 0;
+        quests.forEach(quest => {
+            if (quest.eventType === "KILL_MOB"){
+                let mobId = quest.target;
+                let killCount = playerCache.gameData.mobKills[mobId] || 0;
 
-                    if (killCount > quest.amount) {
-                        console.log("Quest complete: ", quest);
-                    }
+                if (killCount > quest.amount) {
+                    console.log("Quest complete: ", quest);
                 }
-            });
-        }
-        */
+            }
+        });
     }    
 }
 

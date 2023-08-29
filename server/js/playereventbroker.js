@@ -14,7 +14,7 @@ class PlayerEventBroker {
 
 
     static {
-        setInterval(PlayerEventBroker.processEvents, 60000);
+        setInterval(PlayerEventBroker.processEvents, 5000);
     }
 
     constructor(player) {
