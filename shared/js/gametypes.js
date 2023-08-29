@@ -64,7 +64,7 @@ Types = {
         ALARIC: 300016,
         JAYCE: 300017,
         ORLAN: 300018,
-        FANGWING: 300018,
+        FANGWING: 300019,
         ARACHWEAVE: 300015,
         COBCHICKEN: 400001,
         COBCOW: 400002,
