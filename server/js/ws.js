@@ -22,6 +22,7 @@ const dao = require('./dao.js');
 const Formulas = require('./formulas.js');
 const ens = require("./ens.js");
 const chat = require("./chat.js");
+const quests = require("./quests/quests.js");
 
 const cache = new NodeCache();
 
@@ -511,6 +512,22 @@ WS.socketIOServer = Server.extend({
                     return;
                 }
                 res.status(200).send(triggerState);
+            }
+        });
+
+        app.get("/session/:sessionId/npc/:npcId", async (req, res) => {
+            const sessionId = req.params.sessionId;
+            const npcId = req.params.npcId;
+            const sessionData = cache.get(sessionId);
+            if (sessionData === undefined) {
+                res.status(404).json({
+                    status: false,
+                    "error" : "session not found",
+                    user: null
+                });
+            } else {
+                let npcQuests = quests.questsByNPC(npcId);
+                res.status(200).json(npcQuests);
             }
         });
 

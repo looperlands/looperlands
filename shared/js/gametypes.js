@@ -3220,17 +3220,3 @@ if(!(typeof exports === 'undefined')) {
 Types.timeouts = {};
 Types.timeouts[Types.Entities.FIREFOX] = 5000;
 Types.timeouts[Types.Entities.MEGAMAG] = 12000;
-
-
-Types.quests = {};
-Types.quests[Types.Entities.KING] = [
-    {
-        id: "KING_QUEST_1",
-        name: "The King's Request",
-        description: "The King has requested that you slay 100 rats.",
-        eventType: "KILL_MOB",
-        target: Types.Entities.RAT,
-        amount: 100,
-        reward: 100
-    }
-]

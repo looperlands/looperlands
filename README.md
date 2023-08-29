@@ -42,6 +42,11 @@ The following example will activate the doors with triggerId = Fight Night:
 curl -X POST -H "Content-Type: application/json" -H "x-api-key: $LOOPWORMS_API_KEY" -d "{\"triggerId\": \"Fight Night\"}" http://127.0.0.1:8000/activateTrigger
 ```
 # Local development
+Install some dependencies.
+```bash
+sudo apt-get install unzip zip jq
+```
+
 Build maps
 ```bash
 ./build_maps.sh
