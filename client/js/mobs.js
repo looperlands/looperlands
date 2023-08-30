@@ -298,6 +298,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.isAggressive = true;
                 this.aggroRange = 1;
                 this.deathAnimated = true;
+                this.title = "ELITE";
             }
         }),       
         
@@ -311,6 +312,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.atkSpeed = 100;
                 this.aggroRange = 3;
                 this.deathAnimated = true;
+                this.title = "FANGLORD";
             }
         }),         
 
