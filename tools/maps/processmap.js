@@ -40,6 +40,7 @@ module.exports = function processMap(json, options) {
         map.chestAreas = [];
         map.staticChests = [];
         map.staticEntities = {};
+        map.triggerAreas = []
     }
 
     console.log("Processing map info...");
@@ -168,6 +169,20 @@ module.exports = function processMap(json, options) {
         });
     }
 
+    var processTriggerArea = function(triggerArea, idx) {
+        let trigger = {
+            x: triggerArea.x / map.tilesize,
+            y: triggerArea.y / map.tilesize,
+        }
+
+        var triggerProps = triggerArea.properties.property;
+        for(var k=0; k < triggerProps.length; k += 1) {
+            trigger['t'+triggerProps[k].name] = triggerProps[k].value;
+        }
+
+        map.triggerAreas.push(trigger);
+    }
+
     var processChestArea = function(area) {
         var chestArea = {
             x: area.x / map.tilesize,
@@ -242,6 +257,7 @@ module.exports = function processMap(json, options) {
         processGroup('roaming', processRoamingArea);
         processGroup('chestareas', processChestArea);
         processGroup('chests', processChest);
+        processGroup('triggers', processTriggerArea);
     }
 
     if (mode === "client") {

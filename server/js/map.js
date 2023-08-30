@@ -31,6 +31,7 @@ module.exports = Mapx = cls.Class.extend({
         this.collisions = map.collisions;
         this.mobAreas = map.roamingAreas;
         this.chestAreas = map.chestAreas;
+        this.triggerAreas = map.triggerAreas;
         this.staticChests = map.staticChests;
         this.staticEntities = map.staticEntities;
         this.isLoaded = true;

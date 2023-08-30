@@ -39,6 +39,7 @@ module.exports = Area = cls.Class.extend({
     },
     
     addToArea: function(entity) {
+        console.log('add to area', entity);
         if(entity) {
             this.entities.push(entity);
             entity.area = this;
@@ -49,6 +50,24 @@ module.exports = Area = cls.Class.extend({
         
         if(this.isFull()) {
             this.hasCompletelyRespawned = true;
+            if(this.full_callback) {
+                this.full_callback();
+            }
+        }
+    },
+
+    check: function() {
+        if(this.isFull()) {
+            console.log('area is full');
+            if(this.full_callback) {
+                this.full_callback();
+            }
+        }
+        if(this.isEmpty()) {
+            console.log('area is empty');
+            if(this.empty_callback) {
+                this.empty_callback();
+            }
         }
     },
     
@@ -66,5 +85,9 @@ module.exports = Area = cls.Class.extend({
     
     onEmpty: function(callback) {
         this.empty_callback = callback;
+    },
+
+    onFull: function(callback) {
+        this.full_callback = callback;
     }
 });
