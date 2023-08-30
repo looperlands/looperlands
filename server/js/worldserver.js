@@ -13,7 +13,6 @@ var cls = require("./lib/class"),
     MobArea = require('./mobarea'),
     ChestArea = require('./chestarea'),
     Chest = require('./chest'),
-    TriggerArea = require('./triggerarea'),
     Messages = require('./message'),
     Properties = require("./properties"),
     Utils = require("./utils"),
@@ -44,7 +43,6 @@ module.exports = World = cls.Class.extend({
         this.npcs = {};
         this.mobAreas = [];
         this.chestAreas = [];
-        this.triggerAreas = [];
         this.groups = {};
         this.doorTriggers = {};
         
@@ -93,15 +91,6 @@ module.exports = World = cls.Class.extend({
                         } else {
                             self.moveEntity(mob, pos.x, pos.y);
                         }
-                    }
-                });
-
-                console.log(self.triggerAreas);
-                _.each(self.triggerAreas, function(area) {
-                    if(area.contains(player)) {
-                        area.addToArea(player)
-                    } else {
-                        area.removeFromArea(player)
                     }
                 });
             };
@@ -193,19 +182,6 @@ module.exports = World = cls.Class.extend({
             _.each(self.map.staticChests, function(chest) {
                 var c = self.createChest(chest.x, chest.y, chest.i);
                 self.addStaticItem(c);
-            });
-
-            // Create trigger eareas
-            _.each(self.map.triggerAreas, function(a) {
-                console.log('triggerarea', a);
-                var area = new TriggerArea(a.id, a.x, a.y, a.w, a.h, a.ttrigger, self);
-                self.triggerAreas.push(area);
-                area.onFull(self.handleTriggerAreaIsFull.bind(self, area));
-                if(a.tdelay) {
-                    area.onEmpty(() => { setTimeout(self.handleTriggerAreaIsEmpty.bind(self, area), a.tdelay) });
-                } else {
-                    area.onEmpty(self.handleTriggerAreaIsEmpty.bind(self, area));
-                }
             });
 
             // Spawn static entities
@@ -920,18 +896,6 @@ module.exports = World = cls.Class.extend({
         }
     },
 
-    handleTriggerAreaIsFull: function(area) {
-        if(area) {
-            this.activateTrigger(area.trigger);
-        }
-    },
-
-    handleTriggerAreaIsEmpty: function(area) {
-        if(area) {
-            this.deactivateTrigger(area.trigger);
-        }
-    },
-
     handleOpenedChest: function(chest, player) {
         this.pushToAdjacentGroups(chest.group, chest.despawn());
         this.removeEntity(chest);
@@ -1130,14 +1094,12 @@ module.exports = World = cls.Class.extend({
     activateTrigger: function(triggerId) {
         if (this.doorTriggers.hasOwnProperty(triggerId)) {
             this.doorTriggers[triggerId] = true;
-            console.log("Trigger " + triggerId + " activated!");
         }
     },
 
     deactivateTrigger: function(triggerId) {
         if (this.doorTriggers.hasOwnProperty(triggerId)) {
             this.doorTriggers[triggerId] = false;
-            console.log("Trigger " + triggerId + " deactivated!");
         }
     },
 

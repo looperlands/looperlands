@@ -39,7 +39,6 @@ module.exports = Area = cls.Class.extend({
     },
     
     addToArea: function(entity) {
-        console.log('add to area', entity);
         if(entity) {
             this.entities.push(entity);
             entity.area = this;

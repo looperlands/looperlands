@@ -140,8 +140,20 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
                 
                     this.followPath(path);
                 }
-        }   
+            }
+
+            if(this.leave_callback && (
+                x < this.leave_callback_area.x ||
+                y < this.leave_callback_area.y ||
+                x > (this.leave_callback_area.x + this.leave_callback_area.w) ||
+                y > (this.leave_callback_area.y + this.leave_callback_area.h)
+            )) {
+                this.leave_callback();
+                this.leave_callback = null;
+                this.leave_callback_area = null;
+            }
         },
+
     
         requestPathfindingTo: function(x, y) {
             if(this.request_path_callback) {
@@ -163,7 +175,11 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
         onStopPathing: function(callback) {
             this.stop_pathing_callback = callback;
         },
-	
+
+        onLeave(area, callback) {
+            this.leave_callback = callback;
+            this.leave_callback_area = area;
+        },
     	followPath: function(path) {
     		if(path.length > 1) { // Length of 1 means the player has clicked on himself
     			this.path = path;

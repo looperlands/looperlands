@@ -22,7 +22,8 @@ module.exports = function processMap(json, options) {
         height: 0,
         collisions: [],
         doors: [],
-        checkpoints: []
+        checkpoints: [],
+        triggers: []
     };
     mode = options.mode;
 
@@ -40,7 +41,6 @@ module.exports = function processMap(json, options) {
         map.chestAreas = [];
         map.staticChests = [];
         map.staticEntities = {};
-        map.triggerAreas = []
     }
 
     console.log("Processing map info...");
@@ -85,6 +85,7 @@ module.exports = function processMap(json, options) {
             if(objects === undefined) {
                 return null;
             }
+
             if(objects[0] === undefined) {
                 objects = [objects];
             }
@@ -170,17 +171,24 @@ module.exports = function processMap(json, options) {
     }
 
     var processTriggerArea = function(triggerArea, idx) {
-        let trigger = {
+        var trigger = {
+            id: idx + 1,
             x: triggerArea.x / map.tilesize,
             y: triggerArea.y / map.tilesize,
-        }
+            w: triggerArea.width / map.tilesize,
+            h: triggerArea.height / map.tilesize,
+        };
 
         var triggerProps = triggerArea.properties.property;
-        for(var k=0; k < triggerProps.length; k += 1) {
-            trigger['t'+triggerProps[k].name] = triggerProps[k].value;
+        if(triggerProps[0] === undefined) {
+            triggerProps = [triggerArea.properties.property];
         }
 
-        map.triggerAreas.push(trigger);
+        for(var k=0; k < triggerProps.length; k += 1) {
+            trigger[triggerProps[k].name] = triggerProps[k].value;
+        }
+
+        map.triggers.push(trigger);
     }
 
     var processChestArea = function(area) {
@@ -253,11 +261,12 @@ module.exports = function processMap(json, options) {
 
     // Object layers
     processGroup('doors', processDoor);
+    processGroup('triggers', processTriggerArea);
+
     if (mode === 'server') {
         processGroup('roaming', processRoamingArea);
         processGroup('chestareas', processChestArea);
         processGroup('chests', processChest);
-        processGroup('triggers', processTriggerArea);
     }
 
     if (mode === "client") {
