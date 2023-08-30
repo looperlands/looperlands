@@ -133,102 +133,85 @@ var Properties = {
     },
 
     slime: {
+        level: 1,
         drops: {
             potion: 50,
-        },        
-        hp: 50,
-        armor: 2,
-        weapon: 1
+        },
     },
 
     gnashling: {
+        level: 3,
         drops: {
             potion: 50,
-        },                
-        hp: 130,
-        armor: 3,
-        weapon: 2
+        },
     },
 
     loomleaf: {
+        level: 10,
         drops: {
             potion: 100,
-        },                
-        hp: 3300,
-        armor: 16,
-        weapon: 6
+        },
     },
 
     thudlord: {
+        level: 6,
         drops: {
             potion: 150,
-        },                
-        hp: 1100,
-        armor: 4,
-        weapon: 3
+        },
     },
     
     kingslime: {
+        level: 3,
         drops: {
             potion: 100,
-        },                
-        hp: 400,
-        armor: 3,
-        weapon: 3
+        messages: ['Bow to the gelatinous crown', 'Flowing, shifting, unstoppable', 'Dissolve within my embrace', 'I am boundless, ever-spreading', 'Your struggles make the kingdom grow'],        
+        },
     },
 
     silkshade: {
-        hp: 2000,
-        armor: 5,
-        weapon: 4
+        level: 7,
+        drops: {
+            potion: 50,
+        },
+        messages: ['Darkness shall embrance you!', 'Your doom is woven', 'Fear binds you', 'Your end is spun', 'The old world beckons you'],        
     },
 
 
     wildgrin: {
+        level: 7,
         drops: {
             potion: 100,
         },
-        hp: 140,
-        armor: 6,
-        weapon: 4
-    },        
+    },      
     
 
     redslime: {
+        level: 2,
         drops: {
             potion: 100,
-        },        
-        hp: 140,
-        armor: 2,
-        weapon: 2
-    },    
+        },
+    },     
 
     spider: {
+        level: 4,
         drops: {
             potion: 65,
         },
-        hp: 300,
-        armor: 4,
-        weapon: 3
-    },
+    },  
 
     fangwing: {
+        level: 4,
         drops: {
             potion: 65,
         },
-        hp: 300,
-        armor: 4,
-        weapon: 3
-    },
+    },  
 
     arachweave: {
+        level: 5,
         drops: {
             KEY_ARACHWEAVE: 100,
         },
-        hp: 300,
-        armor: 4,
-        weapon: 3
-    },
+    },  
     
     minimag: {
         level: 16,
