@@ -21,7 +21,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.atkSpeed = 100;
                 this.idleSpeed = 800;
                 this.shadowOffsetY = 1;
-                this.setAttackRate(1300);
+                this.setAttackRate(1200);
             }
         }),
 
@@ -33,7 +33,8 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.idleSpeed = 800;
                 this.walkSpeed = 200;
                 this.shadowOffsetY = 1;
-                this.setAttackRate(1300);
+                this.aggroRange = 3;
+                this.setAttackRate(1200);
             }
         }),
 
@@ -150,6 +151,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.atkRate = 2000;
                 this.attackCooldown = new Timer(this.atkRate);
         		this.aggroRange = 3;
+                this.title = "BOSS";
             },
             
             idle: function(orientation) {
@@ -165,7 +167,8 @@ define(['mob', 'timer'], function(Mob, Timer) {
             init: function(id) {
                 this._super(id, Types.Entities.SLIME);
                 this.moveSpeed = 250;
-                this.idleSpeed = 700;
+                this.idleSpeed = 100;
+                this.atkSpeed = 100;
                 this.shadowOffsetY = -2;
                 this.isAggressive = true;
                 this.aggroRange = 1;
@@ -175,8 +178,8 @@ define(['mob', 'timer'], function(Mob, Timer) {
             init: function(id) {
                 this._super(id, Types.Entities.GNASHLING);
                 this.moveSpeed = 300;
-                this.idleSpeed = 700;
-                this.atkSpeed = 50;                
+                this.idleSpeed = 100;
+                this.atkSpeed = 100;            
                 this.shadowOffsetY = -2;
                 this.isAggressive = true;
                 this.aggroRange = 3;
@@ -187,8 +190,8 @@ define(['mob', 'timer'], function(Mob, Timer) {
             init: function(id) {
                 this._super(id, Types.Entities.WILDGRIN);
                 this.moveSpeed = 300;
-                this.idleSpeed = 700;
-                this.atkSpeed = 50;                
+                this.idleSpeed = 100;
+                this.atkSpeed = 100;              
                 this.shadowOffsetY = -2;
                 this.isAggressive = true;
                 this.aggroRange = 3;
@@ -199,8 +202,8 @@ define(['mob', 'timer'], function(Mob, Timer) {
             init: function(id) {
                 this._super(id, Types.Entities.THUDLORD);
                 this.moveSpeed = 300;
-                this.idleSpeed = 700;
-                this.atkSpeed = 50;                
+                this.idleSpeed = 100;
+                this.atkSpeed = 100;              
                 this.shadowOffsetY = -2;
                 this.isAggressive = true;
                 this.aggroRange = 3;
@@ -212,7 +215,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
             init: function(id) {
                 this._super(id, Types.Entities.LOOMLEAF);
                 this.moveSpeed = 300;
-                this.idleSpeed = 700;
+                this.idleSpeed = 100;
                 this.atkSpeed = 50;                
                 this.shadowOffsetY = -2;
                 this.isAggressive = true;
@@ -225,7 +228,8 @@ define(['mob', 'timer'], function(Mob, Timer) {
             init: function(id) {
                 this._super(id, Types.Entities.REDSLIME);
                 this.moveSpeed = 250;
-                this.idleSpeed = 700;
+                this.idleSpeed = 100;
+                this.atkSpeed = 100;                
                 this.shadowOffsetY = -2;
                 this.isAggressive = true;
                 this.aggroRange = 1;
@@ -290,11 +294,13 @@ define(['mob', 'timer'], function(Mob, Timer) {
             init: function(id) {
                 this._super(id, Types.Entities.KINGSLIME);
                 this.moveSpeed = 250;
-                this.idleSpeed = 700;
+                this.idleSpeed = 100;
                 this.shadowOffsetY = -2;
+                this.atkSpeed = 100;                
                 this.isAggressive = true;
                 this.aggroRange = 1;
                 this.deathAnimated = true;
+                this.title = "ELITE";
             }
         }),       
         
@@ -302,11 +308,13 @@ define(['mob', 'timer'], function(Mob, Timer) {
             init: function(id) {
                 this._super(id, Types.Entities.SILKSHADE);
                 this.moveSpeed = 500;
-                this.idleSpeed = 700;
+                this.idleSpeed = 100;
                 this.shadowOffsetY = -2;
                 this.isAggressive = true;
+                this.atkSpeed = 100;
                 this.aggroRange = 3;
                 this.deathAnimated = true;
+                this.title = "FANGLORD";
             }
         }),         
 
@@ -314,8 +322,9 @@ define(['mob', 'timer'], function(Mob, Timer) {
             init: function(id) {
                 this._super(id, Types.Entities.SPIDER);
                 this.moveSpeed = 350;
-                this.idleSpeed = 700;
+                this.idleSpeed = 100;
                 this.shadowOffsetY = -2;
+                this.atkSpeed = 100;
                 this.isAggressive = true;
                 this.aggroRange = 3;
             }
@@ -325,8 +334,9 @@ define(['mob', 'timer'], function(Mob, Timer) {
             init: function(id) {
                 this._super(id, Types.Entities.FANGWING);
                 this.moveSpeed = 350;
-                this.idleSpeed = 700;
+                this.idleSpeed = 100;
                 this.shadowOffsetY = -2;
+                this.atkSpeed = 100;
                 this.isAggressive = true;
                 this.aggroRange = 3;
             }
@@ -336,8 +346,9 @@ define(['mob', 'timer'], function(Mob, Timer) {
             init: function(id) {
                 this._super(id, Types.Entities.ARACHWEAVE);
                 this.moveSpeed = 350;
-                this.idleSpeed = 700;
+                this.idleSpeed = 100;
                 this.shadowOffsetY = -2;
+                this.atkSpeed = 100;
                 this.isAggressive = true;
                 this.aggroRange = 3;
             }
@@ -365,6 +376,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.atkSpeed = 100;
         		this.setAttackRate(2000);
                 this.deathAnimated = true;
+                this.title = "BOSS";
             },
 
             restoreDefaultMovement: function () {

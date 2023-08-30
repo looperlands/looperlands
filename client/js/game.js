@@ -1483,6 +1483,13 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 "NFT_b98dc3bef2fc8b84072faab4a2ca0fdb6a894e8d737ddcddb8431c7a4508de3b",
                                 "NFT_ccf088f0a50c7ff723b9e90540ff659213a9cdf8bd542880b7f1e8fbd57cdc22",
                                 "NFT_cec4f485247ef64f7fe988b8cd239b3a9ee55c1f3feb4424d2b55e0d3c6e6b27",
+                                "NFT_0e6633a3174557966fbc2451f0ba2951ade7f9da7895d262daab28dfc9b8682f",
+                                "NFT_11ff4a423d1a16fbbb1e621c3ef298f27c254e490d93b226f6ff9cf278cd0dba",
+                                "NFT_315455aa614611ba163c78a78c150925d50d059a974b027e0ac427f161a455d7",
+                                "NFT_3e1d8c5a7387d73648f395eff59d35cb9448839b58d914ad7fb2b9e4103132ee",
+                                "NFT_586afdfd3327168bfe60d75575eb1a7e6e17743e0dab28e69561d86f992f9434",
+                                "NFT_a3c5c5c8623293d94ca9e8964cb2f11c3b08981e6b435cee344057490776c5ab",
+                                "NFT_f6f7aaf43b02c615c3e63c63f01b73d4d570b67cfc2eef24a46947f73a4a6c44",
                                 // @nextSpriteLine@
                             ];                          
         },

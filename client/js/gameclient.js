@@ -1,5 +1,5 @@
 
-define(['player', 'entityfactory', 'lib/bison'], function(Player, EntityFactory, BISON) {
+define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityFactory, BISON, Mob) {
 
     var GameClient = Class.extend({
         init: function(host, port, protocol, sessionId, mapId) {
@@ -221,7 +221,7 @@ define(['player', 'entityfactory', 'lib/bison'], function(Player, EntityFactory,
                     this.spawn_chest_callback(item, x, y);
                 }
             } else {
-                var name, orientation, target, weapon, armor, title;
+                var name, orientation, target, weapon, armor, title, level;
             
                 if(Types.isPlayer(kind)) {
                     name = data[5];
@@ -229,14 +229,16 @@ define(['player', 'entityfactory', 'lib/bison'], function(Player, EntityFactory,
                     armor = data[7];
                     weapon = data[8];
                     title = data[9];
-                    if(data.length > 10) {
-                        target = data[10];
+                    level = data[10]
+                    if(data.length > 11) {
+                        target = data[11];
                     }
                 }
                 else if(Types.isMob(kind)) {
                     orientation = data[5];
-                    if(data.length > 6) {
-                        target = data[6];
+                    level = data[6];
+                    if(data.length > 7) {
+                        target = data[7];
                     }
                 }
 
@@ -246,6 +248,10 @@ define(['player', 'entityfactory', 'lib/bison'], function(Player, EntityFactory,
                     character.weaponName = Types.getKindAsString(weapon);
                     character.spriteName = Types.getKindAsString(armor);
                     character.title = title;
+                }
+
+                if(character instanceof Mob || character instanceof Player) {
+                    character.level = level;
                 }
             
                 if(this.spawn_character_callback) {

@@ -39,7 +39,7 @@ class NFTWeapon {
             return true;
         }
         let chance = Math.floor(Math.random() * 100);
-        chance += this.level
+        chance += this.level * 0.5;
         return chance >= 89; // base level is 1, so base chance of trait is 10%
     }
 
