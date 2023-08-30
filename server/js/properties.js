@@ -130,7 +130,7 @@ var Properties = {
         weaponMod: 2.5,
         redpacket: true,
         respawnDelay: 120000,
-        xp: 10000  
+        xp: 7500  
     },
 
     slime: {
