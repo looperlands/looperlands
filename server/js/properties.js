@@ -3,147 +3,133 @@ var Types = require("../../shared/js/gametypes");
 
 var Properties = {
     rat: {
+        level: 1,
         drops: {
             flask: 40,
             burger: 10,
             firepotion: 5
         },
-        hp: 25,
-        armor: 1,
-        weapon: 1,
-        respawnDelay: 5000
+        respawnDelay: 10000,
     },
     
     skeleton: {
+        level: 4,
         drops: {
             flask: 40,
             axe: 20,
             firepotion: 5
         },
-        hp: 110,
-        armor: 2,
-        weapon: 2
+        weaponMod: 1.5, //bgger mod cause attack rate is 50% slower
+        respawnDelay: 45000,
     },
     
     goblin: {
+        level: 3,
         drops: {
             flask: 50,
             axe: 10,
             firepotion: 5
-        },
-        hp: 90,
-        armor: 2,
-        weapon: 1
+        }
     },
     
     ogre: {
+        level: 6,
         drops: {
             burger: 10,
             flask: 50,
-            morningstar: 20,
+            bluesword: 5,
             firepotion: 5
-        },
-        hp: 200,
-        armor: 3,
-        weapon: 2
+        }
     },
     
     spectre: {
+        level: 9,
         drops: {
             flask: 30,
             redsword: 30,
             firepotion: 5
         },
-        hp: 250,
-        armor: 2,
-        weapon: 4
+        weaponMod: 1.25,
+        hpMod: 0.8
     },
     
     deathknight: {
+        level: 12,
         drops: {
-            burger: 95,
+            burger: 50,
             firepotion: 5
         },
-        hp: 250,
-        armor: 3,
-        weapon: 3
+        weaponMod: 0.9,
+        hpMod: 1.2
     },
     
     crab: {
+        level: 2,
         drops: {
             flask: 50,
             axe: 20,
             firepotion: 5
-        },
-        hp: 60,
-        armor: 2,
-        weapon: 1
+        }
     },
     
     snake: {
+        level: 5,
         drops: {
             flask: 50,
             morningstar: 10,
             firepotion: 5
         },
-        hp: 150,
-        armor: 3,
-        weapon: 2
+        weaponMod: 1.2,
+        armorMod: 0.5
     },
     
     skeleton2: {
+        level: 20,
         drops: {
-            flask: 60,
-            bluesword: 15,
-            firepotion: 5
+            burger: 30,
+            firepotion: 10
         },
-        hp: 200,
-        armor: 3,
-        weapon: 3
+        weaponMod: 1.5, //bgger mod cause attack rate is 50% slower
+        respawnDelay: 30000
     },
     
     eye: {
+        level: 8,
         drops: {
             flask: 50,
             redsword: 10,
             firepotion: 5
-        },
-        hp: 200,
-        armor: 3,
-        weapon: 3
+        }
     },
     
     bat: {
+        level: 3,
         drops: {
             flask: 50,
             axe: 10,
             firepotion: 5
-        },
-        hp: 80,
-        armor: 2,
-        weapon: 1
+        }
     },
     
     wizard: {
+        level: 4,
         drops: {
             flask: 50,
             firepotion: 5
-        },
-        hp: 100,
-        armor: 2,
-        weapon: 6
+        }
     },
     
     boss: {
+        level: 13,
         drops: {
             goldensword: 10,
             flask: 50
         },
-        hp: 5000,
-        armor: 5,
-        weapon: 8,
+        hpMod: 15,
+        armorMod: 1.5,
+        weaponMod: 2.5,
         redpacket: true,
-        respawnDelay: 60000
+        respawnDelay: 120000
     },
 
     slime: {
@@ -245,25 +231,26 @@ var Properties = {
     },
     
     minimag: {
+        level: 16,
         drops: {
             flask: 50
         },
-        hp: 500,
-        armor: 25,
-        weapon: 4,
         aoe: {
             damage: 60,
             ondeath: true
-        }
+        },
+        armorMod: 2,
+        weaponMod: 0.8
     },
 
     megamag: {
+        level: 20,
         drops: {
             burger: 100
         },
-        hp: 15000,
-        armor: 40,
-        weapon: 8,
+        armorMod: 2.5,
+        weaponMod: 2.5,
+        hpMod: 20,
         aoe: {
             damage: 100,
             range: 2
@@ -278,40 +265,30 @@ var Properties = {
     },
 
     cobchicken: {
-        hp: 10,
-        armor: 1,
-        weapon: 1,
+        level: 1,
         friendly: true
     },
 
     cobcow: {
-        hp: 100,
-        armor: 1,
-        weapon: 1,
+        level: 1,
         friendly: true
     },
     
     cobpig: {
-        hp: 60,
-        armor: 1,
-        weapon: 1,
+        level: 1,
         friendly: true
     },
     
     cobgoat: {
-        hp: 35,
-        armor: 1,
-        weapon: 1,
+        level: 1,
         friendly: true
     },
 
     ghostie: {
+        level: 6,
         drops: {
             flask: 50
-        },
-        hp: 300,
-        armor: 3,
-        weapon: 3,
+        }
     },
 
     alaric: {
@@ -337,10 +314,15 @@ var Properties = {
 
 };
 
-Properties.getArmorLevel = function(kind) {
+Properties.getArmorLevel = function(kind, levelOffset) {
     try {
         if(Types.isMob(kind)) {
-            return Properties[Types.getKindAsString(kind)].armor;
+            let level = Properties.getLevel(kind);
+            if (Properties[Types.getKindAsString(kind)].armor !== undefined) {
+                return Math.round(Properties[Types.getKindAsString(kind)].armor * (level + levelOffset) / level);
+            } else {
+                return Math.round((0.5 * (level + levelOffset)) * Properties.getArmorMod(kind));
+            }
         } else {
             return 1;
         }
@@ -350,20 +332,51 @@ Properties.getArmorLevel = function(kind) {
     return 1;
 };
 
-Properties.getWeaponLevel = function(kind) {
+Properties.getWeaponLevel = function(kind, levelOffset) {
     try {
         if(Types.isMob(kind)) {
-            return Properties[Types.getKindAsString(kind)].weapon;
+            let level = Properties.getLevel(kind);
+            if (Properties[Types.getKindAsString(kind)].weapon !== undefined) {
+                return Math.round(Properties[Types.getKindAsString(kind)].weapon * (level + levelOffset) / level);
+            } else {
+                return Math.round((0.4 * (level + levelOffset) + (level + levelOffset - 1) * 0.5) * Properties.getWeaponMod(kind));
+            }
         } else {
-            return Types.getWeaponRank(kind) + 1;
+            return Types.getWeaponRank(kind);
         }
     } catch(e) {
         console.error("No level found for weapon: "+Types.getKindAsString(kind));
     }
 };
 
-Properties.getHitPoints = function(kind) {
-    return Properties[Types.getKindAsString(kind)].hp;
+Properties.getHitPoints = function(kind, levelOffset) {
+    let level = Properties.getLevel(kind);
+
+    if (Properties[Types.getKindAsString(kind)].hp !== undefined) {
+        return Math.round(Properties[Types.getKindAsString(kind)].hp * (level + levelOffset) / level);
+    } else {
+        return Math.round((level + levelOffset) * 25 * Properties.getHpMod(kind));
+    }
+};
+
+Properties.getLevel = function(kind) {
+    retLevel = Properties[Types.getKindAsString(kind)].level;
+    return retLevel !== undefined ? retLevel : 1;
+};
+
+Properties.getHpMod = function(kind) {
+    retMod = Properties[Types.getKindAsString(kind)].hpMod;
+    return retMod !== undefined ? retMod : 1;
+};
+
+Properties.getArmorMod = function(kind) {
+    retMod = Properties[Types.getKindAsString(kind)].armorMod;
+    return retMod !== undefined ? retMod : 1;
+};
+
+Properties.getWeaponMod = function(kind) {
+    retMod = Properties[Types.getKindAsString(kind)].weaponMod;
+    return retMod !== undefined ? retMod : 1;
 };
 
 module.exports = Properties;

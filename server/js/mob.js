@@ -3,17 +3,22 @@ var cls = require("./lib/class"),
     _ = require("underscore"),
     Messages = require("./message"),
     Properties = require("./properties"),
+    Formulas = require("./formulas"),
     Types = require("../../shared/js/gametypes");
 
 module.exports = Mob = Character.extend({
     init: function(id, kind, x, y) {
         this._super(id, "mob", kind, x, y);
-        
+
+        this.level = Properties.getLevel(this.kind);
+        this.levelOffset = Math.round(Formulas.gaussianRangeRandom(-0.2 * this.level, 0.2 * this.level));
+        this.level += this.levelOffset;
+
         this.updateHitPoints();
         this.spawningX = x;
         this.spawningY = y;
-        this.armorLevel = Properties.getArmorLevel(this.kind);
-        this.weaponLevel = Properties.getWeaponLevel(this.kind);
+        this.armorLevel = Properties.getArmorLevel(this.kind, this.levelOffset);
+        this.weaponLevel = Properties.getWeaponLevel(this.kind, this.levelOffset);
         this.hatelist = [];
         this.respawnTimeout = null;
         this.returnTimeout = null;
@@ -134,7 +139,7 @@ module.exports = Mob = Character.extend({
 
         let delay = Properties[Types.getKindAsString(this.kind)].respawnDelay;
         if (delay === undefined) {
-            delay = 30000;
+            delay = 60000;
         }
         
         if(this.area && this.area instanceof MobArea) {
@@ -187,7 +192,7 @@ module.exports = Mob = Character.extend({
     },
     
     updateHitPoints: function() {
-        this.resetHitPoints(Properties.getHitPoints(this.kind));
+        this.resetHitPoints(Properties.getHitPoints(this.kind, this.levelOffset));
     },
     
     distanceToSpawningPoint: function(x, y) {

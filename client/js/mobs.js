@@ -21,7 +21,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.atkSpeed = 100;
                 this.idleSpeed = 800;
                 this.shadowOffsetY = 1;
-                this.setAttackRate(1300);
+                this.setAttackRate(1200);
             }
         }),
 
@@ -33,7 +33,8 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.idleSpeed = 800;
                 this.walkSpeed = 200;
                 this.shadowOffsetY = 1;
-                this.setAttackRate(1300);
+                this.aggroRange = 3;
+                this.setAttackRate(1200);
             }
         }),
 
@@ -150,6 +151,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.atkRate = 2000;
                 this.attackCooldown = new Timer(this.atkRate);
         		this.aggroRange = 3;
+                this.title = "BOSS";
             },
             
             idle: function(orientation) {
@@ -365,6 +367,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.atkSpeed = 100;
         		this.setAttackRate(2000);
                 this.deathAnimated = true;
+                this.title = "BOSS";
             },
 
             restoreDefaultMovement: function () {

@@ -3083,7 +3083,7 @@ Types.rankedArmors = [
 ];
 
 Types.getWeaponRank = function(weaponKind) {
-    return _.indexOf(Types.rankedWeapons, weaponKind);
+    return Math.round(_.indexOf(Types.rankedWeapons, weaponKind) * 1.33);
 };
 
 Types.getArmorRank = function(armorKind) {
