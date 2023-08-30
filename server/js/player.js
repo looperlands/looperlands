@@ -209,6 +209,7 @@ module.exports = Player = Character.extend({
                                 self.server.handleHurtEntity(mob, self, dmg);
                             }
                             self.incrementNFTWeaponExperience(dmg);
+                            return dmg;
                         }
 
                         if (weaponTrait === "aoe") {
@@ -217,6 +218,7 @@ module.exports = Player = Character.extend({
                                 handleDamage(mob, totalLevel, 1);
                             } else {
                                 let entityIds = Object.keys(group.entities);
+                                let totalCleaveDmg = 0;
                                 entityIds.forEach(function(id) {
                                     let entity = group.entities[id];
                                     if (entity.type !== undefined && entity.type === 'mob' && !Properties[Types.getKindAsString(entity.kind)].friendly) {
@@ -224,17 +226,27 @@ module.exports = Player = Character.extend({
                                         if (mob.id === entity.id) {
                                             handleDamage(mob, totalLevel, 1);
                                         }
-                                        else if (distance === 1) {
-                                            handleDamage(entity, totalLevel, 0.67);
+                                        else if (distance <= 1) {
+                                           totalCleaveDmg += handleDamage(entity, totalLevel, 0.8);
                                         }
                                     }
                                 });
+                                if (totalCleaveDmg > 0) {
+                                    let hpHealed = Math.round(Math.min(totalCleaveDmg * 0.25, self.maxHitPoints * 0.1))
+
+                                    if (self.hitPoints + hpHealed > self.maxHitPoints) {
+                                        self.hitPoints = self.maxHitPoints;
+                                    } else {
+                                        self.hitPoints += hpHealed;
+                                    }
+                                    self.server.pushToPlayer(self, self.health());
+                                }
                             }
                         } else if (weaponTrait === "crit") {
                             handleDamage(mob, totalLevel, 3);
                         } else if (weaponTrait === "speed") {
                             handleDamage(mob, totalLevel, 1);
-                            newAttackRate = BASE_ATTACK_RATE - (25 * self.getWeaponLevel());
+                            newAttackRate = BASE_ATTACK_RATE - Formulas.getSpeedTraitBonus(self.getWeaponLevel());
                         } else {
                             handleDamage(mob, totalLevel, 1);
                         }
@@ -409,8 +421,14 @@ module.exports = Player = Character.extend({
         if(mob && this.hitPoints > 0) {
             if (damage === undefined) {
                 let level = this.getLevel();
-                let totalLevel = (this.armorLevel + level) - 1;
-                damage = Formulas.dmg(mob.getWeaponLevel(), totalLevel);
+                let totalLevel =  Math.round(level * 0.5); //this is armor
+                let attackerLevel;
+                if (mob instanceof Player) {
+                    attackerLevel = mob.getWeaponLevel() + mob.getLevel();
+                } else {
+                    attackerLevel = mob.getWeaponLevel();
+                }
+                damage = Formulas.dmg(attackerLevel, totalLevel);
             }
             this.hitPoints -= damage;
             this.server.handleHurtEntity(this, mob, damage);
@@ -494,7 +512,7 @@ module.exports = Player = Character.extend({
     
     getState: function() {
         var basestate = this._getBaseState(),
-            state = [this.name, this.orientation, this.armor, this.weapon, this.title];
+            state = [this.name, this.orientation, this.armor, this.weapon, this.title, this.level];
 
         if(this.target) {
             state.push(this.target);
@@ -663,7 +681,7 @@ module.exports = Player = Character.extend({
     },
 
     getMoveSpeed: function() {
-        return BASE_SPEED - (this.getLevel() - 1) * 2;
+        return Math.round(Math.max(BASE_SPEED - (this.getLevel() - 1) * 0.33, 100));
     },
 
     pushEntityList: function() {

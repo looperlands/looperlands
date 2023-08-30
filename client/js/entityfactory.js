@@ -110,6 +110,9 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest'], function(Mobs, Items, NPCs
         return new Mobs.Spider(id);
     };   
 
+    EntityFactory.builders[Types.Entities.FANGWING] = function(id) {
+        return new Mobs.Fangwing(id);
+    };   
     EntityFactory.builders[Types.Entities.ARACHWEAVE] = function(id) {
         return new Mobs.Arachweave(id);
     };   
@@ -140,6 +143,16 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest'], function(Mobs, Items, NPCs
 
     EntityFactory.builders[Types.Entities.GHOSTIE] = function(id) {
         return new Mobs.Ghostie(id);
+    };
+
+    EntityFactory.builders[Types.Entities.ALARIC] = function(id) {
+        return new Mobs.Alaric(id);
+    };
+    EntityFactory.builders[Types.Entities.JAYCE] = function(id) {
+        return new Mobs.Jayce(id);
+    };
+    EntityFactory.builders[Types.Entities.ORLAN] = function(id) {
+        return new Mobs.Orlan(id);
     };
 
     //===== items ======

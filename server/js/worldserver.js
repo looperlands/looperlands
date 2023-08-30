@@ -1034,7 +1034,7 @@ module.exports = World = cls.Class.extend({
 
                     entityIds.forEach(function(id) {
                         let nearbyEntity = group.entities[id];
-                        if (nearbyEntity.type === 'player') {
+                        if (nearbyEntity.type !== undefined && nearbyEntity.type === 'player') {
                             let distance = Utils.distanceTo(mob.x, mob.y, nearbyEntity.x, nearbyEntity.y);
                             if (distance <= aoeRange) {
                                 nearbyEntity.handleHurt(mob, aoeDamage);
@@ -1049,8 +1049,7 @@ module.exports = World = cls.Class.extend({
     distributeExp: function(mob) {
         let self=this;
 
-        let kind = Types.getKindAsString(mob.kind);
-        let xp = Formulas.xp(Properties[kind]);
+        let xp = Formulas.xp(mob);
         let allDmgTaken = mob.dmgTakenArray.reduce((partialSum, currElem) => partialSum + currElem.dmg, 0);
 
         mob.dmgTakenArray.forEach( function(arrElem) { 
@@ -1065,6 +1064,11 @@ module.exports = World = cls.Class.extend({
             let accompliceDmg = arrElem.dmg;
             if (accomplice.type === "player" && allDmgTaken > 0 && accompliceDmg > 0) {
                 let accompliceShare = Formulas.xpShare(xp, allDmgTaken, accompliceDmg);
+                let accompliceLevel = accomplice.getLevel();
+                let mobLevel = mob.level;
+                if (accompliceLevel > Math.round(mobLevel * 1.25)){
+                    accompliceShare = Math.round(accompliceShare * Math.max(1 - (accompliceLevel - (mobLevel * 1.25)) * 0.1, 0.5));
+                }
                 accomplice.handleExperience(accompliceShare);
                 self.pushToPlayer(accomplice, new Messages.Kill(mob, accompliceShare));
             }
@@ -1086,7 +1090,7 @@ module.exports = World = cls.Class.extend({
                 let killersList = "";
                 mob.dmgTakenArray.forEach( function(arrElem) { 
                     let killer = self.getEntityById(arrElem.id);
-                    if (killer.type === "player") {
+                    if (killer.type !== undefined && killer.type === "player") {
                         if (killersList !== "") {killersList += ", "};
                         killersList += killer.name;
                     }
