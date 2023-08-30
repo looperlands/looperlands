@@ -142,12 +142,7 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
                 }
             }
 
-            if(this.leave_callback && (
-                x < this.leave_callback_area.x ||
-                y < this.leave_callback_area.y ||
-                x > (this.leave_callback_area.x + this.leave_callback_area.w) ||
-                y > (this.leave_callback_area.y + this.leave_callback_area.h)
-            )) {
+            if(this.leave_callback && !this.leave_callback_area.contains(this)) {
                 this.leave_callback();
                 this.leave_callback = null;
                 this.leave_callback_area = null;
@@ -180,6 +175,7 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
             this.leave_callback = callback;
             this.leave_callback_area = area;
         },
+
     	followPath: function(path) {
     		if(path.length > 1) { // Length of 1 means the player has clicked on himself
     			this.path = path;

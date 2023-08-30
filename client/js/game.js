@@ -2346,16 +2346,8 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                         self.tryUnlockingAchievement("TOMB_RAIDER");
                     }
 
-                    if(self.map.isTrigger(self.player.gridX, self.player.gridY)) {
-                        var trigger = self.map.getCurrentTrigger(self.player);
-                        self.client.sendTrigger(trigger.id, true);
-                        if(trigger.message) {
-                            self.showNotification(trigger.message);
-                        }
-
-                        self.player.onLeave(trigger, function() {
-                            self.client.sendTrigger(trigger.id, false);
-                        })
+                    if(self.map.getCurrentTrigger(self.player)) {
+                        self.handleTrigger(self.map.getCurrentTrigger(self.player));
                     }
 
                     self.updatePlayerCheckpoint();
@@ -3708,6 +3700,17 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 }
             }
             return false;
+        },
+
+        handleTrigger(trigger) {
+            self.client.sendTrigger(trigger.id, true);
+            if(trigger.message) {
+                self.showNotification(trigger.message);
+            }
+
+            self.player.onLeave(trigger, function() {
+                self.client.sendTrigger(trigger.id, false);
+            })
         },
     
         /**

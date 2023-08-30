@@ -389,10 +389,6 @@ define(['jquery', 'area'], function($, Area) {
             return this.doors[this.GridPositionToTileIndex(x, y)] !== undefined;
         },
 
-        isTrigger: function(x, y) {
-            return this.triggers[this.GridPositionToTileIndex(x, y)] !== undefined;
-        },
-
         getDoorDestination: function(x, y) {
             return this.doors[this.GridPositionToTileIndex(x, y)];
         },
