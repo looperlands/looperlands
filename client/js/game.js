@@ -3239,6 +3239,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             var msg;
         
             if(npc) {
+                this.checkForQuests(npc);
                 msg = npc.talk();
                 this.previousClickPosition = {};
                 if(msg) {
@@ -3255,6 +3256,16 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     this.tryUnlockingAchievement("RICKROLLD");
                 }
             }
+        },
+
+        checkForQuests: function(npc) {
+            var self = this;
+            var url = '/session/' + self.sessionId + '/npc/' + npc.kind;
+            axios.get(url).then(function (response) {
+                console.log(response);
+            }).catch(function (error) {
+                console.error("Error while checking for quests.");
+            });
         },
 
         /**
