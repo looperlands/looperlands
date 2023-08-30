@@ -1092,13 +1092,13 @@ module.exports = World = cls.Class.extend({
     },
 
     activateTrigger: function(triggerId) {
-        if (this.doorTriggers.hasOwnProperty(triggerId) && !this.checkTriggerActive(triggerId)) {
+        if (this.doorTriggers.hasOwnProperty(triggerId)) {
             this.doorTriggers[triggerId] = true;
         }
     },
 
     deactivateTrigger: function(triggerId) {
-        if (this.doorTriggers.hasOwnProperty(triggerId) && this.checkTriggerActive(triggerId)) {
+        if (this.doorTriggers.hasOwnProperty(triggerId)) {
             this.doorTriggers[triggerId] = false;
         }
     },
