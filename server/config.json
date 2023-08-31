@@ -9,7 +9,8 @@
         "oa",
         "oadungeon",
         "oaoverworld",
-        "cobsfarm"
+        "cobsfarm",
+        "fhf"
     ],
     "map_directory": "./server/maps/",
     "metrics_enabled": false,
