@@ -31,7 +31,6 @@ Types = {
         EQUIP_INVENTORY: 27,
         MOBDOSPECIAL: 28,
         MOBEXITCOMBAT: 29,
-        TRIGGER: 30,
     },
     
     Entities: {
