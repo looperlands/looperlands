@@ -22,7 +22,8 @@ module.exports = function processMap(json, options) {
         height: 0,
         collisions: [],
         doors: [],
-        checkpoints: []
+        checkpoints: [],
+        triggers: []
     };
     mode = options.mode;
 
@@ -84,6 +85,7 @@ module.exports = function processMap(json, options) {
             if(objects === undefined) {
                 return null;
             }
+
             if(objects[0] === undefined) {
                 objects = [objects];
             }
@@ -168,6 +170,27 @@ module.exports = function processMap(json, options) {
         });
     }
 
+    var processTriggerArea = function(triggerArea, idx) {
+        var trigger = {
+            id: idx + 1,
+            x: triggerArea.x / map.tilesize,
+            y: triggerArea.y / map.tilesize,
+            w: triggerArea.width / map.tilesize,
+            h: triggerArea.height / map.tilesize,
+        };
+
+        var triggerProps = triggerArea.properties.property;
+        if(triggerProps[0] === undefined) {
+            triggerProps = [triggerArea.properties.property];
+        }
+
+        for(var k=0; k < triggerProps.length; k += 1) {
+            trigger[triggerProps[k].name] = triggerProps[k].value;
+        }
+
+        map.triggers.push(trigger);
+    }
+
     var processChestArea = function(area) {
         var chestArea = {
             x: area.x / map.tilesize,
@@ -238,6 +261,8 @@ module.exports = function processMap(json, options) {
 
     // Object layers
     processGroup('doors', processDoor);
+    processGroup('triggers', processTriggerArea);
+
     if (mode === 'server') {
         processGroup('roaming', processRoamingArea);
         processGroup('chestareas', processChestArea);
