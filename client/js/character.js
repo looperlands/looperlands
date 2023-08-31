@@ -124,6 +124,11 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
     	walk: function(orientation) {
     	    this.setOrientation(orientation);
     	    this.animate("walk", this.walkSpeed);
+            if(this.leave_callback && !this.leave_callback_area.contains(this)) {
+                this.leave_callback();
+                this.leave_callback = null;
+                this.leave_callback_area = null;
+            }
     	},
     
         moveTo_: function(x, y, callback) {
@@ -169,6 +174,11 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
     
         onStopPathing: function(callback) {
             this.stop_pathing_callback = callback;
+            if(this.leave_callback && !this.leave_callback_area.contains(this)) {
+                this.leave_callback();
+                this.leave_callback = null;
+                this.leave_callback_area = null;
+            }
         },
 
         onLeave(area, callback) {

@@ -2542,6 +2542,10 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                         }
                     }
 
+                    if(self.map.getCurrentTrigger(self.player)) {
+                        self.handleTrigger(self.map.getCurrentTrigger(self.player));
+                    }
+
                     if(self.player.target instanceof Npc) {
                         self.makeNpcTalk(self.player.target);
                     } else if(self.player.target instanceof Chest) {
@@ -3703,14 +3707,19 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         },
 
         handleTrigger(trigger) {
-            self.client.sendTrigger(trigger.id, true);
-            if(trigger.message) {
-                self.showNotification(trigger.message);
-            }
+            if(!self.player.triggerArea || self.player.triggerArea.id !== trigger.id) {
+                self.player.triggerArea = trigger;
+                self.client.sendTrigger(trigger.id, true);
 
-            self.player.onLeave(trigger, function() {
-                self.client.sendTrigger(trigger.id, false);
-            })
+                if (trigger.message) {
+                    self.showNotification(trigger.message);
+                }
+
+                self.player.onLeave(trigger, function () {
+                    self.player.triggerArea = null;
+                    self.client.sendTrigger(trigger.id, false);
+                })
+            }
         },
     
         /**

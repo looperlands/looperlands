@@ -43,6 +43,7 @@ module.exports = World = cls.Class.extend({
         this.npcs = {};
         this.mobAreas = [];
         this.chestAreas = [];
+        this.triggerAreas = {};
         this.groups = {};
         this.doorTriggers = {};
         
@@ -159,7 +160,7 @@ module.exports = World = cls.Class.extend({
         this.map.ready(function() {
             self.initZoneGroups();
             self.initDoorTriggers();
-            
+
             self.map.generateCollisionGrid();
             
             // Populate all mob "roaming" areas
@@ -176,6 +177,12 @@ module.exports = World = cls.Class.extend({
                 var area = new ChestArea(a.id, a.x, a.y, a.w, a.h, a.tx, a.ty, a.i, self);
                 self.chestAreas.push(area);
                 area.onEmpty(self.handleEmptyChestArea.bind(self, area));
+            });
+
+            // Create all trigger areas
+            _.each(self.map.triggers, function(a) {
+                var area = new Area(a.id, a.x, a.y, a.w, a.h, self);
+                self.triggerAreas[a.id] = area;
             });
             
             // Spawn static chests

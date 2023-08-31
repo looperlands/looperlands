@@ -390,15 +390,29 @@ module.exports = Player = Character.extend({
                     self.lastCheckpoint = checkpoint;
                 }
             } else if(action === Types.Messages.TRIGGER) {
-                var trigger = self.server.map.triggers[message[1]];
+                var trigger = self.server.triggerAreas[message[1]];
                 if(trigger) {
                     if(message[2] === true) {
-                        self.server.activateTrigger(trigger.trigger);
+                        if(self.triggerDeactivationTimer) {
+                            clearTimeout(self.triggerDeactivationTimer);
+                        }
+
+                        if(!self.area || self.area.id !== trigger.id) {
+                            trigger.addToArea(self);
+                            self.server.activateTrigger(trigger.trigger);
+                        }
                     } else {
+                        trigger.removeFromArea(self);
                         if(trigger.delay) {
-                            setTimeout(() => self.server.deactivateTrigger(trigger.trigger), trigger.delay);
+                            self.triggerDeactivationTimer = setTimeout(() => {
+                                if(trigger.isEmpty()) {
+                                    self.server.deactivateTrigger(trigger.trigger);
+                                }
+                            }, trigger.delay);
                         } else {
-                            self.server.deactivateTrigger(trigger.trigger);
+                            if(trigger.isEmpty()) {
+                                self.server.deactivateTrigger(trigger.trigger);
+                            }
                         }
                     }
                 }
