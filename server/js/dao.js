@@ -412,12 +412,13 @@ exports.loadAvatarGameData = async function(avatarId, retry) {
     }
   }
 
-  const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/loadItemMob.php?NFTID=${avatarId}`;
+  const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/loadItemMobQuest.php?NFTID=${avatarId}`;
 
   try {
     const response = await axios.get(url, options);
 
     let responseData = response.data[0];
+    console.log(responseData);
 
     let mobKills = responseData.mobJson.reduce((avatarMobKills, mobKills) => {
       const mobId = mobKills.mobId;

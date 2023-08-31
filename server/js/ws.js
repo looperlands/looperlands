@@ -527,7 +527,10 @@ WS.socketIOServer = Server.extend({
                 });
             } else {
                 let npcQuests = quests.questsByNPC(npcId);
-                res.status(200).json(npcQuests);
+                if (npcQuests !== undefined) {
+
+                }
+                res.status(202).json(npcQuests);
             }
         });
 
