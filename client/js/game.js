@@ -2362,10 +2362,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                         self.tryUnlockingAchievement("TOMB_RAIDER");
                     }
 
-                    if(self.map.getCurrentTrigger(self.player)) {
-                        self.handleTrigger(self.map.getCurrentTrigger(self.player));
-                    }
-
                     self.updatePlayerCheckpoint();
 
                     if(!self.player.isDead) {
@@ -2558,10 +2554,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                         }
                     }
 
-                    if(self.map.getCurrentTrigger(self.player)) {
-                        self.handleTrigger(self.map.getCurrentTrigger(self.player));
-                    }
-
                     if(self.player.target instanceof Npc) {
                         self.makeNpcTalk(self.player.target);
                     } else if(self.player.target instanceof Chest) {
@@ -2576,6 +2568,11 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     });
                     
                     self.updatePos(self.player);
+
+                    if(self.map.getCurrentTrigger(self.player)) {
+                        self.handleTrigger(self.map.getCurrentTrigger(self.player), self.player);
+                    }
+
                 });
             
                 self.player.onRequestPath(function(x, y) {
@@ -2707,6 +2704,10 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                                     attacker.follow(entity);
                                                 }
                                             });
+
+                                            if(self.map.getCurrentTrigger(entity)) {
+                                                self.handleTrigger(self.map.getCurrentTrigger(entity), entity);
+                                            }
                                         }
                                     });
 
@@ -2760,8 +2761,12 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                                     attacker.follow(entity);
                                                 }
                                             });
-                                
+
                                             self.updatePos(entity);
+
+                                            if(self.map.getCurrentTrigger(entity)) {
+                                                self.handleTrigger(self.map.getCurrentTrigger(entity), entity);
+                                            }
                                         }
                                     });
 
@@ -2811,7 +2816,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                         entity.forEachAttacker(function(attacker) {
                                             attacker.disengage();
                                         });
-                                        
+
                                         if(self.player.target && self.player.target.id === entity.id) {
                                             self.player.disengage();
                                         }
@@ -2825,7 +2830,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                         if(self.camera.isVisible(entity)) {
                                             self.audioManager.playSound("kill"+Math.floor(Math.random()*2+1));
                                         }
-                                    
+
                                         self.updateCursor();
                                     });
 
@@ -2840,6 +2845,10 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                                 self.createAttackLink(entity, player);
                                             }
                                         }
+                                    }
+
+                                    if(self.map.getCurrentTrigger(entity)) {
+                                        self.handleTrigger(self.map.getCurrentTrigger(entity), entity);
                                     }
                                 }
                             }
@@ -3722,17 +3731,16 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             return false;
         },
 
-        handleTrigger(trigger) {
-            if(!self.player.triggerArea || self.player.triggerArea.id !== trigger.id) {
-                self.player.triggerArea = trigger;
+        handleTrigger(trigger, entity) {
+            if(!entity.triggerArea || entity.triggerArea.id !== trigger.id) {
+                entity.triggerArea = trigger;
                 self.client.sendTrigger(trigger.id, true);
-
                 if (trigger.message) {
                     self.showNotification(trigger.message);
                 }
 
-                self.player.onLeave(trigger, function () {
-                    self.player.triggerArea = null;
+                entity.onLeave(trigger, function () {
+                    entity.triggerArea = null;
                     self.client.sendTrigger(trigger.id, false);
                 })
             }

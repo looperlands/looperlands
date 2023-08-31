@@ -146,12 +146,6 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
                     this.followPath(path);
                 }
             }
-
-            if(this.leave_callback && !this.leave_callback_area.contains(this)) {
-                this.leave_callback();
-                this.leave_callback = null;
-                this.leave_callback_area = null;
-            }
         },
 
     
@@ -174,11 +168,6 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
     
         onStopPathing: function(callback) {
             this.stop_pathing_callback = callback;
-            if(this.leave_callback && !this.leave_callback_area.contains(this)) {
-                this.leave_callback();
-                this.leave_callback = null;
-                this.leave_callback_area = null;
-            }
         },
 
         onLeave(area, callback) {
@@ -282,6 +271,12 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
                 
                     if(this.stop_pathing_callback) {
                         this.stop_pathing_callback(this.gridX, this.gridY);
+                    }
+
+                    if(this.leave_callback && !this.leave_callback_area.contains(this)) {
+                        this.leave_callback();
+                        this.leave_callback = null;
+                        this.leave_callback_area = null;
                     }
         		}
         	}
@@ -559,10 +554,16 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
     	die: function() {
     	    this.removeTarget();
     	    this.isDead = true;
-	    
+
     	    if(this.death_callback) {
     	        this.death_callback();
     	    }
+
+            if(this.leave_callback) {
+                this.leave_callback();
+                this.leave_callback = null;
+                this.leave_callback_area = null;
+            }
     	},
 	
     	onHasMoved: function(callback) {

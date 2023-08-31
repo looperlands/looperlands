@@ -182,6 +182,9 @@ module.exports = World = cls.Class.extend({
             // Create all trigger areas
             _.each(self.map.triggers, function(a) {
                 var area = new Area(a.id, a.x, a.y, a.w, a.h, self);
+                area.trigger = a.trigger;
+                area.message = a.message;
+                area.delay = a.delay;
                 self.triggerAreas[a.id] = area;
             });
             
@@ -1115,3 +1118,6 @@ module.exports = World = cls.Class.extend({
     }
 
 });
+
+
+
