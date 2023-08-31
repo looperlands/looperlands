@@ -44,7 +44,11 @@ module.exports = Mapx = cls.Class.extend({
         this.initConnectedGroups(map.doors);
         this.initCheckpoints(map.checkpoints);
         this.initDoors(map.doors);
-        this.initTriggers(map.triggers)
+
+        if(map.triggers) {
+            this.triggers = {}
+            this.initTriggers(map.triggers)
+        }
     
         if(this.ready_func) {
             this.ready_func();
@@ -230,7 +234,6 @@ module.exports = Mapx = cls.Class.extend({
 
     initTriggers: function(triggers) {
         let self = this;
-        this.triggers = {};
 
         triggers.forEach(function(trigger) {
             self.triggers[trigger.id] = {
