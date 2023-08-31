@@ -129,13 +129,14 @@ var Properties = {
         armorMod: 1.5,
         weaponMod: 2.5,
         redpacket: true,
-        respawnDelay: 120000
+        respawnDelay: 120000,
+        xp: 7500  
     },
 
     slime: {
         level: 1,
         drops: {
-            potion: 50,
+            potion: 95,
         },
     },
 
@@ -188,7 +189,7 @@ var Properties = {
     redslime: {
         level: 2,
         drops: {
-            potion: 100,
+            potion: 90,
         },
     },     
 
