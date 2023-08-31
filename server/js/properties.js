@@ -136,7 +136,7 @@ var Properties = {
     slime: {
         level: 1,
         drops: {
-            potion: 50,
+            potion: 95,
         },
     },
 
@@ -189,7 +189,7 @@ var Properties = {
     redslime: {
         level: 2,
         drops: {
-            potion: 100,
+            potion: 90,
         },
     },     
 
