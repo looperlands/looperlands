@@ -575,10 +575,6 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
                               id]);
         },
 
-        sendTrigger: function(id, activated) {
-            this.sendMessage([Types.Messages.TRIGGER, id, activated]);
-        },
-
         sendEquipInventory: function(kind, nftId) {
             this.sendMessage([Types.Messages.EQUIP_INVENTORY,
                               kind,

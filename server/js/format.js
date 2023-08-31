@@ -19,7 +19,6 @@ var _ = require('underscore'),
             this.formats[Types.Messages.ZONE] = [],
             this.formats[Types.Messages.OPEN] = ['n'],
             this.formats[Types.Messages.CHECK] = ['n'],
-            this.formats[Types.Messages.TRIGGER] = ['n', 'b'],
             this.formats[Types.Messages.EQUIP_INVENTORY] = ['n', 's']
         },
         
@@ -39,9 +38,6 @@ var _ = require('underscore'),
                         return false;
                     }
                     if(format[i] === 's' && !_.isString(message[i])) {
-                        return false;
-                    }
-                    if(format[i] === 'b' && !_.isBoolean(message[i])) {
                         return false;
                     }
                 }
