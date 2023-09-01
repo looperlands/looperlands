@@ -545,6 +545,42 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 }, 1500)  
             }
         }),
+
+        Cobslimered: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.COBSLIMERED);
+                this.setName("Slime");
+                this.moveSpeed = 250;
+                this.atkSpeed = 100;
+                this.idleSpeed = 750;
+                this.setAttackRate(900);
+                this.aggroRange = 3;
+            }
+        }),
+
+        Cobslimeyellow: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.COBSLIMEYELLOW);
+                this.setName("Slime");
+                this.moveSpeed = 300;
+                this.atkSpeed = 100;
+                this.idleSpeed = 750;
+                this.setAttackRate(1000);
+                this.aggroRange = 2;
+            }
+        }),
+
+        Cobslimeblue: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.COBSLIMEBLUE);
+                this.setName("Slime");
+                this.moveSpeed = 350;
+                this.atkSpeed = 100;
+                this.idleSpeed = 750;
+                this.setAttackRate(1100);
+                this.aggroRange = 1;
+            }
+        })
     };
     return Mobs;
 });

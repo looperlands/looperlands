@@ -71,6 +71,9 @@ Types = {
         COBPIG: 400003,
         COBGOAT: 400004,
         GHOSTIE: 400005,
+        COBSLIMERED: 400006,
+        COBSLIMEYELLOW: 400007,
+        COBSLIMEBLUE: 400008,
         
         // Armors
         FIREFOX: 20,
@@ -1604,6 +1607,9 @@ var kinds = {
     cobpig: [Types.Entities.COBPIG, "mob"],
     cobgoat: [Types.Entities.COBGOAT, "mob"],
     ghostie: [Types.Entities.GHOSTIE, "mob"],
+    cobslimered: [Types.Entities.COBSLIMERED, "mob"],
+    cobslimeyellow: [Types.Entities.COBSLIMEYELLOW, "mob"],
+    cobslimeblue: [Types.Entities.COBSLIMEBLUE, "mob"],
     sword1: [Types.Entities.SWORD1, "weapon"],
     sword2: [Types.Entities.SWORD2, "weapon"],
     axe: [Types.Entities.AXE, "weapon"],
