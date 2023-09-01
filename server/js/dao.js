@@ -419,7 +419,7 @@ exports.loadAvatarGameData = async function(avatarId, retry) {
 
     let responseData = response.data[0];
 
-    let mobKills, items, quests = {};
+    let mobKills, items = {}, quests = [];
 
     if (responseData.mobJson) {
       mobKills = responseData.mobJson.reduce((avatarMobKills, mobKills) => {
@@ -442,13 +442,7 @@ exports.loadAvatarGameData = async function(avatarId, retry) {
     }
 
     if (responseData.questJson) {
-      quests = responseData.questJson.reduce((avatarQuests, quest) => {
-        const questId = quest.questID;
-        if (questId) {
-          avatarQuests[questId] = quest;
-        }
-        return avatarQuests;
-      }, {});
+      quests = responseData.questJson;
     }
 
     const data = {
@@ -470,6 +464,10 @@ exports.loadAvatarGameData = async function(avatarId, retry) {
       console.error("loadAvatarGameData", error);
     }
   }
+}
+
+exports.setQuestStatus = async function(avatarId, questId, status) {
+  console.log("setQuestStatus", avatarId, questId, status);
 }
 
 

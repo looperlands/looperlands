@@ -1,4 +1,13 @@
+const dao = require('../dao.js');
+
 const main = require('./main.js');
+
+const STATES = {
+  IN_PROGRESS: "IN_PROGRESS", // picked up from an NPC
+  COMPLETED: "COMPLETED", // completed but not turned in
+  FINISHED: "FINISHED" // completed and turned in
+}
+
 // Put new quests from other files here
 let maps = [main.quests]
 
@@ -52,11 +61,16 @@ const questsByNPC = quests.reduce((acc, quest) => {
 }, {});
 
 exports.quests = quests;
-exports.questsByNPC = function (npcId) {
-  return questsByNPC[npcId];
-};
 
-exports.handleNPCClick = function (avatarId, npc) {
-  let npcQuests = quests.questsByNPC(npcId);
-  console.log("npcQuests: ", npcQuests);
+exports.handleNPCClick = function (sessionData, npcId) {
+  let npcQuests = questsByNPC[npcId];
+  if (npcQuests) {
+    let npcQuestIds = npcQuests.map(quest => quest.id);
+    let avatarQuestIds = sessionData.gameData.quests.map(quest => quest.id);
+    for (const questId of npcQuestIds) {
+      if (!avatarQuestIds.includes(questId)) {
+        dao.setQuestStatus(sessionData.nftId, questId, STATES.IN_PROGRESS);
+      }
+    }
+  }
 }
