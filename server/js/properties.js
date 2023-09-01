@@ -269,7 +269,28 @@ var Properties = {
     },
 
     ghostie: {
-        level: 6,
+        level: 7,
+        drops: {
+            flask: 50
+        }
+    },
+
+    cobslimered: {
+        level: 15,
+        drops: {
+            flask: 50
+        }
+    },
+
+    cobslimeyellow: {
+        level: 10,
+        drops: {
+            flask: 50
+        }
+    },
+
+    cobslimeblue: {
+        level: 5,
         drops: {
             flask: 50
         }
