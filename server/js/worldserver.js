@@ -43,6 +43,7 @@ module.exports = World = cls.Class.extend({
         this.npcs = {};
         this.mobAreas = [];
         this.chestAreas = [];
+        this.triggerAreas = {};
         this.groups = {};
         this.doorTriggers = {};
         
@@ -159,7 +160,7 @@ module.exports = World = cls.Class.extend({
         this.map.ready(function() {
             self.initZoneGroups();
             self.initDoorTriggers();
-            
+
             self.map.generateCollisionGrid();
             
             // Populate all mob "roaming" areas
@@ -177,13 +178,22 @@ module.exports = World = cls.Class.extend({
                 self.chestAreas.push(area);
                 area.onEmpty(self.handleEmptyChestArea.bind(self, area));
             });
+
+            // Create all trigger areas
+            _.each(self.map.triggers, function(a) {
+                var area = new Area(a.id, a.x, a.y, a.w, a.h, self);
+                area.trigger = a.trigger;
+                area.message = a.message;
+                area.delay = a.delay;
+                self.triggerAreas[a.id] = area;
+            });
             
             // Spawn static chests
             _.each(self.map.staticChests, function(chest) {
                 var c = self.createChest(chest.x, chest.y, chest.i);
                 self.addStaticItem(c);
             });
-            
+
             // Spawn static entities
             self.spawnStaticEntities();
             
@@ -895,7 +905,7 @@ module.exports = World = cls.Class.extend({
             this.handleItemDespawn(chest);
         }
     },
-    
+
     handleOpenedChest: function(chest, player) {
         this.pushToAdjacentGroups(chest.group, chest.despawn());
         this.removeEntity(chest);
@@ -1094,14 +1104,12 @@ module.exports = World = cls.Class.extend({
     activateTrigger: function(triggerId) {
         if (this.doorTriggers.hasOwnProperty(triggerId)) {
             this.doorTriggers[triggerId] = true;
-            console.log("Trigger " + triggerId + " activated!");
         }
     },
 
     deactivateTrigger: function(triggerId) {
         if (this.doorTriggers.hasOwnProperty(triggerId)) {
             this.doorTriggers[triggerId] = false;
-            console.log("Trigger " + triggerId + " deactivated!");
         }
     },
 
@@ -1110,3 +1118,6 @@ module.exports = World = cls.Class.extend({
     }
 
 });
+
+
+

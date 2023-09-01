@@ -2368,9 +2368,9 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     if(self.player.gridX <= 27 && self.player.gridY <= 123 && self.player.gridY > 112) {
                         self.tryUnlockingAchievement("TOMB_RAIDER");
                     }
-                
+
                     self.updatePlayerCheckpoint();
-                
+
                     if(!self.player.isDead) {
                         self.audioManager.updateMusic();
                     }
@@ -2499,11 +2499,19 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                         }
 
                         function checkTrigger() {
-                            if (dest.triggerId !== undefined) {    
-                                let trUrl = '/session/' + self.sessionId + '/requestTeleport/' + dest.triggerId;
+                            if (dest.triggerId !== undefined) {
+                                let inverted = false;
+                                let triggerId = dest.triggerId;
+                                if(triggerId.startsWith("!")) {
+                                    inverted = true;
+                                    triggerId = dest.triggerId.substring(1);
+                                }
+
+                                let trUrl = '/session/' + self.sessionId + '/requestTeleport/' + triggerId;
                                 _self.doorCheck = true;
                                 axios.get(trUrl).then(function (response) {
-                                    if (response.data === true) {
+                                    if ( (response.data === true && !inverted) || (response.data === false && inverted))
+                                    {
                                         goInside();
                                         _self.updatePos(self.player);
                                     } else {
@@ -2552,7 +2560,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                             checkTrigger();
                         }
                     }
-                
+
                     if(self.player.target instanceof Npc) {
                         self.makeNpcTalk(self.player.target);
                     } else if(self.player.target instanceof Chest) {
@@ -2567,6 +2575,11 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     });
                     
                     self.updatePos(self.player);
+
+                    if(self.map.getCurrentTrigger(self.player)) {
+                        self.handleTrigger(self.map.getCurrentTrigger(self.player), self.player);
+                    }
+
                 });
             
                 self.player.onRequestPath(function(x, y) {
@@ -2698,6 +2711,10 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                                     attacker.follow(entity);
                                                 }
                                             });
+
+                                            if(self.map.getCurrentTrigger(entity)) {
+                                                self.handleTrigger(self.map.getCurrentTrigger(entity), entity);
+                                            }
                                         }
                                     });
 
@@ -2751,8 +2768,12 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                                     attacker.follow(entity);
                                                 }
                                             });
-                                
+
                                             self.updatePos(entity);
+
+                                            if(self.map.getCurrentTrigger(entity)) {
+                                                self.handleTrigger(self.map.getCurrentTrigger(entity), entity);
+                                            }
                                         }
                                     });
 
@@ -2802,7 +2823,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                         entity.forEachAttacker(function(attacker) {
                                             attacker.disengage();
                                         });
-                                        
+
                                         if(self.player.target && self.player.target.id === entity.id) {
                                             self.player.disengage();
                                         }
@@ -2816,7 +2837,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                         if(self.camera.isVisible(entity)) {
                                             self.audioManager.playSound("kill"+Math.floor(Math.random()*2+1));
                                         }
-                                    
+
                                         self.updateCursor();
                                     });
 
@@ -2831,6 +2852,10 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                                 self.createAttackLink(entity, player);
                                             }
                                         }
+                                    }
+
+                                    if(self.map.getCurrentTrigger(entity)) {
+                                        self.handleTrigger(self.map.getCurrentTrigger(entity), entity);
                                     }
                                 }
                             }
@@ -3715,6 +3740,21 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 }
             }
             return false;
+        },
+
+        handleTrigger(trigger, entity) {
+            if(!entity.triggerArea || entity.triggerArea.id !== trigger.id) {
+                entity.triggerArea = trigger;
+                self.client.sendTrigger(trigger.id, true);
+                if (trigger.message) {
+                    self.showNotification(trigger.message);
+                }
+
+                entity.onLeave(trigger, function () {
+                    entity.triggerArea = null;
+                    self.client.sendTrigger(trigger.id, false);
+                })
+            }
         },
     
         /**
