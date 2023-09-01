@@ -55,3 +55,8 @@ exports.quests = quests;
 exports.questsByNPC = function (npcId) {
   return questsByNPC[npcId];
 };
+
+exports.handleNPCClick = function (avatarId, npc) {
+  let npcQuests = quests.questsByNPC(npcId);
+  console.log("npcQuests: ", npcQuests);
+}

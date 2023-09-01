@@ -269,7 +269,6 @@ WS.socketIOServer = Server.extend({
                 cache.set(sessionId, sessionData);
             }
 
-            
             let name = await ens.getEns(walletId);
 
             if (parsedSaveData === undefined) {
@@ -526,10 +525,7 @@ WS.socketIOServer = Server.extend({
                     user: null
                 });
             } else {
-                let npcQuests = quests.questsByNPC(npcId);
-                if (npcQuests !== undefined) {
-
-                }
+                quests.handleNPCClick(sessionData, npcId);
                 res.status(202).json(npcQuests);
             }
         });

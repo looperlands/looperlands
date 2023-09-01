@@ -418,27 +418,43 @@ exports.loadAvatarGameData = async function(avatarId, retry) {
     const response = await axios.get(url, options);
 
     let responseData = response.data[0];
-    console.log(responseData);
 
-    let mobKills = responseData.mobJson.reduce((avatarMobKills, mobKills) => {
-      const mobId = mobKills.mobId;
-      if (mobId) {
-        avatarMobKills[mobId] = mobKills.iCount;
-      }
-      return avatarMobKills;
-    }, {});
+    let mobKills, items, quests = {};
 
-    let items = responseData.itemJson.reduce((avatarItems, itemCount) => {
-      const itemId = itemCount.itemId;
-      if (itemId) {
-        avatarItems[itemId] = itemCount.iCount;
-      }
-      return avatarItems;
-    }, {});
+    if (responseData.mobJson) {
+      mobKills = responseData.mobJson.reduce((avatarMobKills, mobKills) => {
+        const mobId = mobKills.mobId;
+        if (mobId) {
+          avatarMobKills[mobId] = mobKills.iCount;
+        }
+        return avatarMobKills;
+      }, {});
+    }
+
+    if (responseData.itemJson) {
+      items = responseData.itemJson.reduce((avatarItems, itemCount) => {
+        const itemId = itemCount.itemId;
+        if (itemId) {
+          avatarItems[itemId] = itemCount.iCount;
+        }
+        return avatarItems;
+      }, {});
+    }
+
+    if (responseData.questJson) {
+      quests = responseData.questJson.reduce((avatarQuests, quest) => {
+        const questId = quest.questID;
+        if (questId) {
+          avatarQuests[questId] = quest;
+        }
+        return avatarQuests;
+      }, {});
+    }
 
     const data = {
       mobKills: mobKills,
-      items: items
+      items: items,
+      quests: quests
     }
 
     return data;
