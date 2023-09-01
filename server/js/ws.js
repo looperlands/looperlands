@@ -525,7 +525,7 @@ WS.socketIOServer = Server.extend({
                     user: null
                 });
             } else {
-                quests.handleNPCClick(sessionData, npcId);
+                quests.handleNPCClick(cache, sessionId, npcId);
                 res.status(202).json();
             }
         });

@@ -1,5 +1,5 @@
 const dao = require('./dao.js');
-const PlayerQuestEventConsumer = require('./playerquesteventconsumer.js');
+const PlayerQuestEventConsumer = require('./quests/playerquesteventconsumer.js');
 class PlayerEventBroker {
     static Events = {
         KILL_MOB: 'KILL_MOB',

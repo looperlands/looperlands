@@ -419,7 +419,8 @@ exports.loadAvatarGameData = async function(avatarId, retry) {
 
     let responseData = response.data[0];
 
-    let mobKills, items = {}, quests = [];
+    let mobKills, items = {}, quests = {};
+
 
     if (responseData.mobJson) {
       mobKills = responseData.mobJson.reduce((avatarMobKills, mobKills) => {
@@ -442,7 +443,18 @@ exports.loadAvatarGameData = async function(avatarId, retry) {
     }
 
     if (responseData.questJson) {
-      quests = responseData.questJson;
+      quests = responseData.questJson.reduce((avatarQuests, quest) => {
+        const status = quest.status;
+        if (status) {
+          let questsByStatus = avatarQuests[status];
+          if (questsByStatus) {
+            questsByStatus.push(quest);
+          } else {
+            avatarQuests[status] = [quest];
+          }
+        }
+        return avatarQuests;
+      }, {});
     }
 
     const data = {
@@ -466,8 +478,30 @@ exports.loadAvatarGameData = async function(avatarId, retry) {
   }
 }
 
-exports.setQuestStatus = async function(avatarId, questId, status) {
-  console.log("setQuestStatus", avatarId, questId, status);
+exports.setQuestStatus = async function(avatarId, questId, status, retry) {
+  const options = {
+    headers: {
+      'X-Api-Key': API_KEY
+    }
+  }
+
+  let url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/setQuestStatus.php?questId=${questId}&avatarID=${avatarId}&status=${status}`;
+
+  try {
+    const response = await axios.get(url, options);
+    return response;
+  } catch (error) {
+    console.error("setQuestStatus", error);
+    if (retry === undefined) {
+      retry = MAX_RETRY_COUNT;
+    }
+    retry -= 1;
+    if (retry > 0) {
+      return this.setQuestStatus(avatarId, questId, status, retry);
+    } else {
+      console.error("setQuestStatus", error);
+    }
+  }
 }
 
 

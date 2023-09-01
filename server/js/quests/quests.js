@@ -60,17 +60,39 @@ const questsByNPC = quests.reduce((acc, quest) => {
   return acc;
 }, {});
 
-exports.quests = quests;
+const questsByID = quests.reduce((acc, quest) => {
+  acc[quest.id] = quest;
+  return acc;
+}, {});
 
-exports.handleNPCClick = function (sessionData, npcId) {
+exports.handleNPCClick = function (cache, sessionId, npcId) {
   let npcQuests = questsByNPC[npcId];
+  let sessionData = cache.get(sessionId);
   if (npcQuests) {
     let npcQuestIds = npcQuests.map(quest => quest.id);
-    let avatarQuestIds = sessionData.gameData.quests.map(quest => quest.id);
-    for (const questId of npcQuestIds) {
-      if (!avatarQuestIds.includes(questId)) {
-        dao.setQuestStatus(sessionData.nftId, questId, STATES.IN_PROGRESS);
+    let avatarQuestIds = [];
+    for (const [status, quests] of Object.entries(sessionData.gameData.quests)) {
+      //console.log(status, quests)
+      for (const quest of quests) {
+        avatarQuestIds.push(quest.questID);
       }
     }
+
+    for (const questID of npcQuestIds) {
+      if (!avatarQuestIds.includes(questID)) {
+        dao.setQuestStatus(sessionData.nftId, questID, STATES.IN_PROGRESS);
+        let newQuest = npcQuests.find(quest => quest.id === questID);
+        let inProgressQuests = sessionData.gameData.quests[STATES.IN_PROGRESS];
+        if (!inProgressQuests) {
+          sessionData.gameData.quests[STATES.IN_PROGRESS] = [newQuest];
+        } else {
+          sessionData.gameData.quests[STATES.IN_PROGRESS].push(newQuest);
+        }
+      }
+    }
+    cache.set(sessionId, sessionData);
   }
 }
+
+exports.questsByID = questsByID;
+exports.STATES = STATES;
