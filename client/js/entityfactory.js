@@ -236,6 +236,14 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest'], function(Mobs, Items, NPCs
         return new Items.Cake(id);
     };
 
+    EntityFactory.builders[Types.Entities.COBMILK] = function(id) {
+        return new Items.Cobmilk(id);
+    };
+
+    EntityFactory.builders[Types.Entities.COBAPPLE] = function(id) {
+        return new Items.Cobapple(id);
+    };
+
     EntityFactory.builders[Types.Entities.CHEST] = function(id) {
         return new Chest(id);
     };

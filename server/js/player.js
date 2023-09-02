@@ -297,6 +297,7 @@ module.exports = Player = Character.extend({
                             switch(kind) {
                                 case Types.Entities.POTION:
                                 case Types.Entities.FLASK:
+                                case Types.Entities.COBAPPLE:
                                     amount = 40;
                                     break;
                                 case Types.Entities.BURGER:

@@ -271,7 +271,8 @@ var Properties = {
     ghostie: {
         level: 10,
         drops: {
-            flask: 50
+            cobapple: 50,
+            cobmilk: 10
         },
         armorMod: 0.75,
         hpMod: 0.75
@@ -280,28 +281,29 @@ var Properties = {
     cobslimered: {
         level: 6,
         drops: {
-            flask: 50
+            cobapple: 20,
+            cobmilk: 10
         }
     },
 
     cobslimeyellow: {
         level: 4,
         drops: {
-            flask: 50
+            cobapple: 30
         }
     },
 
     cobslimeblue: {
         level: 2,
         drops: {
-            flask: 50
+            cobapple: 20
         }
     },
 
     cobslimeking: {
         level: 8,
         drops: {
-            flask: 100
+            cobmilk: 100
         },
         armorMod: 1.25,
         weaponMod: 2,

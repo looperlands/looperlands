@@ -126,6 +126,24 @@ define(['item'], function(Item) {
             },
         }),
 
+        Cobmilk: Item.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.COBMILK, "object");
+                this.lootMessage = "It's milk time!";
+            },
+
+            onLoot: function(player) {
+                player.startInvincibility();
+            }
+        }),
+
+        Cobapple: Item.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.COBAPPLE, "object");
+                this.lootMessage = "An apple a day keeps the doctor away!";
+            }
+        }),
+
         KEY_ARACHWEAVE:Item.extend({init:function(id){this._super(id,Types.Entities.KEY_ARACHWEAVE,"object");this.lootMessage="You picked up a strange webbed key";}}),
         // @nextItemLine@
     };
