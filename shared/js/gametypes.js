@@ -75,6 +75,7 @@ Types = {
         COBSLIMERED: 400006,
         COBSLIMEYELLOW: 400007,
         COBSLIMEBLUE: 400008,
+        COBSLIMEKING: 400009,
         
         // Armors
         FIREFOX: 20,
@@ -1618,6 +1619,7 @@ var kinds = {
     cobslimered: [Types.Entities.COBSLIMERED, "mob"],
     cobslimeyellow: [Types.Entities.COBSLIMEYELLOW, "mob"],
     cobslimeblue: [Types.Entities.COBSLIMEBLUE, "mob"],
+    cobslimeking: [Types.Entities.COBSLIMEKING, "mob"],
     sword1: [Types.Entities.SWORD1, "weapon"],
     sword2: [Types.Entities.SWORD2, "weapon"],
     axe: [Types.Entities.AXE, "weapon"],
@@ -3287,3 +3289,4 @@ if(!(typeof exports === 'undefined')) {
 Types.timeouts = {};
 Types.timeouts[Types.Entities.FIREFOX] = 5000;
 Types.timeouts[Types.Entities.MEGAMAG] = 12000;
+Types.timeouts[Types.Entities.COBSLIMEKING] = 5000;

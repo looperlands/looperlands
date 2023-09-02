@@ -269,31 +269,45 @@ var Properties = {
     },
 
     ghostie: {
-        level: 7,
+        level: 10,
         drops: {
             flask: 50
-        }
+        },
+        armorMod: 0.75,
+        hpMod: 0.75
     },
 
     cobslimered: {
-        level: 15,
+        level: 6,
         drops: {
             flask: 50
         }
     },
 
     cobslimeyellow: {
-        level: 10,
+        level: 4,
         drops: {
             flask: 50
         }
     },
 
     cobslimeblue: {
-        level: 5,
+        level: 2,
         drops: {
             flask: 50
         }
+    },
+
+    cobslimeking: {
+        level: 8,
+        drops: {
+            flask: 100
+        },
+        armorMod: 1.25,
+        weaponMod: 2,
+        hpMod: 10,
+        xp: 2500,  
+        respawnDelay: 300000
     },
 
     alaric: {

@@ -1,0 +1,53 @@
+{
+	"id": "cobslimeking",
+	"width": 32,
+	"height": 32,
+	"animations": {
+		"walk_down": {
+			"length": 5,
+			"row": 0
+		},
+		"walk_up": {
+			"length": 5,
+			"row": 1
+		},
+		"walk_right": {
+			"length": 5,
+			"row": 2
+		},
+		"idle_down": {
+			"length": 2,
+			"row": 3
+		},
+		"idle_up": {
+			"length": 2,
+			"row": 4
+		},
+		"idle_right": {
+			"length": 2,
+			"row": 5
+		},
+		"atk_down": {
+			"length": 5,
+			"row": 6
+		},
+		"atk_up": {
+			"length": 5,
+			"row": 7
+		},
+		"atk_right": {
+			"length": 5,
+			"row": 8
+		},
+		"death": {
+			"length": 5,
+			"row": 9
+		},
+		"special": {
+			"length": 4,
+			"row": 10
+		}
+	},
+	"offset_x": -8,
+	"offset_y": -16
+}

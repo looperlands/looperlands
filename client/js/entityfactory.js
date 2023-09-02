@@ -157,6 +157,10 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest'], function(Mobs, Items, NPCs
         return new Mobs.Cobslimeblue(id);
     };
 
+    EntityFactory.builders[Types.Entities.COBSLIMEKING] = function(id) {
+        return new Mobs.Cobslimeking(id);
+    };
+
     EntityFactory.builders[Types.Entities.ALARIC] = function(id) {
         return new Mobs.Alaric(id);
     };
