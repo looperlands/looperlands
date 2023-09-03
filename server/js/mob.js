@@ -25,12 +25,14 @@ module.exports = Mob = Character.extend({
         this.specialTimeout = null;
         this.isDead = false;
         this.dmgTakenArray = [];
+        this.addArray = [];
     },
     
     destroy: function() {
         this.isDead = true;
         this.hatelist = [];
         this.dmgTakenArray = [];
+        this.addArray = [];
         this.clearTarget();
         this.updateHitPoints();
         this.resetPosition();
@@ -117,7 +119,6 @@ module.exports = Mob = Character.extend({
 
         if(this.hatelist.length === 0) {
             this.returnToSpawningPosition(duration);
-            this.clearSpecialInterval();
         }
     },
     
@@ -139,7 +140,7 @@ module.exports = Mob = Character.extend({
 
         let delay = Properties[Types.getKindAsString(this.kind)].respawnDelay;
         if (delay === undefined) {
-            delay = 60000;
+            delay = 40000;
         }
         
         if(this.area && this.area instanceof MobArea) {
@@ -176,7 +177,9 @@ module.exports = Mob = Character.extend({
         this.returnTimeout = setTimeout(function() {
             self.resetPosition();
             self.move(self.x, self.y);
-            self.exitCombat();
+            if (self.hatelist.length === 0){
+                self.exitCombat();
+            }
         }, delay);
     },
     
@@ -216,5 +219,6 @@ module.exports = Mob = Character.extend({
 
     isInCombat: function() {
         return this.hatelist.length > 0 ? true : false;
-    },
+    }
+
 });

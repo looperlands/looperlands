@@ -381,6 +381,7 @@ module.exports = World = cls.Class.extend({
         if(entity.type === "mob") {
             this.clearMobAggroLink(entity);
             this.clearMobHateLinks(entity);
+            this.despawnAllAdds(entity);
         }
         
         entity.destroy();
@@ -1077,7 +1078,7 @@ module.exports = World = cls.Class.extend({
                 let killersList = "";
                 mob.dmgTakenArray.forEach( function(arrElem) { 
                     let killer = self.getEntityById(arrElem.id);
-                    if (killer.type !== undefined && killer.type === "player") {
+                    if (killer !== undefined && killer.type === "player") {
                         if (killersList !== "") {killersList += ", "};
                         killersList += killer.name;
                     }
@@ -1108,6 +1109,31 @@ module.exports = World = cls.Class.extend({
             }   
         }
         //END Megamag
+
+        //Slime king (random slime spawn)
+        if (mob.kind === Types.Entities.COBSLIMEKING) {
+            let self = this;
+            if (mob.specialInterval == null) {
+                mob.specialInterval = setInterval(function() {
+                    let slimeType = Utils.random(3);
+                    let slimeKind;
+                    switch (slimeType) {
+                        case 0:
+                            slimeKind = Types.getKindFromString("cobslimeblue");
+                            break;
+                        case 1:
+                            slimeKind = Types.getKindFromString("cobslimeyellow");
+                            break;
+                        case 2:
+                            slimeKind = Types.getKindFromString("cobslimered");
+                            break;
+                    }
+                    self.spawnAdd(mob, slimeKind, mob.x, mob.y);
+                    self.pushToGroup(mob.group, new Messages.MobDoSpecial(mob), false);
+                }, Types.timeouts[Types.Entities.COBSLIMEKING]);
+            }   
+        }
+        //END Slime king 
     },
 
     checkTriggerActive: function(triggerId) {
@@ -1129,6 +1155,39 @@ module.exports = World = cls.Class.extend({
 
     onMobExitCombatCallback: function(mob) {
         this.pushToAdjacentGroups(mob.group, new Messages.MobExitCombat(mob));
+        mob.clearSpecialInterval();
+        this.despawnAllAdds(mob);
+    },
+
+    spawnAdd: function(parent, childKind, x, y) {
+        if(parent.addArray.length < 10) { // Limit amount of adds to 10 to prevent any funny business
+            let self = this;
+            let add = new Mob('6' + childKind + parent.addArray.length, childKind, x, y);
+            parent.addArray.push(add);
+            add.handleRespawn(function() { // Adds dont respawn, instead, I use the function to remove a mob from add array on death
+                const index = array.indexOf(this.id);
+                if (index > -1) { 
+                    parent.addArray.splice(index, 1); 
+                }
+            }); 
+            add.onMove(self.onMobMoveCallback.bind(self));
+            add.onExitCombat(self.onMobExitCombatCallback.bind(self));
+            self.addMob(add);
+            // Add spawns in player destination (his x,y), not current position, therefore we instantly aggro the mob to prevent kiting out of aggro range
+            self.handleMobHate(add.id, parent.target, 5); 
+        }
+    },
+
+    despawnAllAdds: function(mob) {
+        let self = this;
+        if (mob.addArray.length > 0) {
+            mob.addArray.forEach((add) => {
+                if (add !== undefined){
+                    self.despawn(add);
+                }
+            mob.addArray = [];
+            });
+        }
     }
 
 });

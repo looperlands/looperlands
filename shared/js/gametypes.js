@@ -75,6 +75,7 @@ Types = {
         COBSLIMERED: 400006,
         COBSLIMEYELLOW: 400007,
         COBSLIMEBLUE: 400008,
+        COBSLIMEKING: 400009,
         
         // Armors
         FIREFOX: 20,
@@ -91,6 +92,8 @@ Types = {
         BURGER: 36,
         CHEST: 37,
         FIREPOTION: 38,
+        COBMILK: 21300010,
+        COBAPPLE: 21300011,
         CAKE: 21300012,
         KEY_ARACHWEAVE: 21300013, // @lastidObject@
         //@nextIdLineObject@
@@ -1595,7 +1598,29 @@ Types = {
         NFT_e491ccb669fd9c6fa5a1ff6e288c27f8cfa6cfa42632b18ed72c971f4dd6f066: 1531,
         NFT_f1a520837217921af163eb6e8f7bf27a98aff424a6fd128f943013ea5e72c04e: 1532,
         NFT_f55ae88d73c9dca7e45fc7c79103b84c3a5e385151ecd79087d1b244b44e468f: 1533,
-        NFT_f730315f046fe267825711d8872c5134a2650fe794360a0e5473c9058aefadee: 1534 // @lastid@
+        NFT_f730315f046fe267825711d8872c5134a2650fe794360a0e5473c9058aefadee: 1534,
+        NFT_3f167769650d0aaec20a412f4b6921f3b6ece1cbf41045445991dc21e09971fe: 1535,
+        NFT_47c27377827f35dceea175e3e579a1a9453fa0835bb6e84bcb507ed6e5f60112: 1536,
+        NFT_51cb2944ec1aec181fc9e5ecbfcc21112fbb91b5abf633355b3a059e2bf917e0: 1537,
+        NFT_56d6d499257c4aa8a2710e9db3c17683e6f6457f8de8d31ec22d939095d944bd: 1538,
+        NFT_5a8dadf4bd8bd78741a0d6dc76887eb929f321c51870a2552558d26451ac128b: 1539,
+        NFT_62c4f00413e2eff95cf6e3c0628f8cfea1089521e58108c4e97fea8156e1ac27: 1540,
+        NFT_63dc243744253c58573f7bdc845569d6bf1686472df0ceb721a5ad7d8f7bacbe: 1541,
+        NFT_64ee1a5097bfe5a04f57f2d767b134071da7f9cb707f3b69beb8f304cbf2d9d0: 1542,
+        NFT_7c26b7789baa9943555392df2224216bd135bcf4d27d1bb3b54539d0febe5968: 1543,
+        NFT_8b0b2b12a8cc88e3f5524de1f385d4c862ba07fd793050ce49fc203709f2510b: 1544,
+        NFT_93d75dd04329128c514146e2a20ff5b3d5e1e43d8b3e077558536d6249365e74: 1545,
+        NFT_9841f85ae4741faf41b52981515e0e76ef5ab65b5780051e5372614661747135: 1546,
+        NFT_af2c0010e3d1c03458b75adbae15890b1c0f7172a60178900204d15c6e00c2d4: 1547,
+        NFT_d3c30b67599049c3356d64dd76cbb8d72400f1206d5f40df5b328aefff728b06: 1548,
+        NFT_d69dfafe2e631494d2cddbefc3fba35b7ce3baa4b4d75609557f08fcf0d17ede: 1549,
+        NFT_e9c6e9e516dfd639fc8b09101c950e7fe187fb033e61f34900b43f3610d019e2: 1550,
+        NFT_ebaca4ea98f617e128dda6a7dd1ebdf378d47fb3769a6467586484828f465780: 1551,
+        NFT_eeed4c7993dcb16a459f288bb155cdc0fa537c56d52c5ab4e5fd374945729015: 1552,
+        NFT_f03a44c07b62aa02f6f6b403540070354d860b5dd391cdf96083dbea7410a240: 1553,
+        NFT_fbd01ccb7dfd332f00e7a0155c4f709def2994d35c523dadbc6e711e2dc95952: 1554,
+        NFT_1697a67eb223b3c3142e90df7ef1c1c58cf8ed4728f5da8c1be472c63237ced2: 1555,
+        NFT_8e74a289dfb817f1a65aa9ff9cc6edb45ad0355787961b430787a1336fe7be07: 1556 // @lastid@
         //@nextIdLine@
     },
     
@@ -1647,6 +1672,7 @@ var kinds = {
     cobslimered: [Types.Entities.COBSLIMERED, "mob"],
     cobslimeyellow: [Types.Entities.COBSLIMEYELLOW, "mob"],
     cobslimeblue: [Types.Entities.COBSLIMEBLUE, "mob"],
+    cobslimeking: [Types.Entities.COBSLIMEKING, "mob"],
     sword1: [Types.Entities.SWORD1, "weapon"],
     sword2: [Types.Entities.SWORD2, "weapon"],
     axe: [Types.Entities.AXE, "weapon"],
@@ -1665,6 +1691,8 @@ var kinds = {
 
     flask: [Types.Entities.FLASK, "object"],
     potion: [Types.Entities.POTION, "object"],
+    cobapple: [Types.Entities.COBAPPLE, "object"],
+    cobmilk: [Types.Entities.COBMILK, "object"],
     cake: [Types.Entities.CAKE, "object"],
     burger: [Types.Entities.BURGER, "object"],
     chest: [Types.Entities.CHEST, "object"],
@@ -3164,6 +3192,28 @@ var kinds = {
     NFT_f1a520837217921af163eb6e8f7bf27a98aff424a6fd128f943013ea5e72c04e: [Types.Entities.NFT_f1a520837217921af163eb6e8f7bf27a98aff424a6fd128f943013ea5e72c04e, "armor"],
     NFT_f55ae88d73c9dca7e45fc7c79103b84c3a5e385151ecd79087d1b244b44e468f: [Types.Entities.NFT_f55ae88d73c9dca7e45fc7c79103b84c3a5e385151ecd79087d1b244b44e468f, "armor"],
     NFT_f730315f046fe267825711d8872c5134a2650fe794360a0e5473c9058aefadee: [Types.Entities.NFT_f730315f046fe267825711d8872c5134a2650fe794360a0e5473c9058aefadee, "weapon"],
+    NFT_3f167769650d0aaec20a412f4b6921f3b6ece1cbf41045445991dc21e09971fe: [Types.Entities.NFT_3f167769650d0aaec20a412f4b6921f3b6ece1cbf41045445991dc21e09971fe, "weapon"],
+    NFT_47c27377827f35dceea175e3e579a1a9453fa0835bb6e84bcb507ed6e5f60112: [Types.Entities.NFT_47c27377827f35dceea175e3e579a1a9453fa0835bb6e84bcb507ed6e5f60112, "armor"],
+    NFT_51cb2944ec1aec181fc9e5ecbfcc21112fbb91b5abf633355b3a059e2bf917e0: [Types.Entities.NFT_51cb2944ec1aec181fc9e5ecbfcc21112fbb91b5abf633355b3a059e2bf917e0, "armor"],
+    NFT_56d6d499257c4aa8a2710e9db3c17683e6f6457f8de8d31ec22d939095d944bd: [Types.Entities.NFT_56d6d499257c4aa8a2710e9db3c17683e6f6457f8de8d31ec22d939095d944bd, "armor"],
+    NFT_5a8dadf4bd8bd78741a0d6dc76887eb929f321c51870a2552558d26451ac128b: [Types.Entities.NFT_5a8dadf4bd8bd78741a0d6dc76887eb929f321c51870a2552558d26451ac128b, "weapon"],
+    NFT_62c4f00413e2eff95cf6e3c0628f8cfea1089521e58108c4e97fea8156e1ac27: [Types.Entities.NFT_62c4f00413e2eff95cf6e3c0628f8cfea1089521e58108c4e97fea8156e1ac27, "armor"],
+    NFT_63dc243744253c58573f7bdc845569d6bf1686472df0ceb721a5ad7d8f7bacbe: [Types.Entities.NFT_63dc243744253c58573f7bdc845569d6bf1686472df0ceb721a5ad7d8f7bacbe, "armor"],
+    NFT_64ee1a5097bfe5a04f57f2d767b134071da7f9cb707f3b69beb8f304cbf2d9d0: [Types.Entities.NFT_64ee1a5097bfe5a04f57f2d767b134071da7f9cb707f3b69beb8f304cbf2d9d0, "weapon"],
+    NFT_7c26b7789baa9943555392df2224216bd135bcf4d27d1bb3b54539d0febe5968: [Types.Entities.NFT_7c26b7789baa9943555392df2224216bd135bcf4d27d1bb3b54539d0febe5968, "armor"],
+    NFT_8b0b2b12a8cc88e3f5524de1f385d4c862ba07fd793050ce49fc203709f2510b: [Types.Entities.NFT_8b0b2b12a8cc88e3f5524de1f385d4c862ba07fd793050ce49fc203709f2510b, "armor"],
+    NFT_93d75dd04329128c514146e2a20ff5b3d5e1e43d8b3e077558536d6249365e74: [Types.Entities.NFT_93d75dd04329128c514146e2a20ff5b3d5e1e43d8b3e077558536d6249365e74, "armor"],
+    NFT_9841f85ae4741faf41b52981515e0e76ef5ab65b5780051e5372614661747135: [Types.Entities.NFT_9841f85ae4741faf41b52981515e0e76ef5ab65b5780051e5372614661747135, "weapon"],
+    NFT_af2c0010e3d1c03458b75adbae15890b1c0f7172a60178900204d15c6e00c2d4: [Types.Entities.NFT_af2c0010e3d1c03458b75adbae15890b1c0f7172a60178900204d15c6e00c2d4, "armor"],
+    NFT_d3c30b67599049c3356d64dd76cbb8d72400f1206d5f40df5b328aefff728b06: [Types.Entities.NFT_d3c30b67599049c3356d64dd76cbb8d72400f1206d5f40df5b328aefff728b06, "weapon"],
+    NFT_d69dfafe2e631494d2cddbefc3fba35b7ce3baa4b4d75609557f08fcf0d17ede: [Types.Entities.NFT_d69dfafe2e631494d2cddbefc3fba35b7ce3baa4b4d75609557f08fcf0d17ede, "armor"],
+    NFT_e9c6e9e516dfd639fc8b09101c950e7fe187fb033e61f34900b43f3610d019e2: [Types.Entities.NFT_e9c6e9e516dfd639fc8b09101c950e7fe187fb033e61f34900b43f3610d019e2, "armor"],
+    NFT_ebaca4ea98f617e128dda6a7dd1ebdf378d47fb3769a6467586484828f465780: [Types.Entities.NFT_ebaca4ea98f617e128dda6a7dd1ebdf378d47fb3769a6467586484828f465780, "armor"],
+    NFT_eeed4c7993dcb16a459f288bb155cdc0fa537c56d52c5ab4e5fd374945729015: [Types.Entities.NFT_eeed4c7993dcb16a459f288bb155cdc0fa537c56d52c5ab4e5fd374945729015, "weapon"],
+    NFT_f03a44c07b62aa02f6f6b403540070354d860b5dd391cdf96083dbea7410a240: [Types.Entities.NFT_f03a44c07b62aa02f6f6b403540070354d860b5dd391cdf96083dbea7410a240, "armor"],
+    NFT_fbd01ccb7dfd332f00e7a0155c4f709def2994d35c523dadbc6e711e2dc95952: [Types.Entities.NFT_fbd01ccb7dfd332f00e7a0155c4f709def2994d35c523dadbc6e711e2dc95952, "weapon"],
+    NFT_1697a67eb223b3c3142e90df7ef1c1c58cf8ed4728f5da8c1be472c63237ced2: [Types.Entities.NFT_1697a67eb223b3c3142e90df7ef1c1c58cf8ed4728f5da8c1be472c63237ced2, "armor"],
+    NFT_8e74a289dfb817f1a65aa9ff9cc6edb45ad0355787961b430787a1336fe7be07: [Types.Entities.NFT_8e74a289dfb817f1a65aa9ff9cc6edb45ad0355787961b430787a1336fe7be07, "weapon"],
     // @nextSpriteLine@
 
     
@@ -3251,13 +3301,15 @@ Types.isItem = function(kind) {
 Types.isHealingItem = function(kind) {
     return kind === Types.Entities.FLASK 
         || kind === Types.Entities.BURGER
-        || kind === Types.Entities.POTION;
+        || kind === Types.Entities.POTION
+        || kind === Types.Entities.COBAPPLE;
 };
 
 Types.isExpendableItem = function(kind) {
     return Types.isHealingItem(kind)
         || kind === Types.Entities.FIREPOTION
-        || kind === Types.Entities.CAKE;
+        || kind === Types.Entities.CAKE
+        || kind === Types.Entities.COBMILK;
 };
 
 Types.getKindFromString = function(kind) {
@@ -3349,3 +3401,4 @@ if(!(typeof exports === 'undefined')) {
 Types.timeouts = {};
 Types.timeouts[Types.Entities.FIREFOX] = 5000;
 Types.timeouts[Types.Entities.MEGAMAG] = 12000;
+Types.timeouts[Types.Entities.COBSLIMEKING] = 5000;

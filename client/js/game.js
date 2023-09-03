@@ -1,7 +1,7 @@
 
 define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile',
         'warrior', 'gameclient', 'audio', 'updater', 'transition', 'pathfinder',
-        'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'config', 'fieldeffect', '../../shared/js/gametypes'],
+        'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'config', 'fieldeffect', '../../shared/js/gametypes', '../../shared/js/altnames'],
 function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, AnimatedTile,
          Warrior, GameClient, AudioManager, Updater, Transition, Pathfinder,
          Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, config, Fieldeffect) {
@@ -68,11 +68,11 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             this.spriteNames = ["hand", "sword", "loot", "target", "talk", "sparks", "shadow16", "rat", "skeleton", "skeleton2", "spectre", "boss", "deathknight", 
                                 "ogre", "crab", "snake", "eye", "bat", "goblin", "wizard", "guard", "king", "villagegirl", "villager", "coder", "agent", "rick", "scientist", "nyan", "priest", 
                                 "king2", "goose", "tanashi", "slime","kingslime","silkshade","redslime","villagesign1","wildgrin","loomleaf","gnashling","arachweave","spider","fangwing", "minimag", "miner", "megamag", 
-                                "cobchicken", "alaric","orlan","jayce", "cobcow", "cobpig", "cobgoat", "ghostie","cobslimered", "cobslimeyellow", "cobslimeblue",
+                                "cobchicken", "alaric","orlan","jayce", "cobcow", "cobpig", "cobgoat", "ghostie","cobslimered", "cobslimeyellow", "cobslimeblue", "cobslimeking",
                                 "sorcerer", "octocat", "beachnpc", "forestnpc", "desertnpc", "lavanpc","thudlord", "clotharmor", "leatherarmor", "mailarmor",
                                 "platearmor", "redarmor", "goldenarmor", "firefox", "death", "sword1","torin","elric", "axe", "chest",
                                 "sword2", "redsword", "bluesword", "goldensword", "item-sword2", "item-axe", "item-redsword", "item-bluesword", "item-goldensword", "item-leatherarmor", "item-mailarmor", 
-                                "item-platearmor", "item-redarmor", "item-goldenarmor", "item-flask", "item-potion","item-cake", "item-burger", "morningstar", "item-morningstar", "item-firepotion",
+                                "item-platearmor", "item-redarmor", "item-goldenarmor", "item-flask", "item-potion","item-cake", "item-burger", "item-cobmilk", "item-cobapple", "morningstar", "item-morningstar", "item-firepotion",
                                 "item-KEY_ARACHWEAVE",
                                 "fieldeffect-magcrack",
                                 // @nextObjectLine@
@@ -1541,6 +1541,28 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 "NFT_f1a520837217921af163eb6e8f7bf27a98aff424a6fd128f943013ea5e72c04e",
                                 "NFT_f55ae88d73c9dca7e45fc7c79103b84c3a5e385151ecd79087d1b244b44e468f",
                                 "NFT_f730315f046fe267825711d8872c5134a2650fe794360a0e5473c9058aefadee",
+                                "NFT_3f167769650d0aaec20a412f4b6921f3b6ece1cbf41045445991dc21e09971fe",
+                                "NFT_47c27377827f35dceea175e3e579a1a9453fa0835bb6e84bcb507ed6e5f60112",
+                                "NFT_51cb2944ec1aec181fc9e5ecbfcc21112fbb91b5abf633355b3a059e2bf917e0",
+                                "NFT_56d6d499257c4aa8a2710e9db3c17683e6f6457f8de8d31ec22d939095d944bd",
+                                "NFT_5a8dadf4bd8bd78741a0d6dc76887eb929f321c51870a2552558d26451ac128b",
+                                "NFT_62c4f00413e2eff95cf6e3c0628f8cfea1089521e58108c4e97fea8156e1ac27",
+                                "NFT_63dc243744253c58573f7bdc845569d6bf1686472df0ceb721a5ad7d8f7bacbe",
+                                "NFT_64ee1a5097bfe5a04f57f2d767b134071da7f9cb707f3b69beb8f304cbf2d9d0",
+                                "NFT_7c26b7789baa9943555392df2224216bd135bcf4d27d1bb3b54539d0febe5968",
+                                "NFT_8b0b2b12a8cc88e3f5524de1f385d4c862ba07fd793050ce49fc203709f2510b",
+                                "NFT_93d75dd04329128c514146e2a20ff5b3d5e1e43d8b3e077558536d6249365e74",
+                                "NFT_9841f85ae4741faf41b52981515e0e76ef5ab65b5780051e5372614661747135",
+                                "NFT_af2c0010e3d1c03458b75adbae15890b1c0f7172a60178900204d15c6e00c2d4",
+                                "NFT_d3c30b67599049c3356d64dd76cbb8d72400f1206d5f40df5b328aefff728b06",
+                                "NFT_d69dfafe2e631494d2cddbefc3fba35b7ce3baa4b4d75609557f08fcf0d17ede",
+                                "NFT_e9c6e9e516dfd639fc8b09101c950e7fe187fb033e61f34900b43f3610d019e2",
+                                "NFT_ebaca4ea98f617e128dda6a7dd1ebdf378d47fb3769a6467586484828f465780",
+                                "NFT_eeed4c7993dcb16a459f288bb155cdc0fa537c56d52c5ab4e5fd374945729015",
+                                "NFT_f03a44c07b62aa02f6f6b403540070354d860b5dd391cdf96083dbea7410a240",
+                                "NFT_fbd01ccb7dfd332f00e7a0155c4f709def2994d35c523dadbc6e711e2dc95952",
+                                "NFT_1697a67eb223b3c3142e90df7ef1c1c58cf8ed4728f5da8c1be472c63237ced2",
+                                "NFT_8e74a289dfb817f1a65aa9ff9cc6edb45ad0355787961b430787a1336fe7be07",
                                 // @nextSpriteLine@
                             ];                          
         },
@@ -3016,7 +3038,9 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 });
             
                 self.client.onPlayerKillMob(function(kind, xp) {
-                    var mobName = Types.getKindAsString(kind);
+                    let kindString = Types.getKindAsString(kind);
+                    let altName = AltNames.getAltNameFromKind(kindString);
+                    let mobName = altName !== undefined ? altName : kindString;
 
                     setTimeout(function() {
                         self.infoManager.addDamageInfo("+"+xp+" XP", self.player.x, self.player.y - 15, "xp");
@@ -3024,22 +3048,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
                     self.renderStatistics();
 
-                    if(mobName === 'skeleton2') {
-                        mobName = 'greater skeleton';
-                    }
-                    
-                    if(mobName === 'eye') {
-                        mobName = 'evil eye';
-                    }
-                    
-                    if(mobName === 'deathknight') {
-                        mobName = 'death knight';
-                    }
-
-                    if(mobName.startsWith("cobslime")) {
-                        mobName = 'slime';
-                    }
-                    
                     if(mobName === 'boss') {
                         self.showNotification("You killed the skeleton king");
                     } else {
