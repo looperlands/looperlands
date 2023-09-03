@@ -75,6 +75,7 @@ Types = {
         COBSLIMERED: 400006,
         COBSLIMEYELLOW: 400007,
         COBSLIMEBLUE: 400008,
+        COBSLIMEKING: 400009,
         
         // Armors
         FIREFOX: 20,
@@ -91,6 +92,8 @@ Types = {
         BURGER: 36,
         CHEST: 37,
         FIREPOTION: 38,
+        COBMILK: 21300010,
+        COBAPPLE: 21300011,
         CAKE: 21300012,
         KEY_ARACHWEAVE: 21300013, // @lastidObject@
         //@nextIdLineObject@
@@ -1665,6 +1668,7 @@ var kinds = {
     cobslimered: [Types.Entities.COBSLIMERED, "mob"],
     cobslimeyellow: [Types.Entities.COBSLIMEYELLOW, "mob"],
     cobslimeblue: [Types.Entities.COBSLIMEBLUE, "mob"],
+    cobslimeking: [Types.Entities.COBSLIMEKING, "mob"],
     sword1: [Types.Entities.SWORD1, "weapon"],
     sword2: [Types.Entities.SWORD2, "weapon"],
     axe: [Types.Entities.AXE, "weapon"],
@@ -1683,6 +1687,8 @@ var kinds = {
 
     flask: [Types.Entities.FLASK, "object"],
     potion: [Types.Entities.POTION, "object"],
+    cobapple: [Types.Entities.COBAPPLE, "object"],
+    cobmilk: [Types.Entities.COBMILK, "object"],
     cake: [Types.Entities.CAKE, "object"],
     burger: [Types.Entities.BURGER, "object"],
     chest: [Types.Entities.CHEST, "object"],
@@ -3283,13 +3289,15 @@ Types.isItem = function(kind) {
 Types.isHealingItem = function(kind) {
     return kind === Types.Entities.FLASK 
         || kind === Types.Entities.BURGER
-        || kind === Types.Entities.POTION;
+        || kind === Types.Entities.POTION
+        || kind === Types.Entities.COBAPPLE;
 };
 
 Types.isExpendableItem = function(kind) {
     return Types.isHealingItem(kind)
         || kind === Types.Entities.FIREPOTION
-        || kind === Types.Entities.CAKE;
+        || kind === Types.Entities.CAKE
+        || kind === Types.Entities.COBMILK;
 };
 
 Types.getKindFromString = function(kind) {
@@ -3381,3 +3389,4 @@ if(!(typeof exports === 'undefined')) {
 Types.timeouts = {};
 Types.timeouts[Types.Entities.FIREFOX] = 5000;
 Types.timeouts[Types.Entities.MEGAMAG] = 12000;
+Types.timeouts[Types.Entities.COBSLIMEKING] = 5000;

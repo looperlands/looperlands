@@ -7,7 +7,8 @@ var cls = require("./lib/class"),
     Formulas = require("./formulas"),
     check = require("./format").check,
     Types = require("../../shared/js/gametypes"),
-    dao = require('./dao.js');
+    dao = require('./dao.js'),
+    AltNames = require("../../shared/js/altnames");
 
 
 const discord = require('./discord.js');
@@ -296,6 +297,7 @@ module.exports = Player = Character.extend({
                             switch(kind) {
                                 case Types.Entities.POTION:
                                 case Types.Entities.FLASK:
+                                case Types.Entities.COBAPPLE:
                                     amount = 40;
                                     break;
                                 case Types.Entities.BURGER:
@@ -466,7 +468,9 @@ module.exports = Player = Character.extend({
             }
 
             if(this.hitPoints <= 0) {
-                let killer = Types.getKindAsString(mob.kind);
+                let kindString = Types.getKindAsString(mob.kind);
+                let altName = AltNames.getAltNameFromKind(kindString);
+                let killer = altName !== undefined ? altName : kindString;
                 if (mob instanceof Player)  {
                     discord.sendMessage(`Player ${this.name} ganked by ${mob.name}.`);
                     this.updatePVPStats(mob);
