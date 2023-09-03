@@ -1064,7 +1064,7 @@ module.exports = World = cls.Class.extend({
                 let killersList = "";
                 mob.dmgTakenArray.forEach( function(arrElem) { 
                     let killer = self.getEntityById(arrElem.id);
-                    if (killer.type !== undefined && killer.type === "player") {
+                    if (killer !== undefined && killer.type === "player") {
                         if (killersList !== "") {killersList += ", "};
                         killersList += killer.name;
                     }

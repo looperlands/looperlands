@@ -139,7 +139,7 @@ module.exports = Mob = Character.extend({
 
         let delay = Properties[Types.getKindAsString(this.kind)].respawnDelay;
         if (delay === undefined) {
-            delay = 60000;
+            delay = 40000;
         }
         
         if(this.area && this.area instanceof MobArea) {
