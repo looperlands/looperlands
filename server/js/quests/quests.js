@@ -85,7 +85,12 @@ exports.handleNPCClick = function (cache, sessionId, npcId) {
 
       let avatarHasRequiredQuest = true;
       if (newQuest.requiredQuest) {
-        avatarHasRequiredQuest = avatarQuestIds.includes(newQuest.requiredQuest);
+        avatarHasRequiredQuest = false;
+        sessionData.gameData.quests[STATES.COMPLETED].forEach(quest => {
+          if (quest.questID === newQuest.requiredQuest) {
+            avatarHasRequiredQuest = true;
+          }
+        });
       }
 
       let avatarDoesNotHaveQuest =  !avatarQuestIds.includes(questID);
