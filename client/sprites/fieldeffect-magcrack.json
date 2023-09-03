@@ -1,13 +1,1 @@
-{
-	"id": "fieldeffect-magcrack",
-	"width": 64,
-	"height": 64,
-	"animations": {
-		"idle": {
-			"length": 4,
-			"row": 0
-		}
-	},
-	"offset_x": -24,
-	"offset_y": -24
-}
+{	"id": "fieldeffect-magcrack",	"width": 48,	"height": 48,	"animations": {		"idle": {			"length": 4,			"row": 0		}	},	"offset_x": 0,	"offset_y": 0}

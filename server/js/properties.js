@@ -330,9 +330,15 @@ var Properties = {
         armor: 1,
         weapon: 1,
         friendly: true
+    },
+
+    //Field effects
+    magcrack: {
+        aoe: {
+            damage: 175,
+            range: 1
+        }
     }
-
-
 };
 
 Properties.getArmorLevel = function(kind, levelOffset) {

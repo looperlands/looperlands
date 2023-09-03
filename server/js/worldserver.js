@@ -427,9 +427,12 @@ module.exports = World = cls.Class.extend({
     },
 
     addFieldEffect: function(kind, x, y) {
+        const self = this;
+
         var fieldEffect = new Fieldeffect('4'+x+''+y+''+kind, kind, x, y);
         this.addEntity(fieldEffect);
         this.fieldEffects[fieldEffect.id] = fieldEffect;
+        fieldEffect.initDamageCallback(self.doAoe.bind(self));
         
         return fieldEffect;
     },
@@ -1022,7 +1025,7 @@ module.exports = World = cls.Class.extend({
 
                     entityIds.forEach(function(id) {
                         let nearbyEntity = group.entities[id];
-                        if (nearbyEntity.type !== undefined && nearbyEntity.type === 'player') {
+                        if (nearbyEntity !== undefined && nearbyEntity.type === 'player') {
                             let distance = Utils.distanceTo(mob.x, mob.y, nearbyEntity.x, nearbyEntity.y);
                             if (distance <= aoeRange) {
                                 nearbyEntity.handleHurt(mob, aoeDamage);
@@ -1101,10 +1104,16 @@ module.exports = World = cls.Class.extend({
                     self.pushToGroup(mob.group, new Messages.Chat(mob, msg), false); // Warn players Special incoming
                     self.pushToGroup(mob.group, new Messages.MobDoSpecial(mob), false);
                     setTimeout(function() {
-                        self.doAoe(mob);
-                        let target = self.getEntityById(mob.target);
-                        self.addFieldEffect(Types.getKindFromString("magcrack"), target.x, target.y);
-                        }, 2000); // Change this duration also in client/mobs.js
+                        if(mob !== undefined) {
+                            self.doAoe(mob);
+                            let target = self.getEntityById(mob.target);
+                            if (target !== undefined){
+                                self.spawnFieldAdd(mob, Types.getKindFromString("magcrack"), target.x, target.y);
+                            } else {
+                                self.spawnFieldAdd(mob, Types.getKindFromString("magcrack"), mob.x, mob.y);
+                            }
+                        }
+                    }, 2000); // Change this duration also in client/mobs.js
                 }, Types.timeouts[Types.Entities.MEGAMAG]);
             }   
         }
@@ -1128,7 +1137,7 @@ module.exports = World = cls.Class.extend({
                             slimeKind = Types.getKindFromString("cobslimered");
                             break;
                     }
-                    self.spawnAdd(mob, slimeKind, mob.x, mob.y);
+                    self.spawnMobAdd(mob, slimeKind, mob.x, mob.y);
                     self.pushToGroup(mob.group, new Messages.MobDoSpecial(mob), false);
                 }, Types.timeouts[Types.Entities.COBSLIMEKING]);
             }   
@@ -1159,8 +1168,8 @@ module.exports = World = cls.Class.extend({
         this.despawnAllAdds(mob);
     },
 
-    spawnAdd: function(parent, childKind, x, y) {
-        if(parent.addArray.length < 10) { // Limit amount of adds to 10 to prevent any funny business
+    spawnMobAdd: function(parent, childKind, x, y) {
+        if(parent.addArray.length < 15) { // Limit amount of adds to 15 to prevent any funny business
             let self = this;
             let add = new Mob('6' + childKind + parent.addArray.length, childKind, x, y);
             parent.addArray.push(add);
@@ -1173,8 +1182,16 @@ module.exports = World = cls.Class.extend({
             add.onMove(self.onMobMoveCallback.bind(self));
             add.onExitCombat(self.onMobExitCombatCallback.bind(self));
             self.addMob(add);
-            // Add spawns in player destination (his x,y), not current position, therefore we instantly aggro the mob to prevent kiting out of aggro range
+            // Add spawns in player destination (his x,y), not current position! Therefore we instantly aggro the mob to prevent kiting out of aggro range
             self.handleMobHate(add.id, parent.target, 5); 
+        }
+    },
+
+    spawnFieldAdd: function(parent, fieldKind, x, y) {
+        if(parent.addArray.length < 15) { // Limit amount of adds to 15 to prevent any funny business
+            let self = this;
+            field = self.addFieldEffect(fieldKind, parent.x, parent.y);
+            parent.addArray.push(field);
         }
     },
 
