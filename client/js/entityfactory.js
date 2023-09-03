@@ -145,6 +145,22 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest'], function(Mobs, Items, NPCs
         return new Mobs.Ghostie(id);
     };
 
+    EntityFactory.builders[Types.Entities.COBSLIMERED] = function(id) {
+        return new Mobs.Cobslimered(id);
+    };
+
+    EntityFactory.builders[Types.Entities.COBSLIMEYELLOW] = function(id) {
+        return new Mobs.Cobslimeyellow(id);
+    };
+
+    EntityFactory.builders[Types.Entities.COBSLIMEBLUE] = function(id) {
+        return new Mobs.Cobslimeblue(id);
+    };
+
+    EntityFactory.builders[Types.Entities.COBSLIMEKING] = function(id) {
+        return new Mobs.Cobslimeking(id);
+    };
+
     EntityFactory.builders[Types.Entities.ALARIC] = function(id) {
         return new Mobs.Alaric(id);
     };
@@ -218,6 +234,14 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest'], function(Mobs, Items, NPCs
     
     EntityFactory.builders[Types.Entities.CAKE] = function(id) {
         return new Items.Cake(id);
+    };
+
+    EntityFactory.builders[Types.Entities.COBMILK] = function(id) {
+        return new Items.Cobmilk(id);
+    };
+
+    EntityFactory.builders[Types.Entities.COBAPPLE] = function(id) {
+        return new Items.Cobapple(id);
     };
 
     EntityFactory.builders[Types.Entities.CHEST] = function(id) {

@@ -1,7 +1,7 @@
 
 define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile',
         'warrior', 'gameclient', 'audio', 'updater', 'transition', 'pathfinder',
-        'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'config', '../../shared/js/gametypes'],
+        'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'config', '../../shared/js/gametypes', '../../shared/js/altnames'],
 function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, AnimatedTile,
          Warrior, GameClient, AudioManager, Updater, Transition, Pathfinder,
          Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, config) {
@@ -68,11 +68,11 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             this.spriteNames = ["hand", "sword", "loot", "target", "talk", "sparks", "shadow16", "rat", "skeleton", "skeleton2", "spectre", "boss", "deathknight", 
                                 "ogre", "crab", "snake", "eye", "bat", "goblin", "wizard", "guard", "king", "villagegirl", "villager", "coder", "agent", "rick", "scientist", "nyan", "priest", 
                                 "king2", "goose", "tanashi", "slime","kingslime","silkshade","redslime","villagesign1","wildgrin","loomleaf","gnashling","arachweave","spider","fangwing", "minimag", "miner", "megamag", 
-                                "cobchicken", "alaric","orlan","jayce", "cobcow", "cobpig", "cobgoat", "ghostie",
+                                "cobchicken", "alaric","orlan","jayce", "cobcow", "cobpig", "cobgoat", "ghostie","cobslimered", "cobslimeyellow", "cobslimeblue", "cobslimeking",
                                 "sorcerer", "octocat", "beachnpc", "forestnpc", "desertnpc", "lavanpc","thudlord", "clotharmor", "leatherarmor", "mailarmor",
                                 "platearmor", "redarmor", "goldenarmor", "firefox", "death", "sword1","torin","elric", "axe", "chest",
                                 "sword2", "redsword", "bluesword", "goldensword", "item-sword2", "item-axe", "item-redsword", "item-bluesword", "item-goldensword", "item-leatherarmor", "item-mailarmor", 
-                                "item-platearmor", "item-redarmor", "item-goldenarmor", "item-flask", "item-potion","item-cake", "item-burger", "morningstar", "item-morningstar", "item-firepotion",
+                                "item-platearmor", "item-redarmor", "item-goldenarmor", "item-flask", "item-potion","item-cake", "item-burger", "item-cobmilk", "item-cobapple", "morningstar", "item-morningstar", "item-firepotion",
                                 "item-KEY_ARACHWEAVE",
                                 // @nextObjectLine@
                                 "NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6",
@@ -1506,6 +1506,60 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 "NFT_c31beb6175222eaba5c4a8e4e1d38231be6c2ec078321bca3a9116a4a7529d29",
                                 "NFT_d3f2953102b7f996b384f4949515f79d446f32268e75a9c1698a45edee0199e8",
                                 "NFT_f77a8ff6b7903c2aecb7fa36567213e563f8c699fae8ea130de2c2654fca091d",
+                                "NFT_08c5ee5e1368a0bdbb0b15d2a182cab9cd2b71ff53e084f5070aea91acab2b11",
+                                "NFT_4f16827d57d96fc223e8a37998a272a74dbd0de4b59fa4288b9479b82a2d1758",
+                                "NFT_5a7c8db92b9982b59014344dcb1224bd43dd7f1c36cf61a6950b129f6b0f91ce",
+                                "NFT_673778dd1019454f5526c7b2d2bac188641805c1b6dbdceb718b812c7c4fee5f",
+                                "NFT_8ae205a1dad8655903eb4537ca19b719968bcb801b2ce68fe0c65802b20136c0",
+                                "NFT_eac7e8195eeb0b5314fbbd234291a4fda1c97bc33c1b8247453f8f2d74fdd960",
+                                "NFT_f9ef277cc23e217c4aae2f94ebac79c1b978f8cc2545f5f8afe3427b0e828eb2",
+                                "NFT_000487b640a0750eb0f715bb54763fbcf51874af92c15a372dd24f51a80ef060",
+                                "NFT_0d6005efebe7604773ac513ae1d3292a8cd872e591ac9aea4e5f0c62dabf3dda",
+                                "NFT_0fd5c7d4a6d25af0fd8b4603d0cc759956dba5d61e7da4d4fa0114b4d60b8973",
+                                "NFT_1d621c9d27ef6d5fcb6fc77f82ad108d190c95616621b705033f96efb71cb818",
+                                "NFT_32abd8d9a8f7557a7a2e4a1976c19e4dd46b0b72c36ac97aed16c622b678a7f8",
+                                "NFT_41caae003eed717305b2a5c8d8f9b1ccb477e8d402a06fa3e24189830f6d58ca",
+                                "NFT_43297318e8888c103099e31a380a36ad60ad632c7b96a99889fed96795ce6659",
+                                "NFT_45807753ab73d20e36ea791e3ba2816960ac440b7e89de1e4eb96186e6dcfea1",
+                                "NFT_4b1115eb103ce0b3418591b92872090d4f895dc15929f7c4b6823259aa0dbc6b",
+                                "NFT_5de1d9b827cc33e887b44bf0c3c96bc85a5b75b0cec86d4975917a2ade5b390e",
+                                "NFT_6bd9ce59536d51427d3c9d5f45245647685886042823b87f4498269e558e5fbe",
+                                "NFT_6cce90e4115b0e11439e6ef80036d700a3fb3ba96a3b7b3508cb2e0a355ded56",
+                                "NFT_726ea26ee7029afedd8f24ba529c413d9350e605205593f64007b72d4541e7ab",
+                                "NFT_782a0dd46ab88eec2046233a11d837c57454375f033192fd067d486159bdb654",
+                                "NFT_7a3788baa0811b2661d931d0230acf0ab074d3a0b21a5bb75e9cdfa4fb16a914",
+                                "NFT_7a7dd2fad267ee202dc527ee5e4ff76d2920726e7bcd17d9ed8df47477d911ad",
+                                "NFT_a498768dab16080d38e34d1b4f54282ede7a0abeed4f701324fe3500329620d1",
+                                "NFT_b16e6fc3b65ec8d99ecc6a100d6bd16132e07c0432476c3be2050951ebe0d114",
+                                "NFT_badc0ff74e1153ec6c52d3e535f69b790ec857e04b80833298b60f74f0884237",
+                                "NFT_bfc00d3d717c37c4b2d15ee2df7c456d7ccd7578c78e32617a68d1ad826cdb7b",
+                                "NFT_d8462def8ffd9136ae7f13122d4ffda36b400e938c992c10df4ff92cdf4bf2ae",
+                                "NFT_dde0fd444ea9ed719f7c6ae628fa3dc679f4f0c22c563b3d0c0e4c79a7e636b3",
+                                "NFT_e096e903096e8acb61420dff0722c9244cce33e1627c20858691de0981489db7",
+                                "NFT_e491ccb669fd9c6fa5a1ff6e288c27f8cfa6cfa42632b18ed72c971f4dd6f066",
+                                "NFT_f1a520837217921af163eb6e8f7bf27a98aff424a6fd128f943013ea5e72c04e",
+                                "NFT_f55ae88d73c9dca7e45fc7c79103b84c3a5e385151ecd79087d1b244b44e468f",
+                                "NFT_f730315f046fe267825711d8872c5134a2650fe794360a0e5473c9058aefadee",
+                                "NFT_3f167769650d0aaec20a412f4b6921f3b6ece1cbf41045445991dc21e09971fe",
+                                "NFT_47c27377827f35dceea175e3e579a1a9453fa0835bb6e84bcb507ed6e5f60112",
+                                "NFT_51cb2944ec1aec181fc9e5ecbfcc21112fbb91b5abf633355b3a059e2bf917e0",
+                                "NFT_56d6d499257c4aa8a2710e9db3c17683e6f6457f8de8d31ec22d939095d944bd",
+                                "NFT_5a8dadf4bd8bd78741a0d6dc76887eb929f321c51870a2552558d26451ac128b",
+                                "NFT_62c4f00413e2eff95cf6e3c0628f8cfea1089521e58108c4e97fea8156e1ac27",
+                                "NFT_63dc243744253c58573f7bdc845569d6bf1686472df0ceb721a5ad7d8f7bacbe",
+                                "NFT_64ee1a5097bfe5a04f57f2d767b134071da7f9cb707f3b69beb8f304cbf2d9d0",
+                                "NFT_7c26b7789baa9943555392df2224216bd135bcf4d27d1bb3b54539d0febe5968",
+                                "NFT_8b0b2b12a8cc88e3f5524de1f385d4c862ba07fd793050ce49fc203709f2510b",
+                                "NFT_93d75dd04329128c514146e2a20ff5b3d5e1e43d8b3e077558536d6249365e74",
+                                "NFT_9841f85ae4741faf41b52981515e0e76ef5ab65b5780051e5372614661747135",
+                                "NFT_af2c0010e3d1c03458b75adbae15890b1c0f7172a60178900204d15c6e00c2d4",
+                                "NFT_d3c30b67599049c3356d64dd76cbb8d72400f1206d5f40df5b328aefff728b06",
+                                "NFT_d69dfafe2e631494d2cddbefc3fba35b7ce3baa4b4d75609557f08fcf0d17ede",
+                                "NFT_e9c6e9e516dfd639fc8b09101c950e7fe187fb033e61f34900b43f3610d019e2",
+                                "NFT_ebaca4ea98f617e128dda6a7dd1ebdf378d47fb3769a6467586484828f465780",
+                                "NFT_eeed4c7993dcb16a459f288bb155cdc0fa537c56d52c5ab4e5fd374945729015",
+                                "NFT_f03a44c07b62aa02f6f6b403540070354d860b5dd391cdf96083dbea7410a240",
+                                "NFT_fbd01ccb7dfd332f00e7a0155c4f709def2994d35c523dadbc6e711e2dc95952",
                                 // @nextSpriteLine@
                             ];                          
         },
@@ -2361,9 +2415,9 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     if(self.player.gridX <= 27 && self.player.gridY <= 123 && self.player.gridY > 112) {
                         self.tryUnlockingAchievement("TOMB_RAIDER");
                     }
-                
+
                     self.updatePlayerCheckpoint();
-                
+
                     if(!self.player.isDead) {
                         self.audioManager.updateMusic();
                     }
@@ -2492,11 +2546,19 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                         }
 
                         function checkTrigger() {
-                            if (dest.triggerId !== undefined) {    
-                                let trUrl = '/session/' + self.sessionId + '/requestTeleport/' + dest.triggerId;
+                            if (dest.triggerId !== undefined) {
+                                let inverted = false;
+                                let triggerId = dest.triggerId;
+                                if(triggerId.startsWith("!")) {
+                                    inverted = true;
+                                    triggerId = dest.triggerId.substring(1);
+                                }
+
+                                let trUrl = '/session/' + self.sessionId + '/requestTeleport/' + triggerId;
                                 _self.doorCheck = true;
                                 axios.get(trUrl).then(function (response) {
-                                    if (response.data === true) {
+                                    if ( (response.data === true && !inverted) || (response.data === false && inverted))
+                                    {
                                         goInside();
                                         _self.updatePos(self.player);
                                     } else {
@@ -2545,7 +2607,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                             checkTrigger();
                         }
                     }
-                
+
                     if(self.player.target instanceof Npc) {
                         self.makeNpcTalk(self.player.target);
                     } else if(self.player.target instanceof Chest) {
@@ -2560,6 +2622,11 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     });
                     
                     self.updatePos(self.player);
+
+                    if(self.map.getCurrentTrigger(self.player)) {
+                        self.handleTrigger(self.map.getCurrentTrigger(self.player), self.player);
+                    }
+
                 });
             
                 self.player.onRequestPath(function(x, y) {
@@ -2691,6 +2758,10 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                                     attacker.follow(entity);
                                                 }
                                             });
+
+                                            if(self.map.getCurrentTrigger(entity)) {
+                                                self.handleTrigger(self.map.getCurrentTrigger(entity), entity);
+                                            }
                                         }
                                     });
 
@@ -2744,8 +2815,12 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                                     attacker.follow(entity);
                                                 }
                                             });
-                                
+
                                             self.updatePos(entity);
+
+                                            if(self.map.getCurrentTrigger(entity)) {
+                                                self.handleTrigger(self.map.getCurrentTrigger(entity), entity);
+                                            }
                                         }
                                     });
 
@@ -2795,7 +2870,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                         entity.forEachAttacker(function(attacker) {
                                             attacker.disengage();
                                         });
-                                        
+
                                         if(self.player.target && self.player.target.id === entity.id) {
                                             self.player.disengage();
                                         }
@@ -2809,7 +2884,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                         if(self.camera.isVisible(entity)) {
                                             self.audioManager.playSound("kill"+Math.floor(Math.random()*2+1));
                                         }
-                                    
+
                                         self.updateCursor();
                                     });
 
@@ -2824,6 +2899,10 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                                 self.createAttackLink(entity, player);
                                             }
                                         }
+                                    }
+
+                                    if(self.map.getCurrentTrigger(entity)) {
+                                        self.handleTrigger(self.map.getCurrentTrigger(entity), entity);
                                     }
                                 }
                             }
@@ -2940,7 +3019,9 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 });
             
                 self.client.onPlayerKillMob(function(kind, xp) {
-                    var mobName = Types.getKindAsString(kind);
+                    let kindString = Types.getKindAsString(kind);
+                    let altName = AltNames.getAltNameFromKind(kindString);
+                    let mobName = altName !== undefined ? altName : kindString;
 
                     setTimeout(function() {
                         self.infoManager.addDamageInfo("+"+xp+" XP", self.player.x, self.player.y - 15, "xp");
@@ -2948,18 +3029,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
                     self.renderStatistics();
 
-                    if(mobName === 'skeleton2') {
-                        mobName = 'greater skeleton';
-                    }
-                    
-                    if(mobName === 'eye') {
-                        mobName = 'evil eye';
-                    }
-                    
-                    if(mobName === 'deathknight') {
-                        mobName = 'death knight';
-                    }
-                    
                     if(mobName === 'boss') {
                         self.showNotification("You killed the skeleton king");
                     } else {
@@ -3715,6 +3784,21 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 }
             }
             return false;
+        },
+
+        handleTrigger(trigger, entity) {
+            if(!entity.triggerArea || entity.triggerArea.id !== trigger.id) {
+                entity.triggerArea = trigger;
+                self.client.sendTrigger(trigger.id, true);
+                if (trigger.message) {
+                    self.showNotification(trigger.message);
+                }
+
+                entity.onLeave(trigger, function () {
+                    entity.triggerArea = null;
+                    self.client.sendTrigger(trigger.id, false);
+                })
+            }
         },
     
         /**

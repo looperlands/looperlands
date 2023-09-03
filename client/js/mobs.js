@@ -545,6 +545,82 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 }, 1500)  
             }
         }),
+
+        Cobslimered: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.COBSLIMERED);
+                this.moveSpeed = 250;
+                this.atkSpeed = 100;
+                this.idleSpeed = 750;
+                this.setAttackRate(1000);
+                this.deathAnimated = true;
+                this.aggroRange = 3;
+            }
+        }),
+
+        Cobslimeyellow: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.COBSLIMEYELLOW);
+                this.moveSpeed = 300;
+                this.atkSpeed = 100;
+                this.idleSpeed = 750;
+                this.setAttackRate(1000);
+                this.deathAnimated = true;
+                this.aggroRange = 2;
+            }
+        }),
+
+        Cobslimeblue: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.COBSLIMEBLUE);
+                this.moveSpeed = 350;
+                this.atkSpeed = 100;
+                this.idleSpeed = 750;
+                this.setAttackRate(1000);
+                this.deathAnimated = true;
+                this.aggroRange = 1;
+            }
+        }),
+
+        Cobslimeking: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.COBSLIMEKING);
+                this.moveSpeed = 200;
+                this.atkSpeed = 100;
+                this.idleSpeed = 750;
+                this.setAttackRate(1000);
+                this.aggroRange = 4;
+                this.deathAnimated = true;
+                this.title = "BOSS";
+            },
+
+            doSpecial: function() {
+                let self=this;
+
+                self.animationLock = true; // Prevent special animation from being cancelled by movement
+                self.animate("special", 150, 1, function () {
+                        self.animationLock = false;
+                        self.idle();
+                    });
+            },
+
+            exitCombat: function() {
+                this._super();
+                let self = this;
+                this.isFriendly = true;
+                /* Currently when mob exits combat (eg. out of range from spawn) he can INSTANTLY aggro back, 
+                which creates all sort of weird behaviours. For example you can kite a mob endlessly out of his area (25 tiles),
+                as long, as you move away slowly and never exceed the aggro range. This will make the mob aggro you instantly after un-aggroing
+                but at the same time reset his arrays, such as hatelist, dmgTakenArray, addsArray etc.
+                In my opinion the code below should be a default behavior for every single mob (think mob evading in WoW), and should eventually
+                be moved to _super. For now its here for "test purposes"*/    
+                this.exitingCombat = setTimeout(function() {
+                    self.isFriendly = false;
+                    self.exitingCombat = null;
+                }, 4000)  
+            }
+            
+        })
     };
     return Mobs;
 });
