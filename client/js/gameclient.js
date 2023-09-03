@@ -220,6 +220,12 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
                 if(this.spawn_chest_callback) {
                     this.spawn_chest_callback(item, x, y);
                 }
+            } else if(Types.isFieldEffect(kind)) {
+                var fieldEffect = EntityFactory.createEntity(kind, id);
+            
+                if(this.spawn_fieldEffect_callback) {
+                    this.spawn_fieldEffect_callback(fieldEffect, x, y);
+                }
             } else {
                 var name, orientation, target, weapon, armor, title, level;
             
@@ -425,6 +431,10 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
     
         onSpawnChest: function(callback) {
             this.spawn_chest_callback = callback;
+        },
+
+        onSpawnFieldEffect: function(callback) {
+            this.spawn_fieldEffect_callback = callback;
         },
 
         onDespawnEntity: function(callback) {

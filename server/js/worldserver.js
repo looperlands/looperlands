@@ -18,7 +18,8 @@ var cls = require("./lib/class"),
     Utils = require("./utils"),
     Types = require("../../shared/js/gametypes"),
     dao = require("./dao.js"),
-    discord = require("./discord.js");
+    discord = require("./discord.js"),
+    Fieldeffect = require('./fieldeffect');
 
 // ======= GAME SERVER ========
 
@@ -46,6 +47,7 @@ module.exports = World = cls.Class.extend({
         this.triggerAreas = {};
         this.groups = {};
         this.doorTriggers = {};
+        this.fieldEffects = {};
         
         this.outgoingQueues = {};
         
@@ -423,6 +425,14 @@ module.exports = World = cls.Class.extend({
         return item;
     },
 
+    addFieldEffect: function(kind, x, y) {
+        var fieldEffect = new Fieldeffect('4'+x+''+y+''+kind, kind, x, y);
+        this.addEntity(fieldEffect);
+        this.fieldEffects[fieldEffect.id] = fieldEffect;
+        
+        return fieldEffect;
+    },
+
     createItem: function(kind, x, y) {
         var id = '9'+this.itemCount++,
             item = null;
@@ -646,6 +656,9 @@ module.exports = World = cls.Class.extend({
             
             if(Types.isNpc(kind)) {
                 self.addNpc(kind, pos.x + 1, pos.y);
+            }
+            if(Types.isFieldEffect(kind)) {
+                self.addFieldEffect(kind, pos.x + 1, pos.y);
             }
             if(Types.isMob(kind)) {
                 var mob = new Mob('7' + kind + count++, kind, pos.x + 1, pos.y);
@@ -1085,10 +1098,11 @@ module.exports = World = cls.Class.extend({
                     let kind = Types.getKindAsString(mob.kind);
                     let msg = Properties[kind].messages[Utils.random(Properties[kind].messages.length)]; // Fetch random message from properties
                     self.pushToGroup(mob.group, new Messages.Chat(mob, msg), false); // Warn players Special incoming
-
                     self.pushToGroup(mob.group, new Messages.MobDoSpecial(mob), false);
                     setTimeout(function() {
                         self.doAoe(mob);
+                        let target = self.getEntityById(mob.target);
+                        self.addFieldEffect(Types.getKindFromString("magcrack"), target.x, target.y);
                         }, 2000); // Change this duration also in client/mobs.js
                 }, Types.timeouts[Types.Entities.MEGAMAG]);
             }   

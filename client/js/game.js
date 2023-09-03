@@ -1,10 +1,10 @@
 
 define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile',
         'warrior', 'gameclient', 'audio', 'updater', 'transition', 'pathfinder',
-        'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'config', '../../shared/js/gametypes'],
+        'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'config', 'fieldeffect', '../../shared/js/gametypes'],
 function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, AnimatedTile,
          Warrior, GameClient, AudioManager, Updater, Transition, Pathfinder,
-         Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, config) {
+         Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, config, Fieldeffect) {
     
     var Game = Class.extend({
         init: function(app) {
@@ -74,6 +74,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 "sword2", "redsword", "bluesword", "goldensword", "item-sword2", "item-axe", "item-redsword", "item-bluesword", "item-goldensword", "item-leatherarmor", "item-mailarmor", 
                                 "item-platearmor", "item-redarmor", "item-goldenarmor", "item-flask", "item-potion","item-cake", "item-burger", "morningstar", "item-morningstar", "item-firepotion",
                                 "item-KEY_ARACHWEAVE",
+                                "fieldeffect-magcrack",
                                 // @nextObjectLine@
                                 "NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6",
                                 "NFT_38278eacc7d1c86fdbc85d798dca146fbca59a2e5e567dc15898ce2edac21f5f",
@@ -1922,6 +1923,13 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             item.setAnimation("idle", 150);
             this.addEntity(item);
         },
+
+        addFieldEffect: function(fieldEffect, x, y) {
+            fieldEffect.setSprite(this.sprites[fieldEffect.getSpriteName()]);
+            fieldEffect.setGridPosition(x, y);
+            fieldEffect.setAnimation("idle", 150);
+            this.addEntity(fieldEffect);
+        },
     
         removeItem: function(item) {
             if(item) {
@@ -2323,6 +2331,10 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         	            self.checkOtherDirtyRects(self.renderer.targetRect, null, self.selectedX, self.selectedY);
         	        }
                 });
+
+                self.player.onRooted(function(x,y) {
+                    self.client.sendMove(x, y);
+                });
                 
                 self.player.onCheckAggro(function() {
                     self.forEachMob(function(mob) {
@@ -2673,6 +2685,11 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 self.client.onSpawnItem(function(item, x, y) {
                     console.log("Spawned " + Types.getKindAsString(item.kind) + " (" + item.id + ") at "+x+", "+y);
                     self.addItem(item, x, y);
+                });
+
+                self.client.onSpawnFieldEffect(function(fieldEffect, x, y) {
+                    console.log("Spawned field effect " + Types.getKindAsString(fieldEffect.kind) + " (" + fieldEffect.id + ") at "+x+", "+y);
+                    self.addFieldEffect(fieldEffect, x, y);
                 });
             
                 self.client.onSpawnChest(function(chest, x, y) {
