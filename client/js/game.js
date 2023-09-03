@@ -3344,10 +3344,15 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         },
 
         checkForQuests: function(npc) {
-            var self = this;
-            var url = '/session/' + self.sessionId + '/npc/' + npc.kind;
+            let self = this;
+            let url = '/session/' + self.sessionId + '/npc/' + npc.kind;
             axios.get(url).then(function (response) {
                 console.log(response);
+                if (response.data !== "") {
+                    self.createBubble(npc.id, response.data);
+                    self.assignBubbleTo(npc);
+                    self.audioManager.playSound("npc"); 
+                }
             }).catch(function (error) {
                 console.error("Error while checking for quests.");
             });

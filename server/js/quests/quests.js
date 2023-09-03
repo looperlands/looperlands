@@ -68,6 +68,7 @@ const questsByID = quests.reduce((acc, quest) => {
 exports.handleNPCClick = function (cache, sessionId, npcId) {
   let npcQuests = questsByNPC[npcId];
   let sessionData = cache.get(sessionId);
+  let msgText = "";
   if (npcQuests) {
     let npcQuestIds = npcQuests.map(quest => quest.id);
     let avatarQuestIds = [];
@@ -77,6 +78,7 @@ exports.handleNPCClick = function (cache, sessionId, npcId) {
         avatarQuestIds.push(quest.questID);
       }
     }
+
 
     for (const questID of npcQuestIds) {
       let newQuest = npcQuests.find(quest => quest.id === questID);
@@ -96,11 +98,13 @@ exports.handleNPCClick = function (cache, sessionId, npcId) {
         } else {
           sessionData.gameData.quests[STATES.IN_PROGRESS].push(newQuest);
         }
+        msgText = newQuest.startText;
         break;
       }
     }
     cache.set(sessionId, sessionData);
   }
+  return msgText;
 }
 
 exports.questsByID = questsByID;
