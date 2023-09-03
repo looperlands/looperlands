@@ -79,15 +79,24 @@ exports.handleNPCClick = function (cache, sessionId, npcId) {
     }
 
     for (const questID of npcQuestIds) {
-      if (!avatarQuestIds.includes(questID)) {
+      let newQuest = npcQuests.find(quest => quest.id === questID);
+
+      let avatarHasRequiredQuest = true;
+      if (newQuest.requiredQuest) {
+        avatarHasRequiredQuest = avatarQuestIds.includes(newQuest.requiredQuest);
+      }
+
+      let avatarDoesNotHaveQuest =  !avatarQuestIds.includes(questID);
+
+      if (avatarDoesNotHaveQuest && avatarHasRequiredQuest) {
         dao.setQuestStatus(sessionData.nftId, questID, STATES.IN_PROGRESS);
-        let newQuest = npcQuests.find(quest => quest.id === questID);
         let inProgressQuests = sessionData.gameData.quests[STATES.IN_PROGRESS];
         if (!inProgressQuests) {
           sessionData.gameData.quests[STATES.IN_PROGRESS] = [newQuest];
         } else {
           sessionData.gameData.quests[STATES.IN_PROGRESS].push(newQuest);
         }
+        break;
       }
     }
     cache.set(sessionId, sessionData);

@@ -31,7 +31,7 @@ class PlayerQuestEventConsumer extends PlayerEventConsumer {
         if (completionCheckerFN === undefined) {
             throw new Error("Unknown event type: " + event.eventType);
         }
-        
+
         for (let quest of inProgressQuests) {
             let questID = quest.id || quest.questID;
             quest = quests.questsByID[questID];
