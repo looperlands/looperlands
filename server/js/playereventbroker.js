@@ -21,6 +21,7 @@ class PlayerEventBroker {
         this.player = player;
         this.cache = player.server.server.cache;
         PlayerEventBroker.playerEventBrokers[player.sessionId] = this;
+        PlayerEventBroker.cache = this.cache;
     }
 
     static addEvent(eventType, sessionId, playerCache) {
@@ -38,7 +39,12 @@ class PlayerEventBroker {
             PlayerEventBroker.playerEventConsumers.forEach(consumer => {
                 for (const [eventId, playerCache] of Object.entries(events)) {
                     let [eventType, sessionId] = eventId.split(',');
-                    consumer.consume({eventType: eventType, playerCache: playerCache});
+                    let consumed = consumer.consume({eventType: eventType, playerCache: playerCache});
+                    if (consumed.change) {
+                        let playerCache = PlayerEventBroker.cache.get(sessionId);
+                        playerCache.gameData.quests = consumed.quests;
+                        PlayerEventBroker.cache.set(sessionId, playerCache);
+                    }
                 }
             });
         }

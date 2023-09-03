@@ -463,6 +463,8 @@ exports.loadAvatarGameData = async function(avatarId, retry) {
       quests: quests
     }
 
+    //console.log("loadAvatarGameData", data);
+
     return data;
   } catch (error) {
     if (retry === undefined) {
