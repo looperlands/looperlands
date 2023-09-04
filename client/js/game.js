@@ -3200,6 +3200,14 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                         mob.exitCombat();
                     }
                 });
+
+                self.client.onQuestComplete(function(questName, endText, xpReward) {
+                    console.log("Completed Quest!", questName, endText, xpReward);
+                    self.showQuestCompleteNotification(questName, endText, xpReward);
+                    setTimeout(function() {
+                        self.infoManager.addDamageInfo("+"+xpReward+" XP", self.player.x, self.player.y - 15, "xp");
+                    }, 200);
+                });
             
                 self.gamestart_callback();
             
@@ -4141,17 +4149,14 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         },
     
         tryUnlockingAchievement: function(name) {
-            var achievement = null;
-            if(name in this.achievements) {
-                achievement = this.achievements[name];
-            
-                if(achievement.isCompleted() && this.storage.unlockAchievement(achievement.id)) {
-                    if(this.unlock_callback) {
-                        this.unlock_callback(achievement.id, achievement.name, achievement.desc);
-                        this.audioManager.playSound("achievement");
-                    }
-                }
-            }
+            //todo: remove achievements
+        },
+
+        showQuestCompleteNotification: function(questName, endText, xpReward) {
+            if(this.unlock_callback) {
+                this.unlock_callback(questName, endText, xpReward);
+                this.audioManager.playSound("achievement");
+            }            
         },
     
         showNotification: function(message) {

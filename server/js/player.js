@@ -758,7 +758,8 @@ module.exports = Player = Character.extend({
         for (quest of completedQuests) {
             let xpReward = Formulas.xpPercentageOfLevel(quest.level, 5);
             this.handleExperience(xpReward);
+            let msg = new Messages.QuestComplete(quest.name, quest.endText, xpReward);
+            this.server.pushToPlayer(this, msg);
         }
     }
-
 });
