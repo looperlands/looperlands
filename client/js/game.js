@@ -2572,7 +2572,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                         goInside();
                                         _self.updatePos(self.player);
                                     } else {
-                                        _self.showNotification("This entrance is currently inactive.");
+                                        _self.showNotification(dest.trigger_message ? dest.trigger_message : (dest.message ? dest.message : "This entrance is currently inactive."));
                                     }
                                 }).catch(function (error) {
                                     console.error("Error while checking the trigger.");
@@ -2592,7 +2592,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 if (response.data === true) {
                                     checkTrigger()
                                 } else {
-                                    _self.showNotification("You don't own the required NFT to enter.");
+                                    _self.showNotification(dest.nft_message ? dest.nft_message : (dest.message ? dest.message : "You don't own the required NFT to enter."));
                                 }
                             }).catch(function (error) {
                                 console.error("Error while checking ownership of token gate.");
@@ -2606,7 +2606,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 if (response.data === true) {
                                     checkTrigger();
                                 } else {
-                                    _self.showNotification("You do not have the required item to enter.");
+                                    _self.showNotification(dest.item_message ? dest.item_message : (dest.message ? dest.message : "You do not have the required item to enter."));
                                 }
                             }).catch(function (error) {
                                 console.error("Error while checking ownership of token gate.");
