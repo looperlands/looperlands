@@ -1,7 +1,7 @@
 const quests = require('./quests.js');
 const dao = require('../dao.js');
 
-const PlayerEventConsumer = require('../playereventconsumer.js').PlayerEventConsumer;
+const PlayerEventConsumer = require('./playereventconsumer.js').PlayerEventConsumer;
 
 class PlayerQuestEventConsumer extends PlayerEventConsumer {
 
@@ -31,7 +31,8 @@ class PlayerQuestEventConsumer extends PlayerEventConsumer {
         if (completionCheckerFN === undefined) {
             throw new Error("Unknown event type: " + event.eventType);
         }
-        let change = false;
+
+        let changedQuests = []
 
         for (let quest of inProgressQuests) {
             let questID = quest.id || quest.questID;
@@ -48,10 +49,10 @@ class PlayerQuestEventConsumer extends PlayerEventConsumer {
                 }
                 //console.log("inprogress quest: ", event.playerCache.gameData.quests[quests.STATES.IN_PROGRESS]);
                 event.playerCache.gameData.quests[quests.STATES.IN_PROGRESS] = event.playerCache.gameData.quests[quests.STATES.IN_PROGRESS].filter(q => q.id !== questID);
-                change = true;
+                changedQuests.push(quest);
             }
         }
-        return {change: change, quests : event.playerCache.gameData.quests};
+        return {changedQuests: changedQuests, quests : event.playerCache.gameData.quests};
     }
 }
 

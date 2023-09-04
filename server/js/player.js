@@ -15,7 +15,7 @@ const discord = require('./discord.js');
 const axios = require('axios');
 const chat = require("./chat.js");
 const NFTWeapon = require("./nftweapon.js");
-const PlayerEventBroker = require("./playereventbroker.js");
+const PlayerEventBroker = require("./quests/playereventbroker.js");
 
 const LOOPWORMS_LOOPERLANDS_BASE_URL = process.env.LOOPWORMS_LOOPERLANDS_BASE_URL;
 const BASE_SPEED = 120;
@@ -119,6 +119,7 @@ module.exports = Player = Character.extend({
                 self.isDead = false;
                 discord.sendMessage(`Player ${self.name} joined the game.`);
                 dao.saveAvatarMapId(playerCache.nftId, playerCache.mapId);
+                self.playerEventBroker.setPlayer(self);
             }
             else if(action === Types.Messages.WHO) {
                 message.shift();
@@ -750,6 +751,13 @@ module.exports = Player = Character.extend({
             return nftWeapon.getTrait();
         } else {
             return undefined;
+        }
+    },
+
+    handleCompletedQuests: function(completedQuests) {
+        for (quest of completedQuests) {
+            let xpReward = Formulas.xpPercentageOfLevel(quest.level, 5);
+            this.handleExperience(xpReward);
         }
     }
 

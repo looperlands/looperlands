@@ -9,7 +9,7 @@ quests = [
         npc: Types.Entities.KING,
         target: Types.Entities.RAT,
         amount: 100,
-        reward: 100
+        level: 1
     },
     {
         id: "KING_QUEST_2",
@@ -20,8 +20,8 @@ quests = [
         npc: Types.Entities.KING,
         target: Types.Entities.FLASK,
         amount: 100,
-        reward: 100,
-        requiredQuest: "KING_QUEST_1"
+        requiredQuest: "KING_QUEST_1",
+        level: 1
     }
 ]
 

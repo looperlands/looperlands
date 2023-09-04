@@ -1,5 +1,5 @@
-const dao = require('./dao.js');
-const PlayerQuestEventConsumer = require('./quests/playerquesteventconsumer.js');
+const dao = require('../dao.js');
+const PlayerQuestEventConsumer = require('./playerquesteventconsumer.js');
 class PlayerEventBroker {
     static Events = {
         KILL_MOB: 'KILL_MOB',
@@ -20,8 +20,12 @@ class PlayerEventBroker {
     constructor(player) {
         this.player = player;
         this.cache = player.server.server.cache;
-        PlayerEventBroker.playerEventBrokers[player.sessionId] = this;
         PlayerEventBroker.cache = this.cache;
+    }
+
+    setPlayer(player) {
+        PlayerEventBroker.playerEventBrokers[player.sessionId] = this;
+        this.player = player;
     }
 
     static addEvent(eventType, sessionId, playerCache) {
@@ -40,17 +44,17 @@ class PlayerEventBroker {
                 for (const [eventId, playerCache] of Object.entries(events)) {
                     let [eventType, sessionId] = eventId.split(',');
                     let consumed = consumer.consume({eventType: eventType, playerCache: playerCache});
-                    if (consumed.change) {
+                    if (consumed.changedQuests !== undefined && consumed.changedQuests.length > 0) {
                         let playerCache = PlayerEventBroker.cache.get(sessionId);
                         playerCache.gameData.quests = consumed.quests;
                         PlayerEventBroker.cache.set(sessionId, playerCache);
+                        let broker = PlayerEventBroker.playerEventBrokers[sessionId];
+                        broker.player.handleCompletedQuests(consumed.changedQuests);
                     }
                 }
             });
         }
-
     }
-
 
     async lootEvent(item) {
         dao.saveLootEvent(this.player.nftId, item.kind);
