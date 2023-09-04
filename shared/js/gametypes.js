@@ -130,6 +130,8 @@ Types = {
         MORNINGSTAR: 64,
         AXE: 65,
         BLUESWORD: 66,
+        // FieldEffects
+        MAGCRACK: 40000001,
 
         // NFTs
         NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6: 70,
@@ -1729,6 +1731,8 @@ var kinds = {
     tanashi: [Types.Entities.TANASHI, "npc"],
     miner: [Types.Entities.MINER, "npc"],
     villagesign1: [Types.Entities.VILLAGESIGN1, "npc"],
+    // FieldEffects
+    magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],
 
     //NFT
     NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6: [Types.Entities.NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6, "armor"],
@@ -3273,6 +3277,10 @@ Types.isMob = function(kind) {
 
 Types.isNpc = function(kind) {
     return kinds.getType(kind) === "npc";
+};
+
+Types.isFieldEffect = function(kind) {
+    return kinds.getType(kind) === "fieldeffect";
 };
 
 Types.isCharacter = function(kind) {

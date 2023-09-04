@@ -1,5 +1,5 @@
 
-define(['mobs', 'items', 'npcs', 'warrior', 'chest'], function(Mobs, Items, NPCs, Warrior, Chest) {
+define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mobs, Items, NPCs, Warrior, Chest, Fieldeffects) {
 
     var EntityFactory = {};
 
@@ -344,6 +344,12 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest'], function(Mobs, Items, NPCs
     EntityFactory.builders[Types.Entities.VILLAGESIGN1] = function(id) {
         return new NPCs.Villagesign1(id);
     };   
+
+     //====== FieldEffectss ======
+
+    EntityFactory.builders[Types.Entities.MAGCRACK] = function(id) {
+        return new Fieldeffects.Magcrack(id);
+    };  
     
     return EntityFactory;
 });
