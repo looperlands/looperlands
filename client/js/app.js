@@ -232,14 +232,16 @@ define(['jquery', 'storage'], function($, Storage) {
         },
 
         toggleAchievements: function() {
-            /*
         	if($('#instructions').hasClass('active')) {
         	    this.toggleInstructions();
         	    $('#helpbutton').removeClass('active');
         	}
             this.resetPage();
             $('#achievements').toggleClass('active');
-            */
+            if($('#achievements').hasClass('active')) {
+                this.currentPage = 1;
+                this.game.initAchievements()
+            }
         },
 
         resetPage: function() {
@@ -334,6 +336,8 @@ define(['jquery', 'storage'], function($, Storage) {
                 count = 0,
                 $p = null;
 
+            $('#achievements').text('');
+
             _.each(achievements, function(achievement) {
                 count++;
     
@@ -343,15 +347,8 @@ define(['jquery', 'storage'], function($, Storage) {
                 if(!achievement.hidden) {
                     self.setAchievementData($a, achievement.name, achievement.desc);
                 }
-                $a.find('.twitter').attr('href', 'http://twitter.com/share?url=https%3A%2F%2Floopworms.io%2FMetaverse%2F&text=I%20unlocked%20the%20achievement%20%27'+ achievement.name +'%27%20on%20%23LooperLands');
                 $a.show();
-                $a.find('a').click(function() {
-                     var url = $(this).attr('href');
 
-                    self.openPopup('twitter', url);
-                    return false;
-                });
-    
                 if((count - 1) % 4 === 0) {
                     page++;
                     $p = $page.clone();
@@ -359,7 +356,8 @@ define(['jquery', 'storage'], function($, Storage) {
                     $p.show();
                     $lists.append($p);
                 }
-                $p.append($a);
+
+                $('#achievements').append($a);
             });
 
             $('#total-achievements').text($('#achievements').find('li').length);
