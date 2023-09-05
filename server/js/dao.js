@@ -405,6 +405,107 @@ exports.saveMobKillEvent = async function(avatarId, mobId) {
   MOB_KILL_QUEUE.push({avatarId: avatarId, mobId: mobId});
 }
 
+exports.loadAvatarGameData = async function(avatarId, retry) {
+  const options = {
+    headers: {
+      'X-Api-Key': API_KEY
+    }
+  }
+
+  const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/loadItemMobQuest.php?NFTID=${avatarId}`;
+
+  try {
+    const response = await axios.get(url, options);
+
+    let responseData = response.data[0];
+
+    let mobKills, items = {}, quests = {};
+
+
+    if (responseData.mobJson) {
+      mobKills = responseData.mobJson.reduce((avatarMobKills, mobKills) => {
+        const mobId = mobKills.mobId;
+        if (mobId) {
+          avatarMobKills[mobId] = mobKills.iCount;
+        }
+        return avatarMobKills;
+      }, {});
+    }
+
+    if (responseData.itemJson) {
+      items = responseData.itemJson.reduce((avatarItems, itemCount) => {
+        const itemId = itemCount.itemId;
+        if (itemId) {
+          avatarItems[itemId] = itemCount.iCount;
+        }
+        return avatarItems;
+      }, {});
+    }
+
+    if (responseData.questJson) {
+      quests = responseData.questJson.reduce((avatarQuests, quest) => {
+        const status = quest.status;
+        if (status) {
+          let questsByStatus = avatarQuests[status];
+          if (questsByStatus) {
+            questsByStatus.push(quest);
+          } else {
+            avatarQuests[status] = [quest];
+          }
+        }
+        return avatarQuests;
+      }, {});
+    }
+
+    const data = {
+      mobKills: mobKills,
+      items: items,
+      quests: quests
+    }
+
+    //console.log("loadAvatarGameData", data);
+
+    return data;
+  } catch (error) {
+    if (retry === undefined) {
+      retry = MAX_RETRY_COUNT;
+    }
+    retry -= 1;
+    if (retry > 0) {
+      console.log("Retry " + retry);
+      return this.loadAvatarGameData(avatarId, retry);
+    } else {
+      console.error("loadAvatarGameData", error);
+    }
+  }
+}
+
+exports.setQuestStatus = async function(avatarId, questId, status, retry) {
+  const options = {
+    headers: {
+      'X-Api-Key': API_KEY
+    }
+  }
+
+  let url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/setQuestStatus.php?questId=${questId}&avatarID=${avatarId}&status=${status}`;
+
+  try {
+    const response = await axios.get(url, options);
+    return response;
+  } catch (error) {
+    console.error("setQuestStatus", error);
+    if (retry === undefined) {
+      retry = MAX_RETRY_COUNT;
+    }
+    retry -= 1;
+    if (retry > 0) {
+      return this.setQuestStatus(avatarId, questId, status, retry);
+    } else {
+      console.error("setQuestStatus", error);
+    }
+  }
+}
+
 
 exports.updateExperience = updateExperience;
 exports.saveCharacterData = saveCharacterData;

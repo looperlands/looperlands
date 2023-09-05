@@ -22,6 +22,7 @@ const dao = require('./dao.js');
 const Formulas = require('./formulas.js');
 const ens = require("./ens.js");
 const chat = require("./chat.js");
+const quests = require("./quests/quests.js");
 
 const cache = new NodeCache();
 
@@ -246,6 +247,10 @@ WS.socketIOServer = Server.extend({
             const walletId = sessionData.walletId;
             const isDirty = sessionData.isDirty;
 
+            let parsedSaveData;
+            let weapon;
+            let avatarGameData;
+
             if (isDirty === true) {
                 res.status(409).json({
                     status: false,
@@ -254,14 +259,16 @@ WS.socketIOServer = Server.extend({
                 });
                 return;
             } else {
+                //console.log("Session ID", sessionId, "Wallet ID", walletId, "NFT ID", nftId);
+                parsedSaveData = await dao.getCharacterData(walletId, nftId);
+                weapon = await dao.loadWeapon(walletId, nftId);
+                avatarGameData = await dao.loadAvatarGameData(nftId);
+
                 sessionData.isDirty = true;
+                sessionData.gameData = avatarGameData;
                 cache.set(sessionId, sessionData);
             }
 
-            //console.log("Session ID", sessionId, "Wallet ID", walletId, "NFT ID", nftId);
-            let parsedSaveData = await dao.getCharacterData(walletId, nftId);
-            let weapon = await dao.loadWeapon(walletId, nftId);
-            
             let name = await ens.getEns(walletId);
 
             if (parsedSaveData === undefined) {
@@ -371,9 +378,9 @@ WS.socketIOServer = Server.extend({
                 });
 
             } else {
-                const nftId = sessionData.nftId;
-                let owned = await dao.avatarHasItem(nftId, entityItemId)
-                res.status(200).json(owned);
+                let owns = sessionData.gameData.items[entityItemId] !== undefined;
+                res.status(200).json(owns);
+                return;
             }
         });
 
@@ -504,6 +511,22 @@ WS.socketIOServer = Server.extend({
                     return;
                 }
                 res.status(200).send(triggerState);
+            }
+        });
+
+        app.get("/session/:sessionId/npc/:npcId", async (req, res) => {
+            const sessionId = req.params.sessionId;
+            const npcId = req.params.npcId;
+            const sessionData = cache.get(sessionId);
+            if (sessionData === undefined) {
+                res.status(404).json({
+                    status: false,
+                    "error" : "session not found",
+                    user: null
+                });
+            } else {
+                let msgText = quests.handleNPCClick(cache, sessionId, npcId);
+                res.status(202).json(msgText);
             }
         });
 

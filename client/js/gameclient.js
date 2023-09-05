@@ -38,6 +38,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             this.handlers[Types.Messages.BLINK] = this.receiveBlink;
             this.handlers[Types.Messages.MOBDOSPECIAL] = this.receiveMobDoSpecial;
             this.handlers[Types.Messages.MOBEXITCOMBAT] = this.receiveMobExitCombat;
+            this.handlers[Types.Messages.QUEST_COMPLETE] = this.receieveQuestComplete;
         
             this.useBison = false;
             this.enable();
@@ -404,6 +405,16 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
                 this.mobExitCombat_callback(id);
             }
         },
+
+        receieveQuestComplete: function(data) {
+            let questName = data[1],
+                endText = data[2],
+                xpReward = data[3];
+
+            if (this.questComplete_callback) {
+                this.questComplete_callback(questName, endText, xpReward);
+            }
+        },
         
         onDispatched: function(callback) {
             this.dispatched_callback = callback;
@@ -507,6 +518,10 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
 
         onMobExitCombat: function(callback) {
             this.mobExitCombat_callback = callback;
+        },
+
+        onQuestComplete: function(callback) {
+            this.questComplete_callback = callback;
         },
 
         sendHello: function(player) {

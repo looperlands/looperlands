@@ -15,6 +15,7 @@ const discord = require('./discord.js');
 const axios = require('axios');
 const chat = require("./chat.js");
 const NFTWeapon = require("./nftweapon.js");
+const PlayerEventBroker = require("./quests/playereventbroker.js");
 
 const LOOPWORMS_LOOPERLANDS_BASE_URL = process.env.LOOPWORMS_LOOPERLANDS_BASE_URL;
 const BASE_SPEED = 120;
@@ -42,6 +43,8 @@ module.exports = Player = Character.extend({
         this.moveSpeed = BASE_SPEED;
         this.attackRate = BASE_ATTACK_RATE;
         this.accumulatedExperience = 0;
+
+        this.playerEventBroker = new PlayerEventBroker.PlayerEventBroker(this);
 
         this.connection.listen(function(message) {
 
@@ -116,6 +119,7 @@ module.exports = Player = Character.extend({
                 self.isDead = false;
                 discord.sendMessage(`Player ${self.name} joined the game.`);
                 dao.saveAvatarMapId(playerCache.nftId, playerCache.mapId);
+                self.playerEventBroker.setPlayer(self);
             }
             else if(action === Types.Messages.WHO) {
                 message.shift();
@@ -269,6 +273,7 @@ module.exports = Player = Character.extend({
                     var kind = item.kind;
 
                     if(Types.isItem(kind)) {
+                        self.playerEventBroker.lootEvent(item);
                         self.broadcast(item.despawn());
                         self.server.removeEntity(item);
 
@@ -312,9 +317,6 @@ module.exports = Player = Character.extend({
                         } else if(Types.isWeapon(kind) && self.getNFTWeapon() === undefined) {
                             self.equipItem(item);
                             self.broadcast(self.equip(kind));
-                        } else {
-                            // All other items are considered collectible and can be stacked
-                            dao.saveLootEvent(self.nftId, kind);
                         }
                     }
                 }
@@ -750,6 +752,14 @@ module.exports = Player = Character.extend({
         } else {
             return undefined;
         }
-    }
+    },
 
+    handleCompletedQuests: function(completedQuests) {
+        for (quest of completedQuests) {
+            let xpReward = Formulas.xpPercentageOfLevel(quest.level, 5);
+            this.handleExperience(xpReward);
+            let msg = new Messages.QuestComplete(quest.name, quest.endText, xpReward);
+            this.server.pushToPlayer(this, msg);
+        }
+    }
 });

@@ -232,12 +232,14 @@ define(['jquery', 'storage'], function($, Storage) {
         },
 
         toggleAchievements: function() {
+            /*
         	if($('#instructions').hasClass('active')) {
         	    this.toggleInstructions();
         	    $('#helpbutton').removeClass('active');
         	}
             this.resetPage();
             $('#achievements').toggleClass('active');
+            */
         },
 
         resetPage: function() {
@@ -290,13 +292,14 @@ define(['jquery', 'storage'], function($, Storage) {
         	}
         },
 
-        showAchievementNotification: function(id, name) {
+        showAchievementNotification: function(questName, endText, xpReward) {
             var $notif = $('#achievement-notification'),
                 $name = $notif.find('.name'),
                 $button = $('#achievementsbutton');
 
-            $notif.removeClass().addClass('active achievement' + id);
-            $name.text(name);
+            $notif.removeClass().addClass('active achievement' + 1);
+            $name.text(questName);
+            
             if(this.game.storage.getAchievementCount() === 1) {
                 this.blinkInterval = setInterval(function() {
                     $button.toggleClass('blink');
@@ -318,12 +321,8 @@ define(['jquery', 'storage'], function($, Storage) {
             $achievement.addClass('unlocked');
         },
 
-        unlockAchievement: function(id, name) {
-            this.showAchievementNotification(id, name);
-            this.displayUnlockedAchievement(id);
-
-            var nb = parseInt($('#unlocked-achievements').text());
-            $('#unlocked-achievements').text(nb + 1);
+        unlockAchievement: function(questName, endText, xpReward) {
+            this.showAchievementNotification(questName, endText, xpReward);
         },
 
         initAchievementList: function(achievements) {

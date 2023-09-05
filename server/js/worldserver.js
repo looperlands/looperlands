@@ -404,6 +404,7 @@ module.exports = World = cls.Class.extend({
         this.removeEntity(player);
         delete this.players[player.id];
         delete this.outgoingQueues[player.id];
+        player.playerEventBroker.destroy();
     },
     
     addMob: function(mob) {
@@ -621,7 +622,7 @@ module.exports = World = cls.Class.extend({
                 // Distribute exp first, so the multiplier doesnt apply to this kill (that would be OP)
                 this.handleExpMultiplierOnDeath(mob);
                 if (attacker.type === 'player') {
-                    dao.saveMobKillEvent(attacker.nftId, mob.kind);
+                    attacker.playerEventBroker.killMobEvent(mob);
                 }
             }
     
