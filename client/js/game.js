@@ -2321,10 +2321,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             
                 self.addEntity(self.player);
                 self.player.dirtyRect = self.renderer.getEntityBoundingRect(self.player);
-
-                setTimeout(function() {
-                    self.tryUnlockingAchievement("STILL_ALIVE");
-                }, 1500);
             
                 if(!self.storage.hasAlreadyPlayed()) {
                     self.storage.initPlayer(self.player.name);
@@ -2417,26 +2413,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                             }
                         }
                     });
-                
-                    if((self.player.gridX <= 85 && self.player.gridY <= 179 && self.player.gridY > 178) || (self.player.gridX <= 85 && self.player.gridY <= 266 && self.player.gridY > 265)) {
-                        self.tryUnlockingAchievement("INTO_THE_WILD");
-                    }
-                    
-                    if(self.player.gridX <= 85 && self.player.gridY <= 293 && self.player.gridY > 292) {
-                        self.tryUnlockingAchievement("AT_WORLDS_END");
-                    }
-                    
-                    if(self.player.gridX <= 85 && self.player.gridY <= 100 && self.player.gridY > 99) {
-                        self.tryUnlockingAchievement("NO_MANS_LAND");
-                    }
-                    
-                    if(self.player.gridX <= 85 && self.player.gridY <= 51 && self.player.gridY > 50) {
-                        self.tryUnlockingAchievement("HOT_SPOT");
-                    }
-                    
-                    if(self.player.gridX <= 27 && self.player.gridY <= 123 && self.player.gridY > 112) {
-                        self.tryUnlockingAchievement("TOMB_RAIDER");
-                    }
 
                     self.updatePlayerCheckpoint();
 
@@ -2462,21 +2438,8 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 self.client.sendLoot(item); // Notify the server that this item has been looted
                                 self.removeItem(item);
                                 self.showNotification(item.getLootMessage());
-                            
-                                if(item.type === "armor") {
-                                    self.tryUnlockingAchievement("FAT_LOOT");
-                                }
-                                
-                                if(item.type === "weapon") {
-                                    self.tryUnlockingAchievement("A_TRUE_WARRIOR");
-                                }
-
-                                if(item.kind === Types.Entities.CAKE) {
-                                    self.tryUnlockingAchievement("FOR_SCIENCE");
-                                }
                                 
                                 if(item.kind === Types.Entities.FIREPOTION) {
-                                    self.tryUnlockingAchievement("FOXY");
                                     self.audioManager.playSound("firefox");
                                 }
                             
@@ -2484,10 +2447,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                     self.audioManager.playSound("heal");
                                 } else {
                                     self.audioManager.playSound("loot");
-                                }
-                                
-                                if(item.wasDropped && !_(item.playersInvolved).include(self.playerId)) {
-                                    self.tryUnlockingAchievement("NINJA_LOOT");
                                 }
                             } else {
                                 console.log("You can't loot weapons because you have a NFT weapon equipped.");
@@ -2540,17 +2499,12 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                     }
                                 }
                                 
-                                if(_.size(_self.player.attackers) > 0) {
-                                    setTimeout(function() { _self.tryUnlockingAchievement("COWARD"); }, 500);
-                                }
                                 _self.player.forEachAttacker(function(attacker) {
                                     attacker.disengage();
                                     attacker.idle();
                                 });
                             
                                 _self.updatePlateauMode();
-                                
-                                _self.checkUndergroundAchievement();
                                 
                                 if(_self.renderer.mobile || _self.renderer.tablet) {
                                     // When rendering with dirty rects, clear the whole screen when entering a door.
@@ -2986,9 +2940,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                         entity = self.getEntityById(id);
                 
                         if(entity) {
-                            if(self.player.isAttackedBy(entity)) {
-                                self.tryUnlockingAchievement("COWARD");
-                            }
                             entity.disengage();
                             entity.idle();
                             self.makeCharacterGoTo(entity, x, y);
@@ -3067,21 +3018,15 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     }
                     
                     self.storage.incrementTotalKills();
-                    self.tryUnlockingAchievement("HUNTER");
 
                     if(kind === Types.Entities.RAT) {
                         self.storage.incrementRatCount();
-                        self.tryUnlockingAchievement("ANGRY_RATS");
                     }
                     
                     if(kind === Types.Entities.SKELETON || kind === Types.Entities.SKELETON2) {
                         self.storage.incrementSkeletonCount();
-                        self.tryUnlockingAchievement("SKULL_COLLECTOR");
                     }
 
-                    if(kind === Types.Entities.BOSS) {
-                        self.tryUnlockingAchievement("HERO");
-                    }
                 });
             
                 self.client.onPlayerChangeHealth(function(points, isRegen) {
@@ -3102,7 +3047,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                             self.infoManager.addDamageInfo(diff, player.x, player.y - 15, "received");
                             self.audioManager.playSound("hurt");
                             self.storage.addDamage(-diff);
-                            self.tryUnlockingAchievement("MEATSHIELD");
                             if(self.playerhurt_callback) {
                                 self.playerhurt_callback();
                             }
@@ -3369,11 +3313,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 } else {
                     this.destroyBubble(npc.id);
                     this.audioManager.playSound("npc-end");
-                }
-                this.tryUnlockingAchievement("SMALL_TALK");
-                
-                if(npc.kind === Types.Entities.RICK) {
-                    this.tryUnlockingAchievement("RICKROLLD");
                 }
             }
         },
@@ -4147,10 +4086,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         onAchievementUnlock: function(callback) {
             this.unlock_callback = callback;
         },
-    
-        tryUnlockingAchievement: function(name) {
-            //todo: remove achievements
-        },
 
         showQuestCompleteNotification: function(questName, endText, xpReward) {
             if(this.unlock_callback) {
@@ -4211,16 +4146,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 if(!lastCheckpoint || (lastCheckpoint && lastCheckpoint.id !== checkpoint.id)) {
                     this.player.lastCheckpoint = checkpoint;
                     this.client.sendCheck(checkpoint.id);
-                }
-            }
-        },
-        
-        checkUndergroundAchievement: function() {
-            var music = this.audioManager.getSurroundingMusic(this.player);
-
-            if(music) {
-                if(music.name === 'cave') {
-                    this.tryUnlockingAchievement("UNDERGROUND");
                 }
             }
         },
