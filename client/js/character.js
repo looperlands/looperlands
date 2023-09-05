@@ -337,6 +337,10 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
         onDeath: function(callback) {
             this.death_callback = callback;
         },
+
+        onRooted: function(callback) {
+            this.rooted_callback = callback;
+        },
     
         /**
          * Changes the character's orientation so that it is facing its target.
@@ -601,6 +605,9 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
         },
 
         root: function (){
+            if(this.rooted_callback) {
+                this.rooted_callback(this.gridX, this.gridY);
+            }
             this.stop();
             this.isRooted = true;
         },

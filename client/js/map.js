@@ -195,6 +195,10 @@ define(['jquery', 'area'], function($, Area) {
                     map: door.tmap,
                     triggerId: door.ttid,
                     item: door.titem,
+                    message: door.tmessage,
+                    trigger_message: door.ttrigger_message,
+                    nft_message: door.tnft_message,
+                    item_message: door.titem_message
                 };
             });
         

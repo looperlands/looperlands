@@ -1,10 +1,10 @@
 
 define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile',
         'warrior', 'gameclient', 'audio', 'updater', 'transition', 'pathfinder',
-        'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'config', '../../shared/js/gametypes', '../../shared/js/altnames'],
+        'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'config', 'fieldeffect', '../../shared/js/gametypes', '../../shared/js/altnames'],
 function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, AnimatedTile,
          Warrior, GameClient, AudioManager, Updater, Transition, Pathfinder,
-         Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, config) {
+         Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, config, Fieldeffect) {
     
     var Game = Class.extend({
         init: function(app) {
@@ -74,6 +74,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 "sword2", "redsword", "bluesword", "goldensword", "item-sword2", "item-axe", "item-redsword", "item-bluesword", "item-goldensword", "item-leatherarmor", "item-mailarmor", 
                                 "item-platearmor", "item-redarmor", "item-goldenarmor", "item-flask", "item-potion","item-cake", "item-burger", "item-cobmilk", "item-cobapple", "morningstar", "item-morningstar", "item-firepotion",
                                 "item-KEY_ARACHWEAVE",
+                                "fieldeffect-magcrack",
                                 // @nextObjectLine@
                                 "NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6",
                                 "NFT_38278eacc7d1c86fdbc85d798dca146fbca59a2e5e567dc15898ce2edac21f5f",
@@ -1560,6 +1561,16 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 "NFT_eeed4c7993dcb16a459f288bb155cdc0fa537c56d52c5ab4e5fd374945729015",
                                 "NFT_f03a44c07b62aa02f6f6b403540070354d860b5dd391cdf96083dbea7410a240",
                                 "NFT_fbd01ccb7dfd332f00e7a0155c4f709def2994d35c523dadbc6e711e2dc95952",
+                                "NFT_1697a67eb223b3c3142e90df7ef1c1c58cf8ed4728f5da8c1be472c63237ced2",
+                                "NFT_8e74a289dfb817f1a65aa9ff9cc6edb45ad0355787961b430787a1336fe7be07",
+                                "NFT_298b2f27d77bd455033db08ff32c4f3e7b80fe4968963380061798396ae38411",
+                                "NFT_33bb9a4a853ab10c67ef52d371e78c221397810cf0ff0225a96cea312f32e14f",
+                                "NFT_4c188b55ff6c729ffcbbc6686bbdb412b43041dd7afec5f17e6a4773ca362164",
+                                "NFT_667dcacac11388d146c32f86cb9e86f4c7379837b76788e8d888a4590fb77b7d",
+                                "NFT_80d1cfb435a527bcc7324707a17b101d71005090b5d227dff4c1d281d67ea289",
+                                "NFT_8a0533085bf0a1b769f579e1eb5b9e804522cb40c855c2f7ffbf2e62d59f7032",
+                                "NFT_8fe75a2ca1fe1ab9d789c0bc9cccbe7cb800b4f55aa73244941fc95f9693f9e1",
+                                "NFT_e7a8b741fb47f59103b67b2d47dd94229304be0e3e446bf107f8f82e8386feba",
                                 // @nextSpriteLine@
                             ];                          
         },
@@ -1941,6 +1952,13 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             item.setGridPosition(x, y);
             item.setAnimation("idle", 150);
             this.addEntity(item);
+        },
+
+        addFieldEffect: function(fieldEffect, x, y) {
+            fieldEffect.setSprite(this.sprites[fieldEffect.getSpriteName()]);
+            fieldEffect.setGridPosition(x, y);
+            fieldEffect.setAnimation("idle", 150);
+            this.addEntity(fieldEffect);
         },
     
         removeItem: function(item) {
@@ -2343,6 +2361,10 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         	            self.checkOtherDirtyRects(self.renderer.targetRect, null, self.selectedX, self.selectedY);
         	        }
                 });
+
+                self.player.onRooted(function(x,y) {
+                    self.client.sendMove(x, y);
+                });
                 
                 self.player.onCheckAggro(function() {
                     self.forEachMob(function(mob) {
@@ -2562,7 +2584,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                         goInside();
                                         _self.updatePos(self.player);
                                     } else {
-                                        _self.showNotification("This entrance is currently inactive.");
+                                        _self.showNotification(dest.trigger_message ? dest.trigger_message : (dest.message ? dest.message : "This entrance is currently inactive."));
                                     }
                                 }).catch(function (error) {
                                     console.error("Error while checking the trigger.");
@@ -2582,7 +2604,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 if (response.data === true) {
                                     checkTrigger()
                                 } else {
-                                    _self.showNotification("You don't own the required NFT to enter.");
+                                    _self.showNotification(dest.nft_message ? dest.nft_message : (dest.message ? dest.message : "You don't own the required NFT to enter."));
                                 }
                             }).catch(function (error) {
                                 console.error("Error while checking ownership of token gate.");
@@ -2596,7 +2618,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 if (response.data === true) {
                                     checkTrigger();
                                 } else {
-                                    _self.showNotification("You do not have the required item to enter.");
+                                    _self.showNotification(dest.item_message ? dest.item_message : (dest.message ? dest.message : "You do not have the required item to enter."));
                                 }
                             }).catch(function (error) {
                                 console.error("Error while checking ownership of token gate.");
@@ -2693,6 +2715,11 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 self.client.onSpawnItem(function(item, x, y) {
                     console.log("Spawned " + Types.getKindAsString(item.kind) + " (" + item.id + ") at "+x+", "+y);
                     self.addItem(item, x, y);
+                });
+
+                self.client.onSpawnFieldEffect(function(fieldEffect, x, y) {
+                    console.log("Spawned field effect " + Types.getKindAsString(fieldEffect.kind) + " (" + fieldEffect.id + ") at "+x+", "+y);
+                    self.addFieldEffect(fieldEffect, x, y);
                 });
             
                 self.client.onSpawnChest(function(chest, x, y) {

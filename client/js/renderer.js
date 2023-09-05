@@ -425,7 +425,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
         drawEntities: function(dirtyOnly) {
             var self = this;
         
-            this.game.forEachVisibleEntityByDepth(function(entity) {
+            function handleDrawingEntity(entity) {
                 let stuckEntity = entity.lastUpdate !== undefined ? self.game.currentTime - entity.lastUpdate > 1000 : false;
                 if (stuckEntity) {
                     self.game.unregisterEntityPosition(entity);
@@ -444,7 +444,19 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                         self.drawEntity(entity);
                     }
                 }
+            }
+
+            let drawAfter =[];
+
+            this.game.forEachVisibleEntityByDepth(function(entity){
+                if (Types.isFieldEffect(entity.kind)) { //draw FieldEffects first
+                    handleDrawingEntity(entity);
+                } else {
+                    drawAfter.push(entity); //push the other entities to draw next
+                }
             });
+
+            drawAfter.forEach((entity) => handleDrawingEntity(entity));
         },
         
         drawDirtyEntities: function() {
