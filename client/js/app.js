@@ -232,12 +232,14 @@ define(['jquery', 'storage'], function($, Storage) {
         },
 
         toggleAchievements: function() {
+            /*
         	if($('#instructions').hasClass('active')) {
         	    this.toggleInstructions();
         	    $('#helpbutton').removeClass('active');
         	}
             this.resetPage();
             $('#achievements').toggleClass('active');
+            */
         },
 
         resetPage: function() {
