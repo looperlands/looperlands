@@ -2603,6 +2603,20 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                             }).finally(function(e) {
                                 _self.doorCheck = false;
                             });
+                        } else if (dest.quest !== undefined) {
+                            let url = '/session/' + self.sessionId + '/completedQuest/' + dest.quest;
+                            _self.doorCheck = true;
+                            axios.get(url).then(function (response) {
+                                if (response.data === true) {
+                                    checkTrigger();
+                                } else {
+                                    _self.showNotification(dest.quest_message ? dest.quest_message : (dest.message ? dest.message : "You did not complete the quest yet."));
+                                }
+                            }).catch(function (error) {
+                                console.error("Error while checking ownership of token gate.");
+                            }).finally(function(e) {
+                                _self.doorCheck = false;
+                            });
                         } else {
                             checkTrigger();
                         }
