@@ -202,13 +202,24 @@ define(['character'], function (Character) {
             "Hushwind Village"
         ],
 
-
         "miner": [
             "WHAT HAVE WE UNLEASHED?",
             "THE MEGAMAG IS HERE!",
             "Dug our own grave...",
             "Stay away from those caves Looper!",
             "It isn't safe out there..."
+        ],
+
+        "cobhillsnpc": [
+            "Slimes...",
+            "Slimes everywhere!",
+            "They do look quite pretty, though..."
+        ],
+
+        "coblumberjack": [
+            "Come, get yourself warm by the fire!",
+            "The ghosts haunt this forest",
+            "But the campfire keeps them away!"
         ]
     };
 

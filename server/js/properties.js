@@ -303,7 +303,7 @@ var Properties = {
     cobslimeking: {
         level: 8,
         drops: {
-            cobmilk: 100
+            cobclover: 100
         },
         armorMod: 1.25,
         weaponMod: 2,
@@ -329,6 +329,16 @@ var Properties = {
         hp: 10,
         armor: 1,
         weapon: 1,
+        friendly: true
+    },
+
+    cobcat: {
+        level: 1,
+        friendly: true
+    },
+
+    cobyorkie: {
+        level: 1,
         friendly: true
     },
 

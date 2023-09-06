@@ -171,6 +171,14 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
         return new Mobs.Orlan(id);
     };
 
+    EntityFactory.builders[Types.Entities.COBCAT] = function(id) {
+        return new Mobs.Cobcat(id);
+    };
+
+    EntityFactory.builders[Types.Entities.COBYORKIE] = function(id) {
+        return new Mobs.Cobyorkie(id);
+    };
+
     //===== items ======
  
     EntityFactory.builders[Types.Entities.SWORD2] = function(id) {
@@ -242,6 +250,14 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
 
     EntityFactory.builders[Types.Entities.COBAPPLE] = function(id) {
         return new Items.Cobapple(id);
+    };
+
+    EntityFactory.builders[Types.Entities.COBLOG] = function(id) {
+        return new Items.Coblog(id);
+    };
+
+    EntityFactory.builders[Types.Entities.COBCLOVER] = function(id) {
+        return new Items.Cobclover(id);
     };
 
     EntityFactory.builders[Types.Entities.CHEST] = function(id) {
@@ -343,7 +359,17 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
 
     EntityFactory.builders[Types.Entities.VILLAGESIGN1] = function(id) {
         return new NPCs.Villagesign1(id);
-    };   
+    };
+    
+    EntityFactory.builders[Types.Entities.COBLUMBERJACK] = function(id) {
+        return new NPCs.Coblumberjack(id);
+    };    
+
+
+    EntityFactory.builders[Types.Entities.COBHILLSNPC] = function(id) {
+        return new NPCs.Cobhillsnpc(id);
+    };    
+
 
      //====== FieldEffectss ======
 

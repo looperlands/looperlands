@@ -442,7 +442,6 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 }
             }
         }),
-        
 
         Cobcow: Mob.extend({
             init: function(id) {
@@ -620,7 +619,35 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 }, 4000)  
             }
             
-        })
+        }),
+
+        Cobcat: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.COBCAT);
+                this.idleSpeed = 333;
+                this.walkSpeed = 250;
+                this.moveSpeed = 300;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
+        Cobyorkie: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.COBYORKIE);
+                this.idleSpeed = 500;
+                this.walkSpeed = 225;
+                this.moveSpeed = 250;
+                this.isFriendly = true;
+            }
+        }),
     };
     return Mobs;
 });

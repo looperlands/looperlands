@@ -141,9 +141,19 @@ define(['npc'], function(Npc) {
             init: function(id) {
                 this._super(id, Types.Entities.VILLAGESIGN1, 1);
             }
-        })
+        }),
 
-        
+        Coblumberjack: Npc.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.COBLUMBERJACK, 1);
+            }
+        }),
+
+        Cobhillsnpc: Npc.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.COBHILLSNPC, 1);
+            }
+        })
 
     };
     
