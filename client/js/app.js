@@ -336,14 +336,18 @@ define(['jquery', 'storage'], function($, Storage) {
                 count = 0,
                 $p = null;
 
-            $('#achievements').text('');
+            $('#achievements #lists').text('');
 
-            _.each(achievements, function(achievement) {
+            let reversed_achievements = Object.values(achievements).reverse()
+            _.each(reversed_achievements, function(achievement) {
                 count++;
     
                 var $a = $achievement.clone();
                 $a.removeAttr('id');
-                $a.addClass('achievement'+count);
+                $a.addClass('achievement'+achievement.medal);
+                if(achievement.status === 'COMPLETED') {
+                    $a.addClass('unlocked');
+                }
                 if(!achievement.hidden) {
                     self.setAchievementData($a, achievement.name, achievement.desc);
                 }
@@ -357,10 +361,18 @@ define(['jquery', 'storage'], function($, Storage) {
                     $lists.append($p);
                 }
 
-                $('#achievements').append($a);
+                $p.append($a);
             });
 
-            $('#total-achievements').text($('#achievements').find('li').length);
+            let totalAchievements = $('#achievements').find('li').length;
+            $('#total-achievements').text(totalAchievements);
+            if(totalAchievements <= 4) {
+                $('#achievements #previous').hide();
+                $('#achievements #next').hide();
+            } else {
+                $('#achievements #previous').show();
+                $('#achievements #next').show();
+            }
         },
 
         initUnlockedAchievements: function(ids) {

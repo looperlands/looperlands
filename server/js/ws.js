@@ -366,6 +366,7 @@ WS.socketIOServer = Server.extend({
                             id: quest.id,
                             name: quest.name,
                             desc: quest.startText,
+                            medal: quest.medal,
                             status: (_.findIndex(questStatus.COMPLETED, {questID: quest.id}) === -1) ? "IN_PROGRESS" : "COMPLETED"
                         });
                     }
