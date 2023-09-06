@@ -183,7 +183,7 @@ footer, header, hgroup, menu, nav, section {
     #achievements li.unlocked .achievement-name {color:#fce045;}
     #achievements li.unlocked .coin {opacity:1;}
     #achievements .achievement-name {color:#fff;padding-top:8px}
-    #achievements .achievement-description {width:100%;}
+    #achievements .achievement-description {width: calc(100% - 100px);height: 1.1em;overflow-y: hidden;float: left;text-overflow: ellipsis;white-space: nowrap;}
     #achievement-notification {position:absolute;z-index:8;bottom:0;left:50%;text-align:center;font-family:'GraphicPixel';pointer-events:none;-moz-transition:0.3s height ease;-webkit-transition:0.3s height ease;-o-transition:0.3s height ease;-ms-transition:0.3s height ease;}
     #achievement-notification .name, #achievement-notification .title {opacity:0;-moz-transition:0.3s opacity linear;-webkit-transition:0.3s opacity linear;-o-transition:0.3s opacity linear;-ms-transition:0.3s opacity linear;transition:0.3s opacity linear;}
     #achievement-notification.active .name, #achievement-notification.active .title {opacity:1;}
