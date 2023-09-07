@@ -1,5 +1,5 @@
 
-define(['character'], function(Character) {
+define(['character'], function (Character) {
 
     var NpcTalk = {
         "guard": [
@@ -10,7 +10,7 @@ define(['character'], function(Character) {
             'Follow <a href="https://loopworms.io/DEV/LooperLands/QR/qr.php?NPC=guard" target="blank">this link</a> - it might be a Red Packet!',
             "Now go about your adventure, Looper!"
         ],
-    
+
         "king": [
             "Hi Looper, I'm the LoopWorm King",
             "Welcome to my kingdom",
@@ -26,8 +26,8 @@ define(['character'], function(Character) {
             "Hi Looper, I'm the LoopWorm King2. Eventually I'll have a reward for you.",
             'Follow <a href="https://loopworms.io/DEV/LooperLands/QR/qr.php?NPC=king2" target="blank">this link</a> - it might be a Red Packet!',
             "Now go about your adventure, Looper!"
-        ],        
-    
+        ],
+
         "villagegirl": [
             "Hi there, Looper!",
             "I'm Bstrat515",
@@ -36,7 +36,7 @@ define(['character'], function(Character) {
             'Follow <a href="https://loopworms.io/DEV/LooperLands/QR/qr.php?NPC=villagegirl" target="blank">this link</a> - it might be a Red Packet!',
             "Now go about your adventure, Looper!"
         ],
-    
+
         "villager": [
             "Good day, eh, Looper, the name's Ordinary Adam.",
             'Check out my Loopring L2 <a target="_blank" href="https://loopexchange.art/collection/ordinaryadam">collection</a>.',
@@ -44,14 +44,14 @@ define(['character'], function(Character) {
             'Follow <a href="https://loopworms.io/DEV/LooperLands/QR/qr.php?NPC=villager" target="blank">this link</a> - it might be a Red Packet!',
             "Now go about your adventure, Looper!"
         ],
-    
+
         "agent": [
             "Don't believe everything you see, Looper.",
             'Visit <a target="_blank" href="https://twitter.com/heydomoshi">my twitter</a> and give me a follow!',
             'Follow <a href="https://loopworms.io/DEV/LooperLands/QR/qr.php?NPC=agent" target="blank">this link</a> - it might be a Red Packet!',
             "Now go about your adventure, Looper!"
         ],
-    
+
         "rick": [
             "We're no strangers to love",
             "You know the rules and so do I",
@@ -84,16 +84,16 @@ define(['character'], function(Character) {
             "I'll manage... Just steer clear of that place.",
         ],
 
-        
+
         "scientist": [
-            "Greetings, Looper.",
-            "I'm Cobmin (Jacob Huber), the PvP champion of LooperLands",
-            'I also made <a href="https://github.com/cobmin/Maize" target="blank">Maize</a>',
-            "It handles analytics and airdrops for NFTs for Loopring",
+            'Hey there, Looper. my name is <a href="https://www.cobmin.com" target="_blank">cobmin</a>.',
+            "I\'m a creator and developer in the loopring ecosystem.",
+            'I made the NFT toolkit <a href="https://maizehelps.art/" target="_blank">Maize</a>',
+            'and am currently working on <a href="https://twitter.com/CobsFarm" target="_blank">Cob\'s Farm</a>.',
             'Follow <a href="https://loopworms.io/DEV/LooperLands/QR/qr.php?NPC=scientist" target="blank">this link</a> - it might be a Red Packet!',
-            "Now go about your adventure, Looper!"
+            "Remember, read to succeed Looper!"
         ],
-    
+
         "nyan": [
             "nyan nyan nyan nyan nyan",
             "nyan nyan nyan nyan nyan nyan nyan",
@@ -102,27 +102,27 @@ define(['character'], function(Character) {
             'Follow <a href="https://loopworms.io/DEV/LooperLands/QR/qr.php?NPC=nyan" target="blank">this link</a> - it might be a Red Packet!',
             "Now go about your adventure, Looper!"
         ],
-        
+
         "beachnpc": [
             "lorem ipsum dolor sit amet",
             "consectetur adipisicing elit, sed do eiusmod tempor"
         ],
-        
+
         "forestnpc": [
             "lorem ipsum dolor sit amet",
             "consectetur adipisicing elit, sed do eiusmod tempor"
         ],
-        
+
         "desertnpc": [
             "lorem ipsum dolor sit amet",
             "consectetur adipisicing elit, sed do eiusmod tempor"
         ],
-        
+
         "lavanpc": [
             "lorem ipsum dolor sit amet",
             "consectetur adipisicing elit, sed do eiusmod tempor"
         ],
-    
+
         "priest": [
             "Boo! I'm Vince Suarez' REAL Ghost",
             'Check out my Loopring L2 <a target="_blank" href="https://nft.gamestop.com/collection/ghostlytales">collection</a>.',
@@ -130,7 +130,7 @@ define(['character'], function(Character) {
             'Follow <a href="https://loopworms.io/DEV/LooperLands/QR/qr.php?NPC=priest" target="blank">this link</a> - it might be a Red Packet!',
             "Now go about your adventure, Looper!"
         ],
-        
+
         "sorcerer": [
             "Welcome to LooperLands, I'm NickMan",
             'Visit <a target="_blank" href="https://twitter.com/NickManL2">my twitter</a> and give me a follow!',
@@ -147,12 +147,12 @@ define(['character'], function(Character) {
             'Follow <a href="https://loopworms.io/DEV/LooperLands/QR/qr.php?NPC=sorcerer" target="blank">this link</a> - it might be a Red Packet!',
             "Now go about your adventure, Looper!"
         ],
-        
+
         "octocat": [
             "Welcome to LooperLands!",
             'Want to see the  <a target="_blank" href="https://github.com/balkshamster/looperlands">source code</a>?'
         ],
-        
+
         "coder": [
             "It's YaBoyNancy",
             'You should check out my <a target="_blank" href="https://nft.gamestop.com/collection/yaboynancysignaturecollection">Signature Collection</a> on GSMP',
@@ -160,7 +160,7 @@ define(['character'], function(Character) {
             'Follow <a href="https://loopworms.io/DEV/LooperLands/QR/qr.php?NPC=coder" target="blank">this link</a> - it might be a Red Packet!',
             "Now go about your adventure, Looper!"
         ],
-    
+
         "beachnpc": [
             "TurntManJimi needs no introduction, Looper.",
             'You should check out my <a target="_blank" href="https://loopexchange.art/collection/interdemintionalsamurais">InterdeMINTional Samurais</a> collection',
@@ -168,7 +168,7 @@ define(['character'], function(Character) {
             'Follow <a href="https://loopworms.io/DEV/LooperLands/QR/qr.php?NPC=beachnpc" target="blank">this link</a> - it might be a Red Packet!',
             "Now go about your adventure, Looper!"
         ],
-        
+
         "desertnpc": [
             "I'm NFTSpike and should need no introduction.",
             "I make Web3 games on Loopring that are dope AF",
@@ -177,7 +177,7 @@ define(['character'], function(Character) {
             "The Skeleton King may offer a prize",
             "in the form of a Red Packet if you and your friends are brave and strong."
         ],
-    
+
         "othernpc": [
             "lorem ipsum",
             "lorem ipsum"
@@ -202,38 +202,49 @@ define(['character'], function(Character) {
             "Hushwind Village"
         ],
 
-
         "miner": [
             "WHAT HAVE WE UNLEASHED?",
             "THE MEGAMAG IS HERE!",
             "Dug our own grave...",
             "Stay away from those caves Looper!",
             "It isn't safe out there..."
+        ],
+
+        "cobhillsnpc": [
+            "Slimes...",
+            "Slimes everywhere!",
+            "They do look quite pretty, though..."
+        ],
+
+        "coblumberjack": [
+            "Come, get yourself warm by the fire!",
+            "The ghosts haunt this forest",
+            "But the campfire keeps them away!"
         ]
     };
 
     var Npc = Character.extend({
-        init: function(id, kind) {
+        init: function (id, kind) {
             this._super(id, kind, 1);
             this.itemKind = Types.getKindAsString(this.kind);
             this.talkCount = NpcTalk[this.itemKind].length;
             this.talkIndex = 0;
         },
-    
-        talk: function() {
+
+        talk: function () {
             var msg = null;
-        
-            if(this.talkIndex > this.talkCount) {
+
+            if (this.talkIndex > this.talkCount) {
                 this.talkIndex = 0;
             }
-            if(this.talkIndex < this.talkCount) {
+            if (this.talkIndex < this.talkCount) {
                 msg = NpcTalk[this.itemKind][this.talkIndex];
             }
             this.talkIndex += 1;
-            
+
             return msg;
         }
     });
-    
+
     return Npc;
 });

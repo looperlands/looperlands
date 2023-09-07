@@ -44,6 +44,11 @@ module.exports = Mapx = cls.Class.extend({
         this.initConnectedGroups(map.doors);
         this.initCheckpoints(map.checkpoints);
         this.initDoors(map.doors);
+
+        if(map.triggers) {
+            this.triggers = {}
+            this.initTriggers(map.triggers)
+        }
     
         if(this.ready_func) {
             this.ready_func();
@@ -197,11 +202,17 @@ module.exports = Mapx = cls.Class.extend({
             }
             // Trigger doors
             if (door.ttid !== undefined) {
-                if (self.triggerDoors[door.ttid] === undefined){
-                    self.triggerDoors[door.ttid] = []; // can only push to a defined array
+                let triggerId = door.ttid;
+                if(triggerId.startsWith("!")) {
+                    triggerId = triggerId.substring(1);
+                }
+
+                if (self.triggerDoors[triggerId] === undefined){
+                    self.triggerDoors[triggerId] = []; // can only push to a defined array
                 }
                 let tDoor = {x: door.x, y: door.y}
-                self.triggerDoors[door.ttid].push(tDoor);
+
+                self.triggerDoors[triggerId].push(tDoor);
             }
         });
     },
@@ -218,6 +229,22 @@ module.exports = Mapx = cls.Class.extend({
             if(cp.s === 1) {
                 self.startingAreas.push(checkpoint);
             }
+        });
+    },
+
+    initTriggers: function(triggers) {
+        let self = this;
+
+        triggers.forEach(function(trigger) {
+            self.triggers[trigger.id] = {
+                id: trigger.id,
+                x: trigger.x,
+                y: trigger.y,
+                w: trigger.w,
+                h: trigger.h,
+                trigger: trigger.trigger,
+                delay: trigger.delay
+            };
         });
     },
     

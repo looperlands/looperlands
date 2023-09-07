@@ -1,5 +1,5 @@
 
-define(['mobs', 'items', 'npcs', 'warrior', 'chest'], function(Mobs, Items, NPCs, Warrior, Chest) {
+define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mobs, Items, NPCs, Warrior, Chest, Fieldeffects) {
 
     var EntityFactory = {};
 
@@ -145,6 +145,22 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest'], function(Mobs, Items, NPCs
         return new Mobs.Ghostie(id);
     };
 
+    EntityFactory.builders[Types.Entities.COBSLIMERED] = function(id) {
+        return new Mobs.Cobslimered(id);
+    };
+
+    EntityFactory.builders[Types.Entities.COBSLIMEYELLOW] = function(id) {
+        return new Mobs.Cobslimeyellow(id);
+    };
+
+    EntityFactory.builders[Types.Entities.COBSLIMEBLUE] = function(id) {
+        return new Mobs.Cobslimeblue(id);
+    };
+
+    EntityFactory.builders[Types.Entities.COBSLIMEKING] = function(id) {
+        return new Mobs.Cobslimeking(id);
+    };
+
     EntityFactory.builders[Types.Entities.ALARIC] = function(id) {
         return new Mobs.Alaric(id);
     };
@@ -153,6 +169,14 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest'], function(Mobs, Items, NPCs
     };
     EntityFactory.builders[Types.Entities.ORLAN] = function(id) {
         return new Mobs.Orlan(id);
+    };
+
+    EntityFactory.builders[Types.Entities.COBCAT] = function(id) {
+        return new Mobs.Cobcat(id);
+    };
+
+    EntityFactory.builders[Types.Entities.COBYORKIE] = function(id) {
+        return new Mobs.Cobyorkie(id);
     };
 
     //===== items ======
@@ -218,6 +242,22 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest'], function(Mobs, Items, NPCs
     
     EntityFactory.builders[Types.Entities.CAKE] = function(id) {
         return new Items.Cake(id);
+    };
+
+    EntityFactory.builders[Types.Entities.COBMILK] = function(id) {
+        return new Items.Cobmilk(id);
+    };
+
+    EntityFactory.builders[Types.Entities.COBAPPLE] = function(id) {
+        return new Items.Cobapple(id);
+    };
+
+    EntityFactory.builders[Types.Entities.COBLOG] = function(id) {
+        return new Items.Coblog(id);
+    };
+
+    EntityFactory.builders[Types.Entities.COBCLOVER] = function(id) {
+        return new Items.Cobclover(id);
     };
 
     EntityFactory.builders[Types.Entities.CHEST] = function(id) {
@@ -319,7 +359,23 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest'], function(Mobs, Items, NPCs
 
     EntityFactory.builders[Types.Entities.VILLAGESIGN1] = function(id) {
         return new NPCs.Villagesign1(id);
-    };   
+    };
+    
+    EntityFactory.builders[Types.Entities.COBLUMBERJACK] = function(id) {
+        return new NPCs.Coblumberjack(id);
+    };    
+
+
+    EntityFactory.builders[Types.Entities.COBHILLSNPC] = function(id) {
+        return new NPCs.Cobhillsnpc(id);
+    };    
+
+
+     //====== FieldEffectss ======
+
+    EntityFactory.builders[Types.Entities.MAGCRACK] = function(id) {
+        return new Fieldeffects.Magcrack(id);
+    };  
     
     return EntityFactory;
 });
