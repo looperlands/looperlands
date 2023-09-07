@@ -499,7 +499,7 @@ footer, header, hgroup, menu, nav, section {
 	    #bar-container {height:51px;top:-3px;background-size:1440px;}
 
 		#healthbar {height:39px;background-position:0 -51px;width:306px;top:9px;background-size:1440px;z-index:20;}
-		#hitpoints {width:0px;height:33px;top:12px;left:33px;z-index:10;position:absolute;}
+		#hitpoints {width:0px;height:21px;top:15px;left:33px;z-index:10; position:absolute; border-top: 3px solid #ea6767; border-bottom: 3px solid #a62828;}
 
         #armor, #weapon {width:48px;height:48px;position:absolute;background-size:288px;background-position:-96px;}
         #weapon {left:312px;top:3px;background-size:288px;}
@@ -660,7 +660,7 @@ footer, header, hgroup, menu, nav, section {
 		#bar-container {height:34px;top:-2px;background-size:960px;}
 
 		#healthbar {height:26px;background-position:0 -34px;width:204px;top:6px;background-size:960px;z-index:20;}
-		#hitpoints {width:0px;height:22px;top:8px;left:22px;z-index:10;position:absolute;}
+		#hitpoints {width:0px;height:16px;top:8px;left:22px;z-index:10;position:absolute;}
 
         #armor, #weapon {width:32px;height:32px;position:absolute;background-size:192px;background-position:-64px;}
         #weapon {left:208px;top:2px;}
@@ -822,7 +822,7 @@ footer, header, hgroup, menu, nav, section {
 		#bar-container {height:34px;top:-2px;background-size:960px;}
 
 		#healthbar {height:26px;background-position:0 -34px;width:204px;top:6px;background-size:960px;z-index:20;}
-		#hitpoints {width:0px;height:22px;top:8px;left:22px;z-index:10;position:absolute;}
+		#hitpoints {width:0px;height:16px;top:8px;left:22px;z-index:10;position:absolute;}
 
         #armor, #weapon {width:32px;height:32px;position:absolute;background-size:192px;background-position:-64px;}
         #weapon {left:208px;top:2px;}
@@ -1142,7 +1142,7 @@ footer, header, hgroup, menu, nav, section {
 		#bar-container {height:34px;top:-2px;background-size:960px;background-position:0 -96px;}
 
 		#healthbar {height:26px;background-position:0 -34px;width:204px;top:6px;background-size:960px;z-index:20;}
-		#hitpoints {width:0px;height:22px;top:8px;left:22px;z-index:10;position:absolute;}
+		#hitpoints {width:0px;height:16px;top:8px;left:22px;z-index:10;position:absolute;}
 
         #armor, #weapon {width:32px;height:32px;position:absolute;background-size:192px;background-position:-64px;}
         #weapon {left:208px;top:2px;}
