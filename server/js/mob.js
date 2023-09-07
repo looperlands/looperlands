@@ -37,6 +37,7 @@ module.exports = Mob = Character.extend({
         this.updateHitPoints();
         this.resetPosition();
         this.clearSpecialInterval();
+        this.detachFromParent();
 
         this.handleRespawn();
     },
@@ -219,6 +220,18 @@ module.exports = Mob = Character.extend({
 
     isInCombat: function() {
         return this.hatelist.length > 0 ? true : false;
-    }
+    },
+
+    onDetachFromParent: function(callback) {
+        this.detachFromParent_callback = callback;
+    },
+
+    detachFromParent: function() {
+        if (this.parentId !== undefined) {
+            if(this.detachFromParent_callback) {
+               this.detachFromParent_callback(this.parentId, this);
+            }
+        }
+    },
 
 });

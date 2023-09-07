@@ -144,6 +144,20 @@ define(['item'], function(Item) {
             }
         }),
 
+        Coblog: Item.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.COBLOG, "object");
+                this.lootMessage = "Let's get logging!";
+            },
+        }),
+
+        Cobclover: Item.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.COBCLOVER, "object");
+                this.lootMessage = "Feeling lucky?";
+            },
+        }),
+
         KEY_ARACHWEAVE:Item.extend({init:function(id){this._super(id,Types.Entities.KEY_ARACHWEAVE,"object");this.lootMessage="You picked up a strange webbed key";}}),
         // @nextItemLine@
     };

@@ -1,0 +1,33 @@
+{
+	"id": "cobyorkie",
+	"width": 18,
+	"height": 18,
+	"animations": {
+		"walk_down": {
+			"length": 4,
+			"row": 0
+		},
+		"walk_up": {
+			"length": 4,
+			"row": 1
+		},
+		"walk_right": {
+			"length": 4,
+			"row": 2
+		},
+		"idle_right": {
+			"length": 2,
+			"row": 3
+		},
+		"idle_up": {
+			"length": 2,
+			"row": 4
+		},
+		"idle_down": {
+			"length": 4,
+			"row": 5
+		}
+	},
+	"offset_x": -1,
+	"offset_y": -1
+}

@@ -77,6 +77,8 @@ Types = {
         COBSLIMEYELLOW: 400007,
         COBSLIMEBLUE: 400008,
         COBSLIMEKING: 400009,
+        COBCAT: 400010,
+        COBYORKIE: 400011,
         
         // Armors
         FIREFOX: 20,
@@ -93,6 +95,8 @@ Types = {
         BURGER: 36,
         CHEST: 37,
         FIREPOTION: 38,
+        COBLOG: 21300008,
+        COBCLOVER: 21300009,
         COBMILK: 21300010,
         COBAPPLE: 21300011,
         CAKE: 21300012,
@@ -122,7 +126,9 @@ Types = {
         GOOSE: 1000042,
         TANASHI: 1000043,
         MINER: 1000044,
-        VILLAGESIGN1: 30000001,        
+        VILLAGESIGN1: 30000001,
+        COBLUMBERJACK: 34000001,
+        COBHILLSNPC: 34000002,        
         // Weapons
         SWORD1: 60,
         SWORD2: 61,
@@ -1744,6 +1750,8 @@ var kinds = {
     cobslimeyellow: [Types.Entities.COBSLIMEYELLOW, "mob"],
     cobslimeblue: [Types.Entities.COBSLIMEBLUE, "mob"],
     cobslimeking: [Types.Entities.COBSLIMEKING, "mob"],
+    cobcat: [Types.Entities.COBCAT, "mob"],
+    cobyorkie: [Types.Entities.COBYORKIE, "mob"],
     sword1: [Types.Entities.SWORD1, "weapon"],
     sword2: [Types.Entities.SWORD2, "weapon"],
     axe: [Types.Entities.AXE, "weapon"],
@@ -1764,6 +1772,8 @@ var kinds = {
     potion: [Types.Entities.POTION, "object"],
     cobapple: [Types.Entities.COBAPPLE, "object"],
     cobmilk: [Types.Entities.COBMILK, "object"],
+    coblog: [Types.Entities.COBLOG, "object"],
+    cobclover: [Types.Entities.COBCLOVER, "object"],
     cake: [Types.Entities.CAKE, "object"],
     burger: [Types.Entities.BURGER, "object"],
     chest: [Types.Entities.CHEST, "object"],
@@ -1794,6 +1804,8 @@ var kinds = {
     tanashi: [Types.Entities.TANASHI, "npc"],
     miner: [Types.Entities.MINER, "npc"],
     villagesign1: [Types.Entities.VILLAGESIGN1, "npc"],
+    coblumberjack: [Types.Entities.COBLUMBERJACK, "npc"],
+    cobhillsnpc: [Types.Entities.COBHILLSNPC, "npc"],
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],
 
@@ -3427,7 +3439,8 @@ Types.isExpendableItem = function(kind) {
     return Types.isHealingItem(kind)
         || kind === Types.Entities.FIREPOTION
         || kind === Types.Entities.CAKE
-        || kind === Types.Entities.COBMILK;
+        || kind === Types.Entities.COBMILK
+        || kind === Types.Entities.COBCLOVER;
 };
 
 Types.getKindFromString = function(kind) {

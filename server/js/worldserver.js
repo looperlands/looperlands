@@ -1174,14 +1174,11 @@ module.exports = World = cls.Class.extend({
     spawnMobAdd: function(parent, childKind, x, y) {
         if(parent.addArray.length < 15) { // Limit amount of adds to 15 to prevent any funny business
             let self = this;
-            let add = new Mob('6' + childKind + parent.addArray.length, childKind, x, y);
+            let add = new Mob(parent.id + '' + childKind + '' + parent.addArray.length, childKind, x, y);
+            add.parentId = parent.id;
             parent.addArray.push(add);
-            add.handleRespawn(function() { // Adds dont respawn, instead, I use the function to remove a mob from add array on death
-                const index = array.indexOf(this.id);
-                if (index > -1) { 
-                    parent.addArray.splice(index, 1); 
-                }
-            }); 
+            add.handleRespawn = function() { return; };// Adds dont respawn
+            add.onDetachFromParent(self.onDetachFromParentCallback.bind(self))
             add.onMove(self.onMobMoveCallback.bind(self));
             add.onExitCombat(self.onMobExitCombatCallback.bind(self));
             self.addMob(add);
@@ -1193,7 +1190,8 @@ module.exports = World = cls.Class.extend({
     spawnFieldAdd: function(parent, fieldKind, x, y) {
         if(parent.addArray.length < 15) { // Limit amount of adds to 15 to prevent any funny business
             let self = this;
-            field = self.addFieldEffect(fieldKind, parent.x, parent.y);
+            field = self.addFieldEffect(fieldKind, x, y);
+            field.parentId = parent.id;
             parent.addArray.push(field);
         }
     },
@@ -1207,6 +1205,16 @@ module.exports = World = cls.Class.extend({
                 }
             mob.addArray = [];
             });
+        }
+    },
+
+    onDetachFromParentCallback: function(parentId, child) {
+        let parent = this.getEntityById(parentId);
+        if (parent !== undefined) {
+            const index = parent.addArray.indexOf(child);
+                if (index > -1) { 
+                    parent.addArray.splice(index, 1); 
+                }
         }
     }
 
