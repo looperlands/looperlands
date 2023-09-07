@@ -418,6 +418,31 @@ WS.socketIOServer = Server.extend({
             }
         });
 
+        app.get("/session/:sessionId/completedQuest/:questId", async (req, res) => {
+            const sessionId = req.params.sessionId;
+            const questId = req.params.questId;
+
+            const sessionData = cache.get(sessionId);
+            if (sessionData === undefined) {
+                //console.error("Session data is undefined for session id, params: ", sessionId, req.params);
+                res.status(404).json({
+                    status: false,
+                    "error" : "session not found",
+                    user: null
+                });
+            } else {
+                let questStatus = sessionData?.gameData?.quests;
+                if(questStatus === undefined || !questStatus) {
+                    res.status(200).json(false);
+                }
+
+                let completed = (_.findIndex(questStatus.COMPLETED, {questID: questId}) !== -1);
+                res.status(200).json(completed);
+
+                return;
+            }
+        });
+
         app.get("/:mapId/player/:playerId/owns/:nftId", async (req, res) => {
             const mapId = req.params.mapId;
             const playerId = req.params.playerId;
