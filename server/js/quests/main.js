@@ -60,14 +60,14 @@ quests = [
     {
         id: "COB_RED_SLIMES",
         name: "Still finding the lucky clover",
-        startText: "Ohh now don't be mad at me! Yellow, red... it's all the same! If you kill 60, surely one of them has to have it.",
+        startText: "Ohh now don't be mad at me! Yellow, red... it's all the same! If you kill 60 red ones, surely one of them has to have it.",
         endText: "Where's the clover? Will we ever find it again?",
         eventType: "KILL_MOB",
         npc: Types.Entities.COBHILLSNPC,
         target: Types.Entities.COBSLIMERED,
         amount: 60,
         requiredQuest: "COB_YELLOW_SLIMES",
-        level: 6
+        level: 7
     },
     {
         id: "COB_RAINBOW_SLIME",
@@ -79,7 +79,7 @@ quests = [
         target: Types.Entities.COBCLOVER,
         amount: 1,
         requiredQuest: "COB_RED_SLIMES",
-        level: 8
+        level: 10
     },
 ]
 
