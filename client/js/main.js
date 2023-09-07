@@ -295,8 +295,8 @@ define(['jquery', 'app'], function($, App) {
     		    }
     		});
 	
-    		game.onAchievementUnlock(function(questName, endText, xpReward) {
-    		    app.unlockAchievement(questName, endText, xpReward);
+    		game.onAchievementUnlock(function(questName, endText, xpReward, medal) {
+    		    app.unlockAchievement(questName, endText, xpReward, medal);
     		});
 	
     		game.onNotification(function(message) {

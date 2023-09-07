@@ -3083,9 +3083,9 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     }
                 });
 
-                self.client.onQuestComplete(function(questName, endText, xpReward) {
-                    console.log("Completed Quest!", questName, endText, xpReward);
-                    self.showQuestCompleteNotification(questName, endText, xpReward);
+                self.client.onQuestComplete(function(questName, endText, xpReward, medal) {
+                    console.log("Completed Quest!", questName, endText, xpReward, medal);
+                    self.showQuestCompleteNotification(questName, endText, xpReward, medal);
                     setTimeout(function() {
                         self.infoManager.addDamageInfo("+"+xpReward+" XP", self.player.x, self.player.y - 15, "xp");
                     }, 200);
@@ -4025,9 +4025,9 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             this.unlock_callback = callback;
         },
 
-        showQuestCompleteNotification: function(questName, endText, xpReward) {
+        showQuestCompleteNotification: function(questName, endText, xpReward, medal) {
             if(this.unlock_callback) {
-                this.unlock_callback(questName, endText, xpReward);
+                this.unlock_callback(questName, endText, xpReward, medal);
                 this.audioManager.playSound("achievement");
             }            
         },

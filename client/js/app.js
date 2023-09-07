@@ -294,12 +294,12 @@ define(['jquery', 'storage'], function($, Storage) {
         	}
         },
 
-        showAchievementNotification: function(questName, endText, xpReward) {
+        showAchievementNotification: function(questName, endText, xpReward, medal) {
             var $notif = $('#achievement-notification'),
                 $name = $notif.find('.name'),
                 $button = $('#achievementsbutton');
 
-            $notif.removeClass().addClass('active achievement' + 1);
+            $notif.removeClass().addClass('active achievement' + medal);
             $name.text(questName);
             
             if(this.game.storage.getAchievementCount() === 1) {
@@ -323,8 +323,8 @@ define(['jquery', 'storage'], function($, Storage) {
             $achievement.addClass('unlocked');
         },
 
-        unlockAchievement: function(questName, endText, xpReward) {
-            this.showAchievementNotification(questName, endText, xpReward);
+        unlockAchievement: function(questName, endText, xpReward, medal) {
+            this.showAchievementNotification(questName, endText, xpReward, medal);
         },
 
         initAchievementList: function(achievements) {
