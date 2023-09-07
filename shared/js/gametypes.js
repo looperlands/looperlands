@@ -1677,6 +1677,29 @@ Types = {
         DOWN: 2,
         LEFT: 3,
         RIGHT: 4
+    },
+
+    Medals: {
+        SWORD: 1,
+        TREE: 2,
+        RAT: 3,
+        TALK: 4,
+        ARMOR: 5,
+        CAVE: 6,
+        SEA: 7,
+        RUN: 8,
+        TOMB: 9,
+        SKULL: 10,
+        NINJA: 11,
+        CACTUS: 12,
+        BOW: 13,
+        HEARTH: 14,
+        SHIELD: 15,
+        HOT: 16,
+        HERO: 17,
+        FOX: 18,
+        CACE: 19,
+        MIC: 20
     }
 };
 
