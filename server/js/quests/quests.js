@@ -1,6 +1,7 @@
 const dao = require('../dao.js');
 
 const main = require('./main.js');
+const cobsfarm = require('./cobsfarm.js');
 
 const STATES = {
   IN_PROGRESS: "IN_PROGRESS", // picked up from an NPC
@@ -9,7 +10,7 @@ const STATES = {
 }
 
 // Put new quests from other files here
-let maps = [main.quests]
+let maps = [main.quests, cobsfarm.quests];
 
 function findDuplicateValues(arr) {
   const frequencyMap = {};

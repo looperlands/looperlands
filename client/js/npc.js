@@ -213,13 +213,20 @@ define(['character'], function (Character) {
         "cobhillsnpc": [
             "Slimes...",
             "Slimes everywhere!",
-            "They do look quite pretty, though..."
+            "They do look quite pretty, though."
         ],
 
         "coblumberjack": [
             "Come, get yourself warm by the fire!",
-            "The ghosts haunt this forest",
+            "The ghosts haunt this forest...",
             "But the campfire keeps them away!"
+        ],
+
+        "cobcobmin": [
+            "Welcome to Cob's Farm, traveler!",
+            "View our scenic farms, admire vibrant flowers, and animals.",
+            "If adventure calls, our dungeons are rife with monsters and rewards.",
+            "Cob's Farm offers beauty and valor for everyone."
         ]
     };
 

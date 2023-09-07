@@ -126,10 +126,10 @@ define(['item'], function(Item) {
             },
         }),
 
-        Cobmilk: Item.extend({
+        Cobcorn: Item.extend({
             init: function(id) {
-                this._super(id, Types.Entities.COBMILK, "object");
-                this.lootMessage = "It's milk time!";
+                this._super(id, Types.Entities.COBCORN, "object");
+                this.lootMessage = "It's corn time!";
             },
 
             onLoot: function(player) {

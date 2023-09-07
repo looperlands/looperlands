@@ -1,13 +1,13 @@
 {
 	"id": "cobhillsnpc",
-	"width": 15,
-	"height": 30,
+	"width": 24,
+	"height": 24,
 	"animations": {
 		"idle_down": {
-			"length": 1,
+			"length": 2,
 			"row": 0
 		}
 	},
-	"offset_x": 0,
-	"offset_y": -7
+	"offset_x": -4,
+	"offset_y": -4
 }
