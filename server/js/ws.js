@@ -372,6 +372,10 @@ WS.socketIOServer = Server.extend({
                     }
                 });
                 _.each(quests?.questsByID, function (quest) {
+                    if(_.findIndex(questStatus.COMPLETED, {questID: quest.id}) !== -1) {
+                        return;
+                    }
+
                     if (_.findIndex(questStatus.IN_PROGRESS, {questID: quest.id}) !== -1) {
                         availableQuests.push({
                             id: quest.id,
