@@ -34,7 +34,8 @@ quests = [
         npc: Types.Entities.COBLUMBERJACK,
         target: Types.Entities.COBLOG,
         amount: 20,
-        level: 10
+        level: 10,
+        medal: Types.Medals.TREE
     },
     {
         id: "COB_BLUE_SLIMES",
@@ -45,7 +46,8 @@ quests = [
         npc: Types.Entities.COBHILLSNPC,
         target: Types.Entities.COBSLIMEBLUE,
         amount: 20,
-        level: 2
+        level: 2,
+        medal: Types.Medals.SKULL
     },
     {
         id: "COB_YELLOW_SLIMES",
@@ -57,7 +59,8 @@ quests = [
         target: Types.Entities.COBSLIMEYELLOW,
         amount: 40,
         requiredQuest: "COB_BLUE_SLIMES",
-        level: 4
+        level: 4,
+        medal: Types.Medals.SKULL
     },
     {
         id: "COB_RED_SLIMES",
@@ -69,7 +72,8 @@ quests = [
         target: Types.Entities.COBSLIMERED,
         amount: 60,
         requiredQuest: "COB_YELLOW_SLIMES",
-        level: 7
+        level: 7,
+        medal: Types.Medals.SKULL
     },
     {
         id: "COB_RAINBOW_SLIME",
@@ -81,7 +85,8 @@ quests = [
         target: Types.Entities.COBCLOVER,
         amount: 1,
         requiredQuest: "COB_RED_SLIMES",
-        level: 10
+        level: 10,
+        medal: Types.Medals.SKULL
     },
 ]
 
