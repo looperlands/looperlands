@@ -1592,6 +1592,24 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 "NFT_e1560271c64e9e5c2aea0c22bb453f44757ca051d64aff06109d61c04f247e9f",
                                 "NFT_ee2469571e12a7c68b9994e733293fca9ac914229832b80d664c99d839cdd13d",
                                 "NFT_f7963a5820449562de7b0ce34aa8c4b776e0f001abd31950be22401f30afdee6",
+                                "NFT_3270efc4a5a214b73e4e105758f2d9e845c85402305df960e74cd0c27d3763c2",
+                                "NFT_841534f22386f885ca714d497a2a7e5e4f2769031c764da3f57df43a5c9a6d57",
+                                "NFT_ddda259f16959a3c9fe0d843e6384c5a082cd3c0e959f68cd4906569c551ee0a",
+                                "NFT_14551acc40de0d345c4fa3c22bb2889615464026781dfdaf0bd09f140afb2001",
+                                "NFT_196c957e6b2fe39c0b17daa69d0b034f4bb7af0453d9c301adc8aa250f7db9cb",
+                                "NFT_200f0023f44ed5b16b20f728492d9e3ef2c130137c3d05264ebd87ceb782d319",
+                                "NFT_3c501fe4f504eba90811278f5ee709aa8eb20ba84d5d43530771456f18fdcae8",
+                                "NFT_5964b6aa3a0c633d67b9cb85a8eef260cad2992d62c1aa9864206b9a1867f009",
+                                "NFT_7f748b973dfdcf18215614d6e3bed9e0f07b29714129e1cc2baecabd6c119c90",
+                                "NFT_8c5a098db2627efc27d19b6386ec397c64f32c67d378ec46296791772d55cb34",
+                                "NFT_9f1c56638b599ba0d70ec758ae38ff6b1c5b5b757e7362fa8db4708513c14105",
+                                "NFT_ab93b35bbe5c45bc1c300bbd623ab471ca3b217a7ae07deb4e0867dc6c0917c5",
+                                "NFT_ca94a77471b5c96f476b414b5cbf94303a1e8d656b93cfe9436bca0aa5dc294a",
+                                "NFT_e1ab2087db33f161f05850308d415bd8f4266712e82cffe3fc25ee7fc39021a1",
+                                "NFT_3ec7322a7086c3007c06955a569fc42a31024739d7b68fdf184354cbb43af0c8",
+                                "NFT_30174e331276b6fd24b4e87293578a9db7ecd335ace3cfb00585f2c7e7c98093",
+                                "NFT_b4299bf19b8d950a6924afc3b836b6c30ceb8225f9544ec75b06127f9d131a64",
+                                "NFT_f8d9fda6a74135dd3fd458b19d2e4d2a9b6a8b8ce875a86d25bc994228b97023",
                                 // @nextSpriteLine@
                             ];                          
         },
@@ -1693,147 +1711,32 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             self.sprites["chest"].createSilhouette();
             self.sprites["item-cake"].createSilhouette();
         },
-    
+
         initAchievements: function() {
             var self = this;
-        
-            this.achievements = {
-                A_TRUE_WARRIOR: {
-                    id: 1,
-                    name: "A True Warrior",
-                    desc: "Find a new weapon"
-                },
-                INTO_THE_WILD: {
-                    id: 2,
-                    name: "Into the Wild",
-                    desc: "Venture outside the village"
-                },
-                ANGRY_RATS: {
-                    id: 3,
-                    name: "Angry Rats",
-                    desc: "Kill 10 rats",
-                    isCompleted: function() {
-                        return self.storage.getRatCount() >= 10;
+            var questLogUrl = "/session/" + self.sessionId + "/quests";
+            axios.get(questLogUrl).then(function(response) {
+                self.achievements = response.data
+                let unlockedAchievements = [];
+
+                _.each(self.achievements, function(obj) {
+                    if(!obj.hidden) {
+                        obj.hidden = false;
                     }
-                },
-                SMALL_TALK: {
-                    id: 4,
-                    name: "Small Talk",
-                    desc: "Talk to a non-player character"
-                },
-                FAT_LOOT: {
-                    id: 5,
-                    name: "Fat Loot",
-                    desc: "Get a new armor set"
-                },
-                UNDERGROUND: {
-                    id: 6,
-                    name: "Underground",
-                    desc: "Explore at least one cave"
-                },
-                AT_WORLDS_END: {
-                    id: 7,
-                    name: "At World's End",
-                    desc: "Reach the south shore"
-                },
-                COWARD: {
-                    id: 8,
-                    name: "Coward",
-                    desc: "Successfully escape an enemy"
-                },
-                TOMB_RAIDER: {
-                    id: 9,
-                    name: "Tomb Raider",
-                    desc: "Find the graveyard"
-                },
-                SKULL_COLLECTOR: {
-                    id: 10,
-                    name: "Skull Collector",
-                    desc: "Kill 10 skeletons",
-                    isCompleted: function() {
-                        return self.storage.getSkeletonCount() >= 10;
+
+                    if(obj.status === 'COMPLETED') {
+                        unlockedAchievements.push(obj.id);
                     }
-                },
-                NINJA_LOOT: {
-                    id: 11,
-                    name: "Ninja Loot",
-                    desc: "Get hold of an item you didn't fight for"
-                },
-                NO_MANS_LAND: {
-                    id: 12,
-                    name: "No Man's Land",
-                    desc: "Travel through the desert"
-                },
-                HUNTER: {
-                    id: 13,
-                    name: "Hunter",
-                    desc: "Kill 50 enemies",
-                    isCompleted: function() {
-                        return self.storage.getTotalKills() >= 50;
-                    }
-                },
-                STILL_ALIVE: {
-                    id: 14,
-                    name: "Still Alive",
-                    desc: "Revive your character five times",
-                    isCompleted: function() {
-                        return self.storage.getTotalRevives() >= 5;
-                    }
-                },
-                MEATSHIELD: {
-                    id: 15,
-                    name: "Meatshield",
-                    desc: "Take 5,000 points of damage",
-                    isCompleted: function() {
-                        return self.storage.getTotalDamageTaken() >= 5000;
-                    }
-                },
-                HOT_SPOT: {
-                    id: 16,
-                    name: "Hot Spot",
-                    desc: "Enter the volcanic mountains"
-                },
-                HERO: {
-                    id: 17,
-                    name: "Hero",
-                    desc: "Defeat the final boss"
-                },
-                FOXY: {
-                    id: 18,
-                    name: "Foxy",
-                    desc: "Find the Firefox costume",
-                    hidden: true
-                },
-                FOR_SCIENCE: {
-                    id: 19,
-                    name: "For Science",
-                    desc: "Enter into a portal",
-                    hidden: true
-                },
-                RICKROLLD: {
-                    id: 20,
-                    name: "Rickroll'd",
-                    desc: "Take some singing lessons",
-                    hidden: true
-                }
-            };
-        
-            _.each(this.achievements, function(obj) {
-                if(!obj.isCompleted) {
-                    obj.isCompleted = function() { return true; }
-                }
-                if(!obj.hidden) {
-                    obj.hidden = false;
+                });
+
+                self.app.initAchievementList(self.achievements);
+
+                if(self.storage.hasAlreadyPlayed()) {
+                    self.app.initUnlockedAchievements(unlockedAchievements);
                 }
             });
-        
-            this.app.initAchievementList(this.achievements);
-        
-            if(this.storage.hasAlreadyPlayed()) {
-                this.app.initUnlockedAchievements(this.storage.data.achievements.unlocked);
-            }
         },
-    
+
         getAchievementById: function(id) {
             var found = null;
             _.each(this.achievements, function(achievement, key) {
@@ -2594,6 +2497,20 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                     checkTrigger();
                                 } else {
                                     _self.showNotification(dest.item_message ? dest.item_message : (dest.message ? dest.message : "You do not have the required item to enter."));
+                                }
+                            }).catch(function (error) {
+                                console.error("Error while checking ownership of token gate.");
+                            }).finally(function(e) {
+                                _self.doorCheck = false;
+                            });
+                        } else if (dest.quest !== undefined) {
+                            let url = '/session/' + self.sessionId + '/completedQuest/' + dest.quest;
+                            _self.doorCheck = true;
+                            axios.get(url).then(function (response) {
+                                if (response.data === true) {
+                                    checkTrigger();
+                                } else {
+                                    _self.showNotification(dest.quest_message ? dest.quest_message : (dest.message ? dest.message : "You did not complete the quest yet."));
                                 }
                             }).catch(function (error) {
                                 console.error("Error while checking ownership of token gate.");

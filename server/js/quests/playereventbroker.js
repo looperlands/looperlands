@@ -62,6 +62,11 @@ class PlayerEventBroker {
         let sessionId = this.player.sessionId;
         let playerCache = this.cache.get(sessionId);
         let gameData = playerCache.gameData;
+
+        if (gameData.items === undefined) {
+            gameData.items = {};
+        }
+
         let itemCount = gameData.items[item.kind];
         if (itemCount) {
             gameData.items[item.kind] = itemCount + 1;
@@ -81,6 +86,9 @@ class PlayerEventBroker {
         let playerCache = this.cache.get(sessionId);
         let gameData = playerCache.gameData;
 
+        if (gameData.mobKills === undefined) {
+            gameData.mobKills = {};
+        }
 
         let killCount = gameData.mobKills[mob.kind]
         if (killCount) {

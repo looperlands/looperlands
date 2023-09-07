@@ -9,7 +9,8 @@ quests = [
         npc: Types.Entities.KING,
         target: Types.Entities.RAT,
         amount: 100,
-        level: 1
+        level: 1,
+        medal: Types.Medals.RAT
     },
     {
         id: "KING_QUEST_2",
@@ -21,7 +22,8 @@ quests = [
         target: Types.Entities.FLASK,
         amount: 100,
         requiredQuest: "KING_QUEST_1",
-        level: 1
+        level: 1,
+        medal: Types.Medals.HEARTH
     },
     {
         id: "COB_COLLECT_LOGS",

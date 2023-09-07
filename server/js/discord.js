@@ -25,10 +25,10 @@ sendMessage = (message) => {
         try {
             channel.send(message);
         } catch (e) {
-            console.log(message, e);
+            //console.log(message, e);
         }
     } catch (e) {
-        console.log(e);
+        //console.log(e);
     }
 }
 
@@ -41,15 +41,15 @@ exports.sendToDevChannel = (message) => {
         try {
             channel.send(message);
         } catch (e) {
-            console.log(message, e);
+            //console.log(message, e);
         }
     } catch (e) {
-        console.log(e);
+        //console.log(e);
     }
 }
 
 try {
     client.login(process.env.DISCORD_TOKEN);
 } catch (e) {
-    console.log(e);
+    // console.log(e);
 }

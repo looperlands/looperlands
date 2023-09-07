@@ -281,7 +281,9 @@ module.exports = World = cls.Class.extend({
     pushToPlayer: function(player, message) {
         let playerIdInQueue =  player.id in this.outgoingQueues;
         if(player && playerIdInQueue) {
-            this.outgoingQueues[player.id].push(message.serialize());
+            if (message !== undefined) {
+                this.outgoingQueues[player.id].push(message.serialize());
+            }
         } else {
             console.error("pushToPlayer: player was undefined", player, playerIdInQueue, message);
         }
