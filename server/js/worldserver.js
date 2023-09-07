@@ -18,7 +18,8 @@ var cls = require("./lib/class"),
     Utils = require("./utils"),
     Types = require("../../shared/js/gametypes"),
     dao = require("./dao.js"),
-    discord = require("./discord.js");
+    discord = require("./discord.js"),
+    Fieldeffect = require('./fieldeffect');
 
 // ======= GAME SERVER ========
 
@@ -43,8 +44,10 @@ module.exports = World = cls.Class.extend({
         this.npcs = {};
         this.mobAreas = [];
         this.chestAreas = [];
+        this.triggerAreas = {};
         this.groups = {};
         this.doorTriggers = {};
+        this.fieldEffects = {};
         
         this.outgoingQueues = {};
         
@@ -159,7 +162,7 @@ module.exports = World = cls.Class.extend({
         this.map.ready(function() {
             self.initZoneGroups();
             self.initDoorTriggers();
-            
+
             self.map.generateCollisionGrid();
             
             // Populate all mob "roaming" areas
@@ -177,13 +180,22 @@ module.exports = World = cls.Class.extend({
                 self.chestAreas.push(area);
                 area.onEmpty(self.handleEmptyChestArea.bind(self, area));
             });
+
+            // Create all trigger areas
+            _.each(self.map.triggers, function(a) {
+                var area = new Area(a.id, a.x, a.y, a.w, a.h, self);
+                area.trigger = a.trigger;
+                area.message = a.message;
+                area.delay = a.delay;
+                self.triggerAreas[a.id] = area;
+            });
             
             // Spawn static chests
             _.each(self.map.staticChests, function(chest) {
                 var c = self.createChest(chest.x, chest.y, chest.i);
                 self.addStaticItem(c);
             });
-            
+
             // Spawn static entities
             self.spawnStaticEntities();
             
@@ -269,7 +281,9 @@ module.exports = World = cls.Class.extend({
     pushToPlayer: function(player, message) {
         let playerIdInQueue =  player.id in this.outgoingQueues;
         if(player && playerIdInQueue) {
-            this.outgoingQueues[player.id].push(message.serialize());
+            if (message !== undefined) {
+                this.outgoingQueues[player.id].push(message.serialize());
+            }
         } else {
             console.error("pushToPlayer: player was undefined", player, playerIdInQueue, message);
         }
@@ -369,6 +383,7 @@ module.exports = World = cls.Class.extend({
         if(entity.type === "mob") {
             this.clearMobAggroLink(entity);
             this.clearMobHateLinks(entity);
+            this.despawnAllAdds(entity);
         }
         
         entity.destroy();
@@ -391,6 +406,7 @@ module.exports = World = cls.Class.extend({
         this.removeEntity(player);
         delete this.players[player.id];
         delete this.outgoingQueues[player.id];
+        player.playerEventBroker.destroy();
     },
     
     addMob: function(mob) {
@@ -411,6 +427,17 @@ module.exports = World = cls.Class.extend({
         this.items[item.id] = item;
         
         return item;
+    },
+
+    addFieldEffect: function(kind, x, y) {
+        const self = this;
+
+        var fieldEffect = new Fieldeffect('4'+x+''+y+''+kind, kind, x, y);
+        this.addEntity(fieldEffect);
+        this.fieldEffects[fieldEffect.id] = fieldEffect;
+        fieldEffect.initDamageCallback(self.doAoe.bind(self));
+        
+        return fieldEffect;
     },
 
     createItem: function(kind, x, y) {
@@ -597,7 +624,7 @@ module.exports = World = cls.Class.extend({
                 // Distribute exp first, so the multiplier doesnt apply to this kill (that would be OP)
                 this.handleExpMultiplierOnDeath(mob);
                 if (attacker.type === 'player') {
-                    dao.saveMobKillEvent(attacker.nftId, mob.kind);
+                    attacker.playerEventBroker.killMobEvent(mob);
                 }
             }
     
@@ -636,6 +663,9 @@ module.exports = World = cls.Class.extend({
             
             if(Types.isNpc(kind)) {
                 self.addNpc(kind, pos.x + 1, pos.y);
+            }
+            if(Types.isFieldEffect(kind)) {
+                self.addFieldEffect(kind, pos.x + 1, pos.y);
             }
             if(Types.isMob(kind)) {
                 var mob = new Mob('7' + kind + count++, kind, pos.x + 1, pos.y);
@@ -895,7 +925,7 @@ module.exports = World = cls.Class.extend({
             this.handleItemDespawn(chest);
         }
     },
-    
+
     handleOpenedChest: function(chest, player) {
         this.pushToAdjacentGroups(chest.group, chest.despawn());
         this.removeEntity(chest);
@@ -998,7 +1028,7 @@ module.exports = World = cls.Class.extend({
 
                     entityIds.forEach(function(id) {
                         let nearbyEntity = group.entities[id];
-                        if (nearbyEntity.type !== undefined && nearbyEntity.type === 'player') {
+                        if (nearbyEntity !== undefined && nearbyEntity.type === 'player') {
                             let distance = Utils.distanceTo(mob.x, mob.y, nearbyEntity.x, nearbyEntity.y);
                             if (distance <= aoeRange) {
                                 nearbyEntity.handleHurt(mob, aoeDamage);
@@ -1054,7 +1084,7 @@ module.exports = World = cls.Class.extend({
                 let killersList = "";
                 mob.dmgTakenArray.forEach( function(arrElem) { 
                     let killer = self.getEntityById(arrElem.id);
-                    if (killer.type !== undefined && killer.type === "player") {
+                    if (killer !== undefined && killer.type === "player") {
                         if (killersList !== "") {killersList += ", "};
                         killersList += killer.name;
                     }
@@ -1075,15 +1105,47 @@ module.exports = World = cls.Class.extend({
                     let kind = Types.getKindAsString(mob.kind);
                     let msg = Properties[kind].messages[Utils.random(Properties[kind].messages.length)]; // Fetch random message from properties
                     self.pushToGroup(mob.group, new Messages.Chat(mob, msg), false); // Warn players Special incoming
-
                     self.pushToGroup(mob.group, new Messages.MobDoSpecial(mob), false);
                     setTimeout(function() {
-                        self.doAoe(mob);
-                        }, 2000); // Change this duration also in client/mobs.js
+                        if(mob !== undefined) {
+                            self.doAoe(mob);
+                            let target = self.getEntityById(mob.target);
+                            if (target !== undefined){
+                                self.spawnFieldAdd(mob, Types.getKindFromString("magcrack"), target.x, target.y);
+                            } else {
+                                self.spawnFieldAdd(mob, Types.getKindFromString("magcrack"), mob.x, mob.y);
+                            }
+                        }
+                    }, 2000); // Change this duration also in client/mobs.js
                 }, Types.timeouts[Types.Entities.MEGAMAG]);
             }   
         }
         //END Megamag
+
+        //Slime king (random slime spawn)
+        if (mob.kind === Types.Entities.COBSLIMEKING) {
+            let self = this;
+            if (mob.specialInterval == null) {
+                mob.specialInterval = setInterval(function() {
+                    let slimeType = Utils.random(3);
+                    let slimeKind;
+                    switch (slimeType) {
+                        case 0:
+                            slimeKind = Types.getKindFromString("cobslimeblue");
+                            break;
+                        case 1:
+                            slimeKind = Types.getKindFromString("cobslimeyellow");
+                            break;
+                        case 2:
+                            slimeKind = Types.getKindFromString("cobslimered");
+                            break;
+                    }
+                    self.spawnMobAdd(mob, slimeKind, mob.x, mob.y);
+                    self.pushToGroup(mob.group, new Messages.MobDoSpecial(mob), false);
+                }, Types.timeouts[Types.Entities.COBSLIMEKING]);
+            }   
+        }
+        //END Slime king 
     },
 
     checkTriggerActive: function(triggerId) {
@@ -1094,19 +1156,69 @@ module.exports = World = cls.Class.extend({
     activateTrigger: function(triggerId) {
         if (this.doorTriggers.hasOwnProperty(triggerId)) {
             this.doorTriggers[triggerId] = true;
-            console.log("Trigger " + triggerId + " activated!");
         }
     },
 
     deactivateTrigger: function(triggerId) {
         if (this.doorTriggers.hasOwnProperty(triggerId)) {
             this.doorTriggers[triggerId] = false;
-            console.log("Trigger " + triggerId + " deactivated!");
         }
     },
 
     onMobExitCombatCallback: function(mob) {
         this.pushToAdjacentGroups(mob.group, new Messages.MobExitCombat(mob));
+        mob.clearSpecialInterval();
+        this.despawnAllAdds(mob);
+    },
+
+    spawnMobAdd: function(parent, childKind, x, y) {
+        if(parent.addArray.length < 15) { // Limit amount of adds to 15 to prevent any funny business
+            let self = this;
+            let add = new Mob(parent.id + '' + childKind + '' + parent.addArray.length, childKind, x, y);
+            add.parentId = parent.id;
+            parent.addArray.push(add);
+            add.handleRespawn = function() { return; };// Adds dont respawn
+            add.onDetachFromParent(self.onDetachFromParentCallback.bind(self))
+            add.onMove(self.onMobMoveCallback.bind(self));
+            add.onExitCombat(self.onMobExitCombatCallback.bind(self));
+            self.addMob(add);
+            // Add spawns in player destination (his x,y), not current position! Therefore we instantly aggro the mob to prevent kiting out of aggro range
+            self.handleMobHate(add.id, parent.target, 5); 
+        }
+    },
+
+    spawnFieldAdd: function(parent, fieldKind, x, y) {
+        if(parent.addArray.length < 15) { // Limit amount of adds to 15 to prevent any funny business
+            let self = this;
+            field = self.addFieldEffect(fieldKind, x, y);
+            field.parentId = parent.id;
+            parent.addArray.push(field);
+        }
+    },
+
+    despawnAllAdds: function(mob) {
+        let self = this;
+        if (mob.addArray.length > 0) {
+            mob.addArray.forEach((add) => {
+                if (add !== undefined){
+                    self.despawn(add);
+                }
+            mob.addArray = [];
+            });
+        }
+    },
+
+    onDetachFromParentCallback: function(parentId, child) {
+        let parent = this.getEntityById(parentId);
+        if (parent !== undefined) {
+            const index = parent.addArray.indexOf(child);
+                if (index > -1) { 
+                    parent.addArray.splice(index, 1); 
+                }
+        }
     }
 
 });
+
+
+

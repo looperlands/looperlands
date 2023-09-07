@@ -5,10 +5,15 @@ EXPOSE 8000
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt -y update
 RUN apt -q -y install curl
+ENV NVM_DIR /usr/local/nvm
+ENV NODE_VERSION v18.17.1
+RUN mkdir -p /usr/local/nvm && apt-get update && echo "y" | apt-get install curl
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+RUN /bin/bash -c "source $NVM_DIR/nvm.sh && nvm install $NODE_VERSION && nvm use --delete-prefix $NODE_VERSION"
+ENV NODE_PATH $NVM_DIR/versions/node/$NODE_VERSION/bin
+ENV PATH $NODE_PATH:$PATH
 RUN apt-get update -yq \
     && apt-get install curl gnupg python2 -yq \
-    && curl -sL https://deb.nodesource.com/setup_16.x | bash \
-    && apt-get install nodejs -yq \
     && apt-get install python3 -yq \
     && curl https://bootstrap.pypa.io/pip/2.7/get-pip.py --output get-pip.py \
     && python2 get-pip.py \

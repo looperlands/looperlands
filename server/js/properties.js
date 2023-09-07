@@ -269,10 +269,47 @@ var Properties = {
     },
 
     ghostie: {
+        level: 10,
+        drops: {
+            cobapple: 50,
+            cobmilk: 10
+        },
+        armorMod: 0.75,
+        hpMod: 0.75
+    },
+
+    cobslimered: {
         level: 6,
         drops: {
-            flask: 50
+            cobapple: 20,
+            cobmilk: 10
         }
+    },
+
+    cobslimeyellow: {
+        level: 4,
+        drops: {
+            cobapple: 30
+        }
+    },
+
+    cobslimeblue: {
+        level: 2,
+        drops: {
+            cobapple: 20
+        }
+    },
+
+    cobslimeking: {
+        level: 8,
+        drops: {
+            cobclover: 100
+        },
+        armorMod: 1.25,
+        weaponMod: 2,
+        hpMod: 10,
+        xp: 2500,  
+        respawnDelay: 300000
     },
 
     alaric: {
@@ -293,9 +330,25 @@ var Properties = {
         armor: 1,
         weapon: 1,
         friendly: true
+    },
+
+    cobcat: {
+        level: 1,
+        friendly: true
+    },
+
+    cobyorkie: {
+        level: 1,
+        friendly: true
+    },
+
+    //Field effects
+    magcrack: {
+        aoe: {
+            damage: 175,
+            range: 1
+        }
     }
-
-
 };
 
 Properties.getArmorLevel = function(kind, levelOffset) {

@@ -25,3 +25,4 @@ jobs:
           git pull
           docker-compose build
           sudo systemctl restart looperlands
+          docker system prune -af

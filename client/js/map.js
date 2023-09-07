@@ -161,6 +161,7 @@ define(['jquery', 'area'], function($, Area) {
             this.animated = map.animated;
             
             this.doors = this._getDoors(map);
+            this.triggers = this._getTriggers(map);
             this.checkpoints = this._getCheckpoints(map);
         },
     
@@ -194,10 +195,28 @@ define(['jquery', 'area'], function($, Area) {
                     map: door.tmap,
                     triggerId: door.ttid,
                     item: door.titem,
+                    quest: door.tquest,
+                    message: door.tmessage,
+                    trigger_message: door.ttrigger_message,
+                    nft_message: door.tnft_message,
+                    item_message: door.titem_message,
+                    quest_message: door.tquest_message
                 };
             });
         
             return doors;
+        },
+
+        _getTriggers: function(map) {
+            var self = this;
+            var triggers = {};
+            _.each(map.triggers, function(trigger) {
+                var area = new Area(trigger.x, trigger.y, trigger.w, trigger.h);
+                area.id = trigger.id;
+                area.message = trigger.message;
+                triggers[self.GridPositionToTileIndex(trigger.x, trigger.y)] = area;
+            });
+            return triggers;
         },
 
         _loadTileset: function(filepath) {
@@ -375,7 +394,7 @@ define(['jquery', 'area'], function($, Area) {
         isDoor: function(x, y) {
             return this.doors[this.GridPositionToTileIndex(x, y)] !== undefined;
         },
-    
+
         getDoorDestination: function(x, y) {
             return this.doors[this.GridPositionToTileIndex(x, y)];
         },
@@ -393,6 +412,12 @@ define(['jquery', 'area'], function($, Area) {
         getCurrentCheckpoint: function(entity) {
             return _.detect(this.checkpoints, function(checkpoint) {
                 return checkpoint.contains(entity);
+            });
+        },
+
+        getCurrentTrigger: function(entity) {
+            return _.detect(this.triggers, function(trigger) {
+                return trigger.contains(entity);
             });
         },
 

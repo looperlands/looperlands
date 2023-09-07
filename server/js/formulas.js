@@ -101,6 +101,12 @@ Formulas.level = function (experience) {
     return level;
 };
 
+Formulas.xpPercentageOfLevel = function(level, percent) {
+    let xp = EXPERIENCE_MAP[level + 1] * percent/100.0;
+    xp = Math.round(xp);
+    return xp;
+}
+
 
 Formulas.calculatePercentageToNextLevel = function (experience) {
     const currentLevel = Formulas.level(experience);

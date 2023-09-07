@@ -38,6 +38,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             this.handlers[Types.Messages.BLINK] = this.receiveBlink;
             this.handlers[Types.Messages.MOBDOSPECIAL] = this.receiveMobDoSpecial;
             this.handlers[Types.Messages.MOBEXITCOMBAT] = this.receiveMobExitCombat;
+            this.handlers[Types.Messages.QUEST_COMPLETE] = this.receieveQuestComplete;
         
             this.useBison = false;
             this.enable();
@@ -220,6 +221,12 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
                 if(this.spawn_chest_callback) {
                     this.spawn_chest_callback(item, x, y);
                 }
+            } else if(Types.isFieldEffect(kind)) {
+                var fieldEffect = EntityFactory.createEntity(kind, id);
+            
+                if(this.spawn_fieldEffect_callback) {
+                    this.spawn_fieldEffect_callback(fieldEffect, x, y);
+                }
             } else {
                 var name, orientation, target, weapon, armor, title, level;
             
@@ -398,6 +405,16 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
                 this.mobExitCombat_callback(id);
             }
         },
+
+        receieveQuestComplete: function(data) {
+            let questName = data[1],
+                endText = data[2],
+                xpReward = data[3];
+
+            if (this.questComplete_callback) {
+                this.questComplete_callback(questName, endText, xpReward);
+            }
+        },
         
         onDispatched: function(callback) {
             this.dispatched_callback = callback;
@@ -425,6 +442,10 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
     
         onSpawnChest: function(callback) {
             this.spawn_chest_callback = callback;
+        },
+
+        onSpawnFieldEffect: function(callback) {
+            this.spawn_fieldEffect_callback = callback;
         },
 
         onDespawnEntity: function(callback) {
@@ -497,6 +518,10 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
 
         onMobExitCombat: function(callback) {
             this.mobExitCombat_callback = callback;
+        },
+
+        onQuestComplete: function(callback) {
+            this.questComplete_callback = callback;
         },
 
         sendHello: function(player) {
@@ -573,6 +598,10 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
         sendCheck: function(id) {
             this.sendMessage([Types.Messages.CHECK,
                               id]);
+        },
+
+        sendTrigger: function(id, activated) {
+            this.sendMessage([Types.Messages.TRIGGER, id, activated]);
         },
 
         sendEquipInventory: function(kind, nftId) {

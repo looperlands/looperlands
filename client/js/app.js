@@ -238,6 +238,10 @@ define(['jquery', 'storage'], function($, Storage) {
         	}
             this.resetPage();
             $('#achievements').toggleClass('active');
+            if($('#achievements').hasClass('active')) {
+                this.currentPage = 1;
+                this.game.initAchievements()
+            }
         },
 
         resetPage: function() {
@@ -290,13 +294,14 @@ define(['jquery', 'storage'], function($, Storage) {
         	}
         },
 
-        showAchievementNotification: function(id, name) {
+        showAchievementNotification: function(questName, endText, xpReward) {
             var $notif = $('#achievement-notification'),
                 $name = $notif.find('.name'),
                 $button = $('#achievementsbutton');
 
-            $notif.removeClass().addClass('active achievement' + id);
-            $name.text(name);
+            $notif.removeClass().addClass('active achievement' + 1);
+            $name.text(questName);
+            
             if(this.game.storage.getAchievementCount() === 1) {
                 this.blinkInterval = setInterval(function() {
                     $button.toggleClass('blink');
@@ -318,12 +323,8 @@ define(['jquery', 'storage'], function($, Storage) {
             $achievement.addClass('unlocked');
         },
 
-        unlockAchievement: function(id, name) {
-            this.showAchievementNotification(id, name);
-            this.displayUnlockedAchievement(id);
-
-            var nb = parseInt($('#unlocked-achievements').text());
-            $('#unlocked-achievements').text(nb + 1);
+        unlockAchievement: function(questName, endText, xpReward) {
+            this.showAchievementNotification(questName, endText, xpReward);
         },
 
         initAchievementList: function(achievements) {
@@ -335,24 +336,23 @@ define(['jquery', 'storage'], function($, Storage) {
                 count = 0,
                 $p = null;
 
-            _.each(achievements, function(achievement) {
+            $('#achievements #lists').text('');
+
+            let reversed_achievements = Object.values(achievements).reverse()
+            _.each(reversed_achievements, function(achievement) {
                 count++;
     
                 var $a = $achievement.clone();
                 $a.removeAttr('id');
-                $a.addClass('achievement'+count);
+                $a.addClass('achievement'+achievement.medal);
+                if(achievement.status === 'COMPLETED') {
+                    $a.addClass('unlocked');
+                }
                 if(!achievement.hidden) {
                     self.setAchievementData($a, achievement.name, achievement.desc);
                 }
-                $a.find('.twitter').attr('href', 'http://twitter.com/share?url=https%3A%2F%2Floopworms.io%2FMetaverse%2F&text=I%20unlocked%20the%20achievement%20%27'+ achievement.name +'%27%20on%20%23LooperLands');
                 $a.show();
-                $a.find('a').click(function() {
-                     var url = $(this).attr('href');
 
-                    self.openPopup('twitter', url);
-                    return false;
-                });
-    
                 if((count - 1) % 4 === 0) {
                     page++;
                     $p = $page.clone();
@@ -360,10 +360,19 @@ define(['jquery', 'storage'], function($, Storage) {
                     $p.show();
                     $lists.append($p);
                 }
+
                 $p.append($a);
             });
 
-            $('#total-achievements').text($('#achievements').find('li').length);
+            let totalAchievements = $('#achievements').find('li').length;
+            $('#total-achievements').text(totalAchievements);
+            if(totalAchievements <= 4) {
+                $('#achievements #previous').hide();
+                $('#achievements #next').hide();
+            } else {
+                $('#achievements #previous').show();
+                $('#achievements #next').show();
+            }
         },
 
         initUnlockedAchievements: function(ids) {
@@ -378,6 +387,7 @@ define(['jquery', 'storage'], function($, Storage) {
         setAchievementData: function($el, name, desc) {
             $el.find('.achievement-name').html(name);
             $el.find('.achievement-description').html(desc);
+            $el.find('.achievement-description').attr('title', desc);
         },
 
         toggleCredits: function() {
