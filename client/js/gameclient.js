@@ -410,9 +410,10 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             let questName = data[1],
                 endText = data[2],
                 xpReward = data[3];
+                medal = data[4];
 
             if (this.questComplete_callback) {
-                this.questComplete_callback(questName, endText, xpReward);
+                this.questComplete_callback(questName, endText, xpReward, medal);
             }
         },
         

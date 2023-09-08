@@ -102,11 +102,13 @@ exports.handleNPCClick = function (cache, sessionId, npcId) {
       if (avatarDoesNotHaveQuest && avatarHasRequiredQuest) {
         dao.setQuestStatus(sessionData.nftId, questID, STATES.IN_PROGRESS);
         let inProgressQuests = sessionData.gameData.quests[STATES.IN_PROGRESS];
+        let questInCacheFormat = {questID: newQuest.id, status: STATES.IN_PROGRESS};
         if (!inProgressQuests) {
-          sessionData.gameData.quests[STATES.IN_PROGRESS] = [newQuest];
+          sessionData.gameData.quests[STATES.IN_PROGRESS] = [questInCacheFormat];
         } else {
-          sessionData.gameData.quests[STATES.IN_PROGRESS].push(newQuest);
+          sessionData.gameData.quests[STATES.IN_PROGRESS].push(questInCacheFormat);
         }
+
         msgText = newQuest.startText;
         break;
       }

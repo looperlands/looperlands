@@ -755,11 +755,17 @@ module.exports = Player = Character.extend({
     },
 
     handleCompletedQuests: function(completedQuests) {
+        if (this.completedQuestsIDs === undefined) {
+            this.completedQuestsIDs = [];
+        }
         for (quest of completedQuests) {
-            let xpReward = Formulas.xpPercentageOfLevel(quest.level, 5);
-            this.handleExperience(xpReward);
-            let msg = new Messages.QuestComplete(quest.name, quest.endText, xpReward);
-            this.server.pushToPlayer(this, msg);
+            if (!this.completedQuestsIDs.includes(quest.id)) {
+                let xpReward = Formulas.xpPercentageOfLevel(quest.level, 5);
+                this.handleExperience(xpReward);
+                let msg = new Messages.QuestComplete(quest.name, quest.endText, xpReward, quest.medal);
+                this.server.pushToPlayer(this, msg);
+                this.completedQuestsIDs.push(quest.id);
+            }
         }
     }
 });

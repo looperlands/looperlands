@@ -361,13 +361,28 @@ WS.socketIOServer = Server.extend({
 
             if(quests && questStatus) {
                 _.each(quests?.questsByID, function (quest) {
-                    if (_.findIndex(questStatus.IN_PROGRESS, {questID: quest.id}) !== -1 || _.findIndex(questStatus.COMPLETED, {questID: quest.id}) !== -1) {
+                    if (_.findIndex(questStatus.COMPLETED, {questID: quest.id}) !== -1) {
                         availableQuests.push({
                             id: quest.id,
                             name: quest.name,
                             desc: quest.startText,
                             medal: quest.medal,
-                            status: (_.findIndex(questStatus.COMPLETED, {questID: quest.id}) === -1) ? "IN_PROGRESS" : "COMPLETED"
+                            status: "COMPLETED"
+                        });
+                    }
+                });
+                _.each(quests?.questsByID, function (quest) {
+                    if(_.findIndex(questStatus.COMPLETED, {questID: quest.id}) !== -1) {
+                        return;
+                    }
+
+                    if (_.findIndex(questStatus.IN_PROGRESS, {questID: quest.id}) !== -1) {
+                        availableQuests.push({
+                            id: quest.id,
+                            name: quest.name,
+                            desc: quest.startText,
+                            medal: quest.medal,
+                            status: "IN_PROGRESS"
                         });
                     }
                 });
