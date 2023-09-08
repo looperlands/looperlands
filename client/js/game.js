@@ -2550,6 +2550,25 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                             }).finally(function(e) {
                                 _self.doorCheck = false;
                             });
+                        } else if (dest.collection !== undefined) {
+                            var url = '/session/' + self.sessionId + '/ownsNFTCollection/' + dest.collection;
+                            _self.doorCheck = true;
+                            axios.get(url).then(function (response) {
+                                let walletHasCollection = false;
+                                if (response.data[0] !== undefined) {
+                                    walletHasCollection = response.data[0].projectInWallet;
+                                }
+                                
+                                if (walletHasCollection === true) {
+                                    checkTrigger()
+                                } else {
+                                    _self.showNotification(dest.collection_message ? dest.collection_message : (dest.message ? dest.message : "You don't own the required NFT to enter."));
+                                }
+                            }).catch(function (error) {
+                                console.error("Error while checking ownership of token gate.");
+                            }).finally(function(e) {
+                                _self.doorCheck = false;
+                            });
                         } else {
                             checkTrigger();
                         }
