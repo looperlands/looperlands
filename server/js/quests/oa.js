@@ -2,13 +2,13 @@ Types = require("../../../shared/js/gametypes");
 quests = [
     {
         id: "OA_QUEST_1",
-        name: "The King's Kill Request",
-        startText: "The King has requested that you slay 100 rats.",
+        name: "Hushwind's Slimy Problem",
+        startText: "Ah, traveler! Hushwind used to be a peaceful place. But with King RC's absence, even simple creatures like slimes have grown aggressive, threatening our village. Could you assist us in reducing their numbers outside? It might buy us some time to figure out the larger threat looming over Looporia.",
         endText: "Thanks for killing the rats",
         eventType: "KILL_MOB",
-        npc: Types.Entities.KING,
-        target: Types.Entities.RAT,
-        amount: 100,
+        npc: Types.Entities.TORIN,
+        target: Types.Entities.SLIME,
+        amount: 30,
         level: 1,
         medal: Types.Medals.RAT
     },
