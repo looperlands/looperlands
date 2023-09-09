@@ -321,7 +321,367 @@ var Properties = {
         weapon: 1,
         friendly: true
     },
-
+    villager1: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    villager2: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    villager3: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    villager4: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    villager5: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    villager6: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    villager7: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    villager8: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    villager9: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    villager10: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    villager11: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    villager12: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    villager13: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    villager14: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    villager15: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    villager16: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    villager17: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    villager18: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    villager19: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    villager20: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    villager21: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    villager22: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    villager23: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    villager24: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    villager25: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    villager26: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    villager27: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    villager28: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    villager29: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    fvillager1: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    fvillager2: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    fvillager3: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    fvillager4: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    fvillager5: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    fvillager6: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    fvillager7: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    fvillager8: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    fvillager9: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    fvillager10: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    fvillager11: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    fvillager12: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    fvillager13: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    fvillager14: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    fvillager15: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    fvillager16: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    fvillager17: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    fvillager18: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    fvillager19: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    fvillager20: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    fvillager21: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    fvillager22: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    fvillager23: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    fvillager24: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    fvillager25: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    fvillager26: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    fvillager27: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    fvillager28: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    fvillager29: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    fvillager30: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    fvillager31: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    
     jayce: {
         hp: 10,
         armor: 1,

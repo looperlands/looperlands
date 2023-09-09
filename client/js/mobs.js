@@ -253,6 +253,1030 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 }
             }
         }),
+        Villager1: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.VILLAGER1);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
+        Villager2: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.VILLAGER2);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
+        Villager3: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.VILLAGER3);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Villager4: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.VILLAGER4);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Villager5: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.VILLAGER5);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Villager6: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.VILLAGER6);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Villager7: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.VILLAGER7);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Villager8: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.VILLAGER8);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Villager9: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.VILLAGER9);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Villager10: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.VILLAGER10);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Villager11: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.VILLAGER11);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Villager12: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.VILLAGER12);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Villager13: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.VILLAGER13);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Villager14: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.VILLAGER14);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Villager15: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.VILLAGER15);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Villager16: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.VILLAGER16);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Villager17: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.VILLAGER17);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Villager18: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.VILLAGER18);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Villager19: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.VILLAGER19);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Villager20: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.VILLAGER20);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Villager21: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.VILLAGER21);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Villager22: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.VILLAGER22);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Villager23: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.VILLAGER23);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Villager24: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.VILLAGER24);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Villager25: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.VILLAGER25);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Villager26: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.VILLAGER26);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Villager27: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.VILLAGER27);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Villager28: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.VILLAGER28);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Villager29: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.VILLAGER29);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Fvillager1: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.FVILLAGER1);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
+        Fvillager2: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.FVILLAGER2);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
+        Fvillager3: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.FVILLAGER3);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Fvillager4: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.FVILLAGER4);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Fvillager5: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.FVILLAGER5);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Fvillager6: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.FVILLAGER6);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Fvillager7: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.FVILLAGER7);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Fvillager8: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.FVILLAGER8);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Fvillager9: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.FVILLAGER9);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Fvillager10: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.FVILLAGER10);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Fvillager11: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.FVILLAGER11);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Fvillager12: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.FVILLAGER12);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Fvillager13: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.FVILLAGER13);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Fvillager14: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.FVILLAGER14);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Fvillager15: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.FVILLAGER15);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Fvillager16: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.FVILLAGER16);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Fvillager17: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.FVILLAGER17);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Fvillager18: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.FVILLAGER18);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Fvillager19: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.FVILLAGER19);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Fvillager20: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.FVILLAGER20);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Fvillager21: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.FVILLAGER21);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Fvillager22: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.FVILLAGER22);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Fvillager23: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.FVILLAGER23);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Fvillager24: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.FVILLAGER24);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Fvillager25: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.FVILLAGER25);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Fvillager26: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.FVILLAGER26);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Fvillager27: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.FVILLAGER27);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Fvillager28: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.FVILLAGER28);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Fvillager29: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.FVILLAGER29);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Fvillager30: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.FVILLAGER30);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+        Fvillager31: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.FVILLAGER31);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
 
         Jayce: Mob.extend({
             init: function(id) {
