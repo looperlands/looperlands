@@ -458,6 +458,25 @@ WS.socketIOServer = Server.extend({
             }
         });
 
+        app.get("/session/:sessionId/ownsNFTCollection/:collectionName", async (req, res) => {
+            const sessionId = req.params.sessionId;
+            const collectionName = req.params.collectionName;
+            const sessionData = cache.get(sessionId);
+            if (sessionData === undefined) {
+                //console.error("Session data is undefined for session id, params: ", sessionId, req.params);
+                res.status(404).json({
+                    status: false,
+                    "error" : "session not found",
+                    user: null
+                });
+            } else {
+                const walletId = sessionData.walletId;
+                let url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/selectProject.php?WalletID=${walletId}&Project=${collectionName}`
+                const result = await axios.get(url);
+                res.status(200).json(result.data);
+            }
+        });
+
         app.get("/:mapId/player/:playerId/owns/:nftId", async (req, res) => {
             const mapId = req.params.mapId;
             const playerId = req.params.playerId;

@@ -244,8 +244,8 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
         return new Items.Cake(id);
     };
 
-    EntityFactory.builders[Types.Entities.COBMILK] = function(id) {
-        return new Items.Cobmilk(id);
+    EntityFactory.builders[Types.Entities.COBCORN] = function(id) {
+        return new Items.Cobcorn(id);
     };
 
     EntityFactory.builders[Types.Entities.COBAPPLE] = function(id) {
@@ -365,11 +365,13 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
         return new NPCs.Coblumberjack(id);
     };    
 
-
     EntityFactory.builders[Types.Entities.COBHILLSNPC] = function(id) {
         return new NPCs.Cobhillsnpc(id);
     };    
 
+    EntityFactory.builders[Types.Entities.COBCOBMIN] = function(id) {
+        return new NPCs.Cobcobmin(id);
+    };  
 
      //====== FieldEffectss ======
 

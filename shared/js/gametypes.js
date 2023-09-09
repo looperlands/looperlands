@@ -97,7 +97,7 @@ Types = {
         FIREPOTION: 38,
         COBLOG: 21300008,
         COBCLOVER: 21300009,
-        COBMILK: 21300010,
+        COBCORN: 21300010,
         COBAPPLE: 21300011,
         CAKE: 21300012,
         KEY_ARACHWEAVE: 21300013, // @lastidObject@
@@ -128,7 +128,8 @@ Types = {
         MINER: 1000044,
         VILLAGESIGN1: 30000001,
         COBLUMBERJACK: 34000001,
-        COBHILLSNPC: 34000002,        
+        COBHILLSNPC: 34000002,
+        COBCOBMIN: 34000003,           
         // Weapons
         SWORD1: 60,
         SWORD2: 61,
@@ -1698,7 +1699,20 @@ Types = {
         NFT_eb38b1cc3ff82c26fd2354ccb73cd71c3bc9c631a4dce6c2390075ee16c4facd: 1624,
         NFT_fbb0809c50fcd0ce2f1ff71848ee583f8111767c016c2f415b069fd24d7278e8: 1625,
         NFT_fca80788c9df3ae4802e5bf65b398b4ff39d1235d9819a2c906af5b8a3735544: 1626,
-        NFT_fe25af8bfef2d505a711b81cfacf87750ced44eafc68452ada055a52109f8619: 1627 // @lastid@
+        NFT_fe25af8bfef2d505a711b81cfacf87750ced44eafc68452ada055a52109f8619: 1627,
+        NFT_0202e0aba288487bd9d1b7a2f83d826544a2b13cc0b4783a270a479075b2e11e: 1628,
+        NFT_1eae322b189cf7ef8091e25d7f9f738c700b8a65b99a7e25bca20fd5bf21a2b8: 1629,
+        NFT_4759dedebafb23e42c91c8786ed570b6f9bde7ec16775f373eb439e19e491230: 1630,
+        NFT_6080e324b2b9c9ca2dcf1db23dc3dd70574bc180529ce4a8040bf3d7c3c10f9e: 1631,
+        NFT_61f08aa6b187a3271a9489c1f1057ef74c70869aa4339da6bf6fdb9111a8c1eb: 1632,
+        NFT_9f1e4549d7f0980d1fd6168e8e11731c49531b6a771d6c0cfe90f43df1b30f32: 1633,
+        NFT_b143ed8c841f61620294d765158a0bbfcc266d160dc38a5f4407837b7e9e610d: 1634,
+        NFT_d575ffd94e2434241eae18ef451e1463d5728adf18ec5401c407cf545a720a85: 1635,
+        NFT_e6af38550b564cf9e46796350f18ba7596239379ad801945e627e8ab8b482f90: 1636,
+        NFT_16750b6b9595492d72ee1a8098ceec96337c1fc825a8275be68ef8f970159134: 1637,
+        NFT_a62d319a9fb447f3592c256b14f7c7fb1b318ce5cab9defa8ae01dd68a44842b: 1638,
+        NFT_f69dc81edd5d869f21f62238d986995246fd18a844a35d3f9c64f209fe0ab926: 1639,
+        NFT_fb7407047972a712df12b301f0fef94603e85fdf7d01fdc30f58d314f4ae5587: 1640 // @lastid@
         //@nextIdLine@
     },
     
@@ -1795,7 +1809,7 @@ var kinds = {
     flask: [Types.Entities.FLASK, "object"],
     potion: [Types.Entities.POTION, "object"],
     cobapple: [Types.Entities.COBAPPLE, "object"],
-    cobmilk: [Types.Entities.COBMILK, "object"],
+    cobcorn: [Types.Entities.COBCORN, "object"],
     coblog: [Types.Entities.COBLOG, "object"],
     cobclover: [Types.Entities.COBCLOVER, "object"],
     cake: [Types.Entities.CAKE, "object"],
@@ -1830,6 +1844,7 @@ var kinds = {
     villagesign1: [Types.Entities.VILLAGESIGN1, "npc"],
     coblumberjack: [Types.Entities.COBLUMBERJACK, "npc"],
     cobhillsnpc: [Types.Entities.COBHILLSNPC, "npc"],
+    cobcobmin: [Types.Entities.COBCOBMIN, "npc"],
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],
 
@@ -3392,6 +3407,19 @@ var kinds = {
     NFT_fbb0809c50fcd0ce2f1ff71848ee583f8111767c016c2f415b069fd24d7278e8: [Types.Entities.NFT_fbb0809c50fcd0ce2f1ff71848ee583f8111767c016c2f415b069fd24d7278e8, "weapon"],
     NFT_fca80788c9df3ae4802e5bf65b398b4ff39d1235d9819a2c906af5b8a3735544: [Types.Entities.NFT_fca80788c9df3ae4802e5bf65b398b4ff39d1235d9819a2c906af5b8a3735544, "weapon"],
     NFT_fe25af8bfef2d505a711b81cfacf87750ced44eafc68452ada055a52109f8619: [Types.Entities.NFT_fe25af8bfef2d505a711b81cfacf87750ced44eafc68452ada055a52109f8619, "weapon"],
+    NFT_0202e0aba288487bd9d1b7a2f83d826544a2b13cc0b4783a270a479075b2e11e: [Types.Entities.NFT_0202e0aba288487bd9d1b7a2f83d826544a2b13cc0b4783a270a479075b2e11e, "weapon"],
+    NFT_1eae322b189cf7ef8091e25d7f9f738c700b8a65b99a7e25bca20fd5bf21a2b8: [Types.Entities.NFT_1eae322b189cf7ef8091e25d7f9f738c700b8a65b99a7e25bca20fd5bf21a2b8, "armor"],
+    NFT_4759dedebafb23e42c91c8786ed570b6f9bde7ec16775f373eb439e19e491230: [Types.Entities.NFT_4759dedebafb23e42c91c8786ed570b6f9bde7ec16775f373eb439e19e491230, "armor"],
+    NFT_6080e324b2b9c9ca2dcf1db23dc3dd70574bc180529ce4a8040bf3d7c3c10f9e: [Types.Entities.NFT_6080e324b2b9c9ca2dcf1db23dc3dd70574bc180529ce4a8040bf3d7c3c10f9e, "armor"],
+    NFT_61f08aa6b187a3271a9489c1f1057ef74c70869aa4339da6bf6fdb9111a8c1eb: [Types.Entities.NFT_61f08aa6b187a3271a9489c1f1057ef74c70869aa4339da6bf6fdb9111a8c1eb, "armor"],
+    NFT_9f1e4549d7f0980d1fd6168e8e11731c49531b6a771d6c0cfe90f43df1b30f32: [Types.Entities.NFT_9f1e4549d7f0980d1fd6168e8e11731c49531b6a771d6c0cfe90f43df1b30f32, "weapon"],
+    NFT_b143ed8c841f61620294d765158a0bbfcc266d160dc38a5f4407837b7e9e610d: [Types.Entities.NFT_b143ed8c841f61620294d765158a0bbfcc266d160dc38a5f4407837b7e9e610d, "armor"],
+    NFT_d575ffd94e2434241eae18ef451e1463d5728adf18ec5401c407cf545a720a85: [Types.Entities.NFT_d575ffd94e2434241eae18ef451e1463d5728adf18ec5401c407cf545a720a85, "armor"],
+    NFT_e6af38550b564cf9e46796350f18ba7596239379ad801945e627e8ab8b482f90: [Types.Entities.NFT_e6af38550b564cf9e46796350f18ba7596239379ad801945e627e8ab8b482f90, "armor"],
+    NFT_16750b6b9595492d72ee1a8098ceec96337c1fc825a8275be68ef8f970159134: [Types.Entities.NFT_16750b6b9595492d72ee1a8098ceec96337c1fc825a8275be68ef8f970159134, "armor"],
+    NFT_a62d319a9fb447f3592c256b14f7c7fb1b318ce5cab9defa8ae01dd68a44842b: [Types.Entities.NFT_a62d319a9fb447f3592c256b14f7c7fb1b318ce5cab9defa8ae01dd68a44842b, "weapon"],
+    NFT_f69dc81edd5d869f21f62238d986995246fd18a844a35d3f9c64f209fe0ab926: [Types.Entities.NFT_f69dc81edd5d869f21f62238d986995246fd18a844a35d3f9c64f209fe0ab926, "armor"],
+    NFT_fb7407047972a712df12b301f0fef94603e85fdf7d01fdc30f58d314f4ae5587: [Types.Entities.NFT_fb7407047972a712df12b301f0fef94603e85fdf7d01fdc30f58d314f4ae5587, "armor"],
     // @nextSpriteLine@
 
     
@@ -3487,7 +3515,7 @@ Types.isExpendableItem = function(kind) {
     return Types.isHealingItem(kind)
         || kind === Types.Entities.FIREPOTION
         || kind === Types.Entities.CAKE
-        || kind === Types.Entities.COBMILK
+        || kind === Types.Entities.COBCORN
         || kind === Types.Entities.COBCLOVER;
 };
 

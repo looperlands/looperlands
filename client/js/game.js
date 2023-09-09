@@ -66,13 +66,13 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         
             // sprites
             this.spriteNames = ["hand", "sword", "loot", "target", "talk", "sparks", "shadow16", "rat", "skeleton", "skeleton2", "spectre", "boss", "deathknight", 
-                                "ogre", "crab", "snake", "eye", "bat", "goblin", "wizard", "guard", "king", "villagegirl", "villager", "coder", "agent", "rick", "scientist", "nyan", "priest", "coblumberjack", "cobhillsnpc",
+                                "ogre", "crab", "snake", "eye", "bat", "goblin", "wizard", "guard", "king", "villagegirl", "villager", "coder", "agent", "rick", "scientist", "nyan", "priest", "coblumberjack", "cobhillsnpc", "cobcobmin",
                                 "king2", "goose", "tanashi", "slime","kingslime","silkshade","redslime","villagesign1","wildgrin","loomleaf","gnashling","arachweave","spider","fangwing", "minimag", "miner", "megamag", 
                                 "cobchicken", "alaric","orlan","jayce", "cobcow", "cobpig", "cobgoat", "ghostie","cobslimered", "cobslimeyellow", "cobslimeblue", "cobslimeking", "cobyorkie", "cobcat",
                                 "sorcerer", "octocat", "beachnpc", "forestnpc", "desertnpc", "lavanpc","thudlord", "clotharmor", "leatherarmor", "mailarmor",
                                 "platearmor", "redarmor", "goldenarmor", "firefox", "death", "sword1","torin","elric", "axe", "chest",
                                 "sword2", "redsword", "bluesword", "goldensword", "item-sword2", "item-axe", "item-redsword", "item-bluesword", "item-goldensword", "item-leatherarmor", "item-mailarmor", 
-                                "item-platearmor", "item-redarmor", "item-goldenarmor", "item-flask", "item-potion","item-cake", "item-burger", "item-cobmilk", "item-cobapple", "item-coblog", "item-cobclover", "morningstar", "item-morningstar", "item-firepotion",
+                                "item-platearmor", "item-redarmor", "item-goldenarmor", "item-flask", "item-potion","item-cake", "item-burger", "item-cobcorn", "item-cobapple", "item-coblog", "item-cobclover", "morningstar", "item-morningstar", "item-firepotion",
                                 "item-KEY_ARACHWEAVE",
                                 "fieldeffect-magcrack",
                                 // @nextObjectLine@
@@ -1634,6 +1634,19 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 "NFT_fbb0809c50fcd0ce2f1ff71848ee583f8111767c016c2f415b069fd24d7278e8",
                                 "NFT_fca80788c9df3ae4802e5bf65b398b4ff39d1235d9819a2c906af5b8a3735544",
                                 "NFT_fe25af8bfef2d505a711b81cfacf87750ced44eafc68452ada055a52109f8619",
+                                "NFT_0202e0aba288487bd9d1b7a2f83d826544a2b13cc0b4783a270a479075b2e11e",
+                                "NFT_1eae322b189cf7ef8091e25d7f9f738c700b8a65b99a7e25bca20fd5bf21a2b8",
+                                "NFT_4759dedebafb23e42c91c8786ed570b6f9bde7ec16775f373eb439e19e491230",
+                                "NFT_6080e324b2b9c9ca2dcf1db23dc3dd70574bc180529ce4a8040bf3d7c3c10f9e",
+                                "NFT_61f08aa6b187a3271a9489c1f1057ef74c70869aa4339da6bf6fdb9111a8c1eb",
+                                "NFT_9f1e4549d7f0980d1fd6168e8e11731c49531b6a771d6c0cfe90f43df1b30f32",
+                                "NFT_b143ed8c841f61620294d765158a0bbfcc266d160dc38a5f4407837b7e9e610d",
+                                "NFT_d575ffd94e2434241eae18ef451e1463d5728adf18ec5401c407cf545a720a85",
+                                "NFT_e6af38550b564cf9e46796350f18ba7596239379ad801945e627e8ab8b482f90",
+                                "NFT_16750b6b9595492d72ee1a8098ceec96337c1fc825a8275be68ef8f970159134",
+                                "NFT_a62d319a9fb447f3592c256b14f7c7fb1b318ce5cab9defa8ae01dd68a44842b",
+                                "NFT_f69dc81edd5d869f21f62238d986995246fd18a844a35d3f9c64f209fe0ab926",
+                                "NFT_fb7407047972a712df12b301f0fef94603e85fdf7d01fdc30f58d314f4ae5587",
                                 // @nextSpriteLine@
                             ];                          
         },
@@ -2535,6 +2548,25 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                     checkTrigger();
                                 } else {
                                     _self.showNotification(dest.quest_message ? dest.quest_message : (dest.message ? dest.message : "You did not complete the quest yet."));
+                                }
+                            }).catch(function (error) {
+                                console.error("Error while checking ownership of token gate.");
+                            }).finally(function(e) {
+                                _self.doorCheck = false;
+                            });
+                        } else if (dest.collection !== undefined) {
+                            var url = '/session/' + self.sessionId + '/ownsNFTCollection/' + dest.collection;
+                            _self.doorCheck = true;
+                            axios.get(url).then(function (response) {
+                                let walletHasCollection = false;
+                                if (response.data[0] !== undefined) {
+                                    walletHasCollection = response.data[0].projectInWallet;
+                                }
+                                
+                                if (walletHasCollection === true) {
+                                    checkTrigger()
+                                } else {
+                                    _self.showNotification(dest.collection_message ? dest.collection_message : (dest.message ? dest.message : "You don't own the required NFT to enter."));
                                 }
                             }).catch(function (error) {
                                 console.error("Error while checking ownership of token gate.");

@@ -272,7 +272,7 @@ var Properties = {
         level: 10,
         drops: {
             cobapple: 50,
-            cobmilk: 10
+            cobcorn: 10
         },
         armorMod: 0.75,
         hpMod: 0.75
@@ -282,21 +282,24 @@ var Properties = {
         level: 6,
         drops: {
             cobapple: 20,
-            cobmilk: 10
+            cobcorn: 10,
+            redsword: 5
         }
     },
 
     cobslimeyellow: {
         level: 4,
         drops: {
-            cobapple: 30
+            cobapple: 30,
+            morningstar: 5
         }
     },
 
     cobslimeblue: {
         level: 2,
         drops: {
-            cobapple: 20
+            cobapple: 20,
+            axe: 5
         }
     },
 
@@ -345,7 +348,7 @@ var Properties = {
     //Field effects
     magcrack: {
         aoe: {
-            damage: 175,
+            damage: 100,
             range: 1
         }
     }

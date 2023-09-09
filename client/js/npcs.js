@@ -153,6 +153,12 @@ define(['npc'], function(Npc) {
             init: function(id) {
                 this._super(id, Types.Entities.COBHILLSNPC, 1);
             }
+        }),
+
+        Cobcobmin: Npc.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.COBCOBMIN, 1);
+            }
         })
 
     };
