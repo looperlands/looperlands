@@ -46,6 +46,9 @@ class PlayerEventBroker {
                     let consumed = consumer.consume({eventType: eventType, playerCache: playerCache});
                     if (consumed.changedQuests !== undefined && consumed.changedQuests.length > 0) {
                         let playerCache = PlayerEventBroker.cache.get(sessionId);
+                        if (playerCache === undefined) {
+                            continue
+                        }
                         playerCache.gameData.quests = consumed.quests;
                         PlayerEventBroker.cache.set(sessionId, playerCache);
                         let broker = PlayerEventBroker.playerEventBrokers[sessionId];
