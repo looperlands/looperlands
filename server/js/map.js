@@ -109,7 +109,15 @@ module.exports = Mapx = cls.Class.extend({
         if(this.isOutOfBounds(x, y)) {
             return false;
         }
-        return this.grid[y][x] === 1;
+        let collides;
+        try {
+            collides = this.grid[y][x] === 1;
+        } catch (e) {
+            x = Math.floor(x);
+            y = Math.floor(y);
+            collides = this.grid[y][x] === 1;
+        }
+        return collides;
     },
     
     GroupIdToGroupPosition: function(id) {
