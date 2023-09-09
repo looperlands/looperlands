@@ -34,6 +34,18 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
         <script src="js/lib/axios.min.js"></script>
         <script src="js/saveworker.js"></script>
 		<script src="js/keyboardhandler.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/console-ban@5.0.0/dist/console-ban.min.js"></script>
+		<script>
+			let local = window.location.href.indexOf("127.0.0.1") > -1;
+			if (!local) {
+				// default options
+				ConsoleBan.init()
+				// custom options
+				ConsoleBan.init({
+				redirect: '/404'
+				});
+			}
+		</script>
 
         <!--[if lt IE 9]>
                 <link rel="stylesheet" href="css/ie.css" type="text/css">
