@@ -192,6 +192,7 @@ define(['jquery', 'area'], function($, Area) {
                     cameraY: door.tcy,
                     portal: door.p === 1,
                     nft: door.tnft,
+                    collection: door.tcollection,
                     map: door.tmap,
                     triggerId: door.ttid,
                     item: door.titem,
@@ -199,6 +200,7 @@ define(['jquery', 'area'], function($, Area) {
                     message: door.tmessage,
                     trigger_message: door.ttrigger_message,
                     nft_message: door.tnft_message,
+                    collection_message: door.tcollection_message,
                     item_message: door.titem_message,
                     quest_message: door.tquest_message
                 };

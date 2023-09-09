@@ -97,7 +97,7 @@ Types = {
         FIREPOTION: 38,
         COBLOG: 21300008,
         COBCLOVER: 21300009,
-        COBMILK: 21300010,
+        COBCORN: 21300010,
         COBAPPLE: 21300011,
         CAKE: 21300012,
         KEY_ARACHWEAVE: 21300013, // @lastidObject@
@@ -128,7 +128,8 @@ Types = {
         MINER: 1000044,
         VILLAGESIGN1: 30000001,
         COBLUMBERJACK: 34000001,
-        COBHILLSNPC: 34000002,        
+        COBHILLSNPC: 34000002,
+        COBCOBMIN: 34000003,           
         // Weapons
         SWORD1: 60,
         SWORD2: 61,
@@ -1808,7 +1809,7 @@ var kinds = {
     flask: [Types.Entities.FLASK, "object"],
     potion: [Types.Entities.POTION, "object"],
     cobapple: [Types.Entities.COBAPPLE, "object"],
-    cobmilk: [Types.Entities.COBMILK, "object"],
+    cobcorn: [Types.Entities.COBCORN, "object"],
     coblog: [Types.Entities.COBLOG, "object"],
     cobclover: [Types.Entities.COBCLOVER, "object"],
     cake: [Types.Entities.CAKE, "object"],
@@ -1843,6 +1844,7 @@ var kinds = {
     villagesign1: [Types.Entities.VILLAGESIGN1, "npc"],
     coblumberjack: [Types.Entities.COBLUMBERJACK, "npc"],
     cobhillsnpc: [Types.Entities.COBHILLSNPC, "npc"],
+    cobcobmin: [Types.Entities.COBCOBMIN, "npc"],
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],
 
@@ -3513,7 +3515,7 @@ Types.isExpendableItem = function(kind) {
     return Types.isHealingItem(kind)
         || kind === Types.Entities.FIREPOTION
         || kind === Types.Entities.CAKE
-        || kind === Types.Entities.COBMILK
+        || kind === Types.Entities.COBCORN
         || kind === Types.Entities.COBCLOVER;
 };
 

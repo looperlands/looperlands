@@ -277,7 +277,7 @@ module.exports = Player = Character.extend({
                         self.broadcast(item.despawn());
                         self.server.removeEntity(item);
 
-                        if(kind === Types.Entities.FIREPOTION || kind === Types.Entities.COBMILK) {
+                        if(kind === Types.Entities.FIREPOTION || kind === Types.Entities.COBCORN) {
                             self.updateHitPoints();
 
                             if (self.firepotionTimeout != null) {
