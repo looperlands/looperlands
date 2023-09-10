@@ -181,6 +181,100 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.COBYORKIE] = function(id) {
         return new Mobs.Cobyorkie(id);
     };
+    
+    EntityFactory.builders[Types.Entities.FVILLAGER1] = function(id) {
+        return new Mobs.Fvillager1(id);
+    };    
+    EntityFactory.builders[Types.Entities.FVILLAGER2] = function(id) {
+        return new Mobs.Fvillager2(id);
+    };    
+    EntityFactory.builders[Types.Entities.FVILLAGER3] = function(id) {
+        return new Mobs.Fvillager3(id);
+    };    
+    EntityFactory.builders[Types.Entities.FVILLAGER4] = function(id) {
+        return new Mobs.Fvillager4(id);
+    };    
+    EntityFactory.builders[Types.Entities.FVILLAGER5] = function(id) {
+        return new Mobs.Fvillager5(id);
+    };    
+    EntityFactory.builders[Types.Entities.FVILLAGER6] = function(id) {
+        return new Mobs.Fvillager6(id);
+    };    
+    EntityFactory.builders[Types.Entities.FVILLAGER7] = function(id) {
+        return new Mobs.Fvillager7(id);
+    };    
+    EntityFactory.builders[Types.Entities.FVILLAGER8] = function(id) {
+        return new Mobs.Fvillager8(id);
+    };    
+    EntityFactory.builders[Types.Entities.FVILLAGER9] = function(id) {
+        return new Mobs.Fvillager9(id);
+    };    
+    EntityFactory.builders[Types.Entities.FVILLAGER10] = function(id) {
+        return new Mobs.Fvillager10(id);
+    };    
+    EntityFactory.builders[Types.Entities.FVILLAGER11] = function(id) {
+        return new Mobs.Fvillager11(id);
+    };    
+    EntityFactory.builders[Types.Entities.FVILLAGER12] = function(id) {
+        return new Mobs.Fvillager12(id);
+    };    
+    EntityFactory.builders[Types.Entities.FVILLAGER13] = function(id) {
+        return new Mobs.Fvillager13(id);
+    };    
+    EntityFactory.builders[Types.Entities.FVILLAGER14] = function(id) {
+        return new Mobs.Fvillager14(id);
+    };    
+    EntityFactory.builders[Types.Entities.FVILLAGER15] = function(id) {
+        return new Mobs.Fvillager15(id);
+    };    
+    EntityFactory.builders[Types.Entities.FVILLAGER16] = function(id) {
+        return new Mobs.Fvillager16(id);
+    };    
+    EntityFactory.builders[Types.Entities.FVILLAGER17] = function(id) {
+        return new Mobs.Fvillager17(id);
+    };    
+    EntityFactory.builders[Types.Entities.FVILLAGER18] = function(id) {
+        return new Mobs.Fvillager18(id);
+    };    
+    EntityFactory.builders[Types.Entities.FVILLAGER19] = function(id) {
+        return new Mobs.Fvillager19(id);
+    };    
+    EntityFactory.builders[Types.Entities.FVILLAGER20] = function(id) {
+        return new Mobs.Fvillager20(id);
+    };    
+    EntityFactory.builders[Types.Entities.FVILLAGER21] = function(id) {
+        return new Mobs.Fvillager21(id);
+    };
+    EntityFactory.builders[Types.Entities.FVILLAGER22] = function(id) {
+        return new Mobs.Fvillager22(id);
+    };
+    EntityFactory.builders[Types.Entities.FVILLAGER23] = function(id) {
+        return new Mobs.Fvillager23(id);
+    };
+    EntityFactory.builders[Types.Entities.FVILLAGER24] = function(id) {
+        return new Mobs.Fvillager24(id);
+    };
+    EntityFactory.builders[Types.Entities.FVILLAGER25] = function(id) {
+        return new Mobs.Fvillager25(id);
+    };
+    EntityFactory.builders[Types.Entities.FVILLAGER26] = function(id) {
+        return new Mobs.Fvillager26(id);
+    };
+    EntityFactory.builders[Types.Entities.FVILLAGER27] = function(id) {
+        return new Mobs.Fvillager27(id);
+    };
+    EntityFactory.builders[Types.Entities.FVILLAGER28] = function(id) {
+        return new Mobs.Fvillager28(id);
+    };
+    EntityFactory.builders[Types.Entities.FVILLAGER29] = function(id) {
+        return new Mobs.Fvillager29(id);
+    };
+    EntityFactory.builders[Types.Entities.FVILLAGER30] = function(id) {
+        return new Mobs.Fvillager30(id);
+    };
+    EntityFactory.builders[Types.Entities.FVILLAGER31] = function(id) {
+        return new Mobs.Fvillager31(id);
+    };
     EntityFactory.builders[Types.Entities.VILLAGER1] = function(id) {
         return new Mobs.Villager1(id);
     };
@@ -268,100 +362,6 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.VILLAGER29] = function(id) {
         return new Mobs.Villager29(id);
     };
-
-    EntityFactory.builders[Types.Entities.FVILLAGER1] = function(id) {
-        return new Mobs.Fvillager1(id);
-    };
-    EntityFactory.builders[Types.Entities.FVILLAGER2] = function(id) {
-        return new Mobs.Fvillager2(id);
-    };
-    EntityFactory.builders[Types.Entities.FVILLAGER3] = function(id) {
-        return new Mobs.Fvillager3(id);
-    };
-    EntityFactory.builders[Types.Entities.FVILLAGER4] = function(id) {
-        return new Mobs.Fvillager4(id);
-    };
-    EntityFactory.builders[Types.Entities.FVILLAGER5] = function(id) {
-        return new Mobs.Fvillager5(id);
-    };
-    EntityFactory.builders[Types.Entities.FVILLAGER6] = function(id) {
-        return new Mobs.Fvillager6(id);
-    };
-    EntityFactory.builders[Types.Entities.FVILLAGER7] = function(id) {
-        return new Mobs.Fvillager7(id);
-    };
-    EntityFactory.builders[Types.Entities.FVILLAGER8] = function(id) {
-        return new Mobs.Fvillager8(id);
-    };
-    EntityFactory.builders[Types.Entities.FVILLAGER9] = function(id) {
-        return new Mobs.Fvillager9(id);
-    };
-    EntityFactory.builders[Types.Entities.FVILLAGER10] = function(id) {
-        return new Mobs.Fvillager10(id);
-    };
-    EntityFactory.builders[Types.Entities.FVILLAGER11] = function(id) {
-        return new Mobs.Fvillager11(id);
-    };
-    EntityFactory.builders[Types.Entities.FVILLAGER12] = function(id) {
-        return new Mobs.Fvillager12(id);
-    };
-    EntityFactory.builders[Types.Entities.FVILLAGER13] = function(id) {
-        return new Mobs.Fvillager13(id);
-    };
-    EntityFactory.builders[Types.Entities.FVILLAGER14] = function(id) {
-        return new Mobs.Fvillager14(id);
-    };
-    EntityFactory.builders[Types.Entities.FVILLAGER15] = function(id) {
-        return new Mobs.Fvillager15(id);
-    };
-    EntityFactory.builders[Types.Entities.FVILLAGER16] = function(id) {
-        return new Mobs.Fvillager16(id);
-    };
-    EntityFactory.builders[Types.Entities.FVILLAGER17] = function(id) {
-        return new Mobs.Fvillager17(id);
-    };
-    EntityFactory.builders[Types.Entities.FVILLAGER18] = function(id) {
-        return new Mobs.Fvillager18(id);
-    };
-    EntityFactory.builders[Types.Entities.FVILLAGER19] = function(id) {
-        return new Mobs.Fvillager19(id);
-    };
-    EntityFactory.builders[Types.Entities.FVILLAGER20] = function(id) {
-        return new Mobs.Fvillager20(id);
-    };
-    EntityFactory.builders[Types.Entities.FVILLAGER21] = function(id) {
-        return new Mobs.Fvillager21(id);
-    };
-    EntityFactory.builders[Types.Entities.FVILLAGER22] = function(id) {
-        return new Mobs.Fvillager22(id);
-    };
-    EntityFactory.builders[Types.Entities.FVILLAGER23] = function(id) {
-        return new Mobs.Fvillager23(id);
-    };
-    EntityFactory.builders[Types.Entities.FVILLAGER24] = function(id) {
-        return new Mobs.Fvillager24(id);
-    };
-    EntityFactory.builders[Types.Entities.FVILLAGER25] = function(id) {
-        return new Mobs.Fvillager25(id);
-    };
-    EntityFactory.builders[Types.Entities.FVILLAGER26] = function(id) {
-        return new Mobs.Fvillager26(id);
-    };
-    EntityFactory.builders[Types.Entities.FVILLAGER27] = function(id) {
-        return new Mobs.Fvillager27(id);
-    };
-    EntityFactory.builders[Types.Entities.FVILLAGER28] = function(id) {
-        return new Mobs.Fvillager28(id);
-    };
-    EntityFactory.builders[Types.Entities.FVILLAGER29] = function(id) {
-        return new Mobs.Fvillager29(id);
-    };  
-    EntityFactory.builders[Types.Entities.FVILLAGER30] = function(id) {
-        return new Mobs.Fvillager30(id);
-    };    
-    EntityFactory.builders[Types.Entities.FVILLAGER31] = function(id) {
-        return new Mobs.Fvillager31(id);
-    };      
     //===== items ======
  
     EntityFactory.builders[Types.Entities.SWORD2] = function(id) {
@@ -487,6 +487,31 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.TORIN] = function(id) {
         return new NPCs.Torin(id);
     };    
+
+    EntityFactory.builders[Types.Entities.ELARA] = function(id) {
+        return new NPCs.Elara(id);
+    };    
+    EntityFactory.builders[Types.Entities.ELDRIN] = function(id) {
+        return new NPCs.Eldrin(id);
+    };    
+    EntityFactory.builders[Types.Entities.DRAYLEN] = function(id) {
+        return new NPCs.Draylen(id);
+    };    
+    EntityFactory.builders[Types.Entities.THAELEN] = function(id) {
+        return new NPCs.Thaelen(id);
+    };    
+    EntityFactory.builders[Types.Entities.KELDOR] = function(id) {
+        return new NPCs.Keldor(id);
+    };    
+    EntityFactory.builders[Types.Entities.TORVIN] = function(id) {
+        return new NPCs.Torvin(id);
+    };    
+    EntityFactory.builders[Types.Entities.LIORA] = function(id) {
+        return new NPCs.Liora(id);
+    };    
+    EntityFactory.builders[Types.Entities.ARIA] = function(id) {
+        return new NPCs.Aria(id);
+    };
 
     EntityFactory.builders[Types.Entities.ELRIC] = function(id) {
         return new NPCs.Elric(id);

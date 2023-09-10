@@ -748,6 +748,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 }
             }
         }),
+
         Fvillager1: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.FVILLAGER1);
@@ -1277,6 +1278,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 }
             }
         }),
+
 
         Jayce: Mob.extend({
             init: function(id) {

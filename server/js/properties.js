@@ -321,6 +321,14 @@ var Properties = {
         weapon: 1,
         friendly: true
     },
+
+    fvillager1: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },    
+
     villager1: {
         hp: 10,
         armor: 1,
