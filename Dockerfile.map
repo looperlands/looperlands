@@ -1,6 +1,7 @@
 FROM ubuntu:latest
 ENV NEW_RELIC_NO_CONFIG_FILE=true
 ENV DEBIAN_FRONTEND noninteractive
+ENV MAP_FILE=main.tmx
 RUN apt -y update
 RUN apt -q -y install curl
 ENV NVM_DIR /usr/local/nvm
@@ -22,5 +23,5 @@ WORKDIR /opt/app
 COPY shared/js/gametypes.js client/js/gametypes.js
 RUN npm ci
 WORKDIR /opt/app/tools/maps
-RUN python2 ./export.py server single && python2 ./export.py client single
+RUN python2 ./export.py server ${MAP_FILE} && python2 ./export.py client ${MAP_FILE}
 RUN zip -r /opt/app/maps.zip /opt/app/client/maps /opt/app/server/maps
