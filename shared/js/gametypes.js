@@ -123,6 +123,7 @@ Types = {
         FVILLAGER29: 300077,
         FVILLAGER30: 300078,
         FVILLAGER31: 300079,
+        FVILLAGER31: 300079,
         ELARA: 300080,
         ELDRIN: 300081,
         DRAYLEN: 300082,
@@ -131,6 +132,7 @@ Types = {
         TORVIN: 300085,
         LIORA: 300086,
         ARIA: 300087,
+        BOAR: 300088,
         ALARIC: 300016,
         JAYCE: 300017,
         ORLAN: 300018,
@@ -168,7 +170,8 @@ Types = {
         COBCORN: 21300010,
         COBAPPLE: 21300011,
         CAKE: 21300012,
-        KEY_ARACHWEAVE: 21300013, // @lastidObject@
+        KEY_ARACHWEAVE: 21300013,
+        BOARHIDE: 21300014, // @lastidObject@
         //@nextIdLineObject@
         
         // NPCs
@@ -1832,6 +1835,7 @@ var kinds = {
     skeleton2: [Types.Entities.SKELETON2, "mob"],
     boss: [Types.Entities.BOSS, "mob"],
     slime: [Types.Entities.SLIME, "mob"],
+    boar: [Types.Entities.BOAR, "mob"],
     gnashling: [Types.Entities.GNASHLING, "mob"],
     thudlord: [Types.Entities.THUDLORD, "mob"],
     loomleaf: [Types.Entities.LOOMLEAF, "mob"],
@@ -1947,6 +1951,7 @@ var kinds = {
     chest: [Types.Entities.CHEST, "object"],
     firepotion: [Types.Entities.FIREPOTION, "object"],
     KEY_ARACHWEAVE: [Types.Entities.KEY_ARACHWEAVE, "object"],
+    BOARHIDE: [Types.Entities.BOARHIDE, "object"],
     // @nextObjectLine@
 
     guard: [Types.Entities.GUARD, "npc"],

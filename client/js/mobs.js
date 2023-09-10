@@ -174,6 +174,17 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.aggroRange = 1;
             }
         }),
+        Boar: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.BOAR);
+                this.moveSpeed = 250;
+                this.idleSpeed = 450;
+                this.atkSpeed = 100;
+                this.shadowOffsetY = -2;
+                this.isAggressive = true;
+                this.aggroRange = 1;
+            }
+        }),
         Gnashling: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.GNASHLING);

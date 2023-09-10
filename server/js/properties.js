@@ -139,6 +139,12 @@ var Properties = {
             potion: 95,
         },
     },
+    boar: {
+        level: 1,
+        drops: {
+            BOARHIDE: 95,
+        },
+    },
 
     gnashling: {
         level: 3,

@@ -79,6 +79,9 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.SLIME] = function(id) {
         return new Mobs.Slime(id);
     };
+    EntityFactory.builders[Types.Entities.BOAR] = function(id) {
+        return new Mobs.Boar(id);
+    };
     EntityFactory.builders[Types.Entities.THUDLORD] = function(id) {
         return new Mobs.Thudlord(id);
     };
@@ -448,6 +451,7 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     };
 
     EntityFactory.builders[Types.Entities.KEY_ARACHWEAVE]=function(id){return new Items.KEY_ARACHWEAVE(id);};
+    EntityFactory.builders[Types.Entities.BOARHIDE]=function(id){return new Items.BOARHIDE(id);};
     // @nextObjectLine@
 
     //====== NPCs ======
