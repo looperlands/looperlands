@@ -47,9 +47,9 @@ Install some dependencies.
 sudo apt-get install unzip zip jq
 ```
 
-Build maps
+Build a map
 ```bash
-./build_maps.sh
+./build_maps.sh main.tmx
 ```
 
 The following script will build the client and server and run them locally, so you do not have to run the above steps.
