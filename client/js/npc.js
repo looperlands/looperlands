@@ -76,6 +76,15 @@ define(['character'], function (Character) {
             "Could you lend us your strength",
             "and reclaim our village's honor?",
         ],
+
+        "elara": [
+            "Slimes are encroaching on our lands!",
+        ],
+
+        "eldrin": [
+            "Slimes are encroaching on our lands!",
+        ],
+
         "elric": [
             "I'd advise against entering, friend.",
             "I've been tracking down the cause of the rising slime numbers around here.",
