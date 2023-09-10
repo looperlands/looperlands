@@ -3,6 +3,7 @@ define(['jquery', 'area'], function($, Area) {
     
     var Mapx = Class.extend({
         init: function(loadMultiTilesheets, game, mapId) {
+
             this.game = game;
             this.mapId = mapId;
         	this.data = [];
@@ -121,7 +122,8 @@ define(['jquery', 'area'], function($, Area) {
                 "oa": "oa",
                 "oadungeon": "oa",
                 "oaoverworld": "oa",
-                "cobsfarm": "cobsfarm"
+                "cobsfarm": "cobsfarm",
+                "fhf": "fhf"
             }
 
             let tilesetId = mapIdToTileset[this.mapId];
