@@ -68,7 +68,7 @@ define(['character'], function (Character) {
             'Follow <a href="https://loopworms.io/DEV/LooperLands/QR/qr.php?NPC=rick" target="blank">this link</a> - it might be a Red Packet!',
             "Now go about your adventure, Looper!"
         ],
-
+///////////////////////OA NPCS////////////////////
         "torin": [
             "Slimes are encroaching on our lands!",
             "during a misguided attempt to push them back",
@@ -78,11 +78,12 @@ define(['character'], function (Character) {
         ],
 
         "elara": [
-            "Slimes are encroaching on our lands!",
+            "Those pesky boars!",
+            "Your assistance is greatly appreciated!",
         ],
 
         "eldrin": [
-            "Slimes are encroaching on our lands!",
+            "Greetings traveller! I'm the mayor of Hushwind.",
         ],
 
         "elric": [
@@ -93,6 +94,10 @@ define(['character'], function (Character) {
             "I'll manage... Just steer clear of that place.",
         ],
 
+        "draylen": [
+            "Be careful out there wanderer, it's dangerous",
+        ],
+/////////////////////////////////////////////////////
 
         "scientist": [
             'Hey there, Looper. my name is <a href="https://www.cobmin.com" target="_blank">cobmin</a>.',
