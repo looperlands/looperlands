@@ -38,6 +38,46 @@ define(['npc'], function(Npc) {
                 this._super(id, Types.Entities.TORIN, 1);
             }
         }),
+        Elara: Npc.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.ELARA, 1);
+            }
+        }),
+        Eldrin: Npc.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.ELDRIN, 1);
+            }
+        }),
+        Draylen: Npc.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.DRAYLEN, 1);
+            }
+        }),
+        Thaelen: Npc.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.THAELEN, 1);
+            }
+        }),
+        Keldor: Npc.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.KELDOR, 1);
+            }
+        }),
+        Torvin: Npc.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.TORVIN, 1);
+            }
+        }),
+        Liora: Npc.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.LIORA, 1);
+            }
+        }),
+        Aria: Npc.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.ARIA, 1);
+            }
+        }),
 
         Elric: Npc.extend({
             init: function(id) {
