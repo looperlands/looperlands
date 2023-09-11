@@ -89,6 +89,12 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.GNASHLING] = function(id) {
         return new Mobs.Gnashling(id);
     };    
+    EntityFactory.builders[Types.Entities.GRIZZLEFANG] = function(id) {
+        return new Mobs.Grizzlefang(id);
+    };    
+    EntityFactory.builders[Types.Entities.BARRELL] = function(id) {
+        return new Mobs.Barrell(id);
+    };    
 
     EntityFactory.builders[Types.Entities.LOOMLEAF] = function(id) {
         return new Mobs.Loomleaf(id);
@@ -452,6 +458,12 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
 
     EntityFactory.builders[Types.Entities.KEY_ARACHWEAVE]=function(id){return new Items.KEY_ARACHWEAVE(id);};
     EntityFactory.builders[Types.Entities.BOARHIDE]=function(id){return new Items.BOARHIDE(id);};
+    EntityFactory.builders[Types.Entities.THUDKEY]=function(id){return new Items.THUDKEY(id);};
+    EntityFactory.builders[Types.Entities.BATWING]=function(id){return new Items.BATWING(id);};
+    EntityFactory.builders[Types.Entities.ORB]=function(id){return new Items.ORB(id);};
+    EntityFactory.builders[Types.Entities.SLIMEBALL]=function(id){return new Items.SLIMEBALL(id);};
+    EntityFactory.builders[Types.Entities.REDOOZE]=function(id){return new Items.REDOOZE(id);};
+    EntityFactory.builders[Types.Entities.WILDBLADE]=function(id){return new Items.WILDBLADE(id);};
     // @nextObjectLine@
 
     //====== NPCs ======
