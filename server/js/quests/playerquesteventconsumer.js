@@ -11,10 +11,16 @@ class PlayerQuestEventConsumer extends PlayerEventConsumer {
 
     completionCheckers = {
         "KILL_MOB": function(quest, playerCache) {
+            if (quest === undefined) { 
+                return false;
+            }
             let count = playerCache.gameData.mobKills[quest.target] || 0;
             return count >= quest.amount;
         },
         "LOOT_ITEM": function(quest, playerCache) {
+            if (quest === undefined) { 
+                return false;
+            }            
             let count = playerCache.gameData.items[quest.target] || 0;
             return count >= quest.amount;
         }
