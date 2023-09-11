@@ -136,7 +136,8 @@ var Properties = {
     slime: {
         level: 1,
         drops: {
-            potion: 95,
+            potion: 50,
+            SLIMEBALL: 50,
         },
     },
     boar: {
@@ -163,7 +164,21 @@ var Properties = {
     thudlord: {
         level: 6,
         drops: {
-            potion: 150,
+            THUDKEY: 100,
+        },
+    },
+
+    grizzlefang: {
+        level: 6,
+        drops: {
+            ORB: 100,
+        },
+    },
+    barrell: {
+        level: 1,
+        xp: 0,
+        drops: {
+            WILDBLADE: 100,
         },
     },
     
@@ -195,7 +210,8 @@ var Properties = {
     redslime: {
         level: 2,
         drops: {
-            potion: 90,
+            potion: 50,
+            REDOOZE: 50,
         },
     },     
 
@@ -209,7 +225,8 @@ var Properties = {
     fangwing: {
         level: 4,
         drops: {
-            potion: 65,
+            potion: 40,
+            BATWING: 65,
         },
     },  
 

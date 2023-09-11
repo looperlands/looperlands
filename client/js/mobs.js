@@ -172,6 +172,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.shadowOffsetY = -2;
                 this.isAggressive = true;
                 this.aggroRange = 1;
+                this.deathAnimated = true;
             }
         }),
         Boar: Mob.extend({
@@ -183,6 +184,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.shadowOffsetY = -2;
                 this.isAggressive = true;
                 this.aggroRange = 1;
+                this.deathAnimated = true;
             }
         }),
         Gnashling: Mob.extend({
@@ -194,8 +196,33 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.shadowOffsetY = -2;
                 this.isAggressive = true;
                 this.aggroRange = 3;
+                this.deathAnimated = true;
+            }
+        }),   
+        Barrell: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.BARRELL);
+                this.moveSpeed = 100;
+                this.idleSpeed = 100;
+                this.atkSpeed = 100;            
+                this.shadowOffsetY = -2;
+                this.isAggressive = false;
+                this.deathAnimated = true;
+            }
+        }),             
+        Grizzlefang: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.GRIZZLEFANG);
+                this.moveSpeed = 300;
+                this.idleSpeed = 100;
+                this.atkSpeed = 100;            
+                this.shadowOffsetY = -2;
+                this.isAggressive = true;
+                this.aggroRange = 3;
+                this.deathAnimated = true;
             }
         }),        
+
 
         Wildgrin: Mob.extend({
             init: function(id) {
@@ -206,6 +233,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.shadowOffsetY = -2;
                 this.isAggressive = true;
                 this.aggroRange = 3;
+                this.deathAnimated = true;
             }
         }),
 
@@ -244,6 +272,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.shadowOffsetY = -2;
                 this.isAggressive = true;
                 this.aggroRange = 1;
+                this.deathAnimated = true;
             }
         }),
 
@@ -1351,7 +1380,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.atkSpeed = 100;
                 this.aggroRange = 3;
                 this.deathAnimated = true;
-                this.title = "FANGLORD";
+                this.title = "FANG QUEEN";
             }
         }),         
 
@@ -1359,7 +1388,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
             init: function(id) {
                 this._super(id, Types.Entities.SPIDER);
                 this.moveSpeed = 350;
-                this.idleSpeed = 100;
+                this.idleSpeed = 250;
                 this.shadowOffsetY = -2;
                 this.atkSpeed = 100;
                 this.isAggressive = true;
@@ -1376,6 +1405,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.atkSpeed = 100;
                 this.isAggressive = true;
                 this.aggroRange = 3;
+                this.deathAnimated = true;
             }
         }),
 
@@ -1388,6 +1418,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.atkSpeed = 100;
                 this.isAggressive = true;
                 this.aggroRange = 3;
+                this.deathAnimated = true;
             }
         }),
 

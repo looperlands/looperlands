@@ -133,6 +133,8 @@ Types = {
         LIORA: 300086,
         ARIA: 300087,
         BOAR: 300088,
+        GRIZZLEFANG: 300089, //Latest
+        BARRELL: 300090, //Latest
         ALARIC: 300016,
         JAYCE: 300017,
         ORLAN: 300018,
@@ -171,7 +173,13 @@ Types = {
         COBAPPLE: 21300011,
         CAKE: 21300012,
         KEY_ARACHWEAVE: 21300013,
-        BOARHIDE: 21300014, // @lastidObject@
+        BOARHIDE: 21300014,
+        THUDKEY: 21300015,
+        BATWING: 21300016,
+        ORB: 21300017,
+        SLIMEBALL: 21300018,
+        REDOOZE: 21300019,
+        WILDBLADE: 21300020, // @lastidObject@
         //@nextIdLineObject@
         
         // NPCs
@@ -1845,6 +1853,8 @@ var kinds = {
     slime: [Types.Entities.SLIME, "mob"],
     boar: [Types.Entities.BOAR, "mob"],
     gnashling: [Types.Entities.GNASHLING, "mob"],
+    grizzlefang: [Types.Entities.GRIZZLEFANG, "mob"],
+    barrell: [Types.Entities.BARRELL, "mob"],
     thudlord: [Types.Entities.THUDLORD, "mob"],
     loomleaf: [Types.Entities.LOOMLEAF, "mob"],
     redslime: [Types.Entities.REDSLIME, "mob"],
@@ -1960,6 +1970,12 @@ var kinds = {
     firepotion: [Types.Entities.FIREPOTION, "object"],
     KEY_ARACHWEAVE: [Types.Entities.KEY_ARACHWEAVE, "object"],
     BOARHIDE: [Types.Entities.BOARHIDE, "object"],
+    THUDKEY: [Types.Entities.THUDKEY, "object"],
+    BATWING: [Types.Entities.BATWING, "object"],
+    ORB: [Types.Entities.ORB, "object"],
+    SLIMEBALL: [Types.Entities.SLIMEBALL, "object"],
+    REDOOZE: [Types.Entities.REDOOZE, "object"],
+    WILDBLADE: [Types.Entities.WILDBLADE, "object"],
     // @nextObjectLine@
 
     guard: [Types.Entities.GUARD, "npc"],
