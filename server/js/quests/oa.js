@@ -140,7 +140,7 @@ quests = [
         eventType: "KILL_MOB",
         npc: Types.Entities.LIORA,
         target: Types.Entities.SILKSHADE,
-        amount: 30,
+        amount: 1,
         requiredQuest: "OA_QUEST_9",
         level: 4,
         medal: Types.Medals.HEARTH
