@@ -483,6 +483,13 @@ WS.socketIOServer = Server.extend({
             const nftId = req.params.nftId;
             
             let player = self.worldsMap[mapId].getPlayerById(playerId);
+            if (player === undefined) {
+                return res.status(404).json({
+                    status: false,
+                    error: "Player not found",
+                    user: null
+                });
+            }
             let result = dao.walletHasNFT(player.walletId, nftId);
             if (result === undefined) {
                 res.status(400).json({
