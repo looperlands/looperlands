@@ -1,4 +1,6 @@
 const { Client, GatewayIntentBits} = require('discord.js')
+const NodeCache = require( "node-cache" );
+const cache = new NodeCache();
 
 let ready = false;
 const client = new Client({
@@ -22,8 +24,12 @@ if (process.env.DISCORD_TOKEN === undefined) {
 sendMessage = (message) => {
     try {
         let channel = client.channels.cache.get('1108905948308844704');
+
         try {
-            channel.send(message);
+            if (cache.get(message) === undefined) {
+                cache.set(message, true, 60*5);
+                channel.send(message);
+            }
         } catch (e) {
             //console.log(message, e);
         }
