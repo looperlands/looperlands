@@ -178,7 +178,7 @@ var Properties = {
         level: 1,
         xp: 0,
         drops: {
-            WILDBLADE: 100,
+            WILDBLADE: 40,
         },
     },
     
