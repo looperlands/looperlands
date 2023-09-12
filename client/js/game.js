@@ -4249,7 +4249,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     $("#levelInfo").html(levelInfoHTML);
 
                     if (self.player.level !== level) {
-                        console.log("LEVEL UP");
+                        self.app.showAchievementNotification("Leveled up to level " + level, "", undefined, Types.Medals.HEARTH);
                     }
                 }
             }).catch(function (error) {
