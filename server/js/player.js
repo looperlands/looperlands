@@ -765,6 +765,7 @@ module.exports = Player = Character.extend({
                 let msg = new Messages.QuestComplete(quest.name, quest.endText, xpReward, quest.medal);
                 this.server.pushToPlayer(this, msg);
                 this.completedQuestsIDs.push(quest.id);
+                discord.sendMessage(`Player ${this.name} completed the following quest: ${quest.name}.`);
             }
         }
     }
