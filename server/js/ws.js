@@ -342,6 +342,7 @@ WS.socketIOServer = Server.extend({
             res.status(200).json(inventory.data);
         });
 
+
         app.get("/session/:sessionId/quests", async (req, res) => {
             const sessionId = req.params.sessionId;
             const sessionData = cache.get(sessionId);
@@ -362,11 +363,13 @@ WS.socketIOServer = Server.extend({
             if(quests && questStatus) {
                 _.each(quests?.questsByID, function (quest) {
                     if (_.findIndex(questStatus.COMPLETED, {questID: quest.id}) !== -1) {
+
                         availableQuests.push({
                             id: quest.id,
                             name: quest.name,
                             desc: quest.startText,
                             medal: quest.medal,
+                            amount: quest.amount,
                             status: "COMPLETED"
                         });
                     }
@@ -375,13 +378,27 @@ WS.socketIOServer = Server.extend({
                     if(_.findIndex(questStatus.COMPLETED, {questID: quest.id}) !== -1) {
                         return;
                     }
-
                     if (_.findIndex(questStatus.IN_PROGRESS, {questID: quest.id}) !== -1) {
+
+                        let progressCount = 0;
+                        if (quest.eventType === "LOOT_ITEM") {
+                            let itemCount = sessionData.gameData.items[quest.target];
+                            if (itemCount !== undefined) {
+                                progressCount = itemCount;
+                            }
+                        } else if (quest.eventType === "KILL_MOB") {
+                            let mobCount = sessionData.gameData.mobKills[quest.target];
+                            if (mobCount !== undefined) {
+                                progressCount = mobCount;
+                            }
+                        }
                         availableQuests.push({
                             id: quest.id,
                             name: quest.name,
                             desc: quest.startText,
                             medal: quest.medal,
+                            progressCount: progressCount,
+                            amount: quest.amount,
                             status: "IN_PROGRESS"
                         });
                     }
