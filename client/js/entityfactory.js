@@ -464,6 +464,12 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.SLIMEBALL]=function(id){return new Items.SLIMEBALL(id);};
     EntityFactory.builders[Types.Entities.REDOOZE]=function(id){return new Items.REDOOZE(id);};
     EntityFactory.builders[Types.Entities.WILDBLADE]=function(id){return new Items.WILDBLADE(id);};
+    EntityFactory.builders[Types.Entities.WILDFLOWER]=function(id){return new Items.WILDFLOWER(id);};
+    EntityFactory.builders[Types.Entities.MAGICMUSHROOM]=function(id){return new Items.MAGICMUSHROOM(id);};
+    EntityFactory.builders[Types.Entities.BLACKCAT]=function(id){return new Items.BLACKCAT(id);};
+    EntityFactory.builders[Types.Entities.HERMITHOME]=function(id){return new Items.HERMITHOME(id);};
+    EntityFactory.builders[Types.Entities.GREEN_PEARL]=function(id){return new Items.GREEN_PEARL(id);};
+    EntityFactory.builders[Types.Entities.FOREST_KEY]=function(id){return new Items.FOREST_KEY(id);};
     // @nextObjectLine@
 
     //====== NPCs ======
@@ -528,11 +534,24 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.ARIA] = function(id) {
         return new NPCs.Aria(id);
     };
-
     EntityFactory.builders[Types.Entities.ELRIC] = function(id) {
         return new NPCs.Elric(id);
+    };   
+    EntityFactory.builders[Types.Entities.WHISKERS] = function(id) {
+        return new NPCs.Whiskers(id);
     };    
-
+    EntityFactory.builders[Types.Entities.NEENA] = function(id) {
+        return new NPCs.Neena(id);
+    };    
+    EntityFactory.builders[Types.Entities.ATHLYN] = function(id) {
+        return new NPCs.Athlyn(id);
+    };    
+    EntityFactory.builders[Types.Entities.JENIPER] = function(id) {
+        return new NPCs.Jeniper(id);
+    };    
+    EntityFactory.builders[Types.Entities.GLINK] = function(id) {
+        return new NPCs.Glink(id);
+    }; 
     EntityFactory.builders[Types.Entities.SCIENTIST] = function(id) {
         return new NPCs.Scientist(id);
     };

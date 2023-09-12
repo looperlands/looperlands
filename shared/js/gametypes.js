@@ -133,8 +133,13 @@ Types = {
         LIORA: 300086,
         ARIA: 300087,
         BOAR: 300088,
-        GRIZZLEFANG: 300089, //Latest
-        BARRELL: 300090, //Latest
+        GRIZZLEFANG: 300089,
+        BARRELL: 300090, 
+        GLINK: 300091, 
+        ATHLYN: 300092, 
+        JENIPER: 300093,
+        NEENA: 300094, //Latest
+        WHISKERS: 300095, //Latest
         ALARIC: 300016,
         JAYCE: 300017,
         ORLAN: 300018,
@@ -179,7 +184,13 @@ Types = {
         ORB: 21300017,
         SLIMEBALL: 21300018,
         REDOOZE: 21300019,
-        WILDBLADE: 21300020, // @lastidObject@
+        WILDBLADE: 21300020,
+        WILDFLOWER: 21300021,
+        MAGICMUSHROOM: 21300022,
+        BLACKCAT: 21300023,
+        HERMITHOME: 21300024,
+        GREEN_PEARL: 21300025,
+        FOREST_KEY: 21300026, // @lastidObject@
         //@nextIdLineObject@
         
         // NPCs
@@ -1978,6 +1989,12 @@ var kinds = {
     SLIMEBALL: [Types.Entities.SLIMEBALL, "object"],
     REDOOZE: [Types.Entities.REDOOZE, "object"],
     WILDBLADE: [Types.Entities.WILDBLADE, "object"],
+    WILDFLOWER: [Types.Entities.WILDFLOWER, "object"],
+    MAGICMUSHROOM: [Types.Entities.MAGICMUSHROOM, "object"],
+    BLACKCAT: [Types.Entities.BLACKCAT, "object"],
+    HERMITHOME: [Types.Entities.HERMITHOME, "object"],
+    GREEN_PEARL: [Types.Entities.GREEN_PEARL, "object"],
+    FOREST_KEY: [Types.Entities.FOREST_KEY, "object"],
     // @nextObjectLine@
 
     guard: [Types.Entities.GUARD, "npc"],
@@ -1991,6 +2008,11 @@ var kinds = {
     rick: [Types.Entities.RICK, "npc"],
     torin: [Types.Entities.TORIN, "npc"],
     elric: [Types.Entities.ELRIC, "npc"],
+    neena: [Types.Entities.NEENA, "npc"],
+    athlyn: [Types.Entities.ATHLYN, "npc"],
+    jeniper: [Types.Entities.JENIPER, "npc"],
+    whiskers: [Types.Entities.WHISKERS, "npc"],
+    glink: [Types.Entities.GLINK, "npc"],
     elara: [Types.Entities.ELARA, "npc"],
     eldrin: [Types.Entities.ELDRIN, "npc"],
     draylen: [Types.Entities.DRAYLEN, "npc"],

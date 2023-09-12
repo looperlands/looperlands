@@ -95,6 +95,32 @@ define(['character'], function (Character) {
         "torvin": [
             "Greetings traveller",
         ],
+        "glink": [
+            "Hehe! Twisted paths and endless loops, in this maze of many stoops.",
+            "First may lead, third's a trick, but second steps, back you pick.",
+            "Revisit a choice once made, or in circles you'll forever wade!",
+        ],
+        
+        "neena": [
+            "Hey there!",
+        ],
+        "thaelen": [
+            "Greetings warrior, can you assist us?",
+        ],
+        "jeniper": [
+            "Haven't seen you around! You new here?",
+        ],
+        "athlyn": [
+            "Hey! you seem useful, let me put you to work!",
+        ],
+        "torvin": [
+            "Hey can you see if my friend's safe?",
+        ],
+        "whiskers": [
+            "Meeeow",
+            "n'stuff",
+        ],
+
 /////////////////////////////////////////////////////
 
         "scientist": [

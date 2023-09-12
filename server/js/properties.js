@@ -150,7 +150,7 @@ var Properties = {
     gnashling: {
         level: 3,
         drops: {
-            potion: 50,
+            potion: 80,
         },
     },
 
@@ -158,7 +158,14 @@ var Properties = {
         level: 10,
         drops: {
             potion: 100,
+            
         },
+        armorMod: 1.25,
+        weaponMod: 2,
+        hpMod: 3,
+        xp: 3000,  
+        respawnDelay: 30000
+        
     },
 
     thudlord: {
@@ -166,6 +173,11 @@ var Properties = {
         drops: {
             THUDKEY: 100,
         },
+        weaponMod: 2,
+        hpMod: 1,
+        armorMod: 1.25
+
+
     },
 
     grizzlefang: {
@@ -178,7 +190,7 @@ var Properties = {
         level: 1,
         xp: 0,
         drops: {
-            WILDBLADE: 100,
+            WILDBLADE: 40,
         },
     },
     
@@ -186,7 +198,9 @@ var Properties = {
         level: 3,
         drops: {
             potion: 100,
-        messages: ['Bow to the gelatinous crown', 'Flowing, shifting, unstoppable', 'Dissolve within my embrace', 'I am boundless, ever-spreading', 'Your struggles make the kingdom grow'],        
+        messages: ['Bow to the gelatinous crown', 'Flowing, shifting, unstoppable', 'Dissolve within my embrace', 'I am boundless, ever-spreading', 'Your struggles make the kingdom grow'],
+        armorMod: 0.75,
+        hpMod: 0.75,
         },
     },
 
@@ -195,7 +209,14 @@ var Properties = {
         drops: {
             potion: 50,
         },
-        messages: ['Darkness shall embrance you!', 'Your doom is woven', 'Fear binds you', 'Your end is spun', 'The old world beckons you'],        
+        messages: ['Darkness shall embrance you!', 'Your doom is woven', 'Fear binds you', 'Your end is spun', 'The old world beckons you'],   
+        armorMod: 1,
+        hpMod: 1,
+        weaponMod: 0.8,
+        respawnDelay: 30000,
+        xp: 1000
+        
+        
     },
 
 

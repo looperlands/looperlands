@@ -83,8 +83,33 @@ define(['npc'], function(Npc) {
             init: function(id) {
                 this._super(id, Types.Entities.ELRIC, 1);
             }
-        }),        
-        
+        }), 
+        Whiskers: Npc.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.WHISKERS, 1);
+            }
+        }), 
+        Neena: Npc.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.NEENA, 1);
+            }
+        }),
+        Athlyn: Npc.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.ATHLYN, 1);
+            }
+        }),
+        Jeniper: Npc.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.JENIPER, 1);
+            }
+        }),       
+        Glink: Npc.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.GLINK, 1);
+            }
+        }),              
+
         VillageGirl: Npc.extend({
             init: function(id) {
                 this._super(id, Types.Entities.VILLAGEGIRL, 1);
