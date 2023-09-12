@@ -349,6 +349,9 @@ define(['jquery', 'storage'], function($, Storage) {
                     $a.addClass('unlocked');
                 }
                 if(!achievement.hidden) {
+                    if (achievement.progressCount !== undefined && achievement.amount !== undefined) {
+                        achievement.name = achievement.progressCount + "/" + achievement.amount + " " + achievement.name;
+                    }
                     self.setAchievementData($a, achievement.name, achievement.desc);
                 }
                 $a.show();
