@@ -166,13 +166,13 @@ quests = [
     {
         id: "OA_SIDE_1",
         name: "Revenge served..Slimey",
-        startText: "Collect 30 Red Ooze for Elric",
+        startText: "Collect 15 Red Ooze for Elric",
     //        startText: "Traveler, you come at a dire time. My men and I were ambushed. These plains were once calm, but ever since King RC's departure, they've been swarming with these vile creatures we've named 'Gnashlings'. Their numbers are overwhelming. I implore you, if you can thin their ranks, it might give us a fighting chance to reclaim the Windweave Planes and push these creatures back. We need to stabilize this area, or all of Looporia might be at risk.",
         endText: "Collected enough ooze!",
         eventType: "LOOT_ITEM",
         npc: Types.Entities.ELRIC,
         target: Types.Entities.REDOOZE,
-        amount: 30,
+        amount: 15,
         level: 2,
         medal: Types.Medals.HEARTH
     },
@@ -238,6 +238,19 @@ quests = [
         npc: Types.Entities.GLINK,
         target: Types.Entities.WILDGRIN,
         amount: 25,
+        level: 6,
+        medal: Types.Medals.HEARTH
+    },
+    {
+        id: "OA_SIDE_7",
+        name: "Collect 8 Shiny pearls from Wildgrin camps. ",
+        startText: "They steal from Glink! Get them back!",
+    //        startText: "Traveler, you come at a dire time. My men and I were ambushed. These plains were once calm, but ever since King RC's departure, they've been swarming with these vile creatures we've named 'Gnashlings'. Their numbers are overwhelming. I implore you, if you can thin their ranks, it might give us a fighting chance to reclaim the Windweave Planes and push these creatures back. We need to stabilize this area, or all of Looporia might be at risk.",
+        endText: "My preciouses!!",
+        eventType: "LOOT_ITEM",
+        npc: Types.Entities.GLINK,
+        target: Types.Entities.GREEN_PEARL,
+        amount: 8,
         level: 6,
         medal: Types.Medals.HEARTH
     }

@@ -188,7 +188,9 @@ Types = {
         WILDFLOWER: 21300021,
         MAGICMUSHROOM: 21300022,
         BLACKCAT: 21300023,
-        HERMITHOME: 21300024, // @lastidObject@
+        HERMITHOME: 21300024,
+        GREEN_PEARL: 21300025,
+        FOREST_KEY: 21300026, // @lastidObject@
         //@nextIdLineObject@
         
         // NPCs
@@ -1989,6 +1991,8 @@ var kinds = {
     MAGICMUSHROOM: [Types.Entities.MAGICMUSHROOM, "object"],
     BLACKCAT: [Types.Entities.BLACKCAT, "object"],
     HERMITHOME: [Types.Entities.HERMITHOME, "object"],
+    GREEN_PEARL: [Types.Entities.GREEN_PEARL, "object"],
+    FOREST_KEY: [Types.Entities.FOREST_KEY, "object"],
     // @nextObjectLine@
 
     guard: [Types.Entities.GUARD, "npc"],

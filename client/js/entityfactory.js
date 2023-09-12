@@ -468,6 +468,8 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.MAGICMUSHROOM]=function(id){return new Items.MAGICMUSHROOM(id);};
     EntityFactory.builders[Types.Entities.BLACKCAT]=function(id){return new Items.BLACKCAT(id);};
     EntityFactory.builders[Types.Entities.HERMITHOME]=function(id){return new Items.HERMITHOME(id);};
+    EntityFactory.builders[Types.Entities.GREEN_PEARL]=function(id){return new Items.GREEN_PEARL(id);};
+    EntityFactory.builders[Types.Entities.FOREST_KEY]=function(id){return new Items.FOREST_KEY(id);};
     // @nextObjectLine@
 
     //====== NPCs ======
