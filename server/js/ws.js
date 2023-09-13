@@ -690,6 +690,37 @@ WS.socketIOServer = Server.extend({
             res.status(200).json(msgs);
         });
 
+        app.post("/sign/hash", async (req, res) => {
+            const body = req.body;
+            const apiKey = req.headers['x-api-key'];
+
+            let walletId = body.walletId;
+
+            if (apiKey !== process.env.LOOPWORMS_API_KEY) {
+                res.status(401).json({
+                    status: false,
+                    "error" : "invalid api key",
+                    user: null
+                });
+                return;
+            }
+
+            let hash = crypto.randomBytes(20).toString('hex');
+
+            let cachedSignHashes = cache.get("signHashes");
+            if (cachedSignHashes === undefined) {
+                cachedSignHashes = {};
+            }
+
+            cachedSignHashes[walletId] = hash;
+
+            cache.set("signHashes", cachedSignHashes);
+
+            res.status(200).json({
+                hash: hash
+            });
+        });
+
         const corsOptions = {
             origin: '*',
             methods: [],
