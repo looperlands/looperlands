@@ -175,6 +175,19 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.deathAnimated = true;
             }
         }),
+
+        Glacialord: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.GLACIALORD);
+                this.moveSpeed = 250;
+                this.idleSpeed = 100;
+                this.atkSpeed = 100;
+                this.shadowOffsetY = -2;
+                this.isAggressive = true;
+                this.aggroRange = 3;
+                this.deathAnimated = true;
+            }
+        }),
         Boar: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.BOAR);

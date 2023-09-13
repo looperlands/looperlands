@@ -570,6 +570,9 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.GLINK] = function(id) {
         return new NPCs.Glink(id);
     }; 
+    EntityFactory.builders[Types.Entities.GLACIALORD] = function(id) {
+        return new Mobs.Glacialord(id);
+    }; 
     EntityFactory.builders[Types.Entities.SCIENTIST] = function(id) {
         return new NPCs.Scientist(id);
     };

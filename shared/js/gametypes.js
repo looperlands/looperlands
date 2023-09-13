@@ -143,8 +143,9 @@ Types = {
         SHIVERROCK: 300096, //Latest
         CRYSTOLITH: 300097, //Latest
         STONEGUARD: 300098, //Latest
-        SHIVERROCKII: 300096, //Latest
-        SHIVERROCKIII: 300096, //Latest
+        SHIVERROCKII: 300099, //Latest
+        SHIVERROCKIII: 300100, //Latest
+        GLACIALORD: 300101, //Latest
         ALARIC: 300016,
         JAYCE: 300017,
         ORLAN: 300018,
@@ -1885,6 +1886,7 @@ var kinds = {
     crystolith: [Types.Entities.CRYSTOLITH, "mob"],
     stoneguard: [Types.Entities.STONEGUARD, "mob"],
     shiverrock: [Types.Entities.SHIVERROCK, "mob"],
+    glacialord: [Types.Entities.GLACIALORD, "mob"],
     shiverrockii: [Types.Entities.SHIVERROCKII, "mob"],
     shiverrockiii: [Types.Entities.SHIVERROCKIII, "mob"],
     spider: [Types.Entities.SPIDER, "mob"],
