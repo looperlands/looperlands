@@ -23,6 +23,7 @@ const Formulas = require('./formulas.js');
 const ens = require("./ens.js");
 const chat = require("./chat.js");
 const quests = require("./quests/quests.js");
+const signing = require("./signing.js");
 
 const cache = new NodeCache();
 
@@ -191,6 +192,23 @@ WS.socketIOServer = Server.extend({
                     cache.del(key);
                 }
             }
+
+            let signedMessage = body.signedMessage;
+            let signature = body.signature;
+            let validSignature = await signing.validateSignature(body.walletId, signedMessage, signature);
+            console.log("Valid signature", validSignature);
+
+            /*
+            if (!validSignature) {
+                console.error("Invalid signature for wallet", body.walletId);
+                res.status(401).json({
+                    status: false,
+                    error: "Invalid signature",
+                    user: null
+                });
+                return;
+            }
+            */
 
             let responseJson = newSession(body);
 
@@ -690,36 +708,7 @@ WS.socketIOServer = Server.extend({
             res.status(200).json(msgs);
         });
 
-        app.post("/sign/hash", async (req, res) => {
-            const body = req.body;
-            const apiKey = req.headers['x-api-key'];
-
-            let walletId = body.walletId;
-
-            if (apiKey !== process.env.LOOPWORMS_API_KEY) {
-                res.status(401).json({
-                    status: false,
-                    "error" : "invalid api key",
-                    user: null
-                });
-                return;
-            }
-
-            let hash = crypto.randomBytes(20).toString('hex');
-
-            let cachedSignHashes = cache.get("signHashes");
-            if (cachedSignHashes === undefined) {
-                cachedSignHashes = {};
-            }
-
-            cachedSignHashes[walletId] = hash;
-
-            cache.set("signHashes", cachedSignHashes);
-
-            res.status(200).json({
-                hash: hash
-            });
-        });
+        app.post("/sign/generatenonce", signing.generateNonce);
 
         const corsOptions = {
             origin: '*',
