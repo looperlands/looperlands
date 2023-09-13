@@ -140,6 +140,11 @@ Types = {
         JENIPER: 300093,
         NEENA: 300094, //Latest
         WHISKERS: 300095, //Latest
+        SHIVERROCK: 300096, //Latest
+        CRYSTOLITH: 300097, //Latest
+        STONEGUARD: 300098, //Latest
+        SHIVERROCKII: 300096, //Latest
+        SHIVERROCKIII: 300096, //Latest
         ALARIC: 300016,
         JAYCE: 300017,
         ORLAN: 300018,
@@ -190,7 +195,11 @@ Types = {
         BLACKCAT: 21300023,
         HERMITHOME: 21300024,
         GREEN_PEARL: 21300025,
-        FOREST_KEY: 21300026, // @lastidObject@
+        FOREST_KEY: 21300026,
+        ICEKEY1: 21300027,
+        ICEKEY2: 21300028,
+        ICEKEY3: 21300029,
+        ICEKEY4: 21300030, // @lastidObject@
         //@nextIdLineObject@
         
         // NPCs
@@ -1873,6 +1882,11 @@ var kinds = {
     redslime: [Types.Entities.REDSLIME, "mob"],
     kingslime: [Types.Entities.KINGSLIME, "mob"],    
     silkshade: [Types.Entities.SILKSHADE, "mob"],      
+    crystolith: [Types.Entities.CRYSTOLITH, "mob"],
+    stoneguard: [Types.Entities.STONEGUARD, "mob"],
+    shiverrock: [Types.Entities.SHIVERROCK, "mob"],
+    shiverrockii: [Types.Entities.SHIVERROCKII, "mob"],
+    shiverrockiii: [Types.Entities.SHIVERROCKIII, "mob"],
     spider: [Types.Entities.SPIDER, "mob"],
     fangwing: [Types.Entities.FANGWING, "mob"],
     arachweave: [Types.Entities.ARACHWEAVE, "mob"],
@@ -1995,6 +2009,10 @@ var kinds = {
     HERMITHOME: [Types.Entities.HERMITHOME, "object"],
     GREEN_PEARL: [Types.Entities.GREEN_PEARL, "object"],
     FOREST_KEY: [Types.Entities.FOREST_KEY, "object"],
+    ICEKEY1: [Types.Entities.ICEKEY1, "object"],
+    ICEKEY2: [Types.Entities.ICEKEY2, "object"],
+    ICEKEY3: [Types.Entities.ICEKEY3, "object"],
+    ICEKEY4: [Types.Entities.ICEKEY4, "object"],
     // @nextObjectLine@
 
     guard: [Types.Entities.GUARD, "npc"],

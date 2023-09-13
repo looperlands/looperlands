@@ -168,6 +168,39 @@ var Properties = {
         
     },
 
+    crystolith: {
+        level: 12,
+        drops: {
+            potion: 80,
+        },
+    },
+
+    stoneguard: {
+        level: 9,
+        drops: {
+            potion: 80,
+        },
+    },
+
+    shiverrock: {
+        level: 14,
+        drops: {
+            ICEKEY1: 100,
+        },
+    },
+    shiverrockii: {
+        level: 14,
+        drops: {
+            ICEKEY2: 100,
+        },
+    },
+    shiverrockiii: {
+        level: 14,
+        drops: {
+            ICEKEY3: 100,
+        },
+    },
+
     thudlord: {
         level: 6,
         drops: {
