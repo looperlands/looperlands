@@ -168,6 +168,39 @@ var Properties = {
         
     },
 
+    crystolith: {
+        level: 12,
+        drops: {
+            potion: 80,
+        },
+    },
+
+    stoneguard: {
+        level: 9,
+        drops: {
+            potion: 80,
+        },
+    },
+
+    shiverrock: {
+        level: 16,
+        drops: {
+            ICEKEY1: 100,
+        },
+    },
+    shiverrockii: {
+        level: 16,
+        drops: {
+            ICEKEY2: 100,
+        },
+    },
+    shiverrockiii: {
+        level: 16,
+        drops: {
+            ICEKEY3: 100,
+        },
+    },
+
     thudlord: {
         level: 6,
         drops: {
@@ -215,6 +248,21 @@ var Properties = {
         weaponMod: 0.8,
         respawnDelay: 30000,
         xp: 1000
+        
+        
+    },
+
+    glacialord: {
+        level: 20,
+        drops: {
+            potion: 50,
+        },
+        messages: ['Frost consumes you!', 'Ice seals your fate!', 'I am eternal Cold!', 'Cold as death', 'Shatter!'],   
+        armorMod: 1,
+        hpMod: 2,
+        weaponMod: 1.2,
+        respawnDelay: 30000,
+        xp: 3000
         
         
     },

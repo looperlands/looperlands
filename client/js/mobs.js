@@ -175,6 +175,19 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.deathAnimated = true;
             }
         }),
+
+        Glacialord: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.GLACIALORD);
+                this.moveSpeed = 250;
+                this.idleSpeed = 100;
+                this.atkSpeed = 100;
+                this.shadowOffsetY = -2;
+                this.isAggressive = true;
+                this.aggroRange = 3;
+                this.deathAnimated = true;
+            }
+        }),
         Boar: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.BOAR);
@@ -1412,6 +1425,67 @@ define(['mob', 'timer'], function(Mob, Timer) {
         Arachweave: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.ARACHWEAVE);
+                this.moveSpeed = 350;
+                this.idleSpeed = 100;
+                this.shadowOffsetY = -2;
+                this.atkSpeed = 100;
+                this.isAggressive = true;
+                this.aggroRange = 3;
+                this.deathAnimated = true;
+            }
+        }),
+
+        Crystolith: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.CRYSTOLITH);
+                this.moveSpeed = 350;
+                this.idleSpeed = 100;
+                this.shadowOffsetY = -2;
+                this.atkSpeed = 100;
+                this.isAggressive = true;
+                this.aggroRange = 3;
+                this.deathAnimated = true;
+            }
+        }),
+        Shiverrock: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.SHIVERROCK);
+                this.moveSpeed = 350;
+                this.idleSpeed = 100;
+                this.shadowOffsetY = -2;
+                this.atkSpeed = 100;
+                this.isAggressive = true;
+                this.aggroRange = 3;
+                this.deathAnimated = true;
+            }
+        }),
+        ShiverrockII: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.SHIVERROCKII);
+                this.moveSpeed = 350;
+                this.idleSpeed = 100;
+                this.shadowOffsetY = -2;
+                this.atkSpeed = 100;
+                this.isAggressive = true;
+                this.aggroRange = 3;
+                this.deathAnimated = true;
+            }
+        }),
+        ShiverrockIII: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.SHIVERROCKIII);
+                this.moveSpeed = 350;
+                this.idleSpeed = 100;
+                this.shadowOffsetY = -2;
+                this.atkSpeed = 100;
+                this.isAggressive = true;
+                this.aggroRange = 3;
+                this.deathAnimated = true;
+            }
+        }),
+        Stoneguard: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.STONEGUARD);
                 this.moveSpeed = 350;
                 this.idleSpeed = 100;
                 this.shadowOffsetY = -2;

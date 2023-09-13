@@ -114,7 +114,21 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.SILKSHADE] = function(id) {
         return new Mobs.Silkshade(id);
     };    
-
+    EntityFactory.builders[Types.Entities.CRYSTOLITH] = function(id) {
+        return new Mobs.Crystolith(id);
+    };  
+    EntityFactory.builders[Types.Entities.STONEGUARD] = function(id) {
+        return new Mobs.Stoneguard(id);
+    };    
+    EntityFactory.builders[Types.Entities.SHIVERROCK] = function(id) {
+        return new Mobs.Shiverrock(id);
+    }; 
+    EntityFactory.builders[Types.Entities.SHIVERROCKII] = function(id) {
+        return new Mobs.ShiverrockII(id);
+    };    
+    EntityFactory.builders[Types.Entities.SHIVERROCKIII] = function(id) {
+        return new Mobs.ShiverrockIII(id);
+    };  
     EntityFactory.builders[Types.Entities.SPIDER] = function(id) {
         return new Mobs.Spider(id);
     };   
@@ -470,6 +484,10 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.HERMITHOME]=function(id){return new Items.HERMITHOME(id);};
     EntityFactory.builders[Types.Entities.GREEN_PEARL]=function(id){return new Items.GREEN_PEARL(id);};
     EntityFactory.builders[Types.Entities.FOREST_KEY]=function(id){return new Items.FOREST_KEY(id);};
+    EntityFactory.builders[Types.Entities.ICEKEY1]=function(id){return new Items.ICEKEY1(id);};
+    EntityFactory.builders[Types.Entities.ICEKEY2]=function(id){return new Items.ICEKEY2(id);};
+    EntityFactory.builders[Types.Entities.ICEKEY3]=function(id){return new Items.ICEKEY3(id);};
+    EntityFactory.builders[Types.Entities.ICEKEY4]=function(id){return new Items.ICEKEY4(id);};
     // @nextObjectLine@
 
     //====== NPCs ======
@@ -551,6 +569,9 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     };    
     EntityFactory.builders[Types.Entities.GLINK] = function(id) {
         return new NPCs.Glink(id);
+    }; 
+    EntityFactory.builders[Types.Entities.GLACIALORD] = function(id) {
+        return new Mobs.Glacialord(id);
     }; 
     EntityFactory.builders[Types.Entities.SCIENTIST] = function(id) {
         return new NPCs.Scientist(id);

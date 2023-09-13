@@ -58,6 +58,11 @@ define(['npc'], function(Npc) {
                 this._super(id, Types.Entities.THAELEN, 1);
             }
         }),
+        Glacialord: Npc.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.GLACIALORD, 1);
+            }
+        }),
         Keldor: Npc.extend({
             init: function(id) {
                 this._super(id, Types.Entities.KELDOR, 1);
