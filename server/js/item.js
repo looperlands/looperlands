@@ -1,3 +1,5 @@
+const Properties = require("./properties"),
+      Types = require("../../shared/js/gametypes");
 
 module.exports = Item = Entity.extend({
     init: function(id, kind, x, y) {
@@ -24,7 +26,13 @@ module.exports = Item = Entity.extend({
         }
         
         if(this.isStatic) {
-            this.scheduleRespawn(30000);
+            let delay = 30000;
+            if(Properties[Types.getKindAsString(this.kind)] !== undefined && 
+               Properties[Types.getKindAsString(this.kind)].respawnDelay !== undefined) {
+                delay = Properties[Types.getKindAsString(this.kind)].respawnDelay;    
+            }
+
+            this.scheduleRespawn(delay);
         }
     },
     

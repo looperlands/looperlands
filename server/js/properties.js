@@ -815,6 +815,11 @@ var Properties = {
             damage: 100,
             range: 1
         }
+    },
+
+    //Items
+    coblog: {
+        respawnDelay: 60000
     }
 };
 
