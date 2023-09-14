@@ -1409,6 +1409,17 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
 
+        Gloomforged: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.GLOOMFORGED);
+                this.moveSpeed = 350;
+                this.atkSpeed = 100;
+                this.idleSpeed = 400;
+                this.shadowOffsetY = 1;
+                this.setAttackRate(1200);
+            }
+        }),
+
         Fangwing: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.FANGWING);

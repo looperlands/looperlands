@@ -160,6 +160,62 @@ quests = [
         level: 6,
         medal: Types.Medals.HEARTH
     },
+    {
+        id: "OA_QUEST_12",
+        name: "Glacialord's Demise",
+        startText: "Break the curse of Dawnbloom!",
+//        startText: "Traveler, you come at a dire time. My men and I were ambushed. These plains were once calm, but ever since King RC's departure, they've been swarming with these vile creatures we've named 'Gnashlings'. Their numbers are overwhelming. I implore you, if you can thin their ranks, it might give us a fighting chance to reclaim the Windweave Planes and push these creatures back. We need to stabilize this area, or all of Looporia might be at risk.",
+        endText: "Glacialord defeated!",
+        eventType: "KILL_MOB",
+        npc: Types.Entities.EDUR,
+        target: Types.Entities.GLACIALORD,
+        amount: 1,
+        requiredQuest: "OA_QUEST_11",
+        level: 16,
+        medal: Types.Medals.HEARTH
+    },
+    {
+        id: "OA_QUEST_13",
+        name: "Icebound Treasures",
+        startText: "Gather icebound crystals within the enclave.",
+//        startText: "Traveler, you come at a dire time. My men and I were ambushed. These plains were once calm, but ever since King RC's departure, they've been swarming with these vile creatures we've named 'Gnashlings'. Their numbers are overwhelming. I implore you, if you can thin their ranks, it might give us a fighting chance to reclaim the Windweave Planes and push these creatures back. We need to stabilize this area, or all of Looporia might be at risk.",
+        endText: "Crystals delivered!",
+        eventType: "LOOT_ITEM",
+        npc: Types.Entities.LUMI,
+        target: Types.Entities.ICEBOUNDCRYSTAL,
+        amount: 25,
+        requiredQuest: "OA_QUEST_11", // change
+        level: 14,
+        medal: Types.Medals.HEARTH
+    },
+    {
+        id: "OA_QUEST_14",
+        name: "Satchel's Secrets",
+        startText: "Retrieve lost satchel from enclave's depths",
+//        startText: "Traveler, you come at a dire time. My men and I were ambushed. These plains were once calm, but ever since King RC's departure, they've been swarming with these vile creatures we've named 'Gnashlings'. Their numbers are overwhelming. I implore you, if you can thin their ranks, it might give us a fighting chance to reclaim the Windweave Planes and push these creatures back. We need to stabilize this area, or all of Looporia might be at risk.",
+        endText: "Curse has been lifted!",
+        eventType: "LOOT_ITEM",
+        npc: Types.Entities.LUMI,
+        target: Types.Entities.SATCHEL,
+        amount: 1,
+        requiredQuest: "OA_QUEST_11", //change
+        level: 14,
+        medal: Types.Medals.HEARTH
+    },
+    {
+        id: "OA_QUEST_15",
+        name: "Extract essences from enclave's crystoliths.",
+        startText: "Retrieve lost satchel from enclave's depths",
+//        startText: "Traveler, you come at a dire time. My men and I were ambushed. These plains were once calm, but ever since King RC's departure, they've been swarming with these vile creatures we've named 'Gnashlings'. Their numbers are overwhelming. I implore you, if you can thin their ranks, it might give us a fighting chance to reclaim the Windweave Planes and push these creatures back. We need to stabilize this area, or all of Looporia might be at risk.",
+        endText: "Curse has been lifted!",
+        eventType: "LOOT_ITEM",
+        npc: Types.Entities.GELIDUS,
+        target: Types.Entities.ICESSENCE,
+        amount: 40,
+        requiredQuest: "OA_QUEST_11", //change
+        level: 14,
+        medal: Types.Medals.HEARTH
+    },
 
 ///SIDE QUESTS///
 

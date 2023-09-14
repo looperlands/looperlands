@@ -84,6 +84,9 @@ define(['character'], function (Character) {
         "elric": [
             "I'd advise against entering, friend.",
         ],
+        "keldor": [
+            "The frost is gripping this area, stay safe friend",
+        ],
 
         "draylen": [
             "Be careful out there wanderer, it's dangerous",
@@ -120,6 +123,19 @@ define(['character'], function (Character) {
             "Meeeow",
             "n'stuff",
         ],
+        "gelidus": [
+            "Greetings warrior",
+        ],
+        "edur": [
+            "Spare a moment?",
+        ],
+        "lumi": [
+            "Please, can you help me!",
+        ],
+        "snjor": [
+            "I used to be an adventurer like you",
+        ],
+
 
 /////////////////////////////////////////////////////
 

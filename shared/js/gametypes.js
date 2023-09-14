@@ -138,14 +138,19 @@ Types = {
         GLINK: 300091, 
         ATHLYN: 300092, 
         JENIPER: 300093,
-        NEENA: 300094, //Latest
-        WHISKERS: 300095, //Latest
-        SHIVERROCK: 300096, //Latest
-        CRYSTOLITH: 300097, //Latest
-        STONEGUARD: 300098, //Latest
-        SHIVERROCKII: 300099, //Latest
-        SHIVERROCKIII: 300100, //Latest
-        GLACIALORD: 300101, //Latest
+        NEENA: 300094, 
+        WHISKERS: 300095, 
+        SHIVERROCK: 300096, 
+        CRYSTOLITH: 300097, 
+        STONEGUARD: 300098, 
+        SHIVERROCKII: 300099, 
+        SHIVERROCKIII: 300100, 
+        GLACIALORD: 300101, 
+        GELIDUS: 300102,
+        LUMI: 300103,
+        EDUR: 300104,
+        SNJOR: 300105,   
+        GLOOMFORGED: 300106, 
         ALARIC: 300016,
         JAYCE: 300017,
         ORLAN: 300018,
@@ -200,7 +205,10 @@ Types = {
         ICEKEY1: 21300027,
         ICEKEY2: 21300028,
         ICEKEY3: 21300029,
-        ICEKEY4: 21300030, // @lastidObject@
+        ICEKEY4: 21300030,
+        ICEBOUNDCRYSTAL: 21300031,
+        SATCHEL: 21300032,
+        ICESSENCE: 21300033, // @lastidObject@
         //@nextIdLineObject@
         
         // NPCs
@@ -1899,6 +1907,7 @@ var kinds = {
     shiverrockii: [Types.Entities.SHIVERROCKII, "mob"],
     shiverrockiii: [Types.Entities.SHIVERROCKIII, "mob"],
     spider: [Types.Entities.SPIDER, "mob"],
+    gloomforged: [Types.Entities.GLOOMFORGED, "mob"],
     fangwing: [Types.Entities.FANGWING, "mob"],
     arachweave: [Types.Entities.ARACHWEAVE, "mob"],
     minimag: [Types.Entities.MINIMAG, "mob"],
@@ -2024,6 +2033,9 @@ var kinds = {
     ICEKEY2: [Types.Entities.ICEKEY2, "object"],
     ICEKEY3: [Types.Entities.ICEKEY3, "object"],
     ICEKEY4: [Types.Entities.ICEKEY4, "object"],
+    ICEBOUNDCRYSTAL: [Types.Entities.ICEBOUNDCRYSTAL, "object"],
+    SATCHEL: [Types.Entities.SATCHEL, "object"],
+    ICESSENCE: [Types.Entities.ICESSENCE, "object"],
     // @nextObjectLine@
 
     guard: [Types.Entities.GUARD, "npc"],
@@ -2037,6 +2049,10 @@ var kinds = {
     rick: [Types.Entities.RICK, "npc"],
     torin: [Types.Entities.TORIN, "npc"],
     elric: [Types.Entities.ELRIC, "npc"],
+    snjor: [Types.Entities.SNJOR, "npc"],
+    lumi: [Types.Entities.LUMI, "npc"],
+    edur: [Types.Entities.EDUR, "npc"],
+    gelidus: [Types.Entities.GELIDUS, "npc"],
     neena: [Types.Entities.NEENA, "npc"],
     athlyn: [Types.Entities.ATHLYN, "npc"],
     jeniper: [Types.Entities.JENIPER, "npc"],
