@@ -410,6 +410,11 @@ WS.socketIOServer = Server.extend({
                                 progressCount = mobCount;
                             }
                         }
+
+                        if (progressCount >= quest.amount) {
+                            progressCount = quest.amount;
+                        }
+
                         availableQuests.push({
                             id: quest.id,
                             name: quest.name,
