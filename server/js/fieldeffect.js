@@ -10,7 +10,7 @@ module.exports = Fieldeffect = Entity.extend({
 
     initDamageCallback: function(callback) {
         const self = this;
-        kindString = Types.getKindAsString(this.kind);
+        let kindString = Types.getKindAsString(this.kind);
 
         if (Properties[kindString] !== undefined && Properties[kindString].aoe !== undefined){
             self.damage_callback = callback;

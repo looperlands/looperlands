@@ -313,7 +313,7 @@ var Properties = {
         },
         aoe: {
             damage: 60,
-            ondeath: true
+            onDeath: true
         },
         armorMod: 2,
         weaponMod: 0.8
@@ -367,7 +367,13 @@ var Properties = {
             cobcorn: 10
         },
         armorMod: 0.75,
-        hpMod: 0.75
+        hpMod: 0.75,
+        aoe: {
+            damage: 10,
+            range: 3,
+            onHit: true,
+            onDeath: true
+        }
     },
 
     cobslimered: {
