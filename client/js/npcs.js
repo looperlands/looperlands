@@ -32,6 +32,26 @@ define(['npc'], function(Npc) {
                 this._super(id, Types.Entities.RICK, 1);
             }
         }),
+        Gelidus: Npc.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.GELIDUS, 1);
+            }
+        }),
+        Snjor: Npc.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.SNJOR, 1);
+            }
+        }),
+        Lumi: Npc.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.LUMI, 1);
+            }
+        }),
+        Edur: Npc.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.EDUR, 1);
+            }
+        }),
 
         Torin: Npc.extend({
             init: function(id) {

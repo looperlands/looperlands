@@ -27,6 +27,9 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.RAT] = function(id) {
         return new Mobs.Rat(id);
     };
+    EntityFactory.builders[Types.Entities.GLOOMFORGED] = function(id) {
+        return new Mobs.Gloomforged(id);
+    };
 
     EntityFactory.builders[Types.Entities.SKELETON] = function(id) {
         return new Mobs.Skeleton(id);
@@ -488,6 +491,9 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.ICEKEY2]=function(id){return new Items.ICEKEY2(id);};
     EntityFactory.builders[Types.Entities.ICEKEY3]=function(id){return new Items.ICEKEY3(id);};
     EntityFactory.builders[Types.Entities.ICEKEY4]=function(id){return new Items.ICEKEY4(id);};
+    EntityFactory.builders[Types.Entities.ICEBOUNDCRYSTAL]=function(id){return new Items.ICEBOUNDCRYSTAL(id);};
+    EntityFactory.builders[Types.Entities.SATCHEL]=function(id){return new Items.SATCHEL(id);};
+    EntityFactory.builders[Types.Entities.ICESSENCE]=function(id){return new Items.ICESSENCE(id);};
     // @nextObjectLine@
 
     //====== NPCs ======
@@ -520,6 +526,7 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
         return new NPCs.Agent(id);
     };
 
+
     EntityFactory.builders[Types.Entities.RICK] = function(id) {
         return new NPCs.Rick(id);
     };
@@ -530,6 +537,18 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
 
     EntityFactory.builders[Types.Entities.ELARA] = function(id) {
         return new NPCs.Elara(id);
+    };
+    EntityFactory.builders[Types.Entities.EDUR] = function(id) {
+        return new NPCs.Edur(id);
+    };
+    EntityFactory.builders[Types.Entities.LUMI] = function(id) {
+        return new NPCs.Lumi(id);
+    };
+    EntityFactory.builders[Types.Entities.SNJOR] = function(id) {
+        return new NPCs.Snjor(id);
+    };
+    EntityFactory.builders[Types.Entities.GELIDUS] = function(id) {
+        return new NPCs.Gelidus(id);
     };    
     EntityFactory.builders[Types.Entities.ELDRIN] = function(id) {
         return new NPCs.Eldrin(id);

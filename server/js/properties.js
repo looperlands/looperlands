@@ -171,7 +171,7 @@ var Properties = {
     crystolith: {
         level: 12,
         drops: {
-            potion: 80,
+            ICESSENCE: 80,
         },
     },
 
@@ -199,6 +199,10 @@ var Properties = {
         drops: {
             ICEKEY3: 100,
         },
+    },
+
+    gloomforged: {
+        level: 20,
     },
 
     thudlord: {
