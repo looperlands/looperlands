@@ -195,8 +195,8 @@ WS.socketIOServer = Server.extend({
 
             let signedMessage = body.signedMessage;
             let signature = body.signature;
-            let validSignature = await signing.validateSignature(body.walletId, signedMessage, signature);
-            console.log("Valid signature", validSignature);
+            //let validSignature = await signing.validateSignature(body.walletId, signedMessage, signature);
+            //console.log("Valid signature", validSignature);
 
             /*
             if (!validSignature) {
