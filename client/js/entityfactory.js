@@ -530,6 +530,9 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.RICK] = function(id) {
         return new NPCs.Rick(id);
     };
+    EntityFactory.builders[Types.Entities.TORIAN] = function(id) {
+        return new NPCs.Torian(id);
+    };
 
     EntityFactory.builders[Types.Entities.TORIN] = function(id) {
         return new NPCs.Torin(id);
@@ -591,6 +594,9 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     }; 
     EntityFactory.builders[Types.Entities.GLACIALORD] = function(id) {
         return new Mobs.Glacialord(id);
+    }; 
+    EntityFactory.builders[Types.Entities.NIGHTHARROW] = function(id) {
+        return new Mobs.Nightharrow(id);
     }; 
     EntityFactory.builders[Types.Entities.SCIENTIST] = function(id) {
         return new NPCs.Scientist(id);

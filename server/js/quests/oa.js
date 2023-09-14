@@ -61,7 +61,7 @@ quests = [
     { //IN PROGRESS
         id: "OA_QUEST_5",
         name: "The Key to Thudlord",
-        startText: "Commander Draylen wants you to defeat Thudlord and retrieve his key.",
+        startText: "Defeat Thudlord in his camp and retrieve his key",
 //        startText: "Traveler, you come at a dire time. My men and I were ambushed. These plains were once calm, but ever since King RC's departure, they've been swarming with these vile creatures we've named 'Gnashlings'. Their numbers are overwhelming. I implore you, if you can thin their ranks, it might give us a fighting chance to reclaim the Windweave Planes and push these creatures back. We need to stabilize this area, or all of Looporia might be at risk.",
         endText: "Thudlord King slain! - Go see Draylen!",
         eventType: "LOOT_ITEM",
@@ -105,7 +105,7 @@ quests = [
     {
         id: "OA_QUEST_8",
         name: "Lurking in the Shadows",
-        startText: "Silkthread Pass infested with Fangwings; Collect 30 of their wings!",
+        startText: "This area is nfested with bats! Collect 30 of their wings!",
 //        startText: "Traveler, you come at a dire time. My men and I were ambushed. These plains were once calm, but ever since King RC's departure, they've been swarming with these vile creatures we've named 'Gnashlings'. Their numbers are overwhelming. I implore you, if you can thin their ranks, it might give us a fighting chance to reclaim the Windweave Planes and push these creatures back. We need to stabilize this area, or all of Looporia might be at risk.",
         endText: "Bats have been dealt with! - Go See Liora",
         eventType: "LOOT_ITEM",
@@ -186,16 +186,16 @@ quests = [
         amount: 25,
         requiredQuest: "OA_QUEST_11", // change
         level: 14,
-        medal: Types.Medals.HEARTH
+        medal: Types.Medals.HEARTHS
     },
     {
         id: "OA_QUEST_14",
         name: "Satchel's Secrets",
         startText: "Retrieve lost satchel from enclave's depths",
 //        startText: "Traveler, you come at a dire time. My men and I were ambushed. These plains were once calm, but ever since King RC's departure, they've been swarming with these vile creatures we've named 'Gnashlings'. Their numbers are overwhelming. I implore you, if you can thin their ranks, it might give us a fighting chance to reclaim the Windweave Planes and push these creatures back. We need to stabilize this area, or all of Looporia might be at risk.",
-        endText: "Curse has been lifted!",
+        endText: "Recovered Satchel!",
         eventType: "LOOT_ITEM",
-        npc: Types.Entities.LUMI,
+        npc: Types.Entities.EDUR,
         target: Types.Entities.SATCHEL,
         amount: 1,
         requiredQuest: "OA_QUEST_11", //change
@@ -205,9 +205,9 @@ quests = [
     {
         id: "OA_QUEST_15",
         name: "Extract essences from enclave's crystoliths.",
-        startText: "Retrieve lost satchel from enclave's depths",
+        startText: "Extract essences from enclave's crystoliths",
 //        startText: "Traveler, you come at a dire time. My men and I were ambushed. These plains were once calm, but ever since King RC's departure, they've been swarming with these vile creatures we've named 'Gnashlings'. Their numbers are overwhelming. I implore you, if you can thin their ranks, it might give us a fighting chance to reclaim the Windweave Planes and push these creatures back. We need to stabilize this area, or all of Looporia might be at risk.",
-        endText: "Curse has been lifted!",
+        endText: "Extracted essences!",
         eventType: "LOOT_ITEM",
         npc: Types.Entities.GELIDUS,
         target: Types.Entities.ICESSENCE,

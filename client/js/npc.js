@@ -135,6 +135,9 @@ define(['character'], function (Character) {
         "snjor": [
             "I used to be an adventurer like you",
         ],
+        "torian": [
+            "Prepare yourself.",
+        ],
 
 
 /////////////////////////////////////////////////////

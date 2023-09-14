@@ -114,6 +114,11 @@ define(['npc'], function(Npc) {
                 this._super(id, Types.Entities.WHISKERS, 1);
             }
         }), 
+        Torian: Npc.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.TORIAN, 1);
+            }
+        }), 
         Neena: Npc.extend({
             init: function(id) {
                 this._super(id, Types.Entities.NEENA, 1);

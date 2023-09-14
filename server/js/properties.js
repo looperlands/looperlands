@@ -271,6 +271,21 @@ var Properties = {
         
     },
 
+    nightharrow: {
+        level: 25,
+        drops: {
+            potion: 50,
+        },
+        messages: ['Endings begin with me.', 'Kneel!', 'Dawn shall never rise.', 'Face the endless night!', 'Embrace the final dusk.!'],   
+        armorMod: 1.8,
+        hpMod: 25,
+        weaponMod: 2.2,
+        respawnDelay: 1800000,
+        xp: 8000
+        
+        
+    },
+
 
     wildgrin: {
         level: 7,

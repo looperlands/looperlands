@@ -188,6 +188,18 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.deathAnimated = true;
             }
         }),
+        Nightharrow: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.NIGHTHARROW);
+                this.moveSpeed = 250;
+                this.idleSpeed = 400;
+                this.atkSpeed = 100;
+                this.shadowOffsetY = -2;
+                this.isAggressive = true;
+                this.aggroRange = 3;
+                this.deathAnimated = true;
+            }
+        }),
         Boar: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.BOAR);
@@ -1416,6 +1428,8 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.atkSpeed = 100;
                 this.idleSpeed = 400;
                 this.shadowOffsetY = 1;
+                this.isAggressive = true;
+                this.aggroRange = 3;
                 this.setAttackRate(1200);
             }
         }),
