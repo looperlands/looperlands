@@ -202,7 +202,12 @@ var Properties = {
     },
 
     gloomforged: {
+        drops: {
+            FORGEDSWORD: 40,
+        },
         level: 20,
+        armorMod: 1.25,
+        weaponMod: 1.1
     },
 
     thudlord: {
@@ -210,8 +215,8 @@ var Properties = {
         drops: {
             THUDKEY: 100,
         },
-        weaponMod: 2,
-        hpMod: 1,
+        weaponMod: 1.2,
+        hpMod: 4,
         armorMod: 1.25
 
 
@@ -223,7 +228,7 @@ var Properties = {
             ORB: 100,
         },
     },
-    barrell: {
+    barrel: {
         level: 1,
         xp: 0,
         drops: {
@@ -237,7 +242,7 @@ var Properties = {
             potion: 100,
         messages: ['Bow to the gelatinous crown', 'Flowing, shifting, unstoppable', 'Dissolve within my embrace', 'I am boundless, ever-spreading', 'Your struggles make the kingdom grow'],
         armorMod: 0.75,
-        hpMod: 0.75,
+        hpMod: 3,
         },
     },
 
@@ -248,7 +253,7 @@ var Properties = {
         },
         messages: ['Darkness shall embrance you!', 'Your doom is woven', 'Fear binds you', 'Your end is spun', 'The old world beckons you'],   
         armorMod: 1,
-        hpMod: 1,
+        hpMod: 3,
         weaponMod: 0.8,
         respawnDelay: 30000,
         xp: 1000
@@ -263,10 +268,30 @@ var Properties = {
         },
         messages: ['Frost consumes you!', 'Ice seals your fate!', 'I am eternal Cold!', 'Cold as death', 'Shatter!'],   
         armorMod: 1,
-        hpMod: 2,
-        weaponMod: 1.2,
+        hpMod: 5,
+        weaponMod: 0.8,
         respawnDelay: 30000,
         xp: 3000
+        
+        
+    },
+
+    nightharrow: {
+        level: 25,
+        drops: {
+            potion: 50,
+        },
+        aoe: {
+            damage: 100,
+            range: 2
+        },
+        messages: ['Endings begin with me.', 'Kneel!', 'Dawn shall never rise.', 'Face the endless night!', 'Embrace the final dusk.!'],   
+        armorMod: 1.8,
+        hpMod: 30,
+        weaponMod: 2.2,
+        respawnDelay: 1800000,
+        xp: 9000
+        
         
         
     },
