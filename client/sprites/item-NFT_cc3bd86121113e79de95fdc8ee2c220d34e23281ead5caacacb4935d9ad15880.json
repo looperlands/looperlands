@@ -1,0 +1,13 @@
+{
+  "id": "item-NFT_cc3bd86121113e79de95fdc8ee2c220d34e23281ead5caacacb4935d9ad15880",
+  "width": 16,
+  "height": 16,
+  "animations": {
+    "idle": {
+      "length": 6,
+      "row": 0
+    }
+  },
+  "offset_x": 0,
+  "offset_y": 0
+}
