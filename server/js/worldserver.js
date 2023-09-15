@@ -610,7 +610,7 @@ module.exports = World = cls.Class.extend({
                 this.pushToGroup(mob.group, mob.despawn());
                 //On death AoE handling
                 let aoeProps = Properties[kind].aoe;
-                if (aoeProps !== undefined && aoeProps.ondeath) {
+                if (aoeProps !== undefined && aoeProps.onDeath) {
                     this.doAoe(mob);
                 }
                 

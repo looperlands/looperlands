@@ -342,7 +342,7 @@ var Properties = {
         },
         aoe: {
             damage: 60,
-            ondeath: true
+            onDeath: true
         },
         armorMod: 2,
         weaponMod: 0.8

@@ -264,7 +264,19 @@ module.exports = Player = Character.extend({
             }
             else if(action === Types.Messages.HURT) {
                 var mob = self.server.getEntityById(message[1]);
-                self.handleHurt(mob);
+
+                if (mob instanceof Mob){
+                    let kindString = Types.getKindAsString(mob.kind);
+                    let aoeProps = Properties[kindString].aoe;
+
+                    if (aoeProps !== undefined && aoeProps.onHit) {
+                        self.server.doAoe(mob);
+                    } else {
+                        self.handleHurt(mob);
+                    }
+                } else {
+                    self.handleHurt(mob);
+                }
             }
             else if(action === Types.Messages.LOOT) {
                 var item = self.server.getEntityById(message[1]);
