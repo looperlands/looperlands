@@ -3752,16 +3752,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         
             if(npc) {
                 this.checkForQuests(npc);
-                msg = npc.talk();
-                this.previousClickPosition = {};
-                if(msg) {
-                    this.createBubble(npc.id, msg);
-                    this.assignBubbleTo(npc);
-                    this.audioManager.playSound("npc");
-                } else {
-                    this.destroyBubble(npc.id);
-                    this.audioManager.playSound("npc-end");
-                }
             }
         },
 
@@ -3769,11 +3759,22 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             let self = this;
             let url = '/session/' + self.sessionId + '/npc/' + npc.kind;
             axios.get(url).then(function (response) {
-                console.log(response);
                 if (response.data !== "") {
                     self.createBubble(npc.id, response.data);
                     self.assignBubbleTo(npc);
                     self.audioManager.playSound("npc"); 
+                    self.showNotification("Quest Accepted");
+                } else {
+                    msg = npc.talk();
+                    self.previousClickPosition = {};
+                    if(msg) {
+                        self.createBubble(npc.id, msg);
+                        self.assignBubbleTo(npc);
+                        self.audioManager.playSound("npc");
+                    } else {
+                        self.destroyBubble(npc.id);
+                        self.audioManager.playSound("npc-end");
+                    }
                 }
             }).catch(function (error) {
                 console.error("Error while checking for quests.");
