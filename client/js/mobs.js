@@ -186,6 +186,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.isAggressive = true;
                 this.aggroRange = 3;
                 this.deathAnimated = true;
+                this.title = "EVERFROST GIANT";
             }
         }),
         Nightharrow: Mob.extend({
@@ -198,6 +199,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.isAggressive = true;
                 this.aggroRange = 3;
                 this.deathAnimated = true;
+                this.title = "NIGHT KING";
             }
         }),
         Boar: Mob.extend({
@@ -224,9 +226,9 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.deathAnimated = true;
             }
         }),   
-        Barrell: Mob.extend({
+        Barrel: Mob.extend({
             init: function(id) {
-                this._super(id, Types.Entities.BARRELL);
+                this._super(id, Types.Entities.BARREL);
                 this.moveSpeed = 100;
                 this.idleSpeed = 100;
                 this.atkSpeed = 100;            
@@ -272,6 +274,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.isAggressive = true;
                 this.aggroRange = 3;
                 this.deathAnimated = true;
+                this.title = "LORD OF THUDD";
             }
         }),
 
@@ -285,6 +288,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.isAggressive = true;
                 this.aggroRange = 3;
                 this.deathAnimated = true;
+                this.title = "THE WATCHER";
             }
         }),        
 
@@ -1391,7 +1395,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.isAggressive = true;
                 this.aggroRange = 1;
                 this.deathAnimated = true;
-                this.title = "ELITE";
+                this.title = "KING OF SLIME";
             }
         }),       
         

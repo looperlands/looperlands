@@ -134,7 +134,7 @@ Types = {
         ARIA: 300087,
         BOAR: 300088,
         GRIZZLEFANG: 300089,
-        BARRELL: 300090, 
+        BARREL: 300090, 
         GLINK: 300091, 
         ATHLYN: 300092, 
         JENIPER: 300093,
@@ -210,7 +210,9 @@ Types = {
         ICEKEY4: 21300030,
         ICEBOUNDCRYSTAL: 21300031,
         SATCHEL: 21300032,
-        ICESSENCE: 21300033, // @lastidObject@
+        ICESSENCE: 21300033,
+        FORGEDSWORD: 21300034,
+        BANNER: 21300035, // @lastidObject@
         //@nextIdLineObject@
         
         // NPCs
@@ -1907,7 +1909,7 @@ var kinds = {
     boar: [Types.Entities.BOAR, "mob"],
     gnashling: [Types.Entities.GNASHLING, "mob"],
     grizzlefang: [Types.Entities.GRIZZLEFANG, "mob"],
-    barrell: [Types.Entities.BARRELL, "mob"],
+    barrel: [Types.Entities.BARREL, "mob"],
     thudlord: [Types.Entities.THUDLORD, "mob"],
     loomleaf: [Types.Entities.LOOMLEAF, "mob"],
     redslime: [Types.Entities.REDSLIME, "mob"],
@@ -2050,6 +2052,8 @@ var kinds = {
     ICEBOUNDCRYSTAL: [Types.Entities.ICEBOUNDCRYSTAL, "object"],
     SATCHEL: [Types.Entities.SATCHEL, "object"],
     ICESSENCE: [Types.Entities.ICESSENCE, "object"],
+    FORGEDSWORD: [Types.Entities.FORGEDSWORD, "object"],
+    BANNER: [Types.Entities.BANNER, "object"],
     // @nextObjectLine@
 
     guard: [Types.Entities.GUARD, "npc"],

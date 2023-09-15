@@ -8,7 +8,7 @@
 			"row": 0
 		},
 		"atk_right": {
-			"length": 1,
+			"length": 5,
 			"row": 1
 		},
 		"walk_right": {
@@ -20,7 +20,7 @@
 			"row": 3
 		},
 		"atk_up": {
-			"length": 1,
+			"length": 5,
 			"row": 4
 		},
 		"idle_up": {
@@ -32,7 +32,7 @@
 			"row": 6
 		},
 		"atk_down": {
-			"length": 1,
+			"length": 5,
 			"row": 7
 		},
 		"walk_down": {

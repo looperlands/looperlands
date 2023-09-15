@@ -95,8 +95,8 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.GRIZZLEFANG] = function(id) {
         return new Mobs.Grizzlefang(id);
     };    
-    EntityFactory.builders[Types.Entities.BARRELL] = function(id) {
-        return new Mobs.Barrell(id);
+    EntityFactory.builders[Types.Entities.BARREL] = function(id) {
+        return new Mobs.Barrel(id);
     };    
 
     EntityFactory.builders[Types.Entities.LOOMLEAF] = function(id) {
@@ -494,6 +494,8 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.ICEBOUNDCRYSTAL]=function(id){return new Items.ICEBOUNDCRYSTAL(id);};
     EntityFactory.builders[Types.Entities.SATCHEL]=function(id){return new Items.SATCHEL(id);};
     EntityFactory.builders[Types.Entities.ICESSENCE]=function(id){return new Items.ICESSENCE(id);};
+    EntityFactory.builders[Types.Entities.FORGEDSWORD]=function(id){return new Items.FORGEDSWORD(id);};
+    EntityFactory.builders[Types.Entities.BANNER]=function(id){return new Items.BANNER(id);};
     // @nextObjectLine@
 
     //====== NPCs ======
