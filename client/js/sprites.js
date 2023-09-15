@@ -1878,6 +1878,7 @@ define(['text!../sprites/agent.json',
         'text!../sprites/NFT_282ce05ada27625a52fcc18d4c787b9c4baf840a417753cbddcdaf2bb8eb9726.json',
         'text!../sprites/NFT_28e07dea778ad1e453767980f431583e0fef64c39429c804264866678d3eaaa3.json',
         'text!../sprites/NFT_29141f84602f79a8ee36ef26b51790a6d657dc82d8e2b91e36d12895eddb08ac.json',
+        'text!../sprites/NFT_2b59a7db49286a95b21b246d568b08df87b86512dec2bd70e6f1cf3d9f567356.json',
         // @nextSpriteImport@
     ], function() {
     
