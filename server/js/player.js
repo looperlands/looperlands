@@ -118,6 +118,7 @@ module.exports = Player = Character.extend({
                 self.hasEnteredGame = true;
                 self.isDead = false;
                 discord.sendMessage(`Player ${self.name} joined the game.`);
+                self.mapId = playerCache.mapId;
                 dao.saveAvatarMapId(playerCache.nftId, playerCache.mapId);
                 self.playerEventBroker.setPlayer(self);
             }
@@ -402,7 +403,7 @@ module.exports = Player = Character.extend({
             else if(action === Types.Messages.CHECK) {
                 var checkpoint = self.server.map.getCheckpoint(message[1]);
                 if(checkpoint) {
-                    //dao.saveAvatarMapId(self.nftId, checkpoint.mapId);
+                    dao.saveAvatarMapId(self.nftId, self.mapId);
                     dao.saveAvatarCheckpointId(self.nftId, checkpoint.id);
                     self.lastCheckpoint = checkpoint;
                 }
