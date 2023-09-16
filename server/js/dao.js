@@ -151,13 +151,14 @@ loadWeapon = async function (wallet, nft) {
 exports.walletHasNFT = async function (wallet, nft, retry) {
 
     let cached = daoCache.get(`${wallet}_${nft}`);
-    //console.log("Cached value for ", wallet, nft, cached);
+    console.log("Cached value for ", wallet, nft, cached);
     if(cached !== undefined) {
       //console.log("Returning cached value for ", wallet, nft);
       return cached;
     }
 
     let url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/AssetValidation.php?WalletID=${wallet}&NFTID=${nft}`;
+    console.log("Asset validation url ", url);
     try {
         const responseData = await axios.get(url);
         // Cache ownership for 30 minutes because that is the L2 delay
