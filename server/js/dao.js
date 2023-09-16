@@ -162,7 +162,7 @@ exports.walletHasNFT = async function (wallet, nft, retry) {
     try {
         const responseData = await axios.get(url);
         // Cache ownership for 30 minutes because that is the L2 delay
-        daoCache.set(`${wallet}_${nft}`, responseData.data, 60 * 30);
+        daoCache.set(`${wallet}_${nft}`, responseData.data, 60);
         return responseData.data;
     } catch (error) {
       console.error("Error while validating ownership", error, wallet, nft);
