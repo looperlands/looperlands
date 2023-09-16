@@ -293,6 +293,7 @@ define(['character'], function (Character) {
             this.itemKind = Types.getKindAsString(this.kind);
             this.talkCount = NpcTalk[this.itemKind].length;
             this.talkIndex = 0;
+            this.thoughts = [];
         },
 
         talk: function () {
@@ -307,6 +308,13 @@ define(['character'], function (Character) {
             this.talkIndex += 1;
 
             return msg;
+        },
+
+        addThoughts: function(messages) {
+            // add elements from messages array to thoughts array
+            for (var i = 0; i < messages.length; i++) {
+                this.thoughts.push(messages[i]);
+            }
         }
     });
 

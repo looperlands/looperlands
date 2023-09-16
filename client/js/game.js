@@ -3829,12 +3829,24 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         checkForQuests: function(npc) {
             let self = this;
             let url = '/session/' + self.sessionId + '/npc/' + npc.kind;
+            if(npc.thoughts.length > 0) {
+                let message = npc.thoughts.shift()
+                self.createBubble(npc.id, message);
+                self.assignBubbleTo(npc);
+                self.audioManager.playSound("npc");
+                return;
+            }
             axios.get(url).then(function (response) {
                 if (response.data !== "") {
-                    self.createBubble(npc.id, response.data);
+                    let messages  = (!_.isArray(response.data) ? [response.data] : response.data);
+
+                    let message = messages.shift()
+                    npc.addThoughts( messages );
+                    self.createBubble(npc.id, message);
                     self.assignBubbleTo(npc);
-                    self.audioManager.playSound("npc"); 
+                    self.audioManager.playSound("npc");
                     self.showNotification("Quest Accepted");
+
                 } else {
                     msg = npc.talk();
                     self.previousClickPosition = {};
