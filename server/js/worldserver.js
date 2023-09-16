@@ -624,7 +624,12 @@ module.exports = World = cls.Class.extend({
                 // Distribute exp first, so the multiplier doesnt apply to this kill (that would be OP)
                 this.handleExpMultiplierOnDeath(mob);
                 if (attacker.type === 'player') {
-                    attacker.playerEventBroker.killMobEvent(mob);
+                    mob.dmgTakenArray.forEach( function(arrElem) {
+                        let accomplice = self.getEntityById(arrElem.id);
+                        if (accomplice !== undefined && accomplice.type === 'player') {
+                            accomplice.playerEventBroker.killMobEvent(mob);
+                        }
+                    })
                 }
             }
     
