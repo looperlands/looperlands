@@ -258,6 +258,9 @@ module.exports = Mapx = cls.Class.extend({
     
     getCheckpoint: function(id) {
         let checkpoint = this.checkpoints[id];
+        if (checkpoint === undefined) {
+            return undefined;
+        }
         checkpoint.x = Math.round(checkpoint.x);
         checkpoint.y = Math.round(checkpoint.y);
         checkpoint.width = Math.round(checkpoint.width);
