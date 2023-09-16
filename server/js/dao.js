@@ -158,6 +158,7 @@ exports.walletHasNFT = async function (wallet, nft, retry) {
     }
 
     let url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/AssetValidation.php?WalletID=${wallet}&NFTID=${nft}`;
+    console.log("Asset validation url ", url);
     try {
         const responseData = await axios.get(url);
         // Cache ownership for 30 minutes because that is the L2 delay
