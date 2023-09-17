@@ -226,7 +226,7 @@ quests = [
         eventType: "KILL_MOB",
         npc: Types.Entities.TORIAN,
         target: Types.Entities.NIGHTHARROW,
-        amount: 40,
+        amount: 1,
         requiredQuest: "OA_QUEST_12", //change
         level: 21,
         medal: Types.Medals.HEARTH

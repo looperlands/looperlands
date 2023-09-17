@@ -286,11 +286,11 @@ var Properties = {
             range: 2
         },
         messages: ['Endings begin with me.', 'Kneel!', 'Dawn shall never rise.', 'Face the endless night!', 'Embrace the final dusk.!'],   
-        armorMod: 1.8,
-        hpMod: 30,
-        weaponMod: 2.2,
+        armorMod: 2,
+        hpMod: 12,
+        weaponMod: 1.6,
         respawnDelay: 1800000,
-        xp: 9000
+        xp: 5000
         
         
         
