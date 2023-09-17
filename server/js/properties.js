@@ -160,9 +160,9 @@ var Properties = {
             potion: 100,
             
         },
-        armorMod: 1.25,
-        weaponMod: 2,
-        hpMod: 3,
+        armorMod: 1,
+        weaponMod: 1.7,
+        hpMod: 2.3,
         xp: 3000,  
         respawnDelay: 30000
         
