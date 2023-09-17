@@ -385,7 +385,7 @@ WS.socketIOServer = Server.extend({
                         availableQuests.push({
                             id: quest.id,
                             name: quest.name,
-                            desc: quest.startText,
+                            desc: quest.questLogText ?? quest.startText,
                             medal: quest.medal,
                             amount: quest.amount,
                             status: "COMPLETED"
