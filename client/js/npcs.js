@@ -109,6 +109,11 @@ define(['npc'], function(Npc) {
                 this._super(id, Types.Entities.ELRIC, 1);
             }
         }), 
+        Gripnar: Npc.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.GRIPNAR, 1);
+            }
+        }), 
         Whiskers: Npc.extend({
             init: function(id) {
                 this._super(id, Types.Entities.WHISKERS, 1);
