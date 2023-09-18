@@ -579,6 +579,9 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.ELRIC] = function(id) {
         return new NPCs.Elric(id);
     };   
+    EntityFactory.builders[Types.Entities.GRIPNAR] = function(id) {
+        return new NPCs.Gripnar(id);
+    };   
     EntityFactory.builders[Types.Entities.WHISKERS] = function(id) {
         return new NPCs.Whiskers(id);
     };    

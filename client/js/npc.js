@@ -84,6 +84,9 @@ define(['character'], function (Character) {
         "elric": [
             "I'd advise against entering, friend.",
         ],
+        "gripnar": [
+            "greetings warrior!",
+        ],
         "keldor": [
             "The frost is gripping this area, stay safe friend",
         ],

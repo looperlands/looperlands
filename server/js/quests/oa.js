@@ -380,6 +380,19 @@ quests = [
         amount: 8,
         level: 6,
         medal: Types.Medals.HEARTH
+    },
+    {
+        id: "OA_SIDE_8",
+        name: "Collect blue sludge for Gripnar ",
+        startText: "Collect sludge for Gripnar! He use to coat weapon!",
+    //        startText: "Traveler, you come at a dire time. My men and I were ambushed. These plains were once calm, but ever since King RC's departure, they've been swarming with these vile creatures we've named 'Gnashlings'. Their numbers are overwhelming. I implore you, if you can thin their ranks, it might give us a fighting chance to reclaim the Windweave Planes and push these creatures back. We need to stabilize this area, or all of Looporia might be at risk.",
+        endText: "Gripnar thanks you!",
+        eventType: "LOOT_ITEM",
+        npc: Types.Entities.GRIPNAR,
+        target: Types.Entities.SLIMEBALL,
+        amount: 15,
+        level: 2,
+        medal: Types.Medals.HEARTH
     }
 
 ]
