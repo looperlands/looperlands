@@ -2314,6 +2314,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 "NFT_9c6613a9ebf9b3f27f577fadfcd87aaf7dd9294a79b37c13f133692661cd476b",
                                 "NFT_9d978100108c4ef18d6f78ef436c0cd4214326d59fd04b5f5b6f92cd2cb26633",
                                 "NFT_a382599e0b109f8a36b57f6de3dfccd36513eebe70570fb1f99393241ce201b9",
+                                "NFT_a5339a0ede603bf5d2b7b1837c6083f70329ea7b38a004fe866131b04562d365",
                                 // @nextSpriteLine@
                             ];                          
         },
