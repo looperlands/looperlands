@@ -256,7 +256,7 @@ var Properties = {
         hpMod: 3,
         weaponMod: 0.8,
         respawnDelay: 30000,
-        xp: 1000
+        xp: 600
         
         
     },
@@ -271,7 +271,7 @@ var Properties = {
         hpMod: 5,
         weaponMod: 0.8,
         respawnDelay: 30000,
-        xp: 3000
+        xp: 2000
         
         
     },
