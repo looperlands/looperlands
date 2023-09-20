@@ -73,9 +73,14 @@ newLine="                                \"$OBJECT_ID\",\n                      
 sed -e "s#.*@nextCharacterLine@.*#$newLine#g" ../client/js/game.js > tmp2.js
 mv tmp2.js ../client/js/game.js
 
-# newLine=`sed -e "s/ID/$OBJECT_ID/g" ./item-template.js`
-# sed -e "s#.*@nextItemLine@.*#$newLine#g" ../client/js/items.js > tmp2.js
-# mv tmp2.js ../client/js/items.js
+if [ "$type" = "npc" ]; then
+  newLine=`sed -e "s/ID/$OBJECT_ID/g" ./npc-template.js`
+  sed -e "s#.*@nextNPCLine@.*#$newLine#g" ../client/js/npcs.js > tmp2.js
+  mv tmp2.js ../client/js/items.js
+else
+  jq ".id=\"${OBJECT_ID}\"" mobspritemap.json > ../client/sprites/$OBJECT_ID.json
+fi
+
 
 # newLine=`sed -e "s/ID/$OBJECT_ID/g" ./builder-template.js`
 # echo $newLine

@@ -261,6 +261,7 @@ define(['npc'], function(Npc) {
             }
         })
 
+        // @nextNPCLine@
     };
     
     return NPCs;
