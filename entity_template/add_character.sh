@@ -87,7 +87,7 @@ if [ "$type" = "npc" ]; then
   sed -e "s#.*@nextNPCLine@.*#$newLine#g" ../client/js/entityfactory.js > tmp2.js
   mv tmp2.js ../client/js/entityfactory.js
 else
-  newLine=`sed -e "s/ID/$OBJECT_ID/g" ./npc-template.js`
+  newLine=`sed -e "s/ID/$OBJECT_ID/g" ./mob-template.js`
   sed -e "s#.*@nextMobLine@.*#$newLine#g" ../client/js/mobs.js > tmp2.js
   mv tmp2.js ../client/js/mobs.js
 
