@@ -87,5 +87,12 @@ if [ "$type" = "npc" ]; then
   sed -e "s#.*@nextNPCLine@.*#$newLine#g" ../client/js/entityfactory.js > tmp2.js
   mv tmp2.js ../client/js/entityfactory.js
 else
-  jq ".id=\"${OBJECT_ID}\"" mobspritemap.json > ../client/sprites/$OBJECT_ID.json
+  newLine=`sed -e "s/ID/$OBJECT_ID/g" ./npc-template.js`
+  sed -e "s#.*@nextMobLine@.*#$newLine#g" ../client/js/mobs.js > tmp2.js
+  mv tmp2.js ../client/js/mobs.js
+
+  # newLine=`sed -e "s/ID/$OBJECT_ID/g" ./npc-builder-template.js`
+  # echo $newLine
+  # sed -e "s#.*@nextNPCLine@.*#$newLine#g" ../client/js/entityfactory.js > tmp2.js
+  # mv tmp2.js ../client/js/entityfactory.js
 fi
