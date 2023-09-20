@@ -65,9 +65,9 @@ sed -e "s!.*@nextCharacterLine@.*!$newLine!g" tmp.js > tmp2.js
 mv tmp2.js ../shared/js/gametypes.js
 rm tmp.js
 
-# newLine="        'text!../sprites/item-$OBJECT_ID.json',\n        // @nextObjectImport@"
-# sed -e "s#.*@nextObjectImport@.*#$newLine#g" ../client/js/sprites.js > tmp.js
-# mv tmp.js ../client/js/sprites.js
+newLine="        'text!../sprites/$OBJECT_ID.json',\n        // @nextCharacterImport@"
+sed -e "s#.*@nextCharacterImport@.*#$newLine#g" ../client/js/sprites.js > tmp.js
+mv tmp.js ../client/js/sprites.js
 
 # newLine="                                \"item-$OBJECT_ID\",\n                                // @nextObjectLine@"
 # sed -e "s#.*@nextObjectLine@.*#$newLine#g" ../client/js/game.js > tmp2.js
