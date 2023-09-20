@@ -230,7 +230,7 @@ module.exports = Mob = Character.extend({
     },
 
     generateLevel: function() {
-        let deviation = 0.2;
+        const deviation = 0.2;
 
         this.level = Properties.getLevel(this.kind);
         this.levelOffset = Math.round(Formulas.gaussianRangeRandom(-deviation * this.level, deviation * this.level));
