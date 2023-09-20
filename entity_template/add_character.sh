@@ -83,7 +83,6 @@ if [ "$type" = "npc" ]; then
   mv tmp2.js ../client/js/npc.js
 
   newLine=`sed -e "s/ID/$OBJECT_ID/g" ./npc-builder-template.js`
-  echo $newLine
   sed -e "s#.*@nextNPCLine@.*#$newLine#g" ../client/js/entityfactory.js > tmp2.js
   mv tmp2.js ../client/js/entityfactory.js
 else
@@ -91,8 +90,7 @@ else
   sed -e "s#.*@nextMobLine@.*#$newLine#g" ../client/js/mobs.js > tmp2.js
   mv tmp2.js ../client/js/mobs.js
 
-  # newLine=`sed -e "s/ID/$OBJECT_ID/g" ./npc-builder-template.js`
-  # echo $newLine
-  # sed -e "s#.*@nextNPCLine@.*#$newLine#g" ../client/js/entityfactory.js > tmp2.js
-  # mv tmp2.js ../client/js/entityfactory.js
+  newLine=`sed -e "s/ID/$OBJECT_ID/g" ./mob-builder-template.js`
+  sed -e "s#.*@nextMobLine@.*#$newLine#g" ../client/js/entityfactory.js > tmp2.js
+  mv tmp2.js ../client/js/entityfactory.js
 fi
