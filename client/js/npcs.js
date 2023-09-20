@@ -259,7 +259,7 @@ define(['npc'], function(Npc) {
             init: function(id) {
                 this._super(id, Types.Entities.COBCOBMIN, 1);
             }
-        })
+        }),
 
         // @nextNPCLine@
     };
