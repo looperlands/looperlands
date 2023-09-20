@@ -10,15 +10,10 @@ module.exports = Mob = Character.extend({
     init: function(id, kind, x, y) {
         this._super(id, "mob", kind, x, y);
 
-        this.level = Properties.getLevel(this.kind);
-        this.levelOffset = Math.round(Formulas.gaussianRangeRandom(-0.2 * this.level, 0.2 * this.level));
-        this.level += this.levelOffset;
-
-        this.updateHitPoints();
+        this.generateLevel();
+        this.recalculateStats();
         this.spawningX = x;
         this.spawningY = y;
-        this.armorLevel = Properties.getArmorLevel(this.kind, this.levelOffset);
-        this.weaponLevel = Properties.getWeaponLevel(this.kind, this.levelOffset);
         this.hatelist = [];
         this.respawnTimeout = null;
         this.returnTimeout = null;
@@ -234,4 +229,17 @@ module.exports = Mob = Character.extend({
         }
     },
 
+    generateLevel: function() {
+        let deviation = 0.2;
+
+        this.level = Properties.getLevel(this.kind);
+        this.levelOffset = Math.round(Formulas.gaussianRangeRandom(-deviation * this.level, deviation * this.level));
+        this.level += this.levelOffset;
+    },
+
+    recalculateStats: function() {
+        this.updateHitPoints();
+        this.armorLevel = Properties.getArmorLevel(this.kind, this.levelOffset);
+        this.weaponLevel = Properties.getWeaponLevel(this.kind, this.levelOffset);
+    }
 });

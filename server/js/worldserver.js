@@ -676,6 +676,8 @@ module.exports = World = cls.Class.extend({
                 var mob = new Mob('7' + kind + count++, kind, pos.x + 1, pos.y);
                 mob.onRespawn(function() {
                     mob.isDead = false;
+                    mob.generateLevel();
+                    mob.recalculateStats();
                     self.addMob(mob);
                     if(mob.area && mob.area instanceof ChestArea) {
                         mob.area.addToArea(mob);
