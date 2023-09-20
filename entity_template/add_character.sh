@@ -35,11 +35,11 @@ stat $IMAGE_DIR/3.png 1> /dev/null ||  missingFile $IMAGE_DIR/3.png
 
 grep -q "$OBJECT_ID:" ../shared/js/gametypes.js && echo "Error: Object id($OBJECT_ID) already exists in gametypes.js" && exit 1
 
-# jq ".id=\"item-${OBJECT_ID}\"" objectspritemap.json > ../client/sprites/item-$OBJECT_ID.json
+jq ".id=\"item-${OBJECT_ID}\"" objectspritemap.json > ../client/sprites/item-$OBJECT_ID.json
 
-# for i in {1..3}; do
-#     cp $IMAGE_DIR/$i.png ../client/img/$i/item-$OBJECT_ID.png
-# done
+for i in {1..3}; do
+    cp $IMAGE_DIR/$i.png ../client/img/$i/item-$OBJECT_ID.png
+done
 
 # id=`egrep -oh "\:.*([[:digit:]]+)*,.*@lastidObject@" ../shared/js/gametypes.js | cut -d " " -f 2 | cut -d "," -f 1`
 # echo id: $id
