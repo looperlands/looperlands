@@ -666,6 +666,7 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.COBCOBMIN] = function(id) {
         return new NPCs.Cobcobmin(id);
     };  
+    // @nextNPCLine@
 
      //====== FieldEffectss ======
 
