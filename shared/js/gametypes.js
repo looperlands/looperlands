@@ -2791,6 +2791,7 @@ var kinds = {
     coblumberjack: [Types.Entities.COBLUMBERJACK, "npc"],
     cobhillsnpc: [Types.Entities.COBHILLSNPC, "npc"],
     cobcobmin: [Types.Entities.COBCOBMIN, "npc"],
+    // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],
 
