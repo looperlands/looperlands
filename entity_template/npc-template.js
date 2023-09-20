@@ -1,1 +1,1 @@
-ID: Npc.extend({init: function(id) {this._super(id, Types.Entities.ID, 1);}}),\n        // @nextNPCLine@
+        ID: Npc.extend({init: function(id) {this._super(id, Types.Entities.ID, 1);}}),\n        // @nextNPCLine@
