@@ -58,10 +58,10 @@ echo Adding $OBJECT_ID, $nextId
 
 # Add the objectid
 newLine="        $OBJECT_ID: $nextId, // @lastidCharacter@\n        //@nextIdLineCharacter@"
-sed -e "s! // @lastidObject@!!g" -e "s!.*@nextIdLineObject@.*!$newLine!g" ../shared/js/gametypes.js > tmp.js
+sed -e "s! // @lastidCharacter@!!g" -e "s!.*@nextIdLineCharacter@.*!$newLine!g" ../shared/js/gametypes.js > tmp.js
 # Add the object type
-newLine="    $OBJECT_ID: [Types.Entities.$OBJECT_ID, \"$type\"],\n    // @nextObjectLine@"
-sed -e "s!.*@nextObjectLine@.*!$newLine!g" tmp.js > tmp2.js
+newLine="    $OBJECT_ID: [Types.Entities.$OBJECT_ID, \"$type\"],\n    // @nextCharacterLine@"
+sed -e "s!.*@nextCharacterLine@.*!$newLine!g" tmp.js > tmp2.js
 mv tmp2.js ../shared/js/gametypes.js
 rm tmp.js
 
