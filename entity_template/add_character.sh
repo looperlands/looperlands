@@ -28,6 +28,13 @@ IMAGE_DIR=$1
 OBJECT_ID=${2^^}
 type=$3
 
+if [[ "$3" == "mob" || "$1" == "npc" ]]; then
+    echo "Adding $OBJECT_ID, $type"
+else
+    echo "Argument but be mob or npc"
+    exit 1
+fi
+
 stat $IMAGE_DIR/1.png 1> /dev/null ||  missingFile $IMAGE_DIR/1.png
 stat $IMAGE_DIR/2.png 1> /dev/null ||  missingFile $IMAGE_DIR/2.png
 stat $IMAGE_DIR/3.png 1> /dev/null ||  missingFile $IMAGE_DIR/3.png
