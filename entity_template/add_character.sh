@@ -39,10 +39,13 @@ stat $IMAGE_DIR/1.png 1> /dev/null ||  missingFile $IMAGE_DIR/1.png
 stat $IMAGE_DIR/2.png 1> /dev/null ||  missingFile $IMAGE_DIR/2.png
 stat $IMAGE_DIR/3.png 1> /dev/null ||  missingFile $IMAGE_DIR/3.png
 
-
 grep -q "$OBJECT_ID:" ../shared/js/gametypes.js && echo "Error: Object id($OBJECT_ID) already exists in gametypes.js" && exit 1
 
-jq ".id=\"${OBJECT_ID}\"" npcspritemap.json > ../client/sprites/$OBJECT_ID.json
+if [ "$3" = "npc" ]; then
+  jq ".id=\"${OBJECT_ID}\"" npcspritemap.json > ../client/sprites/$OBJECT_ID.json
+else
+  jq ".id=\"${OBJECT_ID}\"" mobspritemap.json > ../client/sprites/$OBJECT_ID.json
+fi
 
 for i in {1..3}; do
     cp $IMAGE_DIR/$i.png ../client/img/$i/$OBJECT_ID.png
