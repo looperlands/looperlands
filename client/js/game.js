@@ -85,6 +85,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 "fvillager15","fvillager16","fvillager17","fvillager18","fvillager19","fvillager20","fvillager21",
                                 "fvillager22","fvillager23","fvillager24","fvillager25","fvillager26","fvillager27","fvillager28",
                                 "fvillager29","fvillager30","fvillager31",
+                                // @nextCharacterLine@
                                 "item-BOARHIDE",
                                 "item-THUDKEY",
                                 "item-BATWING",

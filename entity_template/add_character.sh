@@ -69,9 +69,9 @@ newLine="        'text!../sprites/$OBJECT_ID.json',\n        // @nextCharacterIm
 sed -e "s#.*@nextCharacterImport@.*#$newLine#g" ../client/js/sprites.js > tmp.js
 mv tmp.js ../client/js/sprites.js
 
-# newLine="                                \"item-$OBJECT_ID\",\n                                // @nextObjectLine@"
-# sed -e "s#.*@nextObjectLine@.*#$newLine#g" ../client/js/game.js > tmp2.js
-# mv tmp2.js ../client/js/game.js
+newLine="                                \"$OBJECT_ID\",\n                                // @nextCharacterLine@"
+sed -e "s#.*@nextCharacterLine@.*#$newLine#g" ../client/js/game.js > tmp2.js
+mv tmp2.js ../client/js/game.js
 
 # newLine=`sed -e "s/ID/$OBJECT_ID/g" ./item-template.js`
 # sed -e "s#.*@nextItemLine@.*#$newLine#g" ../client/js/items.js > tmp2.js
