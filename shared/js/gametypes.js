@@ -241,7 +241,8 @@ Types = {
         VILLAGESIGN1: 30000001,
         COBLUMBERJACK: 34000001,
         COBHILLSNPC: 34000002,
-        COBCOBMIN: 34000003,           
+        COBCOBMIN: 34000003, // @lastidCharacter@
+        //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
         SWORD2: 61,
