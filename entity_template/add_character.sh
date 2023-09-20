@@ -77,6 +77,10 @@ if [ "$type" = "npc" ]; then
   newLine=`sed -e "s/ID/$OBJECT_ID/g" ./npc-template.js`
   sed -e "s#.*@nextNPCLine@.*#$newLine#g" ../client/js/npcs.js > tmp2.js
   mv tmp2.js ../client/js/npcs.js
+
+  newLine="        \"$OBJECT_ID\": [\"Change me\"],\n        // @nextNPCLine@"
+  sed -e "s#.*@nextNPCLine@.*#$newLine#g" ../client/js/npcs.js > tmp2.js
+  mv tmp2.js ../client/js/npc.js
 else
   jq ".id=\"${OBJECT_ID}\"" mobspritemap.json > ../client/sprites/$OBJECT_ID.json
 fi
