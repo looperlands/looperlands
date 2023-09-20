@@ -28,7 +28,7 @@ IMAGE_DIR=$1
 OBJECT_ID=${2^^}
 type=$3
 
-if [[ "$3" == "mob" || "$1" == "npc" ]]; then
+if [[ "$3" == "mob" || "$3" == "npc" ]]; then
     echo "Adding $OBJECT_ID, $type"
 else
     echo "Argument but be mob or npc"
