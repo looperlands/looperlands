@@ -43,6 +43,8 @@ module.exports = MobArea = Area.extend({
             mob.x = pos.x;
             mob.y = pos.y;
             mob.isDead = false;
+            mob.generateLevel();
+            mob.recalculateStats();
             self.addToArea(mob);
             self.world.addMob(mob);
         }, delay);
