@@ -41,6 +41,10 @@ if (duplicateIds.length !== 0) {
 }
 
 for (const quest of quests) {
+  if (quest.id.length > 100) {
+    console.error("Quest ID is too long: ", quest);
+    process.exit(1);
+  }
   let target = quest.target;
   if (Types.isMob(target) && quest.eventType !== "KILL_MOB") {
     console.error("Quest target is a mob but event type is not KILL_MOB: ", quest);
