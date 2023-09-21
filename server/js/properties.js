@@ -361,10 +361,7 @@ var Properties = {
             range: 2
         },
         redpacket: true,
-        xp: 50000,  
-        expMultiplier: {
-            duration: 1200
-        },
+        xp: 50000,
         messages: ['Perish!', 'Be gone!', 'Burn!', 'Wither!', 'Suffer!'],
         respawnDelay: 1800000
     },
