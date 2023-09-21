@@ -1819,6 +1819,8 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.isFriendly = true;
             }
         }),
+
+        // @nextMobLine@
     };
     return Mobs;
 });

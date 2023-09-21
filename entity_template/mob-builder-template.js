@@ -1,0 +1,1 @@
+    EntityFactory.builders[Types.Entities.ID]=function(id){return new Mobs.ID(id);};\n    // @nextMobLine@
