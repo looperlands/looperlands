@@ -2741,7 +2741,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
             this.animatedTiles = [];
             this.highAnimatedTiles = [];
-            this.forEachVisibleTile(function (id, index) {
+            this.forEachTile(function (id, index) {
                 if(m.isAnimatedTile(id)) {
                     var tile = new AnimatedTile(id, m.getTileAnimationLength(id), m.getTileAnimationDelay(id), index),
                         pos = self.map.tileIndexToGridPosition(tile.index);
@@ -2930,7 +2930,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 this.updateCursorLogic();
                 this.updater.update();
                 this.focusPlayer();
-                this.initAnimatedTiles();
                 this.renderer.renderStaticCanvases();
                 this.renderer.renderFrame();
             }
@@ -4165,6 +4164,38 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         
             if(m.isLoaded) {
                 this.forEachVisibleTileIndex(function(tileIndex) {
+                    if(_.isArray(m.data[tileIndex])) {
+                        _.each(m.data[tileIndex], function(id) {
+                            callback(id-1, tileIndex);
+                        });
+                    }
+                    else {
+                        if(_.isNaN(m.data[tileIndex]-1)) {
+                            //throw Error("Tile number for index:"+tileIndex+" is NaN");
+                        } else {
+                            callback(m.data[tileIndex]-1, tileIndex);
+                        }
+                    }
+                }, extra);
+            }
+        },
+
+        forEachTileIndex: function(callback, extra) {
+            var m = this.map;
+        
+            this.map.forEachPosition(function(x, y) {
+                if(!m.isOutOfBounds(x, y)) {
+                    callback(m.GridPositionToTileIndex(x, y) - 1);
+                }
+            }, extra);
+        },
+
+        forEachTile: function(callback, extra) {
+            var self = this,
+                m = this.map;
+        
+            if(m.isLoaded) {
+                this.forEachTileIndex(function(tileIndex) {
                     if(_.isArray(m.data[tileIndex])) {
                         _.each(m.data[tileIndex], function(id) {
                             callback(id-1, tileIndex);
