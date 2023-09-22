@@ -1,4 +1,5 @@
 const dao = require('../dao.js');
+const Formulas = require('../formulas.js');
 
 const main = require('./main.js');
 const oa = require('./oa.js');
@@ -85,7 +86,6 @@ exports.handleNPCClick = function (cache, sessionId, npcId) {
       }
     }
 
-
     for (const questID of npcQuestIds) {
       let newQuest = npcQuests.find(quest => quest.id === questID);
 
@@ -100,12 +100,18 @@ exports.handleNPCClick = function (cache, sessionId, npcId) {
             }
           });
         }
+      }
 
+      let avatarHasRequiredLevel = true;
+      if (newQuest.requiredLevel) {
+        if (Formulas.level(sessionData.xp) < newQuest.requiredLevel) {
+          avatarHasRequiredLevel = false;
+        }
       }
 
       let avatarDoesNotHaveQuest =  !avatarQuestIds.includes(questID);
-
-      if (avatarDoesNotHaveQuest && avatarHasRequiredQuest) {
+      
+      if (avatarDoesNotHaveQuest && avatarHasRequiredQuest && avatarHasRequiredLevel) {
         dao.setQuestStatus(sessionData.nftId, questID, STATES.IN_PROGRESS);
         let inProgressQuests = sessionData.gameData.quests[STATES.IN_PROGRESS];
         let questInCacheFormat = {questID: newQuest.id, status: STATES.IN_PROGRESS};
