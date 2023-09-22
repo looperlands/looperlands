@@ -154,20 +154,6 @@ var Properties = {
         },
     },
 
-    loomleaf: {
-        level: 10,
-        drops: {
-            potion: 100,
-            
-        },
-        armorMod: 1.2,
-        weaponMod: 1.9,
-        hpMod: 2.8,
-        xp: 1200,  
-        respawnDelay: 30000
-        
-    },
-
     crystolith: {
         level: 12,
         drops: {
@@ -236,6 +222,11 @@ var Properties = {
         },
     },
     
+
+
+
+//BOSSES
+
     kingslime: {
         level: 3,
         drops: {
@@ -258,11 +249,23 @@ var Properties = {
         weaponMod: 0.8,
         respawnDelay: 30000,
         xp: 600
-        
+    },
+
+    loomleaf: {
+        level: 10,
+        drops: {
+            potion: 100,
+            
+        },
+        armorMod: 1.2,
+        weaponMod: 1.9,
+        hpMod: 2.8,
+        xp: 1200,  
+        respawnDelay: 30000
         
     },
 
-    glacialord: {
+        glacialord: {
         level: 20,
         drops: {
             potion: 50,
