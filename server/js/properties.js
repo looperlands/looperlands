@@ -163,7 +163,7 @@ var Properties = {
         armorMod: 1.2,
         weaponMod: 1.9,
         hpMod: 2.8,
-        xp: 3000,  
+        xp: 1200,  
         respawnDelay: 30000
         
     },
@@ -243,6 +243,7 @@ var Properties = {
         messages: ['Bow to the gelatinous crown', 'Flowing, shifting, unstoppable', 'Dissolve within my embrace', 'I am boundless, ever-spreading', 'Your struggles make the kingdom grow'],
         armorMod: 0.75,
         hpMod: 3,
+        xp: 0,
         },
     },
 
@@ -271,7 +272,7 @@ var Properties = {
         hpMod: 5,
         weaponMod: 0.8,
         respawnDelay: 30000,
-        xp: 2000
+        xp: 3000
         
         
     },
