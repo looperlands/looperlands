@@ -40,11 +40,13 @@ define(function() {
         },
 
         lookAt: function(entity) {
-            var r = this.renderer,
-                x = Math.round( entity.x - (Math.floor(this.gridW / 2) * r.tilesize) ),
-                y = Math.round( entity.y - (Math.floor(this.gridH / 2) * r.tilesize) );
-    
-            this.setPosition(x, y);
+            if (entity) {
+                var r = this.renderer,
+                    x = Math.round( entity.x - (Math.floor(this.gridW / 2) * r.tilesize) ),
+                    y = Math.round( entity.y - (Math.floor(this.gridH / 2) * r.tilesize) );
+        
+                this.setPosition(x, y);
+            }
         },
 
         forEachVisiblePosition: function(callback, extra) {
