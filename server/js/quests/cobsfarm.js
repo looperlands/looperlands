@@ -8,6 +8,7 @@ quests = [
         eventType: "LOOT_ITEM",
         npc: Types.Entities.COBLUMBERJACK,
         target: Types.Entities.COBLOG,
+        requiredLevel: 7,
         amount: 20,
         level: 10,
         medal: Types.Medals.TREE
