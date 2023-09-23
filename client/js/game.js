@@ -2941,7 +2941,9 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 this.renderer.initFont();
                 this.updateCursorLogic();
                 this.updater.update();
-                this.focusPlayer();
+                if (this.mapId !== "main") {
+                    this.focusPlayer();
+                }
                 this.renderer.renderFrame();
             }
 
