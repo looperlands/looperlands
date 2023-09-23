@@ -2938,12 +2938,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             this.currentTime = new Date().getTime();
 
             if(this.started) {
-                this.renderer.createCamera();
-                this.renderer.context.imageSmoothingEnabled = false;
-                this.renderer.background.imageSmoothingEnabled = false;
-                this.renderer.foreground.imageSmoothingEnabled = false;
-
-                this.camera = this.renderer.camera;
                 this.renderer.initFont();
                 this.updateCursorLogic();
                 this.updater.update();
