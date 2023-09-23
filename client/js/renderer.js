@@ -777,9 +777,11 @@ function(Camera, Item, Character, Player, Timer, Mob) {
 
         renderFrame: function() {
             this.clearScreen(this.context);
+            this.clearScreen(this.background);
         
             this.context.save();
             this.setCameraView(this.context);
+            this.renderStaticCanvases();
             this.drawAnimatedTiles();
 
             if(this.game.started) {

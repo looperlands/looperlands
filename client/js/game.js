@@ -2942,7 +2942,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 this.updateCursorLogic();
                 this.updater.update();
                 this.focusPlayer();
-                this.renderer.renderStaticCanvases();
                 this.renderer.renderFrame();
             }
 
