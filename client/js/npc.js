@@ -287,7 +287,8 @@ define(['character'], function (Character) {
             "View our scenic farms, admire vibrant flowers, and animals.",
             "If adventure calls, our dungeons are rife with monsters and rewards.",
             "Cob's Farm offers beauty and valor for everyone."
-        ]
+        ],
+        // @nextNPCLine@
     };
 
     var Npc = Character.extend({

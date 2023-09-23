@@ -388,6 +388,8 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.VILLAGER29] = function(id) {
         return new Mobs.Villager29(id);
     };
+
+    // @nextMobLine@
     //===== items ======
  
     EntityFactory.builders[Types.Entities.SWORD2] = function(id) {
@@ -666,6 +668,7 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.COBCOBMIN] = function(id) {
         return new NPCs.Cobcobmin(id);
     };  
+    // @nextNPCLine@
 
      //====== FieldEffectss ======
 

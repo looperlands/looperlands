@@ -19,3 +19,18 @@ Run this if you are not happy with the output of the above or there was an error
 ```bash
 git clean -f .. && git checkout ..
 ```
+
+# Add a mob or NPC
+```bash
+./add_character.sh npcimagedir/ npc_key_name npc
+```
+
+```bash
+./add_character.sh mobimagedir/ mob_key_name mob
+```
+
+
+Run this if you are not happy with the output of the above or there was an error.
+```bash
+git clean -f .. && git checkout ..
+```

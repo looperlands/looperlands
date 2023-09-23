@@ -154,20 +154,6 @@ var Properties = {
         },
     },
 
-    loomleaf: {
-        level: 10,
-        drops: {
-            potion: 100,
-            
-        },
-        armorMod: 1.2,
-        weaponMod: 1.9,
-        hpMod: 2.8,
-        xp: 3000,  
-        respawnDelay: 30000
-        
-    },
-
     crystolith: {
         level: 12,
         drops: {
@@ -236,6 +222,11 @@ var Properties = {
         },
     },
     
+
+
+
+//BOSSES
+
     kingslime: {
         level: 3,
         drops: {
@@ -243,6 +234,7 @@ var Properties = {
         messages: ['Bow to the gelatinous crown', 'Flowing, shifting, unstoppable', 'Dissolve within my embrace', 'I am boundless, ever-spreading', 'Your struggles make the kingdom grow'],
         armorMod: 0.75,
         hpMod: 3,
+        xp: 0,
         },
     },
 
@@ -257,11 +249,23 @@ var Properties = {
         weaponMod: 0.8,
         respawnDelay: 30000,
         xp: 600
-        
+    },
+
+    loomleaf: {
+        level: 10,
+        drops: {
+            potion: 100,
+            
+        },
+        armorMod: 1.2,
+        weaponMod: 1.9,
+        hpMod: 2.8,
+        xp: 1200,  
+        respawnDelay: 30000
         
     },
 
-    glacialord: {
+        glacialord: {
         level: 20,
         drops: {
             potion: 50,
@@ -271,7 +275,7 @@ var Properties = {
         hpMod: 5,
         weaponMod: 0.8,
         respawnDelay: 30000,
-        xp: 2000
+        xp: 3000
         
         
     },
@@ -361,10 +365,7 @@ var Properties = {
             range: 2
         },
         redpacket: true,
-        xp: 50000,  
-        expMultiplier: {
-            duration: 1200
-        },
+        xp: 50000,
         messages: ['Perish!', 'Be gone!', 'Burn!', 'Wither!', 'Suffer!'],
         respawnDelay: 1800000
     },
