@@ -148,6 +148,7 @@ module.exports = Player = Character.extend({
                         self.clearTarget();
                         self.broadcast(new Messages.Move(self));
                         self.move_callback(self.x, self.y);
+                        self.zone_callback();
                     }
                 }
             }
