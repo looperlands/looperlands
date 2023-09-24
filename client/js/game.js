@@ -3420,7 +3420,10 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 });
             
                 self.player.onHasMoved(function(player) {
-                    self.assignBubbleTo(player);
+                    self.bubbleManager.forEachBubble(function(bubble) {
+                        let character = self.getEntityById(bubble.id);
+                        self.assignBubbleTo(character);
+                    });
                 });
                 
                 self.player.onArmorLoot(function(armorName) {
