@@ -227,7 +227,7 @@ define(['character', 'timer'], function(Character, Timer) {
                 t = this.game.currentTime;
         
             let updateAnimatedTilesFn = function (tile) {
-                if(tile.animate(t)) {
+                if(self.game.camera.isVisiblePosition(tile.x, tile.y, 2) && tile.animate(t)) {
                     tile.isDirty = true;
                     tile.dirtyRect = self.game.renderer.getTileBoundingRect(tile);
 
