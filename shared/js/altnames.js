@@ -6,7 +6,10 @@ const AltNames = {
     cobslimeyellow: "slime",
     cobslimered: "slime",
     cobslimeking: "slime king",
-    magcrack: "megamag"
+    magcrack: "megamag",
+    cobdirt: "pile of dirt",
+    cobincubator: "egg incubator",
+    cobcoblin: "coblin"
 };
 
 AltNames.getAltNameFromKind = function(kind){

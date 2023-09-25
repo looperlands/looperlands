@@ -173,6 +173,9 @@ Types = {
         COBSLIMEKING: 400009,
         COBCAT: 400010,
         COBYORKIE: 400011,
+        COBDIRT: 400012,
+        COBINCUBATOR: 400013,
+        COBCOBLIN: 400014,
         
         // Armors
         FIREFOX: 20,
@@ -189,6 +192,7 @@ Types = {
         BURGER: 36,
         CHEST: 37,
         FIREPOTION: 38,
+        COBEGG: 21300007,
         COBLOG: 21300008,
         COBCLOVER: 21300009,
         COBCORN: 21300010,
@@ -2958,6 +2962,8 @@ var kinds = {
     wildgrin: [Types.Entities.WILDGRIN, "mob"],
     cobchicken: [Types.Entities.COBCHICKEN, "mob"],
     alaric: [Types.Entities.ALARIC, "mob"],
+    cobdirt: [Types.Entities.COBDIRT, "mob"],
+    cobincubator: [Types.Entities.COBINCUBATOR, "mob"],
 
     brownspotdog: [Types.Entities.BROWNSPOTDOG, "mob"],
     blackdog: [Types.Entities.BLACKDOG, "mob"],
@@ -3036,6 +3042,7 @@ var kinds = {
     cobslimeking: [Types.Entities.COBSLIMEKING, "mob"],
     cobcat: [Types.Entities.COBCAT, "mob"],
     cobyorkie: [Types.Entities.COBYORKIE, "mob"],
+    cobcoblin: [Types.Entities.COBCOBLIN, "mob"],
     sword1: [Types.Entities.SWORD1, "weapon"],
     sword2: [Types.Entities.SWORD2, "weapon"],
     axe: [Types.Entities.AXE, "weapon"],
@@ -3058,6 +3065,7 @@ var kinds = {
     cobcorn: [Types.Entities.COBCORN, "object"],
     coblog: [Types.Entities.COBLOG, "object"],
     cobclover: [Types.Entities.COBCLOVER, "object"],
+    cobegg: [Types.Entities.COBEGG, "object"],
     cake: [Types.Entities.CAKE, "object"],
     burger: [Types.Entities.BURGER, "object"],
     chest: [Types.Entities.CHEST, "object"],

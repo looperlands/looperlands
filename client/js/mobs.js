@@ -1911,6 +1911,51 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
 
+        Cobdirt: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.COBDIRT);
+                this.isAggressive = false;
+                this.nameless = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
+        Cobincubator: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.COBINCUBATOR);
+                this.isAggressive = false;
+                this.nameless = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
+        Cobcoblin: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.COBCOBLIN);
+                this.moveSpeed = 200;
+                this.walkSpeed = 200;
+                this.atkSpeed = 75;
+                this.idleSpeed = 600;
+                this.setAttackRate(700);
+                this.aggroRange = 2;
+            }
+        }),
+
+        // @nextMobLine@
     };
     return Mobs;
 });
