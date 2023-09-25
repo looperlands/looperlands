@@ -40,11 +40,13 @@ define(function() {
         },
 
         lookAt: function(entity) {
-            var r = this.renderer,
-                x = Math.round( entity.x - (Math.floor(this.gridW / 2) * r.tilesize) ),
-                y = Math.round( entity.y - (Math.floor(this.gridH / 2) * r.tilesize) );
-    
-            this.setPosition(x, y);
+            if (entity) {
+                var r = this.renderer,
+                    x = Math.round( entity.x - (Math.floor(this.gridW / 2) * r.tilesize) ),
+                    y = Math.round( entity.y - (Math.floor(this.gridH / 2) * r.tilesize) );
+        
+                this.setPosition(x, y);
+            }
         },
 
         forEachVisiblePosition: function(callback, extra) {
@@ -60,9 +62,10 @@ define(function() {
             return this.isVisiblePosition(entity.gridX, entity.gridY);
         },
         
-        isVisiblePosition: function(x, y) {
-            if(y >= this.gridY && y < this.gridY + this.gridH
-            && x >= this.gridX && x < this.gridX + this.gridW) {
+        isVisiblePosition: function(x, y, extra) {
+            var extra = extra || 0;
+            if(y >= this.gridY-extra && y < this.gridY + this.gridH+(extra*2)
+            && x >= this.gridX-extra && x < this.gridX + this.gridW+(extra*2)) {
                 return true;
             } else {
                 return false;
