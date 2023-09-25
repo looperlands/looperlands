@@ -4789,6 +4789,9 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         },
     
         assignBubbleTo: function(character) {
+            if (character === undefined) {
+                return;
+            }
             var bubble = this.bubbleManager.getBubbleById(character.id);
         
             if(bubble) {

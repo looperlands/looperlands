@@ -986,6 +986,9 @@ module.exports = World = cls.Class.extend({
         const group = this.groups[player.group];
         
         let ret = {}
+        if (group === undefined) {
+            return ret;
+        }
         for (const id in group.entities) {
             let entity = group.entities[id];
             if (entity.type === 'mob' || entity.type === 'player') {
