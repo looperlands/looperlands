@@ -187,6 +187,10 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
         return new Mobs.Cobslimeking(id);
     };
 
+    EntityFactory.builders[Types.Entities.COBCOBLIN] = function(id) {
+        return new Mobs.Cobcoblin(id);
+    };
+
     EntityFactory.builders[Types.Entities.ALARIC] = function(id) {
         return new Mobs.Alaric(id);
     };
@@ -202,6 +206,14 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
 
     EntityFactory.builders[Types.Entities.COBCAT] = function(id) {
         return new Mobs.Cobcat(id);
+    };
+
+    EntityFactory.builders[Types.Entities.COBDIRT] = function(id) {
+        return new Mobs.Cobdirt(id);
+    };
+
+    EntityFactory.builders[Types.Entities.COBINCUBATOR] = function(id) {
+        return new Mobs.Cobincubator(id);
     };
     // OA Villagers
     EntityFactory.builders[Types.Entities.COBYORKIE] = function(id) {
@@ -469,6 +481,10 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
 
     EntityFactory.builders[Types.Entities.COBCLOVER] = function(id) {
         return new Items.Cobclover(id);
+    };
+
+    EntityFactory.builders[Types.Entities.COBEGG] = function(id) {
+        return new Items.Cobegg(id);
     };
 
     EntityFactory.builders[Types.Entities.CHEST] = function(id) {

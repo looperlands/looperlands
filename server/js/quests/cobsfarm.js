@@ -10,7 +10,7 @@ quests = [
         target: Types.Entities.COBLOG,
         requiredLevel: 7,
         amount: 20,
-        level: 10,
+        level: 9,
         medal: Types.Medals.TREE
     },
     {
@@ -48,7 +48,7 @@ quests = [
         target: Types.Entities.COBSLIMERED,
         amount: 60,
         requiredQuest: "COB_YELLOW_SLIMES",
-        level: 7,
+        level: 6,
         medal: Types.Medals.SKULL
     },
     {
@@ -61,7 +61,7 @@ quests = [
         target: Types.Entities.COBCLOVER,
         amount: 1,
         requiredQuest: "COB_RED_SLIMES",
-        level: 10,
+        level: 8,
         medal: Types.Medals.SKULL
     },
 ]
