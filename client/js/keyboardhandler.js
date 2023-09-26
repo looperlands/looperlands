@@ -39,9 +39,19 @@ class KeyBoardHandler {
     }
 
     handleMovement() {
-        if (this.game.player.path != null || $('#chatbox').hasClass("active")) {
+        if (this.lastMovement === undefined) {
+            this.lastMovement = new Date().getTime();
+        }
+        let now = new Date().getTime();
+
+        let notEnoughTimeElasped = now - this.lastMovement < 100;
+        
+        if (this.game.player.path != null || $('#chatbox').hasClass("active") || notEnoughTimeElasped) {
             return;
         }
+
+        this.lastMovement = now;
+
         var x = this.game.player.gridX;
         var y = this.game.player.gridY;
         this.game.wasd = true;
