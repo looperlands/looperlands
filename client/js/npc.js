@@ -149,7 +149,7 @@ define(['character'], function (Character) {
             'Hey there, Looper. my name is <a href="https://www.cobmin.com" target="_blank">cobmin</a>.',
             "I\'m a creator and developer in the loopring ecosystem.",
             'I made the NFT toolkit <a href="https://maizehelps.art/" target="_blank">Maize</a>',
-            'and am currently working on <a href="https://twitter.com/CobsFarm" target="_blank">Cob\'s Farm</a>.',
+            'and am currently working on <a href="https://www.cobsfarm.com" target="_blank">Cob\'s Farm</a>.',
             'Follow <a href="https://loopworms.io/DEV/LooperLands/QR/qr.php?NPC=scientist" target="blank">this link</a> - it might be a Red Packet!',
             "Remember, read to succeed Looper!"
         ],
