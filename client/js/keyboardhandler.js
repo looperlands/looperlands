@@ -44,9 +44,11 @@ class KeyBoardHandler {
         }
         var x = this.game.player.gridX;
         var y = this.game.player.gridY;
+        this.game.wasd = true;
         this.game.click({ x: x + this.keys.d - this.keys.a, 
                           y: y + this.keys.s - this.keys.w, 
                           keyboard: true});
+        this.game.wasd = false;
     }
 
     handleBlur() {

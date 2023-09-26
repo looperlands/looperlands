@@ -63,6 +63,8 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         
             // debug
             this.debugPathing = false;
+
+            this.wasd = false;
         
             // sprites
             this.spriteNames = ["hand", "sword", "loot", "target", "talk", "sparks", "shadow16", "rat", "skeleton", "skeleton2", "spectre", "boss", "deathknight", 
@@ -4247,7 +4249,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
          * 
          */
         forEachAnimatedTile: function(callback) {
-            if(this.animatedTiles) {
+            if(this.wasd === false && this.animatedTiles) {
                 _.each(this.animatedTiles, function(tile) {
                     callback(tile);
                 });
@@ -4255,7 +4257,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         },
 
         forEachHighAnimatedTile: function(callback) {
-            if(this.highAnimatedTiles) {
+            if(this.wasd === false && this.highAnimatedTiles) {
                 _.each(this.highAnimatedTiles, function(tile) {
                     callback(tile);
                 });
