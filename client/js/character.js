@@ -77,9 +77,10 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
                 return;
             }
 
-            // don't change animation if the character is doing a special
-            if(this.currentAnimation && this.currentAnimation.name === "special" && this.animationLock) {
-                return
+            // don't change animation if there's a lock (attack/special), death has prio though
+            if(animation !== "death" && this.currentAnimation && this.animationLock && 
+              (this.currentAnimation.name === "special" || this.currentAnimation.name.substr(0, 3) === "atk")) {
+                 return;
             }
 
             this.flipSpriteX = false;
@@ -117,8 +118,13 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
     	},
 	
     	hit: function(orientation) {
+            let self = this;
     	    this.setOrientation(orientation);
-    	    this.animate("atk", this.atkSpeed, 1);
+            this.animationLock = true;
+    	    this.animate("atk", this.atkSpeed, 1, function () {
+                self.animationLock = false;
+                self.idle();
+            });
     	},
 	
     	walk: function(orientation) {
