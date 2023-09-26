@@ -38,6 +38,8 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
     
             this.selectedX = 0;
             this.selectedY = 0;
+            this.lastTickX = 0;
+            this.lastTickY = 0;
             this.selectedCellVisible = false;
             this.targetColor = "rgba(255, 255, 255, 0.5)";
             this.targetCellVisible = true;
@@ -2657,6 +2659,60 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             this.renderer.camera.lookAt(this.player);
         },
 
+        camFollowPlayerX: function() {
+            const cam = this.renderer.camera;
+            const rend = this.renderer;
+
+            let playerWithinBounds = true;
+            let tryPosX = this.player.x - Math.floor((cam.gridW / 2) * rend.tilesize);
+            if (tryPosX > cam.x) { // cam move right
+                for (let i = cam.gridY; i < cam.gridY + cam.gridH; i++) {
+                    if (!this.map.isInsideCenteredCamZone(tryPosX + cam.gridW * rend.tilesize, i*16)) {
+                        playerWithinBounds = false;
+                        break;
+                    }
+                  } 
+            } else if (tryPosX < cam.x) { // cam move left
+                for (let i = cam.gridY; i < cam.gridY + cam.gridH; i++) {
+                    if (!this.map.isInsideCenteredCamZone(tryPosX, i*16)) {
+                        playerWithinBounds = false;
+                        break;
+                    }
+                }
+            }
+
+            if (playerWithinBounds) {
+                this.renderer.camera.setX(tryPosX);
+            }
+        },
+
+        camFollowPlayerY: function() {
+            const cam = this.renderer.camera;
+            const rend = this.renderer;
+
+            let playerWithinBounds = true;
+            let tryPosY = this.player.y - Math.floor((cam.gridH / 2) * rend.tilesize);
+            if (tryPosY > cam.y) { // cam move down
+                for (let i = cam.gridX; i < cam.gridX + cam.gridW; i++) {
+                    if (!this.map.isInsideCenteredCamZone(i*16, tryPosY + cam.gridH * rend.tilesize)) {
+                        playerWithinBounds = false;
+                        break;
+                    }
+                }
+            } else if (tryPosY < cam.y) { // cam move up
+                for (let i = cam.gridX; i < cam.gridX + cam.gridW; i++) {
+                    if (!this.map.isInsideCenteredCamZone(i*16, tryPosY)) {
+                        playerWithinBounds = false;
+                        break;
+                    }
+                }
+            }
+
+            if (playerWithinBounds) {
+                this.renderer.camera.setY(tryPosY);
+            }
+        },
+
         addEntity: function(entity) {
             var self = this;
             
@@ -2957,7 +3013,14 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 this.updateCursorLogic();
                 this.updater.update();
                 if (this.mapId !== "main") {
-                    this.focusPlayer();
+                    if(this.lastTickX !== this.player.x) {
+                        this.camFollowPlayerX();
+                        this.lastTickX = this.player.x;
+                    }
+                    if(this.lastTickY !== this.player.y) {
+                        this.camFollowPlayerY();
+                        this.lastTickY = this.player.y;
+                    }
                 }
                 this.renderer.renderFrame();
             }

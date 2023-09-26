@@ -35,6 +35,7 @@ module.exports = function processMap(json, options) {
         map.plateau = [];
         map.musicAreas = [];
         map.pvpZones = [];
+        map.centeredCamZones = [];
     }
     if(mode === "server") {
         map.roamingAreas = [];
@@ -259,6 +260,16 @@ module.exports = function processMap(json, options) {
         map.pvpZones.push(pvpZone);
     }
 
+    var processCenteredCamZone = function(ccz) {
+        var centeredCamZone = {
+            x: ccz.x / map.tilesize,
+            y: ccz.y / map.tilesize,
+            w: ccz.width / map.tilesize,
+            h: ccz.height / map.tilesize
+        };
+        map.centeredCamZones.push(centeredCamZone);
+    }
+
     // Object layers
     processGroup('doors', processDoor);
     processGroup('triggers', processTriggerArea);
@@ -272,6 +283,7 @@ module.exports = function processMap(json, options) {
     if (mode === "client") {
         processGroup('music', processMusic);
         processGroup('pvpzones', processPvpZone);
+        processGroup('centeredcamzones', processCenteredCamZone);
     }
 
     processGroup('checkpoints', processCheckpoint);

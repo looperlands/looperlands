@@ -156,6 +156,7 @@ define(['jquery', 'area'], function($, Area) {
             this.plateau = map.plateau || [];
             this.musicAreas = map.musicAreas || [];
             this.pvpZones = map.pvpZones || [];
+            this.centeredCamZones = map.centeredCamZones || [];
             this.collisions = map.collisions;
             this.high = map.high;
             this.animated = map.animated;
@@ -429,6 +430,14 @@ define(['jquery', 'area'], function($, Area) {
                                         y >= element.y && 
                                         y < element.y + element.h;
             return this.pvpZones.some(inZone);
+        },
+
+        isInsideCenteredCamZone: function(x, y){
+            const inZone = (element) => x >= element.x * 16 && 
+                                        x < element.x * 16 + element.w * 16 &&
+                                        y >= element.y * 16 && 
+                                        y < element.y * 16 + element.h * 16;
+            return this.centeredCamZones.some(inZone);
         },
 
         forEachPosition: function(callback, extra) {

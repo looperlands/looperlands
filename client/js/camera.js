@@ -49,6 +49,16 @@ define(function() {
             }
         },
 
+        setX: function(x) {
+            this.x = x;
+            this.gridX = Math.floor( x / 16 );
+        },
+
+        setY: function(y) {
+            this.y = y;
+            this.gridY = Math.floor( y / 16 );
+        },
+
         forEachVisiblePosition: function(callback, extra) {
             var extra = extra || 0;
             for(var y=this.gridY-extra, maxY=this.gridY+this.gridH+(extra*2); y < maxY; y += 1) {
