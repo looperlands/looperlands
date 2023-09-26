@@ -227,14 +227,7 @@ define(['character', 'timer'], function(Character, Timer) {
                 t = this.game.currentTime;
         
             let updateAnimatedTilesFn = function (tile) {
-                if(tile.animate(t)) {
-                    tile.isDirty = true;
-                    tile.dirtyRect = self.game.renderer.getTileBoundingRect(tile);
-
-                    if(self.game.renderer.mobile || self.game.renderer.tablet) {
-                        self.game.checkOtherDirtyRects(tile.dirtyRect, tile, tile.x, tile.y);
-                    }
-                }
+                tile.animate(t);
             }
             this.game.forEachAnimatedTile(updateAnimatedTilesFn);
             this.game.forEachHighAnimatedTile(updateAnimatedTilesFn);

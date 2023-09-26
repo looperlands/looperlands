@@ -3068,6 +3068,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 self.player.title = title;
                 self.updateBars();
                 self.resetCamera();
+                self.initAnimatedTiles();
                 self.updatePlateauMode();
                 self.audioManager.updateMusic();
             
@@ -4771,7 +4772,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
     
         resetZone: function() {
             this.bubbleManager.clean();
-            this.initAnimatedTiles();
+            //this.initAnimatedTiles();
             this.renderer.renderStaticCanvases();
         },
     
