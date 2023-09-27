@@ -4402,7 +4402,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         findPath: function(character, x, y, ignoreList) {
             var self = this,
                 grid = this.pathingGrid;
-                path = [],
+                path = undefined,
                 isPlayer = (character === this.player);
         
             if(this.map.isColliding(x, y)) {
@@ -4410,13 +4410,25 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             }
         
             if(this.pathfinder && character) {
+
+
+
                 if(ignoreList) {
                     _.each(ignoreList, function(entity) {
                         self.pathfinder.ignoreEntity(entity);
                     });
                 }
             
-                path = this.pathfinder.findPath(grid, character, x, y, false);
+                if (character.isNear({gridX: x, gridY: y}, 1)) {
+                    if (this.pathingGrid[y][x] === 0) {
+                        path = [[character.gridX, character.gridY], [x, y]];
+                    } else {
+                        path = []
+                    }
+                    //console.log(this.pathingGrid, grid, x, y);
+                } else {
+                    path = this.pathfinder.findPath(grid, character, x, y, false);
+                }
             
                 if(ignoreList) {
                     this.pathfinder.clearIgnoreList();
