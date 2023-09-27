@@ -2550,6 +2550,14 @@ define(['text!../sprites/agent.json',
         'text!../sprites/NFT_d159817f241267b282609ef8af0ea9d9b978f530a9ab4a2128ba9c5825b22831.json',
         'text!../sprites/NFT_377c6a1d924c0f99a2edb5c7023e0125caff2f13779977afb850fbe83b262730.json',
         'text!../sprites/NFT_d7c7e91ebf4c96b5f2d3ed450dc2ed9757670a930915ac23dbb6c3da67aa0558.json',
+        'text!../sprites/NFT_04a48d5e113281bc7bb5207598e36e023c0b06756beb2b700a0ed60ed7a796a7.json',
+        'text!../sprites/NFT_4c1f7939f85f0467c2cb7bb425fd352e9727d2dbf695231ec728b1c0a1421bd6.json',
+        'text!../sprites/NFT_54ca822c35b6e29559c784ea9d5194e7df96a68cff65cb2c3ce59a0ae8650d8d.json',
+        'text!../sprites/NFT_555d2fc15a411abadb81cebfaa568004e82b31bcd2d4661dcadac14c9947a22a.json',
+        'text!../sprites/NFT_a00f3bfcf50d5e96110312b42b7b184ad7f23f717d89902e7d2f7711ec5cdb35.json',
+        'text!../sprites/NFT_a6ca4c0150736687d27bfe1c5739c44a3b5f285e1e56e4ca39a66fd86ded6605.json',
+        'text!../sprites/NFT_b217a432be9daba5ff6ef417a1e0219e97854dc7abe43f0598ca86975a905ead.json',
+        'text!../sprites/NFT_bf6f5bea6e9cbd4525ac31ceeb2cb591a010f6f929ae42102a7c7939ffe03543.json',
         // @nextSpriteImport@
     ], function() {
     
