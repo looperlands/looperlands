@@ -2796,6 +2796,8 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     }
                 }
             }, 1);
+
+            this.findVisibleAnimatedTiles();
             //console.log("Initialized animated tiles.");
         },
     
@@ -3003,6 +3005,21 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             }
         },
 
+        findVisibleAnimatedTiles: function() {
+            let findVisibleAnimatedTiles = function(animatedTiles) {
+                let visibleAnimatedTiles = [];
+                for (tile of animatedTiles) {
+                    if (self.camera.isVisiblePosition(tile.x, tile.y, 2)) {
+                        visibleAnimatedTiles.push(tile);
+                    }
+                }
+                return visibleAnimatedTiles;
+            }
+
+            this.visibleAnimatedTiles = findVisibleAnimatedTiles(this.animatedTiles);
+            this.visibleAnimatedHighTiles = findVisibleAnimatedTiles(this.highAnimatedTiles);
+        },
+
         connect: function(started_callback) {
             var self = this,
                 connecting = false; // always in dispatcher mode in the build version
@@ -3154,6 +3171,8 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 });
             
                 self.player.onStep(function() {
+                    self.findVisibleAnimatedTiles();
+
                     if(self.player.hasNextStep()) {
                         self.registerEntityDualPosition(self.player);
                     }
@@ -4269,6 +4288,22 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 });
             }
         },
+
+        forEachVisibleAnimatedTile: function(callback) {
+            if(this.visibleAnimatedTiles) {
+                _.each(this.visibleAnimatedTiles, function(tile) {
+                    callback(tile);
+                });
+            }
+        },
+
+        forEachVisibleHighAnimatedTile: function(callback) {
+            if(this.visibleAnimatedHighTiles) {
+                _.each(this.visibleAnimatedHighTiles, function(tile) {
+                    callback(tile);
+                });
+            }
+        },
     
         /**
          * Returns the entity located at the given position on the world grid.
@@ -4458,19 +4493,23 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             }
             var entity;
 
+            let clickThrottle;
             if (pos.keyboard) {
                 this.keyboardMovement = true;
+                clickThrottle = 25;
             } else {
-                now = new Date().getTime();
-
-                if (this.lastClick !== undefined) {
-                    if (now - self.lastClick < 500) {
-                        return;
-                    }
-                }
-                self.lastClick = now;
+                clickThrottle = 500;
                 this.keyboardMovement = false;
             }
+
+            let now = new Date().getTime();
+
+            if (this.lastClick !== undefined) {
+                if (now - self.lastClick < clickThrottle) {
+                    return;
+                }
+            }
+            self.lastClick = now;
 
             if(pos.x === this.previousClickPosition.x
             && pos.y === this.previousClickPosition.y) {

@@ -639,11 +639,9 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                 tilesetwidth = this.tileset.width / m.tilesize;
 
             this.animatedTileCount = 0;
-            this.game.forEachAnimatedTile(function (tile) {
-                if (self.camera.isVisiblePosition(tile.x, tile.y, 2)) {
-                    self.drawTile(self.context, tile.id, self.tileset, tilesetwidth, m.width, tile.index);
-                    self.animatedTileCount += 1;
-                }
+            this.game.forEachVisibleAnimatedTile(function (tile) {
+                self.drawTile(self.context, tile.id, self.tileset, tilesetwidth, m.width, tile.index);
+                self.animatedTileCount += 1;
             });
         },
 
@@ -653,11 +651,9 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                 tilesetwidth = this.tileset.width / m.tilesize;
 
             this.animatedTileCount = 0;
-            this.game.forEachHighAnimatedTile(function (tile) {
-                if (self.camera.isVisiblePosition(tile.x, tile.y, 2)) {
-                    self.drawTile(self.context, tile.id, self.tileset, tilesetwidth, m.width, tile.index);
-                    self.animatedTileCount += 1;
-                }
+            this.game.forEachVisibleHighAnimatedTile(function (tile) {
+                self.drawTile(self.context, tile.id, self.tileset, tilesetwidth, m.width, tile.index);
+                self.animatedTileCount += 1;
             });
         },
         
