@@ -20,9 +20,9 @@ const PlayerEventBroker = require("./quests/playereventbroker.js");
 const LOOPWORMS_LOOPERLANDS_BASE_URL = process.env.LOOPWORMS_LOOPERLANDS_BASE_URL;
 const BASE_SPEED = 120;
 const BASE_ATTACK_RATE = 800;
-
-
 const XP_BATCH_SIZE = 500;
+
+const mapflows = require("./flows/mapflow.js");
 
 module.exports = Player = Character.extend({
     init: function(connection, worldServer) {
@@ -120,6 +120,8 @@ module.exports = Player = Character.extend({
                 discord.sendMessage(`Player ${self.name} joined the game.`);
                 dao.saveAvatarMapId(playerCache.nftId, playerCache.mapId);
                 self.playerEventBroker.setPlayer(self);
+
+                mapflows.loadFlow(playerCache.mapId, self.playerEventBroker);
             }
             else if(action === Types.Messages.WHO) {
                 message.shift();

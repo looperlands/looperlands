@@ -14,7 +14,7 @@ class PlayerEventBroker {
 
 
     static {
-        setInterval(PlayerEventBroker.processEvents, 5000);
+        setInterval(PlayerEventBroker.processEvents, 100);
     }
 
     constructor(player) {
@@ -28,9 +28,15 @@ class PlayerEventBroker {
         this.player = player;
     }
 
-    static addEvent(eventType, sessionId, playerCache) {
+    static addEvent(eventType, sessionId, playerCache, eventData) {
+        if(eventData === undefined) {
+            eventData = {};
+        }
+
+        eventData.player= playerCache;
+
         let eventId = eventType + ',' + sessionId;
-        PlayerEventBroker.events[eventId] = playerCache;
+        PlayerEventBroker.events[eventId] = eventData;
     }
     
     static async processEvents() {
@@ -41,9 +47,9 @@ class PlayerEventBroker {
             PlayerEventBroker.events = {};
 
             PlayerEventBroker.playerEventConsumers.forEach(consumer => {
-                for (const [eventId, playerCache] of Object.entries(events)) {
+                for (const [eventId, eventData] of Object.entries(events)) {
                     let [eventType, sessionId] = eventId.split(',');
-                    let consumed = consumer.consume({eventType: eventType, playerCache: playerCache});
+                    let consumed = consumer.consume({eventType: eventType, playerCache: eventData.player, data: eventData});
                     if (consumed.changedQuests !== undefined && consumed.changedQuests.length > 0) {
                         let playerCache = PlayerEventBroker.cache.get(sessionId);
                         if (playerCache === undefined) {
@@ -79,7 +85,7 @@ class PlayerEventBroker {
 
         playerCache.gameData = gameData;
         this.cache.set(sessionId, playerCache);
-        PlayerEventBroker.addEvent(PlayerEventBroker.Events.LOOT_ITEM, sessionId, playerCache);
+        PlayerEventBroker.addEvent(PlayerEventBroker.Events.LOOT_ITEM, sessionId, playerCache, { item: item });
     }
 
     async killMobEvent(mob) {
@@ -102,7 +108,7 @@ class PlayerEventBroker {
 
         playerCache.gameData = gameData;
         this.cache.set(sessionId, playerCache);
-        PlayerEventBroker.addEvent(PlayerEventBroker.Events.KILL_MOB, sessionId, playerCache);
+        PlayerEventBroker.addEvent(PlayerEventBroker.Events.KILL_MOB, sessionId, playerCache, { mob: mob });
     }
     
     destroy() {
