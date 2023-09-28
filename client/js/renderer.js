@@ -6,11 +6,16 @@ function(Camera, Item, Character, Player, Timer, Mob) {
         init: function(game, canvas, background, foreground) {
             this.game = game;
             this.context = (canvas && canvas.getContext) ? canvas.getContext("2d") : null;
-            this.background = (background && background.getContext) ? background.getContext("2d") : null;
+            //this.background = (background && background.getContext) ? background.getContext("2d") : null;
             this.foreground = (foreground && foreground.getContext) ? foreground.getContext("2d") : null;
+
+            backgroundCanvas = document.getElementById("background");
+            let offScreenCanvas = backgroundCanvas.transferControlToOffscreen();
+            console.log("background", backgroundCanvas);
+            this.background = backgroundCanvas;
         
             this.canvas = canvas;
-            this.backcanvas = background;
+            this.backcanvas = backgroundCanvas;
             this.forecanvas = foreground;
 
             this.initFPS();
@@ -18,7 +23,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
         
             this.upscaledRendering = true;
             this.supportsSilhouettes = this.upscaledRendering;
-        
+            this.worker = new Worker("js/renderer-webworker.js");
             this.rescale(this.getScaleFactor());
         
             this.lastTime = new Date();
@@ -33,6 +38,8 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             this.tablet = Detect.isTablet(window.innerWidth);
             
             this.fixFlickeringTimer = new Timer(100);
+
+            this.worker.postMessage({"canvas":  offScreenCanvas, "type": "setCanvas"}, [offScreenCanvas]);
         },
     
         getWidth: function() {
@@ -45,6 +52,8 @@ function(Camera, Item, Character, Player, Timer, Mob) {
     
         setTileset: function(tileset) {
             this.tileset = tileset;
+            console.log(tileset);
+            this.worker.postMessage({type: "setTileset", src: tileset.src});
         },
     
         getScaleFactor: function() {
@@ -96,8 +105,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             this.canvas.height = this.camera.gridH * this.tilesize * this.scale;
             console.debug("#entities set to "+this.canvas.width+" x "+this.canvas.height);
         
-            this.backcanvas.width = this.canvas.width;
-            this.backcanvas.height = this.canvas.height;
+            this.worker.postMessage({type: "setCanvasSize", width: this.canvas.width, height: this.canvas.height});
             console.debug("#background set to "+this.backcanvas.width+" x "+this.backcanvas.height);
         
             this.forecanvas.width = this.canvas.width;
@@ -625,12 +633,16 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             var self = this,
                 m = this.game.map,
                 tilesetwidth = this.tileset.width / m.tilesize;
+
+            let tiles = [];
         
             this.game.forEachVisibleTile(function (id, index) {
                 if(!m.isHighTile(id) && !m.isAnimatedTile(id))  {
-                    self.drawTile(self.background, id, self.tileset, tilesetwidth, m.width, index);
+                    tiles.push({tileid: id, index: index, setW: tilesetwidth, gridW: m.width});
+                    //self.drawTile(self.background, id, self.tileset, tilesetwidth, m.width, index);
                 }
             }, 1);
+            this.worker.postMessage({"type": "render", tiles: tiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale});
         },
     
         drawAnimatedTiles: function() {
@@ -765,15 +777,15 @@ function(Camera, Item, Character, Player, Timer, Mob) {
         },
     
         renderStaticCanvases: function() {
-            this.background.save();
-            this.setCameraView(this.background);
+            //this.background.save();
+            //this.setCameraView(this.background);
             this.drawTerrain();
-            this.background.restore();
+            //this.background.restore();
         },
 
         renderFrame: function() {
             this.clearScreen(this.context);
-            this.clearScreen(this.background);
+            //this.clearScreen(this.background);
         
             this.context.save();
             this.setCameraView(this.context);
