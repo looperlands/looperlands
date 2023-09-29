@@ -203,10 +203,23 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.COBCAT] = function(id) {
         return new Mobs.Cobcat(id);
     };
-    // OA Villagers
+        
     EntityFactory.builders[Types.Entities.COBYORKIE] = function(id) {
         return new Mobs.Cobyorkie(id);
     };
+
+    // OA Villagers
+
+
+    EntityFactory.builders[Types.Entities.BLACKDOG] = function(id) {
+        return new Mobs.Blackdog(id);
+    }
+    EntityFactory.builders[Types.Entities.WHITEDOG] = function(id) {
+        return new Mobs.Whitedog(id);
+    }
+    EntityFactory.builders[Types.Entities.BROWNDOG] = function(id) {
+        return new Mobs.Browndog(id);
+    }
     
     EntityFactory.builders[Types.Entities.FVILLAGER1] = function(id) {
         return new Mobs.Fvillager1(id);
