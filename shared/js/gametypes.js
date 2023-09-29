@@ -153,6 +153,9 @@ Types = {
         NIGHTHARROW: 300107, 
         TORIAN: 300108, 
         GRIPNAR: 300109,
+        BROWNDOG: 30010,
+        BLACKDOG: 30011,
+        WHITEDOG: 30012,
         ALARIC: 300016,
         JAYCE: 300017,
         ORLAN: 300018,
@@ -2672,6 +2675,10 @@ var kinds = {
     cobchicken: [Types.Entities.COBCHICKEN, "mob"],
     alaric: [Types.Entities.ALARIC, "mob"],
 
+
+    blackdog: [Types.Entities.BLACKDOG, "mob"],
+    whitedog: [Types.Entities.WHITEDOG, "mob"],
+    browndog: [Types.Entities.BROWNDOG, "mob"],
     villager1: [Types.Entities.VILLAGER1, "mob"],
     villager2: [Types.Entities.VILLAGER2, "mob"],
     villager3: [Types.Entities.VILLAGER3, "mob"],
