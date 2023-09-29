@@ -631,16 +631,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             var self = this,
                 m = this.game.map,
                 tilesetwidth = this.tileset.width / m.tilesize;
-
-            let tiles = [];
-        
-            this.game.forEachVisibleTile(function (id, index) {
-                if(!m.isHighTile(id) && !m.isAnimatedTile(id))  {
-                    tiles.push({tileid: id, setW: tilesetwidth, gridW: m.width, cellid: index});
-                    //self.drawTile(self.background, id, self.tileset, tilesetwidth, m.width, index);
-                }
-            }, 1);
-            this.worker.postMessage({"type": "render", tiles: tiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale});
+            this.worker.postMessage({"type": "render", tiles: this.game.visibleTerrainTiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale});
         },
     
         drawAnimatedTiles: function() {
@@ -677,12 +668,10 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                 tilesetwidth = this.tileset.width / m.tilesize;
         
             this.highTileCount = 0;
-            this.game.forEachVisibleTile(function (id, index) {
-                if(m.isHighTile(id) && !m.isAnimatedTile(id)) {
-                    self.drawTile(ctx, id, self.tileset, tilesetwidth, m.width, index);
-                    self.highTileCount += 1;
-                }
-            }, 1);
+            for (let [id, index] of this.game.visibleHighTiles) {
+                self.drawTile(ctx, id, self.tileset, tilesetwidth, m.width, index);
+                self.highTileCount += 1;
+            }
         },
 
         drawBackground: function(ctx, color) {
