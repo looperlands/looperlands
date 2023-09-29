@@ -9,7 +9,9 @@ const AltNames = {
     magcrack: "megamag",
     cobdirt: "pile of dirt",
     cobincubator: "egg incubator",
-    cobcoblin: "coblin"
+    cobcoblin: "coblin",
+    cobcobane: "cobane",
+    cobogre: "ogre"
 };
 
 AltNames.getAltNameFromKind = function(kind){

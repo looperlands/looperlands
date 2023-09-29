@@ -176,6 +176,8 @@ Types = {
         COBDIRT: 400012,
         COBINCUBATOR: 400013,
         COBCOBLIN: 400014,
+        COBCOBANE: 400015,
+        COBOGRE: 400016,
         
         // Armors
         FIREFOX: 20,
@@ -258,7 +260,9 @@ Types = {
         VILLAGESIGN7: 34000009,
         VILLAGESIGN8: 34000010,
         VILLAGESIGN9: 34000011,
-        TABBYCAT: 34000012, // @lastidCharacter@
+        TABBYCAT: 34000012, 
+        COBELLEN: 34000013, 
+        COBJOHNNY: 34000014,  // @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -3043,6 +3047,8 @@ var kinds = {
     cobcat: [Types.Entities.COBCAT, "mob"],
     cobyorkie: [Types.Entities.COBYORKIE, "mob"],
     cobcoblin: [Types.Entities.COBCOBLIN, "mob"],
+    cobcobane: [Types.Entities.COBCOBANE, "mob"],
+    cobogre: [Types.Entities.COBOGRE, "mob"],
     sword1: [Types.Entities.SWORD1, "weapon"],
     sword2: [Types.Entities.SWORD2, "weapon"],
     axe: [Types.Entities.AXE, "weapon"],
@@ -3148,6 +3154,8 @@ var kinds = {
     VILLAGESIGN7: [Types.Entities.VILLAGESIGN7, "npc"],
     VILLAGESIGN8: [Types.Entities.VILLAGESIGN8, "npc"],
     VILLAGESIGN9: [Types.Entities.VILLAGESIGN9, "npc"],
+    cobellen: [Types.Entities.COBELLEN, "npc"],
+    cobjohnny: [Types.Entities.COBJOHNNY, "npc"],
     // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],

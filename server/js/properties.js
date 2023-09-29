@@ -898,6 +898,25 @@ var Properties = {
         hpMod: 0.8
     },
 
+    cobcobane: {
+        level: 13,
+        drops: {
+            cobapple: 45,
+            cobcorn: 5,
+            cobegg: 5
+        },
+        hpMod: 1.1
+    },
+
+    cobogre: {
+        level: 15,
+        armorMod: 1.25,
+        weaponMod: 2.25,
+        hpMod: 13,
+        xp: 5000,  
+        respawnDelay: 300000
+    },
+
     //Field effects
     magcrack: {
         aoe: {

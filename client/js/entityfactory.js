@@ -191,6 +191,14 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
         return new Mobs.Cobcoblin(id);
     };
 
+    EntityFactory.builders[Types.Entities.COBCOBANE] = function(id) {
+        return new Mobs.Cobcobane(id);
+    };
+
+    EntityFactory.builders[Types.Entities.COBOGRE] = function(id) {
+        return new Mobs.Cobogre(id);
+    };
+
     EntityFactory.builders[Types.Entities.ALARIC] = function(id) {
         return new Mobs.Alaric(id);
     };
@@ -712,6 +720,14 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.VILLAGESIGN7]=function(id){return new NPCs.VILLAGESIGN7(id);};
     EntityFactory.builders[Types.Entities.VILLAGESIGN8]=function(id){return new NPCs.VILLAGESIGN8(id);};
     EntityFactory.builders[Types.Entities.VILLAGESIGN9]=function(id){return new NPCs.VILLAGESIGN9(id);};
+
+    EntityFactory.builders[Types.Entities.COBELLEN] = function(id) {
+        return new NPCs.Cobellen(id);
+    };  
+
+    EntityFactory.builders[Types.Entities.COBJOHNNY] = function(id) {
+        return new NPCs.Cobjohnny(id);
+    };  
     // @nextNPCLine@
 
      //====== FieldEffectss ======

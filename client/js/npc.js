@@ -296,6 +296,14 @@ define(['character'], function (Character) {
         "VILLAGESIGN7": ["Change me"],
         "VILLAGESIGN8": ["Change me"],
         "VILLAGESIGN9": ["Change me"],
+
+        "cobellen": [
+            "Placeholder"
+        ],
+
+        "cobjohnny": [
+            "Placeholder"
+        ],
         // @nextNPCLine@
     };
 

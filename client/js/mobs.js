@@ -1955,6 +1955,29 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
 
+        Cobcobane: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.COBCOBANE);
+                this.moveSpeed = 225;
+                this.walkSpeed = 225;
+                this.atkSpeed = 75;
+                this.idleSpeed = 600;
+                this.setAttackRate(900);
+                this.aggroRange = 3;
+            }
+        }),
+
+        Cobogre: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.COBOGRE);
+                this.moveSpeed = 300;
+                this.atkSpeed = 100;
+                this.idleSpeed = 600;
+                this.aggroRange = 5;
+                this.title = "SHREK!?";
+            }
+        }),
+
         // @nextMobLine@
     };
     return Mobs;
