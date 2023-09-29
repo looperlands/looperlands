@@ -4844,7 +4844,12 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         },
     
         resetCamera: function() {
-            this.focusPlayer();
+            if (this.mapId !== "main") {
+                this.focusPlayer();
+            } else {
+                this.camera.focusEntity(this.player);
+            }
+
             this.resetZone();
         },
     
