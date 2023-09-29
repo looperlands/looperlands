@@ -3015,6 +3015,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         },
 
         findVisibleAnimatedTiles: function() {
+            let self = this;
             let findVisibleAnimatedTiles = function(animatedTiles) {
                 let visibleAnimatedTiles = [];
                 for (tile of animatedTiles) {
