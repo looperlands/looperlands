@@ -97,10 +97,10 @@ canvas { position:absolute;image-rendering:optimizeSpeed;}
 #background { background:url('../img/common/loading.png') no-repeat center center, #000;}
 .error #background { background:url('../img/common/loading-error.png') no-repeat center center, #000;}
 
-#background, #foreground { margin:0; padding:0;}
+#background, #foreground, #high-tiles { margin:0; padding:0;}
 
 #achievements nav::selection {background:transparent;text-decoration:none;color:transparent;}
-#canvas, #bar-container, #bubbles, #chatbox, #canvasborder, #foreground, #background, footer, #container, #achievement-notification {-moz-user-select:none;-webkit-user-select:none;-o-user-select:none;-ms-user-select:none;}
+#canvas, #bar-container, #bubbles, #chatbox, #canvasborder, #foreground, #background, #high-tiles, footer, #container, #achievement-notification {-moz-user-select:none;-webkit-user-select:none;-o-user-select:none;-ms-user-select:none;}
 
 .started #canvas {cursor:none;}
 

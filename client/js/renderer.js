@@ -9,6 +9,8 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             //this.background = (background && background.getContext) ? background.getContext("2d") : null;
             this.foreground = (foreground && foreground.getContext) ? foreground.getContext("2d") : null;
 
+            let highCanvas = document.getElementById("high-canvas").transferControlToOffscreen();
+
             let offScreenCanvas = background.transferControlToOffscreen();
             this.background = background;
         
@@ -22,6 +24,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             this.upscaledRendering = true;
             this.supportsSilhouettes = this.upscaledRendering;
             this.worker = new Worker("js/renderer-webworker.js");
+            this.highWorker = new Worker("js/renderer-webworker.js");
         
             this.lastTime = new Date();
             this.frameCount = 0;
@@ -37,6 +40,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             this.fixFlickeringTimer = new Timer(100);
 
             this.worker.postMessage({"canvas":  offScreenCanvas, "type": "setCanvas"}, [offScreenCanvas]);
+            this.highWorker.postMessage({"canvas":  highCanvas, "type": "setCanvas"}, [highCanvas]);
             this.rescale(this.getScaleFactor());
         },
     
@@ -52,6 +56,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             this.tileset = tileset;
             console.log(tileset);
             this.worker.postMessage({type: "setTileset", src: tileset.src});
+            this.highWorker.postMessage({type: "setTileset", src: tileset.src});
         },
     
         getScaleFactor: function() {
@@ -104,6 +109,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             console.debug("#entities set to "+this.canvas.width+" x "+this.canvas.height);
         
             this.worker.postMessage({type: "setCanvasSize", width: this.canvas.width, height: this.canvas.height});
+            this.highWorker.postMessage({type: "setCanvasSize", width: this.canvas.width, height: this.canvas.height});
             console.debug("#background set to "+this.backcanvas.width+" x "+this.backcanvas.height);
         
             this.forecanvas.width = this.canvas.width;
@@ -631,7 +637,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             var self = this,
                 m = this.game.map,
                 tilesetwidth = this.tileset.width / m.tilesize;
-            this.worker.postMessage({"type": "render", tiles: this.game.visibleTerrainTiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale});
+            this.worker.postMessage({"type": "render", tiles: this.game.visibleTerrainTiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: true});
         },
     
         drawAnimatedTiles: function() {
@@ -639,11 +645,13 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                 m = this.game.map,
                 tilesetwidth = this.tileset.width / m.tilesize;
 
-            this.animatedTileCount = 0;
-            this.game.forEachVisibleAnimatedTile(function (tile) {
-                self.drawTile(self.context, tile.id, self.tileset, tilesetwidth, m.width, tile.index);
-                self.animatedTileCount += 1;
-            });
+                let visbileTiles = [];
+                if (this.game.visibleAnimatedTiles !== undefined) {
+                    for (let tile of this.game.visibleAnimatedTiles) {
+                        visbileTiles.push({tileid: tile.id, setW: tilesetwidth, gridW: m.width, cellid: tile.index});
+                    }
+                    this.worker.postMessage({"type": "render", tiles: visbileTiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: false});
+                }
         },
 
         drawHighAnimatedTiles: function() {
@@ -651,11 +659,14 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                 m = this.game.map,
                 tilesetwidth = this.tileset.width / m.tilesize;
 
-            this.animatedTileCount = 0;
-            this.game.forEachVisibleHighAnimatedTile(function (tile) {
-                self.drawTile(self.context, tile.id, self.tileset, tilesetwidth, m.width, tile.index);
-                self.animatedTileCount += 1;
-            });
+                let visbileTiles = [];
+                if (this.game.visibleAnimatedHighTiles !== undefined) {
+                    for (let tile of this.game.visibleAnimatedHighTiles) {
+                        visbileTiles.push({tileid: tile.id, setW: tilesetwidth, gridW: m.width, cellid: tile.index});
+                    }
+                    this.highWorker.postMessage({"type": "render", tiles: visbileTiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: false});
+                }
+
         },
         
         drawDirtyAnimatedTiles: function() {
@@ -667,11 +678,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                 m = this.game.map,
                 tilesetwidth = this.tileset.width / m.tilesize;
         
-            this.highTileCount = 0;
-            for (let [id, index] of this.game.visibleHighTiles) {
-                self.drawTile(ctx, id, self.tileset, tilesetwidth, m.width, index);
-                self.highTileCount += 1;
-            }
+                this.highWorker.postMessage({"type": "render", tiles: this.game.visibleHighTiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: true});
         },
 
         drawBackground: function(ctx, color) {
@@ -764,18 +771,15 @@ function(Camera, Item, Character, Player, Timer, Mob) {
         },
     
         renderStaticCanvases: function() {
-            //this.background.save();
-            //this.setCameraView(this.background);
             this.drawTerrain();
-            //this.background.restore();
         },
 
         renderFrame: function() {
             this.clearScreen(this.context);
             //this.clearScreen(this.background);
-        
             this.context.save();
             this.setCameraView(this.context);
+            this.renderStaticCanvases();
             this.drawAnimatedTiles();
 
             if(this.game.started) {
@@ -790,7 +794,6 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             this.drawHighTiles(this.context);
             this.drawHighAnimatedTiles();
             this.context.restore();
-            this.renderStaticCanvases();
             // Overlay UI elements
             this.drawCursor();
             this.drawDebugInfo();

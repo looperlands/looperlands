@@ -48,8 +48,10 @@ function drawTile(ctx, tileid, tileset, setW, gridW, cellid, scale) {
     }
 };
 
-function render(tiles, cameraX, cameraY, scale) {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+function render(tiles, cameraX, cameraY, scale, clear) {
+    if (clear === true) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
     ctx.save();
     ctx.translate(-cameraX * scale, -cameraY * scale);
     for (let tile of tiles) {
@@ -63,7 +65,7 @@ onmessage = (e) => {
     if (e.data.type === "setTileset") {
         loadTileset(e.data.src);
     } else if (e.data.type === "render") {
-        render(e.data.tiles, e.data.cameraX, e.data.cameraY, e.data.scale);
+        render(e.data.tiles, e.data.cameraX, e.data.cameraY, e.data.scale, e.data.clear);
     } else if (e.data.type === "setCanvasSize") {
         console.log("setting canvas size", e.data.width, e.data.height);
         canvas.width = e.data.width;

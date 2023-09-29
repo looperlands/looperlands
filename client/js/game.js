@@ -3038,7 +3038,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     self.visibleTerrainTiles.push({tileid: id, setW: tilesetwidth, gridW: m.width, cellid: index});
                 }
                 else if(m.isHighTile(id) && !m.isAnimatedTile(id)) {
-                    self.visibleHighTiles.push([id, index]);
+                    self.visibleHighTiles.push({tileid: id, setW: tilesetwidth, gridW: m.width, cellid: index});
                 }
             }, 1);
         },
