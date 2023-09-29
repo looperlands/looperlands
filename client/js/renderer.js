@@ -9,12 +9,11 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             //this.background = (background && background.getContext) ? background.getContext("2d") : null;
             this.foreground = (foreground && foreground.getContext) ? foreground.getContext("2d") : null;
 
-            backgroundCanvas = document.getElementById("background");
-            let offScreenCanvas = backgroundCanvas.transferControlToOffscreen();
-            this.background = backgroundCanvas;
+            let offScreenCanvas = background.transferControlToOffscreen();
+            this.background = background;
         
             this.canvas = canvas;
-            this.backcanvas = backgroundCanvas;
+            this.backcanvas = background;
             this.forecanvas = foreground;
 
             this.initFPS();
@@ -788,7 +787,6 @@ function(Camera, Item, Character, Player, Timer, Mob) {
         
             this.context.save();
             this.setCameraView(this.context);
-            this.renderStaticCanvases();
             this.drawAnimatedTiles();
 
             if(this.game.started) {
@@ -803,7 +801,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             this.drawHighTiles(this.context);
             this.drawHighAnimatedTiles();
             this.context.restore();
-
+            this.renderStaticCanvases();
             // Overlay UI elements
             this.drawCursor();
             this.drawDebugInfo();

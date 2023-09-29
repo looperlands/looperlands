@@ -49,6 +49,7 @@ function drawTile(ctx, tileid, tileset, setW, gridW, cellid, scale) {
 };
 
 function render(tiles, cameraX, cameraY, scale) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.save();
     ctx.translate(-cameraX * scale, -cameraY * scale);
     for (let tile of tiles) {
