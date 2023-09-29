@@ -153,6 +153,9 @@ Types = {
         NIGHTHARROW: 300107, 
         TORIAN: 300108, 
         GRIPNAR: 300109,
+        BROWNDOG: 30010,
+        BLACKDOG: 30011,
+        WHITEDOG: 30012,
         ALARIC: 300016,
         JAYCE: 300017,
         ORLAN: 300018,
@@ -2592,7 +2595,9 @@ Types = {
         NFT_70ac0444157883928839fb942eb29703dc6dbe6cd57eb5ca1f662ad9a11aff8b: 2404,
         NFT_b17c21f00c7ee0c10b9ce8eeabbf0278e4285ae2cff3eaf5e209e103678c7e83: 2405,
         NFT_d21e229781eb669505b1fb9c3ab74d07be33db666b3e9227d98209b6005006df: 2406,
-        NFT_e0f8fa1055701ebac734a38dfde9576367178984584fb5c38127fd5db724c334: 2407 // @lastid@
+        NFT_e0f8fa1055701ebac734a38dfde9576367178984584fb5c38127fd5db724c334: 2407,
+        NFT_f15730c0048a189baae93cbf5ab112acf47309045f148982499ce9dda05d62b5: 2408,
+        NFT_f345e3de17f1cd5e805da47fc1330b581c0df976ab633bde5cf7db9af4fa53e2: 2409 // @lastid@
         //@nextIdLine@
     },
     
@@ -2670,6 +2675,10 @@ var kinds = {
     cobchicken: [Types.Entities.COBCHICKEN, "mob"],
     alaric: [Types.Entities.ALARIC, "mob"],
 
+
+    blackdog: [Types.Entities.BLACKDOG, "mob"],
+    whitedog: [Types.Entities.WHITEDOG, "mob"],
+    browndog: [Types.Entities.BROWNDOG, "mob"],
     villager1: [Types.Entities.VILLAGER1, "mob"],
     villager2: [Types.Entities.VILLAGER2, "mob"],
     villager3: [Types.Entities.VILLAGER3, "mob"],
@@ -5181,6 +5190,8 @@ var kinds = {
     NFT_b17c21f00c7ee0c10b9ce8eeabbf0278e4285ae2cff3eaf5e209e103678c7e83: [Types.Entities.NFT_b17c21f00c7ee0c10b9ce8eeabbf0278e4285ae2cff3eaf5e209e103678c7e83, "armor"],
     NFT_d21e229781eb669505b1fb9c3ab74d07be33db666b3e9227d98209b6005006df: [Types.Entities.NFT_d21e229781eb669505b1fb9c3ab74d07be33db666b3e9227d98209b6005006df, "armor"],
     NFT_e0f8fa1055701ebac734a38dfde9576367178984584fb5c38127fd5db724c334: [Types.Entities.NFT_e0f8fa1055701ebac734a38dfde9576367178984584fb5c38127fd5db724c334, "weapon"],
+    NFT_f15730c0048a189baae93cbf5ab112acf47309045f148982499ce9dda05d62b5: [Types.Entities.NFT_f15730c0048a189baae93cbf5ab112acf47309045f148982499ce9dda05d62b5, "weapon"],
+    NFT_f345e3de17f1cd5e805da47fc1330b581c0df976ab633bde5cf7db9af4fa53e2: [Types.Entities.NFT_f345e3de17f1cd5e805da47fc1330b581c0df976ab633bde5cf7db9af4fa53e2, "weapon"],
     // @nextSpriteLine@
 
     

@@ -259,7 +259,7 @@ define(['character'], function (Character) {
         ],
 
         "villagesign1": [
-            "Hushwind Village"
+            "Journey Before Destination, Radiants."
         ],
 
         "miner": [

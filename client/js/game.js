@@ -74,7 +74,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 "sword2", "redsword", "bluesword", "goldensword", "item-sword2", "item-axe", "item-redsword", "item-bluesword", "item-goldensword", "item-leatherarmor", "item-mailarmor","whiskers",
                                 "item-platearmor", "item-redarmor", "item-goldenarmor", "item-flask", "item-potion","item-cake", "item-burger", "item-cobcorn", "item-cobapple", "item-coblog", "item-cobclover", "morningstar", "item-morningstar", "item-firepotion",
                                 "item-KEY_ARACHWEAVE","shiverrock","shiverrockii","shiverrockiii","crystolith","stoneguard","glacialord","edur","lumi","snjor","gelidus","nightharrow",
-                                "fieldeffect-magcrack","gloomforged","torian","gripnar",
+                                "fieldeffect-magcrack","gloomforged","torian","gripnar","blackdog","browndog","whitedog",
                                 "villager1","villager2","villager3","villager4","villager5","villager6",
                                 "villager7","villager8","villager9","villager10","villager11","villager12",
                                 "villager13","villager14","villager15","villager16","villager17","villager18",
@@ -2447,6 +2447,8 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 "NFT_b17c21f00c7ee0c10b9ce8eeabbf0278e4285ae2cff3eaf5e209e103678c7e83",
                                 "NFT_d21e229781eb669505b1fb9c3ab74d07be33db666b3e9227d98209b6005006df",
                                 "NFT_e0f8fa1055701ebac734a38dfde9576367178984584fb5c38127fd5db724c334",
+                                "NFT_f15730c0048a189baae93cbf5ab112acf47309045f148982499ce9dda05d62b5",
+                                "NFT_f345e3de17f1cd5e805da47fc1330b581c0df976ab633bde5cf7db9af4fa53e2",
                                 // @nextSpriteLine@
                             ];                          
         },

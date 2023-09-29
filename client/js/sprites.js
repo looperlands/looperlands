@@ -153,6 +153,9 @@ define(['text!../sprites/agent.json',
         'text!../sprites/megamag.json',
         'text!../sprites/cobchicken.json',
         'text!../sprites/alaric.json',
+        'text!../sprites/browndog.json',
+        'text!../sprites/blackdog.json',
+        'text!../sprites/whitedog.json',
         'text!../sprites/villager1.json',
         'text!../sprites/villager2.json',
         'text!../sprites/villager3.json',
@@ -2565,6 +2568,8 @@ define(['text!../sprites/agent.json',
         'text!../sprites/NFT_b17c21f00c7ee0c10b9ce8eeabbf0278e4285ae2cff3eaf5e209e103678c7e83.json',
         'text!../sprites/NFT_d21e229781eb669505b1fb9c3ab74d07be33db666b3e9227d98209b6005006df.json',
         'text!../sprites/NFT_e0f8fa1055701ebac734a38dfde9576367178984584fb5c38127fd5db724c334.json',
+        'text!../sprites/NFT_f15730c0048a189baae93cbf5ab112acf47309045f148982499ce9dda05d62b5.json',
+        'text!../sprites/NFT_f345e3de17f1cd5e805da47fc1330b581c0df976ab633bde5cf7db9af4fa53e2.json',
         // @nextSpriteImport@
     ], function() {
     
