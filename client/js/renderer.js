@@ -769,17 +769,22 @@ function(Camera, Item, Character, Player, Timer, Mob) {
         },
 
         renderFrame: function() {
-            let renderData = []
-            this.clearScreen(this.context);
-            //this.clearScreen(this.background);
-            this.context.save();
-            this.setCameraView(this.context);
+            let renderData = [];
+
+            let highTiles = this.drawHighTiles();
+            renderData.push(highTiles);
+
+            let highAnimatedTiles = this.drawHighAnimatedTiles();
+            renderData.push(highAnimatedTiles);
 
             let terrain = this.drawTerrain();
             renderData.push(terrain);
             let animatedTiles = this.drawAnimatedTiles();
             renderData.push(animatedTiles);
 
+            this.clearScreen(this.context);
+            this.context.save();
+            this.setCameraView(this.context);
             if(this.game.started) {
                 this.drawSelectedCell();
                 this.drawTargetCell();
@@ -789,13 +794,6 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             this.drawPathingCells();
             this.drawEntities();
             this.drawCombatInfo();
-            let highTiles = this.drawHighTiles();
-            renderData.push(highTiles);
-
-
-            let highAnimatedTiles = this.drawHighAnimatedTiles();
-            renderData.push(highAnimatedTiles);
-
             this.context.restore();
             // Overlay UI elements
             this.drawCursor();
