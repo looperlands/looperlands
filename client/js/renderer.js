@@ -638,7 +638,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
         
             this.game.forEachVisibleTile(function (id, index) {
                 if(!m.isHighTile(id) && !m.isAnimatedTile(id))  {
-                    tiles.push({tileid: id, index: index, setW: tilesetwidth, gridW: m.width});
+                    tiles.push({tileid: id, setW: tilesetwidth, gridW: m.width, cellid: index});
                     //self.drawTile(self.background, id, self.tileset, tilesetwidth, m.width, index);
                 }
             }, 1);
