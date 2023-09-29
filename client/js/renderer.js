@@ -24,15 +24,6 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             this.upscaledRendering = true;
             this.supportsSilhouettes = this.upscaledRendering;
             this.worker = new Worker("js/renderer-webworker.js");
-            this.highWorker = new Worker("js/renderer-webworker.js");
-
-            let self = this;
-
-            this.highWorker.addEventListener("message", (e) => {
-                if (e.data.type === "rendered") {
-                    self.doneRendering = true;
-                }
-            });
 
             this.doneRendering = true;
         
@@ -49,8 +40,8 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             
             this.fixFlickeringTimer = new Timer(100);
 
-            this.worker.postMessage({"canvas":  offScreenCanvas, "type": "setCanvas"}, [offScreenCanvas]);
-            this.highWorker.postMessage({"canvas":  highCanvas, "type": "setCanvas"}, [highCanvas]);
+            this.worker.postMessage({"canvas":  offScreenCanvas, "type": "setCanvas", "id": "background"}, [offScreenCanvas]);
+            this.worker.postMessage({"canvas":  highCanvas, "type": "setCanvas", "id": "high"}, [highCanvas]);
             this.rescale(this.getScaleFactor());
         },
     
@@ -66,7 +57,6 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             this.tileset = tileset;
             console.log(tileset);
             this.worker.postMessage({type: "setTileset", src: tileset.src});
-            this.highWorker.postMessage({type: "setTileset", src: tileset.src});
         },
     
         getScaleFactor: function() {
@@ -119,7 +109,6 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             console.debug("#entities set to "+this.canvas.width+" x "+this.canvas.height);
         
             this.worker.postMessage({type: "setCanvasSize", width: this.canvas.width, height: this.canvas.height});
-            this.highWorker.postMessage({type: "setCanvasSize", width: this.canvas.width, height: this.canvas.height});
             console.debug("#background set to "+this.backcanvas.width+" x "+this.backcanvas.height);
         
             this.forecanvas.width = this.canvas.width;
@@ -647,7 +636,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             var self = this,
                 m = this.game.map,
                 tilesetwidth = this.tileset.width / m.tilesize;            
-            this.worker.postMessage({"type": "render", tiles: this.game.visibleTerrainTiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: true});
+            this.worker.postMessage({"type": "render", id: "background", tiles: this.game.visibleTerrainTiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: true});
         },
     
         drawAnimatedTiles: function() {
@@ -660,7 +649,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                     for (let tile of this.game.visibleAnimatedTiles) {
                         visbileTiles.push({tileid: tile.id, setW: tilesetwidth, gridW: m.width, cellid: tile.index});
                     }
-                    this.worker.postMessage({"type": "render", tiles: visbileTiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: false});
+                    this.worker.postMessage({"type": "render", id: "background", tiles: visbileTiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: false});
                 }
         },
 
@@ -674,7 +663,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                     for (let tile of this.game.visibleAnimatedHighTiles) {
                         visbileTiles.push({tileid: tile.id, setW: tilesetwidth, gridW: m.width, cellid: tile.index});
                     }
-                    this.highWorker.postMessage({"type": "render", tiles: visbileTiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: false, last: true});
+                    this.worker.postMessage({"type": "render", id: "high", tiles: visbileTiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: false});
                 }
 
         },
@@ -688,7 +677,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                 m = this.game.map,
                 tilesetwidth = this.tileset.width / m.tilesize;
         
-                this.highWorker.postMessage({"type": "render", tiles: this.game.visibleHighTiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: true});
+                this.worker.postMessage({"type": "render", id: "high", tiles: this.game.visibleHighTiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: true});
         },
 
         drawBackground: function(ctx, color) {

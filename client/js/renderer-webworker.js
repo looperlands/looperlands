@@ -1,7 +1,7 @@
 let tileset = undefined;
 let tilesize = 16;
-let canvas = undefined;
-let ctx = undefined;
+let canvases = {};
+let contexes = {};
 
 async function loadTileset(src) {
     const imgblob = await fetch(src)
@@ -48,7 +48,9 @@ function drawTile(ctx, tileid, tileset, setW, gridW, cellid, scale) {
     }
 };
 
-function render(tiles, cameraX, cameraY, scale, clear, last) {
+function render(id, tiles, cameraX, cameraY, scale, clear) {
+    let ctx = contexes[id];
+    let canvas = canvases[id];
     if (clear === true) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
@@ -58,9 +60,6 @@ function render(tiles, cameraX, cameraY, scale, clear, last) {
         drawTile(ctx, tile.tileid, tileset, tile.setW, tile.gridW, tile.cellid, scale)
     }
     ctx.restore();
-    if (last === true) {
-        postMessage({type: "rendered"});
-    }
 }
 
 
@@ -68,17 +67,22 @@ onmessage = (e) => {
     if (e.data.type === "setTileset") {
         loadTileset(e.data.src);
     } else if (e.data.type === "render") {
-        render(e.data.tiles, e.data.cameraX, e.data.cameraY, e.data.scale, e.data.clear, e.data.last);
+        render(e.data.id, e.data.tiles, e.data.cameraX, e.data.cameraY, e.data.scale, e.data.clear);
     } else if (e.data.type === "setCanvasSize") {
-        console.log("setting canvas size", e.data.width, e.data.height);
-        canvas.width = e.data.width;
-        canvas.height = e.data.height;
-        ctx.imageSmoothingEnabled  = false;
+
+        for (let id in canvases) {
+            let canvas = canvases[id];
+            let ctx = contexes[id];
+            canvas.width = e.data.width;
+            canvas.height = e.data.height;
+            ctx.imageSmoothingEnabled  = false;
+        }
     } else if (e.data.type === "setCanvas") {
-        console.log("setting canvas");
-        canvas = e.data.canvas;
-        //canvas.imageSmoothingEnabled  = false;
+        let id = e.data.id;
+        let canvas = e.data.canvas;
+        canvases[id] = canvas;
         ctx = canvas.getContext('2d');
         ctx.imageSmoothingEnabled  = false;
+        contexes[id] = ctx;
     }
 };
