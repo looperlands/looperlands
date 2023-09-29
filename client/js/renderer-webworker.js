@@ -67,10 +67,12 @@ onmessage = (e) => {
         console.log("setting canvas size", e.data.width, e.data.height);
         canvas.width = e.data.width;
         canvas.height = e.data.height;
+        ctx.imageSmoothingEnabled  = false;
     } else if (e.data.type === "setCanvas") {
         console.log("setting canvas");
         canvas = e.data.canvas;
-        canvas.imageSmoothingEnabled  = false;
+        //canvas.imageSmoothingEnabled  = false;
         ctx = canvas.getContext('2d');
+        ctx.imageSmoothingEnabled  = false;
     }
 };

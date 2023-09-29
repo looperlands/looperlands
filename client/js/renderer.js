@@ -11,7 +11,6 @@ function(Camera, Item, Character, Player, Timer, Mob) {
 
             backgroundCanvas = document.getElementById("background");
             let offScreenCanvas = backgroundCanvas.transferControlToOffscreen();
-            console.log("background", backgroundCanvas);
             this.background = backgroundCanvas;
         
             this.canvas = canvas;
@@ -24,7 +23,6 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             this.upscaledRendering = true;
             this.supportsSilhouettes = this.upscaledRendering;
             this.worker = new Worker("js/renderer-webworker.js");
-            this.rescale(this.getScaleFactor());
         
             this.lastTime = new Date();
             this.frameCount = 0;
@@ -40,6 +38,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             this.fixFlickeringTimer = new Timer(100);
 
             this.worker.postMessage({"canvas":  offScreenCanvas, "type": "setCanvas"}, [offScreenCanvas]);
+            this.rescale(this.getScaleFactor());
         },
     
         getWidth: function() {
