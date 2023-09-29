@@ -48,7 +48,7 @@ function drawTile(ctx, tileid, tileset, setW, gridW, cellid, scale) {
     }
 };
 
-function render(tiles, cameraX, cameraY, scale, clear) {
+function render(tiles, cameraX, cameraY, scale, clear, last) {
     if (clear === true) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
@@ -58,6 +58,9 @@ function render(tiles, cameraX, cameraY, scale, clear) {
         drawTile(ctx, tile.tileid, tileset, tile.setW, tile.gridW, tile.cellid, scale)
     }
     ctx.restore();
+    if (last === true) {
+        postMessage({type: "rendered"});
+    }
 }
 
 
@@ -65,7 +68,7 @@ onmessage = (e) => {
     if (e.data.type === "setTileset") {
         loadTileset(e.data.src);
     } else if (e.data.type === "render") {
-        render(e.data.tiles, e.data.cameraX, e.data.cameraY, e.data.scale, e.data.clear);
+        render(e.data.tiles, e.data.cameraX, e.data.cameraY, e.data.scale, e.data.clear, e.data.last);
     } else if (e.data.type === "setCanvasSize") {
         console.log("setting canvas size", e.data.width, e.data.height);
         canvas.width = e.data.width;

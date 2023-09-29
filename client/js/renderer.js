@@ -25,6 +25,16 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             this.supportsSilhouettes = this.upscaledRendering;
             this.worker = new Worker("js/renderer-webworker.js");
             this.highWorker = new Worker("js/renderer-webworker.js");
+
+            let self = this;
+
+            this.highWorker.addEventListener("message", (e) => {
+                if (e.data.type === "rendered") {
+                    self.doneRendering = true;
+                }
+            });
+
+            this.doneRendering = true;
         
             this.lastTime = new Date();
             this.frameCount = 0;
@@ -636,7 +646,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
         drawTerrain: function() {
             var self = this,
                 m = this.game.map,
-                tilesetwidth = this.tileset.width / m.tilesize;
+                tilesetwidth = this.tileset.width / m.tilesize;            
             this.worker.postMessage({"type": "render", tiles: this.game.visibleTerrainTiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: true});
         },
     
@@ -664,7 +674,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                     for (let tile of this.game.visibleAnimatedHighTiles) {
                         visbileTiles.push({tileid: tile.id, setW: tilesetwidth, gridW: m.width, cellid: tile.index});
                     }
-                    this.highWorker.postMessage({"type": "render", tiles: visbileTiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: false});
+                    this.highWorker.postMessage({"type": "render", tiles: visbileTiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: false, last: true});
                 }
 
         },
@@ -775,6 +785,9 @@ function(Camera, Item, Character, Player, Timer, Mob) {
         },
 
         renderFrame: function() {
+            if (! this.doneRendering) {
+                return;
+            }
             this.clearScreen(this.context);
             //this.clearScreen(this.background);
             this.context.save();
@@ -793,6 +806,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             this.drawCombatInfo();
             this.drawHighTiles(this.context);
             this.drawHighAnimatedTiles();
+
             this.context.restore();
             // Overlay UI elements
             this.drawCursor();
