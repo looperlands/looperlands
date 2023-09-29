@@ -67,7 +67,10 @@ onmessage = (e) => {
     if (e.data.type === "setTileset") {
         loadTileset(e.data.src);
     } else if (e.data.type === "render") {
-        render(e.data.id, e.data.tiles, e.data.cameraX, e.data.cameraY, e.data.scale, e.data.clear);
+        for (let renderData of e.data.renderData) {
+            render(renderData.id, renderData.tiles, renderData.cameraX, renderData.cameraY, renderData.scale, renderData.clear);
+        }
+
     } else if (e.data.type === "setCanvasSize") {
 
         for (let id in canvases) {
