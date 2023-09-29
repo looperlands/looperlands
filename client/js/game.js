@@ -4844,7 +4844,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         },
     
         resetCamera: function() {
-            this.camera.focusEntity(this.player);
+            this.focusPlayer();
             this.resetZone();
         },
     
