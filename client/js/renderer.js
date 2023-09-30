@@ -41,13 +41,6 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             this.worker.postMessage({"canvas":  offScreenCanvas, "type": "setCanvas", "id": "background"}, [offScreenCanvas]);
             this.worker.postMessage({"canvas":  highCanvas, "type": "setCanvas", "id": "high"}, [highCanvas]);
             this.rescale(this.getScaleFactor());
-
-            let self = this;
-            this.worker.addEventListener("message", (e) => {
-                if (e.data.type === "rendered") {
-                    self.game.tick();
-                }
-            });
         },
     
         getWidth: function() {
