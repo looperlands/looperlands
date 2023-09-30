@@ -288,6 +288,14 @@ define(['character'], function (Character) {
             "If adventure calls, our dungeons are rife with monsters and rewards.",
             "Cob's Farm offers beauty and valor for everyone."
         ],
+        "VILLAGESIGN2": ["Change me"],
+        "VILLAGESIGN3": ["Change me"],
+        "VILLAGESIGN4": ["Change me"],
+        "VILLAGESIGN5": ["Change me"],
+        "VILLAGESIGN6": ["Change me"],
+        "VILLAGESIGN7": ["Change me"],
+        "VILLAGESIGN8": ["Change me"],
+        "VILLAGESIGN9": ["Change me"],
         // @nextNPCLine@
     };
 

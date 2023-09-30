@@ -156,6 +156,7 @@ Types = {
         BROWNDOG: 30010,
         BLACKDOG: 30011,
         WHITEDOG: 30012,
+        BROWNSPOTDOG: 30013,
         ALARIC: 300016,
         JAYCE: 300017,
         ORLAN: 300018,
@@ -244,7 +245,15 @@ Types = {
         VILLAGESIGN1: 30000001,
         COBLUMBERJACK: 34000001,
         COBHILLSNPC: 34000002,
-        COBCOBMIN: 34000003, // @lastidCharacter@
+        COBCOBMIN: 34000003,
+        VILLAGESIGN2: 34000004,
+        VILLAGESIGN3: 34000005,
+        VILLAGESIGN4: 34000006,
+        VILLAGESIGN5: 34000007,
+        VILLAGESIGN6: 34000008,
+        VILLAGESIGN7: 34000009,
+        VILLAGESIGN8: 34000010,
+        VILLAGESIGN9: 34000011, // @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -2675,7 +2684,7 @@ var kinds = {
     cobchicken: [Types.Entities.COBCHICKEN, "mob"],
     alaric: [Types.Entities.ALARIC, "mob"],
 
-
+    brownspotdog: [Types.Entities.BROWNSPOTDOG, "mob"],
     blackdog: [Types.Entities.BLACKDOG, "mob"],
     whitedog: [Types.Entities.WHITEDOG, "mob"],
     browndog: [Types.Entities.BROWNDOG, "mob"],
@@ -2847,6 +2856,14 @@ var kinds = {
     coblumberjack: [Types.Entities.COBLUMBERJACK, "npc"],
     cobhillsnpc: [Types.Entities.COBHILLSNPC, "npc"],
     cobcobmin: [Types.Entities.COBCOBMIN, "npc"],
+    VILLAGESIGN2: [Types.Entities.VILLAGESIGN2, "npc"],
+    VILLAGESIGN3: [Types.Entities.VILLAGESIGN3, "npc"],
+    VILLAGESIGN4: [Types.Entities.VILLAGESIGN4, "npc"],
+    VILLAGESIGN5: [Types.Entities.VILLAGESIGN5, "npc"],
+    VILLAGESIGN6: [Types.Entities.VILLAGESIGN6, "npc"],
+    VILLAGESIGN7: [Types.Entities.VILLAGESIGN7, "npc"],
+    VILLAGESIGN8: [Types.Entities.VILLAGESIGN8, "npc"],
+    VILLAGESIGN9: [Types.Entities.VILLAGESIGN9, "npc"],
     // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],

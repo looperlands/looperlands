@@ -376,6 +376,24 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }), 
 
+        Brownspotdog: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.BROWNSPOTDOG);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }), 
+
         Villager1: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.VILLAGER1);
