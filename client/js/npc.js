@@ -288,8 +288,8 @@ define(['character'], function (Character) {
             "If adventure calls, our dungeons are rife with monsters and rewards.",
             "Cob's Farm offers beauty and valor for everyone."
         ],
-        "VILLAGESIGN2": ["Change me"],
-        "VILLAGESIGN3": ["Change me"],
+        "VILLAGESIGN2": ["Gregloop and Thunders Humble Abode."], //GREGLOOP
+        "VILLAGESIGN3": ["Home of Ripnatius Ironhand"], //RIPNTEAR
         "VILLAGESIGN4": ["Change me"],
         "VILLAGESIGN5": ["Change me"],
         "VILLAGESIGN6": ["Change me"],

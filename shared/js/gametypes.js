@@ -253,7 +253,8 @@ Types = {
         VILLAGESIGN6: 34000008,
         VILLAGESIGN7: 34000009,
         VILLAGESIGN8: 34000010,
-        VILLAGESIGN9: 34000011, // @lastidCharacter@
+        VILLAGESIGN9: 34000011,
+        TABBYCAT: 34000012, // @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -2748,6 +2749,7 @@ var kinds = {
     fvillager29: [Types.Entities.FVILLAGER29, "mob"],
     fvillager30: [Types.Entities.FVILLAGER30, "mob"],
     fvillager31: [Types.Entities.FVILLAGER31, "mob"],
+    tabbycat: [Types.Entities.TABBYCAT, "mob"],
     jayce: [Types.Entities.JAYCE, "mob"],
     orlan: [Types.Entities.ORLAN, "mob"],
     cobcow: [Types.Entities.COBCOW, "mob"],

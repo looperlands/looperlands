@@ -223,6 +223,9 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.BROWNSPOTDOG] = function(id) {
         return new Mobs.Brownspotdog(id);
     }
+    EntityFactory.builders[Types.Entities.TABBYCAT] = function(id) {
+        return new Mobs.Tabbycat(id);
+    }
     
     EntityFactory.builders[Types.Entities.FVILLAGER1] = function(id) {
         return new Mobs.Fvillager1(id);
@@ -404,6 +407,7 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.VILLAGER29] = function(id) {
         return new Mobs.Villager29(id);
     };
+
 
     // @nextMobLine@
     //===== items ======
