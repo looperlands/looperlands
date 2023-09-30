@@ -70,7 +70,9 @@ onmessage = (e) => {
         for (let renderData of e.data.renderData) {
             render(renderData.id, renderData.tiles, renderData.cameraX, renderData.cameraY, renderData.scale, renderData.clear);
         }
-
+        requestAnimationFrame(() => {
+            postMessage({ type: "rendered" });
+        });
     } else if (e.data.type === "setCanvasSize") {
 
         for (let id in canvases) {
