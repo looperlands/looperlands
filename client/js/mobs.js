@@ -358,9 +358,45 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 }
             }
         }),   
+
+        Tabbycat: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.TABBYCAT);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),   
         Whitedog: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.WHITEDOG);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }), 
+
+        Brownspotdog: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.BROWNSPOTDOG);
                 this.idleSpeed = 500;
                 this.walkSpeed = 250;
                 this.moveSpeed = 333;
@@ -393,6 +429,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 }
             }
         }),
+     
 
         Villager2: Mob.extend({
             init: function(id) {
@@ -1874,7 +1911,6 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
 
-        // @nextMobLine@
     };
     return Mobs;
 });
