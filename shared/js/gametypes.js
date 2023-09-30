@@ -156,6 +156,7 @@ Types = {
         BROWNDOG: 30010,
         BLACKDOG: 30011,
         WHITEDOG: 30012,
+        BROWNSPOTDOG: 30013,
         ALARIC: 300016,
         JAYCE: 300017,
         ORLAN: 300018,
@@ -244,7 +245,16 @@ Types = {
         VILLAGESIGN1: 30000001,
         COBLUMBERJACK: 34000001,
         COBHILLSNPC: 34000002,
-        COBCOBMIN: 34000003, // @lastidCharacter@
+        COBCOBMIN: 34000003,
+        VILLAGESIGN2: 34000004,
+        VILLAGESIGN3: 34000005,
+        VILLAGESIGN4: 34000006,
+        VILLAGESIGN5: 34000007,
+        VILLAGESIGN6: 34000008,
+        VILLAGESIGN7: 34000009,
+        VILLAGESIGN8: 34000010,
+        VILLAGESIGN9: 34000011,
+        TABBYCAT: 34000012, // @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -2597,7 +2607,9 @@ Types = {
         NFT_d21e229781eb669505b1fb9c3ab74d07be33db666b3e9227d98209b6005006df: 2406,
         NFT_e0f8fa1055701ebac734a38dfde9576367178984584fb5c38127fd5db724c334: 2407,
         NFT_f15730c0048a189baae93cbf5ab112acf47309045f148982499ce9dda05d62b5: 2408,
-        NFT_f345e3de17f1cd5e805da47fc1330b581c0df976ab633bde5cf7db9af4fa53e2: 2409 // @lastid@
+        NFT_f345e3de17f1cd5e805da47fc1330b581c0df976ab633bde5cf7db9af4fa53e2: 2409,
+        NFT_3b652493114513f71d3d93f6881e170391f1e45a1babfe9c844497b07f7ef730: 2410,
+        NFT_e2c35c8d9d8b9c33f2c2ab163921e32aae60d24b4d0f4ee9466901414bcf5b06: 2411 // @lastid@
         //@nextIdLine@
     },
     
@@ -2675,7 +2687,7 @@ var kinds = {
     cobchicken: [Types.Entities.COBCHICKEN, "mob"],
     alaric: [Types.Entities.ALARIC, "mob"],
 
-
+    brownspotdog: [Types.Entities.BROWNSPOTDOG, "mob"],
     blackdog: [Types.Entities.BLACKDOG, "mob"],
     whitedog: [Types.Entities.WHITEDOG, "mob"],
     browndog: [Types.Entities.BROWNDOG, "mob"],
@@ -2739,6 +2751,7 @@ var kinds = {
     fvillager29: [Types.Entities.FVILLAGER29, "mob"],
     fvillager30: [Types.Entities.FVILLAGER30, "mob"],
     fvillager31: [Types.Entities.FVILLAGER31, "mob"],
+    tabbycat: [Types.Entities.TABBYCAT, "mob"],
     jayce: [Types.Entities.JAYCE, "mob"],
     orlan: [Types.Entities.ORLAN, "mob"],
     cobcow: [Types.Entities.COBCOW, "mob"],
@@ -2847,6 +2860,14 @@ var kinds = {
     coblumberjack: [Types.Entities.COBLUMBERJACK, "npc"],
     cobhillsnpc: [Types.Entities.COBHILLSNPC, "npc"],
     cobcobmin: [Types.Entities.COBCOBMIN, "npc"],
+    VILLAGESIGN2: [Types.Entities.VILLAGESIGN2, "npc"],
+    VILLAGESIGN3: [Types.Entities.VILLAGESIGN3, "npc"],
+    VILLAGESIGN4: [Types.Entities.VILLAGESIGN4, "npc"],
+    VILLAGESIGN5: [Types.Entities.VILLAGESIGN5, "npc"],
+    VILLAGESIGN6: [Types.Entities.VILLAGESIGN6, "npc"],
+    VILLAGESIGN7: [Types.Entities.VILLAGESIGN7, "npc"],
+    VILLAGESIGN8: [Types.Entities.VILLAGESIGN8, "npc"],
+    VILLAGESIGN9: [Types.Entities.VILLAGESIGN9, "npc"],
     // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],
@@ -5192,6 +5213,8 @@ var kinds = {
     NFT_e0f8fa1055701ebac734a38dfde9576367178984584fb5c38127fd5db724c334: [Types.Entities.NFT_e0f8fa1055701ebac734a38dfde9576367178984584fb5c38127fd5db724c334, "weapon"],
     NFT_f15730c0048a189baae93cbf5ab112acf47309045f148982499ce9dda05d62b5: [Types.Entities.NFT_f15730c0048a189baae93cbf5ab112acf47309045f148982499ce9dda05d62b5, "weapon"],
     NFT_f345e3de17f1cd5e805da47fc1330b581c0df976ab633bde5cf7db9af4fa53e2: [Types.Entities.NFT_f345e3de17f1cd5e805da47fc1330b581c0df976ab633bde5cf7db9af4fa53e2, "weapon"],
+    NFT_3b652493114513f71d3d93f6881e170391f1e45a1babfe9c844497b07f7ef730: [Types.Entities.NFT_3b652493114513f71d3d93f6881e170391f1e45a1babfe9c844497b07f7ef730, "armor"],
+    NFT_e2c35c8d9d8b9c33f2c2ab163921e32aae60d24b4d0f4ee9466901414bcf5b06: [Types.Entities.NFT_e2c35c8d9d8b9c33f2c2ab163921e32aae60d24b4d0f4ee9466901414bcf5b06, "armor"],
     // @nextSpriteLine@
 
     
