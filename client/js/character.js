@@ -78,7 +78,7 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
             }
 
             // don't change animation if the character is doing a special
-            if(this.currentAnimation && this.currentAnimation.name === "special" && this.animationLock) {
+            if(animation !== "death" && this.currentAnimation && this.currentAnimation.name === "special" && this.animationLock) {
                 return
             }
 
