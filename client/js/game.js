@@ -2991,6 +2991,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 this.renderer.renderFrame();
             }
 
+            /*
             if(!this.isStopped) {
                 if (this.windowHidden) {
                     setTimeout(this.tick.bind(this), 1000/60);
@@ -2998,6 +2999,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     requestAnimFrame(this.tick.bind(this));
                 }
             }
+            */
         },
 
         start: function() {
