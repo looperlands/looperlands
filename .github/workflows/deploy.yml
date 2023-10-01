@@ -8,6 +8,7 @@ concurrency:
   cancel-in-progress: true      
 jobs:
   build:
+    image: looperlands
     name: Build
     runs-on: ubuntu-latest
     steps:
