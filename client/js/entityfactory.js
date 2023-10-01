@@ -203,10 +203,29 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.COBCAT] = function(id) {
         return new Mobs.Cobcat(id);
     };
-    // OA Villagers
+        
     EntityFactory.builders[Types.Entities.COBYORKIE] = function(id) {
         return new Mobs.Cobyorkie(id);
     };
+
+    // OA Villagers
+
+
+    EntityFactory.builders[Types.Entities.BLACKDOG] = function(id) {
+        return new Mobs.Blackdog(id);
+    }
+    EntityFactory.builders[Types.Entities.WHITEDOG] = function(id) {
+        return new Mobs.Whitedog(id);
+    }
+    EntityFactory.builders[Types.Entities.BROWNDOG] = function(id) {
+        return new Mobs.Browndog(id);
+    }
+    EntityFactory.builders[Types.Entities.BROWNSPOTDOG] = function(id) {
+        return new Mobs.Brownspotdog(id);
+    }
+    EntityFactory.builders[Types.Entities.TABBYCAT] = function(id) {
+        return new Mobs.Tabbycat(id);
+    }
     
     EntityFactory.builders[Types.Entities.FVILLAGER1] = function(id) {
         return new Mobs.Fvillager1(id);
@@ -388,6 +407,7 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.VILLAGER29] = function(id) {
         return new Mobs.Villager29(id);
     };
+
 
     // @nextMobLine@
     //===== items ======
@@ -668,6 +688,14 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.COBCOBMIN] = function(id) {
         return new NPCs.Cobcobmin(id);
     };  
+    EntityFactory.builders[Types.Entities.VILLAGESIGN2]=function(id){return new NPCs.VILLAGESIGN2(id);};
+    EntityFactory.builders[Types.Entities.VILLAGESIGN3]=function(id){return new NPCs.VILLAGESIGN3(id);};
+    EntityFactory.builders[Types.Entities.VILLAGESIGN4]=function(id){return new NPCs.VILLAGESIGN4(id);};
+    EntityFactory.builders[Types.Entities.VILLAGESIGN5]=function(id){return new NPCs.VILLAGESIGN5(id);};
+    EntityFactory.builders[Types.Entities.VILLAGESIGN6]=function(id){return new NPCs.VILLAGESIGN6(id);};
+    EntityFactory.builders[Types.Entities.VILLAGESIGN7]=function(id){return new NPCs.VILLAGESIGN7(id);};
+    EntityFactory.builders[Types.Entities.VILLAGESIGN8]=function(id){return new NPCs.VILLAGESIGN8(id);};
+    EntityFactory.builders[Types.Entities.VILLAGESIGN9]=function(id){return new NPCs.VILLAGESIGN9(id);};
     // @nextNPCLine@
 
      //====== FieldEffectss ======
