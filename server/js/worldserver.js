@@ -1227,7 +1227,7 @@ module.exports = World = cls.Class.extend({
             let self = this;
             field = self.addFieldEffect(fieldKind, x, y);
             field.parentId = parent.id;
-            field.onDetachFromParent(self.onDetachFromParentCallback.bind(self))
+            field.onDetachFromParent(self.onDetachFromParentCallback.bind(self));
             parent.addArray.push(field);
         }
     },

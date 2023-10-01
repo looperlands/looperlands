@@ -298,11 +298,12 @@ define(['character'], function (Character) {
         "VILLAGESIGN9": ["Change me"],
 
         "cobellen": [
-            "Placeholder"
+            "Ahh such beauty.",
+            "I can't wait to grow my own flowers."
         ],
 
         "cobjohnny": [
-            "Placeholder"
+            "Farm life is tough but it's something that we will all be able to do soon."
         ],
         // @nextNPCLine@
     };

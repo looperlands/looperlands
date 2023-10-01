@@ -64,6 +64,83 @@ quests = [
         level: 8,
         medal: Types.Medals.SKULL
     },
+    {
+        id: "COB_MISSING_EGGS",
+        name: "Missing eggs",
+        startText: ["Our eggs have been mysteriously disappearing.",
+        "Could you investigate what's happening?"],
+        questLogText: "Figure out what happened to the missing eggs.",
+        endText: "Good find!",
+        eventType: "KILL_MOB",
+        npc: Types.Entities.COBJOHNNY,
+        target: Types.Entities.COBDIRT,
+        requiredLevel: 9,
+        amount: 1,
+        level: 6,
+        medal: Types.Medals.CAVE
+    },
+    {
+        id: "COB_RETRIEVE_EGGS",
+        name: "Retrieve the stolen eggs",
+        startText: ["Because of the Coblins we are running short on eggs!",
+        "Can you retrieve them from the hidden cave?"],
+        questLogText: "Retrieve 50 stolen eggs",
+        endText: "Good job!",
+        eventType: "LOOT_ITEM",
+        npc: Types.Entities.COBJOHNNY,
+        target: Types.Entities.COBEGG,
+        requiredQuest: "COB_MISSING_EGGS",
+        amount: 50,
+        level: 12,
+        medal: Types.Medals.TREE
+    },
+    {
+        id: "COB_KILL_COBLINS",
+        name: "Fending off the Coblins",
+        startText: ["Coblins invaded our farm last night.",
+        "Could you kill 40 of them to send a clear message?"],
+        questLogText: "Kill 40 Coblins",
+        endText: "Thank you! That will show them!",
+        eventType: "KILL_MOB",
+        npc: Types.Entities.COBJOHNNY,
+        target: Types.Entities.COBCOBLIN,
+        requiredQuest: "COB_MISSING_EGGS",
+        amount: 40,
+        level: 12,
+        medal: Types.Medals.SKULL
+    },
+    {
+        id: "COB_KILL_COBANES",
+        name: "Scaring off the Cobanes",
+        startText: ["Those Cobanes won't learn!",
+        "They're causing chaos amongst the animals...",
+        "Kill 40 of them, that will teach them a lesson!"],
+        questLogText: "Kill 40 Cobanes",
+        endText: "Let's hope they won't come back!",
+        eventType: "KILL_MOB",
+        npc: Types.Entities.COBJOHNNY,
+        target: Types.Entities.COBCOBANE,
+        requiredQuest: "COB_KILL_COBLINS",
+        amount: 40,
+        level: 14,
+        medal: Types.Medals.SKULL
+    },
+    {
+        id: "COB_KILL_COBOGRE",
+        name: "Defeat the Ogre Leader",
+        startText: ["Their ogre leader is orchestrating all this.",
+        "He lurks deep in the cave.",
+        "Can you take him down?"],
+        questLogText: "Kill the Ogre Leader",
+        endText: "The animals are safe thanks to you!",
+        eventType: "KILL_MOB",
+        npc: Types.Entities.COBJOHNNY,
+        target: Types.Entities.COBOGRE,
+        requiredQuest: "COB_KILL_COBANES",
+        amount: 1,
+        level: 15,
+        medal: Types.Medals.SKULL
+    }
 ]
 
 exports.quests = quests;

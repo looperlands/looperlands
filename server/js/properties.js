@@ -927,9 +927,9 @@ var Properties = {
 
     cobfallingrock: {
         aoe: {
-            damage: 100,
+            damage: 75,
             range: 0,
-            singleHitDuration: 2000
+            singleHitDuration: 2900
         },
     },
 
