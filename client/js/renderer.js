@@ -772,8 +772,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
         },
     
         renderStaticCanvases: function() {
-            this.centeredTerrain = undefined;
-            this.centeredHighTiles = undefined;
+            this.redrawTerrain = true;
         },
 
         renderFrame: function() {
@@ -782,13 +781,10 @@ function(Camera, Item, Character, Player, Timer, Mob) {
 
             let terrain = [];
             let highTiles = []
-            if (centeredCamera) {
-                if (this.centeredTerrain === undefined) {
-                    this.centeredTerrain = this.drawTerrain();
-                    this.centeredHighTiles = this.drawHighTiles();
-                }
-                terrain = this.centeredTerrain;
-                highTiles = this.centeredHighTiles;
+            if (centeredCamera && this.redrawTerrain) {
+                terrain = this.drawTerrain();
+                highTiles = this.drawHighTiles();
+                this.redrawTerrain = false;
             } else {
                 terrain = this.drawTerrain();
                 highTiles = this.drawHighTiles();
