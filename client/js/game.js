@@ -3281,6 +3281,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         start: function() {
             this.tick();
             this.hasNeverStarted = false;
+            $("#background").css('background', 'none');
             console.log("Game loop started.");
         },
 
