@@ -121,7 +121,7 @@ module.exports = Player = Character.extend({
                 dao.saveAvatarMapId(playerCache.nftId, playerCache.mapId);
                 self.playerEventBroker.setPlayer(self);
 
-                mapflows.loadFlow(playerCache.mapId, self.playerEventBroker);
+                mapflows.loadFlow(playerCache.mapId, self.playerEventBroker, self.server);
             }
             else if(action === Types.Messages.WHO) {
                 message.shift();

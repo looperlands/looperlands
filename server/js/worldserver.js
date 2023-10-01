@@ -421,6 +421,48 @@ module.exports = World = cls.Class.extend({
         
         return npc;
     },
+
+    getClosestNpcOfKind: function(kind, x, y) {
+        var minDist = 99999,
+            closest = null,
+            npc,
+            dist;
+
+        for(var id in this.npcs) {
+            if(this.npcs.hasOwnProperty(id)) {
+                npc = this.npcs[id];
+                if(npc.kind === kind) {
+                    dist = Utils.distanceTo(x, y, npc.x, npc.y);
+                    if(dist < minDist) {
+                        closest = npc;
+                        minDist = dist;
+                    }
+                }
+            }
+        }
+        return closest;
+    },
+
+    getClosestMobOfKind: function(kind, x, y) {
+        var minDist = 99999,
+            closest = null,
+            mob,
+            dist;
+
+        for(var id in this.mobs) {
+            if(this.mobs.hasOwnProperty(id)) {
+                mob = this.mobs[id];
+                if(mob.kind === kind && !mob.isDead) {
+                    dist = Utils.distanceTo(x, y, mob.x, mob.y);
+                    if(dist < minDist) {
+                        closest = mob;
+                        minDist = dist;
+                    }
+                }
+            }
+        }
+        return closest;
+    },
     
     addItem: function(item) {
         this.addEntity(item);
@@ -758,7 +800,13 @@ module.exports = World = cls.Class.extend({
         this.pushToAdjacentGroups(mob.group, new Messages.Move(mob));
         this.handleEntityGroupMembership(mob);
     },
-    
+
+    moveNpc: function(npc, x, y) {
+        npc.setPosition(x,y);
+        this.pushToAdjacentGroups(npc.group, new Messages.Move(npc));
+        this.handleEntityGroupMembership(npc);
+    },
+
     findPositionNextTo: function(entity, target) {
         var valid = false,
             pos;
@@ -1164,15 +1212,11 @@ module.exports = World = cls.Class.extend({
     },
 
     activateTrigger: function(triggerId) {
-        if (this.doorTriggers.hasOwnProperty(triggerId)) {
-            this.doorTriggers[triggerId] = true;
-        }
+        this.doorTriggers[triggerId] = true;
     },
 
     deactivateTrigger: function(triggerId) {
-        if (this.doorTriggers.hasOwnProperty(triggerId)) {
-            this.doorTriggers[triggerId] = false;
-        }
+        this.doorTriggers[triggerId] = false;
     },
 
     onMobExitCombatCallback: function(mob) {
@@ -1226,8 +1270,12 @@ module.exports = World = cls.Class.extend({
                     parent.addArray.splice(index, 1); 
                 }
         }
-    }
+    },
 
+    nextMobId: function() {
+        // return highest key + 1
+        return _.max(_.keys(this.mobs), function(id) { return parseInt(id); }) + 1;
+    },
 });
 
 

@@ -3,15 +3,17 @@ const Messages = require("../../message");
 
 module.exports = Block = cls.Class.extend({
     init: function(options, worldserver) {
-        this.message = options.message;
         this.worldserver = worldserver;
+        this.npc = options.npc;
     },
 
     destroy: function() {
     },
 
     handle(event) {
-        this.worldserver.pushToPlayer(event.data.player, new Messages.Chat(event.data.player, this.message));
+        let closestNpc = this.worldserver.getClosestNpcOfKind(this.npc, event.data.player.x, event.data.player.y);
+        this.worldserver.pushToPlayer(event.data.player, new Messages.Camera(closestNpc.x, closestNpc.y))
+
         return 'then';
-    }
+    },
 })

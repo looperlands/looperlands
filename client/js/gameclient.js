@@ -26,6 +26,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             this.handlers[Types.Messages.SPAWN_BATCH] = this.receiveSpawnBatch;
             this.handlers[Types.Messages.HEALTH] = this.receiveHealth;
             this.handlers[Types.Messages.CHAT] = this.receiveChat;
+            this.handlers[Types.Messages.NOTIFY] = this.receiveNotification;
             this.handlers[Types.Messages.EQUIP] = this.receiveEquipItem;
             this.handlers[Types.Messages.DROP] = this.receiveDrop;
             this.handlers[Types.Messages.TELEPORT] = this.receiveTeleport;
@@ -38,8 +39,10 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             this.handlers[Types.Messages.BLINK] = this.receiveBlink;
             this.handlers[Types.Messages.MOBDOSPECIAL] = this.receiveMobDoSpecial;
             this.handlers[Types.Messages.MOBEXITCOMBAT] = this.receiveMobExitCombat;
-            this.handlers[Types.Messages.QUEST_COMPLETE] = this.receieveQuestComplete;
-        
+            this.handlers[Types.Messages.QUEST_COMPLETE] = this.receiveQuestComplete;
+            this.handlers[Types.Messages.FOLLOW] = this.receiveFollow;
+            this.handlers[Types.Messages.CAMERA] = this.receiveCamera;
+
             this.useBison = false;
             this.enable();
         },
@@ -296,6 +299,14 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
                 this.chat_callback(id, text);
             }
         },
+
+        receiveNotification: function(data) {
+            var message = data[1];
+
+            if(this.notification_callback) {
+                this.notification_callback(message);
+            }
+        },
     
         receiveEquipItem: function(data) {
             var id = data[1],
@@ -406,7 +417,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             }
         },
 
-        receieveQuestComplete: function(data) {
+        receiveQuestComplete: function(data) {
             let questName = data[1],
                 endText = data[2],
                 xpReward = data[3];
@@ -414,6 +425,23 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
 
             if (this.questComplete_callback) {
                 this.questComplete_callback(questName, endText, xpReward, medal);
+            }
+        },
+
+        receiveFollow: function(data) {
+            let entityId = data[1]
+
+            if (this.follow_callback) {
+                this.follow_callback(entityId);
+            }
+        },
+
+        receiveCamera: function(data) {
+            let x = parseInt(data[1]),
+                y = parseInt(data[2]);
+
+            if (this.camera_callback) {
+                this.camera_callback(x, y);
             }
         },
         
@@ -480,6 +508,10 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
         onChatMessage: function(callback) {
             this.chat_callback = callback;
         },
+
+        onNotification: function(callback) {
+            this.notification_callback = callback;
+        },
     
         onDropItem: function(callback) {
             this.drop_callback = callback;
@@ -523,6 +555,14 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
 
         onQuestComplete: function(callback) {
             this.questComplete_callback = callback;
+        },
+
+        onFollow: function(callback) {
+            this.follow_callback = callback;
+        },
+
+        onCamera: function(callback) {
+            this.camera_callback = callback;
         },
 
         sendHello: function(player) {

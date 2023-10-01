@@ -3636,7 +3636,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                             // See: tryMovingToADifferentTile()
                                             ignoreTarget(entity.previousTarget);
                                         }
-                                        
+
                                         return self.findPath(entity, x, y, ignored);
                                     });
 
@@ -3749,15 +3749,15 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 self.client.onEntityMove(function(id, x, y) {
                     var entity = null;
 
-                    if(id !== self.playerId) {
+                    //if(id !== self.playerId) {
                         entity = self.getEntityById(id);
-                
+
                         if(entity) {
                             entity.disengage();
                             entity.idle();
                             self.makeCharacterGoTo(entity, x, y);
                         }
-                    }
+                    //}
                 });
             
                 self.client.onEntityDestroy(function(id) {
@@ -3893,21 +3893,23 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     var entity = null,
                         currentOrientation;
 
-                    if(id !== self.playerId) {
-                        entity = self.getEntityById(id);
-                
-                        if(entity) {
-                            currentOrientation = entity.orientation;
-                        
-                            self.makeCharacterTeleportTo(entity, x, y);
-                            entity.setOrientation(currentOrientation);
-                        
-                            entity.forEachAttacker(function(attacker) {
-                                attacker.disengage();
-                                attacker.idle();
-                                attacker.stop();
-                            });
-                        }
+                    entity = self.getEntityById(id);
+
+                    if(entity) {
+                        currentOrientation = entity.orientation;
+
+                        self.makeCharacterTeleportTo(entity, x, y);
+                        entity.setOrientation(currentOrientation);
+
+                        entity.forEachAttacker(function(attacker) {
+                            attacker.disengage();
+                            attacker.idle();
+                            attacker.stop();
+                        });
+                    }
+
+                    if(id === self.playerId) {
+                        self.resetCamera();
                     }
                 });
             
@@ -3926,7 +3928,9 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     self.assignBubbleTo(entity);
                     self.audioManager.playSound("chat");
                 });
-            
+
+                self.client.onNotification(self.handleNotify);
+
                 self.client.onPopulationChange(function(worldPlayers, totalPlayers) {
                     if(self.nbplayers_callback) {
                         self.nbplayers_callback(worldPlayers, totalPlayers);
@@ -3965,7 +3969,29 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                         self.infoManager.addDamageInfo("+"+xpReward+" XP", self.player.x, self.player.y - 15, "xp");
                     }, 200);
                 });
-            
+
+                self.client.onFollow(function(entityId) {
+                    console.log("Follow", entityId);
+                    console.log(self.getEntityById(entityId));
+                    self.renderer.camera.focusEntity(self.getEntityById(entityId));
+                });
+
+                self.client.onCamera(function(x, y) {
+                    let cameraX = x - (self.renderer.camera.gridW/2);
+                    let cameraY = y - (self.renderer.camera.gridH/2);
+
+                    if(cameraX < 0) {cameraX = 0}
+                    if(cameraY < 0) {cameraY = 0}
+
+                    if(cameraX > self.map.width - self.renderer.camera.gridW) {
+                        cameraX = self.map.width - self.renderer.camera.gridW
+                    }
+                    if(cameraY > self.map.height - self.renderer.camera.gridH) {
+                        cameraY = self.map.height - self.renderer.camera.gridH
+                    }
+
+                    self.renderer.camera.setGridPosition(cameraX, cameraY);
+                })
                 self.gamestart_callback();
             
                 if(self.hasNeverStarted) {
@@ -4404,7 +4430,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 grid = this.pathingGrid;
                 path = [],
                 isPlayer = (character === this.player);
-        
+
             if(this.map.isColliding(x, y)) {
                 return path;
             }
@@ -4657,7 +4683,11 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 })
             }
         },
-    
+
+        handleNotify(message) {
+            self.showNotification(message);
+        },
+
         /**
          * 
          */

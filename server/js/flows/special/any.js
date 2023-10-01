@@ -1,7 +1,7 @@
 var cls = require("../../lib/class")
 
 module.exports = Block = cls.Class.extend({
-    init: function(options) {
+    init: function(options, worldserver) {
         this.handled = false;
     },
 

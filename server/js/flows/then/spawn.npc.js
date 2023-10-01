@@ -3,7 +3,8 @@ const Messages = require("../../message");
 
 module.exports = Block = cls.Class.extend({
     init: function(options, worldserver) {
-        this.message = options.message;
+        this.npc = options.npc;
+        this.position = options.position;
         this.worldserver = worldserver;
     },
 
@@ -11,7 +12,9 @@ module.exports = Block = cls.Class.extend({
     },
 
     handle(event) {
-        this.worldserver.pushToPlayer(event.data.player, new Messages.Chat(event.data.player, this.message));
+        let coordinate = this.position.split(',');
+        event.data.spawned = this.worldserver.addNpc(this.npc, parseInt(coordinate[0]), parseInt(coordinate[1]));
+
         return 'then';
-    }
+    },
 })

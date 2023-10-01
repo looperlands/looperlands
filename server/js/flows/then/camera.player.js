@@ -3,7 +3,6 @@ const Messages = require("../../message");
 
 module.exports = Block = cls.Class.extend({
     init: function(options, worldserver) {
-        this.message = options.message;
         this.worldserver = worldserver;
     },
 
@@ -11,7 +10,9 @@ module.exports = Block = cls.Class.extend({
     },
 
     handle(event) {
-        this.worldserver.pushToPlayer(event.data.player, new Messages.Chat(event.data.player, this.message));
+
+        this.worldserver.pushToPlayer(event.data.player, new Messages.Follow(event.data.player))
+
         return 'then';
-    }
+    },
 })

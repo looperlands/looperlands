@@ -32,7 +32,10 @@ Types = {
         MOBDOSPECIAL: 28,
         MOBEXITCOMBAT: 29,
         TRIGGER: 30,
-        QUEST_COMPLETE: 31
+        QUEST_COMPLETE: 31,
+        NOTIFY: 32,
+        FOLLOW: 33,
+        CAMERA: 34
     },
     
     Entities: {

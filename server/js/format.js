@@ -14,13 +14,16 @@ var _ = require('underscore'),
             this.formats[Types.Messages.HIT] = ['n'],
             this.formats[Types.Messages.HURT] = ['n'],
             this.formats[Types.Messages.CHAT] = ['s'],
+            this.formats[Types.Messages.NOTIFY] = ['s'],
             this.formats[Types.Messages.LOOT] = ['n'],
             this.formats[Types.Messages.TELEPORT] = ['n', 'n'],
             this.formats[Types.Messages.ZONE] = [],
             this.formats[Types.Messages.OPEN] = ['n'],
             this.formats[Types.Messages.CHECK] = ['n'],
             this.formats[Types.Messages.TRIGGER] = ['n', 'b'],
-            this.formats[Types.Messages.EQUIP_INVENTORY] = ['n', 's']
+            this.formats[Types.Messages.EQUIP_INVENTORY] = ['n', 's'],
+            this.formats[Types.Messages.FOLLOW] = ['n'],
+            this.formats[Types.Messages.CAMERA] = ['n', 'n']
         },
         
         check: function(msg) {

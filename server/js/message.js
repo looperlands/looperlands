@@ -131,6 +131,15 @@ Messages.Chat = Message.extend({
     }
 });
 
+Messages.Notify = Message.extend({
+    init: function(message) {
+        this.message = message;
+    },
+    serialize: function() {
+        return [Types.Messages.NOTIFY, this.message];
+    }
+})
+
 Messages.Teleport = Message.extend({
     init: function(entity) {
         this.entity = entity;
@@ -246,3 +255,28 @@ Messages.QuestComplete = Message.extend({
         ];
     }
 });
+
+Messages.Follow = Message.extend({
+    init: function(entity) {
+        this.entity = entity
+    },
+    serialize: function() {
+        return [Types.Messages.FOLLOW,
+            this.entity.id,
+        ];
+    }
+});
+
+Messages.Camera = Message.extend({
+    init: function(x, y) {
+        this.x = x;
+        this.y = y;
+    },
+    serialize: function() {
+        return [Types.Messages.CAMERA,
+            this.x,
+            this.y,
+        ];
+    }
+});
+

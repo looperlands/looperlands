@@ -8,14 +8,9 @@ class PlayerEventBroker {
 
 
     static playerEventBrokers = {};
-    static events = {};
     static playerEventConsumers = [];
     static cache;
 
-
-    static {
-        setInterval(PlayerEventBroker.processEvents, 100);
-    }
 
     constructor(player) {
         this.player = player;
@@ -28,41 +23,33 @@ class PlayerEventBroker {
         this.player = player;
     }
 
-    static addEvent(eventType, sessionId, playerCache, eventData) {
+    static dispatchEvent(eventType, sessionId, player, playerCache, eventData) {
         if(eventData === undefined) {
             eventData = {};
         }
 
-        eventData.player= playerCache;
+        eventData.player = player;
+        eventData.playerData = playerCache;
 
         let eventId = eventType + ',' + sessionId;
-        PlayerEventBroker.events[eventId] = eventData;
+        PlayerEventBroker.processEvent(eventId, eventData);
     }
     
-    static async processEvents() {
-        let hasEvents = Object.keys(PlayerEventBroker.events).length !== 0;
-        if (hasEvents) {
-            // copy all the events before deleting them
-            let events = {... PlayerEventBroker.events};
-            PlayerEventBroker.events = {};
-
-            PlayerEventBroker.playerEventConsumers.forEach(consumer => {
-                for (const [eventId, eventData] of Object.entries(events)) {
-                    let [eventType, sessionId] = eventId.split(',');
-                    let consumed = consumer.consume({eventType: eventType, playerCache: eventData.player, data: eventData});
-                    if (consumed.changedQuests !== undefined && consumed.changedQuests.length > 0) {
-                        let playerCache = PlayerEventBroker.cache.get(sessionId);
-                        if (playerCache === undefined) {
-                            continue
-                        }
-                        playerCache.gameData.quests = consumed.quests;
-                        PlayerEventBroker.cache.set(sessionId, playerCache);
-                        let broker = PlayerEventBroker.playerEventBrokers[sessionId];
-                        broker.player.handleCompletedQuests(consumed.changedQuests);
-                    }
+    static async processEvent(eventId, eventData) {
+        PlayerEventBroker.playerEventConsumers.forEach(consumer => {
+            let [eventType, sessionId] = eventId.split(',');
+            let consumed = consumer.consume({eventType: eventType, playerCache: eventData.playerData, data: eventData});
+            if (consumed.changedQuests !== undefined && consumed.changedQuests.length > 0) {
+                let playerCache = PlayerEventBroker.cache.get(sessionId);
+                if (playerCache === undefined) {
+                    return;
                 }
-            });
-        }
+                playerCache.gameData.quests = consumed.quests;
+                PlayerEventBroker.cache.set(sessionId, playerCache);
+                let broker = PlayerEventBroker.playerEventBrokers[sessionId];
+                broker.player.handleCompletedQuests(consumed.changedQuests);
+            }
+        })
     }
 
     async lootEvent(item) {
@@ -85,7 +72,7 @@ class PlayerEventBroker {
 
         playerCache.gameData = gameData;
         this.cache.set(sessionId, playerCache);
-        PlayerEventBroker.addEvent(PlayerEventBroker.Events.LOOT_ITEM, sessionId, playerCache, { item: item });
+        PlayerEventBroker.dispatchEvent(PlayerEventBroker.Events.LOOT_ITEM, sessionId, this.player, playerCache, { item: item });
     }
 
     async killMobEvent(mob) {
@@ -108,7 +95,7 @@ class PlayerEventBroker {
 
         playerCache.gameData = gameData;
         this.cache.set(sessionId, playerCache);
-        PlayerEventBroker.addEvent(PlayerEventBroker.Events.KILL_MOB, sessionId, playerCache, { mob: mob });
+        PlayerEventBroker.dispatchEvent(PlayerEventBroker.Events.KILL_MOB, sessionId, this.player, playerCache, { mob: mob });
     }
     
     destroy() {
