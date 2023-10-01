@@ -783,15 +783,19 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             let centeredCamera = !this.game.canUseCenteredCamera();
             let renderData = [];
 
+            let playerXY = this.game.player.x + "," + this.game.player.y;
+
+            if (this.lastPlayerXY !== playerXY && !centeredCamera) {
+                this.lastPlayerXY = playerXY;
+                this.redrawTerrain = true;
+            }
+
             let terrain = [];
-            let highTiles = []
-            if (centeredCamera && this.redrawTerrain) {
+            let highTiles = [];
+            if (this.redrawTerrain) {
                 terrain = this.drawTerrain();
                 highTiles = this.drawHighTiles();
                 this.redrawTerrain = false;
-            } else {
-                terrain = this.drawTerrain();
-                highTiles = this.drawHighTiles();
             }
             renderData.push(highTiles);
             renderData.push(terrain);
