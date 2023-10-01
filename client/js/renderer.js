@@ -10,6 +10,8 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             this.foreground = (foreground && foreground.getContext) ? foreground.getContext("2d") : null;
 
             let highCanvas = document.getElementById("high-canvas").transferControlToOffscreen();
+            let backgroundAnimated = document.getElementById("background-animated").transferControlToOffscreen();
+            let highAnimated = document.getElementById("high-canvas-animated").transferControlToOffscreen();
 
             let offScreenCanvas = background.transferControlToOffscreen();
             this.background = background;
@@ -39,7 +41,9 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             this.fixFlickeringTimer = new Timer(100);
 
             this.worker.postMessage({"canvas":  offScreenCanvas, "type": "setCanvas", "id": "background"}, [offScreenCanvas]);
+            this.worker.postMessage({"canvas":  backgroundAnimated, "type": "setCanvas", "id": "backgroundAnimated"}, [backgroundAnimated]);
             this.worker.postMessage({"canvas":  highCanvas, "type": "setCanvas", "id": "high"}, [highCanvas]);
+            this.worker.postMessage({"canvas":  highAnimated, "type": "setCanvas", "id": "highAnimated"}, [highAnimated]);
             this.rescale(this.getScaleFactor());
 
             let self = this;
@@ -651,7 +655,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                 for (let tile of this.game.visibleAnimatedTiles) {
                     visbileTiles.push({tileid: tile.id, setW: tilesetwidth, gridW: m.width, cellid: tile.index});
                 }
-                return {"type": "render", id: "background", tiles: visbileTiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: false};
+                return {"type": "render", id: "backgroundAnimated", tiles: visbileTiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: true};
             }
         },
 
@@ -665,7 +669,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                     for (let tile of this.game.visibleAnimatedHighTiles) {
                         visbileTiles.push({tileid: tile.id, setW: tilesetwidth, gridW: m.width, cellid: tile.index});
                     }
-                    return {"type": "render", id: "high", tiles: visbileTiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: false};
+                    return {"type": "render", id: "highAnimated", tiles: visbileTiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: true};
                 }
 
         },
