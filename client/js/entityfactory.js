@@ -735,6 +735,10 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.MAGCRACK] = function(id) {
         return new Fieldeffects.Magcrack(id);
     };  
+
+    EntityFactory.builders[Types.Entities.COBFALLINGROCK] = function(id) {
+        return new Fieldeffects.Cobfallingrock(id);
+    };  
     
     return EntityFactory;
 });

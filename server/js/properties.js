@@ -925,6 +925,14 @@ var Properties = {
         }
     },
 
+    cobfallingrock: {
+        aoe: {
+            damage: 100,
+            range: 0,
+            singleHitDuration: 2000
+        },
+    },
+
     //Items
     coblog: {
         respawnDelay: 60000

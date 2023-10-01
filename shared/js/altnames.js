@@ -11,7 +11,8 @@ const AltNames = {
     cobincubator: "egg incubator",
     cobcoblin: "coblin",
     cobcobane: "cobane",
-    cobogre: "ogre"
+    cobogre: "ogre",
+    cobfallingrock: "falling rock"
 };
 
 AltNames.getAltNameFromKind = function(kind){

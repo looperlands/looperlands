@@ -274,6 +274,7 @@ Types = {
         BLUESWORD: 66,
         // FieldEffects
         MAGCRACK: 40000001,
+        COBFALLINGROCK: 40000002,
 
         // NFTs
         NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6: 70,
@@ -3159,6 +3160,7 @@ var kinds = {
     // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],
+    cobfallingrock: [Types.Entities.COBFALLINGROCK, "fieldeffect"],
 
     //NFT
     NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6: [Types.Entities.NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6, "armor"],
@@ -5964,3 +5966,4 @@ Types.timeouts = {};
 Types.timeouts[Types.Entities.FIREFOX] = 5000;
 Types.timeouts[Types.Entities.MEGAMAG] = 12000;
 Types.timeouts[Types.Entities.COBSLIMEKING] = 5000;
+Types.timeouts[Types.Entities.COBOGRE] = 3000;
