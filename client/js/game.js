@@ -3088,7 +3088,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 }
             }, 1);
 
-            this.findVisibleAnimatedTiles();
+            this.findVisibleTiles();
             //console.log("Initialized animated tiles.");
         },
     
@@ -3263,6 +3263,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 this.renderer.renderFrame();
             }
 
+            /*
             if(!this.isStopped) {
                 if (this.windowHidden) {
                     setTimeout(this.tick.bind(this), 1000/60);
@@ -3270,6 +3271,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     requestAnimFrame(this.tick.bind(this));
                 }
             }
+            */
         },
 
         start: function() {
@@ -3296,8 +3298,11 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             }
         },
 
-        findVisibleAnimatedTiles: function() {
-            let self = this;
+        findVisibleTiles: function() {
+            let self = this,
+                m = this.map,
+                tilesetwidth = this.renderer.tileset.width / m.tilesize;
+
             let findVisibleAnimatedTiles = function(animatedTiles) {
                 let visibleAnimatedTiles = [];
                 for (tile of animatedTiles) {
@@ -3310,6 +3315,16 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
             this.visibleAnimatedTiles = findVisibleAnimatedTiles(this.animatedTiles);
             this.visibleAnimatedHighTiles = findVisibleAnimatedTiles(this.highAnimatedTiles);
+            this.visibleTerrainTiles = []
+            this.visibleHighTiles = []
+            this.forEachVisibleTile(function (id, index) {
+                if(!m.isHighTile(id) && !m.isAnimatedTile(id))  {
+                    self.visibleTerrainTiles.push({tileid: id, setW: tilesetwidth, gridW: m.width, cellid: index});
+                }
+                else if(m.isHighTile(id) && !m.isAnimatedTile(id)) {
+                    self.visibleHighTiles.push({tileid: id, setW: tilesetwidth, gridW: m.width, cellid: index});
+                }
+            }, 1);
         },
 
         connect: function(started_callback) {
@@ -3463,7 +3478,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 });
             
                 self.player.onStep(function() {
-                    self.findVisibleAnimatedTiles();
+                    self.findVisibleTiles();
 
                     if(self.player.hasNextStep()) {
                         self.registerEntityDualPosition(self.player);
@@ -5113,7 +5128,12 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         },
     
         resetCamera: function() {
-            this.camera.focusEntity(this.player);
+            if (this.mapId !== "main") {
+                this.focusPlayer();
+            } else {
+                this.camera.focusEntity(this.player);
+            }
+
             this.resetZone();
         },
     
