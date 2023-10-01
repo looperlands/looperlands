@@ -3250,6 +3250,10 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         	}, 100);
         },
     
+        canUseCenteredCamera: function() {
+            return this.mapId !== "main" && !this.renderer.mobile && !this.renderer.tablet;
+        },
+
         tick: function() {
             this.currentTime = new Date().getTime();
 
@@ -3257,7 +3261,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 this.renderer.initFont();
                 this.updateCursorLogic();
                 this.updater.update();
-                if (this.mapId !== "main") {
+                if (this.canUseCenteredCamera()) {
                     this.focusPlayer();
                 }
                 this.renderer.renderFrame();
