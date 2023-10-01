@@ -51,9 +51,6 @@ function drawTile(ctx, tileid, tileset, setW, gridW, cellid, scale) {
 function render(id, tiles, cameraX, cameraY, scale, clear) {
     let ctx = contexes[id];
     let canvas = canvases[id];
-    if (ctx === undefined || canvas === undefined) {
-        return;
-    }    
     if (clear === true) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
