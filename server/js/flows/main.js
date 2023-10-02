@@ -11,53 +11,32 @@ flow = {
             "then": [
                 {
                     "idx": "b03b639b-dbf6-437f-8009-3dd569f166a5",
-                    "type": "camera.npc",
+                    "type": "sound.play",
                     "options": {
-                        "npc": Types.Entities.BEACHNPC
+                        "sound": "anotherQUESThahaha_T3"
+                    },
+                },
+                {
+                    "idx": "b03b639b-dbf6-437f-8009-3dd569f166a6",
+                    "type": "talk.player.private",
+                    "options": {
+                        "message": "Back for another quest?"
+                    },
+                },
+                {
+                    "idx": "b03b639b-dbf6-437f-8009-3dd569f166a7",
+                    "type": "delay",
+                    "options": {
+                        "delay": "3000"
                     },
                     "then": [
                         {
-                            "idx": "c19ea7fe-5777-4a5b-bf40-ccd9217cec7d",
-                            "type": "delay",
+                            "idx": "b03b639b-dbf6-437f-8009-3dd569f166a8",
+                            "type": "talk.player.private",
                             "options": {
-                                "delay": "200"
+                                "message": "Ha ha haha haaaha!!"
                             },
-                            "then": [
-                                {
-                                    "idx": "8b1173fc-8e7d-48cd-b6dd-e05bbd6bda10",
-                                    "type": "talk.npc.private",
-                                    "options": {
-                                        "npc": Types.Entities.BEACHNPC,
-                                        "message": "Help!! Come find me! Anyone?"
-                                    },
-                                    "then": [
-                                        {
-                                            "idx": "b5441bb3-2ce3-439f-899b-83164a0408a8",
-                                            "type": "delay",
-                                            "options": {
-                                                "delay": "3000"
-                                            },
-                                            "then": [
-                                                {
-                                                    "idx": "b37802b4-1b78-4eac-bb09-148c2489e155",
-                                                    "type": "camera.player",
-                                                    "options": {},
-                                                    "then": [
-                                                        {
-                                                            "idx": "8868af2b-63f5-454d-8361-460f91e47824",
-                                                            "type": "talk.player.private",
-                                                            "options": {
-                                                                "message": "I need to help him, lets find him!"
-                                                            }
-                                                        }
-                                                    ]
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
+                        },
                     ]
                 }
             ]

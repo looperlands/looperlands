@@ -3930,6 +3930,8 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 });
 
                 self.client.onNotification(self.handleNotify);
+                self.client.onSound(self.handleSound);
+                self.client.onMusic(self.handleMusic);
 
                 self.client.onPopulationChange(function(worldPlayers, totalPlayers) {
                     if(self.nbplayers_callback) {
@@ -4686,6 +4688,14 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
         handleNotify(message) {
             self.showNotification(message);
+        },
+
+        handleSound(sound) {
+            self.audioManager.playSound(sound, true);
+        },
+
+        handleMusic(music) {
+            self.audioManager.playMusicByName(music);
         },
 
         /**

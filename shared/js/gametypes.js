@@ -35,7 +35,9 @@ Types = {
         QUEST_COMPLETE: 31,
         NOTIFY: 32,
         FOLLOW: 33,
-        CAMERA: 34
+        CAMERA: 34,
+        SOUND: 35,
+        MUSIC: 36
     },
     
     Entities: {

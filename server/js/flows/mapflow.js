@@ -34,6 +34,8 @@ const blocks = {
     'spawn.item': require('./then/spawn.item.js'),
     'camera.player': require('./then/camera.player.js'),
     'camera.npc': require('./then/camera.npc.js'),
+    'sound.play': require('./then/sound.play.js'),
+    'music.play': require('./then/music.play.js'),
 }
 
 const PlayerEventBroker = require('../quests/playereventbroker.js');

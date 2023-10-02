@@ -280,3 +280,20 @@ Messages.Camera = Message.extend({
     }
 });
 
+Messages.Sound = Message.extend({
+    init: function(sound) {
+        this.sound = sound;
+    },
+    serialize: function() {
+        return [Types.Messages.SOUND, this.sound];
+    }
+})
+
+Messages.Music = Message.extend({
+    init: function(music) {
+        this.music = music;
+    },
+    serialize: function() {
+        return [Types.Messages.MUSIC, this.music];
+    }
+})

@@ -42,6 +42,8 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             this.handlers[Types.Messages.QUEST_COMPLETE] = this.receiveQuestComplete;
             this.handlers[Types.Messages.FOLLOW] = this.receiveFollow;
             this.handlers[Types.Messages.CAMERA] = this.receiveCamera;
+            this.handlers[Types.Messages.SOUND] = this.receiveSound;
+            this.handlers[Types.Messages.MUSIC] = this.receiveMusic;
 
             this.useBison = false;
             this.enable();
@@ -444,7 +446,23 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
                 this.camera_callback(x, y);
             }
         },
-        
+
+        receiveSound: function(data) {
+            var sound = data[1];
+
+            if(this.sound_callback) {
+                this.sound_callback(sound);
+            }
+        },
+
+        receiveMusic: function(data) {
+            var music = data[1];
+
+            if(this.music_callback) {
+                this.music_callback(music);
+            }
+        },
+
         onDispatched: function(callback) {
             this.dispatched_callback = callback;
         },
@@ -563,6 +581,14 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
 
         onCamera: function(callback) {
             this.camera_callback = callback;
+        },
+
+        onSound: function(callback) {
+            this.sound_callback = callback;
+        },
+
+        onMusic: function(callback) {
+            this.music_callback = callback;
         },
 
         sendHello: function(player) {
