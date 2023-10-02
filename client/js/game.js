@@ -66,15 +66,15 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         
             // sprites
             this.spriteNames = ["hand", "sword", "loot", "target", "talk", "sparks", "shadow16", "rat", "skeleton", "skeleton2", "spectre", "boss", "deathknight", 
-                                "ogre", "crab", "snake", "eye", "bat", "goblin", "wizard", "guard", "king", "villagegirl", "villager", "coder", "agent", "rick", "scientist", "nyan", "priest", "coblumberjack", "cobhillsnpc", "cobcobmin",
+                                "ogre", "crab", "snake", "eye", "bat", "goblin", "wizard", "guard", "king", "villagegirl", "villager", "coder", "agent", "rick", "scientist", "nyan", "priest", "coblumberjack", "cobhillsnpc", "cobcobmin", "cobellen", "cobjohnny",
                                 "king2", "goose", "tanashi", "slime","kingslime","silkshade","redslime","villagesign1","wildgrin","loomleaf","gnashling","arachweave","spider","fangwing", "minimag", "miner", "megamag", 
-                                "cobchicken", "alaric","orlan","jayce", "cobcow", "cobpig", "cobgoat", "ghostie","cobslimered", "cobslimeyellow", "cobslimeblue", "cobslimeking", "cobyorkie", "cobcat",
+                                "cobchicken", "alaric","orlan","jayce", "cobcow", "cobpig", "cobgoat", "ghostie","cobslimered", "cobslimeyellow", "cobslimeblue", "cobslimeking", "cobyorkie", "cobcat", "cobdirt", "cobincubator", "cobcoblin", "cobcobane", "cobogre",
                                 "sorcerer", "octocat", "beachnpc", "forestnpc", "desertnpc", "lavanpc","thudlord", "clotharmor", "leatherarmor", "mailarmor","boar","grizzlefang","barrel","neena","athlyn","jeniper",
                                 "platearmor", "redarmor", "goldenarmor", "firefox", "death", "sword1","torin","elric","glink", "axe", "chest","elara","eldrin","draylen","thaelen","keldor","torvin","liora","aria",
                                 "sword2", "redsword", "bluesword", "goldensword", "item-sword2", "item-axe", "item-redsword", "item-bluesword", "item-goldensword", "item-leatherarmor", "item-mailarmor","whiskers",
-                                "item-platearmor", "item-redarmor", "item-goldenarmor", "item-flask", "item-potion","item-cake", "item-burger", "item-cobcorn", "item-cobapple", "item-coblog", "item-cobclover", "morningstar", "item-morningstar", "item-firepotion",
+                                "item-platearmor", "item-redarmor", "item-goldenarmor", "item-flask", "item-potion","item-cake", "item-burger", "item-cobcorn", "item-cobapple", "item-coblog", "item-cobclover", "item-cobegg", "morningstar", "item-morningstar", "item-firepotion",
                                 "item-KEY_ARACHWEAVE","shiverrock","shiverrockii","shiverrockiii","crystolith","stoneguard","glacialord","edur","lumi","snjor","gelidus","nightharrow",
-                                "fieldeffect-magcrack","gloomforged","torian","gripnar","blackdog","browndog","whitedog",
+                                "fieldeffect-magcrack","fieldeffect-cobfallingrock","gloomforged","torian","gripnar","blackdog","browndog","whitedog",
                                 "villager1","villager2","villager3","villager4","villager5","villager6","brownspotdog",
                                 "villager7","villager8","villager9","villager10","villager11","villager12",
                                 "villager13","villager14","villager15","villager16","villager17","villager18",
@@ -3000,9 +3000,20 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         },
 
         addFieldEffect: function(fieldEffect, x, y) {
+            let self=this;
+
             fieldEffect.setSprite(this.sprites[fieldEffect.getSpriteName()]);
             fieldEffect.setGridPosition(x, y);
-            fieldEffect.setAnimation("idle", 150);
+            if (fieldEffect.type === "singleIndicatedAoe") {
+                fieldEffect.setAnimation("idle", fieldEffect.idleSpeed, 1, function() {
+                    let animation = self.isPlayerAt(fieldEffect.gridX, fieldEffect.gridY) ? "hit" : "miss";
+                    fieldEffect.setAnimation(animation, fieldEffect.projectileSpeed, 1, function(){
+                        fieldEffect.setVisible(false);
+                    });
+                });
+            } else {
+                fieldEffect.setAnimation("idle", fieldEffect.idleSpeed);
+            }
             this.addEntity(fieldEffect);
         },
     
@@ -3013,6 +3024,16 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 delete this.entities[item.id];
             } else {
                 console.error("Cannot remove item. Unknown ID : " + item.id);
+            }
+        },
+
+        removeFieldEffect: function(fieldEffect) {
+            if(fieldEffect) {
+                self.removeFromRenderingGrid(fieldEffect, fieldEffect.gridX, fieldEffect.gridY);
+                self.removeFromEntityGrid(fieldEffect, fieldEffect.gridX, fieldEffect.gridY);
+                delete this.entities[fieldEffect.id];
+            } else {
+                console.error("Cannot remove field effect. Unknown ID : " + fieldEffect.id);
             }
         },
     
@@ -4023,7 +4044,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
                 self.client.onDespawnEntity(function(entityId) {
                     var entity = self.getEntityById(entityId);
-
             
                     if(entity) {
                         console.log("Despawning " + Types.getKindAsString(entity.kind) + " (" + entity.id+ ")");
@@ -4044,6 +4064,8 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                             entity.die();
                         } else if(entity instanceof Chest) {
                             entity.open();
+                        } else if (entity instanceof Fieldeffect) {
+                            self.removeFieldEffect(entity);
                         }
                         
                         entity.clean();
@@ -4660,6 +4682,14 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             return null;
         },
 
+        getPlayerAt: function(x, y) {
+            var entity = this.getEntityAt(x, y);
+            if(entity && (entity instanceof Player)) {
+                return entity;
+            }
+            return null;
+        },
+
         getItemAt: function(x, y) {
             if(this.map.isOutOfBounds(x, y) || !this.itemGrid) {
                 return null;
@@ -4705,6 +4735,10 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
         isChestAt: function(x, y) {
             return !_.isNull(this.getChestAt(x, y));
+        },
+
+        isPlayerAt: function(x, y) {
+            return !_.isNull(this.getPlayerAt(x, y));
         },
 
         /**

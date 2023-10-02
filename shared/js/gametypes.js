@@ -173,6 +173,11 @@ Types = {
         COBSLIMEKING: 400009,
         COBCAT: 400010,
         COBYORKIE: 400011,
+        COBDIRT: 400012,
+        COBINCUBATOR: 400013,
+        COBCOBLIN: 400014,
+        COBCOBANE: 400015,
+        COBOGRE: 400016,
         
         // Armors
         FIREFOX: 20,
@@ -189,6 +194,7 @@ Types = {
         BURGER: 36,
         CHEST: 37,
         FIREPOTION: 38,
+        COBEGG: 21300007,
         COBLOG: 21300008,
         COBCLOVER: 21300009,
         COBCORN: 21300010,
@@ -254,7 +260,9 @@ Types = {
         VILLAGESIGN7: 34000009,
         VILLAGESIGN8: 34000010,
         VILLAGESIGN9: 34000011,
-        TABBYCAT: 34000012, // @lastidCharacter@
+        TABBYCAT: 34000012, 
+        COBELLEN: 34000013, 
+        COBJOHNNY: 34000014,  // @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -266,6 +274,7 @@ Types = {
         BLUESWORD: 66,
         // FieldEffects
         MAGCRACK: 40000001,
+        COBFALLINGROCK: 40000002,
 
         // NFTs
         NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6: 70,
@@ -2958,6 +2967,8 @@ var kinds = {
     wildgrin: [Types.Entities.WILDGRIN, "mob"],
     cobchicken: [Types.Entities.COBCHICKEN, "mob"],
     alaric: [Types.Entities.ALARIC, "mob"],
+    cobdirt: [Types.Entities.COBDIRT, "mob"],
+    cobincubator: [Types.Entities.COBINCUBATOR, "mob"],
 
     brownspotdog: [Types.Entities.BROWNSPOTDOG, "mob"],
     blackdog: [Types.Entities.BLACKDOG, "mob"],
@@ -3036,6 +3047,9 @@ var kinds = {
     cobslimeking: [Types.Entities.COBSLIMEKING, "mob"],
     cobcat: [Types.Entities.COBCAT, "mob"],
     cobyorkie: [Types.Entities.COBYORKIE, "mob"],
+    cobcoblin: [Types.Entities.COBCOBLIN, "mob"],
+    cobcobane: [Types.Entities.COBCOBANE, "mob"],
+    cobogre: [Types.Entities.COBOGRE, "mob"],
     sword1: [Types.Entities.SWORD1, "weapon"],
     sword2: [Types.Entities.SWORD2, "weapon"],
     axe: [Types.Entities.AXE, "weapon"],
@@ -3058,6 +3072,7 @@ var kinds = {
     cobcorn: [Types.Entities.COBCORN, "object"],
     coblog: [Types.Entities.COBLOG, "object"],
     cobclover: [Types.Entities.COBCLOVER, "object"],
+    cobegg: [Types.Entities.COBEGG, "object"],
     cake: [Types.Entities.CAKE, "object"],
     burger: [Types.Entities.BURGER, "object"],
     chest: [Types.Entities.CHEST, "object"],
@@ -3140,9 +3155,12 @@ var kinds = {
     VILLAGESIGN7: [Types.Entities.VILLAGESIGN7, "npc"],
     VILLAGESIGN8: [Types.Entities.VILLAGESIGN8, "npc"],
     VILLAGESIGN9: [Types.Entities.VILLAGESIGN9, "npc"],
+    cobellen: [Types.Entities.COBELLEN, "npc"],
+    cobjohnny: [Types.Entities.COBJOHNNY, "npc"],
     // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],
+    cobfallingrock: [Types.Entities.COBFALLINGROCK, "fieldeffect"],
 
     //NFT
     NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6: [Types.Entities.NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6, "armor"],
@@ -5948,3 +5966,4 @@ Types.timeouts = {};
 Types.timeouts[Types.Entities.FIREFOX] = 5000;
 Types.timeouts[Types.Entities.MEGAMAG] = 12000;
 Types.timeouts[Types.Entities.COBSLIMEKING] = 5000;
+Types.timeouts[Types.Entities.COBOGRE] = 3000;

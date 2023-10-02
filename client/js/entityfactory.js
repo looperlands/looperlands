@@ -187,6 +187,18 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
         return new Mobs.Cobslimeking(id);
     };
 
+    EntityFactory.builders[Types.Entities.COBCOBLIN] = function(id) {
+        return new Mobs.Cobcoblin(id);
+    };
+
+    EntityFactory.builders[Types.Entities.COBCOBANE] = function(id) {
+        return new Mobs.Cobcobane(id);
+    };
+
+    EntityFactory.builders[Types.Entities.COBOGRE] = function(id) {
+        return new Mobs.Cobogre(id);
+    };
+
     EntityFactory.builders[Types.Entities.ALARIC] = function(id) {
         return new Mobs.Alaric(id);
     };
@@ -204,6 +216,14 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
         return new Mobs.Cobcat(id);
     };
         
+    EntityFactory.builders[Types.Entities.COBDIRT] = function(id) {
+        return new Mobs.Cobdirt(id);
+    };
+
+    EntityFactory.builders[Types.Entities.COBINCUBATOR] = function(id) {
+        return new Mobs.Cobincubator(id);
+    };
+
     EntityFactory.builders[Types.Entities.COBYORKIE] = function(id) {
         return new Mobs.Cobyorkie(id);
     };
@@ -491,6 +511,10 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
         return new Items.Cobclover(id);
     };
 
+    EntityFactory.builders[Types.Entities.COBEGG] = function(id) {
+        return new Items.Cobegg(id);
+    };
+
     EntityFactory.builders[Types.Entities.CHEST] = function(id) {
         return new Chest(id);
     };
@@ -696,12 +720,24 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.VILLAGESIGN7]=function(id){return new NPCs.VILLAGESIGN7(id);};
     EntityFactory.builders[Types.Entities.VILLAGESIGN8]=function(id){return new NPCs.VILLAGESIGN8(id);};
     EntityFactory.builders[Types.Entities.VILLAGESIGN9]=function(id){return new NPCs.VILLAGESIGN9(id);};
+
+    EntityFactory.builders[Types.Entities.COBELLEN] = function(id) {
+        return new NPCs.Cobellen(id);
+    };  
+
+    EntityFactory.builders[Types.Entities.COBJOHNNY] = function(id) {
+        return new NPCs.Cobjohnny(id);
+    };  
     // @nextNPCLine@
 
      //====== FieldEffectss ======
 
     EntityFactory.builders[Types.Entities.MAGCRACK] = function(id) {
         return new Fieldeffects.Magcrack(id);
+    };  
+
+    EntityFactory.builders[Types.Entities.COBFALLINGROCK] = function(id) {
+        return new Fieldeffects.Cobfallingrock(id);
     };  
     
     return EntityFactory;

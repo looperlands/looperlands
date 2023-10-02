@@ -217,18 +217,6 @@ module.exports = Mob = Character.extend({
         return this.hatelist.length > 0 ? true : false;
     },
 
-    onDetachFromParent: function(callback) {
-        this.detachFromParent_callback = callback;
-    },
-
-    detachFromParent: function() {
-        if (this.parentId !== undefined) {
-            if(this.detachFromParent_callback) {
-               this.detachFromParent_callback(this.parentId, this);
-            }
-        }
-    },
-
     generateLevel: function() {
         const deviation = 0.2;
 

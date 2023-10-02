@@ -369,7 +369,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                     this.context.globalAlpha = entity.fadingAlpha;
                 }
                 
-                if(!(entity instanceof Mob && entity.isFriendly)) { // friendly mobs render nameless
+                if(!(entity instanceof Mob && (entity.nameless || entity.isFriendly))) { // friendly mobs render nameless by default
                 this.drawEntityName(entity, sprite.offsetY);
                 }
                 

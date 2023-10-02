@@ -62,5 +62,17 @@ module.exports = Entity = cls.Class.extend({
                 pos.x += 1;
         }
         return pos;
-    }
+    },
+
+    onDetachFromParent: function(callback) {
+        this.detachFromParent_callback = callback;
+    },
+
+    detachFromParent: function() {
+        if (this.parentId !== undefined) {
+            if(this.detachFromParent_callback) {
+               this.detachFromParent_callback(this.parentId, this);
+            }
+        }
+    },
 });
