@@ -65,7 +65,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             this.debugPathing = false;
         
             // sprites
-            this.spriteNames = ["hand", "sword", "loot", "target", "talk", "sparks", "shadow16", "rat", "skeleton", "skeleton2", "spectre", "boss", "deathknight", 
+            this.spriteNames = ["hand", "sword", "loot", "target", "talk", "float", "sparks", "shadow16", "rat", "skeleton", "skeleton2", "spectre", "boss", "deathknight", 
                                 "ogre", "crab", "snake", "eye", "bat", "goblin", "wizard", "guard", "king", "villagegirl", "villager", "coder", "agent", "rick", "scientist", "nyan", "priest", "coblumberjack", "cobhillsnpc", "cobcobmin", "cobellen", "cobjohnny",
                                 "king2", "goose", "tanashi", "slime","kingslime","silkshade","redslime","villagesign1","wildgrin","loomleaf","gnashling","arachweave","spider","fangwing", "minimag", "miner", "megamag", 
                                 "cobchicken", "alaric","orlan","jayce", "cobcow", "cobpig", "cobgoat", "ghostie","cobslimered", "cobslimeyellow", "cobslimeblue", "cobslimeking", "cobyorkie", "cobcat", "cobdirt", "cobincubator", "cobcoblin", "cobcobane", "cobogre",
@@ -2807,6 +2807,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             this.cursors["target"] = this.sprites["target"];
             this.cursors["arrow"] = this.sprites["arrow"];
             this.cursors["talk"] = this.sprites["talk"];
+            this.cursors["float"] = this.sprites["float"];
         },
     
         initAnimations: function() {
@@ -2925,7 +2926,10 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         },
     
         updateCursorLogic: function() {
-            if(this.hoveringCollidingTile && this.started) {
+            if (this.hoveringFishableTile && this.started) {
+                this.targetColor = "rgba(90, 90, 200, 0.5)";
+            }
+            else if(this.hoveringCollidingTile && this.started) {
                 this.targetColor = "rgba(255, 50, 50, 0.5)";
             }
             else {
@@ -2944,6 +2948,11 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             }
             else if((this.hoveringItem || this.hoveringChest) && this.started) {
                 this.setCursor("loot");
+                this.hoveringTarget = false;
+                this.targetCellVisible = true;
+            }
+            else if(this.hoveringFishableTile && this.started) {
+                this.setCursor("float");
                 this.hoveringTarget = false;
                 this.targetCellVisible = true;
             }
@@ -4808,6 +4817,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             if(this.player && !this.renderer.mobile && !this.renderer.tablet) {
                 this.hoveringCollidingTile = this.map.isColliding(x, y);
                 this.hoveringPlateauTile = this.player.isOnPlateau ? !this.map.isPlateau(x, y) : this.map.isPlateau(x, y);
+                this.hoveringFishableTile = this.canFish(x, y);
                 this.hoveringMob = this.isMobAt(x, y);
                 this.hoveringItem = this.isItemAt(x, y);
                 this.hoveringNpc = this.isNpcAt(x, y);
@@ -4872,7 +4882,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
     	    && !this.isZoning()
     	    && !this.isZoningTile(this.player.nextGridX, this.player.nextGridY)
     	    && !this.player.isDead
-    	    && (!this.hoveringCollidingTile || pos.keyboard)
+    	    && (!this.hoveringCollidingTile || pos.keyboard || this.hoveringFishableTile)
     	    && (!this.hoveringPlateauTile || pos.keyboard)
             && !(this.doorCheck)) {
         	    entity = this.getEntityAt(pos.x, pos.y);
@@ -4906,7 +4916,10 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         	    else if(entity instanceof Chest) {
         	        this.makePlayerOpenChest(entity);
         	    }
-        	    else {
+        	    else if(this.canFish(pos.x, pos.y)) {
+                    this.castFishing(pos.x, pos.y);
+                }
+                else {
         	        this.makePlayerGoTo(pos.x, pos.y);
         	    }
         	}
@@ -5517,6 +5530,20 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             }).catch(function (error) {
                 console.error("Error while getting entity hp info", error);
             });
+        },
+
+        canFish: function (gX, gY) {
+            return (this.player.isOnSameAxis(gX, gY)
+            && this.player.isNear({gridX: gX, gridY: gY}, 2)
+            && this.map.getLakeName(gX, gY));
+        },
+
+        castFishing: function(gX, gY) {
+            let orientationToLake = this.player.getOrientationTo({gridX: gX, gridY: gY});
+            if (orientationToLake !== this.player.orientation) {
+                this.player.turnTo(orientationToLake);
+            };
+            this.showNotification("You are currently fishing in: " + self.map.getLakeName(gX, gY));
         }
     });
     

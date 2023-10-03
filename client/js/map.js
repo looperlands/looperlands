@@ -156,6 +156,7 @@ define(['jquery', 'area'], function($, Area) {
             this.plateau = map.plateau || [];
             this.musicAreas = map.musicAreas || [];
             this.pvpZones = map.pvpZones || [];
+            this.fishingTiles = map.fishingTiles || {};
             this.collisions = map.collisions;
             this.high = map.high;
             this.animated = map.animated;
@@ -438,6 +439,10 @@ define(['jquery', 'area'], function($, Area) {
                 }
             }
         },        
+
+        getLakeName: function(x, y) {
+            return this.fishingTiles[this.GridPositionToTileIndex(x, y) - 1];
+        }
     });
     
     return Mapx;

@@ -8,6 +8,7 @@ var map,
     mode,
     collidingTiles = {},
     staticEntities = {},
+    lakes = {},
     mobsFirstgid;
 
 module.exports = function processMap(json, options) {
@@ -35,6 +36,7 @@ module.exports = function processMap(json, options) {
         map.plateau = [];
         map.musicAreas = [];
         map.pvpZones = [];
+        map.fishingTiles = {};
     }
     if(mode === "server") {
         map.roamingAreas = [];
@@ -70,6 +72,9 @@ module.exports = function processMap(json, options) {
                     map.animated[id] = {};
                 }
                 map.animated[id].d = property.value;
+            }
+            if(property.name === "lake") {
+                lakes[id] = property.value;
             }
         }
     }
@@ -356,6 +361,10 @@ var processLayer = function processLayer(layer) {
                     }
                     else {
                         map.data[j] = [gid, map.data[j]];
+                    }
+                // fishing tiles
+                if(gid in lakes) {
+                    map.fishingTiles[j] = lakes[gid];
                     }
                 }
             }
