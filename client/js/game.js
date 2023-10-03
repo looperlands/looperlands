@@ -4817,7 +4817,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             if(this.player && !this.renderer.mobile && !this.renderer.tablet) {
                 this.hoveringCollidingTile = this.map.isColliding(x, y);
                 this.hoveringPlateauTile = this.player.isOnPlateau ? !this.map.isPlateau(x, y) : this.map.isPlateau(x, y);
-                this.hoveringFishableTile = this.canFish(x, y);
+                this.hoveringFishableTile = this.canFish(x, y, false);
                 this.hoveringMob = this.isMobAt(x, y);
                 this.hoveringItem = this.isItemAt(x, y);
                 this.hoveringNpc = this.isNpcAt(x, y);
@@ -4850,6 +4850,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 pos = this.getMouseGridPosition();
             }
             var entity;
+            let fishablePos;
 
             let clickThrottle;
             if (pos.keyboard) {
@@ -4916,8 +4917,8 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         	    else if(entity instanceof Chest) {
         	        this.makePlayerOpenChest(entity);
         	    }
-        	    else if(this.canFish(pos.x, pos.y)) {
-                    this.castFishing(pos.x, pos.y);
+        	    else if(fishablePos = this.canFish(pos.x, pos.y, pos.keyboard)) { // this assignment inside a condition is intentional
+                    this.castFishing(fishablePos.gridX, fishablePos.gridY);
                 }
                 else {
         	        this.makePlayerGoTo(pos.x, pos.y);
@@ -5532,10 +5533,20 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             });
         },
 
-        canFish: function (gX, gY) {
-            return (this.player.isOnSameAxis(gX, gY)
-            && this.player.isNear({gridX: gX, gridY: gY}, 2)
-            && this.map.getLakeName(gX, gY));
+        canFish: function (gX, gY, keyboard) {
+            if (this.player.isOnSameAxis(gX, gY)
+                && this.player.isNear({gridX: gX, gridY: gY}, 2)
+                && this.map.getLakeName(gX, gY))
+            {
+                return {gridX: gX, gridY: gY};
+            } else if (keyboard) { // let keyboard seek one tile further
+                let tryPos = this.player.getOneStepFurther(gX, gY);
+                if (this.map.getLakeName(tryPos.gridX, tryPos.gridY) && this.player.isNear(tryPos, 2)){
+                    return tryPos;
+                }
+            }
+
+            return false;
         },
 
         castFishing: function(gX, gY) {

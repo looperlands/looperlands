@@ -212,6 +212,21 @@ define(['character', 'exceptions', '../../shared/js/gametypes'], function(Charac
             if(this.invincibleTimeout) {
                 clearTimeout(this.invincibleTimeout);
             }
+        },
+
+        getOneStepFurther: function (gX, gY){
+            switch(this.getOrientationTo({gridX: gX, gridY: gY})) {
+                case Types.Orientations.UP:
+                    pos = {gridX: gX, gridY: gY - 1}; break;
+                case Types.Orientations.DOWN:
+                    pos = {gridX: gX, gridY: gY + 1}; break;
+                case Types.Orientations.LEFT:
+                    pos = {gridX: gX - 1, gridY: gY}; break;
+                case Types.Orientations.RIGHT:
+                    pos = {gridX: gX + 1, gridY: gY}; break;
+            }
+
+            return pos;
         }
     });
 
