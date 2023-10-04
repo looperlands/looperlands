@@ -391,7 +391,7 @@ var Properties = {
     },
 
     ghostie: {
-        level: 10,
+        level: 9,
         drops: {
             cobapple: 50,
             cobcorn: 10
@@ -401,7 +401,7 @@ var Properties = {
     },
 
     cobslimered: {
-        level: 6,
+        level: 5,
         drops: {
             cobapple: 20,
             cobcorn: 10,
@@ -410,7 +410,7 @@ var Properties = {
     },
 
     cobslimeyellow: {
-        level: 4,
+        level: 3,
         drops: {
             cobapple: 30,
             morningstar: 5
@@ -418,7 +418,7 @@ var Properties = {
     },
 
     cobslimeblue: {
-        level: 2,
+        level: 1,
         drops: {
             cobapple: 20,
             axe: 5
@@ -426,7 +426,7 @@ var Properties = {
     },
 
     cobslimeking: {
-        level: 8,
+        level: 7,
         drops: {
             cobclover: 100
         },
@@ -443,6 +443,39 @@ var Properties = {
         weapon: 1,
         friendly: true
     },
+
+    blackdog: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },    
+
+    brownspotdog: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    
+    tabbycat: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    browndog: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },  
+    whitedog: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    }, 
 
     fvillager1: {
         hp: 10,
@@ -835,12 +868,69 @@ var Properties = {
         friendly: true
     },
 
+    cobdirt: {
+        level: 1,
+        friendly: true, //not actually friendly, just AoE immune
+        hp: 1,
+        xp: 0,
+        respawnDelay: 10000
+    },
+
+    cobincubator: {
+        level: 1,
+        drops: {
+            cobegg: 100
+        },
+        hp: 1,
+        xp: 0,
+        respawnDelay: 60000
+    },
+
+    cobcoblin: {
+        level: 11,
+        drops: {
+            cobapple: 35,
+            cobcorn: 5,
+            cobegg: 5
+        },
+        weaponMod: 1.15,
+        armorMod: 0.8,
+        hpMod: 0.8
+    },
+
+    cobcobane: {
+        level: 13,
+        drops: {
+            cobapple: 45,
+            cobcorn: 5,
+            cobegg: 5
+        },
+        hpMod: 1.1
+    },
+
+    cobogre: {
+        level: 15,
+        armorMod: 1.25,
+        weaponMod: 2.25,
+        hpMod: 13,
+        xp: 5000,  
+        respawnDelay: 300000
+    },
+
     //Field effects
     magcrack: {
         aoe: {
             damage: 100,
             range: 1
         }
+    },
+
+    cobfallingrock: {
+        aoe: {
+            damage: 75,
+            range: 0,
+            singleHitDuration: 2900
+        },
     },
 
     //Items

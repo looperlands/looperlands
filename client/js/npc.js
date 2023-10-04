@@ -259,7 +259,7 @@ define(['character'], function (Character) {
         ],
 
         "villagesign1": [
-            "Hushwind Village"
+            "Journey Before Destination, Radiants."
         ],
 
         "miner": [
@@ -287,6 +287,23 @@ define(['character'], function (Character) {
             "View our scenic farms, admire vibrant flowers, and animals.",
             "If adventure calls, our dungeons are rife with monsters and rewards.",
             "Cob's Farm offers beauty and valor for everyone."
+        ],
+        "VILLAGESIGN2": ["Gregloop and Thunders Humble Abode."], //GREGLOOP
+        "VILLAGESIGN3": ["Home of Ripnatius Ironhand"], //RIPNTEAR
+        "VILLAGESIGN4": ["Change me"],
+        "VILLAGESIGN5": ["Change me"],
+        "VILLAGESIGN6": ["Change me"],
+        "VILLAGESIGN7": ["Change me"],
+        "VILLAGESIGN8": ["Change me"],
+        "VILLAGESIGN9": ["Change me"],
+
+        "cobellen": [
+            "Ahh such beauty.",
+            "I can't wait to grow my own flowers."
+        ],
+
+        "cobjohnny": [
+            "Farm life is tough but it's something that we will all be able to do soon."
         ],
         // @nextNPCLine@
     };
