@@ -6,7 +6,6 @@ var Log = require('log'),
 
 var map,
     mode,
-    collidingTiles = {},
     staticEntities = {},
     mobsFirstgid;
 
@@ -23,7 +22,9 @@ module.exports = function processMap(json, options) {
         collisions: [],
         doors: [],
         checkpoints: [],
-        triggers: []
+        triggers: [],
+        hiddenLayers: {},
+        collidingTiles: {}
     };
     mode = options.mode;
 
@@ -52,7 +53,7 @@ module.exports = function processMap(json, options) {
     var tileProperties;
     var handleProp = function(property, id) {
         if(property.name === "c") {
-            collidingTiles[id] = true;
+            map.collidingTiles[id] = true;
         }
 
         if(mode === "client") {
@@ -357,8 +358,25 @@ var processLayer = function processLayer(layer) {
             }
 
             // Colliding tiles
-            if(gid in collidingTiles) {
+            if(gid in map.collidingTiles) {
                 map.collisions.push(j);
+            }
+        }
+    } else if(layer.visible === 0) {
+        console.log("Processing hidden layer: "+ layer.name);
+        map.hiddenLayers[layer.name] = [];
+        for(var j=0; j < tiles.length; j += 1) {
+            var gid = tiles[j].gid;
+            if(gid > 0) {
+                if(map.hiddenLayers[layer.name][j] === undefined) {
+                    map.hiddenLayers[layer.name][j] = gid;
+                }
+                else if(map.hiddenLayers[layer.name][j] instanceof Array) {
+                    map.hiddenLayers[layer.name][j].unshift(gid);
+                }
+                else {
+                    map.hiddenLayers[layer.name][j] = [gid, map.hiddenLayers[layer.name][j]];
+                }
             }
         }
     }

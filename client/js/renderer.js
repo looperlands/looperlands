@@ -675,6 +675,26 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             }, 1);
         },
 
+        drawToggledLayers: function(ctx, highTile, animated) {
+            if(highTile === undefined) {
+                highTile = false;
+            }
+            var self = this,
+                m = this.game.map,
+                tilesetwidth = this.tileset.width / m.tilesize;
+
+            _.forEach(Object.keys(self.game.map.hiddenLayers), function(layerName) {
+                if(self.game.toggledLayers[layerName] === true) {
+                    let layer = self.game.map.hiddenLayers[layerName];
+                    self.game.forEachVisibleTileIndex(function(tileIndex) {
+                        if(highTile === m.isHighTile(layer[tileIndex]) && animated === m.isAnimatedTile(layer[tileIndex])) {
+                            self.drawTile(ctx, layer[tileIndex] - 1, self.tileset, tilesetwidth, m.width, tileIndex);
+                        }
+                    }, 1);
+                }
+            });
+        },
+
         drawBackground: function(ctx, color) {
             ctx.fillStyle = color;
             ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
@@ -778,7 +798,9 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             this.context.save();
             this.setCameraView(this.context);
             this.renderStaticCanvases();
+            this.drawToggledLayers(this.context, false, false);
             this.drawAnimatedTiles();
+            this.drawToggledLayers(this.context, false, true);
 
             if(this.game.started) {
                 this.drawSelectedCell();
@@ -790,7 +812,9 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             this.drawEntities();
             this.drawCombatInfo();
             this.drawHighTiles(this.context);
+            this.drawToggledLayers(this.context, true, false);
             this.drawHighAnimatedTiles();
+            this.drawToggledLayers(this.context, true, true);
             this.context.restore();
 
             // Overlay UI elements

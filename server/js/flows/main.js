@@ -10,35 +10,20 @@ flow = {
             },
             "then": [
                 {
-                    "idx": "b03b639b-dbf6-437f-8009-3dd569f166a5",
-                    "type": "sound.play",
+                    "idx": "492f0ba9-636b-4dbe-ba02-0750d884c6c0",
+                    "type": "layer.toggle",
                     "options": {
-                        "sound": "anotherQUESThahaha_T3"
-                    },
-                },
-                {
-                    "idx": "b03b639b-dbf6-437f-8009-3dd569f166a6",
-                    "type": "talk.player.private",
-                    "options": {
-                        "message": "Back for another quest?"
-                    },
-                },
-                {
-                    "idx": "b03b639b-dbf6-437f-8009-3dd569f166a7",
-                    "type": "delay",
-                    "options": {
-                        "delay": "3000"
-                    },
-                    "then": [
-                        {
-                            "idx": "b03b639b-dbf6-437f-8009-3dd569f166a8",
-                            "type": "talk.player.private",
-                            "options": {
-                                "message": "Ha ha haha haaaha!!"
-                            },
-                        },
-                    ]
+                        "layer": "Bridge"
+                    }
                 }
+                // ,
+                // {
+                //     "idx": "492f0ba9-636b-4dbe-ba02-0750d884c6c1",
+                //     "type": "layer.show",
+                //     "options": {
+                //         "layer": "bridges shadows"
+                //     }
+                // }
             ]
         }
     ]

@@ -25,7 +25,8 @@ var _ = require('underscore'),
             this.formats[Types.Messages.FOLLOW] = ['n'],
             this.formats[Types.Messages.CAMERA] = ['n', 'n'],
             this.formats[Types.Messages.SOUND] = ['s'],
-            this.formats[Types.Messages.MUSIC] = ['s']
+            this.formats[Types.Messages.MUSIC] = ['s'],
+            this.formats[Types.Messages.LAYER] = ['s', 'b']
         },
         
         check: function(msg) {

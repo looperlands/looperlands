@@ -37,7 +37,8 @@ Types = {
         FOLLOW: 33,
         CAMERA: 34,
         SOUND: 35,
-        MUSIC: 36
+        MUSIC: 36,
+        LAYER: 37,
     },
     
     Entities: {

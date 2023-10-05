@@ -44,6 +44,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             this.handlers[Types.Messages.CAMERA] = this.receiveCamera;
             this.handlers[Types.Messages.SOUND] = this.receiveSound;
             this.handlers[Types.Messages.MUSIC] = this.receiveMusic;
+            this.handlers[Types.Messages.LAYER] = this.receiveLayer;
 
             this.useBison = false;
             this.enable();
@@ -463,6 +464,15 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             }
         },
 
+        receiveLayer: function(data) {
+            var layer = data[1];
+            var show = data[2];
+
+            if(this.layer_callback) {
+                this.layer_callback(layer, show);
+            }
+        },
+
         onDispatched: function(callback) {
             this.dispatched_callback = callback;
         },
@@ -589,6 +599,10 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
 
         onMusic: function(callback) {
             this.music_callback = callback;
+        },
+
+        onLayer: function(callback) {
+            this.layer_callback = callback;
         },
 
         sendHello: function(player) {

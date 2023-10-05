@@ -36,6 +36,10 @@ const blocks = {
     'camera.npc': require('./then/camera.npc.js'),
     'sound.play': require('./then/sound.play.js'),
     'music.play': require('./then/music.play.js'),
+    'layer.show': require('./then/layer.show.js'),
+    'layer.hide': require('./then/layer.hide.js'),
+    'layer.toggle': require('./then/layer.toggle.js'),
+
 }
 
 const PlayerEventBroker = require('../quests/playereventbroker.js');

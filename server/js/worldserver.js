@@ -79,6 +79,7 @@ module.exports = World = cls.Class.extend({
             self.updatePopulation();
 
             self.pushRelevantEntityListTo(player);
+            self.pushToggledLayersTo(player)
     
             var move_callback = function(x, y) {
                 //console.debug(player.name + " is moving to (" + x + ", " + y + ").");
@@ -277,7 +278,15 @@ module.exports = World = cls.Class.extend({
         
         //console.debug("Pushed "+_.size(ids)+" new spawns to "+player.id);
     },
-    
+
+    pushToggledLayersTo: function(player) {
+        var self = this;
+        _.forEach(Object.keys(this.map.toggledLayers), (layer) => {
+            let visible = self.map.toggledLayers[layer];
+            self.pushToPlayer(player, new Messages.Layer(layer, visible ));
+        });
+    },
+
     pushToPlayer: function(player, message) {
         let playerIdInQueue =  player.id in this.outgoingQueues;
         if(player && playerIdInQueue) {
@@ -1276,6 +1285,21 @@ module.exports = World = cls.Class.extend({
         // return highest key + 1
         return _.max(_.keys(this.mobs), function(id) { return parseInt(id); }) + 1;
     },
+
+    showLayer: function(player, layer) {
+        this.map.toggledLayers[layer] = true;
+        this.pushBroadcast(new Messages.Layer(layer, true), false);
+    },
+
+    hideLayer: function(player, layer) {
+        this.map.toggledLayers[layer] = false;
+        this.pushBroadcast(new Messages.Layer(layer, false), false);
+    },
+
+    toggleLayer: function(player, layer) {
+        this.map.toggledLayers[layer] = !this.map.toggledLayers[layer];
+        this.pushBroadcast(new Messages.Layer(layer, this.map.toggledLayers[layer]), false);
+    }
 });
 
 

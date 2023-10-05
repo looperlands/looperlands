@@ -29,6 +29,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             this.deathpositions = {};
             this.entityGrid = null;
             this.pathingGrid = null;
+            this.finalPathingGrid = null;
             this.renderingGrid = null;
             this.itemGrid = null;
             this.currentCursor = null;
@@ -46,7 +47,9 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             this.hoveringItem = false;
             this.hoveringCollidingTile = false;
             this.doorCheck = false;
-        
+
+            this.toggledLayers = {};
+
             // combat
             this.infoManager = new InfoManager(this);
         
@@ -2727,6 +2730,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
     
         initPathingGrid: function() {
             this.pathingGrid = [];
+            this.finalPathingGrid = [];
             this.pathingGridBackup = [];
             for(var i=0; i < this.map.height; i += 1) {
                 this.pathingGrid[i] = [];
@@ -2945,6 +2949,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     self.initEntityGrid();
                     self.initItemGrid();
                     self.initPathingGrid();
+                    self.applyToggledLayers();
                     self.initRenderingGrid();
                 
                     self.setPathfinder(new Pathfinder(self.map.width, self.map.height));
@@ -3932,6 +3937,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 self.client.onNotification(self.handleNotify);
                 self.client.onSound(self.handleSound);
                 self.client.onMusic(self.handleMusic);
+                self.client.onLayer(self.handleLayer);
 
                 self.client.onPopulationChange(function(worldPlayers, totalPlayers) {
                     if(self.nbplayers_callback) {
@@ -4429,11 +4435,13 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
          */
         findPath: function(character, x, y, ignoreList) {
             var self = this,
-                grid = this.pathingGrid;
+                grid = this.finalPathingGrid,
                 path = [],
                 isPlayer = (character === this.player);
 
+
             if(this.map.isColliding(x, y)) {
+                console.log('is colliding');
                 return path;
             }
         
@@ -4443,9 +4451,9 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                         self.pathfinder.ignoreEntity(entity);
                     });
                 }
-            
+
                 path = this.pathfinder.findPath(grid, character, x, y, false);
-            
+
                 if(ignoreList) {
                     this.pathfinder.clearIgnoreList();
                 }
@@ -4474,6 +4482,24 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 this.renderer.isDebugInfoVisible = false;
             } else {
                 this.renderer.isDebugInfoVisible = true;
+            }
+        },
+
+        applyToggledLayers: function() {
+            this.finalPathingGrid = _.clone(this.pathingGrid);
+            // Loop over keys of this.hiddenLayers
+            for(var	i = 0; i < Object.keys(this.map.hiddenLayers).length; i++) {
+                let layerName = Object.keys(this.map.hiddenLayers)[i]
+                if(this.toggledLayers[layerName]) {
+                    for(var j=0; j < this.map.hiddenLayers[layerName].length; j++) {
+                        let tileType = this.map.hiddenLayers[layerName][j];
+
+                        if (tileType !== null) {
+                            let position = this.map.tileIndexToGridPosition(j)
+                            this.finalPathingGrid[position.y][position.x + 1] = this.map.collidingTiles[tileType]
+                        }
+                    }
+                }
             }
         },
     
@@ -4696,6 +4722,11 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
         handleMusic(music) {
             self.audioManager.playMusicByName(music);
+        },
+
+        handleLayer(layer, show) {
+            self.toggledLayers[layer] = show;
+            self.applyToggledLayers()
         },
 
         /**

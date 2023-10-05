@@ -297,3 +297,13 @@ Messages.Music = Message.extend({
         return [Types.Messages.MUSIC, this.music];
     }
 })
+
+Messages.Layer = Message.extend({
+    init: function(layer, show) {
+        this.layer = layer;
+        this.show = show
+    },
+    serialize: function() {
+        return [Types.Messages.LAYER, this.layer, this.show];
+    }
+})
