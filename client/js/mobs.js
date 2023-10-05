@@ -1796,10 +1796,9 @@ define(['mob', 'timer'], function(Mob, Timer) {
             },
 
             exitCombat: function() {
-                this._super();
                 let self = this;
                 this.isFriendly = true;
-                
+                this.inCombat = false;
                 this.exitingCombat = setTimeout(function() {
                     self.setVisible(false);
                     self.exitingCombat = null;
@@ -1864,23 +1863,6 @@ define(['mob', 'timer'], function(Mob, Timer) {
                         self.idle();
                     });
             },
-
-            exitCombat: function() {
-                this._super();
-                let self = this;
-                this.isFriendly = true;
-                /* Currently when mob exits combat (eg. out of range from spawn) he can INSTANTLY aggro back, 
-                which creates all sort of weird behaviours. For example you can kite a mob endlessly out of his area (25 tiles),
-                as long, as you move away slowly and never exceed the aggro range. This will make the mob aggro you instantly after un-aggroing
-                but at the same time reset his arrays, such as hatelist, dmgTakenArray, addsArray etc.
-                In my opinion the code below should be a default behavior for every single mob (think mob evading in WoW), and should eventually
-                be moved to _super. For now its here for "test purposes"*/    
-                this.exitingCombat = setTimeout(function() {
-                    self.isFriendly = false;
-                    self.exitingCombat = null;
-                }, 4000)  
-            }
-            
         }),
 
         Cobcat: Mob.extend({

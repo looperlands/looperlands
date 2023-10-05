@@ -1205,6 +1205,7 @@ module.exports = World = cls.Class.extend({
         this.pushToAdjacentGroups(mob.group, new Messages.MobExitCombat(mob));
         mob.clearSpecialInterval();
         this.despawnAllAdds(mob);
+        mob.resetHitPoints(mob.maxHitPoints);
     },
 
     spawnMobAdd: function(parent, childKind, x, y) {

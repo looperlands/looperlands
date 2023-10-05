@@ -23,7 +23,15 @@ define(['character','../../shared/js/altnames','../../shared/js/gametypes'], fun
         },
 
         exitCombat: function() {
+            let self = this;
+
             this.inCombat = false;
+            this.isFriendly = true;
+ 
+            this.exitingCombat = setTimeout(function() {
+                self.isFriendly = false;
+                self.exitingCombat = null;
+            }, 4000)  
         },
 
         initAltName: function (){
