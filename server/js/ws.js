@@ -24,6 +24,7 @@ const ens = require("./ens.js");
 const chat = require("./chat.js");
 const quests = require("./quests/quests.js");
 const signing = require("./signing.js");
+const Lakes = require("./lakes.js");
 
 const cache = new NodeCache();
 
@@ -521,7 +522,7 @@ WS.socketIOServer = Server.extend({
             const mapId = req.params.mapId;
             const playerId = req.params.playerId;
             const nftId = req.params.nftId;
-            
+
             let player = self.worldsMap[mapId].getPlayerById(playerId);
             if (player === undefined) {
                 return res.status(404).json({
@@ -730,6 +731,32 @@ WS.socketIOServer = Server.extend({
                 res.status(200).send(true);
             } else {
                 res.status(404).send(false);
+            }
+        });
+
+        app.get("/session/:sessionId/requestFish/:lakeName", async (req, res) => {
+            const sessionId = req.params.sessionId;
+            const lakeName = req.params.lakeName;
+            const sessionData = cache.get(sessionId);
+            if (sessionData === undefined) {
+                res.status(404).json({
+                    status: false,
+                    "error" : "session not found",
+                    user: null
+                });
+            } else {
+                let fish = Lakes.getRandomFish(lakeName);
+                if (fish === undefined) {
+                    res.status(400).json({
+                        status: false,
+                        error: "Could not get fish",
+                        user: null
+                    });
+                    return;
+                }
+                let player = self.worldsMap[sessionData.mapId].getPlayerById(sessionData.entityId);
+                player.waitingFish = fish;
+                res.status(200).send(fish);
             }
         });
 

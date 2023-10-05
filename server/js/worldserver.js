@@ -19,7 +19,8 @@ var cls = require("./lib/class"),
     Types = require("../../shared/js/gametypes"),
     dao = require("./dao.js"),
     discord = require("./discord.js"),
-    Fieldeffect = require('./fieldeffect');
+    Fieldeffect = require('./fieldeffect'),
+    Lakes = require('./lakes');
 
 // ======= GAME SERVER ========
 

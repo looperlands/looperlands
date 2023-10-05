@@ -32,7 +32,8 @@ Types = {
         MOBDOSPECIAL: 28,
         MOBEXITCOMBAT: 29,
         TRIGGER: 30,
-        QUEST_COMPLETE: 31
+        QUEST_COMPLETE: 31,
+        FISHINGRESULT: 32
     },
     
     Entities: {

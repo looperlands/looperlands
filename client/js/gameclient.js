@@ -39,7 +39,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             this.handlers[Types.Messages.MOBDOSPECIAL] = this.receiveMobDoSpecial;
             this.handlers[Types.Messages.MOBEXITCOMBAT] = this.receiveMobExitCombat;
             this.handlers[Types.Messages.QUEST_COMPLETE] = this.receieveQuestComplete;
-        
+
             this.useBison = false;
             this.enable();
         },
@@ -609,6 +609,11 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             this.sendMessage([Types.Messages.EQUIP_INVENTORY,
                               kind,
                               nftId]);
+        },
+
+        sendFishingResult: function(result) {
+            this.sendMessage([Types.Messages.FISHINGRESULT,
+                              result]);
         }
     });
     

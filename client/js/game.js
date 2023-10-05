@@ -5550,11 +5550,35 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         },
 
         castFishing: function(gX, gY) {
+            let self = this;
             let orientationToLake = this.player.getOrientationTo({gridX: gX, gridY: gY});
             if (orientationToLake !== this.player.orientation) {
                 this.player.turnTo(orientationToLake);
             };
-            this.showNotification("You are currently fishing in: " + self.map.getLakeName(gX, gY));
+
+            let url = '/session/' + self.sessionId + '/requestFish/' + self.map.getLakeName(gX, gY);
+            axios.get(url).then(function (response) {
+                self.playCatchFish(response.data);
+            }).catch(function (error) {
+                console.error("Error while requesting a fish.");
+            });
+        },
+
+        playCatchFish: function(fish) {
+            let self = this;
+            let altName = AltNames.getAltNameFromKind(fish);
+            let fishName = altName !== undefined ? altName : fish;
+
+            setTimeout(function() {
+                let random = Math.floor(Math.random() * 2);
+                if (!random) {
+                    self.client.sendFishingResult(true);
+                    self.showNotification("You caught " + fishName);
+                } else {
+                    self.client.sendFishingResult(false);
+                    self.showNotification("Fish escaped " + fishName);
+                }
+            }, 5000)
         }
     });
     

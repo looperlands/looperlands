@@ -434,6 +434,10 @@ module.exports = Player = Character.extend({
                         }
                     }
                 }
+            } else if(action === Types.Messages.FISHINGRESULT) {
+                if (message[1]) {
+                }
+                self.waitingFish = null;
             }
             else {
                 if(self.message_callback) {
