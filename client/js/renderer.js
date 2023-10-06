@@ -725,6 +725,39 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             });
             this.initFont();
         },
+
+        drawFishingFloat: function(rodName, tarGx, tarGy) {
+            let float = this.game.sprites["item-" + rodName],
+                            anim = this.game.floatAnimation;
+
+            if(anim && float) {
+                let s = this.scale,
+                os = this.upscaledRendering ? 1 : s,
+                ds = this.upscaledRendering ? s : 1,
+                frame = anim.currentFrame,
+                fx = float.width * frame.index * os,
+                fy = float.height * anim.row * os,
+                fw = float.width * os,
+                fh = float.height * os;
+
+                this.context.save();
+                this.context.translate(tarGx * this.tilesize * s, tarGy * this.tilesize * s);
+                this.context.drawImage(float.image, fx, fy, fw, fh,
+                                    float.offsetX * s,
+                                    float.offsetY * s,
+                                    fw * ds, fh * ds);
+                this.context.restore();
+            }
+        },
+
+        drawFloats: function() {
+            var self = this;
+
+            this.game.forEachVisibleFloat(function(float){
+                self.drawFishingFloat(float.rodName, float.x, float.y);
+            });
+
+        },
     
         setCameraView: function(ctx) {
             ctx.translate(-this.camera.x * this.scale, -this.camera.y * this.scale);
@@ -809,6 +842,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             //this.drawOccupiedCells();
             this.drawPathingCells();
             this.drawEntities();
+            this.drawFloats();
             this.drawCombatInfo();
             this.context.restore();
             // Overlay UI elements

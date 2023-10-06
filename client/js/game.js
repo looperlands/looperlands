@@ -46,6 +46,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             this.hoveringItem = false;
             this.hoveringCollidingTile = false;
             this.doorCheck = false;
+            this.floatsArray = [];
         
             // combat
             this.infoManager = new InfoManager(this);
@@ -116,6 +117,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 "item-ICESSENCE",
                                 "item-FORGEDSWORD",
                                 "item-BANNER",
+                                "item-NFT_92993461f968da441e1bd6957ae28ac8ec9e2f9156d314a052c8e78e32190dfe",
                                 // @nextObjectLine@
                                 "NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6",
                                 "NFT_38278eacc7d1c86fdbc85d798dca146fbca59a2e5e567dc15898ce2edac21f5f",
@@ -2820,6 +2822,9 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         
             this.sparksAnimation = new Animation("idle_down", 6, 0, 16, 16);
             this.sparksAnimation.setSpeed(120);
+
+            this.floatAnimation = new Animation("idle", 6, 0, 16, 16);
+            this.floatAnimation.setSpeed(240);
         },
     
         initHurtSprites: function() {
@@ -3520,6 +3525,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             
                 self.player.onStep(function() {
                     self.findVisibleTiles();
+                    self.findVisibleFloats();
 
                     if(self.player.hasNextStep()) {
                         self.registerEntityDualPosition(self.player);
@@ -4653,6 +4659,25 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 });
             }
         },
+
+        findVisibleFloats: function() {
+            let self = this;
+
+            self.visibleFloats = [];
+            for (float of self.floatsArray) {
+                if (self.camera.isVisiblePosition(float.x, float.y, 2)) {
+                    self.visibleFloats.push(float);
+                }
+            }
+        },
+
+        forEachVisibleFloat: function(callback) {
+            if(this.visibleFloats) {
+                _.each(this.visibleFloats, function(float) {
+                    callback(float);
+                });
+            }
+        },
     
         /**
          * Returns the entity located at the given position on the world grid.
@@ -5560,11 +5585,24 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 this.player.turnTo(orientationToLake);
             };
 
+            this.player.animate("atk", 75, 1, function() {
+                self.player.idle();
+                let float = {rodName: self.player.getWeaponName(), x: gX, y: gY};
+                self.player.float = float;
+                self.floatsArray.push(float);
+                self.findVisibleFloats();
+            });
+
             let url = '/session/' + self.sessionId + '/requestFish/' + self.map.getLakeName(gX, gY);
             axios.get(url).then(function (response) {
                 self.playCatchFish(response.data);
             }).catch(function (error) {
                 console.error("Error while requesting a fish.");
+                
+                const index = self.floatsArray.indexOf(self.player.float);
+                self.floatsArray.splice(index, 1);
+                self.player.float = null;
+                self.findVisibleFloats();
             });
         },
 
@@ -5582,6 +5620,10 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     self.client.sendFishingResult(false);
                     self.showNotification("Fish escaped " + fishName);
                 }
+                const index = self.floatsArray.indexOf(self.player.float);
+                self.floatsArray.splice(index, 1);
+                self.player.float = null;
+                self.findVisibleFloats();
             }, 5000)
         }
     });
