@@ -39,7 +39,8 @@ const blocks = {
     'layer.show': require('./then/layer.show.js'),
     'layer.hide': require('./then/layer.hide.js'),
     'layer.toggle': require('./then/layer.toggle.js'),
-
+    'quest.new': require('./then/quest.new.js'),
+    'quest.complete': require('./then/quest.complete.js'),
 }
 
 const PlayerEventBroker = require('../quests/playereventbroker.js');
