@@ -1308,20 +1308,20 @@ module.exports = World = cls.Class.extend({
            return false;
         }
 
-        this.sendNotifications(questText, player);
+        this.sendNotifications(player, questText);
         return true;
     },
 
     completeQuest: function(player, questId) {
         let endText = quests.completeQuest(this.server.cache, player.sessionId, questId);
         if(!_.isEmpty(endText)) {
-            this.sendNotifications(endText, player);
+            this.sendNotifications(player, endText);
         }
 
         return true;
     },
 
-    sendNotifications: function(notifications, player) {
+    sendNotifications: function(player, notifications) {
         if(!_.isArray(notifications)) {
             notifications = [notifications];
         }
