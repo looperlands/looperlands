@@ -687,6 +687,9 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                 if(self.game.toggledLayers[layerName] === true) {
                     let layer = self.game.map.hiddenLayers[layerName];
                     self.game.forEachVisibleTileIndex(function(tileIndex) {
+                        if(layer[tileIndex] === null || layer[tileIndex] === undefined) {
+                            return;
+                        }
                         if(highTile === m.isHighTile(layer[tileIndex]) && animated === m.isAnimatedTile(layer[tileIndex])) {
                             self.drawTile(ctx, layer[tileIndex] - 1, self.tileset, tilesetwidth, m.width, tileIndex);
                         }
