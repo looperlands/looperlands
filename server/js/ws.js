@@ -734,9 +734,11 @@ WS.socketIOServer = Server.extend({
             }
         });
 
-        app.get("/session/:sessionId/requestFish/:lakeName", async (req, res) => {
+        app.get("/session/:sessionId/requestFish/:lakeName/:x/:y", async (req, res) => {
             const sessionId = req.params.sessionId;
             const lakeName = req.params.lakeName;
+            const fx = req.params.x;
+            const fy = req.params.y;
             const sessionData = cache.get(sessionId);
             if (sessionData === undefined) {
                 res.status(404).json({
@@ -755,7 +757,8 @@ WS.socketIOServer = Server.extend({
                     return;
                 }
                 let player = self.worldsMap[sessionData.mapId].getPlayerById(sessionData.entityId);
-                player.waitingFish = fish;
+                player.pendingFish = fish;
+                self.worldsMap[sessionData.mapId].announceSpawnFloat(player, fx, fy);
                 res.status(200).send(fish);
             }
         });

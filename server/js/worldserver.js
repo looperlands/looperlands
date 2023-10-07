@@ -1254,6 +1254,18 @@ module.exports = World = cls.Class.extend({
                     parent.addArray.splice(index, 1); 
                 }
         }
+    },
+
+    announceSpawnFloat: function(player, gX, gY) {
+        let playerNftWeapon = player.getNFTWeapon();
+        if (playerNftWeapon !== undefined){
+            let floatName = playerNftWeapon.nftId.replace("0x","NFT_");
+            this.pushToAdjacentGroups(player.group, new Messages.SpawnFloat(player.id, floatName , gX, gY), player.id);
+        }
+    },
+
+    announceDespawnFloat: function(player) {
+        this.pushToAdjacentGroups(player.group, new Messages.DespawnFloat(player.id), player.id);
     }
 
 });

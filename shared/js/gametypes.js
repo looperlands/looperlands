@@ -33,7 +33,9 @@ Types = {
         MOBEXITCOMBAT: 29,
         TRIGGER: 30,
         QUEST_COMPLETE: 31,
-        FISHINGRESULT: 32
+        FISHINGRESULT: 32,
+        SPAWNFLOAT: 33,
+        DESPAWNFLOAT: 34
     },
     
     Entities: {

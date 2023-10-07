@@ -39,6 +39,7 @@ module.exports = Player = Character.extend({
         this.lastCheckpoint = null;
         this.formatChecker = new FormatChecker();
         this.disconnectTimeout = null;
+        this.pendingFish = null;
 
         this.moveSpeed = BASE_SPEED;
         this.attackRate = BASE_ATTACK_RATE;
@@ -437,7 +438,8 @@ module.exports = Player = Character.extend({
             } else if(action === Types.Messages.FISHINGRESULT) {
                 if (message[1]) {
                 }
-                self.waitingFish = null;
+                self.pendingFish = null;
+                self.server.announceDespawnFloat(self);
             }
             else {
                 if(self.message_callback) {

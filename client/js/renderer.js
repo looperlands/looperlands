@@ -726,8 +726,8 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             this.initFont();
         },
 
-        drawFishingFloat: function(rodName, tarGx, tarGy) {
-            let float = this.game.sprites["item-" + rodName],
+        drawFishingFloat: function(inputFloat) {
+            let float = this.game.sprites[inputFloat.spriteName],
                             anim = this.game.floatAnimation;
 
             if(anim && float) {
@@ -741,7 +741,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                 fh = float.height * os;
 
                 this.context.save();
-                this.context.translate(tarGx * this.tilesize * s, tarGy * this.tilesize * s);
+                this.context.translate(inputFloat.gridX * this.tilesize * s, inputFloat.gridY * this.tilesize * s);
                 this.context.drawImage(float.image, fx, fy, fw, fh,
                                     float.offsetX * s,
                                     float.offsetY * s,
@@ -753,8 +753,8 @@ function(Camera, Item, Character, Player, Timer, Mob) {
         drawFloats: function() {
             var self = this;
 
-            this.game.forEachVisibleFloat(function(float){
-                self.drawFishingFloat(float.rodName, float.x, float.y);
+            this.game.forEachFloat(function(float){
+                self.drawFishingFloat(float);
             });
 
         },

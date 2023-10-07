@@ -1,10 +1,10 @@
 
 define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile',
         'warrior', 'gameclient', 'audio', 'updater', 'transition', 'pathfinder',
-        'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'config', 'fieldeffect', '../../shared/js/gametypes', '../../shared/js/altnames'],
+        'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'config', 'fieldeffect', 'float', '../../shared/js/gametypes', '../../shared/js/altnames'],
 function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, AnimatedTile,
          Warrior, GameClient, AudioManager, Updater, Transition, Pathfinder,
-         Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, config, Fieldeffect) {
+         Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, config, Fieldeffect, Float) {
     
     var Game = Class.extend({
         init: function(app) {
@@ -26,6 +26,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
     
             // Game state
             this.entities = {};
+            this.floats = {};
             this.deathpositions = {};
             this.entityGrid = null;
             this.pathingGrid = null;
@@ -46,7 +47,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             this.hoveringItem = false;
             this.hoveringCollidingTile = false;
             this.doorCheck = false;
-            this.floatsArray = [];
         
             // combat
             this.infoManager = new InfoManager(this);
@@ -3059,6 +3059,37 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 console.error("Cannot remove field effect. Unknown ID : " + fieldEffect.id);
             }
         },
+
+        addFloat: function(float) { 
+            if(this.floats[float.id] === undefined) {
+                this.floats[float.id] = float;
+            }
+            else {
+                console.error("This float already exists : " + float.id );
+            }
+        },
+
+        castFloat: function(float) {
+            let player = this.getEntityById(float.id);
+            let orientationToLake = player.getOrientationTo(float);
+            if (orientationToLake !== player.orientation) {
+                player.turnTo(orientationToLake);
+            };
+
+            player.animate("atk", 75, 1, function() {
+                player.idle();
+                self.addFloat(float);
+            });
+        },
+
+        removeFloat: function(floatId) {
+            if(floatId in this.floats) {
+                delete this.floats[floatId];
+            }
+            else {
+                console.error("Cannot remove float. Unknown ID : " + floatId);
+            }
+        },
     
         initPathingGrid: function() {
             this.pathingGrid = [];
@@ -3347,6 +3378,15 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             }
         },
 
+        getFloatById: function(id) {
+            if(id in this.floats) {
+                return this.floats[id];
+            }
+            else {
+                console.error("Unknown float id : " + id, true);
+            }
+        },
+
         findVisibleTiles: function() {
             let self = this,
                 m = this.map,
@@ -3528,7 +3568,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             
                 self.player.onStep(function() {
                     self.findVisibleTiles();
-                    self.findVisibleFloats();
 
                     if(self.player.hasNextStep()) {
                         self.registerEntityDualPosition(self.player);
@@ -4323,6 +4362,15 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                         self.infoManager.addDamageInfo("+"+xpReward+" XP", self.player.x, self.player.y - 15, "xp");
                     }, 200);
                 });
+
+                self.client.onSpawnFloat(function(id, name, x, y) {
+                    let float = new Float(x, y, id, name);
+                    self.castFloat(float);
+                });
+
+                self.client.onDespawnFloat(function(id) {
+                    self.removeFloat(id);
+                });
             
                 self.gamestart_callback();
             
@@ -4663,20 +4711,9 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             }
         },
 
-        findVisibleFloats: function() {
-            let self = this;
-
-            self.visibleFloats = [];
-            for (float of self.floatsArray) {
-                if (self.camera.isVisiblePosition(float.x, float.y, 2)) {
-                    self.visibleFloats.push(float);
-                }
-            }
-        },
-
-        forEachVisibleFloat: function(callback) {
-            if(this.visibleFloats) {
-                _.each(this.visibleFloats, function(float) {
+        forEachFloat: function(callback) {
+            if(this.floats) {
+                _.each(this.floats, function(float) {
                     callback(float);
                 });
             }
@@ -4950,7 +4987,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         	        this.makePlayerOpenChest(entity);
         	    }
         	    else if(fishablePos = this.canFish(pos.x, pos.y, pos.keyboard)) { // this assignment inside a condition is intentional
-                    this.castFishing(fishablePos.gridX, fishablePos.gridY);
+                    this.startFishing(fishablePos.gridX, fishablePos.gridY);
                 }
                 else {
         	        this.makePlayerGoTo(pos.x, pos.y);
@@ -5581,31 +5618,18 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             return false;
         },
 
-        castFishing: function(gX, gY) {
+        startFishing: function(gX, gY) {
             let self = this;
-            let orientationToLake = this.player.getOrientationTo({gridX: gX, gridY: gY});
-            if (orientationToLake !== this.player.orientation) {
-                this.player.turnTo(orientationToLake);
-            };
 
-            this.player.animate("atk", 75, 1, function() {
-                self.player.idle();
-                let float = {rodName: self.player.getWeaponName(), x: gX, y: gY};
-                self.player.float = float;
-                self.floatsArray.push(float);
-                self.findVisibleFloats();
-            });
-
-            let url = '/session/' + self.sessionId + '/requestFish/' + self.map.getLakeName(gX, gY);
+            let float = new Float(gX, gY, self.player.id, self.player.getWeaponName());
+            self.castFloat(float);
+    
+            let url = '/session/' + self.sessionId + '/requestFish/' + self.map.getLakeName(gX, gY) + '/' + gX + '/' + gY;
             axios.get(url).then(function (response) {
                 self.playCatchFish(response.data);
             }).catch(function (error) {
                 console.error("Error while requesting a fish.");
-                
-                const index = self.floatsArray.indexOf(self.player.float);
-                self.floatsArray.splice(index, 1);
-                self.player.float = null;
-                self.findVisibleFloats();
+                self.removeFloat(float.id);
             });
         },
 
@@ -5623,10 +5647,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     self.client.sendFishingResult(false);
                     self.showNotification("Fish escaped " + fishName);
                 }
-                const index = self.floatsArray.indexOf(self.player.float);
-                self.floatsArray.splice(index, 1);
-                self.player.float = null;
-                self.findVisibleFloats();
+                self.removeFloat(self.player.id);
             }, 5000)
         }
     });

@@ -39,6 +39,8 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             this.handlers[Types.Messages.MOBDOSPECIAL] = this.receiveMobDoSpecial;
             this.handlers[Types.Messages.MOBEXITCOMBAT] = this.receiveMobExitCombat;
             this.handlers[Types.Messages.QUEST_COMPLETE] = this.receieveQuestComplete;
+            this.handlers[Types.Messages.SPAWNFLOAT] = this.receiveSpawnFloat;
+            this.handlers[Types.Messages.DESPAWNFLOAT] = this.receiveDespawnFloat;
 
             this.useBison = false;
             this.enable();
@@ -416,6 +418,25 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
                 this.questComplete_callback(questName, endText, xpReward, medal);
             }
         },
+
+        receiveSpawnFloat: function(data) {
+            let id = data[1],
+                name = data[2],
+                x = data[3],
+                y = data[4];
+        
+            if(this.spawnFloat_callback) {
+                this.spawnFloat_callback(id, name, x, y);
+            }
+        },
+
+        receiveDespawnFloat: function(data) {
+            let id = data[1];
+        
+            if(this.despawnFloat_callback) {
+                this.despawnFloat_callback(id);
+            }
+        },
         
         onDispatched: function(callback) {
             this.dispatched_callback = callback;
@@ -523,6 +544,14 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
 
         onQuestComplete: function(callback) {
             this.questComplete_callback = callback;
+        },
+
+        onSpawnFloat: function(callback) {
+            this.spawnFloat_callback = callback;
+        },
+
+        onDespawnFloat: function(callback) {
+            this.despawnFloat_callback = callback;
         },
 
         sendHello: function(player) {
