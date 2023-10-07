@@ -41,6 +41,8 @@ const blocks = {
     'layer.toggle': require('./then/layer.toggle.js'),
     'quest.new': require('./then/quest.new.js'),
     'quest.complete': require('./then/quest.complete.js'),
+    'inventory.add': require('./then/inventory.add.js'),
+    'inventory.remove': require('./then/inventory.remove.js'),
 }
 
 const PlayerEventBroker = require('../quests/playereventbroker.js');
