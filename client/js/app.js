@@ -421,7 +421,7 @@ define(['jquery', 'storage'], function($, Storage) {
                 }
             }
         },
-        
+
         toggleAbout: function() {
             var currentState = $('#parchment').attr('class');
 
@@ -492,7 +492,7 @@ define(['jquery', 'storage'], function($, Storage) {
                             _this.previousState = currentState;
                         }
                     }
-                }                
+                }
             }).catch(function(error) {
                 console.error(error);
             });
