@@ -248,7 +248,12 @@ define(['jquery', 'app'], function($, App) {
     		game.onDisconnect(function(message) {
     		    if($('body').hasClass('credits')) {
     		        $('body').removeClass('credits');
-    		    }                
+    		    }
+
+                if($('body').hasClass('about')) {
+                    $('body').removeClass('about');
+                }
+
                 $('body').addClass('death');
     		    $('#death').find('p').html(message+"<em>Press Browser Back Button.</em>");
     		    $('#respawn').hide();
