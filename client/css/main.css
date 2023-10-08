@@ -661,7 +661,7 @@ footer div  {display:inline-block;}
     #bar-container {height:34px;top:-2px;background-size:960px;}
 
     #healthbar {height:26px;background-position:0 -34px;width:204px;top:6px;background-size:960px;z-index:20;}
-    #hitpoints {width:0px;height:16px;top:8px;left:22px;z-index:10;position:absolute;}
+    #hitpoints {width:0px;height:20px;top:8px;left:22px;z-index:10;position:absolute;}
 
     #armor, #weapon {width:32px;height:32px;position:absolute;background-size:192px;background-position:-64px;}
     #weapon {left:208px;top:2px;}
@@ -985,7 +985,7 @@ footer div  {display:inline-block;}
     #bar-container {height:17px;top:-1px;background-size:480px;}
 
     #healthbar {height:13px;background-position:0 -17px;width:102px;top:3px;background-size:480px;z-index:20;}
-    #hitpoints {width:0px;height:11px;top:4px;left:11px;z-index:10;position:absolute;}
+    #hitpoints {width:0px;height:5px;top:4px;left:11px;z-index:10;position:absolute;}
 
     #armor, #weapon {width:16px;height:16px;position:absolute;background-size:96px;background-position:-32px;}
     #weapon {left:104px;top:1px;}
