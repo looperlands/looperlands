@@ -3061,6 +3061,11 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         },
 
         addFloat: function(float) { 
+            let self = this;
+            float.despawnTimeout = setTimeout(function() {
+                self.removeFloat(float.id);
+            }, 30000);
+
             if(this.floats[float.id] === undefined) {
                 this.floats[float.id] = float;
             }
@@ -3095,6 +3100,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             }
 
             if(floatId in this.floats) {
+                clearTimeout(this.floats[floatId].despawnTimeout);
                 delete this.floats[floatId];
             }
             else {
