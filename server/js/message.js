@@ -307,3 +307,13 @@ Messages.Layer = Message.extend({
         return [Types.Messages.LAYER, this.layer, this.show];
     }
 })
+
+Messages.Animate = Message.extend({
+    init: function(entity, animation) {
+        this.entity = entity;
+        this.animation = animation
+    },
+    serialize: function() {
+        return [Types.Messages.ANIMATE, this.entity, this.animation];
+    }
+})

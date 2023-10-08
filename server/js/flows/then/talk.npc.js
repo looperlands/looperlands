@@ -12,8 +12,14 @@ module.exports = Block = cls.Class.extend({
     },
 
     handle(event) {
-        let closestNpc = this.worldserver.getClosestNpcOfKind(this.npc, event.data.player.x, event.data.player.y);
-        this.worldserver.pushToGroup(closestNpc.group, new Messages.Chat(closestNpc, this.message), false);
+        let controllingNpc;
+        if(_.isString(this.npc) || _.isNumber(this.npc)) {
+            controllingNpc = this.worldserver.getClosestNpcOfKind(this.npc, event.data.player.x, event.data.player.y);
+        } else {
+            controllingNpc = this.npc;
+        }
+
+        this.worldserver.pushToGroup(controllingNpc.group, new Messages.Chat(controllingNpc, this.message), false);
         return 'then';
     }
 })

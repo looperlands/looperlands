@@ -39,6 +39,7 @@ Types = {
         SOUND: 35,
         MUSIC: 36,
         LAYER: 37,
+        ANIMATE: 38
     },
     
     Entities: {

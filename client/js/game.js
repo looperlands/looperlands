@@ -3938,6 +3938,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 self.client.onSound(self.handleSound);
                 self.client.onMusic(self.handleMusic);
                 self.client.onLayer(self.handleLayer);
+                self.client.onAnimate(self.handleAnimationTrigger);
 
                 self.client.onPopulationChange(function(worldPlayers, totalPlayers) {
                     if(self.nbplayers_callback) {
@@ -4727,6 +4728,28 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         handleLayer(layer, show) {
             self.toggledLayers[layer] = show;
             self.applyToggledLayers()
+        },
+
+        handleAnimationTrigger(entityId, animation) {
+            let entity = self.getEntityById(entityId);
+            let speed;
+
+            switch(animation.substring(0, 4).toLowerCase()) {
+                case 'atk_':
+                    speed = entity.atkSpeed;
+                    break;
+                case 'walk':
+                    speed = entity.walkSpeed;
+                    break;
+                case 'idle':
+                    speed = entity.idleSpeed;
+                    break;
+                default:
+                    speed = entity.walkSpeed;
+                    break;
+            }
+
+            entity.setAnimation(animation, speed);
         },
 
         /**

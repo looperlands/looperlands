@@ -43,6 +43,7 @@ const blocks = {
     'quest.complete': require('./then/quest.complete.js'),
     'inventory.add': require('./then/inventory.add.js'),
     'inventory.remove': require('./then/inventory.remove.js'),
+    'npc.animation': require('./then/npc.animation.js'),
 }
 
 const PlayerEventBroker = require('../quests/playereventbroker.js');
@@ -144,8 +145,11 @@ function replaceTags(options, eventData) {
                             data = (altName !== undefined) ? altName : data;
                         }
                     })
-
-                    result[key] = value.replace(fullTag, data);
+                    if(fullTag === value) {
+                        result[key] = data;
+                    } else {
+                        result[key] = value.replace(fullTag, data);
+                    }
                 });
             } else {
                 result[key] = value;

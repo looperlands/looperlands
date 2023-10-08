@@ -45,6 +45,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             this.handlers[Types.Messages.SOUND] = this.receiveSound;
             this.handlers[Types.Messages.MUSIC] = this.receiveMusic;
             this.handlers[Types.Messages.LAYER] = this.receiveLayer;
+            this.handlers[Types.Messages.ANIMATE] = this.receiveAnimate;
 
             this.useBison = false;
             this.enable();
@@ -114,7 +115,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
                 this.connection.on("disconnect", function() {
                     console.debug("Connection closed");
                     $('#container').addClass('error');
-                            
+
                     if(self.disconnected_callback) {
                         if(self.isTimeout) {
                             self.disconnected_callback("You have been disconnected for being inactive for too long");
@@ -473,6 +474,15 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             }
         },
 
+        receiveAnimate: function(data) {
+          var entityId = data[1];
+          var animation = data[2];
+
+          if(this.animate_callback) {
+              this.animate_callback(entityId, animation);
+          }
+        },
+
         onDispatched: function(callback) {
             this.dispatched_callback = callback;
         },
@@ -603,6 +613,10 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
 
         onLayer: function(callback) {
             this.layer_callback = callback;
+        },
+
+        onAnimate: function(callback) {
+            this.animate_callback = callback;
         },
 
         sendHello: function(player) {

@@ -1302,6 +1302,11 @@ module.exports = World = cls.Class.extend({
         this.pushBroadcast(new Messages.Layer(layer, this.map.toggledLayers[layer]), false);
     },
 
+    triggerAnimation: function(entity, animationId) {
+
+        this.pushToAdjacentGroups(entity.group, new Messages.Animate(entity.id, animationId), false);
+    },
+
     newQuest: function(player, questId) {
         let questText = quests.newQuest(this.server.cache, player.sessionId, questId);
         if(_.isEmpty(questText)) {
