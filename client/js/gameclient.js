@@ -114,7 +114,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
                 this.connection.on("disconnect", function() {
                     console.debug("Connection closed");
                     $('#container').addClass('error');
-                    
+                            
                     if(self.disconnected_callback) {
                         if(self.isTimeout) {
                             self.disconnected_callback("You have been disconnected for being inactive for too long");

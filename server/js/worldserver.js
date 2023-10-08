@@ -1334,6 +1334,13 @@ module.exports = World = cls.Class.extend({
             }, delay * SHOW_MESSAGE_TIME);
             delay++;
         })
+    },
+
+    addToInventory(player, itemKind, amount) {
+        let item = this.createItem(itemKind, 0, 0);
+        for(let i = 0; i < amount; i++) {
+            player.playerEventBroker.lootEvent(item);
+        }
     }
 });
 

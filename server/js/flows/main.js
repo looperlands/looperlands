@@ -25,12 +25,21 @@ flow = {
                             },
                             "then": [
                                 {
-                                    "idx": "00324fbd-a4bd-420e-abcc-15d1cf11ace6",
-                                    "type": "inventory.add",
+                                    "idx": "77b6c94d-a170-427e-98c8-6bec8def7b36",
+                                    "type": "delay",
                                     "options": {
-                                        "amount": "100",
-                                        "item": Types.Entities.COBLOG
-                                    }
+                                        "delay": "1000"
+                                    },
+                                    "then": [
+                                        {
+                                            "idx": "00324fbd-a4bd-420e-abcc-15d1cf11ace6",
+                                            "type": "inventory.add",
+                                            "options": {
+                                                "amount": "100",
+                                                "item": Types.Entities.COBLOG
+                                            }
+                                        }
+                                    ]
                                 }
                             ]
                         }
