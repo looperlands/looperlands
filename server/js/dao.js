@@ -315,13 +315,20 @@ processLootEventQueue = async function(retry) {
 
 let LOOT_QUEUE_INTERVAL = undefined;
 
-exports.saveLootEvent = async function(avatarId, itemId) {
+exports.saveLootEvent = async function(avatarId, itemId, amount) {
+  if(amount === undefined) {
+    amount = 1;
+  }
+
   if (LOOT_QUEUE_INTERVAL === undefined) {
     // save the loot event queue every 30 seconds
     LOOT_QUEUE_INTERVAL = setInterval(processLootEventQueue, 1000 * 30);
   }
 
-  LOOT_EVENTS_QUEUE.push({avatarId: avatarId, itemId: itemId});
+  for(let i = 0; i < amount; i++) {
+
+    LOOT_EVENTS_QUEUE.push({avatarId: avatarId, itemId: itemId})
+  }
 }
 
 exports.getItemCount = async function(avatarId, itemId, retry) {
