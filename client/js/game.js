@@ -3071,18 +3071,29 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
         castFloat: function(float) {
             let player = this.getEntityById(float.id);
-            let orientationToLake = player.getOrientationTo(float);
-            if (orientationToLake !== player.orientation) {
-                player.turnTo(orientationToLake);
-            };
+            if(player) {
+                player.isFishing = true;
 
-            player.animate("atk", 75, 1, function() {
-                player.idle();
+                let orientationToLake = player.getOrientationTo(float);
+                if (orientationToLake !== player.orientation) {
+                    player.turnTo(orientationToLake);
+                };
+
+                player.animate("atk", 75, 1, function() {
+                    player.idle();
+                    self.addFloat(float);
+                });
+            } else {
                 self.addFloat(float);
-            });
+            }
         },
 
         removeFloat: function(floatId) {
+            let player = this.getEntityById(floatId);
+            if(player){
+                player.isFishing = false;
+            }
+
             if(floatId in this.floats) {
                 delete this.floats[floatId];
             }
@@ -3569,6 +3580,11 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 self.player.onStep(function() {
                     self.findVisibleTiles();
 
+                    if(this.isFishing) {
+                        self.client.sendFishingResult(false);
+                        self.removeFloat(this.id);
+                    }
+                    
                     if(self.player.hasNextStep()) {
                         self.registerEntityDualPosition(self.player);
                     }
@@ -3863,6 +3879,11 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     var weaponName = self.player.getWeaponName();
                     if (!weaponName.startsWith("NFT_")) {
                         self.storage.setPlayerWeapon(self.player.getWeaponName());
+                    }
+
+                    if(this.isFishing) {
+                        self.client.sendFishingResult(false);
+                        self.removeFloat(this.id);
                     }
 
                     if(self.equipment_callback) {
@@ -5619,18 +5640,20 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         },
 
         startFishing: function(gX, gY) {
-            let self = this;
+            if(!self.player.isFishing){
+                let self = this;
 
-            let float = new Float(gX, gY, self.player.id, self.player.getWeaponName());
-            self.castFloat(float);
-    
-            let url = '/session/' + self.sessionId + '/requestFish/' + self.map.getLakeName(gX, gY) + '/' + gX + '/' + gY;
-            axios.get(url).then(function (response) {
-                self.playCatchFish(response.data);
-            }).catch(function (error) {
-                console.error("Error while requesting a fish.");
-                self.removeFloat(float.id);
-            });
+                let float = new Float(gX, gY, self.player.id, self.player.getWeaponName());
+                self.castFloat(float);
+        
+                let url = '/session/' + self.sessionId + '/requestFish/' + self.map.getLakeName(gX, gY) + '/' + gX + '/' + gY;
+                axios.get(url).then(function (response) {
+                    self.playCatchFish(response.data);
+                }).catch(function (error) {
+                    console.error("Error while requesting a fish.");
+                    self.removeFloat(float.id);
+                });
+            }
         },
 
         playCatchFish: function(fish) {
@@ -5647,7 +5670,9 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     self.client.sendFishingResult(false);
                     self.showNotification("Fish escaped " + fishName);
                 }
-                self.removeFloat(self.player.id);
+                if (self.player.isFishing){
+                    self.removeFloat(self.player.id);
+                }   
             }, 5000)
         }
     });
