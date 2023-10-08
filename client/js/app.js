@@ -430,16 +430,18 @@ define(['jquery', 'storage'], function($, Storage) {
             var inventoryQuery = "/session/" + _this.storage.sessionId + "/inventory";
             axios.get(inventoryQuery).then(function(response) {
                 if (response.data !== null) {
-                    var inventory = response.data.map(function(item) {
-                        return item.replace("0x", "NFT_");
-                    });
+                    var inventory = response.data;
+                    if(!_.isEmpty(inventory.weapons)) {
+                        inventory.weapons = inventory.weapons.map(function (item) {
+                            return item.replace("0x", "NFT_");
+                        });
+                    }
 
                     var inventoryHtml = "";
 
-
                     inventoryHtml += "<strong>Weapons</strong><div>";
-                    inventory.forEach(function(item) {
-                        if (Types.isWeapon(item)) {
+                    inventory.weapons.forEach(function(item) {
+                        if (Types.isWeapon(Types.getKindFromString(item))) {
                             imgTag = "<img id='"+item+"' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0;' src='img/3/item-" + item + ".png' />";
                             inventoryHtml += imgTag;
                         }
@@ -447,25 +449,34 @@ define(['jquery', 'storage'], function($, Storage) {
                     });
                     inventoryHtml += "</div>";
 
-                    inventoryHtml += "<div>";
-                    inventory.forEach(function(item) {
-                        if (!Types.isWeapon(item)) {
-                            imgTag = "<img id='"+item+"' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0;' src='img/3/item-" + item + ".png' />";
+                    if(!_.isEmpty(inventory.items)) {
+                        inventoryHtml += "<strong>Items</strong><div>";
+                        inventoryHtml += "<div style='padding-left:150px; padding-right:150px'>";
+                        Object.keys(inventory.items).forEach(function (item) {
+                            let itemKind = Types.getKindAsString(item);
+                            inventoryHtml += "<span>"
+                            imgTag = "<img id='" + itemKind + "' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0;' src='img/3/item-" + itemKind + ".png' />";
                             inventoryHtml += imgTag;
-                        }
-                    });
-                    inventoryHtml += "</div>";
+                            let itemCount = inventory.items[item];
+                            inventoryHtml += "<span style='margin-bottom:15px; pointer-events: none; margin-right:-28px; width:32px; display:inline-block;position:relative; top:10px; left:-32px; text-align: center'>" + itemCount + "</span>";
+                            inventoryHtml += "</span>"
+
+                        });
+                        inventoryHtml += "</div>";
+                    }
 
                     $("#inventory").html(inventoryHtml);
 
-                    inventory.forEach(function(item) {
-                        let equip = function() {
-                            let itemId = Types.Entities[item];
-                            let nftId = item.replace("NFT_", "0x");
-                            _this.game.client.sendEquipInventory(itemId, nftId);
-                            _this.game.player.switchWeapon(item);
+                    inventory.weapons.forEach(function(item) {
+                        if (Types.isWeapon(Types.getKindFromString(item))) {
+                            let equip = function () {
+                                let itemId = Types.Entities[item];
+                                let nftId = item.replace("NFT_", "0x");
+                                _this.game.client.sendEquipInventory(itemId, nftId);
+                                _this.game.player.switchWeapon(item);
+                            }
+                            document.getElementById(item).addEventListener("click", equip);
                         }
-                        document.getElementById(item).addEventListener("click", equip);
                     });
                 }
 

@@ -357,7 +357,19 @@ WS.socketIOServer = Server.extend({
             const walletId = sessionData.walletId;
 
             const inventory = await axios.get(`${LOOPWORMS_LOOPERLANDS_BASE_URL}/selectLooperLands_Item.php?WalletID=${walletId}&APIKEY=${process.env.LOOPWORMS_API_KEY}`);
-            res.status(200).json(inventory.data);
+
+            // Filter expandable items
+            let nonExpandableItems = {};
+            for(let itemKind in sessionData.gameData.items) {
+                if(!Types.isExpendableItem(parseInt(itemKind))) {
+                    nonExpandableItems[itemKind] = sessionData.gameData.items[itemKind];
+                }
+            }
+            let totalInventory = {
+                weapons: inventory.data,
+                items: nonExpandableItems
+            }
+            res.status(200).json(totalInventory);
         });
 
 
