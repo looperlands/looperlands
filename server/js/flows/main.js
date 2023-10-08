@@ -30,17 +30,7 @@ flow = {
                                     "options": {
                                         "amount": "100",
                                         "item": Types.Entities.COBLOG
-                                    },
-                                    "then": [
-                                        {
-                                            "idx": "389d2039-a497-40af-bf29-f8b78be0a614",
-                                            "type": "inventory.remove",
-                                            "options": {
-                                                "amount": "40",
-                                                "item": Types.Entities.COBLOG
-                                            }
-                                        }
-                                    ]
+                                    }
                                 }
                             ]
                         }
