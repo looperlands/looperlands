@@ -4950,6 +4950,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             this.entities = {};
             this.initEntityGrid();
             this.initPathingGrid();
+            this.applyToggledLayers();
             this.initRenderingGrid();
 
             this.player = new Warrior("player", this.username);
