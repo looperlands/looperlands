@@ -227,6 +227,14 @@ define(['character', 'exceptions', '../../shared/js/gametypes'], function(Charac
             }
 
             return pos;
+        },
+
+        canAttack: function(time) {
+            if (Types.isWeapon(Types.getKindFromString(this.weaponName))){
+                return this._super(time);
+            }
+
+            return false;
         }
     });
 

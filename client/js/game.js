@@ -5633,15 +5633,17 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         },
 
         canFish: function (gX, gY, keyboard) {
-            if (this.player.isOnSameAxis(gX, gY)
-                && this.player.isNear({gridX: gX, gridY: gY}, 2)
-                && this.map.getLakeName(gX, gY))
-            {
-                return {gridX: gX, gridY: gY};
-            } else if (keyboard) { // let keyboard seek one tile further
-                let tryPos = this.player.getOneStepFurther(gX, gY);
-                if (this.map.getLakeName(tryPos.gridX, tryPos.gridY) && this.player.isNear(tryPos, 2)){
-                    return tryPos;
+            if (Types.isFishingRod(Types.getKindFromString(self.player.weaponName))){
+                if (this.player.isOnSameAxis(gX, gY)
+                    && this.player.isNear({gridX: gX, gridY: gY}, 2)
+                    && this.map.getLakeName(gX, gY))
+                {
+                    return {gridX: gX, gridY: gY};
+                } else if (keyboard) { // let keyboard seek one tile further
+                    let tryPos = this.player.getOneStepFurther(gX, gY);
+                    if (this.map.getLakeName(tryPos.gridX, tryPos.gridY) && this.player.isNear(tryPos, 2)){
+                        return tryPos;
+                    }
                 }
             }
 
