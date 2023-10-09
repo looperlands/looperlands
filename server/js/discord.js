@@ -28,8 +28,8 @@ sendMessage = (message) => {
             let channel = client.channels.cache.get(channelId);
 
             try {
-                if (cache.get(message) === undefined) {
-                    cache.set(message, true, 60*5);
+                if (cache.get(message + channelId) === undefined) {
+                    cache.set(message + channelId, true, 60*5);
                     channel.send(message);
                 }
             } catch (e) {
