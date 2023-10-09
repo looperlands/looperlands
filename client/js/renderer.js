@@ -380,7 +380,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                 
                     this.context.drawImage(sprite.image, x, y, w, h, ox, oy, dw, dh);
 
-                    if(entity instanceof Item && entity.kind !== Types.Entities.CAKE) {
+                    if(entity instanceof Item && entity.kind !== Types.Entities.CAKE && !entity.nosparks) {
                         var sparks = this.game.sprites["sparks"],
                             anim = this.game.sparksAnimation,
                             frame = anim.currentFrame,
@@ -576,6 +576,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             if(entity.name && (entity instanceof Player || entity instanceof Mob)) {
                 var color = (entity.id === this.game.playerId) ? "#fcda5c" : this.getHpIndicatorColor(entity);
                 let entityData = entity.name;
+
                 if (entity.level !== undefined && entity.level !== null) { //currently it's null on revive, as the player doesn't get welcome message from the server
                     entityData = entity.level + " " + entityData;
                 }

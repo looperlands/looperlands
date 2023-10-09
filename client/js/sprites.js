@@ -68,6 +68,7 @@ define(['text!../sprites/agent.json',
         'text!../sprites/item-ICESSENCE.json',
         'text!../sprites/item-FORGEDSWORD.json',
         'text!../sprites/item-BANNER.json',
+        'text!../sprites/item-tombstone.json',
         // @nextObjectImport@
         'text!../sprites/king.json',
         'text!../sprites/king2.json',

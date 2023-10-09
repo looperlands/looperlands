@@ -688,6 +688,7 @@ module.exports = World = cls.Class.extend({
             if(entity.type === "player") {
                 this.handlePlayerVanish(entity);
                 this.pushToAdjacentGroups(entity.group, entity.despawn());
+                entity.playerEventBroker.deathEvent(entity, {x: entity.x , y: entity.y});
             }
 
             this.removeEntity(entity);

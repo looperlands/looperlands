@@ -17,7 +17,7 @@ module.exports = Block = cls.Class.extend({
         let item = this.worldserver.createItem(this.item, parseInt(coordinate[0]), parseInt(coordinate[1]));
         // We need this to be a chest item, otherwise it will be handled as a dropped item and that won't work
         item.isFromChest = true;
-
+        
         event.data.spawned = this.worldserver.addItem(item);
         return 'then';
     },

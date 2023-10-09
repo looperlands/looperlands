@@ -111,6 +111,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 "item-ICESSENCE",
                                 "item-FORGEDSWORD",
                                 "item-BANNER",
+                                "item-tombstone",
                                 // @nextObjectLine@
                                 "NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6",
                                 "NFT_38278eacc7d1c86fdbc85d798dca146fbca59a2e5e567dc15898ce2edac21f5f",
@@ -3213,32 +3214,34 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     if(self.isItemAt(x, y)) {
                         var item = self.getItemAt(x, y);
 
-                        try {
-                            let aboutToEquipWeaponButHasNFTWeapon = item.type === "weapon" && self.player.getWeaponName().startsWith("NFT_");
-                            if (!aboutToEquipWeaponButHasNFTWeapon) {
-                                self.player.loot(item);
-                                self.client.sendLoot(item); // Notify the server that this item has been looted
-                                self.removeItem(item);
-                                self.showNotification(item.getLootMessage());
-                                
-                                if(item.kind === Types.Entities.FIREPOTION) {
-                                    self.audioManager.playSound("firefox");
-                                }
-                            
-                                if(Types.isHealingItem(item.kind)) {
-                                    self.audioManager.playSound("heal");
+                        if(!item.unlootable) {
+                            try {
+                                let aboutToEquipWeaponButHasNFTWeapon = item.type === "weapon" && self.player.getWeaponName().startsWith("NFT_");
+                                if (!aboutToEquipWeaponButHasNFTWeapon) {
+                                    self.player.loot(item);
+                                    self.client.sendLoot(item); // Notify the server that this item has been looted
+                                    self.removeItem(item);
+                                    self.showNotification(item.getLootMessage());
+
+                                    if (item.kind === Types.Entities.FIREPOTION) {
+                                        self.audioManager.playSound("firefox");
+                                    }
+
+                                    if (Types.isHealingItem(item.kind)) {
+                                        self.audioManager.playSound("heal");
+                                    } else {
+                                        self.audioManager.playSound("loot");
+                                    }
                                 } else {
-                                    self.audioManager.playSound("loot");
+                                    console.log("You can't loot weapons because you have a NFT weapon equipped.");
                                 }
-                            } else {
-                                console.log("You can't loot weapons because you have a NFT weapon equipped.");
-                            }
-                        } catch(e) {
-                            if(e instanceof Exceptions.LootException) {
-                                self.showNotification(e.message);
-                                self.audioManager.playSound("noloot");
-                            } else {
-                                throw e;
+                            } catch (e) {
+                                if (e instanceof Exceptions.LootException) {
+                                    self.showNotification(e.message);
+                                    self.audioManager.playSound("noloot");
+                                } else {
+                                    throw e;
+                                }
                             }
                         }
                     }

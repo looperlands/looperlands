@@ -5,6 +5,7 @@ class PlayerEventBroker {
         KILL_MOB: 'KILL_MOB',
         LOOT_ITEM: 'LOOT_ITEM',
         SPAWNED: 'SPAWNED',
+        DIED: 'DIED',
     };
 
 
@@ -108,6 +109,13 @@ class PlayerEventBroker {
         let playerCache = this.cache.get(sessionId);
         PlayerEventBroker.dispatchEvent(PlayerEventBroker.Events.SPAWNED, sessionId, this.player, playerCache, { checkpoint: checkpointId });
     }
+
+    async deathEvent(self, position) {
+        let sessionId = this.player.sessionId;
+        let playerCache = this.cache.get(sessionId);
+        PlayerEventBroker.dispatchEvent(PlayerEventBroker.Events.DIED, sessionId, this.player, playerCache, { position: position.x + ',' + position.y});
+    }
+} {
 }
 
 exports.PlayerEventBroker = PlayerEventBroker;

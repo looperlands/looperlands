@@ -10,6 +10,7 @@ const events = {
     'player.killed_mob': require('./when/player.killed_mob.js'),
     'player.looted_item': require('./when/player.looted_item.js'),
     'player.spawned': require('./when/player.spawned.js'),
+    'player.died': require('./when/player.died.js'),
 }
 
 const blocks = {
@@ -33,6 +34,7 @@ const blocks = {
     'spawn.npc': require('./then/spawn.npc.js'),
     'spawn.mob': require('./then/spawn.mob.js'),
     'spawn.item': require('./then/spawn.item.js'),
+    'despawn.item': require('./then/despawn.item.js'),
     'camera.player': require('./then/camera.player.js'),
     'camera.npc': require('./then/camera.npc.js'),
     'sound.play': require('./then/sound.play.js'),

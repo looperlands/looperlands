@@ -181,6 +181,14 @@ define(['item'], function(Item) {
         ICESSENCE:Item.extend({init:function(id){this._super(id,Types.Entities.ICESSENCE,"object");this.lootMessage="Extracted essence";}}),
         FORGEDSWORD:Item.extend({init:function(id){this._super(id,Types.Entities.FORGEDSWORD,"object");this.lootMessage="Recovered sword";}}),
         BANNER:Item.extend({init:function(id){this._super(id,Types.Entities.BANNER,"object");this.lootMessage="Picked up banner";}}),
+        tombstone:Item.extend({
+            unlootable: true,
+            nosparks: true,
+            init:function(id) {
+                this._super(id,Types.Entities.TOMBSTONE,"object");
+                this.lootMessage=" ";
+            }
+        }),
         // @nextItemLine@
     };
 

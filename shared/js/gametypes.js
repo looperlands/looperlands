@@ -219,7 +219,8 @@ Types = {
         SATCHEL: 21300032,
         ICESSENCE: 21300033,
         FORGEDSWORD: 21300034,
-        BANNER: 21300035, // @lastidObject@
+        BANNER: 21300035,
+        TOMBSTONE: 21300036, // @lastidObject@
         //@nextIdLineObject@
         
         // NPCs
@@ -2791,6 +2792,7 @@ var kinds = {
     ICESSENCE: [Types.Entities.ICESSENCE, "object"],
     FORGEDSWORD: [Types.Entities.FORGEDSWORD, "object"],
     BANNER: [Types.Entities.BANNER, "object"],
+    tombstone: [Types.Entities.TOMBSTONE, "object"],
     // @nextObjectLine@
 
     guard: [Types.Entities.GUARD, "npc"],

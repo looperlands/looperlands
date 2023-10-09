@@ -490,6 +490,7 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.GREEN_PEARL]=function(id){return new Items.GREEN_PEARL(id);};
     EntityFactory.builders[Types.Entities.FOREST_KEY]=function(id){return new Items.FOREST_KEY(id);};
     EntityFactory.builders[Types.Entities.ICEKEY1]=function(id){return new Items.ICEKEY1(id);};
+    EntityFactory.builders[Types.Entities.TOMBSTONE]=function(id){return new Items.tombstone(id);};
     EntityFactory.builders[Types.Entities.ICEKEY2]=function(id){return new Items.ICEKEY2(id);};
     EntityFactory.builders[Types.Entities.ICEKEY3]=function(id){return new Items.ICEKEY3(id);};
     EntityFactory.builders[Types.Entities.ICEKEY4]=function(id){return new Items.ICEKEY4(id);};
