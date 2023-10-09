@@ -3064,7 +3064,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             let self = this;
             float.despawnTimeout = setTimeout(function() {
                 self.removeFloat(float.id);
-            }, 30000);
+            }, float.despawnDuration);
 
             if(this.floats[float.id] === undefined) {
                 this.floats[float.id] = float;

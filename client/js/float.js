@@ -7,6 +7,7 @@ define(function() {
             this.gridY = gY;
             this.id = playerId;
             this.spriteName = "item-" + fishingRod;
+            this.despawnDuration = 30000;
         }
     });
     
