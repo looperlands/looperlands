@@ -9,6 +9,7 @@ let loadedBlocks = {};
 const events = {
     'player.killed_mob': require('./when/player.killed_mob.js'),
     'player.looted_item': require('./when/player.looted_item.js'),
+    'player.spawned': require('./when/player.spawned.js'),
 }
 
 const blocks = {
@@ -44,6 +45,7 @@ const blocks = {
     'inventory.add': require('./then/inventory.add.js'),
     'inventory.remove': require('./then/inventory.remove.js'),
     'npc.animation': require('./then/npc.animation.js'),
+    'mob.animation': require('./then/mob.animation.js'),
 }
 
 const PlayerEventBroker = require('../quests/playereventbroker.js');

@@ -11,7 +11,6 @@ module.exports = Event = cls.Class.extend({
     },
 
     handle(event) {
-        console.log(event);
         return (event.data.item.kind === this.item);
     }
 })

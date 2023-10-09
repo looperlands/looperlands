@@ -35,7 +35,7 @@ class PlayerQuestEventConsumer extends PlayerEventConsumer {
 
         let completionCheckerFN = this.completionCheckers[event.eventType];
         if (completionCheckerFN === undefined) {
-            throw new Error("Unknown event type: " + event.eventType);
+            return {change: false};
         }
 
         let changedQuests = []

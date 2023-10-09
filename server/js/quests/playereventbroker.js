@@ -3,7 +3,8 @@ const PlayerQuestEventConsumer = require('./playerquesteventconsumer.js');
 class PlayerEventBroker {
     static Events = {
         KILL_MOB: 'KILL_MOB',
-        LOOT_ITEM: 'LOOT_ITEM'
+        LOOT_ITEM: 'LOOT_ITEM',
+        SPAWNED: 'SPAWNED',
     };
 
 
@@ -100,6 +101,12 @@ class PlayerEventBroker {
     
     destroy() {
         delete PlayerEventBroker.playerEventBrokers[this.player.sessionId];
+    }
+
+    async spawnEvent(self, checkpointId) {
+        let sessionId = this.player.sessionId;
+        let playerCache = this.cache.get(sessionId);
+        PlayerEventBroker.dispatchEvent(PlayerEventBroker.Events.SPAWNED, sessionId, this.player, playerCache, { checkpoint: checkpointId });
     }
 }
 

@@ -122,6 +122,7 @@ module.exports = Player = Character.extend({
                 self.playerEventBroker.setPlayer(self);
 
                 mapflows.loadFlow(playerCache.mapId, self.playerEventBroker, self.server);
+                self.playerEventBroker.spawnEvent(self, playerCache.checkpointId);
             }
             else if(action === Types.Messages.WHO) {
                 message.shift();
