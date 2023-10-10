@@ -3590,8 +3590,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     self.findVisibleTiles();
 
                     if(this.isFishing) {
-                        self.client.sendFishingResult(false);
-                        self.removeFloat(this.id);
+                        self.stopFishing(false);
                     }
                     
                     if(self.player.hasNextStep()) {
@@ -3891,8 +3890,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     }
 
                     if(this.isFishing) {
-                        self.client.sendFishingResult(false);
-                        self.removeFloat(this.id);
+                        self.stopFishing(false);
                     }
 
                     if(self.equipment_callback) {
@@ -5672,20 +5670,26 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             let altName = AltNames.getAltNameFromKind(fish);
             let fishName = altName !== undefined ? altName : fish;
 
+            this.app.showFishing();
+
             setTimeout(function() {
                 let random = Math.floor(Math.random() * 2);
                 if (!random) {
-                    self.client.sendFishingResult(true);
+                    self.stopFishing(true);
                     self.showNotification("You caught " + fishName);
                 } else {
-                    self.client.sendFishingResult(false);
+                    self.stopFishing(false);
                     self.showNotification("Fish escaped " + fishName);
                 }
-                if (self.player.isFishing){
-                    self.removeFloat(self.player.id);
-                }   
             }, 5000)
+        },
+
+        stopFishing(success) {
+            this.client.sendFishingResult(success);
+            this.removeFloat(this.player.id);
+            this.app.hideFishing();
         }
+
     });
     
     return Game;

@@ -618,7 +618,15 @@ define(['jquery', 'storage'], function($, Storage) {
                     this.game.renderer.rescale(newScale);
                 }
             } 
-        }
+        },
+
+        showFishing: function() {
+            $('#fishingbar').addClass('active');
+        },
+
+        hideFishing: function() {
+            $('#fishingbar').removeClass('active');
+        },
     });
 
     return App;
