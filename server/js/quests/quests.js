@@ -100,6 +100,10 @@ exports.newQuest = function (cache, sessionId, questID) {
 }
 
 exports.completeQuest = function (cache, sessionId, questID) {
+  if(avatarHasCompletedQuest(questID, cache.get(sessionId).gameData.quests)) {
+    return false;
+  }
+
   let sessionData = cache.get(sessionId);
   completeQuest(questID, sessionData);
   cache.set(sessionId, sessionData);

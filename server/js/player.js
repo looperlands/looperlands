@@ -782,6 +782,8 @@ module.exports = Player = Character.extend({
                 let msg = new Messages.QuestComplete(quest.name, quest.endText, xpReward, quest.medal);
                 this.server.pushToPlayer(this, msg);
                 this.completedQuestsIDs.push(quest.id);
+
+                this.playerEventBroker.questCompleteEvent(quest, xpReward);
             }
         }
     }

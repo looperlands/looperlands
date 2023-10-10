@@ -6,6 +6,7 @@ class PlayerEventBroker {
         LOOT_ITEM: 'LOOT_ITEM',
         SPAWNED: 'SPAWNED',
         DIED: 'DIED',
+        QUEST_COMPLETED: 'QUEST_COMPLETED',
     };
 
 
@@ -102,6 +103,12 @@ class PlayerEventBroker {
     
     destroy() {
         delete PlayerEventBroker.playerEventBrokers[this.player.sessionId];
+    }
+
+    async questCompleteEvent(quest, xpGained) {
+      let sessionId = this.player.sessionId;
+      let playerCache = this.cache.get(sessionId);
+      PlayerEventBroker.dispatchEvent(PlayerEventBroker.Events.QUEST_COMPLETED, sessionId, this.player, playerCache, { quest: quest, xp: xpGained });
     }
 
     async spawnEvent(self, checkpointId) {

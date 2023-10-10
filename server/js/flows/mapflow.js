@@ -11,6 +11,7 @@ const events = {
     'player.looted_item': require('./when/player.looted_item.js'),
     'player.spawned': require('./when/player.spawned.js'),
     'player.died': require('./when/player.died.js'),
+    'quest.completed': require('./when/quest.completed.js'),
 }
 
 const blocks = {
@@ -154,6 +155,7 @@ function replaceTags(options, eventData) {
                     } else {
                         result[key] = value.replace(fullTag, data);
                     }
+                    value = result[key]
                 });
             } else {
                 result[key] = value;

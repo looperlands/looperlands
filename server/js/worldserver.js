@@ -1319,10 +1319,16 @@ module.exports = World = cls.Class.extend({
     },
 
     completeQuest: function(player, questId) {
-        let endText = quests.completeQuest(this.server.cache, player.sessionId, questId);
-        if(!_.isEmpty(endText)) {
-            this.sendNotifications(player, endText);
+        let result = quests.completeQuest(this.server.cache, player.sessionId, questId);
+        if(result === false) {
+            return false;
         }
+        
+        if(!_.isEmpty(result)) {
+            this.sendNotifications(player, result);
+        }
+
+        player.handleCompletedQuests([questId]);
 
         return true;
     },
