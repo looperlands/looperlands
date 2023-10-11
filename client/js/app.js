@@ -627,6 +627,16 @@ define(['jquery', 'storage'], function($, Storage) {
         hideFishing: function() {
             $('#fishingbar').removeClass('active');
         },
+
+        setFishingTarget: function(difficulty) {
+            let scale = this.game.renderer.getScaleFactor(),
+                targetMaxHeight = 100 * scale,
+                barHeight = Math.floor(targetMaxHeight*difficulty/100), //difficulty is expressed in %
+                marginTop = Math.round(Math.random() * (targetMaxHeight-barHeight)); 
+  
+        	$("#fishingtarget").css('height', barHeight + "px");
+            $("#fishingtarget").css('margin-top', marginTop + "px");
+        },
     });
 
     return App;

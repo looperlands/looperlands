@@ -155,6 +155,7 @@ body.upscaled.game {background:#000;}
 
 #fishingbar {background:url('../img/1/fishing.png');image-rendering:-moz-crisp-edges;position:absolute;top:15%;left:33%;z-index:50;opacity:0}
 #fishingbar.active {opacity:1;}
+#fishingtarget {background:#b0ff66;z-index:51}
 
 #notifications {position:absolute;left:50%;text-align:center;font-family:'GraphicPixel';overflow:hidden;}
 #notifications div {position:absolute;-moz-transition:none;-webkit-transition:none;top:0;width:100%;}
@@ -503,7 +504,8 @@ footer div  {display:inline-block;}
     #healthbar {height:39px;background-position:0 -51px;width:306px;top:9px;background-size:1440px;z-index:20;}
     #hitpoints {width:0px;height:21px;top:15px;left:33px;z-index:10; position:absolute; border-top: 3px solid #ea6767; border-bottom: 3px solid #a62828;}
 
-    #fishingbar {width:60px;height:450px;}
+    #fishingbar {width:72px;height:450px;}
+    #fishingtarget {margin-top:0px;height:0px;width:48px;top:75px;left:12px; position:absolute; border-top: 3px solid #55b000; border-bottom: 3px solid #55b000;}
     
     #armor, #weapon {width:48px;height:48px;position:absolute;background-size:288px;background-position:-96px;}
     #weapon {left:312px;top:3px;background-size:288px;}
@@ -669,7 +671,8 @@ footer div  {display:inline-block;}
     #healthbar {height:26px;background-position:0 -34px;width:204px;top:6px;background-size:960px;z-index:20;}
     #hitpoints {width:0px;height:16px;top:8px;left:22px;z-index:10;position:absolute;}
 
-    #fishingbar {width:40px;height:300px;}
+    #fishingbar {width:48px;height:300px;}
+    #fishingtarget {margin-top:0px;height:0px;width:32px;top:50px;left:8px; position:absolute; border-top: 2px solid #55b000; border-bottom: 2px solid #55b000;}
 
     #armor, #weapon {width:32px;height:32px;position:absolute;background-size:192px;background-position:-64px;}
     #weapon {left:208px;top:2px;}
@@ -835,7 +838,8 @@ footer div  {display:inline-block;}
     #healthbar {height:26px;background-position:0 -34px;width:204px;top:6px;background-size:960px;z-index:20;}
     #hitpoints {width:0px;height:16px;top:8px;left:22px;z-index:10;position:absolute;border-top: 3px solid #ea6767; border-bottom: 3px solid #a62828;}
 
-    #fishingbar {width:40px;height:300px;}
+    #fishingbar {width:48px;height:300px;}
+    #fishingtarget {margin-top:0px;height:0px;width:32px;top:50px;left:8px; position:absolute; border-top: 2px solid #55b000; border-bottom: 2px solid #55b000;}
 
     #armor, #weapon {width:32px;height:32px;position:absolute;background-size:192px;background-position:-64px;}
     #weapon {left:208px;top:2px;}
@@ -998,7 +1002,8 @@ footer div  {display:inline-block;}
     #healthbar {height:13px;background-position:0 -17px;width:102px;top:3px;background-size:480px;z-index:20;}
     #hitpoints {width:0px;height:11px;top:4px;left:11px;z-index:10;position:absolute;}
 
-    #fishingbar {width:20px;height:150px;}
+    #fishingbar {width:24px;height:150px;}
+    #fishingtarget {margin-top:0px;height:0px;width:16px;top:25px;left:4px; position:absolute; border-top: 1px solid #55b000; border-bottom: 1px solid #55b000;}
 
     #armor, #weapon {width:16px;height:16px;position:absolute;background-size:96px;background-position:-32px;}
     #weapon {left:104px;top:1px;}
@@ -1161,7 +1166,8 @@ footer div  {display:inline-block;}
     #healthbar {height:26px;background-position:0 -34px;width:204px;top:6px;background-size:960px;z-index:20;}
     #hitpoints {width:0px;height:16px;top:8px;left:22px;z-index:10;position:absolute;}
 
-    #fishingbar {width:40px;;height:300px;}
+    #fishingbar {width:48px;;height:300px;}
+    #fishingtarget {margin-top:0px;height:0px;width:32px;top:50px;left:8px; position:absolute; border-top: 2px solid #55b000; border-bottom: 2px solid #55b000;}
 
     #armor, #weapon {width:32px;height:32px;position:absolute;background-size:192px;background-position:-64px;}
     #weapon {left:208px;top:2px;}

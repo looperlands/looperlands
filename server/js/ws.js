@@ -758,8 +758,12 @@ WS.socketIOServer = Server.extend({
                 }
                 let player = self.worldsMap[sessionData.mapId].getPlayerById(sessionData.entityId);
                 player.pendingFish = fish;
+                //temp
+                let difficulty = Utils.randomRange(5,25);
+                //
+                let response = {fish: fish, difficulty: difficulty}
                 self.worldsMap[sessionData.mapId].announceSpawnFloat(player, fx, fy);
-                res.status(200).send(fish);
+                res.status(200).send(response);
             }
         });
 

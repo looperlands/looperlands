@@ -5657,7 +5657,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         
                 let url = '/session/' + self.sessionId + '/requestFish/' + self.map.getLakeName(gX, gY) + '/' + gX + '/' + gY;
                 axios.get(url).then(function (response) {
-                    self.playCatchFish(response.data);
+                    self.playCatchFish(response.data.fish, response.data.difficulty);
                 }).catch(function (error) {
                     console.error("Error while requesting a fish.");
                     self.removeFloat(float.id);
@@ -5665,11 +5665,12 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             }
         },
 
-        playCatchFish: function(fish) {
+        playCatchFish: function(fish, difficulty) {
             let self = this;
             let altName = AltNames.getAltNameFromKind(fish);
             let fishName = altName !== undefined ? altName : fish;
 
+            this.app.setFishingTarget(difficulty);
             this.app.showFishing();
 
             setTimeout(function() {
