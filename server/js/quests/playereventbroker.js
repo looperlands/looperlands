@@ -9,11 +9,9 @@ class PlayerEventBroker {
         QUEST_COMPLETED: 'QUEST_COMPLETED',
     };
 
-
     static playerEventBrokers = {};
     static playerEventConsumers = [];
     static cache;
-
 
     constructor(player) {
         this.player = player;
@@ -100,10 +98,6 @@ class PlayerEventBroker {
         this.cache.set(sessionId, playerCache);
         PlayerEventBroker.dispatchEvent(PlayerEventBroker.Events.KILL_MOB, sessionId, this.player, playerCache, { mob: mob });
     }
-    
-    destroy() {
-        delete PlayerEventBroker.playerEventBrokers[this.player.sessionId];
-    }
 
     async questCompleteEvent(quest, xpGained) {
       let sessionId = this.player.sessionId;
@@ -122,7 +116,10 @@ class PlayerEventBroker {
         let playerCache = this.cache.get(sessionId);
         PlayerEventBroker.dispatchEvent(PlayerEventBroker.Events.DIED, sessionId, this.player, playerCache, { position: position.x + ',' + position.y});
     }
-} {
+
+    destroy() {
+        delete PlayerEventBroker.playerEventBrokers[this.player.sessionId];
+    }
 }
 
 exports.PlayerEventBroker = PlayerEventBroker;

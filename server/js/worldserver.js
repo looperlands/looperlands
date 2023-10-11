@@ -22,6 +22,8 @@ var cls = require("./lib/class"),
     Fieldeffect = require('./fieldeffect');
 const quests = require("./quests/quests");
 
+const WorldEventBroker = require("./flows/worldeventbroker.js");
+
 // ======= GAME SERVER ========
 
 module.exports = World = cls.Class.extend({
@@ -56,6 +58,8 @@ module.exports = World = cls.Class.extend({
         this.playerCount = 0;
 
         this.zoneGroupsReady = false;
+
+        this.worldEventBroker = new WorldEventBroker.WorldEventBroker(this);
 
         this.onPlayerConnect(function(player) {
             player.onRequestPosition(function() {
@@ -1224,6 +1228,7 @@ module.exports = World = cls.Class.extend({
 
     activateTrigger: function(triggerId) {
         this.doorTriggers[triggerId] = true;
+        this.worldEventBroker.triggerActivated(triggerId);
     },
 
     deactivateTrigger: function(triggerId) {
@@ -1323,7 +1328,7 @@ module.exports = World = cls.Class.extend({
         if(result === false) {
             return false;
         }
-        
+
         if(!_.isEmpty(result)) {
             this.sendNotifications(player, result);
         }

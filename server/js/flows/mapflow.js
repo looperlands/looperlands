@@ -12,6 +12,7 @@ const events = {
     'player.spawned': require('./when/player.spawned.js'),
     'player.died': require('./when/player.died.js'),
     'quest.completed': require('./when/quest.completed.js'),
+    'trigger.activated': require('./when/trigger.activated.js'),
 }
 
 const blocks = {
@@ -52,9 +53,11 @@ const blocks = {
 }
 
 const PlayerEventBroker = require('../quests/playereventbroker.js');
+const WorldEventBroker = require('./worldeventbroker.js');
 const eventConsumer = new PlayerMapFlowEventConsumer.PlayerMapFlowEventConsumer();
 
 PlayerEventBroker.PlayerEventBroker.playerEventConsumers.push(eventConsumer);
+WorldEventBroker.WorldEventBroker.playerEventConsumers.push(eventConsumer);
 
 function loadFlow(mapId, eventBroker, worldserver) {
     if(loadedFlow != null) {
