@@ -156,6 +156,7 @@ body.upscaled.game {background:#000;}
 #fishingbar {background:url('../img/1/fishing.png');image-rendering:-moz-crisp-edges;position:absolute;top:15%;left:33%;z-index:50;opacity:0}
 #fishingbar.active {opacity:1;}
 #fishingtarget {background:#b0ff66;z-index:51}
+#fish {z-index:52;}
 
 #notifications {position:absolute;left:50%;text-align:center;font-family:'GraphicPixel';overflow:hidden;}
 #notifications div {position:absolute;-moz-transition:none;-webkit-transition:none;top:0;width:100%;}
@@ -506,7 +507,8 @@ footer div  {display:inline-block;}
 
     #fishingbar {width:72px;height:450px;}
     #fishingtarget {margin-top:0px;height:0px;width:48px;top:75px;left:12px; position:absolute; border-top: 3px solid #55b000; border-bottom: 3px solid #55b000;}
-    
+    #fish {margin-top:0px;height:48px;width:48px;top:12px;left:12px; position:absolute;}
+
     #armor, #weapon {width:48px;height:48px;position:absolute;background-size:288px;background-position:-96px;}
     #weapon {left:312px;top:3px;background-size:288px;}
     #armor {left:363px;top:3px;}
@@ -673,6 +675,7 @@ footer div  {display:inline-block;}
 
     #fishingbar {width:48px;height:300px;}
     #fishingtarget {margin-top:0px;height:0px;width:32px;top:50px;left:8px; position:absolute; border-top: 2px solid #55b000; border-bottom: 2px solid #55b000;}
+    #fish {margin-top:0px;height:32px;width:32px;top:8px;left:8px; position:absolute;}
 
     #armor, #weapon {width:32px;height:32px;position:absolute;background-size:192px;background-position:-64px;}
     #weapon {left:208px;top:2px;}
@@ -840,6 +843,7 @@ footer div  {display:inline-block;}
 
     #fishingbar {width:48px;height:300px;}
     #fishingtarget {margin-top:0px;height:0px;width:32px;top:50px;left:8px; position:absolute; border-top: 2px solid #55b000; border-bottom: 2px solid #55b000;}
+    #fish {margin-top:0px;height:32px;width:32px;top:8px;left:8px; position:absolute;}
 
     #armor, #weapon {width:32px;height:32px;position:absolute;background-size:192px;background-position:-64px;}
     #weapon {left:208px;top:2px;}
@@ -1004,6 +1008,7 @@ footer div  {display:inline-block;}
 
     #fishingbar {width:24px;height:150px;}
     #fishingtarget {margin-top:0px;height:0px;width:16px;top:25px;left:4px; position:absolute; border-top: 1px solid #55b000; border-bottom: 1px solid #55b000;}
+    #fish {margin-top:0px;height:16px;width:16px;top:4px;left:4px; position:absolute;}
 
     #armor, #weapon {width:16px;height:16px;position:absolute;background-size:96px;background-position:-32px;}
     #weapon {left:104px;top:1px;}
@@ -1168,6 +1173,7 @@ footer div  {display:inline-block;}
 
     #fishingbar {width:48px;;height:300px;}
     #fishingtarget {margin-top:0px;height:0px;width:32px;top:50px;left:8px; position:absolute; border-top: 2px solid #55b000; border-bottom: 2px solid #55b000;}
+    #fish {margin-top:0px;height:32px;width:32px;top:8px;left:8px; position:absolute;}
 
     #armor, #weapon {width:32px;height:32px;position:absolute;background-size:192px;background-position:-64px;}
     #weapon {left:208px;top:2px;}

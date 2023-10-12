@@ -94,6 +94,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 "VILLAGESIGN7",
                                 "VILLAGESIGN8",
                                 "VILLAGESIGN9",
+                                "cobcarp","cobguppy","cobgoldfish",
                                 // @nextCharacterLine@
                                 "item-BOARHIDE",
                                 "item-THUDKEY",
@@ -2821,6 +2822,13 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             this.cursors["talk"] = this.sprites["talk"];
             this.cursors["float"] = this.sprites["float"];
         },
+
+        initFish: function() {
+            this.fish = {};
+            this.fish["cobcarp"] = this.sprites["cobcarp"];
+            this.fish["cobguppy"] = this.sprites["cobguppy"];
+            this.fish["cobgoldfish"] = this.sprites["cobgoldfish"];
+        },
     
         initAnimations: function() {
             this.targetAnimation = new Animation("idle_down", 4, 0, 16, 16);
@@ -2912,6 +2920,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 //this.initHurtSprites();
                 this.initShadows();
                 this.initCursors();
+                this.initFish();
             }
         },
     
@@ -3320,6 +3329,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     self.initCursors();
                     self.initAnimations();
                     self.initShadows();
+                    self.initFish();
                     //self.initHurtSprites();
                 
                     if(!self.renderer.mobile
@@ -5669,7 +5679,13 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             let self = this;
             let altName = AltNames.getAltNameFromKind(fish);
             let fishName = altName !== undefined ? altName : fish;
+            let fishSpriteUrl;
+            if(this.fish[fish]){
+                fishSpriteUrl = this.fish[fish].getUrlByScale(this.renderer.scale);
+            }
+            console.log(fishSpriteUrl);
 
+            this.app.setFish(fishSpriteUrl);
             this.app.setFishingTarget(difficulty);
             this.app.showFishing();
 

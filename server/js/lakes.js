@@ -5,7 +5,7 @@ let Lakes = {
         fish: {
             cobguppy: 90,
             cobcarp: 9,
-            cobcoldfish: 1
+            cobgoldfish: 1
         },
     },
 };

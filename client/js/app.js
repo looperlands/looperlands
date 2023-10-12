@@ -629,13 +629,17 @@ define(['jquery', 'storage'], function($, Storage) {
         },
 
         setFishingTarget: function(difficulty) {
-            let scale = this.game.renderer.getScaleFactor(),
+            let scale = this.game.renderer.scale,
                 targetMaxHeight = 100 * scale,
                 barHeight = Math.floor(targetMaxHeight*difficulty/100), //difficulty is expressed in %
                 marginTop = Math.round(Math.random() * (targetMaxHeight-barHeight)); 
   
         	$("#fishingtarget").css('height', barHeight + "px");
             $("#fishingtarget").css('margin-top', marginTop + "px");
+        },
+
+        setFish: function(url) {
+            document.getElementById("fish").style.backgroundImage="url('" + url + "')";
         },
     });
 
