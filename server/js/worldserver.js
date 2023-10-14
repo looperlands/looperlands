@@ -491,7 +491,10 @@ module.exports = World = cls.Class.extend({
         var fieldEffect = new Fieldeffect('4'+x+''+y+''+kind, kind, x, y);
         this.addEntity(fieldEffect);
         this.fieldEffects[fieldEffect.id] = fieldEffect;
+
         fieldEffect.initDamageCallback(self.doAoe.bind(self));
+        fieldEffect.initContinousDamageCallback(self.doAoe.bind(self));
+        fieldEffect.initSingleHitCallback(self.doAoe.bind(self), self.despawn.bind(self));
 
         return fieldEffect;
     },
@@ -1169,7 +1172,6 @@ module.exports = World = cls.Class.extend({
     },
 
     handleMobSpecial: function (mob) {
-        //In the future with more specials consider creating server mobs.js and extending mob kinds
         //Megamag (repeating AoE)
         if (mob.kind === Types.Entities.MEGAMAG) {
             let self = this;
@@ -1219,6 +1221,31 @@ module.exports = World = cls.Class.extend({
             }
         }
         //END Slime king 
+
+        //Cobogre (falling rocks on random target within 10 distance)
+        if (mob.kind === Types.Entities.COBOGRE) {
+            let self = this;
+            if (mob.specialInterval == null) {
+                mob.specialInterval = setInterval(function() {
+                let target = {score: -1};
+                mob.hatelist.forEach(function(obj) {
+                    let hated = self.getEntityById(obj.id);
+                    if (Utils.distanceTo(mob.x, mob.y, hated.x, hated.y) < 10) {
+                        let random = Utils.random(100);
+                        if (random > target.score) {
+                            target.score = random;
+                            target.x = hated.x;
+                            target.y = hated.y;
+                        }
+                    }
+                });
+                if (target.x && target.y){
+                    self.spawnFieldAdd(mob, Types.getKindFromString("cobfallingrock"), target.x, target.y);
+                }
+                }, Types.timeouts[Types.Entities.COBOGRE]);
+            }   
+        }
+        //END Cobogre
     },
 
     checkTriggerActive: function(triggerId) {
@@ -1239,6 +1266,7 @@ module.exports = World = cls.Class.extend({
         this.pushToAdjacentGroups(mob.group, new Messages.MobExitCombat(mob));
         mob.clearSpecialInterval();
         this.despawnAllAdds(mob);
+        mob.resetHitPoints(mob.maxHitPoints);
     },
 
     spawnMobAdd: function(parent, childKind, x, y) {
@@ -1262,6 +1290,7 @@ module.exports = World = cls.Class.extend({
             let self = this;
             field = self.addFieldEffect(fieldKind, x, y);
             field.parentId = parent.id;
+            field.onDetachFromParent(self.onDetachFromParentCallback.bind(self));
             parent.addArray.push(field);
         }
     },

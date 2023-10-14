@@ -322,6 +322,96 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 }
             }
         }),
+
+
+        Blackdog: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.BLACKDOG);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),      
+        Browndog: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.BROWNDOG);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),   
+
+        Tabbycat: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.TABBYCAT);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),   
+        Whitedog: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.WHITEDOG);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }), 
+
+        Brownspotdog: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.BROWNSPOTDOG);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }), 
+
         Villager1: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.VILLAGER1);
@@ -339,6 +429,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 }
             }
         }),
+     
 
         Villager2: Mob.extend({
             init: function(id) {
@@ -1705,10 +1796,9 @@ define(['mob', 'timer'], function(Mob, Timer) {
             },
 
             exitCombat: function() {
-                this._super();
                 let self = this;
                 this.isFriendly = true;
-                
+                this.inCombat = false;
                 this.exitingCombat = setTimeout(function() {
                     self.setVisible(false);
                     self.exitingCombat = null;
@@ -1773,23 +1863,6 @@ define(['mob', 'timer'], function(Mob, Timer) {
                         self.idle();
                     });
             },
-
-            exitCombat: function() {
-                this._super();
-                let self = this;
-                this.isFriendly = true;
-                /* Currently when mob exits combat (eg. out of range from spawn) he can INSTANTLY aggro back, 
-                which creates all sort of weird behaviours. For example you can kite a mob endlessly out of his area (25 tiles),
-                as long, as you move away slowly and never exceed the aggro range. This will make the mob aggro you instantly after un-aggroing
-                but at the same time reset his arrays, such as hatelist, dmgTakenArray, addsArray etc.
-                In my opinion the code below should be a default behavior for every single mob (think mob evading in WoW), and should eventually
-                be moved to _super. For now its here for "test purposes"*/    
-                this.exitingCombat = setTimeout(function() {
-                    self.isFriendly = false;
-                    self.exitingCombat = null;
-                }, 4000)  
-            }
-            
         }),
 
         Cobcat: Mob.extend({
@@ -1817,6 +1890,73 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.walkSpeed = 225;
                 this.moveSpeed = 250;
                 this.isFriendly = true;
+            }
+        }),
+
+        Cobdirt: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.COBDIRT);
+                this.isAggressive = false;
+                this.nameless = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
+        Cobincubator: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.COBINCUBATOR);
+                this.isAggressive = false;
+                this.nameless = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
+        Cobcoblin: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.COBCOBLIN);
+                this.moveSpeed = 200;
+                this.walkSpeed = 200;
+                this.atkSpeed = 75;
+                this.idleSpeed = 600;
+                this.setAttackRate(700);
+                this.aggroRange = 2;
+            }
+        }),
+
+        Cobcobane: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.COBCOBANE);
+                this.moveSpeed = 225;
+                this.walkSpeed = 225;
+                this.atkSpeed = 75;
+                this.idleSpeed = 600;
+                this.setAttackRate(900);
+                this.aggroRange = 3;
+            }
+        }),
+
+        Cobogre: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.COBOGRE);
+                this.moveSpeed = 300;
+                this.atkSpeed = 100;
+                this.idleSpeed = 600;
+                this.aggroRange = 5;
+                this.title = "SHREK!?";
             }
         }),
 

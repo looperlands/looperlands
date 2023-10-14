@@ -22,17 +22,21 @@ if (process.env.DISCORD_TOKEN === undefined) {
 }
 
 sendMessage = (message) => {
+    const channels = ['1156612974669209723', '1108905948308844704'];
     try {
-        let channel = client.channels.cache.get('1108905948308844704');
+        for (let channelId of channels) {
+            let channel = client.channels.cache.get(channelId);
 
-        try {
-            if (cache.get(message) === undefined) {
-                cache.set(message, true, 60*5);
-                channel.send(message);
+            try {
+                if (cache.get(message + channelId) === undefined) {
+                    cache.set(message + channelId, true, 60*5);
+                    channel.send(message);
+                }
+            } catch (e) {
+                //console.log(message, e);
             }
-        } catch (e) {
-            //console.log(message, e);
         }
+
     } catch (e) {
         //console.log(e);
     }
@@ -42,12 +46,15 @@ exports.sendMessage = sendMessage;
 exports.ready = ready
 
 exports.sendToDevChannel = (message) => {
+    const channels = ['1156613041467695144', '1127223763990224957'];
     try {
-        let channel = client.channels.cache.get('1127223763990224957');
-        try {
-            channel.send(message);
-        } catch (e) {
-            //console.log(message, e);
+        for (let channelId of channels) {
+            let channel = client.channels.cache.get(channelId);
+            try {
+                channel.send(message);
+            } catch (e) {
+                //console.log(message, e);
+            }
         }
     } catch (e) {
         //console.log(e);

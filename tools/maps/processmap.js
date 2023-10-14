@@ -316,13 +316,17 @@ var processLayer = function processLayer(layer) {
 
     var tiles = layer.data.tile;
 
-    if(mode === "client" && layer.name === "blocking") {
+    if(layer.name === "blocking") {
         console.log("Processing blocking tiles...");
-        for(var i=0; i < tiles.length; i += 1) {
+        for (var i = 0; i < tiles.length; i += 1) {
             var gid = tiles[i].gid;
 
-            if(gid && gid > 0) {
-                map.blocking.push(i);
+            if (gid && gid > 0) {
+                if(mode === "server") {
+                    map.collisions.push(i);
+                } else {
+                    map.blocking.push(i);
+                }
             }
         }
     }
