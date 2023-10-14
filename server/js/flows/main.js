@@ -14,15 +14,7 @@ flow = {
                     "type": "spawn.item",
                     "options": {
                         "item": Types.Entities.TOMBSTONE,
-                        "position": "44,203"
-                    },
-                },
-                {
-                    "idx": "3fc7c527-cb79-4cee-957c-cdecd3ca420a",
-                    "type": "spawn.item",
-                    "options": {
-                        "item": Types.Entities.TOMBSTONE,
-                        "position": "70,375"
+                        "position": "70,374"
                     },
                 }
             ]

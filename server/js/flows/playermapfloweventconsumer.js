@@ -9,8 +9,8 @@ class PlayerMapFlowEventConsumer extends PlayerEventConsumer {
     listeners = {}
 
     consume(event) {
-        if(this.listeners[event.eventType] !== undefined) {
-            this.listeners[event.eventType].forEach(callback => {
+        if(this.listeners[event.data.player.nftId][event.eventType] !== undefined) {
+            this.listeners[event.data.player.nftId][event.eventType].forEach(callback => {
                 callback(event);
             });
         }
@@ -18,15 +18,18 @@ class PlayerMapFlowEventConsumer extends PlayerEventConsumer {
         return {};
     }
 
-    addListener(eventType, callback) {
-        if(this.listeners[eventType] === undefined) {
-            this.listeners[eventType] = [];
+    addListener(nftId, eventType, callback) {
+        if(!this.listeners[nftId]) {
+            this.listeners[nftId] = {};
         }
-        this.listeners[eventType].push(callback);
+        if(this.listeners[nftId][eventType] === undefined) {
+            this.listeners[nftId][eventType] = [];
+        }
+        this.listeners[nftId][eventType].push(callback);
     }
 
-    clearListeners() {
-        this.listeners = {};
+    clearListeners(nftId) {
+        this.listeners[nftId] = {};
     }
 }
 

@@ -59,7 +59,7 @@ module.exports = World = cls.Class.extend({
 
         this.zoneGroupsReady = false;
 
-        this.worldEventBroker = new WorldEventBroker.WorldEventBroker(this);
+        this.worldEventBroker = new WorldEventBroker.WorldEventBroker(id);
 
         this.onPlayerConnect(function(player) {
             player.onRequestPosition(function() {
@@ -1255,11 +1255,12 @@ module.exports = World = cls.Class.extend({
 
     activateTrigger: function(triggerId) {
         this.doorTriggers[triggerId] = true;
-        this.worldEventBroker.triggerActivated(triggerId);
+        this.worldEventBroker.triggerActivated(this.id, triggerId);
     },
 
     deactivateTrigger: function(triggerId) {
         this.doorTriggers[triggerId] = false;
+        this.worldEventBroker.triggerDeactivated(this.id, triggerId);
     },
 
     onMobExitCombatCallback: function(mob) {

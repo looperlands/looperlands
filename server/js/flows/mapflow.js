@@ -1,9 +1,11 @@
 const PlayerMapFlowEventConsumer = require('./playermapfloweventconsumer.js');
+const WorldMapFlowEventConsumer = require('./worldfloweventconsumer.js');
 const main = require('./main.js');
+const oa = require('./oa.js');
 const AltNames = require('../../../shared/js/altnames.js');
-const flows = {main: main.flow}
+const flows = {main: main.flow, oa: oa.flow}
 
-let loadedFlow = null;
+let loadedFlow = {};
 let loadedBlocks = {};
 
 const events = {
@@ -54,13 +56,14 @@ const blocks = {
 
 const PlayerEventBroker = require('../quests/playereventbroker.js');
 const WorldEventBroker = require('./worldeventbroker.js');
-const eventConsumer = new PlayerMapFlowEventConsumer.PlayerMapFlowEventConsumer();
+const playerEventConsumer = new PlayerMapFlowEventConsumer.PlayerMapFlowEventConsumer();
+const worldEventConsumer = new WorldMapFlowEventConsumer.WorldMapFlowEventConsumer();
 
-PlayerEventBroker.PlayerEventBroker.playerEventConsumers.push(eventConsumer);
-WorldEventBroker.WorldEventBroker.playerEventConsumers.push(eventConsumer);
+PlayerEventBroker.PlayerEventBroker.playerEventConsumers.push(playerEventConsumer);
+WorldEventBroker.WorldEventBroker.worldEventConsumers.push(worldEventConsumer);
 
 function loadFlow(mapId, eventBroker, worldserver) {
-    if(loadedFlow != null) {
+    if(loadedFlow[eventBroker.player.nftId] != null) {
         unloadFlow(eventBroker)
     }
 
@@ -70,45 +73,57 @@ function loadFlow(mapId, eventBroker, worldserver) {
     }
 
     assignEventHandlers(flows[mapId], eventBroker, worldserver);
-    loadedFlow = mapId;
+    loadedFlow[eventBroker.player.nftId] = mapId;
 }
 
 function unloadFlow(eventBroker) {
     console.log('unload flow: ' + loadedFlow);
-    eventConsumer.clearListeners();
-    loadedBlocks = {};
+    playerEventConsumer.clearListeners(eventBroker.player.nftId);
+    loadedBlocks[eventBroker.player.nftId] = {};
 }
 
-function assignEventHandlers(flow, eventBroker, worldserver) {
+function assignEventHandlers(flow, eventBroker, worldserver, mapId) {
     console.log('assigning event handlers');
+    if(!loadedBlocks[eventBroker.player.nftId]) {
+        loadedBlocks[eventBroker.player.nftId] = {};
+    }
+
     for (const handler of flow.handlers) {
-        if(!loadedBlocks[handler.idx]) {
-            loadedBlocks[handler.idx] = new events[handler.type](handler.options, worldserver);
+        if(!loadedBlocks[eventBroker.player.nftId][handler.idx]) {
+            loadedBlocks[eventBroker.player.nftId][handler.idx] = new events[handler.type](handler.options, worldserver);
         }
-        let eventClass = loadedBlocks[handler.idx];
-        eventConsumer.addListener(eventClass.eventType, (event) => {
-            loadedBlocks = {};
+        let eventClass = loadedBlocks[eventBroker.player.nftId][handler.idx];
+        playerEventConsumer.addListener(eventBroker.player.nftId, eventClass.eventType, (event) => {
             console.log(eventClass.eventType);
             if(eventClass.handle(event)) {
                 _.forEach(handler.then, (then) => {
-                    handleBlock(then, event, worldserver);
+                    handleBlock(then, event, worldserver, eventBroker);
+                })
+            }
+        })
+
+        worldEventConsumer.addListener(worldserver.id, eventClass.eventType, (event) => {
+            console.log(eventClass.eventType);
+            if(eventClass.handle(event)) {
+                _.forEach(handler.then, (then) => {
+                    handleBlock(then, event, worldserver, eventBroker);
                 })
             }
         })
     }
 }
 
-function handleBlock(block, event, worldserver) {
-    if(!loadedBlocks[block.idx]) {
+function handleBlock(block, event, worldserver, eventBroker) {
+    if(!loadedBlocks[eventBroker.player.nftId][block.idx]) {
         let blockClassName = blocks[block.type];
         console.log(block.type);
         if(!blockClassName) {
             return;
         }
-        loadedBlocks[block.idx] = new blockClassName(replaceTags(block.options, event.data), worldserver);
+        loadedBlocks[eventBroker.player.nftId][block.idx] = new blockClassName(replaceTags(block.options, event.data), worldserver);
     }
 
-    let blockClass = loadedBlocks[block.idx];
+    let blockClass = loadedBlocks[eventBroker.player.nftId][block.idx];
     if(!blockClass) {
         return;
     }
@@ -116,7 +131,7 @@ function handleBlock(block, event, worldserver) {
     if (block.type === 'delay') {
        blockClass.handle(event, (event) => {
            _.forEach(block.then, (then) => {
-               handleBlock(then, event, worldserver);
+               handleBlock(then, event, worldserver, eventBroker);
            })
        })
         return;
@@ -125,7 +140,7 @@ function handleBlock(block, event, worldserver) {
     let output = blockClass.handle(event);
     if(block[output] !== undefined) {
         _.forEach(block[output], (then) => {
-            handleBlock(then, event, worldserver);
+            handleBlock(then, event, worldserver, eventBroker);
         })
     }
 }
