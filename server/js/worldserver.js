@@ -1388,6 +1388,11 @@ module.exports = World = cls.Class.extend({
         for(let i = 0; i < amount; i++) {
             player.playerEventBroker.lootEvent(item);
         }
+    },
+
+    npcTalked(npcId, message, sessionData) {
+        let player = this.getEntityById(sessionData.entityId);
+        player.playerEventBroker.npcTalked(npcId, message)
     }
 });
 

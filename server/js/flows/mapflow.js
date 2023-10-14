@@ -1,9 +1,8 @@
 const PlayerMapFlowEventConsumer = require('./playermapfloweventconsumer.js');
 const WorldMapFlowEventConsumer = require('./worldfloweventconsumer.js');
 const main = require('./main.js');
-const oa = require('./oa.js');
 const AltNames = require('../../../shared/js/altnames.js');
-const flows = {main: main.flow, oa: oa.flow}
+const flows = {main: main.flow}
 
 let loadedFlow = {};
 let loadedBlocks = {};
@@ -15,6 +14,7 @@ const events = {
     'player.died': require('./when/player.died.js'),
     'quest.completed': require('./when/quest.completed.js'),
     'trigger.activated': require('./when/trigger.activated.js'),
+    'npc.talked': require('./when/npc.talked.js'),
 }
 
 const blocks = {
