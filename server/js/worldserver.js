@@ -998,7 +998,9 @@ module.exports = World = cls.Class.extend({
                     hitPoints: entity.hitPoints,
                     moveSpeed: entity.getMoveSpeed(),
                     attackRate: entity.getAttackRate(),
-                    inCombat: entity.isInCombat()
+                    inCombat: entity.isInCombat(),
+                    x: entity.x,
+                    y: entity.y
                 } 
             }
         }

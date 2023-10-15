@@ -5752,6 +5752,11 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                     self.entities[id].exitCombat();
                                 }
                             }
+                            let differentPos = self.entities[id].x !== toUpdateEntity.x || self.entities[id].y !== toUpdateEntity.y;
+                            let notMoving = !self.entities[id].path;
+                            if (id !== self.player.id && differentPos && notMoving && !self.entities[id].isAttacking()) {
+                                self.makeCharacterGoTo(self.entities[id], toUpdateEntity.x, toUpdateEntity.y);
+                            }
                         } else {
                             console.debug("Unknown entity " + id);
                         }
