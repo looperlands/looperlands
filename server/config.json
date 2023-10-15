@@ -10,9 +10,10 @@
         "oadungeon",
         "oaoverworld",
         "cobsfarm",
+        "cobsfarmcity",
         "fhf",
         "wk",
-	"crimsonspace"
+        "crimsonspace"
     ],
     "map_directory": "./server/maps/",
     "metrics_enabled": false,
