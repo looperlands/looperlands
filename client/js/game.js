@@ -5754,7 +5754,8 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                             }
                             let differentPos = self.entities[id].x !== toUpdateEntity.x || self.entities[id].y !== toUpdateEntity.y;
                             let notMoving = !self.entities[id].path;
-                            if (id !== self.player.id && differentPos && notMoving && !self.entities[id].isAttacking()) {
+                            let notPlayer = Number(id) !== Number(self.player.id);
+                            if (notPlayer && differentPos && notMoving && !self.entities[id].isAttacking()) {
                                 self.makeCharacterGoTo(self.entities[id], toUpdateEntity.x, toUpdateEntity.y);
                             }
                         } else {
