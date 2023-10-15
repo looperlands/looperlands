@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/root/.bun/bin/bun
 
 var util = require('util'),
     Log = require('log'),

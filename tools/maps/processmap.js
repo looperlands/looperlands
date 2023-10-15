@@ -1,3 +1,4 @@
+#!/root/.bun/bin/bun
 
 var Log = require('log'),
     _ = require('underscore'),
