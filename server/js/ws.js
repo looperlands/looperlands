@@ -125,7 +125,8 @@ WS.socketIOServer = Server.extend({
         var app = express();
         app.use("/", express.static(__dirname + "/../../client-build"));
 
-        let http = require('http').Server(app);
+        let httpInclude = require('http');
+        let http = new httpInclude.Server(app);
         
 
         var corsAddress = self.protocol + "://" + self.host;
