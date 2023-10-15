@@ -1391,7 +1391,7 @@ module.exports = World = cls.Class.extend({
     },
 
     npcTalked(npcId, message, sessionData) {
-        let player = this.getEntityById(sessionData.entityId);
+        let player = this.getEntityById(sessionData.entityId)
         player.playerEventBroker.npcTalked(npcId, message)
     }
 });
