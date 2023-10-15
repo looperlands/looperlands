@@ -292,6 +292,9 @@ define(['jquery', 'storage'], function($, Storage) {
         	if($('body').hasClass('about')) {
         	    this.closeInGameAbout();
         	}
+            if ($('body').hasClass('settings')) {
+                this.closeSettings();
+            }
         },
 
         showAchievementNotification: function(questName, endText, xpReward, medal) {
@@ -470,8 +473,8 @@ define(['jquery', 'storage'], function($, Storage) {
                 }
 
                 if(_this.game.started) {
+                    _this.hideWindows();
                     $('#parchment').removeClass().addClass('about');
-
                     $('body').toggleClass('about');
                     if(!_this.game.player) {
                         $('body').toggleClass('death');
@@ -498,6 +501,23 @@ define(['jquery', 'storage'], function($, Storage) {
             });
         },
 
+        toggleSettings : function() {
+            _this = this
+
+            if($('body').hasClass('settings')) {
+                this.closeSettings();
+            } else {
+                this.hideWindows();
+                $('#parchment').removeClass().addClass('settings');
+                $('body').addClass('settings');
+            }
+
+            if(!this.game.player) {
+                $('body').toggleClass('death');
+            }
+          
+        },
+
         closeInGameCredits: function() {
             $('body').removeClass('credits');
             $('#parchment').removeClass('credits');
@@ -514,6 +534,15 @@ define(['jquery', 'storage'], function($, Storage) {
             }
             $('#helpbutton').removeClass('active');
         },
+
+        closeSettings: function() {
+            $('body').removeClass('settings');
+            $('#parchment').removeClass('settings');
+            if(!this.game.player) {
+                $('body').addClass('death');
+            }
+            $('#mutebutton').removeClass('active');
+        },        
         
         togglePopulationInfo: function() {
             $('#population').toggleClass('visible');
