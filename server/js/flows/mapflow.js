@@ -1,8 +1,12 @@
 const PlayerMapFlowEventConsumer = require('./playermapfloweventconsumer.js');
 const WorldMapFlowEventConsumer = require('./worldfloweventconsumer.js');
 const main = require('./main.js');
+const cobsfarmcity = require('./cobsfarmcity.js');
 const AltNames = require('../../../shared/js/altnames.js');
-const flows = { cobsfarmcity: main.flow }
+const flows = {
+    main: main.flow,
+    cobsfarmcity: cobsfarmcity.flow
+}
 
 let loadedFlow = {};
 let loadedBlocks = {};
