@@ -15,9 +15,6 @@ ENV PATH $NODE_PATH:$PATH
 RUN apt-get update -yq \
     && apt-get install curl gnupg python2 -yq \
     && apt-get install python3 -yq \
-    && curl https://bootstrap.pypa.io/pip/2.7/get-pip.py --output get-pip.py \
-    && python2 get-pip.py \
-    && python2 -m pip install lxml \
     && apt-get install unzip \
     && curl -fsSL https://bun.sh/install | bash
 COPY . /opt/app
