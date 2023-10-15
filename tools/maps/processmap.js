@@ -173,20 +173,23 @@ module.exports = function processMap(json, options) {
 
     var processTriggerArea = function(triggerArea, idx) {
         var trigger = {
-            id: idx + 1,
+            id: triggerArea.id,
             x: triggerArea.x / map.tilesize,
             y: triggerArea.y / map.tilesize,
             w: triggerArea.width / map.tilesize,
             h: triggerArea.height / map.tilesize,
         };
 
-        var triggerProps = triggerArea.properties.property;
-        if(triggerProps[0] === undefined) {
-            triggerProps = [triggerArea.properties.property];
-        }
+        if(triggerArea.properties) {
+            var triggerProps = triggerArea.properties.property;
 
-        for(var k=0; k < triggerProps.length; k += 1) {
-            trigger[triggerProps[k].name] = triggerProps[k].value;
+            if (triggerProps[0] === undefined) {
+                triggerProps = [triggerArea.properties.property];
+            }
+
+            for (var k = 0; k < triggerProps.length; k += 1) {
+                trigger[triggerProps[k].name] = triggerProps[k].value;
+            }
         }
 
         map.triggers.push(trigger);

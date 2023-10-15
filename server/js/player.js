@@ -420,19 +420,25 @@ module.exports = Player = Character.extend({
 
                         if(!self.area || self.area.id !== trigger.id) {
                             trigger.addToArea(self);
-                            self.server.activateTrigger(trigger.trigger);
+                            self.playerEventBroker.enteredArea(trigger);
+                            if(trigger.trigger) {
+                                self.server.activateTrigger(trigger.trigger);
+                            }
                         }
                     } else {
                         trigger.removeFromArea(self);
-                        if(trigger.delay) {
-                            self.triggerDeactivationTimer = setTimeout(() => {
-                                if(trigger.isEmpty()) {
+                        self.playerEventBroker.leftArea(self, trigger);
+                        if(trigger.trigger) {
+                            if (trigger.delay) {
+                                self.triggerDeactivationTimer = setTimeout(() => {
+                                    if (trigger.isEmpty()) {
+                                        self.server.deactivateTrigger(trigger.trigger);
+                                    }
+                                }, trigger.delay);
+                            } else {
+                                if (trigger.isEmpty()) {
                                     self.server.deactivateTrigger(trigger.trigger);
                                 }
-                            }, trigger.delay);
-                        } else {
-                            if(trigger.isEmpty()) {
-                                self.server.deactivateTrigger(trigger.trigger);
                             }
                         }
                     }

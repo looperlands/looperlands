@@ -12,6 +12,7 @@ module.exports = Block = cls.Class.extend({
 
     handle(event) {
         this.worldserver.pushToPlayer(event.data.player, new Messages.Chat(event.data.player, this.message));
+
         return 'then';
     }
 })

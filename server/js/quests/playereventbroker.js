@@ -7,7 +7,9 @@ class PlayerEventBroker {
         SPAWNED: 'SPAWNED',
         DIED: 'DIED',
         QUEST_COMPLETED: 'QUEST_COMPLETED',
-        NPC_TALKED: 'NPC_TALKED'
+        NPC_TALKED: 'NPC_TALKED',
+        AREA_ENTERED: 'AREA_ENTERED',
+        AREA_LEFT: 'AREA_LEFT',
     };
 
     static playerEventBrokers = {};
@@ -122,6 +124,18 @@ class PlayerEventBroker {
         let sessionId = this.player.sessionId;
         let playerCache = this.cache.get(sessionId);
         PlayerEventBroker.dispatchEvent(PlayerEventBroker.Events.NPC_TALKED, sessionId, this.player, playerCache, { npc: npc, message: message });
+    }
+
+    async enteredArea(area) {
+        let sessionId = this.player.sessionId;
+        let playerCache = this.cache.get(sessionId);
+        PlayerEventBroker.dispatchEvent(PlayerEventBroker.Events.AREA_ENTERED, sessionId, this.player, playerCache, { area: area });
+    }
+
+    async leftArea(area) {
+        let sessionId = this.player.sessionId;
+        let playerCache = this.cache.get(sessionId);
+        PlayerEventBroker.dispatchEvent(PlayerEventBroker.Events.AREA_LEFT, sessionId, this.player, playerCache, { area: area });
     }
 
     destroy() {

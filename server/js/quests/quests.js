@@ -47,14 +47,16 @@ for (const quest of quests) {
     process.exit(1);
   }
   let target = quest.target;
-  if (Types.isMob(target) && quest.eventType !== "KILL_MOB") {
-    console.error("Quest target is a mob but event type is not KILL_MOB: ", quest);
-    process.exit(1);
-  }
+  if(target !== "FLOW") {
+    if (Types.isMob(target) && quest.eventType !== "KILL_MOB") {
+      console.error("Quest target is a mob but event type is not KILL_MOB: ", quest);
+      process.exit(1);
+    }
 
-  if (Types.isItem(target) && quest.eventType !== "LOOT_ITEM") {
-    console.error("Quest target is an item but event type is not LOOT_ITEM: ", quest);
-    process.exit(1);
+    if (Types.isItem(target) && quest.eventType !== "LOOT_ITEM") {
+      console.error("Quest target is an item but event type is not LOOT_ITEM: ", quest);
+      process.exit(1);
+    }
   }
 }
 

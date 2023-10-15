@@ -12,6 +12,7 @@ module.exports = Block = cls.Class.extend({
 
     handle(event) {
         this.worldserver.pushToPlayer(event.data.player, new Messages.Sound(this.sound), false);
+
         return 'then';
     }
 })

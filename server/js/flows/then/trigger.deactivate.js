@@ -12,9 +12,11 @@ module.exports = Block = cls.Class.extend({
     handle(event) {
         if(this.worldserver.checkTriggerActive(this.trigger)) {
             this.worldserver.deactivateTrigger(this.trigger);
+
             return 'then';
         }
         event.data.error = "Trigger is not active."
+
         return 'error';
     }
 })

@@ -8,6 +8,7 @@ define(['jquery', 'animation', 'sprites'], function($, Animation, sprites) {
         	this.isLoaded = false;
         	this.offsetX = 0;
         	this.offsetY = 0;
+
 			if (window.location.href.indexOf("127.0.0.1") > -1) {
 				this.baseImageURL = 'img/';
 			} else {

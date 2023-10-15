@@ -1363,7 +1363,7 @@ module.exports = World = cls.Class.extend({
             this.sendNotifications(player, result);
         }
 
-        player.handleCompletedQuests([questId]);
+        player.handleCompletedQuests([quests.questsByID[questId]]);
 
         return true;
     },
@@ -1393,7 +1393,7 @@ module.exports = World = cls.Class.extend({
     npcTalked(npcId, message, sessionData) {
         let player = this.getEntityById(sessionData.entityId)
         player.playerEventBroker.npcTalked(npcId, message)
-    }
+    },
 });
 
 

@@ -16,6 +16,7 @@ module.exports = Block = cls.Class.extend({
         let altName = AltNames.getAltNameFromKind(Types.getKindAsString(this.item));
         let itemName = altName ? altName : Types.getKindAsString(this.item);
         this.worldserver.sendNotifications(event.data.player, this.amount + ' ' + itemName + ' removed from inventory', false);
+
         return 'then';
     }
 })

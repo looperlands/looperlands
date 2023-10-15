@@ -15,6 +15,7 @@ module.exports = Block = cls.Class.extend({
             return 'then';
         }
         event.data.error = "Trigger is already active."
+
         return 'error';
     }
 })

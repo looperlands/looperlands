@@ -12,6 +12,7 @@ module.exports = Block = cls.Class.extend({
 
     handle(event) {
         this.worldserver.sendNotifications(event.data.player, this.message, false);
+
         return 'then';
     }
 })

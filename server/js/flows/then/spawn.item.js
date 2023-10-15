@@ -19,6 +19,7 @@ module.exports = Block = cls.Class.extend({
         item.isFromChest = true;
 
         event.data.spawned = this.worldserver.addItem(item);
+
         return 'then';
     },
 })

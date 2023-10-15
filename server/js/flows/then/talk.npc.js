@@ -20,6 +20,7 @@ module.exports = Block = cls.Class.extend({
         }
 
         this.worldserver.pushToGroup(controllingNpc.group, new Messages.Chat(controllingNpc, this.message), false);
+
         return 'then';
     }
 })

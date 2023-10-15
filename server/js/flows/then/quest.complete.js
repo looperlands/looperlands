@@ -18,6 +18,7 @@ module.exports = Block = cls.Class.extend({
         }
 
         event.error = 'Quest could not be completed';
+
         return 'error';
     }
 })

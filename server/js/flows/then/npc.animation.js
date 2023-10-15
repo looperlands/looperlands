@@ -19,6 +19,7 @@ module.exports = Block = cls.Class.extend({
         }
 
         this.worldserver.triggerAnimation(controllingNpc, this.anmiation);
+
         return 'then';
     },
 })

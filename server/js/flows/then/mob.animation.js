@@ -19,6 +19,7 @@ module.exports = Block = cls.Class.extend({
         }
 
         this.worldserver.triggerAnimation(controllingMob, this.anmiation);
+
         return 'then';
     },
 })

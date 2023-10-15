@@ -203,11 +203,13 @@ define(['jquery', 'storage'], function($, Storage) {
                     }
                     self.game.destroyBubble("global");
                     chatHTML = "<div>";
-                    response.data.forEach(function(message) {
-                        date = new Date(message.epoch);
-                        time = date.toLocaleTimeString();
-                        chatHTML += `<p><b>${message.playerName}</b>&nbsp;[${time}]:&nbsp;${message.message}</p>`
-                    });
+                    if(response.data) {
+                        response.data.forEach(function (message) {
+                            date = new Date(message.epoch);
+                            time = date.toLocaleTimeString();
+                            chatHTML += `<p><b>${message.playerName}</b>&nbsp;[${time}]:&nbsp;${message.message}</p>`
+                        });
+                    }
                     chatHTML += "</div>";
                     self.game.createBubble("global", chatHTML);
                 });

@@ -15,6 +15,8 @@ const events = {
     'quest.completed': require('./when/quest.completed.js'),
     'trigger.activated': require('./when/trigger.activated.js'),
     'npc.talked': require('./when/npc.talked.js'),
+    'area.entered': require('./when/area.entered.js'),
+    'area.left': require('./when/area.left.js'),
 }
 
 const blocks = {

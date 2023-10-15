@@ -14,6 +14,7 @@ module.exports = Block = cls.Class.extend({
     handle(event) {
         let closestNpc = this.worldserver.getClosestNpcOfKind(this.npc, event.data.player.x, event.data.player.y);
         this.worldserver.pushToPlayer(this.worldserver.player, new Messages.Chat(closestNpc, this.message));
+
         return 'then';
     }
 })

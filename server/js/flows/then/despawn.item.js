@@ -14,6 +14,7 @@ module.exports = Block = cls.Class.extend({
     handle(event) {
         this.worldserver.despawn(this.item);
         event.data.removed = this.item
+
         return 'then';
     },
 })

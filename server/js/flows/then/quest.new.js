@@ -16,6 +16,7 @@ module.exports = Block = cls.Class.extend({
         }
 
         event.error = 'Quest could not be handed out';
+
         return 'error';
     }
 })
