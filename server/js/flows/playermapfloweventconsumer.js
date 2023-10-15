@@ -9,6 +9,10 @@ class PlayerMapFlowEventConsumer extends PlayerEventConsumer {
     listeners = {}
 
     consume(event) {
+        if(!this.listeners[event.data.player.nftId]) {
+            return {};
+        }
+        
         if(this.listeners[event.data.player.nftId][event.eventType] !== undefined) {
             this.listeners[event.data.player.nftId][event.eventType].forEach(callback => {
                 callback(event);
