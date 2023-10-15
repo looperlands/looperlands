@@ -15,17 +15,15 @@ ENV PATH $NODE_PATH:$PATH
 RUN apt-get update -yq \
     && apt-get install curl gnupg python2 -yq \
     && apt-get install python3 -yq \
-    && curl https://bootstrap.pypa.io/pip/2.7/get-pip.py --output get-pip.py \
-    && python2 get-pip.py \
-    && python2 -m pip install lxml
-
+    && apt-get install unzip \
+    && curl -fsSL https://bun.sh/install | bash
 COPY . /opt/app
 WORKDIR /opt/app
 COPY shared/js/gametypes.js client/js/gametypes.js
-RUN npm ci
+RUN ~/.bun/bin/bun install
 RUN mkdir -p client/config
 COPY configs/config_build.json client/config
 WORKDIR /opt/app/bin
 RUN ./build.sh
 WORKDIR /opt/app
-CMD node server/js/main.js
+CMD ~/.bun/bin/bun server/js/main.js
