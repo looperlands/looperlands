@@ -2,7 +2,7 @@ const PlayerMapFlowEventConsumer = require('./playermapfloweventconsumer.js');
 const WorldMapFlowEventConsumer = require('./worldfloweventconsumer.js');
 const main = require('./main.js');
 const AltNames = require('../../../shared/js/altnames.js');
-const flows = {main: main.flow}
+const flows = { cobsfarmcity: main.flow }
 
 let loadedFlow = {};
 let loadedBlocks = {};
@@ -65,12 +65,12 @@ PlayerEventBroker.PlayerEventBroker.playerEventConsumers.push(playerEventConsume
 WorldEventBroker.WorldEventBroker.worldEventConsumers.push(worldEventConsumer);
 
 function loadFlow(mapId, eventBroker, worldserver) {
-    if(loadedFlow[eventBroker.player.nftId] != null) {
+    if (loadedFlow[eventBroker.player.nftId] != null) {
         unloadFlow(eventBroker)
     }
 
     console.log('load flow: ' + mapId);
-    if(flows[mapId] === undefined) {
+    if (flows[mapId] === undefined) {
         return;
     }
 
@@ -86,18 +86,18 @@ function unloadFlow(eventBroker) {
 
 function assignEventHandlers(flow, eventBroker, worldserver, mapId) {
     console.log('assigning event handlers');
-    if(!loadedBlocks[eventBroker.player.nftId]) {
+    if (!loadedBlocks[eventBroker.player.nftId]) {
         loadedBlocks[eventBroker.player.nftId] = {};
     }
 
     for (const handler of flow.handlers) {
-        if(!loadedBlocks[eventBroker.player.nftId][handler.idx]) {
+        if (!loadedBlocks[eventBroker.player.nftId][handler.idx]) {
             loadedBlocks[eventBroker.player.nftId][handler.idx] = new events[handler.type](handler.options, worldserver);
         }
         let eventClass = loadedBlocks[eventBroker.player.nftId][handler.idx];
         playerEventConsumer.addListener(eventBroker.player.nftId, eventClass.eventType, (event) => {
             console.log(eventClass.eventType);
-            if(eventClass.handle(event)) {
+            if (eventClass.handle(event)) {
                 _.forEach(handler.then, (then) => {
                     handleBlock(then, event, worldserver, eventBroker);
                 })
@@ -106,7 +106,7 @@ function assignEventHandlers(flow, eventBroker, worldserver, mapId) {
 
         worldEventConsumer.addListener(worldserver.id, eventClass.eventType, (event) => {
             console.log(eventClass.eventType);
-            if(eventClass.handle(event)) {
+            if (eventClass.handle(event)) {
                 _.forEach(handler.then, (then) => {
                     handleBlock(then, event, worldserver, eventBroker);
                 })
@@ -116,31 +116,31 @@ function assignEventHandlers(flow, eventBroker, worldserver, mapId) {
 }
 
 function handleBlock(block, event, worldserver, eventBroker) {
-    if(!loadedBlocks[eventBroker.player.nftId][block.idx]) {
+    if (!loadedBlocks[eventBroker.player.nftId][block.idx]) {
         let blockClassName = blocks[block.type];
         console.log(block.type);
-        if(!blockClassName) {
+        if (!blockClassName) {
             return;
         }
         loadedBlocks[eventBroker.player.nftId][block.idx] = new blockClassName(replaceTags(block.options, event.data), worldserver);
     }
 
     let blockClass = loadedBlocks[eventBroker.player.nftId][block.idx];
-    if(!blockClass) {
+    if (!blockClass) {
         return;
     }
 
     if (block.type === 'delay') {
-       blockClass.handle(event, (event) => {
-           _.forEach(block.then, (then) => {
-               handleBlock(then, event, worldserver, eventBroker);
-           })
-       })
+        blockClass.handle(event, (event) => {
+            _.forEach(block.then, (then) => {
+                handleBlock(then, event, worldserver, eventBroker);
+            })
+        })
         return;
     }
 
     let output = blockClass.handle(event);
-    if(block[output] !== undefined) {
+    if (block[output] !== undefined) {
         _.forEach(block[output], (then) => {
             handleBlock(then, event, worldserver, eventBroker);
         })
@@ -150,27 +150,27 @@ function handleBlock(block, event, worldserver, eventBroker) {
 function replaceTags(options, eventData) {
     let result = {};
     _.forEach(options, (value, key) => {
-        if(typeof value === 'string') {
+        if (typeof value === 'string') {
             let matches = value.match(/tag:[^\s]*/g);
 
-            if(matches) {
+            if (matches) {
                 _.forEach(matches, (fullTag) => {
                     let tag = fullTag.substring(4);
                     let tagParts = tag.split('.');
                     let data = eventData;
 
                     _.forEach(tagParts, (tagPart) => {
-                        if(data[tagPart]) {
+                        if (data[tagPart]) {
                             data = data[tagPart];
                         }
 
-                        if(tagPart === 'kind') {
+                        if (tagPart === 'kind') {
                             data = Types.getKindAsString(data)
                             let altName = AltNames.getAltNameFromKind(data);
                             data = (altName !== undefined) ? altName : data;
                         }
                     })
-                    if(fullTag === value) {
+                    if (fullTag === value) {
                         result[key] = data;
                     } else {
                         result[key] = value.replace(fullTag, data);
