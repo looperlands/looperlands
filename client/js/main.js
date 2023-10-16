@@ -427,7 +427,6 @@ define(['jquery', 'app'], function($, App) {
             });
             
             $('#mutebutton').click(function() {
-                //game.audioManager.toggle();
                 game.app.toggleSettings();
             });
             

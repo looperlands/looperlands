@@ -5079,6 +5079,11 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
          * Processes game logic when the user triggers a click/touch event during the game.
          */
         click: function(pos) {
+
+            if($('body').hasClass('about') || $('body').hasClass('settings')) {
+                return;
+            }
+
             this.app.hideChat();
             if (pos === undefined) {
                 pos = this.getMouseGridPosition();
