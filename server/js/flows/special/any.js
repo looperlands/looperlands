@@ -8,6 +8,10 @@ module.exports = Block = cls.Class.extend({
     destroy: function() {
     },
 
+    reset: function() {
+        this.handled = false;
+    },
+
     handle(event) {
         if(this.handled) {
             return "blocked";

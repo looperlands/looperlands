@@ -26,6 +26,7 @@ const events = {
 const blocks = {
     'tag.equals': require('./and/tag.equals.js'),
     'any': require('./special/any.js'),
+    'all': require('./special/all.js'),
     'delay': require('./special/delay.js'),
     'send_notification': require('./then/send_notification.js'),
     'talk.player': require('./then/talk.player.js'),
@@ -69,17 +70,17 @@ PlayerEventBroker.PlayerEventBroker.playerEventConsumers.push(playerEventConsume
 WorldEventBroker.WorldEventBroker.worldEventConsumers.push(worldEventConsumer);
 
 function loadFlow(mapId, eventBroker, worldserver) {
-    if(loadedFlow[eventBroker.player.nftId] != null) {
+    if (loadedFlow[eventBroker.player.nftId] != null) {
         unloadFlow(eventBroker)
     }
 
     console.log('load flow: ' + mapId);
-    if(flows[mapId] === undefined) {
+    if (flows[mapId] === undefined) {
         return;
     }
 
-    assignEventHandlers(flows[mapId], eventBroker, worldserver);
     loadedFlow[eventBroker.player.nftId] = mapId;
+    assignEventHandlers(flows[mapId], eventBroker, worldserver);
 }
 
 function unloadFlow(eventBroker) {
@@ -90,91 +91,166 @@ function unloadFlow(eventBroker) {
 
 function assignEventHandlers(flow, eventBroker, worldserver, mapId) {
     console.log('assigning event handlers');
-    if(!loadedBlocks[eventBroker.player.nftId]) {
+    if (!loadedBlocks[eventBroker.player.nftId]) {
         loadedBlocks[eventBroker.player.nftId] = {};
     }
 
     for (const handler of flow.handlers) {
-        if(!loadedBlocks[eventBroker.player.nftId][handler.idx]) {
+        if (!loadedBlocks[eventBroker.player.nftId][handler.idx]) {
             loadedBlocks[eventBroker.player.nftId][handler.idx] = new events[handler.type](handler.options, worldserver);
         }
         let eventClass = loadedBlocks[eventBroker.player.nftId][handler.idx];
         playerEventConsumer.addListener(eventBroker.player.nftId, eventClass.eventType, (event) => {
-            console.log(eventClass.eventType);
-            if(eventClass.handle(event)) {
-                _.forEach(handler.then, (then) => {
-                    handleBlock(then, event, worldserver, eventBroker);
-                })
-            }
+            handleEvent(handler, eventClass, event, worldserver, eventBroker);
         })
 
         worldEventConsumer.addListener(worldserver.id, eventClass.eventType, (event) => {
-            console.log(eventClass.eventType);
-            if(eventClass.handle(event)) {
-                _.forEach(handler.then, (then) => {
-                    handleBlock(then, event, worldserver, eventBroker);
-                })
-            }
+            handleEvent(handler, eventClass, event, worldserver, eventBroker);
         })
     }
 }
 
-function handleBlock(block, event, worldserver, eventBroker) {
-    if(!loadedBlocks[eventBroker.player.nftId][block.idx]) {
+function handleEvent(handler, eventClass, event, worldserver, eventBroker) {
+    // Loop over any blocks and reset them
+    let anyBlocks = findAllBlocksOfType(handler.then, 'any');
+    _.forEach(anyBlocks, (anyBlock) => {
+        if(loadedBlocks[eventBroker.player.nftId][anyBlock.idx]) {
+            let anyBlockClass = loadedBlocks[eventBroker.player.nftId][anyBlock.idx];
+            anyBlockClass.reset();
+        }
+    });
+
+    if (eventClass.handle(event)) {
+        console.log(eventClass.eventType);
+        _.forEach(handler.then, (then) => {
+            handleBlock(then, event, worldserver, eventBroker, handler);
+        })
+    }
+}
+
+function findAllBlocksOfType(blocks, type) {
+    let result = [];
+    _.forEach(blocks, (block) => {
+        if (block.type === type) {
+            result.push(block);
+        }
+        if (block.then) {
+            result = result.concat(findAllBlocksOfType(block.then, type));
+        }
+        if (block.true) {
+            result = result.concat(findAllBlocksOfType(block.true, type));
+        }
+        if (block.false) {
+            result = result.concat(findAllBlocksOfType(block.false, type));
+        }
+        if (block.error) {
+            result = result.concat(findAllBlocksOfType(block.error, type));
+        }
+    })
+    return result;
+}
+
+function handleBlock(block, event, worldserver, eventBroker, incomingBlock) {
+    console.log(block.type);
+    event.incoming = incomingBlock;
+
+    if (!loadedBlocks[eventBroker.player.nftId][block.idx]) {
         let blockClassName = blocks[block.type];
-        console.log(block.type);
-        if(!blockClassName) {
+        if (!blockClassName) {
             return;
         }
         loadedBlocks[eventBroker.player.nftId][block.idx] = new blockClassName(replaceTags(block.options, event.data), worldserver);
+
+        if(block.type === 'all') {
+            loadedBlocks[eventBroker.player.nftId][block.idx].incoming = findIncomingBlocks(flows[loadedFlow[eventBroker.player.nftId]].handlers, block.idx)
+        }
     }
 
     let blockClass = loadedBlocks[eventBroker.player.nftId][block.idx];
-    if(!blockClass) {
+    if (!blockClass) {
         return;
     }
 
     if (block.type === 'delay') {
-       blockClass.handle(event, (event) => {
-           _.forEach(block.then, (then) => {
-               handleBlock(then, event, worldserver, eventBroker);
-           })
-       })
+        blockClass.handle(event, (event) => {
+            _.forEach(block.then, (then) => {
+                handleBlock(then, event, worldserver, eventBroker, block);
+            })
+        })
         return;
     }
 
     let output = blockClass.handle(event);
-    if(block[output] !== undefined) {
+    if (block[output] !== undefined) {
         _.forEach(block[output], (then) => {
-            handleBlock(then, event, worldserver, eventBroker);
+            handleBlock(then, event, worldserver, eventBroker, block);
         })
     }
+}
+
+function findIncomingBlocks(blocks, idx) {
+    let result = [];
+    _.forEach(blocks, (block) => {
+        if (block.then) {
+            _.forEach(block.then, (then) => {
+                if (then.idx === idx && !result.includes(block.idx)) {
+                    result.push(block.idx);
+                }
+                result = result.concat(findIncomingBlocks(block.then, idx));
+            })
+        }
+        if (block.true) {
+            _.forEach(block.true, (then) => {
+                if (then.idx === idx && !result.includes(block.idx)) {
+                    result.push(block.idx);
+                }
+                result = result.concat(findIncomingBlocks(block.true, idx));
+            })
+        }
+        if (block.false) {
+            _.forEach(block.false, (then) => {
+                if (then.idx === idx && !result.includes(block.idx)) {
+                    result.push(block.idx);
+                }
+                result = result.concat(findIncomingBlocks(block.false, idx));
+            })
+        }
+        if (block.error) {
+            _.forEach(block.error, (then) => {
+                if (then.idx === idx && !result.includes(block.idx)) {
+                    result.push(block.idx);
+                }
+                result = result.concat(findIncomingBlocks(block.error, idx));
+            })
+        }
+    })
+    return result;
 }
 
 function replaceTags(options, eventData) {
     let result = {};
     _.forEach(options, (value, key) => {
-        if(typeof value === 'string') {
+        if (typeof value === 'string') {
             let matches = value.match(/tag:[^\s]*/g);
 
-            if(matches) {
+            if (matches) {
                 _.forEach(matches, (fullTag) => {
                     let tag = fullTag.substring(4);
                     let tagParts = tag.split('.');
                     let data = eventData;
 
                     _.forEach(tagParts, (tagPart) => {
-                        if(data[tagPart]) {
+                        if (data[tagPart]) {
                             data = data[tagPart];
                         }
 
-                        if(tagPart === 'kind') {
+                        if (tagPart === 'kind') {
                             data = Types.getKindAsString(data)
                             let altName = AltNames.getAltNameFromKind(data);
                             data = (altName !== undefined) ? altName : data;
                         }
                     })
-                    if(fullTag === value) {
+                    if (fullTag === value) {
                         result[key] = data;
                     } else {
                         result[key] = value.replace(fullTag, data);
