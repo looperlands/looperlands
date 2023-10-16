@@ -29,6 +29,7 @@ const blocks = {
     'has.looted.item': require('./and/has.looted.item.js'),
     'has.quest.received': require('./and/has.quest.received.js'),
     'has.quest.completed': require('./and/has.quest.completed.js'),
+    'has.level': require('./and/has.level.js'),
     'any': require('./special/any.js'),
     'all': require('./special/all.js'),
     'delay': require('./special/delay.js'),
