@@ -138,6 +138,13 @@ function handoutQuest(questID, sessionData) {
   return newQuest.startText;
 }
 
+exports.hasQuest = function(questID, sessionData) {
+    return avatarHasQuest(questID, sessionData.gameData.quests);
+}
+exports.hasCompletedQuest = function(questID, sessionData) {
+    return avatarHasCompletedQuest(questID, sessionData.gameData.quests);
+}
+
 function avatarHasQuest(questId, avatarQuests) {
   if(_.isEmpty(avatarQuests)) {
     return false;
