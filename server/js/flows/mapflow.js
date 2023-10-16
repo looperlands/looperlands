@@ -30,6 +30,7 @@ const blocks = {
     'has.quest.received': require('./and/has.quest.received.js'),
     'has.quest.completed': require('./and/has.quest.completed.js'),
     'has.level': require('./and/has.level.js'),
+    'in.area': require('./and/in.area.js'),
     'any': require('./special/any.js'),
     'all': require('./special/all.js'),
     'delay': require('./special/delay.js'),
