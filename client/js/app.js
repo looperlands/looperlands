@@ -19,6 +19,7 @@ define(['jquery', 'storage'], function($, Storage) {
             this.watchNameInputInterval = setInterval(this.toggleButton.bind(this), 100);
             this.$playButton = $('.play'),
             this.$playDiv = $('.play div');
+            this.settings = new GameSettings(this);
         },
         
         setGame: function(game) {

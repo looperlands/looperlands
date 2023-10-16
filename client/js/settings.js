@@ -1,5 +1,6 @@
 class GameSettings {
-    constructor() {
+    constructor(app) {
+      this.app = app;
       // Check if localStorage is available in the browser
       if (typeof localStorage === 'undefined') {
         console.error('LocalStorage is not available in this browser.');
@@ -29,7 +30,7 @@ class GameSettings {
         this.setMusicEnabled(document.getElementById('musicEnabled').checked);
         this.setCenteredCamera(document.getElementById('centeredCamera').checked);
         this.setAnimatedTiles(document.getElementById('animatedTiles').checked);
-        alert('Settings saved!');
+        app.toggleSettings();
       });
     }
 

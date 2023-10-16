@@ -3517,7 +3517,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         },
     
         canUseCenteredCamera: function() {
-            return this.mapId !== "main" && !this.renderer.mobile && !this.renderer.tablet;
+            return this.mapId !== "main" && this.app.settings.getCenteredCamera();
         },
 
         tick: function() {

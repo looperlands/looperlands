@@ -143,10 +143,31 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
                          </p>
                     </article>
     	            <article id="settings">
-						<h1><p>Settings</p></h1>
-						<p>
-							Settings
-						</p>
+        	            <h1>
+         	               <span class="left-ornament"></span>
+         	               <span class="title">
+         	                   Game Settings
+         	               </span>
+         	               <span class="right-ornament"></span>
+                        </h1>
+						<form id="settingsForm">
+							<ul style="text-align: left;">
+								<li>
+									<input type="checkbox" id="musicEnabled" name="musicEnabled" value="true">
+									<label for="musicEnabled">Music Enabled</label><br>
+								</li>
+								<li>
+									<input type="checkbox" id="centeredCamera" name="centeredCamera" value="true">
+									<label for="centeredCamera">Centered Camera</label><br>
+								</li>
+								<li>
+									<input type="checkbox" id="animatedTiles" name="animatedTiles" value="true">
+									<label for="animatedTiles">Animated Tiles</label><br>
+								</li>
+							</ul>
+							<br>
+							<button type="submit">Save Settings</button>
+						</form>
     	            </article>				
 	            </div>
 	            <div class="parchment-right"></div>
