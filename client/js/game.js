@@ -3461,6 +3461,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
     
         loadAudio: function() {
             this.audioManager = new AudioManager(this);
+            this.app.settings.setSettings();
         },
     
         initMusicAreas: function() {

@@ -27,9 +27,7 @@ class GameSettings {
       const form = document.getElementById('settingsForm');
       form.addEventListener('submit', (event) => {
         event.preventDefault();
-        this.setMusicEnabled(document.getElementById('musicEnabled').checked);
-        this.setCenteredCamera(document.getElementById('centeredCamera').checked);
-        this.setAnimatedTiles(document.getElementById('animatedTiles').checked);
+        this.setSettings();
         app.toggleSettings();
       });
     }
@@ -41,6 +39,11 @@ class GameSettings {
 
     setMusicEnabled(enabled) {
       localStorage.setItem('musicEnabled', enabled ? 'true' : 'false');
+      if (enabled) {
+        this.app.game.audioManager.enable();
+      } else {
+        this.app.game.audioManager.disable();
+      }
     }
 
     getCenteredCamera() {
@@ -57,5 +60,11 @@ class GameSettings {
 
     setAnimatedTiles(enabled) {
       localStorage.setItem('animatedTiles', enabled ? 'true' : 'false');
+    }
+
+    setSettings() {
+      this.setMusicEnabled(document.getElementById('musicEnabled').checked);
+      this.setCenteredCamera(document.getElementById('centeredCamera').checked);
+      this.setAnimatedTiles(document.getElementById('animatedTiles').checked);
     }
   }
