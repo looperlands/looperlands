@@ -25,6 +25,8 @@ const events = {
 
 const blocks = {
     'tag.equals': require('./and/tag.equals.js'),
+    'has.killed.mob': require('./and/has.killed.mob.js'),
+    'has.looted.item': require('./and/has.looted.item.js'),
     'any': require('./special/any.js'),
     'all': require('./special/all.js'),
     'delay': require('./special/delay.js'),
