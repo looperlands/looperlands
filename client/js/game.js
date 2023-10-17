@@ -3485,6 +3485,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
     
         loadAudio: function() {
             this.audioManager = new AudioManager(this);
+            this.app.settings.setSettings();
         },
     
         initMusicAreas: function() {
@@ -3541,7 +3542,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         },
     
         canUseCenteredCamera: function() {
-            return this.mapId !== "main" && !this.renderer.mobile && !this.renderer.tablet;
+            return this.mapId !== "main" && this.app.settings.getCenteredCamera();
         },
 
         tick: function() {
@@ -5102,6 +5103,11 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
          * Processes game logic when the user triggers a click/touch event during the game.
          */
         click: function(pos) {
+
+            if($('body').hasClass('about') || $('body').hasClass('settings')) {
+                return;
+            }
+
             this.app.hideChat();
             if (pos === undefined) {
                 pos = this.getMouseGridPosition();
