@@ -68,7 +68,7 @@ define(['character'], function (Character) {
             'Follow <a href="https://loopworms.io/DEV/LooperLands/QR/qr.php?NPC=rick" target="blank">this link</a> - it might be a Red Packet!',
             "Now go about your adventure, Looper!"
         ],
-///////////////////////OA NPCS////////////////////
+        ///////////////////////OA NPCS////////////////////
         "torin": [
             "Slimes are encroaching on our lands!",
         ],
@@ -106,7 +106,7 @@ define(['character'], function (Character) {
             "First may lead, third's a trick, but second steps, back you pick.",
             "Revisit a choice once made, or in circles you'll forever wade!",
         ],
-        
+
         "neena": [
             "Hey there!",
         ],
@@ -143,7 +143,7 @@ define(['character'], function (Character) {
         ],
 
 
-/////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////
 
         "scientist": [
             'Hey there, Looper. my name is <a href="https://www.cobmin.com" target="_blank">cobmin</a>.',
@@ -331,7 +331,7 @@ define(['character'], function (Character) {
             return msg;
         },
 
-        addThoughts: function(messages) {
+        addThoughts: function (messages) {
             // add elements from messages array to thoughts array
             for (var i = 0; i < messages.length; i++) {
                 this.thoughts.push(messages[i]);

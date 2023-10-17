@@ -231,8 +231,9 @@ define(['character', 'timer'], function(Character, Timer) {
             var self = this,
                 t = this.game.currentTime;
         
+            let animatedTilesEnabled = this.game.app.settings.getAnimatedTiles();
             let updateAnimatedTilesFn = function (tile) {
-                if(tile.animate(t)) {
+                if(animatedTilesEnabled && tile.animate(t)) {
                     tile.isDirty = true;
                     tile.dirtyRect = self.game.renderer.getTileBoundingRect(tile);
 
