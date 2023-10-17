@@ -250,7 +250,7 @@ define(['text!../sprites/agent.json',
         'text!../sprites/cobcoblin.json',
         'text!../sprites/cobcobane.json',
         'text!../sprites/cobogre.json',
-        'text!../sprites/cobcarp.json',
+        'text!../sprites/cobneon.json',
         'text!../sprites/cobguppy.json',
         'text!../sprites/cobgoldfish.json',
         // @nextCharacterImport@

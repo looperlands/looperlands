@@ -26,7 +26,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
     
             // Game state
             this.entities = {};
-            this.floats = {};
             this.deathpositions = {};
             this.entityGrid = null;
             this.pathingGrid = null;
@@ -64,6 +63,12 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         
             // debug
             this.debugPathing = false;
+
+            // fishing
+            this.floats = {};
+            this.fishingData = {fishName: null, fishPos: 0, fishDir: 1, targetPos: 0, targetHeight: 0};
+            this.slidingFish = null;
+            this.uniFishTimeout = null;
         
             // sprites
             this.spriteNames = ["hand", "sword", "loot", "target", "talk", "float", "sparks", "shadow16", "rat", "skeleton", "skeleton2", "spectre", "boss", "deathknight", 
@@ -94,7 +99,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 "VILLAGESIGN7",
                                 "VILLAGESIGN8",
                                 "VILLAGESIGN9",
-                                "cobcarp","cobguppy","cobgoldfish",
+                                "cobneon","cobguppy","cobgoldfish",
                                 // @nextCharacterLine@
                                 "item-BOARHIDE",
                                 "item-THUDKEY",
@@ -2825,7 +2830,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
         initFish: function() {
             this.fish = {};
-            this.fish["cobcarp"] = this.sprites["cobcarp"];
+            this.fish["cobneon"] = this.sprites["cobneon"];
             this.fish["cobguppy"] = this.sprites["cobguppy"];
             this.fish["cobgoldfish"] = this.sprites["cobgoldfish"];
         },
@@ -5667,7 +5672,13 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         
                 let url = '/session/' + self.sessionId + '/requestFish/' + self.map.getLakeName(gX, gY) + '/' + gX + '/' + gY;
                 axios.get(url).then(function (response) {
-                    self.playCatchFish(response.data.fish, response.data.difficulty);
+                    const waitMin = 5000,
+                          waitMax = 10000;
+                    let waitDuration = Math.random() * (waitMax - waitMin) + waitMin;
+
+                    self.uniFishTimeout = setTimeout(function() {
+                        self.playCatchFish(response.data.fish, response.data.difficulty, response.data.speed);
+                    }, waitDuration);                    
                 }).catch(function (error) {
                     console.error("Error while requesting a fish.");
                     self.removeFloat(float.id);
@@ -5675,38 +5686,85 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             }
         },
 
-        playCatchFish: function(fish, difficulty) {
+        playCatchFish: function(fish, difficulty, speed) {
             let self = this;
+            const fishEscapeDuration = 7000;
+
             let altName = AltNames.getAltNameFromKind(fish);
             let fishName = altName !== undefined ? altName : fish;
             let fishSpriteUrl;
             if(this.fish[fish]){
                 fishSpriteUrl = this.fish[fish].getUrlByScale(this.renderer.scale);
             }
-            console.log(fishSpriteUrl);
 
+            this.fishingData.fishName = fishName;
             this.app.setFish(fishSpriteUrl);
-            this.app.setFishingTarget(difficulty);
+            this.generateFishingTarget(difficulty);
+            this.slidingFish = setInterval(this.moveFishOneStep.bind(this), speed);
             this.app.showFishing();
-
-            setTimeout(function() {
-                let random = Math.floor(Math.random() * 2);
-                if (!random) {
-                    self.stopFishing(true);
-                    self.showNotification("You caught " + fishName);
-                } else {
-                    self.stopFishing(false);
-                    self.showNotification("Fish escaped " + fishName);
-                }
-            }, 5000)
+            this.uniFishTimeout = setTimeout(function() {
+                self.showNotification(self.fishingData.fishName + " escaped!");
+                self.stopFishing(false);
+            }, fishEscapeDuration);  
         },
 
-        stopFishing(success) {
-            this.client.sendFishingResult(success);
-            this.removeFloat(this.player.id);
-            this.app.hideFishing();
-        }
+        stopFishing: function(success, barHoldDuration) {
+            let self=this;
+            clearTimeout(this.uniFishTimeout);
+            clearInterval(this.slidingFish);
 
+            if (barHoldDuration) {
+                this.app.holdFishing();
+                setTimeout(function(){self.app.hideFishing();}, barHoldDuration);
+            } else {
+                this.app.hideFishing();
+            }
+            
+            this.removeFloat(this.player.id);
+
+            this.client.sendFishingResult(success);
+            this.fishingData.fishPos = 0;
+            this.fishingData.fishDir = 1;
+            this.fishingData.fishName = null;
+        },
+
+        generateFishingTarget: function(difficulty){
+            const targetMaxHeight = 100, // 150 (bar size) - 2*4 (borders) - 2*21 (21 px gap top/bottom so the target never loads on edge)
+                  targetOffset = 25; // same as above - 25 offset from the top so the target never loads on the edge
+            this.fishingData.targetHeight = Math.floor(targetMaxHeight * difficulty/100); //difficulty is expressed in %
+            this.fishingData.targetPos = targetOffset + Math.round(Math.random() * (targetMaxHeight - this.fishingData.targetHeight));
+
+            this.app.setFishingTarget(this.fishingData.targetHeight, this.fishingData.targetPos);
+        },
+
+        moveFishOneStep: function(){
+            const maxPos = 126; //150 (bar size) - 16 (fish size) - 2*4 (borders)
+            this.fishingData.fishPos += this.fishingData.fishDir;
+
+            if(this.fishingData.fishPos === maxPos){
+                this.fishingData.fishDir = -1;
+            }
+            else if(this.fishingData.fishPos === 0){
+                this.fishingData.fishDir = 1;
+            }
+
+            this.app.setFishPos(this.fishingData.fishPos);
+        },
+
+        clickFishingBar: function(){
+            const markerOffset = 12; // 8 from the marker + 4 from the bar border
+
+            clearInterval(this.slidingFish);
+            if (this.fishingData.fishPos + markerOffset >= this.fishingData.targetPos  
+                && this.fishingData.fishPos + markerOffset <= this.fishingData.targetPos + this.fishingData.targetHeight + 1)
+                {
+                self.showNotification("You caught " + this.fishingData.fishName);
+                self.stopFishing(true, 2000);
+            } else {
+                self.showNotification("Failed to catch " + this.fishingData.fishName);
+                self.stopFishing(false, 2000);
+            }
+        }
     });
     
     return Game;

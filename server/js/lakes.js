@@ -4,7 +4,7 @@ let Lakes = {
     cobFarmLake: {
         fish: {
             cobguppy: 90,
-            cobcarp: 9,
+            cobneon: 9,
             cobgoldfish: 1
         },
     },

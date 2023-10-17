@@ -14,7 +14,7 @@ const AltNames = {
     cobogre: "ogre",
     cobfallingrock: "falling rock",
     cobguppy: "guppy",
-    cobcarp: "carp",
+    cobneon: "neon tetra",
     cobgoldfish: "goldfish"
 };
 

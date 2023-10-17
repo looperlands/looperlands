@@ -153,10 +153,13 @@ body.upscaled.game {background:#000;}
 #hitpoints.white {-moz-animation:flash 0.5s linear 1;-webkit-animation:flash 0.5s linear 1;-o-animation:flash 0.5s linear 1;-ms-animation:flash 0.5s linear 1;animation:flash 0.5s linear 1;}
 #hitpoints.invincible {-moz-animation:invincible 0.3s steps(3, end) alternate infinite;-webkit-animation:invincible 0.3s steps(3, end) alternate infinite;-o-animation:invincible 0.3s steps(3, end) alternate infinite;-ms-animation:invincible 0.3s steps(3, end) alternate infinite;}
 
-#fishingbar {background:url('../img/1/fishing.png');image-rendering:-moz-crisp-edges;position:absolute;top:15%;left:33%;z-index:50;opacity:0}
-#fishingbar.active {opacity:1;}
+#fishingbar {background:url('../img/1/fishing.png');image-rendering:-moz-crisp-edges;position:absolute;top:15%;left:33%;z-index:50;opacity:0;pointer-events:none;cursor:pointer;}
+#fishingbar.active {opacity:1;pointer-events:auto;}
+#fishingbar.hold {opacity:1;pointer-events:none;}
 #fishingtarget {background:#b0ff66;z-index:51}
-#fish {z-index:52;}
+#fish-box{z-index:52;}
+#fish-marker{background:url('../img/1/fishing.png');image-rendering:-moz-crisp-edges;position:absolute;z-index:53;}
+#fish {z-index:54;}
 
 #notifications {position:absolute;left:50%;text-align:center;font-family:'GraphicPixel';overflow:hidden;}
 #notifications div {position:absolute;-moz-transition:none;-webkit-transition:none;top:0;width:100%;}
@@ -427,7 +430,7 @@ footer div  {display:inline-block;}
     .upscaled #logo, .upscaled #logosparks, .upscaled .left-ornament, .upscaled .right-ornament, .upscaled #character, .upscaled #character div, .upscaled .button, .upscaled .button div, .upscaled #respawn, .upscaled #scroll, .upscaled #instructions, .upscaled .icon, .upscaled #tilt, .upscaled .parchment-left, .upscaled .parchment-middle, .upscaled .parchment-right, .upscaled .avatar, .upscaled .facebook, .upscaled .twitter, .upscaled .close, .upscaled .ribbon .top, .upscaled .ribbon .bottom, .upscaled #about .img, .upscaled .ext-link {background-image:url('../img/3/spritesheet.png');}
     .upscaled #bar-container, .upscaled #healthbar, .upscaled .barbutton, .upscaled #chatbox, .upscaled #population {background-image:url('../img/3/barsheet.png');}
     .upscaled #achievements, .upscaled #achievements li, .upscaled .coin, .upscaled #achievement-notification, .upscaled #coinsparks, .upscaled .achievement-sharing a, .upscaled #previous, .upscaled #next {background:url('../img/3/achievements.png');}
-    .upscaled #fishingbar {background:url('../img/3/fishing.png');}
+    .upscaled #fishingbar, #fishing-marker {background:url('../img/3/fishing.png');}
 
     body {background:-moz-radial-gradient(rgba(0,0,0,0) 40%,rgba(0,0,0,1) 125%), url('../img/1/wood2.png') no-repeat 1587px 138px, url('../img/1/wood2.png') no-repeat 51px 519px, url('../img/1/wood3.png') no-repeat 228px 219px, url('../img/1/wood.png') repeat, #000; background-size:auto, 15px auto, 15px auto, 60px auto, 384px;}
     body {background:-webkit-gradient(radial, center center, 360, center center, 1200, from(rgba(0,0,0,0)), to(rgba(0,0,0,1))), url('../img/3/wood2.png') no-repeat 1587px 138px, url('../img/3/wood2.png') no-repeat 51px 519px, url('../img/3/wood3.png') no-repeat 228px 219px, url('../img/3/wood.png') repeat, #000; background-size:auto, 15px auto, 15px auto, 60px auto, 384px;}
@@ -506,8 +509,10 @@ footer div  {display:inline-block;}
     #hitpoints {width:0px;height:21px;top:15px;left:33px;z-index:10; position:absolute; border-top: 3px solid #ea6767; border-bottom: 3px solid #a62828;}
 
     #fishingbar {width:72px;height:450px;}
-    #fishingtarget {margin-top:0px;height:0px;width:48px;top:75px;left:12px; position:absolute; border-top: 3px solid #55b000; border-bottom: 3px solid #55b000;}
-    #fish {margin-top:0px;height:48px;width:48px;top:12px;left:12px; position:absolute;}
+    #fishingtarget {margin-top:0px;height:0px;width:48px;left:12px; position:absolute; border-top: 3px solid #55b000; border-bottom: 3px solid #55b000;}
+    #fish-box {margin-top:0px;height:48px;width:48px;top:12px;left:12px; position:absolute;}
+    #fish-marker{width:54px;height:9px;background-position:-72px 0;background-size:126px;left:-3px;top:21px;}
+    #fish {height:48px;width:48px;position:absolute;}
 
     #armor, #weapon {width:48px;height:48px;position:absolute;background-size:288px;background-position:-96px;}
     #weapon {left:312px;top:3px;background-size:288px;}
@@ -596,7 +601,7 @@ footer div  {display:inline-block;}
     .upscaled #logo, .upscaled #logosparks, .upscaled .left-ornament, .upscaled .right-ornament, .upscaled #character, .upscaled #character div, .upscaled .button, .upscaled .button div, .upscaled #respawn, .upscaled #scroll, .upscaled #instructions, .upscaled .icon, .upscaled #tilt, .upscaled .parchment-left, .upscaled .parchment-middle, .upscaled .parchment-right, .upscaled .avatar, .upscaled .facebook, .upscaled .twitter, .upscaled .close, .upscaled .ribbon .top, .upscaled .ribbon .bottom, .upscaled #about .img, .upscaled .ext-link {background-image:url('../img/2/spritesheet.png');}
     .upscaled #bar-container, .upscaled #healthbar, .upscaled .barbutton, .upscaled #chatbox, .upscaled #population {background-image:url('../img/2/barsheet.png');}
     .upscaled #achievements, .upscaled #achievements li, .upscaled .coin, .upscaled #achievement-notification, .upscaled #coinsparks, .upscaled .achievement-sharing a, .upscaled #previous, .upscaled #next {background:url('../img/2/achievements.png');}
-    .upscaled #fishingbar {background:url('../img/2/fishing.png');}
+    .upscaled #fishingbar, #fish-marker {background:url('../img/2/fishing.png');}
 
     body {background:-moz-radial-gradient(rgba(0,0,0,0) 40%,rgba(0,0,0,1) 125%), url('../img/1/wood.png') repeat, #000; background-size:auto, 256px;}
     body {background:-webkit-gradient(radial, center center, 240, center center, 800, from(rgba(0,0,0,0)), to(rgba(0,0,0,1))), url('../img/2/wood.png') repeat, #000; background-size:auto, 256px;}
@@ -674,8 +679,10 @@ footer div  {display:inline-block;}
     #hitpoints {width:0px;height:16px;top:8px;left:22px;z-index:10;position:absolute;}
 
     #fishingbar {width:48px;height:300px;}
-    #fishingtarget {margin-top:0px;height:0px;width:32px;top:50px;left:8px; position:absolute; border-top: 2px solid #55b000; border-bottom: 2px solid #55b000;}
-    #fish {margin-top:0px;height:32px;width:32px;top:8px;left:8px; position:absolute;}
+    #fishingtarget {margin-top:0px;height:0px;width:32px;left:8px; position:absolute; border-top: 2px solid #55b000; border-bottom: 2px solid #55b000;}
+    #fish-box {margin-top:0px;height:32px;width:32px;top:8px;left:8px; position:absolute;}
+    #fish-marker{width:36px;height:6px;background-position:-48px 0;background-size:84px;left:-2px;top:14px;}
+    #fish {height:32px;width:32px;position:absolute;}
 
     #armor, #weapon {width:32px;height:32px;position:absolute;background-size:192px;background-position:-64px;}
     #weapon {left:208px;top:2px;}
@@ -764,7 +771,7 @@ footer div  {display:inline-block;}
     .upscaled #logo, .upscaled #logosparks, .upscaled .left-ornament, .upscaled .right-ornament, .upscaled #character, .upscaled #character div, .upscaled .button, .upscaled .button div, .upscaled #respawn, .upscaled #scroll, .upscaled #instructions, .upscaled .icon, .upscaled #tilt, .upscaled .parchment-left, .upscaled .parchment-middle, .upscaled .parchment-right, .upscaled .avatar, .upscaled .facebook, .upscaled .twitter, .upscaled .close, .upscaled .ribbon .top, .upscaled .ribbon .bottom, .upscaled #about .img, .upscaled .ext-link {background-image:url('../img/2/spritesheet.png');}
     .upscaled #bar-container, .upscaled #healthbar, .upscaled .barbutton, .upscaled #chatbox, .upscaled #population {background-image:url('../img/2/barsheet.png');}
     .upscaled #achievements, .upscaled #achievements li, .upscaled .coin, .upscaled #achievement-notification, .upscaled #coinsparks, .upscaled .achievement-sharing a, .upscaled #previous, .upscaled #next {background:url('../img/2/achievements.png');}
-    .upscaled #fishingbar {background:url('../img/2/fishing.png');}
+    .upscaled #fishingbar, #fish-marker {background:url('../img/2/fishing.png');}
 
     body {background:-moz-radial-gradient(rgba(0,0,0,0) 40%,rgba(0,0,0,1) 125%), url('../img/1/wood.png') repeat, #000; background-size:auto, 256px;}
     body {background:-webkit-gradient(radial, center center, 240, center center, 800, from(rgba(0,0,0,0)), to(rgba(0,0,0,1))), url('../img/2/wood.png') repeat, #000; background-size:auto, 256px;}
@@ -842,8 +849,10 @@ footer div  {display:inline-block;}
     #hitpoints {width:0px;height:16px;top:8px;left:22px;z-index:10;position:absolute;border-top: 3px solid #ea6767; border-bottom: 3px solid #a62828;}
 
     #fishingbar {width:48px;height:300px;}
-    #fishingtarget {margin-top:0px;height:0px;width:32px;top:50px;left:8px; position:absolute; border-top: 2px solid #55b000; border-bottom: 2px solid #55b000;}
-    #fish {margin-top:0px;height:32px;width:32px;top:8px;left:8px; position:absolute;}
+    #fishingtarget {margin-top:0px;height:0px;width:32px;left:8px; position:absolute; border-top: 2px solid #55b000; border-bottom: 2px solid #55b000;}
+    #fish-box {margin-top:0px;height:32px;width:32px;top:8px;left:8px; position:absolute;}
+    #fish-marker{width:36px;height:6px;background-position:-48px 0;background-size:84px;left:-2px;top:14px;}
+    #fish {height:32px;width:32px;position:absolute;}
 
     #armor, #weapon {width:32px;height:32px;position:absolute;background-size:192px;background-position:-64px;}
     #weapon {left:208px;top:2px;}
@@ -1007,8 +1016,10 @@ footer div  {display:inline-block;}
     #hitpoints {width:0px;height:11px;top:4px;left:11px;z-index:10;position:absolute;}
 
     #fishingbar {width:24px;height:150px;}
-    #fishingtarget {margin-top:0px;height:0px;width:16px;top:25px;left:4px; position:absolute; border-top: 1px solid #55b000; border-bottom: 1px solid #55b000;}
-    #fish {margin-top:0px;height:16px;width:16px;top:4px;left:4px; position:absolute;}
+    #fishingtarget {margin-top:0px;height:0px;width:16px;left:4px; position:absolute; border-top: 1px solid #55b000; border-bottom: 1px solid #55b000;}
+    #fish-box {margin-top:0px;height:16px;width:16px;top:4px;left:4px; position:absolute;}
+    #fish-marker{width:18px;height:3px;background-position:-24px 0;background-size:42px;left:-1px;top:7px;}
+    #fish {height:16px;width:16px;position:absolute;}
 
     #armor, #weapon {width:16px;height:16px;position:absolute;background-size:96px;background-position:-32px;}
     #weapon {left:104px;top:1px;}
@@ -1172,8 +1183,10 @@ footer div  {display:inline-block;}
     #hitpoints {width:0px;height:16px;top:8px;left:22px;z-index:10;position:absolute;}
 
     #fishingbar {width:48px;;height:300px;}
-    #fishingtarget {margin-top:0px;height:0px;width:32px;top:50px;left:8px; position:absolute; border-top: 2px solid #55b000; border-bottom: 2px solid #55b000;}
-    #fish {margin-top:0px;height:32px;width:32px;top:8px;left:8px; position:absolute;}
+    #fishingtarget {margin-top:0px;height:0px;width:32px;left:8px; position:absolute; border-top: 2px solid #55b000; border-bottom: 2px solid #55b000;}
+    #fish-box {margin-top:0px;height:32px;width:32px;top:8px;left:8px; position:absolute;}
+    #fish-marker{width:36px;height:6px;background-position:-48px 0;background-size:84px;left:-2px;top:14px;}
+    #fish {height:32px;width:32px;position:absolute;}
 
     #armor, #weapon {width:32px;height:32px;position:absolute;background-size:192px;background-position:-64px;}
     #weapon {left:208px;top:2px;}

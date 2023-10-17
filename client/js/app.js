@@ -625,22 +625,31 @@ define(['jquery', 'storage'], function($, Storage) {
         },
 
         hideFishing: function() {
+            $('#fishingbar').removeClass('hold');
             $('#fishingbar').removeClass('active');
         },
 
-        setFishingTarget: function(difficulty) {
-            let scale = this.game.renderer.scale,
-                targetMaxHeight = 100 * scale,
-                barHeight = Math.floor(targetMaxHeight*difficulty/100), //difficulty is expressed in %
-                marginTop = Math.round(Math.random() * (targetMaxHeight-barHeight)); 
+        holdFishing: function() {
+            $('#fishingbar').removeClass('active');
+            $('#fishingbar').addClass('hold');
+        },
+
+        setFishingTarget: function(barHeight, marginTop) {
+            let scale = this.game.renderer.scale;
   
-        	$("#fishingtarget").css('height', barHeight + "px");
-            $("#fishingtarget").css('margin-top', marginTop + "px");
+        	$("#fishingtarget").css('height', barHeight * scale + "px");
+            $("#fishingtarget").css('margin-top', marginTop * scale + "px");
         },
 
         setFish: function(url) {
             document.getElementById("fish").style.backgroundImage="url('" + url + "')";
         },
+
+        setFishPos: function(pos) {
+            let scale = this.game.renderer.scale;
+
+            $("#fish-box").css('margin-top', pos * scale + "px");
+        }
     });
 
     return App;
