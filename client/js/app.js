@@ -203,14 +203,17 @@ define(['jquery', 'storage'], function($, Storage) {
                         return;
                     }
                     self.game.destroyBubble("global");
-                    chatHTML = "<div>";
-                    response.data.forEach(function(message) {
-                        date = new Date(message.epoch);
-                        time = date.toLocaleTimeString();
-                        chatHTML += `<p><b>${message.playerName}</b>&nbsp;[${time}]:&nbsp;${message.message}</p>`
-                    });
-                    chatHTML += "</div>";
-                    self.game.createBubble("global", chatHTML);
+                    if (response.data) {
+                        chatHTML = "<div>";
+                        response.data.forEach(function(message) {
+                            date = new Date(message.epoch);
+                            time = date.toLocaleTimeString();
+                            chatHTML += `<p><b>${message.playerName}</b>&nbsp;[${time}]:&nbsp;${message.message}</p>`
+                        });
+                        chatHTML += "</div>";
+                        self.game.createBubble("global", chatHTML);
+                    }
+
                 });
             }
         },
