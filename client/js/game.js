@@ -5163,6 +5163,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     if (inPvpZone) {
                         this.makePlayerAttack(entity);
                     } else {
+                        this.removeFromPathingGrid(pos.x, pos.y);
                         this.makePlayerGoTo(pos.x, pos.y);
                     }
                 }
