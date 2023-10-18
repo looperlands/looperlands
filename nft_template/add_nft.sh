@@ -13,7 +13,7 @@ fi
 
 if [ -z "$3" ]
   then
-    echo "Sprite type (armor or weapon) missing"
+    echo "Sprite type (armor, weapon, fishingrod) missing"
     exit 1
 fi
 
@@ -31,14 +31,14 @@ stat $IMAGE_DIR/1.png 1> /dev/null ||  missingFile $IMAGE_DIR/1.png
 stat $IMAGE_DIR/2.png 1> /dev/null ||  missingFile $IMAGE_DIR/2.png
 stat $IMAGE_DIR/3.png 1> /dev/null ||  missingFile $IMAGE_DIR/3.png
 
-if [ "$type" = "weapon" ]; then
+if [ "$type" = "weapon" ] || [ "$type" = "fishingrod" ]; then
   stat $IMAGE_DIR/item-1.png 1> /dev/null ||  missingFile $IMAGE_DIR/item-1.png
   stat $IMAGE_DIR/item-2.png 1> /dev/null ||  missingFile $IMAGE_DIR/item-2.png
   stat $IMAGE_DIR/item-3.png 1> /dev/null ||  missingFile $IMAGE_DIR/item-3.png
 fi
 
 echo Adding NFT with id $NFT_ID, type $type
-if [ "$3" = "weapon" ]; then
+if [ "$3" = "weapon" ] || [ "$type" = "fishingrod" ]; then
   jq ".id=\"${NFT_ID}\"" weaponspritemap.json > ../client/sprites/$NFT_ID.json
 else
   jq ".id=\"${NFT_ID}\"" armorspritemap.json > ../client/sprites/$NFT_ID.json
@@ -47,7 +47,7 @@ jq ".id=\"item-${NFT_ID}\"" itemspritemap.json > ../client/sprites/item-$NFT_ID.
 
 for i in {1..3}; do
     cp $IMAGE_DIR/$i.png ../client/img/$i/$NFT_ID.png
-    if [ "$3" = "weapon" ]; then
+    if [ "$3" = "weapon" ] || [ "$type" = "fishingrod" ]; then
       cp $IMAGE_DIR/item-$i.png ../client/img/$i/item-$NFT_ID.png
     else
       cp armor$i.png ../client/img/$i/item-$NFT_ID.png
