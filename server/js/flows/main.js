@@ -11,17 +11,32 @@ flow = {
             "then": [
                 {
                     "idx": "027d2f33-5287-4ec4-9baa-e0994ca03a0b",
-                    "type": "in.area",
+                    "type": "has.trigger.active",
                     "options": {
-                        "top_left": "26,197",
-                        "bottom_right": "34,203"
+                        "trigger": "test",
                     },
                     "true": [
                         {
                             "idx": "f8f719c5-5232-49aa-9e81-f8254dc952d9",
                             "type": "talk.player",
                             "options": {
-                                "message": "Portal rat"
+                                "message": "Trigger is active"
+                            }
+                        }
+                    ],
+                    "false": [
+                        {
+                            "idx": "f8f719c5-5232-49aa-9e81-f8254dc952d8",
+                            "type": "talk.player",
+                            "options": {
+                                "message": "Activate trigger now"
+                            }
+                        },
+                        {
+                            "idx": "f8f719c5-5232-49aa-9e81-f8254dc952d7",
+                            "type": "trigger.activate",
+                            "options": {
+                                "trigger": "test"
                             }
                         }
                     ]

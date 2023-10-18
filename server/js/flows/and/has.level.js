@@ -3,7 +3,6 @@ const Formulas = require("../../formulas");
 
 module.exports = Block = cls.Class.extend({
     init: function(options, worldserver) {
-        this.handled = false;
         this.level = parseInt(options.level);
     },
 

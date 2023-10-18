@@ -24,13 +24,13 @@ const events = {
 }
 
 const blocks = {
-    'tag.equals': require('./and/tag.equals.js'),
     'has.killed.mob': require('./and/has.killed.mob.js'),
     'has.looted.item': require('./and/has.looted.item.js'),
     'has.quest.received': require('./and/has.quest.received.js'),
     'has.quest.completed': require('./and/has.quest.completed.js'),
     'has.level': require('./and/has.level.js'),
     'in.area': require('./and/in.area.js'),
+    'has.trigger.active': require('./and/has.trigger.active.js'),
     'any': require('./special/any.js'),
     'all': require('./special/all.js'),
     'delay': require('./special/delay.js'),

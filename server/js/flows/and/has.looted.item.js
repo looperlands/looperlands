@@ -2,7 +2,6 @@ var cls = require("../../lib/class")
 
 module.exports = Block = cls.Class.extend({
     init: function(options, worldserver) {
-        this.handled = false;
         this.item = String(options.item);
         this.amount = parseInt(options.amount);
     },
