@@ -30,6 +30,10 @@ define(['jquery', 'app'], function($, App) {
                     if($('#parchment').hasClass('about')) {
                         app.toggleAbout();
                     }
+
+                    if($('#parchment').hasClass('settings')) {
+                        app.toggleSettings();
+                    }                    
                 });
         
                 $('.barbutton').click(function() {
@@ -428,7 +432,7 @@ define(['jquery', 'app'], function($, App) {
             });
             
             $('#mutebutton').click(function() {
-                game.audioManager.toggle();
+                game.app.toggleSettings();
             });
             
             $(document).bind("keydown", function(e) {

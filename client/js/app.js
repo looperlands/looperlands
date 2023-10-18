@@ -19,6 +19,7 @@ define(['jquery', 'storage'], function($, Storage) {
             this.watchNameInputInterval = setInterval(this.toggleButton.bind(this), 100);
             this.$playButton = $('.play'),
             this.$playDiv = $('.play div');
+            this.settings = new GameSettings(this);
         },
         
         setGame: function(game) {
@@ -202,16 +203,17 @@ define(['jquery', 'storage'], function($, Storage) {
                         return;
                     }
                     self.game.destroyBubble("global");
-                    chatHTML = "<div>";
-                    if(response.data) {
-                        response.data.forEach(function (message) {
+                    if (response.data) {
+                        chatHTML = "<div>";
+                        response.data.forEach(function(message) {
+
                             date = new Date(message.epoch);
                             time = date.toLocaleTimeString();
                             chatHTML += `<p><b>${message.playerName}</b>&nbsp;[${time}]:&nbsp;${message.message}</p>`
                         });
+                        chatHTML += "</div>";
+                        self.game.createBubble("global", chatHTML);
                     }
-                    chatHTML += "</div>";
-                    self.game.createBubble("global", chatHTML);
                 });
             }
         },
@@ -294,6 +296,9 @@ define(['jquery', 'storage'], function($, Storage) {
         	if($('body').hasClass('about')) {
         	    this.closeInGameAbout();
         	}
+            if ($('body').hasClass('settings')) {
+                this.closeSettings();
+            }
         },
 
         showAchievementNotification: function(questName, endText, xpReward, medal) {
@@ -483,8 +488,8 @@ define(['jquery', 'storage'], function($, Storage) {
                 }
 
                 if(_this.game.started) {
+                    _this.hideWindows();
                     $('#parchment').removeClass().addClass('about');
-
                     $('body').toggleClass('about');
                     if(!_this.game.player) {
                         $('body').toggleClass('death');
@@ -511,6 +516,23 @@ define(['jquery', 'storage'], function($, Storage) {
             });
         },
 
+        toggleSettings : function() {
+            _this = this
+
+            if($('body').hasClass('settings')) {
+                this.closeSettings();
+            } else {
+                this.hideWindows();
+                $('#parchment').removeClass().addClass('settings');
+                $('body').addClass('settings');
+            }
+
+            if(!this.game.player) {
+                $('body').toggleClass('death');
+            }
+          
+        },
+
         closeInGameCredits: function() {
             $('body').removeClass('credits');
             $('#parchment').removeClass('credits');
@@ -527,6 +549,15 @@ define(['jquery', 'storage'], function($, Storage) {
             }
             $('#helpbutton').removeClass('active');
         },
+
+        closeSettings: function() {
+            $('body').removeClass('settings');
+            $('#parchment').removeClass('settings');
+            if(!this.game.player) {
+                $('body').addClass('death');
+            }
+            $('#mutebutton').removeClass('active');
+        },        
         
         togglePopulationInfo: function() {
             $('#population').toggleClass('visible');
