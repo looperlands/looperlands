@@ -14,16 +14,14 @@ ENV NODE_PATH $NVM_DIR/versions/node/$NODE_VERSION/bin
 ENV PATH $NODE_PATH:$PATH
 RUN apt-get update -yq \
     && apt-get install curl gnupg python2 -yq \
-    && apt-get install python3 -yq \
-    && apt-get install unzip \
-    && curl -fsSL https://bun.sh/install | bash
+    && apt-get install python3 -yq
 COPY . /opt/app
 WORKDIR /opt/app
 COPY shared/js/gametypes.js client/js/gametypes.js
-RUN ~/.bun/bin/bun install
+RUN npm ci
 RUN mkdir -p client/config
 COPY configs/config_build.json client/config
 WORKDIR /opt/app/bin
 RUN ./build.sh
 WORKDIR /opt/app
-CMD ~/.bun/bin/bun server/js/main.js
+CMD node server/js/main.js
