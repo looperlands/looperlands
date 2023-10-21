@@ -46,7 +46,7 @@ module.exports = Player = Character.extend({
 
         this.playerEventBroker = new PlayerEventBroker.PlayerEventBroker(this);
 
-        this.connection.listen(function(message) {
+        this.connection.listen(async function(message) {
 
             var action = parseInt(message[0]);
 
@@ -101,7 +101,6 @@ module.exports = Player = Character.extend({
                     self.updatePosition();
                 }
 
-
                 self.server.addPlayer(self);
                 self.server.enter_callback(self);
 
@@ -121,7 +120,14 @@ module.exports = Player = Character.extend({
                 dao.saveAvatarMapId(playerCache.nftId, playerCache.mapId);
                 self.playerEventBroker.setPlayer(self);
 
-                mapflows.loadFlow(playerCache.mapId, self.playerEventBroker, self.server);
+                await mapflows.loadFlow(playerCache.mapId, self.playerEventBroker, self.server);
+                if(self.flowInterval) {
+                    clearInterval(self.flowInterval);
+                }
+                self.flowInterval = setInterval(async function() {
+                    await mapflows.loadFlow(playerCache.mapId, self.playerEventBroker, self.server);
+                }, 60 * 1000);
+
                 self.playerEventBroker.spawnEvent(self, playerCache.checkpointId);
             }
             else if(action === Types.Messages.WHO) {

@@ -1,5 +1,7 @@
 const PlayerMapFlowEventConsumer = require('./playermapfloweventconsumer.js');
 const WorldMapFlowEventConsumer = require('./worldfloweventconsumer.js');
+const dao = require('../dao.js');
+
 const main = require('./main.js');
 const cobsfarmcity = require('./cobsfarmcity.js');
 const AltNames = require('../../../shared/js/altnames.js');
@@ -75,13 +77,14 @@ const worldEventConsumer = new WorldMapFlowEventConsumer.WorldMapFlowEventConsum
 PlayerEventBroker.PlayerEventBroker.playerEventConsumers.push(playerEventConsumer);
 WorldEventBroker.WorldEventBroker.worldEventConsumers.push(worldEventConsumer);
 
-function loadFlow(mapId, eventBroker, worldserver) {
+async function loadFlow(mapId, eventBroker, worldserver) {
     if (loadedFlow[eventBroker.player.nftId] != null) {
         unloadFlow(eventBroker)
     }
 
     console.log('load flow: ' + mapId);
-    if (flows[mapId] === undefined) {
+    flows[mapId] = await dao.loadMapFlow(mapId);
+    if (flows[mapId] === undefined || flows[mapId] === null) {
         return;
     }
 
@@ -106,6 +109,7 @@ function assignEventHandlers(flow, eventBroker, worldserver, mapId) {
             loadedBlocks[eventBroker.player.nftId][handler.idx] = new events[handler.type](handler.options, worldserver);
         }
         let eventClass = loadedBlocks[eventBroker.player.nftId][handler.idx];
+
         playerEventConsumer.addListener(eventBroker.player.nftId, eventClass.eventType, (event) => {
             handleEvent(handler, eventClass, event, worldserver, eventBroker);
         })
