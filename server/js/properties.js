@@ -201,9 +201,9 @@ var Properties = {
         drops: {
             THUDKEY: 100,
         },
-        weaponMod: 1.2,
-        hpMod: 4,
-        armorMod: 1.25
+        weaponMod: 0.9,
+        hpMod: 2,
+        armorMod: 0.8
 
 
     },

@@ -3008,6 +3008,24 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 "NFT_ea26d2c5636422daead7ad16467f5f1d8e6313a33d19aa447e54f889ea109ff7",
                                 "NFT_ec73a6c959b95b0b431216158ba5550b0ea89f3ae1c88e68c61d39eb35cbc37f",
                                 "NFT_ece1ba29ce370e2aea52a64402b72f6b2a4e643c12db538b43d671ba18c873cc",
+                                "NFT_14ac8fbc5b8091cbf2319a0389aff26bf0980b04084d4d0edbce623c825c9652",
+                                "NFT_23da55db55ab8ce7c2212833cfd012673e5128f0688d605544f10b734b1be187",
+                                "NFT_54e402fe23deb77c9f0d2dbdd97eb8f07a93d597ac1f67293fdc085f163b0cf2",
+                                "NFT_af060cd1448af99d76bfbdc1ab263804466d00527fedea82ff9a8e0fda8c179e",
+                                "NFT_a37018214ccbc9d96e3d079e0745210c0332c6e82753ce55608c87f24ab9b88c",
+                                "NFT_ff85e22618fb50f3c0e8edf551b0191630af6be5eee0395d4e113677784ea976",
+                                "NFT_0b1f7aa68a99bb17b4ed88bd6c7ad347cd9067c561de1050c81bad461751286c",
+                                "NFT_2e91308a556f7c549393d5779b6c1a2a55f17936960c42124037b7e1e43d51a1",
+                                "NFT_4c06c93a4f483ad07a83a1cb6f48005e2efb2b82cfece7b4079665459e752d99",
+                                "NFT_d07f0a6b464f1155e8f4209337d0c05b68b4004a7cce0db04cfcb987d3f7ded3",
+                                "NFT_2277d811bc49b3e39c2121b0f06f200fadb76320ceeec07894d03168416d14be",
+                                "NFT_5d210eaa23437df3a70e91815f37ae652c10c4db5c5e687249efca48d062e400",
+                                "NFT_f6526224a4fb72a237fe3f87724abfe3846827aa03982ac1dfe48af3d03b6e2e",
+                                "NFT_0c4bcd8384eb657198d3a494f5debbc792006e9da39043e6637ea44c4c21622a",
+                                "NFT_2277d811bc49b3e39c2121b0f06f200fadb76320ceeec07894d03168416d14be",
+                                "NFT_5d210eaa23437df3a70e91815f37ae652c10c4db5c5e687249efca48d062e400",
+                                "NFT_806e7660a09485b11dca68221871570a45351deea5a8b5d276810dc40797ab90",
+                                "NFT_8d10d9501f43a883e5bf568af77042e803a801d60151c498ba315d508d6da2ae",
                                 // @nextSpriteLine@
                             ];                          
         },
@@ -5279,6 +5297,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     if (inPvpZone) {
                         this.makePlayerAttack(entity);
                     } else {
+                        this.removeFromPathingGrid(pos.x, pos.y);
                         this.makePlayerGoTo(pos.x, pos.y);
                     }
                 }
