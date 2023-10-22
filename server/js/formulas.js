@@ -86,10 +86,23 @@ Formulas.calculateSpeedTraitMap = function (numLevels) {
     return speedTraitMap;
 };
 
+Formulas.calculateToolLevelMap = function (numLevels) {
+    const toolLevelMap = {};
+
+    toolLevelMap[1] = 0;
+    toolLevelMap[2] = 1000;
+    for (let level = 3; level <= numLevels; level++) {
+        toolLevelMap[level] = toolLevelMap[level-1] * 2;
+    }
+
+    return toolLevelMap;
+};
+
 // Usage example:
 const numLevels = 100;
 const EXPERIENCE_MAP = Formulas.calculateExperienceMap(numLevels);
 const SPEEDTRAIT_MAP = Formulas.calculateSpeedTraitMap(numLevels);
+const TOOLLEVEL_MAP = Formulas.calculateToolLevelMap(numLevels);
 
 Formulas.level = function (experience) {
     let levels = Object.keys(EXPERIENCE_MAP);
@@ -147,6 +160,15 @@ Formulas.gaussianRand = function() {
 Formulas.gaussianRangeRandom = function(start, end) {
     return Math.floor(start + Formulas.gaussianRand() * (end - start + 1));
 }
+
+Formulas.toolLevel = function (experience) {
+    let levels = Object.keys(TOOLLEVEL_MAP);
+    let level = levels.find(function(level) {
+        return TOOLLEVEL_MAP[level] >= experience;
+    });
+    level = Number(level) - 1
+    return level;
+};
 
 if (!(typeof exports === 'undefined')) {
     module.exports = Formulas;

@@ -10,11 +10,11 @@ var cls = require("./lib/class"),
     dao = require('./dao.js'),
     AltNames = require("../../shared/js/altnames");
 
-
 const discord = require('./discord.js');
 const axios = require('axios');
 const chat = require("./chat.js");
 const NFTWeapon = require("./nftweapon.js");
+const NFTSpecialItem = require("./nftspecialitem.js");
 const PlayerEventBroker = require("./quests/playereventbroker.js");
 
 const LOOPWORMS_LOOPERLANDS_BASE_URL = process.env.LOOPWORMS_LOOPERLANDS_BASE_URL;
@@ -437,6 +437,7 @@ module.exports = Player = Character.extend({
                 }
             } else if(action === Types.Messages.FISHINGRESULT) {
                 if (message[1]) {
+                    self.incrementNFTSpecialItemExperience(self.pendingFish.exp);
                 }
                 self.pendingFish = null;
                 self.server.announceDespawnFloat(self);
@@ -463,8 +464,15 @@ module.exports = Player = Character.extend({
 
     incrementNFTWeaponExperience: function (damage) {
         let nftWeapon = this.getNFTWeapon();
-        if (nftWeapon !== undefined) {
+        if (nftWeapon !== undefined && (nftWeapon instanceof NFTWeapon)) {
             nftWeapon.incrementExperience(damage);
+        }
+    },
+
+    incrementNFTSpecialItemExperience: function (experience) {
+        let nftWeapon = this.getNFTWeapon();
+        if (nftWeapon !== undefined && (nftWeapon instanceof NFTSpecialItem)) {
+            nftWeapon.incrementExperience(experience);
         }
     },
 
@@ -665,6 +673,13 @@ module.exports = Player = Character.extend({
         }
     },
 
+    equipSpecialItem: function(kind) {
+        this.weapon = kind;
+        const kindString = Types.getKindAsString(kind);
+        this.nftWeapon = new NFTSpecialItem.NFTSpecialItem(this.walletId, kindString);
+        this.nftWeapon.loadItemData();
+    },
+
     equipItem: function(item) {
         if(item) {
             //console.debug(this.name + " equips " + Types.getKindAsString(item.kind));
@@ -677,6 +692,8 @@ module.exports = Player = Character.extend({
                 let playerCache = this.server.server.cache.get(this.sessionId);
                 let kind = Types.getKindAsString(item.kind);
                 dao.saveWeapon(playerCache.walletId, playerCache.nftId,Types.getKindAsString(item.kind));
+            } else if (Types.isSpecialItem(item.kind)) {
+                this.equipSpecialItem(item.kind);
             }
         }
     },

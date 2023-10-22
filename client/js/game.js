@@ -99,7 +99,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 "VILLAGESIGN7",
                                 "VILLAGESIGN8",
                                 "VILLAGESIGN9",
-                                "cobneon","cobguppy","cobgoldfish",
+                                "cobneon","cobguppy","cobgoldfish","cobtrout","coblobster","cobcatfish",
                                 // @nextCharacterLine@
                                 "item-BOARHIDE",
                                 "item-THUDKEY",
@@ -3090,6 +3090,9 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             this.fish["cobneon"] = this.sprites["cobneon"];
             this.fish["cobguppy"] = this.sprites["cobguppy"];
             this.fish["cobgoldfish"] = this.sprites["cobgoldfish"];
+            this.fish["coblobster"] = this.sprites["coblobster"];
+            this.fish["cobcatfish"] = this.sprites["cobcatfish"];
+            this.fish["cobtrout"] = this.sprites["cobtrout"];
         },
     
         initAnimations: function() {
@@ -5935,22 +5938,24 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         startFishing: function(gX, gY) {
             if(!self.player.isFishing){
                 let self = this;
-
-                let float = new Float(gX, gY, self.player.id, self.player.getWeaponName());
-                self.castFloat(float);
         
                 let url = '/session/' + self.sessionId + '/requestFish/' + self.map.getLakeName(gX, gY) + '/' + gX + '/' + gY;
                 axios.get(url).then(function (response) {
+                    if (response.data === false) {
+                        self.showNotification("You need a higher level to fish here.");
+                        return;
+                    }
+                    let float = new Float(gX, gY, self.player.id, self.player.getWeaponName());
+                    self.castFloat(float);
+
                     const waitMin = 5000,
                           waitMax = 10000;
                     let waitDuration = Math.random() * (waitMax - waitMin) + waitMin;
-
                     self.uniFishTimeout = setTimeout(function() {
                         self.playCatchFish(response.data.fish, response.data.difficulty, response.data.speed);
                     }, waitDuration);                    
                 }).catch(function (error) {
                     console.error("Error while requesting a fish.");
-                    self.removeFloat(float.id);
                 });
             }
         },

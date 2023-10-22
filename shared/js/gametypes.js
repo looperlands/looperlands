@@ -6392,6 +6392,10 @@ Types.isFishingRod = function(kind) {
     return kinds.getType(kind) === "fishingrod";
 };
 
+Types.isSpecialItem = function(kind) {
+    return Types.isFishingRod(kind);
+};
+
 Types.isObject = function(kind) {
     return kinds.getType(kind) === "object";
 };

@@ -362,6 +362,23 @@ WS.socketIOServer = Server.extend({
             res.status(200).json(inventory.data);
         });
 
+        app.get("/session/:sessionId/specialInventory", async (req, res) => {
+            const sessionId = req.params.sessionId;
+            const sessionData = cache.get(sessionId);
+            if (sessionData === undefined) {
+                //console.error("Session data is undefined for session id, params: ", sessionId, req.params);
+                res.status(404).json({
+                    status: false,
+                    "error" : "session not found",
+                    user: null
+                });
+                return;
+            }
+            const walletId = sessionData.walletId;
+
+            const inventory = await dao.getSpecialItems(walletId);
+            res.status(200).json(inventory);
+        });
 
         app.get("/session/:sessionId/quests", async (req, res) => {
             const sessionId = req.params.sessionId;
@@ -741,6 +758,7 @@ WS.socketIOServer = Server.extend({
             const fx = req.params.x;
             const fy = req.params.y;
             const sessionData = cache.get(sessionId);
+
             if (sessionData === undefined) {
                 res.status(404).json({
                     status: false,
@@ -748,24 +766,29 @@ WS.socketIOServer = Server.extend({
                     user: null
                 });
             } else {
-                let fish = Lakes.getRandomFish(lakeName);
-                if (fish === undefined) {
-                    res.status(400).json({
-                        status: false,
-                        error: "Could not get fish",
-                        user: null
-                    });
-                    return;
-                }
                 let player = self.worldsMap[sessionData.mapId].getPlayerById(sessionData.entityId);
-                player.pendingFish = fish;
-                //temp
-                let difficulty = Utils.randomRange(5,25);
-                let speed = Utils.randomRange(5, 20);
-                //
-                let response = {fish: fish, difficulty: difficulty, speed: speed};
-                self.worldsMap[sessionData.mapId].announceSpawnFloat(player, fx, fy);
-                res.status(200).send(response);
+                if (player.getNFTWeapon().getLevel() < Lakes.getLakeLevel(lakeName)) {
+                    res.status(200).send(false);
+                    return;
+                } else {
+                    let fish = Lakes.getRandomFish(lakeName);
+                    if (fish === undefined) {
+                        res.status(400).json({
+                            status: false,
+                            error: "Could not get fish",
+                            user: null
+                        });
+                        return;
+                    }
+                    let fishExp = Lakes.calculateFishExp(fish, lakeName);
+                    player.pendingFish = {name: fish, exp: fishExp};
+                    let difficulty = Lakes.getDifficulty(player.getNFTWeapon().getLevel(), lakeName);
+                    let speed = Lakes.getFishSpeed(fish, lakeName);
+
+                    let response = {fish: fish, difficulty: difficulty, speed: speed};
+                    self.worldsMap[sessionData.mapId].announceSpawnFloat(player, fx, fy);
+                    res.status(200).send(response);
+                }
             }
         });
 

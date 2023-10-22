@@ -431,38 +431,52 @@ define(['jquery', 'storage'], function($, Storage) {
 
             _this = this;
 
-            var inventoryQuery = "/session/" + _this.storage.sessionId + "/inventory";
+            let inventoryQuery = "/session/" + _this.storage.sessionId + "/inventory",
+                specialInventoryQuery = "/session/" + _this.storage.sessionId + "/specialInventory";
+            let inventory = [],
+                specialInventory = [];
+
             axios.get(inventoryQuery).then(function(response) {
                 if (response.data !== null) {
-                    var inventory = response.data.map(function(item) {
+                    inventory = response.data.map(function(item) {
                         return item.replace("0x", "NFT_");
                     });
-
+                }
+                axios.get(specialInventoryQuery).then(function(specResponse) {
+                    if (specResponse.data !== null) {
+                        specialInventory = specResponse.data.map(function(item) {
+                            return item.NFTID.replace("0x", "NFT_");
+                        });
+                    }
                     var inventoryHtml = "";
-
-
-                    inventoryHtml += "<strong>Weapons</strong><div>";
-                    inventory.forEach(function(item) {
-                        if (Types.isWeapon(item)) {
-                            imgTag = "<img id='"+item+"' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0;' src='img/3/item-" + item + ".png' />";
-                            inventoryHtml += imgTag;
-                        }
-
-                    });
+                    inventoryHtml += "<strong>Weapons</strong>";
+                    inventoryHtml += "<div>"
+                    if (inventory.length !== 0) {
+                        inventory.forEach(function(item) {
+                            if (Types.isWeapon(Types.getKindFromString(item))) {
+                                imgTag = "<img id='"+item+"' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0;' src='img/3/item-" + item + ".png' />";
+                                inventoryHtml += imgTag;
+                            }
+                        });
+                    }
                     inventoryHtml += "</div>";
 
-                    inventoryHtml += "<div>";
-                    inventory.forEach(function(item) {
-                        if (!Types.isWeapon(item)) {
-                            imgTag = "<img id='"+item+"' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0;' src='img/3/item-" + item + ".png' />";
-                            inventoryHtml += imgTag;
-                        }
-                    });
+                    inventoryHtml += "<strong>Tools</strong>";
+                    inventoryHtml += "<div>"
+                    if (specialInventory.length !== 0) {
+                        specialInventory.forEach(function(item) {
+                            if (Types.isFishingRod(Types.getKindFromString(item))) {
+                                imgTag = "<img id='"+item+"' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0;' src='img/3/item-" + item + ".png' />";
+                                inventoryHtml += imgTag;
+                            }
+    
+                        }); 
+                    }
                     inventoryHtml += "</div>";
-
+                    
                     $("#inventory").html(inventoryHtml);
 
-                    inventory.forEach(function(item) {
+                    let equipFunc = function(item) {
                         let equip = function() {
                             let itemId = Types.Entities[item];
                             let nftId = item.replace("NFT_", "0x");
@@ -470,33 +484,43 @@ define(['jquery', 'storage'], function($, Storage) {
                             _this.game.player.switchWeapon(item);
                         }
                         document.getElementById(item).addEventListener("click", equip);
-                    });
-                }
+                    }
 
-                if(_this.game.started) {
-                    _this.hideWindows();
-                    $('#parchment').removeClass().addClass('about');
-                    $('body').toggleClass('about');
-                    if(!_this.game.player) {
-                        $('body').toggleClass('death');
-                    }
-                    if($('body').hasClass('credits')) {
-                        _this.closeInGameCredits();
-                    }
-                } else {
-                    if(currentState !== 'animate') {
-                        if(currentState === 'about') {
-                            if(localStorage && localStorage.data) {
-                                _this.animateParchment(currentState, 'loadcharacter');
-                            } else {
-                                _this.animateParchment(currentState, 'createcharacter');
-                            }
-                        } else {
-                            _this.animateParchment(currentState, 'about');
-                            _this.previousState = currentState;
+                    inventory.forEach(function(item) {
+                        equipFunc(item);
+                    });
+
+                    specialInventory.forEach(function(item) {
+                        equipFunc(item);
+                    });
+
+                    if(_this.game.started) {
+                        _this.hideWindows();
+                        $('#parchment').removeClass().addClass('about');
+                        $('body').toggleClass('about');
+                        if(!_this.game.player) {
+                            $('body').toggleClass('death');
                         }
-                    }
-                }                
+                        if($('body').hasClass('credits')) {
+                            _this.closeInGameCredits();
+                        }
+                    } else {
+                        if(currentState !== 'animate') {
+                            if(currentState === 'about') {
+                                if(localStorage && localStorage.data) {
+                                    _this.animateParchment(currentState, 'loadcharacter');
+                                } else {
+                                    _this.animateParchment(currentState, 'createcharacter');
+                                }
+                            } else {
+                                _this.animateParchment(currentState, 'about');
+                                _this.previousState = currentState;
+                            }
+                        }
+                    }       
+                }).catch(function(error) {
+                    console.error(error);
+                });         
             }).catch(function(error) {
                 console.error(error);
             });

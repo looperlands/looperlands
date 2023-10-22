@@ -232,6 +232,24 @@ exports.saveNFTWeaponExperience = async function(wallet, nft, experience) {
   }
 }
 
+exports.saveNFTSpecialItemExperience = async function(wallet, nft, experience) {
+  const options = {
+    headers: {
+      'X-Api-Key': API_KEY
+    }
+  }
+  const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/SaveSpecialItemExperience.php?WalletID=${wallet}&NFTID=${nft}&Experience=${experience}`;
+  try {
+    const response = await axios.get(url, options);
+    //console.log("ResponseData from Loopworms: ", response.status, response.text, response.data);
+    const updatedExperience = parseInt(response.data.experience);
+    return updatedExperience;
+  } catch (error) {
+    console.error("saveNFTSpecialItemExperience Error", error);
+    return { "error": "Error saving special item experience" };
+  }
+}
+
 exports.loadNFTWeapon = async function (wallet, nft) {
   const options = {
     headers: {
@@ -246,6 +264,23 @@ exports.loadNFTWeapon = async function (wallet, nft) {
   } catch (error) {
     console.error("loadNFTWeapon", error);
     return { "error": "Error loading weapon" };
+  }
+}
+
+exports.getSpecialItems = async function (wallet) {
+  const options = {
+    headers: {
+      'X-Api-Key': API_KEY
+    }
+  }
+
+  const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/selectLooperLands_SpecialItem.php?WalletID=${wallet}`;
+  try {
+    const response = await axios.get(url, options);
+    return response.data;
+  } catch (error) {
+    console.error("getSpecialItems", error);
+    return { "error": "Error getting special items" };
   }
 }
 
