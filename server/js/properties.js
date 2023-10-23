@@ -370,6 +370,37 @@ var Properties = {
         respawnDelay: 1800000
     },
 
+    tentacle: {
+        level: 12,
+        drops: {
+        },
+        armorMod: 2.5,
+        weaponMod: 1.5,
+        hpMod: 2,
+        aoe: {
+            damage: 50,
+            range: 2
+        },
+        redpacket: false,
+        xp: 5000,
+        respawnDelay: 300000
+    },
+    tentacle2: {
+        level: 12,
+        drops: {
+        },
+        armorMod: 2.5,
+        weaponMod: 1.5,
+        hpMod: 2,
+        aoe: {
+            damage: 50,
+            range: 2
+        },
+        redpacket: false,
+        xp: 5000,
+        respawnDelay: 300000
+    },
+
     cobchicken: {
         level: 1,
         friendly: true

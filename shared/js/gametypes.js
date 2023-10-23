@@ -60,6 +60,8 @@ Types = {
         GNASHLING: 300007,
         MINIMAG: 200002,
         MEGAMAG: 200004,
+        TENTACLE: 200005,
+        TENTACLE2: 200006,
         WILDGRIN: 300010,
         THUDLORD: 300011,
         LOOMLEAF: 300012,
@@ -3246,6 +3248,8 @@ var kinds = {
     arachweave: [Types.Entities.ARACHWEAVE, "mob"],
     minimag: [Types.Entities.MINIMAG, "mob"],
     megamag: [Types.Entities.MEGAMAG, "mob"],
+    tentacle: [Types.Entities.TENTACLE, "mob"],
+    tentacle2: [Types.Entities.TENTACLE2, "mob"],
     wildgrin: [Types.Entities.WILDGRIN, "mob"],
     cobchicken: [Types.Entities.COBCHICKEN, "mob"],
     alaric: [Types.Entities.ALARIC, "mob"],
@@ -6529,5 +6533,7 @@ if(!(typeof exports === 'undefined')) {
 Types.timeouts = {};
 Types.timeouts[Types.Entities.FIREFOX] = 5000;
 Types.timeouts[Types.Entities.MEGAMAG] = 12000;
+Types.timeouts[Types.Entities.TENTACLE] = 12000;
+Types.timeouts[Types.Entities.TENTACLE2] = 12000;
 Types.timeouts[Types.Entities.COBSLIMEKING] = 5000;
 Types.timeouts[Types.Entities.COBOGRE] = 3000;
