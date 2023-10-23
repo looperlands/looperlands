@@ -151,6 +151,10 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
         return new Mobs.Megamag(id);
     };
 
+    EntityFactory.builders[Types.Entities.SEACREATURE] = function(id) {
+        return new Mobs.SeaCreature(id);
+    }
+
     EntityFactory.builders[Types.Entities.TENTACLE] = function(id) {
         return new Mobs.Tentacle(id);
     }

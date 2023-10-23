@@ -369,7 +369,17 @@ var Properties = {
         messages: ['Perish!', 'Be gone!', 'Burn!', 'Wither!', 'Suffer!'],
         respawnDelay: 1800000
     },
-
+    seacreature: {
+        level: 25,
+        drops: {
+        },
+        armorMod: 2.5,
+        weaponMod: 1.5,
+        hpMod: 2,
+        redpacket: true,
+        xp: 5000,
+        respawnDelay: 300000
+    },
     tentacle: {
         level: 12,
         drops: {

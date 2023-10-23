@@ -1686,6 +1686,33 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
 
+        SeaCreature: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.SEACREATURE);
+                this.idleSpeed = 400;
+                this.restoreDefaultMovement();
+                this.aggroRange = 0;
+                this.atkSpeed = 100;
+                this.setAttackRate(1000);
+                this.deathAnimated = true;
+                this.title = "";
+            },
+
+            restoreDefaultMovement: function () {
+                this.moveSpeed = 0;
+                this.walkSpeed = 0;
+            },
+
+            idle: function(orientation) {
+                this._super(Types.Orientations.UP);
+            },
+
+            moveTo_: function(x, y, callback) {
+                return;
+            },
+        }),
+
+
         Tentacle: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.TENTACLE);
