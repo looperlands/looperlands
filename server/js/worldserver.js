@@ -1019,8 +1019,8 @@ module.exports = World = cls.Class.extend({
             return;
         }
 
-
         let weaponInfo = {
+            constructor: nftWeapon.constructor.name,
             experience: nftWeapon.experience,
             trait: nftWeapon.trait
         }

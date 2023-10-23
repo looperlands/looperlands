@@ -32,9 +32,8 @@ Lakes.getRandomFish = function(lake) {
         retRarity = null,
         oddsSum = Object.values(rarities).reduce((partialSum, curr) => partialSum + curr.chance, 0),
         v = Utils.random(oddsSum);
-
         for(let rarity in rarities) {
-            let percentage = rarities[rarity];
+            let percentage = rarities[rarity].chance;
             
             p += percentage;
             if(v < p) {
@@ -67,7 +66,7 @@ Lakes.calculateFishExp = function(fishName, lakeName) {
 
     let lakeLevel = Lakes.getLakeLevel(lakeName);
     let fishMultiplier = rarities[Lakes[lakeName].fish[fishName]].expMultiplier;
-    let exp = Math.pow(baseExp * fishMultiplier, (lakeLevel - 1)*levelMultiplier);
+    let exp = baseExp * fishMultiplier * Math.pow(levelMultiplier, (lakeLevel - 1));
 
     return Math.round(exp);
 };

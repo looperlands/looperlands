@@ -3243,7 +3243,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 this.targetColor = "rgba(255, 255, 255, 0.5)";
             }
         
-            if(this.hoveringMob && this.started) {
+            if(this.hoveringMob && this.started && !Types.isSpecialItem(Types.getKindFromString(this.player.weaponName))) {
                 this.setCursor("sword");
                 this.hoveringTarget = false;
                 this.targetCellVisible = false;
@@ -5870,7 +5870,9 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                         weaponLevel = response.data.weaponInfo.weaponLevelInfo.currentLevel;
                         levelInfoHTML+=" - Weapon Level: " + weaponLevel + " ";
                         levelInfoHTML+=weaponPercentage + "%";
-                        levelInfoHTML+=", Trait: " + response.data.weaponInfo.trait;
+                        if (response.data.weaponInfo.trait !== null && response.data.weaponInfo.trait !== undefined) {
+                            levelInfoHTML+=", Trait: " + response.data.weaponInfo.trait;
+                        }
                     }
                     $("#levelInfo").html(levelInfoHTML);
 
@@ -5981,7 +5983,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
         playCatchFish: function(fish, difficulty, speed) {
             let self = this;
-            const fishEscapeDuration = 7000;
+            const fishEscapeDuration = 8000;
 
             let altName = AltNames.getAltNameFromKind(fish);
             let fishName = altName !== undefined ? altName : fish;
@@ -6053,6 +6055,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 {
                 self.showNotification("You caught " + this.fishingData.fishName);
                 self.stopFishing(true, 2000);
+                self.renderStatistics();
             } else {
                 self.showNotification("Failed to catch " + this.fishingData.fishName);
                 self.stopFishing(false, 2000);

@@ -578,7 +578,11 @@ WS.socketIOServer = Server.extend({
                 let maxHp = Formulas.hp(avatarLevelInfo.currentLevel);
                 let weaponInfo = self.worldsMap[sessionData.mapId].getNFTWeaponStatistics(sessionData.entityId);
                 if (weaponInfo !== undefined) {
-                    weaponInfo['weaponLevelInfo'] = Formulas.calculatePercentageToNextLevel(weaponInfo.experience);
+                    if (weaponInfo.constructor === "NFTWeapon") {
+                        weaponInfo['weaponLevelInfo'] = Formulas.calculatePercentageToNextLevel(weaponInfo.experience);
+                    } else if (weaponInfo.constructor === "NFTSpecialItem")  {
+                        weaponInfo['weaponLevelInfo'] = Formulas.calculateToolPercentageToNextLevel(weaponInfo.experience);
+                    }
                 }
 
                 let ret = {

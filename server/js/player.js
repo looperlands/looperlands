@@ -438,6 +438,7 @@ module.exports = Player = Character.extend({
             } else if(action === Types.Messages.FISHINGRESULT) {
                 if (message[1]) {
                     self.incrementNFTSpecialItemExperience(self.pendingFish.exp);
+                    self.playerEventBroker.lootEvent({kind: self.pendingFish.name});
                 }
                 self.pendingFish = null;
                 self.server.announceDespawnFloat(self);
@@ -464,14 +465,14 @@ module.exports = Player = Character.extend({
 
     incrementNFTWeaponExperience: function (damage) {
         let nftWeapon = this.getNFTWeapon();
-        if (nftWeapon !== undefined && (nftWeapon instanceof NFTWeapon)) {
+        if (nftWeapon !== undefined && (nftWeapon instanceof NFTWeapon.NFTWeapon)) {
             nftWeapon.incrementExperience(damage);
         }
     },
 
     incrementNFTSpecialItemExperience: function (experience) {
         let nftWeapon = this.getNFTWeapon();
-        if (nftWeapon !== undefined && (nftWeapon instanceof NFTSpecialItem)) {
+        if (nftWeapon !== undefined && (nftWeapon instanceof NFTSpecialItem.NFTSpecialItem)) {
             nftWeapon.incrementExperience(experience);
         }
     },
@@ -683,6 +684,10 @@ module.exports = Player = Character.extend({
     equipItem: function(item) {
         if(item) {
             //console.debug(this.name + " equips " + Types.getKindAsString(item.kind));
+            if (this.getNFTWeapon() !== undefined) {
+                this.getNFTWeapon().syncExperience();
+            } // this applies to both Weapon and Special item. 
+            // Technically it should be inside Else ifs below but we dont use armor items anyway
 
             if(Types.isArmor(item.kind)) {
                 this.equipArmor(item.kind);
@@ -690,7 +695,6 @@ module.exports = Player = Character.extend({
             } else if(Types.isWeapon(item.kind)) {
                 this.equipWeapon(item.kind);
                 let playerCache = this.server.server.cache.get(this.sessionId);
-                let kind = Types.getKindAsString(item.kind);
                 dao.saveWeapon(playerCache.walletId, playerCache.nftId,Types.getKindAsString(item.kind));
             } else if (Types.isSpecialItem(item.kind)) {
                 this.equipSpecialItem(item.kind);
