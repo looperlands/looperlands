@@ -42,6 +42,7 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
 
             // Other
             this.deathAnimated = false;
+            this.deathSpeed = 120;
     	},
 	
     	clean: function() {

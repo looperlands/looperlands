@@ -378,7 +378,7 @@ var Properties = {
         hpMod: 2,
         redpacket: true,
         xp: 5000,
-        respawnDelay: 300000
+        respawnDelay: 30000
     },
     tentacle: {
         level: 12,
@@ -393,7 +393,7 @@ var Properties = {
         },
         redpacket: false,
         xp: 5000,
-        respawnDelay: 300000
+        respawnDelay: 3000
     },
     tentacle2: {
         level: 12,
@@ -408,7 +408,7 @@ var Properties = {
         },
         redpacket: false,
         xp: 5000,
-        respawnDelay: 300000
+        respawnDelay: 3000
     },
 
     cobchicken: {

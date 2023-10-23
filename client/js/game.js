@@ -4290,7 +4290,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                         if(!entity.deathAnimated) {
                                             entity.setSprite(self.sprites["death"]);
                                         }
-                                        entity.animate("death", 120, 1, function() {
+                                        entity.animate("death", entity.deathSpeed, 1, function() {
                                             console.log(entity.id + " was removed");
 
                                             self.removeEntity(entity);
