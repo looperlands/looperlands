@@ -1,10 +1,10 @@
 const Utils = require("./utils");
 
 const rarities = {common: {chance: 700, expMultiplier: 1, speed: 20}, 
-                uncommon: {chance: 250, expMultiplier: 2, speed: 16}, 
-                rare: {chance: 40, expMultiplier: 5, speed: 12}, 
+                uncommon: {chance: 250, expMultiplier: 2, speed: 15}, 
+                rare: {chance: 40, expMultiplier: 5, speed: 11}, 
                 epic: {chance: 8, expMultiplier: 20, speed: 8}, 
-                legendary: {chance: 2, expMultiplier: 50, speed: 4}};
+                legendary: {chance: 2, expMultiplier: 50, speed: 6}};
 
 //Not all rarities have to be defined within a lake, but a common is mandatory
 let Lakes = {
@@ -85,8 +85,8 @@ Lakes.getDifficulty = function(playerLevel, lakeName) {
     }
 
     const maxDifficulty = 5,
-          minDifficulty = 50, // a target bar should never be bigger than 50%
-          levelGain = 3;
+          minDifficulty = 25, // a target bar should never be bigger than 25%
+          levelGain = 2;
 
     let calculatedDiff = maxDifficulty + (playerLevel - Lakes[lakeName].level) * levelGain;
     return Math.min(calculatedDiff, minDifficulty);

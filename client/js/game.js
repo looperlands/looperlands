@@ -66,7 +66,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
             // fishing
             this.floats = {};
-            this.fishingData = {fishName: null, fishPos: 0, fishDir: 1, targetPos: 0, targetHeight: 0};
+            this.fishingData = {fishName: null, fishPos: 0, fishTime: null, targetPos: 0, targetHeight: 0};
             this.slidingFish = null;
             this.uniFishTimeout = null;
         
@@ -3372,8 +3372,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         castFloat: function(float) {
             let player = this.getEntityById(float.id);
             if(player) {
-                player.isFishing = true;
-
                 let orientationToLake = player.getOrientationTo(float);
                 if (orientationToLake !== player.orientation) {
                     player.turnTo(orientationToLake);
@@ -3389,11 +3387,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         },
 
         removeFloat: function(floatId) {
-            let player = this.getEntityById(floatId);
-            if(player){
-                player.isFishing = false;
-            }
-
             if(floatId in this.floats) {
                 clearTimeout(this.floats[floatId].despawnTimeout);
                 delete this.floats[floatId];
@@ -5315,7 +5308,16 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         	        this.makePlayerOpenChest(entity);
         	    }
         	    else if(fishablePos = this.canFish(pos.x, pos.y, pos.keyboard)) { // this assignment inside a condition is intentional
-                    this.startFishing(fishablePos.gridX, fishablePos.gridY);
+                    if (this.player.isFishing
+                        && $('#fishingbar').hasClass('active')
+                        && this.floats[this.player.id] !== undefined
+                        && this.floats[this.player.id].gridX === fishablePos.gridX
+                        && this.floats[this.player.id].gridY === fishablePos.gridY) 
+                    {
+                        this.clickFishingBar();
+                    } else {
+                        this.startFishing(fishablePos.gridX, fishablePos.gridY);
+                    }
                 }
                 else {
         	        this.makePlayerGoTo(pos.x, pos.y);
@@ -5960,6 +5962,8 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             if(!self.player.isFishing){
                 let self = this;
         
+                self.player.isFishing = true;
+
                 let url = '/session/' + self.sessionId + '/requestFish/' + self.map.getLakeName(gX, gY) + '/' + gX + '/' + gY;
                 axios.get(url).then(function (response) {
                     if (response.data === false) {
@@ -5969,21 +5973,22 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     let float = new Float(gX, gY, self.player.id, self.player.getWeaponName());
                     self.castFloat(float);
 
-                    const waitMin = 5000,
-                          waitMax = 10000;
+                    const waitMin = 6000,
+                          waitMax = 12000;
                     let waitDuration = Math.random() * (waitMax - waitMin) + waitMin;
                     self.uniFishTimeout = setTimeout(function() {
                         self.playCatchFish(response.data.fish, response.data.difficulty, response.data.speed);
                     }, waitDuration);                    
                 }).catch(function (error) {
                     console.error("Error while requesting a fish.");
+                    self.player.isFishing = false;
                 });
             }
         },
 
         playCatchFish: function(fish, difficulty, speed) {
             let self = this;
-            const fishEscapeDuration = 8000;
+            const fishEscapeDuration = 7000;
 
             let altName = AltNames.getAltNameFromKind(fish);
             let fishName = altName !== undefined ? altName : fish;
@@ -5993,9 +5998,10 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             }
 
             this.fishingData.fishName = fishName;
+            this.fishingData.fishTime = new Date().getTime();
             this.app.setFish(fishSpriteUrl);
             this.generateFishingTarget(difficulty);
-            this.slidingFish = setInterval(this.moveFishOneStep.bind(this), speed);
+            this.slidingFish = setInterval(self.tickMovingFish.bind(self), 10, speed);
             this.app.showFishing();
             this.uniFishTimeout = setTimeout(function() {
                 self.showNotification(self.fishingData.fishName + " escaped!");
@@ -6005,12 +6011,14 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
         stopFishing: function(success, barHoldDuration) {
             let self=this;
+
+            self.player.isFishing = false;
             clearTimeout(this.uniFishTimeout);
             clearInterval(this.slidingFish);
 
             if (barHoldDuration) {
                 this.app.holdFishing();
-                setTimeout(function(){self.app.hideFishing();}, barHoldDuration);
+                setTimeout(self.app.hideFishing, barHoldDuration);
             } else {
                 this.app.hideFishing();
             }
@@ -6019,28 +6027,31 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
             this.client.sendFishingResult(success);
             this.fishingData.fishPos = 0;
-            this.fishingData.fishDir = 1;
             this.fishingData.fishName = null;
         },
 
         generateFishingTarget: function(difficulty){
             const targetMaxHeight = 100, // 150 (bar size) - 2*4 (borders) - 2*21 (21 px gap top/bottom so the target never loads on edge)
-                  targetOffset = 25; // same as above - 25 offset from the top so the target never loads on the edge
+                  targetOffset = 25; // same as above - 4+21 offset from the top so the target never loads on the edge
             this.fishingData.targetHeight = Math.floor(targetMaxHeight * difficulty/100); //difficulty is expressed in %
             this.fishingData.targetPos = targetOffset + Math.round(Math.random() * (targetMaxHeight - this.fishingData.targetHeight));
 
             this.app.setFishingTarget(this.fishingData.targetHeight, this.fishingData.targetPos);
         },
 
-        moveFishOneStep: function(){
+        tickMovingFish: function(gap){
             const maxPos = 126; //150 (bar size) - 16 (fish size) - 2*4 (borders)
-            this.fishingData.fishPos += this.fishingData.fishDir;
+            const cycleTime = maxPos * gap;
+            let currTime = new Date().getTime();
+            let timeDiff = currTime - this.fishingData.fishTime;
 
-            if(this.fishingData.fishPos === maxPos){
-                this.fishingData.fishDir = -1;
-            }
-            else if(this.fishingData.fishPos === 0){
-                this.fishingData.fishDir = 1;
+            let dir = (Math.floor(timeDiff / cycleTime) % 2); // 0 -> move down, 1 -> move up
+            let posInCycle = Math.round((timeDiff % cycleTime) / gap);
+
+            if(dir){
+                this.fishingData.fishPos = 126 - posInCycle;
+            } else {
+                this.fishingData.fishPos = posInCycle;
             }
 
             this.app.setFishPos(this.fishingData.fishPos);
