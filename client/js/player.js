@@ -98,8 +98,11 @@ define(['character', 'exceptions', '../../shared/js/gametypes'], function(Charac
             return this.weaponName !== null;
         },
     
-        switchWeapon: function(newWeaponName) {
-            var count = 14, 
+        switchWeapon: function(newWeaponName, blinkCount) {
+            if(blinkCount === undefined) {
+                blinkCount = 14;
+            }
+            var count = blinkCount,
                 value = false, 
                 self = this;
         
@@ -122,10 +125,11 @@ define(['character', 'exceptions', '../../shared/js/gametypes'], function(Charac
                     }
 
                     count -= 1;
-                    if(count === 1) {
+                    if(count <= 1) {
                         clearInterval(blanking);
                         self.switchingWeapon = false;
-                    
+                        self.setWeaponName(newWeaponName);
+                        
                         if(self.switch_callback) {
                             self.switch_callback();
                         }
