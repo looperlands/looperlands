@@ -10,7 +10,7 @@ fi
 
 if [ -z "$2" ]
   then
-    echo "Sprite type (armor or weapon) missing"
+    echo "Sprite type (armor, weapon, fishingrod) missing"
     exit 1
 fi
 
