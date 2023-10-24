@@ -3377,10 +3377,13 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     player.turnTo(orientationToLake);
                 };
 
-                player.animate("atk", 75, 1, function() {
-                    player.idle();
-                    self.addFloat(float);
-                });
+                if (this.camera.isVisible(player)) {
+                    player.animate("atk", 75, 1, function() {
+                        self.audioManager.playSound("watersplash");
+                        player.idle();
+                        self.addFloat(float);
+                    });
+                }
             } else {
                 self.addFloat(float);
             }
@@ -6064,10 +6067,12 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             if (this.fishingData.fishPos + markerOffset >= this.fishingData.targetPos  
                 && this.fishingData.fishPos + markerOffset <= this.fishingData.targetPos + this.fishingData.targetHeight + 1)
                 {
+                self.audioManager.playSound("fishingsuccess");
                 self.showNotification("You caught " + this.fishingData.fishName);
                 self.stopFishing(true, 2000);
                 self.renderStatistics();
             } else {
+                self.audioManager.playSound("fishingfail");
                 self.showNotification("Failed to catch " + this.fishingData.fishName);
                 self.stopFishing(false, 2000);
             }
