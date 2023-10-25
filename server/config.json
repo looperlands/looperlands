@@ -13,7 +13,8 @@
         "cobsfarmcity",
         "fhf",
         "wk",
-        "crimsonspace"
+        "crimsonspace",
+        "kbb"
     ],
     "map_directory": "./server/maps/",
     "metrics_enabled": false,
