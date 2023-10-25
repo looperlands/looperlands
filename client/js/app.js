@@ -459,6 +459,11 @@ define(['jquery', 'storage'], function($, Storage) {
                             if (Types.isWeapon(Types.getKindFromString(item))) {
                                 imgTag = "<img id='"+item+"' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0;' src='img/3/item-" + item + ".png' />";
                                 inventoryHtml += imgTag;
+                            } else {
+                                const index = inventory.indexOf(item);
+                                if (index > -1) {
+                                    inventory.splice(index, 1);
+                                }
                             }
                         });
                     }
@@ -471,8 +476,12 @@ define(['jquery', 'storage'], function($, Storage) {
                             if (Types.isSpecialItem(Types.getKindFromString(item))) {
                                 imgTag = "<img id='"+item+"' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0;' src='img/3/item-" + item + ".png' />";
                                 inventoryHtml += imgTag;
+                            } else {
+                                const index = specialInventory.indexOf(item);
+                                if (index > -1) {
+                                    specialInventory.splice(index, 1); 
+                                }
                             }
-    
                         }); 
                     }
                     inventoryHtml += "</div>";
@@ -480,13 +489,16 @@ define(['jquery', 'storage'], function($, Storage) {
                     $("#inventory").html(inventoryHtml);
 
                     let equipFunc = function(item) {
-                        let equip = function() {
-                            let itemId = Types.Entities[item];
-                            let nftId = item.replace("NFT_", "0x");
-                            _this.game.client.sendEquipInventory(itemId, nftId);
-                            _this.game.player.switchWeapon(item);
+                        if (document.getElementById(item) !== null)
+                        {
+                            let equip = function() {
+                                let itemId = Types.Entities[item];
+                                let nftId = item.replace("NFT_", "0x");
+                                _this.game.client.sendEquipInventory(itemId, nftId);
+                                _this.game.player.switchWeapon(item);
+                            }
+                            document.getElementById(item).addEventListener("click", equip);
                         }
-                        document.getElementById(item).addEventListener("click", equip);
                     }
 
                     inventory.forEach(function(item) {
