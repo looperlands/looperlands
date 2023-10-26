@@ -377,7 +377,7 @@ var Properties = {
         hpMod: 4,
         redpacket: true,
         xp: 20000,
-        respawnDelay: 300000
+        respawnDelay: 3600000
     },
     tentacle: {
         level: 12,
