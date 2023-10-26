@@ -597,8 +597,7 @@ module.exports = World = cls.Class.extend({
         if (attacker.type === 'player') {
             this.pushToPlayer(attacker, new Messages.Damage(entity, damage));
         }
-        
-        
+
         // If the entity is about to die
         if(entity.hitPoints <= 0) {
             if(entity.type === "mob") {
@@ -633,15 +632,9 @@ module.exports = World = cls.Class.extend({
                     })
                 }
 
-                // Handle sea-creature death
                 if (mob.kind === Types.Entities.TENTACLE || mob.kind === Types.Entities.TENTACLE2) {
-                    let parent = self.getEntityById(mob.parentId);
-                    if (parent.addArray.length === 1) {
-                        parent.hitPoints = 0;
-                        self.handleHurtEntity(parent, attacker, parent.hitPoints);
-                    }
+                    self.handleSeaCreatureDie(mob, attacker);
                 }
-                // End sea-creature
             }
     
             if(entity.type === "player") {
@@ -686,6 +679,7 @@ module.exports = World = cls.Class.extend({
             if(Types.isMob(kind)) {
                 var mob = new Mob('7' + kind + count++, kind, pos.x + 1, pos.y);
                 mob.onRespawn(function() {
+                    console.log('respawn mob');
                     mob.isDead = false;
                     mob.generateLevel();
                     mob.recalculateStats();
@@ -694,28 +688,14 @@ module.exports = World = cls.Class.extend({
                         mob.area.addToArea(mob);
                     }
 
-                    //Handle add sea-creature tentacles
-                    if (kind === Types.Entities.SEACREATURE) {
-                        self.spawnMobAdd(mob, Types.Entities.TENTACLE, mob.x - 5, mob.y - 2, true);
-                        self.spawnMobAdd(mob, Types.Entities.TENTACLE, mob.x - 2, mob.y - 2, true);
-                        self.spawnMobAdd(mob, Types.Entities.TENTACLE2, mob.x + 5, mob.y - 2, true);
-                        self.spawnMobAdd(mob, Types.Entities.TENTACLE2, mob.x + 2, mob.y - 2, true);
-                    }
-                    // End sea-creature
+                    if (kind === Types.Entities.SEACREATURE) { self.handleSeaCreatureSpawn(mob); }
                 });
                 mob.onMove(self.onMobMoveCallback.bind(self));
                 mob.onExitCombat(self.onMobExitCombatCallback.bind(self));
                 self.addMob(mob);
                 self.tryAddingMobToChestArea(mob);
 
-                //Handle add sea-creature tentacles
-                if (kind === Types.Entities.SEACREATURE) {
-                    self.spawnMobAdd(mob, Types.Entities.TENTACLE, mob.x - 5, mob.y - 2, true);
-                    self.spawnMobAdd(mob, Types.Entities.TENTACLE, mob.x - 2, mob.y - 2, true);
-                    self.spawnMobAdd(mob, Types.Entities.TENTACLE2, mob.x + 5, mob.y - 2, true);
-                    self.spawnMobAdd(mob, Types.Entities.TENTACLE2, mob.x + 2, mob.y - 2, true);
-                }
-                // End sea-creature
+                if (kind === Types.Entities.SEACREATURE) { self.handleSeaCreatureSpawn(mob); }
             }
             if(Types.isItem(kind)) {
                 self.addStaticItem(self.createItem(kind, pos.x + 1, pos.y));
@@ -1237,15 +1217,37 @@ module.exports = World = cls.Class.extend({
         mob.resetHitPoints(mob.maxHitPoints);
     },
 
-    spawnMobAdd: function(parent, childKind, x, y, canRespawn) {
+    spawnMobAdd: function(parent, childKind, x, y, canRespawn, distributeDamageToParent) {
+        if (distributeDamageToParent === undefined) {
+            distributeDamageToParent = false;
+        }
         if(parent.addArray.length < 15) { // Limit amount of adds to 15 to prevent any funny business
             let self = this;
             let add = new Mob('8' + Math.round(Math.random() * 9999999), childKind, x, y);
             add.parentId = parent.id;
             parent.addArray.push(add);
-            if(canRespawn !== true) {
+            if (canRespawn === true) {
+                let originalHandleRespawn = add.handleRespawn;
+                add.handleRespawn = function() {
+                    if (!parent.isDead) {
+                        originalHandleRespawn.call(add);
+                    }
+                }
+                add.onRespawn(function() {
+                    self.spawnMobAdd(parent, childKind, x, y, true, distributeDamageToParent);
+                });
+            } else {
                 add.handleRespawn = function () {return;};// dont respawn
             }
+
+            if (distributeDamageToParent === true) {
+               let originalHandleHurt = add.handleHurt;
+                add.handleHurt = function(attacker, dmg) {
+                     originalHandleHurt.call(add, attacker, dmg);
+                     self.handleHurtEntity(parent, attacker, dmg);
+                }
+            }
+
             add.onDetachFromParent(self.onDetachFromParentCallback.bind(self))
             add.onMove(self.onMobMoveCallback.bind(self));
             add.onExitCombat(self.onMobExitCombatCallback.bind(self));
@@ -1285,8 +1287,22 @@ module.exports = World = cls.Class.extend({
                     parent.addArray.splice(index, 1); 
                 }
         }
-    }
+    },
 
+    handleSeaCreatureSpawn: function(mob) {
+        this.spawnMobAdd(mob, Types.Entities.TENTACLE, mob.x - 5, mob.y - 2, true);
+        this.spawnMobAdd(mob, Types.Entities.TENTACLE, mob.x - 2, mob.y - 2, true);
+        this.spawnMobAdd(mob, Types.Entities.TENTACLE2, mob.x + 5, mob.y - 2, true);
+        this.spawnMobAdd(mob, Types.Entities.TENTACLE2, mob.x + 2, mob.y - 2, true);
+    },
+
+    handleSeaCreatureDie: function(mob, attacker) {
+        let parent = this.getEntityById(mob.parentId);
+        if (parent.addArray.length === 1) {
+            parent.hitPoints = 0;
+            this.handleHurtEntity(parent, attacker, parent.hitPoints);
+        }
+    }
 });
 
 

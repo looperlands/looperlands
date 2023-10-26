@@ -370,20 +370,18 @@ var Properties = {
         respawnDelay: 1800000
     },
     seacreature: {
-        level: 25,
-        drops: {
-        },
+        level: 12,
+        drops: {},
         armorMod: 2.5,
         weaponMod: 1.5,
-        hpMod: 2,
+        hpMod: 4,
         redpacket: true,
-        xp: 5000,
-        respawnDelay: 30000
+        xp: 20000,
+        respawnDelay: 300000
     },
     tentacle: {
         level: 12,
-        drops: {
-        },
+        drops: {},
         armorMod: 2.5,
         weaponMod: 1.5,
         hpMod: 2,
@@ -393,12 +391,11 @@ var Properties = {
         },
         redpacket: false,
         xp: 5000,
-        respawnDelay: 3000
+        respawnDelay: 20000
     },
     tentacle2: {
         level: 12,
-        drops: {
-        },
+        drops: {},
         armorMod: 2.5,
         weaponMod: 1.5,
         hpMod: 2,
@@ -408,7 +405,7 @@ var Properties = {
         },
         redpacket: false,
         xp: 5000,
-        respawnDelay: 3000
+        respawnDelay: 20000
     },
 
     cobchicken: {
