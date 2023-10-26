@@ -89,7 +89,7 @@ Formulas.calculateSpeedTraitMap = function (numLevels) {
 Formulas.calculateToolLevelMap = function (numLevels) {
     const toolLevelMap = {};
 
-    toolLevelMap[1] = 0;
+    toolLevelMap[1] = -1;
     toolLevelMap[2] = 1000;
     for (let level = 3; level <= numLevels; level++) {
         toolLevelMap[level] = toolLevelMap[level-1] * 2;
@@ -117,9 +117,9 @@ Formulas.level = function (experience) {
 Formulas.toolLevel = function (experience) {
     let levels = Object.keys(TOOLLEVEL_MAP);
     let level = levels.find(function(level) {
-        return TOOLLEVEL_MAP[level] >= experience;
+        return TOOLLEVEL_MAP[level] > experience;
     });
-    level = Number(level) - 1
+    level = Number(level) - 1;
     return level;
 }
 
