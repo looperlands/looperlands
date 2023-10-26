@@ -679,7 +679,6 @@ module.exports = World = cls.Class.extend({
             if(Types.isMob(kind)) {
                 var mob = new Mob('7' + kind + count++, kind, pos.x + 1, pos.y);
                 mob.onRespawn(function() {
-                    console.log('respawn mob');
                     mob.isDead = false;
                     mob.generateLevel();
                     mob.recalculateStats();
