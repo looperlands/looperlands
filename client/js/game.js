@@ -4018,7 +4018,11 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                     if(dest.portal) {
                                         _self.assignBubbleTo(_self.player);
                                     } else {
-                                        _self.camera.focusEntity(_self.player);
+                                        if (_self.canUseCenteredCamera()) {
+                                            _self.focusPlayer();
+                                        } else {
+                                            _self.camera.focusEntity(_self.player);
+                                        }
                                         _self.resetZone();
                                     }
                                 }
