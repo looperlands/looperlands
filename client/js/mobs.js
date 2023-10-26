@@ -1719,7 +1719,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this._super(id, Types.Entities.TENTACLE);
                 this.idleSpeed = 400;
                 this.restoreDefaultMovement();
-                this.aggroRange = 0;
+                this.aggroRange = 1;
                 this.atkSpeed = 100;
                 this.setAttackRate(1000);
                 this.deathAnimated = true;
@@ -1745,7 +1745,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this._super(id, Types.Entities.TENTACLE2);
                 this.idleSpeed = 400;
                 this.restoreDefaultMovement();
-                this.aggroRange = 0;
+                this.aggroRange = 1;
                 this.atkSpeed = 100;
                 this.setAttackRate(1000);
                 this.deathAnimated = true;
