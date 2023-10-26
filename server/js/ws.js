@@ -24,6 +24,7 @@ const ens = require("./ens.js");
 const chat = require("./chat.js");
 const quests = require("./quests/quests.js");
 const signing = require("./signing.js");
+const Lakes = require("./lakes.js");
 
 const cache = new NodeCache();
 
@@ -361,6 +362,23 @@ WS.socketIOServer = Server.extend({
             res.status(200).json(inventory.data);
         });
 
+        app.get("/session/:sessionId/specialInventory", async (req, res) => {
+            const sessionId = req.params.sessionId;
+            const sessionData = cache.get(sessionId);
+            if (sessionData === undefined) {
+                //console.error("Session data is undefined for session id, params: ", sessionId, req.params);
+                res.status(404).json({
+                    status: false,
+                    "error" : "session not found",
+                    user: null
+                });
+                return;
+            }
+            const walletId = sessionData.walletId;
+
+            const inventory = await dao.getSpecialItems(walletId);
+            res.status(200).json(inventory);
+        });
 
         app.get("/session/:sessionId/quests", async (req, res) => {
             const sessionId = req.params.sessionId;
@@ -522,7 +540,7 @@ WS.socketIOServer = Server.extend({
             const mapId = req.params.mapId;
             const playerId = req.params.playerId;
             const nftId = req.params.nftId;
-            
+
             let player = self.worldsMap[mapId].getPlayerById(playerId);
             if (player === undefined) {
                 return res.status(404).json({
@@ -560,7 +578,11 @@ WS.socketIOServer = Server.extend({
                 let maxHp = Formulas.hp(avatarLevelInfo.currentLevel);
                 let weaponInfo = self.worldsMap[sessionData.mapId].getNFTWeaponStatistics(sessionData.entityId);
                 if (weaponInfo !== undefined) {
-                    weaponInfo['weaponLevelInfo'] = Formulas.calculatePercentageToNextLevel(weaponInfo.experience);
+                    if (weaponInfo.constructor === "NFTWeapon") {
+                        weaponInfo['weaponLevelInfo'] = Formulas.calculatePercentageToNextLevel(weaponInfo.experience);
+                    } else if (weaponInfo.constructor === "NFTSpecialItem")  {
+                        weaponInfo['weaponLevelInfo'] = Formulas.calculateToolPercentageToNextLevel(weaponInfo.experience);
+                    }
                 }
 
                 let ret = {
@@ -731,6 +753,46 @@ WS.socketIOServer = Server.extend({
                 res.status(200).send(true);
             } else {
                 res.status(404).send(false);
+            }
+        });
+
+        app.get("/session/:sessionId/requestFish/:lakeName/:x/:y", async (req, res) => {
+            const sessionId = req.params.sessionId;
+            const lakeName = req.params.lakeName;
+            const fx = req.params.x;
+            const fy = req.params.y;
+            const sessionData = cache.get(sessionId);
+
+            if (sessionData === undefined) {
+                res.status(404).json({
+                    status: false,
+                    "error" : "session not found",
+                    user: null
+                });
+            } else {
+                let player = self.worldsMap[sessionData.mapId].getPlayerById(sessionData.entityId);
+                if (player.getNFTWeapon().getLevel() < Lakes.getLakeLevel(lakeName)) {
+                    res.status(200).send(false);
+                    return;
+                } else {
+                    let fish = Lakes.getRandomFish(lakeName);
+                    if (fish === undefined) {
+                        res.status(400).json({
+                            status: false,
+                            error: "Could not get fish",
+                            user: null
+                        });
+                        return;
+                    }
+                    let fishExp = Lakes.calculateFishExp(fish, lakeName);
+                    player.pendingFish = {name: fish, exp: fishExp};
+                    let difficulty = Lakes.getDifficulty(player.getNFTWeapon().getLevel(), lakeName);
+                    let speed = Lakes.getFishSpeed(fish, lakeName);
+
+                    let response = {fish: fish, difficulty: difficulty, speed: speed};
+                    self.worldsMap[sessionData.mapId].announceSpawnFloat(player, fx, fy);
+                    res.status(200).send(response);
+                }
             }
         });
 

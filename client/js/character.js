@@ -320,6 +320,10 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
             }
             return near;
         },
+
+        isOnSameAxis: function(gX, gY) {
+            return gX === this.gridX || gY === this.gridY;
+        },
     
         onAggro: function(callback) {
             this.aggro_callback = callback;

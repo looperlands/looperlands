@@ -168,7 +168,11 @@ define(['jquery', 'animation', 'sprites'], function($, Animation, sprites) {
         	    width: this.width,
         	    height: this.height
         	};
-    	}
+    	},
+
+		getUrlByScale: function(scale){
+			return this.baseImageURL + scale + "/" + this.id + ".png";
+		}
     });
 
     return Sprite;

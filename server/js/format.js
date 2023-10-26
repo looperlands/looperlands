@@ -20,7 +20,8 @@ var _ = require('underscore'),
             this.formats[Types.Messages.OPEN] = ['n'],
             this.formats[Types.Messages.CHECK] = ['n'],
             this.formats[Types.Messages.TRIGGER] = ['n', 'b'],
-            this.formats[Types.Messages.EQUIP_INVENTORY] = ['n', 's']
+            this.formats[Types.Messages.EQUIP_INVENTORY] = ['n', 's'],
+            this.formats[Types.Messages.FISHINGRESULT] = ['b']
         },
         
         check: function(msg) {

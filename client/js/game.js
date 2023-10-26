@@ -1,10 +1,10 @@
 
 define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile',
         'warrior', 'gameclient', 'audio', 'updater', 'transition', 'pathfinder',
-        'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'config', 'fieldeffect', '../../shared/js/gametypes', '../../shared/js/altnames'],
+        'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'config', 'fieldeffect', 'float', '../../shared/js/gametypes', '../../shared/js/altnames'],
 function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, AnimatedTile,
          Warrior, GameClient, AudioManager, Updater, Transition, Pathfinder,
-         Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, config, Fieldeffect) {
+         Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, config, Fieldeffect, Float) {
     
     var Game = Class.extend({
         init: function(app) {
@@ -63,9 +63,15 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         
             // debug
             this.debugPathing = false;
+
+            // fishing
+            this.floats = {};
+            this.fishingData = {fishName: null, fishPos: 0, fishTime: null, targetPos: 0, targetHeight: 0};
+            this.slidingFish = null;
+            this.uniFishTimeout = null;
         
             // sprites
-            this.spriteNames = ["hand", "sword", "loot", "target", "talk", "sparks", "shadow16", "rat", "skeleton", "skeleton2", "spectre", "boss", "deathknight", 
+            this.spriteNames = ["hand", "sword", "loot", "target", "talk", "float", "sparks", "shadow16", "rat", "skeleton", "skeleton2", "spectre", "boss", "deathknight", 
                                 "ogre", "crab", "snake", "eye", "bat", "goblin", "wizard", "guard", "king", "villagegirl", "villager", "coder", "agent", "rick", "scientist", "nyan", "priest", "coblumberjack", "cobhillsnpc", "cobcobmin", "cobellen", "cobjohnny",
                                 "king2", "goose", "tanashi", "slime","kingslime","silkshade","redslime","villagesign1","wildgrin","loomleaf","gnashling","arachweave","spider","fangwing", "minimag", "miner", "megamag", "seacreature", "tentacle", "tentacle2",
                                 "cobchicken", "alaric","orlan","jayce", "cobcow", "cobpig", "cobgoat", "ghostie","cobslimered", "cobslimeyellow", "cobslimeblue", "cobslimeking", "cobyorkie", "cobcat", "cobdirt", "cobincubator", "cobcoblin", "cobcobane", "cobogre",
@@ -93,6 +99,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 "VILLAGESIGN7",
                                 "VILLAGESIGN8",
                                 "VILLAGESIGN9",
+                                "cobneon","cobguppy","cobgoldfish","cobtrout","coblobster","cobcatfish",
                                 // @nextCharacterLine@
                                 "item-BOARHIDE",
                                 "item-THUDKEY",
@@ -116,6 +123,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 "item-ICESSENCE",
                                 "item-FORGEDSWORD",
                                 "item-BANNER",
+                                "item-NFT_344a35ef18eafc0708b2e42b14443db0990fa39977d9347fb256905cbd5ba819",
                                 // @nextObjectLine@
                                 "NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6",
                                 "NFT_38278eacc7d1c86fdbc85d798dca146fbca59a2e5e567dc15898ce2edac21f5f",
@@ -3033,6 +3041,14 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 "NFT_e239e6d18e9028cf6a97b2af797e91867a930e777ec2c0f5ade73bad65ba050c",
                                 "NFT_ea326b39de358b457056362de93ae54bd0d579cde9c2b4286b1bf75e93d55def",
                                 "NFT_f29644be9c870ba8a20e2e4cab7c9afa4762d319f84d86938e3c0fda15d9109a",
+                                "NFT_7d6d49a05b536be96e1bb3103187112d20440ba20225083693e9aa1dbce861d6",
+                                "NFT_8da862601e1de43bb2bae62bf92e141e9dd68a2476ea84b5cc8541927ca5b205",
+                                "NFT_dc2d3314df30747233390fa064e9acdee23b426a88552a5dc1f82d03ff774340",
+                                "NFT_f366b61281816bd61dbda610adee481a9c31c62b4a3e20ebdc66762f144d3535",
+                                "NFT_c95d0dc6d26e6780bfa9d600cf04cb38701f5e5da027f85898fab8f9aba7de02",
+                                "NFT_69f5dbe8d3d20cef5421ba25c49471be21f65ffc6cfe3c5f6c4bfc9a01aa70d7",
+                                "NFT_981710619979f79648423c66ca5cc07e521ea970c69cc995ab8798a5267c0822",
+                                "NFT_b6d8f6bb705a00857f68a2495eab0740a59336ba69d50784893a24534df250f2",
                                 // @nextSpriteLine@
                             ];                          
         },
@@ -3107,6 +3123,17 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             this.cursors["target"] = this.sprites["target"];
             this.cursors["arrow"] = this.sprites["arrow"];
             this.cursors["talk"] = this.sprites["talk"];
+            this.cursors["float"] = this.sprites["float"];
+        },
+
+        initFish: function() {
+            this.fish = {};
+            this.fish["cobneon"] = this.sprites["cobneon"];
+            this.fish["cobguppy"] = this.sprites["cobguppy"];
+            this.fish["cobgoldfish"] = this.sprites["cobgoldfish"];
+            this.fish["coblobster"] = this.sprites["coblobster"];
+            this.fish["cobcatfish"] = this.sprites["cobcatfish"];
+            this.fish["cobtrout"] = this.sprites["cobtrout"];
         },
     
         initAnimations: function() {
@@ -3115,6 +3142,9 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         
             this.sparksAnimation = new Animation("idle_down", 6, 0, 16, 16);
             this.sparksAnimation.setSpeed(120);
+
+            this.floatAnimation = new Animation("idle", 6, 0, 16, 16);
+            this.floatAnimation.setSpeed(240);
         },
     
         initHurtSprites: function() {
@@ -3196,6 +3226,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 //this.initHurtSprites();
                 this.initShadows();
                 this.initCursors();
+                this.initFish();
             }
         },
     
@@ -3225,14 +3256,17 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         },
     
         updateCursorLogic: function() {
-            if(this.hoveringCollidingTile && this.started) {
+            if (this.hoveringFishableTile && this.started) {
+                this.targetColor = "rgba(90, 90, 200, 0.5)";
+            }
+            else if(this.hoveringCollidingTile && this.started) {
                 this.targetColor = "rgba(255, 50, 50, 0.5)";
             }
             else {
                 this.targetColor = "rgba(255, 255, 255, 0.5)";
             }
         
-            if(this.hoveringMob && this.started) {
+            if(this.hoveringMob && this.started && !Types.isSpecialItem(Types.getKindFromString(this.player.weaponName))) {
                 this.setCursor("sword");
                 this.hoveringTarget = false;
                 this.targetCellVisible = false;
@@ -3244,6 +3278,11 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             }
             else if((this.hoveringItem || this.hoveringChest) && this.started) {
                 this.setCursor("loot");
+                this.hoveringTarget = false;
+                this.targetCellVisible = true;
+            }
+            else if(this.hoveringFishableTile && this.started) {
+                this.setCursor("float");
                 this.hoveringTarget = false;
                 this.targetCellVisible = true;
             }
@@ -3336,6 +3375,50 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 delete this.entities[fieldEffect.id];
             } else {
                 console.error("Cannot remove field effect. Unknown ID : " + fieldEffect.id);
+            }
+        },
+
+        addFloat: function(float) { 
+            let self = this;
+            float.despawnTimeout = setTimeout(function() {
+                self.removeFloat(float.id);
+            }, float.despawnDuration);
+
+            if(this.floats[float.id] === undefined) {
+                this.floats[float.id] = float;
+            }
+            else {
+                console.error("This float already exists : " + float.id );
+            }
+        },
+
+        castFloat: function(float) {
+            let player = this.getEntityById(float.id);
+            if(player) {
+                let orientationToLake = player.getOrientationTo(float);
+                if (orientationToLake !== player.orientation) {
+                    player.turnTo(orientationToLake);
+                };
+
+                if (this.camera.isVisible(player)) {
+                    player.animate("atk", 75, 1, function() {
+                        self.audioManager.playSound("watersplash");
+                        player.idle();
+                        self.addFloat(float);
+                    });
+                }
+            } else {
+                self.addFloat(float);
+            }
+        },
+
+        removeFloat: function(floatId) {
+            if(floatId in this.floats) {
+                clearTimeout(this.floats[floatId].despawnTimeout);
+                delete this.floats[floatId];
+            }
+            else {
+                console.error("Cannot remove float. Unknown ID : " + floatId);
             }
         },
     
@@ -3549,6 +3632,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     self.initCursors();
                     self.initAnimations();
                     self.initShadows();
+                    self.initFish();
                     //self.initHurtSprites();
                 
                     if(!self.renderer.mobile
@@ -3624,6 +3708,15 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             }
             else {
                 console.error("Unknown entity id : " + id, true);
+            }
+        },
+
+        getFloatById: function(id) {
+            if(id in this.floats) {
+                return this.floats[id];
+            }
+            else {
+                console.error("Unknown float id : " + id, true);
             }
         },
 
@@ -3809,6 +3902,10 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 self.player.onStep(function() {
                     self.findVisibleTiles();
 
+                    if(this.isFishing) {
+                        self.stopFishing(false);
+                    }
+                    
                     if(self.player.hasNextStep()) {
                         self.registerEntityDualPosition(self.player);
                     }
@@ -4103,6 +4200,10 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     var weaponName = self.player.getWeaponName();
                     if (!weaponName.startsWith("NFT_")) {
                         self.storage.setPlayerWeapon(self.player.getWeaponName());
+                    }
+
+                    if(this.isFishing) {
+                        self.stopFishing(false);
                     }
 
                     if(self.equipment_callback) {
@@ -4602,6 +4703,15 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                         self.infoManager.addDamageInfo("+"+xpReward+" XP", self.player.x, self.player.y - 15, "xp");
                     }, 200);
                 });
+
+                self.client.onSpawnFloat(function(id, name, x, y) {
+                    let float = new Float(x, y, id, name);
+                    self.castFloat(float);
+                });
+
+                self.client.onDespawnFloat(function(id) {
+                    self.removeFloat(id);
+                });
             
                 self.gamestart_callback();
             
@@ -4941,6 +5051,14 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 });
             }
         },
+
+        forEachFloat: function(callback) {
+            if(this.floats) {
+                _.each(this.floats, function(float) {
+                    callback(float);
+                });
+            }
+        },
     
         /**
          * Returns the entity located at the given position on the world grid.
@@ -5109,6 +5227,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             if(this.player && !this.renderer.mobile && !this.renderer.tablet) {
                 this.hoveringCollidingTile = this.map.isColliding(x, y);
                 this.hoveringPlateauTile = this.player.isOnPlateau ? !this.map.isPlateau(x, y) : this.map.isPlateau(x, y);
+                this.hoveringFishableTile = this.canFish(x, y, false);
                 this.hoveringMob = this.isMobAt(x, y);
                 this.hoveringItem = this.isItemAt(x, y);
                 this.hoveringNpc = this.isNpcAt(x, y);
@@ -5146,6 +5265,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 pos = this.getMouseGridPosition();
             }
             var entity;
+            let fishablePos;
 
             let clickThrottle;
             if (pos.keyboard) {
@@ -5178,7 +5298,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
     	    && !this.isZoning()
     	    && !this.isZoningTile(this.player.nextGridX, this.player.nextGridY)
     	    && !this.player.isDead
-    	    && (!this.hoveringCollidingTile || pos.keyboard)
+    	    && (!this.hoveringCollidingTile || pos.keyboard || this.hoveringFishableTile)
     	    && (!this.hoveringPlateauTile || pos.keyboard)
             && !(this.doorCheck)) {
         	    entity = this.getEntityAt(pos.x, pos.y);
@@ -5213,7 +5333,19 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         	    else if(entity instanceof Chest) {
         	        this.makePlayerOpenChest(entity);
         	    }
-        	    else {
+        	    else if(fishablePos = this.canFish(pos.x, pos.y, pos.keyboard)) { // this assignment inside a condition is intentional
+                    if (this.player.isFishing
+                        && $('#fishingbar').hasClass('active')
+                        && this.floats[this.player.id] !== undefined
+                        && this.floats[this.player.id].gridX === fishablePos.gridX
+                        && this.floats[this.player.id].gridY === fishablePos.gridY) 
+                    {
+                        this.clickFishingBar();
+                    } else {
+                        this.startFishing(fishablePos.gridX, fishablePos.gridY);
+                    }
+                }
+                else {
         	        this.makePlayerGoTo(pos.x, pos.y);
         	    }
         	}
@@ -5766,7 +5898,9 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                         weaponLevel = response.data.weaponInfo.weaponLevelInfo.currentLevel;
                         levelInfoHTML+=" - Weapon Level: " + weaponLevel + " ";
                         levelInfoHTML+=weaponPercentage + "%";
-                        levelInfoHTML+=", Trait: " + response.data.weaponInfo.trait;
+                        if (response.data.weaponInfo.trait !== null && response.data.weaponInfo.trait !== undefined) {
+                            levelInfoHTML+=", Trait: " + response.data.weaponInfo.trait;
+                        }
                     }
                     $("#levelInfo").html(levelInfoHTML);
 
@@ -5830,6 +5964,141 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             }).catch(function (error) {
                 console.error("Error while getting entity hp info", error);
             });
+        },
+
+        canFish: function (gX, gY, keyboard) {
+            if (Types.isFishingRod(Types.getKindFromString(self.player.weaponName))){
+                if (this.player.isOnSameAxis(gX, gY)
+                    && this.player.isNear({gridX: gX, gridY: gY}, 2)
+                    && this.map.getLakeName(gX, gY))
+                {
+                    return {gridX: gX, gridY: gY};
+                } else if (keyboard) { // let keyboard seek one tile further
+                    let tryPos = this.player.getOneStepFurther(gX, gY);
+                    if (this.map.getLakeName(tryPos.gridX, tryPos.gridY) && this.player.isNear(tryPos, 2)){
+                        return tryPos;
+                    }
+                }
+            }
+
+            return false;
+        },
+
+        startFishing: function(gX, gY) {
+            if(!self.player.isFishing){
+                let self = this;
+        
+                self.player.isFishing = true;
+
+                let url = '/session/' + self.sessionId + '/requestFish/' + self.map.getLakeName(gX, gY) + '/' + gX + '/' + gY;
+                axios.get(url).then(function (response) {
+                    if (response.data === false) {
+                        self.showNotification("You need a higher level to fish here.");
+                        return;
+                    }
+                    let float = new Float(gX, gY, self.player.id, self.player.getWeaponName());
+                    self.castFloat(float);
+
+                    const waitMin = 6000,
+                          waitMax = 12000;
+                    let waitDuration = Math.random() * (waitMax - waitMin) + waitMin;
+                    self.uniFishTimeout = setTimeout(function() {
+                        self.playCatchFish(response.data.fish, response.data.difficulty, response.data.speed);
+                    }, waitDuration);                    
+                }).catch(function (error) {
+                    console.error("Error while requesting a fish.");
+                    self.player.isFishing = false;
+                });
+            }
+        },
+
+        playCatchFish: function(fish, difficulty, speed) {
+            let self = this;
+            const fishEscapeDuration = 7000;
+
+            let altName = AltNames.getAltNameFromKind(fish);
+            let fishName = altName !== undefined ? altName : fish;
+            let fishSpriteUrl;
+            if(this.fish[fish]){
+                fishSpriteUrl = this.fish[fish].getUrlByScale(this.renderer.scale);
+            }
+
+            this.fishingData.fishName = fishName;
+            this.fishingData.fishTime = new Date().getTime();
+            this.app.setFish(fishSpriteUrl);
+            this.generateFishingTarget(difficulty);
+            this.slidingFish = setInterval(self.tickMovingFish.bind(self), 10, speed);
+            this.app.showFishing();
+            this.uniFishTimeout = setTimeout(function() {
+                self.showNotification(self.fishingData.fishName + " escaped!");
+                self.stopFishing(false);
+            }, fishEscapeDuration);  
+        },
+
+        stopFishing: function(success, barHoldDuration) {
+            let self=this;
+
+            self.player.isFishing = false;
+            clearTimeout(this.uniFishTimeout);
+            clearInterval(this.slidingFish);
+
+            if (barHoldDuration) {
+                this.app.holdFishing();
+                setTimeout(self.app.hideFishing, barHoldDuration);
+            } else {
+                this.app.hideFishing();
+            }
+            
+            this.removeFloat(this.player.id);
+
+            this.client.sendFishingResult(success);
+            this.fishingData.fishPos = 0;
+            this.fishingData.fishName = null;
+        },
+
+        generateFishingTarget: function(difficulty){
+            const targetMaxHeight = 100, // 150 (bar size) - 2*4 (borders) - 2*21 (21 px gap top/bottom so the target never loads on edge)
+                  targetOffset = 25; // same as above - 4+21 offset from the top so the target never loads on the edge
+            this.fishingData.targetHeight = Math.floor(targetMaxHeight * difficulty/100); //difficulty is expressed in %
+            this.fishingData.targetPos = targetOffset + Math.round(Math.random() * (targetMaxHeight - this.fishingData.targetHeight));
+
+            this.app.setFishingTarget(this.fishingData.targetHeight, this.fishingData.targetPos);
+        },
+
+        tickMovingFish: function(gap){
+            const maxPos = 126; //150 (bar size) - 16 (fish size) - 2*4 (borders)
+            const cycleTime = maxPos * gap;
+            let currTime = new Date().getTime();
+            let timeDiff = currTime - this.fishingData.fishTime;
+
+            let dir = (Math.floor(timeDiff / cycleTime) % 2); // 0 -> move down, 1 -> move up
+            let posInCycle = Math.round((timeDiff % cycleTime) / gap);
+
+            if(dir){
+                this.fishingData.fishPos = 126 - posInCycle;
+            } else {
+                this.fishingData.fishPos = posInCycle;
+            }
+
+            this.app.setFishPos(this.fishingData.fishPos);
+        },
+
+        clickFishingBar: function(){
+            const markerOffset = 12; // 8 from the marker + 4 from the bar border
+
+            clearInterval(this.slidingFish);
+            if (this.fishingData.fishPos + markerOffset >= this.fishingData.targetPos  
+                && this.fishingData.fishPos + markerOffset <= this.fishingData.targetPos + this.fishingData.targetHeight + 1)
+                {
+                self.audioManager.playSound("fishingsuccess");
+                self.showNotification("You caught " + this.fishingData.fishName);
+                self.stopFishing(true, 2000);
+                self.renderStatistics();
+            } else {
+                self.audioManager.playSound("fishingfail");
+                self.showNotification("Failed to catch " + this.fishingData.fishName);
+                self.stopFishing(false, 2000);
+            }
         }
     });
     

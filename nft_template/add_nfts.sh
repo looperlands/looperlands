@@ -38,7 +38,7 @@ function add_nft() {
     cp /home/loopworms.io/public_html/DEV/LooperLands/AddNewLooper/images/3/$nftID.png /tmp/$nftID/3.png
 
 
-    if [ "$type" = "weapon" ]; then
+    if [ "$type" = "weapon" ] || [ "$type" = "fishingrod" ]; then
         cp /home/loopworms.io/public_html/DEV/LooperLands/AddNewLooper/images/4/$nftID.png /tmp/$nftID/item-1.png
         cp /home/loopworms.io/public_html/DEV/LooperLands/AddNewLooper/images/5/$nftID.png /tmp/$nftID/item-2.png
         cp /home/loopworms.io/public_html/DEV/LooperLands/AddNewLooper/images/6/$nftID.png /tmp/$nftID/item-3.png

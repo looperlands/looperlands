@@ -18,7 +18,8 @@ var cls = require("./lib/class"),
     Types = require("../../shared/js/gametypes"),
     dao = require("./dao.js"),
     discord = require("./discord.js"),
-    Fieldeffect = require('./fieldeffect');
+    Fieldeffect = require('./fieldeffect'),
+    Lakes = require('./lakes');
 
 // ======= GAME SERVER ========
 
@@ -1042,8 +1043,8 @@ module.exports = World = cls.Class.extend({
             return;
         }
 
-
         let weaponInfo = {
+            constructor: nftWeapon.constructor.name,
             experience: nftWeapon.experience,
             trait: nftWeapon.trait
         }
@@ -1335,6 +1336,18 @@ module.exports = World = cls.Class.extend({
             parent.hitPoints = 0;
             this.handleHurtEntity(parent, attacker, parent.hitPoints);
         }
+    },
+
+    announceSpawnFloat: function(player, gX, gY) {
+        let playerNftWeapon = player.getNFTWeapon();
+        if (playerNftWeapon !== undefined){
+            let floatName = playerNftWeapon.nftId.replace("0x","NFT_");
+            this.pushToAdjacentGroups(player.group, new Messages.SpawnFloat(player.id, floatName , gX, gY), player.id);
+        }
+    },
+
+    announceDespawnFloat: function(player) {
+        this.pushToAdjacentGroups(player.group, new Messages.DespawnFloat(player.id), player.id);
     }
 });
 

@@ -12,7 +12,13 @@ const AltNames = {
     cobcoblin: "coblin",
     cobcobane: "cobane",
     cobogre: "ogre",
-    cobfallingrock: "falling rock"
+    cobfallingrock: "falling rock",
+    cobguppy: "guppy",
+    cobneon: "neon tetra",
+    cobgoldfish: "goldfish",
+    cobtrout: "trout",
+    cobcatfish: "catfish",
+    coblobster: "red lobster"
 };
 
 AltNames.getAltNameFromKind = function(kind){
