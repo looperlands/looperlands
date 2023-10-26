@@ -4,7 +4,7 @@ var cls = require("./lib/class"),
     Utils = require("./utils"),
     Properties = require("./properties"),
     Types = require("../../shared/js/gametypes");
-
+    
 module.exports = Character = Entity.extend({
     init: function(id, type, kind, x, y) {
         this._super(id, type, kind, x, y);

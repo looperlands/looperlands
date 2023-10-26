@@ -197,6 +197,10 @@ define(['jquery', 'app'], function($, App) {
                     
                     app.tryStartingGame(name, data.mapId);
                 });
+
+                $('#fishingbar').click(function() {
+                    app.game.clickFishingBar();
+                });
             
                 document.addEventListener("touchstart", function() {},false);
                 

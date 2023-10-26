@@ -32,7 +32,10 @@ Types = {
         MOBDOSPECIAL: 28,
         MOBEXITCOMBAT: 29,
         TRIGGER: 30,
-        QUEST_COMPLETE: 31
+        QUEST_COMPLETE: 31,
+        FISHINGRESULT: 32,
+        SPAWNFLOAT: 33,
+        DESPAWNFLOAT: 34
     },
     
     Entities: {
@@ -6094,7 +6097,7 @@ var kinds = {
     NFT_01348c49000000000000000002386f26fc100000000000000000000000000394: [Types.Entities.NFT_01348c49000000000000000002386f26fc100000000000000000000000000394, "armor"],
     NFT_f62c22d4577ae5812cf256375682435d992ffe6e937c2491085f7076ec0c42b3: [Types.Entities.NFT_f62c22d4577ae5812cf256375682435d992ffe6e937c2491085f7076ec0c42b3, "armor"],
     NFT_15e050ab5a981a6fa4ed0c3ccaf94d48ddbf3eb760c092619bf36e0f595ff1d9: [Types.Entities.NFT_15e050ab5a981a6fa4ed0c3ccaf94d48ddbf3eb760c092619bf36e0f595ff1d9, "weapon"],
-    NFT_344a35ef18eafc0708b2e42b14443db0990fa39977d9347fb256905cbd5ba819: [Types.Entities.NFT_344a35ef18eafc0708b2e42b14443db0990fa39977d9347fb256905cbd5ba819, "weapon"],
+    NFT_344a35ef18eafc0708b2e42b14443db0990fa39977d9347fb256905cbd5ba819: [Types.Entities.NFT_344a35ef18eafc0708b2e42b14443db0990fa39977d9347fb256905cbd5ba819, "fishingrod"],
     NFT_9189af4285bd917fcd23ff3785eea69b1c74f5c812f85bbfd08679088ea949e6: [Types.Entities.NFT_9189af4285bd917fcd23ff3785eea69b1c74f5c812f85bbfd08679088ea949e6, "armor"],
     NFT_597eefd17f29649846324b3edc0521191236c216e9a516299cb66ecf3c3383a8: [Types.Entities.NFT_597eefd17f29649846324b3edc0521191236c216e9a516299cb66ecf3c3383a8, "weapon"],
     NFT_81529d95c907a8b13e998008065c04d5df14825a0821f27ab902feb710056fbd: [Types.Entities.NFT_81529d95c907a8b13e998008065c04d5df14825a0821f27ab902feb710056fbd, "weapon"],
@@ -6465,6 +6468,14 @@ Types.isWeapon = function(kind) {
         console.log("Unknown kind: " + kind, error);
         return false;
     }
+};
+
+Types.isFishingRod = function(kind) {
+    return kinds.getType(kind) === "fishingrod";
+};
+
+Types.isSpecialItem = function(kind) {
+    return Types.isFishingRod(kind);
 };
 
 Types.isObject = function(kind) {
