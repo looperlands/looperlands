@@ -1234,7 +1234,9 @@ module.exports = World = cls.Class.extend({
                     }
                 }
                 add.onRespawn(function() {
-                    self.spawnMobAdd(parent, childKind, x, y, true, distributeDamageToParent);
+                    if (!parent.isDead) {
+                        self.spawnMobAdd(parent, childKind, x, y, true, distributeDamageToParent);
+                    }
                 });
             } else {
                 add.handleRespawn = function () {return;};// dont respawn
