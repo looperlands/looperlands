@@ -117,9 +117,9 @@ Formulas.level = function (experience) {
 Formulas.toolLevel = function (experience) {
     let levels = Object.keys(TOOLLEVEL_MAP);
     let level = levels.find(function(level) {
-        return TOOLLEVEL_MAP[level] >= experience;
+        return TOOLLEVEL_MAP[level] > experience;
     });
-    level = Number(level) - 1
+    level = Number(level) - 1;
     return level;
 }
 
