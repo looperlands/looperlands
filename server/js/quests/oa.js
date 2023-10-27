@@ -242,7 +242,7 @@ quests = [
         target: Types.Entities.FORGEDSWORD,
         amount: 40,
         requiredQuest: "OA_QUEST_12", //change
-        level: 18,
+        level: 14,
         medal: Types.Medals.HEARTH
     },
 
@@ -252,12 +252,12 @@ quests = [
         startText: "Eliminate Gloomforge warriors",
 //        startText: "Traveler, you come at a dire time. My men and I were ambushed. These plains were once calm, but ever since King RC's departure, they've been swarming with these vile creatures we've named 'Gnashlings'. Their numbers are overwhelming. I implore you, if you can thin their ranks, it might give us a fighting chance to reclaim the Windweave Planes and push these creatures back. We need to stabilize this area, or all of Looporia might be at risk.",
         endText: "King vanquished!",
-        eventType: "LOOT_ITEM",
+        eventType: "KILL_MOB",
         npc: Types.Entities.TORIAN,
-        target: Types.Entities.FORGEDSWORD,
+        target: Types.Entities.GLOOMFORGED,
         amount: 40,
         requiredQuest: "OA_QUEST_12", //change
-        level: 18,
+        level: 14,
         medal: Types.Medals.HEARTH
     },
     {
@@ -271,7 +271,7 @@ quests = [
         target: Types.Entities.BANNER,
         amount: 15,
         requiredQuest: "OA_QUEST_12", //change
-        level: 18,
+        level: 14,
         medal: Types.Medals.HEARTH
     },
     {
