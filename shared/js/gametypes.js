@@ -6623,7 +6623,7 @@ Types.getMessageTypeAsString = function(type) {
 
 Types.getTypeFromString = function(kindString) {
     return kinds.getType(Types.getKindFromString(kindString))
-}
+};
 
 if(!(typeof exports === 'undefined')) {
     module.exports = Types;
