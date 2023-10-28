@@ -500,8 +500,8 @@ module.exports = Player = Character.extend({
 
             if(this.hitPoints <= 0) {
                 let kindString = Types.getKindAsString(mob.kind);
-                let altName = AltNames.getAltNameFromKind(kindString);
-                let killer = altName !== undefined ? altName : kindString;
+                let killer = AltNames.getName(kindString);
+
                 if (mob instanceof Player)  {
                     discord.sendMessage(`Player ${this.name} ganked by ${mob.name}.`);
                     this.updatePVPStats(mob);
