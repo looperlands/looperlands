@@ -4571,8 +4571,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             
                 self.client.onPlayerKillMob(function(kind, xp) {
                     let kindString = Types.getKindAsString(kind);
-                    let altName = AltNames.getAltNameFromKind(kindString);
-                    let mobName = altName !== undefined ? altName : kindString;
+                    let mobName = AltNames.getName(kindString);
 
                     setTimeout(function() {
                         self.infoManager.addDamageInfo("+"+xp+" XP", self.player.x, self.player.y - 15, "xp");
@@ -5918,7 +5917,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     if (response.data.weaponInfo !== null && response.data.weaponInfo !== undefined) {
                         weaponPercentage = response.data.weaponInfo.weaponLevelInfo.percentage;
                         weaponLevel = response.data.weaponInfo.weaponLevelInfo.currentLevel;
-                        levelInfoHTML+=" - Weapon Level: " + weaponLevel + " ";
+                        levelInfoHTML+=" - " + AltNames.getName(Types.getTypeFromString(self.player.weaponName)) + " Level: " + weaponLevel + " ";
                         levelInfoHTML+=weaponPercentage + "%";
                         if (response.data.weaponInfo.trait !== null && response.data.weaponInfo.trait !== undefined) {
                             levelInfoHTML+=", Trait: " + response.data.weaponInfo.trait;
@@ -6014,8 +6013,8 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
                 let url = '/session/' + self.sessionId + '/requestFish/' + self.map.getLakeName(gX, gY) + '/' + gX + '/' + gY;
                 axios.get(url).then(function (response) {
-                    if (response.data === false) {
-                        self.showNotification("You need a higher level to fish here.");
+                    if (!response.data.allowed) {
+                        self.showNotification("You need level  " + response.data.reqLevel + " fishing to fish here.");
                         return;
                     }
                     let float = new Float(gX, gY, self.player.id, self.player.getWeaponName());
@@ -6038,8 +6037,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             let self = this;
             const fishEscapeDuration = 7000;
 
-            let altName = AltNames.getAltNameFromKind(fish);
-            let fishName = altName !== undefined ? altName : fish;
+            let fishName = AltNames.getName(fish);
             let fishSpriteUrl;
             if(this.fish[fish]){
                 fishSpriteUrl = this.fish[fish].getUrlByScale(this.renderer.scale);

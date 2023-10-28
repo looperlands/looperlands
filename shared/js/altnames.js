@@ -18,13 +18,20 @@ const AltNames = {
     cobgoldfish: "goldfish",
     cobtrout: "trout",
     cobcatfish: "catfish",
-    coblobster: "red lobster"
+    coblobster: "red lobster",
+    fishingrod: "Fishing Rod",
+    weapon: "Weapon"
 };
 
 AltNames.getAltNameFromKind = function(kind){
     if(kind in AltNames) {
         return AltNames[kind];
     }
+}
+
+AltNames.getName = function (kind){
+    let altName = AltNames.getAltNameFromKind(kind);
+    return altName !== undefined ? altName : kind;
 }
 
 if(!(typeof exports === 'undefined')) {
