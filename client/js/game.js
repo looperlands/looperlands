@@ -3928,7 +3928,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                             self.createBubble(mob.id, mob.aggroMessage);
                             self.assignBubbleTo(mob);
                         }
-                        mob.joinCombat();
                         self.client.sendAggro(mob);
                         mob.waitToAttack(self.player);
                     }
