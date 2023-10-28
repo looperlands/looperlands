@@ -73,7 +73,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             // sprites
             this.spriteNames = ["hand", "sword", "loot", "target", "talk", "float", "sparks", "shadow16", "rat", "skeleton", "skeleton2", "spectre", "boss", "deathknight", 
                                 "ogre", "crab", "snake", "eye", "bat", "goblin", "wizard", "guard", "king", "villagegirl", "villager", "coder", "agent", "rick", "scientist", "nyan", "priest", "coblumberjack", "cobhillsnpc", "cobcobmin", "cobellen", "cobjohnny",
-                                "king2", "goose", "tanashi", "slime","kingslime","silkshade","redslime","villagesign1","wildgrin","loomleaf","gnashling","arachweave","spider","fangwing", "minimag", "miner", "megamag", 
+                                "king2", "goose", "tanashi", "slime","kingslime","silkshade","redslime","villagesign1","wildgrin","loomleaf","gnashling","arachweave","spider","fangwing", "minimag", "miner", "megamag",
                                 "cobchicken", "alaric","orlan","jayce", "cobcow", "cobpig", "cobgoat", "ghostie","cobslimered", "cobslimeyellow", "cobslimeblue", "cobslimeking", "cobyorkie", "cobcat", "cobdirt", "cobincubator", "cobcoblin", "cobcobane", "cobogre",
                                 "sorcerer", "octocat", "beachnpc", "forestnpc", "desertnpc", "lavanpc","thudlord", "clotharmor", "leatherarmor", "mailarmor","boar","grizzlefang","barrel","neena","athlyn","jeniper",
                                 "platearmor", "redarmor", "goldenarmor", "firefox", "death", "sword1","torin","elric","glink", "axe", "chest","elara","eldrin","draylen","thaelen","keldor","torvin","liora","aria",
@@ -3068,19 +3068,19 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 "NFT_957c1af7a1fae631d4bc173b2c6769fd2a594cfe10dbd3153dfa07405c1831c6",
                                 "NFT_cebe3b0c4e030f81b1c5e3e71baf06ed9692af0d02b1d05f9a42aa944ee9bf08",
                                 // @nextSpriteLine@
-                            ];                          
+                            ];
         },
-    
+
         setup: function($bubbleContainer, canvas, background, foreground, input) {
     		this.setBubbleManager(new BubbleManager($bubbleContainer));
     		this.setRenderer(new Renderer(this, canvas, background, foreground));
     		this.setChatInput(input);
         },
-        
+
         setStorage: function(storage) {
             this.storage = storage;
         },
-    
+
         setRenderer: function(renderer) {
             this.renderer = renderer;
         },
@@ -3088,15 +3088,15 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         setUpdater: function(updater) {
             this.updater = updater;
         },
-    
+
         setPathfinder: function(pathfinder) {
             this.pathfinder = pathfinder;
         },
-    
+
         setChatInput: function(element) {
             this.chatinput = element;
         },
-    
+
         setBubbleManager: function(bubbleManager) {
             this.bubbleManager = bubbleManager;
         },
@@ -3104,28 +3104,28 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         loadMap: function(mapId) {
             var self = this;
             this.mapId = mapId;
-    
+
             this.map = new Mapx(!this.renderer.upscaledRendering, this, mapId);
 
             this.storage.setMapId(mapId);
-    
+
         	this.map.ready(function() {
                 console.log("Map loaded.");
                 var tilesetIndex = self.renderer.upscaledRendering ? 0 : self.renderer.scale - 1;
                 self.renderer.setTileset(self.map.tilesets[tilesetIndex]);
-                self.map._initStreamCheck();  
+                self.map._initStreamCheck();
         	});
         },
-    
+
         initPlayer: function() {
             this.player.setSpriteName(this.storage.data.player.armor);
             if(this.storage.hasAlreadyPlayed()) {
                 this.player.setWeaponName(this.storage.data.player.weapon);
             }
-        
+
         	this.player.setSprite(this.sprites[this.player.getSpriteName()]);
         	this.player.idle();
-        
+
     	    console.debug("Finished initPlayer");
         },
 
@@ -3153,26 +3153,26 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             this.fish["cobcatfish"] = this.sprites["cobcatfish"];
             this.fish["cobtrout"] = this.sprites["cobtrout"];
         },
-    
+
         initAnimations: function() {
             this.targetAnimation = new Animation("idle_down", 4, 0, 16, 16);
             this.targetAnimation.setSpeed(50);
-        
+
             this.sparksAnimation = new Animation("idle_down", 6, 0, 16, 16);
             this.sparksAnimation.setSpeed(120);
 
             this.floatAnimation = new Animation("idle", 6, 0, 16, 16);
             this.floatAnimation.setSpeed(240);
         },
-    
+
         initHurtSprites: function() {
             var self = this;
-        
+
             Types.forEachArmorKind(function(kind, kindName) {
                 self.sprites[kindName].createHurtSprite();
             });
         },
-    
+
         initSilhouettes: function() {
             var self = this;
 
@@ -3217,7 +3217,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             });
             return found;
         },
-    
+
         loadSprite: function(name) {
             if(this.renderer.upscaledRendering) {
                 this.spritesets[0][name] = new Sprite(name, 1);
@@ -3228,15 +3228,15 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 }
             }
         },
-    
+
         setSpriteScale: function(scale) {
             var self = this;
-            
+
             if(this.renderer.upscaledRendering) {
                 this.sprites = this.spritesets[0];
             } else {
                 this.sprites = this.spritesets[scale - 1];
-                
+
                 _.each(this.entities, function(entity) {
                     entity.sprite = null;
                     entity.setSprite(self.sprites[entity.getSpriteName()]);
@@ -3247,7 +3247,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 this.initFish();
             }
         },
-    
+
         loadSprites: function() {
             console.log("Loading sprites...");
             this.spritesets = [];
@@ -3256,14 +3256,14 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             this.spritesets[2] = {};
             _.map(this.spriteNames, this.loadSprite, this);
         },
-    
+
         spritesLoaded: function() {
             if(_.any(this.sprites, function(sprite) { return !sprite.isLoaded; })) {
                 return false;
             }
             return true;
         },
-    
+
         setCursor: function(name, orientation) {
             if(name in this.cursors) {
                 this.currentCursor = this.cursors[name];
@@ -3272,7 +3272,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 console.error("Unknown cursor name :"+name);
             }
         },
-    
+
         updateCursorLogic: function() {
             if (this.hoveringFishableTile && this.started) {
                 this.targetColor = "rgba(90, 90, 200, 0.5)";
@@ -3283,7 +3283,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             else {
                 this.targetColor = "rgba(255, 255, 255, 0.5)";
             }
-        
+
             if(this.hoveringMob && this.started && !Types.isSpecialItem(Types.getKindFromString(this.player.weaponName))) {
                 this.setCursor("sword");
                 this.hoveringTarget = false;
@@ -3310,23 +3310,23 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 this.targetCellVisible = true;
             }
         },
-    
+
         focusPlayer: function() {
             this.renderer.camera.lookAt(this.player);
         },
 
         addEntity: function(entity) {
             var self = this;
-            
+
             if(this.entities[entity.id] === undefined) {
                 this.entities[entity.id] = entity;
                 this.registerEntityPosition(entity);
-                
+
                 if(!(entity instanceof Item && entity.wasDropped)
                 && !(this.renderer.mobile || this.renderer.tablet)) {
                     entity.fadeIn(this.currentTime);
                 }
-                
+
                 if(this.renderer.mobile || this.renderer.tablet) {
                     entity.onDirty(function(e) {
                         if(self.camera.isVisible(e)) {
@@ -3350,7 +3350,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 console.error("Cannot remove entity. Unknown ID : " + entity.id);
             }
         },
-    
+
         addItem: function(item, x, y) {
             item.setSprite(this.sprites[item.getSpriteName()]);
             item.setGridPosition(x, y);
@@ -3375,7 +3375,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             }
             this.addEntity(fieldEffect);
         },
-    
+
         removeItem: function(item) {
             if(item) {
                 this.removeFromItemGrid(item, item.gridX, item.gridY);
@@ -3396,7 +3396,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             }
         },
 
-        addFloat: function(float) { 
+        addFloat: function(float) {
             let self = this;
             float.despawnTimeout = setTimeout(function() {
                 self.removeFloat(float.id);
@@ -3411,7 +3411,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         },
 
         castFloat: function(float) {
-            let self = this;
             let player = this.getEntityById(float.id);
             if(player) {
                 let orientationToLake = player.getOrientationTo(float);
@@ -3440,7 +3439,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 console.error("Cannot remove float. Unknown ID : " + floatId);
             }
         },
-    
+
         initPathingGrid: function() {
             this.pathingGrid = [];
             this.pathingGridBackup = [];
@@ -3455,7 +3454,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             console.log("Initialized the pathing grid with static colliding cells.");
             _self = this;
         },
-    
+
         initEntityGrid: function() {
             this.entityGrid = [];
             for(var i=0; i < this.map.height; i += 1) {
@@ -3466,7 +3465,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             }
             console.log("Initialized the entity grid.");
         },
-    
+
         initRenderingGrid: function() {
             this.renderingGrid = [];
             for(var i=0; i < this.map.height; i += 1) {
@@ -3477,7 +3476,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             }
             console.log("Initialized the rendering grid.");
         },
-    
+
         initItemGrid: function() {
             this.itemGrid = [];
             for(var i=0; i < this.map.height; i += 1) {
@@ -3488,9 +3487,9 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             }
             console.log("Initialized the item grid.");
         },
-    
+
         /**
-         * 
+         *
          */
         initAnimatedTiles: function() {
             var self = this,
@@ -3502,7 +3501,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 if(m.isAnimatedTile(id)) {
                     var tile = new AnimatedTile(id, m.getTileAnimationLength(id), m.getTileAnimationDelay(id), index),
                         pos = self.map.tileIndexToGridPosition(tile.index);
-                    
+
                     tile.x = pos.x;
                     tile.y = pos.y;
                     if (m.isHighTile(id)) {
@@ -3516,35 +3515,35 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             this.findVisibleTiles();
             //console.log("Initialized animated tiles.");
         },
-    
+
         addToRenderingGrid: function(entity, x, y) {
             if(!this.map.isOutOfBounds(x, y)) {
                 this.renderingGrid[y][x][entity.id] = entity;
             }
         },
-    
+
         removeFromRenderingGrid: function(entity, x, y) {
             if(entity && this.renderingGrid[y][x] && entity.id in this.renderingGrid[y][x]) {
                 delete this.renderingGrid[y][x][entity.id];
             }
         },
-    
+
         removeFromEntityGrid: function(entity, x, y) {
             if(this.entityGrid[y][x][entity.id]) {
                 delete this.entityGrid[y][x][entity.id];
             }
         },
-        
+
         removeFromItemGrid: function(item, x, y) {
             if(item && this.itemGrid[y][x][item.id]) {
                 delete this.itemGrid[y][x][item.id];
             }
         },
-    
+
         removeFromPathingGrid: function(x, y) {
             this.pathingGrid[y][x] = 0;
         },
-    
+
         /**
          * Registers the entity at two adjacent positions on the grid at the same time.
          * This situation is temporary and should only occur when the entity is moving.
@@ -3555,9 +3554,9 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         registerEntityDualPosition: function(entity) {
             if(entity) {
                 this.entityGrid[entity.gridY][entity.gridX][entity.id] = entity;
-            
+
                 this.addToRenderingGrid(entity, entity.gridX, entity.gridY);
-            
+
                 if(entity.nextGridX >= 0 && entity.nextGridY >= 0) {
                     this.entityGrid[entity.nextGridY][entity.nextGridX][entity.id] = entity;
                     if(!(entity instanceof Player) && !(entity instanceof Mob && entity.isFriendly)) {
@@ -3566,7 +3565,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 }
             }
         },
-    
+
         /**
          * Clears the position(s) of this entity in the entity grid.
          *
@@ -3576,20 +3575,20 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             if(entity) {
                 this.removeFromEntityGrid(entity, entity.gridX, entity.gridY);
                 this.removeFromPathingGrid(entity.gridX, entity.gridY);
-            
+
                 this.removeFromRenderingGrid(entity, entity.gridX, entity.gridY);
-            
+
                 if(entity.nextGridX >= 0 && entity.nextGridY >= 0) {
                     this.removeFromEntityGrid(entity, entity.nextGridX, entity.nextGridY);
                     this.removeFromPathingGrid(entity.nextGridX, entity.nextGridY);
                 }
             }
         },
-    
+
         registerEntityPosition: function(entity) {
             var x = entity.gridX,
                 y = entity.gridY;
-        
+
             if(entity) {
                 if(entity instanceof Character || entity instanceof Chest) {
                     this.entityGrid[y][x][entity.id] = entity;
@@ -3600,7 +3599,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 if(entity instanceof Item) {
                     this.itemGrid[y][x][entity.id] = entity;
                 }
-            
+
                 this.addToRenderingGrid(entity, x, y);
             }
         },
@@ -3609,7 +3608,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             this.unregisterEntityPosition(entity);
             this.registerEntityPosition(entity);
         },
-    
+
         setServerOptions: function(host, port, username, protocol) {
             console.log(host, port, protocol)
             this.host = host;
@@ -3617,12 +3616,12 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             this.username = username;
             this.protocol = protocol;
         },
-    
+
         loadAudio: function() {
             this.audioManager = new AudioManager(this);
             this.app.settings.setSettings();
         },
-    
+
         initMusicAreas: function() {
             var self = this;
             _.each(this.map.musicAreas, function(area) {
@@ -3632,20 +3631,20 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
         run: function(started_callback) {
             var self = this;
-        
+
             this.loadSprites();
             this.setUpdater(new Updater(this));
             this.camera = this.renderer.camera;
-        
+
             this.setSpriteScale(this.renderer.scale);
-        
+
         	var wait = setInterval(function() {
                 if(self.map.isLoaded && self.spritesLoaded()) {
                     self.ready = true;
                     console.debug('All sprites loaded.');
-                            
+
                     self.loadAudio();
-                    
+
                     self.initMusicAreas();
                     self.initAchievements();
                     self.initCursors();
@@ -3653,30 +3652,30 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     self.initShadows();
                     self.initFish();
                     //self.initHurtSprites();
-                
+
                     if(!self.renderer.mobile
-                    && !self.renderer.tablet 
+                    && !self.renderer.tablet
                     && self.renderer.upscaledRendering) {
                         self.initSilhouettes();
                     }
-            
+
                     self.initEntityGrid();
                     self.initItemGrid();
                     self.initPathingGrid();
                     self.initRenderingGrid();
-                
+
                     self.setPathfinder(new Pathfinder(self.map.width, self.map.height));
-            
+
                     self.initPlayer();
                     self.setCursor("hand");
-                    
+
                     self.connect(started_callback);
-                
+
                     clearInterval(wait);
                 }
         	}, 100);
         },
-    
+
         canUseCenteredCamera: function() {
             return this.mapId !== "main" && this.app.settings.getCenteredCamera();
         },
@@ -3716,7 +3715,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             console.log("Game stopped.");
             this.isStopped = true;
         },
-    
+
         entityIdExists: function(id) {
             return id in this.entities;
         },
@@ -3771,10 +3770,10 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         connect: function(started_callback) {
             var self = this,
                 connecting = false; // always in dispatcher mode in the build version
-    
+
             this.client = new GameClient(this.host, this.port, this.protocol, this.sessionId, this.mapId);
             this.renderStatistics();
-            
+
             //>>excludeStart("prodHost", pragmas.prodHost);
             var config = this.app.config.local || this.app.config.dev;
             if(config) {
@@ -3782,50 +3781,50 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 connecting = true;
             }
             //>>excludeEnd("prodHost");
-            
+
             //>>includeStart("prodHost", pragmas.prodHost);
             if(!connecting) {
                 this.client.connect(true); // always use the dispatcher in production
             }
             //>>includeEnd("prodHost");
-            
+
             this.client.onDispatched(function(host, port) {
                 console.debug("Dispatched to game server "+host+ ":"+port);
-                
+
                 self.client.host = host;
                 self.client.port = port;
                 self.client.connect(); // connect to actual game server
             });
-            
+
             this.client.onConnected(function() {
                 console.log("Starting client/server handshake");
-                
+
                 self.player.name = self.username;
                 self.player.setSpriteName(self.storage.data.player.armor);
                 self.started = true;
 
-            
+
                 self.sendHello(self.player);
             });
-        
+
             this.client.onEntityList(function(list) {
                 var entityIds = _.pluck(self.entities, 'id'),
                     knownIds = _.intersection(entityIds, list),
                     newIds = _.difference(list, knownIds);
-            
+
                 self.obsoleteEntities = _.reject(self.entities, function(entity) {
                     return _.include(knownIds, entity.id) || entity.id === self.player.id;
                 });
-            
+
                 // Destroy entities outside of the player's zone group
                 self.removeObsoleteEntities();
-                
+
                 // Ask the server for spawn information about unknown entities
                 if(_.size(newIds) > 0) {
                     self.client.sendWho(newIds);
                 }
             });
-        
+
             this.client.onWelcome(function(id, name, x, y, hp, title) {
                 console.log("Received player ID from server : "+ id);
                 self.player.id = id;
@@ -3841,10 +3840,10 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 self.resetCamera();
                 self.updatePlateauMode();
                 self.audioManager.updateMusic();
-            
+
                 self.addEntity(self.player);
                 self.player.dirtyRect = self.renderer.getEntityBoundingRect(self.player);
-            
+
                 if(!self.storage.hasAlreadyPlayed()) {
                     self.storage.initPlayer(self.player.name);
                     self.storage.savePlayer(self.renderer.getPlayerImage(),
@@ -3855,19 +3854,19 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     self.showNotification("Welcome back to LooperLands!");
                     self.storage.setPlayerName(name);
                 }
-        
+
                 self.player.onStartPathing(function(path) {
                     var i = path.length - 1,
                         x =  path[i][0],
                         y =  path[i][1];
-                
+
                     if(self.player.isMovingToLoot()) {
                         self.player.isLootMoving = false;
                     }
                     else if(!self.player.isAttacking()) {
                         self.client.sendMove(x, y);
                     }
-                
+
                     // Target cursor position
                     self.selectedX = x;
                     self.selectedY = y;
@@ -3884,19 +3883,19 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 self.player.onRooted(function(x,y) {
                     self.client.sendMove(x, y);
                 });
-                
+
                 self.player.onCheckAggro(function() {
                     self.forEachMob(function(mob) {
-                        if(mob.isAggressive 
-                        && (!mob.isFriendly || mob.breakFriendly(self.player)) 
-                        && !mob.inCombat 
-                        && self.player.isNear(mob, mob.aggroRange)) 
+                        if(mob.isAggressive
+                        && (!mob.isFriendly || mob.breakFriendly(self.player))
+                        && !mob.inCombat
+                        && self.player.isNear(mob, mob.aggroRange))
                         {
                             self.player.aggro(mob);
                         }
                     });
                 });
-            
+
                 self.player.onAggro(function(mob) {
                     if(!mob.isWaitingToAttack(self.player) && !self.player.isAttackedBy(mob) && !self.player.isDead) {
                         self.player.log_info("Aggroed by " + mob.id + " at ("+self.player.gridX+", "+self.player.gridY+")");
@@ -3917,22 +3916,22 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     }
                     self.unregisterEntityPosition(self.player);
                 });
-            
+
                 self.player.onStep(function() {
                     self.findVisibleTiles();
 
-                    if(this.isFishing) {
+                    if(self.isFishing) {
                         self.stopFishing(false);
                     }
-                    
+
                     if(self.player.hasNextStep()) {
                         self.registerEntityDualPosition(self.player);
                     }
-                
+
                     if(self.isZoningTile(self.player.gridX, self.player.gridY)) {
                         self.enqueueZoningFrom(self.player.gridX, self.player.gridY);
                     }
-                
+
                     self.player.forEachAttacker(function(attacker) {
                         if(attacker.isAdjacent(attacker.target)) {
                             attacker.lookAtTarget();
@@ -3949,12 +3948,12 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                         self.audioManager.updateMusic();
                     }
                 });
-            
+
                 self.player.onStopPathing(function(x, y) {
                     if(self.player.hasTarget()) {
                         self.player.lookAtTarget();
                     }
-                
+
                     self.selectedCellVisible = false;
 
                     if(self.isItemAt(x, y)) {
@@ -3967,11 +3966,11 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 self.client.sendLoot(item); // Notify the server that this item has been looted
                                 self.removeItem(item);
                                 self.showNotification(item.getLootMessage());
-                                
+
                                 if(item.kind === Types.Entities.FIREPOTION) {
                                     self.audioManager.playSound("firefox");
                                 }
-                            
+
                                 if(Types.isHealingItem(item.kind)) {
                                     self.audioManager.playSound("heal");
                                 } else {
@@ -3989,7 +3988,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                             }
                         }
                     }
-                
+
                     if(!self.player.hasTarget() && self.map.isDoor(x, y)) {
                         var dest = self.map.getDoorDestination(x, y);
                         var _self = self;
@@ -4007,7 +4006,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 }).catch(function (error) {
                                     console.log(error);
                                 }).finally(function(e) {
-    
+
                                 });
                             } else {
                                 _self.player.setGridPosition(dest.x, dest.y);
@@ -4015,7 +4014,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 _self.player.nextGridY = dest.y;
                                 _self.player.turnTo(dest.orientation);
                                 _self.client.sendTeleport(dest.x, dest.y);
-                                
+
                                 if(_self.renderer.mobile && dest.cameraX && dest.cameraY) {
                                     _self.camera.setGridPosition(dest.cameraX, dest.cameraY);
                                     _self.resetZone();
@@ -4031,23 +4030,23 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                         _self.resetZone();
                                     }
                                 }
-                                
+
                                 _self.player.forEachAttacker(function(attacker) {
                                     attacker.disengage();
                                     attacker.idle();
                                 });
-                            
+
                                 _self.updatePlateauMode();
-                                
+
                                 if(_self.renderer.mobile || _self.renderer.tablet) {
                                     // When rendering with dirty rects, clear the whole screen when entering a door.
                                     _self.renderer.clearScreen(_self.renderer.context);
                                 }
-                                
+
                                 if(dest.portal) {
                                     _self.audioManager.playSound("teleport");
                                 }
-                                
+
                                 if(!_self.player.isDead) {
                                     _self.audioManager.updateMusic();
                                 }
@@ -4134,7 +4133,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 if (response.data[0] !== undefined) {
                                     walletHasCollection = response.data[0].projectInWallet;
                                 }
-                                
+
                                 if (walletHasCollection === true) {
                                     checkTrigger()
                                 } else {
@@ -4162,7 +4161,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                             attacker.follow(self.player);
                         }
                     });
-                    
+
                     self.updatePos(self.player);
 
                     if(self.map.getCurrentTrigger(self.player)) {
@@ -4170,62 +4169,62 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     }
 
                 });
-            
+
                 self.player.onRequestPath(function(x, y) {
                     var ignored = [self.player]; // Always ignore self
-                
+
                     if(self.player.hasTarget()) {
                         ignored.push(self.player.target);
                     }
                     return self.findPath(self.player, x, y, ignored);
                 });
-            
+
                 self.player.onDeath(function() {
                     console.log(self.playerId + " is dead");
-                
+
                     self.player.stopBlinking();
                     self.player.setSprite(self.sprites["death"]);
                     self.player.animate("death", 120, 1, function() {
                         console.log(self.playerId + " was removed");
-                    
+
                         self.removeEntity(self.player);
                         self.removeFromRenderingGrid(self.player, self.player.gridX, self.player.gridY);
-                    
+
                         self.player = null;
                         self.client.disable();
-                    
+
                         setTimeout(function() {
                             self.playerdeath_callback();
                         }, 1000);
                     });
-                
+
                     self.player.forEachAttacker(function(attacker) {
                         attacker.disengage();
                         attacker.idle();
                     });
-                
+
                     self.audioManager.fadeOutCurrentMusic();
                     self.audioManager.playSound("death");
                 });
-            
+
                 self.player.onHasMoved(function(player) {
                     self.bubbleManager.forEachBubble(function(bubble) {
                         let character = self.getEntityById(bubble.id);
                         self.assignBubbleTo(character);
                     });
                 });
-                
+
                 self.player.onArmorLoot(function(armorName) {
                     return;
                 });
-            
+
                 self.player.onSwitchItem(function() {
                     var weaponName = self.player.getWeaponName();
                     if (!weaponName.startsWith("NFT_")) {
                         self.storage.setPlayerWeapon(self.player.getWeaponName());
                     }
 
-                    if(this.isFishing) {
+                    if(self.isFishing) {
                         self.stopFishing(false);
                     }
 
@@ -4233,12 +4232,12 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                         self.equipment_callback();
                     }
                 });
-                
+
                 self.player.onInvincible(function() {
                     self.invincible_callback();
                     self.player.switchArmor(self.sprites["firefox"]);
                 });
-            
+
                 self.client.onSpawnItem(function(item, x, y) {
                     console.log("Spawned " + Types.getKindAsString(item.kind) + " (" + item.id + ") at "+x+", "+y);
                     self.addItem(item, x, y);
@@ -4248,14 +4247,14 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     console.log("Spawned field effect " + Types.getKindAsString(fieldEffect.kind) + " (" + fieldEffect.id + ") at "+x+", "+y);
                     self.addFieldEffect(fieldEffect, x, y);
                 });
-            
+
                 self.client.onSpawnChest(function(chest, x, y) {
                     console.log("Spawned chest (" + chest.id + ") at "+x+", "+y);
                     chest.setSprite(self.sprites[chest.getSpriteName()]);
                     chest.setGridPosition(x, y);
                     chest.setAnimation("idle_down", 150);
                     self.addEntity(chest, x, y);
-                
+
                     chest.onOpen(function() {
                         chest.stopBlinking();
                         chest.setSprite(self.sprites["death"]);
@@ -4267,7 +4266,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                         });
                     });
                 });
-            
+
                 self.client.onSpawnCharacter(function(entity, x, y, orientation, targetId) {
 
                     if (self.entityIdExists(entity.id) && entity instanceof Player) {
@@ -4288,14 +4287,14 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 entity.idle();
                                 if (entity.name === undefined) {
                                     entity.name = entity.normalSprite.name.replace(/[0-9]+/, "");
-                                }                                
+                                }
 
                                 self.addEntity(entity);
                                 self.getServerInfo();
 
-                        
+
                                 console.debug("Spawned " + Types.getKindAsString(entity.kind) + " (" + entity.id + ") at "+entity.gridX+", "+entity.gridY);
-                        
+
                                 if(entity instanceof Character) {
                                     entity.onBeforeStep(function() {
                                         self.unregisterEntityPosition(entity);
@@ -4324,16 +4323,16 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                             if(entity.hasTarget() && entity.isAdjacent(entity.target)) {
                                                 entity.lookAtTarget();
                                             }
-                                
+
                                             if(entity instanceof Player) {
                                                 var gridX = entity.destination.gridX,
                                                     gridY = entity.destination.gridY;
-                                                
+
                                                 if(self.map.isDoor(gridX, gridY)) {
                                                     var dest = self.map.getDoorDestination(gridX, gridY);
 
                                                     function checkTrigger() {
-                                                        if (dest.triggerId !== undefined) {    
+                                                        if (dest.triggerId !== undefined) {
                                                             let trUrl = '/session/' + self.sessionId + '/requestTeleport/' + dest.triggerId;
                                                             axios.get(trUrl).then(function (response) {
                                                                 if (response.data === true) {
@@ -4348,7 +4347,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                                             self.updatePos(entity);
                                                         }
                                                     }
-                                                    
+
                                                     if (dest.nft !== undefined) {
                                                         var url = self.map.mapId + '/player/' + entity.id + '/owns/' + dest.nft;
                                                         axios.get(url).then(function (response) {
@@ -4363,7 +4362,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                                     }
                                                 }
                                             }
-                                        
+
                                             entity.forEachAttacker(function(attacker) {
                                                 if(!attacker.isAdjacentNonDiagonal(entity) && attacker.id !== self.playerId) {
                                                     attacker.follow(entity);
@@ -4388,7 +4387,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                                     ignored.push(attacker);
                                                 });
                                             };
-                                        
+
                                         if(entity.hasTarget()) {
                                             ignoreTarget(entity.target);
                                         } else if(entity.previousTarget) {
@@ -4396,13 +4395,13 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                             // See: tryMovingToADifferentTile()
                                             ignoreTarget(entity.previousTarget);
                                         }
-                                        
+
                                         return self.findPath(entity, x, y, ignored);
                                     });
 
                                     entity.onDeath(function() {
                                         console.log(entity.id + " is dead");
-                                
+
                                         if(entity instanceof Mob) {
                                             // Keep track of where mobs die in order to spawn their dropped items
                                             // at the right position later.
@@ -6107,6 +6106,8 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         },
 
         clickFishingBar: function(){
+            let self = this;
+            
             const markerOffset = 12; // 8 from the marker + 4 from the bar border
 
             clearInterval(this.slidingFish);
