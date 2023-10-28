@@ -3920,7 +3920,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 self.player.onStep(function() {
                     self.findVisibleTiles();
 
-                    if(self.isFishing) {
+                    if(this.isFishing) {
                         self.stopFishing(false);
                     }
 
@@ -4224,7 +4224,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                         self.storage.setPlayerWeapon(self.player.getWeaponName());
                     }
 
-                    if(self.isFishing) {
+                    if(this.isFishing) {
                         self.stopFishing(false);
                     }
 
@@ -6107,7 +6107,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
         clickFishingBar: function(){
             let self = this;
-            
             const markerOffset = 12; // 8 from the marker + 4 from the bar border
 
             clearInterval(this.slidingFish);
