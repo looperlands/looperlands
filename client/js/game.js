@@ -5989,7 +5989,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         },
 
         canFish: function (gX, gY, keyboard) {
-            if (Types.isFishingRod(Types.getKindFromString(self.player.weaponName))){
+            if (Types.isFishingRod(Types.getKindFromString(this.player.weaponName))){
                 if (this.player.isOnSameAxis(gX, gY)
                     && this.player.isNear({gridX: gX, gridY: gY}, 2)
                     && this.map.getLakeName(gX, gY))
@@ -6007,7 +6007,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         },
 
         startFishing: function(gX, gY) {
-            if(!self.player.isFishing){
+            if(!this.player.isFishing){
                 let self = this;
         
                 self.player.isFishing = true;
@@ -6058,7 +6058,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         },
 
         stopFishing: function(success, barHoldDuration) {
-            let self=this;
+            let self= this;
 
             self.player.isFishing = false;
             clearTimeout(this.uniFishTimeout);
