@@ -27,12 +27,12 @@ AltNames.getAltNameFromKind = function(kind){
     if(kind in AltNames) {
         return AltNames[kind];
     }
-}
+};
 
 AltNames.getName = function (kind){
     let altName = AltNames.getAltNameFromKind(kind);
     return altName !== undefined ? altName : kind;
-}
+};
 
 if(!(typeof exports === 'undefined')) {
     module.exports = AltNames;
