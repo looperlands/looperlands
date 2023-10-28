@@ -3411,6 +3411,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         },
 
         castFloat: function(float) {
+            let self = this;
             let player = this.getEntityById(float.id);
             if(player) {
                 let orientationToLake = player.getOrientationTo(float);
