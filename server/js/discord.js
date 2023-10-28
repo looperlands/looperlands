@@ -22,7 +22,7 @@ if (process.env.DISCORD_TOKEN === undefined) {
 }
 
 sendMessage = (message) => {
-    const channels = ['1156612974669209723', '1108905948308844704'];
+    const channels = ['1156612974669209723'];
     try {
         for (let channelId of channels) {
             let channel = client.channels.cache.get(channelId);
@@ -46,7 +46,7 @@ exports.sendMessage = sendMessage;
 exports.ready = ready
 
 exports.sendToDevChannel = (message) => {
-    const channels = ['1156613041467695144', '1127223763990224957'];
+    const channels = ['1156613041467695144'];
     try {
         for (let channelId of channels) {
             let channel = client.channels.cache.get(channelId);
