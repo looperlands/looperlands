@@ -17,7 +17,7 @@ class KeyBoardHandler {
         this.interval = false;
 
         console.log("Created keyboard handler");
-        
+
         document.addEventListener('keydown', (event) => this.handleKeyDown(event));
         document.addEventListener('keyup', (event) => this.handleKeyUp(event));
         window.addEventListener('blur', this.handleBlur.bind(this));
@@ -77,6 +77,10 @@ class KeyBoardHandler {
             return
         }
 
+        if(!this.game.started || this.inputHasFocus() || this.hasOpenPanel()) {
+            return;
+        }
+
         let self = this;
         this.getWeapons((weapons) => {
             self.equipWeapon(self.getNextWeapon(weapons));
@@ -88,10 +92,27 @@ class KeyBoardHandler {
             return
         }
 
+        if(!this.game.started || this.inputHasFocus() || this.hasOpenPanel()) {
+            return;
+        }
+
         let self = this;
         this.getWeapons((weapons) => {
             self.equipWeapon(self.getPreviousWeapon(weapons));
         });
+    }
+
+    inputHasFocus() {
+        const elem = document.activeElement;
+        return elem && (elem.tagName.toLowerCase() === "input" || elem.tagName.toLowerCase() === "textarea");
+
+    }
+
+    hasOpenPanel() {
+        return $('body').hasClass('settings') ||
+            $('body').hasClass('about') ||
+            $('body').hasClass('credits') ||
+            $('#chatbox').hasClass("active");
     }
 
     equipWeapon(weapon) {
