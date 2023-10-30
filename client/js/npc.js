@@ -236,7 +236,8 @@ define(['character'], function (Character) {
             "Behold yon sea beast o’re yonder! It gobbled up me ship and me loyal crew.",
             "I swear to Davey I will not rest until that foul creature meets his doom!",
             "Will ye help me?",
-            "Grab yer crewmates and meet me by the shore! We be no match for this beast on our own."
+            "Grab yer crewmates and meet me by the shore! We be no match for this beast on our own.",
+            'Follow <a href="https://loopworms.io/DEV/LooperLands/QR/qr.php?NPC=wildwill" target="blank">this link</a> - it might be a Red Packet!',
         ],
 
         "desertnpc": [
