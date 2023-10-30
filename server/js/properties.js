@@ -372,21 +372,17 @@ var Properties = {
     seacreature: {
         level: 18,
         drops: {},
-        armorMod: 2.5,
-        weaponMod: 1.5,
-        hpMod: 4,
+        hp: 999999,
         redpacket: true,
-        xp: 50000,
-        respawnDelay: 3600000
+        xp: 75000,
+        respawnDelay: 1800000
     },
     tentacle: {
         level: 18,
         drops: {},
-        armorMod: 5,
+        armorMod: 1.5,
         weaponMod: 0.1,
-        hpMod: 2,
-        redpacket: false,
-        xp: 1000,
+        hpMod: 10,
         aoe: {
             damage: 100,
             range: 1,
@@ -397,11 +393,9 @@ var Properties = {
     tentacle2: {
         level: 18,
         drops: {},
-        armorMod: 5,
+        armorMod: 1.5,
         weaponMod: 0.1,
-        hpMod: 2,
-        redpacket: false,
-        xp: 1000,
+        hpMod: 10,
         aoe: {
             damage: 100,
             range: 1,

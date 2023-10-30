@@ -684,7 +684,11 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.BEACHNPC] = function(id) {
         return new NPCs.BeachNpc(id);
     };
-    
+
+    EntityFactory.builders[Types.Entities.WILDWILL] = function(id) {
+        return new NPCs.WildWill(id);
+    };
+
     EntityFactory.builders[Types.Entities.FORESTNPC] = function(id) {
         return new NPCs.ForestNpc(id);
     };
