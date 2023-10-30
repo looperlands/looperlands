@@ -197,7 +197,7 @@ define(['npc'], function(Npc) {
 
         WildWill: Npc.extend({
             init: function(id) {
-                this._super(id, Types.Entities.WildWill, 1);
+                this._super(id, Types.Entities.WILDWILL, 1);
             }
         }),
 

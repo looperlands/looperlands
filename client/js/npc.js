@@ -230,8 +230,6 @@ define(['character'], function (Character) {
         ],
 
         "wildwill": [
-            "For the dialog on Wild Will.",
-            "I think we can keep it simple for now!",
             "Arg me hearty! Pray, do ye have a trusty blade or pistol stowed away in yer pouch there??",
             "Ye do??",
             "Ah bless the winds upon this day!",
