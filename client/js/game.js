@@ -73,9 +73,9 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             // sprites
             this.spriteNames = ["hand", "sword", "loot", "target", "talk", "float", "sparks", "shadow16", "rat", "skeleton", "skeleton2", "spectre", "boss", "deathknight", 
                                 "ogre", "crab", "snake", "eye", "bat", "goblin", "wizard", "guard", "king", "villagegirl", "villager", "coder", "agent", "rick", "scientist", "nyan", "priest", "coblumberjack", "cobhillsnpc", "cobcobmin", "cobellen", "cobjohnny",
-                                "king2", "goose", "tanashi", "slime","kingslime","silkshade","redslime","villagesign1","wildgrin","loomleaf","gnashling","arachweave","spider","fangwing", "minimag", "miner", "megamag", "seacreature", "tentacle", "tentacle2",
+                                "king2", "goose", "tanashi", "slime","kingslime","silkshade","redslime","villagesign1","wildgrin","loomleaf","gnashling","arachweave","spider","fangwing", "minimag", "miner", "megamag", "seacreature", "tentacle", "tentacle2", "wildwill",
                                 "cobchicken", "alaric","orlan","jayce", "cobcow", "cobpig", "cobgoat", "ghostie","cobslimered", "cobslimeyellow", "cobslimeblue", "cobslimeking", "cobyorkie", "cobcat", "cobdirt", "cobincubator", "cobcoblin", "cobcobane", "cobogre",
-                                "sorcerer", "octocat", "beachnpc", "wildwill", "forestnpc", "desertnpc", "lavanpc","thudlord", "clotharmor", "leatherarmor", "mailarmor","boar","grizzlefang","barrel","neena","athlyn","jeniper",
+                                "sorcerer", "octocat", "beachnpc", "forestnpc", "desertnpc", "lavanpc","thudlord", "clotharmor", "leatherarmor", "mailarmor","boar","grizzlefang","barrel","neena","athlyn","jeniper",
                                 "platearmor", "redarmor", "goldenarmor", "firefox", "death", "sword1","torin","elric","glink", "axe", "chest","elara","eldrin","draylen","thaelen","keldor","torvin","liora","aria",
                                 "sword2", "redsword", "bluesword", "goldensword", "item-sword2", "item-axe", "item-redsword", "item-bluesword", "item-goldensword", "item-leatherarmor", "item-mailarmor","whiskers",
                                 "item-platearmor", "item-redarmor", "item-goldenarmor", "item-flask", "item-potion","item-cake", "item-burger", "item-cobcorn", "item-cobapple", "item-coblog", "item-cobclover", "item-cobegg", "morningstar", "item-morningstar", "item-firepotion",
@@ -3049,20 +3049,94 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 "NFT_69f5dbe8d3d20cef5421ba25c49471be21f65ffc6cfe3c5f6c4bfc9a01aa70d7",
                                 "NFT_981710619979f79648423c66ca5cc07e521ea970c69cc995ab8798a5267c0822",
                                 "NFT_b6d8f6bb705a00857f68a2495eab0740a59336ba69d50784893a24534df250f2",
+                                "NFT_065943156a65cd899a6ab66c69364f4f2c8c284a40206c05d22e8bf88fa70976",
+                                "NFT_248b6acc7226b5e86aaa52213cce3360fc1e87dbc136148de6368bd1de43f898",
+                                "item-NFT_248b6acc7226b5e86aaa52213cce3360fc1e87dbc136148de6368bd1de43f898",
+                                "NFT_33ff1b554839735922f1da757e6dcfbf388562192b4dd5d49af453fbd2331aa1",
+                                "NFT_4786a6878b9243b5e9e241aaaca18488ac7b93a2c0c0538d7d8eed4ff94cb9bc",
+                                "item-NFT_4786a6878b9243b5e9e241aaaca18488ac7b93a2c0c0538d7d8eed4ff94cb9bc",
+                                "NFT_5f8373143edb4565e048dd4251a3dff6bacc7223699812b0a97c572f9a9db602",
+                                "NFT_68bf1509c97b94e78054f7448cf69306ac62f3aca276b823e3f0186aa33af595",
+                                "NFT_80f786c44c644a995310cd73387f1ab60996c3a51b2007354f8b1ae23c408734",
+                                "NFT_88e99caa12dbe5f0ab293f89a1d619aa950beedfb038bb72b2da058142712cb2",
+                                "NFT_b1ec7767fb42e1a923385f484c495b37d53adb5793ddfc616d7d345800b3627a",
+                                "NFT_d45593a7632176c8d29fb9d69b1132722eabbdbcdf63543c54180a3c1096b69a",
+                                "NFT_dcaad24c76229cab33c5e487b80be8995606ebad6069128c3ab916c41080d700",
+                                "NFT_df5270262afb4ec048aba1cfff576846d71372ed3bc18bd2e0e80b4c109d5311",
+                                "NFT_155496afe54464f9a7688f7b205208067ef4da2ff9e844d714389f99dbc08abb",
+                                "NFT_20140ced0519659a6b209112800bca28ff72ac1c5a461b9c5362d7126f3872c5",
+                                "NFT_957c1af7a1fae631d4bc173b2c6769fd2a594cfe10dbd3153dfa07405c1831c6",
+                                "NFT_cebe3b0c4e030f81b1c5e3e71baf06ed9692af0d02b1d05f9a42aa944ee9bf08",
+                                "NFT_1e5cc569c57e28ae9ce853d7b87abe0c64de21bbc553d0e04005372ea7a09f3b",
+                                "item-NFT_1e5cc569c57e28ae9ce853d7b87abe0c64de21bbc553d0e04005372ea7a09f3b",
+                                "NFT_308fe29e31f15c26c18b4a752762c935ec76f3fefc6597853b1bd919deee40c2",
+                                "item-NFT_308fe29e31f15c26c18b4a752762c935ec76f3fefc6597853b1bd919deee40c2",
+                                "NFT_3269d8e31562e41cf063a20467bc90be1647fec80cd0b713b122c499390a2e84",
+                                "item-NFT_3269d8e31562e41cf063a20467bc90be1647fec80cd0b713b122c499390a2e84",
+                                "NFT_54f6bc6da3e690ea9bd53ecb6c3195dac3bb2361430f0581cdcb58e8d85c097c",
+                                "item-NFT_54f6bc6da3e690ea9bd53ecb6c3195dac3bb2361430f0581cdcb58e8d85c097c",
+                                "NFT_6334a66f596137b3f23086bdeb428c125987f981c970faca4fefbadcc105234f",
+                                "item-NFT_6334a66f596137b3f23086bdeb428c125987f981c970faca4fefbadcc105234f",
+                                "NFT_69be5638eb74e42ff2206180676f1466fe20fc60c0711e7e2f2b51d341f5ec39",
+                                "item-NFT_69be5638eb74e42ff2206180676f1466fe20fc60c0711e7e2f2b51d341f5ec39",
+                                "NFT_6fbbc8ea46f26eec07b98c7a16670dc4ed0b3958a5844fdb784ad53b514c838e",
+                                "NFT_79d964b694c0fb8b5b96edfcb92c8d3a261a65ba401dfe542525ab35ed455134",
+                                "item-NFT_79d964b694c0fb8b5b96edfcb92c8d3a261a65ba401dfe542525ab35ed455134",
+                                "NFT_7b04ed139303ba3de76c75b49f2313a2b7644f20620898a9ceff853a50e72861",
+                                "item-NFT_7b04ed139303ba3de76c75b49f2313a2b7644f20620898a9ceff853a50e72861",
+                                "NFT_9deb10bb19a30a1cedce1697bb0b76ab552b29fe52f69077aef24aa895d5e366",
+                                "item-NFT_9deb10bb19a30a1cedce1697bb0b76ab552b29fe52f69077aef24aa895d5e366",
+                                "NFT_a627920e72e5c163d42370efaa8adde90eeac49957a4fb778a58c2970ccedf96",
+                                "NFT_b972a4c7d4b40faa51f4e9c2125594e829cfa06e41b1e888f6129990e6f52c5e",
+                                "NFT_d7584a6b4b4ae5d754a1cd7f65ae27b1eb56e90a9764553584d48073d7ff0697",
+                                "NFT_f48bcff39f2cca8b9bb595d396f16cd56668fd6432fd2278b7e0f65247b715f4",
+                                "item-NFT_f48bcff39f2cca8b9bb595d396f16cd56668fd6432fd2278b7e0f65247b715f4",
+                                "NFT_f80c80f828c633f8d73c6f7941918ab6f78a3588c6fc2dd3061d5c7f5edf9347",
+                                "NFT_8bac0f0f13f97b2f622a7500852d5e39367d665a7fc902f3f652da772764a96d",
+                                "NFT_fd41c7bee2c6a0782c76c8e72d87af7a623b2dce1749ee07a5505e12a5de01e3",
+                                "NFT_06b2a71c2a9c885d64495ea86ec7536eadbe9c161c2ad2182efcfaaa44c7f619",
+                                "NFT_2af6339136794c79a3bb82328b0cd28a953712c4122870a270670dd1bec05ec1",
+                                "NFT_311a5caa89887eede260590073dd3ee23df7a8dbbefc936407571b05bd19e8c7",
+                                "NFT_31a8a7579d5c643336531172eab4e7a03f96085103bc2b4693c9268c87c10971",
+                                "NFT_3f705c925c2fe49efbd14574f645dc2e8e37184411e1572573c4dc71c5d476ba",
+                                "NFT_5323840f2290b780cc42aeead4b5f0c1059e0bca9a771baa9781b0067eccdbe5",
+                                "NFT_55de0347e7168709767c7b640017bb3161eb3f47331bd65887f1e4fe0c319b28",
+                                "NFT_59609a84a8a02b504192598b1691cdbb585f8a292057246ecf2a14a3ca2612f9",
+                                "NFT_630022ca1c42278df07bf5c49ac10b62b939dcd272a0622eb9d2c4dacc61ef08",
+                                "NFT_6760bd6ab8d9945142c480b434e6f56d493e4e1c537b8006271628454ce08f80",
+                                "NFT_70faff2f4da7b77a5818cf07224ae0df56c5e2db122eb390c36392478a15d681",
+                                "NFT_8529151d4d9c00880810f813f47b5ba382a5c129ae226a0796c73d9dedb92c37",
+                                "NFT_85d6b17f8c04dbe392332a1b1b1d706784217a74d16bb9e47b4837b1ae7d220f",
+                                "NFT_8d406b0ef91b56b086f5fdfca62d4a8012c9396f505594a0882f1904dbe98ae4",
+                                "NFT_90fa616c2e8a7269255df1e6593bb6a290c08a554571c997493cbbd00f6bdabf",
+                                "NFT_a3acdc29fe66ed50a1ea3c62660041e7788febdd24d784fe4a8fb307fe98d27e",
+                                "NFT_a4926fb61479e840fd8b620dc5c0c2d3101d8ec363f0dbdb3dced738e5b3653d",
+                                "NFT_a4fb4a7728ad1e9adf43bc83e5e674e26024b49299c80b177aaad1eef9504a87",
+                                "NFT_b81c71d46404e3b4f5082dc94a28647c0b02c8b4aa8477e22d3743d83f6a4731",
+                                "NFT_be67c8453bbf84ef3ab3203798e43d2dcfb18a205544e8e8e9efbde313166935",
+                                "NFT_c39b80227ebe1bf851d09ad7fd1236924741113885b47bac4de8dc6b92f92d82",
+                                "NFT_d7ab421e1289728f42612fbe76d0cea9310608ea02ada0dfa321be2f9fe41f63",
+                                "NFT_d7e2ba7630cc02a4714b0cc3ef64265789aea8323e3ad03a0c6077012bcc1bb1",
+                                "NFT_df845880dd44ab4ed2eafd2694af09e6906c6e150ff4c3db4f6f570373100306",
+                                "NFT_f3d3fd28576b1103b38c45faa6dc53bd22c9b587135783116acaae48db1d0352",
+                                "NFT_f47a931938e39a80ad2d968952fa886988f6f16c02a150930e2a6810a8ad6bfe",
+                                "NFT_f54e9f7cce9efefc487db384b4f6eacf36dd016415baa34a02855b337a8703fe",
+                                "NFT_f577507c4a3d838d65c00fd401eed8699f06b511716e4da3c2ae0f56a37b33ec",
+                                "NFT_f737be5c1722817d32bfc953bd44ff165a35c01fecbc2152790dcf065018f0d6",
                                 // @nextSpriteLine@
-                            ];                          
+                            ];
         },
-    
+
         setup: function($bubbleContainer, canvas, background, foreground, input) {
     		this.setBubbleManager(new BubbleManager($bubbleContainer));
     		this.setRenderer(new Renderer(this, canvas, background, foreground));
     		this.setChatInput(input);
         },
-        
+
         setStorage: function(storage) {
             this.storage = storage;
         },
-    
+
         setRenderer: function(renderer) {
             this.renderer = renderer;
         },
@@ -3070,15 +3144,15 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         setUpdater: function(updater) {
             this.updater = updater;
         },
-    
+
         setPathfinder: function(pathfinder) {
             this.pathfinder = pathfinder;
         },
-    
+
         setChatInput: function(element) {
             this.chatinput = element;
         },
-    
+
         setBubbleManager: function(bubbleManager) {
             this.bubbleManager = bubbleManager;
         },
@@ -3086,28 +3160,28 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         loadMap: function(mapId) {
             var self = this;
             this.mapId = mapId;
-    
+
             this.map = new Mapx(!this.renderer.upscaledRendering, this, mapId);
 
             this.storage.setMapId(mapId);
-    
+
         	this.map.ready(function() {
                 console.log("Map loaded.");
                 var tilesetIndex = self.renderer.upscaledRendering ? 0 : self.renderer.scale - 1;
                 self.renderer.setTileset(self.map.tilesets[tilesetIndex]);
-                self.map._initStreamCheck();  
+                self.map._initStreamCheck();
         	});
         },
-    
+
         initPlayer: function() {
             this.player.setSpriteName(this.storage.data.player.armor);
             if(this.storage.hasAlreadyPlayed()) {
                 this.player.setWeaponName(this.storage.data.player.weapon);
             }
-        
+
         	this.player.setSprite(this.sprites[this.player.getSpriteName()]);
         	this.player.idle();
-        
+
     	    console.debug("Finished initPlayer");
         },
 
@@ -3135,26 +3209,26 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             this.fish["cobcatfish"] = this.sprites["cobcatfish"];
             this.fish["cobtrout"] = this.sprites["cobtrout"];
         },
-    
+
         initAnimations: function() {
             this.targetAnimation = new Animation("idle_down", 4, 0, 16, 16);
             this.targetAnimation.setSpeed(50);
-        
+
             this.sparksAnimation = new Animation("idle_down", 6, 0, 16, 16);
             this.sparksAnimation.setSpeed(120);
 
             this.floatAnimation = new Animation("idle", 6, 0, 16, 16);
             this.floatAnimation.setSpeed(240);
         },
-    
+
         initHurtSprites: function() {
             var self = this;
-        
+
             Types.forEachArmorKind(function(kind, kindName) {
                 self.sprites[kindName].createHurtSprite();
             });
         },
-    
+
         initSilhouettes: function() {
             var self = this;
 
@@ -3199,7 +3273,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             });
             return found;
         },
-    
+
         loadSprite: function(name) {
             if(this.renderer.upscaledRendering) {
                 this.spritesets[0][name] = new Sprite(name, 1);
@@ -3210,15 +3284,15 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 }
             }
         },
-    
+
         setSpriteScale: function(scale) {
             var self = this;
-            
+
             if(this.renderer.upscaledRendering) {
                 this.sprites = this.spritesets[0];
             } else {
                 this.sprites = this.spritesets[scale - 1];
-                
+
                 _.each(this.entities, function(entity) {
                     entity.sprite = null;
                     entity.setSprite(self.sprites[entity.getSpriteName()]);
@@ -3229,7 +3303,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 this.initFish();
             }
         },
-    
+
         loadSprites: function() {
             console.log("Loading sprites...");
             this.spritesets = [];
@@ -3238,14 +3312,14 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             this.spritesets[2] = {};
             _.map(this.spriteNames, this.loadSprite, this);
         },
-    
+
         spritesLoaded: function() {
             if(_.any(this.sprites, function(sprite) { return !sprite.isLoaded; })) {
                 return false;
             }
             return true;
         },
-    
+
         setCursor: function(name, orientation) {
             if(name in this.cursors) {
                 this.currentCursor = this.cursors[name];
@@ -3254,7 +3328,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 console.error("Unknown cursor name :"+name);
             }
         },
-    
+
         updateCursorLogic: function() {
             if (this.hoveringFishableTile && this.started) {
                 this.targetColor = "rgba(90, 90, 200, 0.5)";
@@ -3265,7 +3339,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             else {
                 this.targetColor = "rgba(255, 255, 255, 0.5)";
             }
-        
+
             if(this.hoveringMob && this.started && !Types.isSpecialItem(Types.getKindFromString(this.player.weaponName))) {
                 this.setCursor("sword");
                 this.hoveringTarget = false;
@@ -3292,23 +3366,23 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 this.targetCellVisible = true;
             }
         },
-    
+
         focusPlayer: function() {
             this.renderer.camera.lookAt(this.player);
         },
 
         addEntity: function(entity) {
             var self = this;
-            
+
             if(this.entities[entity.id] === undefined) {
                 this.entities[entity.id] = entity;
                 this.registerEntityPosition(entity);
-                
+
                 if(!(entity instanceof Item && entity.wasDropped)
                 && !(this.renderer.mobile || this.renderer.tablet)) {
                     entity.fadeIn(this.currentTime);
                 }
-                
+
                 if(this.renderer.mobile || this.renderer.tablet) {
                     entity.onDirty(function(e) {
                         if(self.camera.isVisible(e)) {
@@ -3332,7 +3406,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 console.error("Cannot remove entity. Unknown ID : " + entity.id);
             }
         },
-    
+
         addItem: function(item, x, y) {
             item.setSprite(this.sprites[item.getSpriteName()]);
             item.setGridPosition(x, y);
@@ -3357,7 +3431,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             }
             this.addEntity(fieldEffect);
         },
-    
+
         removeItem: function(item) {
             if(item) {
                 this.removeFromItemGrid(item, item.gridX, item.gridY);
@@ -3378,7 +3452,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             }
         },
 
-        addFloat: function(float) { 
+        addFloat: function(float) {
             let self = this;
             float.despawnTimeout = setTimeout(function() {
                 self.removeFloat(float.id);
@@ -3393,6 +3467,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         },
 
         castFloat: function(float) {
+            let self = this;
             let player = this.getEntityById(float.id);
             if(player) {
                 let orientationToLake = player.getOrientationTo(float);
@@ -3421,7 +3496,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 console.error("Cannot remove float. Unknown ID : " + floatId);
             }
         },
-    
+
         initPathingGrid: function() {
             this.pathingGrid = [];
             this.pathingGridBackup = [];
@@ -3436,7 +3511,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             console.log("Initialized the pathing grid with static colliding cells.");
             _self = this;
         },
-    
+
         initEntityGrid: function() {
             this.entityGrid = [];
             for(var i=0; i < this.map.height; i += 1) {
@@ -3447,7 +3522,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             }
             console.log("Initialized the entity grid.");
         },
-    
+
         initRenderingGrid: function() {
             this.renderingGrid = [];
             for(var i=0; i < this.map.height; i += 1) {
@@ -3458,7 +3533,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             }
             console.log("Initialized the rendering grid.");
         },
-    
+
         initItemGrid: function() {
             this.itemGrid = [];
             for(var i=0; i < this.map.height; i += 1) {
@@ -3469,9 +3544,9 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             }
             console.log("Initialized the item grid.");
         },
-    
+
         /**
-         * 
+         *
          */
         initAnimatedTiles: function() {
             var self = this,
@@ -3483,7 +3558,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 if(m.isAnimatedTile(id)) {
                     var tile = new AnimatedTile(id, m.getTileAnimationLength(id), m.getTileAnimationDelay(id), index),
                         pos = self.map.tileIndexToGridPosition(tile.index);
-                    
+
                     tile.x = pos.x;
                     tile.y = pos.y;
                     if (m.isHighTile(id)) {
@@ -3497,35 +3572,35 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             this.findVisibleTiles();
             //console.log("Initialized animated tiles.");
         },
-    
+
         addToRenderingGrid: function(entity, x, y) {
             if(!this.map.isOutOfBounds(x, y)) {
                 this.renderingGrid[y][x][entity.id] = entity;
             }
         },
-    
+
         removeFromRenderingGrid: function(entity, x, y) {
             if(entity && this.renderingGrid[y][x] && entity.id in this.renderingGrid[y][x]) {
                 delete this.renderingGrid[y][x][entity.id];
             }
         },
-    
+
         removeFromEntityGrid: function(entity, x, y) {
             if(this.entityGrid[y][x][entity.id]) {
                 delete this.entityGrid[y][x][entity.id];
             }
         },
-        
+
         removeFromItemGrid: function(item, x, y) {
             if(item && this.itemGrid[y][x][item.id]) {
                 delete this.itemGrid[y][x][item.id];
             }
         },
-    
+
         removeFromPathingGrid: function(x, y) {
             this.pathingGrid[y][x] = 0;
         },
-    
+
         /**
          * Registers the entity at two adjacent positions on the grid at the same time.
          * This situation is temporary and should only occur when the entity is moving.
@@ -3536,9 +3611,9 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         registerEntityDualPosition: function(entity) {
             if(entity) {
                 this.entityGrid[entity.gridY][entity.gridX][entity.id] = entity;
-            
+
                 this.addToRenderingGrid(entity, entity.gridX, entity.gridY);
-            
+
                 if(entity.nextGridX >= 0 && entity.nextGridY >= 0) {
                     this.entityGrid[entity.nextGridY][entity.nextGridX][entity.id] = entity;
                     if(!(entity instanceof Player) && !(entity instanceof Mob && entity.isFriendly)) {
@@ -3547,7 +3622,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 }
             }
         },
-    
+
         /**
          * Clears the position(s) of this entity in the entity grid.
          *
@@ -3557,20 +3632,20 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             if(entity) {
                 this.removeFromEntityGrid(entity, entity.gridX, entity.gridY);
                 this.removeFromPathingGrid(entity.gridX, entity.gridY);
-            
+
                 this.removeFromRenderingGrid(entity, entity.gridX, entity.gridY);
-            
+
                 if(entity.nextGridX >= 0 && entity.nextGridY >= 0) {
                     this.removeFromEntityGrid(entity, entity.nextGridX, entity.nextGridY);
                     this.removeFromPathingGrid(entity.nextGridX, entity.nextGridY);
                 }
             }
         },
-    
+
         registerEntityPosition: function(entity) {
             var x = entity.gridX,
                 y = entity.gridY;
-        
+
             if(entity) {
                 if(entity instanceof Character || entity instanceof Chest) {
                     this.entityGrid[y][x][entity.id] = entity;
@@ -3581,7 +3656,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 if(entity instanceof Item) {
                     this.itemGrid[y][x][entity.id] = entity;
                 }
-            
+
                 this.addToRenderingGrid(entity, x, y);
             }
         },
@@ -3590,7 +3665,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             this.unregisterEntityPosition(entity);
             this.registerEntityPosition(entity);
         },
-    
+
         setServerOptions: function(host, port, username, protocol) {
             console.log(host, port, protocol)
             this.host = host;
@@ -3598,12 +3673,12 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             this.username = username;
             this.protocol = protocol;
         },
-    
+
         loadAudio: function() {
             this.audioManager = new AudioManager(this);
             this.app.settings.setSettings();
         },
-    
+
         initMusicAreas: function() {
             var self = this;
             _.each(this.map.musicAreas, function(area) {
@@ -3613,20 +3688,20 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
         run: function(started_callback) {
             var self = this;
-        
+
             this.loadSprites();
             this.setUpdater(new Updater(this));
             this.camera = this.renderer.camera;
-        
+
             this.setSpriteScale(this.renderer.scale);
-        
+
         	var wait = setInterval(function() {
                 if(self.map.isLoaded && self.spritesLoaded()) {
                     self.ready = true;
                     console.debug('All sprites loaded.');
-                            
+
                     self.loadAudio();
-                    
+
                     self.initMusicAreas();
                     self.initAchievements();
                     self.initCursors();
@@ -3634,30 +3709,30 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     self.initShadows();
                     self.initFish();
                     //self.initHurtSprites();
-                
+
                     if(!self.renderer.mobile
-                    && !self.renderer.tablet 
+                    && !self.renderer.tablet
                     && self.renderer.upscaledRendering) {
                         self.initSilhouettes();
                     }
-            
+
                     self.initEntityGrid();
                     self.initItemGrid();
                     self.initPathingGrid();
                     self.initRenderingGrid();
-                
+
                     self.setPathfinder(new Pathfinder(self.map.width, self.map.height));
-            
+
                     self.initPlayer();
                     self.setCursor("hand");
-                    
+
                     self.connect(started_callback);
-                
+
                     clearInterval(wait);
                 }
         	}, 100);
         },
-    
+
         canUseCenteredCamera: function() {
             return this.mapId !== "main" && this.app.settings.getCenteredCamera();
         },
@@ -3697,7 +3772,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             console.log("Game stopped.");
             this.isStopped = true;
         },
-    
+
         entityIdExists: function(id) {
             return id in this.entities;
         },
@@ -3752,10 +3827,10 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         connect: function(started_callback) {
             var self = this,
                 connecting = false; // always in dispatcher mode in the build version
-    
+
             this.client = new GameClient(this.host, this.port, this.protocol, this.sessionId, this.mapId);
             this.renderStatistics();
-            
+
             //>>excludeStart("prodHost", pragmas.prodHost);
             var config = this.app.config.local || this.app.config.dev;
             if(config) {
@@ -3763,50 +3838,50 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 connecting = true;
             }
             //>>excludeEnd("prodHost");
-            
+
             //>>includeStart("prodHost", pragmas.prodHost);
             if(!connecting) {
                 this.client.connect(true); // always use the dispatcher in production
             }
             //>>includeEnd("prodHost");
-            
+
             this.client.onDispatched(function(host, port) {
                 console.debug("Dispatched to game server "+host+ ":"+port);
-                
+
                 self.client.host = host;
                 self.client.port = port;
                 self.client.connect(); // connect to actual game server
             });
-            
+
             this.client.onConnected(function() {
                 console.log("Starting client/server handshake");
-                
+
                 self.player.name = self.username;
                 self.player.setSpriteName(self.storage.data.player.armor);
                 self.started = true;
 
-            
+
                 self.sendHello(self.player);
             });
-        
+
             this.client.onEntityList(function(list) {
                 var entityIds = _.pluck(self.entities, 'id'),
                     knownIds = _.intersection(entityIds, list),
                     newIds = _.difference(list, knownIds);
-            
+
                 self.obsoleteEntities = _.reject(self.entities, function(entity) {
                     return _.include(knownIds, entity.id) || entity.id === self.player.id;
                 });
-            
+
                 // Destroy entities outside of the player's zone group
                 self.removeObsoleteEntities();
-                
+
                 // Ask the server for spawn information about unknown entities
                 if(_.size(newIds) > 0) {
                     self.client.sendWho(newIds);
                 }
             });
-        
+
             this.client.onWelcome(function(id, name, x, y, hp, title) {
                 console.log("Received player ID from server : "+ id);
                 self.player.id = id;
@@ -3822,10 +3897,10 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 self.resetCamera();
                 self.updatePlateauMode();
                 self.audioManager.updateMusic();
-            
+
                 self.addEntity(self.player);
                 self.player.dirtyRect = self.renderer.getEntityBoundingRect(self.player);
-            
+
                 if(!self.storage.hasAlreadyPlayed()) {
                     self.storage.initPlayer(self.player.name);
                     self.storage.savePlayer(self.renderer.getPlayerImage(),
@@ -3836,19 +3911,19 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     self.showNotification("Welcome back to LooperLands!");
                     self.storage.setPlayerName(name);
                 }
-        
+
                 self.player.onStartPathing(function(path) {
                     var i = path.length - 1,
                         x =  path[i][0],
                         y =  path[i][1];
-                
+
                     if(self.player.isMovingToLoot()) {
                         self.player.isLootMoving = false;
                     }
                     else if(!self.player.isAttacking()) {
                         self.client.sendMove(x, y);
                     }
-                
+
                     // Target cursor position
                     self.selectedX = x;
                     self.selectedY = y;
@@ -3865,19 +3940,19 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 self.player.onRooted(function(x,y) {
                     self.client.sendMove(x, y);
                 });
-                
+
                 self.player.onCheckAggro(function() {
                     self.forEachMob(function(mob) {
-                        if(mob.isAggressive 
-                        && (!mob.isFriendly || mob.breakFriendly(self.player)) 
-                        && !mob.inCombat 
-                        && self.player.isNear(mob, mob.aggroRange)) 
+                        if(mob.isAggressive
+                        && (!mob.isFriendly || mob.breakFriendly(self.player))
+                        && !mob.inCombat
+                        && self.player.isNear(mob, mob.aggroRange))
                         {
                             self.player.aggro(mob);
                         }
                     });
                 });
-            
+
                 self.player.onAggro(function(mob) {
                     if(!mob.isWaitingToAttack(self.player) && !self.player.isAttackedBy(mob) && !self.player.isDead) {
                         self.player.log_info("Aggroed by " + mob.id + " at ("+self.player.gridX+", "+self.player.gridY+")");
@@ -3885,7 +3960,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                             self.createBubble(mob.id, mob.aggroMessage);
                             self.assignBubbleTo(mob);
                         }
-                        mob.joinCombat();
                         self.client.sendAggro(mob);
                         mob.waitToAttack(self.player);
                     }
@@ -3898,22 +3972,22 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     }
                     self.unregisterEntityPosition(self.player);
                 });
-            
+
                 self.player.onStep(function() {
                     self.findVisibleTiles();
 
                     if(this.isFishing) {
                         self.stopFishing(false);
                     }
-                    
+
                     if(self.player.hasNextStep()) {
                         self.registerEntityDualPosition(self.player);
                     }
-                
+
                     if(self.isZoningTile(self.player.gridX, self.player.gridY)) {
                         self.enqueueZoningFrom(self.player.gridX, self.player.gridY);
                     }
-                
+
                     self.player.forEachAttacker(function(attacker) {
                         if(attacker.isAdjacent(attacker.target)) {
                             attacker.lookAtTarget();
@@ -3930,12 +4004,12 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                         self.audioManager.updateMusic();
                     }
                 });
-            
+
                 self.player.onStopPathing(function(x, y) {
                     if(self.player.hasTarget()) {
                         self.player.lookAtTarget();
                     }
-                
+
                     self.selectedCellVisible = false;
 
                     if(self.isItemAt(x, y)) {
@@ -3948,11 +4022,11 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 self.client.sendLoot(item); // Notify the server that this item has been looted
                                 self.removeItem(item);
                                 self.showNotification(item.getLootMessage());
-                                
+
                                 if(item.kind === Types.Entities.FIREPOTION) {
                                     self.audioManager.playSound("firefox");
                                 }
-                            
+
                                 if(Types.isHealingItem(item.kind)) {
                                     self.audioManager.playSound("heal");
                                 } else {
@@ -3970,7 +4044,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                             }
                         }
                     }
-                
+
                     if(!self.player.hasTarget() && self.map.isDoor(x, y)) {
                         var dest = self.map.getDoorDestination(x, y);
                         var _self = self;
@@ -3988,7 +4062,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 }).catch(function (error) {
                                     console.log(error);
                                 }).finally(function(e) {
-    
+
                                 });
                             } else {
                                 _self.player.setGridPosition(dest.x, dest.y);
@@ -3996,7 +4070,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 _self.player.nextGridY = dest.y;
                                 _self.player.turnTo(dest.orientation);
                                 _self.client.sendTeleport(dest.x, dest.y);
-                                
+
                                 if(_self.renderer.mobile && dest.cameraX && dest.cameraY) {
                                     _self.camera.setGridPosition(dest.cameraX, dest.cameraY);
                                     _self.resetZone();
@@ -4004,27 +4078,31 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                     if(dest.portal) {
                                         _self.assignBubbleTo(_self.player);
                                     } else {
-                                        _self.camera.focusEntity(_self.player);
+                                        if (_self.canUseCenteredCamera()) {
+                                            _self.focusPlayer();
+                                        } else {
+                                            _self.camera.focusEntity(_self.player);
+                                        }
                                         _self.resetZone();
                                     }
                                 }
-                                
+
                                 _self.player.forEachAttacker(function(attacker) {
                                     attacker.disengage();
                                     attacker.idle();
                                 });
-                            
+
                                 _self.updatePlateauMode();
-                                
+
                                 if(_self.renderer.mobile || _self.renderer.tablet) {
                                     // When rendering with dirty rects, clear the whole screen when entering a door.
                                     _self.renderer.clearScreen(_self.renderer.context);
                                 }
-                                
+
                                 if(dest.portal) {
                                     _self.audioManager.playSound("teleport");
                                 }
-                                
+
                                 if(!_self.player.isDead) {
                                     _self.audioManager.updateMusic();
                                 }
@@ -4111,7 +4189,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 if (response.data[0] !== undefined) {
                                     walletHasCollection = response.data[0].projectInWallet;
                                 }
-                                
+
                                 if (walletHasCollection === true) {
                                     checkTrigger()
                                 } else {
@@ -4139,7 +4217,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                             attacker.follow(self.player);
                         }
                     });
-                    
+
                     self.updatePos(self.player);
 
                     if(self.map.getCurrentTrigger(self.player)) {
@@ -4147,55 +4225,55 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     }
 
                 });
-            
+
                 self.player.onRequestPath(function(x, y) {
                     var ignored = [self.player]; // Always ignore self
-                
+
                     if(self.player.hasTarget()) {
                         ignored.push(self.player.target);
                     }
                     return self.findPath(self.player, x, y, ignored);
                 });
-            
+
                 self.player.onDeath(function() {
                     console.log(self.playerId + " is dead");
-                
+
                     self.player.stopBlinking();
                     self.player.setSprite(self.sprites["death"]);
                     self.player.animate("death", 120, 1, function() {
                         console.log(self.playerId + " was removed");
-                    
+
                         self.removeEntity(self.player);
                         self.removeFromRenderingGrid(self.player, self.player.gridX, self.player.gridY);
-                    
+
                         self.player = null;
                         self.client.disable();
-                    
+
                         setTimeout(function() {
                             self.playerdeath_callback();
                         }, 1000);
                     });
-                
+
                     self.player.forEachAttacker(function(attacker) {
                         attacker.disengage();
                         attacker.idle();
                     });
-                
+
                     self.audioManager.fadeOutCurrentMusic();
                     self.audioManager.playSound("death");
                 });
-            
+
                 self.player.onHasMoved(function(player) {
                     self.bubbleManager.forEachBubble(function(bubble) {
                         let character = self.getEntityById(bubble.id);
                         self.assignBubbleTo(character);
                     });
                 });
-                
+
                 self.player.onArmorLoot(function(armorName) {
                     return;
                 });
-            
+
                 self.player.onSwitchItem(function() {
                     var weaponName = self.player.getWeaponName();
                     if (!weaponName.startsWith("NFT_")) {
@@ -4210,12 +4288,12 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                         self.equipment_callback();
                     }
                 });
-                
+
                 self.player.onInvincible(function() {
                     self.invincible_callback();
                     self.player.switchArmor(self.sprites["firefox"]);
                 });
-            
+
                 self.client.onSpawnItem(function(item, x, y) {
                     console.log("Spawned " + Types.getKindAsString(item.kind) + " (" + item.id + ") at "+x+", "+y);
                     self.addItem(item, x, y);
@@ -4225,14 +4303,14 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     console.log("Spawned field effect " + Types.getKindAsString(fieldEffect.kind) + " (" + fieldEffect.id + ") at "+x+", "+y);
                     self.addFieldEffect(fieldEffect, x, y);
                 });
-            
+
                 self.client.onSpawnChest(function(chest, x, y) {
                     console.log("Spawned chest (" + chest.id + ") at "+x+", "+y);
                     chest.setSprite(self.sprites[chest.getSpriteName()]);
                     chest.setGridPosition(x, y);
                     chest.setAnimation("idle_down", 150);
                     self.addEntity(chest, x, y);
-                
+
                     chest.onOpen(function() {
                         chest.stopBlinking();
                         chest.setSprite(self.sprites["death"]);
@@ -4244,7 +4322,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                         });
                     });
                 });
-            
+
                 self.client.onSpawnCharacter(function(entity, x, y, orientation, targetId) {
 
                     if (self.entityIdExists(entity.id) && entity instanceof Player) {
@@ -4265,14 +4343,14 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 entity.idle();
                                 if (entity.name === undefined) {
                                     entity.name = entity.normalSprite.name.replace(/[0-9]+/, "");
-                                }                                
+                                }
 
                                 self.addEntity(entity);
                                 self.getServerInfo();
 
-                        
+
                                 console.debug("Spawned " + Types.getKindAsString(entity.kind) + " (" + entity.id + ") at "+entity.gridX+", "+entity.gridY);
-                        
+
                                 if(entity instanceof Character) {
                                     entity.onBeforeStep(function() {
                                         self.unregisterEntityPosition(entity);
@@ -4301,16 +4379,16 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                             if(entity.hasTarget() && entity.isAdjacent(entity.target)) {
                                                 entity.lookAtTarget();
                                             }
-                                
+
                                             if(entity instanceof Player) {
                                                 var gridX = entity.destination.gridX,
                                                     gridY = entity.destination.gridY;
-                                                
+
                                                 if(self.map.isDoor(gridX, gridY)) {
                                                     var dest = self.map.getDoorDestination(gridX, gridY);
 
                                                     function checkTrigger() {
-                                                        if (dest.triggerId !== undefined) {    
+                                                        if (dest.triggerId !== undefined) {
                                                             let trUrl = '/session/' + self.sessionId + '/requestTeleport/' + dest.triggerId;
                                                             axios.get(trUrl).then(function (response) {
                                                                 if (response.data === true) {
@@ -4325,7 +4403,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                                             self.updatePos(entity);
                                                         }
                                                     }
-                                                    
+
                                                     if (dest.nft !== undefined) {
                                                         var url = self.map.mapId + '/player/' + entity.id + '/owns/' + dest.nft;
                                                         axios.get(url).then(function (response) {
@@ -4340,7 +4418,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                                     }
                                                 }
                                             }
-                                        
+
                                             entity.forEachAttacker(function(attacker) {
                                                 if(!attacker.isAdjacentNonDiagonal(entity) && attacker.id !== self.playerId) {
                                                     attacker.follow(entity);
@@ -4365,7 +4443,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                                     ignored.push(attacker);
                                                 });
                                             };
-                                        
+
                                         if(entity.hasTarget()) {
                                             ignoreTarget(entity.target);
                                         } else if(entity.previousTarget) {
@@ -4373,13 +4451,13 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                             // See: tryMovingToADifferentTile()
                                             ignoreTarget(entity.previousTarget);
                                         }
-                                        
+
                                         return self.findPath(entity, x, y, ignored);
                                     });
 
                                     entity.onDeath(function() {
                                         console.log(entity.id + " is dead");
-                                
+
                                         if(entity instanceof Mob) {
                                             // Keep track of where mobs die in order to spawn their dropped items
                                             // at the right position later.
@@ -4549,8 +4627,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             
                 self.client.onPlayerKillMob(function(kind, xp) {
                     let kindString = Types.getKindAsString(kind);
-                    let altName = AltNames.getAltNameFromKind(kindString);
-                    let mobName = altName !== undefined ? altName : kindString;
+                    let mobName = AltNames.getName(kindString);
 
                     setTimeout(function() {
                         self.infoManager.addDamageInfo("+"+xp+" XP", self.player.x, self.player.y - 15, "xp");
@@ -5896,7 +5973,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     if (response.data.weaponInfo !== null && response.data.weaponInfo !== undefined) {
                         weaponPercentage = response.data.weaponInfo.weaponLevelInfo.percentage;
                         weaponLevel = response.data.weaponInfo.weaponLevelInfo.currentLevel;
-                        levelInfoHTML+=" - Weapon Level: " + weaponLevel + " ";
+                        levelInfoHTML+=" - " + AltNames.getName(Types.getTypeFromString(self.player.weaponName)) + " Level: " + weaponLevel + " ";
                         levelInfoHTML+=weaponPercentage + "%";
                         if (response.data.weaponInfo.trait !== null && response.data.weaponInfo.trait !== undefined) {
                             levelInfoHTML+=", Trait: " + response.data.weaponInfo.trait;
@@ -5967,7 +6044,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         },
 
         canFish: function (gX, gY, keyboard) {
-            if (Types.isFishingRod(Types.getKindFromString(self.player.weaponName))){
+            if (Types.isFishingRod(Types.getKindFromString(this.player.weaponName))){
                 if (this.player.isOnSameAxis(gX, gY)
                     && this.player.isNear({gridX: gX, gridY: gY}, 2)
                     && this.map.getLakeName(gX, gY))
@@ -5985,15 +6062,15 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         },
 
         startFishing: function(gX, gY) {
-            if(!self.player.isFishing){
+            if(!this.player.isFishing){
                 let self = this;
         
                 self.player.isFishing = true;
 
                 let url = '/session/' + self.sessionId + '/requestFish/' + self.map.getLakeName(gX, gY) + '/' + gX + '/' + gY;
                 axios.get(url).then(function (response) {
-                    if (response.data === false) {
-                        self.showNotification("You need a higher level to fish here.");
+                    if (!response.data.allowed) {
+                        self.showNotification("You need level  " + response.data.reqLevel + " fishing to fish here.");
                         return;
                     }
                     let float = new Float(gX, gY, self.player.id, self.player.getWeaponName());
@@ -6016,8 +6093,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             let self = this;
             const fishEscapeDuration = 7000;
 
-            let altName = AltNames.getAltNameFromKind(fish);
-            let fishName = altName !== undefined ? altName : fish;
+            let fishName = AltNames.getName(fish);
             let fishSpriteUrl;
             if(this.fish[fish]){
                 fishSpriteUrl = this.fish[fish].getUrlByScale(this.renderer.scale);
@@ -6036,7 +6112,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         },
 
         stopFishing: function(success, barHoldDuration) {
-            let self=this;
+            let self= this;
 
             self.player.isFishing = false;
             clearTimeout(this.uniFishTimeout);
@@ -6084,6 +6160,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         },
 
         clickFishingBar: function(){
+            let self = this;
             const markerOffset = 12; // 8 from the marker + 4 from the bar border
 
             clearInterval(this.slidingFish);

@@ -771,8 +771,10 @@ WS.socketIOServer = Server.extend({
                 });
             } else {
                 let player = self.worldsMap[sessionData.mapId].getPlayerById(sessionData.entityId);
-                if (player.getNFTWeapon().getLevel() < Lakes.getLakeLevel(lakeName)) {
-                    res.status(200).send(false);
+                let lakeLvl = Lakes.getLakeLevel(lakeName);
+                if (player.getNFTWeapon().getLevel() < lakeLvl) {
+                    let response = {allowed: false, reqLevel: lakeLvl};
+                    res.status(200).send(response);
                     return;
                 } else {
                     let fish = Lakes.getRandomFish(lakeName);
@@ -789,7 +791,7 @@ WS.socketIOServer = Server.extend({
                     let difficulty = Lakes.getDifficulty(player.getNFTWeapon().getLevel(), lakeName);
                     let speed = Lakes.getFishSpeed(fish, lakeName);
 
-                    let response = {fish: fish, difficulty: difficulty, speed: speed};
+                    let response = {allowed: true, fish: fish, difficulty: difficulty, speed: speed};
                     self.worldsMap[sessionData.mapId].announceSpawnFloat(player, fx, fy);
                     res.status(200).send(response);
                 }

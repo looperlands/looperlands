@@ -468,7 +468,7 @@ var Properties = {
         weaponMod: 2,
         hpMod: 10,
         xp: 2500,  
-        respawnDelay: 300000
+        respawnDelay: 180000
     },
 
     alaric: {
@@ -948,7 +948,7 @@ var Properties = {
         weaponMod: 2.25,
         hpMod: 13,
         xp: 5000,  
-        respawnDelay: 300000
+        respawnDelay: 180000
     },
 
     //Field effects
