@@ -369,6 +369,40 @@ var Properties = {
         messages: ['Perish!', 'Be gone!', 'Burn!', 'Wither!', 'Suffer!'],
         respawnDelay: 1800000
     },
+    seacreature: {
+        level: 18,
+        drops: {},
+        hp: 999999,
+        redpacket: true,
+        xp: 75000,
+        respawnDelay: 1800000
+    },
+    tentacle: {
+        level: 18,
+        drops: {},
+        armorMod: 1.5,
+        weaponMod: 0.1,
+        hpMod: 10,
+        aoe: {
+            damage: 100,
+            range: 1,
+            onTimer: 4000
+        },
+        respawnDelay: 20000
+    },
+    tentacle2: {
+        level: 18,
+        drops: {},
+        armorMod: 1.5,
+        weaponMod: 0.1,
+        hpMod: 10,
+        aoe: {
+            damage: 100,
+            range: 1,
+            onTimer: 4000
+        },
+        respawnDelay: 20000
+    },
 
     cobchicken: {
         level: 1,

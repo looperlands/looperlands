@@ -229,6 +229,17 @@ define(['character'], function (Character) {
             "Now go about your adventure, Looper!"
         ],
 
+        "wildwill": [
+            "Arg me hearty! Pray, do ye have a trusty blade or pistol stowed away in yer pouch there??",
+            "Ye do??",
+            "Ah bless the winds upon this day!",
+            "Behold yon sea beast o’re yonder! It gobbled up me ship and me loyal crew.",
+            "I swear to Davey I will not rest until that foul creature meets his doom!",
+            "Will ye help me?",
+            "Grab yer crewmates and meet me by the shore! We be no match for this beast on our own.",
+            'Follow <a href="https://loopworms.io/DEV/LooperLands/QR/qr.php?NPC=wildwill" target="blank">this link</a> - it might be a Red Packet!',
+        ],
+
         "desertnpc": [
             "I'm NFTSpike and should need no introduction.",
             "I make Web3 games on Loopring that are dope AF",

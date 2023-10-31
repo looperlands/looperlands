@@ -63,6 +63,9 @@ Types = {
         GNASHLING: 300007,
         MINIMAG: 200002,
         MEGAMAG: 200004,
+        SEACREATURE: 200005,
+        TENTACLE: 200006,
+        TENTACLE2: 200007,
         WILDGRIN: 300010,
         THUDLORD: 300011,
         LOOMLEAF: 300012,
@@ -251,6 +254,7 @@ Types = {
         GOOSE: 1000042,
         TANASHI: 1000043,
         MINER: 1000044,
+        WILDWILL: 1000045,
         VILLAGESIGN1: 30000001,
         COBLUMBERJACK: 34000001,
         COBHILLSNPC: 34000002,
@@ -3374,6 +3378,9 @@ var kinds = {
     arachweave: [Types.Entities.ARACHWEAVE, "mob"],
     minimag: [Types.Entities.MINIMAG, "mob"],
     megamag: [Types.Entities.MEGAMAG, "mob"],
+    seacreature: [Types.Entities.SEACREATURE, "mob"],
+    tentacle: [Types.Entities.TENTACLE, "mob"],
+    tentacle2: [Types.Entities.TENTACLE2, "mob"],
     wildgrin: [Types.Entities.WILDGRIN, "mob"],
     cobchicken: [Types.Entities.COBCHICKEN, "mob"],
     alaric: [Types.Entities.ALARIC, "mob"],
@@ -3547,6 +3554,7 @@ var kinds = {
     agent: [Types.Entities.AGENT, "npc"],
     octocat: [Types.Entities.OCTOCAT, "npc"],
     beachnpc: [Types.Entities.BEACHNPC, "npc"],
+    wildwill: [Types.Entities.WILDWILL, "npc"],
     forestnpc: [Types.Entities.FORESTNPC, "npc"],
     desertnpc: [Types.Entities.DESERTNPC, "npc"],
     lavanpc: [Types.Entities.LAVANPC, "npc"],
@@ -6794,5 +6802,8 @@ if(!(typeof exports === 'undefined')) {
 Types.timeouts = {};
 Types.timeouts[Types.Entities.FIREFOX] = 5000;
 Types.timeouts[Types.Entities.MEGAMAG] = 12000;
+Types.timeouts[Types.Entities.SEACREATURE] = 12000;
+Types.timeouts[Types.Entities.TENTACLE] = 12000;
+Types.timeouts[Types.Entities.TENTACLE2] = 12000;
 Types.timeouts[Types.Entities.COBSLIMEKING] = 5000;
 Types.timeouts[Types.Entities.COBOGRE] = 3000;
