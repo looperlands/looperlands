@@ -455,42 +455,37 @@ define(['jquery', 'storage'], function($, Storage) {
                     inventoryHtml += "<strong>Weapons</strong>";
                     inventoryHtml += "<div>"
                     if (inventory.length !== 0) {
-                        inventory.forEach(function(item) {
+                        for (let i = inventory.length - 1; i >= 0; i--) { // we go backwards because of splice
+                            let item = inventory[i];
                             if (Types.isWeapon(Types.getKindFromString(item))) {
                                 imgTag = "<img id='"+item+"' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0;' src='img/3/item-" + item + ".png' />";
                                 inventoryHtml += imgTag;
                             } else {
-                                const index = inventory.indexOf(item);
-                                if (index > -1) {
-                                    inventory.splice(index, 1);
-                                }
+                                inventory.splice(i, 1);
                             }
-                        });
+                        }
                     }
                     inventoryHtml += "</div>";
 
                     inventoryHtml += "<strong>Tools</strong>";
                     inventoryHtml += "<div>"
                     if (specialInventory.length !== 0) {
-                        specialInventory.forEach(function(item) {
+                        for (let i = specialInventory.length - 1; i >= 0; i--) { // we go backwards because of splice
+                            let item = specialInventory[i];
                             if (Types.isSpecialItem(Types.getKindFromString(item))) {
                                 imgTag = "<img id='"+item+"' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0;' src='img/3/item-" + item + ".png' />";
                                 inventoryHtml += imgTag;
                             } else {
-                                const index = specialInventory.indexOf(item);
-                                if (index > -1) {
-                                    specialInventory.splice(index, 1); 
-                                }
+                                specialInventory.splice(i, 1);
                             }
-                        }); 
+                        }
                     }
                     inventoryHtml += "</div>";
                     
                     $("#inventory").html(inventoryHtml);
 
                     let equipFunc = function(item) {
-                        if (document.getElementById(item) !== null)
-                        {
+                        if (document.getElementById(item) !== null) {
                             let equip = function() {
                                 let itemId = Types.Entities[item];
                                 let nftId = item.replace("NFT_", "0x");
