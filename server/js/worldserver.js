@@ -1304,12 +1304,13 @@ module.exports = World = cls.Class.extend({
     despawnAllAdds: function (mob) {
         let self = this;
         if (mob.addArray.length > 0) {
-            mob.addArray.forEach((add) => {
+            for (let i = mob.addArray.length - 1; i >= 0; i--) { // go backwards through the loop, because we do splice in despawn
+                let add = mob.addArray[i];
                 if (add !== undefined) {
                     self.despawn(add);
                 }
-                mob.addArray = [];
-            });
+            }
+            mob.addArray = [];
         }
     },
 
