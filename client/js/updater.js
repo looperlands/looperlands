@@ -220,6 +220,11 @@ define(['character', 'timer'], function(Character, Timer) {
             if(target) {
                 target.update(t);
             }
+
+            var floats = this.game.floatAnimation;
+            if(floats) {
+                floats.update(t);
+            }
         },
     
         updateAnimatedTiles: function() {

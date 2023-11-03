@@ -151,6 +151,18 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
         return new Mobs.Megamag(id);
     };
 
+    EntityFactory.builders[Types.Entities.SEACREATURE] = function(id) {
+        return new Mobs.SeaCreature(id);
+    }
+
+    EntityFactory.builders[Types.Entities.TENTACLE] = function(id) {
+        return new Mobs.Tentacle(id);
+    }
+
+    EntityFactory.builders[Types.Entities.TENTACLE2] = function(id) {
+        return new Mobs.Tentacle2(id);
+    }
+
     EntityFactory.builders[Types.Entities.COBCHICKEN] = function(id) {
         return new Mobs.Cobchicken(id);
     };
@@ -672,7 +684,11 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.BEACHNPC] = function(id) {
         return new NPCs.BeachNpc(id);
     };
-    
+
+    EntityFactory.builders[Types.Entities.WILDWILL] = function(id) {
+        return new NPCs.WildWill(id);
+    };
+
     EntityFactory.builders[Types.Entities.FORESTNPC] = function(id) {
         return new NPCs.ForestNpc(id);
     };

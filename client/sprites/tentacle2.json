@@ -1,0 +1,49 @@
+{
+	"id": "tentacle2",
+	"width": 48,
+	"height": 32,
+	"animations": {
+		"atk_right": {
+			"length": 5,
+			"row": 0
+		},
+		"walk_right": {
+			"length": 2,
+			"row": 0
+		},
+		"idle_right": {
+			"length": 2,
+			"row": 0
+		},
+		"atk_up": {
+			"length": 5,
+			"row": 0
+		},
+		"walk_up": {
+			"length": 2,
+			"row": 0
+		},
+		"idle_up": {
+			"length": 2,
+			"row": 0
+		},
+		"atk_down": {
+			"length": 5,
+			"row": 0
+		},
+		"walk_down": {
+			"length": 2,
+			"row": 0
+		},
+		"idle_down": {
+			"length": 2,
+			"row": 0
+		},
+		"death": {
+			"length": 5,
+			"row": 1
+		}
+	},
+	"offset_x": 0,
+	"offset_y": -7
+}

@@ -86,10 +86,23 @@ Formulas.calculateSpeedTraitMap = function (numLevels) {
     return speedTraitMap;
 };
 
+Formulas.calculateToolLevelMap = function (numLevels) {
+    const toolLevelMap = {};
+
+    toolLevelMap[1] = 0;
+    toolLevelMap[2] = 1000;
+    for (let level = 3; level <= numLevels; level++) {
+        toolLevelMap[level] = toolLevelMap[level-1] * 2;
+    }
+
+    return toolLevelMap;
+};
+
 // Usage example:
 const numLevels = 100;
 const EXPERIENCE_MAP = Formulas.calculateExperienceMap(numLevels);
 const SPEEDTRAIT_MAP = Formulas.calculateSpeedTraitMap(numLevels);
+const TOOLLEVEL_MAP = Formulas.calculateToolLevelMap(numLevels);
 
 Formulas.level = function (experience) {
     let levels = Object.keys(EXPERIENCE_MAP);
@@ -99,7 +112,16 @@ Formulas.level = function (experience) {
     });
     level = Number(level) - 1
     return level;
-};
+}
+
+Formulas.toolLevel = function (experience) {
+    let levels = Object.keys(TOOLLEVEL_MAP);
+    let level = levels.find(function(level) {
+        return TOOLLEVEL_MAP[level] > experience;
+    });
+    level = Number(level) - 1;
+    return level;
+}
 
 Formulas.xpPercentageOfLevel = function(level, percent) {
     let xp = (EXPERIENCE_MAP[level + 1] - EXPERIENCE_MAP[level]) * percent/100.0;
@@ -112,6 +134,25 @@ Formulas.calculatePercentageToNextLevel = function (experience) {
     const currentLevel = Formulas.level(experience);
     const currentLevelExperience = EXPERIENCE_MAP[currentLevel];
     const nextLevelExperience = EXPERIENCE_MAP[currentLevel + 1];
+
+    let experienceToNextLevel;
+    let experienceRequiredToLevel;
+
+    experienceToNextLevel = experience - currentLevelExperience;
+    experienceRequiredToLevel = nextLevelExperience - currentLevelExperience;
+    
+    let percentage = (experienceToNextLevel / experienceRequiredToLevel) * 100;
+    percentage = percentage.toFixed(2);
+    return {
+        currentLevel: currentLevel,
+        percentage: percentage
+    }
+}
+
+Formulas.calculateToolPercentageToNextLevel = function (experience) {
+    const currentLevel = Formulas.toolLevel(experience);
+    const currentLevelExperience = TOOLLEVEL_MAP[currentLevel];
+    const nextLevelExperience = TOOLLEVEL_MAP[currentLevel + 1];
 
     let experienceToNextLevel;
     let experienceRequiredToLevel;

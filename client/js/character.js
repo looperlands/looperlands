@@ -42,6 +42,7 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
 
             // Other
             this.deathAnimated = false;
+            this.deathSpeed = 120;
     	},
 	
     	clean: function() {
@@ -318,6 +319,10 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
                 near = true;
             }
             return near;
+        },
+
+        isOnSameAxis: function(gX, gY) {
+            return gX === this.gridX || gY === this.gridY;
         },
     
         onAggro: function(callback) {

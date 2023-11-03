@@ -194,7 +194,14 @@ define(['npc'], function(Npc) {
                 this._super(id, Types.Entities.BEACHNPC, 1);
             }
         }),
-        
+
+        WildWill: Npc.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.WILDWILL, 1);
+            }
+        }),
+
+
         ForestNpc: Npc.extend({
             init: function(id) {
                 this._super(id, Types.Entities.FORESTNPC, 1);
