@@ -189,6 +189,11 @@ module.exports = Player = Character.extend({
                 }
             }
             else if(action === Types.Messages.HIT) {
+                let nftWeapon = self.getNFTWeapon();
+                if (nftWeapon !== undefined && !(nftWeapon instanceof NFTWeapon.NFTWeapon)){
+                    return;
+                }
+
                 var mob = self.server.getEntityById(message[1]);
 
                 if(mob) {
@@ -436,7 +441,7 @@ module.exports = Player = Character.extend({
                     }
                 }
             } else if(action === Types.Messages.FISHINGRESULT) {
-                if (message[1]) {
+                if (message[1] && self.pendingFish !== null) {
                     self.incrementNFTSpecialItemExperience(self.pendingFish.exp);
                     self.playerEventBroker.lootEvent({kind: self.pendingFish.name});
                 }
