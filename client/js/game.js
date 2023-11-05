@@ -6286,6 +6286,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     const waitMin = 6000,
                           waitMax = 12000;
                     let waitDuration = Math.random() * (waitMax - waitMin) + waitMin;
+                    clearTimeout(self.uniFishTimeout);
                     self.uniFishTimeout = setTimeout(function() {
                         self.playCatchFish(response.data.fish, response.data.difficulty, response.data.speed);
                     }, waitDuration);                    
@@ -6310,8 +6311,10 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             this.fishingData.fishTime = new Date().getTime();
             this.app.setFish(fishSpriteUrl);
             this.generateFishingTarget(difficulty);
+            clearInterval(this.slidingFish);
             this.slidingFish = setInterval(self.tickMovingFish.bind(self), 10, speed);
             this.app.showFishing();
+            clearTimeout(self.uniFishTimeout);
             this.uniFishTimeout = setTimeout(function() {
                 self.showNotification(self.fishingData.fishName + " escaped!");
                 self.stopFishing(false);
