@@ -24,6 +24,15 @@ let Lakes = {
             coblobster: "rare"
         },
     },
+    cobFarmCityOcean: {
+        level: 7,
+        fish: {
+            cobsardine: "common",
+            cobwhiting: "uncommon",
+            cobangelfish: "rare",
+            cobstingray: "epic"
+        },
+    },
 };
 
 Lakes.getRandomFish = function(lake) {
