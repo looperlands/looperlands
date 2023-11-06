@@ -19,6 +19,10 @@ const AltNames = {
     cobtrout: "trout",
     cobcatfish: "catfish",
     coblobster: "red lobster",
+    cobsardine: "sardine",
+    cobwhiting: "whiting",
+    cobangelfish: "angel fish",
+    cobstingray: "stingray",
     fishingrod: "Fishing Rod",
     weapon: "Weapon"
 };

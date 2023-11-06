@@ -99,7 +99,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 "VILLAGESIGN7",
                                 "VILLAGESIGN8",
                                 "VILLAGESIGN9",
-                                "cobneon","cobguppy","cobgoldfish","cobtrout","coblobster","cobcatfish",
+                                "cobneon","cobguppy","cobgoldfish","cobtrout","coblobster","cobcatfish","cobangelfish","cobsardine","cobstingray","cobwhiting",
                                 // @nextCharacterLine@
                                 "item-BOARHIDE",
                                 "item-THUDKEY",
@@ -3422,6 +3422,10 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             this.fish["coblobster"] = this.sprites["coblobster"];
             this.fish["cobcatfish"] = this.sprites["cobcatfish"];
             this.fish["cobtrout"] = this.sprites["cobtrout"];
+            this.fish["cobangelfish"] = this.sprites["cobangelfish"];
+            this.fish["cobsardine"] = this.sprites["cobsardine"];
+            this.fish["cobstingray"] = this.sprites["cobstingray"];
+            this.fish["cobwhiting"] = this.sprites["cobwhiting"];
         },
 
         initAnimations: function() {
