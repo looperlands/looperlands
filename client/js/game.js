@@ -5003,6 +5003,12 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 self.client.onDespawnFloat(function(id) {
                     self.removeFloat(id);
                 });
+
+                self.client.onNotify(function(text) {
+                    if(text){
+                        self.showNotification(text);
+                    }
+                });
             
                 self.gamestart_callback();
             

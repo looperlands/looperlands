@@ -434,103 +434,115 @@ define(['jquery', 'storage'], function($, Storage) {
 
             _this = this;
 
-            let inventoryQuery = "/session/" + _this.storage.sessionId + "/inventory",
-                specialInventoryQuery = "/session/" + _this.storage.sessionId + "/specialInventory";
-            let inventory = [],
-                specialInventory = [];
+            let inventoryQuery = "/session/" + _this.storage.sessionId + "/inventory";
+            let weaponInventory = [],
+                specialInventory = [],
+                consumablesInventory = {};
 
             axios.get(inventoryQuery).then(function(response) {
-                if (response.data !== null) {
-                    inventory = response.data.map(function(item) {
-                        return item.replace("0x", "NFT_");
+                if (response.data){
+                    weaponInventory = response.data.inventory;
+                    specialInventory = response.data.special;
+                    consumablesInventory = response.data.consumables;
+                }  
+                var inventoryHtml = "";
+                inventoryHtml += "<strong>Weapons</strong>";
+                inventoryHtml += "<div>"
+                if (weaponInventory.length > 0) {
+                    weaponInventory.forEach(function(item) {
+                        imgTag = "<img id='" + item + "' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0;' src='img/3/item-" + item + ".png' />";
+                        inventoryHtml += imgTag;
                     });
                 }
-                axios.get(specialInventoryQuery).then(function(specResponse) {
-                    if (specResponse.data !== null) {
-                        specialInventory = specResponse.data.map(function(item) {
-                            return item.NFTID.replace("0x", "NFT_");
-                        });
-                    }
-                    var inventoryHtml = "";
-                    inventoryHtml += "<strong>Weapons</strong>";
-                    inventoryHtml += "<div>"
-                    if (inventory.length !== 0) {
-                        for (let i = inventory.length - 1; i >= 0; i--) { // we go backwards because of splice
-                            let item = inventory[i];
-                            if (Types.isWeapon(Types.getKindFromString(item))) {
-                                imgTag = "<img id='"+item+"' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0;' src='img/3/item-" + item + ".png' />";
-                                inventoryHtml += imgTag;
-                            } else {
-                                inventory.splice(i, 1);
-                            }
-                        }
-                    }
-                    inventoryHtml += "</div>";
+                inventoryHtml += "</div>";
 
-                    inventoryHtml += "<strong>Tools</strong>";
-                    inventoryHtml += "<div>"
-                    if (specialInventory.length !== 0) {
-                        for (let i = specialInventory.length - 1; i >= 0; i--) { // we go backwards because of splice
-                            let item = specialInventory[i];
-                            if (Types.isSpecialItem(Types.getKindFromString(item))) {
-                                imgTag = "<img id='"+item+"' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0;' src='img/3/item-" + item + ".png' />";
-                                inventoryHtml += imgTag;
-                            } else {
-                                specialInventory.splice(i, 1);
-                            }
-                        }
-                    }
-                    inventoryHtml += "</div>";
-                    
-                    $("#inventory").html(inventoryHtml);
-
-                    let equipFunc = function(item) {
-                        if (document.getElementById(item) !== null) {
-                            let equip = function() {
-                                let itemId = Types.Entities[item];
-                                let nftId = item.replace("NFT_", "0x");
-                                _this.game.client.sendEquipInventory(itemId, nftId);
-                                _this.game.player.switchWeapon(item);
-                            }
-                            document.getElementById(item).addEventListener("click", equip);
-                        }
-                    }
-
-                    inventory.forEach(function(item) {
-                        equipFunc(item);
-                    });
-
+                inventoryHtml += "<strong>Tools</strong>";
+                inventoryHtml += "<div>"
+                if (specialInventory.length > 0) {
                     specialInventory.forEach(function(item) {
-                        equipFunc(item);
+                        imgTag = "<img id='" + item + "' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0;' src='img/3/item-" + item + ".png' />";
+                        inventoryHtml += imgTag;
                     });
+                }
+                inventoryHtml += "</div>";
 
-                    if(_this.game.started) {
-                        _this.hideWindows();
-                        $('#parchment').removeClass().addClass('about');
-                        $('body').toggleClass('about');
-                        if(!_this.game.player) {
-                            $('body').toggleClass('death');
+                inventoryHtml += "<strong>Consumables</strong>";
+                inventoryHtml += "<div>"
+                if (consumablesInventory) {
+                    Object.keys(consumablesInventory).forEach(item => {
+                        inventoryHtml += "<div style='display:inline-block'>"
+                        imgTag = "<img id='" + item + "' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0;' src='img/3/" + item + ".png' />";
+                        inventoryHtml += imgTag;
+
+                        inventoryHtml += "<p id=count_" + item + ">" + consumablesInventory[item] + "</p>"
+                        inventoryHtml += "</div>";
+                    });
+                }
+                inventoryHtml += "</div>";
+
+                $("#inventory").html(inventoryHtml);
+
+                let equipFunc = function (item) {
+                    if (document.getElementById(item) !== null) {
+                        let equip = function () {
+                            let itemId = Types.Entities[item];
+                            let nftId = item.replace("NFT_", "0x");
+                            _this.game.client.sendEquipInventory(itemId, nftId);
+                            _this.game.player.switchWeapon(item);
                         }
-                        if($('body').hasClass('credits')) {
-                            _this.closeInGameCredits();
-                        }
-                    } else {
-                        if(currentState !== 'animate') {
-                            if(currentState === 'about') {
-                                if(localStorage && localStorage.data) {
-                                    _this.animateParchment(currentState, 'loadcharacter');
-                                } else {
-                                    _this.animateParchment(currentState, 'createcharacter');
-                                }
-                            } else {
-                                _this.animateParchment(currentState, 'about');
-                                _this.previousState = currentState;
+                        document.getElementById(item).addEventListener("click", equip);
+                    }
+                }
+
+                let consumeFunc = function (item) {
+                    if (document.getElementById(item) !== null) {
+                        let consume = function () {
+                            let count = parseInt(document.getElementById("count_" + item).innerHTML);
+                            if (count > 0){
+                                _this.game.client.sendConsumeItem(item);
+                                document.getElementById("count_" + item).innerHTML = count - 1;
                             }
                         }
-                    }       
-                }).catch(function(error) {
-                    console.error(error);
-                });         
+                        document.getElementById(item).addEventListener("click", consume);
+                    }
+                }
+
+                weaponInventory.forEach(function (item) {
+                    equipFunc(item);
+                });
+
+                specialInventory.forEach(function (item) {
+                    equipFunc(item);
+                });
+
+                Object.keys(consumablesInventory).forEach(item => {
+                    consumeFunc(item);
+                });
+
+                if (_this.game.started) {
+                    _this.hideWindows();
+                    $('#parchment').removeClass().addClass('about');
+                    $('body').toggleClass('about');
+                    if (!_this.game.player) {
+                        $('body').toggleClass('death');
+                    }
+                    if ($('body').hasClass('credits')) {
+                        _this.closeInGameCredits();
+                    }
+                } else {
+                    if (currentState !== 'animate') {
+                        if (currentState === 'about') {
+                            if (localStorage && localStorage.data) {
+                                _this.animateParchment(currentState, 'loadcharacter');
+                            } else {
+                                _this.animateParchment(currentState, 'createcharacter');
+                            }
+                        } else {
+                            _this.animateParchment(currentState, 'about');
+                            _this.previousState = currentState;
+                        }
+                    }
+                }        
             }).catch(function(error) {
                 console.error(error);
             });

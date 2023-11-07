@@ -1,13 +1,14 @@
 const Utils = require("./utils");
 
-const rarities = {common: {chance: 700, expMultiplier: 1, speed: 20}, 
+const rarities = {common: {chance: 40, expMultiplier: 1, speed: 20}, 
                 uncommon: {chance: 250, expMultiplier: 2, speed: 15}, 
-                rare: {chance: 40, expMultiplier: 5, speed: 11}, 
+                rare: {chance: 700, expMultiplier: 5, speed: 11}, 
                 epic: {chance: 8, expMultiplier: 20, speed: 8}, 
                 legendary: {chance: 2, expMultiplier: 50, speed: 6}};
 
-//Not all rarities have to be defined within a lake, but a common is mandatory
-let Lakes = {
+//---START CONFIG---
+//Not all rarities have to be defined within a lake, but a COMMON is mandatory
+const Lakes = {
     cobFarmLake: {
         level: 1,
         fish: {
@@ -25,6 +26,46 @@ let Lakes = {
         },
     },
 };
+// only EPIC fish can be a consumable
+const ConsumableFish = {
+    hp: ["coblobster"]
+};
+
+//---END CONFIG---
+
+generateFishDataMap = function() { // also do config checks
+    let retMap = [];
+    Object.keys(Lakes).forEach(lake => {
+        let lakeLevel = Lakes[lake].level;
+        let hasCommon = false;
+        if (lakeLevel === undefined){
+            console.error("Lake doesn't have a configured level: ", lake);
+            process.exit(1);
+        }
+        Object.keys(Lakes[lake].fish).forEach(fish => {
+            if(retMap[fish] !== undefined){
+                console.error("Fish appears multiple times in different lakes: ", fish);
+                process.exit(1);
+            }
+            retMap[fish] = {};
+            retMap[fish].level = lakeLevel;
+            retMap[fish].rarity = Lakes[lake].fish[fish];
+
+            if (retMap[fish].rarity === "common") {
+                hasCommon = true;
+            }
+        });
+
+        if (!hasCommon) {
+            console.error("Lake doesn't have a common: ", lake);
+            process.exit(1);
+        }
+    });
+
+    return retMap;
+}
+
+const fishDataMap = generateFishDataMap();
 
 Lakes.getRandomFish = function(lake) {
     let allFish = Lakes[lake].fish,
@@ -91,5 +132,34 @@ Lakes.getDifficulty = function(playerLevel, lakeName) {
     let calculatedDiff = maxDifficulty + (playerLevel - Lakes[lakeName].level) * levelGain;
     return Math.min(calculatedDiff, minDifficulty);
 };
+
+Lakes.isConsumable = function(fishName) {
+    let retVal = false;
+    Object.keys(ConsumableFish).forEach(stat => {
+        if (Array.isArray(ConsumableFish[stat]) && ConsumableFish[stat].includes(fishName) && fishDataMap[fishName]?.rarity === "rare"){
+            retVal = stat;
+        }
+    });
+    return retVal;
+};
+
+Lakes.getBuffByFish = function(fishName) {
+    let buffObj = {};
+    let buff = Lakes.isConsumable(fishName);
+    if (buff) {
+        buffObj.stat = buff;
+    } else {
+        return false;
+    }
+
+    let level = fishDataMap[fishName]?.level;
+    if(level){
+        buffObj.percent = Math.min(1 + level/2, 10);
+    } else {
+        return false;
+    }
+
+    return buffObj;
+}
 
 module.exports = Lakes;

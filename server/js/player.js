@@ -16,6 +16,8 @@ const chat = require("./chat.js");
 const NFTWeapon = require("./nftweapon.js");
 const NFTSpecialItem = require("./nftspecialitem.js");
 const PlayerEventBroker = require("./quests/playereventbroker.js");
+const Lakes = require("./lakes.js");
+const moment = require("moment");
 
 const LOOPWORMS_LOOPERLANDS_BASE_URL = process.env.LOOPWORMS_LOOPERLANDS_BASE_URL;
 const BASE_SPEED = 120;
@@ -444,9 +446,18 @@ module.exports = Player = Character.extend({
                 if (message[1] && self.pendingFish !== null) {
                     self.incrementNFTSpecialItemExperience(self.pendingFish.exp);
                     self.playerEventBroker.lootEvent({kind: self.pendingFish.name});
+                    if (Lakes.isConsumable(self.pendingFish.name)){
+                        self.addConsumable(self.pendingFish.name);
+                    }
+
                 }
                 self.pendingFish = null;
                 self.server.announceDespawnFloat(self);
+            } else if(action === Types.Messages.CONSUMEITEM) {
+                let item = message[1];
+                if (item) {
+                    self.consumeItem(item);
+                }
             }
             else {
                 if(self.message_callback) {
@@ -812,6 +823,51 @@ module.exports = Player = Character.extend({
                 this.server.pushToPlayer(this, msg);
                 this.completedQuestsIDs.push(quest.id);
             }
+        }
+    },
+
+    addConsumable: function(consumable) {
+        dao.saveConsumable(this.nftId, consumable, 1);
+        let cache = this.server.server.cache.get(this.sessionId);
+        let gameData = cache.gameData;
+    
+        if (gameData.consumables === undefined) {
+            gameData.consumables = {};
+        }
+    
+        let itemCount = gameData.consumables[consumable];
+        if (itemCount) {
+            gameData.consumables[consumable] = itemCount + 1;
+        } else {
+            gameData.consumables[consumable] = 1;
+        }
+    
+        cache.gameData = gameData;
+        this.server.server.cache.set(this.sessionId, cache);
+    },
+
+    consumeItem: function(item) {
+        let cache = this.server.server.cache.get(this.sessionId);
+        let gameData = cache.gameData;
+        if (gameData.consumables === undefined) {
+            gameData.consumables = {};
+        }
+        let itemCount = gameData.consumables[item];
+        if (itemCount > 0 && Lakes.isConsumable(item)) {
+            this.getFishBuff(item);
+            dao.saveConsumable(this.nftId, item, -1);
+            gameData.consumables[item] = itemCount - 1;
+            cache.gameData = gameData;
+            this.server.server.cache.set(this.sessionId, cache); 
+        }
+    },
+
+    getFishBuff: function(fish) {
+        let buff = Lakes.getBuffByFish(fish);
+        if(buff){
+            const buffDuration = 60 * 1000 * 10;
+            let notificationMsg = "You have " + buff.percent + "% more "+ buff.stat + " for " + moment.duration(buffDuration).humanize();
+            this.send(new Messages.Notify(notificationMsg).serialize());
         }
     }
 });

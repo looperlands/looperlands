@@ -272,3 +272,13 @@ Messages.DespawnFloat = Message.extend({
                 this.playerId];
     }
 });
+
+Messages.Notify = Message.extend({
+    init: function(text) {
+        this.text = text;
+    },
+    serialize: function() {
+        return [Types.Messages.NOTIFY,
+                this.text];
+    }
+});

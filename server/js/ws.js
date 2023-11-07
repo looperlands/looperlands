@@ -25,6 +25,7 @@ const chat = require("./chat.js");
 const quests = require("./quests/quests.js");
 const signing = require("./signing.js");
 const Lakes = require("./lakes.js");
+const { on } = require("events");
 
 const cache = new NodeCache();
 
@@ -358,26 +359,48 @@ WS.socketIOServer = Server.extend({
             }
             const walletId = sessionData.walletId;
 
-            const inventory = await axios.get(`${LOOPWORMS_LOOPERLANDS_BASE_URL}/selectLooperLands_Item.php?WalletID=${walletId}&APIKEY=${process.env.LOOPWORMS_API_KEY}`);
-            res.status(200).json(inventory.data);
-        });
-
-        app.get("/session/:sessionId/specialInventory", async (req, res) => {
-            const sessionId = req.params.sessionId;
-            const sessionData = cache.get(sessionId);
-            if (sessionData === undefined) {
-                //console.error("Session data is undefined for session id, params: ", sessionId, req.params);
-                res.status(404).json({
-                    status: false,
-                    "error" : "session not found",
-                    user: null
+            let inventory = [];
+            let rcvInventory = await axios.get(`${LOOPWORMS_LOOPERLANDS_BASE_URL}/selectLooperLands_Item.php?WalletID=${walletId}&APIKEY=${process.env.LOOPWORMS_API_KEY}`);
+            if (rcvInventory?.data){
+                inventory = rcvInventory.data.map(function(item) {
+                    if (item){
+                        return item.replace("0x", "NFT_");
+                    }
                 });
-                return;
+                if (inventory.length > 0) {
+                    inventory = inventory.filter(item => {
+                        if (item && Types.isWeapon(Types.getKindFromString(item))){
+                            return item;
+                        }
+                    });
+                }
             }
-            const walletId = sessionData.walletId;
 
-            const inventory = await dao.getSpecialItems(walletId);
-            res.status(200).json(inventory);
+            let special = [];
+            let rcvSpecial = await dao.getSpecialItems(walletId);
+            if (rcvSpecial) {
+                special = rcvSpecial.map(function(item) {
+                    if (item){
+                        return item.NFTID.replace("0x", "NFT_");
+                    }
+                });
+                if (special.length > 0) {
+                    special = special.filter(item => {
+                        if (item && Types.isSpecialItem(Types.getKindFromString(item))){
+                            return item;
+                        }
+                    });
+                }
+            }
+
+            let consumables = sessionData.gameData?.consumables || {};
+            Object.keys(consumables).forEach(item => {
+                if (!item || !Lakes.isConsumable(item) || consumables[item] <= 0){
+                    delete consumables[item];
+                }
+            });
+
+            res.status(200).json({inventory: inventory, special: special, consumables: consumables});
         });
 
         app.get("/session/:sessionId/quests", async (req, res) => {
