@@ -864,7 +864,7 @@ module.exports = Player = Character.extend({
 
     getFishBuff: function(fish) {
         let buff = Lakes.getBuffByFish(fish);
-        if(buff){
+        if(buff){s
             const buffDuration = 60 * 1000 * 10;
             let notificationMsg = "You have " + buff.percent + "% more "+ buff.stat + " for " + moment.duration(buffDuration).humanize();
             this.send(new Messages.Notify(notificationMsg).serialize());
