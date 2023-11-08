@@ -63,19 +63,20 @@ class PlayerEventBroker {
         let playerCache = this.cache.get(sessionId);
         let gameData = playerCache.gameData;
 
-        if (gameData.items === undefined) {
-            gameData.items = {};
-        }
+        if(!Types.isExpendableItem(parseInt(item.kind))) {
+            if (gameData.items === undefined) {
+                gameData.items = {};
+            }
 
-        let itemCount = gameData.items[item.kind];
-        if (itemCount) {
-            gameData.items[item.kind] = itemCount + 1;
-        } else {
-            gameData.items[item.kind] = 1;
+            let itemCount = gameData.items[item.kind];
+            if (itemCount) {
+                gameData.items[item.kind] = itemCount + 1;
+            } else {
+                gameData.items[item.kind] = 1;
+            }
+            playerCache.gameData = gameData;
+            this.cache.set(sessionId, playerCache);
         }
-
-        playerCache.gameData = gameData;
-        this.cache.set(sessionId, playerCache);
         PlayerEventBroker.dispatchEvent(PlayerEventBroker.Events.LOOT_ITEM, sessionId, this.player, playerCache, { item: item });
     }
 

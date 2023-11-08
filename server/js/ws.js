@@ -362,18 +362,7 @@ WS.socketIOServer = Server.extend({
 
             const inventory = await axios.get(`${LOOPWORMS_LOOPERLANDS_BASE_URL}/selectLooperLands_Item.php?WalletID=${walletId}&APIKEY=${process.env.LOOPWORMS_API_KEY}`);
 
-            // Filter expandable items
-            let nonExpandableItems = {};
-            for(let itemKind in sessionData.gameData.items) {
-                if(!Types.isExpendableItem(parseInt(itemKind))) {
-                    nonExpandableItems[itemKind] = sessionData.gameData.items[itemKind];
-                }
-            }
-            let totalInventory = {
-                weapons: inventory.data,
-                items: nonExpandableItems
-            }
-            res.status(200).json(totalInventory);
+            res.status(200).json(inventory.data);
         });
 
         app.get("/session/:sessionId/specialInventory", async (req, res) => {
@@ -393,6 +382,24 @@ WS.socketIOServer = Server.extend({
             const inventory = await dao.getSpecialItems(walletId);
             res.status(200).json(inventory);
         });
+
+        app.get("/session/:sessionId/consumableInventory", async (req, res) => {
+            const sessionId = req.params.sessionId;
+            const sessionData = cache.get(sessionId);
+            if (sessionData === undefined) {
+                //console.error("Session data is undefined for session id, params: ", sessionId, req.params);
+                res.status(404).json({
+                    status: false,
+                    "error" : "session not found",
+                    user: null
+                });
+                return;
+            }
+
+            const inventory = sessionData.gameData.items;
+            res.status(200).json(inventory);
+        });
+
 
         app.get("/session/:sessionId/quests", async (req, res) => {
             const sessionId = req.params.sessionId;

@@ -435,8 +435,11 @@ define(['jquery', 'storage'], function ($, Storage) {
 
             let inventoryQuery = "/session/" + _this.storage.sessionId + "/inventory",
                 specialInventoryQuery = "/session/" + _this.storage.sessionId + "/specialInventory";
+                consumableInventoryQuery = "/session/" + _this.storage.sessionId + "/consumableInventory";
+
             let inventory = [],
                 specialInventory = [];
+                consumableInventory = [];
 
             axios.get(inventoryQuery).then(function (response) {
                 if (response.data !== null) {
@@ -451,87 +454,108 @@ define(['jquery', 'storage'], function ($, Storage) {
                             return item.NFTID.replace("0x", "NFT_");
                         });
                     }
-                    var inventoryHtml = "";
-                    inventoryHtml += "<strong>Weapons</strong>";
-                    inventoryHtml += "<div>"
-                    if (inventory.length !== 0) {
-                        for (let i = inventory.length - 1; i >= 0; i--) { // we go backwards because of splice
-                            let item = inventory[i];
-                            if (Types.isWeapon(Types.getKindFromString(item))) {
-                                imgTag = "<img id='" + item + "' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0;' src='img/3/item-" + item + ".png' />";
-                                inventoryHtml += imgTag;
-                            } else {
-                                inventory.splice(i, 1);
-                            }
-                        }
-                    }
-                    inventoryHtml += "</div>";
 
-                    inventoryHtml += "<strong>Tools</strong>";
-                    inventoryHtml += "<div>"
-                    if (specialInventory.length !== 0) {
-                        for (let i = specialInventory.length - 1; i >= 0; i--) { // we go backwards because of splice
-                            let item = specialInventory[i];
-                            if (Types.isSpecialItem(Types.getKindFromString(item))) {
-                                imgTag = "<img id='" + item + "' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0;' src='img/3/item-" + item + ".png' />";
-                                inventoryHtml += imgTag;
-                            } else {
-                                specialInventory.splice(i, 1);
-                            }
-                        }
-                    }
-                    inventoryHtml += "</div>";
-
-                    $("#inventory").html(inventoryHtml);
-
-                    let equipFunc = function (item) {
-                        if (document.getElementById(item) !== null) {
-                            let equip = function () {
-                                let itemId = Types.Entities[item];
-                                let nftId = item.replace("NFT_", "0x");
-                                _this.game.client.sendEquipInventory(itemId, nftId);
-                                _this.game.player.switchWeapon(item);
-                            }
-                            document.getElementById(item).addEventListener("click", equip);
-                        }
-                    }
-
-                    inventory.forEach(function (item) {
-                        equipFunc(item);
-                    });
-
-                    specialInventory.forEach(function (item) {
-                        equipFunc(item);
-                    });
-
-                    if (_this.game.started) {
-                        _this.hideWindows();
-                        $('#parchment').removeClass().addClass('about');
-                        $('body').toggleClass('about');
-                        if (!_this.game.player) {
-                            $('body').toggleClass('death');
-                        }
-                        if ($('body').hasClass('credits')) {
-                            _this.closeInGameCredits();
-                        }
-                    } else {
-                        if (currentState !== 'animate') {
-                            if (currentState === 'about') {
-                                if (localStorage && localStorage.data) {
-                                    _this.animateParchment(currentState, 'loadcharacter');
+                    axios.get(consumableInventoryQuery).then(function (consumableResponse) {
+                        var inventoryHtml = "";
+                        inventoryHtml += "<strong>Weapons</strong>";
+                        inventoryHtml += "<div>"
+                        if (inventory.length !== 0) {
+                            for (let i = inventory.length - 1; i >= 0; i--) { // we go backwards because of splice
+                                let item = inventory[i];
+                                if (Types.isWeapon(Types.getKindFromString(item))) {
+                                    imgTag = "<img id='" + item + "' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0;' src='img/3/item-" + item + ".png' />";
+                                    inventoryHtml += imgTag;
                                 } else {
-                                    _this.animateParchment(currentState, 'createcharacter');
+                                    inventory.splice(i, 1);
                                 }
-                            } else {
-                                _this.animateParchment(currentState, 'about');
-                                _this.previousState = currentState;
                             }
                         }
-                    }
+                        inventoryHtml += "</div>";
+
+                        inventoryHtml += "<strong>Tools</strong>";
+                        inventoryHtml += "<div>"
+                        if (specialInventory.length !== 0) {
+                            for (let i = specialInventory.length - 1; i >= 0; i--) { // we go backwards because of splice
+                                let item = specialInventory[i];
+                                if (Types.isSpecialItem(Types.getKindFromString(item))) {
+                                    imgTag = "<img id='" + item + "' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0;' src='img/3/item-" + item + ".png' />";
+                                    inventoryHtml += imgTag;
+                                } else {
+                                    specialInventory.splice(i, 1);
+                                }
+                            }
+                        }
+                        inventoryHtml += "</div>";
+
+                        if(Object.keys(consumableResponse.data).length > 0) {
+                            inventoryHtml += "<strong>Items</strong>";
+                            inventoryHtml += "<div>"
+
+                            for (let itemId in consumableResponse.data) {
+                                let item = Types.getKindAsString(itemId);
+                                if(Types.isExpendableItem(parseInt(itemId))) {
+                                    continue;
+                                }
+                                imgTag = "<img id='" + item + "' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0;' src='img/3/item-" + item + ".png' />";
+                                inventoryHtml += imgTag;
+                            }
+
+                            inventoryHtml += "</div>";
+                        }
+
+                        $("#inventory").html(inventoryHtml);
+
+                        let equipFunc = function (item) {
+                            if (document.getElementById(item) !== null) {
+                                let equip = function () {
+                                    let itemId = Types.Entities[item];
+                                    let nftId = item.replace("NFT_", "0x");
+                                    _this.game.client.sendEquipInventory(itemId, nftId);
+                                    _this.game.player.switchWeapon(item);
+                                }
+                                document.getElementById(item).addEventListener("click", equip);
+                            }
+                        }
+
+                        inventory.forEach(function (item) {
+                            equipFunc(item);
+                        });
+
+                        specialInventory.forEach(function (item) {
+                            equipFunc(item);
+                        });
+
+                        if (_this.game.started) {
+                            _this.hideWindows();
+                            $('#parchment').removeClass().addClass('about');
+                            $('body').toggleClass('about');
+                            if (!_this.game.player) {
+                                $('body').toggleClass('death');
+                            }
+                            if ($('body').hasClass('credits')) {
+                                _this.closeInGameCredits();
+                            }
+                        } else {
+                            if (currentState !== 'animate') {
+                                if (currentState === 'about') {
+                                    if (localStorage && localStorage.data) {
+                                        _this.animateParchment(currentState, 'loadcharacter');
+                                    } else {
+                                        _this.animateParchment(currentState, 'createcharacter');
+                                    }
+                                } else {
+                                    _this.animateParchment(currentState, 'about');
+                                    _this.previousState = currentState;
+                                }
+                            }
+                        }
+                    }).catch(function (error) {
+                        console.error(error);
+                    });
+
                 }).catch(function (error) {
                     console.error(error);
                 });
-
             }).catch(function (error) {
                 console.error(error);
             });

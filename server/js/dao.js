@@ -363,7 +363,7 @@ processLootEventQueue = async function(retry) {
 let LOOT_QUEUE_INTERVAL = undefined;
 
 exports.saveLootEvent = async function(avatarId, itemId, amount) {
-  if(amount === undefined) {
+  if (amount === undefined) {
     amount = 1;
   }
 
@@ -372,9 +372,30 @@ exports.saveLootEvent = async function(avatarId, itemId, amount) {
     LOOT_QUEUE_INTERVAL = setInterval(processLootEventQueue, 1000 * 30);
   }
 
-  for(let i = 0; i < amount; i++) {
+  if (Types.isExpendableItem(Types.getKindAsString(itemId))) {
+    LOOT_EVENTS_QUEUE.push({avatarId: avatarId, itemId: itemId, amount})
+  } else {
+    const options = {
+      headers: {
+        'X-Api-Key': API_KEY
+      }
+    }
+    const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/saveConsumable2.php`;
+    try {
+      const response = await axios.post(url, {avatarId: avatarId, itemId: itemId, quantity: amount}, options);
 
-    LOOT_EVENTS_QUEUE.push({avatarId: avatarId, itemId: itemId})
+      return response.data;
+    } catch (error) {
+      if (retry === undefined) {
+        retry = MAX_RETRY_COUNT;
+      }
+      retry -= 1;
+      if (retry > 0) {
+        return this.getItemCount(avatarId, itemId, retry);
+      } else {
+        console.error("getItemCount", error);
+      }
+    }
   }
 }
 
@@ -467,7 +488,7 @@ exports.loadAvatarGameData = async function(avatarId, retry) {
     }
   }
 
-  const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/loadItemMobQuest.php?NFTID=${avatarId}`;
+  const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/loadItemConsumableMobQuest.php?NFTID=${avatarId}`;
 
   try {
     const response = await axios.get(url, options);
@@ -475,7 +496,6 @@ exports.loadAvatarGameData = async function(avatarId, retry) {
     let responseData = response.data[0];
 
     let mobKills, items = {}, quests = {};
-
 
     if (responseData.mobJson) {
       mobKills = responseData.mobJson.reduce((avatarMobKills, mobKills) => {
@@ -491,6 +511,16 @@ exports.loadAvatarGameData = async function(avatarId, retry) {
       items = responseData.itemJson.reduce((avatarItems, itemCount) => {
         const itemId = itemCount.itemId;
         if (itemId) {
+          avatarItems[itemId] = itemCount.iCount;
+        }
+        return avatarItems;
+      }, {});
+    }
+
+    if (responseData.itemConsumableJson) {
+      items = responseData.itemConsumableJson.reduce((avatarItems, itemCount) => {
+        const itemId = itemCount.itemConsumableId;
+        if (itemId && parseInt(itemCount.iCount) > 0) {
           avatarItems[itemId] = itemCount.iCount;
         }
         return avatarItems;
@@ -518,7 +548,7 @@ exports.loadAvatarGameData = async function(avatarId, retry) {
       quests: quests
     }
 
-    //console.log("loadAvatarGameData", data);
+    // console.log("loadAvatarGameData", data);
 
     return data;
   } catch (error) {
