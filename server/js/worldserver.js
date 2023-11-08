@@ -1495,7 +1495,6 @@ module.exports = World = cls.Class.extend({
     announceDespawnFloat: function(player) {
         this.pushToAdjacentGroups(player.group, new Messages.DespawnFloat(player.id), player.id);
     }
->>>>>>> main
 });
 
 
