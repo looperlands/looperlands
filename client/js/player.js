@@ -98,8 +98,11 @@ define(['character', 'exceptions', '../../shared/js/gametypes'], function(Charac
             return this.weaponName !== null;
         },
     
-        switchWeapon: function(newWeaponName) {
-            var count = 14, 
+        switchWeapon: function(newWeaponName, blinkCount) {
+            if(blinkCount === undefined) {
+                blinkCount = 14;
+            }
+            var count = blinkCount,
                 value = false, 
                 self = this;
         
@@ -122,10 +125,11 @@ define(['character', 'exceptions', '../../shared/js/gametypes'], function(Charac
                     }
 
                     count -= 1;
-                    if(count === 1) {
+                    if(count <= 1) {
                         clearInterval(blanking);
                         self.switchingWeapon = false;
-                    
+                        self.setWeaponName(newWeaponName);
+                        
                         if(self.switch_callback) {
                             self.switch_callback();
                         }
@@ -212,6 +216,29 @@ define(['character', 'exceptions', '../../shared/js/gametypes'], function(Charac
             if(this.invincibleTimeout) {
                 clearTimeout(this.invincibleTimeout);
             }
+        },
+
+        getOneStepFurther: function (gX, gY){
+            switch(this.getOrientationTo({gridX: gX, gridY: gY})) {
+                case Types.Orientations.UP:
+                    pos = {gridX: gX, gridY: gY - 1}; break;
+                case Types.Orientations.DOWN:
+                    pos = {gridX: gX, gridY: gY + 1}; break;
+                case Types.Orientations.LEFT:
+                    pos = {gridX: gX - 1, gridY: gY}; break;
+                case Types.Orientations.RIGHT:
+                    pos = {gridX: gX + 1, gridY: gY}; break;
+            }
+
+            return pos;
+        },
+
+        canAttack: function(time) {
+            if (Types.isWeapon(Types.getKindFromString(this.weaponName))){
+                return this._super(time);
+            }
+
+            return false;
         }
     });
 

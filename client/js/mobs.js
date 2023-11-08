@@ -1,4 +1,3 @@
-
 define(['mob', 'timer'], function(Mob, Timer) {
 
     var Mobs = {
@@ -1685,6 +1684,86 @@ define(['mob', 'timer'], function(Mob, Timer) {
                     smashAoe(rootTarget);
                 }, 2000); // Change this duration also in server/worldserver.js      
             }
+        }),
+
+        SeaCreature: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.SEACREATURE);
+                this.idleSpeed = 250;
+                this.restoreDefaultMovement();
+                this.aggroRange = 0;
+                this.atkSpeed = 100;
+                this.setAttackRate(1000);
+                this.deathAnimated = true;
+                this.deathSpeed = 350;
+                this.title = "";
+            },
+
+            restoreDefaultMovement: function () {
+                this.moveSpeed = 0;
+                this.walkSpeed = 0;
+            },
+
+            idle: function(orientation) {
+                this._super(Types.Orientations.UP);
+            },
+
+            moveTo_: function(x, y, callback) {
+                return;
+            },
+        }),
+
+
+        Tentacle: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.TENTACLE);
+                this.idleSpeed = 400;
+                this.restoreDefaultMovement();
+                this.aggroRange = 1;
+                this.atkSpeed = 100;
+                this.setAttackRate(1000);
+                this.deathAnimated = true;
+                this.title = "";
+            },
+
+            restoreDefaultMovement: function () {
+                this.moveSpeed = 0;
+                this.walkSpeed = 0;
+            },
+
+            idle: function(orientation) {
+                this._super(Types.Orientations.UP);
+            },
+
+            moveTo_: function(x, y, callback) {
+                return;
+            },
+        }),
+
+        Tentacle2: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.TENTACLE2);
+                this.idleSpeed = 400;
+                this.restoreDefaultMovement();
+                this.aggroRange = 1;
+                this.atkSpeed = 100;
+                this.setAttackRate(1000);
+                this.deathAnimated = true;
+                this.title = "";
+            },
+
+            restoreDefaultMovement: function () {
+                this.moveSpeed = 0;
+                this.walkSpeed = 0;
+            },
+
+            idle: function(orientation) {
+                this._super(Types.Orientations.UP);
+            },
+
+            moveTo_: function(x, y, callback) {
+                return;
+            },
         }),
         
         Cobchicken: Mob.extend({

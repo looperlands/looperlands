@@ -46,6 +46,9 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             this.handlers[Types.Messages.MUSIC] = this.receiveMusic;
             this.handlers[Types.Messages.LAYER] = this.receiveLayer;
             this.handlers[Types.Messages.ANIMATE] = this.receiveAnimate;
+            this.handlers[Types.Messages.QUEST_COMPLETE] = this.receieveQuestComplete;
+            this.handlers[Types.Messages.SPAWNFLOAT] = this.receiveSpawnFloat;
+            this.handlers[Types.Messages.DESPAWNFLOAT] = this.receiveDespawnFloat;
 
             this.useBison = false;
             this.enable();
@@ -483,6 +486,25 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
           }
         },
 
+        receiveSpawnFloat: function(data) {
+            let id = data[1],
+                name = data[2],
+                x = data[3],
+                y = data[4];
+        
+            if(this.spawnFloat_callback) {
+                this.spawnFloat_callback(id, name, x, y);
+            }
+        },
+
+        receiveDespawnFloat: function(data) {
+            let id = data[1];
+        
+            if(this.despawnFloat_callback) {
+                this.despawnFloat_callback(id);
+            }
+        },
+
         onDispatched: function(callback) {
             this.dispatched_callback = callback;
         },
@@ -619,6 +641,14 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             this.animate_callback = callback;
         },
 
+        onSpawnFloat: function(callback) {
+            this.spawnFloat_callback = callback;
+        },
+
+        onDespawnFloat: function(callback) {
+            this.despawnFloat_callback = callback;
+        },
+
         sendHello: function(player) {
             this.sendMessage([Types.Messages.HELLO,
                               player.name,
@@ -703,6 +733,11 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             this.sendMessage([Types.Messages.EQUIP_INVENTORY,
                               kind,
                               nftId]);
+        },
+
+        sendFishingResult: function(result) {
+            this.sendMessage([Types.Messages.FISHINGRESULT,
+                              result]);
         }
     });
     

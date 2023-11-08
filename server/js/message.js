@@ -317,3 +317,29 @@ Messages.Animate = Message.extend({
         return [Types.Messages.ANIMATE, this.entity, this.animation];
     }
 })
+
+Messages.SpawnFloat = Message.extend({
+    init: function(playerId, floatName, gX, gY) {
+        this.playerId = playerId;
+        this.floatName = floatName;
+        this.gX = gX;
+        this.gY = gY;
+    },
+    serialize: function() {
+        return [Types.Messages.SPAWNFLOAT,
+                this.playerId,
+                this.floatName,
+                this.gX,
+                this.gY];
+    }
+});
+
+Messages.DespawnFloat = Message.extend({
+    init: function(playerId) {
+        this.playerId = playerId;
+    },
+    serialize: function() {
+        return [Types.Messages.DESPAWNFLOAT,
+                this.playerId];
+    }
+});

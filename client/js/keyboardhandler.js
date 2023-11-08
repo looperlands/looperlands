@@ -6,11 +6,18 @@ class KeyBoardHandler {
             s: 0,
             d: 0
         };
+
+        this.weapons = null;
+
+        this.keyCallbacks = {
+            'Comma': () => this.previousWeapon(),
+            'Period': () => this.nextWeapon()
+        };
         this.game = game;
         this.interval = false;
 
         console.log("Created keyboard handler");
-        
+
         document.addEventListener('keydown', (event) => this.handleKeyDown(event));
         document.addEventListener('keyup', (event) => this.handleKeyUp(event));
         window.addEventListener('blur', this.handleBlur.bind(this));
@@ -24,6 +31,10 @@ class KeyBoardHandler {
                 this.handleMovement(); // Execute one instantly so there's no interval delay
                 this.interval = setInterval(this.handleMovement.bind(this), 25);
             }
+        }
+
+        if(this.keyCallbacks.hasOwnProperty(event.code)) {
+            this.keyCallbacks[event.code]();
         }
     }
 
@@ -59,5 +70,98 @@ class KeyBoardHandler {
             clearInterval(this.interval);
             this.interval = false;
         }
+    }
+
+    previousWeapon() {
+        if(!this.game.player.hasWeapon()) {
+            return
+        }
+
+        if(!this.game.started || this.inputHasFocus() || this.hasOpenPanel()) {
+            return;
+        }
+
+        let self = this;
+        this.getWeapons((weapons) => {
+            self.equipWeapon(self.getNextWeapon(weapons));
+        });
+    }
+
+    nextWeapon() {
+        if(!this.game.player.hasWeapon()) {
+            return
+        }
+
+        if(!this.game.started || this.inputHasFocus() || this.hasOpenPanel()) {
+            return;
+        }
+
+        let self = this;
+        this.getWeapons((weapons) => {
+            self.equipWeapon(self.getPreviousWeapon(weapons));
+        });
+    }
+
+    inputHasFocus() {
+        const elem = document.activeElement;
+        return elem && (elem.tagName.toLowerCase() === "input" || elem.tagName.toLowerCase() === "textarea");
+
+    }
+
+    hasOpenPanel() {
+        return $('body').hasClass('settings') ||
+            $('body').hasClass('about') ||
+            $('body').hasClass('credits') ||
+            $('#chatbox').hasClass("active");
+    }
+
+    equipWeapon(weapon) {
+        let weaponId = Types.Entities[weapon];
+        let nftId = weapon.replace("NFT_", "0x");
+        this.game.client.sendEquipInventory(weaponId, nftId);
+        this.game.player.switchWeapon(weapon,1);
+    }
+
+    getWeapons(callback) {
+        if(this.weapons == null) {
+            var inventoryQuery = "/session/" + this.game.sessionId + "/inventory";
+            let self = this;
+            axios.get(inventoryQuery).then(function(response) {
+                self.weapons = [];
+                var inventory = response.data.map(function(item) {
+                    return item.replace("0x", "NFT_");
+                });
+
+                inventory.forEach(function(item) {
+                    if (Types.isWeapon(Types.Entities[item])) {
+                        self.weapons.push(item);
+                    }
+                });
+                callback(self.weapons);
+            });
+        } else {
+            callback(this.weapons);
+        }
+    }
+
+    getPreviousWeapon(weapons) {
+        var currentWeapon = this.game.player.getWeaponName();
+        var currentWeaponIndex = weapons.indexOf(currentWeapon);
+        var prevWeaponIndex = (currentWeaponIndex + 1) % weapons.length;
+
+        return weapons[prevWeaponIndex];
+    }
+
+    getNextWeapon(weapons) {
+        var currentWeapon = this.game.player.getWeaponName();
+        var currentWeaponIndex = weapons.indexOf(currentWeapon);
+        var nextWeaponIndex;
+        if(currentWeaponIndex === 0) {
+            nextWeaponIndex = weapons.length -1;
+        } else {
+            nextWeaponIndex = (currentWeaponIndex - 1) % weapons.length;
+        }
+
+        return weapons[nextWeaponIndex];
     }
 }

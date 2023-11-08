@@ -10,11 +10,11 @@ var cls = require("./lib/class"),
     dao = require('./dao.js'),
     AltNames = require("../../shared/js/altnames");
 
-
 const discord = require('./discord.js');
 const axios = require('axios');
 const chat = require("./chat.js");
 const NFTWeapon = require("./nftweapon.js");
+const NFTSpecialItem = require("./nftspecialitem.js");
 const PlayerEventBroker = require("./quests/playereventbroker.js");
 
 const LOOPWORMS_LOOPERLANDS_BASE_URL = process.env.LOOPWORMS_LOOPERLANDS_BASE_URL;
@@ -39,6 +39,7 @@ module.exports = Player = Character.extend({
         this.lastCheckpoint = null;
         this.formatChecker = new FormatChecker();
         this.disconnectTimeout = null;
+        this.pendingFish = null;
 
         this.moveSpeed = BASE_SPEED;
         this.attackRate = BASE_ATTACK_RATE;
@@ -197,6 +198,11 @@ module.exports = Player = Character.extend({
                 }
             }
             else if(action === Types.Messages.HIT) {
+                let nftWeapon = self.getNFTWeapon();
+                if (nftWeapon !== undefined && !(nftWeapon instanceof NFTWeapon.NFTWeapon)){
+                    return;
+                }
+
                 var mob = self.server.getEntityById(message[1]);
 
                 if(mob) {
@@ -236,7 +242,7 @@ module.exports = Player = Character.extend({
                                 let totalCleaveDmg = 0;
                                 entityIds.forEach(function(id) {
                                     let entity = group.entities[id];
-                                    if (entity.type !== undefined && entity.type === 'mob' && !Properties[Types.getKindAsString(entity.kind)].friendly) {
+                                    if (entity && entity.type !== undefined && entity.type === 'mob' && !Properties[Types.getKindAsString(entity.kind)].friendly) {
                                         let distance = Utils.distanceTo(self.x, self.y, entity.x, entity.y);
                                         if (mob.id === entity.id) {
                                             handleDamage(mob, totalLevel, 1);
@@ -449,6 +455,13 @@ module.exports = Player = Character.extend({
                         }
                     }
                 }
+            } else if(action === Types.Messages.FISHINGRESULT) {
+                if (message[1] && self.pendingFish !== null) {
+                    self.incrementNFTSpecialItemExperience(self.pendingFish.exp);
+                    self.playerEventBroker.lootEvent({kind: self.pendingFish.name});
+                }
+                self.pendingFish = null;
+                self.server.announceDespawnFloat(self);
             }
             else {
                 if(self.message_callback) {
@@ -472,8 +485,15 @@ module.exports = Player = Character.extend({
 
     incrementNFTWeaponExperience: function (damage) {
         let nftWeapon = this.getNFTWeapon();
-        if (nftWeapon !== undefined) {
+        if (nftWeapon !== undefined && (nftWeapon instanceof NFTWeapon.NFTWeapon)) {
             nftWeapon.incrementExperience(damage);
+        }
+    },
+
+    incrementNFTSpecialItemExperience: function (experience) {
+        let nftWeapon = this.getNFTWeapon();
+        if (nftWeapon !== undefined && (nftWeapon instanceof NFTSpecialItem.NFTSpecialItem)) {
+            nftWeapon.incrementExperience(experience);
         }
     },
 
@@ -500,8 +520,8 @@ module.exports = Player = Character.extend({
 
             if(this.hitPoints <= 0) {
                 let kindString = Types.getKindAsString(mob.kind);
-                let altName = AltNames.getAltNameFromKind(kindString);
-                let killer = altName !== undefined ? altName : kindString;
+                let killer = AltNames.getName(kindString);
+
                 if (mob instanceof Player)  {
                     discord.sendMessage(`Player ${this.name} ganked by ${mob.name}.`);
                     this.updatePVPStats(mob);
@@ -674,9 +694,20 @@ module.exports = Player = Character.extend({
         }
     },
 
+    equipSpecialItem: function(kind) {
+        this.weapon = kind;
+        const kindString = Types.getKindAsString(kind);
+        this.nftWeapon = new NFTSpecialItem.NFTSpecialItem(this.walletId, kindString);
+        this.nftWeapon.loadItemData();
+    },
+
     equipItem: function(item) {
         if(item) {
             //console.debug(this.name + " equips " + Types.getKindAsString(item.kind));
+            if (this.getNFTWeapon() !== undefined) {
+                this.getNFTWeapon().syncExperience();
+            } // this applies to both Weapon and Special item. 
+            // Technically it should be inside Else ifs below but we dont use armor items anyway
 
             if(Types.isArmor(item.kind)) {
                 this.equipArmor(item.kind);
@@ -684,8 +715,9 @@ module.exports = Player = Character.extend({
             } else if(Types.isWeapon(item.kind)) {
                 this.equipWeapon(item.kind);
                 let playerCache = this.server.server.cache.get(this.sessionId);
-                let kind = Types.getKindAsString(item.kind);
                 dao.saveWeapon(playerCache.walletId, playerCache.nftId,Types.getKindAsString(item.kind));
+            } else if (Types.isSpecialItem(item.kind)) {
+                this.equipSpecialItem(item.kind);
             }
         }
     },
