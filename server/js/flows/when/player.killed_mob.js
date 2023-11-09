@@ -11,6 +11,6 @@ module.exports = Event = cls.Class.extend({
     },
 
     handle(event) {
-        return (event.data.mob.kind === this.mob);
+        return (parseInt(event.data.mob.kind) === parseInt(this.mob));
     }
 })

@@ -5,10 +5,7 @@ const dao = require('../dao.js');
 const main = require('./main.js');
 const cobsfarmcity = require('./cobsfarmcity.js');
 const AltNames = require('../../../shared/js/altnames.js');
-const flows = {
-    main: main.flow,
-    cobsfarmcity: cobsfarmcity.flow
-}
+let flows = {}
 
 let loadedFlow = {};
 let loadedBlocks = {};

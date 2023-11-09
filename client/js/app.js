@@ -463,7 +463,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                             for (let i = inventory.length - 1; i >= 0; i--) { // we go backwards because of splice
                                 let item = inventory[i];
                                 if (Types.isWeapon(Types.getKindFromString(item))) {
-                                    imgTag = "<img id='" + item + "' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0;' src='img/3/item-" + item + ".png' />";
+                                    imgTag = "<div class='item'><img id='" + item + "' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0;' src='img/3/item-" + item + ".png' /></div>";
                                     inventoryHtml += imgTag;
                                 } else {
                                     inventory.splice(i, 1);
@@ -472,13 +472,13 @@ define(['jquery', 'storage'], function ($, Storage) {
                         }
                         inventoryHtml += "</div>";
 
-                        inventoryHtml += "<strong>Tools</strong>";
+                        inventoryHtml += "<strong style='display:block; margin-top:10px'>Tools</strong>";
                         inventoryHtml += "<div>"
                         if (specialInventory.length !== 0) {
                             for (let i = specialInventory.length - 1; i >= 0; i--) { // we go backwards because of splice
                                 let item = specialInventory[i];
                                 if (Types.isSpecialItem(Types.getKindFromString(item))) {
-                                    imgTag = "<img id='" + item + "' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0;' src='img/3/item-" + item + ".png' />";
+                                    imgTag = "<div class='item'><img id='" + item + "' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0;' src='img/3/item-" + item + ".png' /></div>";
                                     inventoryHtml += imgTag;
                                 } else {
                                     specialInventory.splice(i, 1);
@@ -488,7 +488,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                         inventoryHtml += "</div>";
 
                         if(Object.keys(consumableResponse.data).length > 0) {
-                            inventoryHtml += "<strong>Items</strong>";
+                            inventoryHtml += "<strong style='display:block; margin-top:10px'>Items</strong>";
                             inventoryHtml += "<div>"
 
                             for (let itemId in consumableResponse.data) {
@@ -496,7 +496,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                                 if(Types.isExpendableItem(parseInt(itemId))) {
                                     continue;
                                 }
-                                imgTag = "<img id='" + item + "' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0;' src='img/3/item-" + item + ".png' />";
+                                imgTag = "<div class='item'><img id='" + item + "' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0;' src='img/3/item-" + item + ".png' /><br/>" + consumableResponse.data[itemId] + "</div>";
                                 inventoryHtml += imgTag;
                             }
 

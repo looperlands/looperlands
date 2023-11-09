@@ -262,6 +262,19 @@ footer div  {display:inline-block;}
 
 #death p em, #settings p em {display:block;font-style:normal;}
 
+#inventory .item {
+    text-align: center;
+    width: 42px;
+    display: inline-block;
+    border-radius: 4px;
+    padding: 5px;
+    line-height: 25px !important;
+    margin-top: 5px;
+}
+#inventory .item:hover {
+    background: #d9c399;
+}
+
 /* Magic Parchment */
 
 .parchment-left {position:absolute;top:0;left:0%;}

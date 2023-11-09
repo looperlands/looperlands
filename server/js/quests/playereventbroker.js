@@ -56,8 +56,8 @@ class PlayerEventBroker {
         })
     }
 
-    async lootEvent(item) {
-        dao.saveLootEvent(this.player.nftId, item.kind);
+    async lootEvent(item, amount) {
+        dao.saveLootEvent(this.player.nftId, item.kind, amount);
 
         let sessionId = this.player.sessionId;
         let playerCache = this.cache.get(sessionId);
@@ -70,10 +70,11 @@ class PlayerEventBroker {
 
             let itemCount = gameData.items[item.kind];
             if (itemCount) {
-                gameData.items[item.kind] = itemCount + 1;
+                gameData.items[item.kind] = itemCount + amount;
             } else {
-                gameData.items[item.kind] = 1;
+                gameData.items[item.kind] = amount;
             }
+
             playerCache.gameData = gameData;
             this.cache.set(sessionId, playerCache);
         }

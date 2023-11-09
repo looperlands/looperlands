@@ -1459,9 +1459,14 @@ module.exports = World = cls.Class.extend({
 
     addToInventory(player, itemKind, amount) {
         let item = this.createItem(itemKind, 0, 0);
-        for(let i = 0; i < amount; i++) {
-            player.playerEventBroker.lootEvent(item);
-        }
+        player.playerEventBroker.lootEvent(item, amount);
+
+    },
+
+    removeFromInventory(player, itemKind, amount) {
+        let item = this.createItem(itemKind, 0, 0);
+        console.log(item);
+        player.playerEventBroker.lootEvent(item, amount * -1);
     },
 
     npcTalked(npcId, message, sessionData) {
