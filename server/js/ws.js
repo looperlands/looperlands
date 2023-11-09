@@ -149,6 +149,13 @@ WS.socketIOServer = Server.extend({
             if (body.mapId === undefined) {
                 body.mapId = "main";
             }
+            if (body.checkpointId === undefined) {
+                // teleport request
+                if (body.x !== undefined && body.y !== undefined) {
+                    let checkpoint = self.worldsMap[body.mapId].map.findClosestCheckpoint(body.x, body.y);
+                    dao.saveAvatarCheckpointId(body.nftId, checkpoint.id);
+                }
+            }
             cache.set(id, body);
             let responseJson = {
                 "sessionId" : id
