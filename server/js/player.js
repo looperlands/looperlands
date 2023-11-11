@@ -42,6 +42,7 @@ module.exports = Player = Character.extend({
         this.formatChecker = new FormatChecker();
         this.disconnectTimeout = null;
         this.pendingFish = null;
+        this.consumableBuff = null;
 
         this.moveSpeed = BASE_SPEED;
         this.attackRate = BASE_ATTACK_RATE;
@@ -586,6 +587,10 @@ module.exports = Player = Character.extend({
         });
         this.haters = {};
         this.syncAvatarAndWeaponExperience();
+
+        if (self.consumableBuff?.buffTimeout) {
+            clearTimeout(self.consumableBuff.buffTimeout);
+        }
     },
 
     getState: function() {
@@ -863,11 +868,51 @@ module.exports = Player = Character.extend({
     },
 
     getFishBuff: function(fish) {
-        let buff = Lakes.getBuffByFish(fish);
-        if(buff){s
-            const buffDuration = 60 * 1000 * 10;
-            let notificationMsg = "You have " + buff.percent + "% more "+ buff.stat + " for " + moment.duration(buffDuration).humanize();
-            this.send(new Messages.Notify(notificationMsg).serialize());
+        let self = this;
+        let buffData = Lakes.getBuffByFish(fish);
+        if (buffData){
+            const buffDuration = 1000 * 60 * 10;
+
+            if (self.consumableBuff) {
+                clearTimeout(self.consumableBuff.buffTimeout);
+                self.removeConsumableBuff();
+            }
+            self.consumableBuff = {};
+            self.consumableBuff.expireTime = new Date().getTime() + buffDuration;
+            self.consumableBuff.buff = buffData;
+            self.consumableBuff.buffTimeout = setTimeout(function(){
+                self.removeConsumableBuff();
+                self.consumableBuff = null;
+            }, buffDuration);
+            self.applyConsumableBuff();
+
+            let notificationMsg = "You have " + buffData.percent + "% more "+ buffData.stat + " for " + moment.duration(buffDuration).humanize();
+            self.send(new Messages.Notify(notificationMsg).serialize());
+        }
+    },
+
+    applyConsumableBuff: function() {
+        if (this.consumableBuff?.buff) {
+            let buffStat = this.consumableBuff.buff.stat;
+            if (buffStat === 'hp') {
+                this.maxHitPoints = Math.round(this.maxHitPoints * (100 + this.consumableBuff.buff.percent)/100);
+            }
+        }
+    },
+
+    removeConsumableBuff: function() {
+        if (this.consumableBuff?.buff) {
+            let buffStat = this.consumableBuff?.buff.stat;
+            if (buffStat === 'hp') {
+                let level = this.getLevel();
+                let hp = Formulas.hp(level);
+                if (this.hitPoints > hp) {
+                    this.resetHitPoints(hp);
+                    this.send(new Messages.HitPoints(this.maxHitPoints).serialize());
+                } else {
+                    this.maxHitpoints = hp;
+                }
+            }
         }
     }
 });
