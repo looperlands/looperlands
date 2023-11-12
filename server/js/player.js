@@ -17,7 +17,6 @@ const NFTWeapon = require("./nftweapon.js");
 const NFTSpecialItem = require("./nftspecialitem.js");
 const PlayerEventBroker = require("./quests/playereventbroker.js");
 const Lakes = require("./lakes.js");
-const moment = require("moment");
 
 const LOOPWORMS_LOOPERLANDS_BASE_URL = process.env.LOOPWORMS_LOOPERLANDS_BASE_URL;
 const BASE_SPEED = 120;
@@ -42,7 +41,7 @@ module.exports = Player = Character.extend({
         this.formatChecker = new FormatChecker();
         this.disconnectTimeout = null;
         this.pendingFish = null;
-        this.consumableBuff = null;
+        this.consumableBuff = {};
 
         this.moveSpeed = BASE_SPEED;
         this.attackRate = BASE_ATTACK_RATE;
@@ -206,7 +205,11 @@ module.exports = Player = Character.extend({
                         mob.handleHurt(self);
                     } else {
                         let level = self.getLevel();
-                        let totalLevel = (self.getWeaponLevel() + level) - 1;
+                        let totalLevel = (self.getWeaponLevel() + level);
+                        let buff = self.getActiveBuff();
+                        if (buff && buff.stat === "atk"){
+                            totalLevel = totalLevel*(100 + buff.percent)/100;
+                        }
 
                         let weaponTrait = self.getNFTWeaponActiveTrait();
 
@@ -501,7 +504,11 @@ module.exports = Player = Character.extend({
                 let totalLevel =  Math.round(level * 0.5); //this is armor
                 let attackerLevel;
                 if (mob instanceof Player) {
-                    attackerLevel = mob.getWeaponLevel() + mob.getLevel();
+                    attackerLevel = (mob.getWeaponLevel() + mob.getLevel());
+                    let mobBuff = mob.getActiveBuff();
+                    if (mobBuff && mobBuff.stat === "atk"){
+                        attackerLevel = attackerLevel*(100 + mobBuff.percent)/100;
+                    }
                 } else {
                     attackerLevel = mob.getWeaponLevel();
                 }
@@ -588,7 +595,7 @@ module.exports = Player = Character.extend({
         this.haters = {};
         this.syncAvatarAndWeaponExperience();
 
-        if (self.consumableBuff?.buffTimeout) {
+        if (self.consumableBuff.buffTimeout) {
             clearTimeout(self.consumableBuff.buffTimeout);
         }
     },
@@ -877,42 +884,49 @@ module.exports = Player = Character.extend({
                 clearTimeout(self.consumableBuff.buffTimeout);
                 self.removeConsumableBuff();
             }
-            self.consumableBuff = {};
             self.consumableBuff.expireTime = new Date().getTime() + buffDuration;
             self.consumableBuff.buff = buffData;
             self.consumableBuff.buffTimeout = setTimeout(function(){
                 self.removeConsumableBuff();
-                self.consumableBuff = null;
-            }, buffDuration);
+                self.consumableBuff = {};
+            }.bind(self), buffDuration);
             self.applyConsumableBuff();
 
-            let notificationMsg = "You have " + buffData.percent + "% more "+ buffData.stat + " for " + moment.duration(buffDuration).humanize();
-            self.send(new Messages.Notify(notificationMsg).serialize());
+            self.send(new Messages.Buffinfo(self.consumableBuff.buff?.stat, self.consumableBuff.buff?.percent, buffDuration).serialize());
         }
     },
 
     applyConsumableBuff: function() {
-        if (this.consumableBuff?.buff) {
-            let buffStat = this.consumableBuff.buff.stat;
+        let buff = this.getActiveBuff(); // soon to be active ;)
+        if (buff) { 
+            let buffStat = buff.stat;
             if (buffStat === 'hp') {
-                this.maxHitPoints = Math.round(this.maxHitPoints * (100 + this.consumableBuff.buff.percent)/100);
+                this.maxHitPoints = Math.round(this.maxHitPoints * (100 + buff.percent)/100);
+                this.send(new Messages.HitPoints(this.maxHitPoints).serialize());
             }
+            //atk and exp buff also exists but it's handled in different part of the code (it doesn't directly increase stats)
         }
     },
 
     removeConsumableBuff: function() {
-        if (this.consumableBuff?.buff) {
-            let buffStat = this.consumableBuff?.buff.stat;
+        let buff = this.getActiveBuff();
+        if (buff) {
+            let buffStat = buff.stat;
             if (buffStat === 'hp') {
                 let level = this.getLevel();
                 let hp = Formulas.hp(level);
                 if (this.hitPoints > hp) {
                     this.resetHitPoints(hp);
-                    this.send(new Messages.HitPoints(this.maxHitPoints).serialize());
                 } else {
                     this.maxHitpoints = hp;
                 }
+                this.send(new Messages.HitPoints(this.maxHitPoints).serialize());
             }
         }
+        this.send(new Messages.Buffinfo(0, 0, 0).serialize()); //clears the buff data client side
+    },
+
+    getActiveBuff: function() {
+        return this.consumableBuff.buff; //can be undefined!
     }
 });

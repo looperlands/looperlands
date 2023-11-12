@@ -1,8 +1,8 @@
 const Utils = require("./utils");
 
-const rarities = {common: {chance: 40, expMultiplier: 1, speed: 20}, 
+const rarities = {common: {chance: 700, expMultiplier: 1, speed: 20}, 
                 uncommon: {chance: 250, expMultiplier: 2, speed: 15}, 
-                rare: {chance: 700, expMultiplier: 5, speed: 11}, 
+                rare: {chance: 40, expMultiplier: 5, speed: 11}, 
                 epic: {chance: 8, expMultiplier: 20, speed: 8}, 
                 legendary: {chance: 2, expMultiplier: 50, speed: 6}};
 
@@ -28,7 +28,9 @@ const Lakes = {
 };
 // only EPIC fish can be a consumable
 const ConsumableFish = {
-    hp: ["coblobster"]
+    hp: [],
+    atk: [],
+    exp: []
 };
 
 //---END CONFIG---
@@ -136,7 +138,7 @@ Lakes.getDifficulty = function(playerLevel, lakeName) {
 Lakes.isConsumable = function(fishName) {
     let retVal = false;
     Object.keys(ConsumableFish).forEach(stat => {
-        if (Array.isArray(ConsumableFish[stat]) && ConsumableFish[stat].includes(fishName) && fishDataMap[fishName]?.rarity === "rare"){
+        if (Array.isArray(ConsumableFish[stat]) && ConsumableFish[stat].includes(fishName) && fishDataMap[fishName]?.rarity === "epic"){
             retVal = stat;
         }
     });

@@ -42,6 +42,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             this.handlers[Types.Messages.SPAWNFLOAT] = this.receiveSpawnFloat;
             this.handlers[Types.Messages.DESPAWNFLOAT] = this.receiveDespawnFloat;
             this.handlers[Types.Messages.NOTIFY] = this.receiveNotify;
+            this.handlers[Types.Messages.BUFFINFO] = this.receiveBuffInfo;
 
             this.useBison = false;
             this.enable();
@@ -446,6 +447,16 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
                 this.notify_callback(text);
             }
         },
+
+        receiveBuffInfo: function(data) {
+            let stat = data[1],
+                percent = data[2],
+                expireTime = data[3];
+
+            if(this.buffInfo_callback) {
+                this.buffInfo_callback(stat, percent, expireTime);
+            }
+        },
         
         onDispatched: function(callback) {
             this.dispatched_callback = callback;
@@ -565,6 +576,10 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
 
         onNotify: function(callback) {
             this.notify_callback = callback;
+        },
+
+        onBuffInfo: function(callback) {
+            this.buffInfo_callback = callback;
         },
 
         sendHello: function(player) {

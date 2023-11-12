@@ -1101,6 +1101,10 @@ module.exports = World = cls.Class.extend({
                 if (accompliceLevel > Math.round(mobLevel * 1.25)) {
                     accompliceShare = Math.round(accompliceShare * Math.max(1 - (accompliceLevel - (mobLevel * 1.25)) * 0.1, 0.5));
                 }
+                let buff = accomplice.getActiveBuff();
+                if (buff && buff.stat === "exp"){
+                    accompliceShare = Math.round(accompliceShare * (100 + buff.percent)/100);
+                }
                 accomplice.handleExperience(accompliceShare);
                 self.pushToPlayer(accomplice, new Messages.Kill(mob, accompliceShare));
             }

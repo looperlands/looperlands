@@ -25,8 +25,6 @@ const chat = require("./chat.js");
 const quests = require("./quests/quests.js");
 const signing = require("./signing.js");
 const Lakes = require("./lakes.js");
-const { on } = require("events");
-
 const cache = new NodeCache();
 
 const LOOPWORMS_LOOPERLANDS_BASE_URL = process.env.LOOPWORMS_LOOPERLANDS_BASE_URL;

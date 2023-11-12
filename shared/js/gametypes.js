@@ -37,7 +37,8 @@ Types = {
         SPAWNFLOAT: 33,
         DESPAWNFLOAT: 34,
         CONSUMEITEM: 35,
-        NOTIFY: 36
+        NOTIFY: 36,
+        BUFFINFO: 37
     },
     
     Entities: {
