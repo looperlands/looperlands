@@ -28,6 +28,7 @@ const Lakes = require("./lakes.js");
 const cache = new NodeCache();
 
 const LOOPWORMS_LOOPERLANDS_BASE_URL = process.env.LOOPWORMS_LOOPERLANDS_BASE_URL;
+const INSTANCE_URI = process.env.INSTANCE_URI ? process.env.INSTANCE_URI : "";
 
 /**
  * Abstract Server and Connection classes
@@ -129,7 +130,8 @@ WS.socketIOServer = Server.extend({
         let http = new httpInclude.Server(app);
         
 
-        var corsAddress = self.protocol + "://" + self.host;
+        var corsAddress = self.protocol + "://" + self.host + INSTANCE_URI;
+        console.log("CORS Address", corsAddress);
         self.io = require('socket.io')(http, {
             allowEIO3: true,
             cors: {origin: corsAddress, credentials: true}
@@ -145,6 +147,13 @@ WS.socketIOServer = Server.extend({
             //console.log("New Session", id, body);
             if (body.mapId === undefined) {
                 body.mapId = "main";
+            }
+            if (body.checkpointId === undefined) {
+                // teleport request
+                if (body.x !== undefined && body.y !== undefined) {
+                    let checkpoint = self.worldsMap[body.mapId].map.findClosestCheckpoint(body.x, body.y);
+                    dao.saveAvatarCheckpointId(body.nftId, checkpoint.id);
+                }
             }
             cache.set(id, body);
             let responseJson = {

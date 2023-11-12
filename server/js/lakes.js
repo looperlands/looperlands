@@ -25,6 +25,15 @@ const Lakes = {
             coblobster: "rare"
         },
     },
+    cobFarmCityOcean: {
+        level: 7,
+        fish: {
+            cobsardine: "common",
+            cobwhiting: "uncommon",
+            cobangelfish: "rare",
+            cobstingray: "epic"
+        },
+    },
 };
 // only EPIC fish can be a consumable
 const ConsumableFish = {
