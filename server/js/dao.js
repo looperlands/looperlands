@@ -373,9 +373,8 @@ exports.saveLootEvent = async function(avatarId, itemId, amount) {
     LOOT_QUEUE_INTERVAL = setInterval(processLootEventQueue, 1000 * 30);
   }
 
+  LOOT_EVENTS_QUEUE.push({avatarId: avatarId, itemId: itemId, amount})
   if (Collectables.isCollectable(itemId)) {
-    LOOT_EVENTS_QUEUE.push({avatarId: avatarId, itemId: itemId, amount})
-  } else {
     const options = {
       headers: {
         'X-Api-Key': API_KEY
