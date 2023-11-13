@@ -304,6 +304,21 @@ module.exports = Mapx = cls.Class.extend({
         return Object.keys(this.triggerDoors).find(key => 
             this.triggerDoors[key].find((element) => 
             element.x === x && element.y === y));
+    },
+
+    findClosestCheckpoint: function(x, y) {
+        let closestCheckpoint = null;
+        let closestDistance = Infinity;
+
+        for (let id in this.checkpoints) {
+            let checkpoint = this.checkpoints[id];
+            let distance = Utils.distanceTo(x, y, checkpoint.x, checkpoint.y);
+            if (distance < closestDistance) {
+                closestDistance = distance;
+                closestCheckpoint = checkpoint;
+            }
+        }
+        return closestCheckpoint;
     }
 });
 

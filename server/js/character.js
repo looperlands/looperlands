@@ -108,4 +108,8 @@ module.exports = Character = Entity.extend({
     isInCombat: function() {
         return;
     },
+
+    getActiveBuff: function() {
+        return;
+    }
 });

@@ -13,6 +13,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             this.ready = false;
             this.started = false;
             this.hasNeverStarted = true;
+            this.buffTickInterval = null;
         
             this.renderer = null;
             this.updater = null;
@@ -3480,6 +3481,72 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 "NFT_f68ba5d5edd3033fcc8607c86a046efa9a90bb59cf0098e0c5c08c26be1c6f36",
                                 "NFT_fd242ec983bea3a3deaf67e555bb399a61ee8b58a6b22494f027d0790cb9f399",
                                 "NFT_fefcaa895766a91d92b48c270924df16c69cff76daa4472d6691e8da33a365a5",
+                                "NFT_02b45b1fd8e25c8588b6d0d86e0eb6b98df95ad2d778c2ebdabefeb45d90f58e",
+                                "NFT_040f70cce71309e3d212fd735fdf23c990a9ae5624e322d0f6fd676fbce9592f",
+                                "NFT_11e68ea98a3ce57a0b2897796267e0bb7f0768b1801f03f739c469b16a7a9b2b",
+                                "NFT_1bfc02f187bba6d0f3c5a9bee7498f0603cbee6f5242c957be711deb31fb174b",
+                                "NFT_201673b26374953fb7ee0ccddaf08a1e2300d80ce4b90f18352b6318ff5903df",
+                                "NFT_4b8fc2f1eec7445bc1d8dcfa395e5ec201b102b4380163a2c0871b3f0dc45071",
+                                "NFT_64d7e7f0cef76a754845fc17ce9ea0746c6e4a4e75ce2a04b7613898ed05775f",
+                                "NFT_66c595042171a17d84b7e690d886558ebc907b29656fad29dbfb696a4f06286e",
+                                "NFT_81356e280eb689c38cfc77ab537e9752f612450c18da62fff636ed1a352fa73b",
+                                "NFT_83376e8e30bc3d94da9cd7b40e98a2dc3a512f1a25b9300e577f94b84b05bc72",
+                                "NFT_897f27e73c7eef32eaaa150d90da97db63d47029e21f30f10197112a4ad2f3b9",
+                                "NFT_b6225f91dba9bc993054fb0784776880a6759f4018a72cd1ab9a6700e66a7246",
+                                "NFT_c8ae87de9609c4679c305c00f1e7c117ce28189a5104b44983c79dd8b3568231",
+                                "NFT_cea867338be83973a7e7ab5558b25569cc0ed83eda6152a81749d6f2ac2a5a4c",
+                                "NFT_d1ef2464b2704231173ee95fec90cd2b099277f8aba2acc3b1beeabcf76d2192",
+                                "NFT_dce4fd3e8fa8c0e42e5052d99fe9b3a03000e387947cffe40c1589dbdf47afc2",
+                                "item-NFT_dce4fd3e8fa8c0e42e5052d99fe9b3a03000e387947cffe40c1589dbdf47afc2",
+                                "NFT_ef3558473adb946a0c5680678b8b302a5753985ffcd684f1a35a953102a17d95",
+                                "NFT_f4b48fbb38c7f4b273e3e81cd2835fbc7c3f82e3eb2b0ff64d8ebf3b75036f07",
+                                "NFT_fdad05e9952744bb200feb27681b26831f425ff3a0294ffdea69d738e005e4cf",
+                                "NFT_0019ea06cdec0085f338a16087ecab96bb0f2ee86274a7a40b2bdedd4fe02ca9",
+                                "NFT_08778425645e51ddbedea5528c38e4fa3e9163b95a1d19d908b4cd6589729d22",
+                                "NFT_20913a887415201f64f37bc009bae3d9ac4b6b53c09475dbea59a3e2e4ac49e3",
+                                "NFT_465e66926f5400b415ae4e28484e6282b5745800a216ffe47f9122fcfeef5db0",
+                                "NFT_6f3e19e98aeeccbb963449f77517eb20d60fd3f568088fd0c05bc4a33f41759b",
+                                "NFT_71a90d35b1d4dbe7a26725448869cd893f426b08cffd821bdb7fa514c7aa93ae",
+                                "NFT_779f70b1810c28ace9cf464a9fc7c7a4cc20abb8aca58c24be005b02f54709cb",
+                                "NFT_79ba484820b3e94b62b9d087f2f64349c0d89e8d9668cbd8d48330f01353fc2c",
+                                "NFT_7b7598dc6a71da53aed165b0a91787bfb03782a2fd7ebeff303ada1a27efeccf",
+                                "NFT_7b9af38fc424146b984901fd1d87651369dbd6e95d256c8090eb9b0e97a3bd12",
+                                "NFT_7d502dd0ff90e92eaeaf48c0677d1c79bb62c3c278bd76cba11f53ce3ca0ea6f",
+                                "NFT_8c1e4874f2f8545ab5a074638cb22f45d160d1f58501cb0507ed0de579821439",
+                                "NFT_9400e0cc43dcaaa4d4e60e256bae46db6ecaca0c823f5d4189af0ac0cca73bcc",
+                                "NFT_a7d10785c8a1ec50dc45f530307ddce741a5da51b1fad73385a35f4df5032eee",
+                                "NFT_c2d3a655929115f0bf66bce4382cc2b53abb4d3f1db2e4e49986d69668c8ba0d",
+                                "NFT_d9c3586c9dcc53bd601973beb85031bcdf881bfff789eee689a0d9863dc39052",
+                                "NFT_e396dfce28de08ebbb7c57c80c73b2f8b8f5c2f9d43b7daae05a1b1d45d08171",
+                                "NFT_e3ad6e82ffa354b8e5385786f05ad9cec90f5b6bb5ff41b3db15fa4ebdd7cf1d",
+                                "NFT_006a3417dde38a6f122c4394d5715c4f101825a9b004954d043c8c994819cc13",
+                                "NFT_31ae3eccc28743d169cdd62e9509e34a5919af5974a6317eaf846a437e2c6eee",
+                                "NFT_3bb6b533d4e05464991186894fbbc2f3c60842d7d3e3c34259ef3eb3553bd492",
+                                "NFT_3c4653cb4a607ce5bec6398389ce2164a97f41f2c065532cbc5e0aac2970c49e",
+                                "NFT_5303df668ddc4549c4b3d59310dc9d731b405f8aabbd129a7980060050138d75",
+                                "NFT_6e22066daeec2faebd94bf77ea15b02b252a2103b8ca1d852e3bf5eca5679fae",
+                                "NFT_86e83bc1e5305cc1a5b73e47c12588897aa1e42cd8421b9661b683193ecb82fd",
+                                "NFT_995b3c4f1a7cffdadfd3bcc04b45c3c4fd1f07050815c8596a5b9eeb31264756",
+                                "NFT_bd3a679e00af4324589e1a93c0d94525a66196ff92f24f205424f6e99451d3f9",
+                                "NFT_bd98424de9eb4879dc9f81c176eb3d40babe88d180a0b980b3fd0352de436e4e",
+                                "NFT_0aaff5c8c64ce5a341ea3b52e34bdc3866aa72fe5ba914ab00161c930ecaaa56",
+                                "NFT_1b206a7dfc8adb609ba8a1f9b813fc280f8b6a54a3518e556dfc55e465269dc6",
+                                "NFT_505de9da813a1704bb8b9edc598ac47be553a60f276668327043a0501b14ea69",
+                                "NFT_5157be2642c7ef1a0b26ac2efb8425c1133fc3d6fe561626ce9795ab43ca5101",
+                                "NFT_a51dc01ae15b270b1943bc7620613353d574b88be0884b35d4e6424036304bc9",
+                                "NFT_bc14160717ba54414c734ce62b7f6544b33f19eba5ba46550463bbca16cffab2",
+                                "NFT_c82a47f5e026206b495dd42f0969ca6f59ffdf7c60e3d5f8ebf9dac8c6cb4f64",
+                                "NFT_d8abdc7944997f90cbc5517362b16eec474fb67608be483e40d38b911dda5c89",
+                                "NFT_0bcfa97a6666cd85e924a974a648b234df3b3548bb0f904cca0d67def705e289",
+                                "NFT_2ba2e80ef30d985bdeb21b21201db7e1c2798b8683d0a9a2cfb6acf74a133098",
+                                "NFT_4b46fea895bea05ee145507d72f3f3924cc1b5a99e2ddad9bb4dd92678df7a49",
+                                "NFT_61e06ddba4a0c7ca060b3d305754d7e2b6cafdb253cfc2d7f553963317fe274c",
+                                "NFT_6a5ce33eb5d2a1ab667e6765d7ca87b4144d57e003ed46038794b2c2dca7109d",
+                                "NFT_788967dcfe4515e5d6279d55ef516d685ccb8a33f5ed8f560c0e27a092001ce8",
+                                "NFT_897b7d166200f1b69907776eb3ef787b22cbc6dee1d713786c314d1bdb7b746d",
+                                "NFT_945781805ae860c4a131f17a5635466bfe094c51a7ccccc1360557a0952ce7e4",
+                                "NFT_a44014fe2165233aefcf1adb079c1b572b1b2b919a2f3ad637205a3b528b245f",
+                                "NFT_b2bb74a8bfee3366cd7470e8be52b5abdb8f924869bc4aec9f58c84b5ca594cc",
                                 // @nextSpriteLine@
                             ];
         },
@@ -4563,7 +4630,10 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                             }).finally(function(e) {
                                 _self.doorCheck = false;
                             });
-                        } else {
+                        } else if (dest.http_redirect !== undefined) {
+                            window.location.href = dest.http_redirect;
+                        }
+                        else {
                             checkTrigger();
                         }
                     }
@@ -5107,7 +5177,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     self.audioManager.playSound("chat");
                 });
 
-                self.client.onNotification(self.handleNotify);
                 self.client.onSound(self.handleSound);
                 self.client.onMusic(self.handleMusic);
                 self.client.onLayer(self.handleLayer);
@@ -5180,6 +5249,16 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
                 self.client.onDespawnFloat(function(id) {
                     self.removeFloat(id);
+                });
+
+                self.client.onNotify(function(text) {
+                    if(text){
+                        self.showNotification(text);
+                    }
+                });
+
+                self.client.onBuffInfo(function(stat, percent, duration) {
+                    self.updateBuffInfo(stat, percent, duration);
                 });
 
                 self.gamestart_callback();
@@ -6630,6 +6709,38 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 self.audioManager.playSound("fishingfail");
                 self.showNotification("Failed to catch " + this.fishingData.fishName);
                 self.stopFishing(false, 2000);
+            }
+        },
+
+        msToTime: function(duration) {
+            var seconds = parseInt((duration/1000)%60),
+                minutes = parseInt((duration/(1000*60))%60);
+            
+            seconds = (seconds < 10) ? "0" + seconds : seconds;
+            
+            return minutes + ":" + seconds;
+        },
+
+        updateBuffInfo: function(stat, percent, duration){
+            let self = this;
+            clearInterval(self.buffTickInterval);
+            
+            if (duration && duration > 0){ //expireTime === 0 means the buff got cancelled by the server
+                self.showNotification("You have " + percent + "% more "+ stat + " for " + self.msToTime(duration) + " min");
+                const buffExpiration = new Date().getTime() + duration;
+                self.buffTickInterval = setInterval(function() {
+                    let durationLeft = buffExpiration - new Date().getTime();
+                    let buffInfo;
+                    if (durationLeft > 0){
+                        buffInfo = "Current buff: " + percent +"% " + stat + " - time left: " + self.msToTime(durationLeft);
+                    } else {
+                        buffInfo = "";
+                        clearInterval(self.buffTickInterval);
+                    }
+                    $("#buffInfo").html(buffInfo);
+                }, 1000);
+            } else {
+                $("#buffInfo").html("");
             }
         }
     });

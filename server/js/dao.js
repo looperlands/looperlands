@@ -494,8 +494,7 @@ exports.loadAvatarGameData = async function(avatarId, retry) {
     const response = await axios.get(url, options);
 
     let responseData = response.data[0];
-
-    let mobKills, items = {}, quests = {};
+    let mobKills, items = {}, quests = {}, consumables = {};
 
     if (responseData.mobJson) {
       mobKills = responseData.mobJson.reduce((avatarMobKills, mobKills) => {
@@ -542,10 +541,21 @@ exports.loadAvatarGameData = async function(avatarId, retry) {
       }, {});
     }
 
+    if (responseData.itemConsumableJson) {
+      consumables = responseData.itemConsumableJson.reduce((avatarConsumes, item) => {
+        const itemId = item.itemConsumableId;
+        if (itemId) {
+          avatarConsumes[itemId] = item.iCount;
+        }
+        return avatarConsumes;
+      }, {});
+    }
+
     const data = {
       mobKills: mobKills,
       items: items,
-      quests: quests
+      quests: quests,
+      consumables: consumables
     }
 
     // console.log("loadAvatarGameData", data);
@@ -591,6 +601,23 @@ exports.setQuestStatus = async function(avatarId, questId, status, retry) {
   }
 }
 
+exports.saveConsumable = async function(nft, item, qty) {
+  const options = {
+    headers: {
+      'X-Api-Key': API_KEY,
+      'Content-Type': 'application/json'
+    }
+  }
+  const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/saveConsumable2.php`;
+  const sData = {avatarId: nft, itemId: item, quantity: qty};
+  try {
+    let response = await axios.post(url, sData, options);
+    return response.data;
+  } catch (error) {
+    console.error("saveConsumable", error);
+    return { "error": "Error saving consumable" };
+  }
+}
 
 exports.updateExperience = updateExperience;
 exports.saveCharacterData = saveCharacterData;
