@@ -413,24 +413,6 @@ WS.socketIOServer = Server.extend({
             res.status(200).json({inventory: inventory, special: special, consumables: consumables});
         });
 
-        app.get("/session/:sessionId/consumableInventory", async (req, res) => {
-            const sessionId = req.params.sessionId;
-            const sessionData = cache.get(sessionId);
-            if (sessionData === undefined) {
-                //console.error("Session data is undefined for session id, params: ", sessionId, req.params);
-                res.status(404).json({
-                    status: false,
-                    "error" : "session not found",
-                    user: null
-                });
-                return;
-            }
-
-            const inventory = sessionData.gameData.items;
-            res.status(200).json(inventory);
-        });
-
-
         app.get("/session/:sessionId/quests", async (req, res) => {
             const sessionId = req.params.sessionId;
             const sessionData = cache.get(sessionId);
