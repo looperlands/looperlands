@@ -503,7 +503,6 @@ module.exports = World = cls.Class.extend({
         this.addEntity(fieldEffect);
         this.fieldEffects[fieldEffect.id] = fieldEffect;
 
-        fieldEffect.initDamageCallback(self.doAoe.bind(self));
         fieldEffect.initContinousDamageCallback(self.doAoe.bind(self));
         fieldEffect.initSingleHitCallback(self.doAoe.bind(self), self.despawn.bind(self));
 
