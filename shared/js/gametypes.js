@@ -35,7 +35,10 @@ Types = {
         QUEST_COMPLETE: 31,
         FISHINGRESULT: 32,
         SPAWNFLOAT: 33,
-        DESPAWNFLOAT: 34
+        DESPAWNFLOAT: 34,
+        CONSUMEITEM: 35,
+        NOTIFY: 36,
+        BUFFINFO: 37
     },
     
     Entities: {

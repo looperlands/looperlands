@@ -13,6 +13,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             this.ready = false;
             this.started = false;
             this.hasNeverStarted = true;
+            this.buffTickInterval = null;
         
             this.renderer = null;
             this.updater = null;
@@ -5213,6 +5214,16 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 self.client.onDespawnFloat(function(id) {
                     self.removeFloat(id);
                 });
+
+                self.client.onNotify(function(text) {
+                    if(text){
+                        self.showNotification(text);
+                    }
+                });
+
+                self.client.onBuffInfo(function(stat, percent, duration) {
+                    self.updateBuffInfo(stat, percent, duration);
+                });
             
                 self.gamestart_callback();
             
@@ -6602,6 +6613,38 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 self.audioManager.playSound("fishingfail");
                 self.showNotification("Failed to catch " + this.fishingData.fishName);
                 self.stopFishing(false, 2000);
+            }
+        },
+
+        msToTime: function(duration) {
+            var seconds = parseInt((duration/1000)%60),
+                minutes = parseInt((duration/(1000*60))%60);
+            
+            seconds = (seconds < 10) ? "0" + seconds : seconds;
+            
+            return minutes + ":" + seconds;
+        },
+
+        updateBuffInfo: function(stat, percent, duration){
+            let self = this;
+            clearInterval(self.buffTickInterval);
+            
+            if (duration && duration > 0){ //expireTime === 0 means the buff got cancelled by the server
+                self.showNotification("You have " + percent + "% more "+ stat + " for " + self.msToTime(duration) + " min");
+                const buffExpiration = new Date().getTime() + duration;
+                self.buffTickInterval = setInterval(function() {
+                    let durationLeft = buffExpiration - new Date().getTime();
+                    let buffInfo;
+                    if (durationLeft > 0){
+                        buffInfo = "Current buff: " + percent +"% " + stat + " - time left: " + self.msToTime(durationLeft);
+                    } else {
+                        buffInfo = "";
+                        clearInterval(self.buffTickInterval);
+                    }
+                    $("#buffInfo").html(buffInfo);
+                }, 1000);
+            } else {
+                $("#buffInfo").html("");
             }
         }
     });

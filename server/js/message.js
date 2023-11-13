@@ -272,3 +272,27 @@ Messages.DespawnFloat = Message.extend({
                 this.playerId];
     }
 });
+
+Messages.Notify = Message.extend({
+    init: function(text) {
+        this.text = text;
+    },
+    serialize: function() {
+        return [Types.Messages.NOTIFY,
+                this.text];
+    },
+});
+
+Messages.Buffinfo = Message.extend({
+    init: function(buffstat, buffPercent, buffDuration) {
+        this.stat = buffstat;
+        this.percent = buffPercent;
+        this.duration = buffDuration;
+    },
+    serialize: function() {
+        return [Types.Messages.BUFFINFO,
+                this.stat,
+                this.percent,
+                this.duration];
+    },
+});
