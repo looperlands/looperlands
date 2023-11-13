@@ -2,6 +2,7 @@ const LOOPWORMS_LOOPERLANDS_BASE_URL = process.env.LOOPWORMS_LOOPERLANDS_BASE_UR
 const API_KEY = process.env.LOOPWORMS_API_KEY;
 const axios = require('axios');
 const NodeCache = require( "node-cache" );
+const Collectables = require('./collectables.js');
 const daoCache = new NodeCache();
 
 const MAX_RETRY_COUNT = 5;
@@ -372,7 +373,7 @@ exports.saveLootEvent = async function(avatarId, itemId, amount) {
     LOOT_QUEUE_INTERVAL = setInterval(processLootEventQueue, 1000 * 30);
   }
 
-  if (Types.isExpendableItem(Types.getKindAsString(itemId))) {
+  if (Collectables.isCollectable(itemId)) {
     LOOT_EVENTS_QUEUE.push({avatarId: avatarId, itemId: itemId, amount})
   } else {
     const options = {

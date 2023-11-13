@@ -5721,7 +5721,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
 
             if(this.map.isColliding(x, y)) {
-                console.log('is colliding');
                 return path;
             }
         
