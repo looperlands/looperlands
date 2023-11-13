@@ -4463,6 +4463,8 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                     } else {
                                         self.audioManager.playSound("loot");
                                     }
+                                } else {
+                                    console.log("You can't loot weapons because you have a NFT weapon equipped.");
                                 }
                             } catch (e) {
                                 if (e instanceof Exceptions.LootException) {
@@ -4997,16 +4999,13 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
                 self.client.onEntityMove(function(id, x, y) {
                     var entity = null;
+                    entity = self.getEntityById(id);
 
-                    //if(id !== self.playerId) {
-                        entity = self.getEntityById(id);
-
-                        if(entity) {
-                            entity.disengage();
-                            entity.idle();
-                            self.makeCharacterGoTo(entity, x, y);
-                        }
-                    //}
+                    if(entity) {
+                        entity.disengage();
+                        entity.idle();
+                        self.makeCharacterGoTo(entity, x, y);
+                    }
                 });
             
                 self.client.onEntityDestroy(function(id) {
