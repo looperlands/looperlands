@@ -4614,7 +4614,10 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                             }).finally(function(e) {
                                 _self.doorCheck = false;
                             });
-                        } else {
+                        } else if (dest.http_redirect !== undefined) {
+                            window.location.href = dest.http_redirect;
+                        }
+                        else {
                             checkTrigger();
                         }
                     }

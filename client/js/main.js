@@ -227,6 +227,7 @@ define(['jquery', 'app'], function($, App) {
                 } else {
                     $("#welcomeMessage").text("Error loading your user data. Please try again later.");
                 }
+                window.location.href = "https://looperlands.io";
             });
         });
     };
