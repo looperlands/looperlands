@@ -126,7 +126,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 "item-ICESSENCE",
                                 "item-FORGEDSWORD",
                                 "item-BANNER",
-                                "item-tombstone",
                                 "item-NFT_344a35ef18eafc0708b2e42b14443db0990fa39977d9347fb256905cbd5ba819",
                                 // @nextObjectLine@
                                 "NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6",

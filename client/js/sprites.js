@@ -71,7 +71,6 @@ define(['text!../sprites/agent.json',
         'text!../sprites/item-ICESSENCE.json',
         'text!../sprites/item-FORGEDSWORD.json',
         'text!../sprites/item-BANNER.json',
-        'text!../sprites/item-tombstone.json',
         'text!../sprites/item-NFT_344a35ef18eafc0708b2e42b14443db0990fa39977d9347fb256905cbd5ba819.json',
         // @nextObjectImport@
         'text!../sprites/king.json',
