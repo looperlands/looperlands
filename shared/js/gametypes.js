@@ -36,9 +36,15 @@ Types = {
         FISHINGRESULT: 32,
         SPAWNFLOAT: 33,
         DESPAWNFLOAT: 34,
+        NOTIFY: 35,
+        FOLLOW: 36,
+        CAMERA: 37,
+        SOUND: 38,
+        MUSIC: 39,
+        LAYER: 40,
+        ANIMATE: 41,
         CONSUMEITEM: 35,
-        NOTIFY: 36,
-        BUFFINFO: 37
+        BUFFINFO: 36
     },
     
     Entities: {

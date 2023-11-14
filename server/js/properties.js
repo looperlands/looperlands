@@ -969,7 +969,7 @@ var Properties = {
 
     //Items
     coblog: {
-        respawnDelay: 60000
+        respawnDelay: 60000,
     }
 };
 
@@ -1037,5 +1037,26 @@ Properties.getWeaponMod = function(kind) {
     retMod = Properties[Types.getKindAsString(kind)].weaponMod;
     return retMod !== undefined ? retMod : 1;
 };
+
+Properties.isCollectable = function(kind) {
+    retCollectable = Properties[Types.getKindAsString(kind)]?.collectable;
+    return retCollectable !== undefined ? retCollectable : false;
+}
+
+Properties.isConsumable = function(kind) {
+    retConsumable = Properties[Types.getKindAsString(kind)]?.consumable;
+    return retConsumable !== undefined ? retConsumable : false;
+}
+
+Properties.getCollectableImageName = function(kind) {
+    return 'item-' + Types.getKindAsString(kind);
+}
+
+Properties.consume = function(kind, player) {
+    onConsume = Properties[Types.getKindAsString(kind)]?.onConsume
+    if(onConsume !== undefined) {
+        onConsume(player);
+    }
+}
 
 module.exports = Properties;

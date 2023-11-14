@@ -60,7 +60,6 @@ function(Camera, Item, Character, Player, Timer, Mob) {
     
         setTileset: function(tileset) {
             this.tileset = tileset;
-            console.log(tileset);
             this.worker.postMessage({type: "setTileset", src: tileset.src});
         },
     
@@ -396,7 +395,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                 
                     this.context.drawImage(sprite.image, x, y, w, h, ox, oy, dw, dh);
 
-                    if(entity instanceof Item && entity.kind !== Types.Entities.CAKE) {
+                    if(entity instanceof Item && entity.kind !== Types.Entities.CAKE && !entity.nosparks) {
                         var sparks = this.game.sprites["sparks"],
                             anim = this.game.sparksAnimation,
                             frame = anim.currentFrame,
@@ -592,6 +591,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             if(entity.name && (entity instanceof Player || entity instanceof Mob)) {
                 var color = (entity.id === this.game.playerId) ? "#fcda5c" : this.getHpIndicatorColor(entity);
                 let entityData = entity.name;
+
                 if (entity.level !== undefined && entity.level !== null) { //currently it's null on revive, as the player doesn't get welcome message from the server
                     entityData = entity.level + " " + entityData;
                 }
@@ -680,6 +680,29 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                 tilesetwidth = this.tileset.width / m.tilesize;
         
                 return {"type": "render", id: "high", tiles: this.game.visibleHighTiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: true};
+        },
+
+        drawToggledLayers: function(ctx, highTile, animated) {
+            if(highTile === undefined) {
+                highTile = false;
+            }
+            var self = this,
+                m = this.game.map,
+                tilesetwidth = this.tileset.width / m.tilesize;
+
+            _.forEach(Object.keys(self.game.map.hiddenLayers), function(layerName) {
+                if(self.game.toggledLayers[layerName] === true) {
+                    let layer = self.game.map.hiddenLayers[layerName];
+                    self.game.forEachVisibleTileIndex(function(tileIndex) {
+                        if(layer[tileIndex] === null || layer[tileIndex] === undefined) {
+                            return;
+                        }
+                        if(highTile === m.isHighTile(layer[tileIndex]) && animated === m.isAnimatedTile(layer[tileIndex])) {
+                            self.drawTile(ctx, layer[tileIndex] - 1, self.tileset, tilesetwidth, m.width, tileIndex);
+                        }
+                    }, 1);
+                }
+            });
         },
 
         drawBackground: function(ctx, color) {
@@ -834,6 +857,12 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             this.clearScreen(this.context);
             this.context.save();
             this.setCameraView(this.context);
+
+            this.renderStaticCanvases();
+            this.drawToggledLayers(this.context, false, false);
+            this.drawAnimatedTiles();
+            this.drawToggledLayers(this.context, false, true);
+
             if(this.game.started) {
                 this.drawSelectedCell();
                 this.drawTargetCell();
@@ -844,6 +873,12 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             this.drawEntities();
             this.drawFloats();
             this.drawCombatInfo();
+
+            this.drawHighTiles(this.context);
+            this.drawToggledLayers(this.context, true, false);
+            this.drawHighAnimatedTiles();
+            this.drawToggledLayers(this.context, true, true);
+
             this.context.restore();
             // Overlay UI elements
             this.drawCursor();

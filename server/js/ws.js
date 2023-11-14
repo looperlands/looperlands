@@ -25,6 +25,7 @@ const chat = require("./chat.js");
 const quests = require("./quests/quests.js");
 const signing = require("./signing.js");
 const Lakes = require("./lakes.js");
+const Collectables = require('./collectables.js');
 const cache = new NodeCache();
 
 const LOOPWORMS_LOOPERLANDS_BASE_URL = process.env.LOOPWORMS_LOOPERLANDS_BASE_URL;
@@ -402,8 +403,10 @@ WS.socketIOServer = Server.extend({
 
             let consumables = sessionData.gameData?.consumables || {};
             Object.keys(consumables).forEach(item => {
-                if (!item || !Lakes.isConsumable(item) || consumables[item] <= 0){
+                if (!item || !Collectables.isCollectable(item) || consumables[item] <= 0){
                     delete consumables[item];
+                } else {
+                    consumables[item] = {qty: consumables[item], consumable: Collectables.isConsumable(item), image: Collectables.getCollectableImageName(item)};
                 }
             });
 
@@ -718,7 +721,9 @@ WS.socketIOServer = Server.extend({
                     user: null
                 });
             } else {
-                let msgText = quests.handleNPCClick(cache, sessionId, npcId);
+                let msgText = quests.handleNPCClick(cache, sessionId, parseInt(npcId));
+                const sessionData = cache.get(sessionId);
+                self.worldsMap[sessionData.mapId].npcTalked(npcId, msgText, sessionData)
                 res.status(202).json(msgText);
             }
         });

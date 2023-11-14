@@ -1,0 +1,46 @@
+const Lakes = require("./lakes.js");
+const Properties = require("./properties.js");
+
+const Collectables = {
+    providers: [Lakes, Properties],
+    isCollectable: function (item) {
+        for (var i = 0; i < this.providers.length; i++) {
+            if (this.providers[i].isCollectable(item)) {
+                return true;
+            }
+        }
+        return false;
+    },
+
+    isConsumable: function (item) {
+        for (var i = 0; i < this.providers.length; i++) {
+            if (this.providers[i].isConsumable(item)) {
+                return true;
+            }
+        }
+        return false;
+    },
+
+    getCollectableImageName: function(item) {
+        for (var i = 0; i < this.providers.length; i++) {
+            if (this.providers[i].isCollectable(item)) {
+                if(!this.providers[i].getCollectableImageName) {
+                    return item;
+                }
+                return this.providers[i].getCollectableImageName(item);
+            }
+        }
+        return item;
+    },
+
+    consume: function (item, player) {
+        for (var i = 0; i < this.providers.length; i++) {
+            if (this.providers[i].isConsumable(item) && this.providers[i].consume !== undefined) {
+                this.providers[i].consume(item, player);
+                return;
+            }
+        }
+    }
+};
+
+module.exports = Collectables;

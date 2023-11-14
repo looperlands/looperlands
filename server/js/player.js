@@ -17,13 +17,14 @@ const NFTWeapon = require("./nftweapon.js");
 const NFTSpecialItem = require("./nftspecialitem.js");
 const PlayerEventBroker = require("./quests/playereventbroker.js");
 const Lakes = require("./lakes.js");
+const Collectables = require("./collectables.js");
 
 const LOOPWORMS_LOOPERLANDS_BASE_URL = process.env.LOOPWORMS_LOOPERLANDS_BASE_URL;
 const BASE_SPEED = 120;
 const BASE_ATTACK_RATE = 800;
-
-
 const XP_BATCH_SIZE = 500;
+
+const mapflows = require("./flows/mapflow.js");
 
 module.exports = Player = Character.extend({
     init: function(connection, worldServer) {
@@ -49,7 +50,7 @@ module.exports = Player = Character.extend({
 
         this.playerEventBroker = new PlayerEventBroker.PlayerEventBroker(this);
 
-        this.connection.listen(function(message) {
+        this.connection.listen(async function(message) {
 
             var action = parseInt(message[0]);
 
@@ -104,7 +105,6 @@ module.exports = Player = Character.extend({
                     self.updatePosition();
                 }
 
-
                 self.server.addPlayer(self);
                 self.server.enter_callback(self);
 
@@ -123,6 +123,16 @@ module.exports = Player = Character.extend({
                 discord.sendMessage(`Player ${self.name} joined the game.`);
                 dao.saveAvatarMapId(playerCache.nftId, playerCache.mapId);
                 self.playerEventBroker.setPlayer(self);
+
+                await mapflows.loadFlow(playerCache.mapId, self.playerEventBroker, self.server);
+                if(self.flowInterval) {
+                    clearInterval(self.flowInterval);
+                }
+                self.flowInterval = setInterval(async function() {
+                    await mapflows.loadFlow(playerCache.mapId, self.playerEventBroker, self.server);
+                }, 60 * 1000);
+
+                self.playerEventBroker.spawnEvent(self, playerCache.checkpointId);
             }
             else if(action === Types.Messages.WHO) {
                 message.shift();
@@ -429,19 +439,25 @@ module.exports = Player = Character.extend({
 
                         if(!self.area || self.area.id !== trigger.id) {
                             trigger.addToArea(self);
-                            self.server.activateTrigger(trigger.trigger);
+                            self.playerEventBroker.enteredArea(trigger);
+                            if(trigger.trigger) {
+                                self.server.activateTrigger(trigger.trigger);
+                            }
                         }
                     } else {
                         trigger.removeFromArea(self);
-                        if(trigger.delay) {
-                            self.triggerDeactivationTimer = setTimeout(() => {
-                                if(trigger.isEmpty()) {
+                        self.playerEventBroker.leftArea(self, trigger);
+                        if(trigger.trigger) {
+                            if (trigger.delay) {
+                                self.triggerDeactivationTimer = setTimeout(() => {
+                                    if (trigger.isEmpty()) {
+                                        self.server.deactivateTrigger(trigger.trigger);
+                                    }
+                                }, trigger.delay);
+                            } else {
+                                if (trigger.isEmpty()) {
                                     self.server.deactivateTrigger(trigger.trigger);
                                 }
-                            }, trigger.delay);
-                        } else {
-                            if(trigger.isEmpty()) {
-                                self.server.deactivateTrigger(trigger.trigger);
                             }
                         }
                     }
@@ -834,6 +850,8 @@ module.exports = Player = Character.extend({
                 let msg = new Messages.QuestComplete(quest.name, quest.endText, xpReward, quest.medal);
                 this.server.pushToPlayer(this, msg);
                 this.completedQuestsIDs.push(quest.id);
+
+                this.playerEventBroker.questCompleteEvent(quest, xpReward);
             }
         }
     },
@@ -865,12 +883,13 @@ module.exports = Player = Character.extend({
             gameData.consumables = {};
         }
         let itemCount = gameData.consumables[item];
-        if (itemCount > 0 && Lakes.isConsumable(item)) {
+        if(itemCount > 0 && Collectables.isConsumable(item)) {
             this.getFishBuff(item);
+            Collectables.consume(item, this);
             dao.saveConsumable(this.nftId, item, -1);
             gameData.consumables[item] = itemCount - 1;
             cache.gameData = gameData;
-            this.server.server.cache.set(this.sessionId, cache); 
+            this.server.server.cache.set(this.sessionId, cache);
         }
     },
 

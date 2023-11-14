@@ -262,6 +262,19 @@ footer div  {display:inline-block;}
 
 #death p em, #settings p em {display:block;font-style:normal;}
 
+#inventory .item {
+    text-align: center;
+    width: 42px;
+    display: inline-block;
+    border-radius: 4px;
+    padding: 5px;
+    line-height: 25px !important;
+    margin-top: 5px;
+}
+#inventory .item:hover {
+    background: #d9c399;
+}
+
 /* Magic Parchment */
 
 .parchment-left {position:absolute;top:0;left:0%;}
@@ -676,7 +689,7 @@ footer div  {display:inline-block;}
     #bar-container {height:34px;top:-2px;background-size:960px;}
 
     #healthbar {height:26px;background-position:0 -34px;width:204px;top:6px;background-size:960px;z-index:20;}
-    #hitpoints {width:0px;height:16px;top:8px;left:22px;z-index:10;position:absolute;}
+    #hitpoints {width:0px;height:20px;top:8px;left:22px;z-index:10;position:absolute;}
 
     #fishingbar {width:48px;height:300px;}
     #fishingtarget {margin-top:0px;height:0px;width:32px;left:8px; position:absolute; border-top: 2px solid #55b000; border-bottom: 2px solid #55b000;}
@@ -1013,7 +1026,7 @@ footer div  {display:inline-block;}
     #bar-container {height:17px;top:-1px;background-size:480px;}
 
     #healthbar {height:13px;background-position:0 -17px;width:102px;top:3px;background-size:480px;z-index:20;}
-    #hitpoints {width:0px;height:11px;top:4px;left:11px;z-index:10;position:absolute;}
+    #hitpoints {width:0px;height:5px;top:4px;left:11px;z-index:10;position:absolute;}
 
     #fishingbar {width:24px;height:150px;}
     #fishingtarget {margin-top:0px;height:0px;width:16px;left:4px; position:absolute; border-top: 1px solid #55b000; border-bottom: 1px solid #55b000;}

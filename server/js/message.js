@@ -247,6 +247,68 @@ Messages.QuestComplete = Message.extend({
     }
 });
 
+Messages.Follow = Message.extend({
+    init: function(entity) {
+        this.entity = entity
+    },
+    serialize: function() {
+        return [Types.Messages.FOLLOW,
+            this.entity.id,
+        ];
+    }
+});
+
+Messages.Camera = Message.extend({
+    init: function(x, y) {
+        this.x = x;
+        this.y = y;
+    },
+    serialize: function() {
+        return [Types.Messages.CAMERA,
+            this.x,
+            this.y,
+        ];
+    }
+});
+
+Messages.Sound = Message.extend({
+    init: function(sound) {
+        this.sound = sound;
+    },
+    serialize: function() {
+        return [Types.Messages.SOUND, this.sound];
+    }
+})
+
+Messages.Music = Message.extend({
+    init: function(music) {
+        this.music = music;
+    },
+    serialize: function() {
+        return [Types.Messages.MUSIC, this.music];
+    }
+})
+
+Messages.Layer = Message.extend({
+    init: function(layer, show) {
+        this.layer = layer;
+        this.show = show
+    },
+    serialize: function() {
+        return [Types.Messages.LAYER, this.layer, this.show];
+    }
+})
+
+Messages.Animate = Message.extend({
+    init: function(entity, animation) {
+        this.entity = entity;
+        this.animation = animation
+    },
+    serialize: function() {
+        return [Types.Messages.ANIMATE, this.entity, this.animation];
+    }
+})
+
 Messages.SpawnFloat = Message.extend({
     init: function(playerId, floatName, gX, gY) {
         this.playerId = playerId;
@@ -278,8 +340,7 @@ Messages.Notify = Message.extend({
         this.text = text;
     },
     serialize: function() {
-        return [Types.Messages.NOTIFY,
-                this.text];
+        return [Types.Messages.NOTIFY, this.text];
     },
 });
 

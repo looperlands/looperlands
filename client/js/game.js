@@ -30,6 +30,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             this.deathpositions = {};
             this.entityGrid = null;
             this.pathingGrid = null;
+            this.finalPathingGrid = null;
             this.renderingGrid = null;
             this.itemGrid = null;
             this.currentCursor = null;
@@ -47,7 +48,9 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             this.hoveringItem = false;
             this.hoveringCollidingTile = false;
             this.doorCheck = false;
-        
+
+            this.toggledLayers = {};
+
             // combat
             this.infoManager = new InfoManager(this);
         
@@ -3955,6 +3958,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
         initPathingGrid: function() {
             this.pathingGrid = [];
+            this.finalPathingGrid = [];
             this.pathingGridBackup = [];
             for(var i=0; i < this.map.height; i += 1) {
                 this.pathingGrid[i] = [];
@@ -4175,6 +4179,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     self.initEntityGrid();
                     self.initItemGrid();
                     self.initPathingGrid();
+                    self.applyToggledLayers();
                     self.initRenderingGrid();
 
                     self.setPathfinder(new Pathfinder(self.map.width, self.map.height));
@@ -4471,32 +4476,34 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     if(self.isItemAt(x, y)) {
                         var item = self.getItemAt(x, y);
 
-                        try {
-                            let aboutToEquipWeaponButHasNFTWeapon = item.type === "weapon" && self.player.getWeaponName().startsWith("NFT_");
-                            if (!aboutToEquipWeaponButHasNFTWeapon) {
-                                self.player.loot(item);
-                                self.client.sendLoot(item); // Notify the server that this item has been looted
-                                self.removeItem(item);
-                                self.showNotification(item.getLootMessage());
+                        if(!item.unlootable) {
+                            try {
+                                let aboutToEquipWeaponButHasNFTWeapon = item.type === "weapon" && self.player.getWeaponName().startsWith("NFT_");
+                                if (!aboutToEquipWeaponButHasNFTWeapon) {
+                                    self.player.loot(item);
+                                    self.client.sendLoot(item); // Notify the server that this item has been looted
+                                    self.removeItem(item);
+                                    self.showNotification(item.getLootMessage());
 
-                                if(item.kind === Types.Entities.FIREPOTION) {
-                                    self.audioManager.playSound("firefox");
-                                }
+                                    if (item.kind === Types.Entities.FIREPOTION) {
+                                        self.audioManager.playSound("firefox");
+                                    }
 
-                                if(Types.isHealingItem(item.kind)) {
-                                    self.audioManager.playSound("heal");
+                                    if (Types.isHealingItem(item.kind)) {
+                                        self.audioManager.playSound("heal");
+                                    } else {
+                                        self.audioManager.playSound("loot");
+                                    }
                                 } else {
-                                    self.audioManager.playSound("loot");
+                                    console.log("You can't loot weapons because you have a NFT weapon equipped.");
                                 }
-                            } else {
-                                console.log("You can't loot weapons because you have a NFT weapon equipped.");
-                            }
-                        } catch(e) {
-                            if(e instanceof Exceptions.LootException) {
-                                self.showNotification(e.message);
-                                self.audioManager.playSound("noloot");
-                            } else {
-                                throw e;
+                            } catch (e) {
+                                if (e instanceof Exceptions.LootException) {
+                                    self.showNotification(e.message);
+                                    self.audioManager.playSound("noloot");
+                                } else {
+                                    throw e;
+                                }
                             }
                         }
                     }
@@ -5023,15 +5030,12 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
                 self.client.onEntityMove(function(id, x, y) {
                     var entity = null;
+                    entity = self.getEntityById(id);
 
-                    if(id !== self.playerId) {
-                        entity = self.getEntityById(id);
-                
-                        if(entity) {
-                            entity.disengage();
-                            entity.idle();
-                            self.makeCharacterGoTo(entity, x, y);
-                        }
+                    if(entity) {
+                        entity.disengage();
+                        entity.idle();
+                        self.makeCharacterGoTo(entity, x, y);
                     }
                 });
             
@@ -5167,21 +5171,23 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     var entity = null,
                         currentOrientation;
 
-                    if(id !== self.playerId) {
-                        entity = self.getEntityById(id);
-                
-                        if(entity) {
-                            currentOrientation = entity.orientation;
-                        
-                            self.makeCharacterTeleportTo(entity, x, y);
-                            entity.setOrientation(currentOrientation);
-                        
-                            entity.forEachAttacker(function(attacker) {
-                                attacker.disengage();
-                                attacker.idle();
-                                attacker.stop();
-                            });
-                        }
+                    entity = self.getEntityById(id);
+
+                    if(entity) {
+                        currentOrientation = entity.orientation;
+
+                        self.makeCharacterTeleportTo(entity, x, y);
+                        entity.setOrientation(currentOrientation);
+
+                        entity.forEachAttacker(function(attacker) {
+                            attacker.disengage();
+                            attacker.idle();
+                            attacker.stop();
+                        });
+                    }
+
+                    if(id === self.playerId) {
+                        self.resetCamera();
                     }
                 });
             
@@ -5200,7 +5206,12 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     self.assignBubbleTo(entity);
                     self.audioManager.playSound("chat");
                 });
-            
+
+                self.client.onSound(self.handleSound);
+                self.client.onMusic(self.handleMusic);
+                self.client.onLayer(self.handleLayer);
+                self.client.onAnimate(self.handleAnimationTrigger);
+
                 self.client.onPopulationChange(function(worldPlayers, totalPlayers) {
                     if(self.nbplayers_callback) {
                         self.nbplayers_callback(worldPlayers, totalPlayers);
@@ -5240,6 +5251,27 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     }, 200);
                 });
 
+                self.client.onFollow(function(entityId) {
+                    self.renderer.camera.focusEntity(self.getEntityById(entityId));
+                });
+
+                self.client.onCamera(function(x, y) {
+                    let cameraX = x - (self.renderer.camera.gridW/2);
+                    let cameraY = y - (self.renderer.camera.gridH/2);
+
+                    if(cameraX < 0) {cameraX = 0}
+                    if(cameraY < 0) {cameraY = 0}
+
+                    if(cameraX > self.map.width - self.renderer.camera.gridW) {
+                        cameraX = self.map.width - self.renderer.camera.gridW
+                    }
+                    if(cameraY > self.map.height - self.renderer.camera.gridH) {
+                        cameraY = self.map.height - self.renderer.camera.gridH
+                    }
+
+                    self.renderer.camera.setGridPosition(cameraX, cameraY);
+                })
+
                 self.client.onSpawnFloat(function(id, name, x, y) {
                     let float = new Float(x, y, id, name);
                     self.castFloat(float);
@@ -5258,7 +5290,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 self.client.onBuffInfo(function(stat, percent, duration) {
                     self.updateBuffInfo(stat, percent, duration);
                 });
-            
+
                 self.gamestart_callback();
             
                 if(self.hasNeverStarted) {
@@ -5714,10 +5746,11 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
          */
         findPath: function(character, x, y, ignoreList) {
             var self = this,
-                grid = this.pathingGrid;
+                grid = this.finalPathingGrid,
                 path = [],
                 isPlayer = (character === this.player);
-        
+
+
             if(this.map.isColliding(x, y)) {
                 return path;
             }
@@ -5728,9 +5761,9 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                         self.pathfinder.ignoreEntity(entity);
                     });
                 }
-            
+
                 path = this.pathfinder.findPath(grid, character, x, y, false);
-            
+
                 if(ignoreList) {
                     this.pathfinder.clearIgnoreList();
                 }
@@ -5759,6 +5792,24 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 this.renderer.isDebugInfoVisible = false;
             } else {
                 this.renderer.isDebugInfoVisible = true;
+            }
+        },
+
+        applyToggledLayers: function() {
+            this.finalPathingGrid = _.clone(this.pathingGrid);
+            // Loop over keys of this.hiddenLayers
+            for(var	i = 0; i < Object.keys(this.map.hiddenLayers).length; i++) {
+                let layerName = Object.keys(this.map.hiddenLayers)[i]
+                if(this.toggledLayers[layerName]) {
+                    for(var j=0; j < this.map.hiddenLayers[layerName].length; j++) {
+                        let tileType = this.map.hiddenLayers[layerName][j];
+
+                        if (tileType !== null) {
+                            let position = this.map.tileIndexToGridPosition(j)
+                            this.finalPathingGrid[position.y][position.x + 1] = this.map.collidingTiles[tileType]
+                        }
+                    }
+                }
             }
         },
     
@@ -5990,7 +6041,46 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 })
             }
         },
-    
+
+        handleNotify(message) {
+            self.showNotification(message);
+        },
+
+        handleSound(sound) {
+            self.audioManager.playSound(sound, true);
+        },
+
+        handleMusic(music) {
+            self.audioManager.playMusicByName(music);
+        },
+
+        handleLayer(layer, show) {
+            self.toggledLayers[layer] = show;
+            self.applyToggledLayers()
+        },
+
+        handleAnimationTrigger(entityId, animation) {
+            let entity = self.getEntityById(entityId);
+            let speed;
+
+            switch(animation.substring(0, 4).toLowerCase()) {
+                case 'atk_':
+                    speed = entity.atkSpeed;
+                    break;
+                case 'walk':
+                    speed = entity.walkSpeed;
+                    break;
+                case 'idle':
+                    speed = entity.idleSpeed;
+                    break;
+                default:
+                    speed = entity.walkSpeed;
+                    break;
+            }
+
+            entity.setAnimation(animation, speed);
+        },
+
         /**
          * 
          */
@@ -6217,6 +6307,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             this.entities = {};
             this.initEntityGrid();
             this.initPathingGrid();
+            this.applyToggledLayers();
             this.initRenderingGrid();
 
             this.player = new Warrior("player", this.username);

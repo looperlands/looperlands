@@ -166,6 +166,10 @@ Lakes.getDifficulty = function(playerLevel, lakeName) {
     return Math.min(calculatedDiff, minDifficulty);
 };
 
+Lakes.isCollectable = function(item) {
+    return Lakes.isConsumable(item);
+}
+
 Lakes.isConsumable = function(fishName) {
     let retVal = false;
     Object.keys(ConsumableFish).forEach(stat => {

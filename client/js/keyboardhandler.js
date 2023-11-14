@@ -126,17 +126,13 @@ class KeyBoardHandler {
         if(this.weapons == null) {
             var inventoryQuery = "/session/" + this.game.sessionId + "/inventory";
             let self = this;
+            this.weapons = [];
             axios.get(inventoryQuery).then(function(response) {
-                self.weapons = [];
-                var inventory = response.data.map(function(item) {
-                    return item.replace("0x", "NFT_");
-                });
-
-                inventory.forEach(function(item) {
-                    if (Types.isWeapon(Types.Entities[item])) {
-                        self.weapons.push(item);
+                for(var i = 0; i < response.data.inventory.length; i++) {
+                    if (Types.isWeapon(Types.Entities[response.data.inventory[i]])) {
+                        self.weapons.push(response.data.inventory[i]);
                     }
-                });
+                }
                 callback(self.weapons);
             });
         } else {
