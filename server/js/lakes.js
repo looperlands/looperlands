@@ -1,9 +1,9 @@
 const Utils = require("./utils");
 
-const rarities = {common: {chance: 700, expMultiplier: 1, speed: 20}, 
-                uncommon: {chance: 250, expMultiplier: 2, speed: 15}, 
+const rarities = {common: {chance: 700, expMultiplier: 1, speed: 20},
+                uncommon: {chance: 243, expMultiplier: 2, speed: 15},
                 rare: {chance: 40, expMultiplier: 5, speed: 11}, 
-                epic: {chance: 8, expMultiplier: 20, speed: 8}, 
+                epic: {chance: 15, expMultiplier: 20, speed: 8}, 
                 legendary: {chance: 2, expMultiplier: 50, speed: 6}};
 
 //---START CONFIG---
@@ -34,12 +34,34 @@ const Lakes = {
             cobstingray: "epic"
         },
     },
+    cobFarmSlimeLake: {
+        level: 8,
+        fish: {
+            cobrosette: "common",
+            cobparadisefish: "epic"
+        }
+    },
+    cobFarmForestLake: {
+        level: 6,
+        fish: {
+            cobfatheadminnow: "common",
+            cobgrasscarp: "rare",
+            cobgreensunfish: "epic"
+        }
+    },
+    cobFarmPond: {
+        level: 5,
+        fish: {
+            cobcruciancarp: "common",
+            cobbluegill: "epic"
+        }
+    }
 };
 // only EPIC fish can be a consumable
 const ConsumableFish = {
-    hp: [],
-    atk: [],
-    exp: []
+    hp: ["cobparadisefish"],
+    atk: ["cobbluegill"],
+    exp: ["cobgreensunfish"]
 };
 
 //---END CONFIG---
