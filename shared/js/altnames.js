@@ -24,7 +24,14 @@ const AltNames = {
     cobangelfish: "angel fish",
     cobstingray: "stingray",
     fishingrod: "Fishing Rod",
-    weapon: "Weapon"
+    weapon: "Weapon",
+    cobrosette: "rosette",
+    cobparadisefish: "paradise fish",
+    cobfatheadminnow: "fathead minnow",
+    cobgrasscarp: "grass carp",
+    cobgreensunfish: "green sunfish",
+    cobcruciancarp: "crucian carp",
+    cobbluegill: "bluegill"
 };
 
 AltNames.getAltNameFromKind = function(kind){
