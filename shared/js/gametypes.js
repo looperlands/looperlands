@@ -172,6 +172,7 @@ Types = {
         BLACKDOG: 30011,
         WHITEDOG: 30012,
         BROWNSPOTDOG: 30013,
+        TURTLE: 30014,
         ALARIC: 300016,
         JAYCE: 300017,
         ORLAN: 300018,
@@ -3752,6 +3753,7 @@ var kinds = {
     cobincubator: [Types.Entities.COBINCUBATOR, "mob"],
 
     brownspotdog: [Types.Entities.BROWNSPOTDOG, "mob"],
+    turtle: [Types.Entities.TURTLE, "mob"],
     blackdog: [Types.Entities.BLACKDOG, "mob"],
     whitedog: [Types.Entities.WHITEDOG, "mob"],
     browndog: [Types.Entities.BROWNDOG, "mob"],

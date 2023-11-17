@@ -246,6 +246,9 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.BLACKDOG] = function(id) {
         return new Mobs.Blackdog(id);
     }
+    EntityFactory.builders[Types.Entities.TURTLE] = function(id) {
+        return new Mobs.Turtle(id);
+    }
     EntityFactory.builders[Types.Entities.WHITEDOG] = function(id) {
         return new Mobs.Whitedog(id);
     }

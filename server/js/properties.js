@@ -485,6 +485,13 @@ var Properties = {
         friendly: true
     },    
 
+    turtle: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },  
+
     brownspotdog: {
         hp: 10,
         armor: 1,
