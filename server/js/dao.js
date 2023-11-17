@@ -245,6 +245,24 @@ exports.saveNFTWeaponExperience = async function(wallet, nft, experience) {
   }
 }
 
+exports.saveNFTSpecialItemTrait = async function(wallet, nft) {
+  const options = {
+    headers: {
+      'X-Api-Key': API_KEY
+    }
+  }
+
+  const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/SaveSpecialItemTrait.php?WalletID=${wallet}&NFTID=${nft}`;
+  try {
+    const response = await axios.get(url, options);
+    const updatedTrait = response.data;
+    return updatedTrait;
+  } catch(error) {
+    console.error("saveNFTSpecialItemTrait error", error);
+    return { "error": "Error saving weapon trait" };
+  }
+}
+
 exports.saveNFTSpecialItemExperience = async function(wallet, nft, experience) {
   const options = {
     headers: {
@@ -374,29 +392,6 @@ exports.saveLootEvent = async function(avatarId, itemId, amount) {
   }
 
   LOOT_EVENTS_QUEUE.push({avatarId: avatarId, itemId: itemId, amount})
-  if (Collectables.isCollectable(itemId)) {
-    const options = {
-      headers: {
-        'X-Api-Key': API_KEY
-      }
-    }
-    const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/saveConsumable2.php`;
-    try {
-      const response = await axios.post(url, {avatarId: avatarId, itemId: itemId, quantity: amount}, options);
-
-      return response.data;
-    } catch (error) {
-      if (retry === undefined) {
-        retry = MAX_RETRY_COUNT;
-      }
-      retry -= 1;
-      if (retry > 0) {
-        return this.getItemCount(avatarId, itemId, retry);
-      } else {
-        console.error("getItemCount", error);
-      }
-    }
-  }
 }
 
 exports.getItemCount = async function(avatarId, itemId, retry) {
@@ -602,6 +597,9 @@ exports.setQuestStatus = async function(avatarId, questId, status, retry) {
 }
 
 exports.saveConsumable = async function(nft, item, qty) {
+  if(qty === undefined){
+    qty = 1;
+  }
   const options = {
     headers: {
       'X-Api-Key': API_KEY,

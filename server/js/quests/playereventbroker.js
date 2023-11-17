@@ -1,5 +1,7 @@
 const dao = require('../dao.js');
 const PlayerQuestEventConsumer = require('./playerquesteventconsumer.js');
+const Collectables = require('../collectables.js');
+
 class PlayerEventBroker {
     static Events = {
         KILL_MOB: 'KILL_MOB',
@@ -78,6 +80,24 @@ class PlayerEventBroker {
             playerCache.gameData = gameData;
             this.cache.set(sessionId, playerCache);
         }
+        if (Collectables.isCollectable(item.kind)){
+            dao.saveConsumable(this.player.nftId, item.kind, amount);
+
+            if (gameData.consumables === undefined) {
+                gameData.consumables = {};
+            }
+        
+            let itemCount = gameData.consumables[item.kind];
+            if (itemCount) {
+                gameData.consumables[item.kind] = itemCount + amount;
+            } else {
+                gameData.consumables[item.kind] = amount;
+            }
+        
+            playerCache.gameData = gameData;
+            this.cache.set(sessionId, playerCache);
+        }
+
         PlayerEventBroker.dispatchEvent(PlayerEventBroker.Events.LOOT_ITEM, sessionId, this.player, playerCache, { item: item });
     }
 

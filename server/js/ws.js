@@ -812,7 +812,8 @@ WS.socketIOServer = Server.extend({
                     res.status(200).send(response);
                     return;
                 } else {
-                    let fish = Lakes.getRandomFish(lakeName);
+                    let activeTrait = player.getNFTSpecialItemActiveTrait();
+                    let fish = Lakes.getRandomFish(lakeName, (activeTrait === "lucky"));
                     if (fish === undefined) {
                         res.status(400).json({
                             status: false,
@@ -822,11 +823,11 @@ WS.socketIOServer = Server.extend({
                         return;
                     }
                     let fishExp = Lakes.calculateFishExp(fish, lakeName);
-                    player.pendingFish = {name: fish, exp: fishExp};
-                    let difficulty = Lakes.getDifficulty(player.getNFTWeapon().getLevel(), lakeName);
+                    player.pendingFish = {name: fish, exp: fishExp, double: (activeTrait === "double_catch")};
+                    let difficulty = Lakes.getDifficulty(player.getNFTWeapon().getLevel(), lakeName, (activeTrait === "upper_hand"));
                     let speed = Lakes.getFishSpeed(fish, lakeName);
 
-                    let response = {allowed: true, fish: fish, difficulty: difficulty, speed: speed};
+                    let response = {allowed: true, fish: fish, difficulty: difficulty, speed: speed, trait: activeTrait};
                     self.worldsMap[sessionData.mapId].announceSpawnFloat(player, fx, fy);
                     res.status(200).send(response);
                 }
