@@ -59,6 +59,10 @@ define(function() {
         "xp": {
             fill: "rgb(0, 0, 255)",
             stroke: "white",
+        },
+        "fishTrait": {
+            fill: "#00e4ff",
+            stroke: "#001dff",
         }
     };
 

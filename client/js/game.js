@@ -6643,6 +6643,19 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             return false;
         },
 
+        getFishingTraitProcText: function(text){
+            switch (text) {
+                case 'upper_hand':
+                    return "Upper hand!";
+                case 'double_catch':
+                    return "Double!";
+                case 'lucky':
+                    return "Lucky!";
+                default:
+                    return false;
+              }
+        },
+
         startFishing: function(gX, gY) {
             if(!this.player.isFishing){
                 let self = this;
@@ -6657,13 +6670,17 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     }
                     let float = new Float(gX, gY, self.player.id, self.player.getWeaponName());
                     self.castFloat(float);
-
+                    let traitText = self.getFishingTraitProcText(response.data.trait);
+                    
                     const waitMin = 6000,
                           waitMax = 12000;
                     let waitDuration = Math.random() * (waitMax - waitMin) + waitMin;
                     clearTimeout(self.uniFishTimeout);
                     self.uniFishTimeout = setTimeout(function() {
                         self.playCatchFish(response.data.fish, response.data.difficulty, response.data.speed);
+                        if (traitText){
+                            self.infoManager.addDamageInfo(traitText, float.gridX*16, float.gridY*16 - 5, "fishTrait");
+                        }
                     }, waitDuration);                    
                 }).catch(function (error) {
                     console.error("Error while requesting a fish.");

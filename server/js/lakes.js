@@ -2,8 +2,8 @@ const Utils = require("./utils");
 
 const rarities = {common: {chance: 700, expMultiplier: 1, speed: 20},
                 uncommon: {chance: 243, expMultiplier: 2, speed: 15},
-                rare: {chance: 40, expMultiplier: 5, speed: 11}, 
-                epic: {chance: 15, expMultiplier: 20, speed: 8}, 
+                rare: {chance: 40, expMultiplier: 5, speed: 11},
+                epic: {chance: 15, expMultiplier: 20, speed: 8},
                 legendary: {chance: 2, expMultiplier: 50, speed: 6}};
 
 //---START CONFIG---
@@ -100,7 +100,11 @@ generateFishDataMap = function() { // also do config checks
 
 const fishDataMap = generateFishDataMap();
 
-Lakes.getRandomFish = function(lake) {
+Lakes.getRandomFish = function(lake, lucky) {
+    let luckyFish = false;
+    if (lucky){
+        luckyFish = Lakes.getRandomFish(lake, false);
+    }
     let allFish = Lakes[lake].fish,
         p = 0,
         retRarity = null,
@@ -117,12 +121,13 @@ Lakes.getRandomFish = function(lake) {
         }
 
         let retFish = Object.keys(allFish).find(key => allFish[key] === retRarity);
-        if (retFish !== undefined){
-            return retFish;
+        if (retFish === undefined){
+            retFish = Object.keys(allFish).find(key => allFish[key] === "common");
         }
-        else
-        {
-            return Object.keys(allFish).find(key => allFish[key] === "common");
+        if(luckyFish && rarities[allFish[luckyFish]].chance < rarities[allFish[retFish]].chance) {
+            return luckyFish;
+        } else {
+            return retFish;
         }
 };
 
@@ -153,7 +158,7 @@ Lakes.getFishSpeed = function(fishName, lakeName) {
     return rarities[Lakes[lakeName].fish[fishName]].speed;
 };
 
-Lakes.getDifficulty = function(playerLevel, lakeName) {
+Lakes.getDifficulty = function(playerLevel, lakeName, upperHand) {
     if (Lakes[lakeName] === undefined) {
         return null;
     }
@@ -163,7 +168,8 @@ Lakes.getDifficulty = function(playerLevel, lakeName) {
           levelGain = 2;
 
     let calculatedDiff = maxDifficulty + (playerLevel - Lakes[lakeName].level) * levelGain;
-    return Math.min(calculatedDiff, minDifficulty);
+    let returnDiff = Math.min(calculatedDiff, minDifficulty);
+    return upperHand ? returnDiff * 2 : returnDiff;
 };
 
 Lakes.isCollectable = function(item) {

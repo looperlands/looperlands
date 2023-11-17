@@ -464,12 +464,9 @@ module.exports = Player = Character.extend({
                 }
             } else if(action === Types.Messages.FISHINGRESULT) {
                 if (message[1] && self.pendingFish !== null) {
-                    self.incrementNFTSpecialItemExperience(self.pendingFish.exp);
-                    self.playerEventBroker.lootEvent({kind: self.pendingFish.name});
-                    if (Lakes.isConsumable(self.pendingFish.name)){
-                        self.addConsumable(self.pendingFish.name);
-                    }
-
+                    let caughtAmount = self.pendingFish.double ? 2 : 1;
+                    self.incrementNFTSpecialItemExperience(self.pendingFish.exp * caughtAmount);
+                    self.playerEventBroker.lootEvent({kind: self.pendingFish.name}, caughtAmount);
                 }
                 self.pendingFish = null;
                 self.server.announceDespawnFloat(self);
@@ -837,6 +834,10 @@ module.exports = Player = Character.extend({
         } else {
             return undefined;
         }
+    },
+
+    getNFTSpecialItemActiveTrait: function() {
+        return this.getNFTWeaponActiveTrait();
     },
 
     handleCompletedQuests: function(completedQuests) {
