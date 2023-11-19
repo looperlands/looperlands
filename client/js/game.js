@@ -6551,21 +6551,18 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     if (self.player.level == null) {
                         self.player.level = level;
                     }
-                    
-                    
-                    var levelInfoHTML = "Avatar Level: " + level + " ";
-                    levelInfoHTML+=percentage + "%";
+
+                    $('#avatarLevel').text(level);
+                    $('#avatarProgress').text(percentage);
 
                     if (response.data.weaponInfo !== null && response.data.weaponInfo !== undefined) {
                         weaponPercentage = response.data.weaponInfo.weaponLevelInfo.percentage;
                         weaponLevel = response.data.weaponInfo.weaponLevelInfo.currentLevel;
-                        levelInfoHTML+=" - " + AltNames.getName(Types.getTypeFromString(self.player.weaponName)) + " Level: " + weaponLevel + " ";
-                        levelInfoHTML+=weaponPercentage + "%";
-                        if (response.data.weaponInfo.trait !== null && response.data.weaponInfo.trait !== undefined) {
-                            levelInfoHTML+=", Trait: " + response.data.weaponInfo.trait;
-                        }
+
+                        $('#weaponLevel').text(weaponLevel);
+                        $('#weaponProgress').text(weaponPercentage);
+                        $('#weaponTrait').text(response.data.weaponInfo.trait);
                     }
-                    $("#levelInfo").html(levelInfoHTML);
 
                     if (self.player.level !== level) {
                         self.player.level = level;
@@ -6804,12 +6801,12 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     let durationLeft = buffExpiration - new Date().getTime();
                     let buffInfo;
                     if (durationLeft > 0){
-                        buffInfo = "Current buff: " + percent +"% " + stat + " - time left: " + self.msToTime(durationLeft);
+                        buffInfo = "Current buff: <span style='color:#FCE045; padding-right: 5px;'"> + percent +"%</span> " + stat + " - time left: <span <span style='color:#FCE045;'>" + self.msToTime(durationLeft) + '</span>';
                     } else {
                         buffInfo = "";
                         clearInterval(self.buffTickInterval);
                     }
-                    $("#buffInfo").html(buffInfo);
+                    $("#buffInfo").html('<div id="buffInfo">' + buffInfo + '</div>');
                 }, 1000);
             } else {
                 $("#buffInfo").html("");

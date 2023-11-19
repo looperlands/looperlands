@@ -71,6 +71,18 @@ define(['jquery', 'app'], function($, App) {
                 $('#population').click(function() {
                     app.togglePopulationInfo();
                 });
+
+                $('#weapon').click(function(event) {
+                    app.toggleWeaponInfo(event)
+
+                    return false;
+                });
+
+                $('#armor').click(function(event) {
+                    app.toggleAvatarInfo(event)
+
+                    return false;
+                });
         
                 $('.clickable').click(function(event) {
                     event.stopPropagation();

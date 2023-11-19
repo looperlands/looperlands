@@ -173,6 +173,67 @@ body.upscaled.game {background:#000;}
 #population span:nth-child(1) {color:#FCE045;}
 #population.visible {opacity:1;pointer-events:auto;}
 
+#armor, #weapon {
+    cursor: pointer;
+}
+
+#avatarStats {
+    position: absolute;
+    left: 70px;
+    background: url(../img/1/barsheet.png);
+    background-position: -240px -48px;
+    width: 91px;
+    color: #FFF;
+    font-family: 'GraphicPixel';
+    font-size: 9px;
+    text-align: center;
+    height: 0;
+    opacity: 0;
+    padding: 20px;
+    padding-top: 0;
+    padding-bottom: 0;
+    transition: 0.2s ease-in-out all;
+    bottom: 18px;
+}
+
+#avatarStats.visible {
+    height: 20px;
+    padding-top: 5px;
+    padding-bottom: 10px;
+    opacity: 100;
+    transition: 0.2s ease-in-out all;
+    line-height: 9px;
+}
+
+#weaponStats {
+    position: absolute;
+    left: 70px;
+    background: url(../img/1/barsheet.png);
+    background-position: -240px -48px;
+    width: 91px;
+    color: #FFF;
+    font-family: 'GraphicPixel';
+    font-size: 9px;
+    text-align: center;
+    height: 0;
+    opacity: 0;
+    padding: 20px;
+    padding-top: 0;
+    padding-bottom: 0;
+    transition: 0.2s ease-in-out all;
+    bottom: 18px;
+}
+
+#weaponStats.visible {
+    height: 20px;
+    padding-top: 5px;
+    padding-bottom: 10px;
+    opacity: 100;
+    transition: 0.2s ease-in-out all;
+    line-height: 9px;
+}
+
+
 .barbutton {background:url('../img/1/barsheet.png');image-rendering:-moz-crispt-edges;position:absolute;}
 
 #chatbox {background:url('../img/1/barsheet.png');image-rendering:-moz-crisp-edges;position:absolute;left:50%;z-index:5;-moz-transition:0.2s bottom ease;-webkit-transition:0.2s bottom ease;-o-transition:0.2s bottom ease;-ms-transition:0.2s bottom ease;transition:0.2s bottom ease;}
@@ -445,6 +506,36 @@ footer div  {display:inline-block;}
     .upscaled #achievements, .upscaled #achievements li, .upscaled .coin, .upscaled #achievement-notification, .upscaled #coinsparks, .upscaled .achievement-sharing a, .upscaled #previous, .upscaled #next {background:url('../img/3/achievements.png');}
     .upscaled #fishingbar, #fishing-marker {background:url('../img/3/fishing.png');}
 
+    .upscaled #avatarStats {
+        left: 210px;
+        bottom: 65px;
+        background: url('../img/3/barsheet.png');
+        background-position: -720px -144px;
+        width: 353px;
+        font-size: 16px;
+        line-height: 24px;
+    }
+    .upscaled #avatarStats.visible {
+        height: 43px;
+        padding-top: 28px;
+        padding-bottom: 20px;
+    }
+
+    .upscaled #weaponStats {
+        left: 161px;
+        bottom: 65px;
+        background: url('../img/3/barsheet.png');
+        background-position: -720px -144px;
+        width: 353px;
+        font-size: 16px;
+        line-height: 24px;
+    }
+    .upscaled #weaponStats.visible {
+        height: 43px;
+        padding-top: 28px;
+        padding-bottom: 20px;
+    }
+
     body {background:-moz-radial-gradient(rgba(0,0,0,0) 40%,rgba(0,0,0,1) 125%), url('../img/1/wood2.png') no-repeat 1587px 138px, url('../img/1/wood2.png') no-repeat 51px 519px, url('../img/1/wood3.png') no-repeat 228px 219px, url('../img/1/wood.png') repeat, #000; background-size:auto, 15px auto, 15px auto, 60px auto, 384px;}
     body {background:-webkit-gradient(radial, center center, 360, center center, 1200, from(rgba(0,0,0,0)), to(rgba(0,0,0,1))), url('../img/3/wood2.png') no-repeat 1587px 138px, url('../img/3/wood2.png') no-repeat 51px 519px, url('../img/3/wood3.png') no-repeat 228px 219px, url('../img/3/wood.png') repeat, #000; background-size:auto, 15px auto, 15px auto, 60px auto, 384px;}
     #logo, #logosparks, .left-ornament, .right-ornament, #character, #character div, .button, .button div, #respawn, #scroll, #instructions, .icon, .avatar, .close, #note, .ribbon .top, .ribbon .bottom, #about .img, .ext-link {background-size:1266px auto;}
@@ -615,6 +706,62 @@ footer div  {display:inline-block;}
     .upscaled #bar-container, .upscaled #healthbar, .upscaled .barbutton, .upscaled #chatbox, .upscaled #population {background-image:url('../img/2/barsheet.png');}
     .upscaled #achievements, .upscaled #achievements li, .upscaled .coin, .upscaled #achievement-notification, .upscaled #coinsparks, .upscaled .achievement-sharing a, .upscaled #previous, .upscaled #next {background:url('../img/2/achievements.png');}
     .upscaled #fishingbar, #fish-marker {background:url('../img/2/fishing.png');}
+
+    #avatarStats {
+        position: absolute;
+        left: 132px;
+        bottom: 43px;
+        background: url(../img/2/barsheet.png);
+        background-position: -480px -96px;
+        width: 222px;
+        color: #FFF;
+        font-family: 'GraphicPixel';
+        font-size: 12px;
+        text-align: center;
+        height:0;
+        opacity: 0;
+        padding: 20px;
+        padding-top: 0;
+        padding-bottom: 0;
+        transition: 0.2s ease-in-out all;
+    }
+
+    #avatarStats.visible {
+        height: 27px;
+        padding-top: 18px;
+        padding-bottom: 20px;
+        opacity: 100;
+        transition: 0.2s ease-in-out all;
+        line-height:18px;
+    }
+
+    #weaponStats {
+        position: absolute;
+        left: 106px;
+        bottom: 44px;
+        background: url(../img/2/barsheet.png);
+        background-position: -480px -96px;
+        width: 222px;
+        color: #FFF;
+        font-family: 'GraphicPixel';
+        font-size: 12px;
+        text-align: center;
+        height:0;
+        padding:20px;
+        padding-top: 0;
+        padding-bottom: 0;
+        opacity: 0;
+        transition: 0.2s ease-in-out all;
+    }
+
+    #weaponStats.visible {
+        height: 20px;
+        padding-top: 16px;
+        padding-bottom: 20px;
+        opacity: 100;
+        line-height:16px;
+        transition: 0.2s ease-in-out all;
+    }
 
     body {background:-moz-radial-gradient(rgba(0,0,0,0) 40%,rgba(0,0,0,1) 125%), url('../img/1/wood.png') repeat, #000; background-size:auto, 256px;}
     body {background:-webkit-gradient(radial, center center, 240, center center, 800, from(rgba(0,0,0,0)), to(rgba(0,0,0,1))), url('../img/2/wood.png') repeat, #000; background-size:auto, 256px;}
@@ -828,6 +975,62 @@ footer div  {display:inline-block;}
     #instructions li:nth-child(2) span {height:32px;width:26px;background-position:-786px -24px; display:block;float:left;margin: 0 24px 28px 40px;position: relative;top: -6px;}
     #instructions li:nth-child(3) span {height:42px;width:32px;background-position:-812px -24px; display:block;float:left;margin: 0 18px 0 40px;position: relative;top: -12px;}
     #instructions p {text-align:center;font-family:'GraphicPixel';font-size:20px;clear:left;margin-top:20px;}
+
+    .upscaled #avatarStats {
+        position: absolute;
+        left: 132px;
+        bottom: 43px;
+        background: url(../img/2/barsheet.png);
+        background-position: -480px -96px;
+        width: 222px;
+        color: #FFF;
+        font-family: 'GraphicPixel';
+        font-size: 12px;
+        text-align: center;
+        height:0;
+        opacity: 0;
+        padding: 20px;
+        padding-top: 0;
+        padding-bottom: 0;
+        transition: 0.2s ease-in-out all;
+    }
+
+    .upscaled #avatarStats.visible {
+        height: 27px;
+        padding-top: 18px;
+        padding-bottom: 20px;
+        opacity: 100;
+        transition: 0.2s ease-in-out all;
+        line-height:18px;
+    }
+
+    .upscaled #weaponStats {
+        position: absolute;
+        left: 106px;
+        bottom: 44px;
+        background: url(../img/2/barsheet.png);
+        background-position: -480px -96px;
+        width: 222px;
+        color: #FFF;
+        font-family: 'GraphicPixel';
+        font-size: 12px;
+        text-align: center;
+        height:0;
+        padding:20px;
+        padding-top: 0;
+        padding-bottom: 0;
+        opacity: 0;
+        transition: 0.2s ease-in-out all;
+    }
+
+    .upscaled #weaponStats.visible {
+        height: 20px;
+        padding-top: 16px;
+        padding-bottom: 20px;
+        opacity: 100;
+        line-height:16px;
+        transition: 0.2s ease-in-out all;
+    }
 
     #playerimage {height: 64px; width: 64px;}
 
@@ -1112,6 +1315,63 @@ footer div  {display:inline-block;}
     .game.credits .parchment-middle, .game.death .parchment-middle, .game.about .parchment-middle, .game.settings .parchment-middle {width:346px;margin-left:-173px;background-position: -38px -294px;}
 
     #resize-check {height:1px;}
+
+    #avatarStats {
+        position: absolute;
+        left: 70px;
+        background: url(../img/1/barsheet.png);
+        background-position: -240px -48px;
+        width: 91px;
+        color: #FFF;
+        font-family: 'GraphicPixel';
+        font-size: 9px;
+        text-align: center;
+        height: 0;
+        opacity: 0;
+        padding: 20px;
+        padding-top: 0;
+        padding-bottom: 0;
+        transition: 0.2s ease-in-out all;
+        bottom: 18px;
+    }
+
+    #avatarStats.visible {
+        height: 20px;
+        padding-top: 5px;
+        padding-bottom: 10px;
+        opacity: 100;
+        transition: 0.2s ease-in-out all;
+        line-height: 9px;
+    }
+
+    #weaponStats {
+        position: absolute;
+        left: 70px;
+        background: url(../img/1/barsheet.png);
+        background-position: -240px -48px;
+        width: 91px;
+        color: #FFF;
+        font-family: 'GraphicPixel';
+        font-size: 9px;
+        text-align: center;
+        height: 0;
+        opacity: 0;
+        padding: 20px;
+        padding-top: 0;
+        padding-bottom: 0;
+        transition: 0.2s ease-in-out all;
+        bottom: 18px;
+    }
+
+    #weaponStats.visible {
+        height: 20px;
+        padding-top: 5px;
+        padding-bottom: 10px;
+        opacity: 100;
+        transition: 0.2s ease-in-out all;
+        line-height: 9px;
+    }
+
 }
 
 @media screen and (max-width: 800px) {
@@ -1251,6 +1511,63 @@ footer div  {display:inline-block;}
 
     footer {display:none;}
     #bubbles {overflow:hidden;}
+
+    #avatarStats {
+        position: absolute;
+        left: 70px;
+        background: url(../img/1/barsheet.png);
+        background-position: -240px -48px;
+        width: 91px;
+        color: #FFF;
+        font-family: 'GraphicPixel';
+        font-size: 9px;
+        text-align: center;
+        height: 0;
+        opacity: 0;
+        padding: 20px;
+        padding-top: 0;
+        padding-bottom: 0;
+        transition: 0.2s ease-in-out all;
+        bottom: 18px;
+    }
+
+    #avatarStats.visible {
+        height: 20px;
+        padding-top: 5px;
+        padding-bottom: 10px;
+        opacity: 100;
+        transition: 0.2s ease-in-out all;
+        line-height: 9px;
+    }
+
+    #weaponStats {
+        position: absolute;
+        left: 70px;
+        background: url(../img/1/barsheet.png);
+        background-position: -240px -48px;
+        width: 91px;
+        color: #FFF;
+        font-family: 'GraphicPixel';
+        font-size: 9px;
+        text-align: center;
+        height: 0;
+        opacity: 0;
+        padding: 20px;
+        padding-top: 0;
+        padding-bottom: 0;
+        transition: 0.2s ease-in-out all;
+        bottom: 18px;
+    }
+
+    #weaponStats.visible {
+        height: 20px;
+        padding-top: 5px;
+        padding-bottom: 10px;
+        opacity: 100;
+        transition: 0.2s ease-in-out all;
+        line-height: 9px;
+    }
+
 }
 
 @media screen and (max-width: 800px) and (orientation: portrait) {

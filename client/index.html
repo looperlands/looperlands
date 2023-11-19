@@ -272,6 +272,16 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
                         <span>0</span> <span>players</span> total
                     </div>
                 </div>
+
+				<div id="avatarStats">
+					<span>Level: </span><span id="avatarLevel" style="color:#FCE045; padding-right: 10px;"></span>(<span id="avatarProgress"></span>%)
+					<span id="buffInfo"></span>
+				</div>
+
+				<div id="weaponStats">
+					<div><span>Level: </span><span id="weaponLevel" style="color:#FCE045; padding-right: 10px;"></span>(<span id="weaponProgress"></span>%)</div>
+					<div>Trait: <span id="weaponTrait" style="color: #FCE045;"></span></div>
+				</div>
 		    </div>
 		</div>
 		<ul id="page-tmpl" class="clickable" style="display:none">
@@ -318,9 +328,5 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
                 var require = { waitSeconds: 60 };
         </script>
         <script data-main="js/home" src="js/lib/require-jquery.js"></script>
-		<div style="color: white; text-align: center; margin-top: 5px">
-			<h2 id="levelInfo"></h2>
-			<h2 id="buffInfo"></h2>
-		</div>
 	</body>
 </html>
