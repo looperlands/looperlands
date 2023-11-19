@@ -253,7 +253,7 @@ define(['jquery', 'storage'], function ($, Storage) {
 
             if ($achievements.hasClass('active')) {
                 $achievements.bind(TRANSITIONEND, function () {
-                    $achievements.removeClass('page' + self.currentPage).addClass('page1');
+                    $('#lists').css({left: 0});
                     self.currentPage = 1;
                     $achievements.unbind(TRANSITIONEND);
                 });
