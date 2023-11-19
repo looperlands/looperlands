@@ -597,6 +597,34 @@ define(['jquery', 'storage'], function ($, Storage) {
 
         togglePopulationInfo: function () {
             $('#population').toggleClass('visible');
+            if ($('#population').hasClass('visible')) {
+                $('#weaponStats').removeClass('visible');
+                $('#avatarStats').removeClass('visible');
+            }
+        },
+
+        toggleAvatarInfo: function (event) {
+            $('#avatarStats').toggleClass('visible');
+            if ($('#avatarStats').hasClass('visible')) {
+               $('#weaponStats').removeClass('visible');
+               $('#population').removeClass('visible');
+            }
+
+            event.stopImmediatePropagation();
+            event.preventDefault();
+            return false
+        },
+
+        toggleWeaponInfo: function (event) {
+            $('#weaponStats').toggleClass('visible');
+            if ($('#weaponStats').hasClass('visible')) {
+                $('#population').removeClass('visible');
+                $('#avatarStats').removeClass('visible');
+            }
+
+            event.stopImmediatePropagation();
+            event.preventDefault();
+            return false
         },
 
         openPopup: function (type, url) {
