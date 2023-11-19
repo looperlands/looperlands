@@ -45,7 +45,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             this.handlers[Types.Messages.MUSIC] = this.receiveMusic;
             this.handlers[Types.Messages.LAYER] = this.receiveLayer;
             this.handlers[Types.Messages.ANIMATE] = this.receiveAnimate;
-            this.handlers[Types.Messages.QUEST_COMPLETE] = this.receieveQuestComplete;
+            this.handlers[Types.Messages.QUEST_COMPLETE] = this.receiveQuestComplete;
             this.handlers[Types.Messages.SPAWNFLOAT] = this.receiveSpawnFloat;
             this.handlers[Types.Messages.DESPAWNFLOAT] = this.receiveDespawnFloat;
             this.handlers[Types.Messages.NOTIFY] = this.receiveNotify;
