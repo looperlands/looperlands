@@ -308,7 +308,7 @@ module.exports = Player = Character.extend({
                     var kind = item.kind;
 
                     if(Types.isItem(kind)) {
-                        self.playerEventBroker.lootEvent(item);
+                        self.playerEventBroker.lootEvent(item, 1);
                         self.broadcast(item.despawn());
                         self.server.removeEntity(item);
 
