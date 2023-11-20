@@ -153,13 +153,16 @@ body.upscaled.game {background:#000;}
 #hitpoints.white {-moz-animation:flash 0.5s linear 1;-webkit-animation:flash 0.5s linear 1;-o-animation:flash 0.5s linear 1;-ms-animation:flash 0.5s linear 1;animation:flash 0.5s linear 1;}
 #hitpoints.invincible {-moz-animation:invincible 0.3s steps(3, end) alternate infinite;-webkit-animation:invincible 0.3s steps(3, end) alternate infinite;-o-animation:invincible 0.3s steps(3, end) alternate infinite;-ms-animation:invincible 0.3s steps(3, end) alternate infinite;}
 
-#fishingbar {background:url('../img/1/fishing.png');image-rendering:-moz-crisp-edges;position:absolute;top:15%;left:33%;z-index:50;opacity:0;pointer-events:none;cursor:pointer;}
-#fishingbar.active {opacity:1;pointer-events:auto;}
-#fishingbar.hold {opacity:1;pointer-events:none;}
-#fishingtarget {background:#b0ff66;z-index:51}
-#fish-box{z-index:52;}
-#fish-marker{background:url('../img/1/fishing.png');image-rendering:-moz-crisp-edges;position:absolute;z-index:53;}
-#fish {z-index:54;}
+#fishingbar {background:url('../img/1/fishing.png');image-rendering:-moz-crisp-edges;position:absolute;top:15%;left:33%;z-index:50;display:none;pointer-events:none;cursor:pointer;}
+#fishingbar.active {display:block;pointer-events:auto;}
+#fishingbar.hold {display:block;pointer-events:none;}
+#bullseye {color: gold;writing-mode: vertical-lr;text-orientation:upright;font-family: 'GraphicPixel', sans-serif;display:none;align-items:center;justify-content:center;z-index:62;width:100%; height:100%; position: absolute;}
+#bullseye.active {display:flex;}
+#fishingtarget {background:#b0ff66;z-index:52}
+#fishingtargetbullseye {background:rgb(100, 255, 255);z-index:54}
+#fish-box{z-index:56;}
+#fish-marker{background:url('../img/1/fishing.png');image-rendering:-moz-crisp-edges;position:absolute;z-index:58;}
+#fish {z-index:60;}
 
 #notifications {position:absolute;left:50%;text-align:center;font-family:'GraphicPixel';overflow:hidden;}
 #notifications div {position:absolute;-moz-transition:none;-webkit-transition:none;top:0;width:100%;}
@@ -520,9 +523,11 @@ footer div  {display:inline-block;}
 
     #healthbar {height:39px;background-position:0 -51px;width:306px;top:9px;background-size:1440px;z-index:20;}
     #hitpoints {width:0px;height:21px;top:15px;left:33px;z-index:10; position:absolute; border-top: 3px solid #ea6767; border-bottom: 3px solid #a62828;}
-
+    
     #fishingbar {width:72px;height:450px;}
-    #fishingtarget {margin-top:0px;height:0px;width:48px;left:12px; position:absolute; border-top: 3px solid #55b000; border-bottom: 3px solid #55b000;}
+    #bullseye {text-shadow: -1px -1px 3px #000, 1px -1px 3px #000, -1px 1px 3px #000, 1px 1px 3px #000;font-size:36px;}
+    #fishingtarget {margin-top:0px;height:0px;width:48px;left:12px; position:absolute;box-shadow:0px -3px 0px 0px green inset, 0px 3px 0px 0px green inset;}
+    #fishingtargetbullseye {margin-top:0px;height:0px;width:48px;left:0px; position:absolute;}
     #fish-box {margin-top:0px;height:48px;width:48px;top:12px;left:12px; position:absolute;}
     #fish-marker{width:54px;height:9px;background-position:-72px 0;background-size:126px;left:-3px;top:21px;}
     #fish {height:48px;width:48px;position:absolute;}
@@ -692,7 +697,9 @@ footer div  {display:inline-block;}
     #hitpoints {width:0px;height:20px;top:8px;left:22px;z-index:10;position:absolute;}
 
     #fishingbar {width:48px;height:300px;}
-    #fishingtarget {margin-top:0px;height:0px;width:32px;left:8px; position:absolute; border-top: 2px solid #55b000; border-bottom: 2px solid #55b000;}
+    #bullseye {text-shadow: -1px -1px 2px #000, 1px -1px 2px #000, -1px 1px 2px #000, 1px 1px 2px #000;font-size:24px;}
+    #fishingtarget {margin-top:0px;height:0px;width:32px;left:8px; position:absolute; box-shadow:0px -2px 0px 0px green inset, 0px 2px 0px 0px green inset;}
+    #fishingtargetbullseye {margin-top:0px;height:0px;width:32px;left:0px; position:absolute;}
     #fish-box {margin-top:0px;height:32px;width:32px;top:8px;left:8px; position:absolute;}
     #fish-marker{width:36px;height:6px;background-position:-48px 0;background-size:84px;left:-2px;top:14px;}
     #fish {height:32px;width:32px;position:absolute;}
@@ -862,7 +869,9 @@ footer div  {display:inline-block;}
     #hitpoints {width:0px;height:16px;top:8px;left:22px;z-index:10;position:absolute;border-top: 3px solid #ea6767; border-bottom: 3px solid #a62828;}
 
     #fishingbar {width:48px;height:300px;}
-    #fishingtarget {margin-top:0px;height:0px;width:32px;left:8px; position:absolute; border-top: 2px solid #55b000; border-bottom: 2px solid #55b000;}
+    #bullseye {text-shadow: -1px -1px 2px #000, 1px -1px 2px #000, -1px 1px 2px #000, 1px 1px 2px #000;font-size:24px;}
+    #fishingtarget {margin-top:0px;height:0px;width:32px;left:8px; position:absolute; box-shadow:0px -2px 0px 0px green inset, 0px 2px 0px 0px green inset;}
+    #fishingtargetbullseye {margin-top:0px;height:0px;width:32px;left:0px; position:absolute;}
     #fish-box {margin-top:0px;height:32px;width:32px;top:8px;left:8px; position:absolute;}
     #fish-marker{width:36px;height:6px;background-position:-48px 0;background-size:84px;left:-2px;top:14px;}
     #fish {height:32px;width:32px;position:absolute;}
@@ -1029,7 +1038,9 @@ footer div  {display:inline-block;}
     #hitpoints {width:0px;height:5px;top:4px;left:11px;z-index:10;position:absolute;}
 
     #fishingbar {width:24px;height:150px;}
-    #fishingtarget {margin-top:0px;height:0px;width:16px;left:4px; position:absolute; border-top: 1px solid #55b000; border-bottom: 1px solid #55b000;}
+    #bullseye {text-shadow: -1px -1px 1px #000, 1px -1px 1px #000, -1px 1px 1px #000, 1px 1px 1px #000;font-size:12px;}
+    #fishingtarget {margin-top:0px;height:0px;width:16px;left:4px; position:absolute;box-shadow:0px -1px 0px 0px green inset, 0px 1px 0px 0px green inset;}
+    #fishingtargetbullseye {margin-top:0px;height:0px;width:16px;left:0px; position:absolute;}
     #fish-box {margin-top:0px;height:16px;width:16px;top:4px;left:4px; position:absolute;}
     #fish-marker{width:18px;height:3px;background-position:-24px 0;background-size:42px;left:-1px;top:7px;}
     #fish {height:16px;width:16px;position:absolute;}
@@ -1196,7 +1207,9 @@ footer div  {display:inline-block;}
     #hitpoints {width:0px;height:16px;top:8px;left:22px;z-index:10;position:absolute;}
 
     #fishingbar {width:48px;;height:300px;}
-    #fishingtarget {margin-top:0px;height:0px;width:32px;left:8px; position:absolute; border-top: 2px solid #55b000; border-bottom: 2px solid #55b000;}
+    #bullseye {text-shadow: -1px -1px 2px #000, 1px -1px 2px #000, -1px 1px 2px #000, 1px 1px 2px #000;font-size:24px;}
+    #fishingtarget {margin-top:0px;height:0px;width:32px;left:8px; position:absolute;box-shadow:0px -2px 0px 0px green inset, 0px 2px 0px 0px green inset;}
+    #fishingtargetbullseye {margin-top:0px;height:0px;width:32px;left:0px; position:absolute;}
     #fish-box {margin-top:0px;height:32px;width:32px;top:8px;left:8px; position:absolute;}
     #fish-marker{width:36px;height:6px;background-position:-48px 0;background-size:84px;left:-2px;top:14px;}
     #fish {height:32px;width:32px;position:absolute;}

@@ -827,7 +827,7 @@ WS.socketIOServer = Server.extend({
                     let difficulty = Lakes.getDifficulty(player.getNFTWeapon().getLevel(), lakeName, (activeTrait === "upper_hand"));
                     let speed = Lakes.getFishSpeed(fish, lakeName);
 
-                    let response = {allowed: true, fish: fish, difficulty: difficulty, speed: speed, trait: activeTrait};
+                    let response = {allowed: true, fish: fish, difficulty: difficulty?.difficulty, speed: speed, bullseyeSize: difficulty?.bullseye, trait: activeTrait};
                     self.worldsMap[sessionData.mapId].announceSpawnFloat(player, fx, fy);
                     res.status(200).send(response);
                 }

@@ -28,7 +28,7 @@ var _ = require('underscore'),
             this.formats[Types.Messages.MUSIC] = ['s'],
             this.formats[Types.Messages.LAYER] = ['s', 'b'],
             this.formats[Types.Messages.ANIMATE] = ['n', 's'],
-            this.formats[Types.Messages.FISHINGRESULT] = ['b']
+            this.formats[Types.Messages.FISHINGRESULT] = ['b', 'b']
             this.formats[Types.Messages.CONSUMEITEM] = ['s']
         },
         
