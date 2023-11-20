@@ -71,6 +71,18 @@ define(['jquery', 'app'], function($, App) {
                 $('#population').click(function() {
                     app.togglePopulationInfo();
                 });
+
+                $('#weapon').click(function(event) {
+                    app.toggleWeaponInfo(event)
+
+                    return false;
+                });
+
+                $('#armor').click(function(event) {
+                    app.toggleAvatarInfo(event)
+
+                    return false;
+                });
         
                 $('.clickable').click(function(event) {
                     event.stopPropagation();
@@ -138,26 +150,33 @@ define(['jquery', 'app'], function($, App) {
                 });
         
                 $('#previous').click(function() {
-                    var $achievements = $('#achievements');
-            
                     if(app.currentPage === 1) {
+                        $('#lists').css({left: 0});
                         return false;
                     } else {
                         app.currentPage -= 1;
-                        $achievements.removeClass().addClass('active page' + app.currentPage);
+
+                        let margin = parseInt($('#achievements-wrapper').css('marginLeft')) + parseInt($('#achievements-wrapper').css('marginRight'));
+                        let width = $('#achievements-wrapper').width();
+
+                        $('#lists').css({left: -1 * ((app.currentPage -1) * (width + margin))});
                     }
                 });
         
                 $('#next').click(function() {
-                    var $achievements = $('#achievements'),
-                        $lists = $('#lists'),
+                    var $lists = $('#lists'),
                         nbPages = $lists.children('ul').length;
             
                     if(app.currentPage === nbPages) {
+                        $lists.css({left: 0});
+                        app.currentPage = 1;
                         return false;
                     } else {
                         app.currentPage += 1;
-                        $achievements.removeClass().addClass('active page' + app.currentPage);
+                        let margin = parseInt($('#achievements-wrapper').css('marginLeft')) + parseInt($('#achievements-wrapper').css('marginRight'));
+                        let width = $('#achievements-wrapper').width();
+
+                        $lists.css({left: -1 * ((app.currentPage -1)* (width + margin))});
                     }
                 });
 

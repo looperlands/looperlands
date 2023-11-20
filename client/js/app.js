@@ -253,7 +253,7 @@ define(['jquery', 'storage'], function ($, Storage) {
 
             if ($achievements.hasClass('active')) {
                 $achievements.bind(TRANSITIONEND, function () {
-                    $achievements.removeClass('page' + self.currentPage).addClass('page1');
+                    $('#lists').css({left: 0});
                     self.currentPage = 1;
                     $achievements.unbind(TRANSITIONEND);
                 });
@@ -597,6 +597,34 @@ define(['jquery', 'storage'], function ($, Storage) {
 
         togglePopulationInfo: function () {
             $('#population').toggleClass('visible');
+            if ($('#population').hasClass('visible')) {
+                $('#weaponStats').removeClass('visible');
+                $('#avatarStats').removeClass('visible');
+            }
+        },
+
+        toggleAvatarInfo: function (event) {
+            $('#avatarStats').toggleClass('visible');
+            if ($('#avatarStats').hasClass('visible')) {
+               $('#weaponStats').removeClass('visible');
+               $('#population').removeClass('visible');
+            }
+
+            event.stopImmediatePropagation();
+            event.preventDefault();
+            return false
+        },
+
+        toggleWeaponInfo: function (event) {
+            $('#weaponStats').toggleClass('visible');
+            if ($('#weaponStats').hasClass('visible')) {
+                $('#population').removeClass('visible');
+                $('#avatarStats').removeClass('visible');
+            }
+
+            event.stopImmediatePropagation();
+            event.preventDefault();
+            return false
         },
 
         openPopup: function (type, url) {
@@ -709,18 +737,24 @@ define(['jquery', 'storage'], function ($, Storage) {
         hideFishing: function () {
             $('#fishingbar').removeClass('hold');
             $('#fishingbar').removeClass('active');
+            $('#bullseye').removeClass('active');
         },
 
-        holdFishing: function () {
+        holdFishing: function (bullseye) {
             $('#fishingbar').removeClass('active');
             $('#fishingbar').addClass('hold');
+            if (bullseye){
+                $('#bullseye').addClass('active');
+            }
         },
 
-        setFishingTarget: function (barHeight, marginTop) {
+        setFishingTarget: function (barHeight, barMarginTop, bullseyeHeight, bullseyeMarginTop) {
             let scale = this.game.renderer.scale;
 
             $("#fishingtarget").css('height', barHeight * scale + "px");
-            $("#fishingtarget").css('margin-top', marginTop * scale + "px");
+            $("#fishingtarget").css('margin-top', barMarginTop * scale + "px");
+            $("#fishingtargetbullseye").css('height', bullseyeHeight * scale + "px");
+            $("#fishingtargetbullseye").css('margin-top', bullseyeMarginTop * scale + "px");
         },
 
         setFish: function (url) {

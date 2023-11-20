@@ -70,7 +70,13 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
             // fishing
             this.floats = {};
-            this.fishingData = {fishName: null, fishPos: 0, fishTime: null, targetPos: 0, targetHeight: 0};
+            this.fishingData = {fishName: null, 
+                                fishPos: 0, 
+                                fishTime: null, 
+                                targetPos: 0, 
+                                targetHeight: 0, 
+                                bullseyeRelPos: 0, 
+                                bullseyeHeight: 0};
             this.slidingFish = null;
             this.uniFishTimeout = null;
         
@@ -3597,6 +3603,13 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 "NFT_32861ec4243308bb96631c0f05f310ce70ee969b3b872b44c3db77a06396db7a",
                                 "NFT_86751dbdb889bff14a9cf2ecbd7645c7aeeaed48d46522fd8419f30c8f84eb59",
                                 "item-NFT_86751dbdb889bff14a9cf2ecbd7645c7aeeaed48d46522fd8419f30c8f84eb59",
+                                "NFT_0e4b5e6dae45b224db344b2d699c6f16b5d523f5bd63743f7bf266b7f815528f",
+                                "NFT_18e90ae4c2a855a5f47a2bffa52151d99cdae0f099563c4e4d1fc0bea215064a",
+                                "NFT_1ae70cfeef9301c067bc961a8f813f3022bd4c9aa902ccee8cf02736a94166c4",
+                                "NFT_424595f8e38aee0955b2637ca0753f238de128aeb9869dc268b7ae3156875b7e",
+                                "NFT_5bd4db605d50caa218ee1491c145c93df53eb04cf6579684d65dfaa5381a0fc2",
+                                "NFT_9a84f1ec1a827a7db2bc684d656117d29d88acf86e6ddbf7577651f835b143e2",
+                                "NFT_f155710f74e17a292b112aa765c476f00be2f1efec526284e812e8842eb0b7c9",
                                 // @nextSpriteLine@
                             ];
         },
@@ -4464,7 +4477,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     self.findVisibleTiles();
 
                     if(this.isFishing) {
-                        self.stopFishing(false);
+                        self.stopFishing(false, false, false);
                     }
 
                     if(self.player.hasNextStep()) {
@@ -4773,7 +4786,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     }
 
                     if(this.isFishing) {
-                        self.stopFishing(false);
+                        self.stopFishing(false, false, false);
                     }
 
                     if(self.equipment_callback) {
@@ -6551,21 +6564,18 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     if (self.player.level == null) {
                         self.player.level = level;
                     }
-                    
-                    
-                    var levelInfoHTML = "Avatar Level: " + level + " ";
-                    levelInfoHTML+=percentage + "%";
+
+                    $('#avatarLevel').text(level);
+                    $('#avatarProgress').text(percentage);
 
                     if (response.data.weaponInfo !== null && response.data.weaponInfo !== undefined) {
                         weaponPercentage = response.data.weaponInfo.weaponLevelInfo.percentage;
                         weaponLevel = response.data.weaponInfo.weaponLevelInfo.currentLevel;
-                        levelInfoHTML+=" - " + AltNames.getName(Types.getTypeFromString(self.player.weaponName)) + " Level: " + weaponLevel + " ";
-                        levelInfoHTML+=weaponPercentage + "%";
-                        if (response.data.weaponInfo.trait !== null && response.data.weaponInfo.trait !== undefined) {
-                            levelInfoHTML+=", Trait: " + response.data.weaponInfo.trait;
-                        }
+
+                        $('#weaponLevel').text(weaponLevel);
+                        $('#weaponProgress').text(weaponPercentage);
+                        $('#weaponTrait').text(response.data.weaponInfo.trait);
                     }
-                    $("#levelInfo").html(levelInfoHTML);
 
                     if (self.player.level !== level) {
                         self.player.level = level;
@@ -6681,7 +6691,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     let waitDuration = Math.random() * (waitMax - waitMin) + waitMin;
                     clearTimeout(self.uniFishTimeout);
                     self.uniFishTimeout = setTimeout(function() {
-                        self.playCatchFish(response.data.fish, response.data.difficulty, response.data.speed);
+                        self.playCatchFish(response.data.fish, response.data.difficulty, response.data.speed, response.data.bullseyeSize);
                         if (traitText){
                             self.infoManager.addDamageInfo(traitText, float.gridX*16, float.gridY*16 - 5, "fishTrait");
                         }
@@ -6693,7 +6703,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             }
         },
 
-        playCatchFish: function(fish, difficulty, speed) {
+        playCatchFish: function(fish, difficulty, speed, bullseyeSize) {
             let self = this;
             const fishEscapeDuration = 7000;
 
@@ -6706,18 +6716,18 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             this.fishingData.fishName = fishName;
             this.fishingData.fishTime = new Date().getTime();
             this.app.setFish(fishSpriteUrl);
-            this.generateFishingTarget(difficulty);
+            this.generateFishingTarget(difficulty, bullseyeSize);
             clearInterval(this.slidingFish);
             this.slidingFish = setInterval(self.tickMovingFish.bind(self), 10, speed);
             this.app.showFishing();
             clearTimeout(self.uniFishTimeout);
             this.uniFishTimeout = setTimeout(function() {
                 self.showNotification(self.fishingData.fishName + " escaped!");
-                self.stopFishing(false);
+                self.stopFishing(false, false, false);
             }, fishEscapeDuration);  
         },
 
-        stopFishing: function(success, barHoldDuration) {
+        stopFishing: function(success, barHoldDuration, bullseye) {
             let self= this;
 
             self.player.isFishing = false;
@@ -6725,7 +6735,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             clearInterval(this.slidingFish);
 
             if (barHoldDuration) {
-                this.app.holdFishing();
+                this.app.holdFishing(bullseye);
                 setTimeout(self.app.hideFishing, barHoldDuration);
             } else {
                 this.app.hideFishing();
@@ -6733,18 +6743,20 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             
             this.removeFloat(this.player.id);
 
-            this.client.sendFishingResult(success);
+            this.client.sendFishingResult(success, bullseye);
             this.fishingData.fishPos = 0;
             this.fishingData.fishName = null;
         },
 
-        generateFishingTarget: function(difficulty){
+        generateFishingTarget: function(difficulty, bullseyeSize){
             const targetMaxHeight = 100, // 150 (bar size) - 2*4 (borders) - 2*21 (21 px gap top/bottom so the target never loads on edge)
                   targetOffset = 25; // same as above - 4+21 offset from the top so the target never loads on the edge
             this.fishingData.targetHeight = Math.floor(targetMaxHeight * difficulty/100); //difficulty is expressed in %
             this.fishingData.targetPos = targetOffset + Math.round(Math.random() * (targetMaxHeight - this.fishingData.targetHeight));
+            this.fishingData.bullseyeRelPos = (Math.ceil(difficulty/2)) - 1; // -1 cause 0 is the first value
+            this.fishingData.bullseyeHeight = bullseyeSize;
 
-            this.app.setFishingTarget(this.fishingData.targetHeight, this.fishingData.targetPos);
+            this.app.setFishingTarget(this.fishingData.targetHeight, this.fishingData.targetPos, this.fishingData.bullseyeHeight, this.fishingData.bullseyeRelPos);
         },
 
         tickMovingFish: function(gap){
@@ -6768,19 +6780,26 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         clickFishingBar: function(){
             let self = this;
             const markerOffset = 12; // 8 from the marker + 4 from the bar border
+            let clickPos = this.fishingData.fishPos + markerOffset;
+            let minTargetPos = this.fishingData.targetPos;
+            let maxTargetPos = this.fishingData.targetPos + this.fishingData.targetHeight;
+            let minBullseyePos = minTargetPos + this.fishingData.bullseyeRelPos;
+            let maxBullseyePos = minBullseyePos + this.fishingData.bullseyeHeight;
 
             clearInterval(this.slidingFish);
-            if (this.fishingData.fishPos + markerOffset >= this.fishingData.targetPos  
-                && this.fishingData.fishPos + markerOffset <= this.fishingData.targetPos + this.fishingData.targetHeight + 1)
-                {
+            if (clickPos >= minTargetPos && clickPos < maxTargetPos){
+                let bullseye = false;
+                if (clickPos >= minBullseyePos && clickPos < maxBullseyePos){
+                    bullseye = true;
+                }
                 self.audioManager.playSound("fishingsuccess");
                 self.showNotification("You caught " + this.fishingData.fishName);
-                self.stopFishing(true, 2000);
+                self.stopFishing(true, 2000, bullseye);
                 self.renderStatistics();
             } else {
                 self.audioManager.playSound("fishingfail");
                 self.showNotification("Failed to catch " + this.fishingData.fishName);
-                self.stopFishing(false, 2000);
+                self.stopFishing(false, 2000, false);
             }
         },
 
@@ -6804,12 +6823,12 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     let durationLeft = buffExpiration - new Date().getTime();
                     let buffInfo;
                     if (durationLeft > 0){
-                        buffInfo = "Current buff: " + percent +"% " + stat + " - time left: " + self.msToTime(durationLeft);
+                        buffInfo = "Current buff: <span style='color:#FCE045; padding-right: 5px;'>" + percent + "%</span> " + stat + " - time left: <span style='color:#FCE045;'>" + self.msToTime(durationLeft) + '</span>';
                     } else {
                         buffInfo = "";
                         clearInterval(self.buffTickInterval);
                     }
-                    $("#buffInfo").html(buffInfo);
+                    $("#buffInfo").html('<div id="buffInfo">' + buffInfo + '</div>');
                 }, 1000);
             } else {
                 $("#buffInfo").html("");

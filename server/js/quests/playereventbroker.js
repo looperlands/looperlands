@@ -59,6 +59,10 @@ class PlayerEventBroker {
     }
 
     async lootEvent(item, amount) {
+        if(amount === undefined) {
+            amount = 1;
+        }
+
         dao.saveLootEvent(this.player.nftId, item.kind, amount);
 
         let sessionId = this.player.sessionId;

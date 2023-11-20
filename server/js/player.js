@@ -308,7 +308,7 @@ module.exports = Player = Character.extend({
                     var kind = item.kind;
 
                     if(Types.isItem(kind)) {
-                        self.playerEventBroker.lootEvent(item);
+                        self.playerEventBroker.lootEvent(item, 1);
                         self.broadcast(item.despawn());
                         self.server.removeEntity(item);
 
@@ -463,9 +463,13 @@ module.exports = Player = Character.extend({
                     }
                 }
             } else if(action === Types.Messages.FISHINGRESULT) {
-                if (message[1] && self.pendingFish !== null) {
+                let success = message[1],
+                    bullseye = message[2];
+                if (success && self.pendingFish !== null) {
                     let caughtAmount = self.pendingFish.double ? 2 : 1;
-                    self.incrementNFTSpecialItemExperience(self.pendingFish.exp * caughtAmount);
+                    let expAward = bullseye ? Math.round(self.pendingFish.exp * 1.5) : self.pendingFish.exp;
+                    
+                    self.incrementNFTSpecialItemExperience(expAward * caughtAmount);
                     self.playerEventBroker.lootEvent({kind: self.pendingFish.name}, caughtAmount);
                 }
                 self.pendingFish = null;
