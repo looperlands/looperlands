@@ -201,7 +201,10 @@ function(Camera, Item, Character, Player, Timer, Mob) {
         drawTargetCell: function() {
             var mouse = this.game.getMouseGridPosition();
         
-            if(this.game.targetCellVisible && !(mouse.x === this.game.selectedX && mouse.y === this.game.selectedY)) {
+            if( this.game.targetCellVisible 
+                && !(mouse.x === this.game.selectedX && mouse.y === this.game.selectedY) 
+                && this.game.app.settings.getHighlightTargetTiles()
+                ) {
                 this.drawCellHighlight(mouse.x, mouse.y, this.game.targetColor);
             }
         },

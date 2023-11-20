@@ -135,7 +135,7 @@ body.upscaled.game {background:#000;}
 #vignetting {height:100%;width:100%;position:absolute;top:0;left:0;pointer-events:none;}
 #logosparks {display:block;position:absolute;top:0;left:0;}
 #parchment, #parchment input {font-family:'GraphicPixel';}
-#parchment input {width:50%;background:rgba(0,0,0,0.05);text-align:center;-moz-animation:glow 0.5s linear infinite alternate;-webkit-animation:glow 0.5s linear infinite alternate;-o-animation:glow 0.5s linear infinite alternate;-ms-animation:glow 0.5s linear infinite alternate;color:#eee;}
+#parchment input {width:20%;background:rgba(0,0,0,0.05);text-align:center;-moz-animation:glow 0.5s linear infinite alternate;-webkit-animation:glow 0.5s linear infinite alternate;-o-animation:glow 0.5s linear infinite alternate;-ms-animation:glow 0.5s linear infinite alternate;color:#eee;}
 #parchment input:focus {-moz-animation:none;-webkit-animation:none;-o-animation:none;-ms-animation:none;animation:none;color:#fff;background:rgba(0,0,0,0.1);border-color:rgba(0,0,0,0.3);}
 
 #character div {-moz-transition:0.4s opacity linear;-webkit-transition:0.4s opacity linear;-o-transition:0.4s opacity linear;-ms-transition:0.4s opacity linear;transition:0.4s opacity linear;}
@@ -458,7 +458,7 @@ footer div  {display:inline-block;}
     #character {height:63px;width:36px;margin:0 auto;background-position:-1062px -36px;margin-top:45px;position:relative;}
     #character div {height:63px;width:36px;position:absolute;top:0;left:0;background-position:-1098px -36px;opacity:1;}
     #character.disabled div {opacity:0;pointer-events:none;}
-    #parchment input {margin-top:30px; padding:0 15px; border:3px dashed #b2af9b; font-size:30px;border-radius:9px;height:61px;}
+    #parchment input {margin-top:30px; padding:0 15px; border:3px dashed #b2af9b; font-size:30px;border-radius:9px;height:30px;}
     .button {height:153px;width:375px;background-position:-687px -306px;margin:30px auto 0 auto;position:relative;}
     .play div {height:153px;width:375px;background-position:-687px 0px;}
     .play div:active {background-position:-687px -459px;}
@@ -629,7 +629,7 @@ footer div  {display:inline-block;}
     #character {height:42px;width:24px;margin:0 auto;background-position:-708px -24px;margin-top:30px;position:relative;}
     #character div {height:42px;width:24px;position:absolute;top:0;left:0;background-position:-732px -24px;opacity:1;}
     #character.disabled div {opacity:0;pointer-events:none;}
-    #parchment input {margin-top:20px; padding:0 10px; border:2px dashed #b2af9b; font-size:20px;border-radius:6px;height:41px;}
+    #parchment input {margin-top:20px; padding:0 10px; border:2px dashed #b2af9b; font-size:20px;border-radius:6px;height:20px;}
     .button {height:102px;width:250px;background-position:-458px -204px;margin:20px auto 0 auto;position:relative;}
     .play div {height:102px;width:250px;background-position:-458px 0px;}
     .play div:active {background-position:-458px -306px;}
@@ -799,7 +799,7 @@ footer div  {display:inline-block;}
     #character {height:42px;width:24px;margin:0 auto;background-position:-708px -24px;margin-top:30px;position:relative;}
     #character div {height:42px;width:24px;position:absolute;top:0;left:0;background-position:-732px -24px;opacity:1;}
     #character.disabled div {opacity:0;pointer-events:none;}
-    #parchment input {margin-top:20px; padding:0 10px; border:2px dashed #b2af9b; font-size:20px;border-radius:6px;height:41px;}
+    #parchment input {margin-top:20px; padding:0 10px; border:2px dashed #b2af9b; font-size:20px;border-radius:6px;height:20px;}
     .button {height:102px;width:250px;background-position:-458px -204px;margin:20px auto 0 auto;position:relative;}
     .play div {height:102px;width:250px;background-position:-458px 0px;}
     .play div:active {background-position:-458px -306px;}
@@ -964,7 +964,7 @@ footer div  {display:inline-block;}
     #character {height:21px;width:12px;margin:0 auto;background-position:-354px -12px;margin-top:15px;position:relative;}
     #character div {height:21px;width:12px;position:absolute;top:0;left:0;background-position:-366px -12px;opacity:1;}
     #character.disabled div {opacity:0;pointer-events:none;}
-    #parchment input {margin-top:10px; padding:0 5px; border:1px dashed #b2af9b; font-size:10px;border-radius:3px;height:21px;}
+    #parchment input {margin-top:10px; padding:0 5px; border:1px dashed #b2af9b; font-size:10px;border-radius:3px;height:10px;}
     .button {height:51px;width:125px;background-position:-229px -102px;margin:10px auto 0 auto;position:relative;}
     .play div {height:51px;width:125px;background-position:-229px 0px;}
     .play div:active {background-position:-229px -153px;}
@@ -1151,7 +1151,7 @@ footer div  {display:inline-block;}
     #character {height:21px;width:12px;margin:0 auto;background-position:-354px -12px;margin-top:15px;position:relative;display:none;}
     #character div {height:21px;width:12px;position:absolute;top:0;left:0;background-position:-366px -12px;opacity:1;}
     #character.disabled div {opacity:0;pointer-events:none;}
-    #parchment input {margin-top:10px; padding-bottom:5px; border-bottom:1px dashed #b2af9b; font-size:20px;-moz-animation:none;-webkit-animation:none;-o-animation:none;-ms-animation:none;color:#eee;}
+    #parchment input {margin-top:20px; padding:0 10px; border:2px dashed #b2af9b; font-size:20px;border-radius:6px;height:20px;}
     .button {height:54px;width:204px;background-position:-500px -952px;margin:20px auto 0 auto;position:relative;background-size:844px;}
     .play div {height:54px;width:204px;background-position:-458px -512px; background-size:844px;}
     .play div:active {background-position:0px -1398px;}
