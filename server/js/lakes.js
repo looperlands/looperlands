@@ -167,9 +167,12 @@ Lakes.getDifficulty = function(playerLevel, lakeName, upperHand) {
           minDifficulty = 25, // a target bar should never be bigger than 25%
           levelGain = 2;
 
+    let traitMod = upperHand ? 2 : 1;
+
     let calculatedDiff = maxDifficulty + (playerLevel - Lakes[lakeName].level) * levelGain;
-    let returnDiff = Math.min(calculatedDiff, minDifficulty);
-    return upperHand ? returnDiff * 2 : returnDiff;
+    let returnDiff = Math.min(calculatedDiff, minDifficulty) * traitMod;
+    let bullseyeDiff = 1 * traitMod;
+    return {difficulty: returnDiff, bullseye: bullseyeDiff};
 };
 
 Lakes.isCollectable = function(item) {

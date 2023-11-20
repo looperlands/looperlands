@@ -751,9 +751,10 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
                               nftId]);
         },
 
-        sendFishingResult: function(result) {
+        sendFishingResult: function(result, bullseye) {
             this.sendMessage([Types.Messages.FISHINGRESULT,
-                              result]);
+                              result,
+                              bullseye]);
         },
 
         sendConsumeItem: function(itemId) {

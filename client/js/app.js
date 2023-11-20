@@ -737,18 +737,24 @@ define(['jquery', 'storage'], function ($, Storage) {
         hideFishing: function () {
             $('#fishingbar').removeClass('hold');
             $('#fishingbar').removeClass('active');
+            $('#bullseye').removeClass('active');
         },
 
-        holdFishing: function () {
+        holdFishing: function (bullseye) {
             $('#fishingbar').removeClass('active');
             $('#fishingbar').addClass('hold');
+            if (bullseye){
+                $('#bullseye').addClass('active');
+            }
         },
 
-        setFishingTarget: function (barHeight, marginTop) {
+        setFishingTarget: function (barHeight, barMarginTop, bullseyeHeight, bullseyeMarginTop) {
             let scale = this.game.renderer.scale;
 
             $("#fishingtarget").css('height', barHeight * scale + "px");
-            $("#fishingtarget").css('margin-top', marginTop * scale + "px");
+            $("#fishingtarget").css('margin-top', barMarginTop * scale + "px");
+            $("#fishingtargetbullseye").css('height', bullseyeHeight * scale + "px");
+            $("#fishingtargetbullseye").css('margin-top', bullseyeMarginTop * scale + "px");
         },
 
         setFish: function (url) {
