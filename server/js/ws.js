@@ -23,7 +23,6 @@ const Formulas = require('./formulas.js');
 const ens = require("./ens.js");
 const chat = require("./chat.js");
 const quests = require("./quests/quests.js");
-const signing = require("./signing.js");
 const Lakes = require("./lakes.js");
 const Collectables = require('./collectables.js');
 const cache = new NodeCache();
@@ -203,23 +202,6 @@ WS.socketIOServer = Server.extend({
                     cache.del(key);
                 }
             }
-
-            let signedMessage = body.signedMessage;
-            let signature = body.signature;
-            let validSignature = await signing.validateSignature(body.walletId, signedMessage, signature);
-            //console.log("Valid signature", validSignature);
-
-            /*
-            if (!validSignature) {
-                console.error("Invalid signature for wallet", body.walletId);
-                res.status(401).json({
-                    status: false,
-                    error: "Invalid signature",
-                    user: null
-                });
-                return;
-            }
-            */
 
             let responseJson = newSession(body);
 
@@ -773,8 +755,6 @@ WS.socketIOServer = Server.extend({
             let msgs = chat.getMessages();
             res.status(200).json(msgs);
         });
-
-        app.post("/sign/generatenonce", signing.generateNonce);
 
         const corsOptions = {
             origin: '*',
