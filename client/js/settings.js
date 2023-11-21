@@ -17,11 +17,15 @@ class GameSettings {
       if (!localStorage.getItem('animatedTiles')) {
         localStorage.setItem('animatedTiles', 'true');
       }
+      if (!localStorage.getItem('highlightTargetTiles')) {
+        localStorage.setItem('highlightTargetTiles', 'true');
+      }
 
       // Initialize checkbox states based on localStorage
       document.getElementById('musicEnabled').checked = this.getMusicEnabled();
       document.getElementById('centeredCamera').checked = this.getCenteredCamera();
       document.getElementById('animatedTiles').checked = this.getAnimatedTiles();
+      document.getElementById('highlightTargetTiles').checked = this.getHighlightTargetTiles();
 
       // Add event listener to save settings when the form is submitted
       const form = document.getElementById('settingsForm');
@@ -62,9 +66,18 @@ class GameSettings {
       localStorage.setItem('animatedTiles', enabled ? 'true' : 'false');
     }
 
+    getHighlightTargetTiles() {
+      return localStorage.getItem('highlightTargetTiles') === 'true';
+    }
+
+    setHighlightTargetTiles(enabled) {
+      localStorage.setItem('highlightTargetTiles', enabled ? 'true' : 'false');
+    }
+
     setSettings() {
       this.setMusicEnabled(document.getElementById('musicEnabled').checked);
       this.setCenteredCamera(document.getElementById('centeredCamera').checked);
       this.setAnimatedTiles(document.getElementById('animatedTiles').checked);
+      this.setHighlightTargetTiles(document.getElementById('highlightTargetTiles').checked);
     }
   }
