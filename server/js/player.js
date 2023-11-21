@@ -902,19 +902,32 @@ module.exports = Player = Character.extend({
         let self = this;
         let buffData = Lakes.getBuffByFish(fish);
         if (buffData){
-            const buffDuration = 1000 * 60 * 10;
+            let buffDuration = 1000 * 60 * 10;
+            let newBuff = true;
 
             if (self.consumableBuff) {
                 clearTimeout(self.consumableBuff.buffTimeout);
-                self.removeConsumableBuff();
+                if(buffData.stat === self.consumableBuff.buff?.stat && buffData.percent === self.consumableBuff.buff?.percent) {
+                    newBuff = false;
+                    let oldDurationLeft = self.consumableBuff.expireTime - new Date().getTime();
+                    if (oldDurationLeft > 0) {
+                        buffDuration = Math.min(buffDuration + oldDurationLeft, 3599999); //cap at 59:59 to not overcomplicate things in the ui
+                    }
+                } else {
+                    self.removeConsumableBuff();
+                }
             }
+            
             self.consumableBuff.expireTime = new Date().getTime() + buffDuration;
-            self.consumableBuff.buff = buffData;
             self.consumableBuff.buffTimeout = setTimeout(function(){
                 self.removeConsumableBuff();
                 self.consumableBuff = {};
             }.bind(self), buffDuration);
-            self.applyConsumableBuff();
+
+            if(newBuff){
+                self.consumableBuff.buff = buffData;
+                self.applyConsumableBuff();
+            }
 
             self.send(new Messages.Buffinfo(self.consumableBuff.buff?.stat, self.consumableBuff.buff?.percent, buffDuration).serialize());
         }

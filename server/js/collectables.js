@@ -40,6 +40,16 @@ const Collectables = {
                 return;
             }
         }
+    },
+
+    getInventoryDescription: function(item) {
+        for (var i = 0; i < this.providers.length; i++) {
+            let description = this.providers[i].getInventoryDescription(item);
+            if (description) {
+                return description;
+            }
+        }
+        return "";
     }
 };
 

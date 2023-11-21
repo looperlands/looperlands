@@ -406,7 +406,10 @@ WS.socketIOServer = Server.extend({
                 if (!item || !Collectables.isCollectable(item) || consumables[item] <= 0){
                     delete consumables[item];
                 } else {
-                    consumables[item] = {qty: consumables[item], consumable: Collectables.isConsumable(item), image: Collectables.getCollectableImageName(item)};
+                    consumables[item] = {qty: consumables[item], 
+                                        consumable: Collectables.isConsumable(item), 
+                                        image: Collectables.getCollectableImageName(item),
+                                        description: Collectables.getInventoryDescription(item)};
                 }
             });
 

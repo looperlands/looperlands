@@ -96,7 +96,7 @@ generateFishDataMap = function() { // also do config checks
     });
 
     return retMap;
-}
+};
 
 const fishDataMap = generateFishDataMap();
 
@@ -177,7 +177,7 @@ Lakes.getDifficulty = function(playerLevel, lakeName, upperHand) {
 
 Lakes.isCollectable = function(item) {
     return Lakes.isConsumable(item);
-}
+};
 
 Lakes.isConsumable = function(fishName) {
     let retVal = false;
@@ -206,6 +206,11 @@ Lakes.getBuffByFish = function(fishName) {
     }
 
     return buffObj;
-}
+};
+
+Lakes.getInventoryDescription = function(fishName){
+    let description = Lakes.getBuffByFish(fishName);
+    return description ? description.percent + "% " + description.stat : false;
+};
 
 module.exports = Lakes;
