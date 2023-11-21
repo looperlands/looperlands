@@ -14,7 +14,8 @@
         "fhf",
         "wk",
         "crimsonspace",
-        "kbb"
+        "kbb",
+        "shortdestroyers"
     ],
     "map_directory": "./server/maps/",
     "metrics_enabled": false,
