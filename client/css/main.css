@@ -334,10 +334,35 @@ footer div  {display:inline-block;}
     padding: 5px;
     line-height: 25px !important;
     margin-top: 5px;
+    position: relative;
 }
+
+#inventory .item .tooltiptext {
+    visibility: hidden;
+    padding: 0.25em 0.5em;
+    background-color: #dec696;
+    color: #000000;
+    text-align: center;
+    border-radius: 0.25em;
+    white-space: nowrap;
+    position: absolute;
+    z-index: 1;
+    top: 100%;
+    left: 100%;
+    font-family: "GraphicPixel";
+    outline-style: solid;
+    outline-color: #a18b61;
+    outline-width: thin;
+  }
+
 #inventory .item:hover {
     background: #d9c399;
 }
+
+#inventory .item:hover .tooltiptext {
+    visibility: visible;
+}
+
 
 /* Magic Parchment */
 
