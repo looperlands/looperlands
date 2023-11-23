@@ -289,6 +289,7 @@ Types = {
         MORNINGSTAR: 64,
         AXE: 65,
         BLUESWORD: 66,
+        TRANSPARENT_WEAPON: 67,
         // FieldEffects
         MAGCRACK: 40000001,
         COBFALLINGROCK: 40000002,
@@ -3895,6 +3896,7 @@ var kinds = {
     axe: [Types.Entities.AXE, "weapon"],
     redsword: [Types.Entities.REDSWORD, "weapon"],
     bluesword: [Types.Entities.BLUESWORD, "weapon"],
+    transparentweapon: [Types.Entities.TRANSPARENT_WEAPON, "weapon"],
     goldensword: [Types.Entities.GOLDENSWORD, "weapon"],
     morningstar: [Types.Entities.MORNINGSTAR, "weapon"],
     
@@ -7467,7 +7469,11 @@ Types.rankedArmors = [
 ];
 
 Types.getWeaponRank = function(weaponKind) {
-    return Math.round(_.indexOf(Types.rankedWeapons, weaponKind) * 1.33);
+    if (weaponKind === Types.Entities.TRANSPARENT_WEAPON) {
+        return 0;
+    } else {
+        return Math.round(_.indexOf(Types.rankedWeapons, weaponKind) * 1.33);
+    }
 };
 
 Types.getArmorRank = function(armorKind) {
