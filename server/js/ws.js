@@ -190,16 +190,15 @@ WS.socketIOServer = Server.extend({
                 let key = cacheKeys[i];
                 let cachedBody = cache.get(key);
                 let sameWallet = cachedBody.walletId === body.walletId;
-                if(sameWallet && cachedBody.isDirty === true) {
-                    let player = self.worldsMap[cachedBody.mapId].getEntityById(cachedBody.entityId);
+                if(sameWallet) {
                     cache.del(key);
-                    if (player !== undefined) {
-                        player.connection.close('A new session from another device created');
+                    if (cachedBody.isDirty === true) {
+                        let player = self.worldsMap[cachedBody.mapId]?.getPlayerById(cachedBody.entityId);
+                        if (player !== undefined) {
+                            player.connection.close('A new session from another device created');
+                        }
                     }
                     break;
-                } else if (sameWallet && cachedBody.isDirty === false){
-                    //console.log("deleting a session that never connected: " + key)
-                    cache.del(key);
                 }
             }
 
