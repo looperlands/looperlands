@@ -7078,7 +7078,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     let durationLeft = buffExpiration - new Date().getTime();
                     let buffInfo;
                     if (durationLeft > 0){
-                        buffInfo = "Current buff: <span style='color:#FCE045; padding-right: 5px;'>" + percent + "%</span> " + stat + " - time left: <span style='color:#FCE045;'>" + self.msToTime(durationLeft) + '</span>';
+                        buffInfo = "Active buff: <span style='color:#FCE045; padding-right: 5px;'>" + percent + "%</span>" + stat + " (<span style='color:#FCE045;'>" + self.msToTime(durationLeft) + '</span>)';
                     } else {
                         buffInfo = "";
                         clearInterval(self.buffTickInterval);
