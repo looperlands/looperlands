@@ -6668,6 +6668,18 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
                 this.renderer.renderStaticCanvases();
                 this.app.initEquipmentIcons();
+
+                this.fullscreen();
+        },
+
+        fullscreen: function() {
+            this.fullscreenScaleFactor = Math.min(
+                ($(window).width() / $("#container").width() * 0.95), 
+                ($(window).height() / $("#container").height() * 0.95)
+            );
+                        
+            $("#container").css('transform', 'scale(' + Math.min(($(window).width() / $("#container").width() * 0.95), ($(window).height() / $("#container").height() * 0.95)) + ')');                
+
         },
     
         updateBars: function() {

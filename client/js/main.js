@@ -263,6 +263,7 @@ define(['jquery', 'app'], function($, App) {
     		game.setup('#bubbles', canvas, background, foreground, input);
     		game.setStorage(app.storage);
     		app.setGame(game);
+            game.fullscreen();
     		
     		if(app.isDesktop && app.supportsWorkers) {
     		    game.loadMap(mapId);
@@ -350,7 +351,9 @@ define(['jquery', 'app'], function($, App) {
                 });
             } else {
                 $('#foreground').click(function(event) {
-                    app.center();
+                    app.center();               
+
+                    // todo: some type of conversion
                     app.setMouseCoordinates(event);
                     if(game) {
                 	    game.click();
@@ -358,6 +361,7 @@ define(['jquery', 'app'], function($, App) {
                 	app.hideWindows();
                     // $('#chatinput').focus();
                 });
+
             }
 
             $('body').unbind('click');
