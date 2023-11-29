@@ -4082,9 +4082,8 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         setCursor: function(name, orientation) {
             if(name in this.cursors) {
                 this.currentCursorOrientation = orientation;
-                if (name !== this.lastCursorName) {
-                    this.renderer.worker.postMessage({type: "setMouseCursor", name: name});
-                    this.lastCursorName = name;
+                if (name !== this.currentCursorName) {
+                    this.currentCursorName = name;
                 }
             } else {
                 console.error("Unknown cursor name :"+name);

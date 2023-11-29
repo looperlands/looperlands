@@ -290,7 +290,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                 s = this.scale,
                 os = this.upscaledRendering ? 1 : this.scale;
 
-            return {"type": "render", id: "high", mx: mx, my: my, s: s, os: os, cursor : true, name: this.game.lastCursorName};
+            return {"type": "render", id: "high", mx: mx, my: my, s: s, os: os, cursor : true, name: this.game.currentCursorName};
         },
 
         drawScaledImage: function(ctx, image, x, y, w, h, dx, dy) {

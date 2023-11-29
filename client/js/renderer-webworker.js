@@ -70,10 +70,6 @@ onmessage = (e) => {
         loadImg(e.data.src).then((img) => {
             tileset = img;
         });
-    }
-    else if (e.data.type === "setMouseCursor") {
-        cursor = cursors[e.data.name];
-        console.log("setMouseCursor", e.data.name);
     } else if (e.data.type === "loadCursor") {
         loadImg(e.data.src).then((img) => {
             cursors[e.data.name] = img;
