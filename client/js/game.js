@@ -33,7 +33,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             this.finalPathingGrid = null;
             this.renderingGrid = null;
             this.itemGrid = null;
-            this.currentCursor = null;
             this.mouse = { x: 0, y: 0 };
             this.zoningQueue = [];
             this.previousClickPosition = {};
@@ -3944,6 +3943,13 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             this.cursors["arrow"] = this.sprites["arrow"];
             this.cursors["talk"] = this.sprites["talk"];
             this.cursors["float"] = this.sprites["float"];
+
+            for (let name in this.cursors) {
+                let cursor = this.cursors[name];
+                if (cursor !== undefined) {
+                    this.renderer.worker.postMessage({type: "loadCursor", name: name, src: "/" + cursor.filepath});
+                }
+            }
         },
 
         initFish: function() {
@@ -4079,8 +4085,10 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
         setCursor: function(name, orientation) {
             if(name in this.cursors) {
-                this.currentCursor = this.cursors[name];
                 this.currentCursorOrientation = orientation;
+                if (name !== this.currentCursorName) {
+                    this.currentCursorName = name;
+                }
             } else {
                 console.error("Unknown cursor name :"+name);
             }
