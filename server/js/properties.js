@@ -1066,4 +1066,9 @@ Properties.consume = function(kind, player) {
     }
 }
 
+Properties.getInventoryDescription = function(kind) {
+    retDescription = Properties[Types.getKindAsString(kind)]?.inventoryDescription;
+    return retDescription !== undefined ? retDescription : false;
+}
+
 module.exports = Properties;

@@ -1,0 +1,53 @@
+{
+  "id": "NFT_0ca53f3ae0871e7dc784025e6692cbf118f40b085049dc3a4bc31167d6d96960",
+	"width": 64,
+	"height": 64,
+	"animations": {
+		"atk_right": {
+			"length": 5,
+			"row": 0
+		},
+		"walk_right": {
+			"length": 4,
+			"row": 1
+		},
+		"idle_right": {
+			"length": 2,
+			"row": 2
+		},
+		"atk_up": {
+			"length": 6,
+			"row": 3
+		},
+		"walk_up": {
+			"length": 4,
+			"row": 4
+		},
+		"idle_up": {
+			"length": 2,
+			"row": 5
+		},
+		"atk_down": {
+			"length": 5,
+			"row": 6
+		},
+		"walk_down": {
+			"length": 4,
+			"row": 7
+		},
+		"idle_down": {
+			"length": 2,
+			"row": 8
+		},
+		"special": {
+			"length": 6,
+			"row": 9
+		},
+		"death": {
+			"length": 4,
+			"row": 10
+		}
+	},
+	"offset_x": -24,
+	"offset_y": -40
+}

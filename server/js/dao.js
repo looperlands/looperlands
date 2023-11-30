@@ -518,7 +518,7 @@ exports.loadAvatarGameData = async function(avatarId, retry) {
           avatarItems[itemId] = itemCount.iCount;
         }
         return avatarItems;
-      }, {});
+      }, items);
     }
 
     if (responseData.questJson) {

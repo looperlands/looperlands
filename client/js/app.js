@@ -471,9 +471,14 @@ define(['jquery', 'storage'], function ($, Storage) {
                     inventoryHtml += "<strong>Items</strong>";
                     inventoryHtml += "<div>"
                     Object.keys(consumablesInventory).forEach(item => {
+                        let description = consumablesInventory[item].description;
+                        let tooltipText = "";
+                        if(description){
+                            tooltipText = "<div class='tooltiptext'>" + description + "</div>";
+                        }
                         inventoryHtml += "<div style='display:inline-block'>"
                         let cursor = consumablesInventory[item].consumable ? "pointer" : "not-allowed";
-                        imgTag = "<div class='item'><img id='" + item + "' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0; cursor: " + cursor + ";' src='img/3/" + consumablesInventory[item].image + ".png' /></div>";
+                        imgTag = "<div class='item'>" + tooltipText + "<img id='" + item + "' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0; cursor: " + cursor + ";' src='img/3/" + consumablesInventory[item].image + ".png' /></div>";
                         inventoryHtml += imgTag;
 
                         inventoryHtml += "<p id=count_" + item + ">" + consumablesInventory[item].qty + "</p>"

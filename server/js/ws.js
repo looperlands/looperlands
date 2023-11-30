@@ -23,7 +23,6 @@ const Formulas = require('./formulas.js');
 const ens = require("./ens.js");
 const chat = require("./chat.js");
 const quests = require("./quests/quests.js");
-const signing = require("./signing.js");
 const Lakes = require("./lakes.js");
 const Collectables = require('./collectables.js');
 const cache = new NodeCache();
@@ -191,35 +190,17 @@ WS.socketIOServer = Server.extend({
                 let key = cacheKeys[i];
                 let cachedBody = cache.get(key);
                 let sameWallet = cachedBody.walletId === body.walletId;
-                if(sameWallet && cachedBody.isDirty === true) {
-                    let player = self.worldsMap[cachedBody.mapId].getEntityById(cachedBody.entityId);
+                if(sameWallet) {
                     cache.del(key);
-                    if (player !== undefined) {
-                        player.connection.close('A new session from another device created');
+                    if (cachedBody.isDirty === true) {
+                        let player = self.worldsMap[cachedBody.mapId]?.getPlayerById(cachedBody.entityId);
+                        if (player !== undefined) {
+                            player.connection.close('A new session from another device created');
+                        }
                     }
                     break;
-                } else if (sameWallet && cachedBody.isDirty === false){
-                    //console.log("deleting a session that never connected: " + key)
-                    cache.del(key);
                 }
             }
-
-            let signedMessage = body.signedMessage;
-            let signature = body.signature;
-            let validSignature = await signing.validateSignature(body.walletId, signedMessage, signature);
-            //console.log("Valid signature", validSignature);
-
-            /*
-            if (!validSignature) {
-                console.error("Invalid signature for wallet", body.walletId);
-                res.status(401).json({
-                    status: false,
-                    error: "Invalid signature",
-                    user: null
-                });
-                return;
-            }
-            */
 
             let responseJson = newSession(body);
 
@@ -406,7 +387,10 @@ WS.socketIOServer = Server.extend({
                 if (!item || !Collectables.isCollectable(item) || consumables[item] <= 0){
                     delete consumables[item];
                 } else {
-                    consumables[item] = {qty: consumables[item], consumable: Collectables.isConsumable(item), image: Collectables.getCollectableImageName(item)};
+                    consumables[item] = {qty: consumables[item], 
+                                        consumable: Collectables.isConsumable(item), 
+                                        image: Collectables.getCollectableImageName(item),
+                                        description: Collectables.getInventoryDescription(item)};
                 }
             });
 
@@ -770,8 +754,6 @@ WS.socketIOServer = Server.extend({
             let msgs = chat.getMessages();
             res.status(200).json(msgs);
         });
-
-        app.post("/sign/generatenonce", signing.generateNonce);
 
         const corsOptions = {
             origin: '*',
