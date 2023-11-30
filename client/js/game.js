@@ -3947,7 +3947,9 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             for (let name in this.cursors) {
                 let cursor = this.cursors[name];
                 if (cursor !== undefined) {
-                    this.renderer.worker.postMessage({type: "loadCursor", name: name, src: "/" + cursor.filepath});
+                    let isLocal = window.location.href.indexOf("127.0.0.1") > -1;
+                    let src =  isLocal ? "/" + cursor.filepath : cursor.filepath;
+                    this.renderer.worker.postMessage({type: "loadCursor", name: name, src: src});
                 }
             }
         },
