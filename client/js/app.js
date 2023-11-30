@@ -132,8 +132,10 @@ define(['jquery', 'storage'], function ($, Storage) {
                 height = this.game.renderer.getHeight(),
                 mouse = this.game.mouse;
 
-            mouse.x = event.pageX - gamePos.left - (this.isMobile ? 0 : 5 * scale);
-            mouse.y = event.pageY - gamePos.top - (this.isMobile ? 0 : 7 * scale);
+            var scale = $(this).css("transform").split("(")[1].split(")")[0].split(",");
+
+            mouse.x = (event.pageX - gamePos.left) / scale
+            mouse.y = (event.pageY - gamePos.top) / scale
 
             if (mouse.x <= 0) {
                 mouse.x = 0;

@@ -258,6 +258,8 @@ define(['jquery', 'app'], function($, App) {
         	    background = document.getElementById("background"),
         	    foreground = document.getElementById("foreground"),
         	    input = document.getElementById("chatinput");
+                emoteToggle = document.getElementById("emoteToggle");
+
 
     		game = new Game(app);
     		game.setup('#bubbles', canvas, background, foreground, input);
@@ -454,7 +456,14 @@ define(['jquery', 'app'], function($, App) {
                     }
                 }
             });
-            
+
+            $('#emoteMenuToggle'.click(function(event) {
+                game.emote('love')
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                return false;
+            });
+
             $('#mutebutton').click(function() {
                 game.app.toggleSettings();
             });

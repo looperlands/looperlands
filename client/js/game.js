@@ -5313,9 +5313,35 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             
                 self.client.onChatMessage(function(entityId, message) {
                     var entity = self.getEntityById(entityId);
+
+                    if(message.substring(0,1) === '/') {
+                        const hearths = 25;
+                        let delay = 0;
+                        for(let i = 0; i < hearths; i++) {
+                            // randomize
+                            delay += Math.floor(Math.random() * 500);
+                            let randomXOffset = Math.floor(Math.random() * 40) - 20;
+                            let randomYOffset = -1 * (Math.floor(Math.random() * 20) + 5);
+                            setTimeout(() => {self.infoManager.addDamageInfo("🎵", entity.x + randomXOffset, entity.y + randomYOffset, "emote");}, delay)
+                        }
+                        return;
+                    }
                     self.createBubble(entityId, message);
                     self.assignBubbleTo(entity);
                     self.audioManager.playSound("chat");
+                });
+
+                self.client.onEmotion(function(entityId, emotion) {
+                    var entity = self.getEntityById(entityId);
+                    const icons = 25;
+                    let delay = 0;
+                    for(let i = 0; i < icons; i++) {
+                        // randomize
+                        delay += Math.floor(Math.random() * 500);
+                        let randomXOffset = Math.floor(Math.random() * 40) - 20;
+                        let randomYOffset = -1 * (Math.floor(Math.random() * 20) + 5);
+                        setTimeout(() => {self.infoManager.addDamageInfo("🎵", entity.x + randomXOffset, entity.y + randomYOffset, "emote");}, delay)
+                    }
                 });
 
                 self.client.onSound(self.handleSound);
@@ -6366,6 +6392,10 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
     
         say: function(message) {
             this.client.sendChat(message);
+        },
+
+        emote: function(emotion) {
+            this.client.sendEmotion(emotion);
         },
     
         createBubble: function(id, message) {

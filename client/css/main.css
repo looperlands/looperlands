@@ -243,6 +243,21 @@ body.upscaled.game {background:#000;}
 .bubble p {-moz-user-select:none;-webkit-user-select:none;}
 .bubbleglobal p {-moz-user-select:none;-webkit-user-select:none; text-align: left; flex: 0 0 100%;}
 
+#emoteMenuToggle {
+    width: 12px;
+    height: 12px;
+    position: absolute;
+    top: 3px;
+    left: 4px;
+    background: url(../img/1/barsheet.png);
+    background-position-y: -65px;
+    cursor: pointer;
+    display:none;
+}
+#chatbox.active #emoteMenuToggle {
+    display:block;
+}
+
 #instructions {position:absolute;top:50%;left:50%;z-index:1000;font-family:'GraphicPixel';pointer-events:none;opacity:0;-moz-transition:0.25s opacity linear;-webkit-transition:0.4s top ease, 0.4s opacity linear;-o-transition:0.4s top ease, 0.4s opacity linear;-ms-transition:0.4s top ease, 0.4s opacity linear;transition:0.4s top ease, 0.4s opacity linear;}
 #instructions.active, #achievements.active {opacity:1;pointer-events:auto;}
 
@@ -681,7 +696,18 @@ footer div  {display:inline-block;}
 
     #chatbox {height:48px;width:1182px;background-size:1440px;background-position:0 -96px;margin-left:-591px;bottom:18px;}
     #chatbox.active {bottom:66px;}
-    #chatbox input {font-size:20px;color:#eee;background:none;width:90%;border:0;margin-left:2%;padding:16px 0;}
+    #chatbox input {font-size:20px;color:#eee;background:none;width:90%;border:0;margin-left:5%;padding:16px 0;}
+
+    #emoteMenuToggle {
+        width: 24px;
+        height: 24px;
+        position: absolute;
+        top: 6px;
+        left: 9px;
+        background: url(../img/2/barsheet.png);
+        background-position-y: -129px;
+        cursor: pointer;
+    }
 
     /*Credits*/
     #credits, #death, #about, #settings {width:1266px;height:546px;margin-left:-633px;margin-top:-273px;font-size:30px;}
@@ -736,6 +762,17 @@ footer div  {display:inline-block;}
     .upscaled #bar-container, .upscaled #healthbar, .upscaled .barbutton, .upscaled #chatbox, .upscaled #population {background-image:url('../img/2/barsheet.png');}
     .upscaled #achievements, .upscaled #achievements li, .upscaled .coin, .upscaled #achievement-notification, .upscaled #coinsparks, .upscaled .achievement-sharing a, .upscaled #previous, .upscaled #next {background:url('../img/2/achievements.png');}
     .upscaled #fishingbar, #fish-marker {background:url('../img/2/fishing.png');}
+
+    #emoteMenuToggle {
+        width: 24px;
+        height: 24px;
+        position: absolute;
+        top: 6px;
+        left: 9px;
+        background: url(../img/2/barsheet.png);
+        background-position-y: -129px;
+        cursor: pointer;
+    }
 
     #avatarStats {
         position: absolute;
@@ -908,7 +945,7 @@ footer div  {display:inline-block;}
 
     #chatbox {height:32px;width:788px;background-size:960px;background-position:0 -64px;margin-left:-394px;bottom:12px;}
     #chatbox.active {bottom:44px;}
-    #chatbox input {font-size:20px;color:#eee;background:none;width:90%;border:0;margin-left:2%;padding:7px 0;}
+    #chatbox input {font-size:20px;color:#eee;background:none;width:90%;border:0;margin-left:5%;padding:7px 0;}
 
     /*Credits*/
     #credits, #death, #about, #settings {width:844px;height:364px;margin-left:-422px;margin-top:-182px;font-size:20px;}
@@ -1136,7 +1173,18 @@ footer div  {display:inline-block;}
 
     #chatbox {height:32px;width:788px;background-size:960px;background-position:0 -64px;margin-left:-394px;bottom:12px;}
     #chatbox.active {bottom:44px;}
-    #chatbox input {font-size:20px;color:#eee;background:none;width:90%;border:0;margin-left:2%;padding:7px 0;}
+    #chatbox input {font-size:20px;color:#eee;background:none;width:90%;border:0;margin-left:5%;padding:7px 0;}
+
+    .upscaled #emoteMenuToggle {
+        width: 24px;
+        height: 24px;
+        position: absolute;
+        top: 6px;
+        left: 9px;
+        background: url(../img/2/barsheet.png);
+        background-position-y: -129px;
+        cursor: pointer;
+    }
 
     /*Credits*/
     #credits, #death, #about, #settings {width:844px;height:364px;margin-left:-422px;margin-top:-182px;font-size:20px;}
@@ -1304,7 +1352,7 @@ footer div  {display:inline-block;}
 
     #chatbox {height:16px;width:394px;background-size:480px;background-position:0 -32px;margin-left:-197px;bottom:6px;}
     #chatbox.active {bottom:22px;}
-    #chatbox input {font-size:10px;color:#eee;background:none;width:90%;border:0;margin-left:2%;padding:0;}
+    #chatbox input {font-size:10px;color:#eee;background:none;width:90%;border:0;margin-left:5%;padding:0;}
 
     /*Credits*/
     #credits, #death, #about, #settings {width:422px;height:182px;top:50%;margin-left:-211px;margin-top:-91px;font-size:10px;}
@@ -1527,7 +1575,7 @@ footer div  {display:inline-block;}
 
     #chatbox {height:32px;width:480px;background-size:960px;background-position:0 -64px;margin-left:-240px;bottom:2px;}
     #chatbox.active {bottom:34px;}
-    #chatbox input {font-size:20px;color:#eee;background:none;width:90%;border:0;margin-left:2%;padding:0px 0;}
+    #chatbox input {font-size:20px;color:#eee;background:none;width:90%;border:0;margin-left:5%;padding:0px 0;}
 
     /*Credits*/
     .parchment-left, .upscaled .parchment-left, .parchment-middle, .upscaled .parchment-middle, .parchment-right, .upscaled .parchment-right {background:none;}

@@ -26,6 +26,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             this.handlers[Types.Messages.SPAWN_BATCH] = this.receiveSpawnBatch;
             this.handlers[Types.Messages.HEALTH] = this.receiveHealth;
             this.handlers[Types.Messages.CHAT] = this.receiveChat;
+            this.handlers[Types.Messages.EMOTE] = this.receiveEmotion;
             this.handlers[Types.Messages.EQUIP] = this.receiveEquipItem;
             this.handlers[Types.Messages.DROP] = this.receiveDrop;
             this.handlers[Types.Messages.TELEPORT] = this.receiveTeleport;
@@ -309,6 +310,16 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
         },
 
 
+        receiveEmotion: function(data) {
+            var id = data[1],
+                emotion = data[2];
+
+            if(this.emotion_callback) {
+                this.emotion_callback(id, emotion);
+            }
+        },
+
+
         receiveEquipItem: function(data) {
             var id = data[1],
                 itemKind = data[2];
@@ -581,6 +592,10 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             this.chat_callback = callback;
         },
 
+        onEmotion: function(callback) {
+            this.emotion_callback = callback;
+        },
+
         onDropItem: function(callback) {
             this.drop_callback = callback;
         },
@@ -707,8 +722,11 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
         },
     
         sendChat: function(text) {
-            this.sendMessage([Types.Messages.CHAT,
-                              text]);
+            this.sendMessage([Types.Messages.CHAT, text]);
+        },
+
+        sendEmotion: function(emotion) {
+            this.sendMessage([Types.Messages.EMOTE, emotion]);
         },
     
         sendLoot: function(item) {

@@ -44,7 +44,8 @@ Types = {
         LAYER: 40,
         ANIMATE: 41,
         CONSUMEITEM: 35,
-        BUFFINFO: 36
+        BUFFINFO: 36,
+        EMOTE: 37
     },
     
     Entities: {
