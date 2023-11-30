@@ -131,10 +131,17 @@ define(['jquery', 'storage'], function ($, Storage) {
                 height = this.game.renderer.getHeight(),
                 mouse = this.game.mouse;
 
-            var scale = $('#container').css("transform").split("(")[1].split(")")[0].split(",");
+            var scale;
 
-            mouse.x = (event.pageX - gamePos.left) / parseFloat(scale[0])
-            mouse.y = (event.pageY - gamePos.top) / parseFloat(scale[3])
+            if(this.settings.getFullscreen()) {
+                scale = $('#container').css("transform").split("(")[1].split(")")[0].split(",");
+                mouse.x = (event.pageX - gamePos.left) / parseFloat(scale[0])
+                mouse.y = (event.pageY - gamePos.top) / parseFloat(scale[3])
+            } else {
+                scale = this.game.renderer.getScaleFactor();
+                mouse.x = event.pageX - gamePos.left - (this.isMobile ? 0 : 5 * scale);
+                mouse.y = event.pageY - gamePos.top - (this.isMobile ? 0 : 7 * scale);
+            }
 
             if (mouse.x <= 0) {
                 mouse.x = 0;
