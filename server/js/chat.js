@@ -18,7 +18,7 @@ exports.addMessage = function(playerName, message) {
         messages.shift();
     }
     let discordMessage = `${playerName}: ${message.message.replace(/@|\//g, "")}`;
-    //discord.sendMessage(discordMessage);
+    discord.sendMessage(discordMessage);
     cache.set("logs", messages);
 }
 
