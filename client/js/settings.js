@@ -20,12 +20,16 @@ class GameSettings {
       if (!localStorage.getItem('highlightTargetTiles')) {
         localStorage.setItem('highlightTargetTiles', 'true');
       }
+      if (!localStorage.getItem('fullscreen')) {
+          localStorage.setItem('fullscreen', 'true');
+      }
 
       // Initialize checkbox states based on localStorage
       document.getElementById('musicEnabled').checked = this.getMusicEnabled();
       document.getElementById('centeredCamera').checked = this.getCenteredCamera();
       document.getElementById('animatedTiles').checked = this.getAnimatedTiles();
       document.getElementById('highlightTargetTiles').checked = this.getHighlightTargetTiles();
+      document.getElementById('fullscreen').checked = this.getFullscreen();
 
       // Add event listener to save settings when the form is submitted
       const form = document.getElementById('settingsForm');
@@ -74,10 +78,24 @@ class GameSettings {
       localStorage.setItem('highlightTargetTiles', enabled ? 'true' : 'false');
     }
 
+    getFullscreen() {
+        return localStorage.getItem('fullscreen') === 'true';
+    }
+
+    setFullscreen(enabled) {
+        localStorage.setItem('fullscreen', enabled ? 'true' : 'false');
+        if(enabled) {
+            $("#container").css('transform', 'scale(' + Math.min(($(window).width() / $("#container").width() * 0.95), ($(window).height() / $("#container").height() * 0.95)) + ')')
+        } else {
+            $("#container").css('transform', 'scale(1)')
+        }
+    }
+
     setSettings() {
       this.setMusicEnabled(document.getElementById('musicEnabled').checked);
       this.setCenteredCamera(document.getElementById('centeredCamera').checked);
       this.setAnimatedTiles(document.getElementById('animatedTiles').checked);
       this.setHighlightTargetTiles(document.getElementById('highlightTargetTiles').checked);
+      this.setFullscreen(document.getElementById('fullscreen').checked);
     }
   }

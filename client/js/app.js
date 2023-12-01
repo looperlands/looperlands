@@ -127,13 +127,21 @@ define(['jquery', 'storage'], function ($, Storage) {
 
         setMouseCoordinates: function (event) {
             var gamePos = $('#container').offset(),
-                scale = this.game.renderer.getScaleFactor(),
                 width = this.game.renderer.getWidth(),
                 height = this.game.renderer.getHeight(),
                 mouse = this.game.mouse;
 
-            mouse.x = event.pageX - gamePos.left - (this.isMobile ? 0 : 5 * scale);
-            mouse.y = event.pageY - gamePos.top - (this.isMobile ? 0 : 7 * scale);
+            var scale;
+
+            if(this.settings.getFullscreen()) {
+                scale = $('#container').css("transform").split("(")[1].split(")")[0].split(",");
+                mouse.x = (event.pageX - gamePos.left) / parseFloat(scale[0])
+                mouse.y = (event.pageY - gamePos.top) / parseFloat(scale[3])
+            } else {
+                scale = this.game.renderer.getScaleFactor();
+                mouse.x = event.pageX - gamePos.left - (this.isMobile ? 0 : 5 * scale);
+                mouse.y = event.pageY - gamePos.top - (this.isMobile ? 0 : 7 * scale);
+            }
 
             if (mouse.x <= 0) {
                 mouse.x = 0;

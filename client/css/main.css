@@ -140,6 +140,15 @@ body.upscaled.game {background:#000;}
 
 #character div {-moz-transition:0.4s opacity linear;-webkit-transition:0.4s opacity linear;-o-transition:0.4s opacity linear;-ms-transition:0.4s opacity linear;transition:0.4s opacity linear;}
 
+#parchment #settingsForm input {
+    margin-top:10px;
+}
+
+#settingsForm ul {
+    margin-top:20px;
+    margin-bottom: 20px;
+}
+
 .play div {position:absolute;top:0;left:0;opacity:1;-moz-transition:0.4s linear opacity;-webkit-transition:0.4s linear opacity;-o-transition:0.4s linear opacity;-ms-transition:0.4s linear opacity;transition:0.4s linear opacity}
 .play.disabled div {opacity:0;pointer-events:none;}
 .play img {display:none;}
