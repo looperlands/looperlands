@@ -652,7 +652,15 @@ WS.socketIOServer = Server.extend({
             res.status(200).send(true);
         });
 
-        app.get("/players", async (req, res) => {
+        const corsOptions = {
+            origin: '*',
+            methods: [],
+            allowedHeaders: [],
+            exposedHeaders: [],
+            credentials: true
+        };
+
+        app.get("/players", cors(corsOptions), async (req, res) => {
             let players = []
             let cacheKeys = cache.keys();
             for (i in cacheKeys) {
@@ -662,7 +670,9 @@ WS.socketIOServer = Server.extend({
                     let player = {
                         name: await ens.getEns(cachedBody.walletId),
                         wallet: cachedBody.walletId,
-                        avatar: cachedBody.nftId
+                        avatar: cachedBody.nftId,
+                        mapId: cachedBody.mapId,
+                        xp: cachedBody.xp
                     }
                     players.push(player);
                 }
@@ -754,14 +764,6 @@ WS.socketIOServer = Server.extend({
             let msgs = chat.getMessages();
             res.status(200).json(msgs);
         });
-
-        const corsOptions = {
-            origin: '*',
-            methods: [],
-            allowedHeaders: [],
-            exposedHeaders: [],
-            credentials: true
-        };
 
         app.get("/nftcommited/:shortnftid", cors(corsOptions), async (req, res) => {
             let nftId = req.params.shortnftid;
