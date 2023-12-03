@@ -666,7 +666,8 @@ WS.socketIOServer = Server.extend({
             for (i in cacheKeys) {
                 let key = cacheKeys[i];
                 let cachedBody = cache.get(key);
-                if(cachedBody.isDirty === true) {
+                let player = self.worldsMap[cachedBody.mapId]?.getPlayerById(cachedBody.entityId);
+                if(cachedBody.isDirty === true && player !== undefined) {
                     let player = {
                         name: await ens.getEns(cachedBody.walletId),
                         wallet: cachedBody.walletId,
