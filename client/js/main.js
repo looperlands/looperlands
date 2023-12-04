@@ -362,6 +362,17 @@ define(['jquery', 'app'], function($, App) {
                 });
             }
 
+            // Zoom game area to fill 95% of window size.
+            window.onresize = () => {
+                if (!app.settings.getFullscreen()) {
+                    return;
+                }
+                $("#container").css('transform', 'scale(' + Math.min(($(window).width() / $("#container").width() * 0.95), ($(window).height() / $("#container").height() * 0.95)) + ')');
+            }
+            if (app.settings.getFullscreen()) {
+                $("#container").css('transform', 'scale(' + Math.min(($(window).width() / $("#container").width() * 0.95), ($(window).height() / $("#container").height() * 0.95)) + ')')
+            }
+
             $('body').unbind('click');
             $('body').click(function(event) {
                 var hasClosedParchment = false;

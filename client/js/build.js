@@ -2,7 +2,7 @@
     appDir: "../",
     baseUrl: "js/",
     dir: "../../client-build",
-    optimize: "uglify",
+    optimize: "none",
     optimizeCss: "standard.keepLines",
     
     paths: {
@@ -31,5 +31,5 @@
     pragmas: {
         devHost: false,
         prodHost: true
-    }
+    },
 })

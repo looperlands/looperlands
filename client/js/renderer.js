@@ -289,12 +289,8 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                 my = this.game.mouse.y,
                 s = this.scale,
                 os = this.upscaledRendering ? 1 : this.scale;
-        
-            this.context.save();
-            if(this.game.currentCursor && this.game.currentCursor.isLoaded) {
-                this.context.drawImage(this.game.currentCursor.image, 0, 0, 14 * os, 14 * os, mx, my, 14*s, 14*s);
-            }
-            this.context.restore();
+
+            return {"type": "render", id: "high", mx: mx, my: my, s: s, os: os, cursor : true, name: this.game.currentCursorName};
         },
 
         drawScaledImage: function(ctx, image, x, y, w, h, dx, dy) {
@@ -884,7 +880,8 @@ function(Camera, Item, Character, Player, Timer, Mob) {
 
             this.context.restore();
             // Overlay UI elements
-            this.drawCursor();
+            let cursorData = this.drawCursor();
+            renderData.push(cursorData);
             this.drawDebugInfo();
             this.worker.postMessage({"type": "render", "renderData": renderData});
         },

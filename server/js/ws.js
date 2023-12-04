@@ -190,16 +190,15 @@ WS.socketIOServer = Server.extend({
                 let key = cacheKeys[i];
                 let cachedBody = cache.get(key);
                 let sameWallet = cachedBody.walletId === body.walletId;
-                if(sameWallet && cachedBody.isDirty === true) {
-                    let player = self.worldsMap[cachedBody.mapId].getEntityById(cachedBody.entityId);
+                if(sameWallet) {
                     cache.del(key);
-                    if (player !== undefined) {
-                        player.connection.close('A new session from another device created');
+                    if (cachedBody.isDirty === true) {
+                        let player = self.worldsMap[cachedBody.mapId]?.getPlayerById(cachedBody.entityId);
+                        if (player !== undefined) {
+                            player.connection.close('A new session from another device created');
+                        }
                     }
                     break;
-                } else if (sameWallet && cachedBody.isDirty === false){
-                    //console.log("deleting a session that never connected: " + key)
-                    cache.del(key);
                 }
             }
 
@@ -653,17 +652,28 @@ WS.socketIOServer = Server.extend({
             res.status(200).send(true);
         });
 
-        app.get("/players", async (req, res) => {
+        const corsOptions = {
+            origin: '*',
+            methods: [],
+            allowedHeaders: [],
+            exposedHeaders: [],
+            credentials: true
+        };
+
+        app.get("/players", cors(corsOptions), async (req, res) => {
             let players = []
             let cacheKeys = cache.keys();
             for (i in cacheKeys) {
                 let key = cacheKeys[i];
                 let cachedBody = cache.get(key);
-                if(cachedBody.isDirty === true) {
+                let player = self.worldsMap[cachedBody.mapId]?.getPlayerById(cachedBody.entityId);
+                if(cachedBody.isDirty === true && player !== undefined) {
                     let player = {
                         name: await ens.getEns(cachedBody.walletId),
                         wallet: cachedBody.walletId,
-                        avatar: cachedBody.nftId
+                        avatar: cachedBody.nftId,
+                        mapId: cachedBody.mapId,
+                        xp: cachedBody.xp
                     }
                     players.push(player);
                 }
@@ -755,14 +765,6 @@ WS.socketIOServer = Server.extend({
             let msgs = chat.getMessages();
             res.status(200).json(msgs);
         });
-
-        const corsOptions = {
-            origin: '*',
-            methods: [],
-            allowedHeaders: [],
-            exposedHeaders: [],
-            credentials: true
-        };
 
         app.get("/nftcommited/:shortnftid", cors(corsOptions), async (req, res) => {
             let nftId = req.params.shortnftid;
