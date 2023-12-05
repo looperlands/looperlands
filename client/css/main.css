@@ -93,11 +93,11 @@ html, body {height:100%;}
 
 body {padding:0;margin:0;background:#111;overflow:hidden;image-rendering:-moz-crisp-edges; image-rendering:-webkit-optimize-contrast;border-top:2px solid #707070;}
 
-canvas { position:absolute;image-rendering:optimizeSpeed;}
+canvas { position:absolute;image-rendering:pixelated;}
 #background { background:url('../img/common/loading.png') no-repeat center center, #000;}
 .error #background { background:url('../img/common/loading-error.png') no-repeat center center, #000;}
 
-#background, #foreground, #high-tiles { margin:0; padding:0;}
+#background, #foreground, #high-tiles { margin:0; padding:0; image-rendering:pixelated;}
 
 #achievements nav::selection {background:transparent;text-decoration:none;color:transparent;}
 #canvas, #bar-container, #bubbles, #chatbox, #canvasborder, #foreground, #background, #high-tiles, footer, #container, #achievement-notification {-moz-user-select:none;-webkit-user-select:none;-o-user-select:none;-ms-user-select:none;}
@@ -139,6 +139,15 @@ body.upscaled.game {background:#000;}
 #parchment input:focus {-moz-animation:none;-webkit-animation:none;-o-animation:none;-ms-animation:none;animation:none;color:#fff;background:rgba(0,0,0,0.1);border-color:rgba(0,0,0,0.3);}
 
 #character div {-moz-transition:0.4s opacity linear;-webkit-transition:0.4s opacity linear;-o-transition:0.4s opacity linear;-ms-transition:0.4s opacity linear;transition:0.4s opacity linear;}
+
+#parchment #settingsForm input {
+    margin-top:10px;
+}
+
+#settingsForm ul {
+    margin-top:20px;
+    margin-bottom: 20px;
+}
 
 .play div {position:absolute;top:0;left:0;opacity:1;-moz-transition:0.4s linear opacity;-webkit-transition:0.4s linear opacity;-o-transition:0.4s linear opacity;-ms-transition:0.4s linear opacity;transition:0.4s linear opacity}
 .play.disabled div {opacity:0;pointer-events:none;}

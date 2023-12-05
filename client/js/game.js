@@ -33,7 +33,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             this.finalPathingGrid = null;
             this.renderingGrid = null;
             this.itemGrid = null;
-            this.currentCursor = null;
             this.mouse = { x: 0, y: 0 };
             this.zoningQueue = [];
             this.previousClickPosition = {};
@@ -3869,6 +3868,42 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 "NFT_30e473e3b5b3adf837083a4aa8fed3bbd9513d7d104d9ad797bf596724186088",
                                 "NFT_3c6ed7198b696ffb31d272892be0bca643e110fa4313de23435dfa0369e67f1f",
                                 "NFT_5a04ed276fcaeef37b0a2fe8bffb0a7c1f0ff7f26551fc55484f1a6215028a00",
+                                "NFT_28ff05604af775f0f82767903f42d1b6801bb54a73b76ff1f6b2c56c8180c08b",
+                                "NFT_50e84b3aa6d351d2cdc9229b461b1589440c06fc96d7ea4abb3c0d8e9aa68c1a",
+                                "NFT_5a04ed276fcaeef37b0a2fe8bffb0a7c1f0ff7f26551fc55484f1a6215028a00",
+                                "NFT_631748c023c7bf5d146e63b35bd44679404b93910b195f7e48f931865506db5d",
+                                "NFT_a62d46905299c7ee1c50a19b9355fe93157cdbfc4e480c788c5c587df4a99a96",
+                                "NFT_aa2b297780278493a0c09ed4e1794569b96b0a35f267369384026b653914c2fd",
+                                "NFT_cd7b985ecdf70f73d2939a238bed4b029ddbeeb396bff084ccc38bdae6596bdf",
+                                "NFT_d18126ed6424e4633556e94da1085f56f9d1a45fd392108eb7a770dc18866bcd",
+                                "NFT_fc9211c2c892dc80ad1912467e50eed5248a6c3ca349cccd020e033d31a0278c",
+                                "NFT_23bd028cbaf11af6be684c392cd42295d3f32667586212b2604e64ac1d9eb1a8",
+                                "NFT_28ff05604af775f0f82767903f42d1b6801bb54a73b76ff1f6b2c56c8180c08b",
+                                "NFT_50e84b3aa6d351d2cdc9229b461b1589440c06fc96d7ea4abb3c0d8e9aa68c1a",
+                                "NFT_52dde81ca66748f836f11f6968b0bcb1cd850ec67cbfed28d7f4629077dd5dd6",
+                                "NFT_5a04ed276fcaeef37b0a2fe8bffb0a7c1f0ff7f26551fc55484f1a6215028a00",
+                                "NFT_631748c023c7bf5d146e63b35bd44679404b93910b195f7e48f931865506db5d",
+                                "NFT_99b7e8ae13738b9093d6721819a988d395bcf0ea1a1900a665532b31317c97c9",
+                                "NFT_a62d46905299c7ee1c50a19b9355fe93157cdbfc4e480c788c5c587df4a99a96",
+                                "NFT_a7213d3da60af52fc9fbb546f572c05419107c599f9a4980b905138dccbd79ae",
+                                "NFT_aa2b297780278493a0c09ed4e1794569b96b0a35f267369384026b653914c2fd",
+                                "NFT_bdc01881e9434a238e5804c7920da51d85a6bbc92cd6ed5df29e81b1efd49ecb",
+                                "NFT_cd7b985ecdf70f73d2939a238bed4b029ddbeeb396bff084ccc38bdae6596bdf",
+                                "NFT_d18126ed6424e4633556e94da1085f56f9d1a45fd392108eb7a770dc18866bcd",
+                                "NFT_d5ed8f94116cb3a004ae1568fdd4ff1cc7b43e0de875ee2ce8d867993baf1380",
+                                "NFT_fc9211c2c892dc80ad1912467e50eed5248a6c3ca349cccd020e033d31a0278c",
+                                "NFT_939e9dc177c56ca26280ca4937f419da9fc2f1d81a85ac0ebf9f98f1f9fa6cf4",
+                                "NFT_b69e3e44f58d5399faad29b94108a88dbed79e6a14c676fb202e817ac5697560",
+                                "NFT_d8e14d2eea1404979b729b5fc34794229311a8e6a1b2c8947e8446d4e8f24740",
+                                "NFT_dcad4cf001129498e537777fb09c295275e69ea04fa8c6a25f71c904fe2a16c6",
+                                "NFT_012498e5bead24a3dea7c0d64135b2ba79b69aec58dc70182449228b124e7819",
+                                "NFT_2509d5ae31798346f1144e9d652d582262182d524ad4872d03ae587bb6602768",
+                                "NFT_36fa5d1a625b9034e3e79e09d3a70a45270fb1657a9d4ef4bb4875c9b29eacc3",
+                                "NFT_60fbf25266609a748aa0f63aa0ac82738089fe2f0fdb290484a326c98479033f",
+                                "NFT_786157331f0eecce8f4ae86190d6422c94bc492133fbdb0d89095edf54882421",
+                                "NFT_acfe66a6631b5fa6c20f10929f14bce3c53bbec5cba600c86fcb170c28e24a28",
+                                "NFT_ad3cd65a995c67c49ed4fb54c594c3fa3dbce3c71b21584bb1719cbcc689f3e2",
+                                "NFT_fc946a25f41380668850fc9415624c8d8942ef307e992eaef40e4c0cbae3a0ea",
                                 // @nextSpriteLine@
                             ];
         },
@@ -3944,6 +3979,15 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             this.cursors["arrow"] = this.sprites["arrow"];
             this.cursors["talk"] = this.sprites["talk"];
             this.cursors["float"] = this.sprites["float"];
+
+            for (let name in this.cursors) {
+                let cursor = this.cursors[name];
+                if (cursor !== undefined) {
+                    let isLocal = window.location.href.indexOf("127.0.0.1") > -1;
+                    let src =  isLocal ? "/" + cursor.filepath : cursor.filepath;
+                    this.renderer.worker.postMessage({type: "loadCursor", name: name, src: src});
+                }
+            }
         },
 
         initFish: function() {
@@ -4079,8 +4123,10 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
         setCursor: function(name, orientation) {
             if(name in this.cursors) {
-                this.currentCursor = this.cursors[name];
                 this.currentCursorOrientation = orientation;
+                if (name !== this.currentCursorName) {
+                    this.currentCursorName = name;
+                }
             } else {
                 console.error("Unknown cursor name :"+name);
             }

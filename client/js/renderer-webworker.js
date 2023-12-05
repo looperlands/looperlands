@@ -2,12 +2,14 @@ let tileset = undefined;
 let tilesize = 16;
 let canvases = {};
 let contexes = {};
+let cursors = {};
+let cursor = undefined;
 
-async function loadTileset(src) {
+
+async function loadImg(src) {
     const imgblob = await fetch(src)
         .then(r => r.blob());
-    tileset = await createImageBitmap(imgblob);
-    console.log("set tileset to " + tileset);
+    return await createImageBitmap(imgblob);
 }
 
 
@@ -65,10 +67,22 @@ function render(id, tiles, cameraX, cameraY, scale, clear) {
 
 onmessage = (e) => {
     if (e.data.type === "setTileset") {
-        loadTileset(e.data.src);
-    } else if (e.data.type === "render") {
+        loadImg(e.data.src).then((img) => {
+            tileset = img;
+        });
+    } else if (e.data.type === "loadCursor") {
+        loadImg(e.data.src).then((img) => {
+            cursors[e.data.name] = img;
+            console.log("loaded cursor", e.data.name);
+        });
+    }
+    else if (e.data.type === "render") {
         for (let renderData of e.data.renderData) {
-            render(renderData.id, renderData.tiles, renderData.cameraX, renderData.cameraY, renderData.scale, renderData.clear);
+            if (renderData.cursor !== undefined) {
+                renderCursor(renderData);
+            } else {
+                render(renderData.id, renderData.tiles, renderData.cameraX, renderData.cameraY, renderData.scale, renderData.clear);
+            }
         }
         requestAnimationFrame(() => {
             postMessage({ type: "rendered" });
@@ -91,3 +105,15 @@ onmessage = (e) => {
         contexes[id] = ctx;
     }
 };
+
+function renderCursor(renderData) {
+    let mx = renderData.mx;
+    let my = renderData.my;
+    let s = renderData.s;
+    let os = renderData.os;
+    let cursorImg = cursors[renderData.name];
+    let ctx = contexes[renderData.id];
+    ctx.save();
+    ctx.drawImage(cursorImg, 0, 0, 14 * os, 14 * os, mx, my, 14 * s, 14 * s);
+    ctx.restore();
+}
