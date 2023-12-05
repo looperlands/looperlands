@@ -4559,6 +4559,8 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 this.renderer.renderFrame();
                 if (this.gamepadListener) {
                     this.gamepadListener.update();
+                } else {
+                    this.gamepadListener = new GamepadListener(this);
                 }
             }
 

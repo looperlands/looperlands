@@ -1,6 +1,8 @@
 class GamePadListener {
+
+    static gamepad= undefined
+
     constructor(game) {
-        this.gamepad = null;
         this.game = game;
 
         window.addEventListener("gamepadconnected", (event) => {
@@ -14,10 +16,19 @@ class GamePadListener {
                 this.gamepad = null;
             }
         });
+
+        console.log("Created gamepad handler");
     }
 
     update() {
-        if (!this.gamepad) return;
+        if (!this.gamepad) {
+            const gamepad = navigator.getGamepads ? navigator.getGamepads()[0] : null;
+            if (gamepad) {
+              console.log("Gamepad found:", gamepad);
+              this.gamepad = gamepad;
+            }            
+            return;
+        }
 
         // Get the latest state of the gamepad
         this.gamepad = navigator.getGamepads()[this.gamepad.index];
@@ -54,7 +65,7 @@ class GamePadListener {
             keys.s = 1;
             change = true;
         }
-
+        
         if (change) {
             let x = this.game.player.gridX;
             let y = this.game.player.gridY;
