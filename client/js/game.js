@@ -4557,6 +4557,9 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     this.focusPlayer();
                 }
                 this.renderer.renderFrame();
+                if (this.gamepadListener) {
+                    this.gamepadListener.update();
+                }
             }
 
             /*
