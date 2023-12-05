@@ -35,22 +35,22 @@ class GamePadListener {
         let change = false;
         // Left stick horizontal movement (axis 0)
         if (this.gamepad.axes[0] < -threshold) {
-            console.log('Left stick moved left (A)');
+            //console.log('Left stick moved left (A)');
             keys.a = 1;
             change = true;
         } else if (this.gamepad.axes[0] > threshold) {
-            console.log('Left stick moved right (D)');
+            //console.log('Left stick moved right (D)');
             keys.d = 1;
             change = true;
         }
 
         // Left stick vertical movement (axis 1)
         if (this.gamepad.axes[1] < -threshold) {
-            console.log('Left stick moved up (W)');
+            //console.log('Left stick moved up (W)');
             keys.w = 1;
             change = true;
         } else if (this.gamepad.axes[1] > threshold) {
-            console.log('Left stick moved down (S)');
+            //console.log('Left stick moved down (S)');
             keys.s = 1;
             change = true;
         }
