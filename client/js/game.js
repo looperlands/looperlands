@@ -3904,6 +3904,20 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 "NFT_acfe66a6631b5fa6c20f10929f14bce3c53bbec5cba600c86fcb170c28e24a28",
                                 "NFT_ad3cd65a995c67c49ed4fb54c594c3fa3dbce3c71b21584bb1719cbcc689f3e2",
                                 "NFT_fc946a25f41380668850fc9415624c8d8942ef307e992eaef40e4c0cbae3a0ea",
+                                "NFT_129735229141561a10f96195d827a0ff9e1e5cc2b1de4cb60968de6444647dc1",
+                                "NFT_17b0f1c27528b115ed1619101a864bfb168cda9a7c99ca15474cec9c58d24732",
+                                "NFT_1c428fbd454038dbcd67cadbb7c97fb8016e5de1f21440b5a8458274c9858360",
+                                "NFT_5dbfc45f1593cbf4821506a6a7c960127687790e9f08f273a644ed24b924decb",
+                                "NFT_052c0d184e6b724832852b1f154c9c1b920a72e16e1b8046dcf04214feae93cd",
+                                "NFT_200c4216a0cf765acea21cc100893ac05ab10f390b341fcb7bf386a9acfc972b",
+                                "NFT_4d7abedb5ed141ea2bacffd7a3f5147eb8da65ba46024cc5ca94dcdeb89b528f",
+                                "NFT_5a013915b0ae8910344a1b0ce77b166ad1ab81cb1c618527a6b15ae203375d46",
+                                "NFT_77069c47a5bbd09bd6ea161ea3f2306da22aa62410316d14b8b9143bc905e1d7",
+                                "NFT_ce8ac24c160b21b539166304b76e1521b4c1143ee69dc40f7ef78f1416cc4401",
+                                "NFT_4469d973c6ac4269d3ffb53c085b59c34ca405cb62163942ba7b2bcc0c0dfa90",
+                                "NFT_98385676d01e8e66dc41cf7cdcc4d2e09d9d598f113501a0754a22793cdea070",
+                                "NFT_3def52bda4cbeffaf5acd52ee9cabfb21e026998c8679f91cbd2d2d7baa51ede",
+                                "NFT_4b5850c8ff0d4b4b9933ae9acef7ce6b",
                                 // @nextSpriteLine@
                             ];
         },
@@ -4553,6 +4567,11 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     this.focusPlayer();
                 }
                 this.renderer.renderFrame();
+                if (this.gamepadListener) {
+                    this.gamepadListener.update();
+                } else {
+                    this.gamepadListener = new GamepadListener(this);
+                }
             }
 
             /*
