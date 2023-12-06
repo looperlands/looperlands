@@ -57,7 +57,7 @@ define(['jquery', 'area'], function ($, Area) {
                         audio = new Audio(mp3URL);
                         audio.loop = true;
 
-                        playAudio = function () {
+                        document.body.addEventListener("mousemove", function () {
                             if (audio.playing === undefined) {
                                 audio.playing = true;
                                 console.log("playing song", mp3URL);
@@ -70,11 +70,7 @@ define(['jquery', 'area'], function ($, Area) {
                                     console.log(e);
                                 }
                             }
-
-                        }
-                        document.body.addEventListener("click", playAudio);
-                        document.body.addEventListener("touchstart", playAudio);
-                        document.body.addEventListener("mouseover", playAudio);
+                        });
 
                         song = mp3URL;
                     }
