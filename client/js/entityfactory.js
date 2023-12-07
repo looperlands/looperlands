@@ -557,6 +557,7 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.ICESSENCE]=function(id){return new Items.ICESSENCE(id);};
     EntityFactory.builders[Types.Entities.FORGEDSWORD]=function(id){return new Items.FORGEDSWORD(id);};
     EntityFactory.builders[Types.Entities.BANNER]=function(id){return new Items.BANNER(id);};
+    EntityFactory.builders[Types.Entities.PNEUMA_SIGN]=function(id){return new Items.PNEUMA_SIGN(id);};
     // @nextObjectLine@
 
     //====== NPCs ======

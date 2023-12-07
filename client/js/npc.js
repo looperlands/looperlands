@@ -301,10 +301,10 @@ define(['character'], function (Character) {
         ],
         "VILLAGESIGN2": ["Gregloop and Thunders Humble Abode."], //GREGLOOP
         "VILLAGESIGN3": ["Home of Ripnatius Ironhand"], //RIPNTEAR
-        "VILLAGESIGN4": ["Change me"],
-        "VILLAGESIGN5": ["Change me"],
-        "VILLAGESIGN6": ["Change me"],
-        "VILLAGESIGN7": ["Change me"],
+        "VILLAGESIGN4": ["Pneuma's Dispensary"], //PNEUMA
+        "VILLAGESIGN5": ["Bertles Turtle Club"],
+        "VILLAGESIGN6": ["Scrimp House"],
+        "VILLAGESIGN7": ["Home of Chocolate Wheystead"],
         "VILLAGESIGN8": ["Change me"],
         "VILLAGESIGN9": ["Change me"],
 

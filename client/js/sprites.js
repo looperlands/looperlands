@@ -72,6 +72,7 @@ define(['text!../sprites/agent.json',
         'text!../sprites/item-FORGEDSWORD.json',
         'text!../sprites/item-BANNER.json',
         'text!../sprites/item-NFT_344a35ef18eafc0708b2e42b14443db0990fa39977d9347fb256905cbd5ba819.json',
+        'text!../sprites/item-PNEUMA_SIGN.json',
         // @nextObjectImport@
         'text!../sprites/king.json',
         'text!../sprites/king2.json',
