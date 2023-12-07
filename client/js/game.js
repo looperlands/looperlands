@@ -6402,6 +6402,9 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         handleTrigger(trigger, entity) {
             if(!entity.triggerArea || entity.triggerArea.id !== trigger.id) {
                 entity.triggerArea = trigger;
+                if (!self.client) {
+                    return;
+                }
                 self.client.sendTrigger(trigger.id, true);
                 if (trigger.message) {
                     self.showNotification(trigger.message);
