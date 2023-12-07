@@ -238,7 +238,8 @@ Types = {
         SATCHEL: 21300032,
         ICESSENCE: 21300033,
         FORGEDSWORD: 21300034,
-        BANNER: 21300035, // @lastidObject@
+        BANNER: 21300035,
+        PNEUMA_SIGN: 21300036, // @lastidObject@
         //@nextIdLineObject@
         
         // NPCs
@@ -4195,6 +4196,7 @@ var kinds = {
     ICESSENCE: [Types.Entities.ICESSENCE, "object"],
     FORGEDSWORD: [Types.Entities.FORGEDSWORD, "object"],
     BANNER: [Types.Entities.BANNER, "object"],
+    PNEUMA_SIGN: [Types.Entities.PNEUMA_SIGN, "object"],
     // @nextObjectLine@
 
     guard: [Types.Entities.GUARD, "npc"],
