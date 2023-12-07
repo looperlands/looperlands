@@ -1,4 +1,3 @@
-
 define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile',
         'warrior', 'gameclient', 'audio', 'updater', 'transition', 'pathfinder',
         'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'config', 'fieldeffect', 'float', '../../shared/js/gametypes', '../../shared/js/altnames'],
@@ -4166,7 +4165,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 this.targetColor = "rgba(255, 255, 255, 0.5)";
             }
 
-            if(this.hoveringMob && this.started && !Types.isSpecialItem(Types.getKindFromString(this.player.weaponName))) {
+            if(this.hoveringMob && this.started && this.player && !Types.isSpecialItem(Types.getKindFromString(this.player.weaponName))) {
                 this.setCursor("sword");
                 this.hoveringTarget = false;
                 this.targetCellVisible = false;
