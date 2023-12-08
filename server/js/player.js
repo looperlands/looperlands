@@ -137,7 +137,7 @@ module.exports = Player = Character.extend({
                 dao.getLooperAssetCount(playerCache.walletId).then(function (result) {
                     let playerCache = self.server.server.cache.get(self.sessionId);
                     let total = result.totalLLAssetsOwned;
-                    console.log("Asset count: ", total,  " for wallet " + playerCache.walletId + " and nft " + playerCache.nftId);
+                    //console.log("Asset count: ", total,  " for wallet " + playerCache.walletId + " and nft " + playerCache.nftId);
                     playerCache.xp = parseInt(playerCache.xp) + 100000 * total;
                     self.server.server.cache.set(self.sessionId, playerCache);
                 }).catch(function (error) {
