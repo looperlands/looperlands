@@ -185,22 +185,27 @@ WS.socketIOServer = Server.extend({
                 return;
             };
 
-            let cacheKeys = cache.keys();
-            for (i in cacheKeys) {
-                let key = cacheKeys[i];
-                let cachedBody = cache.get(key);
-                let sameWallet = cachedBody.walletId === body.walletId;
-                if(sameWallet) {
-                    cache.del(key);
-                    if (cachedBody.isDirty === true) {
-                        let player = self.worldsMap[cachedBody.mapId]?.getPlayerById(cachedBody.entityId);
-                        if (player !== undefined) {
-                            player.connection.close('A new session from another device created');
+            let nftId = body.nftId.replace("0x", "NFT_");
+            let bot = Types.isBot(Types.getKindFromString(nftId));
+            if (!bot) {
+                let cacheKeys = cache.keys();
+                for (i in cacheKeys) {
+                    let key = cacheKeys[i];
+                    let cachedBody = cache.get(key);
+                    let sameWallet = cachedBody.walletId === body.walletId;
+                    if(sameWallet) {
+                        cache.del(key);
+                        if (cachedBody.isDirty === true) {
+                            let player = self.worldsMap[cachedBody.mapId]?.getPlayerById(cachedBody.entityId);
+                            if (player !== undefined) {
+                                player.connection.close('A new session from another device created');
+                            }
                         }
+                        break;
                     }
-                    break;
                 }
             }
+
 
             let responseJson = newSession(body);
 
@@ -823,7 +828,6 @@ WS.socketIOServer = Server.extend({
           //console.log('a user connected');
 
           connection.remoteAddress = connection.handshake.address.address
-
   
           var c = new WS.socketIOConnection(self._createId(), connection, self);
             
