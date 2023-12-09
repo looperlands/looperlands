@@ -181,7 +181,7 @@ body.upscaled.game {background:#000;}
 
 #playercount {font-family:'GraphicPixel';color:#e3e3e3;position:absolute;}
 #playercount:hover {cursor:pointer;color:#FCE045;}
-#population {background:url('../img/1/barsheet.png');image-rendering:-moz-crisp-edges;position:absolute;font-family:'GraphicPixel';color:#fff;text-align:center;opacity:0;pointer-events:none;-moz-transition:0.2s opacity linear, 0.2s height ease;-webkit-transition:0.2s opacity linear, 0.2s height ease;-o-transition:0.2s opacity linear, 0.2s height ease;-ms-transition:0.2s opacity linear, 0.2s height ease;transition:0.2s opacity linear, 0.2s height ease;height:0;overflow:hidden;}
+#population {background:url('../img/1/barsheet.png');border-radius: 10px 0 0 0; image-rendering:-moz-crisp-edges;position:absolute;font-family:'GraphicPixel';color:#fff;text-align:center;opacity:0;pointer-events:none;-moz-transition:0.2s opacity linear, 0.2s height ease;-webkit-transition:0.2s opacity linear, 0.2s height ease;-o-transition:0.2s opacity linear, 0.2s height ease;-ms-transition:0.2s opacity linear, 0.2s height ease;transition:0.2s opacity linear, 0.2s height ease;height:0;overflow:hidden;}
 #population span:nth-child(1) {color:#FCE045;}
 #population.visible {opacity:1;pointer-events:auto;}
 
@@ -747,6 +747,23 @@ footer div  {display:inline-block;}
         background-position-y: -192px;
         cursor: pointer;
     }
+    .upscaled #emoteMenu {
+        top: 12px;
+        left: 51px;
+        height: 36px;
+        overflow-y: hidden;
+    }
+    .upscaled #emoteMenu .emote {
+        width: 16px;
+        height: 16px;
+        display: inline-block;
+        border-radius: 6px;
+        background: rgba(255,255,255,0.2);
+        margin: 0px 3px 0 3px;
+        padding: 8px;
+        text-align: center;
+        cursor: pointer;
+    }
 
     /*Credits*/
     #credits, #death, #about, #settings {width:1266px;height:546px;margin-left:-633px;margin-top:-273px;font-size:30px;}
@@ -830,6 +847,7 @@ footer div  {display:inline-block;}
         padding-top: 0;
         padding-bottom: 0;
         transition: 0.2s ease-in-out all;
+        border-radius: 10px 0 0 0;
     }
 
     #avatarStats.visible {
@@ -858,6 +876,7 @@ footer div  {display:inline-block;}
         padding-bottom: 0;
         opacity: 0;
         transition: 0.2s ease-in-out all;
+        border-radius: 10px 0 0 0;
     }
 
     #weaponStats.visible {
@@ -963,7 +982,7 @@ footer div  {display:inline-block;}
 
     #playercount {font-size:16px;left:717px;top:10px;width:114px;text-align:center;}
     #population {background-size:960px;right:70px;bottom:44px;width:262px;background-position:-480px -96px;font-size:14px;line-height:20px;}
-    #population.visible {height:64px;}
+    #population.visible {height:64px; border-radius: 10px 0 0 0;}
     #instance-population {padding-top:12px;}
 
     .barbutton {background-size:960px;height:30px;width:28px;}
@@ -985,6 +1004,25 @@ footer div  {display:inline-block;}
     #chatbox {height:32px;width:788px;background-size:960px;background-position:0 -64px;margin-left:-394px;bottom:12px;}
     #chatbox.active {bottom:44px;}
     #chatbox input {font-size:20px;color:#eee;background:none;width:90%;border:0;margin-left:5%;padding:7px 0;}
+
+    #emoteMenu {
+        position: absolute;
+        top: 8px;
+        left: 40px;
+        height: 24px;
+        overflow-y: hidden;
+    }
+    #emoteMenu .emote {
+        width: 16px;
+        height: 14px;
+        display: inline-block;
+        border-radius: 6px;
+        background: rgba(255,255,255,0.2);
+        margin: 0 2px 0 2px;
+        padding: 4px;
+        text-align: center;
+        cursor: pointer;
+    }
 
     /*Credits*/
     #credits, #death, #about, #settings {width:844px;height:364px;margin-left:-422px;margin-top:-182px;font-size:20px;}

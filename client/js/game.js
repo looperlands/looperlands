@@ -5599,16 +5599,23 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                         'love': "💙",
                         'attack': "⚔️",
                         'magic': "✨",
+                        'thunder': "⚡️",
                         'laugh': "🤣",
                         'cry': "😭",
                         'sad': "😢",
                         'sleep': "😴",
                         'confused': "❓",
                         'thanks': "🙏🏻",
+                        'angry': "😡",
                         'positive': "👍🏻",
                         'negative': "👎🏻",
                         'fire': "🔥",
+                        'banana': "🍌",
                         'seen': "👀",
+                        'turtle': "🐢",
+                        'ghost': "👻",
+                        'corn': "🌽",
+                        'beer': "🍺",
                     };
                     if(!emotions[emotion]) {
                         return;

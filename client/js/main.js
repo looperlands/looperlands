@@ -496,16 +496,23 @@ define(['jquery', 'app'], function($, App) {
                 'love': "💙",
                 'attack': "⚔️",
                 'magic': "✨",
+                'thunder': "⚡️",
                 'laugh': "🤣",
                 'cry': "😭",
                 'sad': "😢",
                 'sleep': "😴",
                 'confused': "❓",
                 'thanks': "🙏🏻",
+                'angry': "😡",
                 'positive': "👍🏻",
                 'negative': "👎🏻",
                 'fire': "🔥",
+                'banana': "🍌",
                 'seen': "👀",
+                'turtle': "🐢",
+                'ghost': "👻",
+                'corn': "🌽",
+                'beer': "🍺",
             };
             let emoIdx = 0;
             for (var emotion in emotions) {
