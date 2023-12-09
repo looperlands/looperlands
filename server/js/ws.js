@@ -26,6 +26,7 @@ const quests = require("./quests/quests.js");
 const Lakes = require("./lakes.js");
 const Collectables = require('./collectables.js');
 const cache = new NodeCache();
+const LooperManager = require('./ownyourlooperboost.js');
 
 const LOOPWORMS_LOOPERLANDS_BASE_URL = process.env.LOOPWORMS_LOOPERLANDS_BASE_URL;
 const INSTANCE_URI = process.env.INSTANCE_URI ? process.env.INSTANCE_URI : "";
@@ -140,7 +141,7 @@ WS.socketIOServer = Server.extend({
         app.use(express.json())
 
 
-        function newSession(body) {
+        async function newSession(body, teleport) {
             const id = crypto.randomBytes(20).toString('hex');
             // this prevents failed logins not being able to login again
             body.isDirty = false;
@@ -152,9 +153,23 @@ WS.socketIOServer = Server.extend({
                 // teleport request
                 if (body.x !== undefined && body.y !== undefined) {
                     let checkpoint = self.worldsMap[body.mapId].map.findClosestCheckpoint(body.x, body.y);
-                    dao.saveAvatarCheckpointId(body.nftId, checkpoint.id);
+                    await dao.saveAvatarCheckpointId(body.nftId, checkpoint.id);
                 }
             }
+
+
+            if (teleport) {
+                body.xp = parseInt(body.xp);
+            } else {
+                let manager = new LooperManager(body.walletId);
+                await manager.fetchLoopers();
+                let ownYourLoopersBuff = manager.getTotalExperienceBoost();
+                //console.log("Asset count: ", total,  " for wallet " + playerCache.walletId + " and nft " + playerCache.nftId);
+                body.xp = parseInt(body.xp) + ownYourLoopersBuff;
+                body.ownYourLoopersBuff = ownYourLoopersBuff;
+            }
+            
+
             cache.set(id, body);
             let responseJson = {
                 "sessionId" : id
@@ -185,24 +200,29 @@ WS.socketIOServer = Server.extend({
                 return;
             };
 
-            let cacheKeys = cache.keys();
-            for (i in cacheKeys) {
-                let key = cacheKeys[i];
-                let cachedBody = cache.get(key);
-                let sameWallet = cachedBody.walletId === body.walletId;
-                if(sameWallet) {
-                    cache.del(key);
-                    if (cachedBody.isDirty === true) {
-                        let player = self.worldsMap[cachedBody.mapId]?.getPlayerById(cachedBody.entityId);
-                        if (player !== undefined) {
-                            player.connection.close('A new session from another device created');
+            let nftId = body.nftId.replace("0x", "NFT_");
+            let bot = Types.isBot(Types.getKindFromString(nftId));
+            if (!bot) {
+                let cacheKeys = cache.keys();
+                for (i in cacheKeys) {
+                    let key = cacheKeys[i];
+                    let cachedBody = cache.get(key);
+                    let sameWallet = cachedBody.walletId === body.walletId;
+                    if(sameWallet) {
+                        cache.del(key);
+                        if (cachedBody.isDirty === true) {
+                            let player = self.worldsMap[cachedBody.mapId]?.getPlayerById(cachedBody.entityId);
+                            if (player !== undefined) {
+                                player.connection.close('A new session from another device created');
+                            }
                         }
+                        break;
                     }
-                    break;
                 }
             }
 
-            let responseJson = newSession(body);
+
+            let responseJson = await newSession(body);
 
             res.status(200).send(responseJson);
         });
@@ -236,7 +256,7 @@ WS.socketIOServer = Server.extend({
             body.title = sessionData.title;
             delete body.map;
 
-            let responseJson = newSession(body);
+            let responseJson = await newSession(body, true);
 
             res.status(200).send(responseJson);
         });
@@ -591,6 +611,8 @@ WS.socketIOServer = Server.extend({
                     user: null
                 });
             } else {
+                let looperManager = new LooperManager(sessionData.walletId);
+                await looperManager.fetchLoopers();
                 let avatarLevelInfo = Formulas.calculatePercentageToNextLevel(sessionData.xp);
                 let maxHp = Formulas.hp(avatarLevelInfo.currentLevel);
                 let weaponInfo = self.worldsMap[sessionData.mapId].getNFTWeaponStatistics(sessionData.entityId);
@@ -604,6 +626,8 @@ WS.socketIOServer = Server.extend({
 
                 let ret = {
                     avatarLevelInfo: avatarLevelInfo,
+                    ownYourLoopersBuff: looperManager.getTotalExperienceBoost(),
+                    totalLoopers: looperManager.getTotalAssets(),
                     maxHp: maxHp,
                     weaponInfo: weaponInfo
                 }
@@ -823,7 +847,6 @@ WS.socketIOServer = Server.extend({
           //console.log('a user connected');
 
           connection.remoteAddress = connection.handshake.address.address
-
   
           var c = new WS.socketIOConnection(self._createId(), connection, self);
             
