@@ -627,7 +627,7 @@ exports.getLooperAssetCount = async function(wallet, retry) {
   const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/getTotalAssets.php?walletID=${wallet}`;
   try {
     const response = await axios.get(url, options);
-    return response.data;
+    return response.data.totalLLAssetsOwned;
   } catch (error) {
     console.error("getLooperCount", error);
     if (retry === undefined) {

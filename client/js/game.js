@@ -6924,6 +6924,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                         $('#weaponLevel').text(weaponLevel);
                         $('#weaponProgress').text(weaponPercentage);
                         $('#weaponTrait').text(response.data.weaponInfo.trait);
+                        $('#ownYourLoopersBuff').text(response.data.ownYourLoopersBuff);
                     }
 
                     if (self.player.level !== level) {
