@@ -584,8 +584,13 @@ module.exports = Player = Character.extend({
     syncExperience: async function(session) {
         let updatedXp = await dao.updateExperience(this.walletId, this.nftId, this.accumulatedExperience);
         if (!Number.isNaN(updatedXp)) {
+            let buff = 0;
             if (session !== undefined) {
-                session.xp = updatedXp;
+                if (session.ownYourLoopersBuff !== undefined) {
+                    let ownYourLoopersBuff = new Number(session.ownYourLoopersBuff);
+                    buff = ownYourLoopersBuff.valueOf();
+                }
+                session.xp = updatedXp + buff;
                 this.server.server.cache.set(this.sessionId, session);
             }
             this.accumulatedExperience = 0;
