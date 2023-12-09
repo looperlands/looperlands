@@ -152,7 +152,7 @@ WS.socketIOServer = Server.extend({
                 // teleport request
                 if (body.x !== undefined && body.y !== undefined) {
                     let checkpoint = self.worldsMap[body.mapId].map.findClosestCheckpoint(body.x, body.y);
-                    dao.saveAvatarCheckpointId(body.nftId, checkpoint.id);
+                    await dao.saveAvatarCheckpointId(body.nftId, checkpoint.id);
                 }
             }
 
@@ -162,8 +162,9 @@ WS.socketIOServer = Server.extend({
             } else {
                 let result = await dao.getLooperAssetCount(body.walletId);
                 let total = result.totalLLAssetsOwned;
+                let ownYourLoopersBuff = 25000 * total;
                 //console.log("Asset count: ", total,  " for wallet " + playerCache.walletId + " and nft " + playerCache.nftId);
-                body.xp = parseInt(body.xp) + 100000 * total;
+                body.xp = parseInt(body.xp) + ownYourLoopersBuff;
             }
 
             cache.set(id, body);
