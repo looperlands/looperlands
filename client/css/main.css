@@ -263,6 +263,36 @@ body.upscaled.game {background:#000;}
     cursor: pointer;
     display:none;
 }
+
+#emoteMenu {
+    position: absolute;
+    top: 8px;
+    left: 40px;
+    height:24px;
+    overflow-y:hidden;
+}
+
+#emoteMenu .emote {
+    width: 16px;
+    height: 14px;
+    display: inline-block;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.2);
+    margin: 0 2px 0 2px;
+    padding: 4px;
+    text-align: center;
+    cursor: pointer;
+}
+
+#emoteMenu .emote:hover {
+    background: rgba(255,255,255,0.6);
+    transition: ease-in-out all 0.2s;
+}
+#emoteMenu.active .emote {
+    animation: fade-in 1s;
+    animation-delay: calc(var(--n) * 0.1s);
+}
+
 #chatbox.active #emoteMenuToggle {
     display:block;
 }
@@ -707,14 +737,14 @@ footer div  {display:inline-block;}
     #chatbox.active {bottom:66px;}
     #chatbox input {font-size:20px;color:#eee;background:none;width:90%;border:0;margin-left:5%;padding:16px 0;}
 
-    #emoteMenuToggle {
-        width: 24px;
-        height: 24px;
+    .upscaled #emoteMenuToggle {
+        width: 36px;
+        height: 36px;
         position: absolute;
-        top: 6px;
-        left: 9px;
-        background: url(../img/2/barsheet.png);
-        background-position-y: -129px;
+        top: 8px;
+        left: 14px;
+        background: url(../img/3/barsheet.png);
+        background-position-y: -192px;
         cursor: pointer;
     }
 

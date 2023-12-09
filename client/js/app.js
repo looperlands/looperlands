@@ -202,7 +202,7 @@ define(['jquery', 'storage'], function ($, Storage) {
         showChat: function () {
             if (this.game.started) {
                 $('#chatbox').addClass('active');
-                $('#chatinput').focus();
+                $('#chatinput').show().focus();
                 $('#chatbutton').addClass('active');
                 self = this;
                 axios.get("/chat").then(function (response) {
@@ -231,8 +231,14 @@ define(['jquery', 'storage'], function ($, Storage) {
                 $('#chatinput').blur();
                 $('#chatbutton').removeClass('active');
                 this.game.destroyBubble("global");
+
+                $('#emoteMenu').removeClass('active');
+                $('#emoteMenu').children().each(function(index) {
+                    $(this).delay(($('#emoteMenu').children().length - index) * 20).fadeOut(100);
+                });
             }
         },
+
 
         toggleInstructions: function () {
             if ($('#achievements').hasClass('active')) {
@@ -254,6 +260,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                 this.game.initAchievements()
             }
         },
+
 
         resetPage: function () {
             var self = this,

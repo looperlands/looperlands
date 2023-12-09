@@ -43,9 +43,9 @@ Types = {
         MUSIC: 39,
         LAYER: 40,
         ANIMATE: 41,
-        CONSUMEITEM: 35,
-        BUFFINFO: 36,
-        EMOTE: 37
+        CONSUMEITEM: 42,
+        BUFFINFO: 43,
+        EMOTE: 44
     },
     
     Entities: {

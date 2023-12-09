@@ -468,12 +468,59 @@ define(['jquery', 'app'], function($, App) {
                 }
             });
 
-            $('#emoteMenuToggle'.click(function(event) {
-                game.emote('love')
+            $('#emoteMenuToggle').click(function(event) {
                 event.preventDefault();
                 event.stopImmediatePropagation();
+                $('#emoteMenu').toggleClass('active');
+
+                if($('#emoteMenu').hasClass('active')) {
+                    $('#chatinput').hide();
+                    $('#emoteMenu').children().each(function(index) {
+                        $(this).delay(index * 50).fadeIn(200);
+                    });
+                } else {
+                    $('#chatinput').show();
+                    $('#emoteMenu').children().each(function(index) {
+                        $(this).delay(($('#emoteMenu').children().length - index) * 50).fadeOut(200);
+                    });
+                }
+
                 return false;
             });
+
+            var emotions = {
+                'sing': "🎶",
+                'love': "💙",
+                'attack': "⚔️",
+                'magic': "✨",
+                'laugh': "🤣",
+                'cry': "😭",
+                'sad': "😢",
+                'sleep': "😴",
+                'confused': "❓",
+                'thanks': "🙏🏻",
+                'positive': "👍🏻",
+                'negative': "👎🏻",
+                'fire': "🔥",
+                'seen': "👀",
+            };
+            let emoIdx = 0;
+            for (var emotion in emotions) {
+                var emotionDiv = $('<div class="emote" data-emotion="' + emotion + '" style="--n: ' + emoIdx++ + '">' + emotions[emotion] + '</div>');
+                emotionDiv.click(function(event) {
+                    game.emote($(event.target).data('emotion'));
+                    $('#emoteMenu').removeClass('active');
+                    $('#emoteMenu').children().each(function(index) {
+                        $(this).delay(($('#emoteMenu').children().length - index) * 20).fadeOut(100);
+                    });
+
+                    event.preventDefault();
+                    event.stopImmediatePropagation();
+                    return false;
+                });
+                $('#emoteMenu').append(emotionDiv);
+                emotionDiv.hide();
+            }
 
             $('#mutebutton').click(function() {
                 game.app.toggleSettings();

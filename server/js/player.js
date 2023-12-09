@@ -153,7 +153,7 @@ module.exports = Player = Character.extend({
             }
             else if(action === Types.Messages.EMOTE) {
                 var emotion = Utils.sanitize(message[1]);
-                self.broadcastToZone(new Messages.Chat(self, emotion), false);
+                self.broadcastToZone(new Messages.Emote(self, emotion), false);
             }
             else if(action === Types.Messages.MOVE) {
                 if(self.move_callback) {
