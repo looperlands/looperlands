@@ -140,7 +140,7 @@ WS.socketIOServer = Server.extend({
         app.use(express.json())
 
 
-        function newSession(body) {
+        async function newSession(body, teleport) {
             const id = crypto.randomBytes(20).toString('hex');
             // this prevents failed logins not being able to login again
             body.isDirty = false;
@@ -152,9 +152,21 @@ WS.socketIOServer = Server.extend({
                 // teleport request
                 if (body.x !== undefined && body.y !== undefined) {
                     let checkpoint = self.worldsMap[body.mapId].map.findClosestCheckpoint(body.x, body.y);
-                    dao.saveAvatarCheckpointId(body.nftId, checkpoint.id);
+                    await dao.saveAvatarCheckpointId(body.nftId, checkpoint.id);
                 }
             }
+
+
+            if (teleport) {
+                body.xp = parseInt(body.xp);
+            } else {
+                let result = await dao.getLooperAssetCount(body.walletId);
+                let total = result.totalLLAssetsOwned;
+                let ownYourLoopersBuff = 25000 * total;
+                //console.log("Asset count: ", total,  " for wallet " + playerCache.walletId + " and nft " + playerCache.nftId);
+                body.xp = parseInt(body.xp) + ownYourLoopersBuff;
+            }
+
             cache.set(id, body);
             let responseJson = {
                 "sessionId" : id
@@ -207,7 +219,7 @@ WS.socketIOServer = Server.extend({
             }
 
 
-            let responseJson = newSession(body);
+            let responseJson = await newSession(body);
 
             res.status(200).send(responseJson);
         });
@@ -241,7 +253,7 @@ WS.socketIOServer = Server.extend({
             body.title = sessionData.title;
             delete body.map;
 
-            let responseJson = newSession(body);
+            let responseJson = await newSession(body, true);
 
             res.status(200).send(responseJson);
         });

@@ -133,6 +133,7 @@ module.exports = Player = Character.extend({
                 }, 60 * 1000);
 
                 self.playerEventBroker.spawnEvent(self, playerCache.checkpointId);
+
             }
             else if(action === Types.Messages.WHO) {
                 message.shift();
