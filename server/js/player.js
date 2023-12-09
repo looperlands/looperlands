@@ -155,6 +155,8 @@ module.exports = Player = Character.extend({
             else if(action === Types.Messages.EMOTE) {
                 var emotion = Utils.sanitize(message[1]);
                 self.broadcastToZone(new Messages.Emote(self, emotion), false);
+                let emoticon = Types.emotions[emotion];
+                discord.sendMessage(`${self.name} ${emoticon}`);
             }
             else if(action === Types.Messages.MOVE) {
                 if(self.move_callback) {

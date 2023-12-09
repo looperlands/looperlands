@@ -479,44 +479,21 @@ define(['jquery', 'app'], function($, App) {
                 if($('#emoteMenu').hasClass('active')) {
                     $('#chatinput').hide();
                     $('#emoteMenu').children().each(function(index) {
-                        $(this).delay(index * 50).fadeIn(200);
+                        $(this).delay(index * 30).fadeIn(200);
                     });
                 } else {
                     $('#chatinput').show();
                     $('#emoteMenu').children().each(function(index) {
-                        $(this).delay(($('#emoteMenu').children().length - index) * 50).fadeOut(200);
+                        $(this).delay(($('#emoteMenu').children().length - index) * 30).fadeOut(200);
                     });
                 }
 
                 return false;
             });
 
-            var emotions = {
-                'sing': "🎶",
-                'love': "💙",
-                'attack': "⚔️",
-                'magic': "✨",
-                'thunder': "⚡️",
-                'laugh': "🤣",
-                'cry': "😭",
-                'sad': "😢",
-                'sleep': "😴",
-                'confused': "❓",
-                'thanks': "🙏🏻",
-                'angry': "😡",
-                'positive': "👍🏻",
-                'negative': "👎🏻",
-                'fire': "🔥",
-                'banana': "🍌",
-                'seen': "👀",
-                'turtle': "🐢",
-                'ghost': "👻",
-                'corn': "🌽",
-                'beer': "🍺",
-            };
             let emoIdx = 0;
-            for (var emotion in emotions) {
-                var emotionDiv = $('<div class="emote" data-emotion="' + emotion + '" style="--n: ' + emoIdx++ + '">' + emotions[emotion] + '</div>');
+            for (var emotion in Types.emotions) {
+                var emotionDiv = $('<div class="emote" data-emotion="' + emotion + '" style="--n: ' + emoIdx++ + '">' + Types.emotions[emotion] + '</div>');
                 emotionDiv.click(function(event) {
                     game.emote($(event.target).data('emotion'));
                     $('#emoteMenu').removeClass('active');

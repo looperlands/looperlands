@@ -288,10 +288,6 @@ body.upscaled.game {background:#000;}
     background: rgba(255,255,255,0.6);
     transition: ease-in-out all 0.2s;
 }
-#emoteMenu.active .emote {
-    animation: fade-in 1s;
-    animation-delay: calc(var(--n) * 0.1s);
-}
 
 #chatbox.active #emoteMenuToggle {
     display:block;
@@ -748,9 +744,8 @@ footer div  {display:inline-block;}
         cursor: pointer;
     }
     .upscaled #emoteMenu {
-        top: 12px;
-        left: 51px;
-        height: 36px;
+        top: 20%;
+        left: 5%;
         overflow-y: hidden;
     }
     .upscaled #emoteMenu .emote {
@@ -760,7 +755,7 @@ footer div  {display:inline-block;}
         border-radius: 6px;
         background: rgba(255,255,255,0.2);
         margin: 0px 3px 0 3px;
-        padding: 8px;
+        padding: 0.2rem;
         text-align: center;
         cursor: pointer;
     }
