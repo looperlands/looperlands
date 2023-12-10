@@ -583,21 +583,15 @@ module.exports = Player = Character.extend({
         }
 
         if (this.accumulatedExperience > XP_BATCH_SIZE) {
-            this.syncExperience(session);
+            await this.syncExperience(session);
         }
     },
 
     syncExperience: async function(session) {
-
-        let buff = 0;
-        if (session.ownYourLoopersBuff !== undefined) {
-            buff = session.ownYourLoopersBuff;
-        }
-
-        let updatedXp = await dao.updateExperience(this.walletId, this.nftId, this.accumulatedExperience) + buff;
+        let updatedXp = await dao.updateExperience(this.walletId, this.nftId, this.accumulatedExperience);
         if (!Number.isNaN(updatedXp)) {
             if (session !== undefined) {
-                session.xp = updatedXp;
+                session.xp = updatedXp + session.ownYourLoopersBuff;
                 this.server.server.cache.set(this.sessionId, session);
             }
             this.accumulatedExperience = 0;
