@@ -166,7 +166,6 @@ WS.socketIOServer = Server.extend({
                 let ownYourLoopersBuff = manager.getTotalExperienceBoost();
                 //console.log("Asset count: ", total,  " for wallet " + playerCache.walletId + " and nft " + playerCache.nftId);
                 body.xp = parseInt(body.xp) + ownYourLoopersBuff;
-                body.ownYourLoopersBuff = ownYourLoopersBuff;
             }
             
 
