@@ -1,10 +1,11 @@
 define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile',
         'warrior', 'gameclient', 'audio', 'updater', 'transition', 'pathfinder',
         'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'config', 'fieldeffect', 'float', '../../shared/js/gametypes', '../../shared/js/altnames'],
+
 function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, AnimatedTile,
          Warrior, GameClient, AudioManager, Updater, Transition, Pathfinder,
          Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, config, Fieldeffect, Float) {
-    
+
     var Game = Class.extend({
         init: function(app) {
             this.app = app;
@@ -5596,6 +5597,25 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     self.audioManager.playSound("chat");
                 });
 
+                self.client.onEmotion(function(entityId, emotion) {
+                    var entity = self.getEntityById(entityId);
+
+                    if(!Types.emotions[emotion]) {
+                        return;
+                    }
+
+                    const icons = 25;
+                    let delay = 0;
+                    for(let i = 0; i < icons; i++) {
+                        // randomize
+                        delay += Math.floor(Math.random() * 500);
+                        let randomXOffset = Math.floor(Math.random() * 40) - 20;
+                        let randomYOffset = -1 * (Math.floor(Math.random() * 20) + 5);
+
+                        setTimeout(() => {self.infoManager.addDamageInfo(Types.emotions[emotion], entity.x + randomXOffset, entity.y + randomYOffset, "emote");}, delay)
+                    }
+                });
+
                 self.client.onSound(self.handleSound);
                 self.client.onMusic(self.handleMusic);
                 self.client.onLayer(self.handleLayer);
@@ -6647,6 +6667,10 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
     
         say: function(message) {
             this.client.sendChat(message);
+        },
+
+        emote: function(emotion) {
+            this.client.sendEmotion(emotion);
         },
     
         createBubble: function(id, message) {

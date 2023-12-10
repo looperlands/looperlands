@@ -43,8 +43,9 @@ Types = {
         MUSIC: 39,
         LAYER: 40,
         ANIMATE: 41,
-        CONSUMEITEM: 35,
-        BUFFINFO: 36
+        CONSUMEITEM: 42,
+        BUFFINFO: 43,
+        EMOTE: 44
     },
     
     Entities: {
@@ -8220,3 +8221,27 @@ Types.timeouts[Types.Entities.TENTACLE] = 12000;
 Types.timeouts[Types.Entities.TENTACLE2] = 12000;
 Types.timeouts[Types.Entities.COBSLIMEKING] = 5000;
 Types.timeouts[Types.Entities.COBOGRE] = 3000;
+
+Types.emotions = {
+    'sing': "🎶",
+    'love': "💙",
+    'attack': "⚔️",
+    'magic': "✨",
+    'thunder': "⚡️",
+    'laugh': "🤣",
+    'cry': "😭",
+    'sad': "😢",
+    'sleep': "😴",
+    'confused': "❓",
+    'thanks': "🙏🏻",
+    'angry': "😡",
+    'positive': "👍🏻",
+    'negative': "👎🏻",
+    'fire': "🔥",
+    'banana': "🍌",
+    'seen': "👀",
+    'turtle': "🐢",
+    'ghost': "👻",
+    'corn': "🌽",
+    'beer': "🍺",
+};

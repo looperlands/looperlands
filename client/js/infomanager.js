@@ -63,6 +63,10 @@ define(function() {
         "fishTrait": {
             fill: "#00e4ff",
             stroke: "#001dff",
+        },
+        "emote": {
+            fill: "rgb(150, 170, 190)",
+            stroke: "rgb(50, 70, 90)"
         }
     };
 

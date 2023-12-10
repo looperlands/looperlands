@@ -131,6 +131,18 @@ Messages.Chat = Message.extend({
     }
 });
 
+Messages.Emote = Message.extend({
+    init: function(player, emotion) {
+        this.playerId = player.id;
+        this.emotion = emotion;
+    },
+    serialize: function() {
+        return [Types.Messages.EMOTE,
+            this.playerId,
+            this.emotion];
+    }
+})
+
 Messages.Teleport = Message.extend({
     init: function(entity) {
         this.entity = entity;
