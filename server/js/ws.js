@@ -414,7 +414,9 @@ WS.socketIOServer = Server.extend({
                 }
             });
 
-            res.status(200).json({inventory: inventory, special: special, consumables: consumables});
+            let botsResponse = await axios.get(`${LOOPWORMS_LOOPERLANDS_BASE_URL}/loadBot.php?walletID=${walletId}`);
+            let bots = botsResponse.data;
+            res.status(200).json({inventory: inventory, special: special, consumables: consumables, bots: bots});
         });
 
         app.get("/session/:sessionId/quests", async (req, res) => {
