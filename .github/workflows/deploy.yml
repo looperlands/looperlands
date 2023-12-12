@@ -19,7 +19,7 @@ jobs:
         password: ${{ secrets.PASSWORD }}
         port: 22
         script: |
-          docker image prune -a -f
+          docker system prune -af
           cd /home/looperlands/git/looperlands
           git checkout .
           git checkout main
