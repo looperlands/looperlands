@@ -847,8 +847,14 @@ WS.socketIOServer = Server.extend({
         app.post("/session/:sessionId/newBot", async (req, res) => {
             const sessionId = req.params.sessionId;
             const sessionData = cache.get(sessionId);
-            let botNftId = req.params.botNftId;
-            console.log(botNftId);
+            let botNftId = req.body.botNftId;
+            let ownedBots = await dao.getBots(sessionData.walletId);
+            let botInfo = ownedBots.find(bot => bot.botNftId === botNftId);
+            if (botInfo) {
+                dao.newBot(sessionData.mapId, botNftId, botInfo.experience, botInfo.name, sessionData.walletId, sessionData.entityId);
+            } else {
+                console.error("Bot not found " + sessionData);
+            }
         });
 
         self.io.on('connection', function(connection){

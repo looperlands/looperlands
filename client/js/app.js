@@ -1,3 +1,4 @@
+
 define(['jquery', 'storage'], function ($, Storage) {
 
     var App = Class.extend({
@@ -542,12 +543,29 @@ define(['jquery', 'storage'], function ($, Storage) {
                     }
                 }
 
+                let newBot = function (item) {
+                    console.log(item);
+                    let itemId = item.botNftId.replace("0x", "");
+                    if (document.getElementById(itemId) !== null) {
+                        let spawnBot = function () {
+                            axios.post("/session/" + _this.storage.sessionId + "/newBot", {botNftId: item.botNftId}).then(function(response) {
+                                console.log("new bot", itemId);
+                            });
+                        }
+                        document.getElementById(itemId).addEventListener("click", spawnBot);
+                    }
+                }
+
                 weaponInventory.forEach(function (item) {
                     equipFunc(item);
                 });
 
                 specialInventory.forEach(function (item) {
                     equipFunc(item);
+                });
+
+                botsInventory.forEach(function (item) {
+                    newBot(item);
                 });
 
                 Object.keys(consumablesInventory).forEach(item => {
