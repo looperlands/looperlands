@@ -414,8 +414,7 @@ WS.socketIOServer = Server.extend({
                 }
             });
 
-            let botsResponse = await axios.get(`${LOOPWORMS_LOOPERLANDS_BASE_URL}/loadBot.php?walletID=${walletId}`);
-            let bots = botsResponse.data;
+            let bots = await dao.getBots(walletId);
             res.status(200).json({inventory: inventory, special: special, consumables: consumables, bots: bots});
         });
 
@@ -845,7 +844,12 @@ WS.socketIOServer = Server.extend({
             }
         });
 
-        app.post("/session/:sessionId/spawnBot", async (req, res) => {
+        app.post("/session/:sessionId/newBot", async (req, res) => {
+            const sessionId = req.params.sessionId;
+            const sessionData = cache.get(sessionId);
+            let botNftId = req.params.botNftId;
+            console.log(botNftId);
+        });
 
         self.io.on('connection', function(connection){
           //console.log('a user connected');
