@@ -262,6 +262,10 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
         return new Mobs.Tabbycat(id);
     }
     
+    EntityFactory.builders[Types.Entities.OABLACKCAT] = function(id) {
+        return new Mobs.Oablackcat(id);
+    }
+    
     EntityFactory.builders[Types.Entities.FVILLAGER1] = function(id) {
         return new Mobs.Fvillager1(id);
     };    

@@ -93,7 +93,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 "villager1","villager2","villager3","villager4","villager5","villager6","brownspotdog",
                                 "villager7","villager8","villager9","villager10","villager11","villager12",
                                 "villager13","villager14","villager15","villager16","villager17","villager18","turtle",
-                                "villager19","villager20","villager21","villager22","villager23","villager24",
+                                "villager19","villager20","villager21","villager22","villager23","villager24","oablackcat",
                                 "villager25","villager26","villager27","villager28","villager29","tabbycat",
                                 "fvillager1","fvillager2","fvillager3","fvillager4","fvillager5","fvillager6","fvillager7",
                                 "fvillager8","fvillager9","fvillager10","fvillager11","fvillager12","fvillager13","fvillager14",

@@ -281,7 +281,8 @@ Types = {
         VILLAGESIGN9: 34000011,
         TABBYCAT: 34000012, 
         COBELLEN: 34000013, 
-        COBJOHNNY: 34000014,  // @lastidCharacter@
+        COBJOHNNY: 34000014,  
+        OABLACKCAT: 34000015, // @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -4406,6 +4407,7 @@ var kinds = {
     fvillager30: [Types.Entities.FVILLAGER30, "mob"],
     fvillager31: [Types.Entities.FVILLAGER31, "mob"],
     tabbycat: [Types.Entities.TABBYCAT, "mob"],
+    oablackcat: [Types.Entities.OABLACKCAT, "mob"],
     jayce: [Types.Entities.JAYCE, "mob"],
     orlan: [Types.Entities.ORLAN, "mob"],
     cobcow: [Types.Entities.COBCOW, "mob"],
