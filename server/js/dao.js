@@ -664,7 +664,8 @@ exports.newBot = async function(mapId, botNftId, xp, name, walletId, ownerEntity
       "xp" : xp,
       "name": name,
       "walletId": walletId,
-      "owner": ownerEntityId
+      "owner": ownerEntityId,
+      "name": name
     }
     const response = await axios.post(url, sessionRequest, options);
     return response.data;
@@ -675,7 +676,7 @@ exports.newBot = async function(mapId, botNftId, xp, name, walletId, ownerEntity
     }
     retry -= 1;
     if (retry > 0) {
-      return this.newBot(mapId, botNftId, xp, name, walletId, retry);
+      return this.newBot(mapId, botNftId, xp, name, walletId, ownerEntityId, retry);
     } else {
       console.error("newBot", error);
     }
