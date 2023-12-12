@@ -240,7 +240,8 @@ Types = {
         ICESSENCE: 21300033,
         FORGEDSWORD: 21300034,
         BANNER: 21300035,
-        PNEUMA_SIGN: 21300036, // @lastidObject@
+        PNEUMA_SIGN: 21300036,
+        VILLAGESIGN10: 21300037, // @lastidObject@
         //@nextIdLineObject@
         
         // NPCs
@@ -282,7 +283,13 @@ Types = {
         TABBYCAT: 34000012, 
         COBELLEN: 34000013, 
         COBJOHNNY: 34000014,  
-        OABLACKCAT: 34000015, // @lastidCharacter@
+        OABLACKCAT: 34000015,
+        VILLAGESIGN11: 34000016,
+        VILLAGESIGN12: 34000017,
+        VILLAGESIGN13: 34000018,
+        VILLAGESIGN14: 34000019,
+        VILLAGESIGN15: 34000020,
+        VILLAGESIGN16: 34000021, // @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -4475,6 +4482,7 @@ var kinds = {
     FORGEDSWORD: [Types.Entities.FORGEDSWORD, "object"],
     BANNER: [Types.Entities.BANNER, "object"],
     PNEUMA_SIGN: [Types.Entities.PNEUMA_SIGN, "object"],
+    VILLAGESIGN10: [Types.Entities.VILLAGESIGN10, "object"],
     // @nextObjectLine@
 
     guard: [Types.Entities.GUARD, "npc"],
@@ -4533,6 +4541,12 @@ var kinds = {
     VILLAGESIGN9: [Types.Entities.VILLAGESIGN9, "npc"],
     cobellen: [Types.Entities.COBELLEN, "npc"],
     cobjohnny: [Types.Entities.COBJOHNNY, "npc"],
+    VILLAGESIGN11: [Types.Entities.VILLAGESIGN11, "npc"],
+    VILLAGESIGN12: [Types.Entities.VILLAGESIGN12, "npc"],
+    VILLAGESIGN13: [Types.Entities.VILLAGESIGN13, "npc"],
+    VILLAGESIGN14: [Types.Entities.VILLAGESIGN14, "npc"],
+    VILLAGESIGN15: [Types.Entities.VILLAGESIGN15, "npc"],
+    VILLAGESIGN16: [Types.Entities.VILLAGESIGN16, "npc"],
     // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],
