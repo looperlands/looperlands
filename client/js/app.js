@@ -544,7 +544,6 @@ define(['jquery', 'storage'], function ($, Storage) {
                 }
 
                 let newBot = function (item) {
-                    console.log(item);
                     let itemId = item.botNftId.replace("0x", "");
                     if (document.getElementById(itemId) !== null) {
                         let spawnBot = function () {
