@@ -392,6 +392,23 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 }
             }
         }),   
+        Oablackcat: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.OABLACKCAT);
+                this.idleSpeed = 500;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),   
         Whitedog: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.WHITEDOG);

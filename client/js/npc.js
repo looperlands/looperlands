@@ -316,6 +316,12 @@ define(['character'], function (Character) {
         "cobjohnny": [
             "Farm life is tough but it's something that we will all be able to do soon."
         ],
+        "VILLAGESIGN11": ["Change me"],
+        "VILLAGESIGN12": ["Change me"],
+        "VILLAGESIGN13": ["Change me"],
+        "VILLAGESIGN14": ["Change me"],
+        "VILLAGESIGN15": ["Change me"],
+        "VILLAGESIGN16": ["Change me"],
         // @nextNPCLine@
     };
 
