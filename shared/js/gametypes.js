@@ -4160,7 +4160,8 @@ Types = {
         NFT_6303103a23412cd3d967ec209c92a4751640a48a7ef3ed2c3706d6d06ca62f40: 3930,
         NFT_6610c8b56d7aed07bd9b71616fb203af1c5ad3bf53fec460e9504ad1aba32f90: 3931,
         NFT_66b715ac66281cc112b200af2eb440b908865031eaa7ab87e273cf50c4880c8d: 3932,
-        NFT_68ecf5db5a3af55c9add8914efb9055db0117337b73416857192cccd67533de4: 3933 // @lastid@
+        NFT_68ecf5db5a3af55c9add8914efb9055db0117337b73416857192cccd67533de4: 3933,
+        NFT_6be445e56e3c23c5cd55786ba69968794f6e096d888bb6b1b916da191e07eeef: 3934 // @lastid@
         //@nextIdLine@
     },
     
@@ -8304,6 +8305,7 @@ var kinds = {
     NFT_6610c8b56d7aed07bd9b71616fb203af1c5ad3bf53fec460e9504ad1aba32f90: [Types.Entities.NFT_6610c8b56d7aed07bd9b71616fb203af1c5ad3bf53fec460e9504ad1aba32f90, "fishingrod"],
     NFT_66b715ac66281cc112b200af2eb440b908865031eaa7ab87e273cf50c4880c8d: [Types.Entities.NFT_66b715ac66281cc112b200af2eb440b908865031eaa7ab87e273cf50c4880c8d, "fishingrod"],
     NFT_68ecf5db5a3af55c9add8914efb9055db0117337b73416857192cccd67533de4: [Types.Entities.NFT_68ecf5db5a3af55c9add8914efb9055db0117337b73416857192cccd67533de4, "fishingrod"],
+    NFT_6be445e56e3c23c5cd55786ba69968794f6e096d888bb6b1b916da191e07eeef: [Types.Entities.NFT_6be445e56e3c23c5cd55786ba69968794f6e096d888bb6b1b916da191e07eeef, "fishingrod"],
     // @nextSpriteLine@
 
     
