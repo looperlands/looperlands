@@ -845,6 +845,8 @@ WS.socketIOServer = Server.extend({
             }
         });
 
+        app.post("/session/:sessionId/spawnBot", async (req, res) => {
+
         self.io.on('connection', function(connection){
           //console.log('a user connected');
 
