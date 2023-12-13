@@ -552,7 +552,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                             axios.post("/session/" + _this.storage.sessionId + "/newBot", {botNftId: item.botNftId}).then(function(response) {
                                 console.log("new bot", response);
                             }).catch(function(error) {
-                                console.error(error);
+                                console.log(error);
                                 let errorMsg = error?.response?.data?.error;
                                 _this.showMessage(errorMsg);
                             });
