@@ -550,7 +550,11 @@ define(['jquery', 'storage'], function ($, Storage) {
                     if (itemId && document.getElementById(itemId) !== null) {
                         let spawnBot = function () {
                             axios.post("/session/" + _this.storage.sessionId + "/newBot", {botNftId: item.botNftId}).then(function(response) {
-                                console.log("new bot", response.data);
+                                console.log("new bot", response);
+                            }).catch(function(error) {
+                                console.error(error);
+                                let errorMsg = error?.response?.data?.error;
+                                _this.showMessage(errorMsg);
                             });
                         }
                         document.getElementById(itemId).addEventListener("click", spawnBot);
