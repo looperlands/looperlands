@@ -509,9 +509,11 @@ define(['jquery', 'storage'], function ($, Storage) {
                     inventoryHtml += "<div>"
 
                     botsInventory.forEach(function(bot) {
-                        let item = bot.botNftId.replace("0x", "");
-                        imgTag = `<div class='item'><img id=${item} style='width: 32px; height: 32px; object-fit: cover; cursor: pointer; object-position: 100% 0;' src='img/3/NFT_` + item + ".png' /></div>";
-                        inventoryHtml += imgTag;
+                        let item = bot?.botNftId?.replace("0x", "");
+                        if (item) {
+                            imgTag = `<div class='item'><img id=${item} style='width: 32px; height: 32px; object-fit: cover; cursor: pointer; object-position: 100% 0;' src='img/3/NFT_` + item + ".png' /></div>";
+                            inventoryHtml += imgTag;
+                        }
                     });
                     inventoryHtml += "</div>";
                 }
