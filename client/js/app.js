@@ -1,3 +1,4 @@
+
 define(['jquery', 'storage'], function ($, Storage) {
 
     var App = Class.extend({
@@ -459,6 +460,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                     weaponInventory = response.data.inventory;
                     specialInventory = response.data.special;
                     consumablesInventory = response.data.consumables;
+                    botsInventory = response.data.bots;
                 }  
                 var inventoryHtml = "";
                 inventoryHtml += "<strong>Weapons</strong>";
@@ -502,6 +504,18 @@ define(['jquery', 'storage'], function ($, Storage) {
                     inventoryHtml += "</div>";
                 }
 
+                if (botsInventory.length > 0) {
+                    inventoryHtml += "<strong>Companions</strong>";
+                    inventoryHtml += "<div>"
+
+                    botsInventory.forEach(function(bot) {
+                        let item = bot.botNftId.replace("0x", "");
+                        imgTag = `<div class='item'><img id=${item} style='width: 32px; height: 32px; object-fit: cover; cursor: pointer; object-position: 100% 0;' src='img/3/NFT_` + item + ".png' /></div>";
+                        inventoryHtml += imgTag;
+                    });
+                    inventoryHtml += "</div>";
+                }
+
                 $("#inventory").html(inventoryHtml);
 
                 let equipFunc = function (item) {
@@ -529,12 +543,28 @@ define(['jquery', 'storage'], function ($, Storage) {
                     }
                 }
 
+                let newBot = function (item) {
+                    let itemId = item.botNftId.replace("0x", "");
+                    if (document.getElementById(itemId) !== null) {
+                        let spawnBot = function () {
+                            axios.post("/session/" + _this.storage.sessionId + "/newBot", {botNftId: item.botNftId}).then(function(response) {
+                                console.log("new bot", itemId);
+                            });
+                        }
+                        document.getElementById(itemId).addEventListener("click", spawnBot);
+                    }
+                }
+
                 weaponInventory.forEach(function (item) {
                     equipFunc(item);
                 });
 
                 specialInventory.forEach(function (item) {
                     equipFunc(item);
+                });
+
+                botsInventory.forEach(function (item) {
+                    newBot(item);
                 });
 
                 Object.keys(consumablesInventory).forEach(item => {

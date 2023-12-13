@@ -1,5 +1,7 @@
 const LOOPWORMS_LOOPERLANDS_BASE_URL = process.env.LOOPWORMS_LOOPERLANDS_BASE_URL;
 const API_KEY = process.env.LOOPWORMS_API_KEY;
+const LOOPERLANDS_BACKEND_BASE_URL = process.env.LOOPERLANDS_BACKEND_BASE_URL;
+const LOOPERLANDS_BACKEND_API_KEY = process.env.LOOPERLANDS_BACKEND_API_KEY;
 const axios = require('axios');
 const NodeCache = require( "node-cache" );
 const Collectables = require('./collectables.js');
@@ -638,6 +640,45 @@ exports.getLooperAssetCount = async function(wallet, retry) {
       return this.getLooperCount(wallet, retry);
     } else {
       console.error("getLooperCount", error);
+    }
+  }
+}
+
+exports.getBots = async function(walletId) {
+  let botsResponse = await axios.get(`${LOOPWORMS_LOOPERLANDS_BASE_URL}/loadBot.php?walletID=${walletId}`);
+  let bots = botsResponse.data;
+  return bots;
+}
+
+exports.newBot = async function(mapId, botNftId, xp, name, walletId, ownerEntityId, retry) {
+  const options = {
+    headers: {
+      'X-Api-Key': LOOPERLANDS_BACKEND_API_KEY
+    }
+  }
+  const url = `${LOOPERLANDS_BACKEND_BASE_URL}/newBot`;
+  try {
+    let sessionRequest = {
+      "nftId" : botNftId,
+      "mapId" : mapId,
+      "xp" : xp,
+      "name": name,
+      "walletId": walletId,
+      "owner": ownerEntityId,
+      "name": name
+    }
+    const response = await axios.post(url, sessionRequest, options);
+    return response.data;
+  } catch (error) {
+    console.error("newBot", error);
+    if (retry === undefined) {
+      retry = MAX_RETRY_COUNT;
+    }
+    retry -= 1;
+    if (retry > 0) {
+      return this.newBot(mapId, botNftId, xp, name, walletId, ownerEntityId, retry);
+    } else {
+      console.error("newBot", error);
     }
   }
 }
