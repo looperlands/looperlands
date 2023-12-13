@@ -546,11 +546,11 @@ define(['jquery', 'storage'], function ($, Storage) {
                 }
 
                 let newBot = function (item) {
-                    let itemId = item.botNftId.replace("0x", "");
-                    if (document.getElementById(itemId) !== null) {
+                    let itemId = item?.botNftId?.replace("0x", "");
+                    if (itemId && document.getElementById(itemId) !== null) {
                         let spawnBot = function () {
                             axios.post("/session/" + _this.storage.sessionId + "/newBot", {botNftId: item.botNftId}).then(function(response) {
-                                console.log("new bot", itemId);
+                                console.log("new bot", response.data);
                             });
                         }
                         document.getElementById(itemId).addEventListener("click", spawnBot);
