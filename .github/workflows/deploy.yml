@@ -24,5 +24,12 @@ jobs:
           git checkout .
           git checkout main
           git pull
-          docker-compose build
+          docker-compose build --no-cache
           sudo systemctl restart looperlands
+          cd ../looperlands-backend
+          git checkout .
+          git checkout main
+          git pull
+          cp /home/looperlands/git/docker-flyway-looperlands-backend.config /home/looperlands/git/looperlands-backend/docker-flyway.config          
+          docker-compose build --no-cache
+          sudo systemctl restart looperlands-backend 
