@@ -978,5 +978,10 @@ module.exports = Player = Character.extend({
 
     getActiveBuff: function() {
         return this.consumableBuff.buff; //can be undefined!
+    },
+
+    isBot: function() {
+        let nftId = this.nftId.replace("0x", "NFT_");
+        return Types.isBot(Types.getKindFromString(nftId));
     }
 });
