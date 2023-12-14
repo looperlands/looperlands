@@ -124,19 +124,19 @@ module.exports = Player = Character.extend({
                 dao.saveAvatarMapId(playerCache.nftId, playerCache.mapId);
                 self.playerEventBroker.setPlayer(self);
 
-                /*
                 try {
                     await mapflows.loadFlow(playerCache.mapId, self.playerEventBroker, self.server);
                     if (self.flowInterval) {
                         clearInterval(self.flowInterval);
                     }
                     self.flowInterval = setInterval(async function () {
-                        await mapflows.loadFlow(playerCache.mapId, self.playerEventBroker, self.server);
+                        try {
+                            await mapflows.loadFlow(playerCache.mapId, self.playerEventBroker, self.server);
+                        } catch (e) { console.error(e); }
                     }, 60 * 1000);
                 } catch (e) {
                     console.error(e);
                 }
-                */
 
                 self.playerEventBroker.spawnEvent(self, playerCache.checkpointId);
 
