@@ -670,7 +670,9 @@ exports.newBot = async function(mapId, botNftId, xp, name, walletId, ownerEntity
     const response = await axios.post(url, sessionRequest, options);
     return response.data;
   } catch (error) {
-    console.error("newBot", error);
+    if (error?.response?.status === 409) {
+      return error?.response?.data;
+    }
     if (retry === undefined) {
       retry = MAX_RETRY_COUNT;
     }

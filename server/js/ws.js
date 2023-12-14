@@ -855,8 +855,12 @@ WS.socketIOServer = Server.extend({
             let ownedBots = await dao.getBots(sessionData.walletId);
             let botInfo = ownedBots.find(bot => bot.botNftId === botNftId);
             if (botInfo) {
-                dao.newBot(sessionData.mapId, botNftId, botInfo.experience, botInfo.looperName, sessionData.walletId, sessionData.entityId);
-                res.status(200).send({});
+                let newBot = await dao.newBot(sessionData.mapId, botNftId, botInfo.experience, botInfo.looperName, sessionData.walletId, sessionData.entityId);
+                if (newBot.sessionId) {
+                    res.status(200).send({});
+                } else {
+                    res.status(500).send(newBot);
+                }
             } else {
                 console.error("Bot not found " + sessionData);
                 res.status(404).send({});

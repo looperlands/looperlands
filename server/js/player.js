@@ -124,6 +124,7 @@ module.exports = Player = Character.extend({
                 dao.saveAvatarMapId(playerCache.nftId, playerCache.mapId);
                 self.playerEventBroker.setPlayer(self);
 
+                /*
                 try {
                     await mapflows.loadFlow(playerCache.mapId, self.playerEventBroker, self.server);
                     if (self.flowInterval) {
@@ -135,6 +136,7 @@ module.exports = Player = Character.extend({
                 } catch (e) {
                     console.error(e);
                 }
+                */
 
                 self.playerEventBroker.spawnEvent(self, playerCache.checkpointId);
 
