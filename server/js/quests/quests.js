@@ -4,6 +4,7 @@ const Formulas = require('../formulas.js');
 const main = require('./main.js');
 const oa = require('./oa.js');
 const cobsfarm = require('./cobsfarm.js');
+const _ = require('underscore');
 
 const STATES = {
   IN_PROGRESS: "IN_PROGRESS", // picked up from an NPC
