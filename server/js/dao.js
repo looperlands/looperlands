@@ -53,7 +53,12 @@ loadMapFlow = async function (mapId) {
 
   let url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/Maps/selectLooperLands_Quest2.php?map=${mapId}`;
   const responseData = await axios.get(url, options);
-  return JSON.parse(responseData.data);
+  try {
+    return JSON.parse(responseData.data);
+  } catch (error) {
+    console.error("Error parsing map flow");
+    return undefined;
+  }
 }
 
 getCharacterData = async function (wallet, nft, retry) {
