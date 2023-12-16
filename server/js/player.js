@@ -169,22 +169,13 @@ module.exports = Player = Character.extend({
                     var x = message[1],
                         y = message[2];
 
-                    let validPos = self.server.isValidPosition(x, y);
-                    let isBot = self.isBot();
-                    if (!validPos && !isBot) {
-                        return;
+                    if(self.server.isValidPosition(x, y)) {
+                        self.setPosition(x, y);
+                        self.clearTarget();
+                        self.broadcast(new Messages.Move(self));
+                        self.move_callback(self.x, self.y);
+                        self.zone_callback();
                     }
-
-                    if (!validPos && isBot) {
-                        x = x + 1;
-                        y = y + 1;
-                    }
-
-                    self.setPosition(x, y);
-                    self.clearTarget();
-                    self.broadcast(new Messages.Move(self));
-                    self.move_callback(self.x, self.y);
-                    self.zone_callback();
                 }
             }
             else if(action === Types.Messages.LOOTMOVE) {
