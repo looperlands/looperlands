@@ -859,7 +859,6 @@ function(Camera, Item, Character, Player, Timer, Mob) {
 
             this.renderStaticCanvases();
             this.drawToggledLayers(this.context, false, false);
-            this.drawAnimatedTiles();
             this.drawToggledLayers(this.context, false, true);
 
             if(this.game.started) {
@@ -873,9 +872,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             this.drawFloats();
             this.drawCombatInfo();
 
-            this.drawHighTiles(this.context);
             this.drawToggledLayers(this.context, true, false);
-            this.drawHighAnimatedTiles();
             this.drawToggledLayers(this.context, true, true);
 
             this.context.restore();
