@@ -286,9 +286,9 @@ module.exports = class Mapx {
     }
     
     getRandomStartingPosition() {
-        var nbAreas = _.size(this.startingAreas);
-            i = Utils.randomInt(0, nbAreas-1);
-            area = this.startingAreas[i];
+        let nbAreas = _.size(this.startingAreas);
+        let i = Utils.randomInt(0, nbAreas-1);
+        let area = this.startingAreas[i];
         
         return area.getRandomPosition();
     }
