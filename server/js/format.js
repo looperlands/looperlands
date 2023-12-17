@@ -8,6 +8,7 @@ var _ = require('underscore'),
             this.formats = [];
             this.formats[Types.Messages.HELLO] = ['s', 'n', 'n', 's'],
             this.formats[Types.Messages.MOVE] = ['n', 'n'],
+            this.formats[Types.Messages.SUMMON_FOLLOW] = ['n', 'n'],
             this.formats[Types.Messages.LOOTMOVE] = ['n', 'n', 'n'],
             this.formats[Types.Messages.AGGRO] = ['n'],
             this.formats[Types.Messages.ATTACK] = ['n'],

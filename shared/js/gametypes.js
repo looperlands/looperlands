@@ -45,7 +45,8 @@ Types = {
         ANIMATE: 41,
         CONSUMEITEM: 42,
         BUFFINFO: 43,
-        EMOTE: 44
+        EMOTE: 44,
+        SUMMON_FOLLOW: 45
     },
     
     Entities: {
