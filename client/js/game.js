@@ -6376,19 +6376,32 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 self.createBubble(npc.id, message);
                 self.assignBubbleTo(npc);
                 self.audioManager.playSound("npc");
+
+                if (npc.thoughts.length === 0 && npc.thoughtsClearedCallback) {
+                   setTimeout(() => { npc.thoughtsClearedCallback(); npc.thoughtsClearedCallback = null}, 2000);
+                }
                 return;
             }
             axios.get(url).then(function (response) {
                 if (response.data !== "") {
-                    let messages  = (!_.isArray(response.data) ? [response.data] : response.data);
+                    let messages;
+                    if(_.isObject(response.data)) {
+                        messages = (!_.isArray(response.data.text) ? [response.data.text] : response.data.text);
+                    } else {
+                        messages = [response.data];
+                    }
 
                     let message = messages.shift()
-                    npc.addThoughts( messages );
+                    if (messages.length > 0) {
+                        npc.addThoughts(messages, () => {
+                            showNewQuestPopup(response.data.quest)
+                        });
+                    } else {
+                        alert('new quest: ' + response.data.quest);
+                    }
                     self.createBubble(npc.id, message);
                     self.assignBubbleTo(npc);
                     self.audioManager.playSound("npc");
-                    self.showNotification("Quest Accepted");
-
                 } else {
                     msg = npc.talk();
                     self.previousClickPosition = {};

@@ -747,7 +747,10 @@ WS.socketIOServer = Server.extend({
             } else {
                 let msgText = quests.handleNPCClick(cache, sessionId, parseInt(npcId));
                 const sessionData = cache.get(sessionId);
-                self.worldsMap[sessionData.mapId].npcTalked(npcId, msgText, sessionData)
+
+                if (msgText) {
+                    self.worldsMap[sessionData.mapId].npcTalked(npcId, msgText.text, sessionData)
+                }
                 res.status(202).json(msgText);
             }
         });
