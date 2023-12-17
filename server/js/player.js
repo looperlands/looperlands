@@ -178,6 +178,25 @@ module.exports = Player = Character.extend({
                     }
                 }
             }
+            else if (action === Types.Messages.SUMMON_FOLLOW) {
+                if(self.move_callback) {
+                    let x = message[1],
+                        y = message[2];
+
+                    let possiblePos = [{ x: x - 1, y: y - 1 }, { x: x, y: y }, { x: x + 1, y: y }, { x: x - 1, y: y }, { x: x, y: y + 1 }, { x: x, y: y - 1 }];
+
+                    for (let pos of possiblePos) {
+                        if (self.server.isValidPosition(pos.x, pos.y)) {
+                            self.setPosition(pos.x, pos.y);
+                            self.clearTarget();
+                            self.broadcast(new Messages.Move(self));
+                            self.move_callback(self.x, self.y);
+                            self.zone_callback();
+                            break;
+                        }
+                    }
+                }
+            }
             else if(action === Types.Messages.LOOTMOVE) {
                 if(self.lootmove_callback) {
                     self.setPosition(message[1], message[2]);
