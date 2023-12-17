@@ -161,9 +161,13 @@ WS.socketIOServer = Server.extend({
             if (teleport) {
                 body.xp = parseInt(body.xp);
             } else {
-                let manager = new LooperManager(body.walletId);
-                await manager.fetchLoopers();
-                let ownYourLoopersBuff = manager.getTotalExperienceBoost();
+                let ownYourLoopersBuff = 0;
+                if (!body.bot) {
+                    let manager = new LooperManager(body.walletId);
+                    await manager.fetchLoopers();
+                    ownYourLoopersBuff = manager.getTotalExperienceBoost();
+                }
+
                 //console.log("Asset count: ", total,  " for wallet " + playerCache.walletId + " and nft " + playerCache.nftId);
                 body.xp = parseInt(body.xp) + ownYourLoopersBuff;
                 body.ownYourLoopersBuff = ownYourLoopersBuff;
@@ -414,7 +418,8 @@ WS.socketIOServer = Server.extend({
                 }
             });
 
-            res.status(200).json({inventory: inventory, special: special, consumables: consumables});
+            let bots = await dao.getBots(walletId);
+            res.status(200).json({inventory: inventory, special: special, consumables: consumables, bots: bots});
         });
 
         app.get("/session/:sessionId/quests", async (req, res) => {
@@ -840,6 +845,25 @@ WS.socketIOServer = Server.extend({
                     self.worldsMap[sessionData.mapId].announceSpawnFloat(player, fx, fy);
                     res.status(200).send(response);
                 }
+            }
+        });
+
+        app.post("/session/:sessionId/newBot", async (req, res) => {
+            const sessionId = req.params.sessionId;
+            const sessionData = cache.get(sessionId);
+            let botNftId = req.body.botNftId;
+            let ownedBots = await dao.getBots(sessionData.walletId);
+            let botInfo = ownedBots.find(bot => bot.botNftId === botNftId);
+            if (botInfo) {
+                let newBot = await dao.newBot(sessionData.mapId, botNftId, botInfo.experience, botInfo.looperName, sessionData.walletId, sessionData.entityId);
+                if (newBot.sessionId) {
+                    res.status(200).send({});
+                } else {
+                    res.status(500).send(newBot);
+                }
+            } else {
+                console.error("Bot not found " + sessionData);
+                res.status(404).send({});
             }
         });
 

@@ -1,7 +1,7 @@
 const dao = require('./dao.js'); // Import the dao.js module
 
 class LooperManager {
-    static EXPERIENCE_BOOST_PER_LOOPER = 25000;
+    static EXPERIENCE_BOOST_PER_LOOPER = 0;
 
     constructor(owner) {
         this.owner = owner;

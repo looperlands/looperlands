@@ -5,7 +5,7 @@ var cls = require("./lib/class"),
     Entity = require('./entity'),
     Character = require('./character'),
     Mob = require('./mob'),
-    Map = require('./map'),
+    Mapx = require('./map'),
     Npc = require('./npc'),
     Player = require('./player'),
     Item = require('./item'),
@@ -694,7 +694,7 @@ module.exports = World = cls.Class.extend({
                 if (attacker.type === 'player') {
                     mob.dmgTakenArray.forEach(function (arrElem) {
                         let accomplice = self.getEntityById(arrElem.id);
-                        if (accomplice !== undefined && accomplice.type === 'player') {
+                        if (accomplice !== undefined && accomplice.type === 'player' && !accomplice.isBot()) {
                             accomplice.playerEventBroker.killMobEvent(mob);
                         }
                     })

@@ -505,6 +505,12 @@ var Properties = {
         weapon: 1,
         friendly: true
     },
+    oablackcat: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
     browndog: {
         hp: 10,
         armor: 1,

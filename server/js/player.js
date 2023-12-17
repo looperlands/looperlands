@@ -124,13 +124,19 @@ module.exports = Player = Character.extend({
                 dao.saveAvatarMapId(playerCache.nftId, playerCache.mapId);
                 self.playerEventBroker.setPlayer(self);
 
-                await mapflows.loadFlow(playerCache.mapId, self.playerEventBroker, self.server);
-                if(self.flowInterval) {
-                    clearInterval(self.flowInterval);
-                }
-                self.flowInterval = setInterval(async function() {
+                try {
                     await mapflows.loadFlow(playerCache.mapId, self.playerEventBroker, self.server);
-                }, 60 * 1000);
+                    if (self.flowInterval) {
+                        clearInterval(self.flowInterval);
+                    }
+                    self.flowInterval = setInterval(async function () {
+                        try {
+                            await mapflows.loadFlow(playerCache.mapId, self.playerEventBroker, self.server);
+                        } catch (e) { console.error(e); }
+                    }, 60 * 1000);
+                } catch (e) {
+                    console.error(e);
+                }
 
                 self.playerEventBroker.spawnEvent(self, playerCache.checkpointId);
 
@@ -583,20 +589,15 @@ module.exports = Player = Character.extend({
         }
 
         if (this.accumulatedExperience > XP_BATCH_SIZE) {
-            this.syncExperience(session);
+            await this.syncExperience(session);
         }
     },
 
     syncExperience: async function(session) {
         let updatedXp = await dao.updateExperience(this.walletId, this.nftId, this.accumulatedExperience);
         if (!Number.isNaN(updatedXp)) {
-            let buff = 0;
             if (session !== undefined) {
-                if (session.ownYourLoopersBuff !== undefined) {
-                    let ownYourLoopersBuff = new Number(session.ownYourLoopersBuff);
-                    buff = ownYourLoopersBuff.valueOf();
-                }
-                session.xp = updatedXp + buff;
+                session.xp = updatedXp + session.ownYourLoopersBuff;
                 this.server.server.cache.set(this.sessionId, session);
             }
             this.accumulatedExperience = 0;
@@ -977,5 +978,10 @@ module.exports = Player = Character.extend({
 
     getActiveBuff: function() {
         return this.consumableBuff.buff; //can be undefined!
+    },
+
+    isBot: function() {
+        let nftId = this.nftId.replace("0x", "NFT_");
+        return Types.isBot(Types.getKindFromString(nftId));
     }
 });

@@ -39,7 +39,7 @@ quests = [
         npc: Types.Entities.ELDRIN,
         target: Types.Entities.KINGSLIME,
         amount: 1,
-        requiredQuest: "OA_QUEST_2",
+        requiredQuest: "OA_QUEST_1",
         level: 2,
         medal: Types.Medals.HEARTH
     },
@@ -143,7 +143,7 @@ quests = [
         target: Types.Entities.HERMITHOME,
         amount: 1,
         requiredQuest: "OA_QUEST_9",
-        level: 5,
+        level: 4,
         medal: Types.Medals.HEARTH
     },
 
@@ -205,7 +205,7 @@ quests = [
     },
     {
         id: "OA_QUEST_15",
-        name: "Extract essences from enclave's crystoliths.",
+        name: "Essence of Frost",
         startText: "Extract essences from enclave's crystoliths",
 //        startText: "Traveler, you come at a dire time. My men and I were ambushed. These plains were once calm, but ever since King RC's departure, they've been swarming with these vile creatures we've named 'Gnashlings'. Their numbers are overwhelming. I implore you, if you can thin their ranks, it might give us a fighting chance to reclaim the Windweave Planes and push these creatures back. We need to stabilize this area, or all of Looporia might be at risk.",
         endText: "Extracted essences!",
@@ -262,7 +262,7 @@ quests = [
     },
     {
         id: "OA_QUEST_19",
-        name: "Recover Gloomforge Bannners",
+        name: "Tattered Banners",
         startText: "Receover Gloomforge Banners!",
 //        startText: "Traveler, you come at a dire time. My men and I were ambushed. These plains were once calm, but ever since King RC's departure, they've been swarming with these vile creatures we've named 'Gnashlings'. Their numbers are overwhelming. I implore you, if you can thin their ranks, it might give us a fighting chance to reclaim the Windweave Planes and push these creatures back. We need to stabilize this area, or all of Looporia might be at risk.",
         endText: "King vanquished!",
@@ -370,7 +370,7 @@ quests = [
     },
     {
         id: "OA_SIDE_7",
-        name: "Collect 8 Shiny pearls from Wildgrin camps. ",
+        name: "My pearls!",
         startText: "They steal from Glink! Get them back!",
     //        startText: "Traveler, you come at a dire time. My men and I were ambushed. These plains were once calm, but ever since King RC's departure, they've been swarming with these vile creatures we've named 'Gnashlings'. Their numbers are overwhelming. I implore you, if you can thin their ranks, it might give us a fighting chance to reclaim the Windweave Planes and push these creatures back. We need to stabilize this area, or all of Looporia might be at risk.",
         endText: "My preciouses!!",
@@ -383,7 +383,7 @@ quests = [
     },
     {
         id: "OA_SIDE_8",
-        name: "Collect blue sludge for Gripnar ",
+        name: "Slimy coating ",
         startText: "Collect sludge for Gripnar! He use to coat weapon!",
     //        startText: "Traveler, you come at a dire time. My men and I were ambushed. These plains were once calm, but ever since King RC's departure, they've been swarming with these vile creatures we've named 'Gnashlings'. Their numbers are overwhelming. I implore you, if you can thin their ranks, it might give us a fighting chance to reclaim the Windweave Planes and push these creatures back. We need to stabilize this area, or all of Looporia might be at risk.",
         endText: "Gripnar thanks you!",

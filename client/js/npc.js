@@ -305,8 +305,8 @@ define(['character'], function (Character) {
         "VILLAGESIGN5": ["Bertles Turtle Club"],
         "VILLAGESIGN6": ["Scrimp House"],
         "VILLAGESIGN7": ["Home of Chocolate Wheystead"],
-        "VILLAGESIGN8": ["Change me"],
-        "VILLAGESIGN9": ["Change me"],
+        "VILLAGESIGN8": ["BFA"], //BFA (Alex)
+        "VILLAGESIGN9": ["Home of JackStraw"], // Jackstraw
 
         "cobellen": [
             "Ahh such beauty.",
@@ -316,6 +316,12 @@ define(['character'], function (Character) {
         "cobjohnny": [
             "Farm life is tough but it's something that we will all be able to do soon."
         ],
+        "VILLAGESIGN11": ["Home of Haxmya"], // Home of Haxmya
+        "VILLAGESIGN12": ["Squeaky Squeakerton's Squeakeasy"], //Squeaky's home
+        "VILLAGESIGN13": ["Change me"],
+        "VILLAGESIGN14": ["Change me"],
+        "VILLAGESIGN15": ["Change me"],
+        "VILLAGESIGN16": ["Change me"],
         // @nextNPCLine@
     };
 

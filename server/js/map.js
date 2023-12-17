@@ -1,12 +1,11 @@
 
-var cls = require('./lib/class')
-    fs = require('fs'),
+var fs = require('fs'),
     _ = require('underscore'),
     Utils = require('./utils'),
     Checkpoint = require('./checkpoint');
 
-module.exports = Mapx = cls.Class.extend({    
-    init: function(filepath) {
+module.exports = class Mapx {
+    constructor(filepath) {
     	var self = this;
     
     	this.isLoaded = false;
@@ -23,9 +22,9 @@ module.exports = Mapx = cls.Class.extend({
         {
             console.error(filepath + " doesn't exist.");
         }
-    },
+    }
 
-    initMap: function(map) {
+    initMap(map) {
         this.width = map.width;
         this.height = map.height;
         this.collisions = map.collisions;
@@ -56,13 +55,13 @@ module.exports = Mapx = cls.Class.extend({
         if(this.ready_func) {
             this.ready_func();
         }
-    },
+    }
 
-    ready: function(f) {
+    ready(f) {
     	this.ready_func = f;
-    },
+    }
 
-    tileIndexToGridPosition: function(tileNum) {
+    tileIndexToGridPosition(tileNum) {
         var x = 0,
             y = 0;
         
@@ -78,13 +77,13 @@ module.exports = Mapx = cls.Class.extend({
         y = Math.floor(tileNum / this.width);
     
         return { x: x, y: y };
-    },
+    }
 
-    GridPositionToTileIndex: function(x, y) {
+    GridPositionToTileIndex(x, y) {
         return (y * this.width) + x + 1;
-    },
+    }
 
-    generateCollisionGrid: function() {
+    generateCollisionGrid() {
         this.grid = [];
     
         if(this.isLoaded) {
@@ -102,13 +101,13 @@ module.exports = Mapx = cls.Class.extend({
             }
             //console.log("Collision grid generated.");
         }
-    },
+    }
 
-    isOutOfBounds: function(x, y) {
+    isOutOfBounds(x, y) {
         return x <= 0 || x >= this.width || y <= 0 || y >= this.height;
-    },
+    }
 
-    isColliding: function(x, y) {
+    isColliding(x, y) {
         if(this.isOutOfBounds(x, y)) {
             return false;
         }
@@ -136,15 +135,15 @@ module.exports = Mapx = cls.Class.extend({
             collides = this.grid[y][x] === 1;
         }
         return collides;
-    },
+    }
     
-    GroupIdToGroupPosition: function(id) {
+    GroupIdToGroupPosition(id) {
         var posArray = id.split('-');
         
         return pos(parseInt(posArray[0]), parseInt(posArray[1]));
-    },
+    }
     
-    forEachGroup: function(callback) {
+    forEachGroup(callback) {
         var width = this.groupWidth,
             height = this.groupHeight;
         
@@ -153,18 +152,18 @@ module.exports = Mapx = cls.Class.extend({
                 callback(x+'-'+y);
             }
         }
-    },
+    }
     
-    getGroupIdFromPosition: function(x, y) {
+    getGroupIdFromPosition(x, y) {
         var w = this.zoneWidth,
             h = this.zoneHeight,
             gx = Math.floor((x - 1) / w),
             gy = Math.floor((y - 1) / h);
 
         return gx+'-'+gy;
-    },
+    }
     
-    getAdjacentGroupPositions: function(id) {
+    getAdjacentGroupPositions(id) {
         var self = this,
             position = this.GroupIdToGroupPosition(id),
             x = position.x,
@@ -185,17 +184,17 @@ module.exports = Mapx = cls.Class.extend({
         return _.reject(list, function(pos) { 
             return pos.x < 0 || pos.y < 0 || pos.x >= self.groupWidth || pos.y >= self.groupHeight;
         });
-    },
+    }
     
-    forEachAdjacentGroup: function(groupId, callback) {
+    forEachAdjacentGroup(groupId, callback) {
         if(groupId) {
             _.each(this.getAdjacentGroupPositions(groupId), function(pos) {
                 callback(pos.x+'-'+pos.y);
             });
         }
-    },
+    }
     
-    initConnectedGroups: function(doors) {
+    initConnectedGroups(doors) {
         var self = this;
 
         this.connectedGroups = {};
@@ -210,9 +209,9 @@ module.exports = Mapx = cls.Class.extend({
                 self.connectedGroups[groupId] = [connectedPosition];
             }
         });
-    },
+    }
 
-    initDoors: function(doors) {
+    initDoors(doors) {
         let self = this;
         this.tokenizedDoors = {};
         this.triggerDoors = {};
@@ -241,9 +240,9 @@ module.exports = Mapx = cls.Class.extend({
                 self.triggerDoors[triggerId].push(tDoor);
             }
         });
-    },
+    }
 
-    initCheckpoints: function(cpList) {
+    initCheckpoints(cpList) {
         var self = this;
         
         this.checkpoints = {};
@@ -256,9 +255,9 @@ module.exports = Mapx = cls.Class.extend({
                 self.startingAreas.push(checkpoint);
             }
         });
-    },
+    }
 
-    initTriggers: function(triggers) {
+    initTriggers(triggers) {
         let self = this;
 
         triggers.forEach(function(trigger) {
@@ -272,10 +271,10 @@ module.exports = Mapx = cls.Class.extend({
                 delay: trigger.delay
             };
         });
-    },
-    
-    getCheckpoint: function(id) {
-        let checkpoint = this.checkpoints[id];
+    }
+
+    getCheckpoint(identifier) {
+        let checkpoint = this.checkpoints[identifier];
         if (checkpoint === undefined) {
             return undefined;
         }
@@ -283,30 +282,30 @@ module.exports = Mapx = cls.Class.extend({
         checkpoint.y = Math.round(checkpoint.y);
         checkpoint.width = Math.round(checkpoint.width);
         checkpoint.height = Math.round(checkpoint.height);
-        return this.checkpoints[id];
-    },
+        return this.checkpoints[identifier];
+    }
     
-    getRandomStartingPosition: function() {
-        var nbAreas = _.size(this.startingAreas);
-            i = Utils.randomInt(0, nbAreas-1);
-            area = this.startingAreas[i];
+    getRandomStartingPosition() {
+        let nbAreas = _.size(this.startingAreas);
+        let i = Utils.randomInt(0, nbAreas-1);
+        let area = this.startingAreas[i];
         
         return area.getRandomPosition();
-    },
+    }
 
-    getRequiredNFT: function(x, y) {
+    getRequiredNFT(x, y) {
         return Object.keys(this.tokenizedDoors).find(key => 
             this.tokenizedDoors[key].find((element) => 
             element.x === x && element.y === y));
-    },
+    }
 
-    getDoorTrigger: function(x, y) {
+    getDoorTrigger(x, y) {
         return Object.keys(this.triggerDoors).find(key => 
             this.triggerDoors[key].find((element) => 
             element.x === x && element.y === y));
-    },
+    }
 
-    findClosestCheckpoint: function(x, y) {
+    findClosestCheckpoint(x, y) {
         let closestCheckpoint = null;
         let closestDistance = Infinity;
 
@@ -320,7 +319,7 @@ module.exports = Mapx = cls.Class.extend({
         }
         return closestCheckpoint;
     }
-});
+}
 
 var pos = function(x, y) {
     return { x: x, y: y };
