@@ -6458,7 +6458,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                         });
                     } else {
                         setTimeout(() => { self.showNewQuestPopup(response.data.quest); }, 1500);
-                        alert('new quest: ' + response.data.quest);
                     }
                     self.createBubble(npc.id, message);
                     self.assignBubbleTo(npc);
