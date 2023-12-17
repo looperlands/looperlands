@@ -753,10 +753,13 @@ WS.socketIOServer = Server.extend({
                     user: null
                 });
             } else {
-                let msgText = quests.handleNPCClick(cache, sessionId, parseInt(npcId));
+                let questData = quests.handleNPCClick(cache, sessionId, parseInt(npcId));
                 const sessionData = cache.get(sessionId);
-                self.worldsMap[sessionData.mapId].npcTalked(npcId, msgText, sessionData)
-                res.status(202).json(msgText);
+
+                if (questData) {
+                    self.worldsMap[sessionData.mapId].npcTalked(npcId, questData.text, sessionData)
+                }
+                res.status(202).json(questData);
             }
         });
 

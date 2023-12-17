@@ -341,6 +341,7 @@ define(['character'], function (Character) {
             this.talkCount = NpcTalk[this.itemKind].length;
             this.talkIndex = 0;
             this.thoughts = [];
+            this.thoughtsClearedCallback = null;
         },
 
         talk: function () {
@@ -357,11 +358,13 @@ define(['character'], function (Character) {
             return msg;
         },
 
-        addThoughts: function (messages) {
+        addThoughts: function (messages, thoughtsClearedCallback) {
             // add elements from messages array to thoughts array
             for (var i = 0; i < messages.length; i++) {
                 this.thoughts.push(messages[i]);
             }
+
+            this.thoughtsClearedCallback = thoughtsClearedCallback;
         }
     });
 

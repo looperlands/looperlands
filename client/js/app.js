@@ -262,6 +262,22 @@ define(['jquery', 'storage'], function ($, Storage) {
             }
         },
 
+        showNewQuestPopup(quest) {
+            let newQuestPopup = $('#new-achievement-popup');
+            newQuestPopup.find('#new-achievement-name').text(quest.name);
+
+            let questText = quest.longText ?? (_.isArray(quest.startText) ? quest.startText.join("<br/>") : quest.startText)
+            newQuestPopup.find('#new-achievement-text').html(questText);
+            let eventTypeText = "";
+            if(quest.type === "KILL_MOB") {
+                eventTypeText = "Kill ";
+            }
+            else if(quest.type === "LOOT_ITEM") {
+                eventTypeText = "Loot ";
+            }
+
+            newQuestPopup.removeClass("hidden");
+        },
 
         resetPage: function () {
             var self = this,
@@ -409,6 +425,10 @@ define(['jquery', 'storage'], function ($, Storage) {
                 $('#achievement-details').addClass('hidden');
                 $('#achievements #lists ul').removeClass('hidden');
             });
+
+            $('#close-new-achievement').click(function() {
+                $('#new-achievement-popup').addClass('hidden');
+            });
         },
 
         initUnlockedAchievements: function (ids) {
@@ -424,7 +444,12 @@ define(['jquery', 'storage'], function ($, Storage) {
             let details = $('#achievement-details');
 
             details.find('#achievement-details-name').text(achievement.name);
-            details.find('#achievement-details-text').html(achievement.longDesc ?? achievement.desc);
+
+            let questText = achievement.longDesc ?? achievement.desc;
+            if(_.isArray(questText)) {
+                questText = questText.join("<br/>");
+            }
+            details.find('#achievement-details-text').html(questText);
             if (achievement.status === 'COMPLETED') {
                 details.find('#achievement-details-status').text(achievement.status);
             } else {
@@ -474,6 +499,10 @@ define(['jquery', 'storage'], function ($, Storage) {
 
         setAchievementData: function ($el, name, desc) {
             $el.find('.achievement-name').html(name);
+
+            if(_.isArray(desc)) {
+                desc = desc.join(" ");
+            }
             $el.find('.achievement-description').html(desc);
             $el.find('.achievement-description').attr('title', desc);
         },

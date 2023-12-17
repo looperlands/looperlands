@@ -178,7 +178,7 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
 							<br>
 							<button type="submit">Save Settings</button>
 						</form>
-    	            </article>				
+    	            </article>
 	            </div>
 	            <div class="parchment-right"></div>
 	        </section>
@@ -212,7 +212,7 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
     		                <span id="unlocked-achievements">0</span>
     		                /
     		                <span id="total-achievements"></span>
-    		            </div> 
+    		            </div>
     		        </div>
 		            <nav class="clickable">
 		                <div id="previous"></div>
@@ -248,7 +248,7 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
 					<canvas id="high-canvas"></canvas>
     				<canvas id="foreground" class="clickable"></canvas>
     			</div>
-    			<div id="bubbles">				
+    			<div id="bubbles">
     			</div>
     			<div id="achievement-notification">
     			    <div class="coin">
@@ -322,6 +322,17 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
 					<div><span>Level: </span><span id="weaponLevel" style="color:#FCE045; padding-right: 10px;"></span>(<span id="weaponProgress"></span>%)</div>
 					<div>Trait: <span id="weaponTrait" style="color: #FCE045;"></span></div>
 				</div>
+
+				<div id="new-achievement-popup" class="panel hidden">
+					<div class="panelTitle">New Quest Received</div>
+					<div class="header">
+						<div id="new-achievement-name" class="stroke"></div>
+					</div>
+					<div class="body">
+						<div id="new-achievement-text"></div>
+					</div>
+					<div id="close-new-achievement"></div>
+				</div>
 		    </div>
 		</div>
 		<ul id="page-tmpl" class="clickable" style="display:none">
@@ -333,23 +344,23 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
                 <div class="achievement-description">???</div>
             </li>
         </ul>
-        
+
         <img src="img/common/thingy.png" alt="" class="preload">
-        
+
         <div id="resize-check"></div>
-		
+
         <script type="text/javascript">
             var ctx = document.querySelector('canvas').getContext('2d'),
                 parchment = document.getElementById("parchment");
-            
+
             if(!Detect.supportsWebSocket()) {
                 parchment.className = "error";
             }
-            
+
             if(ctx.mozImageSmoothingEnabled === undefined) {
                 document.querySelector('body').className += ' upscaled';
             }
-            
+
             if(!Modernizr.localstorage) {
                 var alert = document.createElement("div");
                     alert.className = 'alert';
@@ -362,7 +373,7 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
                 parchment.className = "loadcharacter";
             }
         </script>
-        
+
         <script src="js/lib/log.js"></script>
         <script>
                 var require = { waitSeconds: 60 };

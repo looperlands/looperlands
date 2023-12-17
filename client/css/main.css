@@ -322,6 +322,7 @@ body.upscaled.game {background:#000;}
     border-image-repeat: round;
     image-rendering: pixelated;
     border-image-width: 12px;
+    font-family: 'GraphicPixel', arial, sans-serif;
 }
 
 .panel .panelTitle,
@@ -341,10 +342,13 @@ body.upscaled.game {background:#000;}
     position: relative;
     top: -12px;
     text-align: center;
+    overflow: hidden;
+    border-radius: 5px;
 }
 
 
 .panelBorder {
+    font-family: 'GraphicPixel', arial, sans-serif;
     background: none !important;
     border-image-source: url("../img/common/panel.png");
     border-image-slice: 9;

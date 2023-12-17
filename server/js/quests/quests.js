@@ -79,19 +79,25 @@ exports.handleNPCClick = function (cache, sessionId, npcId) {
   let npcQuests = questsByNPC[npcId];
   let sessionData = cache.get(sessionId);
   let msgText = "";
+  let handedOutQuest = null;
   if (npcQuests) {
     let npcQuestIds = npcQuests.map(quest => quest.id);
-
     for (const questID of npcQuestIds) {
       msgText = handoutQuest(questID, sessionData);
       if(msgText) {
+        handedOutQuest = questsByID[questID];
         break;
       }
     }
 
     cache.set(sessionId, sessionData);
   }
-  return msgText;
+
+  if (handedOutQuest) {
+    return {text: msgText, quest: handedOutQuest};
+  }
+
+  return "";
 }
 
 exports.newQuest = function (cache, sessionId, questID) {
