@@ -295,6 +295,15 @@ define(['npc'], function(Npc) {
         VILLAGESIGN14: Npc.extend({init: function(id) {this._super(id, Types.Entities.VILLAGESIGN14, 1);}}),
         VILLAGESIGN15: Npc.extend({init: function(id) {this._super(id, Types.Entities.VILLAGESIGN15, 1);}}),
         VILLAGESIGN16: Npc.extend({init: function(id) {this._super(id, Types.Entities.VILLAGESIGN16, 1);}}),
+        VILLAGESIGN: Npc.extend({init: function(id) {this._super(id, Types.Entities.VILLAGESIGN, 1);}}),
+        VILLAGESIGN17: Npc.extend({init: function(id) {this._super(id, Types.Entities.VILLAGESIGN17, 1);}}),
+        VILLAGESIGN18: Npc.extend({init: function(id) {this._super(id, Types.Entities.VILLAGESIGN18, 1);}}),
+        VILLAGESIGN19: Npc.extend({init: function(id) {this._super(id, Types.Entities.VILLAGESIGN19, 1);}}),
+        VILLAGESIGN20: Npc.extend({init: function(id) {this._super(id, Types.Entities.VILLAGESIGN20, 1);}}),
+        VILLAGESIGN21: Npc.extend({init: function(id) {this._super(id, Types.Entities.VILLAGESIGN21, 1);}}),
+        VILLAGESIGN22: Npc.extend({init: function(id) {this._super(id, Types.Entities.VILLAGESIGN22, 1);}}),
+        VILLAGESIGN23: Npc.extend({init: function(id) {this._super(id, Types.Entities.VILLAGESIGN23, 1);}}),
+        VILLAGESIGN24: Npc.extend({init: function(id) {this._super(id, Types.Entities.VILLAGESIGN24, 1);}}),
         // @nextNPCLine@
     };
     

@@ -55,13 +55,104 @@ const Lakes = {
             cobcruciancarp: "common",
             cobbluegill: "epic"
         }
+    },
+
+    oaeverpond1: {
+        level: 1,
+        fish: {
+            oafish1: "common",
+            oafish2: "common",
+            oafish3: "uncommon",
+            oafish4: "epic",
+        }
+    },
+
+    oaeverpond2: {
+        level: 3,
+        fish: {
+            oafish5: "common",
+            oafish6: "common",
+            oafish7: "uncommon",
+            oafish8: "epic",
+        }
+    },
+
+    oaeverpond3: {
+        level: 5,
+        fish: {
+            oafish9: "common",
+            oafish10: "common",
+            oafish11: "uncommon",
+            oafish12: "epic",
+            oafish13: "common",
+        }
+    },
+
+    oaeverpond4: {
+        level: 6,
+        fish: {
+            oafish14: "common",
+            oafish15: "common",
+            oafish16: "uncommon",
+            oafish17: "epic",
+            oafish18: "common",
+        }
+    },
+
+    oaeverpond5: {
+        level: 7,
+        fish: {
+            oafish19: "common",
+            oafish20: "common",
+            oafish21: "uncommon",
+            oafish22: "epic",
+
+        }
+    },
+
+    oaeverpond6: {
+        level: 8,
+        fish: {
+            oafish23: "common",
+            oafish24: "common",
+            oafish25: "uncommon",
+            oafish26: "common",
+            oafish27: "epic",
+
+        }
+    },
+
+    oaeverpond7: {
+        level: 10,
+        fish: {
+            oafish28: "common",
+            oafish29: "common",
+            oafish30: "uncommon",
+            oafish31: "common",
+            oafish31: "epic",
+        }
+    },    
+
+    oaeverpond8: {
+        level: 12,
+        fish: {
+            oafish32: "common",
+            oafish33: "common",
+            oafish34: "uncommon",
+            oafish35: "common",
+            oafish36: "epic",
+        }
     }
+
 };
 // only EPIC fish can be a consumable
 const ConsumableFish = {
-    hp: ["cobparadisefish"],
-    atk: ["cobbluegill"],
-    exp: ["cobgreensunfish"]
+    hp: ["cobparadisefish","oafish27"],
+    atk: ["cobbluegill","oafish31","oafish22"],
+    exp: ["cobgreensunfish,oafish36"],
+
+
+
 };
 
 //---END CONFIG---

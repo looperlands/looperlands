@@ -289,7 +289,16 @@ Types = {
         VILLAGESIGN13: 34000018,
         VILLAGESIGN14: 34000019,
         VILLAGESIGN15: 34000020,
-        VILLAGESIGN16: 34000021, // @lastidCharacter@
+        VILLAGESIGN16: 34000021,
+        VILLAGESIGN: 34000022,
+        VILLAGESIGN17: 34000023,
+        VILLAGESIGN18: 34000024,
+        VILLAGESIGN19: 34000025,
+        VILLAGESIGN20: 34000026,
+        VILLAGESIGN21: 34000027,
+        VILLAGESIGN22: 34000028,
+        VILLAGESIGN23: 34000029,
+        VILLAGESIGN24: 34000030, // @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -4626,6 +4635,15 @@ var kinds = {
     VILLAGESIGN14: [Types.Entities.VILLAGESIGN14, "npc"],
     VILLAGESIGN15: [Types.Entities.VILLAGESIGN15, "npc"],
     VILLAGESIGN16: [Types.Entities.VILLAGESIGN16, "npc"],
+    VILLAGESIGN: [Types.Entities.VILLAGESIGN, "npc"],
+    VILLAGESIGN17: [Types.Entities.VILLAGESIGN17, "npc"],
+    VILLAGESIGN18: [Types.Entities.VILLAGESIGN18, "npc"],
+    VILLAGESIGN19: [Types.Entities.VILLAGESIGN19, "npc"],
+    VILLAGESIGN20: [Types.Entities.VILLAGESIGN20, "npc"],
+    VILLAGESIGN21: [Types.Entities.VILLAGESIGN21, "npc"],
+    VILLAGESIGN22: [Types.Entities.VILLAGESIGN22, "npc"],
+    VILLAGESIGN23: [Types.Entities.VILLAGESIGN23, "npc"],
+    VILLAGESIGN24: [Types.Entities.VILLAGESIGN24, "npc"],
     // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],
