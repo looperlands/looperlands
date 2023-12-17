@@ -199,8 +199,9 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
 	                </ul>
 	                    <p>- click anywhere to close -</p>
 		        </article>
-		        <article id="achievements" class="page1 clickable">
+		        <article id="achievements" class="page1 clickable panel">
 		            <div class="close"></div>
+					<div class="panelTitle">Quests</div>
 		            <div id="achievements-wrapper">
 		                <div id="lists">
         		        </div>
@@ -217,6 +218,29 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
 		                <div id="previous"></div>
 		                <div id="next"></div>
 		            </nav>
+					<div id="achievement-details" class="panelBorder hidden">
+						<div class="header">
+							<div class="left">
+								<div id="achievement-details-name" class="stroke"></div>
+								<div class="objective">
+									<span id="achievement-details-objective-type"></span>
+									<span id="achievement-details-objective-amount"></span>
+									<span id="achievement-details-objective-target"></span>
+								</div>
+							</div>
+							<div class="right">
+								<div id="achievement-details-status"></div>
+								<div id="achievement-details-level">Level: <span class="achievement-details-highlight" id="achievement-details-level-number"></span></div>
+							</div>
+						</div>
+						<div class="body">
+							<div id="achievement-details-text"></div>
+							<div id="achievement-details-rewards">
+								<div class="coin"></div>
+							</div>
+						</div>
+						<div id="close-achievement-details"></div>
+					</div>
 		        </article>
     			<div id="canvas">
     				<canvas id="background"></canvas>
