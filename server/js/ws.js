@@ -447,8 +447,12 @@ WS.socketIOServer = Server.extend({
                             id: quest.id,
                             name: quest.name,
                             desc: quest.questLogText ?? quest.startText,
+                            longDesc: quest.longText ?? quest.startText,
+                            type: quest.eventType,
+                            target: quest.target,
                             medal: quest.medal,
                             amount: quest.amount,
+                            level: quest.level,
                             status: "COMPLETED"
                         });
                     }
@@ -480,7 +484,11 @@ WS.socketIOServer = Server.extend({
                             id: quest.id,
                             name: quest.name,
                             desc: quest.questLogText ?? quest.startText,
+                            longDesc: quest.longText ?? quest.startText,
+                            type: quest.eventType,
+                            target: quest.target,
                             medal: quest.medal,
+                            level: quest.level,
                             progressCount: progressCount,
                             amount: quest.amount,
                             status: "IN_PROGRESS"

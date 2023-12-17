@@ -9,6 +9,10 @@
     font-size: 18px;
     padding: 5px 0;
 }
+#achievements .panelTitle {
+    width: 120px;
+    left: calc(50% - 60px);
+}
 
 #lists {
     left: 0;
@@ -73,6 +77,8 @@
     opacity:1;
     transition: 500ms ease-in-out;
     background-color: #533643 !important;
+    text-shadow: 0 1px black;
+    box-shadow: 0 0 25px rgba(0,0,0,0.5);
 }
 
 #achievement-details.hidden {
@@ -81,14 +87,89 @@
     transition: 500ms ease-in-out;
 }
 
+#achievement-details .header {
+    margin-bottom: 10px;
+    height: 50px;
+    border-bottom: 1px solid #b86f50;
+    box-shadow: 0 1px 0 #332332;
+    margin-top:20px;
+}
+
+#achievement-details .header .left {
+    float:left;
+    width:80%;
+}
+
+#achievement-details-name {
+    color: #FCE045;
+    font-size:18px;
+}
+
+#achievement-details .header .right {
+    float:right;
+    width:20%;
+}
+
+#achievement-details-status {
+    color: #FCE045;
+}
+
+#achievement-details .body {
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: 250px;
+}
+
+#achievement-details-text {
+    border-bottom: 1px solid #b86f50;
+    box-shadow: 0 1px 0 #332332;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+}
+#achievement-details-text * {
+    font-family: 'GraphicPixel', arial, sans-serif;
+    line-height: 16px;
+    font-size: 16px;
+}
+#achievement-details-text h1,
+#achievement-details-text h2,
+#achievement-details-text h3,
+#achievement-details-text h4,
+#achievement-details-text h5,
+#achievement-details-text h6 {
+    color: #FCE045;
+}
+
+#achievement-details .body::-webkit-scrollbar {
+    width: 10px;
+    background-color: #533643;
+}
+#achievement-details .body::-webkit-scrollbar-thumb {
+    background-color: #b86f50;
+}
+#achievement-details .body::-webkit-scrollbar-thumb:hover {
+    background-color: #FCE045;
+}
+#achievement-details .body::-webkit-scrollbar-thumb:active {
+    background-color: #FCE045;
+}
+
+.achievement-details-highlight {
+    color: #FCE045;
+}
+
 #close-achievement-details {
-    background-image:url('../img/3/spritesheet.png');
+    background-image: url(../img/2/spritesheet.png);
     position: absolute;
     cursor: pointer;
-    height:48px;width:48px;top:-12px;right:-15px;background-position:-1062px -378px;
+    height: 32px;
+    width: 32px;
+    top: -4px;
+    right: -5px;
+    background-position: -708px -252px;
 }
-#close-achievement-details:hover {background-position:-1110px -378px;}
-#close-achievement-details:active {background-position:-1158px -378px;}
+#close-achievement-details:hover {background-position: -740px -252px;}
+#close-achievement-details:active {background-position:-772px -252px;}
 
 @media screen and (min-width: 1501px) {
     .coin {width:72px;height:78px;}
@@ -139,7 +220,7 @@
     .achievement-sharing .facebook:hover {background-position:-1116px -621px;}
     .achievement-sharing .twitter, .upscaled .achievement-sharing .twitter {height:33px;width:48px;background-position:-1131px -588px;margin-left:15px;}
     .achievement-sharing .twitter:hover, .upscaled .achievement-sharing .twitter:hover {background-position:-1131px -621px;}
-    
+
     #achievement-notification, .upscaled #achievement-notification {width:648px;bottom:66px;height:0;margin-left:-324px;background-position:0 -744px;}
     #achievement-notification.active {height:102px;}
     #achievement-notification .coin {position:absolute;top:-60px;left:50%;margin-left:-36px;opacity:0;}
@@ -147,6 +228,26 @@
     #achievement-notification.active #coinsparks, .upscaled #achievement-notification.active #coinsparks {height:78px;width:72px;-moz-animation:coinsparks3 0.8s steps(6, end) 7;-webkit-animation:coinsparks3 0.8s steps(6, end) 7;-o-animation:coinsparks3 0.8s steps(6, end) 7;-ms-animation:coinsparks3 0.8s steps(6, end) 7;}
     #achievement-notification .title {color:#fce045;font-size:20px;margin:27px 0 9px 0;}
     #achievement-notification .name {color:#eee;font-size:30px;margin:9px 0;}
+
+    #achievements .panelTitle {
+        width: 160px;
+        left: calc(50% - 80px);
+    }
+
+    #achievement-details .header {
+        margin-top: 40px;
+    }
+
+    #achievement-details-name {
+        font-size: 30px;
+        position: relative;
+        top: -15px;
+        margin-bottom: -5px;
+    }
+
+    #achievement-details .body {
+        height: 400px;
+    }
 }
 
 @media screen and (max-width: 1500px) {
@@ -226,7 +327,7 @@
     .achievement19 .coin {background-position:-480px -548px;}
     .achievement20 .coin {background-position:-528px -548px;}
 
-    #achievements-wrapper {height:258px;width:744px;margin:40px 0 20px 40px;}
+    #achievements-wrapper {height:266px;width:744px;margin:40px 0 20px 40px;}
     #achievements ul {margin-left:40px;}
     #achievements nav {height:44px;width:135px;margin:0 auto;}
     #previous, #next {height:44px;width:68px;display:inline-block;}

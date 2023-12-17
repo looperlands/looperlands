@@ -322,8 +322,28 @@ body.upscaled.game {background:#000;}
     border-image-repeat: round;
     image-rendering: pixelated;
     border-image-width: 12px;
-
 }
+
+.panel .panelTitle,
+.panelBorder .panelTitle{
+    background: none !important;
+    border-image-source: url("../img/common/panel.png");
+    border-image-slice: 12;
+    border-image-repeat: round;
+    image-rendering: pixelated;
+    border-image-width: 6px;
+    padding: 12px 0;
+    margin-bottom: -30px;
+    color: color(srgb 0.8233 0.73 0.1835);
+    text-shadow: 0 1px black;
+    line-height: 12px;
+    background-color: color(srgb 0.3267 0.2107 0.2608) !important;
+    position: relative;
+    top: -12px;
+    text-align: center;
+}
+
+
 .panelBorder {
     background: none !important;
     border-image-source: url("../img/common/panel.png");
@@ -825,6 +845,12 @@ footer div  {display:inline-block;}
 
     footer {font-size:20px;}
     #resize-check {height:3px;}
+
+    .panelTitle {
+        padding: 20px 0 !important;
+        top: -21px !important;
+        margin-bottom:-50px !important;
+    }
 }
 
 @media screen and (max-width: 1500px) {

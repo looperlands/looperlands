@@ -4610,6 +4610,8 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     if(obj.status === 'COMPLETED') {
                         unlockedAchievements.push(obj.id);
                     }
+
+                    obj.targetName = AltNames.getName(Types.getKindAsString(obj.target));
                 });
 
                 self.app.initAchievementList(self.achievements);
