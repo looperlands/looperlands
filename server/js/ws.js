@@ -447,8 +447,12 @@ WS.socketIOServer = Server.extend({
                             id: quest.id,
                             name: quest.name,
                             desc: quest.questLogText ?? quest.startText,
+                            longDesc: quest.longText ?? quest.startText,
+                            type: quest.eventType,
+                            target: quest.target,
                             medal: quest.medal,
                             amount: quest.amount,
+                            level: quest.level,
                             status: "COMPLETED"
                         });
                     }
@@ -480,7 +484,11 @@ WS.socketIOServer = Server.extend({
                             id: quest.id,
                             name: quest.name,
                             desc: quest.questLogText ?? quest.startText,
+                            longDesc: quest.longText ?? quest.startText,
+                            type: quest.eventType,
+                            target: quest.target,
                             medal: quest.medal,
+                            level: quest.level,
                             progressCount: progressCount,
                             amount: quest.amount,
                             status: "IN_PROGRESS"
@@ -745,13 +753,13 @@ WS.socketIOServer = Server.extend({
                     user: null
                 });
             } else {
-                let msgText = quests.handleNPCClick(cache, sessionId, parseInt(npcId));
+                let questData = quests.handleNPCClick(cache, sessionId, parseInt(npcId));
                 const sessionData = cache.get(sessionId);
 
-                if (msgText) {
-                    self.worldsMap[sessionData.mapId].npcTalked(npcId, msgText.text, sessionData)
+                if (questData) {
+                    self.worldsMap[sessionData.mapId].npcTalked(npcId, questData.text, sessionData)
                 }
-                res.status(202).json(msgText);
+                res.status(202).json(questData);
             }
         });
 

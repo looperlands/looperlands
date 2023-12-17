@@ -45,7 +45,8 @@ Types = {
         ANIMATE: 41,
         CONSUMEITEM: 42,
         BUFFINFO: 43,
-        EMOTE: 44
+        EMOTE: 44,
+        SUMMON_FOLLOW: 45
     },
     
     Entities: {
@@ -289,7 +290,16 @@ Types = {
         VILLAGESIGN13: 34000018,
         VILLAGESIGN14: 34000019,
         VILLAGESIGN15: 34000020,
-        VILLAGESIGN16: 34000021, // @lastidCharacter@
+        VILLAGESIGN16: 34000021,
+        VILLAGESIGN: 34000022,
+        VILLAGESIGN17: 34000023,
+        VILLAGESIGN18: 34000024,
+        VILLAGESIGN19: 34000025,
+        VILLAGESIGN20: 34000026,
+        VILLAGESIGN21: 34000027,
+        VILLAGESIGN22: 34000028,
+        VILLAGESIGN23: 34000029,
+        VILLAGESIGN24: 34000030, // @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -4344,7 +4354,10 @@ Types = {
         NFT_bdfe7bc1143b63a3ebd00147b61653efd9bc359ee0bbdd4a3cc8ea741ac826c4: 4106,
         NFT_c4dd2f94242d277735107db8e00e662a79d7d647f295ba135b02cb3da1cab433: 4107,
         NFT_e8e3a3f668cfe543762acced0d184a38cbcf86a00dc324a4aaf317e375f6f658: 4108,
-        NFT_f070f3261254eb6d40ea46083144e918e7b973e4de46166dd7de95f86c87c992: 4109 // @lastid@
+        NFT_f070f3261254eb6d40ea46083144e918e7b973e4de46166dd7de95f86c87c992: 4109,
+        NFT_3b4e61e1f3bcc8fa1e8d011368ad613c5a39eea5f2b252a4ba6dacd7e781442d: 4110,
+        NFT_635a92fbd7f6ce1a5186ebb70663919317af24d07c4518beca57ac4cc0464a43: 4111,
+        NFT_f547527c63ff5fd585eff8f89101b117c01fba510d870ac29267007ca4b7b27f: 4112 // @lastid@
         //@nextIdLine@
     },
     
@@ -4626,6 +4639,15 @@ var kinds = {
     VILLAGESIGN14: [Types.Entities.VILLAGESIGN14, "npc"],
     VILLAGESIGN15: [Types.Entities.VILLAGESIGN15, "npc"],
     VILLAGESIGN16: [Types.Entities.VILLAGESIGN16, "npc"],
+    VILLAGESIGN: [Types.Entities.VILLAGESIGN, "npc"],
+    VILLAGESIGN17: [Types.Entities.VILLAGESIGN17, "npc"],
+    VILLAGESIGN18: [Types.Entities.VILLAGESIGN18, "npc"],
+    VILLAGESIGN19: [Types.Entities.VILLAGESIGN19, "npc"],
+    VILLAGESIGN20: [Types.Entities.VILLAGESIGN20, "npc"],
+    VILLAGESIGN21: [Types.Entities.VILLAGESIGN21, "npc"],
+    VILLAGESIGN22: [Types.Entities.VILLAGESIGN22, "npc"],
+    VILLAGESIGN23: [Types.Entities.VILLAGESIGN23, "npc"],
+    VILLAGESIGN24: [Types.Entities.VILLAGESIGN24, "npc"],
     // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],
@@ -8672,6 +8694,9 @@ var kinds = {
     NFT_c4dd2f94242d277735107db8e00e662a79d7d647f295ba135b02cb3da1cab433: [Types.Entities.NFT_c4dd2f94242d277735107db8e00e662a79d7d647f295ba135b02cb3da1cab433, "armor"],
     NFT_e8e3a3f668cfe543762acced0d184a38cbcf86a00dc324a4aaf317e375f6f658: [Types.Entities.NFT_e8e3a3f668cfe543762acced0d184a38cbcf86a00dc324a4aaf317e375f6f658, "weapon"],
     NFT_f070f3261254eb6d40ea46083144e918e7b973e4de46166dd7de95f86c87c992: [Types.Entities.NFT_f070f3261254eb6d40ea46083144e918e7b973e4de46166dd7de95f86c87c992, "armor"],
+    NFT_3b4e61e1f3bcc8fa1e8d011368ad613c5a39eea5f2b252a4ba6dacd7e781442d: [Types.Entities.NFT_3b4e61e1f3bcc8fa1e8d011368ad613c5a39eea5f2b252a4ba6dacd7e781442d, "armor"],
+    NFT_635a92fbd7f6ce1a5186ebb70663919317af24d07c4518beca57ac4cc0464a43: [Types.Entities.NFT_635a92fbd7f6ce1a5186ebb70663919317af24d07c4518beca57ac4cc0464a43, "armor"],
+    NFT_f547527c63ff5fd585eff8f89101b117c01fba510d870ac29267007ca4b7b27f: [Types.Entities.NFT_f547527c63ff5fd585eff8f89101b117c01fba510d870ac29267007ca4b7b27f, "armor"],
     // @nextSpriteLine@
 
     

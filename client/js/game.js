@@ -110,12 +110,28 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 "VILLAGESIGN9",
                                 "cobneon","cobguppy","cobgoldfish","cobtrout","coblobster","cobcatfish","cobangelfish","cobsardine","cobstingray","cobwhiting",
                                 "cobrosette", "cobparadisefish", "cobfatheadminnow", "cobgrasscarp", "cobgreensunfish", "cobcruciancarp", "cobbluegill",
+                                //OA fIsHIes
+                                "oagreyfish",
+                                "oafish1", "oafish2", "oafish3", "oafish4", "oafish5", "oafish6", "oafish7", "oafish8", "oafish9", "oafish10",
+                                "oafish11", "oafish12", "oafish13", "oafish14", "oafish15", "oafish16", "oafish17", "oafish18", "oafish19", "oafish20",
+                                "oafish21", "oafish22", "oafish23", "oafish24", "oafish25", "oafish26", "oafish27", "oafish28", "oafish29", "oafish30",
+                                "oafish31", "oafish32", "oafish33", "oafish34", "oafish35", "oafish36",
+                                /////                                
                                 "VILLAGESIGN11",
                                 "VILLAGESIGN12",
                                 "VILLAGESIGN13",
                                 "VILLAGESIGN14",
                                 "VILLAGESIGN15",
                                 "VILLAGESIGN16",
+                                "VILLAGESIGN",
+                                "VILLAGESIGN17",
+                                "VILLAGESIGN18",
+                                "VILLAGESIGN19",
+                                "VILLAGESIGN20",
+                                "VILLAGESIGN21",
+                                "VILLAGESIGN22",
+                                "VILLAGESIGN23",
+                                "VILLAGESIGN24",
                                 // @nextCharacterLine@
                                 "item-BOARHIDE",
                                 "item-THUDKEY",
@@ -4459,6 +4475,9 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 "NFT_c4dd2f94242d277735107db8e00e662a79d7d647f295ba135b02cb3da1cab433",
                                 "NFT_e8e3a3f668cfe543762acced0d184a38cbcf86a00dc324a4aaf317e375f6f658",
                                 "NFT_f070f3261254eb6d40ea46083144e918e7b973e4de46166dd7de95f86c87c992",
+                                "NFT_3b4e61e1f3bcc8fa1e8d011368ad613c5a39eea5f2b252a4ba6dacd7e781442d",
+                                "NFT_635a92fbd7f6ce1a5186ebb70663919317af24d07c4518beca57ac4cc0464a43",
+                                "NFT_f547527c63ff5fd585eff8f89101b117c01fba510d870ac29267007ca4b7b27f",
                                 // @nextSpriteLine@
                             ];
         },
@@ -4564,6 +4583,45 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             this.fish["cobgreensunfish"] = this.sprites["cobgreensunfish"];
             this.fish["cobcruciancarp"] = this.sprites["cobcruciancarp"];
             this.fish["cobbluegill"] = this.sprites["cobbluegill"];
+            ////OAFISHIES
+            this.fish["oagreyfish"] = this.sprites["oagreyfish"];
+            this.fish["oafish1"] = this.sprites["oafish1"];
+            this.fish["oafish2"] = this.sprites["oafish2"];
+            this.fish["oafish3"] = this.sprites["oafish3"];
+            this.fish["oafish4"] = this.sprites["oafish4"];
+            this.fish["oafish5"] = this.sprites["oafish5"];
+            this.fish["oafish6"] = this.sprites["oafish6"];
+            this.fish["oafish7"] = this.sprites["oafish7"];
+            this.fish["oafish8"] = this.sprites["oafish8"];
+            this.fish["oafish9"] = this.sprites["oafish9"];
+            this.fish["oafish10"] = this.sprites["oafish10"];
+            this.fish["oafish11"] = this.sprites["oafish11"];
+            this.fish["oafish12"] = this.sprites["oafish12"];
+            this.fish["oafish13"] = this.sprites["oafish13"];
+            this.fish["oafish14"] = this.sprites["oafish14"];
+            this.fish["oafish15"] = this.sprites["oafish15"];
+            this.fish["oafish16"] = this.sprites["oafish16"];
+            this.fish["oafish17"] = this.sprites["oafish17"];
+            this.fish["oafish18"] = this.sprites["oafish18"];
+            this.fish["oafish19"] = this.sprites["oafish19"];
+            this.fish["oafish20"] = this.sprites["oafish20"];
+            this.fish["oafish21"] = this.sprites["oafish21"];
+            this.fish["oafish22"] = this.sprites["oafish22"];
+            this.fish["oafish23"] = this.sprites["oafish23"];
+            this.fish["oafish24"] = this.sprites["oafish24"];
+            this.fish["oafish25"] = this.sprites["oafish25"];
+            this.fish["oafish26"] = this.sprites["oafish26"];
+            this.fish["oafish27"] = this.sprites["oafish27"];
+            this.fish["oafish28"] = this.sprites["oafish28"];
+            this.fish["oafish29"] = this.sprites["oafish29"];
+            this.fish["oafish30"] = this.sprites["oafish30"];
+            this.fish["oafish31"] = this.sprites["oafish31"];
+            this.fish["oafish32"] = this.sprites["oafish32"];
+            this.fish["oafish33"] = this.sprites["oafish33"];
+            this.fish["oafish34"] = this.sprites["oafish34"];
+            this.fish["oafish35"] = this.sprites["oafish35"];
+            this.fish["oafish36"] = this.sprites["oafish36"];
+            ////
         },
 
         initAnimations: function() {
@@ -4610,6 +4668,8 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     if(obj.status === 'COMPLETED') {
                         unlockedAchievements.push(obj.id);
                     }
+
+                    obj.targetName = AltNames.getName(Types.getKindAsString(obj.target));
                 });
 
                 self.app.initAchievementList(self.achievements);
@@ -5890,7 +5950,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                             console.error(e);
                         }
                     } else {
-                        console.log("Character "+entity.id+" already exists. Don't respawn.");
+                        //console.log("Character "+entity.id+" already exists. Don't respawn.");
                     }
                 });
 
@@ -6378,7 +6438,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 self.audioManager.playSound("npc");
 
                 if (npc.thoughts.length === 0 && npc.thoughtsClearedCallback) {
-                   setTimeout(() => { npc.thoughtsClearedCallback(); npc.thoughtsClearedCallback = null}, 2000);
+                   setTimeout(() => { npc.thoughtsClearedCallback(); npc.thoughtsClearedCallback = null}, 1500);
                 }
                 return;
             }
@@ -6394,9 +6454,10 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     let message = messages.shift()
                     if (messages.length > 0) {
                         npc.addThoughts(messages, () => {
-                            showNewQuestPopup(response.data.quest)
+                            self.showNewQuestPopup(response.data.quest)
                         });
                     } else {
+                        setTimeout(() => { self.showNewQuestPopup(response.data.quest); }, 1500);
                         alert('new quest: ' + response.data.quest);
                     }
                     self.createBubble(npc.id, message);
@@ -6946,7 +7007,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     // avoid stacking mobs on the same tile next to a player
                     // by making them go to adjacent tiles if they are available
                     if(pos && !target.adjacentTiles[pos.o]) {
-                        if(this.player.target && attacker.id === this.player.target.id) {
+                        if(this.player && this.player.target && attacker.id === this.player.target.id) {
                             return false; // never unstack the player's target
                         }
                         
@@ -7338,6 +7399,16 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
     
         onAchievementUnlock: function(callback) {
             this.unlock_callback = callback;
+        },
+
+        onQuestHandout: function(callback) {
+            this.quest_handout_callback = callback;
+        },
+
+        showNewQuestPopup: function(quest) {
+          if (this.quest_handout_callback) {
+              this.quest_handout_callback(quest);
+          }
         },
 
         showQuestCompleteNotification: function(questName, endText, xpReward, medal) {

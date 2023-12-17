@@ -262,6 +262,22 @@ define(['jquery', 'storage'], function ($, Storage) {
             }
         },
 
+        showNewQuestPopup(quest) {
+            let newQuestPopup = $('#new-achievement-popup');
+            newQuestPopup.find('#new-achievement-name').text(quest.name);
+
+            let questText = quest.longText ?? (_.isArray(quest.startText) ? quest.startText.join("<br/>") : quest.startText)
+            newQuestPopup.find('#new-achievement-text').html(questText);
+            let eventTypeText = "";
+            if(quest.type === "KILL_MOB") {
+                eventTypeText = "Kill ";
+            }
+            else if(quest.type === "LOOT_ITEM") {
+                eventTypeText = "Loot ";
+            }
+
+            newQuestPopup.removeClass("hidden");
+        },
 
         resetPage: function () {
             var self = this,
@@ -367,6 +383,12 @@ define(['jquery', 'storage'], function ($, Storage) {
                 var $a = $achievement.clone();
                 $a.removeAttr('id');
                 $a.addClass('achievement' + achievement.medal);
+                $a.addClass('panelBorder');
+                $a.click(function() {
+                    $a.closest('ul').addClass('hidden');
+                    self.openAchievement(achievement)
+                })
+
                 if (achievement.status === 'COMPLETED') {
                     $a.addClass('unlocked');
                 }
@@ -398,6 +420,15 @@ define(['jquery', 'storage'], function ($, Storage) {
                 $('#achievements #previous').show();
                 $('#achievements #next').show();
             }
+
+            $('#close-achievement-details').click(function() {
+                $('#achievement-details').addClass('hidden');
+                $('#achievements #lists ul').removeClass('hidden');
+            });
+
+            $('#close-new-achievement').click(function() {
+                $('#new-achievement-popup').addClass('hidden');
+            });
         },
 
         initUnlockedAchievements: function (ids) {
@@ -409,8 +440,69 @@ define(['jquery', 'storage'], function ($, Storage) {
             $('#unlocked-achievements').text(ids.length);
         },
 
+        openAchievement: function (achievement) {
+            let details = $('#achievement-details');
+
+            details.find('#achievement-details-name').text(achievement.name);
+
+            let questText = achievement.longDesc ?? achievement.desc;
+            if(_.isArray(questText)) {
+                questText = questText.join("<br/>");
+            }
+            details.find('#achievement-details-text').html(questText);
+            if (achievement.status === 'COMPLETED') {
+                details.find('#achievement-details-status').text(achievement.status);
+            } else {
+                details.find('#achievement-details-status').text(achievement.progressCount + "/" + achievement.amount);
+            }
+            details.find('#achievement-details-level-number').text(achievement.level);
+
+            let eventTypeText = "";
+            if(achievement.type === "KILL_MOB") {
+                eventTypeText = "Kill ";
+            }
+            else if(achievement.type === "LOOT_ITEM") {
+                eventTypeText = "Loot ";
+            }
+            details.find('#achievement-details-objective-type').text(eventTypeText);
+            details.find('#achievement-details-objective-amount').text(achievement.amount);
+            details.find('#achievement-details-objective-target').text(achievement.targetName);
+
+            details.removeClass('achievement1');
+            details.removeClass('achievement2');
+            details.removeClass('achievement3');
+            details.removeClass('achievement4');
+            details.removeClass('achievement5');
+            details.removeClass('achievement6');
+            details.removeClass('achievement7');
+            details.removeClass('achievement8');
+            details.removeClass('achievement9');
+            details.removeClass('achievement10');
+            details.removeClass('achievement11');
+            details.removeClass('achievement12');
+            details.removeClass('achievement13');
+            details.removeClass('achievement14');
+            details.removeClass('achievement15');
+            details.removeClass('achievement16');
+            details.removeClass('achievement17');
+            details.removeClass('achievement18');
+            details.removeClass('achievement19');
+            details.removeClass('achievement20');
+
+            details.addClass('achievement' + achievement.medal);
+            if (achievement.status === 'COMPLETED') {
+                details.addClass('unlocked');
+            }
+
+            details.removeClass('hidden');
+        },
+
         setAchievementData: function ($el, name, desc) {
             $el.find('.achievement-name').html(name);
+
+            if(_.isArray(desc)) {
+                desc = desc.join(" ");
+            }
             $el.find('.achievement-description').html(desc);
             $el.find('.achievement-description').attr('title', desc);
         },

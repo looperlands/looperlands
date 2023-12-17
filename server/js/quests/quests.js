@@ -85,7 +85,7 @@ exports.handleNPCClick = function (cache, sessionId, npcId) {
     for (const questID of npcQuestIds) {
       msgText = handoutQuest(questID, sessionData);
       if(msgText) {
-        handedOutQuest = questID;
+        handedOutQuest = questsByID[questID];
         break;
       }
     }

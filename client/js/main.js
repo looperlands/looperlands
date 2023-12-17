@@ -336,7 +336,11 @@ define(['jquery', 'app'], function($, App) {
     		game.onAchievementUnlock(function(questName, endText, xpReward, medal) {
     		    app.unlockAchievement(questName, endText, xpReward, medal);
     		});
-	
+
+            game.onQuestHandout(function(questId) {
+                app.showNewQuestPopup(questId);
+            });
+
     		game.onNotification(function(message) {
     		    app.showMessage(message);
     		});

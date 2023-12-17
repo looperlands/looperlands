@@ -318,10 +318,19 @@ define(['character'], function (Character) {
         ],
         "VILLAGESIGN11": ["Home of Haxmya"], // Home of Haxmya
         "VILLAGESIGN12": ["Squeaky Squeakerton's Squeakeasy"], //Squeaky's home
-        "VILLAGESIGN13": ["Change me"],
-        "VILLAGESIGN14": ["Change me"],
-        "VILLAGESIGN15": ["Change me"],
-        "VILLAGESIGN16": ["Change me"],
+        "VILLAGESIGN13": ["Rookie Rodman"],
+        "VILLAGESIGN14": ["Skilled Caster"],
+        "VILLAGESIGN15": ["Seasoned Angler"],
+        "VILLAGESIGN16": ["Adept Hookmaster"],
+        "VILLAGESIGN": ["Change me"],
+        "VILLAGESIGN17": ["Veteran Linehandler"],
+        "VILLAGESIGN18": ["Elite Tacklechief"],
+        "VILLAGESIGN19": ["Master Baiter"],
+        "VILLAGESIGN20": ["Grand Fisher Sage"],
+        "VILLAGESIGN21": ["Change me"],
+        "VILLAGESIGN22": ["Change me"],
+        "VILLAGESIGN23": ["Change me"],
+        "VILLAGESIGN24": ["Change me"],
         // @nextNPCLine@
     };
 
