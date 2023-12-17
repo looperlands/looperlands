@@ -366,6 +366,12 @@ define(['jquery', 'storage'], function ($, Storage) {
                 var $a = $achievement.clone();
                 $a.removeAttr('id');
                 $a.addClass('achievement' + achievement.medal);
+                $a.addClass('panelBorder');
+                $a.click(function() {
+                    $a.closest('ul').addClass('hidden');
+                    self.openAchievement(achievement)
+                })
+
                 if (achievement.status === 'COMPLETED') {
                     $a.addClass('unlocked');
                 }
@@ -397,6 +403,11 @@ define(['jquery', 'storage'], function ($, Storage) {
                 $('#achievements #previous').show();
                 $('#achievements #next').show();
             }
+
+            $('#close-achievement-details').click(function() {
+                $('#achievement-details').addClass('hidden');
+                $('#achievements #lists ul').removeClass('hidden');
+            });
         },
 
         initUnlockedAchievements: function (ids) {
@@ -406,6 +417,11 @@ define(['jquery', 'storage'], function ($, Storage) {
                 self.displayUnlockedAchievement(id);
             });
             $('#unlocked-achievements').text(ids.length);
+        },
+
+        openAchievement: function (achievement) {
+            let details = $('#achievement-details');
+           details.removeClass('hidden');
         },
 
         setAchievementData: function ($el, name, desc) {

@@ -5,12 +5,90 @@
 #achievements-count div {display:inline-block;}
 #achievement-notification .coin {-moz-transition:0.2s opacity linear;-webkit-transition:0.2s opacity linear;-o-transition:0.2s opacity linear;-ms-transition:0.2s opacity linear;transition:0.2s opacity linear;}
 
+#achievements .achievement-description {
+    font-size: 18px;
+    padding: 5px 0;
+}
+
 #lists {
     left: 0;
     white-space:  nowrap;
     display: flex;
     flex-direction: row;
 }
+
+#achievements ul {
+    min-width:100%;
+}
+
+#achievements li {
+    background: #ead4aa !important;
+    display: list-item;
+    left: 25px;
+    width: calc(100% - 25px);
+    padding: 6px 0 12px;
+    height: 44px;
+    cursor: pointer;
+    margin: 2px 25px 2px 0;
+
+    transition: 300ms ease-in-out;
+}
+
+#achievements ul.hidden li:nth-child(1), #achievements li:nth-child(1){
+    transition-delay: 0ms;
+}
+#achievements ul.hidden li:nth-child(2), #achievements li:nth-child(2){
+    transition-delay: 40ms;
+}
+#achievements ul.hidden li:nth-child(3), #achievements li:nth-child(3){
+    transition-delay: 80ms;
+}
+#achievements ul.hidden li:nth-child(4), #achievements li:nth-child(4){
+    transition-delay: 120ms;
+}
+
+#achievements ul.hidden li {
+    left: -100%;
+    transition: 300ms ease-in-out;
+}
+
+#achievements li:hover {
+    background: #ffd380 !important;
+}
+
+#achievements li .coin {
+    margin-left: -25px;
+}
+
+#achievement-details {
+    position: absolute;
+    top: 5%;
+    left: 5%;
+    width: 84%;
+    height: 76%;
+    padding: 3%;
+    color: #b9b9b9;
+    font-weight: 100;
+    font-size: 16px;
+    opacity:1;
+    transition: 500ms ease-in-out;
+    background-color: #533643 !important;
+}
+
+#achievement-details.hidden {
+    opacity:0;
+    left: 200%;
+    transition: 500ms ease-in-out;
+}
+
+#close-achievement-details {
+    background-image:url('../img/3/spritesheet.png');
+    position: absolute;
+    cursor: pointer;
+    height:48px;width:48px;top:-12px;right:-15px;background-position:-1062px -378px;
+}
+#close-achievement-details:hover {background-position:-1110px -378px;}
+#close-achievement-details:active {background-position:-1158px -378px;}
 
 @media screen and (min-width: 1501px) {
     .coin {width:72px;height:78px;}
@@ -36,7 +114,7 @@
     .achievement20 .coin {background-position:-792px -822px;}
 
     #achievements-wrapper {height:387px;width:1116px;margin:60px 0 30px 60px;}
-    #achievements ul {float:left;margin-left:60px;}
+    #achievements ul {margin-left:60px;}
     #achievements nav {height:66px;width:202px;margin:0 auto;}
     #previous, #next {height:66px;width:102px;display:inline-block;}
     #previous, .upscaled #previous {background-position:-201px -846px;}
@@ -48,7 +126,12 @@
     
     #achievements, #achievements li, #achievements .coin, #achievement-notification, #achievement-notification .coin, #coinsparks, .achievement-sharing a, #previous, #next {background-size:1248px;}
     #achievements {height:588px;width:1248px;margin-left:-624px;margin-top:-324px;font-size:30px;}
-    #achievements li, .upscaled #achievements li {height:78px;width:1116px;background-position:0 -588px;margin:15px 0;}
+    #achievements li, .upscaled #achievements li {
+        height: 19%;
+        width: calc(100% - 25px);
+        background-position: 0 -588px;
+        margin: 2px 25px 2px 0;
+    }
     #achievements li .coin {margin-right:10px;}
     #achievements li span {padding-top:27px;}
     .achievement-sharing {right:24px;top:24px;}
@@ -90,7 +173,7 @@
     .achievement20 .coin {background-position:-528px -548px;}
 
     #achievements-wrapper {height:258px;width:744px;margin:40px 0 20px 40px;}
-    #achievements ul {float:left;margin-left:40px;}
+    #achievements ul {margin-left:40px;}
     #achievements nav {height:44px;width:134px;margin:0 auto;}
     #previous, #next {height:44px;width:68px;display:inline-block;}
     #previous, .upscaled #previous {background-position:-134px -564px;}
@@ -102,7 +185,7 @@
     
     #achievements, #achievements li, #achievements .coin, #achievement-notification, #achievement-notification .coin, #coinsparks, .upscaled #coinsparks, .achievement-sharing a, #previous, #next {background-size:832px;}
     #achievements {height:392px;width:832px;margin-left:-416px;margin-top:-216px;font-size:20px;}
-    #achievements li, .upscaled #achievements li {height:52px;width:744px;background-position:0 -392px;margin:10px 0;}
+    #achievements li, .upscaled #achievements li {height:2.8rem ; background-position:0 -392px; margin: 2px 25px 2px 0;}
     #achievements li .coin {margin-right:10px;}
     #achievements li span {padding-top:18px;}
     .achievement-sharing {right:16px;top:16px;}
@@ -144,7 +227,7 @@
     .achievement20 .coin {background-position:-528px -548px;}
 
     #achievements-wrapper {height:258px;width:744px;margin:40px 0 20px 40px;}
-    #achievements ul {float:left;margin-left:40px;}
+    #achievements ul {margin-left:40px;}
     #achievements nav {height:44px;width:135px;margin:0 auto;}
     #previous, #next {height:44px;width:68px;display:inline-block;}
     #previous, .upscaled #previous {background-position:-134px -564px;}
@@ -156,7 +239,6 @@
     
     #achievements, #achievements li, #achievements .coin, #achievement-notification, #achievement-notification .coin, #coinsparks, .upscaled #coinsparks, .achievement-sharing a, #previous, #next {background-size:832px;}
     #achievements {height:392px;width:832px;margin-left:-416px;margin-top:-216px;font-size:20px;}
-    #achievements li, .upscaled #achievements li {height:52px;width:744px;background-position:0 -392px;margin:10px 0;}
     #achievements li .coin {margin-right:10px;}
     #achievements li span {padding-top:18px;}
     .achievement-sharing {right:16px;top:16px;}
@@ -198,7 +280,7 @@
     .achievement20 .coin {background-position:-264px -274px;}
     
     #achievements-wrapper {height:129px;width:372px;margin:20px 0 10px 20px;}
-    #achievements ul {float:left;margin-left:20px;}
+    #achievements ul {margin-left:20px;}
     #achievements nav {height:22px;width:68px;margin:0 auto;}
     #previous, #next {height:22px;width:34px;display:inline-block;}
     #previous, .upscaled #previous {background-position:-67px -282px;}
@@ -212,7 +294,6 @@
     
     #achievements, #achievements li, #achievements .coin, #achievement-notification, #achievement-notification .coin, #coinsparks, .achievement-sharing a, #previous, #next {background-size:416px;}
     #achievements {height:196px;width:416px;margin-left:-208px;margin-top:-108px;font-size:10px;}
-    #achievements li, .upscaled #achievements li {height:26px;width:372px;background-position:0 -196px;margin:5px 0;}
     #achievements li .coin {margin-right:10px;}
     #achievements li span {padding-top:9px;}
     .achievement-sharing {right:8px;top:8px;}

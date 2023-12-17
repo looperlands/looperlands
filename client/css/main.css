@@ -314,6 +314,26 @@ body.upscaled.game {background:#000;}
 #achievements li.unlocked:hover .achievement-sharing {display:block;}
 .achievement-sharing a {display:block;float:left;}
 
+
+.panel {
+    background: none !important;
+    border-image-source: url("../img/common/panel.png");
+    border-image-slice: 12 fill;
+    border-image-repeat: round;
+    image-rendering: pixelated;
+    border-image-width: 12px;
+
+}
+.panelBorder {
+    background: none !important;
+    border-image-source: url("../img/common/panel.png");
+    border-image-slice: 9;
+    border-image-repeat: round;
+    border-image-width: 6px;
+    border-radius: 12px;
+    image-rendering: pixelated;
+}
+
 #bubbles a {pointer-events:auto;text-decoration:none;color:#fcda5c;}
 
 #create-new span:hover, #cancel span:hover {cursor:pointer;color:#d83939;}
