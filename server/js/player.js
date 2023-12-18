@@ -1000,7 +1000,10 @@ module.exports = Player = Character.extend({
     },
 
     isBot: function() {
-        let nftId = this.nftId.replace("0x", "NFT_");
-        return Types.isBot(Types.getKindFromString(nftId));
+        if (this._isBot === undefined) {
+            let nftId = this.nftId.replace("0x", "NFT_");
+            this._isBot = Types.isBot(Types.getKindFromString(nftId));
+        }
+        return this._isBot;
     }
 });
