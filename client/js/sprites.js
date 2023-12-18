@@ -74,6 +74,10 @@ define(['text!../sprites/agent.json',
         'text!../sprites/item-NFT_344a35ef18eafc0708b2e42b14443db0990fa39977d9347fb256905cbd5ba819.json',
         'text!../sprites/item-PNEUMA_SIGN.json',
         'text!../sprites/item-VILLAGESIGN10.json',
+        'text!../sprites/item-GOLD1.json',
+        'text!../sprites/item-GOLD2.json',
+        'text!../sprites/item-GOLD3.json',
+        'text!../sprites/item-GOLD.json',
         // @nextObjectImport@
         'text!../sprites/king.json',
         'text!../sprites/king2.json',
@@ -4650,6 +4654,7 @@ define(['text!../sprites/agent.json',
         'text!../sprites/NFT_3b4e61e1f3bcc8fa1e8d011368ad613c5a39eea5f2b252a4ba6dacd7e781442d.json',
         'text!../sprites/NFT_635a92fbd7f6ce1a5186ebb70663919317af24d07c4518beca57ac4cc0464a43.json',
         'text!../sprites/NFT_f547527c63ff5fd585eff8f89101b117c01fba510d870ac29267007ca4b7b27f.json',
+        'text!../sprites/NFT_1becbc0842f6e578f92977e3024cb2c9b3da273069f6ac9cd4160c67e531bdc9.json',
         // @nextSpriteImport@
     ], function() {
     

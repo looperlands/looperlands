@@ -75,7 +75,7 @@ module.exports = World = cls.Class.extend({
         this.onPlayerEnter(function (player) {
             //console.log(player.name + " has joined "+ self.id, "Player ID " + player.id);
 
-            if (!player.hasEnteredGame) {
+            if (!player.hasEnteredGame && !player.isBot()) {
                 self.incrementPlayerCount();
             }
 
@@ -128,7 +128,9 @@ module.exports = World = cls.Class.extend({
             player.onExit(function () {
                 //console.log(player.name + " has left the game.");
                 self.removePlayer(player);
-                self.decrementPlayerCount();
+                if (!player.isBot()) {
+                    self.decrementPlayerCount();
+                }
                 if (self.removed_callback) {
                     self.removed_callback();
                 }

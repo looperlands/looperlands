@@ -704,7 +704,7 @@ WS.socketIOServer = Server.extend({
                 let key = cacheKeys[i];
                 let cachedBody = cache.get(key);
                 let player = self.worldsMap[cachedBody.mapId]?.getPlayerById(cachedBody.entityId);
-                if(cachedBody.isDirty === true && player !== undefined) {
+                if(cachedBody.isDirty === true && player !== undefined && !player.isBot()) {
                     let player = {
                         name: await ens.getEns(cachedBody.walletId),
                         wallet: cachedBody.walletId,
@@ -866,7 +866,17 @@ WS.socketIOServer = Server.extend({
             let ownedBots = await dao.getBots(sessionData.walletId);
             let botInfo = ownedBots.find(bot => bot.botNftId === botNftId);
             if (botInfo) {
-                let newBot = await dao.newBot(sessionData.mapId, botNftId, botInfo.experience, botInfo.looperName, sessionData.walletId, sessionData.entityId);
+                let owner = self.worldsMap[sessionData.mapId].getPlayerById(sessionData.entityId);
+                let newBot = await dao.newBot(
+                    sessionData.mapId,
+                    botNftId,
+                    botInfo.experience,
+                    botInfo.looperName,
+                    sessionData.walletId,
+                    sessionData.entityId,
+                    owner.x,
+                    owner.y
+                );
                 if (newBot.sessionId) {
                     res.status(200).send({});
                 } else {

@@ -242,7 +242,11 @@ Types = {
         FORGEDSWORD: 21300034,
         BANNER: 21300035,
         PNEUMA_SIGN: 21300036,
-        VILLAGESIGN10: 21300037, // @lastidObject@
+        VILLAGESIGN10: 21300037,
+        GOLD1: 21300038,
+        GOLD2: 21300039,
+        GOLD3: 21300040,
+        GOLD: 21300041, // @lastidObject@
         //@nextIdLineObject@
         
         // NPCs
@@ -4357,7 +4361,8 @@ Types = {
         NFT_f070f3261254eb6d40ea46083144e918e7b973e4de46166dd7de95f86c87c992: 4109,
         NFT_3b4e61e1f3bcc8fa1e8d011368ad613c5a39eea5f2b252a4ba6dacd7e781442d: 4110,
         NFT_635a92fbd7f6ce1a5186ebb70663919317af24d07c4518beca57ac4cc0464a43: 4111,
-        NFT_f547527c63ff5fd585eff8f89101b117c01fba510d870ac29267007ca4b7b27f: 4112 // @lastid@
+        NFT_f547527c63ff5fd585eff8f89101b117c01fba510d870ac29267007ca4b7b27f: 4112,
+        NFT_1becbc0842f6e578f92977e3024cb2c9b3da273069f6ac9cd4160c67e531bdc9: 4113 // @lastid@
         //@nextIdLine@
     },
     
@@ -4575,6 +4580,10 @@ var kinds = {
     BANNER: [Types.Entities.BANNER, "object"],
     PNEUMA_SIGN: [Types.Entities.PNEUMA_SIGN, "object"],
     VILLAGESIGN10: [Types.Entities.VILLAGESIGN10, "object"],
+    GOLD1: [Types.Entities.GOLD1, "object"],
+    GOLD2: [Types.Entities.GOLD2, "object"],
+    GOLD3: [Types.Entities.GOLD3, "object"],
+    GOLD: [Types.Entities.GOLD, "object"],
     // @nextObjectLine@
 
     guard: [Types.Entities.GUARD, "npc"],
@@ -8697,6 +8706,7 @@ var kinds = {
     NFT_3b4e61e1f3bcc8fa1e8d011368ad613c5a39eea5f2b252a4ba6dacd7e781442d: [Types.Entities.NFT_3b4e61e1f3bcc8fa1e8d011368ad613c5a39eea5f2b252a4ba6dacd7e781442d, "armor"],
     NFT_635a92fbd7f6ce1a5186ebb70663919317af24d07c4518beca57ac4cc0464a43: [Types.Entities.NFT_635a92fbd7f6ce1a5186ebb70663919317af24d07c4518beca57ac4cc0464a43, "armor"],
     NFT_f547527c63ff5fd585eff8f89101b117c01fba510d870ac29267007ca4b7b27f: [Types.Entities.NFT_f547527c63ff5fd585eff8f89101b117c01fba510d870ac29267007ca4b7b27f, "armor"],
+    NFT_1becbc0842f6e578f92977e3024cb2c9b3da273069f6ac9cd4160c67e531bdc9: [Types.Entities.NFT_1becbc0842f6e578f92977e3024cb2c9b3da273069f6ac9cd4160c67e531bdc9, "weapon"],
     // @nextSpriteLine@
 
     
