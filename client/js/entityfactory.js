@@ -566,6 +566,7 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.GOLD1]=function(id){return new Items.GOLD1(id);};
     EntityFactory.builders[Types.Entities.GOLD2]=function(id){return new Items.GOLD2(id);};
     EntityFactory.builders[Types.Entities.GOLD3]=function(id){return new Items.GOLD3(id);};
+    EntityFactory.builders[Types.Entities.GOLD]=function(id){return new Items.GOLD(id);};
     // @nextObjectLine@
 
     //====== NPCs ======

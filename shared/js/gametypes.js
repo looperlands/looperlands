@@ -245,7 +245,8 @@ Types = {
         VILLAGESIGN10: 21300037,
         GOLD1: 21300038,
         GOLD2: 21300039,
-        GOLD3: 21300040, // @lastidObject@
+        GOLD3: 21300040,
+        GOLD: 21300041, // @lastidObject@
         //@nextIdLineObject@
         
         // NPCs
@@ -4582,6 +4583,7 @@ var kinds = {
     GOLD1: [Types.Entities.GOLD1, "object"],
     GOLD2: [Types.Entities.GOLD2, "object"],
     GOLD3: [Types.Entities.GOLD3, "object"],
+    GOLD: [Types.Entities.GOLD, "object"],
     // @nextObjectLine@
 
     guard: [Types.Entities.GUARD, "npc"],

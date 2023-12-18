@@ -77,6 +77,7 @@ define(['text!../sprites/agent.json',
         'text!../sprites/item-GOLD1.json',
         'text!../sprites/item-GOLD2.json',
         'text!../sprites/item-GOLD3.json',
+        'text!../sprites/item-GOLD.json',
         // @nextObjectImport@
         'text!../sprites/king.json',
         'text!../sprites/king2.json',
