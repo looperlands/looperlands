@@ -863,7 +863,17 @@ WS.socketIOServer = Server.extend({
             let ownedBots = await dao.getBots(sessionData.walletId);
             let botInfo = ownedBots.find(bot => bot.botNftId === botNftId);
             if (botInfo) {
-                let newBot = await dao.newBot(sessionData.mapId, botNftId, botInfo.experience, botInfo.looperName, sessionData.walletId, sessionData.entityId);
+                let owner = self.worldsMap[sessionData.mapId].getPlayerById(sessionData.entityId);
+                let newBot = await dao.newBot(
+                    sessionData.mapId,
+                    botNftId,
+                    botInfo.experience,
+                    botInfo.looperName,
+                    sessionData.walletId,
+                    sessionData.entityId,
+                    owner.x,
+                    owner.y
+                );
                 if (newBot.sessionId) {
                     res.status(200).send({});
                 } else {
