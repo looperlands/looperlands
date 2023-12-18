@@ -655,7 +655,7 @@ exports.getBots = async function(walletId) {
   return bots;
 }
 
-exports.newBot = async function(mapId, botNftId, xp, name, walletId, ownerEntityId, retry) {
+exports.newBot = async function(mapId, botNftId, xp, name, walletId, ownerEntityId, x, y, retry) {
   const options = {
     headers: {
       'X-Api-Key': LOOPERLANDS_BACKEND_API_KEY
@@ -670,7 +670,8 @@ exports.newBot = async function(mapId, botNftId, xp, name, walletId, ownerEntity
       "name": name,
       "walletId": walletId,
       "owner": ownerEntityId,
-      "name": name
+      "x" : x,
+      "y" : y,
     }
     const response = await axios.post(url, sessionRequest, options);
     return response.data;
@@ -683,7 +684,7 @@ exports.newBot = async function(mapId, botNftId, xp, name, walletId, ownerEntity
     }
     retry -= 1;
     if (retry > 0) {
-      return this.newBot(mapId, botNftId, xp, name, walletId, ownerEntityId, retry);
+      return this.newBot(mapId, botNftId, xp, name, walletId, ownerEntityId, x, y, retry);
     } else {
       console.error("newBot", error);
     }
