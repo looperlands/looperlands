@@ -563,6 +563,9 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.BANNER]=function(id){return new Items.BANNER(id);};
     EntityFactory.builders[Types.Entities.PNEUMA_SIGN]=function(id){return new Items.PNEUMA_SIGN(id);};
     EntityFactory.builders[Types.Entities.VILLAGESIGN10]=function(id){return new Items.VILLAGESIGN10(id);};
+    EntityFactory.builders[Types.Entities.GOLD1]=function(id){return new Items.GOLD1(id);};
+    EntityFactory.builders[Types.Entities.GOLD2]=function(id){return new Items.GOLD2(id);};
+    EntityFactory.builders[Types.Entities.GOLD3]=function(id){return new Items.GOLD3(id);};
     // @nextObjectLine@
 
     //====== NPCs ======

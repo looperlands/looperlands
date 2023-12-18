@@ -242,7 +242,10 @@ Types = {
         FORGEDSWORD: 21300034,
         BANNER: 21300035,
         PNEUMA_SIGN: 21300036,
-        VILLAGESIGN10: 21300037, // @lastidObject@
+        VILLAGESIGN10: 21300037,
+        GOLD1: 21300038,
+        GOLD2: 21300039,
+        GOLD3: 21300040, // @lastidObject@
         //@nextIdLineObject@
         
         // NPCs
@@ -4576,6 +4579,9 @@ var kinds = {
     BANNER: [Types.Entities.BANNER, "object"],
     PNEUMA_SIGN: [Types.Entities.PNEUMA_SIGN, "object"],
     VILLAGESIGN10: [Types.Entities.VILLAGESIGN10, "object"],
+    GOLD1: [Types.Entities.GOLD1, "object"],
+    GOLD2: [Types.Entities.GOLD2, "object"],
+    GOLD3: [Types.Entities.GOLD3, "object"],
     // @nextObjectLine@
 
     guard: [Types.Entities.GUARD, "npc"],
