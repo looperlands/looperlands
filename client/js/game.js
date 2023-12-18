@@ -7547,6 +7547,11 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     $('#avatarLevel').text(level);
                     $('#avatarProgress').text(percentage);
 
+                    if (response.data.botInfo) {
+                        $('#companionLevel').text(response.data.botInfo.currentLevel);
+                        $('#companionProgress').text(response.data.botInfo.percentage);
+                    }
+
                     if (response.data.weaponInfo !== null && response.data.weaponInfo !== undefined) {
                         weaponPercentage = response.data.weaponInfo.weaponLevelInfo.percentage;
                         weaponLevel = response.data.weaponInfo.weaponLevelInfo.currentLevel;
@@ -7554,7 +7559,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                         $('#weaponLevel').text(weaponLevel);
                         $('#weaponProgress').text(weaponPercentage);
                         $('#weaponTrait').text(response.data.weaponInfo.trait);
-                        $('#ownYourLoopersBuff').text(response.data.ownYourLoopersBuff);
                     }
 
                     if (self.player.level !== level) {
