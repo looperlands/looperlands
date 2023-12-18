@@ -330,6 +330,8 @@ define(['jquery', 'storage'], function ($, Storage) {
             if ($('body').hasClass('settings')) {
                 this.closeSettings();
             }
+
+            $('#new-achievement-popup').addClass('hidden')
         },
 
         showAchievementNotification: function (questName, endText, xpReward, medal) {
@@ -426,8 +428,10 @@ define(['jquery', 'storage'], function ($, Storage) {
                 $('#achievements #lists ul').removeClass('hidden');
             });
 
-            $('#close-new-achievement').click(function() {
+            $('#close-new-achievement').click(function(e) {
                 $('#new-achievement-popup').addClass('hidden');
+                e.preventDefault();
+                e.stopImmediatePropagation();
             });
         },
 
