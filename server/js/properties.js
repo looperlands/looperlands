@@ -5,9 +5,10 @@ var Properties = {
     rat: {
         level: 1,
         drops: {
-            flask: 40,
-            burger: 10,
-            firepotion: 5
+            GOLD: 50,
+            // flask: 40,
+            // burger: 10,
+            // firepotion: 5
         },
         respawnDelay: 10000,
     },
@@ -983,7 +984,12 @@ var Properties = {
     //Items
     coblog: {
         respawnDelay: 60000,
-    }
+    },
+
+    GOLD: {
+        collectable: true,
+        inventoryDescription: "Gold"
+    },
 };
 
 Properties.getArmorLevel = function(kind, levelOffset) {

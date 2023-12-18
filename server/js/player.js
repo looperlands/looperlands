@@ -25,6 +25,7 @@ const BASE_ATTACK_RATE = 800;
 const XP_BATCH_SIZE = 500;
 
 const mapflows = require("./flows/mapflow.js");
+const {getItemCount} = require("./dao");
 
 module.exports = Player = Character.extend({
     init: function(connection, worldServer) {
@@ -384,6 +385,11 @@ module.exports = Player = Character.extend({
                         } else if(Types.isWeapon(kind) && self.getNFTWeapon() === undefined) {
                             self.equipItem(item);
                             self.broadcast(self.equip(kind));
+                        }
+
+                        if(Types.isResource(kind)) {
+                            let message = new Messages.Resource(kind, self.getResourceAmount(kind));
+                            self.server.pushToPlayer(self, message);
                         }
                     }
                 }
@@ -791,6 +797,18 @@ module.exports = Player = Character.extend({
             var pos = this.requestpos_callback();
             this.setPosition(pos.x, pos.y);
         }
+    },
+
+    getResourceAmount: function(kind) {
+        let cache = this.server.server.cache.get(this.sessionId);
+        let gameData = cache.gameData;
+
+        let consumables = gameData.consumables;
+        if (consumables === undefined) {
+            return 0;
+        }
+
+        return consumables[kind] || 0;
     },
 
     onRequestPosition: function(callback) {

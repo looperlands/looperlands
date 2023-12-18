@@ -46,7 +46,8 @@ Types = {
         CONSUMEITEM: 42,
         BUFFINFO: 43,
         EMOTE: 44,
-        SUMMON_FOLLOW: 45
+        SUMMON_FOLLOW: 45,
+        RESOURCE: 46
     },
     
     Entities: {
@@ -4583,7 +4584,7 @@ var kinds = {
     GOLD1: [Types.Entities.GOLD1, "object"],
     GOLD2: [Types.Entities.GOLD2, "object"],
     GOLD3: [Types.Entities.GOLD3, "object"],
-    GOLD: [Types.Entities.GOLD, "object"],
+    GOLD: [Types.Entities.GOLD, "resource"],
     // @nextObjectLine@
 
     guard: [Types.Entities.GUARD, "npc"],
@@ -8797,13 +8798,18 @@ Types.isObject = function(kind) {
     return kinds.getType(kind) === "object";
 };
 
+Types.isResource = function(kind) {
+    return kinds.getType(kind) === "resource";
+};
+
 Types.isChest = function(kind) {
     return kind === Types.Entities.CHEST;
 };
 
 Types.isItem = function(kind) {
     return Types.isWeapon(kind) 
-        || Types.isArmor(kind) 
+        || Types.isArmor(kind)
+        || Types.isResource(kind)
         || (Types.isObject(kind) && !Types.isChest(kind));
 };
 

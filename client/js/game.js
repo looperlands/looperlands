@@ -5128,6 +5128,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
                     self.initMusicAreas();
                     self.initAchievements();
+                    self.initResourcesDisplay();
                     self.initCursors();
                     self.initAnimations();
                     self.initShadows();
@@ -6277,6 +6278,10 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
                 self.client.onBuffInfo(function(stat, percent, duration) {
                     self.updateBuffInfo(stat, percent, duration);
+                });
+
+                self.client.onResourceUpdated(function(resource, amount) {
+                    self.updateResource(resource, amount);
                 });
 
                 self.gamestart_callback();
@@ -7813,6 +7818,18 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             } else {
                 $("#buffInfo").html("");
             }
+        },
+
+        updateResource: function (resource, amount) {
+            if ($('#resource-' + resource).length === 0) {
+                let resourceEl = $('<div id="resource-' + resource + '"><span class="img"></span><span class="amount"></span></div>');
+                let url = "img/1/item-" + Types.getKindAsString(resource) + ".png";
+                resourceEl.find('.img').css('background-image',  "url('" + url + "')");
+               $('#resources').append(resourceEl);
+            }
+
+            $('#resource-' + resource).find('.amount').text(amount);
+
         }
     });
     

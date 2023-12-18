@@ -1,6 +1,8 @@
 const dao = require('../dao.js');
 const PlayerQuestEventConsumer = require('./playerquesteventconsumer.js');
 const Collectables = require('../collectables.js');
+const Types = require("../../../shared/js/gametypes");
+const Messages = require("../message");
 
 class PlayerEventBroker {
     static Events = {

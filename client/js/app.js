@@ -584,6 +584,10 @@ define(['jquery', 'storage'], function ($, Storage) {
                     inventoryHtml += "<strong>Items</strong>";
                     inventoryHtml += "<div>"
                     Object.keys(consumablesInventory).forEach(item => {
+                        if(Types.isResource(item)) {
+                            return;
+                        }
+
                         let description = consumablesInventory[item].description;
                         let tooltipText = "";
                         if(description){
@@ -719,6 +723,24 @@ define(['jquery', 'storage'], function ($, Storage) {
                 $('body').toggleClass('death');
             }
 
+        },
+
+        initResourcesDisplay: function () {
+            _this = this;
+
+            let inventoryQuery = "/session/" + _this.storage.sessionId + "/inventory";
+            let resources = [];
+
+            axios.get(inventoryQuery).then(function(response) {
+                console.log(response.data);
+                for (let resource in response.data.consumables) {
+                    if (Types.isResource(resource)) {
+                        let resourceEl = $('<div id="resource-' + resource + '" class="resource"><span class="img"></span><span class="amount"></span></div>');
+                        let url = "img/1/item-" + Types.getKindAsString(resource) + ".png";
+                        resourceEl.find('.img').css('background-image', "url('" + url + "')");
+                    }
+                }
+            });
         },
 
         closeInGameCredits: function () {

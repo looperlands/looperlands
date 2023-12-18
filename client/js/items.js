@@ -193,7 +193,7 @@ define(['item'], function(Item) {
         GOLD1:Item.extend({init:function(id){this._super(id,Types.Entities.GOLD1,"object");this.lootMessage="";}}),
         GOLD2:Item.extend({init:function(id){this._super(id,Types.Entities.GOLD2,"object");this.lootMessage="";}}),
         GOLD3:Item.extend({init:function(id){this._super(id,Types.Entities.GOLD3,"object");this.lootMessage="";}}),
-        GOLD:Item.extend({init:function(id){this._super(id,Types.Entities.GOLD,"object");this.lootMessage="Picked up gold!";}}),
+        GOLD:Item.extend({init:function(id){this._super(id,Types.Entities.GOLD,"resource");this.lootMessage="Picked up gold!";}}),
         // @nextItemLine@
     };
 
