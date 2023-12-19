@@ -388,7 +388,8 @@ module.exports = Player = Character.extend({
                         }
 
                         if(Types.isResource(kind)) {
-                            let message = new Messages.Resource(kind, self.getResourceAmount(kind));
+                            let resourceKind = Collectables.getCollectItem(kind);
+                            let message = new Messages.Resource(resourceKind, self.getResourceAmount(resourceKind));
                             self.server.pushToPlayer(self, message);
                         }
                     }

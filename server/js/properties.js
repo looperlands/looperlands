@@ -5,7 +5,9 @@ var Properties = {
     rat: {
         level: 1,
         drops: {
-            GOLD: 50,
+            GOLD: 20,
+            GOLD2: 20,
+            GOLD3: 20,
             // flask: 40,
             // burger: 10,
             // firepotion: 5
@@ -27,7 +29,8 @@ var Properties = {
     goblin: {
         level: 3,
         drops: {
-            flask: 50,
+            coblog: 50,
+            //flask: 50,
             axe: 10,
             firepotion: 5
         }
@@ -984,12 +987,26 @@ var Properties = {
     //Items
     coblog: {
         respawnDelay: 60000,
+        collectable: true
     },
 
     GOLD: {
         collectable: true,
-        inventoryDescription: "Gold"
+        inventoryDescription: "Gold",
     },
+
+    GOLD2: {
+        collectable: true,
+        inventoryDescription: "Gold",
+        collectItem: Types.Entities.GOLD,
+        collectAmount: 10
+    },
+    GOLD3: {
+        collectable: true,
+        inventoryDescription: "Gold",
+        collectItem: Types.Entities.GOLD,
+        collectAmount: 50
+    }
 };
 
 Properties.getArmorLevel = function(kind, levelOffset) {
@@ -1069,6 +1086,17 @@ Properties.isConsumable = function(kind) {
 
 Properties.getCollectableImageName = function(kind) {
     return 'item-' + Types.getKindAsString(kind);
+}
+
+Properties.getCollectAmount = function(kind) {
+    retCollectableAmount = Properties[Types.getKindAsString(kind)]?.collectAmount;
+    return retCollectableAmount !== undefined ? retCollectableAmount : 1;
+}
+
+Properties.getCollectItem = function(kind) {
+    console.log(Properties[Types.getKindAsString(kind)]);
+    retCollectableItem = Properties[Types.getKindAsString(kind)]?.collectItem;
+    return retCollectableItem !== undefined ? retCollectableItem : kind;
 }
 
 Properties.consume = function(kind, player) {

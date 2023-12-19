@@ -4549,7 +4549,7 @@ var kinds = {
     potion: [Types.Entities.POTION, "object"],
     cobapple: [Types.Entities.COBAPPLE, "object"],
     cobcorn: [Types.Entities.COBCORN, "object"],
-    coblog: [Types.Entities.COBLOG, "object"],
+    coblog: [Types.Entities.COBLOG, "resource"],
     cobclover: [Types.Entities.COBCLOVER, "object"],
     cobegg: [Types.Entities.COBEGG, "object"],
     cake: [Types.Entities.CAKE, "object"],
@@ -4582,8 +4582,8 @@ var kinds = {
     PNEUMA_SIGN: [Types.Entities.PNEUMA_SIGN, "object"],
     VILLAGESIGN10: [Types.Entities.VILLAGESIGN10, "object"],
     GOLD1: [Types.Entities.GOLD1, "object"],
-    GOLD2: [Types.Entities.GOLD2, "object"],
-    GOLD3: [Types.Entities.GOLD3, "object"],
+    GOLD2: [Types.Entities.GOLD2, "resource"],
+    GOLD3: [Types.Entities.GOLD3, "resource"],
     GOLD: [Types.Entities.GOLD, "resource"],
     // @nextObjectLine@
 

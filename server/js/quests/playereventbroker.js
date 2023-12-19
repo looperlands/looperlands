@@ -87,17 +87,19 @@ class PlayerEventBroker {
             this.cache.set(sessionId, playerCache);
         }
         if (Collectables.isCollectable(item.kind)){
-            dao.saveConsumable(this.player.nftId, item.kind, amount);
+            let kind = Collectables.getCollectItem(item.kind);
+            amount = amount * Collectables.getCollectAmount(item.kind);
+            dao.saveConsumable(this.player.nftId, kind, amount);
 
             if (gameData.consumables === undefined) {
                 gameData.consumables = {};
             }
         
-            let itemCount = gameData.consumables[item.kind];
+            let itemCount = gameData.consumables[kind];
             if (itemCount) {
-                gameData.consumables[item.kind] = itemCount + amount;
+                gameData.consumables[kind] = itemCount + amount;
             } else {
-                gameData.consumables[item.kind] = amount;
+                gameData.consumables[kind] = amount;
             }
         
             playerCache.gameData = gameData;
