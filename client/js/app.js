@@ -580,6 +580,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                     inventoryHtml += "</div>";
                 }
 
+
                 if (Object.keys(consumablesInventory).length > 0) {
                     inventoryHtml += "<strong>Items</strong>";
                     inventoryHtml += "<div>"
