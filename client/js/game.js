@@ -7609,8 +7609,8 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             $("#companionInfo").hide();
 
             function validLevelInfo(levelInfo) {
-                level = levelInfo.currentLevel;
-                percentage = levelInfo.percentage;
+                let level = levelInfo.currentLevel;
+                let percentage = levelInfo.percentage;
                 let invalid = !level || Number.isNaN(level) || !percentage || Number.isNaN(percentage);
 
                 return !invalid;
