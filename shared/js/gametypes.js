@@ -8894,7 +8894,7 @@ Types.getWeaponRank = function(weaponKind) {
     if (weaponKind === Types.Entities.TRANSPARENT_WEAPON) {
         return 0;
     } else {
-        return Math.round(_.indexOf(Types.rankedWeapons, weaponKind) * 1.33);
+        return Math.round(Types.rankedWeapons.indexOf(weaponKind) * 1.33);
     }
 };
 
