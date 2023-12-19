@@ -9049,15 +9049,12 @@ Types.getRandomItemKind = function(item) {
 
 Types.getMessageTypeAsString = function(type) {
     var typeName;
-    for (var name in Types.Messages) {
-        if (Types.Messages.hasOwnProperty(name)) {
-            if (Types.Messages[name] === type) {
-                typeName = name;
-                break; // Break the loop once the type is found
-            }
+    _.each(Types.Messages, function(value, name) {
+        if(value === type) {
+            typeName = name;
         }
-    }
-    if (!typeName) {
+    });
+    if(!typeName) {
         typeName = "UNKNOWN";
     }
     return typeName;
