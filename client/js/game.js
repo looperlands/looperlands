@@ -7606,13 +7606,24 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
         renderStatistics: function () {
             self = this;
+            $("#companionInfo").hide();
+
+            function validLevelInfo(levelInfo) {
+                level = levelInfo.currentLevel;
+                percentage = levelInfo.percentage;
+                let invalid = !level || Number.isNaN(level) || !percentage || Number.isNaN(percentage);
+
+                return !invalid;
+            }
+
             axios.get("/session/" + this.sessionId + "/statistics").then(function(response){
+
                 if (response.data !== null && response.data !== undefined) {
 
                     level = response.data.avatarLevelInfo.currentLevel;
                     percentage = response.data.avatarLevelInfo.percentage;
 
-                    if (!level || Number.isNaN(level) || !percentage || Number.isNaN(percentage)) {
+                    if (!validLevelInfo(response.data.avatarLevelInfo)) {
                         console.error("Invalid level or percentage");
                         return;
                     }
@@ -7624,7 +7635,8 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     $('#avatarLevel').text(level);
                     $('#avatarProgress').text(percentage);
 
-                    if (response.data.botInfo) {
+                    if (validLevelInfo(response.data.botInfo)) {
+                        $("#companionInfo").show();
                         $('#companionLevel').text(response.data.botInfo.currentLevel);
                         $('#companionProgress').text(response.data.botInfo.percentage);
                     }
