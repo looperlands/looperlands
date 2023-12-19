@@ -9040,26 +9040,15 @@ Types.getOrientationAsString = function(orientation) {
     }
 };
 
-Types.getRandomItemKind = function(item) {
-    var all = _.union(this.rankedWeapons, this.rankedArmors),
-        forbidden = [Types.Entities.SWORD1, Types.Entities.CLOTHARMOR],
-        itemKinds = _.difference(all, forbidden),
-        i = Math.floor(Math.random() * _.size(itemKinds));
-    
-    return itemKinds[i];
-};
-
 Types.getMessageTypeAsString = function(type) {
-    var typeName;
-    _.each(Types.Messages, function(value, name) {
-        if(value === type) {
-            typeName = name;
+    let keys = Object.keys(Types.Messages);
+    for (let i = 0; i < keys.length; i++) {
+        let key = keys[i];
+        if (Types.Messages[key] === type) {
+            return key;
         }
-    });
-    if(!typeName) {
-        typeName = "UNKNOWN";
     }
-    return typeName;
+    return "UNKNOWN";
 };
 
 Types.getTypeFromString = function(kindString) {
