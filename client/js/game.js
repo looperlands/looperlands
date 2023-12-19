@@ -66,6 +66,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         
             // debug
             this.debugPathing = false;
+            $("#companionInfo").hide();
 
             // fishing
             this.floats = {};
@@ -7606,7 +7607,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
         renderStatistics: function () {
             self = this;
-            $("#companionInfo").hide();
 
             function validLevelInfo(levelInfo) {
                 let level = levelInfo.currentLevel;
