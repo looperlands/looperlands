@@ -29,8 +29,7 @@ var Properties = {
     goblin: {
         level: 3,
         drops: {
-            coblog: 50,
-            //flask: 50,
+            flask: 50,
             axe: 10,
             firepotion: 5
         }
@@ -1055,32 +1054,32 @@ Properties.getHitPoints = function(kind, levelOffset) {
 };
 
 Properties.getLevel = function(kind) {
-    retLevel = Properties[Types.getKindAsString(kind)].level;
+    let retLevel = Properties[Types.getKindAsString(kind)].level;
     return retLevel !== undefined ? retLevel : 1;
 };
 
 Properties.getHpMod = function(kind) {
-    retMod = Properties[Types.getKindAsString(kind)].hpMod;
+    let retMod = Properties[Types.getKindAsString(kind)].hpMod;
     return retMod !== undefined ? retMod : 1;
 };
 
 Properties.getArmorMod = function(kind) {
-    retMod = Properties[Types.getKindAsString(kind)].armorMod;
+    let retMod = Properties[Types.getKindAsString(kind)].armorMod;
     return retMod !== undefined ? retMod : 1;
 };
 
 Properties.getWeaponMod = function(kind) {
-    retMod = Properties[Types.getKindAsString(kind)].weaponMod;
+    let retMod = Properties[Types.getKindAsString(kind)].weaponMod;
     return retMod !== undefined ? retMod : 1;
 };
 
 Properties.isCollectable = function(kind) {
-    retCollectable = Properties[Types.getKindAsString(kind)]?.collectable;
+    let retCollectable = Properties[Types.getKindAsString(kind)]?.collectable;
     return retCollectable !== undefined ? retCollectable : false;
 }
 
 Properties.isConsumable = function(kind) {
-    retConsumable = Properties[Types.getKindAsString(kind)]?.consumable;
+    let retConsumable = Properties[Types.getKindAsString(kind)]?.consumable;
     return retConsumable !== undefined ? retConsumable : false;
 }
 
@@ -1089,25 +1088,24 @@ Properties.getCollectableImageName = function(kind) {
 }
 
 Properties.getCollectAmount = function(kind) {
-    retCollectableAmount = Properties[Types.getKindAsString(kind)]?.collectAmount;
+    let retCollectableAmount = Properties[Types.getKindAsString(kind)]?.collectAmount;
     return retCollectableAmount !== undefined ? retCollectableAmount : 1;
 }
 
 Properties.getCollectItem = function(kind) {
-    console.log(Properties[Types.getKindAsString(kind)]);
-    retCollectableItem = Properties[Types.getKindAsString(kind)]?.collectItem;
+    let retCollectableItem = Properties[Types.getKindAsString(kind)]?.collectItem;
     return retCollectableItem !== undefined ? retCollectableItem : kind;
 }
 
 Properties.consume = function(kind, player) {
-    onConsume = Properties[Types.getKindAsString(kind)]?.onConsume
+    let onConsume = Properties[Types.getKindAsString(kind)]?.onConsume
     if(onConsume !== undefined) {
         onConsume(player);
     }
 }
 
 Properties.getInventoryDescription = function(kind) {
-    retDescription = Properties[Types.getKindAsString(kind)]?.inventoryDescription;
+    let retDescription = Properties[Types.getKindAsString(kind)]?.inventoryDescription;
     return retDescription !== undefined ? retDescription : false;
 }
 

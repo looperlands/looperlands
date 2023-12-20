@@ -5128,7 +5128,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
                     self.initMusicAreas();
                     self.initAchievements();
-                    self.initResourcesDisplay();
                     self.initCursors();
                     self.initAnimations();
                     self.initShadows();
@@ -6476,9 +6475,15 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     msg = npc.talk();
                     self.previousClickPosition = {};
                     if(msg) {
-                        self.createBubble(npc.id, msg);
-                        self.assignBubbleTo(npc);
-                        self.audioManager.playSound("npc");
+                        if (msg.startsWith("/openShop")) {
+                            console.log(msg);
+                            let shop = msg.split(" ")[1];
+                            self.app.openShop(shop)
+                        } else {
+                            self.createBubble(npc.id, msg);
+                            self.assignBubbleTo(npc);
+                            self.audioManager.playSound("npc");
+                        }
                     } else {
                         self.destroyBubble(npc.id);
                         self.audioManager.playSound("npc-end");
@@ -7821,6 +7826,8 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         },
 
         updateResource: function (resource, amount) {
+            console.log(resource + ' has ' + amount);
+            $('#resources').removeClass('hidden');
             if ($('#resource-' + resource).length === 0) {
                 let resourceEl = $('<div id="resource-' + resource + '" class="resource"><span class="img"></span><span class="amount"></span></div>');
                 let url = "img/1/item-" + Types.getKindAsString(resource) + ".png";

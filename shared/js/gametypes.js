@@ -8712,6 +8712,9 @@ var kinds = {
 
     
     getType: function(kind) {
+        if(!kinds[Types.getKindAsString(kind)]) {
+            return "";
+        }
         return kinds[Types.getKindAsString(kind)][1];
     }
 };

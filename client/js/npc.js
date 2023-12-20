@@ -13,6 +13,7 @@ define(['character'], function (Character) {
 
         "king": [
             "Hi Looper, I'm the LoopWorm King",
+            "/openShop King's Shop",
             "Welcome to my kingdom",
             'You can buy our <a target="_blank" href="https://loopexchange.art/collection/web3-pets">Web3 Pets</a> to support us.',
             'Check out <a target="_blank" href="https://twitter.com/LoopWorms">my twitter</a> and give me a follow!',

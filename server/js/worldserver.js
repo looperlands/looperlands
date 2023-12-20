@@ -1470,7 +1470,6 @@ module.exports = World = cls.Class.extend({
 
     removeFromInventory(player, itemKind, amount) {
         let item = this.createItem(itemKind, 0, 0);
-        console.log(item);
         player.playerEventBroker.lootEvent(item, amount * -1);
     },
 

@@ -407,8 +407,13 @@ WS.socketIOServer = Server.extend({
             }
 
             let consumables = sessionData.gameData?.consumables || {};
+            let resources = {};
             Object.keys(consumables).forEach(item => {
-                if (!item || !Collectables.isCollectable(item) || consumables[item] <= 0){
+                if(Types.isResource(parseInt(item))) {
+                    resources[item] = consumables[item];
+                    delete consumables[item];
+                }
+                if (!item || !Collectables.isCollectable(parseInt(item)) || consumables[item] <= 0){
                     delete consumables[item];
                 } else {
                     consumables[item] = {qty: consumables[item], 
@@ -419,7 +424,7 @@ WS.socketIOServer = Server.extend({
             });
 
             let bots = await dao.getBots(walletId);
-            res.status(200).json({inventory: inventory, special: special, consumables: consumables, bots: bots});
+            res.status(200).json({inventory: inventory, special: special, consumables: consumables, bots: bots, resources: resources});
         });
 
         app.get("/session/:sessionId/quests", async (req, res) => {

@@ -581,27 +581,34 @@ define(['jquery', 'storage'], function ($, Storage) {
                 }
 
                 if (Object.keys(consumablesInventory).length > 0) {
-                    inventoryHtml += "<strong>Items</strong>";
-                    inventoryHtml += "<div>"
+
+                    let itemHtml = "<strong>Items</strong>";
+                    itemHtml += "<div>"
+                    let hasItem = false;
                     Object.keys(consumablesInventory).forEach(item => {
                         if(Types.isResource(item)) {
                             return;
                         }
+                        hasItem = true;
 
                         let description = consumablesInventory[item].description;
                         let tooltipText = "";
                         if(description){
                             tooltipText = "<div class='tooltiptext'>" + description + "</div>";
                         }
-                        inventoryHtml += "<div style='display:inline-block'>"
+                        itemHtml += "<div style='display:inline-block'>"
                         let cursor = consumablesInventory[item].consumable ? "pointer" : "not-allowed";
                         imgTag = "<div class='item'>" + tooltipText + "<img id='" + item + "' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0; cursor: " + cursor + ";' src='img/3/" + consumablesInventory[item].image + ".png' /></div>";
-                        inventoryHtml += imgTag;
+                        itemHtml += imgTag;
 
-                        inventoryHtml += "<p id=count_" + item + ">" + consumablesInventory[item].qty + "</p>"
-                        inventoryHtml += "</div>";
+                        itemHtml += "<p id=count_" + item + ">" + consumablesInventory[item].qty + "</p>"
+                        itemHtml += "</div>";
                     });
-                    inventoryHtml += "</div>";
+                    itemHtml += "</div>";
+
+                    if (hasItem) {
+                        inventoryHtml += itemHtml;
+                    }
                 }
 
                 if (botsInventory.length > 0) {
@@ -729,16 +736,15 @@ define(['jquery', 'storage'], function ($, Storage) {
             _this = this;
 
             let inventoryQuery = "/session/" + _this.storage.sessionId + "/inventory";
-            let resources = [];
 
             axios.get(inventoryQuery).then(function(response) {
-                console.log(response.data);
-                for (let resource in response.data.consumables) {
-                    if (Types.isResource(resource)) {
-                        let resourceEl = $('<div id="resource-' + resource + '" class="resource"><span class="img"></span><span class="amount"></span></div>');
-                        let url = "img/1/item-" + Types.getKindAsString(resource) + ".png";
-                        resourceEl.find('.img').css('background-image', "url('" + url + "')");
-                    }
+                let resourcesInventory = response.data.resources;
+                if (Object.keys(resourcesInventory).length > 0) {
+                    Object.keys(resourcesInventory).forEach(item => {
+                        if (Types.isResource(parseInt(item))) {
+                            _this.game.updateResource(parseInt(item), resourcesInventory[item]);
+                        }
+                    });
                 }
             });
         },
@@ -827,6 +833,81 @@ define(['jquery', 'storage'], function ($, Storage) {
             if (window.focus) {
                 newwindow.focus()
             }
+        },
+
+        openShop: function(shopName) {
+            let shopPopup = $('#shop-popup');
+            shopPopup.find('#shop-popup-name').text(shopName);
+
+            // TODO: Get this from an API
+            let items = [
+                {
+                    name: "Potion",
+                    item: Types.Entities.POTION,
+                    description: "Gain 100 HP",
+                    price: 100
+                },
+                {
+                    name: "Potion",
+                    item: Types.Entities.POTION,
+                    description: "Gain 100 HP",
+                    price: 100
+                },
+                {
+                    name: "Potion",
+                    item: Types.Entities.POTION,
+                    description: "Gain 100 HP",
+                    price: 100
+                },{
+                    name: "Potion",
+                    item: Types.Entities.POTION,
+                    description: "Gain 100 HP",
+                    price: 100
+                },{
+                    name: "Potion",
+                    item: Types.Entities.POTION,
+                    description: "Gain 100 HP",
+                    price: 100
+                },{
+                    name: "Potion",
+                    item: Types.Entities.POTION,
+                    description: "Gain 100 HP",
+                    price: 100
+                },{
+                    name: "Potion",
+                    item: Types.Entities.POTION,
+                    description: "Gain 100 HP",
+                    price: 100
+                },{
+                    name: "Potion",
+                    item: Types.Entities.POTION,
+                    description: "Gain 100 HP",
+                    price: 100
+                },{
+                    name: "Potion",
+                    item: Types.Entities.POTION,
+                    description: "Gain 100 HP",
+                    price: 100
+                },
+            ]
+            shopPopup.find('#shop-popup-items').html('');
+            items.forEach(function (item) {
+                let itemHtml = "<div class='item'>";
+                itemHtml += "<img id='" + item.item + "' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0; cursor: pointer;' src='img/3/item-" + Types.getKindAsString(item.item) + ".png' />";
+                itemHtml += "<div class='name'>" + item.name + "</div>";
+                itemHtml += "<div class='desc'>" + item.description + "</div>";
+                itemHtml += "<div class='price'>" + item.price + " coins</div>";
+                itemHtml += "</div>";
+                shopPopup.find('#shop-popup-items').append(itemHtml);
+            });
+
+            $('#close-shop').click(function(e) {
+                $('#shop-popup').addClass('hidden');
+                e.preventDefault();
+                e.stopImmediatePropagation();
+            });
+
+            shopPopup.removeClass("hidden");
         },
 
         animateParchment: function (origin, destination) {
