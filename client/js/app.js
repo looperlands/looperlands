@@ -332,6 +332,7 @@ define(['jquery', 'storage'], function ($, Storage) {
             }
 
             $('#new-achievement-popup').addClass('hidden')
+            $('#shop-popup').addClass('hidden')
         },
 
         showAchievementNotification: function (questName, endText, xpReward, medal) {
@@ -842,63 +843,55 @@ define(['jquery', 'storage'], function ($, Storage) {
             // TODO: Get this from an API
             let items = [
                 {
-                    name: "Potion",
+                    name: "Healing Potion",
                     item: Types.Entities.POTION,
                     description: "Gain 100 HP",
-                    price: 100
+                    price: { GOLD: 100 }
                 },
                 {
-                    name: "Potion",
-                    item: Types.Entities.POTION,
-                    description: "Gain 100 HP",
-                    price: 100
+                    name: "Wooden sword",
+                    item: Types.Entities.NFT_0b3bb2213a2f4beaf114bf00ea68bede2092b01307871bc418b7d858c2171088,
+                    description: "Great sword to beat wood",
+                    price: { GOLD: 10, coblog: 25 },
+                    level: 12
                 },
                 {
-                    name: "Potion",
-                    item: Types.Entities.POTION,
+                    name: "Invisibility Potion",
+                    item: Types.Entities.FIREPOTION,
                     description: "Gain 100 HP",
-                    price: 100
-                },{
-                    name: "Potion",
-                    item: Types.Entities.POTION,
-                    description: "Gain 100 HP",
-                    price: 100
-                },{
-                    name: "Potion",
-                    item: Types.Entities.POTION,
-                    description: "Gain 100 HP",
-                    price: 100
-                },{
-                    name: "Potion",
-                    item: Types.Entities.POTION,
-                    description: "Gain 100 HP",
-                    price: 100
-                },{
-                    name: "Potion",
-                    item: Types.Entities.POTION,
-                    description: "Gain 100 HP",
-                    price: 100
-                },{
-                    name: "Potion",
-                    item: Types.Entities.POTION,
-                    description: "Gain 100 HP",
-                    price: 100
-                },{
-                    name: "Potion",
-                    item: Types.Entities.POTION,
-                    description: "Gain 100 HP",
-                    price: 100
+                    price: { GOLD: 100 }
                 },
-            ]
+                {
+                    name: "Axe",
+                    item: Types.Entities.AXE,
+                    description: "Gain 100 HP",
+                    price: { GOLD: 100 }
+                },
+            ];
             shopPopup.find('#shop-popup-items').html('');
             items.forEach(function (item) {
                 let itemHtml = "<div class='item'>";
                 itemHtml += "<img id='" + item.item + "' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0; cursor: pointer;' src='img/3/item-" + Types.getKindAsString(item.item) + ".png' />";
-                itemHtml += "<div class='name'>" + item.name + "</div>";
+
+                let levelInfo = "";
+                if (item.level) {
+                    levelInfo = "<span class='level'>Lvl&nbsp;" + item.level + "</span>";
+                }
+
+                itemHtml += "<div class='name'>" + item.name + levelInfo + "</div>";
                 itemHtml += "<div class='desc'>" + item.description + "</div>";
-                itemHtml += "<div class='price'>" + item.price + " coins</div>";
+                itemHtml += "<div class='price'></div>";
                 itemHtml += "</div>";
-                shopPopup.find('#shop-popup-items').append(itemHtml);
+
+                let itemEl  = $(itemHtml);
+                Object.keys(item.price).forEach(function (resource) {
+                    let resourceEl = $('<div id="resource-' + resource + '" class="resource"><span class="img"></span><span class="amount"></span></div>');
+                    let url = "img/1/item-" + resource + ".png";
+                    resourceEl.find('.img').css('background-image',  "url('" + url + "')");
+                    resourceEl.find('.amount').text(item.price[resource]);
+                    itemEl.find('.price').append(resourceEl);
+                });
+                shopPopup.find('#shop-popup-items').append(itemEl);
             });
 
             $('#close-shop').click(function(e) {

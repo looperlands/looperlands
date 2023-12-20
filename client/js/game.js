@@ -6477,8 +6477,9 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     if(msg) {
                         if (msg.startsWith("/openShop")) {
                             console.log(msg);
-                            let shop = msg.split(" ")[1];
-                            self.app.openShop(shop)
+                            let shop = msg.split(" ");
+                            shop.shift();
+                            self.app.openShop(shop.join(" "))
                         } else {
                             self.createBubble(npc.id, msg);
                             self.assignBubbleTo(npc);
