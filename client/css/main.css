@@ -354,6 +354,10 @@ body.upscaled.game {background:#000;}
     font-family: 'GraphicPixel';
 }
 
+#shop-popup .close {
+    scale: 0.666;
+}
+
 #shop-popup .items {
     display: grid;
     justify-content: start;
@@ -364,6 +368,13 @@ body.upscaled.game {background:#000;}
     width: 100%;
     grid: auto-flow / 1fr 1fr;
     padding-right:30px;
+}
+
+#shop-popup .item-image {
+    width: 32px;
+    height: 32px;
+    margin: auto;
+    cursor: pointer;
 }
 
 #shop-popup .items::-webkit-scrollbar {
@@ -393,7 +404,7 @@ body.upscaled.game {background:#000;}
     border-image-width: 3px;
     padding-top: 16px;
     padding-bottom: 16px;
-    box-shadow: 0px 0px 4px rgba(0,0,0,0.5);
+    box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.5);
 }
 
 #shop-popup .item.selected {
@@ -1023,6 +1034,7 @@ footer div  {display:inline-block;}
         cursor: pointer;
     }
 
+    #resources { right: 40px; }
     #shop-popup {
         max-height: 570px;
     }

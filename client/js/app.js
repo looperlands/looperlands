@@ -838,6 +838,7 @@ define(['jquery', 'storage'], function ($, Storage) {
         },
 
         openShop: function(shopName) {
+            let self = this;
             let shopPopup = $('#shop-popup');
             shopPopup.find('#shop-popup-name').text(shopName);
 
@@ -876,7 +877,7 @@ define(['jquery', 'storage'], function ($, Storage) {
             shopPopup.find('#shop-popup-items').html('');
             items.forEach(function (item) {
                 let itemHtml = "<div class='item'>";
-                itemHtml += "<img id='" + item.item + "' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0; cursor: pointer;' src='img/3/item-" + Types.getKindAsString(item.item) + ".png' />";
+                itemHtml += "<div id='" + item.item + "' class='item-image' style='background: url(img/2/item-" + Types.getKindAsString(item.item) + ".png)' />";
 
                 let levelInfo = "";
                 if (item.level) {
@@ -940,6 +941,7 @@ define(['jquery', 'storage'], function ($, Storage) {
 
         purchaseShopItem: function(shopName, item) {
             console.log('buying', shopName, item);
+            this.game.audioManager.playSound("achievement");
         },
 
         animateParchment: function (origin, destination) {
