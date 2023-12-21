@@ -333,6 +333,7 @@ define(['jquery', 'storage'], function ($, Storage) {
 
             $('#new-achievement-popup').addClass('hidden')
             $('#shop-popup').addClass('hidden')
+            $('#shop-confirmation').removeClass('visible').addClass('hidden');
         },
 
         showAchievementNotification: function (questName, endText, xpReward, medal) {
@@ -843,12 +844,14 @@ define(['jquery', 'storage'], function ($, Storage) {
             // TODO: Get this from an API
             let items = [
                 {
+                    id: 1,
                     name: "Healing Potion",
                     item: Types.Entities.POTION,
                     description: "Gain 100 HP",
                     price: { GOLD: 100 }
                 },
                 {
+                    id: 2,
                     name: "Wooden sword",
                     item: Types.Entities.NFT_0b3bb2213a2f4beaf114bf00ea68bede2092b01307871bc418b7d858c2171088,
                     description: "Great sword to beat wood",
@@ -856,16 +859,18 @@ define(['jquery', 'storage'], function ($, Storage) {
                     level: 12
                 },
                 {
+                    id: 3,
                     name: "Invisibility Potion",
                     item: Types.Entities.FIREPOTION,
                     description: "Gain 100 HP",
                     price: { GOLD: 100 }
                 },
                 {
+                    id: 4,
                     name: "Axe",
                     item: Types.Entities.AXE,
                     description: "Gain 100 HP",
-                    price: { GOLD: 100 }
+                    price: { GOLD: 9900 }
                 },
             ];
             shopPopup.find('#shop-popup-items').html('');
@@ -884,23 +889,57 @@ define(['jquery', 'storage'], function ($, Storage) {
                 itemHtml += "</div>";
 
                 let itemEl  = $(itemHtml);
+
                 Object.keys(item.price).forEach(function (resource) {
                     let resourceEl = $('<div id="resource-' + resource + '" class="resource"><span class="img"></span><span class="amount"></span></div>');
                     let url = "img/1/item-" + resource + ".png";
                     resourceEl.find('.img').css('background-image',  "url('" + url + "')");
                     resourceEl.find('.amount').text(item.price[resource]);
                     itemEl.find('.price').append(resourceEl);
+
+                    itemEl.on('click', function(e) {
+                        e.preventDefault();
+                        e.stopImmediatePropagation();
+                        $('#shop-popup .selected').removeClass('selected');
+                        $(e.currentTarget).addClass('selected');
+                        $('#shop-confirmation-text').html  ('Are you sure you want to buy <span class="highlight">' + item.name + '</span>?');
+                        $('#shop-confirmation').removeClass('hidden');
+
+                        $('#cancel-shop-purchase').click(function(e) {
+                            $('#shop-confirmation').addClass('hidden');
+                            itemEl.removeClass('selected');
+                            e.preventDefault();
+                            e.stopImmediatePropagation();
+                        });
+
+                        $('#confirm-shop-purchase').click( function(e) {
+                            $('#shop-confirmation').addClass('hidden');
+                            itemEl.removeClass('selected');
+                            e.preventDefault();
+                            e.stopImmediatePropagation();
+                            self.purchaseShopItem(shopName, item);
+                        });
+                    })
                 });
                 shopPopup.find('#shop-popup-items').append(itemEl);
             });
 
             $('#close-shop').click(function(e) {
                 $('#shop-popup').addClass('hidden');
+                $('#shop-confirmation').removeClass('visible').addClass('hidden');
                 e.preventDefault();
                 e.stopImmediatePropagation();
             });
 
             shopPopup.removeClass("hidden");
+            setTimeout(() => {
+                $('#shop-confirmation').addClass('visible');
+            }, 1000);
+
+        },
+
+        purchaseShopItem: function(shopName, item) {
+            console.log('buying', shopName, item);
         },
 
         animateParchment: function (origin, destination) {

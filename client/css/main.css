@@ -396,6 +396,10 @@ body.upscaled.game {background:#000;}
     box-shadow: 0px 0px 4px rgba(0,0,0,0.5);
 }
 
+#shop-popup .item.selected {
+    background: #1e181e !important;;
+}
+
 #shop-popup .item:hover {
     background: #533642;
     cursor: pointer;
@@ -408,6 +412,7 @@ body.upscaled.game {background:#000;}
 #shop-popup .item .name .level {
     color: white;
     font-size: 9px;
+    margin-left:3px;
 }
 #shop-popup .item .desc {
     font-size: 11px;
@@ -441,6 +446,62 @@ body.upscaled.game {background:#000;}
     padding: 0;
     line-height: 15px;
     font-family: 'GraphicPixel';
+}
+
+#shop-confirmation {
+    position: absolute;
+    top: 18%;
+    left: 43%;
+    width: 200px;
+    height: 120px;
+    transition: ease-in-out 300ms;
+    color: white;
+    padding: 30px 30px 10px 50px;
+    display:none;
+}
+
+#shop-confirmation.visible {
+    display: block;
+}
+
+#shop-confirmation.hidden {
+    left: 20%;
+    opacity: 1;
+    transition: ease-in-out 300ms;
+}
+
+#shop-confirmation-text {
+    padding: 15px 5px;
+    width: 100%;
+}
+#shop-confirmation-text .highlight {
+    color: #fce045;
+}
+#cancel-shop-purchase {
+    display: inline-block;
+    padding: 5px 10px;
+    border: 1px solid;
+    border-radius: 3px;
+    margin-right: 55px;
+    margin-left: 8px;
+    margin-top: 10px;
+    cursor: pointer;
+    opacity:0.6;
+}
+#cancel-shop-purchase:hover {
+    opacity: 1;
+}
+
+#confirm-shop-purchase {
+    display: inline-block;
+    padding: 5px 10px;
+    border: 1px solid;
+    border-radius: 3px;
+    cursor: pointer;
+    opacity:0.6;
+}
+#confirm-shop-purchase:hover {
+    opacity:1;
 }
 
 #chatbox.active #emoteMenuToggle {
@@ -962,17 +1023,18 @@ footer div  {display:inline-block;}
         cursor: pointer;
     }
 
-    #shop-popup .items {
-        padding-top: 33px;
-    }
-
     #shop-popup {
         max-height: 570px;
     }
 
     #shop-popup .items {
+        padding-top: 33px;
         max-height:522px;
         grid: auto-flow / 1fr 1fr;
+    }
+
+    #shop-popup .item {
+        border-image-width: 4px;
     }
 
     /*Credits*/
