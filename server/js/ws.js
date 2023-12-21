@@ -642,12 +642,21 @@ WS.socketIOServer = Server.extend({
                     }
                 }
 
+                let botInfo = {};
+                if (sessionData.botSessionId !== undefined) {
+                    let botSessionData = cache.get(sessionData.botSessionId);
+                    if (botSessionData !== undefined) {
+                        botInfo = Formulas.calculatePercentageToNextLevel(botSessionData.xp);
+                    }
+                }
+
                 let ret = {
                     avatarLevelInfo: avatarLevelInfo,
                     ownYourLoopersBuff: looperManager.getTotalExperienceBoost(),
                     totalLoopers: looperManager.getTotalAssets(),
                     maxHp: maxHp,
-                    weaponInfo: weaponInfo
+                    weaponInfo: weaponInfo,
+                    botInfo: botInfo
                 }
                 res.status(200).json(ret);
             }
@@ -883,6 +892,8 @@ WS.socketIOServer = Server.extend({
                     owner.y
                 );
                 if (newBot.sessionId) {
+                    sessionData.botSessionId = newBot.sessionId;
+                    cache.set(sessionId, sessionData);
                     res.status(200).send({});
                 } else {
                     res.status(500).send(newBot);

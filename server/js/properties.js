@@ -1,5 +1,5 @@
 
-var Types = require("../../shared/js/gametypes");
+const Types = require("../../shared/js/gametypes");
 
 var Properties = {
     rat: {
@@ -1039,7 +1039,7 @@ Properties.getWeaponLevel = function(kind, levelOffset) {
             return Types.getWeaponRank(kind);
         }
     } catch(e) {
-        console.error("No level found for weapon: "+Types.getKindAsString(kind));
+        console.error("No level found for weapon: "+Types.getKindAsString(kind), e);
     }
 };
 

@@ -121,7 +121,9 @@ module.exports = Player = Character.extend({
                 self.send([Types.Messages.WELCOME, self.id, self.name, self.x, self.y, self.hitPoints, self.title]);
                 self.hasEnteredGame = true;
                 self.isDead = false;
-                discord.sendMessage(`Player ${self.name} joined the game.`);
+                if (!self.isBot()) {
+                    discord.sendMessage(`Player ${self.name} joined the game.`);
+                }
                 dao.saveAvatarMapId(playerCache.nftId, playerCache.mapId);
                 self.playerEventBroker.setPlayer(self);
 

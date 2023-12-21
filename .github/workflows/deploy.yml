@@ -30,6 +30,7 @@ jobs:
           git checkout .
           git checkout main
           git pull
+          cp ../looperlands/shared/js/gametypes.js src/gametypes.cjs
           cp /home/looperlands/git/docker-flyway-looperlands-backend.config /home/looperlands/git/looperlands-backend/docker-flyway.config          
           docker-compose build --no-cache
           sudo systemctl restart looperlands-backend 
