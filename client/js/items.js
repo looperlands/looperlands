@@ -188,6 +188,12 @@ define(['item'], function(Item) {
         ICESSENCE:Item.extend({init:function(id){this._super(id,Types.Entities.ICESSENCE,"object");this.lootMessage="Extracted essence";}}),
         FORGEDSWORD:Item.extend({init:function(id){this._super(id,Types.Entities.FORGEDSWORD,"object");this.lootMessage="Recovered sword";}}),
         BANNER:Item.extend({init:function(id){this._super(id,Types.Entities.BANNER,"object");this.lootMessage="Picked up banner";}}),
+        PNEUMA_SIGN:Item.extend({init:function(id){this._super(id,Types.Entities.PNEUMA_SIGN,"object");this.lootMessage="";}}),
+        VILLAGESIGN10:Item.extend({init:function(id){this._super(id,Types.Entities.VILLAGESIGN10,"object");this.lootMessage="";}}),
+        GOLD1:Item.extend({init:function(id){this._super(id,Types.Entities.GOLD1,"object");this.lootMessage="";}}),
+        GOLD2:Item.extend({init:function(id){this._super(id,Types.Entities.GOLD2,"object");this.lootMessage="";}}),
+        GOLD3:Item.extend({init:function(id){this._super(id,Types.Entities.GOLD3,"object");this.lootMessage="";}}),
+        GOLD:Item.extend({init:function(id){this._super(id,Types.Entities.GOLD,"object");this.lootMessage="Picked up gold!";}}),
         // @nextItemLine@
     };
 

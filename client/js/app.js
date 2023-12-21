@@ -1,3 +1,4 @@
+
 define(['jquery', 'storage'], function ($, Storage) {
 
     var App = Class.extend({
@@ -202,7 +203,7 @@ define(['jquery', 'storage'], function ($, Storage) {
         showChat: function () {
             if (this.game.started) {
                 $('#chatbox').addClass('active');
-                $('#chatinput').focus();
+                $('#chatinput').show().focus();
                 $('#chatbutton').addClass('active');
                 self = this;
                 axios.get("/chat").then(function (response) {
@@ -231,8 +232,14 @@ define(['jquery', 'storage'], function ($, Storage) {
                 $('#chatinput').blur();
                 $('#chatbutton').removeClass('active');
                 this.game.destroyBubble("global");
+
+                $('#emoteMenu').removeClass('active');
+                $('#emoteMenu').children().each(function(index) {
+                    $(this).delay(($('#emoteMenu').children().length - index) * 20).fadeOut(100);
+                });
             }
         },
+
 
         toggleInstructions: function () {
             if ($('#achievements').hasClass('active')) {
@@ -253,6 +260,23 @@ define(['jquery', 'storage'], function ($, Storage) {
                 this.currentPage = 1;
                 this.game.initAchievements()
             }
+        },
+
+        showNewQuestPopup(quest) {
+            let newQuestPopup = $('#new-achievement-popup');
+            newQuestPopup.find('#new-achievement-name').text(quest.name);
+
+            let questText = quest.longText ?? (_.isArray(quest.startText) ? quest.startText.join("<br/>") : quest.startText)
+            newQuestPopup.find('#new-achievement-text').html(questText);
+            let eventTypeText = "";
+            if(quest.type === "KILL_MOB") {
+                eventTypeText = "Kill ";
+            }
+            else if(quest.type === "LOOT_ITEM") {
+                eventTypeText = "Loot ";
+            }
+
+            newQuestPopup.removeClass("hidden");
         },
 
         resetPage: function () {
@@ -306,6 +330,8 @@ define(['jquery', 'storage'], function ($, Storage) {
             if ($('body').hasClass('settings')) {
                 this.closeSettings();
             }
+
+            $('#new-achievement-popup').addClass('hidden')
         },
 
         showAchievementNotification: function (questName, endText, xpReward, medal) {
@@ -359,6 +385,12 @@ define(['jquery', 'storage'], function ($, Storage) {
                 var $a = $achievement.clone();
                 $a.removeAttr('id');
                 $a.addClass('achievement' + achievement.medal);
+                $a.addClass('panelBorder');
+                $a.click(function() {
+                    $a.closest('ul').addClass('hidden');
+                    self.openAchievement(achievement)
+                })
+
                 if (achievement.status === 'COMPLETED') {
                     $a.addClass('unlocked');
                 }
@@ -390,6 +422,17 @@ define(['jquery', 'storage'], function ($, Storage) {
                 $('#achievements #previous').show();
                 $('#achievements #next').show();
             }
+
+            $('#close-achievement-details').click(function() {
+                $('#achievement-details').addClass('hidden');
+                $('#achievements #lists ul').removeClass('hidden');
+            });
+
+            $('#close-new-achievement').click(function(e) {
+                $('#new-achievement-popup').addClass('hidden');
+                e.preventDefault();
+                e.stopImmediatePropagation();
+            });
         },
 
         initUnlockedAchievements: function (ids) {
@@ -401,8 +444,69 @@ define(['jquery', 'storage'], function ($, Storage) {
             $('#unlocked-achievements').text(ids.length);
         },
 
+        openAchievement: function (achievement) {
+            let details = $('#achievement-details');
+
+            details.find('#achievement-details-name').text(achievement.name);
+
+            let questText = achievement.longDesc ?? achievement.desc;
+            if(_.isArray(questText)) {
+                questText = questText.join("<br/>");
+            }
+            details.find('#achievement-details-text').html(questText);
+            if (achievement.status === 'COMPLETED') {
+                details.find('#achievement-details-status').text(achievement.status);
+            } else {
+                details.find('#achievement-details-status').text(achievement.progressCount + "/" + achievement.amount);
+            }
+            details.find('#achievement-details-level-number').text(achievement.level);
+
+            let eventTypeText = "";
+            if(achievement.type === "KILL_MOB") {
+                eventTypeText = "Kill ";
+            }
+            else if(achievement.type === "LOOT_ITEM") {
+                eventTypeText = "Loot ";
+            }
+            details.find('#achievement-details-objective-type').text(eventTypeText);
+            details.find('#achievement-details-objective-amount').text(achievement.amount);
+            details.find('#achievement-details-objective-target').text(achievement.targetName);
+
+            details.removeClass('achievement1');
+            details.removeClass('achievement2');
+            details.removeClass('achievement3');
+            details.removeClass('achievement4');
+            details.removeClass('achievement5');
+            details.removeClass('achievement6');
+            details.removeClass('achievement7');
+            details.removeClass('achievement8');
+            details.removeClass('achievement9');
+            details.removeClass('achievement10');
+            details.removeClass('achievement11');
+            details.removeClass('achievement12');
+            details.removeClass('achievement13');
+            details.removeClass('achievement14');
+            details.removeClass('achievement15');
+            details.removeClass('achievement16');
+            details.removeClass('achievement17');
+            details.removeClass('achievement18');
+            details.removeClass('achievement19');
+            details.removeClass('achievement20');
+
+            details.addClass('achievement' + achievement.medal);
+            if (achievement.status === 'COMPLETED') {
+                details.addClass('unlocked');
+            }
+
+            details.removeClass('hidden');
+        },
+
         setAchievementData: function ($el, name, desc) {
             $el.find('.achievement-name').html(name);
+
+            if(_.isArray(desc)) {
+                desc = desc.join(" ");
+            }
             $el.find('.achievement-description').html(desc);
             $el.find('.achievement-description').attr('title', desc);
         },
@@ -452,6 +556,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                     weaponInventory = response.data.inventory;
                     specialInventory = response.data.special;
                     consumablesInventory = response.data.consumables;
+                    botsInventory = response.data.bots;
                 }  
                 var inventoryHtml = "";
                 inventoryHtml += "<strong>Weapons</strong>";
@@ -475,6 +580,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                     inventoryHtml += "</div>";
                 }
 
+
                 if (Object.keys(consumablesInventory).length > 0) {
                     inventoryHtml += "<strong>Items</strong>";
                     inventoryHtml += "<div>"
@@ -491,6 +597,20 @@ define(['jquery', 'storage'], function ($, Storage) {
 
                         inventoryHtml += "<p id=count_" + item + ">" + consumablesInventory[item].qty + "</p>"
                         inventoryHtml += "</div>";
+                    });
+                    inventoryHtml += "</div>";
+                }
+
+                if (botsInventory.length > 0) {
+                    inventoryHtml += "<strong>Companions</strong>";
+                    inventoryHtml += "<div>"
+
+                    botsInventory.forEach(function(bot) {
+                        let item = bot?.botNftId?.replace("0x", "");
+                        if (item) {
+                            imgTag = `<div class='item'><img id=${item} style='width: 32px; height: 32px; object-fit: cover; cursor: pointer; object-position: 100% 0;' src='img/1/NFT_` + item + ".png' /></div>";
+                            inventoryHtml += imgTag;
+                        }
                     });
                     inventoryHtml += "</div>";
                 }
@@ -522,12 +642,32 @@ define(['jquery', 'storage'], function ($, Storage) {
                     }
                 }
 
+                let newBot = function (item) {
+                    let itemId = item?.botNftId?.replace("0x", "");
+                    if (itemId && document.getElementById(itemId) !== null) {
+                        let spawnBot = function () {
+                            axios.post("/session/" + _this.storage.sessionId + "/newBot", {botNftId: item.botNftId}).then(function(response) {
+                                console.log("new bot", response);
+                            }).catch(function(error) {
+                                console.log(error);
+                                let errorMsg = error?.response?.data?.error;
+                                _this.showMessage(errorMsg);
+                            });
+                        }
+                        document.getElementById(itemId).addEventListener("click", spawnBot);
+                    }
+                }
+
                 weaponInventory.forEach(function (item) {
                     equipFunc(item);
                 });
 
                 specialInventory.forEach(function (item) {
                     equipFunc(item);
+                });
+
+                botsInventory.forEach(function (item) {
+                    newBot(item);
                 });
 
                 Object.keys(consumablesInventory).forEach(item => {

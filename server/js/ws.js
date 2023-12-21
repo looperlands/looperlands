@@ -26,6 +26,7 @@ const quests = require("./quests/quests.js");
 const Lakes = require("./lakes.js");
 const Collectables = require('./collectables.js');
 const cache = new NodeCache();
+const LooperManager = require('./ownyourlooperboost.js');
 
 const LOOPWORMS_LOOPERLANDS_BASE_URL = process.env.LOOPWORMS_LOOPERLANDS_BASE_URL;
 const INSTANCE_URI = process.env.INSTANCE_URI ? process.env.INSTANCE_URI : "";
@@ -140,7 +141,7 @@ WS.socketIOServer = Server.extend({
         app.use(express.json())
 
 
-        function newSession(body) {
+        async function newSession(body, teleport) {
             const id = crypto.randomBytes(20).toString('hex');
             // this prevents failed logins not being able to login again
             body.isDirty = false;
@@ -152,9 +153,27 @@ WS.socketIOServer = Server.extend({
                 // teleport request
                 if (body.x !== undefined && body.y !== undefined) {
                     let checkpoint = self.worldsMap[body.mapId].map.findClosestCheckpoint(body.x, body.y);
-                    dao.saveAvatarCheckpointId(body.nftId, checkpoint.id);
+                    await dao.saveAvatarCheckpointId(body.nftId, checkpoint.id);
                 }
             }
+
+
+            if (teleport) {
+                body.xp = parseInt(body.xp);
+            } else {
+                let ownYourLoopersBuff = 0;
+                if (!body.bot) {
+                    let manager = new LooperManager(body.walletId);
+                    await manager.fetchLoopers();
+                    ownYourLoopersBuff = manager.getTotalExperienceBoost();
+                }
+
+                //console.log("Asset count: ", total,  " for wallet " + playerCache.walletId + " and nft " + playerCache.nftId);
+                body.xp = parseInt(body.xp) + ownYourLoopersBuff;
+                body.ownYourLoopersBuff = ownYourLoopersBuff;
+            }
+            
+
             cache.set(id, body);
             let responseJson = {
                 "sessionId" : id
@@ -185,24 +204,29 @@ WS.socketIOServer = Server.extend({
                 return;
             };
 
-            let cacheKeys = cache.keys();
-            for (i in cacheKeys) {
-                let key = cacheKeys[i];
-                let cachedBody = cache.get(key);
-                let sameWallet = cachedBody.walletId === body.walletId;
-                if(sameWallet) {
-                    cache.del(key);
-                    if (cachedBody.isDirty === true) {
-                        let player = self.worldsMap[cachedBody.mapId]?.getPlayerById(cachedBody.entityId);
-                        if (player !== undefined) {
-                            player.connection.close('A new session from another device created');
+            let nftId = body.nftId.replace("0x", "NFT_");
+            let bot = Types.isBot(Types.getKindFromString(nftId));
+            if (!bot) {
+                let cacheKeys = cache.keys();
+                for (i in cacheKeys) {
+                    let key = cacheKeys[i];
+                    let cachedBody = cache.get(key);
+                    let sameWallet = cachedBody.walletId === body.walletId;
+                    if(sameWallet) {
+                        cache.del(key);
+                        if (cachedBody.isDirty === true) {
+                            let player = self.worldsMap[cachedBody.mapId]?.getPlayerById(cachedBody.entityId);
+                            if (player !== undefined) {
+                                player.connection.close('A new session from another device created');
+                            }
                         }
+                        break;
                     }
-                    break;
                 }
             }
 
-            let responseJson = newSession(body);
+
+            let responseJson = await newSession(body);
 
             res.status(200).send(responseJson);
         });
@@ -236,7 +260,7 @@ WS.socketIOServer = Server.extend({
             body.title = sessionData.title;
             delete body.map;
 
-            let responseJson = newSession(body);
+            let responseJson = await newSession(body, true);
 
             res.status(200).send(responseJson);
         });
@@ -394,7 +418,8 @@ WS.socketIOServer = Server.extend({
                 }
             });
 
-            res.status(200).json({inventory: inventory, special: special, consumables: consumables});
+            let bots = await dao.getBots(walletId);
+            res.status(200).json({inventory: inventory, special: special, consumables: consumables, bots: bots});
         });
 
         app.get("/session/:sessionId/quests", async (req, res) => {
@@ -422,8 +447,12 @@ WS.socketIOServer = Server.extend({
                             id: quest.id,
                             name: quest.name,
                             desc: quest.questLogText ?? quest.startText,
+                            longDesc: quest.longText ?? quest.startText,
+                            type: quest.eventType,
+                            target: quest.target,
                             medal: quest.medal,
                             amount: quest.amount,
+                            level: quest.level,
                             status: "COMPLETED"
                         });
                     }
@@ -455,7 +484,11 @@ WS.socketIOServer = Server.extend({
                             id: quest.id,
                             name: quest.name,
                             desc: quest.questLogText ?? quest.startText,
+                            longDesc: quest.longText ?? quest.startText,
+                            type: quest.eventType,
+                            target: quest.target,
                             medal: quest.medal,
+                            level: quest.level,
                             progressCount: progressCount,
                             amount: quest.amount,
                             status: "IN_PROGRESS"
@@ -591,6 +624,8 @@ WS.socketIOServer = Server.extend({
                     user: null
                 });
             } else {
+                let looperManager = new LooperManager(sessionData.walletId);
+                await looperManager.fetchLoopers();
                 let avatarLevelInfo = Formulas.calculatePercentageToNextLevel(sessionData.xp);
                 let maxHp = Formulas.hp(avatarLevelInfo.currentLevel);
                 let weaponInfo = self.worldsMap[sessionData.mapId].getNFTWeaponStatistics(sessionData.entityId);
@@ -602,10 +637,21 @@ WS.socketIOServer = Server.extend({
                     }
                 }
 
+                let botInfo = {};
+                if (sessionData.botSessionId !== undefined) {
+                    let botSessionData = cache.get(sessionData.botSessionId);
+                    if (botSessionData !== undefined) {
+                        botInfo = Formulas.calculatePercentageToNextLevel(botSessionData.xp);
+                    }
+                }
+
                 let ret = {
                     avatarLevelInfo: avatarLevelInfo,
+                    ownYourLoopersBuff: looperManager.getTotalExperienceBoost(),
+                    totalLoopers: looperManager.getTotalAssets(),
                     maxHp: maxHp,
-                    weaponInfo: weaponInfo
+                    weaponInfo: weaponInfo,
+                    botInfo: botInfo
                 }
                 res.status(200).json(ret);
             }
@@ -667,7 +713,7 @@ WS.socketIOServer = Server.extend({
                 let key = cacheKeys[i];
                 let cachedBody = cache.get(key);
                 let player = self.worldsMap[cachedBody.mapId]?.getPlayerById(cachedBody.entityId);
-                if(cachedBody.isDirty === true && player !== undefined) {
+                if(cachedBody.isDirty === true && player !== undefined && !player.isBot()) {
                     let player = {
                         name: await ens.getEns(cachedBody.walletId),
                         wallet: cachedBody.walletId,
@@ -716,10 +762,13 @@ WS.socketIOServer = Server.extend({
                     user: null
                 });
             } else {
-                let msgText = quests.handleNPCClick(cache, sessionId, parseInt(npcId));
+                let questData = quests.handleNPCClick(cache, sessionId, parseInt(npcId));
                 const sessionData = cache.get(sessionId);
-                self.worldsMap[sessionData.mapId].npcTalked(npcId, msgText, sessionData)
-                res.status(202).json(msgText);
+
+                if (questData) {
+                    self.worldsMap[sessionData.mapId].npcTalked(npcId, questData.text, sessionData)
+                }
+                res.status(202).json(questData);
             }
         });
 
@@ -819,11 +868,41 @@ WS.socketIOServer = Server.extend({
             }
         });
 
+        app.post("/session/:sessionId/newBot", async (req, res) => {
+            const sessionId = req.params.sessionId;
+            const sessionData = cache.get(sessionId);
+            let botNftId = req.body.botNftId;
+            let ownedBots = await dao.getBots(sessionData.walletId);
+            let botInfo = ownedBots.find(bot => bot.botNftId === botNftId);
+            if (botInfo) {
+                let owner = self.worldsMap[sessionData.mapId].getPlayerById(sessionData.entityId);
+                let newBot = await dao.newBot(
+                    sessionData.mapId,
+                    botNftId,
+                    botInfo.experience,
+                    botInfo.looperName,
+                    sessionData.walletId,
+                    sessionData.entityId,
+                    owner.x,
+                    owner.y
+                );
+                if (newBot.sessionId) {
+                    sessionData.botSessionId = newBot.sessionId;
+                    cache.set(sessionId, sessionData);
+                    res.status(200).send({});
+                } else {
+                    res.status(500).send(newBot);
+                }
+            } else {
+                console.error("Bot not found " + sessionData);
+                res.status(404).send({});
+            }
+        });
+
         self.io.on('connection', function(connection){
           //console.log('a user connected');
 
           connection.remoteAddress = connection.handshake.address.address
-
   
           var c = new WS.socketIOConnection(self._createId(), connection, self);
             

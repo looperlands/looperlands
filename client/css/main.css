@@ -181,7 +181,7 @@ body.upscaled.game {background:#000;}
 
 #playercount {font-family:'GraphicPixel';color:#e3e3e3;position:absolute;}
 #playercount:hover {cursor:pointer;color:#FCE045;}
-#population {background:url('../img/1/barsheet.png');image-rendering:-moz-crisp-edges;position:absolute;font-family:'GraphicPixel';color:#fff;text-align:center;opacity:0;pointer-events:none;-moz-transition:0.2s opacity linear, 0.2s height ease;-webkit-transition:0.2s opacity linear, 0.2s height ease;-o-transition:0.2s opacity linear, 0.2s height ease;-ms-transition:0.2s opacity linear, 0.2s height ease;transition:0.2s opacity linear, 0.2s height ease;height:0;overflow:hidden;}
+#population {background:url('../img/1/barsheet.png');border-radius: 10px 0 0 0; image-rendering:-moz-crisp-edges;position:absolute;font-family:'GraphicPixel';color:#fff;text-align:center;opacity:0;pointer-events:none;-moz-transition:0.2s opacity linear, 0.2s height ease;-webkit-transition:0.2s opacity linear, 0.2s height ease;-o-transition:0.2s opacity linear, 0.2s height ease;-ms-transition:0.2s opacity linear, 0.2s height ease;transition:0.2s opacity linear, 0.2s height ease;height:0;overflow:hidden;}
 #population span:nth-child(1) {color:#FCE045;}
 #population.visible {opacity:1;pointer-events:auto;}
 
@@ -252,6 +252,47 @@ body.upscaled.game {background:#000;}
 .bubble p {-moz-user-select:none;-webkit-user-select:none;}
 .bubbleglobal p {-moz-user-select:none;-webkit-user-select:none; text-align: left; flex: 0 0 100%;}
 
+#emoteMenuToggle {
+    width: 12px;
+    height: 12px;
+    position: absolute;
+    top: 3px;
+    left: 4px;
+    background: url(../img/1/barsheet.png);
+    background-position-y: -65px;
+    cursor: pointer;
+    display:none;
+}
+
+#emoteMenu {
+    position: absolute;
+    top: 8px;
+    left: 40px;
+    height:24px;
+    overflow-y:hidden;
+}
+
+#emoteMenu .emote {
+    width: 16px;
+    height: 14px;
+    display: inline-block;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.2);
+    margin: 0 2px 0 2px;
+    padding: 4px;
+    text-align: center;
+    cursor: pointer;
+}
+
+#emoteMenu .emote:hover {
+    background: rgba(255,255,255,0.6);
+    transition: ease-in-out all 0.2s;
+}
+
+#chatbox.active #emoteMenuToggle {
+    display:block;
+}
+
 #instructions {position:absolute;top:50%;left:50%;z-index:1000;font-family:'GraphicPixel';pointer-events:none;opacity:0;-moz-transition:0.25s opacity linear;-webkit-transition:0.4s top ease, 0.4s opacity linear;-o-transition:0.4s top ease, 0.4s opacity linear;-ms-transition:0.4s top ease, 0.4s opacity linear;transition:0.4s top ease, 0.4s opacity linear;}
 #instructions.active, #achievements.active {opacity:1;pointer-events:auto;}
 
@@ -272,6 +313,50 @@ body.upscaled.game {background:#000;}
 .achievement-sharing {position:absolute;display:none;}
 #achievements li.unlocked:hover .achievement-sharing {display:block;}
 .achievement-sharing a {display:block;float:left;}
+
+
+.panel {
+    background: none !important;
+    border-image-source: url("../img/common/panel.png");
+    border-image-slice: 12 fill;
+    border-image-repeat: round;
+    image-rendering: pixelated;
+    border-image-width: 12px;
+    font-family: 'GraphicPixel', arial, sans-serif;
+}
+
+.panel .panelTitle,
+.panelBorder .panelTitle{
+    background: none !important;
+    border-image-source: url("../img/common/panel.png");
+    border-image-slice: 12;
+    border-image-repeat: round;
+    image-rendering: pixelated;
+    border-image-width: 6px;
+    padding: 12px 0;
+    margin-bottom: -30px;
+    color: color(srgb 0.8233 0.73 0.1835);
+    text-shadow: 0 1px black;
+    line-height: 12px;
+    background-color: color(srgb 0.3267 0.2107 0.2608) !important;
+    position: relative;
+    top: -12px;
+    text-align: center;
+    overflow: hidden;
+    border-radius: 5px;
+}
+
+
+.panelBorder {
+    font-family: 'GraphicPixel', arial, sans-serif;
+    background: none !important;
+    border-image-source: url("../img/common/panel.png");
+    border-image-slice: 9;
+    border-image-repeat: round;
+    border-image-width: 6px;
+    border-radius: 12px;
+    image-rendering: pixelated;
+}
 
 #bubbles a {pointer-events:auto;text-decoration:none;color:#fcda5c;}
 
@@ -690,7 +775,34 @@ footer div  {display:inline-block;}
 
     #chatbox {height:48px;width:1182px;background-size:1440px;background-position:0 -96px;margin-left:-591px;bottom:18px;}
     #chatbox.active {bottom:66px;}
-    #chatbox input {font-size:20px;color:#eee;background:none;width:90%;border:0;margin-left:2%;padding:16px 0;}
+    #chatbox input {font-size:20px;color:#eee;background:none;width:90%;border:0;margin-left:5%;padding:16px 0;}
+
+    .upscaled #emoteMenuToggle {
+        width: 36px;
+        height: 36px;
+        position: absolute;
+        top: 8px;
+        left: 14px;
+        background: url(../img/3/barsheet.png);
+        background-position-y: -192px;
+        cursor: pointer;
+    }
+    .upscaled #emoteMenu {
+        top: 20%;
+        left: 5%;
+        overflow-y: hidden;
+    }
+    .upscaled #emoteMenu .emote {
+        width: 16px;
+        height: 16px;
+        display: inline-block;
+        border-radius: 6px;
+        background: rgba(255,255,255,0.2);
+        margin: 0px 3px 0 3px;
+        padding: 0.2rem;
+        text-align: center;
+        cursor: pointer;
+    }
 
     /*Credits*/
     #credits, #death, #about, #settings {width:1266px;height:546px;margin-left:-633px;margin-top:-273px;font-size:30px;}
@@ -737,6 +849,12 @@ footer div  {display:inline-block;}
 
     footer {font-size:20px;}
     #resize-check {height:3px;}
+
+    .panelTitle {
+        padding: 20px 0 !important;
+        top: -21px !important;
+        margin-bottom:-50px !important;
+    }
 }
 
 @media screen and (max-width: 1500px) {
@@ -745,6 +863,17 @@ footer div  {display:inline-block;}
     .upscaled #bar-container, .upscaled #healthbar, .upscaled .barbutton, .upscaled #chatbox, .upscaled #population {background-image:url('../img/2/barsheet.png');}
     .upscaled #achievements, .upscaled #achievements li, .upscaled .coin, .upscaled #achievement-notification, .upscaled #coinsparks, .upscaled .achievement-sharing a, .upscaled #previous, .upscaled #next {background:url('../img/2/achievements.png');}
     .upscaled #fishingbar, #fish-marker {background:url('../img/2/fishing.png');}
+
+    #emoteMenuToggle {
+        width: 24px;
+        height: 24px;
+        position: absolute;
+        top: 6px;
+        left: 9px;
+        background: url(../img/2/barsheet.png);
+        background-position-y: -129px;
+        cursor: pointer;
+    }
 
     #avatarStats {
         position: absolute;
@@ -763,6 +892,7 @@ footer div  {display:inline-block;}
         padding-top: 0;
         padding-bottom: 0;
         transition: 0.2s ease-in-out all;
+        border-radius: 10px 0 0 0;
     }
 
     #avatarStats.visible {
@@ -791,6 +921,7 @@ footer div  {display:inline-block;}
         padding-bottom: 0;
         opacity: 0;
         transition: 0.2s ease-in-out all;
+        border-radius: 10px 0 0 0;
     }
 
     #weaponStats.visible {
@@ -896,7 +1027,7 @@ footer div  {display:inline-block;}
 
     #playercount {font-size:16px;left:717px;top:10px;width:114px;text-align:center;}
     #population {background-size:960px;right:70px;bottom:44px;width:262px;background-position:-480px -96px;font-size:14px;line-height:20px;}
-    #population.visible {height:64px;}
+    #population.visible {height:64px; border-radius: 10px 0 0 0;}
     #instance-population {padding-top:12px;}
 
     .barbutton {background-size:960px;height:30px;width:28px;}
@@ -917,7 +1048,26 @@ footer div  {display:inline-block;}
 
     #chatbox {height:32px;width:788px;background-size:960px;background-position:0 -64px;margin-left:-394px;bottom:12px;}
     #chatbox.active {bottom:44px;}
-    #chatbox input {font-size:20px;color:#eee;background:none;width:90%;border:0;margin-left:2%;padding:7px 0;}
+    #chatbox input {font-size:20px;color:#eee;background:none;width:90%;border:0;margin-left:5%;padding:7px 0;}
+
+    #emoteMenu {
+        position: absolute;
+        top: 8px;
+        left: 40px;
+        height: 24px;
+        overflow-y: hidden;
+    }
+    #emoteMenu .emote {
+        width: 16px;
+        height: 14px;
+        display: inline-block;
+        border-radius: 6px;
+        background: rgba(255,255,255,0.2);
+        margin: 0 2px 0 2px;
+        padding: 4px;
+        text-align: center;
+        cursor: pointer;
+    }
 
     /*Credits*/
     #credits, #death, #about, #settings {width:844px;height:364px;margin-left:-422px;margin-top:-182px;font-size:20px;}
@@ -1145,7 +1295,18 @@ footer div  {display:inline-block;}
 
     #chatbox {height:32px;width:788px;background-size:960px;background-position:0 -64px;margin-left:-394px;bottom:12px;}
     #chatbox.active {bottom:44px;}
-    #chatbox input {font-size:20px;color:#eee;background:none;width:90%;border:0;margin-left:2%;padding:7px 0;}
+    #chatbox input {font-size:20px;color:#eee;background:none;width:90%;border:0;margin-left:5%;padding:7px 0;}
+
+    .upscaled #emoteMenuToggle {
+        width: 24px;
+        height: 24px;
+        position: absolute;
+        top: 6px;
+        left: 9px;
+        background: url(../img/2/barsheet.png);
+        background-position-y: -129px;
+        cursor: pointer;
+    }
 
     /*Credits*/
     #credits, #death, #about, #settings {width:844px;height:364px;margin-left:-422px;margin-top:-182px;font-size:20px;}
@@ -1313,7 +1474,7 @@ footer div  {display:inline-block;}
 
     #chatbox {height:16px;width:394px;background-size:480px;background-position:0 -32px;margin-left:-197px;bottom:6px;}
     #chatbox.active {bottom:22px;}
-    #chatbox input {font-size:10px;color:#eee;background:none;width:90%;border:0;margin-left:2%;padding:0;}
+    #chatbox input {font-size:10px;color:#eee;background:none;width:90%;border:0;margin-left:5%;padding:0;}
 
     /*Credits*/
     #credits, #death, #about, #settings {width:422px;height:182px;top:50%;margin-left:-211px;margin-top:-91px;font-size:10px;}
@@ -1536,7 +1697,7 @@ footer div  {display:inline-block;}
 
     #chatbox {height:32px;width:480px;background-size:960px;background-position:0 -64px;margin-left:-240px;bottom:2px;}
     #chatbox.active {bottom:34px;}
-    #chatbox input {font-size:20px;color:#eee;background:none;width:90%;border:0;margin-left:2%;padding:0px 0;}
+    #chatbox input {font-size:20px;color:#eee;background:none;width:90%;border:0;margin-left:5%;padding:0px 0;}
 
     /*Credits*/
     .parchment-left, .upscaled .parchment-left, .parchment-middle, .upscaled .parchment-middle, .parchment-right, .upscaled .parchment-right {background:none;}

@@ -2,6 +2,8 @@
 var Utils = require('./utils'),
     Types = require("../../shared/js/gametypes");
 
+const _ = require('underscore');
+
 module.exports = Chest = Item.extend({
     init: function(id, x, y) {
         this._super(id, Types.Entities.CHEST, x, y);

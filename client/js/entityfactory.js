@@ -262,6 +262,10 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
         return new Mobs.Tabbycat(id);
     }
     
+    EntityFactory.builders[Types.Entities.OABLACKCAT] = function(id) {
+        return new Mobs.Oablackcat(id);
+    }
+    
     EntityFactory.builders[Types.Entities.FVILLAGER1] = function(id) {
         return new Mobs.Fvillager1(id);
     };    
@@ -557,6 +561,12 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.ICESSENCE]=function(id){return new Items.ICESSENCE(id);};
     EntityFactory.builders[Types.Entities.FORGEDSWORD]=function(id){return new Items.FORGEDSWORD(id);};
     EntityFactory.builders[Types.Entities.BANNER]=function(id){return new Items.BANNER(id);};
+    EntityFactory.builders[Types.Entities.PNEUMA_SIGN]=function(id){return new Items.PNEUMA_SIGN(id);};
+    EntityFactory.builders[Types.Entities.VILLAGESIGN10]=function(id){return new Items.VILLAGESIGN10(id);};
+    EntityFactory.builders[Types.Entities.GOLD1]=function(id){return new Items.GOLD1(id);};
+    EntityFactory.builders[Types.Entities.GOLD2]=function(id){return new Items.GOLD2(id);};
+    EntityFactory.builders[Types.Entities.GOLD3]=function(id){return new Items.GOLD3(id);};
+    EntityFactory.builders[Types.Entities.GOLD]=function(id){return new Items.GOLD(id);};
     // @nextObjectLine@
 
     //====== NPCs ======
@@ -747,6 +757,21 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.COBJOHNNY] = function(id) {
         return new NPCs.Cobjohnny(id);
     };  
+    EntityFactory.builders[Types.Entities.VILLAGESIGN11]=function(id){return new NPCs.VILLAGESIGN11(id);};
+    EntityFactory.builders[Types.Entities.VILLAGESIGN12]=function(id){return new NPCs.VILLAGESIGN12(id);};
+    EntityFactory.builders[Types.Entities.VILLAGESIGN13]=function(id){return new NPCs.VILLAGESIGN13(id);};
+    EntityFactory.builders[Types.Entities.VILLAGESIGN14]=function(id){return new NPCs.VILLAGESIGN14(id);};
+    EntityFactory.builders[Types.Entities.VILLAGESIGN15]=function(id){return new NPCs.VILLAGESIGN15(id);};
+    EntityFactory.builders[Types.Entities.VILLAGESIGN16]=function(id){return new NPCs.VILLAGESIGN16(id);};
+    EntityFactory.builders[Types.Entities.VILLAGESIGN]=function(id){return new NPCs.VILLAGESIGN(id);};
+    EntityFactory.builders[Types.Entities.VILLAGESIGN17]=function(id){return new NPCs.VILLAGESIGN17(id);};
+    EntityFactory.builders[Types.Entities.VILLAGESIGN18]=function(id){return new NPCs.VILLAGESIGN18(id);};
+    EntityFactory.builders[Types.Entities.VILLAGESIGN19]=function(id){return new NPCs.VILLAGESIGN19(id);};
+    EntityFactory.builders[Types.Entities.VILLAGESIGN20]=function(id){return new NPCs.VILLAGESIGN20(id);};
+    EntityFactory.builders[Types.Entities.VILLAGESIGN21]=function(id){return new NPCs.VILLAGESIGN21(id);};
+    EntityFactory.builders[Types.Entities.VILLAGESIGN22]=function(id){return new NPCs.VILLAGESIGN22(id);};
+    EntityFactory.builders[Types.Entities.VILLAGESIGN23]=function(id){return new NPCs.VILLAGESIGN23(id);};
+    EntityFactory.builders[Types.Entities.VILLAGESIGN24]=function(id){return new NPCs.VILLAGESIGN24(id);};
     // @nextNPCLine@
 
      //====== FieldEffectss ======

@@ -2,7 +2,8 @@
 var Area = require('./area'),
     _ = require('underscore'),
     Types = require("../../shared/js/gametypes"),
-    Mob = require('./mob');
+    Mob = require('./mob')
+    Utils = require('./utils');
 
 module.exports = MobArea = Area.extend({
     init: function(id, nb, kind, x, y, width, height, world) {

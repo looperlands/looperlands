@@ -5,7 +5,7 @@ var cls = require("./lib/class"),
     Entity = require('./entity'),
     Character = require('./character'),
     Mob = require('./mob'),
-    Map = require('./map'),
+    Mapx = require('./map'),
     Npc = require('./npc'),
     Player = require('./player'),
     Item = require('./item'),
@@ -75,7 +75,7 @@ module.exports = World = cls.Class.extend({
         this.onPlayerEnter(function (player) {
             //console.log(player.name + " has joined "+ self.id, "Player ID " + player.id);
 
-            if (!player.hasEnteredGame) {
+            if (!player.hasEnteredGame && !player.isBot()) {
                 self.incrementPlayerCount();
             }
 
@@ -128,7 +128,9 @@ module.exports = World = cls.Class.extend({
             player.onExit(function () {
                 //console.log(player.name + " has left the game.");
                 self.removePlayer(player);
-                self.decrementPlayerCount();
+                if (!player.isBot()) {
+                    self.decrementPlayerCount();
+                }
                 if (self.removed_callback) {
                     self.removed_callback();
                 }
@@ -694,7 +696,7 @@ module.exports = World = cls.Class.extend({
                 if (attacker.type === 'player') {
                     mob.dmgTakenArray.forEach(function (arrElem) {
                         let accomplice = self.getEntityById(arrElem.id);
-                        if (accomplice !== undefined && accomplice.type === 'player') {
+                        if (accomplice !== undefined && accomplice.type === 'player' && !accomplice.isBot()) {
                             accomplice.playerEventBroker.killMobEvent(mob);
                         }
                     })

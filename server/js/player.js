@@ -120,19 +120,28 @@ module.exports = Player = Character.extend({
                 self.send([Types.Messages.WELCOME, self.id, self.name, self.x, self.y, self.hitPoints, self.title]);
                 self.hasEnteredGame = true;
                 self.isDead = false;
-                discord.sendMessage(`Player ${self.name} joined the game.`);
+                if (!self.isBot()) {
+                    discord.sendMessage(`Player ${self.name} joined the game.`);
+                }
                 dao.saveAvatarMapId(playerCache.nftId, playerCache.mapId);
                 self.playerEventBroker.setPlayer(self);
 
-                await mapflows.loadFlow(playerCache.mapId, self.playerEventBroker, self.server);
-                if(self.flowInterval) {
-                    clearInterval(self.flowInterval);
-                }
-                self.flowInterval = setInterval(async function() {
+                try {
                     await mapflows.loadFlow(playerCache.mapId, self.playerEventBroker, self.server);
-                }, 60 * 1000);
+                    if (self.flowInterval) {
+                        clearInterval(self.flowInterval);
+                    }
+                    self.flowInterval = setInterval(async function () {
+                        try {
+                            await mapflows.loadFlow(playerCache.mapId, self.playerEventBroker, self.server);
+                        } catch (e) { console.error(e); }
+                    }, 60 * 1000);
+                } catch (e) {
+                    console.error(e);
+                }
 
                 self.playerEventBroker.spawnEvent(self, playerCache.checkpointId);
+
             }
             else if(action === Types.Messages.WHO) {
                 message.shift();
@@ -151,6 +160,12 @@ module.exports = Player = Character.extend({
                     chat.addMessage(self.name, msg);
                 }
             }
+            else if(action === Types.Messages.EMOTE) {
+                var emotion = Utils.sanitize(message[1]);
+                self.broadcastToZone(new Messages.Emote(self, emotion), false);
+                let emoticon = Types.emotions[emotion];
+                discord.sendMessage(`${self.name} ${emoticon}`);
+            }
             else if(action === Types.Messages.MOVE) {
                 if(self.move_callback) {
                     var x = message[1],
@@ -162,6 +177,25 @@ module.exports = Player = Character.extend({
                         self.broadcast(new Messages.Move(self));
                         self.move_callback(self.x, self.y);
                         self.zone_callback();
+                    }
+                }
+            }
+            else if (action === Types.Messages.SUMMON_FOLLOW) {
+                if(self.move_callback) {
+                    let x = message[1],
+                        y = message[2];
+
+                    let possiblePos = [{ x: x - 1, y: y - 1 }, { x: x, y: y }, { x: x + 1, y: y }, { x: x - 1, y: y }, { x: x, y: y + 1 }, { x: x, y: y - 1 }];
+
+                    for (let pos of possiblePos) {
+                        if (self.server.isValidPosition(pos.x, pos.y)) {
+                            self.setPosition(pos.x, pos.y);
+                            self.clearTarget();
+                            self.broadcast(new Messages.Move(self));
+                            self.move_callback(self.x, self.y);
+                            self.zone_callback();
+                            break;
+                        }
                     }
                 }
             }
@@ -576,7 +610,7 @@ module.exports = Player = Character.extend({
         }
 
         if (this.accumulatedExperience > XP_BATCH_SIZE) {
-            this.syncExperience(session);
+            await this.syncExperience(session);
         }
     },
 
@@ -584,7 +618,7 @@ module.exports = Player = Character.extend({
         let updatedXp = await dao.updateExperience(this.walletId, this.nftId, this.accumulatedExperience);
         if (!Number.isNaN(updatedXp)) {
             if (session !== undefined) {
-                session.xp = updatedXp;
+                session.xp = updatedXp + session.ownYourLoopersBuff;
                 this.server.server.cache.set(this.sessionId, session);
             }
             this.accumulatedExperience = 0;
@@ -965,5 +999,13 @@ module.exports = Player = Character.extend({
 
     getActiveBuff: function() {
         return this.consumableBuff.buff; //can be undefined!
+    },
+
+    isBot: function() {
+        if (this._isBot === undefined) {
+            let nftId = this.nftId.replace("0x", "NFT_");
+            this._isBot = Types.isBot(Types.getKindFromString(nftId));
+        }
+        return this._isBot;
     }
 });

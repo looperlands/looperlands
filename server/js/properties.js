@@ -1,5 +1,5 @@
 
-var Types = require("../../shared/js/gametypes");
+const Types = require("../../shared/js/gametypes");
 
 var Properties = {
     rat: {
@@ -500,6 +500,12 @@ var Properties = {
     },
     
     tabbycat: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    oablackcat: {
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -1011,7 +1017,7 @@ Properties.getWeaponLevel = function(kind, levelOffset) {
             return Types.getWeaponRank(kind);
         }
     } catch(e) {
-        console.error("No level found for weapon: "+Types.getKindAsString(kind));
+        console.error("No level found for weapon: "+Types.getKindAsString(kind), e);
     }
 };
 

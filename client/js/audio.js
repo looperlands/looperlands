@@ -11,7 +11,7 @@ define(['area'], function(Area) {
             this.game = game;
             this.currentMusic = null;
             this.areas = [];
-            this.musicNames = ["village","oaspooky","oafortressboss","oacastle","oasnowcon","oanightharrow","full","fluteguitar","guitar","oainsidecastle","beach", "forest", "cave", "desert", "lavaland","oacrystal", "boss", "oavillage","oaglacialord", "oaforest","oasnowthaven", "overworld","oaseacombat","oacave","oawind","oaforesttown","oatitle","oaporttown","oaplanes","oacave2","oaforestboss","oahome","oaspiderboss","oaforest2","cobsfarmmain","cobdungeon","cobspookyforest","cobactionadventure","cobsnuggles","cobbasicfishing","cobreggae","oamain","oacustoms","oafishing","oanorthern","oatower"];
+            this.musicNames = ["village","oaspooky","oafortressboss","oacastle","oasnowcon","oanightharrow","full","fluteguitar","guitar","oainsidecastle","beach", "forest", "cave", "desert", "lavaland","oacrystal", "boss", "oavillage","oaglacialord", "oaforest","oasnowthaven", "overworld","oaseacombat","oacave","oawind","oaforesttown","oatitle","oaporttown","oaplanes","oacave2","oaforestboss","oahome","oaspiderboss","oaforest2","cobsfarmmain","cobdungeon","cobspookyforest","cobactionadventure","cobsnuggles","cobbasicfishing","cobreggae","oamain","oacustoms","oafishing","oanorthern","oatower","oaarena","oachristmas","oachristmas2","oatavern"];
             this.soundNames = ["loot", "hit1", "hit2", "hurt", "heal", "chat", "revive", "death", "firefox", "achievement", "kill1", "kill2", "noloot", "teleport", "chest", "npc", "npc-end", "watersplash", "fishingfail", "fishingsuccess"];
             
             var loadSoundFiles = function() {
