@@ -331,6 +331,11 @@ define(['character'], function (Character) {
         "VILLAGESIGN22": ["Change me"],
         "VILLAGESIGN23": ["Change me"],
         "VILLAGESIGN24": ["Change me"],
+        "THEDIUS": ["Greetings"],
+        "NIANDRA": ["Hello there"],
+        "BLARK": ["Hello!"],
+        "DANIEL": ["Salutations"],
+        "ESTELLA": ["Greetings"],
         // @nextNPCLine@
     };
 

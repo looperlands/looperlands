@@ -304,6 +304,11 @@ define(['npc'], function(Npc) {
         VILLAGESIGN22: Npc.extend({init: function(id) {this._super(id, Types.Entities.VILLAGESIGN22, 1);}}),
         VILLAGESIGN23: Npc.extend({init: function(id) {this._super(id, Types.Entities.VILLAGESIGN23, 1);}}),
         VILLAGESIGN24: Npc.extend({init: function(id) {this._super(id, Types.Entities.VILLAGESIGN24, 1);}}),
+        THEDIUS: Npc.extend({init: function(id) {this._super(id, Types.Entities.THEDIUS, 1);}}),
+        NIANDRA: Npc.extend({init: function(id) {this._super(id, Types.Entities.NIANDRA, 1);}}),
+        BLARK: Npc.extend({init: function(id) {this._super(id, Types.Entities.BLARK, 1);}}),
+        DANIEL: Npc.extend({init: function(id) {this._super(id, Types.Entities.DANIEL, 1);}}),
+        ESTELLA: Npc.extend({init: function(id) {this._super(id, Types.Entities.ESTELLA, 1);}}),
         // @nextNPCLine@
     };
     

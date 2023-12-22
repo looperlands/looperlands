@@ -246,7 +246,12 @@ Types = {
         GOLD1: 21300038,
         GOLD2: 21300039,
         GOLD3: 21300040,
-        GOLD: 21300041, // @lastidObject@
+        GOLD: 21300041,
+        EVERPEAKMAP1: 21300042,
+        EVERPEAKMAP2: 21300043,
+        EVERPEAKMAP3: 21300044,
+        EVERPEAKMAP4: 21300045,
+        EVERPEAKMAP5: 21300046, // @lastidObject@
         //@nextIdLineObject@
         
         // NPCs
@@ -303,7 +308,12 @@ Types = {
         VILLAGESIGN21: 34000027,
         VILLAGESIGN22: 34000028,
         VILLAGESIGN23: 34000029,
-        VILLAGESIGN24: 34000030, // @lastidCharacter@
+        VILLAGESIGN24: 34000030,
+        THEDIUS: 34000031,
+        NIANDRA: 34000032,
+        BLARK: 34000033,
+        DANIEL: 34000034,
+        ESTELLA: 34000035, // @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -4743,6 +4753,11 @@ var kinds = {
     GOLD2: [Types.Entities.GOLD2, "object"],
     GOLD3: [Types.Entities.GOLD3, "object"],
     GOLD: [Types.Entities.GOLD, "object"],
+    EVERPEAKMAP1: [Types.Entities.EVERPEAKMAP1, "object"],
+    EVERPEAKMAP2: [Types.Entities.EVERPEAKMAP2, "object"],
+    EVERPEAKMAP3: [Types.Entities.EVERPEAKMAP3, "object"],
+    EVERPEAKMAP4: [Types.Entities.EVERPEAKMAP4, "object"],
+    EVERPEAKMAP5: [Types.Entities.EVERPEAKMAP5, "object"],
     // @nextObjectLine@
 
     guard: [Types.Entities.GUARD, "npc"],
@@ -4816,6 +4831,11 @@ var kinds = {
     VILLAGESIGN22: [Types.Entities.VILLAGESIGN22, "npc"],
     VILLAGESIGN23: [Types.Entities.VILLAGESIGN23, "npc"],
     VILLAGESIGN24: [Types.Entities.VILLAGESIGN24, "npc"],
+    THEDIUS: [Types.Entities.THEDIUS, "npc"],
+    NIANDRA: [Types.Entities.NIANDRA, "npc"],
+    BLARK: [Types.Entities.BLARK, "npc"],
+    DANIEL: [Types.Entities.DANIEL, "npc"],
+    ESTELLA: [Types.Entities.ESTELLA, "npc"],
     // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],

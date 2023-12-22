@@ -392,8 +392,87 @@ quests = [
         amount: 15,
         level: 2,
         medal: Types.Medals.HEARTH
+    },
+////EVERPEAK QUESTS
+    {
+        id: "OA_SIDE_9",
+        name: "Fishing Feast! ",
+        startText: "Discover the fishing Isle", 
+        longText: "Hello, adventurer! I couldn't help but notice you have the look of an expert angler. Odd thing to say? Perhaps, but hear me out. To the northwest lies an extraordinary fishing haven, an island infused with magic by Aldarion the Wavebinder. Its waters teem with a diverse array of fish, a result of Aldarion's enchantment. Be warned though, the abundance comes with its challenges.",
+        endText: "Discovered the fishing island!",
+        eventType: "LOOT_ITEM",
+        npc: Types.Entities.THEDIUS,
+        target: Types.Entities.EVERPEAKMAP1,
+        amount: 1,
+        level: 2,
+        medal: Types.Medals.HEARTH
+    },
+    
+    {
+        id: "OA_SIDE_10",
+        name: "The Gilded Gryphon",
+        startText: "Dicover the Gilded Gryphon", 
+        longText: "Ah, weary traveler! Your journey has been long and arduous, I can tell. Why not take a well-deserved respite at the Gilded Gryphon Tavern? Nestled in the bustling heart of our city, this legendary inn is the perfect place to relax, replenish, and share tales of your adventures. You'll find it brimming with warmth, good cheer, and perhaps a few intriguing secrets. It's an experience you won't want to miss! Head over there, kick back, and enjoy the hospitality of the Gilded Gryphon.",
+        endText: "Discovered the Tavern!",
+        eventType: "LOOT_ITEM",
+        npc: Types.Entities.ESTELLA,
+        target: Types.Entities.EVERPEAKMAP2,
+        amount: 1,
+        level: 2,
+        medal: Types.Medals.HEARTH
+    },
+    {
+        id: "OA_SIDE_11",
+        name: "Enchanted Construction",
+        startText: "Enchanted Homes", 
+        longText: "Greetings, brave explorer! Have you heard about the latest development in our city? There's a curious area that may appear vacant at first glance, but don't be fooled. This is the future site of Enchanted Glade, a visionary project where magic meets architecture. The city's finest mages and craftsmen are weaving enchantments into every brick and beam, promising homes unlike any you've seen. Your task is to venture there and witness the magic in the making. Observe the construction, speak with the workers, and learn about the enchantments being cast. Who knows, you might even catch a glimpse of a house taking shape right before your eyes! This is a chance to be part of our city's history, to see how we're shaping a future where magic elevates everyday life.",
+        endText: "Discovered Echanted Isle!",
+        eventType: "LOOT_ITEM",
+        npc: Types.Entities.NIANDRA,
+        target: Types.Entities.EVERPEAKMAP3,
+        amount: 1,
+        level: 2,
+        medal: Types.Medals.HEARTH
+    },
+    {
+        id: "OA_SIDE_12",
+        name: "Stormhelm Arena",
+        startText: "Discover Stormhelm Arena", 
+        longText: "Attention, warriors and spectators alike! Have you felt the rush of battle, the thrill of competition? Near the heart of the city lies the Stormhelm Arena, a grand coliseum where bravery and skill are tested in combat. This is no ordinary arena – here, players can challenge each other in fierce duels while an eager crowd cheers from the stands. Your quest is to find this arena and witness the spectacle of battle. Feel the energy of the crowd, hear the clash of steel, and maybe even step into the ring yourself. Whether you're a fighter seeking glory or a spectator craving excitement, Stormhelm Arena offers an experience like no other. It's a place where legends are made and heroes are born. Will you be part of the action?",
+        endText: "Discoevered Stormhelm Arena",
+        eventType: "LOOT_ITEM",
+        npc: Types.Entities.BLARK,
+        target: Types.Entities.EVERPEAKMAP4,
+        amount: 1,
+        level: 2,
+        medal: Types.Medals.HEARTH
+    },
+
+    {
+        id: "OA_SIDE_13",
+        name: "Riverbreeze District",
+        startText: "Discover the Riverbreeze District", 
+        longText: "Explore the Riverbreeze District to the northeast, where the common and upper classes coexist in harmony. Wander its streets, mingle with diverse residents, and experience the unique blend of everyday life and luxury in this vibrant part of our floating city.",
+        endText: "Discovered Riverbreeze District",
+        eventType: "LOOT_ITEM",
+        npc: Types.Entities.DANIEL,
+        target: Types.Entities.EVERPEAKMAP5,
+        amount: 1,
+        level: 2,
+        medal: Types.Medals.HEARTH
     }
 
+    
+
+
+
+
+
+
+
 ]
+
+
+
 
 exports.quests = quests;
