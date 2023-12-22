@@ -964,6 +964,13 @@ var Properties = {
         respawnDelay: 180000
     },
 
+    lateflea: {
+        level: 5,
+        drops: {
+            potion: 50,
+        },
+    },  
+
     //Field effects
     magcrack: {
         aoe: {

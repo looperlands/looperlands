@@ -2073,6 +2073,20 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
 
+        //Short Destroyers
+        Lateflea: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.LATEFLEA);
+                this.moveSpeed = 300;
+                this.idleSpeed = 100;
+                this.atkSpeed = 100;              
+                this.shadowOffsetY = -2;
+                this.isAggressive = true;
+                this.aggroRange = 3;
+                this.deathAnimated = true;
+            }
+        }),
+
         // @nextMobLine@
     };
     return Mobs;

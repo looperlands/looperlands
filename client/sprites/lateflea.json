@@ -1,0 +1,49 @@
+{
+	"id": "lateflea",
+	"width": 48,
+	"height": 48,
+	"animations": {
+		"death": {
+			"length": 6,
+			"row": 0
+		},
+		"atk_right": {
+			"length": 6,
+			"row": 1
+		},
+		"walk_right": {
+			"length": 6,
+			"row": 2
+		},
+		"idle_right": {
+			"length": 5,
+			"row": 3
+		},
+		"atk_up": {
+			"length": 6,
+			"row": 4
+		},
+		"walk_up": {
+			"length": 6,
+			"row": 5
+		},
+		"idle_up": {
+			"length": 5,
+			"row": 6
+		},
+		"atk_down": {
+			"length": 6,
+			"row": 7
+		},
+		"walk_down": {
+			"length": 6,
+			"row": 8
+		},
+		"idle_down": {
+			"length": 5,
+			"row": 9
+		}
+	},
+	"offset_x": -16,
+	"offset_y": -20
+}

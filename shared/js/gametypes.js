@@ -196,6 +196,8 @@ Types = {
         COBCOBLIN: 400014,
         COBCOBANE: 400015,
         COBOGRE: 400016,
+        //Short Destroyers
+        LATEFLEA: 770001,
         
         // Armors
         FIREFOX: 20,
@@ -4605,6 +4607,9 @@ var kinds = {
     cobyorkie: [Types.Entities.COBYORKIE, "mob"],
     cobcoblin: [Types.Entities.COBCOBLIN, "mob"],
     cobcobane: [Types.Entities.COBCOBANE, "mob"],
+    //Short Destroyers
+    lateflea: [Types.Entities.LATEFLEA, "mob"],
+
     cobogre: [Types.Entities.COBOGRE, "mob"],
     sword1: [Types.Entities.SWORD1, "weapon"],
     sword2: [Types.Entities.SWORD2, "weapon"],

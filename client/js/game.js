@@ -133,6 +133,8 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 "VILLAGESIGN22",
                                 "VILLAGESIGN23",
                                 "VILLAGESIGN24",
+                                //Short Destroyers
+                                "lateflea",
                                 // @nextCharacterLine@
                                 "item-BOARHIDE",
                                 "item-THUDKEY",

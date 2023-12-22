@@ -446,7 +446,11 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.VILLAGER29] = function(id) {
         return new Mobs.Villager29(id);
     };
-
+    
+    // Short Destroyers
+    EntityFactory.builders[Types.Entities.LATEFLEA] = function(id) {
+        return new Mobs.Lateflea(id);
+    };
 
     // @nextMobLine@
     //===== items ======
