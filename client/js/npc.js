@@ -336,6 +336,16 @@ define(['character'], function (Character) {
         "BLARK": ["Hello!"],
         "DANIEL": ["Salutations"],
         "ESTELLA": ["Greetings"],
+        "CITYSIGN1": ["FOR SALE!"],
+        "CITYSIGN2": ["FOR SALE!"],
+        "CITYSIGN3": ["FOR SALE!"],
+        "CITYSIGN4": ["FOR SALE!"],
+        "CITYSIGN5": ["FOR SALE!"],
+        "CITYSIGN6": ["FOR SALE!"],
+        "CITYSIGN7": ["FOR SALE!"],
+        "CITYSIGN8": ["FOR SALE!"],
+        "CITYSIGN9": ["FOR SALE!"],
+        "CITYSIGN10": ["FOR SALE!"],
         // @nextNPCLine@
     };
 

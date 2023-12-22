@@ -313,7 +313,17 @@ Types = {
         NIANDRA: 34000032,
         BLARK: 34000033,
         DANIEL: 34000034,
-        ESTELLA: 34000035, // @lastidCharacter@
+        ESTELLA: 34000035,
+        CITYSIGN1: 34000036,
+        CITYSIGN2: 34000037,
+        CITYSIGN3: 34000038,
+        CITYSIGN4: 34000039,
+        CITYSIGN5: 34000040,
+        CITYSIGN6: 34000041,
+        CITYSIGN7: 34000042,
+        CITYSIGN8: 34000043,
+        CITYSIGN9: 34000044,
+        CITYSIGN10: 34000045, // @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -4836,6 +4846,16 @@ var kinds = {
     BLARK: [Types.Entities.BLARK, "npc"],
     DANIEL: [Types.Entities.DANIEL, "npc"],
     ESTELLA: [Types.Entities.ESTELLA, "npc"],
+    CITYSIGN1: [Types.Entities.CITYSIGN1, "npc"],
+    CITYSIGN2: [Types.Entities.CITYSIGN2, "npc"],
+    CITYSIGN3: [Types.Entities.CITYSIGN3, "npc"],
+    CITYSIGN4: [Types.Entities.CITYSIGN4, "npc"],
+    CITYSIGN5: [Types.Entities.CITYSIGN5, "npc"],
+    CITYSIGN6: [Types.Entities.CITYSIGN6, "npc"],
+    CITYSIGN7: [Types.Entities.CITYSIGN7, "npc"],
+    CITYSIGN8: [Types.Entities.CITYSIGN8, "npc"],
+    CITYSIGN9: [Types.Entities.CITYSIGN9, "npc"],
+    CITYSIGN10: [Types.Entities.CITYSIGN10, "npc"],
     // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],
