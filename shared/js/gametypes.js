@@ -246,7 +246,12 @@ Types = {
         GOLD1: 21300038,
         GOLD2: 21300039,
         GOLD3: 21300040,
-        GOLD: 21300041, // @lastidObject@
+        GOLD: 21300041,
+        EVERPEAKMAP1: 21300042,
+        EVERPEAKMAP2: 21300043,
+        EVERPEAKMAP3: 21300044,
+        EVERPEAKMAP4: 21300045,
+        EVERPEAKMAP5: 21300046, // @lastidObject@
         //@nextIdLineObject@
         
         // NPCs
@@ -303,7 +308,22 @@ Types = {
         VILLAGESIGN21: 34000027,
         VILLAGESIGN22: 34000028,
         VILLAGESIGN23: 34000029,
-        VILLAGESIGN24: 34000030, // @lastidCharacter@
+        VILLAGESIGN24: 34000030,
+        THEDIUS: 34000031,
+        NIANDRA: 34000032,
+        BLARK: 34000033,
+        DANIEL: 34000034,
+        ESTELLA: 34000035,
+        CITYSIGN1: 34000036,
+        CITYSIGN2: 34000037,
+        CITYSIGN3: 34000038,
+        CITYSIGN4: 34000039,
+        CITYSIGN5: 34000040,
+        CITYSIGN6: 34000041,
+        CITYSIGN7: 34000042,
+        CITYSIGN8: 34000043,
+        CITYSIGN9: 34000044,
+        CITYSIGN10: 34000045, // @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -4743,6 +4763,11 @@ var kinds = {
     GOLD2: [Types.Entities.GOLD2, "object"],
     GOLD3: [Types.Entities.GOLD3, "object"],
     GOLD: [Types.Entities.GOLD, "object"],
+    EVERPEAKMAP1: [Types.Entities.EVERPEAKMAP1, "object"],
+    EVERPEAKMAP2: [Types.Entities.EVERPEAKMAP2, "object"],
+    EVERPEAKMAP3: [Types.Entities.EVERPEAKMAP3, "object"],
+    EVERPEAKMAP4: [Types.Entities.EVERPEAKMAP4, "object"],
+    EVERPEAKMAP5: [Types.Entities.EVERPEAKMAP5, "object"],
     // @nextObjectLine@
 
     guard: [Types.Entities.GUARD, "npc"],
@@ -4816,6 +4841,21 @@ var kinds = {
     VILLAGESIGN22: [Types.Entities.VILLAGESIGN22, "npc"],
     VILLAGESIGN23: [Types.Entities.VILLAGESIGN23, "npc"],
     VILLAGESIGN24: [Types.Entities.VILLAGESIGN24, "npc"],
+    THEDIUS: [Types.Entities.THEDIUS, "npc"],
+    NIANDRA: [Types.Entities.NIANDRA, "npc"],
+    BLARK: [Types.Entities.BLARK, "npc"],
+    DANIEL: [Types.Entities.DANIEL, "npc"],
+    ESTELLA: [Types.Entities.ESTELLA, "npc"],
+    CITYSIGN1: [Types.Entities.CITYSIGN1, "npc"],
+    CITYSIGN2: [Types.Entities.CITYSIGN2, "npc"],
+    CITYSIGN3: [Types.Entities.CITYSIGN3, "npc"],
+    CITYSIGN4: [Types.Entities.CITYSIGN4, "npc"],
+    CITYSIGN5: [Types.Entities.CITYSIGN5, "npc"],
+    CITYSIGN6: [Types.Entities.CITYSIGN6, "npc"],
+    CITYSIGN7: [Types.Entities.CITYSIGN7, "npc"],
+    CITYSIGN8: [Types.Entities.CITYSIGN8, "npc"],
+    CITYSIGN9: [Types.Entities.CITYSIGN9, "npc"],
+    CITYSIGN10: [Types.Entities.CITYSIGN10, "npc"],
     // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],
