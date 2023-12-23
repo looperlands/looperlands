@@ -61,60 +61,6 @@ loadMapFlow = async function (mapId) {
   }
 }
 
-getCharacterData = async function (wallet, nft, retry) {
-  const options = {
-    method: 'POST',
-    headers: {
-      'X-Api-Key': API_KEY
-    },
-  };
-  try {
-    const responseData = await axios.get(`${LOOPWORMS_LOOPERLANDS_BASE_URL}/Load.php?NFTID=${nft}&WalletID=${wallet}`, options);
-    //console.log("ResponseData from Loopworms: ", responseData.status, responseData.text, responseData.data, `${LOOPWORMS_LOOPERLANDS_BASE_URL}/Load.php?NFTID=${nft}&WalletID=${wallet}`);
-
-    let parsedSaveData;
-    try {
-      if (responseData[1] !== '') {
-        parsedSaveData = JSON.parse(responseData.data[1]);
-      } else {
-        return;
-      }
-    } catch (error) {
-      if (retry === undefined) {
-        retry = MAX_RETRY_COUNT;
-      }
-      retry -= 1;
-      if (retry > 0) {
-        return getCharacterData(wallet, nft, retry);
-      } else {
-        //console.error("Error parsing save data ", error, responseData.data);
-        return
-      }
-    }
-    return parsedSaveData;
-  } catch (error) {
-    return;
-  }
-
-}
-
-saveCharacterData = async function (wallet, nft, saveGame) {
-  const options = {
-    headers: {
-      'X-Api-Key': API_KEY,
-      'Content-Type': 'application/json'
-    }
-  };
-
-  try {
-    const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/Save.php?NFTID=${nft}&WalletID=${wallet}`
-    axios.post(url, saveGame, options);
-  } catch (error) {
-    console.error(error);
-    return { "error": "Error saving character data" };
-  }
-}
-
 saveWeapon = async function (wallet, nft, weaponName) {
 
   const options = {
@@ -667,8 +613,6 @@ exports.newBot = async function(mapId, botNftId, xp, name, walletId, ownerEntity
 }
 
 exports.updateExperience = updateExperience;
-exports.saveCharacterData = saveCharacterData;
-exports.getCharacterData = getCharacterData;
 exports.saveWeapon = saveWeapon;
 exports.loadWeapon = loadWeapon;
 exports.loadExperience = loadExperience;
