@@ -319,26 +319,6 @@ WS.socketIOServer = Server.extend({
             
             res.status(200).json(parsedSaveData);
         });
-        
-        app.put('/session/:sessionId', (req, res) => {
-            const sessionId = req.params.sessionId;
-            const sessionData = cache.get(sessionId);
-            if (sessionData === undefined) {
-                //console.error("Session data is undefined for session id, params: ", sessionId, req.params);
-                res.status(404).json({
-                    status: false,
-                    "error" : "session not found",
-                    user: null
-                });
-                return;
-            }
-            const nftId = sessionData.nftId;
-            const walletId = sessionData.walletId;
-
-            const body = req.body;
-            dao.saveCharacterData(walletId, nftId, body);
-            res.status(200).send(true);
-        });
 
         app.get("/session/:sessionId/inventory", async (req, res) => {
             const sessionId = req.params.sessionId;
