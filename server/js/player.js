@@ -618,7 +618,7 @@ module.exports = Player = Character.extend({
         let updatedXp = await dao.updateExperience(this.walletId, this.nftId, this.accumulatedExperience);
         if (!Number.isNaN(updatedXp)) {
             if (session !== undefined) {
-                session.xp = updatedXp + session.ownYourLoopersBuff;
+                session.xp = updatedXp;
                 this.server.server.cache.set(this.sessionId, session);
             }
             this.accumulatedExperience = 0;
