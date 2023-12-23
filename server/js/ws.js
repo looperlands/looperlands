@@ -265,7 +265,7 @@ WS.socketIOServer = Server.extend({
             const walletId = sessionData.walletId;
             const isDirty = sessionData.isDirty;
 
-            let parsedSaveData;
+            let parsedSaveData = undefined;
             let weapon;
             let avatarGameData;
 
@@ -277,8 +277,6 @@ WS.socketIOServer = Server.extend({
                 });
                 return;
             } else {
-                //console.log("Session ID", sessionId, "Wallet ID", walletId, "NFT ID", nftId);
-                parsedSaveData = await dao.getCharacterData(walletId, nftId);
                 weapon = await dao.loadWeapon(walletId, nftId);
                 avatarGameData = await dao.loadAvatarGameData(nftId);
 
@@ -295,7 +293,7 @@ WS.socketIOServer = Server.extend({
                     looperlands: true,
                     nftId: nftId,
                     walletId: walletId,
-                    hasAlreadyPlayed: false,
+                    hasAlreadyPlayed: sessionData.xp > 0,
                     player: {
                         name: name,
                         weapon: "",
