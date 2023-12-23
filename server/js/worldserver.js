@@ -5,7 +5,7 @@ var cls = require("./lib/class"),
     Entity = require('./entity'),
     Character = require('./character'),
     Mob = require('./mob'),
-    Map = require('./map'),
+    Mapx = require('./map'),
     Npc = require('./npc'),
     Player = require('./player'),
     Item = require('./item'),
@@ -18,7 +18,11 @@ var cls = require("./lib/class"),
     Types = require("../../shared/js/gametypes"),
     dao = require("./dao.js"),
     discord = require("./discord.js"),
-    Fieldeffect = require('./fieldeffect'),
+    Fieldeffect = require('./fieldeffect');
+const quests = require("./quests/quests");
+
+const WorldEventBroker = require("./flows/worldeventbroker.js");
+
     Lakes = require('./lakes');
 
 // ======= GAME SERVER ========
@@ -56,6 +60,8 @@ module.exports = World = cls.Class.extend({
 
         this.zoneGroupsReady = false;
 
+        this.worldEventBroker = new WorldEventBroker.WorldEventBroker(id);
+
         this.onPlayerConnect(function (player) {
             player.onRequestPosition(function () {
                 if (player.lastCheckpoint) {
@@ -69,7 +75,7 @@ module.exports = World = cls.Class.extend({
         this.onPlayerEnter(function (player) {
             //console.log(player.name + " has joined "+ self.id, "Player ID " + player.id);
 
-            if (!player.hasEnteredGame) {
+            if (!player.hasEnteredGame && !player.isBot()) {
                 self.incrementPlayerCount();
             }
 
@@ -79,6 +85,7 @@ module.exports = World = cls.Class.extend({
             self.updatePopulation();
 
             self.pushRelevantEntityListTo(player);
+            self.pushToggledLayersTo(player)
 
             var move_callback = function (x, y) {
                 //console.debug(player.name + " is moving to (" + x + ", " + y + ").");
@@ -114,14 +121,16 @@ module.exports = World = cls.Class.extend({
                 self.pushToAdjacentGroups(player.group, message, ignoreSelf ? player.id : null);
             });
 
-            player.onBroadcastToZone(function (message, ignoreSelf) {
+            player.onBroadcastToZone(function(message, ignoreSelf) {
                 self.pushToGroup(player.group, message, ignoreSelf ? player.id : null);
             });
 
             player.onExit(function () {
                 //console.log(player.name + " has left the game.");
                 self.removePlayer(player);
-                self.decrementPlayerCount();
+                if (!player.isBot()) {
+                    self.decrementPlayerCount();
+                }
                 if (self.removed_callback) {
                     self.removed_callback();
                 }
@@ -141,12 +150,13 @@ module.exports = World = cls.Class.extend({
             }
         });
 
-        this.onRegenTick(function () {
-            self.forEachCharacter(function (character) {
-                if (!character.hasFullHealth()) {
+
+        this.onRegenTick(function() {
+            self.forEachCharacter(function(character) {
+                if(!character.hasFullHealth()) {
                     character.regenHealthBy(Math.floor(character.maxHitPoints / 25));
 
-                    if (character.type === 'player') {
+                    if(character.type === 'player') {
                         self.pushToPlayer(character, character.regen());
                     }
                 }
@@ -154,7 +164,8 @@ module.exports = World = cls.Class.extend({
         });
     },
 
-    run: function (mapFilePath) {
+
+    run: function(mapFilePath) {
         var self = this;
 
         this.map = new Mapx(mapFilePath);
@@ -221,41 +232,42 @@ module.exports = World = cls.Class.extend({
             }
         }, 1000 / this.ups);
 
-        console.log("" + this.id + " created (capacity: " + this.maxPlayers + " players).");
+        console.log(""+this.id+" created (capacity: "+this.maxPlayers+" players).");
+    },
+
+
+    onInit: function(callback) {
+        this.init_callback = callback;
     },
 
     setUpdatesPerSecond: function (ups) {
         this.ups = ups;
     },
 
-    onInit: function (callback) {
-        this.init_callback = callback;
-    },
-
     onPlayerConnect: function (callback) {
         this.connect_callback = callback;
     },
 
-    onPlayerEnter: function (callback) {
+    onPlayerEnter: function(callback) {
         this.enter_callback = callback;
     },
 
-    onPlayerAdded: function (callback) {
+    onPlayerAdded: function(callback) {
         this.added_callback = callback;
     },
 
-    onPlayerRemoved: function (callback) {
+    onPlayerRemoved: function(callback) {
         this.removed_callback = callback;
     },
 
-    onRegenTick: function (callback) {
+    onRegenTick: function(callback) {
         this.regen_callback = callback;
     },
 
-    pushRelevantEntityListTo: function (player) {
+    pushRelevantEntityListTo: function(player) {
         var entities;
 
-        if (player && (player.group in this.groups)) {
+        if(player && (player.group in this.groups)) {
             entities = _.keys(this.groups[player.group].entities);
             entities = _.reject(entities, function (id) {
                 return id == player.id;
@@ -269,10 +281,11 @@ module.exports = World = cls.Class.extend({
         }
     },
 
-    pushSpawnsToPlayer: function (player, ids) {
+
+    pushSpawnsToPlayer: function(player, ids) {
         var self = this;
 
-        _.each(ids, function (id) {
+        _.each(ids, function(id) {
             var entity = self.getEntityById(id);
             if (entity) {
                 self.pushToPlayer(player, new Messages.Spawn(entity));
@@ -280,6 +293,14 @@ module.exports = World = cls.Class.extend({
         });
 
         //console.debug("Pushed "+_.size(ids)+" new spawns to "+player.id);
+    },
+
+    pushToggledLayersTo: function(player) {
+        var self = this;
+        _.forEach(Object.keys(this.map.toggledLayers), (layer) => {
+            let visible = self.map.toggledLayers[layer];
+            self.pushToPlayer(player, new Messages.Layer(layer, visible ));
+        });
     },
 
     pushToPlayer: function (player, message) {
@@ -370,7 +391,7 @@ module.exports = World = cls.Class.extend({
         }
     },
 
-    addEntity: function (entity) {
+    addEntity: function(entity) {
         this.entities[entity.id] = entity;
         this.handleEntityGroupMembership(entity);
     },
@@ -428,7 +449,49 @@ module.exports = World = cls.Class.extend({
         return npc;
     },
 
-    addItem: function (item) {
+    getClosestNpcOfKind: function(kind, x, y) {
+        var minDist = 99999,
+            closest = null,
+            npc,
+            dist;
+
+        for(var id in this.npcs) {
+            if(this.npcs.hasOwnProperty(id)) {
+                npc = this.npcs[id];
+                if(npc.kind === kind) {
+                    dist = Utils.distanceTo(x, y, npc.x, npc.y);
+                    if(dist < minDist) {
+                        closest = npc;
+                        minDist = dist;
+                    }
+                }
+            }
+        }
+        return closest;
+    },
+
+    getClosestMobOfKind: function(kind, x, y) {
+        var minDist = 99999,
+            closest = null,
+            mob,
+            dist;
+
+        for(var id in this.mobs) {
+            if(this.mobs.hasOwnProperty(id)) {
+                mob = this.mobs[id];
+                if(mob.kind === kind && !mob.isDead) {
+                    dist = Utils.distanceTo(x, y, mob.x, mob.y);
+                    if(dist < minDist) {
+                        closest = mob;
+                        minDist = dist;
+                    }
+                }
+            }
+        }
+        return closest;
+    },
+
+    addItem: function(item) {
         this.addEntity(item);
         this.items[item.id] = item;
 
@@ -441,6 +504,7 @@ module.exports = World = cls.Class.extend({
         var fieldEffect = new Fieldeffect('4' + x + '' + y + '' + kind, kind, x, y);
         this.addEntity(fieldEffect);
         this.fieldEffects[fieldEffect.id] = fieldEffect;
+
         fieldEffect.initContinousDamageCallback(self.doAoe.bind(self));
         fieldEffect.initSingleHitCallback(self.doAoe.bind(self), self.despawn.bind(self));
 
@@ -451,7 +515,7 @@ module.exports = World = cls.Class.extend({
         var id = '9' + this.itemCount++,
             item = null;
 
-        if (kind === Types.Entities.CHEST) {
+        if(kind === Types.Entities.CHEST) {
             item = new Chest(id, x, y);
         } else {
             item = new Item(id, kind, x, y);
@@ -632,7 +696,7 @@ module.exports = World = cls.Class.extend({
                 if (attacker.type === 'player') {
                     mob.dmgTakenArray.forEach(function (arrElem) {
                         let accomplice = self.getEntityById(arrElem.id);
-                        if (accomplice !== undefined && accomplice.type === 'player') {
+                        if (accomplice !== undefined && accomplice.type === 'player' && !accomplice.isBot()) {
                             accomplice.playerEventBroker.killMobEvent(mob);
                         }
                     })
@@ -648,6 +712,7 @@ module.exports = World = cls.Class.extend({
             if (entity.type === "player") {
                 this.handlePlayerVanish(entity);
                 this.pushToAdjacentGroups(entity.group, entity.despawn());
+                entity.playerEventBroker.deathEvent(entity, {x: entity.x , y: entity.y});
             }
 
             this.removeEntity(entity);
@@ -657,7 +722,7 @@ module.exports = World = cls.Class.extend({
     handleRedPacket: function (mob, kind) {
         if (Properties[kind].redpacket) {
             let url = "https://loopworms.io/DEV/LooperLands/QR/qr.php?NPC=" + kind;
-            let msg = `Follow <a href='${url}' target="blank">this link</a> for a reward</a>`;
+            let msg = `<a href='${url}' target="blank"><h2>Click For Reward!</h2></a>`;
             this.pushToGroup(mob.group, new Messages.Chat(mob, msg), false);
         }
     },
@@ -779,6 +844,13 @@ module.exports = World = cls.Class.extend({
         this.handleEntityGroupMembership(mob);
     },
 
+
+    moveNpc: function(npc, x, y) {
+        npc.setPosition(x,y);
+        this.pushToAdjacentGroups(npc.group, new Messages.Move(npc));
+        this.handleEntityGroupMembership(npc);
+    },
+
     findPositionNextTo: function (entity, target) {
         var valid = false,
             pos;
@@ -815,7 +887,6 @@ module.exports = World = cls.Class.extend({
             oldGroups = [];
 
         if (entity && entity.group) {
-
             var group = this.groups[entity.group];
             if (entity instanceof Player) {
                 group.players = _.reject(group.players, function (id) {
@@ -1101,6 +1172,10 @@ module.exports = World = cls.Class.extend({
                 if (accompliceLevel > Math.round(mobLevel * 1.25)) {
                     accompliceShare = Math.round(accompliceShare * Math.max(1 - (accompliceLevel - (mobLevel * 1.25)) * 0.1, 0.5));
                 }
+                let buff = accomplice.getActiveBuff();
+                if (buff && buff.stat === "exp"){
+                    accompliceShare = Math.round(accompliceShare * (100 + buff.percent)/100);
+                }
                 accomplice.handleExperience(accompliceShare);
                 self.pushToPlayer(accomplice, new Messages.Kill(mob, accompliceShare));
             }
@@ -1218,16 +1293,14 @@ module.exports = World = cls.Class.extend({
         return triggerState !== undefined ? triggerState : false;
     },
 
-    activateTrigger: function (triggerId) {
-        if (this.doorTriggers.hasOwnProperty(triggerId)) {
-            this.doorTriggers[triggerId] = true;
-        }
+    activateTrigger: function(triggerId) {
+        this.doorTriggers[triggerId] = true;
+        this.worldEventBroker.triggerActivated(this.id, triggerId);
     },
 
-    deactivateTrigger: function (triggerId) {
-        if (this.doorTriggers.hasOwnProperty(triggerId)) {
-            this.doorTriggers[triggerId] = false;
-        }
+    deactivateTrigger: function(triggerId) {
+        this.doorTriggers[triggerId] = false;
+        this.worldEventBroker.triggerDeactivated(this.id, triggerId);
     },
 
     onMobExitCombatCallback: function (mob) {
@@ -1318,10 +1391,92 @@ module.exports = World = cls.Class.extend({
         let parent = this.getEntityById(parentId);
         if (parent !== undefined) {
             const index = parent.addArray.indexOf(child);
-            if (index > -1) {
-                parent.addArray.splice(index, 1);
-            }
+                if (index > -1) {
+                    parent.addArray.splice(index, 1);
+                }
         }
+    },
+
+    nextMobId: function() {
+        // return highest key + 1
+        return _.max(_.keys(this.mobs), function(id) { return parseInt(id); }) + 1;
+    },
+
+    showLayer: function(player, layer) {
+        this.map.toggledLayers[layer] = true;
+        this.pushBroadcast(new Messages.Layer(layer, true), false);
+    },
+
+    hideLayer: function(player, layer) {
+        this.map.toggledLayers[layer] = false;
+        this.pushBroadcast(new Messages.Layer(layer, false), false);
+    },
+
+    toggleLayer: function(player, layer) {
+        this.map.toggledLayers[layer] = !this.map.toggledLayers[layer];
+        this.pushBroadcast(new Messages.Layer(layer, this.map.toggledLayers[layer]), false);
+    },
+
+    triggerAnimation: function(entity, animationId) {
+
+        this.pushToAdjacentGroups(entity.group, new Messages.Animate(entity.id, animationId), false);
+    },
+
+    newQuest: function(player, questId) {
+        let questText = quests.newQuest(this.server.cache, player.sessionId, questId);
+        if(_.isEmpty(questText)) {
+           return false;
+        }
+
+        this.sendNotifications(player, questText);
+        return true;
+    },
+
+    completeQuest: function(player, questId) {
+        let result = quests.completeQuest(this.server.cache, player.sessionId, questId);
+        if(result === false) {
+            return false;
+        }
+
+        if(!_.isEmpty(result)) {
+            this.sendNotifications(player, result);
+        }
+
+        player.handleCompletedQuests([quests.questsByID[questId]]);
+
+        return true;
+    },
+
+    sendNotifications: function(player, notifications) {
+        if(!_.isArray(notifications)) {
+            notifications = [notifications];
+        }
+        let self = this;
+        let delay = 0;
+        const SHOW_MESSAGE_TIME = 2000;
+        notifications.forEach((text) => {
+            setTimeout(function() {
+                self.pushToPlayer(player, new Messages.Notify(text), false);
+            }, delay * SHOW_MESSAGE_TIME);
+            delay++;
+        })
+    },
+
+    addToInventory(player, itemKind, amount) {
+        let item = this.createItem(itemKind, 0, 0);
+        player.playerEventBroker.lootEvent(item, amount);
+
+    },
+
+    removeFromInventory(player, itemKind, amount) {
+        let item = this.createItem(itemKind, 0, 0);
+        console.log(item);
+        player.playerEventBroker.lootEvent(item, amount * -1);
+    },
+
+    npcTalked(npcId, message, sessionData) {
+        let player = this.getEntityById(sessionData.entityId)
+        player.playerEventBroker.npcTalked(npcId, message)
     },
 
     handleSeaCreatureSpawn: function (mob) {

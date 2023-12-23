@@ -35,6 +35,7 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
         <script src="js/saveworker.js"></script>
 		<script src="js/keyboardhandler.js"></script>
 		<script src="js/settings.js"></script>
+		<script src="js/gamepad.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/console-ban@5.0.0/dist/console-ban.min.js"></script>
 		<!--
 		<script>
@@ -121,9 +122,9 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
                         <p id="inventory">
                             Your inventory is empty.
                         </p>
-	                    <div id="close-about">
+	                    <span id="close-about">
 	                        <span>- click anywhere to close -</span>
-                        </div>
+                        </span>
     	            </article>
     	            <article id="death">
                         <p>You are dead...</p>
@@ -155,21 +156,29 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
 							<ul style="text-align: left;">
 								<li>
 									<input type="checkbox" id="musicEnabled" name="musicEnabled" value="true">
-									<label for="musicEnabled">Music Enabled</label><br>
+									<label for="musicEnabled">Music Enabled</label>
 								</li>
 								<li>
 									<input type="checkbox" id="centeredCamera" name="centeredCamera" value="true">
-									<label for="centeredCamera">Centered Camera</label><br>
+									<label for="centeredCamera">Centered Camera</label>
 								</li>
 								<li>
 									<input type="checkbox" id="animatedTiles" name="animatedTiles" value="true">
-									<label for="animatedTiles">Animated Tiles</label><br>
+									<label for="animatedTiles">Animated Tiles</label>
+								</li>
+								<li>
+									<input type="checkbox" id="highlightTargetTiles" name="highlightTargetTiles" value="true">
+									<label for="highlightTargetTiles">Highlight Target Tiles</label>
+								</li>
+								<li>
+									<input type="checkbox" id="fullscreen" name="fullscreen" value="true">
+									<label for="fullscreen">Fullscreen</label>
 								</li>
 							</ul>
 							<br>
 							<button type="submit">Save Settings</button>
 						</form>
-    	            </article>				
+    	            </article>
 	            </div>
 	            <div class="parchment-right"></div>
 	        </section>
@@ -190,8 +199,9 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
 	                </ul>
 	                    <p>- click anywhere to close -</p>
 		        </article>
-		        <article id="achievements" class="page1 clickable">
+		        <article id="achievements" class="page1 clickable panel">
 		            <div class="close"></div>
+					<div class="panelTitle">Quests</div>
 		            <div id="achievements-wrapper">
 		                <div id="lists">
         		        </div>
@@ -202,12 +212,35 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
     		                <span id="unlocked-achievements">0</span>
     		                /
     		                <span id="total-achievements"></span>
-    		            </div> 
+    		            </div>
     		        </div>
 		            <nav class="clickable">
 		                <div id="previous"></div>
 		                <div id="next"></div>
 		            </nav>
+					<div id="achievement-details" class="panelBorder hidden">
+						<div class="header">
+							<div class="left">
+								<div id="achievement-details-name" class="stroke"></div>
+								<div class="objective">
+									<span id="achievement-details-objective-type"></span>
+									<span id="achievement-details-objective-amount"></span>
+									<span id="achievement-details-objective-target"></span>
+								</div>
+							</div>
+							<div class="right">
+								<div id="achievement-details-status"></div>
+								<div id="achievement-details-level">Level: <span class="achievement-details-highlight" id="achievement-details-level-number"></span></div>
+							</div>
+						</div>
+						<div class="body">
+							<div id="achievement-details-text"></div>
+							<div id="achievement-details-rewards">
+								<div class="coin"></div>
+							</div>
+						</div>
+						<div id="close-achievement-details"></div>
+					</div>
 		        </article>
     			<div id="canvas">
     				<canvas id="background"></canvas>
@@ -215,7 +248,7 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
 					<canvas id="high-canvas"></canvas>
     				<canvas id="foreground" class="clickable"></canvas>
     			</div>
-    			<div id="bubbles">				
+    			<div id="bubbles">
     			</div>
     			<div id="achievement-notification">
     			    <div class="coin">
@@ -228,14 +261,17 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
     			</div>
 				<div id="fishingbar" class="clickable">
 					<div id="fishingtarget">
+						<div id="fishingtargetbullseye">
+						</div>
 					</div>
 					<div id="fish-box">
 						<div id="fish-marker">
 						</div>
 						<div id="fish">
 						</div>
-					</div>			
-    			</div>
+					</div>
+					<div id="bullseye">BULLSEYE</div>
+				</div>
     			<div id="bar-container">
 					<div id="healthbar">
 					</div>
@@ -262,6 +298,8 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
 				<div id="chatbox">
 				    <form action="none" method="get" accept-charset="utf-8">
 					    <input id="chatinput" class="gp" type="text" maxlength="60">
+						<div id="emoteMenuToggle"></div>
+						<div id="emoteMenu"></div>
 				    </form>
 				</div>
                 <div id="population">
@@ -272,6 +310,31 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
                         <span>0</span> <span>players</span> total
                     </div>
                 </div>
+
+				<div id="avatarStats">
+					<span>Level: </span><span id="avatarLevel" style="color:#FCE045; padding-right: 10px;"></span>(<span id="avatarProgress"></span>%)
+					<span id="buffInfo"></span>
+					<br>
+					<span id="companionInfo">
+						<span>Companion: </span><span id="companionLevel" style="color:#FCE045; padding-right: 10px;"></span>(<span id="companionProgress"></span>%)
+					</span>
+				</div>
+
+				<div id="weaponStats">
+					<div><span>Level: </span><span id="weaponLevel" style="color:#FCE045; padding-right: 10px;"></span>(<span id="weaponProgress"></span>%)</div>
+					<div>Trait: <span id="weaponTrait" style="color: #FCE045;"></span></div>
+				</div>
+
+				<div id="new-achievement-popup" class="panel hidden">
+					<div class="panelTitle">New Quest Received</div>
+					<div class="header">
+						<div id="new-achievement-name" class="stroke"></div>
+					</div>
+					<div class="body">
+						<div id="new-achievement-text"></div>
+					</div>
+					<div id="close-new-achievement"></div>
+				</div>
 		    </div>
 		</div>
 		<ul id="page-tmpl" class="clickable" style="display:none">
@@ -283,23 +346,23 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
                 <div class="achievement-description">???</div>
             </li>
         </ul>
-        
+
         <img src="img/common/thingy.png" alt="" class="preload">
-        
+
         <div id="resize-check"></div>
-		
+
         <script type="text/javascript">
             var ctx = document.querySelector('canvas').getContext('2d'),
                 parchment = document.getElementById("parchment");
-            
+
             if(!Detect.supportsWebSocket()) {
                 parchment.className = "error";
             }
-            
+
             if(ctx.mozImageSmoothingEnabled === undefined) {
                 document.querySelector('body').className += ' upscaled';
             }
-            
+
             if(!Modernizr.localstorage) {
                 var alert = document.createElement("div");
                     alert.className = 'alert';
@@ -312,14 +375,11 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
                 parchment.className = "loadcharacter";
             }
         </script>
-        
+
         <script src="js/lib/log.js"></script>
         <script>
                 var require = { waitSeconds: 60 };
         </script>
         <script data-main="js/home" src="js/lib/require-jquery.js"></script>
-		<div style="color: white; text-align: center; margin-top: 5px">
-			<h2 id="levelInfo"></h3>
-		</div>
 	</body>
 </html>

@@ -11,7 +11,7 @@ define(['area'], function(Area) {
             this.game = game;
             this.currentMusic = null;
             this.areas = [];
-            this.musicNames = ["village","oaspooky","oafortressboss","oacastle","oasnowcon","oanightharrow","full","fluteguitar","guitar","oainsidecastle","beach", "forest", "cave", "desert", "lavaland","oacrystal", "boss", "oavillage","oaglacialord", "oaforest","oasnowthaven", "overworld","oaseacombat","oacave","oawind","oaforesttown","oatitle","oaporttown","oaplanes","oacave2","oaforestboss","oahome","oaspiderboss","oaforest2","cobsfarmmain","cobdungeon","cobspookyforest"];
+            this.musicNames = ["village","oaspooky","oafortressboss","oacastle","oasnowcon","oanightharrow","full","fluteguitar","guitar","oainsidecastle","beach", "forest", "cave", "desert", "lavaland","oacrystal", "boss", "oavillage","oaglacialord", "oaforest","oasnowthaven", "overworld","oaseacombat","oacave","oawind","oaforesttown","oatitle","oaporttown","oaplanes","oacave2","oaforestboss","oahome","oaspiderboss","oaforest2","cobsfarmmain","cobdungeon","cobspookyforest","cobactionadventure","cobsnuggles","cobbasicfishing","cobreggae","oamain","oacustoms","oafishing","oanorthern","oatower","oaarena","oachristmas","oachristmas2","oatavern"];
             this.soundNames = ["loot", "hit1", "hit2", "hurt", "heal", "chat", "revive", "death", "firefox", "achievement", "kill1", "kill2", "noloot", "teleport", "chest", "npc", "npc-end", "watersplash", "fishingfail", "fishingsuccess"];
             
             var loadSoundFiles = function() {
@@ -132,9 +132,26 @@ define(['area'], function(Area) {
             return sound;
         },
     
-        playSound: function(name) {
+        playSound: function(name, lowerMusicVolume) {
+            if(lowerMusicVolume === undefined) {
+                lowerMusicVolume = false;
+            }
             var sound = this.enabled && this.getSound(name);
             if(sound) {
+
+                if(lowerMusicVolume && this.currentMusic) {
+                    this.lowerCurrentMusicVolume();
+                }
+
+                let self = this;
+                if(lowerMusicVolume) {
+                    if (sound.duration > 2) {
+                        setTimeout(() => { self.raiseCurrentMusicVolume() }, Math.round(sound.duration * 1000) - 1000)
+                    } else {
+                        self.raiseCurrentMusicVolume();
+                    }
+                }
+
                 sound.play();
             }
         },
@@ -177,7 +194,19 @@ define(['area'], function(Area) {
         isCurrentMusic: function(music) {
             return this.currentMusic && (music.name === this.currentMusic.name);
         },
-    
+
+        playMusicByName: function(name) {
+            let music = { sound: this.getSound(name), name: name };
+            if(music) {
+                if(!this.isCurrentMusic(music)) {
+                    if(this.currentMusic) {
+                        this.fadeOutCurrentMusic();
+                    }
+                    this.playMusic(music);
+                }
+            }
+        },
+
         playMusic: function(music) {
             if(this.enabled && music && music.sound) {
                 if(music.sound.fadingOut) {
@@ -255,6 +284,38 @@ define(['area'], function(Area) {
                     self.resetMusic(music);
                 });
                 this.currentMusic = null;
+            }
+        },
+
+        lowerCurrentMusicVolume : function() {
+            var self = this;
+            if(this.currentMusic) {
+                var end = 0.25;
+                self.currentMusic.sound.fadingOut = setInterval(function() {
+                    var step = 0.02;
+                    volume = self.currentMusic.sound.volume - step;
+
+                    if(self.enabled && volume >= end) {
+                        self.currentMusic.sound.volume = volume;
+                    } else {
+                        self.clearFadeOut(self.currentMusic);
+                    }
+                }, 20);
+            }
+        },
+        raiseCurrentMusicVolume : function() {
+            var self = this;
+            if(this.currentMusic) {
+                var end = 1;
+                self.currentMusic.sound.fadingIn = setInterval(function() {
+                    var step = 0.02;
+                    volume = self.currentMusic.sound.volume + step;
+                    if(self.enabled && volume < end) {
+                        self.currentMusic.sound.volume = volume;
+                    } else {
+                        self.clearFadeIn(self.currentMusic);
+                    }
+                }, 50);
             }
         }
     });

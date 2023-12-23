@@ -2,6 +2,8 @@
 define(['jquery', 'app'], function($, App) {
     var app, game;
 
+    let gamepadHandler = undefined;
+
     var initApp = function() {
         $(document).ready(function() {
         	app = new App();
@@ -71,6 +73,18 @@ define(['jquery', 'app'], function($, App) {
                 $('#population').click(function() {
                     app.togglePopulationInfo();
                 });
+
+                $('#weapon').click(function(event) {
+                    app.toggleWeaponInfo(event)
+
+                    return false;
+                });
+
+                $('#armor').click(function(event) {
+                    app.toggleAvatarInfo(event)
+
+                    return false;
+                });
         
                 $('.clickable').click(function(event) {
                     event.stopPropagation();
@@ -138,26 +152,33 @@ define(['jquery', 'app'], function($, App) {
                 });
         
                 $('#previous').click(function() {
-                    var $achievements = $('#achievements');
-            
                     if(app.currentPage === 1) {
+                        $('#lists').css({left: 0});
                         return false;
                     } else {
                         app.currentPage -= 1;
-                        $achievements.removeClass().addClass('active page' + app.currentPage);
+
+                        let margin = parseInt($('#achievements-wrapper').css('marginLeft')) + parseInt($('#achievements-wrapper').css('marginRight'));
+                        let width = $('#achievements-wrapper').width();
+
+                        $('#lists').css({left: -1 * ((app.currentPage -1) * (width + margin))});
                     }
                 });
         
                 $('#next').click(function() {
-                    var $achievements = $('#achievements'),
-                        $lists = $('#lists'),
+                    var $lists = $('#lists'),
                         nbPages = $lists.children('ul').length;
             
                     if(app.currentPage === nbPages) {
+                        $lists.css({left: 0});
+                        app.currentPage = 1;
                         return false;
                     } else {
                         app.currentPage += 1;
-                        $achievements.removeClass().addClass('active page' + app.currentPage);
+                        let margin = parseInt($('#achievements-wrapper').css('marginLeft')) + parseInt($('#achievements-wrapper').css('marginRight'));
+                        let width = $('#achievements-wrapper').width();
+
+                        $lists.css({left: -1 * ((app.currentPage -1)* (width + margin))});
                     }
                 });
 
@@ -227,6 +248,7 @@ define(['jquery', 'app'], function($, App) {
                 } else {
                     $("#welcomeMessage").text("Error loading your user data. Please try again later.");
                 }
+                window.location.href = "https://looperlands.io";
             });
         });
     };
@@ -238,6 +260,8 @@ define(['jquery', 'app'], function($, App) {
         	    background = document.getElementById("background"),
         	    foreground = document.getElementById("foreground"),
         	    input = document.getElementById("chatinput");
+                emoteToggle = document.getElementById("emoteToggle");
+
 
     		game = new Game(app);
     		game.setup('#bubbles', canvas, background, foreground, input);
@@ -251,12 +275,18 @@ define(['jquery', 'app'], function($, App) {
     		game.onGameStart(function() {
                 app.initEquipmentIcons();
                 keyboardHandler = new KeyBoardHandler(game);
+                game.gamepadListener = new GamePadListener(game);
     		});
     		
     		game.onDisconnect(function(message) {
     		    if($('body').hasClass('credits')) {
     		        $('body').removeClass('credits');
-    		    }                
+    		    }
+
+                if($('body').hasClass('about')) {
+                    $('body').removeClass('about');
+                }
+
                 $('body').addClass('death');
     		    $('#death').find('p').html(message+"<em>Press Browser Back Button.</em>");
     		    $('#respawn').hide();
@@ -306,7 +336,11 @@ define(['jquery', 'app'], function($, App) {
     		game.onAchievementUnlock(function(questName, endText, xpReward, medal) {
     		    app.unlockAchievement(questName, endText, xpReward, medal);
     		});
-	
+
+            game.onQuestHandout(function(questId) {
+                app.showNewQuestPopup(questId);
+            });
+
     		game.onNotification(function(message) {
     		    app.showMessage(message);
     		});
@@ -333,6 +367,17 @@ define(['jquery', 'app'], function($, App) {
                 	app.hideWindows();
                     // $('#chatinput').focus();
                 });
+            }
+
+            // Zoom game area to fill 95% of window size.
+            window.onresize = () => {
+                if (!app.settings.getFullscreen()) {
+                    return;
+                }
+                $("#container").css('transform', 'scale(' + Math.min(($(window).width() / $("#container").width() * 0.95), ($(window).height() / $("#container").height() * 0.95)) + ')');
+            }
+            if (app.settings.getFullscreen()) {
+                $("#container").css('transform', 'scale(' + Math.min(($(window).width() / $("#container").width() * 0.95), ($(window).height() / $("#container").height() * 0.95)) + ')')
             }
 
             $('body').unbind('click');
@@ -429,7 +474,45 @@ define(['jquery', 'app'], function($, App) {
                     }
                 }
             });
-            
+
+            $('#emoteMenuToggle').click(function(event) {
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                $('#emoteMenu').toggleClass('active');
+
+                if($('#emoteMenu').hasClass('active')) {
+                    $('#chatinput').hide();
+                    $('#emoteMenu').children().each(function(index) {
+                        $(this).delay(index * 30).fadeIn(200);
+                    });
+                } else {
+                    $('#chatinput').show();
+                    $('#emoteMenu').children().each(function(index) {
+                        $(this).delay(($('#emoteMenu').children().length - index) * 30).fadeOut(200);
+                    });
+                }
+
+                return false;
+            });
+
+            let emoIdx = 0;
+            for (var emotion in Types.emotions) {
+                var emotionDiv = $('<div class="emote" data-emotion="' + emotion + '" style="--n: ' + emoIdx++ + '">' + Types.emotions[emotion] + '</div>');
+                emotionDiv.click(function(event) {
+                    game.emote($(event.target).data('emotion'));
+                    $('#emoteMenu').removeClass('active');
+                    $('#emoteMenu').children().each(function(index) {
+                        $(this).delay(($('#emoteMenu').children().length - index) * 20).fadeOut(100);
+                    });
+
+                    event.preventDefault();
+                    event.stopImmediatePropagation();
+                    return false;
+                });
+                $('#emoteMenu').append(emotionDiv);
+                emotionDiv.hide();
+            }
+
             $('#mutebutton').click(function() {
                 game.app.toggleSettings();
             });

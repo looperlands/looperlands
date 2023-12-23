@@ -27,7 +27,7 @@ class PlayerQuestEventConsumer extends PlayerEventConsumer {
     }
 
     consume(event) {
-        let inProgressQuests = event.playerCache.gameData.quests[quests.STATES.IN_PROGRESS];
+        let inProgressQuests = event.playerCache.gameData?.quests[quests.STATES.IN_PROGRESS];
         //console.log("inProgressQuests: ", event.playerCache.gameData.quests, inProgressQuests);
         if (inProgressQuests === undefined) {
             return {change: false};
@@ -35,7 +35,7 @@ class PlayerQuestEventConsumer extends PlayerEventConsumer {
 
         let completionCheckerFN = this.completionCheckers[event.eventType];
         if (completionCheckerFN === undefined) {
-            throw new Error("Unknown event type: " + event.eventType);
+            return {change: false};
         }
 
         let changedQuests = []

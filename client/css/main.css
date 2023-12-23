@@ -93,11 +93,11 @@ html, body {height:100%;}
 
 body {padding:0;margin:0;background:#111;overflow:hidden;image-rendering:-moz-crisp-edges; image-rendering:-webkit-optimize-contrast;border-top:2px solid #707070;}
 
-canvas { position:absolute;image-rendering:optimizeSpeed;}
+canvas { position:absolute;image-rendering:pixelated;}
 #background { background:url('../img/common/loading.png') no-repeat center center, #000;}
 .error #background { background:url('../img/common/loading-error.png') no-repeat center center, #000;}
 
-#background, #foreground, #high-tiles { margin:0; padding:0;}
+#background, #foreground, #high-tiles { margin:0; padding:0; image-rendering:pixelated;}
 
 #achievements nav::selection {background:transparent;text-decoration:none;color:transparent;}
 #canvas, #bar-container, #bubbles, #chatbox, #canvasborder, #foreground, #background, #high-tiles, footer, #container, #achievement-notification {-moz-user-select:none;-webkit-user-select:none;-o-user-select:none;-ms-user-select:none;}
@@ -135,10 +135,19 @@ body.upscaled.game {background:#000;}
 #vignetting {height:100%;width:100%;position:absolute;top:0;left:0;pointer-events:none;}
 #logosparks {display:block;position:absolute;top:0;left:0;}
 #parchment, #parchment input {font-family:'GraphicPixel';}
-#parchment input {width:50%;background:rgba(0,0,0,0.05);text-align:center;-moz-animation:glow 0.5s linear infinite alternate;-webkit-animation:glow 0.5s linear infinite alternate;-o-animation:glow 0.5s linear infinite alternate;-ms-animation:glow 0.5s linear infinite alternate;color:#eee;}
+#parchment input {width:20%;background:rgba(0,0,0,0.05);text-align:center;-moz-animation:glow 0.5s linear infinite alternate;-webkit-animation:glow 0.5s linear infinite alternate;-o-animation:glow 0.5s linear infinite alternate;-ms-animation:glow 0.5s linear infinite alternate;color:#eee;}
 #parchment input:focus {-moz-animation:none;-webkit-animation:none;-o-animation:none;-ms-animation:none;animation:none;color:#fff;background:rgba(0,0,0,0.1);border-color:rgba(0,0,0,0.3);}
 
 #character div {-moz-transition:0.4s opacity linear;-webkit-transition:0.4s opacity linear;-o-transition:0.4s opacity linear;-ms-transition:0.4s opacity linear;transition:0.4s opacity linear;}
+
+#parchment #settingsForm input {
+    margin-top:10px;
+}
+
+#settingsForm ul {
+    margin-top:20px;
+    margin-bottom: 20px;
+}
 
 .play div {position:absolute;top:0;left:0;opacity:1;-moz-transition:0.4s linear opacity;-webkit-transition:0.4s linear opacity;-o-transition:0.4s linear opacity;-ms-transition:0.4s linear opacity;transition:0.4s linear opacity}
 .play.disabled div {opacity:0;pointer-events:none;}
@@ -153,13 +162,16 @@ body.upscaled.game {background:#000;}
 #hitpoints.white {-moz-animation:flash 0.5s linear 1;-webkit-animation:flash 0.5s linear 1;-o-animation:flash 0.5s linear 1;-ms-animation:flash 0.5s linear 1;animation:flash 0.5s linear 1;}
 #hitpoints.invincible {-moz-animation:invincible 0.3s steps(3, end) alternate infinite;-webkit-animation:invincible 0.3s steps(3, end) alternate infinite;-o-animation:invincible 0.3s steps(3, end) alternate infinite;-ms-animation:invincible 0.3s steps(3, end) alternate infinite;}
 
-#fishingbar {background:url('../img/1/fishing.png');image-rendering:-moz-crisp-edges;position:absolute;top:15%;left:33%;z-index:50;opacity:0;pointer-events:none;cursor:pointer;}
-#fishingbar.active {opacity:1;pointer-events:auto;}
-#fishingbar.hold {opacity:1;pointer-events:none;}
-#fishingtarget {background:#b0ff66;z-index:51}
-#fish-box{z-index:52;}
-#fish-marker{background:url('../img/1/fishing.png');image-rendering:-moz-crisp-edges;position:absolute;z-index:53;}
-#fish {z-index:54;}
+#fishingbar {background:url('../img/1/fishing.png');image-rendering:-moz-crisp-edges;position:absolute;top:15%;left:33%;z-index:50;display:none;pointer-events:none;cursor:pointer;}
+#fishingbar.active {display:block;pointer-events:auto;}
+#fishingbar.hold {display:block;pointer-events:none;}
+#bullseye {color: gold;writing-mode: vertical-lr;text-orientation:upright;font-family: 'GraphicPixel', sans-serif;display:none;align-items:center;justify-content:center;z-index:62;width:100%; height:100%; position: absolute;}
+#bullseye.active {display:flex;}
+#fishingtarget {background:#b0ff66;z-index:52}
+#fishingtargetbullseye {background:rgb(100, 255, 255);z-index:54}
+#fish-box{z-index:56;}
+#fish-marker{background:url('../img/1/fishing.png');image-rendering:-moz-crisp-edges;position:absolute;z-index:58;}
+#fish {z-index:60;}
 
 #notifications {position:absolute;left:50%;text-align:center;font-family:'GraphicPixel';overflow:hidden;}
 #notifications div {position:absolute;-moz-transition:none;-webkit-transition:none;top:0;width:100%;}
@@ -169,15 +181,117 @@ body.upscaled.game {background:#000;}
 
 #playercount {font-family:'GraphicPixel';color:#e3e3e3;position:absolute;}
 #playercount:hover {cursor:pointer;color:#FCE045;}
-#population {background:url('../img/1/barsheet.png');image-rendering:-moz-crisp-edges;position:absolute;font-family:'GraphicPixel';color:#fff;text-align:center;opacity:0;pointer-events:none;-moz-transition:0.2s opacity linear, 0.2s height ease;-webkit-transition:0.2s opacity linear, 0.2s height ease;-o-transition:0.2s opacity linear, 0.2s height ease;-ms-transition:0.2s opacity linear, 0.2s height ease;transition:0.2s opacity linear, 0.2s height ease;height:0;overflow:hidden;}
+#population {background:url('../img/1/barsheet.png');border-radius: 10px 0 0 0; image-rendering:-moz-crisp-edges;position:absolute;font-family:'GraphicPixel';color:#fff;text-align:center;opacity:0;pointer-events:none;-moz-transition:0.2s opacity linear, 0.2s height ease;-webkit-transition:0.2s opacity linear, 0.2s height ease;-o-transition:0.2s opacity linear, 0.2s height ease;-ms-transition:0.2s opacity linear, 0.2s height ease;transition:0.2s opacity linear, 0.2s height ease;height:0;overflow:hidden;}
 #population span:nth-child(1) {color:#FCE045;}
 #population.visible {opacity:1;pointer-events:auto;}
+
+#armor, #weapon {
+    cursor: pointer;
+}
+
+#avatarStats {
+    position: absolute;
+    left: 70px;
+    background: url(../img/1/barsheet.png);
+    background-position: -240px -48px;
+    width: 91px;
+    color: #FFF;
+    font-family: 'GraphicPixel';
+    font-size: 9px;
+    text-align: center;
+    height: 0;
+    opacity: 0;
+    padding: 20px;
+    padding-top: 0;
+    padding-bottom: 0;
+    transition: 0.2s ease-in-out all;
+    bottom: 18px;
+}
+
+#avatarStats.visible {
+    height: 20px;
+    padding-top: 5px;
+    padding-bottom: 10px;
+    opacity: 100;
+    transition: 0.2s ease-in-out all;
+    line-height: 9px;
+}
+
+#weaponStats {
+    position: absolute;
+    left: 70px;
+    background: url(../img/1/barsheet.png);
+    background-position: -240px -48px;
+    width: 91px;
+    color: #FFF;
+    font-family: 'GraphicPixel';
+    font-size: 9px;
+    text-align: center;
+    height: 0;
+    opacity: 0;
+    padding: 20px;
+    padding-top: 0;
+    padding-bottom: 0;
+    transition: 0.2s ease-in-out all;
+    bottom: 18px;
+}
+
+#weaponStats.visible {
+    height: 20px;
+    padding-top: 5px;
+    padding-bottom: 10px;
+    opacity: 100;
+    transition: 0.2s ease-in-out all;
+    line-height: 9px;
+}
+
 
 .barbutton {background:url('../img/1/barsheet.png');image-rendering:-moz-crispt-edges;position:absolute;}
 
 #chatbox {background:url('../img/1/barsheet.png');image-rendering:-moz-crisp-edges;position:absolute;left:50%;z-index:5;-moz-transition:0.2s bottom ease;-webkit-transition:0.2s bottom ease;-o-transition:0.2s bottom ease;-ms-transition:0.2s bottom ease;transition:0.2s bottom ease;}
 .bubble p {-moz-user-select:none;-webkit-user-select:none;}
 .bubbleglobal p {-moz-user-select:none;-webkit-user-select:none; text-align: left; flex: 0 0 100%;}
+
+#emoteMenuToggle {
+    width: 12px;
+    height: 12px;
+    position: absolute;
+    top: 3px;
+    left: 4px;
+    background: url(../img/1/barsheet.png);
+    background-position-y: -65px;
+    cursor: pointer;
+    display:none;
+}
+
+#emoteMenu {
+    position: absolute;
+    top: 8px;
+    left: 40px;
+    height:24px;
+    overflow-y:hidden;
+}
+
+#emoteMenu .emote {
+    width: 16px;
+    height: 14px;
+    display: inline-block;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.2);
+    margin: 0 2px 0 2px;
+    padding: 4px;
+    text-align: center;
+    cursor: pointer;
+}
+
+#emoteMenu .emote:hover {
+    background: rgba(255,255,255,0.6);
+    transition: ease-in-out all 0.2s;
+}
+
+#chatbox.active #emoteMenuToggle {
+    display:block;
+}
 
 #instructions {position:absolute;top:50%;left:50%;z-index:1000;font-family:'GraphicPixel';pointer-events:none;opacity:0;-moz-transition:0.25s opacity linear;-webkit-transition:0.4s top ease, 0.4s opacity linear;-o-transition:0.4s top ease, 0.4s opacity linear;-ms-transition:0.4s top ease, 0.4s opacity linear;transition:0.4s top ease, 0.4s opacity linear;}
 #instructions.active, #achievements.active {opacity:1;pointer-events:auto;}
@@ -199,6 +313,50 @@ body.upscaled.game {background:#000;}
 .achievement-sharing {position:absolute;display:none;}
 #achievements li.unlocked:hover .achievement-sharing {display:block;}
 .achievement-sharing a {display:block;float:left;}
+
+
+.panel {
+    background: none !important;
+    border-image-source: url("../img/common/panel.png");
+    border-image-slice: 12 fill;
+    border-image-repeat: round;
+    image-rendering: pixelated;
+    border-image-width: 12px;
+    font-family: 'GraphicPixel', arial, sans-serif;
+}
+
+.panel .panelTitle,
+.panelBorder .panelTitle{
+    background: none !important;
+    border-image-source: url("../img/common/panel.png");
+    border-image-slice: 12;
+    border-image-repeat: round;
+    image-rendering: pixelated;
+    border-image-width: 6px;
+    padding: 12px 0;
+    margin-bottom: -30px;
+    color: color(srgb 0.8233 0.73 0.1835);
+    text-shadow: 0 1px black;
+    line-height: 12px;
+    background-color: color(srgb 0.3267 0.2107 0.2608) !important;
+    position: relative;
+    top: -12px;
+    text-align: center;
+    overflow: hidden;
+    border-radius: 5px;
+}
+
+
+.panelBorder {
+    font-family: 'GraphicPixel', arial, sans-serif;
+    background: none !important;
+    border-image-source: url("../img/common/panel.png");
+    border-image-slice: 9;
+    border-image-repeat: round;
+    border-image-width: 6px;
+    border-radius: 12px;
+    image-rendering: pixelated;
+}
 
 #bubbles a {pointer-events:auto;text-decoration:none;color:#fcda5c;}
 
@@ -261,6 +419,44 @@ footer div  {display:inline-block;}
 #resize-check {position:absolute;height:0;top:0;left:0;-moz-transition:0.001s height ease;-webkit-transition:0.001s height ease;-o-transition:0.001s height ease;-ms-transition:0.001s height ease;transition:0.001s height ease;}
 
 #death p em, #settings p em {display:block;font-style:normal;}
+
+#inventory .item {
+    text-align: center;
+    width: 42px;
+    display: inline-block;
+    border-radius: 4px;
+    padding: 5px;
+    line-height: 25px !important;
+    margin-top: 5px;
+    position: relative;
+}
+
+#inventory .item .tooltiptext {
+    visibility: hidden;
+    padding: 0.25em 0.5em;
+    background-color: #dec696;
+    color: #000000;
+    text-align: center;
+    border-radius: 0.25em;
+    white-space: nowrap;
+    position: absolute;
+    z-index: 1;
+    top: 100%;
+    left: 100%;
+    font-family: "GraphicPixel";
+    outline-style: solid;
+    outline-color: #a18b61;
+    outline-width: thin;
+  }
+
+#inventory .item:hover {
+    background: #d9c399;
+}
+
+#inventory .item:hover .tooltiptext {
+    visibility: visible;
+}
+
 
 /* Magic Parchment */
 
@@ -432,8 +628,38 @@ footer div  {display:inline-block;}
     .upscaled #achievements, .upscaled #achievements li, .upscaled .coin, .upscaled #achievement-notification, .upscaled #coinsparks, .upscaled .achievement-sharing a, .upscaled #previous, .upscaled #next {background:url('../img/3/achievements.png');}
     .upscaled #fishingbar, #fishing-marker {background:url('../img/3/fishing.png');}
 
-    body {background:-moz-radial-gradient(rgba(0,0,0,0) 40%,rgba(0,0,0,1) 125%), url('../img/1/wood2.png') no-repeat 1587px 138px, url('../img/1/wood2.png') no-repeat 51px 519px, url('../img/1/wood3.png') no-repeat 228px 219px, url('../img/1/wood.png') repeat, #000; background-size:auto, 15px auto, 15px auto, 60px auto, 384px;}
-    body {background:-webkit-gradient(radial, center center, 360, center center, 1200, from(rgba(0,0,0,0)), to(rgba(0,0,0,1))), url('../img/3/wood2.png') no-repeat 1587px 138px, url('../img/3/wood2.png') no-repeat 51px 519px, url('../img/3/wood3.png') no-repeat 228px 219px, url('../img/3/wood.png') repeat, #000; background-size:auto, 15px auto, 15px auto, 60px auto, 384px;}
+    .upscaled #avatarStats {
+        left: 210px;
+        bottom: 65px;
+        background: url('../img/3/barsheet.png');
+        background-position: -720px -144px;
+        width: 353px;
+        font-size: 16px;
+        line-height: 24px;
+    }
+    .upscaled #avatarStats.visible {
+        height: 43px;
+        padding-top: 28px;
+        padding-bottom: 20px;
+    }
+
+    .upscaled #weaponStats {
+        left: 161px;
+        bottom: 65px;
+        background: url('../img/3/barsheet.png');
+        background-position: -720px -144px;
+        width: 353px;
+        font-size: 16px;
+        line-height: 24px;
+    }
+    .upscaled #weaponStats.visible {
+        height: 43px;
+        padding-top: 28px;
+        padding-bottom: 20px;
+    }
+
+    body {background:-moz-radial-gradient(rgba(0,0,0,0) 40%,rgba(0,0,0,1) 125%), #000; background-size:auto, 15px auto, 15px auto, 60px auto, 384px;}
+    body {background:-webkit-gradient(radial, center center, 360, center center, 1200, from(rgba(0,0,0,0)), to(rgba(0,0,0,1))),#000; background-size:auto, 15px auto, 15px auto, 60px auto, 384px;}
     #logo, #logosparks, .left-ornament, .right-ornament, #character, #character div, .button, .button div, #respawn, #scroll, #instructions, .icon, .avatar, .close, #note, .ribbon .top, .ribbon .bottom, #about .img, .ext-link {background-size:1266px auto;}
     #logo {height:126px;width:687px;position:absolute;top:10%;left:50%;margin-left:-344px;z-index:3;}
     #logosparks {width:687px;height:126px;z-index:4;-moz-animation:logo3 .8s steps(6, end) infinite;-webkit-animation:logo3 .8s steps(6, end) infinite;-o-animation:logo3 .8s steps(6, end) infinite;-ms-animation:logo3 .8s steps(6, end) infinite;}
@@ -445,7 +671,7 @@ footer div  {display:inline-block;}
     #character {height:63px;width:36px;margin:0 auto;background-position:-1062px -36px;margin-top:45px;position:relative;}
     #character div {height:63px;width:36px;position:absolute;top:0;left:0;background-position:-1098px -36px;opacity:1;}
     #character.disabled div {opacity:0;pointer-events:none;}
-    #parchment input {margin-top:30px; padding:0 15px; border:3px dashed #b2af9b; font-size:30px;border-radius:9px;height:61px;}
+    #parchment input {margin-top:30px; padding:0 15px; border:3px dashed #b2af9b; font-size:30px;border-radius:9px;height:30px;}
     .button {height:153px;width:375px;background-position:-687px -306px;margin:30px auto 0 auto;position:relative;}
     .play div {height:153px;width:375px;background-position:-687px 0px;}
     .play div:active {background-position:-687px -459px;}
@@ -507,9 +733,11 @@ footer div  {display:inline-block;}
 
     #healthbar {height:39px;background-position:0 -51px;width:306px;top:9px;background-size:1440px;z-index:20;}
     #hitpoints {width:0px;height:21px;top:15px;left:33px;z-index:10; position:absolute; border-top: 3px solid #ea6767; border-bottom: 3px solid #a62828;}
-
+    
     #fishingbar {width:72px;height:450px;}
-    #fishingtarget {margin-top:0px;height:0px;width:48px;left:12px; position:absolute; border-top: 3px solid #55b000; border-bottom: 3px solid #55b000;}
+    #bullseye {text-shadow: -1px -1px 3px #000, 1px -1px 3px #000, -1px 1px 3px #000, 1px 1px 3px #000;font-size:36px;}
+    #fishingtarget {margin-top:0px;height:0px;width:48px;left:12px; position:absolute;box-shadow:0px -3px 0px 0px green inset, 0px 3px 0px 0px green inset;}
+    #fishingtargetbullseye {margin-top:0px;height:0px;width:48px;left:0px; position:absolute;}
     #fish-box {margin-top:0px;height:48px;width:48px;top:12px;left:12px; position:absolute;}
     #fish-marker{width:54px;height:9px;background-position:-72px 0;background-size:126px;left:-3px;top:21px;}
     #fish {height:48px;width:48px;position:absolute;}
@@ -547,7 +775,34 @@ footer div  {display:inline-block;}
 
     #chatbox {height:48px;width:1182px;background-size:1440px;background-position:0 -96px;margin-left:-591px;bottom:18px;}
     #chatbox.active {bottom:66px;}
-    #chatbox input {font-size:20px;color:#eee;background:none;width:90%;border:0;margin-left:2%;padding:16px 0;}
+    #chatbox input {font-size:20px;color:#eee;background:none;width:90%;border:0;margin-left:5%;padding:16px 0;}
+
+    .upscaled #emoteMenuToggle {
+        width: 36px;
+        height: 36px;
+        position: absolute;
+        top: 8px;
+        left: 14px;
+        background: url(../img/3/barsheet.png);
+        background-position-y: -192px;
+        cursor: pointer;
+    }
+    .upscaled #emoteMenu {
+        top: 20%;
+        left: 5%;
+        overflow-y: hidden;
+    }
+    .upscaled #emoteMenu .emote {
+        width: 16px;
+        height: 16px;
+        display: inline-block;
+        border-radius: 6px;
+        background: rgba(255,255,255,0.2);
+        margin: 0px 3px 0 3px;
+        padding: 0.2rem;
+        text-align: center;
+        cursor: pointer;
+    }
 
     /*Credits*/
     #credits, #death, #about, #settings {width:1266px;height:546px;margin-left:-633px;margin-top:-273px;font-size:30px;}
@@ -594,6 +849,12 @@ footer div  {display:inline-block;}
 
     footer {font-size:20px;}
     #resize-check {height:3px;}
+
+    .panelTitle {
+        padding: 20px 0 !important;
+        top: -21px !important;
+        margin-bottom:-50px !important;
+    }
 }
 
 @media screen and (max-width: 1500px) {
@@ -603,8 +864,77 @@ footer div  {display:inline-block;}
     .upscaled #achievements, .upscaled #achievements li, .upscaled .coin, .upscaled #achievement-notification, .upscaled #coinsparks, .upscaled .achievement-sharing a, .upscaled #previous, .upscaled #next {background:url('../img/2/achievements.png');}
     .upscaled #fishingbar, #fish-marker {background:url('../img/2/fishing.png');}
 
-    body {background:-moz-radial-gradient(rgba(0,0,0,0) 40%,rgba(0,0,0,1) 125%), url('../img/1/wood.png') repeat, #000; background-size:auto, 256px;}
-    body {background:-webkit-gradient(radial, center center, 240, center center, 800, from(rgba(0,0,0,0)), to(rgba(0,0,0,1))), url('../img/2/wood.png') repeat, #000; background-size:auto, 256px;}
+    #emoteMenuToggle {
+        width: 24px;
+        height: 24px;
+        position: absolute;
+        top: 6px;
+        left: 9px;
+        background: url(../img/2/barsheet.png);
+        background-position-y: -129px;
+        cursor: pointer;
+    }
+
+    #avatarStats {
+        position: absolute;
+        left: 132px;
+        bottom: 43px;
+        background: url(../img/2/barsheet.png);
+        background-position: -480px -96px;
+        width: 222px;
+        color: #FFF;
+        font-family: 'GraphicPixel';
+        font-size: 12px;
+        text-align: center;
+        height:0;
+        opacity: 0;
+        padding: 20px;
+        padding-top: 0;
+        padding-bottom: 0;
+        transition: 0.2s ease-in-out all;
+        border-radius: 10px 0 0 0;
+    }
+
+    #avatarStats.visible {
+        height: 27px;
+        padding-top: 18px;
+        padding-bottom: 20px;
+        opacity: 100;
+        transition: 0.2s ease-in-out all;
+        line-height:18px;
+    }
+
+    #weaponStats {
+        position: absolute;
+        left: 106px;
+        bottom: 44px;
+        background: url(../img/2/barsheet.png);
+        background-position: -480px -96px;
+        width: 222px;
+        color: #FFF;
+        font-family: 'GraphicPixel';
+        font-size: 12px;
+        text-align: center;
+        height:0;
+        padding:20px;
+        padding-top: 0;
+        padding-bottom: 0;
+        opacity: 0;
+        transition: 0.2s ease-in-out all;
+        border-radius: 10px 0 0 0;
+    }
+
+    #weaponStats.visible {
+        height: 20px;
+        padding-top: 16px;
+        padding-bottom: 20px;
+        opacity: 100;
+        line-height:16px;
+        transition: 0.2s ease-in-out all;
+    }
+
+    body {background:-moz-radial-gradient(rgba(0,0,0,0) 40%,rgba(0,0,0,1) 125%), #000; background-size:auto, 256px;}
+    body {background:-webkit-gradient(radial, center center, 240, center center, 800, from(rgba(0,0,0,0)), to(rgba(0,0,0,1))),#000; background-size:auto, 256px;}
     #logo, #logosparks, .left-ornament, .right-ornament, #character, #character div, .button, .button div, #respawn, #scroll, #instructions, .icon, .avatar, .close, #note, .ribbon .top, .ribbon .bottom, #about .img, .ext-link {background-size:844px auto;}
     #logo {height:84px;width:458px;position:absolute;top:10%;left:50%;margin-left:-229px;z-index:3;}
     #logosparks {width:458px;height:84px;z-index:4;-moz-animation:logo2 .8s steps(6, end) infinite;-webkit-animation:logo2 .8s steps(6, end) infinite;-o-animation:logo2 .8s steps(6, end) infinite;-ms-animation:logo2 .8s steps(6, end) infinite;}
@@ -616,7 +946,7 @@ footer div  {display:inline-block;}
     #character {height:42px;width:24px;margin:0 auto;background-position:-708px -24px;margin-top:30px;position:relative;}
     #character div {height:42px;width:24px;position:absolute;top:0;left:0;background-position:-732px -24px;opacity:1;}
     #character.disabled div {opacity:0;pointer-events:none;}
-    #parchment input {margin-top:20px; padding:0 10px; border:2px dashed #b2af9b; font-size:20px;border-radius:6px;height:41px;}
+    #parchment input {margin-top:20px; padding:0 10px; border:2px dashed #b2af9b; font-size:20px;border-radius:6px;height:20px;}
     .button {height:102px;width:250px;background-position:-458px -204px;margin:20px auto 0 auto;position:relative;}
     .play div {height:102px;width:250px;background-position:-458px 0px;}
     .play div:active {background-position:-458px -306px;}
@@ -676,10 +1006,12 @@ footer div  {display:inline-block;}
     #bar-container {height:34px;top:-2px;background-size:960px;}
 
     #healthbar {height:26px;background-position:0 -34px;width:204px;top:6px;background-size:960px;z-index:20;}
-    #hitpoints {width:0px;height:16px;top:8px;left:22px;z-index:10;position:absolute;}
+    #hitpoints {width:0px;height:20px;top:8px;left:22px;z-index:10;position:absolute;}
 
     #fishingbar {width:48px;height:300px;}
-    #fishingtarget {margin-top:0px;height:0px;width:32px;left:8px; position:absolute; border-top: 2px solid #55b000; border-bottom: 2px solid #55b000;}
+    #bullseye {text-shadow: -1px -1px 2px #000, 1px -1px 2px #000, -1px 1px 2px #000, 1px 1px 2px #000;font-size:24px;}
+    #fishingtarget {margin-top:0px;height:0px;width:32px;left:8px; position:absolute; box-shadow:0px -2px 0px 0px green inset, 0px 2px 0px 0px green inset;}
+    #fishingtargetbullseye {margin-top:0px;height:0px;width:32px;left:0px; position:absolute;}
     #fish-box {margin-top:0px;height:32px;width:32px;top:8px;left:8px; position:absolute;}
     #fish-marker{width:36px;height:6px;background-position:-48px 0;background-size:84px;left:-2px;top:14px;}
     #fish {height:32px;width:32px;position:absolute;}
@@ -695,7 +1027,7 @@ footer div  {display:inline-block;}
 
     #playercount {font-size:16px;left:717px;top:10px;width:114px;text-align:center;}
     #population {background-size:960px;right:70px;bottom:44px;width:262px;background-position:-480px -96px;font-size:14px;line-height:20px;}
-    #population.visible {height:64px;}
+    #population.visible {height:64px; border-radius: 10px 0 0 0;}
     #instance-population {padding-top:12px;}
 
     .barbutton {background-size:960px;height:30px;width:28px;}
@@ -716,7 +1048,26 @@ footer div  {display:inline-block;}
 
     #chatbox {height:32px;width:788px;background-size:960px;background-position:0 -64px;margin-left:-394px;bottom:12px;}
     #chatbox.active {bottom:44px;}
-    #chatbox input {font-size:20px;color:#eee;background:none;width:90%;border:0;margin-left:2%;padding:7px 0;}
+    #chatbox input {font-size:20px;color:#eee;background:none;width:90%;border:0;margin-left:5%;padding:7px 0;}
+
+    #emoteMenu {
+        position: absolute;
+        top: 8px;
+        left: 40px;
+        height: 24px;
+        overflow-y: hidden;
+    }
+    #emoteMenu .emote {
+        width: 16px;
+        height: 14px;
+        display: inline-block;
+        border-radius: 6px;
+        background: rgba(255,255,255,0.2);
+        margin: 0 2px 0 2px;
+        padding: 4px;
+        text-align: center;
+        cursor: pointer;
+    }
 
     /*Credits*/
     #credits, #death, #about, #settings {width:844px;height:364px;margin-left:-422px;margin-top:-182px;font-size:20px;}
@@ -773,8 +1124,8 @@ footer div  {display:inline-block;}
     .upscaled #achievements, .upscaled #achievements li, .upscaled .coin, .upscaled #achievement-notification, .upscaled #coinsparks, .upscaled .achievement-sharing a, .upscaled #previous, .upscaled #next {background:url('../img/2/achievements.png');}
     .upscaled #fishingbar, #fish-marker {background:url('../img/2/fishing.png');}
 
-    body {background:-moz-radial-gradient(rgba(0,0,0,0) 40%,rgba(0,0,0,1) 125%), url('../img/1/wood.png') repeat, #000; background-size:auto, 256px;}
-    body {background:-webkit-gradient(radial, center center, 240, center center, 800, from(rgba(0,0,0,0)), to(rgba(0,0,0,1))), url('../img/2/wood.png') repeat, #000; background-size:auto, 256px;}
+    body {background:-moz-radial-gradient(rgba(0,0,0,0) 40%,rgba(0,0,0,1) 125%), #000; background-size:auto, 256px;}
+    body {background:-webkit-gradient(radial, center center, 240, center center, 800, from(rgba(0,0,0,0)), to(rgba(0,0,0,1))),#000; background-size:auto, 256px;}
     #logo, #logosparks, .left-ornament, .right-ornament, #character, #character div, .button, .button div, #respawn, #scroll, #instructions, .icon, .avatar, .close, #note, .ribbon .top, .ribbon .bottom, #about .img, .ext-link {background-size:844px auto;}
     #logo {height:84px;width:458px;position:absolute;top:10%;left:50%;margin-left:-229px;z-index:3;}
     #logosparks {width:458px;height:84px;z-index:4;-moz-animation:logo2 .8s steps(6, end) infinite;-webkit-animation:logo2 .8s steps(6, end) infinite;-o-animation:logo2 .8s steps(6, end) infinite;-ms-animation:logo2 .8s steps(6, end) infinite;}
@@ -786,7 +1137,7 @@ footer div  {display:inline-block;}
     #character {height:42px;width:24px;margin:0 auto;background-position:-708px -24px;margin-top:30px;position:relative;}
     #character div {height:42px;width:24px;position:absolute;top:0;left:0;background-position:-732px -24px;opacity:1;}
     #character.disabled div {opacity:0;pointer-events:none;}
-    #parchment input {margin-top:20px; padding:0 10px; border:2px dashed #b2af9b; font-size:20px;border-radius:6px;height:41px;}
+    #parchment input {margin-top:20px; padding:0 10px; border:2px dashed #b2af9b; font-size:20px;border-radius:6px;height:20px;}
     .button {height:102px;width:250px;background-position:-458px -204px;margin:20px auto 0 auto;position:relative;}
     .play div {height:102px;width:250px;background-position:-458px 0px;}
     .play div:active {background-position:-458px -306px;}
@@ -815,6 +1166,62 @@ footer div  {display:inline-block;}
     #instructions li:nth-child(2) span {height:32px;width:26px;background-position:-786px -24px; display:block;float:left;margin: 0 24px 28px 40px;position: relative;top: -6px;}
     #instructions li:nth-child(3) span {height:42px;width:32px;background-position:-812px -24px; display:block;float:left;margin: 0 18px 0 40px;position: relative;top: -12px;}
     #instructions p {text-align:center;font-family:'GraphicPixel';font-size:20px;clear:left;margin-top:20px;}
+
+    .upscaled #avatarStats {
+        position: absolute;
+        left: 132px;
+        bottom: 43px;
+        background: url(../img/2/barsheet.png);
+        background-position: -480px -96px;
+        width: 222px;
+        color: #FFF;
+        font-family: 'GraphicPixel';
+        font-size: 12px;
+        text-align: center;
+        height:0;
+        opacity: 0;
+        padding: 20px;
+        padding-top: 0;
+        padding-bottom: 0;
+        transition: 0.2s ease-in-out all;
+    }
+
+    .upscaled #avatarStats.visible {
+        height: 27px;
+        padding-top: 18px;
+        padding-bottom: 20px;
+        opacity: 100;
+        transition: 0.2s ease-in-out all;
+        line-height:18px;
+    }
+
+    .upscaled #weaponStats {
+        position: absolute;
+        left: 106px;
+        bottom: 44px;
+        background: url(../img/2/barsheet.png);
+        background-position: -480px -96px;
+        width: 222px;
+        color: #FFF;
+        font-family: 'GraphicPixel';
+        font-size: 12px;
+        text-align: center;
+        height:0;
+        padding:20px;
+        padding-top: 0;
+        padding-bottom: 0;
+        opacity: 0;
+        transition: 0.2s ease-in-out all;
+    }
+
+    .upscaled #weaponStats.visible {
+        height: 20px;
+        padding-top: 16px;
+        padding-bottom: 20px;
+        opacity: 100;
+        line-height:16px;
+        transition: 0.2s ease-in-out all;
+    }
 
     #playerimage {height: 64px; width: 64px;}
 
@@ -849,7 +1256,9 @@ footer div  {display:inline-block;}
     #hitpoints {width:0px;height:16px;top:8px;left:22px;z-index:10;position:absolute;border-top: 3px solid #ea6767; border-bottom: 3px solid #a62828;}
 
     #fishingbar {width:48px;height:300px;}
-    #fishingtarget {margin-top:0px;height:0px;width:32px;left:8px; position:absolute; border-top: 2px solid #55b000; border-bottom: 2px solid #55b000;}
+    #bullseye {text-shadow: -1px -1px 2px #000, 1px -1px 2px #000, -1px 1px 2px #000, 1px 1px 2px #000;font-size:24px;}
+    #fishingtarget {margin-top:0px;height:0px;width:32px;left:8px; position:absolute; box-shadow:0px -2px 0px 0px green inset, 0px 2px 0px 0px green inset;}
+    #fishingtargetbullseye {margin-top:0px;height:0px;width:32px;left:0px; position:absolute;}
     #fish-box {margin-top:0px;height:32px;width:32px;top:8px;left:8px; position:absolute;}
     #fish-marker{width:36px;height:6px;background-position:-48px 0;background-size:84px;left:-2px;top:14px;}
     #fish {height:32px;width:32px;position:absolute;}
@@ -886,7 +1295,18 @@ footer div  {display:inline-block;}
 
     #chatbox {height:32px;width:788px;background-size:960px;background-position:0 -64px;margin-left:-394px;bottom:12px;}
     #chatbox.active {bottom:44px;}
-    #chatbox input {font-size:20px;color:#eee;background:none;width:90%;border:0;margin-left:2%;padding:7px 0;}
+    #chatbox input {font-size:20px;color:#eee;background:none;width:90%;border:0;margin-left:5%;padding:7px 0;}
+
+    .upscaled #emoteMenuToggle {
+        width: 24px;
+        height: 24px;
+        position: absolute;
+        top: 6px;
+        left: 9px;
+        background: url(../img/2/barsheet.png);
+        background-position-y: -129px;
+        cursor: pointer;
+    }
 
     /*Credits*/
     #credits, #death, #about, #settings {width:844px;height:364px;margin-left:-422px;margin-top:-182px;font-size:20px;}
@@ -938,8 +1358,8 @@ footer div  {display:inline-block;}
 @media screen and (max-width: 1000px) {
 
     canvas {image-rendering:optimizeSpeed;}
-    body {background:-moz-radial-gradient(rgba(0,0,0,0) 40%,rgba(0,0,0,1) 125%), url('../img/1/wood.png') repeat, #000; background-size:auto, 128px;}
-    body {background:-webkit-gradient(radial, center center, 200, center center, 600, from(rgba(0,0,0,0)), to(rgba(0,0,0,1))), url('../img/1/wood.png') repeat, #000; background-size:auto, 128px;}
+    body {background:-moz-radial-gradient(rgba(0,0,0,0) 40%,rgba(0,0,0,1) 125%), #000; background-size:auto, 128px;}
+    body {background:-webkit-gradient(radial, center center, 200, center center, 600, from(rgba(0,0,0,0)), to(rgba(0,0,0,1))), #000; background-size:auto, 128px;}
     #logo, #logosparks, .left-ornament, .right-ornament, #character, #character div, .button, .button div, #respawn, #scroll, #instructions, .icon, .avatar, .close, #note, .ribbon .top, .ribbon .bottom, #about .img, .ext-link {background-size:422px auto;}
     #logo {height:42px;width:229px;position:absolute;top:10%;left:50%;margin-left:-114px;z-index:3;}
     #logosparks {width:229px;height:42px;z-index:4;-moz-animation:logo1 .8s steps(6, end) infinite;-webkit-animation:logo1 .8s steps(6, end) infinite;-o-animation:logo1 .8s steps(6, end) infinite;-ms-animation:logo1 .8s steps(6, end) infinite;}
@@ -951,7 +1371,7 @@ footer div  {display:inline-block;}
     #character {height:21px;width:12px;margin:0 auto;background-position:-354px -12px;margin-top:15px;position:relative;}
     #character div {height:21px;width:12px;position:absolute;top:0;left:0;background-position:-366px -12px;opacity:1;}
     #character.disabled div {opacity:0;pointer-events:none;}
-    #parchment input {margin-top:10px; padding:0 5px; border:1px dashed #b2af9b; font-size:10px;border-radius:3px;height:21px;}
+    #parchment input {margin-top:10px; padding:0 5px; border:1px dashed #b2af9b; font-size:10px;border-radius:3px;height:10px;}
     .button {height:51px;width:125px;background-position:-229px -102px;margin:10px auto 0 auto;position:relative;}
     .play div {height:51px;width:125px;background-position:-229px 0px;}
     .play div:active {background-position:-229px -153px;}
@@ -1013,10 +1433,12 @@ footer div  {display:inline-block;}
     #bar-container {height:17px;top:-1px;background-size:480px;}
 
     #healthbar {height:13px;background-position:0 -17px;width:102px;top:3px;background-size:480px;z-index:20;}
-    #hitpoints {width:0px;height:11px;top:4px;left:11px;z-index:10;position:absolute;}
+    #hitpoints {width:0px;height:5px;top:4px;left:11px;z-index:10;position:absolute;}
 
     #fishingbar {width:24px;height:150px;}
-    #fishingtarget {margin-top:0px;height:0px;width:16px;left:4px; position:absolute; border-top: 1px solid #55b000; border-bottom: 1px solid #55b000;}
+    #bullseye {text-shadow: -1px -1px 1px #000, 1px -1px 1px #000, -1px 1px 1px #000, 1px 1px 1px #000;font-size:12px;}
+    #fishingtarget {margin-top:0px;height:0px;width:16px;left:4px; position:absolute;box-shadow:0px -1px 0px 0px green inset, 0px 1px 0px 0px green inset;}
+    #fishingtargetbullseye {margin-top:0px;height:0px;width:16px;left:0px; position:absolute;}
     #fish-box {margin-top:0px;height:16px;width:16px;top:4px;left:4px; position:absolute;}
     #fish-marker{width:18px;height:3px;background-position:-24px 0;background-size:42px;left:-1px;top:7px;}
     #fish {height:16px;width:16px;position:absolute;}
@@ -1052,7 +1474,7 @@ footer div  {display:inline-block;}
 
     #chatbox {height:16px;width:394px;background-size:480px;background-position:0 -32px;margin-left:-197px;bottom:6px;}
     #chatbox.active {bottom:22px;}
-    #chatbox input {font-size:10px;color:#eee;background:none;width:90%;border:0;margin-left:2%;padding:0;}
+    #chatbox input {font-size:10px;color:#eee;background:none;width:90%;border:0;margin-left:5%;padding:0;}
 
     /*Credits*/
     #credits, #death, #about, #settings {width:422px;height:182px;top:50%;margin-left:-211px;margin-top:-91px;font-size:10px;}
@@ -1099,6 +1521,63 @@ footer div  {display:inline-block;}
     .game.credits .parchment-middle, .game.death .parchment-middle, .game.about .parchment-middle, .game.settings .parchment-middle {width:346px;margin-left:-173px;background-position: -38px -294px;}
 
     #resize-check {height:1px;}
+
+    #avatarStats {
+        position: absolute;
+        left: 70px;
+        background: url(../img/1/barsheet.png);
+        background-position: -240px -48px;
+        width: 91px;
+        color: #FFF;
+        font-family: 'GraphicPixel';
+        font-size: 9px;
+        text-align: center;
+        height: 0;
+        opacity: 0;
+        padding: 20px;
+        padding-top: 0;
+        padding-bottom: 0;
+        transition: 0.2s ease-in-out all;
+        bottom: 18px;
+    }
+
+    #avatarStats.visible {
+        height: 20px;
+        padding-top: 5px;
+        padding-bottom: 10px;
+        opacity: 100;
+        transition: 0.2s ease-in-out all;
+        line-height: 9px;
+    }
+
+    #weaponStats {
+        position: absolute;
+        left: 70px;
+        background: url(../img/1/barsheet.png);
+        background-position: -240px -48px;
+        width: 91px;
+        color: #FFF;
+        font-family: 'GraphicPixel';
+        font-size: 9px;
+        text-align: center;
+        height: 0;
+        opacity: 0;
+        padding: 20px;
+        padding-top: 0;
+        padding-bottom: 0;
+        transition: 0.2s ease-in-out all;
+        bottom: 18px;
+    }
+
+    #weaponStats.visible {
+        height: 20px;
+        padding-top: 5px;
+        padding-bottom: 10px;
+        opacity: 100;
+        transition: 0.2s ease-in-out all;
+        line-height: 9px;
+    }
+
 }
 
 @media screen and (max-width: 800px) {
@@ -1119,8 +1598,8 @@ footer div  {display:inline-block;}
 
     canvas {image-rendering:optimizeSpeed;}
     #moztab {display:none;}
-    body.intro {background:-moz-radial-gradient(rgba(0,0,0,0) 40%,rgba(0,0,0,1) 125%), url('../img/1/wood.png') repeat, #000; background-size:auto, 128px;}
-    body.intro {background:-webkit-gradient(radial, center center, 120, center center, 400, from(rgba(0,0,0,0)), to(rgba(0,0,0,1))), url('../img/1/wood.png') repeat, #000; background-size:auto, 128px;}
+    body.intro {background:-moz-radial-gradient(rgba(0,0,0,0) 40%,rgba(0,0,0,1) 125%), #000; background-size:auto, 128px;}
+    body.intro {background:-webkit-gradient(radial, center center, 120, center center, 400, from(rgba(0,0,0,0)), to(rgba(0,0,0,1))), #000; background-size:auto, 128px;}
     body {background:#000;}
     #logosparks {-moz-animation:none;-webkit-animation:none;-o-animation:none;-ms-animation:none;display:none;}
     #container {height:258px;width:480px;position:relative;left:50%;top:50%;margin:-128px auto 0 -240px;}
@@ -1138,7 +1617,7 @@ footer div  {display:inline-block;}
     #character {height:21px;width:12px;margin:0 auto;background-position:-354px -12px;margin-top:15px;position:relative;display:none;}
     #character div {height:21px;width:12px;position:absolute;top:0;left:0;background-position:-366px -12px;opacity:1;}
     #character.disabled div {opacity:0;pointer-events:none;}
-    #parchment input {margin-top:10px; padding-bottom:5px; border-bottom:1px dashed #b2af9b; font-size:20px;-moz-animation:none;-webkit-animation:none;-o-animation:none;-ms-animation:none;color:#eee;}
+    #parchment input {margin-top:20px; padding:0 10px; border:2px dashed #b2af9b; font-size:20px;border-radius:6px;height:20px;}
     .button {height:54px;width:204px;background-position:-500px -952px;margin:20px auto 0 auto;position:relative;background-size:844px;}
     .play div {height:54px;width:204px;background-position:-458px -512px; background-size:844px;}
     .play div:active {background-position:0px -1398px;}
@@ -1183,7 +1662,9 @@ footer div  {display:inline-block;}
     #hitpoints {width:0px;height:16px;top:8px;left:22px;z-index:10;position:absolute;}
 
     #fishingbar {width:48px;;height:300px;}
-    #fishingtarget {margin-top:0px;height:0px;width:32px;left:8px; position:absolute; border-top: 2px solid #55b000; border-bottom: 2px solid #55b000;}
+    #bullseye {text-shadow: -1px -1px 2px #000, 1px -1px 2px #000, -1px 1px 2px #000, 1px 1px 2px #000;font-size:24px;}
+    #fishingtarget {margin-top:0px;height:0px;width:32px;left:8px; position:absolute;box-shadow:0px -2px 0px 0px green inset, 0px 2px 0px 0px green inset;}
+    #fishingtargetbullseye {margin-top:0px;height:0px;width:32px;left:0px; position:absolute;}
     #fish-box {margin-top:0px;height:32px;width:32px;top:8px;left:8px; position:absolute;}
     #fish-marker{width:36px;height:6px;background-position:-48px 0;background-size:84px;left:-2px;top:14px;}
     #fish {height:32px;width:32px;position:absolute;}
@@ -1216,7 +1697,7 @@ footer div  {display:inline-block;}
 
     #chatbox {height:32px;width:480px;background-size:960px;background-position:0 -64px;margin-left:-240px;bottom:2px;}
     #chatbox.active {bottom:34px;}
-    #chatbox input {font-size:20px;color:#eee;background:none;width:90%;border:0;margin-left:2%;padding:0px 0;}
+    #chatbox input {font-size:20px;color:#eee;background:none;width:90%;border:0;margin-left:5%;padding:0px 0;}
 
     /*Credits*/
     .parchment-left, .upscaled .parchment-left, .parchment-middle, .upscaled .parchment-middle, .parchment-right, .upscaled .parchment-right {background:none;}
@@ -1238,6 +1719,63 @@ footer div  {display:inline-block;}
 
     footer {display:none;}
     #bubbles {overflow:hidden;}
+
+    #avatarStats {
+        position: absolute;
+        left: 70px;
+        background: url(../img/1/barsheet.png);
+        background-position: -240px -48px;
+        width: 91px;
+        color: #FFF;
+        font-family: 'GraphicPixel';
+        font-size: 9px;
+        text-align: center;
+        height: 0;
+        opacity: 0;
+        padding: 20px;
+        padding-top: 0;
+        padding-bottom: 0;
+        transition: 0.2s ease-in-out all;
+        bottom: 18px;
+    }
+
+    #avatarStats.visible {
+        height: 20px;
+        padding-top: 5px;
+        padding-bottom: 10px;
+        opacity: 100;
+        transition: 0.2s ease-in-out all;
+        line-height: 9px;
+    }
+
+    #weaponStats {
+        position: absolute;
+        left: 70px;
+        background: url(../img/1/barsheet.png);
+        background-position: -240px -48px;
+        width: 91px;
+        color: #FFF;
+        font-family: 'GraphicPixel';
+        font-size: 9px;
+        text-align: center;
+        height: 0;
+        opacity: 0;
+        padding: 20px;
+        padding-top: 0;
+        padding-bottom: 0;
+        transition: 0.2s ease-in-out all;
+        bottom: 18px;
+    }
+
+    #weaponStats.visible {
+        height: 20px;
+        padding-top: 5px;
+        padding-bottom: 10px;
+        opacity: 100;
+        transition: 0.2s ease-in-out all;
+        line-height: 9px;
+    }
+
 }
 
 @media screen and (max-width: 800px) and (orientation: portrait) {

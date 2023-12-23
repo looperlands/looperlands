@@ -46,7 +46,7 @@ function main() {
 // Loads the temporary JSON Tiled map converted by tmx2json.py
 function getTiledJSONmap(filename, callback) {
     if (fs.existsSync(filename)) { 
-    
+
         fs.readFile(source, function(err, file) {
             callback(JSON.parse(file.toString()));
         });

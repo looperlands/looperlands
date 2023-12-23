@@ -1,21 +1,22 @@
 const dao = require('../dao.js');
 const PlayerQuestEventConsumer = require('./playerquesteventconsumer.js');
+const Collectables = require('../collectables.js');
+
 class PlayerEventBroker {
     static Events = {
         KILL_MOB: 'KILL_MOB',
-        LOOT_ITEM: 'LOOT_ITEM'
+        LOOT_ITEM: 'LOOT_ITEM',
+        SPAWNED: 'SPAWNED',
+        DIED: 'DIED',
+        QUEST_COMPLETED: 'QUEST_COMPLETED',
+        NPC_TALKED: 'NPC_TALKED',
+        AREA_ENTERED: 'AREA_ENTERED',
+        AREA_LEFT: 'AREA_LEFT',
     };
 
-
     static playerEventBrokers = {};
-    static events = {};
     static playerEventConsumers = [];
     static cache;
-
-
-    static {
-        setInterval(PlayerEventBroker.processEvents, 5000);
-    }
 
     constructor(player) {
         this.player = player;
@@ -28,58 +29,80 @@ class PlayerEventBroker {
         this.player = player;
     }
 
-    static addEvent(eventType, sessionId, playerCache) {
+    static dispatchEvent(eventType, sessionId, player, playerCache, eventData) {
+        if(eventData === undefined) {
+            eventData = {};
+        }
+
+        eventData.player = player;
+        eventData.playerData = playerCache;
+
         let eventId = eventType + ',' + sessionId;
-        PlayerEventBroker.events[eventId] = playerCache;
+        PlayerEventBroker.processEvent(eventId, eventData);
     }
     
-    static async processEvents() {
-        let hasEvents = Object.keys(PlayerEventBroker.events).length !== 0;
-        if (hasEvents) {
-            // copy all the events before deleting them
-            let events = {... PlayerEventBroker.events};
-            PlayerEventBroker.events = {};
-
-            PlayerEventBroker.playerEventConsumers.forEach(consumer => {
-                for (const [eventId, playerCache] of Object.entries(events)) {
-                    let [eventType, sessionId] = eventId.split(',');
-                    let consumed = consumer.consume({eventType: eventType, playerCache: playerCache});
-                    if (consumed.changedQuests !== undefined && consumed.changedQuests.length > 0) {
-                        let playerCache = PlayerEventBroker.cache.get(sessionId);
-                        if (playerCache === undefined) {
-                            continue
-                        }
-                        playerCache.gameData.quests = consumed.quests;
-                        PlayerEventBroker.cache.set(sessionId, playerCache);
-                        let broker = PlayerEventBroker.playerEventBrokers[sessionId];
-                        broker.player.handleCompletedQuests(consumed.changedQuests);
-                    }
+    static async processEvent(eventId, eventData) {
+        PlayerEventBroker.playerEventConsumers.forEach(consumer => {
+            let [eventType, sessionId] = eventId.split(',');
+            let consumed = consumer.consume({eventType: eventType, playerCache: eventData.playerData, data: eventData});
+            if (consumed.changedQuests !== undefined && consumed.changedQuests.length > 0) {
+                let playerCache = PlayerEventBroker.cache.get(sessionId);
+                if (playerCache === undefined) {
+                    return;
                 }
-            });
-        }
+                playerCache.gameData.quests = consumed.quests;
+                PlayerEventBroker.cache.set(sessionId, playerCache);
+                let broker = PlayerEventBroker.playerEventBrokers[sessionId];
+                broker.player.handleCompletedQuests(consumed.changedQuests);
+            }
+        })
     }
 
-    async lootEvent(item) {
-        dao.saveLootEvent(this.player.nftId, item.kind);
+    async lootEvent(item, amount) {
+        if(amount === undefined) {
+            amount = 1;
+        }
+
+        dao.saveLootEvent(this.player.nftId, item.kind, amount);
 
         let sessionId = this.player.sessionId;
         let playerCache = this.cache.get(sessionId);
         let gameData = playerCache.gameData;
 
-        if (gameData.items === undefined) {
-            gameData.items = {};
+        if(!Types.isExpendableItem(parseInt(item.kind))) {
+            if (gameData.items === undefined) {
+                gameData.items = {};
+            }
+
+            let itemCount = gameData.items[item.kind];
+            if (itemCount) {
+                gameData.items[item.kind] = itemCount + amount;
+            } else {
+                gameData.items[item.kind] = amount;
+            }
+
+            playerCache.gameData = gameData;
+            this.cache.set(sessionId, playerCache);
+        }
+        if (Collectables.isCollectable(item.kind)){
+            dao.saveConsumable(this.player.nftId, item.kind, amount);
+
+            if (gameData.consumables === undefined) {
+                gameData.consumables = {};
+            }
+        
+            let itemCount = gameData.consumables[item.kind];
+            if (itemCount) {
+                gameData.consumables[item.kind] = itemCount + amount;
+            } else {
+                gameData.consumables[item.kind] = amount;
+            }
+        
+            playerCache.gameData = gameData;
+            this.cache.set(sessionId, playerCache);
         }
 
-        let itemCount = gameData.items[item.kind];
-        if (itemCount) {
-            gameData.items[item.kind] = itemCount + 1;
-        } else {
-            gameData.items[item.kind] = 1;
-        }
-
-        playerCache.gameData = gameData;
-        this.cache.set(sessionId, playerCache);
-        PlayerEventBroker.addEvent(PlayerEventBroker.Events.LOOT_ITEM, sessionId, playerCache);
+        PlayerEventBroker.dispatchEvent(PlayerEventBroker.Events.LOOT_ITEM, sessionId, this.player, playerCache, { item: item });
     }
 
     async killMobEvent(mob) {
@@ -102,9 +125,45 @@ class PlayerEventBroker {
 
         playerCache.gameData = gameData;
         this.cache.set(sessionId, playerCache);
-        PlayerEventBroker.addEvent(PlayerEventBroker.Events.KILL_MOB, sessionId, playerCache);
+        PlayerEventBroker.dispatchEvent(PlayerEventBroker.Events.KILL_MOB, sessionId, this.player, playerCache, { mob: mob });
     }
-    
+
+    async questCompleteEvent(quest, xpGained) {
+      let sessionId = this.player.sessionId;
+      let playerCache = this.cache.get(sessionId);
+      PlayerEventBroker.dispatchEvent(PlayerEventBroker.Events.QUEST_COMPLETED, sessionId, this.player, playerCache, { quest: quest, xp: xpGained });
+    }
+
+    async spawnEvent(self, checkpointId) {
+        let sessionId = this.player.sessionId;
+        let playerCache = this.cache.get(sessionId);
+        PlayerEventBroker.dispatchEvent(PlayerEventBroker.Events.SPAWNED, sessionId, this.player, playerCache, { checkpoint: checkpointId });
+    }
+
+    async deathEvent(self, position) {
+        let sessionId = this.player.sessionId;
+        let playerCache = this.cache.get(sessionId);
+        PlayerEventBroker.dispatchEvent(PlayerEventBroker.Events.DIED, sessionId, this.player, playerCache, { position: position.x + ',' + position.y});
+    }
+
+    async npcTalked(npc, message ) {
+        let sessionId = this.player.sessionId;
+        let playerCache = this.cache.get(sessionId);
+        PlayerEventBroker.dispatchEvent(PlayerEventBroker.Events.NPC_TALKED, sessionId, this.player, playerCache, { npc: npc, message: message });
+    }
+
+    async enteredArea(area) {
+        let sessionId = this.player.sessionId;
+        let playerCache = this.cache.get(sessionId);
+        PlayerEventBroker.dispatchEvent(PlayerEventBroker.Events.AREA_ENTERED, sessionId, this.player, playerCache, { area: area });
+    }
+
+    async leftArea(area) {
+        let sessionId = this.player.sessionId;
+        let playerCache = this.cache.get(sessionId);
+        PlayerEventBroker.dispatchEvent(PlayerEventBroker.Events.AREA_LEFT, sessionId, this.player, playerCache, { area: area });
+    }
+
     destroy() {
         delete PlayerEventBroker.playerEventBrokers[this.player.sessionId];
     }

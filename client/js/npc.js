@@ -301,12 +301,12 @@ define(['character'], function (Character) {
         ],
         "VILLAGESIGN2": ["Gregloop and Thunders Humble Abode."], //GREGLOOP
         "VILLAGESIGN3": ["Home of Ripnatius Ironhand"], //RIPNTEAR
-        "VILLAGESIGN4": ["Change me"],
-        "VILLAGESIGN5": ["Change me"],
-        "VILLAGESIGN6": ["Change me"],
-        "VILLAGESIGN7": ["Change me"],
-        "VILLAGESIGN8": ["Change me"],
-        "VILLAGESIGN9": ["Change me"],
+        "VILLAGESIGN4": ["Pneuma's Dispensary"], //PNEUMA
+        "VILLAGESIGN5": ["Bertles Turtle Club"],
+        "VILLAGESIGN6": ["Scrimp House"],
+        "VILLAGESIGN7": ["Home of Chocolate Wheystead"],
+        "VILLAGESIGN8": ["BFA"], //BFA (Alex)
+        "VILLAGESIGN9": ["Home of JackStraw"], // Jackstraw
 
         "cobellen": [
             "Ahh such beauty.",
@@ -316,6 +316,36 @@ define(['character'], function (Character) {
         "cobjohnny": [
             "Farm life is tough but it's something that we will all be able to do soon."
         ],
+        "VILLAGESIGN11": ["Home of Haxmya"], // Home of Haxmya
+        "VILLAGESIGN12": ["Squeaky Squeakerton's Squeakeasy"], //Squeaky's home
+        "VILLAGESIGN13": ["Rookie Rodman"],
+        "VILLAGESIGN14": ["Skilled Caster"],
+        "VILLAGESIGN15": ["Seasoned Angler"],
+        "VILLAGESIGN16": ["Adept Hookmaster"],
+        "VILLAGESIGN": ["Change me"],
+        "VILLAGESIGN17": ["Veteran Linehandler"],
+        "VILLAGESIGN18": ["Elite Tacklechief"],
+        "VILLAGESIGN19": ["Master Baiter"],
+        "VILLAGESIGN20": ["Grand Fisher Sage"],
+        "VILLAGESIGN21": ["Change me"],
+        "VILLAGESIGN22": ["Change me"],
+        "VILLAGESIGN23": ["Change me"],
+        "VILLAGESIGN24": ["Change me"],
+        "THEDIUS": ["Greetings"],
+        "NIANDRA": ["Hello there"],
+        "BLARK": ["Hello!"],
+        "DANIEL": ["Salutations"],
+        "ESTELLA": ["Greetings"],
+        "CITYSIGN1": ["Home of MyCupBloody"],
+        "CITYSIGN2": ["Home of Punk"],
+        "CITYSIGN3": ["Home of Enraged"],
+        "CITYSIGN4": ["FOR SALE!"],
+        "CITYSIGN5": ["FOR SALE!"],
+        "CITYSIGN6": ["FOR SALE!"],
+        "CITYSIGN7": ["FOR SALE!"],
+        "CITYSIGN8": ["FOR SALE!"],
+        "CITYSIGN9": ["FOR SALE!"],
+        "CITYSIGN10": ["FOR SALE!"],
         // @nextNPCLine@
     };
 
@@ -326,6 +356,7 @@ define(['character'], function (Character) {
             this.talkCount = NpcTalk[this.itemKind].length;
             this.talkIndex = 0;
             this.thoughts = [];
+            this.thoughtsClearedCallback = null;
         },
 
         talk: function () {
@@ -342,11 +373,13 @@ define(['character'], function (Character) {
             return msg;
         },
 
-        addThoughts: function (messages) {
+        addThoughts: function (messages, thoughtsClearedCallback) {
             // add elements from messages array to thoughts array
             for (var i = 0; i < messages.length; i++) {
                 this.thoughts.push(messages[i]);
             }
+
+            this.thoughtsClearedCallback = thoughtsClearedCallback;
         }
     });
 

@@ -6,7 +6,7 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN apt -y update
 RUN apt -q -y install curl
 ENV NVM_DIR /usr/local/nvm
-ENV NODE_VERSION v18.17.1
+ENV NODE_VERSION v20.9.0
 RUN mkdir -p /usr/local/nvm && apt-get update && echo "y" | apt-get install curl
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
 RUN /bin/bash -c "source $NVM_DIR/nvm.sh && nvm install $NODE_VERSION && nvm use --delete-prefix $NODE_VERSION"

@@ -10,6 +10,7 @@ class NFTSpecialItem{
         this.experience = undefined;
         this.level = 1;
         this.accumulatedExperience = 0;
+        this.trait = undefined;
     }
 
     async loadItemData() {
@@ -18,6 +19,19 @@ class NFTSpecialItem{
         let item = response.find((item) => item.NFTID === self.nftId);
         this.experience = item.experience;
         this.level = Formulas.toolLevel(this.experience);
+        this.trait = item.trait;
+        if (!this.trait) {
+            await this.#setTraitInServer();
+        }
+    }
+
+    async #setTraitInServer() {
+        try {
+            const trait = await dao.saveNFTSpecialItemTrait(this.walletId, this.nftId);
+            this.trait = trait;
+        } catch (error) {
+            console.error(error);
+        }
     }
 
     async incrementExperience(experience) {
@@ -52,6 +66,19 @@ class NFTSpecialItem{
 
     getLevel() {
         return this.level;
+    }
+
+    isTraitActive() {
+        let roll = Math.floor(Math.random() * 100);
+        let trait = this.getTrait();
+        let traitMod = (trait === "lucky" || trait === "upper_hand") ? 2 : 1;
+        
+        let chance = (5 + this.getLevel()) * traitMod;
+        return roll < chance;
+    }
+
+    getTrait() {
+        return this.trait;
     }
 }
 

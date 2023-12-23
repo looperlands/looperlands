@@ -8,12 +8,15 @@ var _ = require('underscore'),
             this.formats = [];
             this.formats[Types.Messages.HELLO] = ['s', 'n', 'n', 's'],
             this.formats[Types.Messages.MOVE] = ['n', 'n'],
+            this.formats[Types.Messages.SUMMON_FOLLOW] = ['n', 'n'],
             this.formats[Types.Messages.LOOTMOVE] = ['n', 'n', 'n'],
             this.formats[Types.Messages.AGGRO] = ['n'],
             this.formats[Types.Messages.ATTACK] = ['n'],
             this.formats[Types.Messages.HIT] = ['n'],
             this.formats[Types.Messages.HURT] = ['n'],
             this.formats[Types.Messages.CHAT] = ['s'],
+            this.formats[Types.Messages.EMOTE] = ['s'],
+            this.formats[Types.Messages.NOTIFY] = ['s'],
             this.formats[Types.Messages.LOOT] = ['n'],
             this.formats[Types.Messages.TELEPORT] = ['n', 'n'],
             this.formats[Types.Messages.ZONE] = [],
@@ -21,7 +24,14 @@ var _ = require('underscore'),
             this.formats[Types.Messages.CHECK] = ['n'],
             this.formats[Types.Messages.TRIGGER] = ['n', 'b'],
             this.formats[Types.Messages.EQUIP_INVENTORY] = ['n', 's'],
-            this.formats[Types.Messages.FISHINGRESULT] = ['b']
+            this.formats[Types.Messages.FOLLOW] = ['n'],
+            this.formats[Types.Messages.CAMERA] = ['n', 'n'],
+            this.formats[Types.Messages.SOUND] = ['s'],
+            this.formats[Types.Messages.MUSIC] = ['s'],
+            this.formats[Types.Messages.LAYER] = ['s', 'b'],
+            this.formats[Types.Messages.ANIMATE] = ['n', 's'],
+            this.formats[Types.Messages.FISHINGRESULT] = ['b', 'b']
+            this.formats[Types.Messages.CONSUMEITEM] = ['s']
         },
         
         check: function(msg) {

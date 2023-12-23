@@ -23,12 +23,12 @@ const Formulas = require('./formulas.js');
 const ens = require("./ens.js");
 const chat = require("./chat.js");
 const quests = require("./quests/quests.js");
-const signing = require("./signing.js");
 const Lakes = require("./lakes.js");
-
+const Collectables = require('./collectables.js');
 const cache = new NodeCache();
 
 const LOOPWORMS_LOOPERLANDS_BASE_URL = process.env.LOOPWORMS_LOOPERLANDS_BASE_URL;
+const INSTANCE_URI = process.env.INSTANCE_URI ? process.env.INSTANCE_URI : "";
 
 /**
  * Abstract Server and Connection classes
@@ -130,7 +130,8 @@ WS.socketIOServer = Server.extend({
         let http = new httpInclude.Server(app);
         
 
-        var corsAddress = self.protocol + "://" + self.host;
+        var corsAddress = self.protocol + "://" + self.host + INSTANCE_URI;
+        console.log("CORS Address", corsAddress);
         self.io = require('socket.io')(http, {
             allowEIO3: true,
             cors: {origin: corsAddress, credentials: true}
@@ -139,7 +140,7 @@ WS.socketIOServer = Server.extend({
         app.use(express.json())
 
 
-        function newSession(body) {
+        async function newSession(body, teleport) {
             const id = crypto.randomBytes(20).toString('hex');
             // this prevents failed logins not being able to login again
             body.isDirty = false;
@@ -147,6 +148,16 @@ WS.socketIOServer = Server.extend({
             if (body.mapId === undefined) {
                 body.mapId = "main";
             }
+            if (body.checkpointId === undefined) {
+                // teleport request
+                if (body.x !== undefined && body.y !== undefined) {
+                    let checkpoint = self.worldsMap[body.mapId].map.findClosestCheckpoint(body.x, body.y);
+                    await dao.saveAvatarCheckpointId(body.nftId, checkpoint.id);
+                }
+            }
+
+            body.xp = parseInt(body.xp);
+
             cache.set(id, body);
             let responseJson = {
                 "sessionId" : id
@@ -177,42 +188,29 @@ WS.socketIOServer = Server.extend({
                 return;
             };
 
-            let cacheKeys = cache.keys();
-            for (i in cacheKeys) {
-                let key = cacheKeys[i];
-                let cachedBody = cache.get(key);
-                let sameWallet = cachedBody.walletId === body.walletId;
-                if(sameWallet && cachedBody.isDirty === true) {
-                    let player = self.worldsMap[cachedBody.mapId].getEntityById(cachedBody.entityId);
-                    cache.del(key);
-                    if (player !== undefined) {
-                        player.connection.close('A new session from another device created');
+            let nftId = body.nftId.replace("0x", "NFT_");
+            let bot = Types.isBot(Types.getKindFromString(nftId));
+            if (!bot) {
+                let cacheKeys = cache.keys();
+                for (i in cacheKeys) {
+                    let key = cacheKeys[i];
+                    let cachedBody = cache.get(key);
+                    let sameWallet = cachedBody.walletId === body.walletId;
+                    if(sameWallet) {
+                        cache.del(key);
+                        if (cachedBody.isDirty === true) {
+                            let player = self.worldsMap[cachedBody.mapId]?.getPlayerById(cachedBody.entityId);
+                            if (player !== undefined) {
+                                player.connection.close('A new session from another device created');
+                            }
+                        }
+                        break;
                     }
-                    break;
-                } else if (sameWallet && cachedBody.isDirty === false){
-                    //console.log("deleting a session that never connected: " + key)
-                    cache.del(key);
                 }
             }
 
-            let signedMessage = body.signedMessage;
-            let signature = body.signature;
-            let validSignature = await signing.validateSignature(body.walletId, signedMessage, signature);
-            //console.log("Valid signature", validSignature);
 
-            /*
-            if (!validSignature) {
-                console.error("Invalid signature for wallet", body.walletId);
-                res.status(401).json({
-                    status: false,
-                    error: "Invalid signature",
-                    user: null
-                });
-                return;
-            }
-            */
-
-            let responseJson = newSession(body);
+            let responseJson = await newSession(body);
 
             res.status(200).send(responseJson);
         });
@@ -246,7 +244,7 @@ WS.socketIOServer = Server.extend({
             body.title = sessionData.title;
             delete body.map;
 
-            let responseJson = newSession(body);
+            let responseJson = await newSession(body, true);
 
             res.status(200).send(responseJson);
         });
@@ -358,26 +356,54 @@ WS.socketIOServer = Server.extend({
             }
             const walletId = sessionData.walletId;
 
-            const inventory = await axios.get(`${LOOPWORMS_LOOPERLANDS_BASE_URL}/selectLooperLands_Item.php?WalletID=${walletId}&APIKEY=${process.env.LOOPWORMS_API_KEY}`);
-            res.status(200).json(inventory.data);
-        });
-
-        app.get("/session/:sessionId/specialInventory", async (req, res) => {
-            const sessionId = req.params.sessionId;
-            const sessionData = cache.get(sessionId);
-            if (sessionData === undefined) {
-                //console.error("Session data is undefined for session id, params: ", sessionId, req.params);
-                res.status(404).json({
-                    status: false,
-                    "error" : "session not found",
-                    user: null
+            let inventory = [];
+            let rcvInventory = await axios.get(`${LOOPWORMS_LOOPERLANDS_BASE_URL}/selectLooperLands_Item.php?WalletID=${walletId}&APIKEY=${process.env.LOOPWORMS_API_KEY}`);
+            if (rcvInventory?.data){
+                inventory = rcvInventory.data.map(function(item) {
+                    if (item){
+                        return item.replace("0x", "NFT_");
+                    }
                 });
-                return;
+                if (inventory.length > 0) {
+                    inventory = inventory.filter(item => {
+                        if (item && Types.isWeapon(Types.getKindFromString(item))){
+                            return item;
+                        }
+                    });
+                }
             }
-            const walletId = sessionData.walletId;
 
-            const inventory = await dao.getSpecialItems(walletId);
-            res.status(200).json(inventory);
+            let special = [];
+            let rcvSpecial = await dao.getSpecialItems(walletId);
+            if (rcvSpecial) {
+                special = rcvSpecial.map(function(item) {
+                    if (item){
+                        return item.NFTID.replace("0x", "NFT_");
+                    }
+                });
+                if (special.length > 0) {
+                    special = special.filter(item => {
+                        if (item && Types.isSpecialItem(Types.getKindFromString(item))){
+                            return item;
+                        }
+                    });
+                }
+            }
+
+            let consumables = sessionData.gameData?.consumables || {};
+            Object.keys(consumables).forEach(item => {
+                if (!item || !Collectables.isCollectable(item) || consumables[item] <= 0){
+                    delete consumables[item];
+                } else {
+                    consumables[item] = {qty: consumables[item], 
+                                        consumable: Collectables.isConsumable(item), 
+                                        image: Collectables.getCollectableImageName(item),
+                                        description: Collectables.getInventoryDescription(item)};
+                }
+            });
+
+            let bots = await dao.getBots(walletId);
+            res.status(200).json({inventory: inventory, special: special, consumables: consumables, bots: bots});
         });
 
         app.get("/session/:sessionId/quests", async (req, res) => {
@@ -405,8 +431,12 @@ WS.socketIOServer = Server.extend({
                             id: quest.id,
                             name: quest.name,
                             desc: quest.questLogText ?? quest.startText,
+                            longDesc: quest.longText ?? quest.startText,
+                            type: quest.eventType,
+                            target: quest.target,
                             medal: quest.medal,
                             amount: quest.amount,
+                            level: quest.level,
                             status: "COMPLETED"
                         });
                     }
@@ -438,7 +468,11 @@ WS.socketIOServer = Server.extend({
                             id: quest.id,
                             name: quest.name,
                             desc: quest.questLogText ?? quest.startText,
+                            longDesc: quest.longText ?? quest.startText,
+                            type: quest.eventType,
+                            target: quest.target,
                             medal: quest.medal,
+                            level: quest.level,
                             progressCount: progressCount,
                             amount: quest.amount,
                             status: "IN_PROGRESS"
@@ -585,10 +619,19 @@ WS.socketIOServer = Server.extend({
                     }
                 }
 
+                let botInfo = {};
+                if (sessionData.botSessionId !== undefined) {
+                    let botSessionData = cache.get(sessionData.botSessionId);
+                    if (botSessionData !== undefined) {
+                        botInfo = Formulas.calculatePercentageToNextLevel(botSessionData.xp);
+                    }
+                }
+
                 let ret = {
                     avatarLevelInfo: avatarLevelInfo,
                     maxHp: maxHp,
-                    weaponInfo: weaponInfo
+                    weaponInfo: weaponInfo,
+                    botInfo: botInfo
                 }
                 res.status(200).json(ret);
             }
@@ -635,17 +678,28 @@ WS.socketIOServer = Server.extend({
             res.status(200).send(true);
         });
 
-        app.get("/players", async (req, res) => {
+        const corsOptions = {
+            origin: '*',
+            methods: [],
+            allowedHeaders: [],
+            exposedHeaders: [],
+            credentials: true
+        };
+
+        app.get("/players", cors(corsOptions), async (req, res) => {
             let players = []
             let cacheKeys = cache.keys();
             for (i in cacheKeys) {
                 let key = cacheKeys[i];
                 let cachedBody = cache.get(key);
-                if(cachedBody.isDirty === true) {
+                let player = self.worldsMap[cachedBody.mapId]?.getPlayerById(cachedBody.entityId);
+                if(cachedBody.isDirty === true && player !== undefined && !player.isBot()) {
                     let player = {
                         name: await ens.getEns(cachedBody.walletId),
                         wallet: cachedBody.walletId,
-                        avatar: cachedBody.nftId
+                        avatar: cachedBody.nftId,
+                        mapId: cachedBody.mapId,
+                        xp: cachedBody.xp
                     }
                     players.push(player);
                 }
@@ -688,8 +742,13 @@ WS.socketIOServer = Server.extend({
                     user: null
                 });
             } else {
-                let msgText = quests.handleNPCClick(cache, sessionId, npcId);
-                res.status(202).json(msgText);
+                let questData = quests.handleNPCClick(cache, sessionId, parseInt(npcId));
+                const sessionData = cache.get(sessionId);
+
+                if (questData) {
+                    self.worldsMap[sessionData.mapId].npcTalked(npcId, questData.text, sessionData)
+                }
+                res.status(202).json(questData);
             }
         });
 
@@ -736,16 +795,6 @@ WS.socketIOServer = Server.extend({
             res.status(200).json(msgs);
         });
 
-        app.post("/sign/generatenonce", signing.generateNonce);
-
-        const corsOptions = {
-            origin: '*',
-            methods: [],
-            allowedHeaders: [],
-            exposedHeaders: [],
-            credentials: true
-        };
-
         app.get("/nftcommited/:shortnftid", cors(corsOptions), async (req, res) => {
             let nftId = req.params.shortnftid;
             nftId = nftId.replace("0x", "NFT_");
@@ -777,7 +826,8 @@ WS.socketIOServer = Server.extend({
                     res.status(200).send(response);
                     return;
                 } else {
-                    let fish = Lakes.getRandomFish(lakeName);
+                    let activeTrait = player.getNFTSpecialItemActiveTrait();
+                    let fish = Lakes.getRandomFish(lakeName, (activeTrait === "lucky"));
                     if (fish === undefined) {
                         res.status(400).json({
                             status: false,
@@ -787,14 +837,45 @@ WS.socketIOServer = Server.extend({
                         return;
                     }
                     let fishExp = Lakes.calculateFishExp(fish, lakeName);
-                    player.pendingFish = {name: fish, exp: fishExp};
-                    let difficulty = Lakes.getDifficulty(player.getNFTWeapon().getLevel(), lakeName);
+                    player.pendingFish = {name: fish, exp: fishExp, double: (activeTrait === "double_catch")};
+                    let difficulty = Lakes.getDifficulty(player.getNFTWeapon().getLevel(), lakeName, (activeTrait === "upper_hand"));
                     let speed = Lakes.getFishSpeed(fish, lakeName);
 
-                    let response = {allowed: true, fish: fish, difficulty: difficulty, speed: speed};
+                    let response = {allowed: true, fish: fish, difficulty: difficulty?.difficulty, speed: speed, bullseyeSize: difficulty?.bullseye, trait: activeTrait};
                     self.worldsMap[sessionData.mapId].announceSpawnFloat(player, fx, fy);
                     res.status(200).send(response);
                 }
+            }
+        });
+
+        app.post("/session/:sessionId/newBot", async (req, res) => {
+            const sessionId = req.params.sessionId;
+            const sessionData = cache.get(sessionId);
+            let botNftId = req.body.botNftId;
+            let ownedBots = await dao.getBots(sessionData.walletId);
+            let botInfo = ownedBots.find(bot => bot.botNftId === botNftId);
+            if (botInfo) {
+                let owner = self.worldsMap[sessionData.mapId].getPlayerById(sessionData.entityId);
+                let newBot = await dao.newBot(
+                    sessionData.mapId,
+                    botNftId,
+                    botInfo.experience,
+                    botInfo.looperName,
+                    sessionData.walletId,
+                    sessionData.entityId,
+                    owner.x,
+                    owner.y
+                );
+                if (newBot.sessionId) {
+                    sessionData.botSessionId = newBot.sessionId;
+                    cache.set(sessionId, sessionData);
+                    res.status(200).send({});
+                } else {
+                    res.status(500).send(newBot);
+                }
+            } else {
+                console.error("Bot not found " + sessionData);
+                res.status(404).send({});
             }
         });
 
@@ -802,7 +883,6 @@ WS.socketIOServer = Server.extend({
           //console.log('a user connected');
 
           connection.remoteAddress = connection.handshake.address.address
-
   
           var c = new WS.socketIOConnection(self._createId(), connection, self);
             

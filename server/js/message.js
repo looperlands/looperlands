@@ -131,6 +131,18 @@ Messages.Chat = Message.extend({
     }
 });
 
+Messages.Emote = Message.extend({
+    init: function(player, emotion) {
+        this.playerId = player.id;
+        this.emotion = emotion;
+    },
+    serialize: function() {
+        return [Types.Messages.EMOTE,
+            this.playerId,
+            this.emotion];
+    }
+})
+
 Messages.Teleport = Message.extend({
     init: function(entity) {
         this.entity = entity;
@@ -247,6 +259,68 @@ Messages.QuestComplete = Message.extend({
     }
 });
 
+Messages.Follow = Message.extend({
+    init: function(entity) {
+        this.entity = entity
+    },
+    serialize: function() {
+        return [Types.Messages.FOLLOW,
+            this.entity.id,
+        ];
+    }
+});
+
+Messages.Camera = Message.extend({
+    init: function(x, y) {
+        this.x = x;
+        this.y = y;
+    },
+    serialize: function() {
+        return [Types.Messages.CAMERA,
+            this.x,
+            this.y,
+        ];
+    }
+});
+
+Messages.Sound = Message.extend({
+    init: function(sound) {
+        this.sound = sound;
+    },
+    serialize: function() {
+        return [Types.Messages.SOUND, this.sound];
+    }
+})
+
+Messages.Music = Message.extend({
+    init: function(music) {
+        this.music = music;
+    },
+    serialize: function() {
+        return [Types.Messages.MUSIC, this.music];
+    }
+})
+
+Messages.Layer = Message.extend({
+    init: function(layer, show) {
+        this.layer = layer;
+        this.show = show
+    },
+    serialize: function() {
+        return [Types.Messages.LAYER, this.layer, this.show];
+    }
+})
+
+Messages.Animate = Message.extend({
+    init: function(entity, animation) {
+        this.entity = entity;
+        this.animation = animation
+    },
+    serialize: function() {
+        return [Types.Messages.ANIMATE, this.entity, this.animation];
+    }
+})
+
 Messages.SpawnFloat = Message.extend({
     init: function(playerId, floatName, gX, gY) {
         this.playerId = playerId;
@@ -271,4 +345,27 @@ Messages.DespawnFloat = Message.extend({
         return [Types.Messages.DESPAWNFLOAT,
                 this.playerId];
     }
+});
+
+Messages.Notify = Message.extend({
+    init: function(text) {
+        this.text = text;
+    },
+    serialize: function() {
+        return [Types.Messages.NOTIFY, this.text];
+    },
+});
+
+Messages.Buffinfo = Message.extend({
+    init: function(buffstat, buffPercent, buffDuration) {
+        this.stat = buffstat;
+        this.percent = buffPercent;
+        this.duration = buffDuration;
+    },
+    serialize: function() {
+        return [Types.Messages.BUFFINFO,
+                this.stat,
+                this.percent,
+                this.duration];
+    },
 });

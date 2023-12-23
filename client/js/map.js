@@ -161,7 +161,8 @@ define(['jquery', 'area'], function ($, Area) {
             this.collisions = map.collisions;
             this.high = map.high;
             this.animated = map.animated;
-
+            this.hiddenLayers = map.hiddenLayers || {};
+            this.collidingTiles = map.collidingTiles || {};
             this.doors = this._getDoors(map);
             this.triggers = this._getTriggers(map);
             this.checkpoints = this._getCheckpoints(map);
@@ -204,7 +205,8 @@ define(['jquery', 'area'], function ($, Area) {
                     nft_message: door.tnft_message,
                     collection_message: door.tcollection_message,
                     item_message: door.titem_message,
-                    quest_message: door.tquest_message
+                    quest_message: door.tquest_message,
+                    http_redirect: door.thttp_redirect
                 };
             });
 
@@ -279,6 +281,21 @@ define(['jquery', 'area'], function ($, Area) {
             if (this.isOutOfBounds(x, y) || !this.grid) {
                 return false;
             }
+
+            // Loop over keys of this.hiddenLayers
+            for(var	i = 0; i < Object.keys(this.hiddenLayers).length; i++) {
+                let layerName = Object.keys(this.hiddenLayers)[i]
+                if(this.game.toggledLayers[layerName]) {
+
+                    // if layer has collision
+                    let tileIndex = this.GridPositionToTileIndex(x - 1, y);
+                    let tileType = this.hiddenLayers[layerName][tileIndex];
+                    if(tileType !== null) {
+                        return (this.collidingTiles[tileType] === true);
+                    }
+                }
+            }
+
             return (this.grid[y][x] === 1);
         },
 

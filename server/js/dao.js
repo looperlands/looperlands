@@ -1,7 +1,10 @@
 const LOOPWORMS_LOOPERLANDS_BASE_URL = process.env.LOOPWORMS_LOOPERLANDS_BASE_URL;
 const API_KEY = process.env.LOOPWORMS_API_KEY;
+const LOOPERLANDS_BACKEND_BASE_URL = process.env.LOOPERLANDS_BACKEND_BASE_URL;
+const LOOPERLANDS_BACKEND_API_KEY = process.env.LOOPERLANDS_BACKEND_API_KEY;
 const axios = require('axios');
 const NodeCache = require( "node-cache" );
+const Collectables = require('./collectables.js');
 const daoCache = new NodeCache();
 
 const MAX_RETRY_COUNT = 5;
@@ -39,6 +42,23 @@ loadExperience = async function (walletId, nftId) {
   const responseData = await axios.get(url, options);
   const xp = parseInt(responseData.data);
   return xp;
+}
+
+loadMapFlow = async function (mapId) {
+  const options = {
+    headers: {
+      'X-Api-Key': API_KEY
+    },
+  };
+
+  let url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/Maps/selectLooperLands_Quest2.php?map=${mapId}`;
+  const responseData = await axios.get(url, options);
+  try {
+    return JSON.parse(responseData.data);
+  } catch (error) {
+    console.error("Error parsing map flow");
+    return undefined;
+  }
 }
 
 getCharacterData = async function (wallet, nft, retry) {
@@ -232,6 +252,24 @@ exports.saveNFTWeaponExperience = async function(wallet, nft, experience) {
   }
 }
 
+exports.saveNFTSpecialItemTrait = async function(wallet, nft) {
+  const options = {
+    headers: {
+      'X-Api-Key': API_KEY
+    }
+  }
+
+  const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/SaveSpecialItemTrait.php?WalletID=${wallet}&NFTID=${nft}`;
+  try {
+    const response = await axios.get(url, options);
+    const updatedTrait = response.data;
+    return updatedTrait;
+  } catch(error) {
+    console.error("saveNFTSpecialItemTrait error", error);
+    return { "error": "Error saving weapon trait" };
+  }
+}
+
 exports.saveNFTSpecialItemExperience = async function(wallet, nft, experience) {
   const options = {
     headers: {
@@ -350,13 +388,17 @@ processLootEventQueue = async function(retry) {
 
 let LOOT_QUEUE_INTERVAL = undefined;
 
-exports.saveLootEvent = async function(avatarId, itemId) {
+exports.saveLootEvent = async function(avatarId, itemId, amount) {
+  if (amount === undefined) {
+    amount = 1;
+  }
+
   if (LOOT_QUEUE_INTERVAL === undefined) {
     // save the loot event queue every 30 seconds
     LOOT_QUEUE_INTERVAL = setInterval(processLootEventQueue, 1000 * 30);
   }
 
-  LOOT_EVENTS_QUEUE.push({avatarId: avatarId, itemId: itemId});
+  LOOT_EVENTS_QUEUE.push({avatarId: avatarId, itemId: itemId, amount})
 }
 
 exports.getItemCount = async function(avatarId, itemId, retry) {
@@ -448,15 +490,13 @@ exports.loadAvatarGameData = async function(avatarId, retry) {
     }
   }
 
-  const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/loadItemMobQuest.php?NFTID=${avatarId}`;
+  const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/loadItemConsumableMobQuest.php?NFTID=${avatarId}`;
 
   try {
     const response = await axios.get(url, options);
 
     let responseData = response.data[0];
-
-    let mobKills, items = {}, quests = {};
-
+    let mobKills, items = {}, quests = {}, consumables = {};
 
     if (responseData.mobJson) {
       mobKills = responseData.mobJson.reduce((avatarMobKills, mobKills) => {
@@ -478,6 +518,16 @@ exports.loadAvatarGameData = async function(avatarId, retry) {
       }, {});
     }
 
+    if (responseData.itemConsumableJson) {
+      items = responseData.itemConsumableJson.reduce((avatarItems, itemCount) => {
+        const itemId = itemCount.itemConsumableId;
+        if (itemId && parseInt(itemCount.iCount) > 0) {
+          avatarItems[itemId] = itemCount.iCount;
+        }
+        return avatarItems;
+      }, items);
+    }
+
     if (responseData.questJson) {
       quests = responseData.questJson.reduce((avatarQuests, quest) => {
         const status = quest.status;
@@ -493,13 +543,24 @@ exports.loadAvatarGameData = async function(avatarId, retry) {
       }, {});
     }
 
+    if (responseData.itemConsumableJson) {
+      consumables = responseData.itemConsumableJson.reduce((avatarConsumes, item) => {
+        const itemId = item.itemConsumableId;
+        if (itemId) {
+          avatarConsumes[itemId] = item.iCount;
+        }
+        return avatarConsumes;
+      }, {});
+    }
+
     const data = {
       mobKills: mobKills,
       items: items,
-      quests: quests
+      quests: quests,
+      consumables: consumables
     }
 
-    //console.log("loadAvatarGameData", data);
+    // console.log("loadAvatarGameData", data);
 
     return data;
   } catch (error) {
@@ -542,6 +603,68 @@ exports.setQuestStatus = async function(avatarId, questId, status, retry) {
   }
 }
 
+exports.saveConsumable = async function(nft, item, qty) {
+  if(qty === undefined){
+    qty = 1;
+  }
+  const options = {
+    headers: {
+      'X-Api-Key': API_KEY,
+      'Content-Type': 'application/json'
+    }
+  }
+  const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/saveConsumable2.php`;
+  const sData = {avatarId: nft, itemId: item, quantity: qty};
+  try {
+    let response = await axios.post(url, sData, options);
+    return response.data;
+  } catch (error) {
+    console.error("saveConsumable", error);
+    return { "error": "Error saving consumable" };
+  }
+}
+
+exports.getBots = async function(walletId) {
+  let botsResponse = await axios.get(`${LOOPWORMS_LOOPERLANDS_BASE_URL}/loadBot.php?walletID=${walletId}`);
+  let bots = botsResponse.data;
+  return bots;
+}
+
+exports.newBot = async function(mapId, botNftId, xp, name, walletId, ownerEntityId, x, y, retry) {
+  const options = {
+    headers: {
+      'X-Api-Key': LOOPERLANDS_BACKEND_API_KEY
+    }
+  }
+  const url = `${LOOPERLANDS_BACKEND_BASE_URL}/newBot`;
+  try {
+    let sessionRequest = {
+      "nftId" : botNftId,
+      "mapId" : mapId,
+      "xp" : xp,
+      "name": name,
+      "walletId": walletId,
+      "owner": ownerEntityId,
+      "x" : x,
+      "y" : y,
+    }
+    const response = await axios.post(url, sessionRequest, options);
+    return response.data;
+  } catch (error) {
+    if (error?.response?.status === 409) {
+      return error?.response?.data;
+    }
+    if (retry === undefined) {
+      retry = MAX_RETRY_COUNT;
+    }
+    retry -= 1;
+    if (retry > 0) {
+      return this.newBot(mapId, botNftId, xp, name, walletId, ownerEntityId, x, y, retry);
+    } else {
+      console.error("newBot", error);
+    }
+  }
+}
 
 exports.updateExperience = updateExperience;
 exports.saveCharacterData = saveCharacterData;
@@ -549,3 +672,4 @@ exports.getCharacterData = getCharacterData;
 exports.saveWeapon = saveWeapon;
 exports.loadWeapon = loadWeapon;
 exports.loadExperience = loadExperience;
+exports.loadMapFlow = loadMapFlow;

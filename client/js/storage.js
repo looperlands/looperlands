@@ -14,14 +14,6 @@ define(function() {
             this.walletId = this.data.walletId;
 
             _this = this;
-
-            setInterval(function() {
-                if (_this.dirty === true) {
-                    _this.data['sessionId'] = _this.sessionId;
-                    _this.saveWorker.postMessage(_this.data);
-                    _this.dirty = false;
-                }
-            }, 5000);
         },
         resetData: function() {
             return;

@@ -9,12 +9,14 @@
         "oa",
         "oadungeon",
         "oaoverworld",
+        "oacity",
         "cobsfarm",
         "cobsfarmcity",
         "fhf",
         "wk",
         "crimsonspace",
-        "kbb"
+        "kbb",
+        "m88n"
     ],
     "map_directory": "./server/maps/",
     "metrics_enabled": false,
