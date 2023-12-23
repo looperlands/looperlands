@@ -624,31 +624,6 @@ exports.saveConsumable = async function(nft, item, qty) {
   }
 }
 
-exports.getLooperAssetCount = async function(wallet, retry) {
-
-  const options = {
-    headers: {
-      'X-Api-Key': API_KEY
-    }
-  }
-  const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/getTotalAssets.php?walletID=${wallet}`;
-  try {
-    const response = await axios.get(url, options);
-    return response.data.totalLLAssetsOwned;
-  } catch (error) {
-    console.error("getLooperCount", error);
-    if (retry === undefined) {
-      retry = MAX_RETRY_COUNT;
-    }
-    retry -= 1;
-    if (retry > 0) {
-      return this.getLooperCount(wallet, retry);
-    } else {
-      console.error("getLooperCount", error);
-    }
-  }
-}
-
 exports.getBots = async function(walletId) {
   let botsResponse = await axios.get(`${LOOPWORMS_LOOPERLANDS_BASE_URL}/loadBot.php?walletID=${walletId}`);
   let bots = botsResponse.data;

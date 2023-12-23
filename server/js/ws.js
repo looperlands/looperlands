@@ -26,7 +26,6 @@ const quests = require("./quests/quests.js");
 const Lakes = require("./lakes.js");
 const Collectables = require('./collectables.js');
 const cache = new NodeCache();
-const LooperManager = require('./ownyourlooperboost.js');
 
 const LOOPWORMS_LOOPERLANDS_BASE_URL = process.env.LOOPWORMS_LOOPERLANDS_BASE_URL;
 const INSTANCE_URI = process.env.INSTANCE_URI ? process.env.INSTANCE_URI : "";
@@ -157,22 +156,7 @@ WS.socketIOServer = Server.extend({
                 }
             }
 
-
-            if (teleport) {
-                body.xp = parseInt(body.xp);
-            } else {
-                let ownYourLoopersBuff = 0;
-                if (!body.bot) {
-                    let manager = new LooperManager(body.walletId);
-                    await manager.fetchLoopers();
-                    ownYourLoopersBuff = manager.getTotalExperienceBoost();
-                }
-
-                //console.log("Asset count: ", total,  " for wallet " + playerCache.walletId + " and nft " + playerCache.nftId);
-                body.xp = parseInt(body.xp) + ownYourLoopersBuff;
-                body.ownYourLoopersBuff = ownYourLoopersBuff;
-            }
-            
+            body.xp = parseInt(body.xp);
 
             cache.set(id, body);
             let responseJson = {
@@ -624,8 +608,6 @@ WS.socketIOServer = Server.extend({
                     user: null
                 });
             } else {
-                let looperManager = new LooperManager(sessionData.walletId);
-                await looperManager.fetchLoopers();
                 let avatarLevelInfo = Formulas.calculatePercentageToNextLevel(sessionData.xp);
                 let maxHp = Formulas.hp(avatarLevelInfo.currentLevel);
                 let weaponInfo = self.worldsMap[sessionData.mapId].getNFTWeaponStatistics(sessionData.entityId);
@@ -647,8 +629,6 @@ WS.socketIOServer = Server.extend({
 
                 let ret = {
                     avatarLevelInfo: avatarLevelInfo,
-                    ownYourLoopersBuff: looperManager.getTotalExperienceBoost(),
-                    totalLoopers: looperManager.getTotalAssets(),
                     maxHp: maxHp,
                     weaponInfo: weaponInfo,
                     botInfo: botInfo
