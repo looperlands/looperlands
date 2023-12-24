@@ -4,7 +4,6 @@ define(function() {
         init: function(sessionId){
             this.sessionId = sessionId;
         },
-        saveWorker: new Worker("js/saveworker.js"),
         dirty: false,
         loadData: async function() {
             console.log("Loading data");
