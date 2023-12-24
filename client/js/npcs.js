@@ -304,6 +304,21 @@ define(['npc'], function(Npc) {
         VILLAGESIGN22: Npc.extend({init: function(id) {this._super(id, Types.Entities.VILLAGESIGN22, 1);}}),
         VILLAGESIGN23: Npc.extend({init: function(id) {this._super(id, Types.Entities.VILLAGESIGN23, 1);}}),
         VILLAGESIGN24: Npc.extend({init: function(id) {this._super(id, Types.Entities.VILLAGESIGN24, 1);}}),
+        THEDIUS: Npc.extend({init: function(id) {this._super(id, Types.Entities.THEDIUS, 1);}}),
+        NIANDRA: Npc.extend({init: function(id) {this._super(id, Types.Entities.NIANDRA, 1);}}),
+        BLARK: Npc.extend({init: function(id) {this._super(id, Types.Entities.BLARK, 1);}}),
+        DANIEL: Npc.extend({init: function(id) {this._super(id, Types.Entities.DANIEL, 1);}}),
+        ESTELLA: Npc.extend({init: function(id) {this._super(id, Types.Entities.ESTELLA, 1);}}),
+        CITYSIGN1: Npc.extend({init: function(id) {this._super(id, Types.Entities.CITYSIGN1, 1);}}),
+        CITYSIGN2: Npc.extend({init: function(id) {this._super(id, Types.Entities.CITYSIGN2, 1);}}),
+        CITYSIGN3: Npc.extend({init: function(id) {this._super(id, Types.Entities.CITYSIGN3, 1);}}),
+        CITYSIGN4: Npc.extend({init: function(id) {this._super(id, Types.Entities.CITYSIGN4, 1);}}),
+        CITYSIGN5: Npc.extend({init: function(id) {this._super(id, Types.Entities.CITYSIGN5, 1);}}),
+        CITYSIGN6: Npc.extend({init: function(id) {this._super(id, Types.Entities.CITYSIGN6, 1);}}),
+        CITYSIGN7: Npc.extend({init: function(id) {this._super(id, Types.Entities.CITYSIGN7, 1);}}),
+        CITYSIGN8: Npc.extend({init: function(id) {this._super(id, Types.Entities.CITYSIGN8, 1);}}),
+        CITYSIGN9: Npc.extend({init: function(id) {this._super(id, Types.Entities.CITYSIGN9, 1);}}),
+        CITYSIGN10: Npc.extend({init: function(id) {this._super(id, Types.Entities.CITYSIGN10, 1);}}),
         // @nextNPCLine@
     };
     

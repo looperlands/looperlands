@@ -4,7 +4,6 @@ define(function() {
         init: function(sessionId){
             this.sessionId = sessionId;
         },
-        saveWorker: new Worker("js/saveworker.js"),
         dirty: false,
         loadData: async function() {
             console.log("Loading data");
@@ -14,14 +13,6 @@ define(function() {
             this.walletId = this.data.walletId;
 
             _this = this;
-
-            setInterval(function() {
-                if (_this.dirty === true) {
-                    _this.data['sessionId'] = _this.sessionId;
-                    _this.saveWorker.postMessage(_this.data);
-                    _this.dirty = false;
-                }
-            }, 5000);
         },
         resetData: function() {
             return;

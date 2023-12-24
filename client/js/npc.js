@@ -332,6 +332,21 @@ define(['character'], function (Character) {
         "VILLAGESIGN22": ["Change me"],
         "VILLAGESIGN23": ["Change me"],
         "VILLAGESIGN24": ["Change me"],
+        "THEDIUS": ["Greetings"],
+        "NIANDRA": ["Hello there"],
+        "BLARK": ["Hello!"],
+        "DANIEL": ["Salutations"],
+        "ESTELLA": ["Greetings"],
+        "CITYSIGN1": ["Home of MyCupBloody"],
+        "CITYSIGN2": ["Home of Punk"],
+        "CITYSIGN3": ["Home of Enraged"],
+        "CITYSIGN4": ["FOR SALE!"],
+        "CITYSIGN5": ["FOR SALE!"],
+        "CITYSIGN6": ["FOR SALE!"],
+        "CITYSIGN7": ["FOR SALE!"],
+        "CITYSIGN8": ["FOR SALE!"],
+        "CITYSIGN9": ["FOR SALE!"],
+        "CITYSIGN10": ["FOR SALE!"],
         // @nextNPCLine@
     };
 

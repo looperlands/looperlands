@@ -26,7 +26,6 @@ const quests = require("./quests/quests.js");
 const Lakes = require("./lakes.js");
 const Collectables = require('./collectables.js');
 const cache = new NodeCache();
-const LooperManager = require('./ownyourlooperboost.js');
 
 const LOOPWORMS_LOOPERLANDS_BASE_URL = process.env.LOOPWORMS_LOOPERLANDS_BASE_URL;
 const INSTANCE_URI = process.env.INSTANCE_URI ? process.env.INSTANCE_URI : "";
@@ -157,22 +156,7 @@ WS.socketIOServer = Server.extend({
                 }
             }
 
-
-            if (teleport) {
-                body.xp = parseInt(body.xp);
-            } else {
-                let ownYourLoopersBuff = 0;
-                if (!body.bot) {
-                    let manager = new LooperManager(body.walletId);
-                    await manager.fetchLoopers();
-                    ownYourLoopersBuff = manager.getTotalExperienceBoost();
-                }
-
-                //console.log("Asset count: ", total,  " for wallet " + playerCache.walletId + " and nft " + playerCache.nftId);
-                body.xp = parseInt(body.xp) + ownYourLoopersBuff;
-                body.ownYourLoopersBuff = ownYourLoopersBuff;
-            }
-            
+            body.xp = parseInt(body.xp);
 
             cache.set(id, body);
             let responseJson = {
@@ -281,7 +265,7 @@ WS.socketIOServer = Server.extend({
             const walletId = sessionData.walletId;
             const isDirty = sessionData.isDirty;
 
-            let parsedSaveData;
+            let parsedSaveData = undefined;
             let weapon;
             let avatarGameData;
 
@@ -293,8 +277,6 @@ WS.socketIOServer = Server.extend({
                 });
                 return;
             } else {
-                //console.log("Session ID", sessionId, "Wallet ID", walletId, "NFT ID", nftId);
-                parsedSaveData = await dao.getCharacterData(walletId, nftId);
                 weapon = await dao.loadWeapon(walletId, nftId);
                 avatarGameData = await dao.loadAvatarGameData(nftId);
 
@@ -311,7 +293,7 @@ WS.socketIOServer = Server.extend({
                     looperlands: true,
                     nftId: nftId,
                     walletId: walletId,
-                    hasAlreadyPlayed: false,
+                    hasAlreadyPlayed: sessionData.xp > 0,
                     player: {
                         name: name,
                         weapon: "",
@@ -336,26 +318,6 @@ WS.socketIOServer = Server.extend({
             parsedSaveData.mapId = sessionData.mapId;
             
             res.status(200).json(parsedSaveData);
-        });
-        
-        app.put('/session/:sessionId', (req, res) => {
-            const sessionId = req.params.sessionId;
-            const sessionData = cache.get(sessionId);
-            if (sessionData === undefined) {
-                //console.error("Session data is undefined for session id, params: ", sessionId, req.params);
-                res.status(404).json({
-                    status: false,
-                    "error" : "session not found",
-                    user: null
-                });
-                return;
-            }
-            const nftId = sessionData.nftId;
-            const walletId = sessionData.walletId;
-
-            const body = req.body;
-            dao.saveCharacterData(walletId, nftId, body);
-            res.status(200).send(true);
         });
 
         app.get("/session/:sessionId/inventory", async (req, res) => {
@@ -629,8 +591,6 @@ WS.socketIOServer = Server.extend({
                     user: null
                 });
             } else {
-                let looperManager = new LooperManager(sessionData.walletId);
-                await looperManager.fetchLoopers();
                 let avatarLevelInfo = Formulas.calculatePercentageToNextLevel(sessionData.xp);
                 let maxHp = Formulas.hp(avatarLevelInfo.currentLevel);
                 let weaponInfo = self.worldsMap[sessionData.mapId].getNFTWeaponStatistics(sessionData.entityId);
@@ -652,8 +612,6 @@ WS.socketIOServer = Server.extend({
 
                 let ret = {
                     avatarLevelInfo: avatarLevelInfo,
-                    ownYourLoopersBuff: looperManager.getTotalExperienceBoost(),
-                    totalLoopers: looperManager.getTotalAssets(),
                     maxHp: maxHp,
                     weaponInfo: weaponInfo,
                     botInfo: botInfo
