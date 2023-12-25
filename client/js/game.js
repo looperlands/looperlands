@@ -5361,6 +5361,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             if(this.started) {
                 this.renderer.initFont();
                 this.updateCursorLogic();
+                this.findVisibleTiles();
                 this.updater.update();
                 if (this.canUseCenteredCamera()) {
                     this.focusPlayer();
@@ -5597,7 +5598,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 });
 
                 self.player.onStep(function() {
-                    self.findVisibleTiles();
+                    //self.findVisibleTiles();
 
                     if(this.isFishing) {
                         self.stopFishing(false, false, false);
