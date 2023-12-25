@@ -1955,6 +1955,18 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
 
+        Cobslimepurple: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.COBSLIMEPURPLE);
+                this.moveSpeed = 350;
+                this.atkSpeed = 100;
+                this.idleSpeed = 750;
+                this.setAttackRate(1000);
+                this.deathAnimated = true;
+                this.aggroRange = 3;
+            }
+        }),
+
         Cobslimeking: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.COBSLIMEKING);

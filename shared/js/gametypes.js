@@ -196,6 +196,7 @@ Types = {
         COBCOBLIN: 400014,
         COBCOBANE: 400015,
         COBOGRE: 400016,
+        COBSLIMEPURPLE: 400017,
         
         // Armors
         FIREFOX: 20,
@@ -4714,6 +4715,7 @@ var kinds = {
     cobslimeyellow: [Types.Entities.COBSLIMEYELLOW, "mob"],
     cobslimeblue: [Types.Entities.COBSLIMEBLUE, "mob"],
     cobslimeking: [Types.Entities.COBSLIMEKING, "mob"],
+    cobslimepurple: [Types.Entities.COBSLIMEPURPLE, "mob"],
     cobcat: [Types.Entities.COBCAT, "mob"],
     cobyorkie: [Types.Entities.COBYORKIE, "mob"],
     cobcoblin: [Types.Entities.COBCOBLIN, "mob"],
