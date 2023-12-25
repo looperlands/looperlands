@@ -5,6 +5,7 @@ const AltNames = {
     cobslimeblue: "slime",
     cobslimeyellow: "slime",
     cobslimered: "slime",
+    cobslimepurple: "slime",
     cobslimeking: "slime king",
     magcrack: "megamag",
     cobdirt: "pile of dirt",

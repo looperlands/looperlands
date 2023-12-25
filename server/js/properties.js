@@ -459,6 +459,15 @@ var Properties = {
         }
     },
 
+    cobslimepurple: {
+        level: 8,
+        drops: {
+            cobapple: 20,
+            cobcorn: 10,
+            redsword: 5
+        }
+    },
+
     cobslimeking: {
         level: 7,
         drops: {

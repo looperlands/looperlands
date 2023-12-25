@@ -192,7 +192,11 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     };
 
     EntityFactory.builders[Types.Entities.COBSLIMEBLUE] = function(id) {
-        return new Mobs.Cobslimeblue(id);
+        return new Mobs.Cobslimeblue(id);  
+    };
+
+    EntityFactory.builders[Types.Entities.COBSLIMEPURPLE] = function(id) {
+        return new Mobs.Cobslimepurple(id);
     };
 
     EntityFactory.builders[Types.Entities.COBSLIMEKING] = function(id) {
