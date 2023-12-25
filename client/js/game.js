@@ -4692,6 +4692,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
         setRenderer: function(renderer) {
             this.renderer = renderer;
+            this.renderer.initFont();
         },
 
         setUpdater: function(updater) {
@@ -5359,9 +5360,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             this.currentTime = new Date().getTime();
 
             if(this.started) {
-                this.renderer.initFont();
                 this.updateCursorLogic();
-                this.findVisibleTiles();
                 this.updater.update();
                 if (this.canUseCenteredCamera()) {
                     this.focusPlayer();
@@ -5419,23 +5418,25 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             }
         },
 
+        findVisibleAnimatedTiles: function(animatedTiles) {
+            let visibleAnimatedTiles = [];
+            for (let i = 0; i < animatedTiles.length; i++) {
+                let tile = animatedTiles[i];
+                if (this.camera.isVisiblePosition(tile.x, tile.y, 2)) {
+                    visibleAnimatedTiles.push(tile);
+                }
+            }
+            return visibleAnimatedTiles;
+        },
+
         findVisibleTiles: function() {
             let self = this,
                 m = this.map,
                 tilesetwidth = this.renderer.tileset.width / m.tilesize;
 
-            let findVisibleAnimatedTiles = function(animatedTiles) {
-                let visibleAnimatedTiles = [];
-                for (tile of animatedTiles) {
-                    if (self.camera.isVisiblePosition(tile.x, tile.y, 2)) {
-                        visibleAnimatedTiles.push(tile);
-                    }
-                }
-                return visibleAnimatedTiles;
-            }
 
-            this.visibleAnimatedTiles = findVisibleAnimatedTiles(this.animatedTiles);
-            this.visibleAnimatedHighTiles = findVisibleAnimatedTiles(this.highAnimatedTiles);
+            this.visibleAnimatedTiles = this.findVisibleAnimatedTiles(this.animatedTiles);
+            this.visibleAnimatedHighTiles = this.findVisibleAnimatedTiles(this.highAnimatedTiles);
             this.visibleTerrainTiles = []
             this.visibleHighTiles = []
             this.forEachVisibleTile(function (id, index) {
@@ -5598,7 +5599,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 });
 
                 self.player.onStep(function() {
-                    //self.findVisibleTiles();
+                    self.findVisibleTiles();
 
                     if(this.isFishing) {
                         self.stopFishing(false, false, false);
@@ -6737,7 +6738,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
          * 
          */
         forEachVisibleTile: function(callback, extra) {
-            var self = this,
+            let self = this,
                 m = this.map;
         
             if(m.isLoaded) {
