@@ -880,7 +880,11 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             let cursorData = this.drawCursor();
             renderData.push(cursorData);
             this.drawDebugInfo();
-            this.worker.postMessage({"type": "render", "renderData": renderData});
+            let self = this;
+            requestAnimationFrame(() => {
+                self.worker.postMessage({"type": "render", "renderData": renderData});
+            });
+
         },
         
         preventFlickeringBug: function() {
