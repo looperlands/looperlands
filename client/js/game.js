@@ -4844,10 +4844,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
         initSilhouettes: function() {
             var self = this;
-
-            Types.forEachMobOrNpcKind(function(kind, kindName) {
-                self.sprites[kindName].createSilhouette();
-            });
             self.sprites["chest"].createSilhouette();
             self.sprites["item-cake"].createSilhouette();
         },
