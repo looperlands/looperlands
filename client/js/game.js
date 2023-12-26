@@ -4673,6 +4673,11 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 "NFT_846115cf3265fb16a0aabca7b6b594591b591058ebf36581d8084c1a91d9f382",
                                 "NFT_cebc660eefad59147d4c2b85ad4d47aec995e6b8f5f203218aaac0b58eb02901",
                                 "NFT_cf805345f5cfd13e8ef87b072331324b27f11a8559aa7a0529044763bcaa908e",
+                                "NFT_0c12a8461074d7234552d4cc7f80da0bd1d60cc6edfd5734e28ad63ec50502f0",
+                                "NFT_6624e75be920eadc270767378d0dc4c07183fdd08911aac1dd2d594c847ab47e",
+                                "NFT_f56a7a9387010f99d97a771bf714a7fcb7efcebeced13306ea216315c71bc075",
+                                "NFT_5a55d34593c0b6ca473269b6798fe1be1e24583c280f413ce2a30a1fc20fcfcc",
+                                "NFT_c697bb89b5c2bc9d0684ec9221be10dd945d1c14b9843169c3b6105a67a13526",
                                 // @nextSpriteLine@
                             ];
         },
@@ -4689,6 +4694,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
         setRenderer: function(renderer) {
             this.renderer = renderer;
+            this.renderer.initFont();
         },
 
         setUpdater: function(updater) {
@@ -4840,10 +4846,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
         initSilhouettes: function() {
             var self = this;
-
-            Types.forEachMobOrNpcKind(function(kind, kindName) {
-                self.sprites[kindName].createSilhouette();
-            });
             self.sprites["chest"].createSilhouette();
             self.sprites["item-cake"].createSilhouette();
         },
@@ -5356,7 +5358,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             this.currentTime = new Date().getTime();
 
             if(this.started) {
-                this.renderer.initFont();
                 this.updateCursorLogic();
                 this.updater.update();
                 if (this.canUseCenteredCamera()) {
@@ -5415,23 +5416,25 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             }
         },
 
+        findVisibleAnimatedTiles: function(animatedTiles) {
+            let visibleAnimatedTiles = [];
+            for (let i = 0; i < animatedTiles.length; i++) {
+                let tile = animatedTiles[i];
+                if (this.camera.isVisiblePosition(tile.x, tile.y, 2)) {
+                    visibleAnimatedTiles.push(tile);
+                }
+            }
+            return visibleAnimatedTiles;
+        },
+
         findVisibleTiles: function() {
             let self = this,
                 m = this.map,
                 tilesetwidth = this.renderer.tileset.width / m.tilesize;
 
-            let findVisibleAnimatedTiles = function(animatedTiles) {
-                let visibleAnimatedTiles = [];
-                for (tile of animatedTiles) {
-                    if (self.camera.isVisiblePosition(tile.x, tile.y, 2)) {
-                        visibleAnimatedTiles.push(tile);
-                    }
-                }
-                return visibleAnimatedTiles;
-            }
 
-            this.visibleAnimatedTiles = findVisibleAnimatedTiles(this.animatedTiles);
-            this.visibleAnimatedHighTiles = findVisibleAnimatedTiles(this.highAnimatedTiles);
+            this.visibleAnimatedTiles = this.findVisibleAnimatedTiles(this.animatedTiles);
+            this.visibleAnimatedHighTiles = this.findVisibleAnimatedTiles(this.highAnimatedTiles);
             this.visibleTerrainTiles = []
             this.visibleHighTiles = []
             this.forEachVisibleTile(function (id, index) {
@@ -6555,7 +6558,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
          * @see makeCharacterGoTo
          */
         makePlayerGoTo: function(x, y) {
-            this.storage.saveXY(x, y);
             this.makeCharacterGoTo(this.player, x, y);
         },
     
@@ -6733,7 +6735,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
          * 
          */
         forEachVisibleTile: function(callback, extra) {
-            var self = this,
+            let self = this,
                 m = this.map;
         
             if(m.isLoaded) {
