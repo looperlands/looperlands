@@ -6560,7 +6560,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
          * @see makeCharacterGoTo
          */
         makePlayerGoTo: function(x, y) {
-            this.storage.saveXY(x, y);
             this.makeCharacterGoTo(this.player, x, y);
         },
     
