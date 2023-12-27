@@ -468,6 +468,42 @@ var Properties = {
         }
     },
 
+    cobslimegreen: {
+        level: 11,
+        drops: {
+            cobapple: 20,
+            cobcorn: 10,
+            redsword: 5
+        }
+    },
+
+    cobslimepink: {
+        level: 14,
+        drops: {
+            cobapple: 20,
+            cobcorn: 10,
+            redsword: 5
+        }
+    },
+
+    cobslimecyan: {
+        level: 17,
+        drops: {
+            cobapple: 20,
+            cobcorn: 10,
+            redsword: 5
+        }
+    },
+
+    cobslimemint: {
+        level: 20,
+        drops: {
+            cobapple: 20,
+            cobcorn: 10,
+            redsword: 5
+        }
+    },
+
     cobslimeking: {
         level: 7,
         drops: {
