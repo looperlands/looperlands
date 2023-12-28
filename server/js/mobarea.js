@@ -55,17 +55,18 @@ module.exports = MobArea = Area.extend({
         var self = this;
         
         setInterval(function() {
-            _.each(self.entities, function(mob) {
-                var canRoam = (Utils.random(20) === 1),
+            for (let i = 0; i < self.entities.length; i++) {
+                let mob = self.entities[i];
+                let canRoam = (Utils.random(20) === 1),
                     pos;
-                
-                if(canRoam) {
-                    if(!mob.hasTarget() && !mob.isDead) {
+
+                if (canRoam) {
+                    if (!mob.hasTarget() && !mob.isDead) {
                         pos = self._getRandomPositionInsideArea();
                         mob.move(pos.x, pos.y);
                     }
                 }
-            });
+            }
         }, 500);
     },
     
