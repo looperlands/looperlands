@@ -342,14 +342,14 @@ function(Camera, Item, Character, Player, Timer, Mob) {
         },
 
         drawEntity: function(entity) {
-            var sprite = entity.sprite,
+            let sprite = entity.sprite,
                 shadow = this.game.shadows["small"],
                 anim = entity.currentAnimation,
                 os = this.upscaledRendering ? 1 : this.scale,
                 ds = this.upscaledRendering ? this.scale : 1;
         
             if(anim && sprite) {
-                var	frame = anim.currentFrame,
+                let	frame = anim.currentFrame,
                     s = this.scale,
                     x = frame.x * os,
                     y = frame.y * os,
@@ -395,7 +395,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                     this.context.drawImage(sprite.image, x, y, w, h, ox, oy, dw, dh);
 
                     if(entity instanceof Item && entity.kind !== Types.Entities.CAKE && !entity.nosparks) {
-                        var sparks = this.game.sprites["sparks"],
+                        let sparks = this.game.sprites["sparks"],
                             anim = this.game.sparksAnimation,
                             frame = anim.currentFrame,
                             sx = sparks.width * frame.index * os,
@@ -411,10 +411,10 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                 }
             
                 if(entity instanceof Character && !entity.isDead && entity.hasWeapon()) {
-                    var weapon = this.game.sprites[entity.getWeaponName()];
+                    let weapon = this.game.sprites[entity.getWeaponName()];
         
                     if(weapon) {
-                        var weaponAnimData = weapon.animationData[anim.name],
+                        let weaponAnimData = weapon.animationData[anim.name],
                             index = frame.index < weaponAnimData.length ? frame.index : frame.index % weaponAnimData.length;
                             wx = weapon.width * index * os,
                             wy = weapon.height * anim.row * os,
@@ -641,13 +641,15 @@ function(Camera, Item, Character, Player, Timer, Mob) {
         },
     
         drawAnimatedTiles: function() {
-            var self = this,
-                m = this.game.map,
+            let m = this.game.map,
                 tilesetwidth = this.tileset.width / m.tilesize;
 
             let visbileTiles = [];
             if (this.game.visibleAnimatedTiles !== undefined) {
-                for (let tile of this.game.visibleAnimatedTiles) {
+                let visibleAnimatedTiles = this.game.visibleAnimatedTiles;
+                let visibileAnimatedTilesLength = visibleAnimatedTiles.length;
+                for (let i = 0; i < visibileAnimatedTilesLength; i++) {
+                    let tile = visibleAnimatedTiles[i];
                     visbileTiles.push({tileid: tile.id, setW: tilesetwidth, gridW: m.width, cellid: tile.index});
                 }
                 return {"type": "render", id: "background", tiles: visbileTiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: false};
@@ -655,13 +657,15 @@ function(Camera, Item, Character, Player, Timer, Mob) {
         },
 
         drawHighAnimatedTiles: function() {
-            var self = this,
-                m = this.game.map,
+            let m = this.game.map,
                 tilesetwidth = this.tileset.width / m.tilesize;
 
                 let visbileTiles = [];
                 if (this.game.visibleAnimatedHighTiles !== undefined) {
-                    for (let tile of this.game.visibleAnimatedHighTiles) {
+                    let visibileAnimatedHighTiles = this.game.visibleAnimatedHighTiles;
+                    let visibileAnimatedTilesLength = visibileAnimatedHighTiles.length;
+                    for (let i = 0; i < visibileAnimatedTilesLength; i++) {
+                        let tile = visibileAnimatedHighTiles[i];
                         visbileTiles.push({tileid: tile.id, setW: tilesetwidth, gridW: m.width, cellid: tile.index});
                     }
                     return {"type": "render", id: "high", tiles: visbileTiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: false};
@@ -673,12 +677,10 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             this.drawAnimatedTiles(true);
         },
     
-        drawHighTiles: function(ctx) {
-            var self = this,
-                m = this.game.map,
-                tilesetwidth = this.tileset.width / m.tilesize;
+        drawHighTiles: function() {
+            let m = this.game.map;
         
-                return {"type": "render", id: "high", tiles: this.game.visibleHighTiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: true};
+            return {"type": "render", id: "high", tiles: this.game.visibleHighTiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: true};
         },
 
         drawToggledLayers: function(ctx, highTile, animated) {
