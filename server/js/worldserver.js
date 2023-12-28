@@ -219,6 +219,9 @@ module.exports = World = cls.Class.extend({
         var regenCount = this.ups * 2;
         var updateCount = 0;
         setInterval(function () {
+            if (self.getPlayerCount() < 1) {
+                return;
+            }
             self.processGroups();
             self.processQueues();
 
@@ -635,16 +638,6 @@ module.exports = World = cls.Class.extend({
         } else {
             //console.error("Unknown player: " + id);
         }
-    },
-
-    getPlayerCount: function () {
-        var count = 0;
-        for (var p in this.players) {
-            if (this.players.hasOwnProperty(p)) {
-                count += 1;
-            }
-        }
-        return count;
     },
 
     broadcastAttacker: function (character) {
