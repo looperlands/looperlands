@@ -5420,7 +5420,8 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
         findVisibleAnimatedTiles: function(animatedTiles) {
             let visibleAnimatedTiles = [];
-            for (let i = 0; i < animatedTiles.length; i++) {
+            const animatedTilesLength = animatedTiles.length;
+            for (let i = 0; i < animatedTilesLength; i++) {
                 let tile = animatedTiles[i];
                 if (this.camera.isVisiblePosition(tile.x, tile.y, 2)) {
                     visibleAnimatedTiles.push(tile);
