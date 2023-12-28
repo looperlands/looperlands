@@ -972,19 +972,21 @@ module.exports = World = cls.Class.extend({
     },
 
     processGroups: function () {
-        var self = this;
+        let self = this;
 
         if (this.zoneGroupsReady) {
             this.map.forEachGroup(function (id) {
-                var spawns = [];
-                if (self.groups[id].incoming.length > 0) {
-                    spawns = _.each(self.groups[id].incoming, function (entity) {
+                let incoming = self.groups[id].incoming;
+                const incomingLength = incoming.length;
+                if (incomingLength > 0) {
+                    for (let i = 0; i < incomingLength; i++) {
+                        let entity = incoming[i];
                         if (entity instanceof Player) {
                             self.pushToGroup(id, new Messages.Spawn(entity), entity.id);
                         } else {
                             self.pushToGroup(id, new Messages.Spawn(entity));
                         }
-                    });
+                    }
                     self.groups[id].incoming = [];
                 }
             });
