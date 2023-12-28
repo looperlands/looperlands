@@ -60,7 +60,7 @@ module.exports = MobArea = Area.extend({
             }
             for (let i = 0; i < self.entities.length; i++) {
                 let mob = self.entities[i];
-                let canRoam = (Utils.random(20) === 1),
+                let canRoam = (Utils.random(10) === 1),
                     pos;
 
                 if (canRoam) {
@@ -70,7 +70,7 @@ module.exports = MobArea = Area.extend({
                     }
                 }
             }
-        }, 500);
+        }, 2000);
     },
     
     createReward: function() {
