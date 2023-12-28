@@ -145,11 +145,11 @@ module.exports = class Mapx {
     }
     
     forEachGroup(callback) {
-        var width = this.groupWidth,
+        let width = this.groupWidth,
             height = this.groupHeight;
         
-        for(var x = 0; x < width; x += 1) {
-            for(var y = 0; y < height; y += 1) {
+        for(let x = 0; x < width; x += 1) {
+            for(let y = 0; y < height; y += 1) {
                 callback(x+'-'+y);
             }
         }
