@@ -55,18 +55,23 @@ module.exports = MobArea = Area.extend({
         var self = this;
         
         setInterval(function() {
-            _.each(self.entities, function(mob) {
-                var canRoam = (Utils.random(20) === 1),
+            if (self.world.getPlayerCount() < 1) {
+                return;
+            }
+            const entitiesLength = self.entities.length;
+            for (let i = 0; i < entitiesLength; i++) {
+                let mob = self.entities[i];
+                let canRoam = (Utils.random(10) === 1),
                     pos;
-                
-                if(canRoam) {
-                    if(!mob.hasTarget() && !mob.isDead) {
+
+                if (canRoam) {
+                    if (!mob.hasTarget() && !mob.isDead) {
                         pos = self._getRandomPositionInsideArea();
                         mob.move(pos.x, pos.y);
                     }
                 }
-            });
-        }, 500);
+            }
+        }, 2000);
     },
     
     createReward: function() {

@@ -233,13 +233,8 @@ define(['character', 'timer'], function(Character, Timer) {
         
             let animatedTilesEnabled = this.game.app.settings.getAnimatedTiles();
             let updateAnimatedTilesFn = function (tile) {
-                if(animatedTilesEnabled && tile.animate(t)) {
-                    tile.isDirty = true;
-                    tile.dirtyRect = self.game.renderer.getTileBoundingRect(tile);
-
-                    if(self.game.renderer.mobile || self.game.renderer.tablet) {
-                        self.game.checkOtherDirtyRects(tile.dirtyRect, tile, tile.x, tile.y);
-                    }
+                if(animatedTilesEnabled) {
+                    tile.animate(t)
                 }
             }
             this.game.forEachAnimatedTile(updateAnimatedTilesFn);

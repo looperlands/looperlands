@@ -84,7 +84,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             this.spriteNames = ["hand", "sword", "loot", "target", "talk", "float", "sparks", "shadow16", "rat", "skeleton", "skeleton2", "spectre", "boss", "deathknight", 
                                 "ogre", "crab", "snake", "eye", "bat", "goblin", "wizard", "guard", "king", "villagegirl", "villager", "coder", "agent", "rick", "scientist", "nyan", "priest", "coblumberjack", "cobhillsnpc", "cobcobmin", "cobellen", "cobjohnny",
                                 "king2", "goose", "tanashi", "slime","kingslime","silkshade","redslime","villagesign1","wildgrin","loomleaf","gnashling","arachweave","spider","fangwing", "minimag", "miner", "megamag", "seacreature", "tentacle", "tentacle2", "wildwill",
-                                "cobchicken", "alaric","orlan","jayce", "cobcow", "cobpig", "cobgoat", "ghostie","cobslimered", "cobslimeyellow", "cobslimeblue", "cobslimeking", "cobyorkie", "cobcat", "cobdirt", "cobincubator", "cobcoblin", "cobcobane", "cobogre",
+                                "cobchicken", "alaric","orlan","jayce", "cobcow", "cobpig", "cobgoat", "ghostie","cobslimered", "cobslimeyellow", "cobslimeblue", "cobslimepurple", "cobslimegreen", "cobslimepink", "cobslimecyan", "cobslimemint", "cobslimeking", "cobyorkie", "cobcat", "cobdirt", "cobincubator", "cobcoblin", "cobcobane", "cobogre",
                                 "sorcerer", "octocat", "beachnpc", "forestnpc", "desertnpc", "lavanpc","thudlord", "clotharmor", "leatherarmor", "mailarmor","boar","grizzlefang","barrel","neena","athlyn","jeniper",
                                 "platearmor", "redarmor", "goldenarmor", "firefox", "death", "sword1", "transparentweapon", "torin","elric","glink", "axe", "chest","elara","eldrin","draylen","thaelen","keldor","torvin","liora","aria",
                                 "sword2", "redsword", "bluesword", "goldensword", "item-sword2", "item-axe", "item-redsword", "item-bluesword", "item-goldensword", "item-leatherarmor", "item-mailarmor","whiskers",
@@ -4669,6 +4669,17 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 "NFT_8aa8c263ad0e1ce09441fcd8187b7cc093d6a7268cf8f6094cb3a2f1f8bfd7df",
                                 "NFT_b4404152e353209618aebdfbf30c57f251a5fa73c4dbe854313a95f1797aa84c",
                                 "NFT_ce2241e2a86d6c8dc0a50bc89f896ec63264e6e621ac033fe09c7f7a7b5e53e0",
+                                "NFT_78e270143ccfea7592ab433a7514f041f8884a72b22f5abb645ea403d8645571",
+                                "NFT_846115cf3265fb16a0aabca7b6b594591b591058ebf36581d8084c1a91d9f382",
+                                "NFT_cebc660eefad59147d4c2b85ad4d47aec995e6b8f5f203218aaac0b58eb02901",
+                                "NFT_cf805345f5cfd13e8ef87b072331324b27f11a8559aa7a0529044763bcaa908e",
+                                "NFT_0c12a8461074d7234552d4cc7f80da0bd1d60cc6edfd5734e28ad63ec50502f0",
+                                "NFT_6624e75be920eadc270767378d0dc4c07183fdd08911aac1dd2d594c847ab47e",
+                                "NFT_f56a7a9387010f99d97a771bf714a7fcb7efcebeced13306ea216315c71bc075",
+                                "NFT_5a55d34593c0b6ca473269b6798fe1be1e24583c280f413ce2a30a1fc20fcfcc",
+                                "NFT_c697bb89b5c2bc9d0684ec9221be10dd945d1c14b9843169c3b6105a67a13526",
+                                "NFT_1d02b80d167d20b0bfa8f30d30aff800fb4ee787cc59e1657a076fe040bc46b2",
+                                "NFT_779fec4f349d23b4fa4b57c2ef508685901fbd3f31fe241dd9e21865f56e4261",
                                 // @nextSpriteLine@
                             ];
         },
@@ -4685,6 +4696,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
         setRenderer: function(renderer) {
             this.renderer = renderer;
+            this.renderer.initFont();
         },
 
         setUpdater: function(updater) {
@@ -4836,10 +4848,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
         initSilhouettes: function() {
             var self = this;
-
-            Types.forEachMobOrNpcKind(function(kind, kindName) {
-                self.sprites[kindName].createSilhouette();
-            });
             self.sprites["chest"].createSilhouette();
             self.sprites["item-cake"].createSilhouette();
         },
@@ -5352,7 +5360,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             this.currentTime = new Date().getTime();
 
             if(this.started) {
-                this.renderer.initFont();
                 this.updateCursorLogic();
                 this.updater.update();
                 if (this.canUseCenteredCamera()) {
@@ -5411,23 +5418,26 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
             }
         },
 
+        findVisibleAnimatedTiles: function(animatedTiles) {
+            let visibleAnimatedTiles = [];
+            const animatedTilesLength = animatedTiles.length;
+            for (let i = 0; i < animatedTilesLength; i++) {
+                let tile = animatedTiles[i];
+                if (this.camera.isVisiblePosition(tile.x, tile.y, 2)) {
+                    visibleAnimatedTiles.push(tile);
+                }
+            }
+            return visibleAnimatedTiles;
+        },
+
         findVisibleTiles: function() {
             let self = this,
                 m = this.map,
                 tilesetwidth = this.renderer.tileset.width / m.tilesize;
 
-            let findVisibleAnimatedTiles = function(animatedTiles) {
-                let visibleAnimatedTiles = [];
-                for (tile of animatedTiles) {
-                    if (self.camera.isVisiblePosition(tile.x, tile.y, 2)) {
-                        visibleAnimatedTiles.push(tile);
-                    }
-                }
-                return visibleAnimatedTiles;
-            }
 
-            this.visibleAnimatedTiles = findVisibleAnimatedTiles(this.animatedTiles);
-            this.visibleAnimatedHighTiles = findVisibleAnimatedTiles(this.highAnimatedTiles);
+            this.visibleAnimatedTiles = this.findVisibleAnimatedTiles(this.animatedTiles);
+            this.visibleAnimatedHighTiles = this.findVisibleAnimatedTiles(this.highAnimatedTiles);
             this.visibleTerrainTiles = []
             this.visibleHighTiles = []
             this.forEachVisibleTile(function (id, index) {
@@ -6555,7 +6565,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
          * @see makeCharacterGoTo
          */
         makePlayerGoTo: function(x, y) {
-            this.storage.saveXY(x, y);
             this.makeCharacterGoTo(this.player, x, y);
         },
     
@@ -6742,7 +6751,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
          * 
          */
         forEachVisibleTile: function(callback, extra) {
-            var self = this,
+            let self = this,
                 m = this.map;
         
             if(m.isLoaded) {

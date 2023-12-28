@@ -94,11 +94,18 @@ html, body {height:100%;}
 
 body {padding:0;margin:0;background:#111;overflow:hidden;image-rendering:-moz-crisp-edges; image-rendering:-webkit-optimize-contrast;border-top:2px solid #707070;}
 
-canvas { position:absolute;image-rendering:pixelated;}
+canvas { position:absolute;image-rendering:pixelated; will-change: transform;}
 #background { background:url('../img/common/loading.png') no-repeat center center, #000;}
 .error #background { background:url('../img/common/loading-error.png') no-repeat center center, #000;}
 
-#background, #foreground, #high-tiles { margin:0; padding:0; image-rendering:pixelated;}
+#background,
+#foreground,
+#high-tiles {
+    margin: 0;
+    padding: 0;
+    image-rendering: pixelated;
+    will-change: transform;
+}
 
 #achievements nav::selection {background:transparent;text-decoration:none;color:transparent;}
 #canvas, #bar-container, #bubbles, #chatbox, #canvasborder, #foreground, #background, #high-tiles, footer, #container, #achievement-notification {-moz-user-select:none;-webkit-user-select:none;-o-user-select:none;-ms-user-select:none;}

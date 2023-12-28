@@ -1955,6 +1955,66 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
 
+        Cobslimepurple: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.COBSLIMEPURPLE);
+                this.moveSpeed = 360;
+                this.atkSpeed = 110;
+                this.idleSpeed = 750;
+                this.setAttackRate(1000);
+                this.deathAnimated = true;
+                this.aggroRange = 3;
+            }
+        }),
+
+        Cobslimegreen: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.COBSLIMEGREEN);
+                this.moveSpeed = 350;
+                this.atkSpeed = 100;
+                this.idleSpeed = 750;
+                this.setAttackRate(1000);
+                this.deathAnimated = true;
+                this.aggroRange = 3;
+            }
+        }),
+
+        Cobslimepink: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.COBSLIMEPINK);
+                this.moveSpeed = 350;
+                this.atkSpeed = 100;
+                this.idleSpeed = 750;
+                this.setAttackRate(1000);
+                this.deathAnimated = true;
+                this.aggroRange = 3;
+            }
+        }),
+
+        Cobslimecyan: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.COBSLIMECYAN);
+                this.moveSpeed = 350;
+                this.atkSpeed = 100;
+                this.idleSpeed = 750;
+                this.setAttackRate(1000);
+                this.deathAnimated = true;
+                this.aggroRange = 3;
+            }
+        }),
+
+        Cobslimemint: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.COBSLIMEMINT);
+                this.moveSpeed = 350;
+                this.atkSpeed = 100;
+                this.idleSpeed = 750;
+                this.setAttackRate(1000);
+                this.deathAnimated = true;
+                this.aggroRange = 3;
+            }
+        }),
+
         Cobslimeking: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.COBSLIMEKING);

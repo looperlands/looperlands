@@ -192,7 +192,27 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     };
 
     EntityFactory.builders[Types.Entities.COBSLIMEBLUE] = function(id) {
-        return new Mobs.Cobslimeblue(id);
+        return new Mobs.Cobslimeblue(id);  
+    };
+
+    EntityFactory.builders[Types.Entities.COBSLIMEPURPLE] = function(id) {
+        return new Mobs.Cobslimepurple(id);
+    };
+
+    EntityFactory.builders[Types.Entities.COBSLIMEGREEN] = function(id) {
+        return new Mobs.Cobslimegreen(id);
+    };
+
+    EntityFactory.builders[Types.Entities.COBSLIMEPINK] = function(id) {
+        return new Mobs.Cobslimepink(id);
+    };
+
+    EntityFactory.builders[Types.Entities.COBSLIMECYAN] = function(id) {
+        return new Mobs.Cobslimecyan(id);
+    };
+
+    EntityFactory.builders[Types.Entities.COBSLIMEMINT] = function(id) {
+        return new Mobs.Cobslimemint(id);
     };
 
     EntityFactory.builders[Types.Entities.COBSLIMEKING] = function(id) {

@@ -16,7 +16,8 @@
         "wk",
         "crimsonspace",
         "kbb",
-        "m88n"
+        "m88n",
+        "duckville"
     ],
     "map_directory": "./server/maps/",
     "metrics_enabled": false,
