@@ -55,9 +55,13 @@ module.exports = MobArea = Area.extend({
         var self = this;
         
         setInterval(function() {
-            for (let i = 0; i < self.entities.length; i++) {
+            if (self.world.getPlayerCount() < 1) {
+                return;
+            }
+            const entitiesLength = self.entities.length;
+            for (let i = 0; i < entitiesLength; i++) {
                 let mob = self.entities[i];
-                let canRoam = (Utils.random(20) === 1),
+                let canRoam = (Utils.random(10) === 1),
                     pos;
 
                 if (canRoam) {
@@ -67,7 +71,7 @@ module.exports = MobArea = Area.extend({
                     }
                 }
             }
-        }, 500);
+        }, 2000);
     },
     
     createReward: function() {

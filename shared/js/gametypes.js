@@ -9286,7 +9286,8 @@ Types.getOrientationAsString = function(orientation) {
 
 Types.getMessageTypeAsString = function(type) {
     let keys = Object.keys(Types.Messages);
-    for (let i = 0; i < keys.length; i++) {
+    const keysLength = keys.length;
+    for (let i = 0; i < keysLength; i++) {
         let key = keys[i];
         if (Types.Messages[key] === type) {
             return key;
