@@ -809,6 +809,10 @@ module.exports = World = cls.Class.extend({
         this.playerCount = count;
     },
 
+    getPlayerCount: function () {
+        return this.playerCount;
+    },
+
     incrementPlayerCount: function () {
         this.setPlayerCount(this.playerCount + 1);
     },
