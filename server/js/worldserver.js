@@ -318,27 +318,29 @@ module.exports = World = cls.Class.extend({
     },
 
     pushToGroup: function (groupId, message, ignoredPlayer) {
-        var self = this,
-            group = this.groups[groupId];
+        let group = this.groups[groupId];
 
         if (group) {
             let removeList = [];
-            _.each(group.players, function (playerId) {
+
+            const groupPlayers = group.players;
+            const groupPlayersLength = groupPlayers.length;
+            for (let i = 0; i < groupPlayersLength; i++) {
+                let playerId = groupPlayers[i];
                 if (playerId != ignoredPlayer) {
-                    let entity = self.getEntityById(playerId);
+                    let entity = this.getEntityById(playerId);
                     if (entity === undefined) {
                         removeList.push(playerId);
                     } else {
-                        self.pushToPlayer(entity, message);
+                        this.pushToPlayer(entity, message);
                     }
                 }
-            });
-            if (removeList.length > 0) {
-                //console.log("Removing undefined players from group:", removeList);
-                removeList.forEach(function (playerId) {
-                    group.players = _.reject(group.players, function (id) {
-                        return id === playerId;
-                    });
+            }
+            const removeListLength = removeList.length;
+            for (let i = 0; i < removeListLength; i++) {
+                let playerId = removeList[i];
+                group.players = _.reject(group.players, function (id) {
+                    return id === playerId;
                 });
             }
         } else {
