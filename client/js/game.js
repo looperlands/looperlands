@@ -6665,7 +6665,9 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                             console.log(msg);
                             let shop = msg.split(" ");
                             shop.shift();
-                            self.app.openShop(shop.join(" "))
+                            let shopId = shop.shift();
+                            let shopName = shop.join(" ");
+                            self.app.openShop(shopId, shopName)
                         } else {
                             self.createBubble(npc.id, msg);
                             self.assignBubbleTo(npc);
@@ -8028,17 +8030,19 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         },
 
         updateResource: function (resource, amount) {
-            console.log(resource + ' has ' + amount);
             $('#resources').removeClass('hidden');
-            if ($('#resource-' + resource).length === 0) {
-                let resourceEl = $('<div id="resource-' + resource + '" class="resource"><span class="img"></span><span class="amount"></span></div>');
-                let url = "img/1/item-" + Types.getKindAsString(resource) + ".png";
-                resourceEl.find('.img').css('background-image',  "url('" + url + "')");
-               $('#resources').append(resourceEl);
+            if (amount > 0) {
+                if ($('#resource-' + resource).length === 0) {
+                    let resourceEl = $('<div id="resource-' + resource + '" class="resource"><span class="img"></span><span class="amount"></span></div>');
+                    let url = "img/1/item-" + Types.getKindAsString(resource) + ".png";
+                    resourceEl.find('.img').css('background-image', "url('" + url + "')");
+                    $('#resources').append(resourceEl);
+                }
+
+                $('#resource-' + resource).find('.amount').text(amount);
+            } else {
+                $('#resource-' + resource).remove()
             }
-
-            $('#resource-' + resource).find('.amount').text(amount);
-
         }
     });
     

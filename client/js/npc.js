@@ -13,7 +13,7 @@ define(['character'], function (Character) {
 
         "king": [
             "Hi Looper, I'm the LoopWorm King",
-            "/openShop King's Shop",
+            "/openShop wormking King's Shop",
             "Welcome to my kingdom",
             'You can buy our <a target="_blank" href="https://loopexchange.art/collection/web3-pets">Web3 Pets</a> to support us.',
             'Check out <a target="_blank" href="https://twitter.com/LoopWorms">my twitter</a> and give me a follow!',
@@ -39,6 +39,7 @@ define(['character'], function (Character) {
         ],
 
         "villager": [
+            "/openShop wormking Wormking's Shop",
             "Good day, eh, Looper, the name's Ordinary Adam.",
             'Check out my Loopring L2 <a target="_blank" href="https://loopexchange.art/collection/ordinaryadam">collection</a>.',
             'Visit <a target="_blank" href="https://twitter.com/Ordinary_Adam">my twitter</a> and give me a follow!',

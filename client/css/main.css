@@ -415,6 +415,13 @@ body.upscaled.game {background:#000;}
     background: #533642;
     cursor: pointer;
 }
+#shop-popup .item.disabled {
+    opacity: 0.5;
+}
+#shop-popup .item.disabled:hover {
+    background: #342433;
+    cursor: default;
+}
 
 #shop-popup .item .name {
     color: #fce045;
@@ -459,15 +466,23 @@ body.upscaled.game {background:#000;}
     font-family: 'GraphicPixel';
 }
 
+#shop-popup .minLevel {
+    padding-top: 9px;
+    color: #b3a9ad;
+}
+#shop-popup .minLevel .amount {
+    color: #fce045;
+}
+
 #shop-confirmation {
     position: absolute;
     top: 18%;
     left: 43%;
     width: 200px;
-    height: 120px;
+    min-height: 120px;
     transition: ease-in-out 300ms;
     color: white;
-    padding: 30px 30px 10px 50px;
+    padding: 30px 30px 30px 50px;
     display:none;
 }
 
@@ -476,15 +491,20 @@ body.upscaled.game {background:#000;}
 }
 
 #shop-confirmation.hidden {
-    left: 20%;
+    left: 10%;
     opacity: 1;
     transition: ease-in-out 300ms;
 }
 
 #shop-confirmation-text {
-    padding: 15px 5px;
+    padding: 15px 0;
     width: 100%;
 }
+
+#shop-confirmation-longtext {
+    color: #b3a9ad;
+}
+
 #shop-confirmation-text .highlight {
     color: #fce045;
 }
@@ -501,6 +521,11 @@ body.upscaled.game {background:#000;}
 }
 #cancel-shop-purchase:hover {
     opacity: 1;
+}
+
+#confirm-shop-purchase.disabled {
+    pointer-events: none;
+    opacity: 0.3;
 }
 
 #confirm-shop-purchase {

@@ -612,6 +612,23 @@ exports.newBot = async function(mapId, botNftId, xp, name, walletId, ownerEntity
   }
 }
 
+exports.getShopInventory = async function(shopId) {
+  const options = {
+    headers: {
+      'X-Api-Key': API_KEY,
+      'Content-Type': 'application/json'
+    }
+  }
+  const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/shopInventory.php?shopName=${shopId}`;
+  const shopResponse = await axios.get(url, options);
+  try {
+    return shopResponse.data;
+  } catch (error) {
+    return null;
+  }
+}
+
+
 exports.updateExperience = updateExperience;
 exports.saveWeapon = saveWeapon;
 exports.loadWeapon = loadWeapon;

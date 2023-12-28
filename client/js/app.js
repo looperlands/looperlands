@@ -838,75 +838,72 @@ define(['jquery', 'storage'], function ($, Storage) {
             }
         },
 
-        openShop: function(shopName) {
+        openShop: function(shopId, shopName) {
             let self = this;
             let shopPopup = $('#shop-popup');
             shopPopup.find('#shop-popup-name').text(shopName);
 
-            // TODO: Get this from an API
-            let items = [
-                {
-                    id: 1,
-                    name: "Healing Potion",
-                    item: Types.Entities.POTION,
-                    description: "Gain 100 HP",
-                    price: { GOLD: 100 }
-                },
-                {
-                    id: 2,
-                    name: "Wooden sword",
-                    item: Types.Entities.NFT_0b3bb2213a2f4beaf114bf00ea68bede2092b01307871bc418b7d858c2171088,
-                    description: "Great sword to beat wood",
-                    price: { GOLD: 10, coblog: 25 },
-                    level: 12
-                },
-                {
-                    id: 3,
-                    name: "Invisibility Potion",
-                    item: Types.Entities.FIREPOTION,
-                    description: "Gain 100 HP",
-                    price: { GOLD: 100 }
-                },
-                {
-                    id: 4,
-                    name: "Axe",
-                    item: Types.Entities.AXE,
-                    description: "Gain 100 HP",
-                    price: { GOLD: 9900 }
-                },
-            ];
-            shopPopup.find('#shop-popup-items').html('');
-            items.forEach(function (item) {
-                let itemHtml = "<div class='item'>";
-                itemHtml += "<div id='" + item.item + "' class='item-image' style='background: url(img/2/item-" + Types.getKindAsString(item.item) + ".png)' />";
+            let shopInventoryQuery = "/shop/" + shopId + "/inventory";
+            axios.get(shopInventoryQuery).then(function(response) {
+                let items = response.data;
+                shopPopup.find('#shop-popup-items').html('');
+                items.forEach(function (item) {
 
-                let levelInfo = "";
-                if (item.level) {
-                    levelInfo = "<span class='level'>Lvl&nbsp;" + item.level + "</span>";
-                }
+                    let itemHtml = "<div class='item'>";
+                    itemHtml += "<div id='" + item.item + "' class='item-image' style='background: url(img/2/item-" + Types.getKindAsString(item.item) + ".png)' />";
 
-                itemHtml += "<div class='name'>" + item.name + levelInfo + "</div>";
-                itemHtml += "<div class='desc'>" + item.description + "</div>";
-                itemHtml += "<div class='price'></div>";
-                itemHtml += "</div>";
+                    let levelInfo = "";
+                    if (item.level) {
+                        levelInfo = "<span class='level'>Lvl&nbsp;" + item.level + "</span>";
+                    }
 
-                let itemEl  = $(itemHtml);
+                    itemHtml += "<div class='name'>" + item.name + levelInfo + "</div>";
+                    itemHtml += "<div class='desc'>" + item.description + "</div>";
+                    itemHtml += "<div class='price'></div>";
+                    itemHtml += "</div>";
 
-                Object.keys(item.price).forEach(function (resource) {
-                    let resourceEl = $('<div id="resource-' + resource + '" class="resource"><span class="img"></span><span class="amount"></span></div>');
-                    let url = "img/1/item-" + resource + ".png";
-                    resourceEl.find('.img').css('background-image',  "url('" + url + "')");
-                    resourceEl.find('.amount').text(item.price[resource]);
-                    itemEl.find('.price').append(resourceEl);
+                    let itemEl  = $(itemHtml);
+                    let playerHasEnoughResources = true;
+                    Object.keys(item.price).forEach(function (resource) {
+                        let resourceEl = $('<div id="resource-' + resource + '" class="resource"><span class="img"></span><span class="amount"></span></div>');
+                        let url = "img/1/item-" + resource + ".png";
+                        resourceEl.find('.img').css('background-image', "url('" + url + "')");
+                        resourceEl.find('.amount').text(item.price[resource]);
+                        itemEl.find('.price').append(resourceEl);
+
+                        // Find resource amount in player resource bar and check if player has enough
+                        if(parseInt($('#resources').find('#resource-' + Types.getKindFromString(resource)).find('.amount').text()) < parseInt(item.price[resource])) {
+                            playerHasEnoughResources = false;
+                        }
+                    });
+
+                    let playerHasMinimumLevel = true;
+                    if ((item.minPlayerLevel ?? 0) > 0) {
+                        let resourceEl = $('<div class="minLevel"><span class="img">Lvl</span><span class="amount"> ' + item.minPlayerLevel + '</span></div>');
+                        itemEl.find('.price').append(resourceEl);
+
+                        if (self.game.player.level < (item.minPlayerLevel ?? 0)) {
+                            playerHasMinimumLevel = false;
+                        }
+                    }
+
+                    if(!playerHasEnoughResources || !playerHasMinimumLevel) {
+                        itemEl.addClass('disabled');
+                    } else {
+                        itemEl.removeClass('disabled');
+                    }
 
                     itemEl.on('click', function(e) {
                         e.preventDefault();
                         e.stopImmediatePropagation();
+
                         $('#shop-popup .selected').removeClass('selected');
                         $(e.currentTarget).addClass('selected');
-                        $('#shop-confirmation-text').html  ('Are you sure you want to buy <span class="highlight">' + item.name + '</span>?');
+                        $('#shop-confirmation-text').html('Are you sure you want to buy <span class="highlight">' + item.name + '</span>?');
+                        $('#shop-confirmation-longtext').html(item.longDescription ?? item.description);
                         $('#shop-confirmation').removeClass('hidden');
 
+                        $('#cancel-shop-purchase').off('click');
                         $('#cancel-shop-purchase').click(function(e) {
                             $('#shop-confirmation').addClass('hidden');
                             itemEl.removeClass('selected');
@@ -914,35 +911,62 @@ define(['jquery', 'storage'], function ($, Storage) {
                             e.stopImmediatePropagation();
                         });
 
-                        $('#confirm-shop-purchase').click( function(e) {
-                            $('#shop-confirmation').addClass('hidden');
-                            itemEl.removeClass('selected');
-                            e.preventDefault();
-                            e.stopImmediatePropagation();
-                            self.purchaseShopItem(shopName, item);
-                        });
+                        let itemId = item.id;
+                        $('#confirm-shop-purchase').off('click');
+                        if(playerHasEnoughResources && playerHasMinimumLevel) {
+                            $('#confirm-shop-purchase').click(function (e) {
+                                $('#shop-confirmation').addClass('hidden');
+                                itemEl.removeClass('selected');
+                                e.preventDefault();
+                                e.stopImmediatePropagation();
+                                self.purchaseShopItem(shopId, itemId);
+                            });
+
+                            $('#shop-confirmation-text').show();
+                            $('#confirm-shop-purchase').show();
+                            $('#cancel-shop-purchase').show();
+                            $('#confirm-shop-purchase').removeClass('disabled');
+                        } else {
+                            $('#shop-confirmation-text').hide();
+                            $('#confirm-shop-purchase').hide();
+                            $('#cancel-shop-purchase').hide();
+                            $('#confirm-shop-purchase').addClass('disabled');
+                        }
                     })
+
+                    shopPopup.find('#shop-popup-items').append(itemEl);
                 });
-                shopPopup.find('#shop-popup-items').append(itemEl);
+
+                $('#close-shop').click(function(e) {
+                    $('#shop-popup').addClass('hidden');
+                    $('#shop-confirmation-longtext').html('');
+                    $('#shop-confirmation').removeClass('visible').addClass('hidden');
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+                });
+
+                shopPopup.removeClass("hidden");
+                setTimeout(() => {
+                    $('#shop-confirmation').addClass('visible');
+                }, 1000);
             });
-
-            $('#close-shop').click(function(e) {
-                $('#shop-popup').addClass('hidden');
-                $('#shop-confirmation').removeClass('visible').addClass('hidden');
-                e.preventDefault();
-                e.stopImmediatePropagation();
-            });
-
-            shopPopup.removeClass("hidden");
-            setTimeout(() => {
-                $('#shop-confirmation').addClass('visible');
-            }, 1000);
-
         },
 
-        purchaseShopItem: function(shopName, item) {
-            console.log('buying', shopName, item);
-            this.game.audioManager.playSound("achievement");
+        purchaseShopItem: function(shopId, itemId) {
+            let self = this;
+            let shopInventoryQuery = "/session/" + _this.storage.sessionId + "/shop/" + shopId + "/buy/" + itemId;
+            axios.get(shopInventoryQuery)
+                .then(function(response) {
+                    self.initResourcesDisplay();
+                    self.game.audioManager.playSound("achievement");
+                    self.game.showNotification("Purchase successful!");
+                })
+                .catch(function(error) {
+                    console.error(error);
+                    let errorMsg = error?.response?.data?.error;
+                    self.game.audioManager.playSound("noloot");
+                    self.game.showNotification(errorMsg);
+                });
         },
 
         animateParchment: function (origin, destination) {

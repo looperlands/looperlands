@@ -862,6 +862,86 @@ WS.socketIOServer = Server.extend({
             }
         });
 
+        app.get("/shop/:shopId/inventory", async (req, res) => {
+            const shopId = req.params.shopId;
+            let shopInventory = await dao.getShopInventory(shopId);
+            res.status(200).json(shopInventory);
+        });
+
+        app.get("/session/:sessionId/shop/:shopId/buy/:itemId", async (req, res) => {
+            const sessionId = req.params.sessionId;
+            const sessionData = cache.get(sessionId);
+            let player = self.worldsMap[sessionData.mapId].getPlayerById(sessionData.entityId);
+            let gameData = sessionData.gameData;
+            if (sessionData === undefined) {
+                res.status(404).json({
+                    status: false,
+                    error: "No session with id " + sessionId + " found",
+                    user: null
+                });
+                return;
+            }
+
+            const nftId = sessionData.nftId;
+            const shopInventory = await dao.getShopInventory(req.params.shopId);
+            const item = shopInventory.find(item => item.id === req.params.itemId);
+
+            if (gameData.consumables === undefined) {
+                gameData.consumables = {};
+            }
+
+            // Check player min level
+            let minPlayerLvl = parseInt(item.minPlayerLevel ?? 0);
+            if( minPlayerLvl !== undefined && !_.isNaN(minPlayerLvl) && minPlayerLvl > 0 && minPlayerLvl > player.level) {
+                res.status(400).json({
+                    status: false,
+                    error: "You're almost there! Achieve level " + item.minPlayerLevel + " to unlock this item.",
+                    user: null
+                });
+
+                return;
+            }
+
+            // Loop over all keys of price and check if player has enough of that resource
+            for (const [key, value] of Object.entries(item.price)) {
+                let resourceId = Types.getKindFromString(key);
+                let cost = parseInt(value);
+                let resource = parseInt(gameData.consumables[resourceId]);
+                if (_.isNaN(resource) || !_.isNumber(resource) || (resource < cost)) {
+                    res.status(400).json({
+                        status: false,
+                        error: "Not enough " + key,
+                        user: null
+                    });
+
+                    return;
+                }
+            }
+
+            // Loop over all keys of price again and remove that amount of resource from player
+            for (const [key, value] of Object.entries(item.price)) {
+                let resourceId = Types.getKindFromString(key);
+                let cost = parseInt(value);
+                dao.saveConsumable(nftId, resourceId, -1 * cost);
+                gameData.consumables[resourceId] = gameData.consumables[resourceId] - cost;
+            }
+
+            // Add item to player inventory
+            dao.saveConsumable(nftId, item.item, item.amount ?? 1);
+            let itemCount = gameData.consumables[item.item];
+            if (itemCount) {
+                gameData.consumables[item.item] = itemCount + 1;
+            } else {
+                gameData.consumables[item.item] = 1;
+            }
+
+            // Store changes in session data
+            sessionData.gameData = gameData;
+            cache.set(sessionId, sessionData);
+
+            res.status(200).send({});
+        });
+
         self.io.on('connection', function(connection){
           //console.log('a user connected');
 
@@ -873,7 +953,6 @@ WS.socketIOServer = Server.extend({
                 self.connection_callback(c);
           }
           self.addConnection(c);
-
         });
 
         
@@ -949,7 +1028,5 @@ WS.socketIOConnection = Connection.extend({
         //console.log("Closing connection to socket"+". Error: " + logError);
         this._connection.disconnect();
     }
-    
-
 
 });
