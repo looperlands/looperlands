@@ -58,7 +58,8 @@ module.exports = MobArea = Area.extend({
             if (self.world.getPlayerCount() < 1) {
                 return;
             }
-            for (let i = 0; i < self.entities.length; i++) {
+            const entitiesLength = self.entities.length;
+            for (let i = 0; i < entitiesLength; i++) {
                 let mob = self.entities[i];
                 let canRoam = (Utils.random(10) === 1),
                     pos;

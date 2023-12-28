@@ -198,7 +198,7 @@ module.exports = class Mapx {
     forEachAdjacentGroup(groupId, callback) {
         if(groupId) {
             let adjacentGroupPositions = this.getAdjacentGroupPositions(groupId);
-            let length = adjacentGroupPositions.length;
+            const length = adjacentGroupPositions.length;
             for (let i = 0; i < length; i++) {
                 let pos = adjacentGroupPositions[i];
                 callback(`${pos.x}-${pos.y}`);
