@@ -36,6 +36,7 @@ module.exports = class Mapx {
         this.hiddenLayers = map.hiddenLayers || {};
         this.collidingTiles = map.collidingTiles || {};
         this.toggledLayers = [];
+        this.getAdjacentGroupPositionsMap = {};
 
         // zone groups
     	this.zoneWidth = 28;
@@ -164,7 +165,12 @@ module.exports = class Mapx {
     }
     
     getAdjacentGroupPositions(id) {
-        var self = this,
+
+        if (this.getAdjacentGroupPositionsMap[id] !== undefined) {
+            return this.getAdjacentGroupPositionsMap[id];
+        }
+
+        let self = this,
             position = this.GroupIdToGroupPosition(id),
             x = position.x,
             y = position.y,
@@ -180,10 +186,13 @@ module.exports = class Mapx {
                 list.push(position);
             }
         });
-        
-        return _.reject(list, function(pos) { 
+
+        let ret = _.reject(list, function(pos) {
             return pos.x < 0 || pos.y < 0 || pos.x >= self.groupWidth || pos.y >= self.groupHeight;
         });
+
+        this.getAdjacentGroupPositionsMap[id] = ret;
+        return ret;
     }
     
     forEachAdjacentGroup(groupId, callback) {
