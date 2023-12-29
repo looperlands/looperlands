@@ -4,12 +4,40 @@ let canvases = {};
 let contexes = {};
 let cursors = {};
 let cursor = undefined;
+let sprites = {};
+
+class Sprite {
+    constructor(id, src, animationData, width, height, offsetX, offsetY) {
+        this.id = id;
+        this.filepath = src;
+        this.animationData = animationData;
+        this.width = width;
+        this.height = height;
+        this.offsetX = offsetX;
+        this.offsetY = offsetY;
+        let self = this;
+
+        if (this.filepath.startsWith("img/")) {
+            this.filepath = "/" + this.filepath;
+        }
+
+        loadImg(this.filepath).then((img) => {
+            self.image = img;
+            self.isLoaded = true;
+        });
+    }
+}
 
 
 async function loadImg(src) {
-    const imgblob = await fetch(src)
+    try {
+        const imgblob = await fetch(src)
         .then(r => r.blob());
-    return await createImageBitmap(imgblob);
+        return await createImageBitmap(imgblob);
+    } catch (e) {
+        console.log(e, src);
+    }
+
 }
 
 
@@ -103,6 +131,9 @@ onmessage = (e) => {
         ctx = canvas.getContext('2d');
         ctx.imageSmoothingEnabled  = false;
         contexes[id] = ctx;
+    } else if (e.data.type === "loadSprite") {
+        let sprite = new Sprite(e.data.id, e.data.src, e.data.animationData, e.data.width, e.data.height, e.data.offsetX, e.data.offsetY);
+        sprites[sprite.id] = sprite;
     }
 };
 
