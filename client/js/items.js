@@ -146,7 +146,7 @@ define(['item'], function(Item) {
 
         Coblog: Item.extend({
             init: function(id) {
-                this._super(id, Types.Entities.COBLOG, "resource");
+                this._super(id, Types.Entities.COBLOG, "object");
                 this.lootMessage = "Let's get logging!";
             },
         }),
