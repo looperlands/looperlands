@@ -337,7 +337,7 @@ define(['character'], function (Character) {
         "DANIEL": ["Salutations"],
         "ESTELLA": ["Greetings"],
         "CITYSIGN1": ["Home of MyCupBloody"],
-        "CITYSIGN2": ["Home of Punk"],
+        "CITYSIGN2": ["Phunk ‘n Stollen’s"],
         "CITYSIGN3": ["Home of Enraged"],
         "CITYSIGN4": ["FOR SALE!"],
         "CITYSIGN5": ["FOR SALE!"],
