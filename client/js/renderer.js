@@ -342,6 +342,8 @@ function(Camera, Item, Character, Player, Timer, Mob) {
         },
 
         drawEntity: function(entity) {
+            let textData = undefined;
+
             var sprite = entity.sprite,
                 shadow = this.game.shadows["small"],
                 anim = entity.currentAnimation,
@@ -368,7 +370,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                 }
                 
                 if(!(entity instanceof Mob && (entity.nameless || entity.isFriendly))) { // friendly mobs render nameless by default
-                this.drawEntityName(entity, sprite.offsetY);
+                    textData = this.drawEntityName(entity, sprite.offsetY);
                 }
                 
                 this.context.save();
@@ -434,9 +436,11 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                     this.context.restore();
                 }
             }
+            return textData;
         },
 
         drawEntities: function(dirtyOnly) {
+            let textData = [];
             var self = this;
         
             function handleDrawingEntity(entity) {
@@ -448,14 +452,20 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                 if(entity.isLoaded) {
                     if(dirtyOnly) {
                         if(entity.isDirty) {
-                            self.drawEntity(entity);
+                            let newTextData = self.drawEntity(entity);
+                            if (newTextData !== undefined) {
+                                textData.push(newTextData);
+                            }
                             
                             entity.isDirty = false;
                             entity.oldDirtyRect = entity.dirtyRect;
                             entity.dirtyRect = null;
                         }
                     } else {
-                        self.drawEntity(entity);
+                        let newTextData = self.drawEntity(entity);
+                        if (newTextData !== undefined) {
+                            textData.push(newTextData);
+                        }
                     }
                 }
             }
@@ -471,6 +481,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             });
 
             drawAfter.forEach((entity) => handleDrawingEntity(entity));
+            return textData;
         },
         
         drawDirtyEntities: function() {
@@ -868,7 +879,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
 
             //this.drawOccupiedCells();
             this.drawPathingCells();
-            this.drawEntities();
+            let textData = this.drawEntities();
             this.drawFloats();
             this.drawCombatInfo();
 
