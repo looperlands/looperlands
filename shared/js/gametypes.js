@@ -4561,7 +4561,9 @@ Types = {
         NFT_6624e75be920eadc270767378d0dc4c07183fdd08911aac1dd2d594c847ab47e: 4284,
         NFT_f56a7a9387010f99d97a771bf714a7fcb7efcebeced13306ea216315c71bc075: 4285,
         NFT_5a55d34593c0b6ca473269b6798fe1be1e24583c280f413ce2a30a1fc20fcfcc: 4286,
-        NFT_c697bb89b5c2bc9d0684ec9221be10dd945d1c14b9843169c3b6105a67a13526: 4287 // @lastid@
+        NFT_c697bb89b5c2bc9d0684ec9221be10dd945d1c14b9843169c3b6105a67a13526: 4287,
+        NFT_1d02b80d167d20b0bfa8f30d30aff800fb4ee787cc59e1657a076fe040bc46b2: 4288,
+        NFT_779fec4f349d23b4fa4b57c2ef508685901fbd3f31fe241dd9e21865f56e4261: 4289 // @lastid@
         //@nextIdLine@
     },
     
@@ -9105,6 +9107,8 @@ var kinds = {
     NFT_f56a7a9387010f99d97a771bf714a7fcb7efcebeced13306ea216315c71bc075: [Types.Entities.NFT_f56a7a9387010f99d97a771bf714a7fcb7efcebeced13306ea216315c71bc075, "armor"],
     NFT_5a55d34593c0b6ca473269b6798fe1be1e24583c280f413ce2a30a1fc20fcfcc: [Types.Entities.NFT_5a55d34593c0b6ca473269b6798fe1be1e24583c280f413ce2a30a1fc20fcfcc, "weapon"],
     NFT_c697bb89b5c2bc9d0684ec9221be10dd945d1c14b9843169c3b6105a67a13526: [Types.Entities.NFT_c697bb89b5c2bc9d0684ec9221be10dd945d1c14b9843169c3b6105a67a13526, "weapon"],
+    NFT_1d02b80d167d20b0bfa8f30d30aff800fb4ee787cc59e1657a076fe040bc46b2: [Types.Entities.NFT_1d02b80d167d20b0bfa8f30d30aff800fb4ee787cc59e1657a076fe040bc46b2, "armor"],
+    NFT_779fec4f349d23b4fa4b57c2ef508685901fbd3f31fe241dd9e21865f56e4261: [Types.Entities.NFT_779fec4f349d23b4fa4b57c2ef508685901fbd3f31fe241dd9e21865f56e4261, "armor"],
     // @nextSpriteLine@
 
     
@@ -9282,7 +9286,8 @@ Types.getOrientationAsString = function(orientation) {
 
 Types.getMessageTypeAsString = function(type) {
     let keys = Object.keys(Types.Messages);
-    for (let i = 0; i < keys.length; i++) {
+    const keysLength = keys.length;
+    for (let i = 0; i < keysLength; i++) {
         let key = keys[i];
         if (Types.Messages[key] === type) {
             return key;
