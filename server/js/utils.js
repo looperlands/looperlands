@@ -10,7 +10,8 @@ Utils.sanitize = function(string) {
     // Strip unsafe tags, then escape as html entities.
     let injectSafe = sanitizer.escape(sanitizer.sanitize(string));
     // Replace bad words with asterisks
-    for (let i = 0; i < bad_words.length; i++) {
+    const badWordsLength = bad_words.length;
+    for (let i = 0; i < badWordsLength; i++) {
         injectSafe = injectSafe.replace(new RegExp("\\b"+bad_words[i]+"\\b", "ig"), "*".repeat(bad_words[i].length));
     }
     return injectSafe;

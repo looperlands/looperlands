@@ -50,9 +50,9 @@ define(function() {
         },
 
         forEachVisiblePosition: function(callback, extra) {
-            var extra = extra || 0;
-            for(var y=this.gridY-extra, maxY=this.gridY+this.gridH+(extra*2); y < maxY; y += 1) {
-                for(var x=this.gridX-extra, maxX=this.gridX+this.gridW+(extra*2); x < maxX; x += 1) {
+            extra = extra || 0;
+            for(let y=this.gridY-extra, maxY=this.gridY+this.gridH+(extra*2); y < maxY; y += 1) {
+                for(let x=this.gridX-extra, maxX=this.gridX+this.gridW+(extra*2); x < maxX; x += 1) {
                     callback(x, y);
                 }
             }
@@ -63,13 +63,9 @@ define(function() {
         },
         
         isVisiblePosition: function(x, y, extra) {
-            var extra = extra || 0;
-            if(y >= this.gridY-extra && y < this.gridY + this.gridH+(extra*2)
-            && x >= this.gridX-extra && x < this.gridX + this.gridW+(extra*2)) {
-                return true;
-            } else {
-                return false;
-            }
+            extra = extra || 0;
+            return y >= this.gridY - extra && y < this.gridY + this.gridH + (extra * 2)
+                && x >= this.gridX - extra && x < this.gridX + this.gridW + (extra * 2);
         },
     
         focusEntity: function(entity) {

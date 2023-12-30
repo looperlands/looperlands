@@ -141,6 +141,9 @@ define(function() {
     
         setHighlight: function(value) {
             if(value === true) {
+                if(!this.sprite.silhouetteSprite) {
+                    this.sprite.createSilhouette();
+                }
                 this.sprite = this.sprite.silhouetteSprite;
                 this.isHighlighted = true;
             }
