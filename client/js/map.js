@@ -88,7 +88,7 @@ define(['jquery', 'area'], function ($, Area) {
 
             if (useWorker) {
                 console.log("Loading map with web worker." + this.mapId);
-                var worker = new Worker('js/mapworker.js');
+                let worker = new Worker('js/mapworker.js');
                 worker.postMessage(this.mapId);
 
                 worker.onmessage = function (event) {
@@ -98,6 +98,7 @@ define(['jquery', 'area'], function ($, Area) {
                     self.plateauGrid = map.plateauGrid;
                     self.mapLoaded = true;
                     self._checkReady();
+                    worker.terminate();
                 };
             } else {
                 console.log("Loading map via Ajax.");
