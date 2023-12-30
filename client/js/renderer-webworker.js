@@ -80,6 +80,8 @@ onmessage = (e) => {
         for (let renderData of e.data.renderData) {
             if (renderData.cursor !== undefined) {
                 renderCursor(renderData);
+            } else if (renderData.type === "text") {
+                drawText(renderData);
             } else {
                 render(renderData.id, renderData.tiles, renderData.cameraX, renderData.cameraY, renderData.scale, renderData.clear);
             }
@@ -115,5 +117,58 @@ function renderCursor(renderData) {
     let ctx = contexes[renderData.id];
     ctx.save();
     ctx.drawImage(cursorImg, 0, 0, 14 * os, 14 * os, mx, my, 14 * s, 14 * s);
+    ctx.restore();
+}
+
+function drawText(renderData) {
+    let id = renderData.id;
+    let ctx = contexes[id];
+    let canvas = canvases[id];
+    function setFontSize(size) {
+        let font = size + "px GraphicPixel";
+        ctx.font = font;
+    }
+
+    const cameraX = renderData.cameraX;
+    const cameraY = renderData.cameraY;
+    const scale = renderData.scale;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.save();
+    ctx.translate(-cameraX * scale, -cameraY * scale);
+    const textDataLength = renderData.textData.length;
+    for (let i = 0; i < textDataLength; i++) {
+        let textData = renderData.textData[i];
+        let {text, x, y, centered, color, strokeColor, title} = textData;
+
+        let strokeSize;
+
+        switch (scale) {
+            case 1:
+                strokeSize = 3; break;
+            case 2:
+                strokeSize = 3; break;
+            case 3:
+                strokeSize = 5;
+        }
+
+        if (text && x && y) {
+            if (centered) {
+                ctx.textAlign = "center";
+            }
+            if (title) {
+                switch (scale) {
+                    case 1: setFontSize(5); break;
+                    case 2: setFontSize(10); break;
+                    case 3: setFontSize(15); break;
+                }
+            }
+            ctx.strokeStyle = strokeColor || "#373737";
+            ctx.lineWidth = strokeSize;
+            ctx.strokeText(text, x, y);
+            ctx.fillStyle = color || "white";
+            ctx.fillText(text, x, y);
+        }
+    }
     ctx.restore();
 }

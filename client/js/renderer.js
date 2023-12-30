@@ -10,6 +10,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             this.foreground = (foreground && foreground.getContext) ? foreground.getContext("2d") : null;
 
             let highCanvas = document.getElementById("high-canvas").transferControlToOffscreen();
+            let textCanvas = document.getElementById("text-canvas").transferControlToOffscreen();
 
             let offScreenCanvas = background.transferControlToOffscreen();
             this.background = background;
@@ -40,6 +41,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
 
             this.worker.postMessage({"canvas":  offScreenCanvas, "type": "setCanvas", "id": "background"}, [offScreenCanvas]);
             this.worker.postMessage({"canvas":  highCanvas, "type": "setCanvas", "id": "high"}, [highCanvas]);
+            this.worker.postMessage({"canvas":  textCanvas, "type": "setCanvas", "id": "text"}, [textCanvas]);
             this.rescale(this.getScaleFactor());
 
             let self = this;
@@ -454,7 +456,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                         if(entity.isDirty) {
                             let newTextData = self.drawEntity(entity);
                             if (newTextData !== undefined) {
-                                textData.push(newTextData);
+                                textData = textData.concat(newTextData);
                             }
                             
                             entity.isDirty = false;
@@ -464,7 +466,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                     } else {
                         let newTextData = self.drawEntity(entity);
                         if (newTextData !== undefined) {
-                            textData.push(newTextData);
+                            textData = textData.concat(newTextData);
                         }
                     }
                 }
@@ -482,10 +484,6 @@ function(Camera, Item, Character, Player, Timer, Mob) {
 
             drawAfter.forEach((entity) => handleDrawingEntity(entity));
             return textData;
-        },
-        
-        drawDirtyEntities: function() {
-            this.drawEntities(true);
         },
         
         clearDirtyRect: function(r) {
@@ -595,32 +593,57 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                      (rect2.top > rect1.bottom) ||
                      (rect2.bottom < rect1.top));
         },
-        
+
         drawEntityName: function(entity, oy) {
-            this.context.save();
+            let textData = [];
             if(entity.name && (entity instanceof Player || entity instanceof Mob)) {
-                var color = (entity.id === this.game.playerId) ? "#fcda5c" : this.getHpIndicatorColor(entity);
+                let color = (entity.id === this.game.playerId) ? "#fcda5c" : this.getHpIndicatorColor(entity);
                 let entityData = entity.name;
 
                 if (entity.level !== undefined && entity.level !== null) { //currently it's null on revive, as the player doesn't get welcome message from the server
                     entityData = entity.level + " " + entityData;
                 }
                 
-                this.drawText(entityData,
-                              (entity.x + 8) * this.scale,
-                              (entity.y + oy) * this.scale,
-                              true,
-                              color);
+                //text, x, y, centered, color, strokeColor, title
+                //drawText: function(text, x, y, centered, color, strokeColor, title)
+
+                textData.push({
+                    "id": "text",
+                    "type": "text",
+                    "text": entityData,
+                    "x": (entity.x + 8) * this.scale,
+                    "y": (entity.y + oy) * this.scale,
+                    "centered": true,
+                    "color": color
+                });
 
                 if (entity.title !== undefined) {
                     if (entity instanceof Player){
-                        this.drawText(entity.title, (entity.x + 8) * this.scale, (entity.y + entity.nameOffsetY + 5) * this.scale, true, "white", 1, true);
+                        textData.push({
+                            "id": "text",
+                            "type": "text",
+                            "text": entity.title,
+                            "x": (entity.x + 8) * this.scale,
+                            "y": (entity.y + entity.nameOffsetY + 5) * this.scale,
+                            "centered": true,
+                            "color": "white",
+                            "title": true
+                        });
                     } else {
-                        this.drawText(entity.title, (entity.x + 8) * this.scale, (entity.y + oy + 6) * this.scale, true, "orange", 1, true);
+                        textData.push({
+                            "id": "text",
+                            "type": "text",
+                            "text": entity.title,
+                            "x": (entity.x + 8) * this.scale,
+                            "y": (entity.y + oy + 6) * this.scale,
+                            "centered": true,
+                            "color": "orange",
+                            "title" : true
+                        });
                     }
                 }
             }
-            this.context.restore();
+            return textData;
         },
         
         getHpIndicatorColor: function(entity) {
@@ -880,6 +903,15 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             //this.drawOccupiedCells();
             this.drawPathingCells();
             let textData = this.drawEntities();
+            let textDataCmd = {
+                "type": "text",
+                "id": "text",
+                "textData": textData,
+                "cameraX": this.camera.x,
+                "cameraY": this.camera.y,
+                "scale": this.scale
+            }
+            renderData.push(textDataCmd);
             this.drawFloats();
             this.drawCombatInfo();
 
