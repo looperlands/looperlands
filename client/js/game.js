@@ -5833,8 +5833,8 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 _self.doorCheck = false;
                             });
                         } else if (dest.http_redirect !== undefined) {
-                            window.location.href = dest.http_redirect;
-                        }
+                            window.open(dest.http_redirect, '_blank');
+                        }                        
                         else {
                             checkTrigger();
                         }
