@@ -116,6 +116,8 @@ onmessage = (e) => {
                 renderCursor(renderData);
             } else if (renderData.type === "text") {
                 drawText(renderData);
+            }  else if (renderData.type === "entities") {
+                drawEntities(renderData);
             } else {
                 render(renderData.id, renderData.tiles, renderData.cameraX, renderData.cameraY, renderData.scale, renderData.clear);
             }
@@ -237,4 +239,47 @@ function drawText(renderData) {
     }
     ctx.restore();
     lastRenderLength = textDataLength;
+}
+
+
+function drawEntities(drawEntitiesData) {
+    let id = drawEntitiesData.id;
+    let ctx = contexes[id];
+    let canvas = canvases[id];
+
+    const cameraX = drawEntitiesData.cameraX;
+    const cameraY = drawEntitiesData.cameraY;
+    const scale = drawEntitiesData.scale;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.save();
+    ctx.translate(-cameraX * scale, -cameraY * scale);
+
+    const entityCount = drawEntitiesData.entityData.length;
+
+    for (let i = 0; i < entityCount; i++) {
+        const entityData = drawEntitiesData.entityData[i];
+        ctx.save();
+        if (entityData.globalAlpha !== undefined && Number.isNaN(entityData.globalAlpha) === false) {
+            ctx.globalAlpha = entityData.globalAlpha;
+        }
+
+        ctx.translate(entityData.translateX, entityData.translateY);
+        if (entityData.scaleX !== undefined && entityData.scaleY !== undefined) {
+            ctx.scale(entityData.scaleX, entityData.scaleY);
+        }
+        let drawDataLength = entityData.drawData.length;
+        for (let y = 0; y < drawDataLength; y++) {
+            const drawData = entityData.drawData[y];
+            const {id, sx, sy, sW, sH, dx, dy, dW, dH} = drawData;
+
+            let sprite = sprites[id];
+            if (sprite && sprite.isLoaded === true) {
+                ctx.drawImage(sprite.image, sx, sy, sW, sH, dx, dy, dW, dH);
+            }
+        }
+        ctx.restore();
+
+    }
+    ctx.restore();
 }

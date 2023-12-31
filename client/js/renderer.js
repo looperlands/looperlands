@@ -1,4 +1,3 @@
-
 define(['camera', 'item', 'character', 'player', 'timer', 'mob'], 
 function(Camera, Item, Character, Player, Timer, Mob) {
 
@@ -11,6 +10,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
 
             let highCanvas = document.getElementById("high-canvas").transferControlToOffscreen();
             let textCanvas = document.getElementById("text-canvas").transferControlToOffscreen();
+            let entitiesCanvas = document.getElementById("entities-canvas").transferControlToOffscreen();
 
             let offScreenCanvas = background.transferControlToOffscreen();
             this.background = background;
@@ -42,6 +42,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             this.worker.postMessage({"canvas":  offScreenCanvas, "type": "setCanvas", "id": "background"}, [offScreenCanvas]);
             this.worker.postMessage({"canvas":  highCanvas, "type": "setCanvas", "id": "high"}, [highCanvas]);
             this.worker.postMessage({"canvas":  textCanvas, "type": "setCanvas", "id": "text"}, [textCanvas]);
+            this.worker.postMessage({"canvas":  entitiesCanvas, "type": "setCanvas", "id": "entities"}, [entitiesCanvas]);
             this.rescale(this.getScaleFactor());
 
             let self = this;
@@ -310,6 +311,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
 
         drawEntity: function(entity) {
             let textData = undefined;
+            let entityData = {drawData: []};
 
             var sprite = entity.sprite,
                 shadow = this.game.shadows["small"],
@@ -332,36 +334,56 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                     dh = h * ds;
             
                 if(entity.isFading) {
-                    this.context.save();
-                    this.context.globalAlpha = entity.fadingAlpha;
+                    entityData.globalAlpha = entity.fadingAlpha;
                 }
                 
                 if(!(entity instanceof Mob && (entity.nameless || entity.isFriendly))) { // friendly mobs render nameless by default
                     textData = this.drawEntityName(entity, sprite.offsetY);
                 }
                 
-                this.context.save();
                 if(entity.flipSpriteX) {
-                    this.context.translate(dx + this.tilesize*s, dy);
-                    this.context.scale(-1, 1);
+                    entityData.translateX = dx + this.tilesize*s;
+                    entityData.translateY = dy;
+                    entityData.scaleX = -1;
+                    entityData.scaleY = 1;
                 }
                 else if(entity.flipSpriteY) {
-                    this.context.translate(dx, dy + dh);
-                    this.context.scale(1, -1);
+                    entityData.translateX = dx;
+                    entityData.translateY = dy + dh;
+                    entityData.scaleX = 1;
+                    entityData.scaleY = -1;
                 }
                 else {
-                    this.context.translate(dx, dy);
+                    entityData.translateX = dx;
+                    entityData.translateY = dy;
                 }
             
                 if(entity.isVisible()) {
                     if(entity.hasShadow()) {
-                        this.context.drawImage(shadow.image, 0, 0, shadow.width * os, shadow.height * os,
-                                               0,
-                                               entity.shadowOffsetY * ds,
-                                               shadow.width * os * ds, shadow.height * os * ds);
+                        entityData.drawData.push({
+                            "id": shadow.id,
+                            "sx": 0,
+                            "sy": 0,
+                            "sW": shadow.width * os,
+                            "sH": shadow.height * os,
+                            "dx": 0,
+                            "dy": entity.shadowOffsetY * ds,
+                            "dW": shadow.width * os * ds,
+                            "dH": shadow.height * os * ds
+                        });
                     }
-                
-                    this.context.drawImage(sprite.image, x, y, w, h, ox, oy, dw, dh);
+
+                    entityData.drawData.push({
+                        "id": sprite.id,
+                        "sx": x,
+                        "sy": y,
+                        "sW": w,
+                        "sH": h,
+                        "dx": ox,
+                        "dy": oy,
+                        "dW": dw,
+                        "dH": dh
+                    });
 
                     if(entity instanceof Item && entity.kind !== Types.Entities.CAKE && !entity.nosparks) {
                         let sparks = this.game.sprites["sparks"],
@@ -372,10 +394,17 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                             sw = sparks.width * os,
                             sh = sparks.width * os;
 
-                        this.context.drawImage(sparks.image, sx, sy, sw, sh,
-                                               sparks.offsetX * s,
-                                               sparks.offsetY * s,
-                                               sw * ds, sh * ds);
+                        entityData.drawData.push({
+                            "id": sparks.id,
+                            "sx": sx,
+                            "sy": sy,
+                            "sW": sw,
+                            "sH": sh,
+                            "dx": sparks.offsetX * ds,
+                            "dy": sparks.offsetY * ds,
+                            "dW": sw * ds,
+                            "dH": sh * ds
+                        });
                     }
                 }
             
@@ -390,24 +419,26 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                             ww = weapon.width * os,
                             wh = weapon.height * os;
 
-                        this.context.drawImage(weapon.image, wx, wy, ww, wh,
-                                               weapon.offsetX * s,
-                                               weapon.offsetY * s,
-                                               ww * ds, wh * ds);
+                        entityData.drawData.push({
+                            "id": weapon.id,
+                            "sx": wx,
+                            "sy": wy,
+                            "sW": ww,
+                            "sH": wh,
+                            "dx": weapon.offsetX * ds,
+                            "dy": weapon.offsetY * ds,
+                            "dW": ww * ds,
+                            "dH": wh * ds
+                        });
                     }
                 }
-            
-                this.context.restore();
-            
-                if(entity.isFading) {
-                    this.context.restore();
-                }
             }
-            return textData;
+            return [textData, entityData];
         },
 
         drawEntities: function(dirtyOnly) {
             let textData = [];
+            let entities = [];
             var self = this;
         
             function handleDrawingEntity(entity) {
@@ -417,22 +448,13 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                     return;
                 }
                 if(entity.isLoaded) {
-                    if(dirtyOnly) {
-                        if(entity.isDirty) {
-                            let newTextData = self.drawEntity(entity);
-                            if (newTextData !== undefined) {
-                                textData = textData.concat(newTextData);
-                            }
-                            
-                            entity.isDirty = false;
-                            entity.oldDirtyRect = entity.dirtyRect;
-                            entity.dirtyRect = null;
-                        }
-                    } else {
-                        let newTextData = self.drawEntity(entity);
-                        if (newTextData !== undefined) {
-                            textData = textData.concat(newTextData);
-                        }
+                    let [newTextData, entityData] = self.drawEntity(entity);
+                    if (newTextData !== undefined) {
+                        textData = textData.concat(newTextData);
+                    }
+
+                    if (entityData !== undefined) {
+                        entities.push(entityData);
                     }
                 }
             }
@@ -448,7 +470,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             });
 
             drawAfter.forEach((entity) => handleDrawingEntity(entity));
-            return textData;
+            return [textData, entities];
         },
         
         clearDirtyRect: function(r) {
@@ -881,7 +903,16 @@ function(Camera, Item, Character, Player, Timer, Mob) {
 
             //this.drawOccupiedCells();
             this.drawPathingCells();
-            let entityTextData = this.drawEntities();
+            let [entityTextData, entityDrawData] = this.drawEntities();
+            let drawEntitiesData = {
+                "type": "entities",
+                "id": "entities",
+                "entityData": entityDrawData,
+                "cameraX": this.camera.x,
+                "cameraY": this.camera.y,
+                "scale": this.scale
+            }
+            renderData.push(drawEntitiesData);
             this.drawFloats();
 
             let combatInfoTextData = this.drawCombatInfo();
