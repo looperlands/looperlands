@@ -127,46 +127,6 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
                              In order to play, we recommend using the latest version of Firefox, Chrome or Safari.
                          </p>
                     </article>
-    	            <article id="settings">
-        	            <h1>
-         	               <span class="left-ornament"></span>
-         	               <span class="title">
-         	                   Game Settings
-         	               </span>
-         	               <span class="right-ornament"></span>
-                        </h1>
-						<small>Disable centered camera and/or animated tiles for performance.</small>
-						<form id="settingsForm">
-							<ul style="text-align: left;">
-								<li>
-									<input type="checkbox" id="musicEnabled" name="musicEnabled" value="true">
-									<label for="musicEnabled">Music Enabled</label>
-								</li>
-								<li>
-									<input type="checkbox" id="centeredCamera" name="centeredCamera" value="true">
-									<label for="centeredCamera">Centered Camera</label>
-								</li>
-								<li>
-									<input type="checkbox" id="animatedTiles" name="animatedTiles" value="true">
-									<label for="animatedTiles">Animated Tiles</label>
-								</li>
-								<li>
-									<input type="checkbox" id="highlightTargetTiles" name="highlightTargetTiles" value="true">
-									<label for="highlightTargetTiles">Highlight Target Tiles</label>
-								</li>
-								<li>
-									<input type="checkbox" id="fullscreen" name="fullscreen" value="true">
-									<label for="fullscreen">Fullscreen</label>
-								</li>
-								<li>
-									<input type="checkbox" id="renderText" name="renderText" value="true">
-									<label for="renderText">Render Text (names of entities and combat info)</label>
-								</li>
-							</ul>
-							<br>
-							<button type="submit">Save Settings</button>
-						</form>
-    	            </article>
 	            </div>
 	            <div class="parchment-right"></div>
 	        </section>
@@ -193,8 +153,42 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
 						<div id="inventorycontent">
 							Your inventory is empty.
 						</div>
-						<span id="close-inventory" class="close"></span>
+						<span id="close-inventory" class="close" onclick="(e) => { e.stopImmediatePropagation(); e.preventDefault(); return false}"></span>
 					</div>
+				</article>
+				<article id="settings" class="panel">
+					<div class="panelTitle" style="margin: 0 auto; width:250px;">Game Settings</div>
+					<small>Disable centered camera and/or animated tiles for performance.</small>
+					<form id="settingsForm">
+						<ul style="text-align: left;">
+							<li>
+								<input type="checkbox" id="musicEnabled" name="musicEnabled" value="true">
+								<label for="musicEnabled">Music Enabled</label>
+							</li>
+							<li>
+								<input type="checkbox" id="centeredCamera" name="centeredCamera" value="true">
+								<label for="centeredCamera">Centered Camera</label>
+							</li>
+							<li>
+								<input type="checkbox" id="animatedTiles" name="animatedTiles" value="true">
+								<label for="animatedTiles">Animated Tiles</label>
+							</li>
+							<li>
+								<input type="checkbox" id="highlightTargetTiles" name="highlightTargetTiles" value="true">
+								<label for="highlightTargetTiles">Highlight Target Tiles</label>
+							</li>
+							<li>
+								<input type="checkbox" id="fullscreen" name="fullscreen" value="true">
+								<label for="fullscreen">Fullscreen</label>
+							</li>
+							<li>
+								<input type="checkbox" id="renderText" name="renderText" value="true">
+								<label for="renderText">Render Text (names of entities and combat info)</label>
+							</li>
+						</ul>
+						<br>
+						<button type="submit" class="panelBorder">Save Settings</button>
+					</form>
 				</article>
 		        <article id="achievements" class="page1 clickable panel">
 		            <div class="close"></div>
@@ -242,8 +236,6 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
     			<div id="canvas">
     				<canvas id="background"></canvas>
     				<canvas id="entities"></canvas>
-					<canvas id="text-canvas"></canvas>
-					<canvas id="high-canvas"></canvas>
     				<canvas id="foreground" class="clickable"></canvas>
     			</div>
     			<div id="bubbles">

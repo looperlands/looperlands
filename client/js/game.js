@@ -4896,11 +4896,11 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
         loadSprite: function(name) {
             if(this.renderer.upscaledRendering) {
-                this.spritesets[0][name] = new Sprite(name, 1);
+                this.spritesets[0][name] = new Sprite(name, 1, this.renderer.worker);
             } else {
-                this.spritesets[1][name] = new Sprite(name, 2);
+                this.spritesets[1][name] = new Sprite(name, 2, this.renderer.worker);
                 if(!this.renderer.mobile && !this.renderer.tablet) {
-                    this.spritesets[2][name] = new Sprite(name, 3);
+                    this.spritesets[2][name] = new Sprite(name, 3, this.renderer.worker);
                 }
             }
         },
