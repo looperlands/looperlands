@@ -23,6 +23,9 @@ class GameSettings {
       if (!localStorage.getItem('fullscreen')) {
           localStorage.setItem('fullscreen', 'true');
       }
+      if(!localStorage.getItem('renderText')) {
+          localStorage.setItem('renderText', 'true');
+      }
 
       // Initialize checkbox states based on localStorage
       document.getElementById('musicEnabled').checked = this.getMusicEnabled();
@@ -30,6 +33,7 @@ class GameSettings {
       document.getElementById('animatedTiles').checked = this.getAnimatedTiles();
       document.getElementById('highlightTargetTiles').checked = this.getHighlightTargetTiles();
       document.getElementById('fullscreen').checked = this.getFullscreen();
+      document.getElementById('renderText').checked = this.getRenderText();
 
       // Add event listener to save settings when the form is submitted
       const form = document.getElementById('settingsForm');
@@ -79,7 +83,7 @@ class GameSettings {
     }
 
     getFullscreen() {
-        return localStorage.getItem('fullscreen') === 'true';
+      return localStorage.getItem('fullscreen') === 'true';
     }
 
     setFullscreen(enabled) {
@@ -91,11 +95,20 @@ class GameSettings {
         }
     }
 
+    setRenderText(enabled) {
+      localStorage.setItem('renderText', enabled ? 'true' : 'false');
+    }
+
+    getRenderText() { 
+        return localStorage.getItem('renderText') === 'true';
+    }
+
     setSettings() {
       this.setMusicEnabled(document.getElementById('musicEnabled').checked);
       this.setCenteredCamera(document.getElementById('centeredCamera').checked);
       this.setAnimatedTiles(document.getElementById('animatedTiles').checked);
       this.setHighlightTargetTiles(document.getElementById('highlightTargetTiles').checked);
       this.setFullscreen(document.getElementById('fullscreen').checked);
+      this.setRenderText(document.getElementById('renderText').checked);
     }
   }
