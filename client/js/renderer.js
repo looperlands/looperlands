@@ -940,11 +940,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             let cursorData = this.drawCursor();
             renderData.push(cursorData);
             this.drawDebugInfo();
-            let self = this;
-            requestAnimationFrame(() => {
-                self.worker.postMessage({"type": "render", "renderData": renderData});
-            });
-
+            this.worker.postMessage({"type": "render", "renderData": renderData});
         }
     });
 
