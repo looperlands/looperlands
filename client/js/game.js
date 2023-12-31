@@ -4684,6 +4684,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 "NFT_3c6809d64541f4288ce7ae06a3aa2f3986c89affe5bbd2d3e56c96b211aa31ad",
                                 "NFT_9bc1f3c822de3b0abcbf1ebd4e5b0cd80129292c664fa1e53222155481e8e82a",
                                 "NFT_a2795d8a59dc5ba5973ffbfc7e39790282aa21810090c2d17d1f1b11f821402a",
+                                "NFT_a032e8dd627558e71295e5de0a8e26b1b81f6ad865d2161d373a451704f1b8e1",
                                 // @nextSpriteLine@
                             ];
         },
@@ -5833,8 +5834,8 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 _self.doorCheck = false;
                             });
                         } else if (dest.http_redirect !== undefined) {
-                            window.location.href = dest.http_redirect;
-                        }
+                            window.open(dest.http_redirect, '_blank');
+                        }                        
                         else {
                             checkTrigger();
                         }
@@ -7053,7 +7054,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
          */
         click: function(pos) {
 
-            if($('body').hasClass('about') || $('body').hasClass('settings')) {
+            if($('body').hasClass('inventory') || $('body').hasClass('settings')) {
                 return;
             }
 

@@ -58,9 +58,13 @@ function render(id, tiles, cameraX, cameraY, scale, clear) {
     }
     ctx.save();
     ctx.translate(-cameraX * scale, -cameraY * scale);
-    for (let tile of tiles) {
-        drawTile(ctx, tile.tileid, tileset, tile.setW, tile.gridW, tile.cellid, scale)
+
+    const tilesLength = tiles.length;
+    for (let i = 0; i < tilesLength; i++) {
+        let tile = tiles[i];
+        drawTile(ctx, tile.tileid, tileset, tile.setW, tile.gridW, tile.cellid, scale);
     }
+
     ctx.restore();
 }
 
@@ -77,9 +81,13 @@ onmessage = (e) => {
         });
     }
     else if (e.data.type === "render") {
-        for (let renderData of e.data.renderData) {
+        const renderDataLength = e.data.renderData.length;
+        for (let i = 0; i < renderDataLength; i++) {
+            let renderData = e.data.renderData[i];
             if (renderData.cursor !== undefined) {
                 renderCursor(renderData);
+            } else if (renderData.type === "text") {
+                drawText(renderData);
             } else {
                 render(renderData.id, renderData.tiles, renderData.cameraX, renderData.cameraY, renderData.scale, renderData.clear);
             }
@@ -116,4 +124,86 @@ function renderCursor(renderData) {
     ctx.save();
     ctx.drawImage(cursorImg, 0, 0, 14 * os, 14 * os, mx, my, 14 * s, 14 * s);
     ctx.restore();
+}
+
+
+let lastRenderLength = 0;
+function drawText(renderData) {
+    const textDataLength = renderData.textData.length;
+
+    /*
+        Don't render if there is no text to render the second time
+        which allows for clearing the screen once
+        after the user disables the text rendering
+    */
+    let disabled = textDataLength === lastRenderLength && textDataLength === 0;
+    if(disabled) {
+        return;
+    }
+
+    let id = renderData.id;
+    let ctx = contexes[id];
+    let canvas = canvases[id];
+
+    const cameraX = renderData.cameraX;
+    const cameraY = renderData.cameraY;
+    const scale = renderData.scale;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.save();
+    ctx.translate(-cameraX * scale, -cameraY * scale);
+    for (let i = 0; i < textDataLength; i++) {
+        let textData = renderData.textData[i];
+        let {text, x, y, centered, color, strokeColor, title} = textData;
+
+        let strokeSize;
+
+        switch (scale) {
+            case 1:
+                strokeSize = 3; break;
+            case 2:
+                strokeSize = 3; break;
+            case 3:
+                strokeSize = 5;
+        }
+
+        if (text && x && y) {
+            if (centered) {
+                ctx.textAlign = "center";
+            }
+            let fontSize;
+            if (title) {
+                switch (scale) {
+                    case 1: fontSize = 5; break;
+                    case 2: fontSize = 10; break;
+                    case 3: fontSize = 15; break;
+                }
+            } else {
+                if (textData.fontSize) {
+                    fontSize = textData.fontSize;
+                } else {
+                    switch (scale) {
+                        case 1: fontSize = 10; break;
+                        case 2: fontSize = 13; break;
+                        case 3: fontSize = 20; break;
+                    }
+                }
+            }
+
+            let font = `${fontSize}px GraphicPixel`;
+            ctx.font = font;
+
+            if (textData.globalAlpha !== undefined) {
+                ctx.globalAlpha = textData.globalAlpha;
+            }
+
+            ctx.strokeStyle = strokeColor || "#373737";
+            ctx.lineWidth = strokeSize;
+            ctx.strokeText(text, x, y);
+            ctx.fillStyle = color || "white";
+            ctx.fillText(text, x, y);
+        }
+    }
+    ctx.restore();
+    lastRenderLength = textDataLength;
 }
