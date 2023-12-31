@@ -120,7 +120,21 @@ function renderCursor(renderData) {
     ctx.restore();
 }
 
+
+let lastRenderLength = 0;
 function drawText(renderData) {
+    const textDataLength = renderData.textData.length;
+
+    /*
+        Don't render if there is no text to render the second time
+        which allows for clearing the screen once
+        after the user disables the text rendering
+    */
+    let disabled = textDataLength === lastRenderLength && textDataLength === 0;
+    if(disabled) {
+        return;
+    }
+
     let id = renderData.id;
     let ctx = contexes[id];
     let canvas = canvases[id];
@@ -132,7 +146,6 @@ function drawText(renderData) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.save();
     ctx.translate(-cameraX * scale, -cameraY * scale);
-    const textDataLength = renderData.textData.length;
     for (let i = 0; i < textDataLength; i++) {
         let textData = renderData.textData[i];
         let {text, x, y, centered, color, strokeColor, title} = textData;
@@ -186,4 +199,5 @@ function drawText(renderData) {
         }
     }
     ctx.restore();
+    lastRenderLength = textDataLength;
 }
