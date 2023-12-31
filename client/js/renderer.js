@@ -842,6 +842,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
 
         renderFrame: function() {
             let centeredCamera = !this.game.canUseCenteredCamera();
+            let renderText = this.game.app.settings.getRenderText();
             let renderData = [];
 
             let terrain = [];
@@ -878,14 +879,20 @@ function(Camera, Item, Character, Player, Timer, Mob) {
 
             //this.drawOccupiedCells();
             this.drawPathingCells();
-            let textData = this.drawEntities();
+            let entityTextData = this.drawEntities();
             this.drawFloats();
+
             let combatInfoTextData = this.drawCombatInfo();
+
+            let textData = []
+            if (renderText) {
+                textData = entityTextData.concat(combatInfoTextData);
+            }
 
             let textDataCmd = {
                 "type": "text",
                 "id": "text",
-                "textData": textData.concat(combatInfoTextData),
+                "textData": textData,
                 "cameraX": this.camera.x,
                 "cameraY": this.camera.y,
                 "scale": this.scale
