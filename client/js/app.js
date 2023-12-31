@@ -258,6 +258,9 @@ define(['jquery', 'storage'], function ($, Storage) {
             if ($('body').hasClass('inventory')) {
                 this.hideInventory();
             }
+            if($('body').hasClass('settings')) {
+                this.closeSettings();
+            }
 
             this.resetPage();
             $('#achievements').toggleClass('active');
@@ -716,7 +719,6 @@ define(['jquery', 'storage'], function ($, Storage) {
                 this.closeSettings();
             } else {
                 this.hideWindows();
-                $('#parchment').removeClass().addClass('settings');
                 $('body').addClass('settings');
             }
 
@@ -736,7 +738,6 @@ define(['jquery', 'storage'], function ($, Storage) {
 
         closeSettings: function () {
             $('body').removeClass('settings');
-            $('#parchment').removeClass('settings');
             if (!this.game.player) {
                 $('body').addClass('death');
             }
