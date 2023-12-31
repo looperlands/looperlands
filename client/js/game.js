@@ -6725,7 +6725,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
          * 
          */    
         forEachVisibleTileIndex: function(callback, extra) {
-            var m = this.map;
+            let m = this.map;
         
             this.camera.forEachVisiblePosition(function(x, y) {
                 if(!m.isOutOfBounds(x, y)) {

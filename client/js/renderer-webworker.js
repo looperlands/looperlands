@@ -53,9 +53,6 @@ function drawTile(ctx, tileid, tileset, setW, gridW, cellid, scale) {
 function render(id, tiles, cameraX, cameraY, scale, clear) {
     let ctx = contexes[id];
     let canvas = canvases[id];
-    if (clear === true) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
     ctx.save();
     ctx.translate(-cameraX * scale, -cameraY * scale);
 
@@ -68,6 +65,11 @@ function render(id, tiles, cameraX, cameraY, scale, clear) {
     ctx.restore();
 }
 
+function clearAllContexts() {
+    for (let id in contexes) {
+        contexes[id].clearRect(0, 0, canvases[id].width, canvases[id].height);
+    }
+}
 
 onmessage = (e) => {
     if (e.data.type === "setTileset") {
@@ -82,6 +84,7 @@ onmessage = (e) => {
     }
     else if (e.data.type === "render") {
         const renderDataLength = e.data.renderData.length;
+        clearAllContexts();
         for (let i = 0; i < renderDataLength; i++) {
             let renderData = e.data.renderData[i];
             if (renderData.cursor !== undefined) {
@@ -143,13 +146,11 @@ function drawText(renderData) {
 
     let id = renderData.id;
     let ctx = contexes[id];
-    let canvas = canvases[id];
 
     const cameraX = renderData.cameraX;
     const cameraY = renderData.cameraY;
     const scale = renderData.scale;
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.save();
     ctx.translate(-cameraX * scale, -cameraY * scale);
     for (let i = 0; i < textDataLength; i++) {
