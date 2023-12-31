@@ -601,11 +601,9 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                 let entityData = entity.name;
 
                 if (entity.level !== undefined && entity.level !== null) { //currently it's null on revive, as the player doesn't get welcome message from the server
-                    entityData = entity.level + " " + entityData;
+                    let level = entity.level > 0 ? entity.level : 1;
+                    entityData = level + " " + entityData;
                 }
-                
-                //text, x, y, centered, color, strokeColor, title
-                //drawText: function(text, x, y, centered, color, strokeColor, title)
 
                 textData.push({
                     "id": "text",
