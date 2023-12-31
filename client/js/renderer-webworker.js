@@ -124,10 +124,6 @@ function drawText(renderData) {
     let id = renderData.id;
     let ctx = contexes[id];
     let canvas = canvases[id];
-    function setFontSize(size) {
-        let font = size + "px GraphicPixel";
-        ctx.font = font;
-    }
 
     const cameraX = renderData.cameraX;
     const cameraY = renderData.cameraY;
@@ -156,13 +152,32 @@ function drawText(renderData) {
             if (centered) {
                 ctx.textAlign = "center";
             }
+            let fontSize;
             if (title) {
                 switch (scale) {
-                    case 1: setFontSize(5); break;
-                    case 2: setFontSize(10); break;
-                    case 3: setFontSize(15); break;
+                    case 1: fontSize = 5; break;
+                    case 2: fontSize = 10; break;
+                    case 3: fontSize = 15; break;
+                }
+            } else {
+                if (renderData.fontSize) {
+                    fontSize = renderData.fontSize;
+                } else {
+                    switch (scale) {
+                        case 1: fontSize = 10; break;
+                        case 2: fontSize = 13; break;
+                        case 3: fontSize = 20; break;
+                    }
                 }
             }
+
+            let font = `${fontSize}px Times New Roman`;
+            ctx.font = font;
+
+            if (textData.globalAlpha !== undefined) {
+                ctx.globalAlpha = textData.globalAlpha;
+            }
+
             ctx.strokeStyle = strokeColor || "#373737";
             ctx.lineWidth = strokeSize;
             ctx.strokeText(text, x, y);

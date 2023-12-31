@@ -767,19 +767,32 @@ function(Camera, Item, Character, Player, Timer, Mob) {
         },
     
         drawCombatInfo: function() {
-            var self = this;
+            let combatTextData = [];
+            let self = this;
         
-            switch(this.scale) {
-                case 2: this.setFontSize(20); break;
-                case 3: this.setFontSize(30); break;
+            let fontSize;
+            if (this.scale === 2) {
+                fontSize = 20;
+            } else if (this.scale === 3) {
+                fontSize = 30;
             }
+
             this.game.infoManager.forEachInfo(function(info) {
-                self.context.save();
-                self.context.globalAlpha = info.opacity;
-                self.drawText(info.value, (info.x + 8) * self.scale, Math.floor(info.y * self.scale), true, info.fillColor, info.strokeColor);
-                self.context.restore();
+                let textData = {
+                    "id": "text",
+                    "type": "text",
+                    "text": info.value,
+                    "x": (info.x + 8) * self.scale,
+                    "y": Math.floor(info.y * self.scale),
+                    "centered": true,
+                    "color": info.fillColor,
+                    "strokeColor": info.strokeColor,
+                    "globalAlpha": info.opacity,
+                    "fontSize": fontSize
+                }
+                combatTextData.push(textData);
             });
-            this.initFont();
+            return combatTextData;
         },
 
         drawFishingFloat: function(inputFloat) {
@@ -903,17 +916,18 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             //this.drawOccupiedCells();
             this.drawPathingCells();
             let textData = this.drawEntities();
+            this.drawFloats();
+            let combatInfoTextData = this.drawCombatInfo();
+
             let textDataCmd = {
                 "type": "text",
                 "id": "text",
-                "textData": textData,
+                "textData": textData.concat(combatInfoTextData),
                 "cameraX": this.camera.x,
                 "cameraY": this.camera.y,
                 "scale": this.scale
             }
             renderData.push(textDataCmd);
-            this.drawFloats();
-            this.drawCombatInfo();
 
             this.drawToggledLayers(this.context, true, false);
             this.drawToggledLayers(this.context, true, true);
