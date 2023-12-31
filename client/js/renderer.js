@@ -146,41 +146,6 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             this.context.font = font;
             this.background.font = font;
         },
-
-        drawText: function(text, x, y, centered, color, strokeColor, title) {
-            var ctx = this.context;
-            
-            let strokeSize;
-
-            switch(this.scale) {
-                case 1:
-                    strokeSize = 3; break;
-                case 2:
-                    strokeSize = 3; break;
-                case 3:
-                    strokeSize = 5;
-            }
-
-            if(text && x && y) {
-                ctx.save();
-                if(centered) {
-                    ctx.textAlign = "center";
-                }
-                if (title) {
-                    switch(this.scale) {
-                        case 1: this.setFontSize(5); break;
-                        case 2: this.setFontSize(10); break;
-                        case 3: this.setFontSize(15); break;
-                    }
-                }
-                ctx.strokeStyle = strokeColor || "#373737";
-                ctx.lineWidth = strokeSize;
-                ctx.strokeText(text, x, y);
-                ctx.fillStyle = color || "white";
-                ctx.fillText(text, x, y);
-                ctx.restore();
-            }
-        },
     
         drawCellRect: function(x, y, color) {
             this.context.save();
@@ -753,14 +718,14 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             this.frameCount++;
         
             //this.drawText("FPS: " + this.realFPS + " / " + this.maxFPS, 30, 30, false);
-            this.drawText("FPS: " + this.realFPS, 30, 30, false);
+            //this.drawText("FPS: " + this.realFPS, 30, 30, false);
         },
     
         drawDebugInfo: function() {
             if(this.isDebugInfoVisible) {
-                this.drawFPS();
-                this.drawText("A: " + this.animatedTileCount, 100, 30, false);
-                this.drawText("H: " + this.highTileCount, 140, 30, false);
+                //this.drawFPS();
+                //this.drawText("A: " + this.animatedTileCount, 100, 30, false);
+                //this.drawText("H: " + this.highTileCount, 140, 30, false);
             }
         },
     
