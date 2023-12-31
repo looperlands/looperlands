@@ -905,14 +905,6 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                 self.worker.postMessage({"type": "render", "renderData": renderData});
             });
 
-        },
-        
-        preventFlickeringBug: function() {
-            if(this.fixFlickeringTimer.isOver(this.game.currentTime)) {
-                this.background.fillRect(0, 0, 0, 0);
-                this.context.fillRect(0, 0, 0, 0);
-                this.foreground.fillRect(0, 0, 0, 0);
-            }
         }
     });
 
