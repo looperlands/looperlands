@@ -10,6 +10,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             this.foreground = (foreground && foreground.getContext) ? foreground.getContext("2d") : null;
 
             let highCanvas = document.getElementById("high-canvas").transferControlToOffscreen();
+            let textCanvas = document.getElementById("text-canvas").transferControlToOffscreen();
 
             let offScreenCanvas = background.transferControlToOffscreen();
             this.background = background;
@@ -40,6 +41,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
 
             this.worker.postMessage({"canvas":  offScreenCanvas, "type": "setCanvas", "id": "background"}, [offScreenCanvas]);
             this.worker.postMessage({"canvas":  highCanvas, "type": "setCanvas", "id": "high"}, [highCanvas]);
+            this.worker.postMessage({"canvas":  textCanvas, "type": "setCanvas", "id": "text"}, [textCanvas]);
             this.rescale(this.getScaleFactor());
 
             let self = this;
@@ -143,41 +145,6 @@ function(Camera, Item, Character, Player, Timer, Mob) {
         
             this.context.font = font;
             this.background.font = font;
-        },
-
-        drawText: function(text, x, y, centered, color, strokeColor, title) {
-            var ctx = this.context;
-            
-            let strokeSize;
-
-            switch(this.scale) {
-                case 1:
-                    strokeSize = 3; break;
-                case 2:
-                    strokeSize = 3; break;
-                case 3:
-                    strokeSize = 5;
-            }
-
-            if(text && x && y) {
-                ctx.save();
-                if(centered) {
-                    ctx.textAlign = "center";
-                }
-                if (title) {
-                    switch(this.scale) {
-                        case 1: this.setFontSize(5); break;
-                        case 2: this.setFontSize(10); break;
-                        case 3: this.setFontSize(15); break;
-                    }
-                }
-                ctx.strokeStyle = strokeColor || "#373737";
-                ctx.lineWidth = strokeSize;
-                ctx.strokeText(text, x, y);
-                ctx.fillStyle = color || "white";
-                ctx.fillText(text, x, y);
-                ctx.restore();
-            }
         },
     
         drawCellRect: function(x, y, color) {
@@ -342,7 +309,9 @@ function(Camera, Item, Character, Player, Timer, Mob) {
         },
 
         drawEntity: function(entity) {
-            let sprite = entity.sprite,
+            let textData = undefined;
+
+            var sprite = entity.sprite,
                 shadow = this.game.shadows["small"],
                 anim = entity.currentAnimation,
                 os = this.upscaledRendering ? 1 : this.scale,
@@ -368,7 +337,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                 }
                 
                 if(!(entity instanceof Mob && (entity.nameless || entity.isFriendly))) { // friendly mobs render nameless by default
-                this.drawEntityName(entity, sprite.offsetY);
+                    textData = this.drawEntityName(entity, sprite.offsetY);
                 }
                 
                 this.context.save();
@@ -434,9 +403,11 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                     this.context.restore();
                 }
             }
+            return textData;
         },
 
         drawEntities: function(dirtyOnly) {
+            let textData = [];
             var self = this;
         
             function handleDrawingEntity(entity) {
@@ -448,14 +419,20 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                 if(entity.isLoaded) {
                     if(dirtyOnly) {
                         if(entity.isDirty) {
-                            self.drawEntity(entity);
+                            let newTextData = self.drawEntity(entity);
+                            if (newTextData !== undefined) {
+                                textData = textData.concat(newTextData);
+                            }
                             
                             entity.isDirty = false;
                             entity.oldDirtyRect = entity.dirtyRect;
                             entity.dirtyRect = null;
                         }
                     } else {
-                        self.drawEntity(entity);
+                        let newTextData = self.drawEntity(entity);
+                        if (newTextData !== undefined) {
+                            textData = textData.concat(newTextData);
+                        }
                     }
                 }
             }
@@ -471,10 +448,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             });
 
             drawAfter.forEach((entity) => handleDrawingEntity(entity));
-        },
-        
-        drawDirtyEntities: function() {
-            this.drawEntities(true);
+            return textData;
         },
         
         clearDirtyRect: function(r) {
@@ -584,32 +558,55 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                      (rect2.top > rect1.bottom) ||
                      (rect2.bottom < rect1.top));
         },
-        
+
         drawEntityName: function(entity, oy) {
-            this.context.save();
+            let textData = [];
             if(entity.name && (entity instanceof Player || entity instanceof Mob)) {
-                var color = (entity.id === this.game.playerId) ? "#fcda5c" : this.getHpIndicatorColor(entity);
+                let color = (entity.id === this.game.playerId) ? "#fcda5c" : this.getHpIndicatorColor(entity);
                 let entityData = entity.name;
 
                 if (entity.level !== undefined && entity.level !== null) { //currently it's null on revive, as the player doesn't get welcome message from the server
-                    entityData = entity.level + " " + entityData;
+                    let level = entity.level > 0 ? entity.level : 1;
+                    entityData = level + " " + entityData;
                 }
-                
-                this.drawText(entityData,
-                              (entity.x + 8) * this.scale,
-                              (entity.y + oy) * this.scale,
-                              true,
-                              color);
+
+                textData.push({
+                    "id": "text",
+                    "type": "text",
+                    "text": entityData,
+                    "x": (entity.x + 8) * this.scale,
+                    "y": (entity.y + oy) * this.scale,
+                    "centered": true,
+                    "color": color
+                });
 
                 if (entity.title !== undefined) {
                     if (entity instanceof Player){
-                        this.drawText(entity.title, (entity.x + 8) * this.scale, (entity.y + entity.nameOffsetY + 5) * this.scale, true, "white", 1, true);
+                        textData.push({
+                            "id": "text",
+                            "type": "text",
+                            "text": entity.title,
+                            "x": (entity.x + 8) * this.scale,
+                            "y": (entity.y + entity.nameOffsetY + 5) * this.scale,
+                            "centered": true,
+                            "color": "white",
+                            "title": true
+                        });
                     } else {
-                        this.drawText(entity.title, (entity.x + 8) * this.scale, (entity.y + oy + 6) * this.scale, true, "orange", 1, true);
+                        textData.push({
+                            "id": "text",
+                            "type": "text",
+                            "text": entity.title,
+                            "x": (entity.x + 8) * this.scale,
+                            "y": (entity.y + oy + 6) * this.scale,
+                            "centered": true,
+                            "color": "orange",
+                            "title" : true
+                        });
                     }
                 }
             }
-            this.context.restore();
+            return textData;
         },
         
         getHpIndicatorColor: function(entity) {
@@ -723,31 +720,44 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             this.frameCount++;
         
             //this.drawText("FPS: " + this.realFPS + " / " + this.maxFPS, 30, 30, false);
-            this.drawText("FPS: " + this.realFPS, 30, 30, false);
+            //this.drawText("FPS: " + this.realFPS, 30, 30, false);
         },
     
         drawDebugInfo: function() {
             if(this.isDebugInfoVisible) {
-                this.drawFPS();
-                this.drawText("A: " + this.animatedTileCount, 100, 30, false);
-                this.drawText("H: " + this.highTileCount, 140, 30, false);
+                //this.drawFPS();
+                //this.drawText("A: " + this.animatedTileCount, 100, 30, false);
+                //this.drawText("H: " + this.highTileCount, 140, 30, false);
             }
         },
     
         drawCombatInfo: function() {
-            var self = this;
+            let combatTextData = [];
+            let self = this;
         
-            switch(this.scale) {
-                case 2: this.setFontSize(20); break;
-                case 3: this.setFontSize(30); break;
+            let fontSize;
+            if (this.scale === 2) {
+                fontSize = 20;
+            } else if (this.scale === 3) {
+                fontSize = 30;
             }
+
             this.game.infoManager.forEachInfo(function(info) {
-                self.context.save();
-                self.context.globalAlpha = info.opacity;
-                self.drawText(info.value, (info.x + 8) * self.scale, Math.floor(info.y * self.scale), true, info.fillColor, info.strokeColor);
-                self.context.restore();
+                let textData = {
+                    "id": "text",
+                    "type": "text",
+                    "text": info.value,
+                    "x": (info.x + 8) * self.scale,
+                    "y": Math.floor(info.y * self.scale),
+                    "centered": true,
+                    "color": info.fillColor,
+                    "strokeColor": info.strokeColor,
+                    "globalAlpha": info.opacity,
+                    "fontSize": fontSize
+                }
+                combatTextData.push(textData);
             });
-            this.initFont();
+            return combatTextData;
         },
 
         drawFishingFloat: function(inputFloat) {
@@ -834,6 +844,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
 
         renderFrame: function() {
             let centeredCamera = !this.game.canUseCenteredCamera();
+            let renderText = this.game.app.settings.getRenderText();
             let renderData = [];
 
             let terrain = [];
@@ -870,9 +881,25 @@ function(Camera, Item, Character, Player, Timer, Mob) {
 
             //this.drawOccupiedCells();
             this.drawPathingCells();
-            this.drawEntities();
+            let entityTextData = this.drawEntities();
             this.drawFloats();
-            this.drawCombatInfo();
+
+            let combatInfoTextData = this.drawCombatInfo();
+
+            let textData = []
+            if (renderText) {
+                textData = entityTextData.concat(combatInfoTextData);
+            }
+
+            let textDataCmd = {
+                "type": "text",
+                "id": "text",
+                "textData": textData,
+                "cameraX": this.camera.x,
+                "cameraY": this.camera.y,
+                "scale": this.scale
+            }
+            renderData.push(textDataCmd);
 
             this.drawToggledLayers(this.context, true, false);
             this.drawToggledLayers(this.context, true, true);
@@ -887,14 +914,6 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                 self.worker.postMessage({"type": "render", "renderData": renderData});
             });
 
-        },
-        
-        preventFlickeringBug: function() {
-            if(this.fixFlickeringTimer.isOver(this.game.currentTime)) {
-                this.background.fillRect(0, 0, 0, 0);
-                this.context.fillRect(0, 0, 0, 0);
-                this.foreground.fillRect(0, 0, 0, 0);
-            }
         }
     });
 
