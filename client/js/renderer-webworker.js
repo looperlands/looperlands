@@ -173,8 +173,8 @@ function drawText(renderData) {
                     case 3: fontSize = 15; break;
                 }
             } else {
-                if (renderData.fontSize) {
-                    fontSize = renderData.fontSize;
+                if (textData.fontSize) {
+                    fontSize = textData.fontSize;
                 } else {
                     switch (scale) {
                         case 1: fontSize = 10; break;
@@ -184,7 +184,7 @@ function drawText(renderData) {
                 }
             }
 
-            let font = `${fontSize}px Times New Roman`;
+            let font = `${fontSize}px GraphicPixel`;
             ctx.font = font;
 
             if (textData.globalAlpha !== undefined) {
