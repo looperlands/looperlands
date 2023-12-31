@@ -8,10 +8,6 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             //this.background = (background && background.getContext) ? background.getContext("2d") : null;
             this.foreground = (foreground && foreground.getContext) ? foreground.getContext("2d") : null;
 
-            let highCanvas = document.getElementById("high-canvas").transferControlToOffscreen();
-            let textCanvas = document.getElementById("text-canvas").transferControlToOffscreen();
-            let entitiesCanvas = document.getElementById("entities-canvas").transferControlToOffscreen();
-
             let offScreenCanvas = background.transferControlToOffscreen();
             this.background = background;
         
@@ -40,9 +36,6 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             this.fixFlickeringTimer = new Timer(100);
 
             this.worker.postMessage({"canvas":  offScreenCanvas, "type": "setCanvas", "id": "background"}, [offScreenCanvas]);
-            this.worker.postMessage({"canvas":  highCanvas, "type": "setCanvas", "id": "high"}, [highCanvas]);
-            this.worker.postMessage({"canvas":  textCanvas, "type": "setCanvas", "id": "text"}, [textCanvas]);
-            this.worker.postMessage({"canvas":  entitiesCanvas, "type": "setCanvas", "id": "entities"}, [entitiesCanvas]);
             this.rescale(this.getScaleFactor());
 
             let self = this;
