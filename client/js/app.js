@@ -593,9 +593,9 @@ define(['jquery', 'storage'], function ($, Storage) {
                     itemHtml += "<div class='inventorySectionItems'>"
                     let hasItem = false;
                     Object.keys(consumablesInventory).forEach(item => {
-                        if (Types.isResource(item)) {
-                            return;
-                        }
+                        // if (Types.isResource(item)) {
+                        //     return;
+                        // }
                         hasItem = true;
 
                         let description = consumablesInventory[item].description;
