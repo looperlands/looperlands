@@ -258,7 +258,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                 s = this.scale,
                 os = this.upscaledRendering ? 1 : this.scale;
 
-            return {"type": "render", id: "high", mx: mx, my: my, s: s, os: os, cursor : true, name: this.game.currentCursorName};
+            return {"type": "render", id: "background", mx: mx, my: my, s: s, os: os, cursor : true, name: this.game.currentCursorName};
         },
 
         drawScaledImage: function(ctx, image, x, y, w, h, dx, dy) {
@@ -593,7 +593,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                 }
 
                 textData.push({
-                    "id": "text",
+                    "id": "background",
                     "type": "text",
                     "text": entityData,
                     "x": (entity.x + 8) * this.scale,
@@ -605,7 +605,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                 if (entity.title !== undefined) {
                     if (entity instanceof Player){
                         textData.push({
-                            "id": "text",
+                            "id": "background",
                             "type": "text",
                             "text": entity.title,
                             "x": (entity.x + 8) * this.scale,
@@ -616,7 +616,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                         });
                     } else {
                         textData.push({
-                            "id": "text",
+                            "id": "background",
                             "type": "text",
                             "text": entity.title,
                             "x": (entity.x + 8) * this.scale,
@@ -687,7 +687,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                         let tile = visibileAnimatedHighTiles[i];
                         visbileTiles.push({tileid: tile.id, setW: tilesetwidth, gridW: m.width, cellid: tile.index});
                     }
-                    return {"type": "render", id: "high", tiles: visbileTiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: false};
+                    return {"type": "render", id: "background", tiles: visbileTiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: false};
                 }
 
         },
@@ -699,7 +699,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
         drawHighTiles: function() {
             let m = this.game.map;
         
-            return {"type": "render", id: "high", tiles: this.game.visibleHighTiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: true};
+            return {"type": "render", id: "background", tiles: this.game.visibleHighTiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: false};
         },
 
         drawToggledLayers: function(ctx, highTile, animated) {
@@ -879,11 +879,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                 terrain = this.drawTerrain();
                 highTiles = this.drawHighTiles();
             }
-            renderData.push(highTiles);
             renderData.push(terrain);
-
-            let highAnimatedTiles = this.drawHighAnimatedTiles();
-            renderData.push(highAnimatedTiles);
 
             let animatedTiles = this.drawAnimatedTiles();
             renderData.push(animatedTiles);
@@ -906,14 +902,13 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             let [entityTextData, entityDrawData] = this.drawEntities();
             let drawEntitiesData = {
                 "type": "entities",
-                "id": "entities",
+                "id": "background",
                 "entityData": entityDrawData,
                 "cameraX": this.camera.x,
                 "cameraY": this.camera.y,
                 "scale": this.scale
             }
             renderData.push(drawEntitiesData);
-            this.drawFloats();
 
             let combatInfoTextData = this.drawCombatInfo();
 
@@ -924,13 +919,20 @@ function(Camera, Item, Character, Player, Timer, Mob) {
 
             let textDataCmd = {
                 "type": "text",
-                "id": "text",
+                "id": "background",
                 "textData": textData,
                 "cameraX": this.camera.x,
                 "cameraY": this.camera.y,
                 "scale": this.scale
             }
             renderData.push(textDataCmd);
+            
+            renderData.push(highTiles);
+            let highAnimatedTiles = this.drawHighAnimatedTiles();
+            renderData.push(highAnimatedTiles);
+
+            this.drawFloats();
+
 
             this.drawToggledLayers(this.context, true, false);
             this.drawToggledLayers(this.context, true, true);

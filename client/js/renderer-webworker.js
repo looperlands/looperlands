@@ -182,7 +182,6 @@ function drawText(renderData) {
     const cameraY = renderData.cameraY;
     const scale = renderData.scale;
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.save();
     ctx.translate(-cameraX * scale, -cameraY * scale);
     for (let i = 0; i < textDataLength; i++) {
@@ -251,7 +250,6 @@ function drawEntities(drawEntitiesData) {
     const cameraY = drawEntitiesData.cameraY;
     const scale = drawEntitiesData.scale;
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.save();
     ctx.translate(-cameraX * scale, -cameraY * scale);
 
