@@ -29,8 +29,8 @@ define(['jquery', 'app'], function($, App) {
                         app.toggleCredits();
                     }
                     
-                    if($('#parchment').hasClass('about')) {
-                        app.toggleAbout();
+                    if($('body').hasClass('inventory')) {
+                        app.toggleInventory();
                     }
 
                     if($('#parchment').hasClass('settings')) {
@@ -50,8 +50,8 @@ define(['jquery', 'app'], function($, App) {
                     }
                 });
         
-                $('#helpbutton').click(function() {
-                    app.toggleAbout();
+                $('#inventorybutton').click(function() {
+                    app.showInventory();
                 });
         
                 $('#achievementsbutton').click(function() {
@@ -144,7 +144,7 @@ define(['jquery', 'app'], function($, App) {
                 });
                 
                 $('.ribbon').click(function() {
-                    app.toggleAbout();
+                    app.toggleInventory();
                 });
 
                 $('#nameinput').bind("keyup", function() {
@@ -283,8 +283,8 @@ define(['jquery', 'app'], function($, App) {
     		        $('body').removeClass('credits');
     		    }
 
-                if($('body').hasClass('about')) {
-                    $('body').removeClass('about');
+                if($('body').hasClass('inventory')) {
+                    $('body').removeClass('inventory');
                 }
 
                 $('body').addClass('death');
@@ -390,15 +390,6 @@ define(['jquery', 'app'], function($, App) {
                         hasClosedParchment = true;
                     } else {
                         app.toggleCredits();
-                    }
-                }
-                
-                if($('#parchment').hasClass('about')) {
-                    if(game.started) {
-                        app.closeInGameAbout();
-                        hasClosedParchment = true;
-                    } else {
-                        app.toggleAbout();
                     }
                 }
                 

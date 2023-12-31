@@ -7054,7 +7054,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
          */
         click: function(pos) {
 
-            if($('body').hasClass('about') || $('body').hasClass('settings')) {
+            if($('body').hasClass('inventory') || $('body').hasClass('settings')) {
                 return;
             }
 
