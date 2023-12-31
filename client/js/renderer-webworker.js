@@ -58,9 +58,13 @@ function render(id, tiles, cameraX, cameraY, scale, clear) {
     }
     ctx.save();
     ctx.translate(-cameraX * scale, -cameraY * scale);
-    for (let tile of tiles) {
-        drawTile(ctx, tile.tileid, tileset, tile.setW, tile.gridW, tile.cellid, scale)
+
+    const tilesLenght = tiles.length;
+    for (let i = 0; i < tilesLenght; i++) {
+        let tile = tiles[i];
+        drawTile(ctx, tile.tileid, tileset, tile.setW, tile.gridW, tile.cellid, scale);
     }
+
     ctx.restore();
 }
 
