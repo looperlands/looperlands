@@ -23,7 +23,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             this.tilesize = 16;
         
             this.upscaledRendering = true;
-            this.supportsSilhouettes = this.upscaledRendering;
+            this.supportsSilhouettes = false;
             this.worker = new Worker("js/renderer-webworker.js");
         
             this.lastTime = new Date();
@@ -926,7 +926,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                 "scale": this.scale
             }
             renderData.push(textDataCmd);
-            
+
             renderData.push(highTiles);
             let highAnimatedTiles = this.drawHighAnimatedTiles();
             renderData.push(highAnimatedTiles);
