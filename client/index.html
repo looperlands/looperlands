@@ -110,21 +110,6 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
 	                        <span>Close</span>
                         </div>
     	            </article>
-    	            <article id="about">
-        	            <h1>
-         	               <span class="left-ornament"></span>
-         	               <span class="title">
-         	                   Inventory
-         	               </span>
-         	               <span class="right-ornament"></span>
-                        </h1>
-                        <p id="inventory">
-                            Your inventory is empty.
-                        </p>
-	                    <span id="close-about">
-	                        <span>- click anywhere to close -</span>
-                        </span>
-    	            </article>
     	            <article id="death">
                         <p>You are dead...</p>
 						<a href="https://loopworms.io/DEV/LooperLands/">Character Selection</a>
@@ -198,6 +183,15 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
 	                </ul>
 	                    <p>- click anywhere to close -</p>
 		        </article>
+				<article id="inventory" class="panel">
+					<div class="panelTitle">Inventory</div>
+					<div class="panelContent">
+						<div id="inventorycontent">
+							Your inventory is empty.
+						</div>
+						<span id="close-inventory" class="close"></span>
+					</div>
+				</article>
 		        <article id="achievements" class="page1 clickable panel">
 		            <div class="close"></div>
 					<div class="panelTitle">Quests</div>
@@ -290,7 +284,7 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
                     <div id="barbuttons">
                         <div id="chatbutton" class="barbutton clickable"></div>
                         <div id="achievementsbutton" class="barbutton clickable"></div>
-                        <div id="helpbutton" class="barbutton clickable"></div>
+                        <div id="inventorybutton" class="barbutton clickable"></div>
                         <div id="mutebutton" class="barbutton clickable active"></div>
                     </div>
     			</div>
