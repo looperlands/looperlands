@@ -155,8 +155,13 @@ function renderCursor(renderData) {
     let cursorImg = cursors[renderData.name];
     let ctx = contexes[renderData.id];
     ctx.save();
-    ctx.drawImage(cursorImg, 0, 0, 14 * os, 14 * os, mx, my, 14 * s, 14 * s);
-    ctx.restore();
+    try {
+        ctx.drawImage(cursorImg, 0, 0, 14 * os, 14 * os, mx, my, 14 * s, 14 * s);
+    } catch (e) {
+        console.error(e);
+    } finally {
+        ctx.restore();
+    }
 }
 
 
