@@ -590,7 +590,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                 if (Object.keys(consumablesInventory).length > 0) {
                     columns++;
                     let itemHtml = "<div class='inventorySection' id='inventory-tools'><div class='inventoryTitle'>Items</div>";
-                    itemHtml += "<div class='inventorySectionItems'>";
+                    itemHtml += "<div class='inventorySectionItems'>"
                     let hasItem = false;
                     Object.keys(consumablesInventory).forEach(item => {
                         if (Types.isResource(item)) {
@@ -642,7 +642,6 @@ define(['jquery', 'storage'], function ($, Storage) {
                             let nftId = item.replace("NFT_", "0x");
                             _this.game.client.sendEquipInventory(itemId, nftId);
                             _this.game.player.switchWeapon(item);
-                            _this.hideInventory();
                         }
                         document.getElementById(item).addEventListener("click", equip);
                     }
@@ -656,7 +655,6 @@ define(['jquery', 'storage'], function ($, Storage) {
                                 _this.game.client.sendConsumeItem(item);
                                 document.getElementById("count_" + item).innerHTML = count - 1;
                             }
-                            _this.hideInventory();
                         }
                         document.getElementById(item).addEventListener("click", consume);
                     }
@@ -673,7 +671,6 @@ define(['jquery', 'storage'], function ($, Storage) {
                                 let errorMsg = error?.response?.data?.error;
                                 _this.showMessage(errorMsg);
                             });
-                            _this.hideInventory();
                         }
                         document.getElementById(itemId).addEventListener("click", spawnBot);
                     }
