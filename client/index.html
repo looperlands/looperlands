@@ -158,6 +158,10 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
 									<input type="checkbox" id="fullscreen" name="fullscreen" value="true">
 									<label for="fullscreen">Fullscreen</label>
 								</li>
+								<li>
+									<input type="checkbox" id="renderText" name="renderText" value="true">
+									<label for="renderText">Render Text (names of entities and combat info)</label>
+								</li>
 							</ul>
 							<br>
 							<button type="submit">Save Settings</button>
@@ -238,6 +242,7 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
     			<div id="canvas">
     				<canvas id="background"></canvas>
     				<canvas id="entities"></canvas>
+					<canvas id="text-canvas"></canvas>
 					<canvas id="high-canvas"></canvas>
     				<canvas id="foreground" class="clickable"></canvas>
     			</div>
