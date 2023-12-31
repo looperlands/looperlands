@@ -59,8 +59,8 @@ function render(id, tiles, cameraX, cameraY, scale, clear) {
     ctx.save();
     ctx.translate(-cameraX * scale, -cameraY * scale);
 
-    const tilesLenght = tiles.length;
-    for (let i = 0; i < tilesLenght; i++) {
+    const tilesLength = tiles.length;
+    for (let i = 0; i < tilesLength; i++) {
         let tile = tiles[i];
         drawTile(ctx, tile.tileid, tileset, tile.setW, tile.gridW, tile.cellid, scale);
     }
@@ -81,7 +81,9 @@ onmessage = (e) => {
         });
     }
     else if (e.data.type === "render") {
-        for (let renderData of e.data.renderData) {
+        const renderDataLength = e.data.renderData.length;
+        for (let i = 0; i < renderDataLength; i++) {
+            let renderData = e.data.renderData[i];
             if (renderData.cursor !== undefined) {
                 renderCursor(renderData);
             } else if (renderData.type === "text") {
