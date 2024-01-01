@@ -35,6 +35,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             this.frameCount = 0;
             this.maxFPS = this.FPS;
             this.realFPS = 0;
+            this.frameTime = 1000 / this.FPS;
             this.isDebugInfoVisible = false;
         
             this.animatedTileCount = 0;
@@ -871,6 +872,17 @@ function(Camera, Item, Character, Player, Timer, Mob) {
         },
 
         renderFrame: function() {
+
+            if (this.lastFrameTime !== undefined) {
+                let elaspedTime = this.game.currentTime - this.lastFrameTime;
+                if (elaspedTime < this.frameTime) {
+                    this.worker.postMessage({"type": "idle"});
+                    return;
+                }
+            }
+
+            this.lastFrameTime = this.game.currentTime;
+
             let centeredCamera = !this.game.canUseCenteredCamera();
             let renderText = this.game.app.settings.getRenderText();
             let renderData = [];

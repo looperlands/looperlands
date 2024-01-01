@@ -157,6 +157,8 @@ onmessage = (e) => {
     } else if (e.data.type === "loadSprite") {
         let sprite = new Sprite(e.data.id, e.data.src, e.data.animationData, e.data.width, e.data.height, e.data.offsetX, e.data.offsetY);
         sprites[sprite.id] = sprite;
+    } else if (e.data.type === "idle") {
+        postMessage({ type: "rendered" });
     }
 };
 
