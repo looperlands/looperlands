@@ -4,40 +4,12 @@ let canvases = {};
 let contexes = {};
 let cursors = {};
 let cursor = undefined;
-let sprites = {};
-
-class Sprite {
-    constructor(id, src, animationData, width, height, offsetX, offsetY) {
-        this.id = id;
-        this.filepath = src;
-        this.animationData = animationData;
-        this.width = width;
-        this.height = height;
-        this.offsetX = offsetX;
-        this.offsetY = offsetY;
-        let self = this;
-
-        if (this.filepath.startsWith("img/")) {
-            this.filepath = "/" + this.filepath;
-        }
-
-        loadImg(this.filepath).then((img) => {
-            self.image = img;
-            self.isLoaded = true;
-        });
-    }
-}
 
 
 async function loadImg(src) {
-    try {
-        const imgblob = await fetch(src)
+    const imgblob = await fetch(src)
         .then(r => r.blob());
-        return await createImageBitmap(imgblob);
-    } catch (e) {
-        console.log(e, src);
-    }
-
+    return await createImageBitmap(imgblob);
 }
 
 
@@ -116,8 +88,6 @@ onmessage = (e) => {
                 renderCursor(renderData);
             } else if (renderData.type === "text") {
                 drawText(renderData);
-            }  else if (renderData.type === "entities") {
-                drawEntities(renderData);
             } else {
                 render(renderData.id, renderData.tiles, renderData.cameraX, renderData.cameraY, renderData.scale, renderData.clear);
             }
@@ -141,9 +111,6 @@ onmessage = (e) => {
         ctx = canvas.getContext('2d');
         ctx.imageSmoothingEnabled  = false;
         contexes[id] = ctx;
-    } else if (e.data.type === "loadSprite") {
-        let sprite = new Sprite(e.data.id, e.data.src, e.data.animationData, e.data.width, e.data.height, e.data.offsetX, e.data.offsetY);
-        sprites[sprite.id] = sprite;
     }
 };
 
@@ -182,6 +149,7 @@ function drawText(renderData) {
     const cameraY = renderData.cameraY;
     const scale = renderData.scale;
 
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.save();
     ctx.translate(-cameraX * scale, -cameraY * scale);
     for (let i = 0; i < textDataLength; i++) {
@@ -238,46 +206,4 @@ function drawText(renderData) {
     }
     ctx.restore();
     lastRenderLength = textDataLength;
-}
-
-
-function drawEntities(drawEntitiesData) {
-    let id = drawEntitiesData.id;
-    let ctx = contexes[id];
-    let canvas = canvases[id];
-
-    const cameraX = drawEntitiesData.cameraX;
-    const cameraY = drawEntitiesData.cameraY;
-    const scale = drawEntitiesData.scale;
-
-    ctx.save();
-    ctx.translate(-cameraX * scale, -cameraY * scale);
-
-    const entityCount = drawEntitiesData.entityData.length;
-
-    for (let i = 0; i < entityCount; i++) {
-        const entityData = drawEntitiesData.entityData[i];
-        ctx.save();
-        if (entityData.globalAlpha !== undefined && Number.isNaN(entityData.globalAlpha) === false) {
-            ctx.globalAlpha = entityData.globalAlpha;
-        }
-
-        ctx.translate(entityData.translateX, entityData.translateY);
-        if (entityData.scaleX !== undefined && entityData.scaleY !== undefined) {
-            ctx.scale(entityData.scaleX, entityData.scaleY);
-        }
-        let drawDataLength = entityData.drawData.length;
-        for (let y = 0; y < drawDataLength; y++) {
-            const drawData = entityData.drawData[y];
-            const {id, sx, sy, sW, sH, dx, dy, dW, dH} = drawData;
-
-            let sprite = sprites[id];
-            if (sprite && sprite.isLoaded === true) {
-                ctx.drawImage(sprite.image, sx, sy, sW, sH, dx, dy, dW, dH);
-            }
-        }
-        ctx.restore();
-
-    }
-    ctx.restore();
 }
