@@ -601,19 +601,6 @@ footer div  {display:inline-block;}
     line-height:27px;
 }
 
-#settings input:after {
-    content: "";
-    /* border: 1px solid red; */
-    width: 12px;
-    height: 12px;
-    display: block;
-    border-image-source: url(../img/common/panel.png);
-    border-image-slice: 9;
-    border-image-repeat: round;
-    border-image-width: 3px;
-    border-radius: 12px;
-    border-image-outset: 3px;
-}
 /* Magic Parchment */
 
 .parchment-left {position:absolute;top:0;left:0%;}
