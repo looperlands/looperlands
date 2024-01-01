@@ -126,6 +126,7 @@ onmessage = (e) => {
         let combinedCanvas = canvases["combined"];
         let combinedCtx = contexes["combined"];
 
+        // Perform double buffering by drawing all canvases to a single canvas
         combinedCtx.clearRect(0, 0, combinedCanvas.width, combinedCanvas.height);
         combinedCtx.save();
         combinedCtx.drawImage(canvases["background"], 0, 0);
