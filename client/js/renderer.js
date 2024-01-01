@@ -8,11 +8,16 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             //this.background = (background && background.getContext) ? background.getContext("2d") : null;
             this.foreground = (foreground && foreground.getContext) ? foreground.getContext("2d") : null;
 
-            let highCanvas = document.getElementById("high-canvas").transferControlToOffscreen();
-            let textCanvas = document.getElementById("text-canvas").transferControlToOffscreen();
-            let entitiesCanvas = document.getElementById("entities-canvas").transferControlToOffscreen();
+            let combinedCanvas = document.getElementById("background").transferControlToOffscreen();
 
-            let offScreenCanvas = background.transferControlToOffscreen();
+            let width = canvas.width;
+            let height = canvas.height;
+
+            let offScreenCanvas = new OffscreenCanvas(width, height);
+            let highCanvas = new OffscreenCanvas(width, height);
+            let textCanvas = new OffscreenCanvas(width, height);
+            let entitiesCanvas = new OffscreenCanvas(width, height);
+
             this.background = background;
         
             this.canvas = canvas;
@@ -43,6 +48,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             this.worker.postMessage({"canvas":  highCanvas, "type": "setCanvas", "id": "high"}, [highCanvas]);
             this.worker.postMessage({"canvas":  textCanvas, "type": "setCanvas", "id": "text"}, [textCanvas]);
             this.worker.postMessage({"canvas":  entitiesCanvas, "type": "setCanvas", "id": "entities"}, [entitiesCanvas]);
+            this.worker.postMessage({"canvas":  combinedCanvas, "type": "setCanvas", "id": "combined"}, [combinedCanvas]);
             this.rescale(this.getScaleFactor());
 
             let self = this;

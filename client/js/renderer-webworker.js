@@ -122,6 +122,18 @@ onmessage = (e) => {
                 render(renderData.id, renderData.tiles, renderData.cameraX, renderData.cameraY, renderData.scale, renderData.clear);
             }
         }
+
+        let combinedCanvas = canvases["combined"];
+        let combinedCtx = contexes["combined"];
+
+        combinedCtx.clearRect(0, 0, combinedCanvas.width, combinedCanvas.height);
+        combinedCtx.save();
+        combinedCtx.drawImage(canvases["background"], 0, 0);
+        combinedCtx.drawImage(canvases["entities"], 0, 0);
+        combinedCtx.drawImage(canvases["text"], 0, 0);
+        combinedCtx.drawImage(canvases["high"], 0, 0);
+        combinedCtx.restore();
+
         requestAnimationFrame(() => {
             postMessage({ type: "rendered" });
         });
