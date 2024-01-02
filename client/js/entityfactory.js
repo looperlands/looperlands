@@ -596,6 +596,12 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.EVERPEAKMAP3]=function(id){return new Items.EVERPEAKMAP3(id);};
     EntityFactory.builders[Types.Entities.EVERPEAKMAP4]=function(id){return new Items.EVERPEAKMAP4(id);};
     EntityFactory.builders[Types.Entities.EVERPEAKMAP5]=function(id){return new Items.EVERPEAKMAP5(id);};
+        
+    //Short Destroyers
+    EntityFactory.builders[Types.Entities.DVD]=function(id){return new Items.DVD(id);};
+    EntityFactory.builders[Types.Entities.VHS]=function(id){return new Items.VHS(id);};
+    EntityFactory.builders[Types.Entities.GAME]=function(id){return new Items.GAME(id);};
+    EntityFactory.builders[Types.Entities.POPCORN]=function(id){return new Items.POPCORN(id);};
     // @nextObjectLine@
 
     //====== NPCs ======
