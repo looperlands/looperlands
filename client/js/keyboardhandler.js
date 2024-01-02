@@ -110,7 +110,7 @@ class KeyBoardHandler {
 
     hasOpenPanel() {
         return $('body').hasClass('settings') ||
-            $('body').hasClass('about') ||
+            $('body').hasClass('inventory') ||
             $('body').hasClass('credits') ||
             $('#chatbox').hasClass("active");
     }
