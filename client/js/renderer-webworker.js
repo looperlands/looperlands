@@ -5,6 +5,7 @@ let contexes = {};
 let cursors = {};
 let cursor = undefined;
 let sprites = {};
+let hasLoadedFont = false;
 
 class Sprite {
     constructor(id, dataURL, animationData, width, height, offsetX, offsetY) {
@@ -60,6 +61,20 @@ async function loadImg(src) {
     }
 }
 
+async function loadFont() {
+    if(self.FontFace) {
+        // first declare our font-face
+        const fontFace = new FontFace(
+            'GraphicPixel',
+            "url('../fonts/graphicpixel-webfont.eot') format('embedded-opentype'), url('../fonts/graphicpixel-webfont.eot?#iefix') format('embedded-opentype'), url('../fonts/graphicpixel-webfont.woff') format('woff'), url('../fonts/graphicpixel-webfont.ttf') format('truetype'), url('../fonts/graphicpixel-webfont.svg#GraphicPixelRegular') format('svg')"
+        );
+        // add it to the list of fonts our worker supports
+        self.fonts.add(fontFace);
+        await fontFace.load();
+    }
+
+    hasLoadedFont = true;
+}
 
 function getX(id, w) {
     if (id == 0) {
@@ -118,6 +133,10 @@ function render(id, tiles, cameraX, cameraY, scale, clear) {
 
 
 onmessage = (e) => {
+    if(!hasLoadedFont) {
+        loadFont();
+    }
+
     if (e.data.type === "setTileset") {
         loadImg(e.data.src).then((img) => {
             tileset = img;
@@ -196,7 +215,7 @@ function renderCursor(renderData) {
 
 
 let lastRenderLength = 0;
-function drawText(renderData) {
+async function drawText(renderData) {
     const textDataLength = renderData.textData.length;
 
     /*
@@ -270,6 +289,7 @@ function drawText(renderData) {
             ctx.strokeText(text, x, y);
             ctx.fillStyle = color || "white";
             ctx.fillText(text, x, y);
+
         }
     }
     ctx.restore();
