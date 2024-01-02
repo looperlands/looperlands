@@ -8,7 +8,16 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             //this.background = (background && background.getContext) ? background.getContext("2d") : null;
             this.foreground = (foreground && foreground.getContext) ? foreground.getContext("2d") : null;
 
-            let offScreenCanvas = background.transferControlToOffscreen();
+            let combinedCanvas = document.getElementById("background").transferControlToOffscreen();
+
+            let width = canvas.width;
+            let height = canvas.height;
+
+            let offScreenCanvas = new OffscreenCanvas(width, height);
+            let highCanvas = new OffscreenCanvas(width, height);
+            let textCanvas = new OffscreenCanvas(width, height);
+            let entitiesCanvas = new OffscreenCanvas(width, height);
+
             this.background = background;
         
             this.canvas = canvas;
@@ -26,6 +35,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             this.frameCount = 0;
             this.maxFPS = this.FPS;
             this.realFPS = 0;
+            this.frameTime = 1000 / this.FPS;
             this.isDebugInfoVisible = false;
         
             this.animatedTileCount = 0;
@@ -36,6 +46,10 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             this.fixFlickeringTimer = new Timer(100);
 
             this.worker.postMessage({"canvas":  offScreenCanvas, "type": "setCanvas", "id": "background"}, [offScreenCanvas]);
+            this.worker.postMessage({"canvas":  highCanvas, "type": "setCanvas", "id": "high"}, [highCanvas]);
+            this.worker.postMessage({"canvas":  textCanvas, "type": "setCanvas", "id": "text"}, [textCanvas]);
+            this.worker.postMessage({"canvas":  entitiesCanvas, "type": "setCanvas", "id": "entities"}, [entitiesCanvas]);
+            this.worker.postMessage({"canvas":  combinedCanvas, "type": "setCanvas", "id": "combined"}, [combinedCanvas]);
             this.rescale(this.getScaleFactor());
 
             let self = this;
@@ -251,7 +265,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                 s = this.scale,
                 os = this.upscaledRendering ? 1 : this.scale;
 
-            return {"type": "render", id: "background", mx: mx, my: my, s: s, os: os, cursor : true, name: this.game.currentCursorName};
+            return {"type": "render", id: "high", mx: mx, my: my, s: s, os: os, cursor : true, name: this.game.currentCursorName};
         },
 
         drawScaledImage: function(ctx, image, x, y, w, h, dx, dy) {
@@ -586,7 +600,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                 }
 
                 textData.push({
-                    "id": "background",
+                    "id": "text",
                     "type": "text",
                     "text": entityData,
                     "x": (entity.x + 8) * this.scale,
@@ -598,7 +612,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                 if (entity.title !== undefined) {
                     if (entity instanceof Player){
                         textData.push({
-                            "id": "background",
+                            "id": "text",
                             "type": "text",
                             "text": entity.title,
                             "x": (entity.x + 8) * this.scale,
@@ -609,7 +623,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                         });
                     } else {
                         textData.push({
-                            "id": "background",
+                            "id": "text",
                             "type": "text",
                             "text": entity.title,
                             "x": (entity.x + 8) * this.scale,
@@ -680,7 +694,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                         let tile = visibileAnimatedHighTiles[i];
                         visbileTiles.push({tileid: tile.id, setW: tilesetwidth, gridW: m.width, cellid: tile.index});
                     }
-                    return {"type": "render", id: "background", tiles: visbileTiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: false};
+                    return {"type": "render", id: "high", tiles: visbileTiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: false};
                 }
 
         },
@@ -692,7 +706,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
         drawHighTiles: function() {
             let m = this.game.map;
         
-            return {"type": "render", id: "background", tiles: this.game.visibleHighTiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: false};
+            return {"type": "render", id: "high", tiles: this.game.visibleHighTiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: true};
         },
 
         drawToggledLayers: function(ctx, highTile, animated) {
@@ -858,6 +872,17 @@ function(Camera, Item, Character, Player, Timer, Mob) {
         },
 
         renderFrame: function() {
+
+            if (this.lastFrameTime !== undefined) {
+                let elaspedTime = this.game.currentTime - this.lastFrameTime;
+                if (elaspedTime < this.frameTime) {
+                    this.worker.postMessage({"type": "idle"});
+                    return;
+                }
+            }
+
+            this.lastFrameTime = this.game.currentTime;
+
             let centeredCamera = !this.game.canUseCenteredCamera();
             let renderText = this.game.app.settings.getRenderText();
             let renderData = [];
@@ -872,7 +897,11 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                 terrain = this.drawTerrain();
                 highTiles = this.drawHighTiles();
             }
+            renderData.push(highTiles);
             renderData.push(terrain);
+
+            let highAnimatedTiles = this.drawHighAnimatedTiles();
+            renderData.push(highAnimatedTiles);
 
             let animatedTiles = this.drawAnimatedTiles();
             renderData.push(animatedTiles);
@@ -895,13 +924,14 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             let [entityTextData, entityDrawData] = this.drawEntities();
             let drawEntitiesData = {
                 "type": "entities",
-                "id": "background",
+                "id": "entities",
                 "entityData": entityDrawData,
                 "cameraX": this.camera.x,
                 "cameraY": this.camera.y,
                 "scale": this.scale
             }
             renderData.push(drawEntitiesData);
+            this.drawFloats();
 
             let combatInfoTextData = this.drawCombatInfo();
 
@@ -912,20 +942,13 @@ function(Camera, Item, Character, Player, Timer, Mob) {
 
             let textDataCmd = {
                 "type": "text",
-                "id": "background",
+                "id": "text",
                 "textData": textData,
                 "cameraX": this.camera.x,
                 "cameraY": this.camera.y,
                 "scale": this.scale
             }
             renderData.push(textDataCmd);
-
-            renderData.push(highTiles);
-            let highAnimatedTiles = this.drawHighAnimatedTiles();
-            renderData.push(highAnimatedTiles);
-
-            this.drawFloats();
-
 
             this.drawToggledLayers(this.context, true, false);
             this.drawToggledLayers(this.context, true, true);

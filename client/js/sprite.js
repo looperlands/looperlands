@@ -39,11 +39,18 @@ define(['jquery', 'animation', 'sprites'], function($, Animation, sprites) {
 
         	this.image.onload = function() {
         		self.isLoaded = true;
+
+				const canvas = document.createElement('canvas');
+				canvas.width = self.image.width;
+				canvas.height = self.image.height;
+				const ctx = canvas.getContext('2d');
+				ctx.drawImage(self.image, 0, 0);
+				let dataURL = canvas.toDataURL();
     		    
 				self.renderWorker.postMessage({
 					"type": "loadSprite",
 					"id": self.id,
-					"src": self.filepath,
+					"dataURL": dataURL,
 					"animationData": self.animationData,
 					"width": self.width,
 					"height": self.height,
@@ -55,8 +62,6 @@ define(['jquery', 'animation', 'sprites'], function($, Animation, sprites) {
                     self.onload_func();
                 }
         	};
-
-
         },
     
         createAnimations: function() {

@@ -5,26 +5,48 @@ let contexes = {};
 let cursors = {};
 let cursor = undefined;
 let sprites = {};
+let hasLoadedFont = false;
 
 class Sprite {
-    constructor(id, src, animationData, width, height, offsetX, offsetY) {
+    constructor(id, dataURL, animationData, width, height, offsetX, offsetY) {
         this.id = id;
-        this.filepath = src;
+        this.dataURL = dataURL;
         this.animationData = animationData;
         this.width = width;
         this.height = height;
         this.offsetX = offsetX;
         this.offsetY = offsetY;
+
+
+        let base64Response = dataURL.replace(/^data:image\/[a-z]+;base64,/, "");
+        let blob = this.base64ToBlob(base64Response, "image/png");
+
         let self = this;
-
-        if (this.filepath.startsWith("img/")) {
-            this.filepath = "/" + this.filepath;
-        }
-
-        loadImg(this.filepath).then((img) => {
+        this.image = createImageBitmap(blob).then((img) => {
             self.image = img;
             self.isLoaded = true;
         });
+    }
+
+    base64ToBlob(base64, mime) {
+        mime = mime || '';
+        const sliceSize = 1024;
+        let byteChars = atob(base64);
+        let byteArrays = [];
+
+        for (let offset = 0, len = byteChars.length; offset < len; offset += sliceSize) {
+            let slice = byteChars.slice(offset, offset + sliceSize);
+
+            let byteNumbers = new Array(slice.length);
+            for (let i = 0; i < slice.length; i++) {
+                byteNumbers[i] = slice.charCodeAt(i);
+            }
+
+            let byteArray = new Uint8Array(byteNumbers);
+            byteArrays.push(byteArray);
+        }
+
+        return new Blob(byteArrays, {type: mime});
     }
 }
 
@@ -37,9 +59,22 @@ async function loadImg(src) {
     } catch (e) {
         console.log(e, src);
     }
-
 }
 
+async function loadFont() {
+    if(self.FontFace) {
+        // first declare our font-face
+        const fontFace = new FontFace(
+            'GraphicPixel',
+            "url('../fonts/graphicpixel-webfont.eot') format('embedded-opentype'), url('../fonts/graphicpixel-webfont.eot?#iefix') format('embedded-opentype'), url('../fonts/graphicpixel-webfont.woff') format('woff'), url('../fonts/graphicpixel-webfont.ttf') format('truetype'), url('../fonts/graphicpixel-webfont.svg#GraphicPixelRegular') format('svg')"
+        );
+        // add it to the list of fonts our worker supports
+        self.fonts.add(fontFace);
+        await fontFace.load();
+    }
+
+    hasLoadedFont = true;
+}
 
 function getX(id, w) {
     if (id == 0) {
@@ -98,6 +133,10 @@ function render(id, tiles, cameraX, cameraY, scale, clear) {
 
 
 onmessage = (e) => {
+    if(!hasLoadedFont) {
+        loadFont();
+    }
+
     if (e.data.type === "setTileset") {
         loadImg(e.data.src).then((img) => {
             tileset = img;
@@ -122,6 +161,19 @@ onmessage = (e) => {
                 render(renderData.id, renderData.tiles, renderData.cameraX, renderData.cameraY, renderData.scale, renderData.clear);
             }
         }
+
+        let combinedCanvas = canvases["combined"];
+        let combinedCtx = contexes["combined"];
+
+        // Perform double buffering by drawing all canvases to a single canvas
+        combinedCtx.clearRect(0, 0, combinedCanvas.width, combinedCanvas.height);
+        combinedCtx.save();
+        combinedCtx.drawImage(canvases["background"], 0, 0);
+        combinedCtx.drawImage(canvases["entities"], 0, 0);
+        combinedCtx.drawImage(canvases["text"], 0, 0);
+        combinedCtx.drawImage(canvases["high"], 0, 0);
+        combinedCtx.restore();
+
         requestAnimationFrame(() => {
             postMessage({ type: "rendered" });
         });
@@ -142,8 +194,10 @@ onmessage = (e) => {
         ctx.imageSmoothingEnabled  = false;
         contexes[id] = ctx;
     } else if (e.data.type === "loadSprite") {
-        let sprite = new Sprite(e.data.id, e.data.src, e.data.animationData, e.data.width, e.data.height, e.data.offsetX, e.data.offsetY);
+        let sprite = new Sprite(e.data.id, e.data.dataURL, e.data.animationData, e.data.width, e.data.height, e.data.offsetX, e.data.offsetY);
         sprites[sprite.id] = sprite;
+    } else if (e.data.type === "idle") {
+        postMessage({ type: "rendered" });
     }
 };
 
@@ -155,18 +209,13 @@ function renderCursor(renderData) {
     let cursorImg = cursors[renderData.name];
     let ctx = contexes[renderData.id];
     ctx.save();
-    try {
-        ctx.drawImage(cursorImg, 0, 0, 14 * os, 14 * os, mx, my, 14 * s, 14 * s);
-    } catch (e) {
-        console.error(e);
-    } finally {
-        ctx.restore();
-    }
+    ctx.drawImage(cursorImg, 0, 0, 14 * os, 14 * os, mx, my, 14 * s, 14 * s);
+    ctx.restore();
 }
 
 
 let lastRenderLength = 0;
-function drawText(renderData) {
+async function drawText(renderData) {
     const textDataLength = renderData.textData.length;
 
     /*
@@ -187,6 +236,7 @@ function drawText(renderData) {
     const cameraY = renderData.cameraY;
     const scale = renderData.scale;
 
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.save();
     ctx.translate(-cameraX * scale, -cameraY * scale);
     for (let i = 0; i < textDataLength; i++) {
@@ -239,6 +289,7 @@ function drawText(renderData) {
             ctx.strokeText(text, x, y);
             ctx.fillStyle = color || "white";
             ctx.fillText(text, x, y);
+
         }
     }
     ctx.restore();
@@ -255,6 +306,7 @@ function drawEntities(drawEntitiesData) {
     const cameraY = drawEntitiesData.cameraY;
     const scale = drawEntitiesData.scale;
 
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.save();
     ctx.translate(-cameraX * scale, -cameraY * scale);
 
