@@ -62,8 +62,6 @@ define(['jquery', 'animation', 'sprites'], function($, Animation, sprites) {
                     self.onload_func();
                 }
         	};
-
-
         },
     
         createAnimations: function() {
