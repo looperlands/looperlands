@@ -2,12 +2,13 @@
 define(['jquery', 'animation', 'sprites'], function($, Animation, sprites) {
 
     var Sprite = Class.extend({
-        init: function(name, scale) {
+        init: function(name, scale, renderWorker) {
         	this.name = name;
         	this.scale = scale;
         	this.isLoaded = false;
         	this.offsetX = 0;
         	this.offsetY = 0;
+			this.renderWorker = renderWorker;
 
 			if (window.location.href.indexOf("127.0.0.1") > -1) {
 				this.baseImageURL = 'img/';
@@ -38,7 +39,25 @@ define(['jquery', 'animation', 'sprites'], function($, Animation, sprites) {
 
         	this.image.onload = function() {
         		self.isLoaded = true;
+
+				const canvas = document.createElement('canvas');
+				canvas.width = self.image.width;
+				canvas.height = self.image.height;
+				const ctx = canvas.getContext('2d');
+				ctx.drawImage(self.image, 0, 0);
+				let dataURL = canvas.toDataURL();
     		    
+				self.renderWorker.postMessage({
+					"type": "loadSprite",
+					"id": self.id,
+					"dataURL": dataURL,
+					"animationData": self.animationData,
+					"width": self.width,
+					"height": self.height,
+					"offsetX": self.offsetX,
+					"offsetY": self.offsetY
+				});
+
                 if(self.onload_func) {
                     self.onload_func();
                 }

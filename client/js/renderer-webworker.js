@@ -4,13 +4,61 @@ let canvases = {};
 let contexes = {};
 let cursors = {};
 let cursor = undefined;
+let sprites = {};
 let hasLoadedFont = false;
+
+class Sprite {
+    constructor(id, dataURL, animationData, width, height, offsetX, offsetY) {
+        this.id = id;
+        this.dataURL = dataURL;
+        this.animationData = animationData;
+        this.width = width;
+        this.height = height;
+        this.offsetX = offsetX;
+        this.offsetY = offsetY;
+
+
+        let base64Response = dataURL.replace(/^data:image\/[a-z]+;base64,/, "");
+        let blob = this.base64ToBlob(base64Response, "image/png");
+
+        let self = this;
+        this.image = createImageBitmap(blob).then((img) => {
+            self.image = img;
+            self.isLoaded = true;
+        });
+    }
+
+    base64ToBlob(base64, mime) {
+        mime = mime || '';
+        const sliceSize = 1024;
+        let byteChars = atob(base64);
+        let byteArrays = [];
+
+        for (let offset = 0, len = byteChars.length; offset < len; offset += sliceSize) {
+            let slice = byteChars.slice(offset, offset + sliceSize);
+
+            let byteNumbers = new Array(slice.length);
+            for (let i = 0; i < slice.length; i++) {
+                byteNumbers[i] = slice.charCodeAt(i);
+            }
+
+            let byteArray = new Uint8Array(byteNumbers);
+            byteArrays.push(byteArray);
+        }
+
+        return new Blob(byteArrays, {type: mime});
+    }
+}
 
 
 async function loadImg(src) {
-    const imgblob = await fetch(src)
+    try {
+        const imgblob = await fetch(src)
         .then(r => r.blob());
-    return await createImageBitmap(imgblob);
+        return await createImageBitmap(imgblob);
+    } catch (e) {
+        console.log(e, src);
+    }
 }
 
 async function loadFont() {
@@ -107,10 +155,25 @@ onmessage = (e) => {
                 renderCursor(renderData);
             } else if (renderData.type === "text") {
                 drawText(renderData);
+            }  else if (renderData.type === "entities") {
+                drawEntities(renderData);
             } else {
                 render(renderData.id, renderData.tiles, renderData.cameraX, renderData.cameraY, renderData.scale, renderData.clear);
             }
         }
+
+        let combinedCanvas = canvases["combined"];
+        let combinedCtx = contexes["combined"];
+
+        // Perform double buffering by drawing all canvases to a single canvas
+        combinedCtx.clearRect(0, 0, combinedCanvas.width, combinedCanvas.height);
+        combinedCtx.save();
+        combinedCtx.drawImage(canvases["background"], 0, 0);
+        combinedCtx.drawImage(canvases["entities"], 0, 0);
+        combinedCtx.drawImage(canvases["text"], 0, 0);
+        combinedCtx.drawImage(canvases["high"], 0, 0);
+        combinedCtx.restore();
+
         requestAnimationFrame(() => {
             postMessage({ type: "rendered" });
         });
@@ -130,6 +193,11 @@ onmessage = (e) => {
         ctx = canvas.getContext('2d');
         ctx.imageSmoothingEnabled  = false;
         contexes[id] = ctx;
+    } else if (e.data.type === "loadSprite") {
+        let sprite = new Sprite(e.data.id, e.data.dataURL, e.data.animationData, e.data.width, e.data.height, e.data.offsetX, e.data.offsetY);
+        sprites[sprite.id] = sprite;
+    } else if (e.data.type === "idle") {
+        postMessage({ type: "rendered" });
     }
 };
 
@@ -226,4 +294,47 @@ async function drawText(renderData) {
     }
     ctx.restore();
     lastRenderLength = textDataLength;
+}
+
+
+function drawEntities(drawEntitiesData) {
+    let id = drawEntitiesData.id;
+    let ctx = contexes[id];
+    let canvas = canvases[id];
+
+    const cameraX = drawEntitiesData.cameraX;
+    const cameraY = drawEntitiesData.cameraY;
+    const scale = drawEntitiesData.scale;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.save();
+    ctx.translate(-cameraX * scale, -cameraY * scale);
+
+    const entityCount = drawEntitiesData.entityData.length;
+
+    for (let i = 0; i < entityCount; i++) {
+        const entityData = drawEntitiesData.entityData[i];
+        ctx.save();
+        if (entityData.globalAlpha !== undefined && Number.isNaN(entityData.globalAlpha) === false) {
+            ctx.globalAlpha = entityData.globalAlpha;
+        }
+
+        ctx.translate(entityData.translateX, entityData.translateY);
+        if (entityData.scaleX !== undefined && entityData.scaleY !== undefined) {
+            ctx.scale(entityData.scaleX, entityData.scaleY);
+        }
+        let drawDataLength = entityData.drawData.length;
+        for (let y = 0; y < drawDataLength; y++) {
+            const drawData = entityData.drawData[y];
+            const {id, sx, sy, sW, sH, dx, dy, dW, dH} = drawData;
+
+            let sprite = sprites[id];
+            if (sprite && sprite.isLoaded === true) {
+                ctx.drawImage(sprite.image, sx, sy, sW, sH, dx, dy, dW, dH);
+            }
+        }
+        ctx.restore();
+
+    }
+    ctx.restore();
 }

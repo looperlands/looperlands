@@ -1,4 +1,3 @@
-
 define(['camera', 'item', 'character', 'player', 'timer', 'mob'], 
 function(Camera, Item, Character, Player, Timer, Mob) {
 
@@ -9,10 +8,16 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             //this.background = (background && background.getContext) ? background.getContext("2d") : null;
             this.foreground = (foreground && foreground.getContext) ? foreground.getContext("2d") : null;
 
-            let highCanvas = document.getElementById("high-canvas").transferControlToOffscreen();
-            let textCanvas = document.getElementById("text-canvas").transferControlToOffscreen();
+            let combinedCanvas = document.getElementById("background").transferControlToOffscreen();
 
-            let offScreenCanvas = background.transferControlToOffscreen();
+            let width = canvas.width;
+            let height = canvas.height;
+
+            let offScreenCanvas = new OffscreenCanvas(width, height);
+            let highCanvas = new OffscreenCanvas(width, height);
+            let textCanvas = new OffscreenCanvas(width, height);
+            let entitiesCanvas = new OffscreenCanvas(width, height);
+
             this.background = background;
         
             this.canvas = canvas;
@@ -23,13 +28,14 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             this.tilesize = 16;
         
             this.upscaledRendering = true;
-            this.supportsSilhouettes = this.upscaledRendering;
+            this.supportsSilhouettes = false;
             this.worker = new Worker("js/renderer-webworker.js");
         
             this.lastTime = new Date();
             this.frameCount = 0;
             this.maxFPS = this.FPS;
             this.realFPS = 0;
+            this.frameTime = 1000 / this.FPS;
             this.isDebugInfoVisible = false;
         
             this.animatedTileCount = 0;
@@ -42,6 +48,8 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             this.worker.postMessage({"canvas":  offScreenCanvas, "type": "setCanvas", "id": "background"}, [offScreenCanvas]);
             this.worker.postMessage({"canvas":  highCanvas, "type": "setCanvas", "id": "high"}, [highCanvas]);
             this.worker.postMessage({"canvas":  textCanvas, "type": "setCanvas", "id": "text"}, [textCanvas]);
+            this.worker.postMessage({"canvas":  entitiesCanvas, "type": "setCanvas", "id": "entities"}, [entitiesCanvas]);
+            this.worker.postMessage({"canvas":  combinedCanvas, "type": "setCanvas", "id": "combined"}, [combinedCanvas]);
             this.rescale(this.getScaleFactor());
 
             let self = this;
@@ -310,6 +318,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
 
         drawEntity: function(entity) {
             let textData = undefined;
+            let entityData = {drawData: []};
 
             var sprite = entity.sprite,
                 shadow = this.game.shadows["small"],
@@ -318,7 +327,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                 ds = this.upscaledRendering ? this.scale : 1;
         
             if(anim && sprite) {
-                var	frame = anim.currentFrame,
+                let	frame = anim.currentFrame,
                     s = this.scale,
                     x = frame.x * os,
                     y = frame.y * os,
@@ -332,39 +341,59 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                     dh = h * ds;
             
                 if(entity.isFading) {
-                    this.context.save();
-                    this.context.globalAlpha = entity.fadingAlpha;
+                    entityData.globalAlpha = entity.fadingAlpha;
                 }
                 
                 if(!(entity instanceof Mob && (entity.nameless || entity.isFriendly))) { // friendly mobs render nameless by default
                     textData = this.drawEntityName(entity, sprite.offsetY);
                 }
                 
-                this.context.save();
                 if(entity.flipSpriteX) {
-                    this.context.translate(dx + this.tilesize*s, dy);
-                    this.context.scale(-1, 1);
+                    entityData.translateX = dx + this.tilesize*s;
+                    entityData.translateY = dy;
+                    entityData.scaleX = -1;
+                    entityData.scaleY = 1;
                 }
                 else if(entity.flipSpriteY) {
-                    this.context.translate(dx, dy + dh);
-                    this.context.scale(1, -1);
+                    entityData.translateX = dx;
+                    entityData.translateY = dy + dh;
+                    entityData.scaleX = 1;
+                    entityData.scaleY = -1;
                 }
                 else {
-                    this.context.translate(dx, dy);
+                    entityData.translateX = dx;
+                    entityData.translateY = dy;
                 }
             
                 if(entity.isVisible()) {
                     if(entity.hasShadow()) {
-                        this.context.drawImage(shadow.image, 0, 0, shadow.width * os, shadow.height * os,
-                                               0,
-                                               entity.shadowOffsetY * ds,
-                                               shadow.width * os * ds, shadow.height * os * ds);
+                        entityData.drawData.push({
+                            "id": shadow.id,
+                            "sx": 0,
+                            "sy": 0,
+                            "sW": shadow.width * os,
+                            "sH": shadow.height * os,
+                            "dx": 0,
+                            "dy": entity.shadowOffsetY * ds,
+                            "dW": shadow.width * os * ds,
+                            "dH": shadow.height * os * ds
+                        });
                     }
-                
-                    this.context.drawImage(sprite.image, x, y, w, h, ox, oy, dw, dh);
+
+                    entityData.drawData.push({
+                        "id": sprite.id,
+                        "sx": x,
+                        "sy": y,
+                        "sW": w,
+                        "sH": h,
+                        "dx": ox,
+                        "dy": oy,
+                        "dW": dw,
+                        "dH": dh
+                    });
 
                     if(entity instanceof Item && entity.kind !== Types.Entities.CAKE && !entity.nosparks) {
-                        var sparks = this.game.sprites["sparks"],
+                        let sparks = this.game.sprites["sparks"],
                             anim = this.game.sparksAnimation,
                             frame = anim.currentFrame,
                             sx = sparks.width * frame.index * os,
@@ -372,42 +401,51 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                             sw = sparks.width * os,
                             sh = sparks.width * os;
 
-                        this.context.drawImage(sparks.image, sx, sy, sw, sh,
-                                               sparks.offsetX * s,
-                                               sparks.offsetY * s,
-                                               sw * ds, sh * ds);
+                        entityData.drawData.push({
+                            "id": sparks.id,
+                            "sx": sx,
+                            "sy": sy,
+                            "sW": sw,
+                            "sH": sh,
+                            "dx": sparks.offsetX * ds,
+                            "dy": sparks.offsetY * ds,
+                            "dW": sw * ds,
+                            "dH": sh * ds
+                        });
                     }
                 }
             
                 if(entity instanceof Character && !entity.isDead && entity.hasWeapon()) {
-                    var weapon = this.game.sprites[entity.getWeaponName()];
+                    let weapon = this.game.sprites[entity.getWeaponName()];
         
                     if(weapon) {
-                        var weaponAnimData = weapon.animationData[anim.name],
+                        let weaponAnimData = weapon.animationData[anim.name],
                             index = frame.index < weaponAnimData.length ? frame.index : frame.index % weaponAnimData.length;
                             wx = weapon.width * index * os,
                             wy = weapon.height * anim.row * os,
                             ww = weapon.width * os,
                             wh = weapon.height * os;
 
-                        this.context.drawImage(weapon.image, wx, wy, ww, wh,
-                                               weapon.offsetX * s,
-                                               weapon.offsetY * s,
-                                               ww * ds, wh * ds);
+                        entityData.drawData.push({
+                            "id": weapon.id,
+                            "sx": wx,
+                            "sy": wy,
+                            "sW": ww,
+                            "sH": wh,
+                            "dx": weapon.offsetX * ds,
+                            "dy": weapon.offsetY * ds,
+                            "dW": ww * ds,
+                            "dH": wh * ds
+                        });
                     }
                 }
-            
-                this.context.restore();
-            
-                if(entity.isFading) {
-                    this.context.restore();
-                }
             }
-            return textData;
+            return [textData, entityData];
         },
 
         drawEntities: function(dirtyOnly) {
             let textData = [];
+            let entities = [];
             var self = this;
         
             function handleDrawingEntity(entity) {
@@ -417,22 +455,13 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                     return;
                 }
                 if(entity.isLoaded) {
-                    if(dirtyOnly) {
-                        if(entity.isDirty) {
-                            let newTextData = self.drawEntity(entity);
-                            if (newTextData !== undefined) {
-                                textData = textData.concat(newTextData);
-                            }
-                            
-                            entity.isDirty = false;
-                            entity.oldDirtyRect = entity.dirtyRect;
-                            entity.dirtyRect = null;
-                        }
-                    } else {
-                        let newTextData = self.drawEntity(entity);
-                        if (newTextData !== undefined) {
-                            textData = textData.concat(newTextData);
-                        }
+                    let [newTextData, entityData] = self.drawEntity(entity);
+                    if (newTextData !== undefined) {
+                        textData = textData.concat(newTextData);
+                    }
+
+                    if (entityData !== undefined) {
+                        entities.push(entityData);
                     }
                 }
             }
@@ -448,7 +477,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             });
 
             drawAfter.forEach((entity) => handleDrawingEntity(entity));
-            return textData;
+            return [textData, entities];
         },
         
         clearDirtyRect: function(r) {
@@ -638,13 +667,15 @@ function(Camera, Item, Character, Player, Timer, Mob) {
         },
     
         drawAnimatedTiles: function() {
-            var self = this,
-                m = this.game.map,
+            let m = this.game.map,
                 tilesetwidth = this.tileset.width / m.tilesize;
 
             let visbileTiles = [];
             if (this.game.visibleAnimatedTiles !== undefined) {
-                for (let tile of this.game.visibleAnimatedTiles) {
+                let visibleAnimatedTiles = this.game.visibleAnimatedTiles;
+                let visibileAnimatedTilesLength = visibleAnimatedTiles.length;
+                for (let i = 0; i < visibileAnimatedTilesLength; i++) {
+                    let tile = visibleAnimatedTiles[i];
                     visbileTiles.push({tileid: tile.id, setW: tilesetwidth, gridW: m.width, cellid: tile.index});
                 }
                 return {"type": "render", id: "background", tiles: visbileTiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: false};
@@ -652,13 +683,15 @@ function(Camera, Item, Character, Player, Timer, Mob) {
         },
 
         drawHighAnimatedTiles: function() {
-            var self = this,
-                m = this.game.map,
+            let m = this.game.map,
                 tilesetwidth = this.tileset.width / m.tilesize;
 
                 let visbileTiles = [];
                 if (this.game.visibleAnimatedHighTiles !== undefined) {
-                    for (let tile of this.game.visibleAnimatedHighTiles) {
+                    let visibileAnimatedHighTiles = this.game.visibleAnimatedHighTiles;
+                    let visibileAnimatedTilesLength = visibileAnimatedHighTiles.length;
+                    for (let i = 0; i < visibileAnimatedTilesLength; i++) {
+                        let tile = visibileAnimatedHighTiles[i];
                         visbileTiles.push({tileid: tile.id, setW: tilesetwidth, gridW: m.width, cellid: tile.index});
                     }
                     return {"type": "render", id: "high", tiles: visbileTiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: false};
@@ -670,12 +703,10 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             this.drawAnimatedTiles(true);
         },
     
-        drawHighTiles: function(ctx) {
-            var self = this,
-                m = this.game.map,
-                tilesetwidth = this.tileset.width / m.tilesize;
+        drawHighTiles: function() {
+            let m = this.game.map;
         
-                return {"type": "render", id: "high", tiles: this.game.visibleHighTiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: true};
+            return {"type": "render", id: "high", tiles: this.game.visibleHighTiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: true};
         },
 
         drawToggledLayers: function(ctx, highTile, animated) {
@@ -841,6 +872,17 @@ function(Camera, Item, Character, Player, Timer, Mob) {
         },
 
         renderFrame: function() {
+
+            if (this.lastFrameTime !== undefined) {
+                let elaspedTime = this.game.currentTime - this.lastFrameTime;
+                if (elaspedTime < this.frameTime) {
+                    this.worker.postMessage({"type": "idle"});
+                    return;
+                }
+            }
+
+            this.lastFrameTime = this.game.currentTime;
+
             let centeredCamera = !this.game.canUseCenteredCamera();
             let renderText = this.game.app.settings.getRenderText();
             let renderData = [];
@@ -879,7 +921,16 @@ function(Camera, Item, Character, Player, Timer, Mob) {
 
             //this.drawOccupiedCells();
             this.drawPathingCells();
-            let entityTextData = this.drawEntities();
+            let [entityTextData, entityDrawData] = this.drawEntities();
+            let drawEntitiesData = {
+                "type": "entities",
+                "id": "entities",
+                "entityData": entityDrawData,
+                "cameraX": this.camera.x,
+                "cameraY": this.camera.y,
+                "scale": this.scale
+            }
+            renderData.push(drawEntitiesData);
             this.drawFloats();
 
             let combatInfoTextData = this.drawCombatInfo();
@@ -907,11 +958,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             let cursorData = this.drawCursor();
             renderData.push(cursorData);
             this.drawDebugInfo();
-            let self = this;
-            requestAnimationFrame(() => {
-                self.worker.postMessage({"type": "render", "renderData": renderData});
-            });
-
+            this.worker.postMessage({"type": "render", "renderData": renderData});
         }
     });
 
