@@ -7,24 +7,45 @@ let cursor = undefined;
 let sprites = {};
 
 class Sprite {
-    constructor(id, src, animationData, width, height, offsetX, offsetY) {
+    constructor(id, dataURL, animationData, width, height, offsetX, offsetY) {
         this.id = id;
-        this.filepath = src;
+        this.dataURL = dataURL;
         this.animationData = animationData;
         this.width = width;
         this.height = height;
         this.offsetX = offsetX;
         this.offsetY = offsetY;
+
+
+        let base64Response = dataURL.replace(/^data:image\/[a-z]+;base64,/, "");
+        let blob = this.base64ToBlob(base64Response, "image/png");
+
         let self = this;
-
-        if (this.filepath.startsWith("img/")) {
-            this.filepath = "/" + this.filepath;
-        }
-
-        loadImg(this.filepath).then((img) => {
+        this.image = createImageBitmap(blob).then((img) => {
             self.image = img;
             self.isLoaded = true;
         });
+    }
+
+    base64ToBlob(base64, mime) {
+        mime = mime || '';
+        const sliceSize = 1024;
+        let byteChars = atob(base64);
+        let byteArrays = [];
+
+        for (let offset = 0, len = byteChars.length; offset < len; offset += sliceSize) {
+            let slice = byteChars.slice(offset, offset + sliceSize);
+
+            let byteNumbers = new Array(slice.length);
+            for (let i = 0; i < slice.length; i++) {
+                byteNumbers[i] = slice.charCodeAt(i);
+            }
+
+            let byteArray = new Uint8Array(byteNumbers);
+            byteArrays.push(byteArray);
+        }
+
+        return new Blob(byteArrays, {type: mime});
     }
 }
 
@@ -37,7 +58,6 @@ async function loadImg(src) {
     } catch (e) {
         console.log(e, src);
     }
-
 }
 
 
@@ -155,7 +175,7 @@ onmessage = (e) => {
         ctx.imageSmoothingEnabled  = false;
         contexes[id] = ctx;
     } else if (e.data.type === "loadSprite") {
-        let sprite = new Sprite(e.data.id, e.data.src, e.data.animationData, e.data.width, e.data.height, e.data.offsetX, e.data.offsetY);
+        let sprite = new Sprite(e.data.id, e.data.dataURL, e.data.animationData, e.data.width, e.data.height, e.data.offsetX, e.data.offsetY);
         sprites[sprite.id] = sprite;
     } else if (e.data.type === "idle") {
         postMessage({ type: "rendered" });
