@@ -313,6 +313,10 @@ define(['character'], function (Character) {
             "I can't wait to grow my own flowers."
         ],
 
+        "cobashley": [
+            "I am Ashley."
+        ],
+
         "cobjohnny": [
             "Farm life is tough but it's something that we will all be able to do soon."
         ],

@@ -779,6 +779,10 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
         return new NPCs.Cobellen(id);
     };  
 
+    EntityFactory.builders[Types.Entities.COBASHLEY] = function(id) {
+        return new NPCs.cobashley(id);
+    };  
+
     EntityFactory.builders[Types.Entities.COBJOHNNY] = function(id) {
         return new NPCs.Cobjohnny(id);
     };  

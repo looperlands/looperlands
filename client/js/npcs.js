@@ -283,6 +283,12 @@ define(['npc'], function(Npc) {
             }
         }),
 
+        cobashley: Npc.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.COBASHLEY, 1);
+            }
+        }),
+
         Cobjohnny: Npc.extend({
             init: function(id) {
                 this._super(id, Types.Entities.COBJOHNNY, 1);
