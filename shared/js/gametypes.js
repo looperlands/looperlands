@@ -328,7 +328,11 @@ Types = {
         CITYSIGN7: 34000042,
         CITYSIGN8: 34000043,
         CITYSIGN9: 34000044,
-        CITYSIGN10: 34000045, // @lastidCharacter@
+        CITYSIGN10: 34000045, 
+        COBASHLEY: 34000046,
+        COBELLIOTT: 34000047,
+        COBMAUVE: 34000048,
+        COBFERN: 34000049, // @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
