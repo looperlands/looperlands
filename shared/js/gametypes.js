@@ -330,6 +330,9 @@ Types = {
         CITYSIGN9: 34000044,
         CITYSIGN10: 34000045,
         COBASHLEY: 34000046,
+        COBELLIOTT: 34000047,
+        COBMAUVE: 34000048,
+        COBFERN: 34000049,
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -4913,6 +4916,9 @@ var kinds = {
     CITYSIGN8: [Types.Entities.CITYSIGN8, "npc"],
     CITYSIGN9: [Types.Entities.CITYSIGN9, "npc"],
     CITYSIGN10: [Types.Entities.CITYSIGN10, "npc"],
+    cobelliott: [Types.Entities.COBELLIOTT, "npc"],
+    cobfern: [Types.Entities.COBFERN, "npc"],
+    cobmauve: [Types.Entities.COBMAUVE, "npc"],
     // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],
