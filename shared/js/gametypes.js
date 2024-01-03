@@ -4836,6 +4836,10 @@ var kinds = {
     EVERPEAKMAP3: [Types.Entities.EVERPEAKMAP3, "object"],
     EVERPEAKMAP4: [Types.Entities.EVERPEAKMAP4, "object"],
     EVERPEAKMAP5: [Types.Entities.EVERPEAKMAP5, "object"],
+    dvd: [Types.Entities.DVD, "object"],
+    vhs: [Types.Entities.VHS, "object"],
+    game: [Types.Entities.GAME, "object"],
+    popcorn: [Types.Entities.POPCORN, "object"],
     // @nextObjectLine@
 
     guard: [Types.Entities.GUARD, "npc"],

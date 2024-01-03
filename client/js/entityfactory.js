@@ -601,10 +601,10 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.EVERPEAKMAP5]=function(id){return new Items.EVERPEAKMAP5(id);};
         
     //Short Destroyers
-    EntityFactory.builders[Types.Entities.DVD]=function(id){return new Items.DVD(id);};
-    EntityFactory.builders[Types.Entities.VHS]=function(id){return new Items.VHS(id);};
-    EntityFactory.builders[Types.Entities.GAME]=function(id){return new Items.GAME(id);};
-    EntityFactory.builders[Types.Entities.POPCORN]=function(id){return new Items.POPCORN(id);};
+    EntityFactory.builders[Types.Entities.DVD]=function(id){return new Items.Dvd(id);};
+    EntityFactory.builders[Types.Entities.VHS]=function(id){return new Items.Vhs(id);};
+    EntityFactory.builders[Types.Entities.GAME]=function(id){return new Items.Game(id);};
+    EntityFactory.builders[Types.Entities.POPCORN]=function(id){return new Items.Popcorn(id);};
     // @nextObjectLine@
 
     //====== NPCs ======

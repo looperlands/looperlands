@@ -1020,8 +1020,10 @@ var Properties = {
     wolfboss: {
         level: 10,
         drops: {
-            potion: 100,      
+            dvd: 50,
+            popcorn: 50,      
         },
+        messages: ['Darkness shall embrance you!', 'Your doom is woven', 'Fear binds you', 'Your end is spun', 'The old world beckons you'],
         armorMod: 1.1,
         weaponMod: 1.6,
         hpMod: 2.0,

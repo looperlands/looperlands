@@ -74,7 +74,9 @@ const AltNames = {
     oafish33: "Tropic Pinchmarvel",
     oafish34: "Cobalt Asteroidea",
     oafish35: "Orbhead Oceantwirl",
-    oafish36: "Emerald Jellyfloat",    
+    oafish36: "Emerald Jellyfloat", 
+    //Short Destroyers
+    lateflea: ".65 Late Flea",  
 };
 
 AltNames.getAltNameFromKind = function(kind){

@@ -201,10 +201,10 @@ define(['item'], function(Item) {
         EVERPEAKMAP5:Item.extend({init:function(id){this._super(id,Types.Entities.EVERPEAKMAP5,"object");this.lootMessage="Discovered Riverbreeze District";}}),
         
         //Short Destroyers
-        DVD:Item.extend({init:function(id){this._super(id,Types.Entities.DVD,"object");this.lootMessage="Picked up a DVD";}}),
-        VHS:Item.extend({init:function(id){this._super(id,Types.Entities.VHS,"object");this.lootMessage="Picked up a VHS";}}),
-        GAME:Item.extend({init:function(id){this._super(id,Types.Entities.GAME,"object");this.lootMessage="Picked up a Game Cartridge";}}),
-        POPCORN:Item.extend({init:function(id){this._super(id,Types.Entities.POPCORN,"object");this.lootMessage="Picked up a Bag of Popcorn";}}),
+        Dvd:Item.extend({init:function(id){this._super(id,Types.Entities.DVD,"object");this.lootMessage="Picked up a DVD";}}),
+        Vhs:Item.extend({init:function(id){this._super(id,Types.Entities.VHS,"object");this.lootMessage="Picked up a VHS";}}),
+        Game:Item.extend({init:function(id){this._super(id,Types.Entities.GAME,"object");this.lootMessage="Picked up a Game Cartridge";}}),
+        Popcorn:Item.extend({init:function(id){this._super(id,Types.Entities.POPCORN,"object");this.lootMessage="Picked up a Bag of Popcorn";}}),
         // @nextItemLine@
     };
 

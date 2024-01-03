@@ -39,5 +39,7 @@
 			"length": 4,
 			"row": 8
 		}
-	}
+	},
+	"offset_x": -20,
+	"offset_y": -40
 }
