@@ -471,6 +471,9 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.LATEFLEA] = function(id) {
         return new Mobs.Lateflea(id);
     };
+    EntityFactory.builders[Types.Entities.WOLFBOSS] = function(id) {
+        return new Mobs.Wolfboss(id);
+    };  
 
     // @nextMobLine@
     //===== items ======

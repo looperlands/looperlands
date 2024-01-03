@@ -203,6 +203,7 @@ Types = {
         COBSLIMEMINT: 400021,
         //Short Destroyers
         LATEFLEA: 770001,
+        WOLFBOSS: 770002,
         
         // Armors
         FIREFOX: 20,
@@ -258,7 +259,13 @@ Types = {
         EVERPEAKMAP2: 21300043,
         EVERPEAKMAP3: 21300044,
         EVERPEAKMAP4: 21300045,
-        EVERPEAKMAP5: 21300046, // @lastidObject@
+        EVERPEAKMAP5: 21300046, 
+        
+        //Short Destroyers
+        DVD: 77000001,
+        VHS: 77000002,
+        GAME: 77000003,
+        POPCORN: 77000004,// @lastidObject@
         //@nextIdLineObject@
         
         // NPCs
@@ -4764,6 +4771,7 @@ var kinds = {
     cobcobane: [Types.Entities.COBCOBANE, "mob"],
     //Short Destroyers
     lateflea: [Types.Entities.LATEFLEA, "mob"],
+    wolfboss: [Types.Entities.WOLFBOSS, "mob"],
 
     cobogre: [Types.Entities.COBOGRE, "mob"],
     sword1: [Types.Entities.SWORD1, "weapon"],

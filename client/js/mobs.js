@@ -2147,6 +2147,20 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
 
+        Wolfboss: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.WOLFBOSS);
+                this.moveSpeed = 300;
+                this.idleSpeed = 100;
+                this.atkSpeed = 50;                
+                this.shadowOffsetY = -2;
+                this.isAggressive = true;
+                this.aggroRange = 3;
+                this.deathAnimated = true;
+                this.title = "Time To Test Your Might!";
+            }
+        }),
+
         // @nextMobLine@
     };
     return Mobs;

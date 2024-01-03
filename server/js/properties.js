@@ -1009,12 +1009,25 @@ var Properties = {
         respawnDelay: 180000
     },
 
+    //Short Destroyers
     lateflea: {
         level: 5,
         drops: {
             potion: 50,
         },
-    },  
+    }, 
+
+    wolfboss: {
+        level: 10,
+        drops: {
+            potion: 100,      
+        },
+        armorMod: 1.1,
+        weaponMod: 1.6,
+        hpMod: 2.0,
+        xp: 1200,  
+        respawnDelay: 30000
+    },
 
     //Field effects
     magcrack: {
