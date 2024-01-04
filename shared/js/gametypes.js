@@ -340,7 +340,8 @@ Types = {
         KEEPERARIADNE: 34000050, 
         MAYOROSWALD: 34000051, 
         NEWCOMERSILAS: 34000052, 
-        PATRONCORA: 34000053, // @lastidCharacter@
+        PATRONCORA: 34000053,
+        BORAC: 34000054, // @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -4948,6 +4949,7 @@ var kinds = {
     mayoroswald: [Types.Entities.MAYOROSWALD, "npc"],
     newcomersilas: [Types.Entities.NEWCOMERSILAS, "npc"],
     patroncora: [Types.Entities.PATRONCORA, "npc"],
+    BORAC: [Types.Entities.BORAC, "mob"],
     // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],
