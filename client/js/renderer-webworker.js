@@ -25,6 +25,7 @@ class Sprite {
         this.image = createImageBitmap(blob).then((img) => {
             self.image = img;
             self.isLoaded = true;
+            postMessage({"type": "loadedSprite", "id": self.id});
         });
     }
 
