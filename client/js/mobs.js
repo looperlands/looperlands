@@ -2133,7 +2133,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
 
-        BORAC: Mob.extend({ 
+        Borac: Mob.extend({ 
             init: function(id) { 
                 this._super(id, Types.Entities.BORAC); 
                 this.moveSpeed = 350; 

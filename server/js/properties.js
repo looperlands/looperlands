@@ -1009,6 +1009,12 @@ var Properties = {
         respawnDelay: 180000
     },
 
+    borac: {
+        level: 6,
+        xp: 100,
+        hpMod: 1
+    },
+
     //Field effects
     magcrack: {
         aoe: {
