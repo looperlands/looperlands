@@ -77,6 +77,7 @@ const AltNames = {
     oafish36: "Emerald Jellyfloat", 
     //Short Destroyers
     lateflea: ".65 Late Flea",  
+    wolfboss: "Victor Henry Stevenson"
 };
 
 AltNames.getAltNameFromKind = function(kind){
