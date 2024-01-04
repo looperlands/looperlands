@@ -45,6 +45,8 @@ define(['jquery', 'animation', 'sprites'], function($, Animation, sprites) {
 				const ctx = canvas.getContext('2d');
 				ctx.drawImage(self.image, 0, 0);
 				let dataURL = canvas.toDataURL();
+				delete ctx;
+				delete canvas;
     		    
 				self.renderWorker.postMessage({
 					"type": "loadSprite",
@@ -62,7 +64,7 @@ define(['jquery', 'animation', 'sprites'], function($, Animation, sprites) {
                 }
         	};
         },
-    
+
         createAnimations: function() {
             var animations = {};
         
