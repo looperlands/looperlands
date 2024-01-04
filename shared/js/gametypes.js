@@ -256,7 +256,11 @@ Types = {
         EVERPEAKMAP2: 21300043,
         EVERPEAKMAP3: 21300044,
         EVERPEAKMAP4: 21300045,
-        EVERPEAKMAP5: 21300046, // @lastidObject@
+        EVERPEAKMAP5: 21300046, 
+        COFFEEBEANS: 21300047, 
+        CRYSTAL: 21300048, 
+        TRINKET: 21300049, 
+        WILDFLOWERS: 21300050, // @lastidObject@
         //@nextIdLineObject@
         
         // NPCs
@@ -328,10 +332,7 @@ Types = {
         CITYSIGN7: 34000042,
         CITYSIGN8: 34000043,
         CITYSIGN9: 34000044,
-        CITYSIGN10: 34000045,
-        //mycupbloody
-        //mobs
-        BORAC: 84000001, // @lastidCharacter@
+        CITYSIGN10: 34000045, // @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -4604,7 +4605,11 @@ Types = {
         NFT_a98b4ec521b67a4b2355d16d0e5037c0b5309731d5d5fe22f9fdcc27f43b5b8d: 4324,
         NFT_abbae0efbe16fafb67f4e845b3678082e3eb92e26e6ac5dfcab348aeb1b83830: 4325,
         NFT_d6ce4890cdacd8b9dd53cefd3e6011a7930ce354ba13e1678d9d03456b2cc1ca: 4326,
-        NFT_edc99a182c776db43eddfa8bfeee64c8e5e4462f5a3a36a3d0d19549a56db293: 4327 // @lastid@
+        NFT_edc99a182c776db43eddfa8bfeee64c8e5e4462f5a3a36a3d0d19549a56db293: 4327,
+        NFT_21cd639387806d002edb556d24356a981f52ced2092543c96c6a046170fc026b: 4328,
+        NFT_593676686ca26d6dec2929e72b7bb808b252ec5bc008c8df18c315d474f21986: 4329,
+        NFT_85d0edf755d7ba780e451f9a785c159f66b2695ed76254fb4431a3929169ab89: 4330,
+        NFT_a92f99a5f52cb476b1a70979d2574d61b5df5e3ed83666aa5bd454cd94896081: 4331 // @lastid@
         //@nextIdLine@
     },
     
@@ -4836,6 +4841,10 @@ var kinds = {
     EVERPEAKMAP3: [Types.Entities.EVERPEAKMAP3, "object"],
     EVERPEAKMAP4: [Types.Entities.EVERPEAKMAP4, "object"],
     EVERPEAKMAP5: [Types.Entities.EVERPEAKMAP5, "object"],
+    coffeebeans: [Types.Entities.COFFEEBEANS, "object"],
+    crystal: [Types.Entities.CRYSTAL, "object"],
+    trinket: [Types.Entities.TRINKET, "object"],
+    wildflowers: [Types.Entities.WILDFLOWERS, "object"],
     // @nextObjectLine@
 
     guard: [Types.Entities.GUARD, "npc"],
@@ -4893,7 +4902,10 @@ var kinds = {
     VILLAGESIGN8: [Types.Entities.VILLAGESIGN8, "npc"],
     VILLAGESIGN9: [Types.Entities.VILLAGESIGN9, "npc"],
     cobellen: [Types.Entities.COBELLEN, "npc"],
-    cobjohnny: [Types.Entities.COBJOHNNY, "npc"],
+    cobfern: [Types.Entities.COBFERN, "npc"],
+    cobelliott: [Types.Entities.COBELLIOTT, "npc"],
+    cobmauve: [Types.Entities.COBMAUVE, "npc"],
+    cobashley: [Types.Entities.COBASHLEY, "npc"],
     VILLAGESIGN11: [Types.Entities.VILLAGESIGN11, "npc"],
     VILLAGESIGN12: [Types.Entities.VILLAGESIGN12, "npc"],
     VILLAGESIGN13: [Types.Entities.VILLAGESIGN13, "npc"],
@@ -4924,11 +4936,6 @@ var kinds = {
     CITYSIGN8: [Types.Entities.CITYSIGN8, "npc"],
     CITYSIGN9: [Types.Entities.CITYSIGN9, "npc"],
     CITYSIGN10: [Types.Entities.CITYSIGN10, "npc"],
-
-    //mycupbloody
-
-    //mobs
-    BORAC: [Types.Entities.BORAC, "mob"],
     // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],
@@ -9193,6 +9200,10 @@ var kinds = {
     NFT_abbae0efbe16fafb67f4e845b3678082e3eb92e26e6ac5dfcab348aeb1b83830: [Types.Entities.NFT_abbae0efbe16fafb67f4e845b3678082e3eb92e26e6ac5dfcab348aeb1b83830, "armor"],
     NFT_d6ce4890cdacd8b9dd53cefd3e6011a7930ce354ba13e1678d9d03456b2cc1ca: [Types.Entities.NFT_d6ce4890cdacd8b9dd53cefd3e6011a7930ce354ba13e1678d9d03456b2cc1ca, "armor"],
     NFT_edc99a182c776db43eddfa8bfeee64c8e5e4462f5a3a36a3d0d19549a56db293: [Types.Entities.NFT_edc99a182c776db43eddfa8bfeee64c8e5e4462f5a3a36a3d0d19549a56db293, "armor"],
+    NFT_21cd639387806d002edb556d24356a981f52ced2092543c96c6a046170fc026b: [Types.Entities.NFT_21cd639387806d002edb556d24356a981f52ced2092543c96c6a046170fc026b, "armor"],
+    NFT_593676686ca26d6dec2929e72b7bb808b252ec5bc008c8df18c315d474f21986: [Types.Entities.NFT_593676686ca26d6dec2929e72b7bb808b252ec5bc008c8df18c315d474f21986, "armor"],
+    NFT_85d0edf755d7ba780e451f9a785c159f66b2695ed76254fb4431a3929169ab89: [Types.Entities.NFT_85d0edf755d7ba780e451f9a785c159f66b2695ed76254fb4431a3929169ab89, "armor"],
+    NFT_a92f99a5f52cb476b1a70979d2574d61b5df5e3ed83666aa5bd454cd94896081: [Types.Entities.NFT_a92f99a5f52cb476b1a70979d2574d61b5df5e3ed83666aa5bd454cd94896081, "armor"],
     // @nextSpriteLine@
 
     
