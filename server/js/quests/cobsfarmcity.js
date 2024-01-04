@@ -1,45 +1,57 @@
 Types = require("../../../shared/js/gametypes");
-///MAIN QUESTS///
 quests = [
-    { //DONE
-        id: "COLLECT_CLOVERS_TEST",
-        name: "I need to get lucky again...",
-        longText: "Please mista help me with finding 100 clovers.",
-        startText: "What is up fam!",
-        endText: "I am going to be so lucky now. Thank you for the help 😊",
+    {
+        id: "WILLOW_FLOWERS",
+        name: "Flowers for Willowdale",
+        startText: "Our town square needs sprucing up for the coming festival.",
+        longText: "Could you gather 15 wildflowers? The town square is the heart of Willowdale Crossing, and we want it to look its best. These flowers will bring life and color to our gathering place, making the festival a truly memorable event.",
+        endText: "These are perfect! Willowdale Crossing will look vibrant and welcoming, thanks to you.",
         eventType: "LOOT_ITEM",
-        npc: Types.Entities.COBASHLEY,
-        target: Types.Entities.COBCLOVER,
-        amount: 20,
-        level: 3,
-        medal: Types.Medals.HEARTH
+        npc: Types.Entities.MAYOROSWALD,
+        target: Types.Entities.WILDFLOWERS,
+        amount: 30,
+        level: 5,
+        medal: Types.Medals.TREE
     },
-    { //DONE
-        id: "KILL_GREEN_SLIMES",
-        name: "Kill the Green Slimes!",
-        startText: "You look like a killer!",
-        longText:  "Please help us we need to kill the green slimes.",
-        endText: "You killed them nice!",
-        eventType: "KILL_MOB",
-        npc: Types.Entities.COBMAUVE,
-        target: Types.Entities.COBSLIMEGREEN,
-        amount: 1,
-        level: 11,
-        medal: Types.Medals.HEARTH
+    {
+        id: "CAFEBEAN_HUNT",
+        name: "Hunt for the Perfect Bean",
+        startText: "I'm experimenting with coffee blends and need fresh beans.",
+        longText: "The grove nearby is known for its exquisite coffee beans. If you could fetch 10 coffee beans, it would greatly aid my quest to create the ultimate coffee blend. It's an essential part of the café experience, and I’m committed to finding the perfect taste.",
+        endText: "These beans look excellent! I can't wait to taste the brew they'll make.",
+        eventType: "LOOT_ITEM",
+        npc: Types.Entities.PATRONCORA,
+        target: Types.Entities.COFFEEBEANS,
+        amount: 10,
+        level: 5,
+        medal: Types.Medals.TREE
     },
-//     { //DONE
-//         id: "OA_QUEST_2",
-//         name: "Boar's Hide and Seek",
-//         startText: "Ah, a new face!",
-//         longText: "You're the one who helped Guard Aleron with the slimes, aren't you? I'm in desperate need of assistance. The boars around the village, usually a source of hides for my work, have become aggressive and are hindering my ability to gather materials. If you could take some down and bring me their hides, it would be of great help to both me and the village. We need to ensure we're well-equipped, especially now with King RC missing and uncertainty clouding our lands.",
-//         endText: "Boar hides collected!- Go see Eldrin!",
-//         eventType: "LOOT_ITEM",
-//         npc: Types.Entities.ELARA,
-//         target: Types.Entities.BOARHIDE,
-//         amount: 30,
-//         level: 2,
-//         medal: Types.Medals.HEARTH
-//     },
+    {
+        id: "HOUSEWARMING_GIFTS",
+        name: "Gathering Housewarming Gifts",
+        startText: "I want to make a good impression.",
+        longText: "As a newcomer to Willowdale Crossing, I'm eager to integrate into the community. I thought of collecting unique trinkets from around town to gift my neighbors. Could you help me gather 8 trinkets? It would mean a lot to me and help break the ice with my new neighbors.",
+        endText: "These trinkets are wonderful! They will surely endear me to my new neighbors.",
+        eventType: "LOOT_ITEM",
+        npc: Types.Entities.NEWCOMERSILAS,
+        target: Types.Entities.TRINKET,
+        amount: 8,
+        level: 5,
+        medal: Types.Medals.TREE
+    },
+    {
+        id: "PORTAL_CRYSTALS",
+        name: "Crystals for the Portal",
+        startText: "The portals' magic is waning.",
+        longText: "Our portals are vital for travel and communication, but their power is diminishing. I need 5 pure crystals to rejuvenate their magic. These crystals are found in the depths where slimes gather. Restoring the portals' power is crucial for maintaining our connection with the outside world.",
+        endText: "With these crystals, the portals will hum with energy once more. You have my gratitude.",
+        eventType: "LOOT_ITEM",
+        npc: Types.Entities.KEEPERARIADNE,
+        target: Types.Entities.CRYSTAL,
+        amount: 10,
+        level: 7,
+        medal: Types.Medals.TREE
+    },
 
 //     { //DONE
 //         id: "OA_QUEST_3",

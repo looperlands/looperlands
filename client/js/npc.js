@@ -369,6 +369,22 @@ define(['character'], function (Character) {
             "You look like you could use a break.", 
             "The wilderness is getting more dangerous by the day."
         ],
+
+        "keeperariadne": [
+            "Welcome, traveler!", "These portals are the gateways to familiar lands afar.", "Step through and find yourself where you need to be in mere moments."
+        ],
+
+        "mayoroswald": [
+            "Greetings, traveler.", "Our town thrives on the bravery of adventurers like you.", "Can you help us with our Slime predicament?"
+        ],
+
+        "newcomersilas": [
+            "Willowdale Crossing seems like a fine place to call home, doesn't it?", "If only I could decide on the right spot.", "What do you think of the area near the market?"
+        ],
+
+        "patroncora": [
+            "This is the best spot in town for a cup of joe and the latest gossip."
+        ],
         // @nextNPCLine@
     };
 
