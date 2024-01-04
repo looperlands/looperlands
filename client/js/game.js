@@ -149,6 +149,8 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 "CITYSIGN9",
                                 "CITYSIGN10",
                                 "cobelliott",
+                                "cobfern",
+                                "cobmauve",
                                 
                                 //mycupbloody mob
                                 "Borac",
