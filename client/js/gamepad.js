@@ -74,6 +74,16 @@ class GamePadListener {
                               keyboard: true});
             change = false;    
         }
+
+        // Check if the left button on the D-pad is pressed
+        if (this.gamepad.buttons[14].pressed) {
+            this.simulateKeyPress(',', 'Comma'); //Previous Weapon
+        }
+
+        // Check if the right button on the D-pad is pressed
+        if (this.gamepad.buttons[15].pressed) {
+            this.simulateKeyPress('.', 'Period'); //Next Weapon
+        }
               
         // Process the gamepad buttons here (if needed)
         /*
@@ -84,4 +94,15 @@ class GamePadListener {
         }
         */
     }
+    
+    simulateKeyPress(key, code) {
+        const event = new KeyboardEvent('keydown', {
+            bubbles: true,
+            cancelable: true,
+            key: key,
+            code: code
+        });
+        document.dispatchEvent(event);
+    }
+    
 }
