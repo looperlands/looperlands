@@ -151,6 +151,10 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 "cobelliott",
                                 "cobfern",
                                 "cobmauve",
+                                "keeperariadne",
+                                "patroncora",
+                                "mayoroswald",
+                                "newcomersilas",
                                 // @nextCharacterLine@
                                 "item-BOARHIDE",
                                 "item-THUDKEY",

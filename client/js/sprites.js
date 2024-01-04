@@ -4898,6 +4898,10 @@ define(['text!../sprites/agent.json',
         'text!../sprites/cobelliott.json',
         'text!../sprites/cobfern.json',
         'text!../sprites/cobmauve.json',
+        'text!../sprites/keeperariadne.json',
+        'text!../sprites/mayoroswald.json',
+        'text!../sprites/patroncora.json',
+        'text!../sprites/newcomersilas.json',
         // @nextSpriteImport@
     ], function() {
     
