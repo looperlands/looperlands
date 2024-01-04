@@ -328,8 +328,17 @@ Types = {
         CITYSIGN7: 34000042,
         CITYSIGN8: 34000043,
         CITYSIGN9: 34000044,
-        CITYSIGN10: 34000045, // @lastidCharacter@
+        CITYSIGN10: 34000045,
+         // @lastidCharacter@
         //@nextIdLineCharacter@
+
+        //Mobs
+        BORAC: 84000001,
+
+        // @lastidObject@
+
+
+        //@nextIdLineObject@
         // Weapons
         SWORD1: 60,
         SWORD2: 61,
@@ -4771,6 +4780,7 @@ var kinds = {
     cobcoblin: [Types.Entities.COBCOBLIN, "mob"],
     cobcobane: [Types.Entities.COBCOBANE, "mob"],
     cobogre: [Types.Entities.COBOGRE, "mob"],
+    BORAC: [Types.Entities.BORAC, "mob"],
     sword1: [Types.Entities.SWORD1, "weapon"],
     sword2: [Types.Entities.SWORD2, "weapon"],
     axe: [Types.Entities.AXE, "weapon"],
@@ -4921,6 +4931,7 @@ var kinds = {
     CITYSIGN8: [Types.Entities.CITYSIGN8, "npc"],
     CITYSIGN9: [Types.Entities.CITYSIGN9, "npc"],
     CITYSIGN10: [Types.Entities.CITYSIGN10, "npc"],
+    
     // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],

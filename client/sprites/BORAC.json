@@ -1,0 +1,47 @@
+{
+  "id": "BORAC",
+  "width": 48,
+  "height": 48,
+  "animations": {
+    "death": {
+      "length": 3,
+      "row": 0
+    },
+    "atk_right": {
+      "length": 3,
+      "row": 2
+    },
+    "walk_right": {
+      "length": 3,
+      "row": 2
+    },
+    "idle_right": {
+      "length": 3,
+      "row": 2
+    },
+    "atk_up": {
+      "length": 3,
+      "row": 3
+    },
+    "walk_up": {
+      "length": 3,
+      "row": 3
+    },
+    "idle_up": {
+      "length": 3,
+      "row": 3
+    },
+    "atk_down": {
+      "length": 3,
+      "row": 0
+    },
+    "walk_down": {
+      "length": 3,
+      "row": 0
+    },
+    "idle_down": {
+      "length": 3,
+      "row": 0
+    }
+  }
+}
