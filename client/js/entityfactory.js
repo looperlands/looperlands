@@ -468,6 +468,8 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     };
 
 
+    EntityFactory.builders[Types.Entities.BORAC]=function(id){
+        return new Mobs.BORAC(id);};
     // @nextMobLine@
     //===== items ======
  

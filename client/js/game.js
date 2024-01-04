@@ -155,6 +155,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 "patroncora",
                                 "mayoroswald",
                                 "newcomersilas",
+                                "BORAC",
                                 // @nextCharacterLine@
                                 "item-BOARHIDE",
                                 "item-THUDKEY",
