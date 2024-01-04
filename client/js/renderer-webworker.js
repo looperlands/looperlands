@@ -8,46 +8,21 @@ let sprites = {};
 let hasLoadedFont = false;
 
 class Sprite {
-    constructor(id, dataURL, animationData, width, height, offsetX, offsetY) {
+    constructor(id, src, animationData, width, height, offsetX, offsetY) {
         this.id = id;
-        this.dataURL = dataURL;
+        this.src = src;
         this.animationData = animationData;
         this.width = width;
         this.height = height;
         this.offsetX = offsetX;
         this.offsetY = offsetY;
 
-
-        let base64Response = dataURL.replace(/^data:image\/[a-z]+;base64,/, "");
-        let blob = this.base64ToBlob(base64Response, "image/png");
-
         let self = this;
-        this.image = createImageBitmap(blob).then((img) => {
+        loadImg(src).then((img) => {
             self.image = img;
             self.isLoaded = true;
             postMessage({"type": "loadedSprite", "id": self.id});
         });
-    }
-
-    base64ToBlob(base64, mime) {
-        mime = mime || '';
-        const sliceSize = 1024;
-        let byteChars = atob(base64);
-        let byteArrays = [];
-
-        for (let offset = 0, len = byteChars.length; offset < len; offset += sliceSize) {
-            let slice = byteChars.slice(offset, offset + sliceSize);
-
-            let byteNumbers = new Array(slice.length);
-            for (let i = 0; i < slice.length; i++) {
-                byteNumbers[i] = slice.charCodeAt(i);
-            }
-
-            let byteArray = new Uint8Array(byteNumbers);
-            byteArrays.push(byteArray);
-        }
-
-        return new Blob(byteArrays, {type: mime});
     }
 }
 
@@ -195,7 +170,7 @@ onmessage = (e) => {
         ctx.imageSmoothingEnabled  = false;
         contexes[id] = ctx;
     } else if (e.data.type === "loadSprite") {
-        let sprite = new Sprite(e.data.id, e.data.dataURL, e.data.animationData, e.data.width, e.data.height, e.data.offsetX, e.data.offsetY);
+        let sprite = new Sprite(e.data.id, e.data.src, e.data.animationData, e.data.width, e.data.height, e.data.offsetX, e.data.offsetY);
         sprites[sprite.id] = sprite;
     } else if (e.data.type === "idle") {
         postMessage({ type: "rendered" });

@@ -31,7 +31,7 @@ define(['jquery', 'animation', 'sprites'], function($, Animation, sprites) {
     	},
 
         load: function() {
-        	var self = this;
+			let self = this;
 
         	this.image = new Image();
         	this.image.src = this.filepath;
@@ -39,19 +39,10 @@ define(['jquery', 'animation', 'sprites'], function($, Animation, sprites) {
 
         	this.image.onload = function() {
 
-				const canvas = document.createElement('canvas');
-				canvas.width = self.image.width;
-				canvas.height = self.image.height;
-				const ctx = canvas.getContext('2d');
-				ctx.drawImage(self.image, 0, 0);
-				let dataURL = canvas.toDataURL();
-				delete ctx;
-				delete canvas;
-    		    
 				self.renderWorker.postMessage({
 					"type": "loadSprite",
 					"id": self.id,
-					"dataURL": dataURL,
+					"src": self.image.src,
 					"animationData": self.animationData,
 					"width": self.width,
 					"height": self.height,
