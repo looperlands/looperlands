@@ -256,7 +256,11 @@ Types = {
         EVERPEAKMAP2: 21300043,
         EVERPEAKMAP3: 21300044,
         EVERPEAKMAP4: 21300045,
-        EVERPEAKMAP5: 21300046, // @lastidObject@
+        EVERPEAKMAP5: 21300046, 
+        COFFEEBEANS: 21300047, 
+        CRYSTAL: 21300048, 
+        TRINKET: 21300049, 
+        WILDFLOWERS: 21300050, // @lastidObject@
         //@nextIdLineObject@
         
         // NPCs
@@ -4841,6 +4845,10 @@ var kinds = {
     EVERPEAKMAP3: [Types.Entities.EVERPEAKMAP3, "object"],
     EVERPEAKMAP4: [Types.Entities.EVERPEAKMAP4, "object"],
     EVERPEAKMAP5: [Types.Entities.EVERPEAKMAP5, "object"],
+    coffeebeans: [Types.Entities.COFFEEBEANS, "object"],
+    crystal: [Types.Entities.CRYSTAL, "object"],
+    trinket: [Types.Entities.TRINKET, "object"],
+    wildflowers: [Types.Entities.WILDFLOWERS, "object"],
     // @nextObjectLine@
 
     guard: [Types.Entities.GUARD, "npc"],

@@ -1,57 +1,5 @@
 Types = require("../../../shared/js/gametypes");
-quests = [
-    {
-        id: "WILLOW_FLOWERS",
-        name: "Flowers for Willowdale",
-        startText: "Our town square needs sprucing up for the coming festival. Could you gather 15 wildflowers?",
-        endText: "These are perfect! Willowdale Crossing will look vibrant and welcoming, thanks to you.",
-        eventType: "LOOT_ITEM",
-        npc: Types.Entities.MAYOR,
-        target: Types.Entities.WILDFLOWER,
-        requiredLevel: 5,
-        amount: 15,
-        level: 6,
-        medal: Types.Medals.GARDENER
-    },
-    {
-        id: "CAFEBEAN_HUNT",
-        name: "Hunt for the Perfect Bean",
-        startText: "I'm experimenting with coffee blends and need fresh beans. Could you fetch 10 coffee beans from the nearby grove?",
-        endText: "These beans look excellent! I can't wait to taste the brew they'll make.",
-        eventType: "LOOT_ITEM",
-        npc: Types.Entities.CAFEREGULAR,
-        target: Types.Entities.COFFEEBEAN,
-        requiredLevel: 4,
-        amount: 10,
-        level: 5,
-        medal: Types.Medals.BARISTA
-    },
-    {
-        id: "HOUSEWARMING_GIFTS",
-        name: "Gathering Housewarming Gifts",
-        startText: "I want to make a good impression. Could you help me collect 8 trinkets from the town's surroundings?",
-        endText: "These trinkets are wonderful! They will surely endear me to my new neighbors.",
-        eventType: "LOOT_ITEM",
-        npc: Types.Entities.HOMEBUYER,
-        target: Types.Entities.TRINKET,
-        requiredLevel: 3,
-        amount: 8,
-        level: 4,
-        medal: Types.Medals.HOMESTEADER
-    },
-    {
-        id: "PORTAL_CRYSTALS",
-        name: "Crystals for the Portal",
-        startText: "The portals' magic is waning. I need 5 pure crystals to restore their power.",
-        endText: "With these crystals, the portals will hum with energy once more. You have my gratitude.",
-        eventType: "LOOT_ITEM",
-        npc: Types.Entities.PORTALKEEPER,
-        target: Types.Entities.CRYSTAL,
-        requiredLevel: 8,
-        amount: 5,
-        level: 10,
-        medal: Types.Medals.PORTALMASTER
-    },                
+quests = [        
     {
         id: "COB_COLLECT_LOGS",
         name: "Maintaining the campfire",

@@ -592,6 +592,10 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.EVERPEAKMAP3]=function(id){return new Items.EVERPEAKMAP3(id);};
     EntityFactory.builders[Types.Entities.EVERPEAKMAP4]=function(id){return new Items.EVERPEAKMAP4(id);};
     EntityFactory.builders[Types.Entities.EVERPEAKMAP5]=function(id){return new Items.EVERPEAKMAP5(id);};
+    EntityFactory.builders[Types.Entities.COFFEEBEANS] = function(id) { return new Items.coffeebeans(id); };
+    EntityFactory.builders[Types.Entities.CRYSTAL] = function(id) { return new Items.crystal(id); };
+    EntityFactory.builders[Types.Entities.TRINKET] = function(id) { return new Items.trinket(id); };
+    EntityFactory.builders[Types.Entities.WILDFLOWERS] = function(id) { return new Items.wildflowers(id); };
     // @nextObjectLine@
 
     //====== NPCs ======
