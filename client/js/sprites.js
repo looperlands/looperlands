@@ -4899,6 +4899,7 @@ define(['text!../sprites/agent.json',
         'text!../sprites/cobfern.json',
         'text!../sprites/cobmauve.json',
         'text!../sprites/NFT_21cd639387806d002edb556d24356a981f52ced2092543c96c6a046170fc026b.json',
+        'text!../sprites/NFT_593676686ca26d6dec2929e72b7bb808b252ec5bc008c8df18c315d474f21986.json',
         // @nextSpriteImport@
     ], function() {
     
