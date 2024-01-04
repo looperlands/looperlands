@@ -148,6 +148,11 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 "CITYSIGN8",
                                 "CITYSIGN9",
                                 "CITYSIGN10",
+
+                                //mycupbloody
+
+                                //mob
+                                "BORAC",
                                 // @nextCharacterLine@
                                 "item-BOARHIDE",
                                 "item-THUDKEY",

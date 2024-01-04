@@ -328,7 +328,10 @@ Types = {
         CITYSIGN7: 34000042,
         CITYSIGN8: 34000043,
         CITYSIGN9: 34000044,
-        CITYSIGN10: 34000045, // @lastidCharacter@
+        CITYSIGN10: 34000045,
+        //mycupbloody
+        //mobs
+        BORAC: 84000001, // @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -4921,6 +4924,11 @@ var kinds = {
     CITYSIGN8: [Types.Entities.CITYSIGN8, "npc"],
     CITYSIGN9: [Types.Entities.CITYSIGN9, "npc"],
     CITYSIGN10: [Types.Entities.CITYSIGN10, "npc"],
+
+    //mycupbloody
+
+    //mobs
+    BORAC: [Types.Entities.BORAC, "mob"],
     // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],
