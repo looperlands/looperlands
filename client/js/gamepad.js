@@ -4,6 +4,7 @@ class GamePadListener {
 
     constructor(game) {
         this.game = game;
+        this.buttonStates = new Array(16).fill(false);
 
         window.addEventListener("gamepadconnected", (event) => {
             console.log("Gamepad connected:", event.gamepad);
@@ -74,25 +75,58 @@ class GamePadListener {
                               keyboard: true});
             change = false;    
         }
-
-        // Check if the left button on the D-pad is pressed
-        if (this.gamepad.buttons[14].pressed) {
-            this.simulateKeyPress(',', 'Comma'); //Previous Weapon
-        }
-
-        // Check if the right button on the D-pad is pressed
-        if (this.gamepad.buttons[15].pressed) {
-            this.simulateKeyPress('.', 'Period'); //Next Weapon
-        }
-              
-        // Process the gamepad buttons here (if needed)
+        
         /*
+        // Process the gamepad buttons here (if needed)
         for (let i = 0; i < this.gamepad.buttons.length; i++) {
             if (this.gamepad.buttons[i].pressed) {
                 console.log(`Button ${i} is pressed`);
             }
         }
         */
+        
+        for (let i = 0; i < this.gamepad.buttons.length; i++) {
+            if (this.gamepad.buttons[i].pressed) {
+                if (!this.buttonStates[i]) {
+                    this.buttonStates[i] = true;
+                    this.handleButtonPress(i);
+                }
+            } else {
+                if (this.buttonStates[i]) {
+                    this.buttonStates[i] = false;
+                    this.simulateKeyRelease(i); 
+                }
+            }
+        }
+    }
+
+    handleButtonPress(buttonIndex) {
+        switch (buttonIndex) {
+            case 1:
+                this.simulateKeyPress('Escape', 'Escape'); // Close Windows
+                break;
+            case 3:
+                this.simulateKeyPress('z', 'KeyZ'); // Inventory
+                break;
+            case 8:
+                this.simulateKeyPress('x', 'KeyX'); // Quests
+                break;
+            case 9:
+                this.simulateKeyPress('c', 'KeyC'); // Settings
+                break;
+            case 12:
+                this.simulateKeyPress('v', 'KeyV'); // Weapon Info
+                break;
+            case 13:
+                this.simulateKeyPress('b', 'KeyB'); // Avatar Info
+                break;
+            case 14:
+                this.simulateKeyPress(',', 'Comma'); // Previous Weapon
+                break;
+            case 15:
+                this.simulateKeyPress('.', 'Period'); // Next Weapon
+                break;
+        }
     }
     
     simulateKeyPress(key, code) {
@@ -104,5 +138,15 @@ class GamePadListener {
         });
         document.dispatchEvent(event);
     }
+
+    simulateKeyRelease(key, code) {
+        const event = new KeyboardEvent('keyup', {
+            bubbles: true,
+            cancelable: true,
+            key: key,
+            code: code
+        });
+        document.dispatchEvent(event);
+    }    
     
 }
