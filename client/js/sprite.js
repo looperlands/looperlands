@@ -38,7 +38,6 @@ define(['jquery', 'animation', 'sprites'], function($, Animation, sprites) {
 			this.image.crossOrigin = "Anonymous";
 
         	this.image.onload = function() {
-        		self.isLoaded = true;
 
 				const canvas = document.createElement('canvas');
 				canvas.width = self.image.width;
