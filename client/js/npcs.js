@@ -325,9 +325,13 @@ define(['npc'], function(Npc) {
         CITYSIGN8: Npc.extend({init: function(id) {this._super(id, Types.Entities.CITYSIGN8, 1);}}),
         CITYSIGN9: Npc.extend({init: function(id) {this._super(id, Types.Entities.CITYSIGN9, 1);}}),
         CITYSIGN10: Npc.extend({init: function(id) {this._super(id, Types.Entities.CITYSIGN10, 1);}}),
-cobelliott: Npc.extend({init: function(id) {this._super(id, Types.Entities.COBELLIOTT, 1);}}),
-cobfern: Npc.extend({init: function(id) {this._super(id, Types.Entities.COBFERN, 1);}}),
-cobmauve: Npc.extend({init: function(id) {this._super(id, Types.Entities.COBMAUVE, 1);}}),
+        cobelliott: Npc.extend({init: function(id) {this._super(id, Types.Entities.COBELLIOTT, 1);}}),
+        cobfern: Npc.extend({init: function(id) {this._super(id, Types.Entities.COBFERN, 1);}}),
+        cobmauve: Npc.extend({init: function(id) {this._super(id, Types.Entities.COBMAUVE, 1);}}),
+        keeperariadne: Npc.extend({init: function(id) {this._super(id, Types.Entities.KEEPERARIADNE, 1);}}),
+        mayoroswald: Npc.extend({init: function(id) {this._super(id, Types.Entities.MAYOROSWALD, 1);}}),
+        newcomersilas: Npc.extend({init: function(id) {this._super(id, Types.Entities.NEWCOMERSILAS, 1);}}),
+        patroncora: Npc.extend({init: function(id) {this._super(id, Types.Entities.PATRONCORA, 1);}}),
         // @nextNPCLine@
     };
     

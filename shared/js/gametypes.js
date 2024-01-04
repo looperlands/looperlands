@@ -256,7 +256,11 @@ Types = {
         EVERPEAKMAP2: 21300043,
         EVERPEAKMAP3: 21300044,
         EVERPEAKMAP4: 21300045,
-        EVERPEAKMAP5: 21300046, // @lastidObject@
+        EVERPEAKMAP5: 21300046, 
+        COFFEEBEANS: 21300047, 
+        CRYSTAL: 21300048, 
+        TRINKET: 21300049, 
+        WILDFLOWERS: 21300050, // @lastidObject@
         //@nextIdLineObject@
         
         // NPCs
@@ -332,7 +336,11 @@ Types = {
         COBASHLEY: 34000046,
         COBELLIOTT: 34000047,
         COBMAUVE: 34000048,
-        COBFERN: 34000049, // @lastidCharacter@
+        COBFERN: 34000049, 
+        KEEPERARIADNE: 34000050, 
+        MAYOROSWALD: 34000051, 
+        NEWCOMERSILAS: 34000052, 
+        PATRONCORA: 34000053, // @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -4841,6 +4849,10 @@ var kinds = {
     EVERPEAKMAP3: [Types.Entities.EVERPEAKMAP3, "object"],
     EVERPEAKMAP4: [Types.Entities.EVERPEAKMAP4, "object"],
     EVERPEAKMAP5: [Types.Entities.EVERPEAKMAP5, "object"],
+    coffeebeans: [Types.Entities.COFFEEBEANS, "object"],
+    crystal: [Types.Entities.CRYSTAL, "object"],
+    trinket: [Types.Entities.TRINKET, "object"],
+    wildflowers: [Types.Entities.WILDFLOWERS, "object"],
     // @nextObjectLine@
 
     guard: [Types.Entities.GUARD, "npc"],
@@ -4932,6 +4944,10 @@ var kinds = {
     CITYSIGN8: [Types.Entities.CITYSIGN8, "npc"],
     CITYSIGN9: [Types.Entities.CITYSIGN9, "npc"],
     CITYSIGN10: [Types.Entities.CITYSIGN10, "npc"],
+    keeperariadne: [Types.Entities.KEEPERARIADNE, "npc"],
+    mayoroswald: [Types.Entities.MAYOROSWALD, "npc"],
+    newcomersilas: [Types.Entities.NEWCOMERSILAS, "npc"],
+    patroncora: [Types.Entities.PATRONCORA, "npc"],
     // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],

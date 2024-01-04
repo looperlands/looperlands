@@ -1026,6 +1026,18 @@ var Properties = {
     },
 
     //Items
+    wildflowers: {
+        respawnDelay: 60000,
+    },
+    trinket: {
+        respawnDelay: 60000,
+    },
+    crystal: {
+        respawnDelay: 60000,
+    },
+    coffeebeans: {
+        respawnDelay: 60000,
+    },
     coblog: {
         respawnDelay: 60000,
     }

@@ -83,6 +83,10 @@ define(['text!../sprites/agent.json',
         'text!../sprites/item-EVERPEAKMAP3.json',
         'text!../sprites/item-EVERPEAKMAP4.json',
         'text!../sprites/item-EVERPEAKMAP5.json',
+        'text!../sprites/item-coffeebeans.json',
+        'text!../sprites/item-crystal.json',
+        'text!../sprites/item-trinket.json',
+        'text!../sprites/item-wildflowers.json',
         // @nextObjectImport@
         'text!../sprites/king.json',
         'text!../sprites/king2.json',
@@ -4902,6 +4906,10 @@ define(['text!../sprites/agent.json',
         'text!../sprites/NFT_593676686ca26d6dec2929e72b7bb808b252ec5bc008c8df18c315d474f21986.json',
         'text!../sprites/NFT_85d0edf755d7ba780e451f9a785c159f66b2695ed76254fb4431a3929169ab89.json',
         'text!../sprites/NFT_a92f99a5f52cb476b1a70979d2574d61b5df5e3ed83666aa5bd454cd94896081.json',
+        'text!../sprites/keeperariadne.json',
+        'text!../sprites/mayoroswald.json',
+        'text!../sprites/patroncora.json',
+        'text!../sprites/newcomersilas.json',
         // @nextSpriteImport@
     ], function() {
     
