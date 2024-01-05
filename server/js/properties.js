@@ -1011,8 +1011,9 @@ var Properties = {
 
     BORAC: {
         level: 6,
-        xp: 100,
-        
+        drops: {
+            potion: 80,
+        },
     },
 
     //Field effects
