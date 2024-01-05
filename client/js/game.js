@@ -5590,7 +5590,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
                 if(!self.storage.hasAlreadyPlayed()) {
                     self.storage.initPlayer(self.player.name);
-                    self.storage.savePlayer(self.renderer.getPlayerImage(),
+                    self.storage.savePlayer(undefined,
                                             self.player.getSpriteName(),
                                             self.player.getWeaponName());
                     self.showNotification("Welcome to LooperLands!");

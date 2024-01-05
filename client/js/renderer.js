@@ -830,43 +830,6 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         },
     
-        getPlayerImage: function() {
-            var canvas = document.createElement('canvas'),
-    	        ctx = canvas.getContext('2d'),
-    	        os = this.upscaledRendering ? 1 : this.scale,
-    	        player = this.game.player,
-    	        sprite = player.getArmorSprite(),
-    	        spriteAnim = sprite.animationData["idle_down"],
-    	        // character
-    	        row = spriteAnim.row,
-                w = sprite.width * os,
-                h = sprite.height * os,
-    	        y = row * h,
-    	        // weapon
-    	        weapon = this.game.sprites[this.game.player.getWeaponName()],
-    	        ww = weapon.width * os,
-    	        wh = weapon.height * os,
-    	        wy = wh * row,
-    	        offsetX = (weapon.offsetX - sprite.offsetX) * os,
-    	        offsetY = (weapon.offsetY - sprite.offsetY) * os,
-    	        // shadow
-    	        shadow = this.game.shadows["small"],
-    	        sw = shadow.width * os,
-    	        sh = shadow.height * os,
-    	        ox = -sprite.offsetX * os;
-    	        oy = -sprite.offsetY * os;
-	    
-    	    canvas.width = w;
-    	    canvas.height = h;
-	    
-    	    ctx.clearRect(0, 0, w, h);
-    	    ctx.drawImage(shadow.image, 0, 0, sw, sh, ox, oy, sw, sh);
-    	    ctx.drawImage(sprite.image, 0, y, w, h, 0, 0, w, h);
-            ctx.drawImage(weapon.image, 0, wy, ww, wh, offsetX, offsetY, ww, wh);
-        
-            return canvas.toDataURL("image/png");
-        },
-    
         renderStaticCanvases: function() {
             this.redrawTerrain = true;
         },
