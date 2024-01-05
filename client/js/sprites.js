@@ -4912,6 +4912,7 @@ define(['text!../sprites/agent.json',
         'text!../sprites/patroncora.json',
         'text!../sprites/newcomersilas.json',
         'text!../sprites/NFT_31f7785476de522d52bdf566021c9cf0dfff9b66ff65013fc5a601c181cd0994.json',
+        'text!../sprites/NFT_4822b4c78781564c603a33a809d78e8ae96351abacca828a057dd097d492dacf.json',
         // @nextSpriteImport@
     ], function() {
     
