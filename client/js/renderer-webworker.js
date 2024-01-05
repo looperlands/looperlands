@@ -22,8 +22,6 @@ class Sprite {
         let self = this;
         loadImg(this.src).then((img) => {
             self.image = img;
-            self.isLoaded = true;
-            postMessage({"type": "loadedSprite", "id": self.id});
         });
     }
 }
@@ -173,7 +171,6 @@ onmessage = (e) => {
         contexes[id] = ctx;
     } else if (e.data.type === "loadSprite") {
         let sprite = new Sprite(e.data.id, e.data.src, e.data.animationData, e.data.width, e.data.height, e.data.offsetX, e.data.offsetY);
-        sprite.load();
         sprites[sprite.id] = sprite;
     } else if (e.data.type === "idle") {
         postMessage({ type: "rendered" });
@@ -308,7 +305,7 @@ function drawEntities(drawEntitiesData) {
             const {id, sx, sy, sW, sH, dx, dy, dW, dH} = drawData;
 
             let sprite = sprites[id];
-            if (sprite && sprite.isLoaded === true) {
+            if (sprite) {
                 try {
                     ctx.drawImage(sprite.image, sx, sy, sW, sH, dx, dy, dW, dH);
                 } catch (e) {

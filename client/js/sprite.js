@@ -37,11 +37,12 @@ define(['jquery', 'animation', 'sprites'], function($, Animation, sprites) {
 				this.image = new Image();
 				this.image.src = this.filepath;
 				this.image.crossOrigin = "Anonymous";
-
 				this.image.onload = function() {
 					self.sendToWorker();
+					self.isLoaded = true;
 				};
 			} else {
+				this.isLoaded = true;
 				self.sendToWorker();
 			}
         },
