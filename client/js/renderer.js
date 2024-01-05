@@ -56,8 +56,6 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             this.worker.addEventListener("message", (e) => {
                 if (e.data.type === "rendered") {
                     self.game.tick();
-                } else if (e.data.type === "loadedSprite") {
-                    self.game.sprites[e.data.id].isLoaded = true;
                 }
             });
         },
