@@ -51,10 +51,10 @@ class KeyBoardHandler {
                 this.app.toggleSettings();
                 break;
             case 'v':
-                this.app.toggleWeaponInfo();
+                this.app.toggleWeaponInfo(event);
                 break;
             case 'b':
-                this.app.toggleAvatarInfo();
+                this.app.toggleAvatarInfo(event);
                 break;
         }
     }
