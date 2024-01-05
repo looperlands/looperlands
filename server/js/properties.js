@@ -1009,10 +1009,10 @@ var Properties = {
         respawnDelay: 180000
     },
 
-    borac: {
+    BORAC: {
         level: 6,
         xp: 100,
-        hpMod: 1
+        
     },
 
     //Field effects
