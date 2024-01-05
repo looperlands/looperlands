@@ -102,9 +102,6 @@ class GamePadListener {
 
     handleButtonPress(buttonIndex) {
         switch (buttonIndex) {
-            case 1:
-                this.simulateKeyPress('Escape', 'Escape'); // Close Windows
-                break;
             case 3:
                 this.simulateKeyPress('z', 'KeyZ'); // Inventory
                 break;

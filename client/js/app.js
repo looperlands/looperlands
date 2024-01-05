@@ -548,6 +548,16 @@ define(['jquery', 'storage'], function ($, Storage) {
             }
         },
 
+        isInventoryVisible: false,
+
+        toggleInventory: function () {
+            if (this.isInventoryVisible) {
+                this.hideInventory();
+            } else {
+                this.showInventory();
+            }
+        },
+
         showInventory: function () {
             _this = this;
 
@@ -702,6 +712,7 @@ define(['jquery', 'storage'], function ($, Storage) {
             }).catch(function(error) {
                 console.error(error);
             });
+            this.isInventoryVisible = true;
         },
 
         hideInventory: function () {
@@ -710,6 +721,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                 $('body').addClass('death');
             }
             $('#inventorybutton').removeClass('active');
+            this.isInventoryVisible = false;
         },
 
         toggleSettings: function () {

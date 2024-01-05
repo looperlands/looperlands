@@ -39,10 +39,10 @@ class KeyBoardHandler {
             this.keyCallbacks[event.code]();
         }
 
-        // New keyboard shortcuts
+        // Keyboard shortcuts
         switch (key) {
             case 'z':
-                this.app.showInventory();
+                this.app.toggleInventory();
                 break;
             case 'x':
                 this.app.toggleAchievements();
