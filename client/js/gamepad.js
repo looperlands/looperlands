@@ -34,6 +34,7 @@ class GamePadListener {
         // Get the latest state of the gamepad
         this.gamepad = navigator.getGamepads()[this.gamepad.index];
 
+        /*
         // Threshold for considering an input as a directional movement
         const threshold = 0.5;
 
@@ -64,6 +65,33 @@ class GamePadListener {
         } else if (this.gamepad.axes[1] > threshold) {
             //console.log('Left stick moved down (S)');
             keys.s = 1;
+            change = true;
+        }
+        */
+
+        // Dead zone threshold
+        const threshold = 0.2;
+
+        let keys = {
+            a: 0,
+            d: 0,
+            w: 0,
+            s: 0
+        };
+
+        let change = false;
+
+        // Normalize axis values and apply dead zone
+        let horizontal = Math.abs(this.gamepad.axes[0]) > threshold ? Math.sign(this.gamepad.axes[0]) : 0;
+        let vertical = Math.abs(this.gamepad.axes[1]) > threshold ? Math.sign(this.gamepad.axes[1]) : 0;
+
+        // Assign keys based on normalized values
+        keys.a = horizontal < 0 ? 1 : 0;
+        keys.d = horizontal > 0 ? 1 : 0;
+        keys.w = vertical < 0 ? 1 : 0;
+        keys.s = vertical > 0 ? 1 : 0;
+
+        if (horizontal !== 0 || vertical !== 0) {
             change = true;
         }
         
