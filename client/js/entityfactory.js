@@ -829,6 +829,7 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.MAYOROSWALD]=function(id){return new NPCs.mayoroswald(id);};
     EntityFactory.builders[Types.Entities.NEWCOMERSILAS]=function(id){return new NPCs.newcomersilas(id);};
     EntityFactory.builders[Types.Entities.PATRONCORA]=function(id){return new NPCs.patroncora(id);};
+    EntityFactory.builders[Types.Entities.GUARDIANFINTAN]=function(id){return new NPCs.guardianfintan(id);};
     // @nextNPCLine@
 
      //====== FieldEffectss ======
