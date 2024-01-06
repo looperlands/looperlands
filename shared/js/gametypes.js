@@ -341,7 +341,8 @@ Types = {
         MAYOROSWALD: 34000051, 
         NEWCOMERSILAS: 34000052, 
         PATRONCORA: 34000053,
-        BORAC: 34000054, // @lastidCharacter@
+        BORAC: 34000054,
+        GUARDIANFINTAN: 34000055, // @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -4983,6 +4984,7 @@ var kinds = {
     CITYSIGN10: [Types.Entities.CITYSIGN10, "npc"],
     keeperariadne: [Types.Entities.KEEPERARIADNE, "npc"],
     mayoroswald: [Types.Entities.MAYOROSWALD, "npc"],
+    guardianfintan: [Types.Entities.GUARDIANFINTAN, "npc"],
     newcomersilas: [Types.Entities.NEWCOMERSILAS, "npc"],
     patroncora: [Types.Entities.PATRONCORA, "npc"],
     BORAC: [Types.Entities.BORAC, "mob"],
