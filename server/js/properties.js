@@ -1010,9 +1010,9 @@ var Properties = {
     },
 
     BORAC: {
-        level: 6,
+        level: 12,
         drops: {
-            potion: 80,
+            flask: 40,
         },
     },
 
