@@ -498,7 +498,7 @@ define(['jquery', 'app'], function($, App) {
 
             let emoIdx = 0;
             for (var emotion in Types.emotions) {
-                var emotionDiv = $('<div class="emote" data-emotion="' + emotion + '" style="--n: ' + emoIdx++ + '">' + Types.emotions[emotion] + '</div>');
+                var emotionDiv = $('<div class="emote pixel-corners-xs" data-emotion="' + emotion + '" style="--n: ' + emoIdx++ + '">' + Types.emotions[emotion] + '</div>');
                 emotionDiv.click(function(event) {
                     game.emote($(event.target).data('emotion'));
                     $('#emoteMenu').removeClass('active');
