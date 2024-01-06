@@ -22,11 +22,6 @@ class GamePadListener {
     }
 
     update() {
-        const currentTime = new Date().getTime();
-        if (currentTime - this.lastUpdateTime < this.directionChangeDelay) {
-            return; // Skip update if it's too soon since the last update
-        }
-
         if (!this.gamepad) {
             const gamepad = navigator.getGamepads ? navigator.getGamepads()[0] : null;
             if (gamepad) {
@@ -39,7 +34,6 @@ class GamePadListener {
         // Get the latest state of the gamepad
         this.gamepad = navigator.getGamepads()[this.gamepad.index];
 
-        /*
         // Threshold for considering an input as a directional movement
         const threshold = 0.5;
 
@@ -72,36 +66,6 @@ class GamePadListener {
             keys.s = 1;
             change = true;
         }
-        */
-
-        // Dead zone threshold
-        const threshold = 0.15;
-
-        let keys = {
-            a: 0,
-            d: 0,
-            w: 0,
-            s: 0
-        };
-
-        let change = false;
-
-        // Normalize axis values and apply dead zone
-        let horizontal = Math.abs(this.gamepad.axes[0]) > threshold ? Math.sign(this.gamepad.axes[0]) : 0;
-        let vertical = Math.abs(this.gamepad.axes[1]) > threshold ? Math.sign(this.gamepad.axes[1]) : 0;
-
-        // Debugging: Log raw and processed axis values
-        console.log(`Raw Axes: [${this.gamepad.axes[0]}, ${this.gamepad.axes[1]}], Processed: [${horizontal}, ${vertical}]`);
-
-        // Assign keys based on normalized values
-        keys.a = horizontal < 0 ? 1 : 0;
-        keys.d = horizontal > 0 ? 1 : 0;
-        keys.w = vertical < 0 ? 1 : 0;
-        keys.s = vertical > 0 ? 1 : 0;
-
-        if (horizontal !== 0 || vertical !== 0) {
-            change = true;
-        }
         
         if (change) {
             let x = this.game.player.gridX;
@@ -110,7 +74,6 @@ class GamePadListener {
                               y: y + keys.s - keys.w, 
                               keyboard: true});
             change = false;    
-            this.lastUpdateTime = currentTime;
         }
         
         /*
