@@ -40,22 +40,28 @@ class KeyBoardHandler {
         }
 
         // Keyboard shortcuts
-        switch (key) {
-            case 'z':
-                this.app.toggleInventory();
-                break;
-            case 'x':
-                this.app.toggleAchievements();
-                break;
-            case 'c':
-                this.app.toggleSettings();
-                break;
-            case 'v':
-                this.app.toggleWeaponInfo(event);
-                break;
-            case 'b':
-                this.app.toggleAvatarInfo(event);
-                break;
+        const shortCuts = 'zxcvb';
+        if (shortCuts.indexOf(key) > -1) {
+            if(!this.game.started || this.inputHasFocus() || this.hasOpenPanel()) {
+                return;
+            }
+            switch (key) {
+                case 'z':
+                    this.app.toggleInventory();
+                    break;
+                case 'x':
+                    this.app.toggleAchievements();
+                    break;
+                case 'c':
+                    this.app.toggleSettings();
+                    break;
+                case 'v':
+                    this.app.toggleWeaponInfo(event);
+                    break;
+                case 'b':
+                    this.app.toggleAvatarInfo(event);
+                    break;
+            }
         }
     }
 
@@ -126,7 +132,6 @@ class KeyBoardHandler {
     inputHasFocus() {
         const elem = document.activeElement;
         return elem && (elem.tagName.toLowerCase() === "input" || elem.tagName.toLowerCase() === "textarea");
-
     }
 
     hasOpenPanel() {
