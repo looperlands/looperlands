@@ -455,7 +455,7 @@ body.upscaled.game {background:#000;}
     border-image-slice: 4 fill;
     border-image-repeat: round;
     image-rendering: pixelated;
-    border-image-width: 11px;
+    border-image-width: 9px;
     padding: 0px 12px 12px 12px;
     color: #e4d0b6;
     font-family: 'GraphicPixel';
@@ -1340,6 +1340,152 @@ footer div  {display:inline-block;}
     #chatbox.active {bottom:66px;}
     #chatbox input {font-size:20px;color:#eee;background:none;width:90%;border:0;margin-left:5%;padding:16px 0;}
 
+    .pixel-corners {
+        clip-path: polygon(
+                0px calc(100% - 15px),
+                3px calc(100% - 15px),
+                3px calc(100% - 9px),
+                6px calc(100% - 9px),
+                6px calc(100% - 6px),
+                9px calc(100% - 6px),
+                9px calc(100% - 3px),
+                15px calc(100% - 3px),
+                15px 100%,
+                calc(100% - 15px) 100%,
+                calc(100% - 15px) calc(100% - 3px),
+                calc(100% - 9px) calc(100% - 3px),
+                calc(100% - 9px) calc(100% - 64px),
+                calc(100% - 6px) calc(100% - 6px),
+                calc(100% - 6px) calc(100% - 9px),
+                calc(100% - 3px) calc(100% - 9px),
+                calc(100% - 3px) calc(100% - 15px),
+                100% calc(100% - 15px),
+                100% 15px,
+                calc(100% - 3px) 15px,
+                calc(100% - 3px) 9px,
+                calc(100% - 6px) 9px,
+                calc(100% - 6px) 6px,
+                calc(100% - 9px) 6px,
+                calc(100% - 9px) 3px,
+                calc(100% - 15px) 3px,
+                calc(100% - 15px) 0px,
+                15px 0px,
+                15px 3px,
+                9px 3px,
+                9px 6px,
+                6px 6px,
+                6px 9px,
+                3px 9px,
+                3px 15px,
+                0px 15px
+        );
+    }
+
+    .pixel-corners-sm {
+        clip-path: polygon(
+                0px calc(100% - 9px),
+                3px calc(100% - 9px),
+                3px calc(100% - 6px),
+                6px calc(100% - 6px),
+                6px calc(100% - 3px),
+                9px calc(100% - 3px),
+                9px 100%,
+                calc(100% - 9px) 100%,
+                calc(100% - 9px) calc(100% - 3px),
+                calc(100% - 6px) calc(100% - 3px),
+                calc(100% - 6px) calc(100% - 6px),
+                calc(100% - 3px) calc(100% - 6px),
+                calc(100% - 3px) calc(100% - 9px),
+                100% calc(100% - 9px),
+                100% 9px,
+                calc(100% - 3px) 9px,
+                calc(100% - 3px) 6px,
+                calc(100% - 6px) 6px,
+                calc(100% - 6px) 3px,
+                calc(100% - 9px) 3px,
+                calc(100% - 9px) 0px,
+                9px 0px,
+                9px 3px,
+                6px 3px,
+                6px 6px,
+                3px 6px,
+                3px 9px,
+                0px 9px
+        );
+    }
+
+    .pixel-corners-xs {
+        clip-path: polygon(
+                0px calc(100% - 6px),
+                3px calc(100% - 6px),
+                3px calc(100% - 3px),
+                6px calc(100% - 3px),
+                6px 100%,
+                calc(100% - 6px) 100%,
+                calc(100% - 6px) calc(100% - 3px),
+                calc(100% - 3px) calc(100% - 3px),
+                calc(100% - 3px) calc(100% - 6px),
+                100% calc(100% - 6px),
+                100% 3px,
+                calc(100% - 3px) 3px,
+                calc(100% - 3px) 0px,
+                6px 0px,
+                4px 3px,
+                3px 3px,
+                3px 6px,
+                0px 6px
+        );
+    }
+
+    .pixel-corners-2xs {
+        clip-path: polygon(
+                0px calc(100% - 3px),
+                3px calc(100% - 3px),
+                3px 100%,
+                calc(100% - 3px) 100%,
+                calc(100% - 3px) calc(100% - 3px),
+                100% calc(100% - 3px),
+                100% 3px,
+                calc(100% - 3px) 3px,
+                calc(100% - 3px) 0px,
+                3px 0px
+        );
+    }
+
+    .pixel-corners-top {
+        clip-path: polygon(
+                0px 100%,
+                100% 100%,
+                100% 6px,
+                calc(100% - 3px) 6px,
+                calc(100% - 3px) 3px,
+                calc(100% - 6px) 3px,
+                calc(100% - 6px) 0px,
+                6px 0px,
+                6px 3px,
+                3px 3px,
+                3px 6px,
+                0px 6px
+        );
+    }
+
+    .pixel-corners-bottom {
+        clip-path: polygon(
+                0px calc(100% - 6px),
+                3px calc(100% - 6px),
+                3px calc(100% - 3px),
+                6px calc(100% - 3px),
+                6px 100%,
+                calc(100% - 6px) 100%,
+                calc(100% - 6px) calc(100% - 3px),
+                calc(100% - 3px) calc(100% - 3px),
+                calc(100% - 3px) calc(100% - 6px),
+                100% calc(100% - 6px),
+                100% 0px,
+                0px 0px
+        );
+    }
+
     .upscaled #emoteMenuToggle {
         width: 36px;
         height: 36px;
@@ -1418,7 +1564,6 @@ footer div  {display:inline-block;}
     .panelTitle {
         padding: 20px 0 !important;
         top: -21px !important;
-        margin-bottom:-50px !important;
     }
 }
 
