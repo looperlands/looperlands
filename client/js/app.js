@@ -252,8 +252,16 @@ define(['jquery', 'storage'], function ($, Storage) {
         toggleAchievements: function () {
             if ($('#instructions').hasClass('active')) {
                 this.toggleInstructions();
-                $('#helpbutton').removeClass('active');
+                $('#inventorybutton').removeClass('active');
             }
+
+            if ($('body').hasClass('inventory')) {
+                this.hideInventory();
+            }
+            if($('body').hasClass('settings')) {
+                this.closeSettings();
+            }
+
             this.resetPage();
             $('#achievements').toggleClass('active');
             if ($('#achievements').hasClass('active')) {
@@ -319,13 +327,13 @@ define(['jquery', 'storage'], function ($, Storage) {
             }
             if ($('#instructions').hasClass('active')) {
                 this.toggleInstructions();
-                $('#helpbutton').removeClass('active');
+                $('#inventorybutton').removeClass('active');
             }
             if ($('body').hasClass('credits')) {
                 this.closeInGameCredits();
             }
-            if ($('body').hasClass('about')) {
-                this.closeInGameAbout();
+            if ($('body').hasClass('inventory')) {
+                this.hideInventory();
             }
             if ($('body').hasClass('settings')) {
                 this.closeSettings();
@@ -526,9 +534,9 @@ define(['jquery', 'storage'], function ($, Storage) {
                     $('body').toggleClass('death');
                 }
                 */
-                if ($('body').hasClass('about')) {
-                    this.closeInGameAbout();
-                    $('#helpbutton').removeClass('active');
+                if ($('body').hasClass('inventory')) {
+                    this.hideInventory();
+                    $('#inventorybutton').removeClass('active');
                 }
             } else {
                 if (currentState !== 'animate') {
@@ -542,11 +550,8 @@ define(['jquery', 'storage'], function ($, Storage) {
             }
         },
 
-        toggleAbout: function () {
-            var currentState = $('#parchment').attr('class');
-
+        showInventory: function () {
             _this = this;
-
 
             let inventoryQuery = "/session/" + _this.storage.sessionId + "/inventory";
             let weaponInventory = [],
@@ -560,54 +565,57 @@ define(['jquery', 'storage'], function ($, Storage) {
                     consumablesInventory = response.data.consumables;
                     botsInventory = response.data.bots;
                 }  
-                var inventoryHtml = "";
-                inventoryHtml += "<strong>Weapons</strong>";
-                inventoryHtml += "<div>"
+                let inventoryHtml = "";
+                let columns = 0;
+
+                inventoryHtml += "<div class='inventorySection' id='inventory-weapons'><div class='inventoryTitle'>Weapons</div>";
+                inventoryHtml += "<div class='inventorySectionItems'>"
                 if (weaponInventory.length > 0) {
+                    columns++;
                     weaponInventory.forEach(function(item) {
-                        imgTag = "<div class='item'><img id='" + item + "' style='width: 32px; height: 32px; object-fit: cover; cursor: pointer; object-position: 100% 0;' src='img/3/item-" + item + ".png' /></div>";
+                        imgTag = "<div class='item panelBorder'><img id='" + item + "' style='width: 32px; height: 32px; object-fit: cover; cursor: pointer; object-position: 100% 0;' src='img/3/item-" + item + ".png' /></div>";
                         inventoryHtml += imgTag;
                     });
                 }
-                inventoryHtml += "</div>";
+                inventoryHtml += "</div></div>";
 
                 if (specialInventory.length > 0) {
-                    inventoryHtml += "<strong>Tools</strong>";
-                    inventoryHtml += "<div>"
+                    columns++;
+                    inventoryHtml += "<div class='inventorySection' id='inventory-tools'><div class='inventoryTitle'>Tools</div>";
+                    inventoryHtml += "<div class='inventorySectionItems'>"
 
                     specialInventory.forEach(function(item) {
-                        imgTag = "<div class='item'><img id='" + item + "' style='width: 32px; height: 32px; object-fit: cover; cursor: pointer; object-position: 100% 0;' src='img/3/item-" + item + ".png' /></div>";
+                        imgTag = "<div class='item panelBorder'><img id='" + item + "' style='width: 32px; height: 32px; object-fit: cover; cursor: pointer; object-position: 100% 0;' src='img/3/item-" + item + ".png' /></div>";
                         inventoryHtml += imgTag;
                     });
-                    inventoryHtml += "</div>";
+                    inventoryHtml += "</div></div>";
                 }
 
 
                 if (Object.keys(consumablesInventory).length > 0) {
-
-                    let itemHtml = "<strong>Items</strong>";
-                    itemHtml += "<div>"
+                    columns++;
+                    let itemHtml = "<div class='inventorySection' id='inventory-tools'><div class='inventoryTitle'>Items</div>";
+                    itemHtml += "<div class='inventorySectionItems'>"
                     let hasItem = false;
                     Object.keys(consumablesInventory).forEach(item => {
-                        if(Types.isResource(item)) {
+                        if (Types.isResource(item)) {
                             return;
                         }
                         hasItem = true;
 
                         let description = consumablesInventory[item].description;
                         let tooltipText = "";
-                        if(description){
+                        if (description){
                             tooltipText = "<div class='tooltiptext'>" + description + "</div>";
                         }
-                        itemHtml += "<div style='display:inline-block'>"
-                        let cursor = consumablesInventory[item].consumable ? "pointer" : "not-allowed";
-                        imgTag = "<div class='item'>" + tooltipText + "<img id='" + item + "' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0; cursor: " + cursor + ";' src='img/3/" + consumablesInventory[item].image + ".png' /></div>";
-                        itemHtml += imgTag;
 
-                        itemHtml += "<p id=count_" + item + ">" + consumablesInventory[item].qty + "</p>"
+                        let cursor = consumablesInventory[item].consumable ? "pointer" : "not-allowed";
+                        itemHtml += "<div class='item panelBorder'>" + tooltipText + "<img id='" + item + "' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0; cursor: " + cursor + ";' src='img/3/" + consumablesInventory[item].image + ".png' />";
+                        itemHtml += "<p id='count_" + item + "'>" + consumablesInventory[item].qty + "</p>"
                         itemHtml += "</div>";
                     });
-                    itemHtml += "</div>";
+
+                    itemHtml += "</div></div>";
 
                     if (hasItem) {
                         inventoryHtml += itemHtml;
@@ -615,21 +623,23 @@ define(['jquery', 'storage'], function ($, Storage) {
                 }
 
                 if (botsInventory.length > 0) {
-                    inventoryHtml += "<strong>Companions</strong>";
-                    inventoryHtml += "<div>"
+                    columns++;
+                    inventoryHtml += "<div class='inventorySection' id='inventory-companions'><div class='inventoryTitle'>Companions</div>";
+                    inventoryHtml += "<div class='inventorySectionItems'>"
 
                     botsInventory.forEach(function(bot) {
                         let item = bot?.botNftId?.replace("0x", "");
                         if (item) {
-                            imgTag = `<div class='item'><img id=${item} style='width: 32px; height: 32px; object-fit: cover; cursor: pointer; object-position: 100% 0;' src='img/1/NFT_` + item + ".png' /></div>";
+                            imgTag = `<div class='item panelBorder'><img id=${item} style='width: 32px; height: 32px; object-fit: cover; cursor: pointer; object-position: 100% 0;' src='img/1/NFT_` + item + ".png' /></div>";
                             inventoryHtml += imgTag;
                         }
                     });
-                    inventoryHtml += "</div>";
+                    inventoryHtml += "</div></div>";
                 }
 
-                $("#inventory").html(inventoryHtml);
-
+                $("#inventorycontent").html(inventoryHtml);
+                $('#inventorybutton').addClass('active');
+                $("#inventorycontent").addClass("columns" + columns);
                 let equipFunc = function (item) {
                     if (document.getElementById(item) !== null) {
                         let equip = function () {
@@ -689,33 +699,19 @@ define(['jquery', 'storage'], function ($, Storage) {
                     }
                 });
 
-                if (_this.game.started) {
-                    _this.hideWindows();
-                    $('#parchment').removeClass().addClass('about');
-                    $('body').toggleClass('about');
-                    if (!_this.game.player) {
-                        $('body').toggleClass('death');
-                    }
-                    if ($('body').hasClass('credits')) {
-                        _this.closeInGameCredits();
-                    }
-                } else {
-                    if (currentState !== 'animate') {
-                        if (currentState === 'about') {
-                            if (localStorage && localStorage.data) {
-                                _this.animateParchment(currentState, 'loadcharacter');
-                            } else {
-                                _this.animateParchment(currentState, 'createcharacter');
-                            }
-                        } else {
-                            _this.animateParchment(currentState, 'about');
-                            _this.previousState = currentState;
-                        }
-                    }
-                }        
+                _this.hideWindows();
+                $('body').addClass('inventory');
             }).catch(function(error) {
                 console.error(error);
             });
+        },
+
+        hideInventory: function () {
+            $('body').removeClass('inventory');
+            if (!this.game.player) {
+                $('body').addClass('death');
+            }
+            $('#inventorybutton').removeClass('active');
         },
 
         toggleSettings: function () {
@@ -725,7 +721,6 @@ define(['jquery', 'storage'], function ($, Storage) {
                 this.closeSettings();
             } else {
                 this.hideWindows();
-                $('#parchment').removeClass().addClass('settings');
                 $('body').addClass('settings');
             }
 
@@ -760,18 +755,8 @@ define(['jquery', 'storage'], function ($, Storage) {
             }
         },
 
-        closeInGameAbout: function () {
-            $('body').removeClass('about');
-            $('#parchment').removeClass('about');
-            if (!this.game.player) {
-                $('body').addClass('death');
-            }
-            $('#helpbutton').removeClass('active');
-        },
-
         closeSettings: function () {
             $('body').removeClass('settings');
-            $('#parchment').removeClass('settings');
             if (!this.game.player) {
                 $('body').addClass('death');
             }

@@ -82,7 +82,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
         
             // sprites
             this.spriteNames = ["hand", "sword", "loot", "target", "talk", "float", "sparks", "shadow16", "rat", "skeleton", "skeleton2", "spectre", "boss", "deathknight", 
-                                "ogre", "crab", "snake", "eye", "bat", "goblin", "wizard", "guard", "king", "villagegirl", "villager", "coder", "agent", "rick", "scientist", "nyan", "priest", "coblumberjack", "cobhillsnpc", "cobcobmin", "cobellen", "cobjohnny",
+                                "ogre", "crab", "snake", "eye", "bat", "goblin", "wizard", "guard", "king", "villagegirl", "villager", "coder", "agent", "rick", "scientist", "nyan", "priest", "coblumberjack", "cobhillsnpc", "cobcobmin", "cobellen", "cobjohnny", "cobashley",
                                 "king2", "goose", "tanashi", "slime","kingslime","silkshade","redslime","villagesign1","wildgrin","loomleaf","gnashling","arachweave","spider","fangwing", "minimag", "miner", "megamag", "seacreature", "tentacle", "tentacle2", "wildwill",
                                 "cobchicken", "alaric","orlan","jayce", "cobcow", "cobpig", "cobgoat", "ghostie","cobslimered", "cobslimeyellow", "cobslimeblue", "cobslimepurple", "cobslimegreen", "cobslimepink", "cobslimecyan", "cobslimemint", "cobslimeking", "cobyorkie", "cobcat", "cobdirt", "cobincubator", "cobcoblin", "cobcobane", "cobogre",
                                 "sorcerer", "octocat", "beachnpc", "forestnpc", "desertnpc", "lavanpc","thudlord", "clotharmor", "leatherarmor", "mailarmor","boar","grizzlefang","barrel","neena","athlyn","jeniper",
@@ -148,6 +148,14 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 "CITYSIGN8",
                                 "CITYSIGN9",
                                 "CITYSIGN10",
+                                "cobelliott",
+                                "cobfern",
+                                "cobmauve",
+                                "keeperariadne",
+                                "patroncora",
+                                "mayoroswald",
+                                "newcomersilas",
+                                "BORAC",
                                 // @nextCharacterLine@
                                 "item-BOARHIDE",
                                 "item-THUDKEY",
@@ -183,6 +191,10 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 "item-EVERPEAKMAP3",
                                 "item-EVERPEAKMAP4",
                                 "item-EVERPEAKMAP5",
+                                "item-coffeebeans",
+                                "item-crystal",
+                                "item-trinket",
+                                "item-wildflowers",
                                 // @nextObjectLine@
                                 "NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6",
                                 "NFT_38278eacc7d1c86fdbc85d798dca146fbca59a2e5e567dc15898ce2edac21f5f",
@@ -4680,6 +4692,55 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 "NFT_c697bb89b5c2bc9d0684ec9221be10dd945d1c14b9843169c3b6105a67a13526",
                                 "NFT_1d02b80d167d20b0bfa8f30d30aff800fb4ee787cc59e1657a076fe040bc46b2",
                                 "NFT_779fec4f349d23b4fa4b57c2ef508685901fbd3f31fe241dd9e21865f56e4261",
+                                "NFT_2257751c359918c6b74e96a0f7d289e21163f242837475611326006bdc923a6c",
+                                "NFT_3c6809d64541f4288ce7ae06a3aa2f3986c89affe5bbd2d3e56c96b211aa31ad",
+                                "NFT_9bc1f3c822de3b0abcbf1ebd4e5b0cd80129292c664fa1e53222155481e8e82a",
+                                "NFT_a2795d8a59dc5ba5973ffbfc7e39790282aa21810090c2d17d1f1b11f821402a",
+                                "NFT_a032e8dd627558e71295e5de0a8e26b1b81f6ad865d2161d373a451704f1b8e1",
+                                "NFT_1349ac2b1d16fcaeade3b23b812d7b912a6fe2b0533c5dc695ab370ddc3b95d8",
+                                "NFT_2ef60a578d1e2f89eb1cb4e9fcfba941ff6cf66f183753d3fe86be827b0b815e",
+                                "NFT_55692a79f7497ecf04f78a057f047df60149bc98863a81900cbbcb2d46afaca6",
+                                "NFT_8290e8f1365be76bd636ce4c5e543e9e805895f5b5b8b37c704cc102a8fc0300",
+                                "NFT_cdd585984f1c8a12de2efddc85315ade35a1d15887ceb77e5d5bd3d203529b42",
+                                "NFT_d53624c998709cbc0831a5f8b260f2760f1bc8a341627933fa8fe156ba9af847",
+                                "NFT_d6c88f527e4a2b7e55c01549bb7a76ab4bc7575ec5b557a66430529bc57cbe2b",
+                                "NFT_d9674d0bdf1c6022434c7a44dd10e123a7a1b44252dfa56a46060a6599af3209",
+                                "NFT_da7e8f576cfc285a0a7d7c20dcfcb72b06c7e3f0984489c23b87569af9a9cfc0",
+                                "NFT_f81a605a5e810febf0c2379fbc28b72b9f4ba170b045cd5d033c7e582612a7b1",
+                                "NFT_fd19cbc0729a448ec8de0aa466a0375835c5752186d1838f66db314efa7feb28",
+                                "NFT_0b5955f0f1749e1fb53a10f8b88bb24dffa53b1f9b3eb1592f820593f915e218",
+                                "NFT_3a6e5c760f2a7ea8d8d3f8e59db6eb8b23be2c70c8fedc4be38361b633926492",
+                                "NFT_4a39b8900117379415b5068d7d7121da70a7b459a903be36b0fef30a84b6e08c",
+                                "NFT_503cabc95bbc5a53c53d647b9b4f84121bdfa049d0b8e6974bcd01af1baf513f",
+                                "NFT_692065baef994c7c2d5c5e5fa84bd7c8ec8e35e9ddb0462fa62fcbd599e875f4",
+                                "NFT_7814cc1980179ae592bfe3c6df7b073a44cb693e9de4e95a1dec1d9fa539c98b",
+                                "NFT_b7965bcfa6bb078fcd14b34e13e2f2a46c2302089415fc13980858d84b443918",
+                                "NFT_c0104b0923e09886390f88efc74b60503e74fde7c68e47c21bbae16c0461fcd0",
+                                "NFT_e420bd45004e80eab925cccbec10038bb87132d04310a9a77b2a954a3b2c031c",
+                                "NFT_f3537b6c84040896f0add7c9ef1e4301c5abb52774ead1fba3be4380f3fe262a",
+                                "NFT_fdf5aa1e45c6fd7e9261d9e7633902ce23c23b91cbb01ff2997322a03d3dad88",
+                                "NFT_ff5823527e46ea0fa0a5c7d32c593565ee45c818aba5771b6946ef1a29e7b717",
+                                "NFT_0ec53348015308769c617565fca4f16efe940dd031648bf7eb02f3d998a11254",
+                                "NFT_20ee893b24b0a2e1efc26ef86509b9f944d17ed275ea63749a5c1cfa342a6686",
+                                "NFT_570fed9a6248fa590ec065eff2217634875e1779ae4290f288897691d655c59c",
+                                "NFT_80453ed4ea9d676594239abe9fb53cafe61ecb32edf07aca69b00409ef60ca6d",
+                                "NFT_82cc76a59d06847148704f158b2ba51b5854c5ee3b2e9314fc36c093a919530a",
+                                "NFT_967a6d0d5b848d326a31dfcfb239a4b6934448f7e012e1794b90e4c1905f9f34",
+                                "NFT_a98b4ec521b67a4b2355d16d0e5037c0b5309731d5d5fe22f9fdcc27f43b5b8d",
+                                "NFT_abbae0efbe16fafb67f4e845b3678082e3eb92e26e6ac5dfcab348aeb1b83830",
+                                "NFT_d6ce4890cdacd8b9dd53cefd3e6011a7930ce354ba13e1678d9d03456b2cc1ca",
+                                "NFT_edc99a182c776db43eddfa8bfeee64c8e5e4462f5a3a36a3d0d19549a56db293",
+                                "NFT_21cd639387806d002edb556d24356a981f52ced2092543c96c6a046170fc026b",
+                                "NFT_593676686ca26d6dec2929e72b7bb808b252ec5bc008c8df18c315d474f21986",
+                                "NFT_85d0edf755d7ba780e451f9a785c159f66b2695ed76254fb4431a3929169ab89",
+                                "NFT_a92f99a5f52cb476b1a70979d2574d61b5df5e3ed83666aa5bd454cd94896081",
+                                "NFT_31f7785476de522d52bdf566021c9cf0dfff9b66ff65013fc5a601c181cd0994",
+                                "NFT_4822b4c78781564c603a33a809d78e8ae96351abacca828a057dd097d492dacf",
+                                "NFT_8d927ad37d65a72ca42f10d5a4189a51d26f8b60d2fdf1ff65ed918eb379b64a",
+                                "NFT_9395fa7978c042a8ebb512b565ba86766637edb0d90ded4a77c7ab30df7bfe51",
+                                "NFT_ada02e4767628f349a6c0e5d48c2415fe0504bc6b9cb418f9e92804ffaed6792",
+                                "NFT_dd98cc8fbf3355620228068d3ca43b1549b7f1e4f874c5a1e793f0d045f591eb",
+                                "NFT_fd948c2c65af57a2cae97fbb39db84c0a77bfc4b1dbed49629ebc0e09753dae9",
                                 // @nextSpriteLine@
                             ];
         },
@@ -4891,11 +4952,11 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
         loadSprite: function(name) {
             if(this.renderer.upscaledRendering) {
-                this.spritesets[0][name] = new Sprite(name, 1);
+                this.spritesets[0][name] = new Sprite(name, 1, this.renderer.worker);
             } else {
-                this.spritesets[1][name] = new Sprite(name, 2);
+                this.spritesets[1][name] = new Sprite(name, 2, this.renderer.worker);
                 if(!this.renderer.mobile && !this.renderer.tablet) {
-                    this.spritesets[2][name] = new Sprite(name, 3);
+                    this.spritesets[2][name] = new Sprite(name, 3, this.renderer.worker);
                 }
             }
         },
@@ -5529,7 +5590,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
 
                 if(!self.storage.hasAlreadyPlayed()) {
                     self.storage.initPlayer(self.player.name);
-                    self.storage.savePlayer(self.renderer.getPlayerImage(),
+                    self.storage.savePlayer(undefined,
                                             self.player.getSpriteName(),
                                             self.player.getWeaponName());
                     self.showNotification("Welcome to LooperLands!");
@@ -5829,8 +5890,8 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                                 _self.doorCheck = false;
                             });
                         } else if (dest.http_redirect !== undefined) {
-                            window.location.href = dest.http_redirect;
-                        }
+                            window.open(dest.http_redirect, '_blank');
+                        }                        
                         else {
                             checkTrigger();
                         }
@@ -6475,10 +6536,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     self.updateBuffInfo(stat, percent, duration);
                 });
 
-                self.client.onResourceUpdated(function(resource, amount) {
-                    self.updateResource(resource, amount);
-                });
-
                 self.gamestart_callback();
             
                 if(self.hasNeverStarted) {
@@ -6670,18 +6727,9 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                     msg = npc.talk();
                     self.previousClickPosition = {};
                     if(msg) {
-                        if (msg.startsWith("/openShop")) {
-                            console.log(msg);
-                            let shop = msg.split(" ");
-                            shop.shift();
-                            let shopId = shop.shift();
-                            let shopName = shop.join(" ");
-                            self.app.openShop(shopId, shopName)
-                        } else {
-                            self.createBubble(npc.id, msg);
-                            self.assignBubbleTo(npc);
-                            self.audioManager.playSound("npc");
-                        }
+                        self.createBubble(npc.id, msg);
+                        self.assignBubbleTo(npc);
+                        self.audioManager.playSound("npc");
                     } else {
                         self.destroyBubble(npc.id);
                         self.audioManager.playSound("npc-end");
@@ -7062,7 +7110,7 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
          */
         click: function(pos) {
 
-            if($('body').hasClass('about') || $('body').hasClass('settings')) {
+            if($('body').hasClass('inventory') || $('body').hasClass('settings')) {
                 return;
             }
 
@@ -8035,22 +8083,6 @@ function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, Animated
                 }, 1000);
             } else {
                 $("#buffInfo").html("");
-            }
-        },
-
-        updateResource: function (resource, amount) {
-            $('#resources').removeClass('hidden');
-            if (amount > 0) {
-                if ($('#resource-' + resource).length === 0) {
-                    let resourceEl = $('<div id="resource-' + resource + '" class="resource"><span class="img"></span><span class="amount"></span></div>');
-                    let url = "img/1/item-" + Types.getKindAsString(resource) + ".png";
-                    resourceEl.find('.img').css('background-image', "url('" + url + "')");
-                    $('#resources').append(resourceEl);
-                }
-
-                $('#resource-' + resource).find('.amount').text(amount);
-            } else {
-                $('#resource-' + resource).remove()
             }
         }
     });

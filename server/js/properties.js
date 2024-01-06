@@ -1,16 +1,15 @@
-
 const Types = require("../../shared/js/gametypes");
 
-var Properties = {
+let Properties = {
     rat: {
         level: 1,
         drops: {
-            GOLD: 20,
-            GOLD2: 20,
-            GOLD3: 20,
             // flask: 40,
             // burger: 10,
             // firepotion: 5
+            GOLD: 20,
+            GOLD2: 20,
+            GOLD3: 20,
         },
         respawnDelay: 10000,
     },
@@ -22,7 +21,7 @@ var Properties = {
             axe: 20,
             firepotion: 5
         },
-        weaponMod: 1.5, //bgger mod cause attack rate is 50% slower
+        weaponMod: 1.5, //bigger mod cause attack rate is 50% slower
         respawnDelay: 45000,
     },
     
@@ -1012,6 +1011,12 @@ var Properties = {
         respawnDelay: 180000
     },
 
+    BORAC: {
+        level: 6,
+        xp: 100,
+        
+    },
+
     //Field effects
     magcrack: {
         aoe: {
@@ -1029,16 +1034,25 @@ var Properties = {
     },
 
     //Items
+    wildflowers: {
+        respawnDelay: 60000,
+    },
+    trinket: {
+        respawnDelay: 60000,
+    },
+    crystal: {
+        respawnDelay: 60000,
+    },
+    coffeebeans: {
+        respawnDelay: 60000,
+    },
     coblog: {
         respawnDelay: 60000,
-        collectable: true
     },
-
     GOLD: {
         collectable: true,
         inventoryDescription: "Gold",
     },
-
     GOLD2: {
         collectable: true,
         inventoryDescription: "Gold",
