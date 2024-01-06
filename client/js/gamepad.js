@@ -22,6 +22,11 @@ class GamePadListener {
     }
 
     update() {
+        const currentTime = new Date().getTime();
+        if (currentTime - this.lastUpdateTime < this.directionChangeDelay) {
+            return; // Skip update if it's too soon since the last update
+        }
+
         if (!this.gamepad) {
             const gamepad = navigator.getGamepads ? navigator.getGamepads()[0] : null;
             if (gamepad) {
@@ -70,7 +75,7 @@ class GamePadListener {
         */
 
         // Dead zone threshold
-        const threshold = 0.2;
+        const threshold = 0.15;
 
         let keys = {
             a: 0,
@@ -84,6 +89,9 @@ class GamePadListener {
         // Normalize axis values and apply dead zone
         let horizontal = Math.abs(this.gamepad.axes[0]) > threshold ? Math.sign(this.gamepad.axes[0]) : 0;
         let vertical = Math.abs(this.gamepad.axes[1]) > threshold ? Math.sign(this.gamepad.axes[1]) : 0;
+
+        // Debugging: Log raw and processed axis values
+        console.log(`Raw Axes: [${this.gamepad.axes[0]}, ${this.gamepad.axes[1]}], Processed: [${horizontal}, ${vertical}]`);
 
         // Assign keys based on normalized values
         keys.a = horizontal < 0 ? 1 : 0;
@@ -102,6 +110,7 @@ class GamePadListener {
                               y: y + keys.s - keys.w, 
                               keyboard: true});
             change = false;    
+            this.lastUpdateTime = currentTime;
         }
         
         /*
