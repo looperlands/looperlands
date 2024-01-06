@@ -1010,10 +1010,16 @@ var Properties = {
     },
 
     BORAC: {
+<<<<<<< HEAD
         level: 12,
         drops: {
             flask: 40,
         },
+=======
+        level: 6,
+        xp: 100,
+        
+>>>>>>> e0f4f886031bbd25fc518f882d6d6df94b87b4e1
     },
 
     //Field effects

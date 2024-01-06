@@ -1,11 +1,13 @@
 class KeyBoardHandler {
-    constructor(game) {
+    constructor(game, app) {
         this.keys = {
             w: 0,
             a: 0,
             s: 0,
             d: 0
         };
+
+        this.app = app;
 
         this.weapons = null;
 
@@ -35,6 +37,31 @@ class KeyBoardHandler {
 
         if(this.keyCallbacks.hasOwnProperty(event.code)) {
             this.keyCallbacks[event.code]();
+        }
+
+        // Keyboard shortcuts
+        const shortCuts = 'zxcvb';
+        if (shortCuts.indexOf(key) > -1) {
+            if(!this.game.started || this.inputHasFocus() || this.hasOpenPanel()) {
+                return;
+            }
+            switch (key) {
+                case 'z':
+                    this.app.toggleInventory();
+                    break;
+                case 'x':
+                    this.app.toggleAchievements();
+                    break;
+                case 'c':
+                    this.app.toggleSettings();
+                    break;
+                case 'v':
+                    this.app.toggleWeaponInfo(event);
+                    break;
+                case 'b':
+                    this.app.toggleAvatarInfo(event);
+                    break;
+            }
         }
     }
 
@@ -105,7 +132,6 @@ class KeyBoardHandler {
     inputHasFocus() {
         const elem = document.activeElement;
         return elem && (elem.tagName.toLowerCase() === "input" || elem.tagName.toLowerCase() === "textarea");
-
     }
 
     hasOpenPanel() {
