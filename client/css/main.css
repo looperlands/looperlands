@@ -1338,42 +1338,34 @@ footer div  {display:inline-block;}
 
     .pixel-corners {
         clip-path: polygon(
-                0px calc(100% - 15px),
-                3px calc(100% - 15px),
+                0px calc(100% - 9px),
                 3px calc(100% - 9px),
-                6px calc(100% - 9px),
+                3px calc(100% - 6px),
                 6px calc(100% - 6px),
-                9px calc(100% - 6px),
+                6px calc(100% - 3px),
                 9px calc(100% - 3px),
-                15px calc(100% - 3px),
-                15px 100%,
-                calc(100% - 15px) 100%,
-                calc(100% - 15px) calc(100% - 3px),
+                9px 100%,
+                calc(100% - 9px) 100%,
                 calc(100% - 9px) calc(100% - 3px),
-                calc(100% - 9px) calc(100% - 64px),
+                calc(100% - 6px) calc(100% - 3px),
                 calc(100% - 6px) calc(100% - 6px),
-                calc(100% - 6px) calc(100% - 9px),
+                calc(100% - 3px) calc(100% - 6px),
                 calc(100% - 3px) calc(100% - 9px),
-                calc(100% - 3px) calc(100% - 15px),
-                100% calc(100% - 15px),
-                100% 15px,
-                calc(100% - 3px) 15px,
+                100% calc(100% - 9px),
+                100% 9px,
                 calc(100% - 3px) 9px,
-                calc(100% - 6px) 9px,
+                calc(100% - 3px) 6px,
                 calc(100% - 6px) 6px,
-                calc(100% - 9px) 6px,
+                calc(100% - 6px) 3px,
                 calc(100% - 9px) 3px,
-                calc(100% - 15px) 3px,
-                calc(100% - 15px) 0px,
-                15px 0px,
-                15px 3px,
+                calc(100% - 9px) 0px,
+                9px 0px,
                 9px 3px,
-                9px 6px,
+                6px 3px,
                 6px 6px,
-                6px 9px,
+                3px 6px,
                 3px 9px,
-                3px 15px,
-                0px 15px
+                0px 9px
         );
     }
 
@@ -1493,9 +1485,10 @@ footer div  {display:inline-block;}
         cursor: pointer;
     }
     .upscaled #emoteMenu {
-        top: 20%;
+        top: 30%;
         left: 5%;
         overflow-y: hidden;
+        height: 32px;
     }
     .upscaled #emoteMenu .emote {
         width: 16px;
@@ -1507,6 +1500,7 @@ footer div  {display:inline-block;}
         padding: 0.2rem;
         text-align: center;
         cursor: pointer;
+        padding: 6px;
     }
 
     #resources { right: 40px; }
