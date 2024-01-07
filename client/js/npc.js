@@ -1,7 +1,6 @@
-
 define(['character'], function (Character) {
 
-    var NpcTalk = {
+    let NpcTalk = {
         "guard": [
             "Hello there, Looper",
             'You can learn more about <a target="_blank" href="https://medium.loopring.io/loopring-taiko-ready-layer-3-d9657327f908">Loopring and Taiko on Layer 3</a>.',
@@ -12,6 +11,7 @@ define(['character'], function (Character) {
         ],
 
         "king": [
+            //"/openShop wormking King's Shop",
             "Hi Looper, I'm the LoopWorm King",
             "Welcome to my kingdom",
             'You can buy our <a target="_blank" href="https://loopexchange.art/collection/web3-pets">Web3 Pets</a> to support us.',

@@ -301,6 +301,7 @@ define(['jquery', 'app'], function($, App) {
 	
     		game.onPlayerEquipmentChange(function() {
     		    app.initEquipmentIcons();
+                setTimeout(() => game.renderStatistics(), 1000);
     		});
 	
     		game.onPlayerInvincible(function() {
@@ -346,6 +347,7 @@ define(['jquery', 'app'], function($, App) {
     		});
 	
             app.initHealthBar();
+            app.initResourcesDisplay();
 	
             $('#nameinput').val('');
     		$('#chatbox').attr('value', '');
@@ -488,7 +490,7 @@ define(['jquery', 'app'], function($, App) {
 
             let emoIdx = 0;
             for (var emotion in Types.emotions) {
-                var emotionDiv = $('<div class="emote" data-emotion="' + emotion + '" style="--n: ' + emoIdx++ + '">' + Types.emotions[emotion] + '</div>');
+                var emotionDiv = $('<div class="emote pixel-corners-xs" data-emotion="' + emotion + '" style="--n: ' + emoIdx++ + '">' + Types.emotions[emotion] + '</div>');
                 emotionDiv.click(function(event) {
                     game.emote($(event.target).data('emotion'));
                     $('#emoteMenu').removeClass('active');

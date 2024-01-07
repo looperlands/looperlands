@@ -1,4 +1,3 @@
-
 Types = {
     Messages: {
         HELLO: 0,
@@ -46,12 +45,13 @@ Types = {
         CONSUMEITEM: 42,
         BUFFINFO: 43,
         EMOTE: 44,
-        SUMMON_FOLLOW: 45
+        SUMMON_FOLLOW: 45,
+        RESOURCE: 46
     },
-    
+
     Entities: {
         WARRIOR: 1,
-        
+
         // Mobs
         RAT: 2,
         SKELETON: 3,
@@ -70,7 +70,7 @@ Types = {
         SPIDER: 300003,
         KINGSLIME: 300004,
         REDSLIME: 300005,
-        SILKSHADE: 300006,        
+        SILKSHADE: 300006,
         GNASHLING: 300007,
         MINIMAG: 200002,
         MEGAMAG: 200004,
@@ -150,25 +150,25 @@ Types = {
         ARIA: 300087,
         BOAR: 300088,
         GRIZZLEFANG: 300089,
-        BARREL: 300090, 
-        GLINK: 300091, 
-        ATHLYN: 300092, 
+        BARREL: 300090,
+        GLINK: 300091,
+        ATHLYN: 300092,
         JENIPER: 300093,
-        NEENA: 300094, 
-        WHISKERS: 300095, 
-        SHIVERROCK: 300096, 
-        CRYSTOLITH: 300097, 
-        STONEGUARD: 300098, 
-        SHIVERROCKII: 300099, 
-        SHIVERROCKIII: 300100, 
-        GLACIALORD: 300101, 
+        NEENA: 300094,
+        WHISKERS: 300095,
+        SHIVERROCK: 300096,
+        CRYSTOLITH: 300097,
+        STONEGUARD: 300098,
+        SHIVERROCKII: 300099,
+        SHIVERROCKIII: 300100,
+        GLACIALORD: 300101,
         GELIDUS: 300102,
         LUMI: 300103,
         EDUR: 300104,
-        SNJOR: 300105,   
-        GLOOMFORGED: 300106, 
-        NIGHTHARROW: 300107, 
-        TORIAN: 300108, 
+        SNJOR: 300105,
+        GLOOMFORGED: 300106,
+        NIGHTHARROW: 300107,
+        TORIAN: 300108,
         GRIPNAR: 300109,
         BROWNDOG: 30010,
         BLACKDOG: 30011,
@@ -201,7 +201,7 @@ Types = {
         COBSLIMEPINK: 400019,
         COBSLIMECYAN: 400020,
         COBSLIMEMINT: 400021,
-        
+
         // Armors
         FIREFOX: 20,
         CLOTHARMOR: 21,
@@ -210,7 +210,7 @@ Types = {
         PLATEARMOR: 24,
         REDARMOR: 25,
         GOLDENARMOR: 26,
-        
+
         // Objects
         FLASK: 35,
         POTION: 300008,
@@ -256,18 +256,18 @@ Types = {
         EVERPEAKMAP2: 21300043,
         EVERPEAKMAP3: 21300044,
         EVERPEAKMAP4: 21300045,
-        EVERPEAKMAP5: 21300046, 
-        COFFEEBEANS: 21300047, 
-        CRYSTAL: 21300048, 
-        TRINKET: 21300049, 
-        WILDFLOWERS: 21300050, 
+        EVERPEAKMAP5: 21300046,
+        COFFEEBEANS: 21300047,
+        CRYSTAL: 21300048,
+        TRINKET: 21300049,
+        WILDFLOWERS: 21300050,
         LUMINOUSSTONES: 21300051, // @lastidObject@
         //@nextIdLineObject@
-        
+
         // NPCs
         GUARD: 40,
         KING: 41,
-        KING2: 1000041,        
+        KING2: 1000041,
         OCTOCAT: 42,
         VILLAGEGIRL: 43,
         VILLAGER: 44,
@@ -300,9 +300,9 @@ Types = {
         VILLAGESIGN7: 34000009,
         VILLAGESIGN8: 34000010,
         VILLAGESIGN9: 34000011,
-        TABBYCAT: 34000012, 
-        COBELLEN: 34000013, 
-        COBJOHNNY: 34000014,  
+        TABBYCAT: 34000012,
+        COBELLEN: 34000013,
+        COBJOHNNY: 34000014,
         OABLACKCAT: 34000015,
         VILLAGESIGN11: 34000016,
         VILLAGESIGN12: 34000017,
@@ -333,14 +333,14 @@ Types = {
         CITYSIGN7: 34000042,
         CITYSIGN8: 34000043,
         CITYSIGN9: 34000044,
-        CITYSIGN10: 34000045, 
+        CITYSIGN10: 34000045,
         COBASHLEY: 34000046,
         COBELLIOTT: 34000047,
         COBMAUVE: 34000048,
-        COBFERN: 34000049, 
-        KEEPERARIADNE: 34000050, 
-        MAYOROSWALD: 34000051, 
-        NEWCOMERSILAS: 34000052, 
+        COBFERN: 34000049,
+        KEEPERARIADNE: 34000050,
+        MAYOROSWALD: 34000051,
+        NEWCOMERSILAS: 34000052,
         PATRONCORA: 34000053,
         BORAC: 34000054,
         GUARDIANFINTAN: 34000055, // @lastidCharacter@
@@ -4656,10 +4656,20 @@ Types = {
         NFT_c07c43904844767527e164a3b12c0fa4a0361c92095234727f90c51cbad42593: 4364,
         NFT_d9708716bbd6916aa79aee680a4c43f13f8a140cfe1ea7fd0906d2fd8e577652: 4365,
         NFT_e89be5712e553a1cf1a6052d6158b320802edae914c5a9d5d1f1fa8f12de265f: 4366,
-        NFT_f4c1e9a6a4f9b4508def42f912b94749af5553d87d8265d33d0641beec3a9783: 4367 // @lastid@
+        NFT_f4c1e9a6a4f9b4508def42f912b94749af5553d87d8265d33d0641beec3a9783: 4367,
+        NFT_0a29968803dba72b739c528370eb67ad37eb12ccded44c9c738efb67d18f0042: 4368,
+        NFT_1bc8dece04df021b67f0f7f71da6c081abc2e05ed08dcbe2d62b97bd237a1d52: 4369,
+        NFT_3af6e4c3648df3d06fba56bb856f140cff6604a7a429706318d1e3655cbfd989: 4370,
+        NFT_4d06cdf061615ccec9b309fc4c7cbe384a68b75bc9819be440f9b5f4ca5f9afc: 4371,
+        NFT_4d5d8809a5476af3296760c06b47e0194b8154345edf7d21a377dd59e32c0928: 4372,
+        NFT_7f3d1a4264e5ee2ce33606ac56f155f707de2771223ead02ca52efab5fc367e0: 4373,
+        NFT_85e6a5f94c137fe7496e3af21e7b6d6a1f652f38afde70f75b2eeb6b3aac29b5: 4374,
+        NFT_b5893a75b74f9caccd3c23b4a974db5f53b4e9d2: 4375,
+        NFT_d61fbdec9853a9b09956ef8d852ca066a48e5968eb8786aa6ab02fb3b4d30a35: 4376,
+        NFT_ef4dbad11f6944c9ba3222b3e8aa63157178dd1857f0f4fcd7e16d58fcd1b4f1: 4377 // @lastid@
         //@nextIdLine@
     },
-    
+
     Orientations: {
         UP: 1,
         DOWN: 2,
@@ -4693,7 +4703,7 @@ Types = {
 
 var kinds = {
     warrior: [Types.Entities.WARRIOR, "player"],
-    
+
     rat: [Types.Entities.RAT, "mob"],
     skeleton: [Types.Entities.SKELETON , "mob"],
     goblin: [Types.Entities.GOBLIN, "mob"],
@@ -4715,8 +4725,8 @@ var kinds = {
     thudlord: [Types.Entities.THUDLORD, "mob"],
     loomleaf: [Types.Entities.LOOMLEAF, "mob"],
     redslime: [Types.Entities.REDSLIME, "mob"],
-    kingslime: [Types.Entities.KINGSLIME, "mob"],    
-    silkshade: [Types.Entities.SILKSHADE, "mob"],      
+    kingslime: [Types.Entities.KINGSLIME, "mob"],
+    silkshade: [Types.Entities.SILKSHADE, "mob"],
     crystolith: [Types.Entities.CRYSTOLITH, "mob"],
     stoneguard: [Types.Entities.STONEGUARD, "mob"],
     shiverrock: [Types.Entities.SHIVERROCK, "mob"],
@@ -4834,7 +4844,7 @@ var kinds = {
     transparentweapon: [Types.Entities.TRANSPARENT_WEAPON, "weapon"],
     goldensword: [Types.Entities.GOLDENSWORD, "weapon"],
     morningstar: [Types.Entities.MORNINGSTAR, "weapon"],
-    
+
     firefox: [Types.Entities.FIREFOX, "armor"],
     clotharmor: [Types.Entities.CLOTHARMOR, "armor"],
     leatherarmor: [Types.Entities.LEATHERARMOR, "armor"],
@@ -4879,10 +4889,10 @@ var kinds = {
     BANNER: [Types.Entities.BANNER, "object"],
     PNEUMA_SIGN: [Types.Entities.PNEUMA_SIGN, "object"],
     VILLAGESIGN10: [Types.Entities.VILLAGESIGN10, "object"],
-    GOLD1: [Types.Entities.GOLD1, "object"],
-    GOLD2: [Types.Entities.GOLD2, "object"],
-    GOLD3: [Types.Entities.GOLD3, "object"],
-    GOLD: [Types.Entities.GOLD, "object"],
+    GOLD: [Types.Entities.GOLD, "resource"],
+    GOLD1: [Types.Entities.GOLD1, "resource"],
+    GOLD2: [Types.Entities.GOLD2, "resource"],
+    GOLD3: [Types.Entities.GOLD3, "resource"],
     EVERPEAKMAP1: [Types.Entities.EVERPEAKMAP1, "object"],
     EVERPEAKMAP2: [Types.Entities.EVERPEAKMAP2, "object"],
     EVERPEAKMAP3: [Types.Entities.EVERPEAKMAP3, "object"],
@@ -9294,10 +9304,22 @@ var kinds = {
     NFT_d9708716bbd6916aa79aee680a4c43f13f8a140cfe1ea7fd0906d2fd8e577652: [Types.Entities.NFT_d9708716bbd6916aa79aee680a4c43f13f8a140cfe1ea7fd0906d2fd8e577652, "armor"],
     NFT_e89be5712e553a1cf1a6052d6158b320802edae914c5a9d5d1f1fa8f12de265f: [Types.Entities.NFT_e89be5712e553a1cf1a6052d6158b320802edae914c5a9d5d1f1fa8f12de265f, "armor"],
     NFT_f4c1e9a6a4f9b4508def42f912b94749af5553d87d8265d33d0641beec3a9783: [Types.Entities.NFT_f4c1e9a6a4f9b4508def42f912b94749af5553d87d8265d33d0641beec3a9783, "armor"],
+    NFT_0a29968803dba72b739c528370eb67ad37eb12ccded44c9c738efb67d18f0042: [Types.Entities.NFT_0a29968803dba72b739c528370eb67ad37eb12ccded44c9c738efb67d18f0042, "armor"],
+    NFT_1bc8dece04df021b67f0f7f71da6c081abc2e05ed08dcbe2d62b97bd237a1d52: [Types.Entities.NFT_1bc8dece04df021b67f0f7f71da6c081abc2e05ed08dcbe2d62b97bd237a1d52, "armor"],
+    NFT_3af6e4c3648df3d06fba56bb856f140cff6604a7a429706318d1e3655cbfd989: [Types.Entities.NFT_3af6e4c3648df3d06fba56bb856f140cff6604a7a429706318d1e3655cbfd989, "armor"],
+    NFT_4d06cdf061615ccec9b309fc4c7cbe384a68b75bc9819be440f9b5f4ca5f9afc: [Types.Entities.NFT_4d06cdf061615ccec9b309fc4c7cbe384a68b75bc9819be440f9b5f4ca5f9afc, "armor"],
+    NFT_4d5d8809a5476af3296760c06b47e0194b8154345edf7d21a377dd59e32c0928: [Types.Entities.NFT_4d5d8809a5476af3296760c06b47e0194b8154345edf7d21a377dd59e32c0928, "armor"],
+    NFT_7f3d1a4264e5ee2ce33606ac56f155f707de2771223ead02ca52efab5fc367e0: [Types.Entities.NFT_7f3d1a4264e5ee2ce33606ac56f155f707de2771223ead02ca52efab5fc367e0, "weapon"],
+    NFT_85e6a5f94c137fe7496e3af21e7b6d6a1f652f38afde70f75b2eeb6b3aac29b5: [Types.Entities.NFT_85e6a5f94c137fe7496e3af21e7b6d6a1f652f38afde70f75b2eeb6b3aac29b5, "armor"],
+    NFT_b5893a75b74f9caccd3c23b4a974db5f53b4e9d2: [Types.Entities.NFT_b5893a75b74f9caccd3c23b4a974db5f53b4e9d2, "armor"],
+    NFT_d61fbdec9853a9b09956ef8d852ca066a48e5968eb8786aa6ab02fb3b4d30a35: [Types.Entities.NFT_d61fbdec9853a9b09956ef8d852ca066a48e5968eb8786aa6ab02fb3b4d30a35, "armor"],
+    NFT_ef4dbad11f6944c9ba3222b3e8aa63157178dd1857f0f4fcd7e16d58fcd1b4f1: [Types.Entities.NFT_ef4dbad11f6944c9ba3222b3e8aa63157178dd1857f0f4fcd7e16d58fcd1b4f1, "armor"],
     // @nextSpriteLine@
 
-    
     getType: function(kind) {
+        if(!kinds[Types.getKindAsString(kind)]) {
+            return "";
+        }
         return kinds[Types.getKindAsString(kind)][1];
     }
 };
@@ -9384,18 +9406,23 @@ Types.isObject = function(kind) {
     return kinds.getType(kind) === "object";
 };
 
+Types.isResource = function(kind) {
+    return kinds.getType(kind) === "resource";
+};
+
 Types.isChest = function(kind) {
     return kind === Types.Entities.CHEST;
 };
 
 Types.isItem = function(kind) {
-    return Types.isWeapon(kind) 
-        || Types.isArmor(kind) 
+    return Types.isWeapon(kind)
+        || Types.isArmor(kind)
+        || Types.isResource(kind)
         || (Types.isObject(kind) && !Types.isChest(kind));
 };
 
 Types.isHealingItem = function(kind) {
-    return kind === Types.Entities.FLASK 
+    return kind === Types.Entities.FLASK
         || kind === Types.Entities.BURGER
         || kind === Types.Entities.POTION
         || kind === Types.Entities.COBAPPLE;

@@ -131,7 +131,7 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
 	            <div class="parchment-right"></div>
 	        </section>
 	    </div>
-		<div id="container">
+		<div id="container" class="pixel-corners">
 		    <div id="canvasborder">
 		        <article id="instructions" class="clickable">
 		            <div class="close"></div>
@@ -148,7 +148,7 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
 	                    <p>- click anywhere to close -</p>
 		        </article>
 				<article id="inventory" class="panel">
-					<div class="panelTitle">Inventory</div>
+					<div class="panelTitle pixel-corners-xs">Inventory</div>
 					<div class="panelContent">
 						<div id="inventorycontent">
 							Your inventory is empty.
@@ -157,7 +157,7 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
 					</div>
 				</article>
 				<article id="settings" class="panel">
-					<div class="panelTitle" style="margin: 0 auto; width:250px;">Game Settings</div>
+					<div class="panelTitle pixel-corners-xs" style="margin: 0 auto; width:250px;">Game Settings</div>
 					<small>Disable centered camera and/or animated tiles for performance.</small>
 					<form id="settingsForm">
 						<ul style="text-align: left;">
@@ -192,7 +192,7 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
 				</article>
 		        <article id="achievements" class="page1 clickable panel">
 		            <div class="close"></div>
-					<div class="panelTitle">Quests</div>
+					<div class="panelTitle pixel-corners-xs">Quests</div>
 		            <div id="achievements-wrapper">
 		                <div id="lists">
         		        </div>
@@ -233,7 +233,7 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
 						<div id="close-achievement-details"></div>
 					</div>
 		        </article>
-    			<div id="canvas">
+    			<div id="canvas" class="pixel-corners-top">
     				<canvas id="background"></canvas>
     				<canvas id="entities"></canvas>
     				<canvas id="foreground" class="clickable"></canvas>
@@ -262,7 +262,7 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
 					</div>
 					<div id="bullseye">BULLSEYE</div>
 				</div>
-    			<div id="bar-container">
+    			<div id="bar-container" class="pixel-corners-bottom">
 					<div id="healthbar">
 					</div>
 					<div id="hitpoints">
@@ -292,7 +292,7 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
 						<div id="emoteMenu"></div>
 				    </form>
 				</div>
-                <div id="population">
+                <div id="population" class="pixel-corners-top">
                     <div id="instance-population" class="">
                         <span>0</span> <span>players</span> in this world
                     </div>
@@ -301,7 +301,7 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
                     </div>
                 </div>
 
-				<div id="avatarStats">
+				<div id="avatarStats" class="pixel-corners-top">
 					<span>Level: </span><span id="avatarLevel" style="color:#FCE045; padding-right: 10px;"></span>(<span id="avatarProgress"></span>%)
 					<span id="buffInfo"></span>
 					<br>
@@ -310,13 +310,14 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
 					</span>
 				</div>
 
-				<div id="weaponStats">
-					<div><span>Level: </span><span id="weaponLevel" style="color:#FCE045; padding-right: 10px;"></span>(<span id="weaponProgress"></span>%)</div>
-					<div>Trait: <span id="weaponTrait" style="color: #FCE045;"></span></div>
+				<div id="weaponStats" class="pixel-corners-top">
+					<div><span>Level: </span><span id="weaponLevel" style="color:#FCE045; padding-right: 10px;"></span><span id="weaponProgressContainer">(<span id="weaponProgress"></span>%)</span></div>
+					<div id="weaponTraitContainer">Trait: <span id="weaponTrait" style="color: #FCE045;"></span></div>
 				</div>
 
+				<div id="resources" class="hidden pixel-corners-bottom"></div>
 				<div id="new-achievement-popup" class="panel hidden">
-					<div class="panelTitle">New Quest Received</div>
+					<div class="panelTitle pixel-corners-xs">New Quest Received</div>
 					<div class="header">
 						<div id="new-achievement-name" class="stroke"></div>
 					</div>
@@ -324,6 +325,18 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
 						<div id="new-achievement-text"></div>
 					</div>
 					<div id="close-new-achievement"></div>
+				</div>
+
+				<div id="shop-confirmation" class="panel hidden">
+					<div id="shop-confirmation-longtext"></div>
+					<div id="shop-confirmation-text"></div>
+					<div id="cancel-shop-purchase">Cancel</div>
+					<div id="confirm-shop-purchase">Buy</div>
+				</div>
+				<div id="shop-popup" class="panel hidden">
+					<div class="panelTitle pixel-corners-xs" id="shop-popup-name"></div>
+					<div class="items" id="shop-popup-items"></div>
+					<div id="close-shop" class="close"></div>
 				</div>
 		    </div>
 		</div>

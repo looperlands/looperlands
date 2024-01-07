@@ -19,6 +19,7 @@ table, caption, tbody, tfoot, thead, tr, th, td {
 }
 body {
     line-height: 1;
+    image-rendering: pixelated;
 }
 ol, ul {
     list-style: none;
@@ -91,7 +92,7 @@ footer, header, hgroup, menu, nav, section {
 html {-webkit-text-size-adjust: 100%}
 html, body {height:100%;}
 
-body {padding:0;margin:0;background:#111;overflow:hidden;image-rendering:-moz-crisp-edges; image-rendering:-webkit-optimize-contrast;border-top:2px solid #707070;}
+body {padding:0;margin:0;background:#111;overflow:hidden;image-rendering:-moz-crisp-edges; image-rendering:-webkit-optimize-contrast;}
 
 canvas { position:absolute;image-rendering:pixelated; will-change: transform;}
 #background { background:url('../img/common/loading.png') no-repeat center center, #000;}
@@ -122,6 +123,151 @@ body {
     display:block;*/
 }
 
+.pixel-corners {
+    clip-path: polygon(
+            0px calc(100% - 10px),
+            2px calc(100% - 10px),
+            2px calc(100% - 6px),
+            4px calc(100% - 6px),
+            4px calc(100% - 4px),
+            6px calc(100% - 4px),
+            6px calc(100% - 2px),
+            10px calc(100% - 2px),
+            10px 100%,
+            calc(100% - 10px) 100%,
+            calc(100% - 10px) calc(100% - 2px),
+            calc(100% - 6px) calc(100% - 2px),
+            calc(100% - 6px) calc(100% - 4px),
+            calc(100% - 4px) calc(100% - 4px),
+            calc(100% - 4px) calc(100% - 6px),
+            calc(100% - 2px) calc(100% - 6px),
+            calc(100% - 2px) calc(100% - 10px),
+            100% calc(100% - 10px),
+            100% 10px,
+            calc(100% - 2px) 10px,
+            calc(100% - 2px) 6px,
+            calc(100% - 4px) 6px,
+            calc(100% - 4px) 4px,
+            calc(100% - 6px) 4px,
+            calc(100% - 6px) 2px,
+            calc(100% - 10px) 2px,
+            calc(100% - 10px) 0px,
+            10px 0px,
+            10px 2px,
+            6px 2px,
+            6px 4px,
+            4px 4px,
+            4px 6px,
+            2px 6px,
+            2px 10px,
+            0px 10px
+    );
+}
+
+.pixel-corners-sm {
+    clip-path: polygon(
+            0px calc(100% - 6px),
+            2px calc(100% - 6px),
+            2px calc(100% - 4px),
+            4px calc(100% - 4px),
+            4px calc(100% - 2px),
+            6px calc(100% - 2px),
+            6px 100%,
+            calc(100% - 6px) 100%,
+            calc(100% - 6px) calc(100% - 2px),
+            calc(100% - 4px) calc(100% - 2px),
+            calc(100% - 4px) calc(100% - 4px),
+            calc(100% - 2px) calc(100% - 4px),
+            calc(100% - 2px) calc(100% - 6px),
+            100% calc(100% - 6px),
+            100% 6px,
+            calc(100% - 2px) 6px,
+            calc(100% - 2px) 4px,
+            calc(100% - 4px) 4px,
+            calc(100% - 4px) 2px,
+            calc(100% - 6px) 2px,
+            calc(100% - 6px) 0px,
+            6px 0px,
+            6px 2px,
+            4px 2px,
+            4px 4px,
+            2px 4px,
+            2px 6px,
+            0px 6px
+    );
+}
+
+.pixel-corners-xs {
+    clip-path: polygon(
+            0px calc(100% - 4px),
+            2px calc(100% - 4px),
+            2px calc(100% - 2px),
+            4px calc(100% - 2px),
+            4px 100%,
+            calc(100% - 4px) 100%,
+            calc(100% - 4px) calc(100% - 2px),
+            calc(100% - 2px) calc(100% - 2px),
+            calc(100% - 2px) calc(100% - 4px),
+            100% calc(100% - 4px),
+            100% 2px,
+            calc(100% - 2px) 2px,
+            calc(100% - 2px) 0px,
+            4px 0px,
+            4px 2px,
+            2px 2px,
+            2px 4px,
+            0px 4px
+    );
+}
+
+.pixel-corners-2xs {
+    clip-path: polygon(
+            0px calc(100% - 2px),
+            2px calc(100% - 2px),
+            2px 100%,
+            calc(100% - 2px) 100%,
+            calc(100% - 2px) calc(100% - 2px),
+            100% calc(100% - 2px),
+            100% 2px,
+            calc(100% - 2px) 2px,
+            calc(100% - 2px) 0px,
+            2px 0px
+    );
+}
+
+.pixel-corners-top {
+    clip-path: polygon(
+            0px 100%,
+            100% 100%,
+            100% 4px,
+            calc(100% - 2px) 4px,
+            calc(100% - 2px) 2px,
+            calc(100% - 4px) 2px,
+            calc(100% - 4px) 0px,
+            4px 0px,
+            4px 2px,
+            2px 2px,
+            2px 4px,
+            0px 4px
+    );
+}
+
+.pixel-corners-bottom {
+    clip-path: polygon(
+            0px calc(100% - 4px),
+            2px calc(100% - 4px),
+            2px calc(100% - 2px),
+            4px calc(100% - 2px),
+            4px 100%,
+            calc(100% - 4px) 100%,
+            calc(100% - 4px) calc(100% - 2px),
+            calc(100% - 2px) calc(100% - 2px),
+            calc(100% - 2px) calc(100% - 4px),
+            100% calc(100% - 4px),
+            100% 0px,
+            0px 0px
+    );
+}
 
 @media screen and (max-width: 600px) {
 
@@ -300,6 +446,256 @@ body.upscaled.game {background:#000;}
     transition: ease-in-out all 0.2s;
 }
 
+#resources {
+    position: absolute;
+    top: 5px;
+    right: 24px;
+    background: #161221;
+    border-image: url(../img/common/small-border.png);
+    border-image-slice: 4 fill;
+    border-image-repeat: round;
+    image-rendering: pixelated;
+    border-image-width: 9px;
+    padding: 0px 12px 12px 12px;
+    color: #e4d0b6;
+    font-family: 'GraphicPixel';
+    font-size: 12px;
+    border-top-width: 0px;
+    border-radius: 15px;
+}
+
+#resources.hidden {
+    display: none;
+}
+
+#resource-21300041 .img {
+    background: url(../img/1/item-GOLD3.png) !important;
+}
+
+#resources .img {
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    position: relative;
+    top: 2px;
+    left: -5px;
+}
+
+#resources .resource {
+    display: inline-block;
+    padding: 0 10px;
+    border-left: 2px solid #e4a672;
+    height: 25px;
+    margin-bottom: -8px;
+}
+#resources .resource:first-child {
+    border-left:none;
+    padding-left:5px;
+}
+
+#resources .resource:last-child {
+    padding-right:5px;
+}
+
+#shop-popup {
+    position: absolute;
+    top: 10%;
+    left: 5%;
+    width: 40%;
+    max-height: 360px;
+    padding: 30px;
+    padding-top: 0;
+    box-sizing: border-box;
+    color: #d7ab97;
+    font-family: 'GraphicPixel';
+}
+
+#shop-popup .close {
+    scale: 0.666;
+}
+
+#shop-popup .items {
+    display: grid;
+    justify-content: start;
+    padding-top: 28px;
+    overflow: auto;
+    max-height: 313px;
+    margin-right: -30px;
+    width: 100%;
+    grid: auto-flow / 1fr 1fr;
+    padding-right:30px;
+}
+
+#shop-popup .item-image {
+    width: 32px;
+    height: 32px;
+    margin: auto;
+    cursor: pointer;
+}
+
+#shop-popup .items::-webkit-scrollbar {
+    width: 10px;
+    background-color: #533643;
+}
+#shop-popup .items::-webkit-scrollbar-thumb {
+    background-color: #b86f50;
+}
+#shop-popup .items::-webkit-scrollbar-thumb:hover {
+    background-color: #FCE045;
+}
+#shop-popup .items::-webkit-scrollbar-thumb:active {
+    background-color: #FCE045;
+}
+
+#shop-popup .item {
+    margin: 3px;
+    background: #342433;
+    padding: 5px;
+    border-radius: 6px;
+    text-align: center;
+    border-image-source: url(../img/common/panel.png);
+    border-image-slice: 12;
+    border-image-repeat: round;
+    image-rendering: pixelated;
+    border-image-width: 3px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.5);
+}
+
+#shop-popup .item.selected {
+    background: #1e181e !important;;
+}
+
+#shop-popup .item:hover {
+    background: #533642;
+    cursor: pointer;
+}
+#shop-popup .item.disabled {
+    opacity: 0.5;
+}
+#shop-popup .item.disabled:hover {
+    background: #342433;
+    cursor: default;
+}
+
+#shop-popup .item .name {
+    color: #fce045;
+    padding: 5px;
+}
+#shop-popup .item .name .level {
+    color: white;
+    font-size: 9px;
+    margin-left:3px;
+}
+#shop-popup .item .desc {
+    font-size: 11px;
+    color: #b07d63;
+    padding-bottom:10px;
+}
+
+#shop-popup .item .price {
+    font-size:12px;
+}
+
+#shop-popup .item .price .resource {
+    display: inline-block;
+    margin-right: 10px;
+}
+#shop-popup .item .price .resource:last-child {
+    margin-right: 0px;
+}
+
+#shop-popup .item .price .resource .img {
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    position: relative;
+    top: 2px;
+    left: -2px;
+}
+
+#shop-popup p {
+    margin: 0;
+    padding: 0;
+    line-height: 15px;
+    font-family: 'GraphicPixel';
+}
+
+#shop-popup .minLevel {
+    padding-top: 9px;
+    color: #b3a9ad;
+}
+#shop-popup .minLevel .amount {
+    color: #fce045;
+}
+
+#shop-confirmation {
+    position: absolute;
+    top: 18%;
+    left: 43%;
+    width: 200px;
+    min-height: 120px;
+    transition: ease-in-out 300ms;
+    color: white;
+    padding: 30px 30px 30px 50px;
+    display:none;
+}
+
+#shop-confirmation.visible {
+    display: block;
+}
+
+#shop-confirmation.hidden {
+    left: 10%;
+    opacity: 1;
+    transition: ease-in-out 300ms;
+}
+
+#shop-confirmation-text {
+    padding: 15px 0;
+    width: 100%;
+}
+
+#shop-confirmation-longtext {
+    color: #b3a9ad;
+}
+
+#shop-confirmation-text .highlight {
+    color: #fce045;
+}
+#cancel-shop-purchase {
+    display: inline-block;
+    padding: 5px 10px;
+    border: 1px solid;
+    border-radius: 3px;
+    margin-right: 55px;
+    margin-left: 8px;
+    margin-top: 10px;
+    cursor: pointer;
+    opacity:0.6;
+}
+#cancel-shop-purchase:hover {
+    opacity: 1;
+}
+
+#confirm-shop-purchase.disabled {
+    pointer-events: none;
+    opacity: 0.3;
+}
+
+#confirm-shop-purchase {
+    display: inline-block;
+    padding: 5px 10px;
+    border: 1px solid;
+    border-radius: 3px;
+    cursor: pointer;
+    opacity:0.6;
+}
+#confirm-shop-purchase:hover {
+    opacity:1;
+}
+
 #chatbox.active #emoteMenuToggle {
     display:block;
 }
@@ -397,7 +793,11 @@ body.inventory #inventory {
     image-rendering: pixelated;
     border-image-width: 12px;
     font-family: 'GraphicPixel', arial, sans-serif;
+    transition: ease-in-out 500ms;
+    opacity: 100;
 }
+
+.panel.hidden,.panelBorder.hidden { opacity: 0; pointer-events: none; transition: ease-in-out 500ms;}
 
 .panel .panelTitle,
 .panelBorder .panelTitle{
@@ -544,6 +944,11 @@ footer div  {display:inline-block;}
 }
 #inventory .item:hover .tooltiptext {
     visibility: visible;
+}
+
+.tooltiptext .tooltipHighlight {
+    color: #610b23;
+    font-size:12px;
 }
 
 #inventory .tooltiptext {
@@ -770,12 +1175,27 @@ footer div  {display:inline-block;}
         height:450px;
     }
 
-    #inventorycontent {
-        padding-top:45px;
-    }
-
     #inventory .inventorySectionItems {
         height: 355px;
+    }
+
+    .upscaled #emoteMenu {
+        top: 30%;
+        left: 5%;
+        overflow-y: hidden;
+        height: 32px;
+    }
+    .upscaled #emoteMenu .emote {
+        width: 16px;
+        height: 16px;
+        display: inline-block;
+        border-radius: 6px;
+        background: rgba(255,255,255,0.2);
+        margin: 0px 3px 0 3px;
+        padding: 0.2rem;
+        text-align: center;
+        cursor: pointer;
+        padding: 6px;
     }
 }
 
@@ -940,6 +1360,144 @@ footer div  {display:inline-block;}
     #chatbox.active {bottom:66px;}
     #chatbox input {font-size:20px;color:#eee;background:none;width:90%;border:0;margin-left:5%;padding:16px 0;}
 
+    .pixel-corners {
+        clip-path: polygon(
+                0px calc(100% - 9px),
+                3px calc(100% - 9px),
+                3px calc(100% - 6px),
+                6px calc(100% - 6px),
+                6px calc(100% - 3px),
+                9px calc(100% - 3px),
+                9px 100%,
+                calc(100% - 9px) 100%,
+                calc(100% - 9px) calc(100% - 3px),
+                calc(100% - 6px) calc(100% - 3px),
+                calc(100% - 6px) calc(100% - 6px),
+                calc(100% - 3px) calc(100% - 6px),
+                calc(100% - 3px) calc(100% - 9px),
+                100% calc(100% - 9px),
+                100% 9px,
+                calc(100% - 3px) 9px,
+                calc(100% - 3px) 6px,
+                calc(100% - 6px) 6px,
+                calc(100% - 6px) 3px,
+                calc(100% - 9px) 3px,
+                calc(100% - 9px) 0px,
+                9px 0px,
+                9px 3px,
+                6px 3px,
+                6px 6px,
+                3px 6px,
+                3px 9px,
+                0px 9px
+        );
+    }
+
+    .pixel-corners-sm {
+        clip-path: polygon(
+                0px calc(100% - 9px),
+                3px calc(100% - 9px),
+                3px calc(100% - 6px),
+                6px calc(100% - 6px),
+                6px calc(100% - 3px),
+                9px calc(100% - 3px),
+                9px 100%,
+                calc(100% - 9px) 100%,
+                calc(100% - 9px) calc(100% - 3px),
+                calc(100% - 6px) calc(100% - 3px),
+                calc(100% - 6px) calc(100% - 6px),
+                calc(100% - 3px) calc(100% - 6px),
+                calc(100% - 3px) calc(100% - 9px),
+                100% calc(100% - 9px),
+                100% 9px,
+                calc(100% - 3px) 9px,
+                calc(100% - 3px) 6px,
+                calc(100% - 6px) 6px,
+                calc(100% - 6px) 3px,
+                calc(100% - 9px) 3px,
+                calc(100% - 9px) 0px,
+                9px 0px,
+                9px 3px,
+                6px 3px,
+                6px 6px,
+                3px 6px,
+                3px 9px,
+                0px 9px
+        );
+    }
+
+    .pixel-corners-xs {
+        clip-path: polygon(
+                0px calc(100% - 6px),
+                3px calc(100% - 6px),
+                3px calc(100% - 3px),
+                6px calc(100% - 3px),
+                6px 100%,
+                calc(100% - 6px) 100%,
+                calc(100% - 6px) calc(100% - 3px),
+                calc(100% - 3px) calc(100% - 3px),
+                calc(100% - 3px) calc(100% - 6px),
+                100% calc(100% - 6px),
+                100% 3px,
+                calc(100% - 3px) 3px,
+                calc(100% - 3px) 0px,
+                6px 0px,
+                4px 3px,
+                3px 3px,
+                3px 6px,
+                0px 6px
+        );
+    }
+
+    .pixel-corners-2xs {
+        clip-path: polygon(
+                0px calc(100% - 3px),
+                3px calc(100% - 3px),
+                3px 100%,
+                calc(100% - 3px) 100%,
+                calc(100% - 3px) calc(100% - 3px),
+                100% calc(100% - 3px),
+                100% 3px,
+                calc(100% - 3px) 3px,
+                calc(100% - 3px) 0px,
+                3px 0px
+        );
+    }
+
+    .pixel-corners-top {
+        clip-path: polygon(
+                0px 100%,
+                100% 100%,
+                100% 6px,
+                calc(100% - 3px) 6px,
+                calc(100% - 3px) 3px,
+                calc(100% - 6px) 3px,
+                calc(100% - 6px) 0px,
+                6px 0px,
+                6px 3px,
+                3px 3px,
+                3px 6px,
+                0px 6px
+        );
+    }
+
+    .pixel-corners-bottom {
+        clip-path: polygon(
+                0px calc(100% - 6px),
+                3px calc(100% - 6px),
+                3px calc(100% - 3px),
+                6px calc(100% - 3px),
+                6px 100%,
+                calc(100% - 6px) 100%,
+                calc(100% - 6px) calc(100% - 3px),
+                calc(100% - 3px) calc(100% - 3px),
+                calc(100% - 3px) calc(100% - 6px),
+                100% calc(100% - 6px),
+                100% 0px,
+                0px 0px
+        );
+    }
+
     .upscaled #emoteMenuToggle {
         width: 36px;
         height: 36px;
@@ -948,22 +1506,6 @@ footer div  {display:inline-block;}
         left: 14px;
         background: url(../img/3/barsheet.png);
         background-position-y: -192px;
-        cursor: pointer;
-    }
-    .upscaled #emoteMenu {
-        top: 20%;
-        left: 5%;
-        overflow-y: hidden;
-    }
-    .upscaled #emoteMenu .emote {
-        width: 16px;
-        height: 16px;
-        display: inline-block;
-        border-radius: 6px;
-        background: rgba(255,255,255,0.2);
-        margin: 0px 3px 0 3px;
-        padding: 0.2rem;
-        text-align: center;
         cursor: pointer;
     }
 
@@ -981,8 +1523,6 @@ footer div  {display:inline-block;}
     #shop-popup .item {
         border-image-width: 4px;
     }
-
-
 
     /*Credits*/
     #credits, #death {width:1266px;height:546px;margin-left:-633px;margin-top:-273px;font-size:30px;}
@@ -1020,7 +1560,6 @@ footer div  {display:inline-block;}
     .panelTitle {
         padding: 20px 0 !important;
         top: -21px !important;
-        margin-bottom:-50px !important;
     }
 }
 
@@ -1374,6 +1913,25 @@ footer div  {display:inline-block;}
         opacity: 100;
         line-height:16px;
         transition: 0.2s ease-in-out all;
+    }
+
+    #emoteMenu {
+        position: absolute;
+        top: 8px;
+        left: 40px;
+        height: 24px;
+        overflow-y: hidden;
+    }
+    #emoteMenu .emote {
+        width: 16px;
+        height: 14px;
+        display: inline-block;
+        border-radius: 6px;
+        background: rgba(255,255,255,0.2);
+        margin: 0 2px 0 2px;
+        padding: 4px;
+        text-align: center;
+        cursor: pointer;
     }
 
     #playerimage {height: 64px; width: 64px;}

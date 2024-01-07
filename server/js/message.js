@@ -91,6 +91,18 @@ Messages.HitPoints = Message.extend({
     }
 });
 
+Messages.Resource = Message.extend({
+  init: function (resource, qty) {
+      this.resource = resource
+      this.qty = qty;
+  },
+  serialize: function() {
+        return [Types.Messages.RESOURCE,
+            this.resource,
+            this.qty];
+    }
+})
+
 Messages.EquipItem = Message.extend({
     init: function(player, itemKind) {
         this.playerId = player.id;
