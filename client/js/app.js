@@ -574,7 +574,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                     columns++;
                     weaponInventory.forEach(function(item) {
                         imgTag = "<div class='item panelBorder'>" +
-                            "<div class='tooltiptext'><span class='tooltipHighlight'>Level " + item.level + "</span> " + item.weaponName + " (" + item.Trait + ")</div>" +
+                            "<div class='tooltiptext pixel-corners-xs'><span class='tooltipHighlight'>Level " + item.level + "</span> " + item.weaponName + " (" + item.Trait + ")</div>" +
                             "<img id='" + item.nftId + "' style='width: 32px; height: 32px; object-fit: cover; cursor: pointer; object-position: 100% 0;' src='img/3/item-" + item.nftId + ".png' />" +
                             "</div>";
                         inventoryHtml += imgTag;
@@ -589,7 +589,7 @@ define(['jquery', 'storage'], function ($, Storage) {
 
                     specialInventory.forEach(function(item) {
                         imgTag = "<div class='item panelBorder'>" +
-                            "<div class='tooltiptext'><span class='tooltipHighlight'>Level " + item.level + "</span> " + item.specialItemName + " (" + item.Trait + ")</div>" +
+                            "<div class='tooltiptext pixel-corners-xs'><span class='tooltipHighlight'>Level " + item.level + "</span> " + item.specialItemName + " (" + item.Trait + ")</div>" +
                             "<img id='" + item.nftId + "' style='width: 32px; height: 32px; object-fit: cover; cursor: pointer; object-position: 100% 0;' src='img/3/item-" + item.nftId + ".png' /></div>";
                         inventoryHtml += imgTag;
                     });
@@ -610,7 +610,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                         let description = consumablesInventory[item].description;
                         let tooltipText = "";
                         if (description){
-                            tooltipText = "<div class='tooltiptext'>" + description + "</div>";
+                            tooltipText = "<div class='tooltiptext pixel-corners-xs'>" + description + "</div>";
                         }
 
                         let cursor = consumablesInventory[item].consumable ? "pointer" : "not-allowed";
@@ -634,7 +634,7 @@ define(['jquery', 'storage'], function ($, Storage) {
 
                     botsInventory.forEach(function(bot) {
                         if (bot) {
-                            imgTag = `<div class='item panelBorder'><div class='tooltiptext'><span class='tooltipHighlight'>Level ${bot.level}</span> ${bot.looperName}</div><img id=${bot.nftId} style='width: 32px; height: 32px; object-fit: cover; cursor: pointer; object-position: 100% 0;' src='img/1/` + bot.nftId + ".png' /></div>";
+                            imgTag = `<div class='item panelBorder'><div class='tooltiptext pixel-corners-xs'><span class='tooltipHighlight'>Level ${bot.level}</span> ${bot.looperName}</div><img id=${bot.nftId} style='width: 32px; height: 32px; object-fit: cover; cursor: pointer; object-position: 100% 0;' src='img/1/` + bot.nftId + ".png' /></div>";
                             inventoryHtml += imgTag;
                         }
                     });
