@@ -1068,20 +1068,15 @@ let Properties = {
 
     // Weapons
     axe: {
-        level: 40,
         name: "Axe",
         consumables: {
             GOLD: {
                 level: 40,
                 range: 6
             },
-            COBLOG: {
+            coblog: {
                 level: 10,
                 range: 12
-            },
-            fireArrow: {
-                level: 20,
-                range: 15,
             }
         }
     }
@@ -1123,7 +1118,7 @@ Properties.getWeaponLevel = function(kind, levelOffset) {
                     for(let consumable in weaponProps.consumables) {
                         levelInfo.push({ consumable: consumable, level: weaponProps.consumables[consumable].level, range: weaponProps.consumables[consumable].range});
                     }
-                    console.log(levelInfo);
+
                     return levelInfo;
                 }
 

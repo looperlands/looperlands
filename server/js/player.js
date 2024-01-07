@@ -888,13 +888,16 @@ module.exports = Player = Character.extend({
             return nftWeapon.getLevel();
         }
 
-        if(kind === undefined) {
-            kind = this.weaponName;
+        if (kind === undefined) {
+            kind = this.weapon;
+        } else {
+            kind = Types.getKindFromString(kind);
         }
-        let levelInfo = Properties.getWeaponLevel(Types.getKindFromString(kind));
+
+        let levelInfo = Properties.getWeaponLevel(kind);
         let weaponLevel = 0;
         if (typeof levelInfo === "object") {
-            let sortedLevelInfo = _.sortBy(levelInfo, ["level"]);
+            let sortedLevelInfo = _(levelInfo).chain().sortBy("level").reverse().value()
             for (let i = 0; i < sortedLevelInfo.length; i++) {
                 let level = sortedLevelInfo[i];
                 if (this.getResourceAmount(Types.getKindFromString(level.consumable)) > 0) {
@@ -905,6 +908,7 @@ module.exports = Player = Character.extend({
         } else {
             weaponLevel = levelInfo;
         }
+
         return weaponLevel;
 
     },

@@ -403,7 +403,7 @@ WS.socketIOServer = Server.extend({
                     let levelInfo = Properties.getWeaponLevel(item);
                     let weaponLevel = 0;
                     if (typeof levelInfo === "object") {
-                        let sortedLevelInfo = _.sortBy(levelInfo, ["level"]);
+                        let sortedLevelInfo = _(levelInfo).chain().sortBy("level").reverse().value()
                         for (let i = 0; i < sortedLevelInfo.length; i++) {
                             let level = sortedLevelInfo[i];
                             if (consumables[Types.getKindFromString(level.consumable)] > 0) {

@@ -6765,7 +6765,6 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         self.previousClickPosition = {};
                         if(msg) {
                             if (msg.startsWith("/openShop")) {
-                                console.log(msg);
                                 let shop = msg.split(" ");
                                 shop.shift();
                                 let shopId = shop.shift();
