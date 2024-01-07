@@ -471,7 +471,7 @@ var Properties = {
     cobslimegreen: {
         level: 11,
         drops: {
-            cobapple: 20,
+            cobapple: 30,
             cobcorn: 10,
             redsword: 5
         }
@@ -480,7 +480,8 @@ var Properties = {
     cobslimepink: {
         level: 14,
         drops: {
-            cobapple: 20,
+            cobapple: 30,
+            luminousstones: 20,
             cobcorn: 10,
             redsword: 5
         }
@@ -489,16 +490,16 @@ var Properties = {
     cobslimecyan: {
         level: 17,
         drops: {
-            cobapple: 20,
+            luminousstones: 50,
+            cobapple: 40,
             cobcorn: 10,
-            redsword: 5
         }
     },
 
     cobslimemint: {
         level: 20,
         drops: {
-            cobapple: 20,
+            cobapple: 50,
             cobcorn: 10,
             redsword: 5
         }
@@ -1032,6 +1033,9 @@ var Properties = {
     },
 
     //Items
+    luminousstones: {
+        respawnDelay: 60000,
+    },
     wildflowers: {
         respawnDelay: 60000,
     },

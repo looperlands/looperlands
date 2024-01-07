@@ -1,6 +1,19 @@
 Types = require("../../../shared/js/gametypes");
 quests = [
     {
+        id: "FESTIVE_FOUNTAIN",
+        name: "The Fountain's Gleam",
+        startText: "Traveler, the fountain's waters grow dim.",
+        longText: "Salutations, brave one. The heart of our town, this very fountain, once gleamed with an ethereal light. As the Festival draws near, I seek to restore its former brilliance. In Chillwater Haven to the northwest, you will find 'Luminous Stones' that radiate with an inner light. Could you retrieve them for me? They are the key to revitalizing the fountain's mystical glow.",
+        endText: "Ah, the Luminous Stones! With these, the fountain shall be a beacon of light once more. You have my deepest thanks.",
+        eventType: "LOOT_ITEM",
+        npc: Types.Entities.GUARDIANFINTAN,
+        target: Types.Entities.LUMINOUSSTONES,
+        amount: 15,
+        level: 14,
+        medal: Types.Medals.TREE
+    },
+    {
         id: "WILLOW_FLOWERS",
         name: "Flowers for Willowdale",
         startText: "Our town square needs sprucing up for the coming festival.",
