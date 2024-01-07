@@ -11,7 +11,7 @@ define(['character'], function (Character) {
         ],
 
         "king": [
-            "/openShop wormking King's Shop",
+            //"/openShop wormking King's Shop",
             "Hi Looper, I'm the LoopWorm King",
             "Welcome to my kingdom",
             'You can buy our <a target="_blank" href="https://loopexchange.art/collection/web3-pets">Web3 Pets</a> to support us.',

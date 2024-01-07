@@ -4,12 +4,9 @@ let Properties = {
     rat: {
         level: 1,
         drops: {
-            // flask: 40,
-            // burger: 10,
-            // firepotion: 5
-            GOLD: 20,
-            GOLD2: 20,
-            GOLD3: 20,
+            flask: 40,
+            burger: 10,
+            firepotion: 5
         },
         respawnDelay: 10000,
     },
@@ -1067,19 +1064,19 @@ let Properties = {
     },
 
     // Weapons
-    axe: {
-        name: "Axe",
-        consumables: {
-            GOLD: {
-                level: 40,
-                range: 6
-            },
-            coblog: {
-                level: 10,
-                range: 12
-            }
-        }
-    }
+    // axe: {
+    //     name: "Axe",
+    //     consumables: {
+    //         GOLD: {
+    //             level: 40,
+    //             range: 6
+    //         },
+    //         coblog: {
+    //             level: 10,
+    //             range: 12
+    //         }
+    //     }
+    // }
 };
 
 Properties.getArmorLevel = function(kind, levelOffset) {

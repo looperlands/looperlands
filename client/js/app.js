@@ -661,6 +661,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                             let nftId = item.replace("NFT_", "0x");
                             _this.game.client.sendEquipInventory(itemId, nftId);
                             _this.game.player.switchWeapon(item);
+                            _this.hideInventory();
                         }
                         document.getElementById(item).addEventListener("click", equip);
                     }
@@ -674,6 +675,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                                 _this.game.client.sendConsumeItem(item);
                                 document.getElementById("count_" + item).innerHTML = count - 1;
                             }
+                            _this.hideInventory();
                         }
                         document.getElementById(item).addEventListener("click", consume);
                     }
@@ -690,6 +692,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                                 let errorMsg = error?.response?.data?.error;
                                 _this.showMessage(errorMsg);
                             });
+                            _this.hideInventory();
                         }
                         document.getElementById(item.nftId).addEventListener("click", spawnBot);
                     }

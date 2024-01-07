@@ -1178,6 +1178,25 @@ footer div  {display:inline-block;}
     #inventory .inventorySectionItems {
         height: 355px;
     }
+
+    .upscaled #emoteMenu {
+        top: 30%;
+        left: 5%;
+        overflow-y: hidden;
+        height: 32px;
+    }
+    .upscaled #emoteMenu .emote {
+        width: 16px;
+        height: 16px;
+        display: inline-block;
+        border-radius: 6px;
+        background: rgba(255,255,255,0.2);
+        margin: 0px 3px 0 3px;
+        padding: 0.2rem;
+        text-align: center;
+        cursor: pointer;
+        padding: 6px;
+    }
 }
 
 @media screen and (min-width: 1501px) {
@@ -1488,24 +1507,6 @@ footer div  {display:inline-block;}
         background: url(../img/3/barsheet.png);
         background-position-y: -192px;
         cursor: pointer;
-    }
-    .upscaled #emoteMenu {
-        top: 30%;
-        left: 5%;
-        overflow-y: hidden;
-        height: 32px;
-    }
-    .upscaled #emoteMenu .emote {
-        width: 16px;
-        height: 16px;
-        display: inline-block;
-        border-radius: 6px;
-        background: rgba(255,255,255,0.2);
-        margin: 0px 3px 0 3px;
-        padding: 0.2rem;
-        text-align: center;
-        cursor: pointer;
-        padding: 6px;
     }
 
     #resources { right: 40px; }
@@ -1912,6 +1913,25 @@ footer div  {display:inline-block;}
         opacity: 100;
         line-height:16px;
         transition: 0.2s ease-in-out all;
+    }
+
+    #emoteMenu {
+        position: absolute;
+        top: 8px;
+        left: 40px;
+        height: 24px;
+        overflow-y: hidden;
+    }
+    #emoteMenu .emote {
+        width: 16px;
+        height: 14px;
+        display: inline-block;
+        border-radius: 6px;
+        background: rgba(255,255,255,0.2);
+        margin: 0 2px 0 2px;
+        padding: 4px;
+        text-align: center;
+        cursor: pointer;
     }
 
     #playerimage {height: 64px; width: 64px;}
