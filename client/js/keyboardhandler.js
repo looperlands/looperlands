@@ -42,7 +42,7 @@ class KeyBoardHandler {
         // Keyboard shortcuts
         const shortCuts = 'zxcvb';
         if (shortCuts.indexOf(key) > -1) {
-            if(!this.game.started || this.inputHasFocus() || this.hasOpenPanel()) {
+            if(!this.game.started || this.inputHasFocus()) {
                 return;
             }
             switch (key) {
