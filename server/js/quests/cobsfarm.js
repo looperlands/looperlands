@@ -21,7 +21,7 @@ quests = [
         eventType: "KILL_MOB",
         npc: Types.Entities.COBHILLSNPC,
         target: Types.Entities.COBSLIMEBLUE,
-        amount: 20,
+        amount: 40,
         level: 2,
         medal: Types.Medals.SKULL
     },
@@ -46,7 +46,7 @@ quests = [
         eventType: "KILL_MOB",
         npc: Types.Entities.COBHILLSNPC,
         target: Types.Entities.COBSLIMERED,
-        amount: 60,
+        amount: 40,
         requiredQuest: "COB_YELLOW_SLIMES",
         level: 6,
         medal: Types.Medals.SKULL
