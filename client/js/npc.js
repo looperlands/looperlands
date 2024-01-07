@@ -313,6 +313,12 @@ define(['character'], function (Character) {
             "I can't wait to grow my own flowers."
         ],
 
+        "cobfern": [
+            "Adventurer, beware! Slimes have taken over these parts recently.",
+            "If you're heading to Willowdale Crossing, tread carefully.", 
+            "The path is swarming with those gooey critters."
+        ],
+
         "cobjohnny": [
             "Farm life is tough but it's something that we will all be able to do soon."
         ],
@@ -346,6 +352,39 @@ define(['character'], function (Character) {
         "CITYSIGN8": ["FOR SALE!"],
         "CITYSIGN9": ["FOR SALE!"],
         "CITYSIGN10": ["FOR SALE!"],
+
+        "cobelliott": [
+            "Need your weapons sharpened or armor reinforced?", "Those Slimes might be soft, but they're pesky in large numbers.",
+            "Stay vigilant out there.", "I've heard tales of bigger creatures lurking beyond the Slime-infested areas."
+        ],
+
+        "cobashley": [
+            "Welcome to Willowdale Crossing!", 
+            "We're a peaceful town, but lately, there's been trouble with Slimes nearby.",
+            "You never know what you might encounter out there."
+        ],
+
+        "cobmauve": [
+            "Ah, nothing beats a hot drink after a long day dodging Slimes, right?",
+            "You look like you could use a break.", 
+            "The wilderness is getting more dangerous by the day."
+        ],
+
+        "keeperariadne": [
+            "Welcome, traveler!", "These portals are the gateways to familiar lands afar.", "Step through and find yourself where you need to be in mere moments."
+        ],
+
+        "mayoroswald": [
+            "Greetings, traveler.", "Our town thrives on the bravery of adventurers like you.", "Can you help us with our Slime predicament?"
+        ],
+
+        "newcomersilas": [
+            "Willowdale Crossing seems like a fine place to call home, doesn't it?", "If only I could decide on the right spot.", "What do you think of the area near the market?"
+        ],
+
+        "patroncora": [
+            "This is the best spot in town for a cup of joe and the latest gossip."
+        ],
         // @nextNPCLine@
     };
 

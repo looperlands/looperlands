@@ -20,7 +20,7 @@ define(['jquery', 'animation', 'sprites'], function($, Animation, sprites) {
         
         loadJSON: function(data) {
     		this.id = data.id;
-			this.filepath = this.baseImageURL   + this.scale + "/" + this.id + ".png";
+			this.filepath = this.baseImageURL + this.scale + "/" + this.id + ".png";
     		this.animationData = data.animations;
     		this.width = data.width;
     		this.height = data.height;
@@ -31,39 +31,42 @@ define(['jquery', 'animation', 'sprites'], function($, Animation, sprites) {
     	},
 
         load: function() {
-        	var self = this;
+			let self = this;
 
-        	this.image = new Image();
-        	this.image.src = this.filepath;
-			this.image.crossOrigin = "Anonymous";
-
-        	this.image.onload = function() {
-        		self.isLoaded = true;
-
-				const canvas = document.createElement('canvas');
-				canvas.width = self.image.width;
-				canvas.height = self.image.height;
-				const ctx = canvas.getContext('2d');
-				ctx.drawImage(self.image, 0, 0);
-				let dataURL = canvas.toDataURL();
-    		    
-				self.renderWorker.postMessage({
-					"type": "loadSprite",
-					"id": self.id,
-					"dataURL": dataURL,
-					"animationData": self.animationData,
-					"width": self.width,
-					"height": self.height,
-					"offsetX": self.offsetX,
-					"offsetY": self.offsetY
-				});
-
-                if(self.onload_func) {
-                    self.onload_func();
-                }
-        	};
+			if (!self.id.startsWith("NFT_")) {
+				this.image = new Image();
+				this.image.src = this.filepath;
+				this.image.crossOrigin = "Anonymous";
+				this.image.onload = function() {
+					self.sendToWorker();
+					self.isLoaded = true;
+				};
+			} else {
+				this.isLoaded = true;
+				self.sendToWorker();
+			}
         },
-    
+
+		sendToWorker: function() {
+			let self = this;
+			let src;
+			if (window.location.href.indexOf("127.0.0.1") > -1) {
+				src = "http://127.0.0.1:8000/" + this.filepath;
+			} else {
+				src = this.filepath;
+			}			
+			self.renderWorker.postMessage({
+				"type": "loadSprite",
+				"id": self.id,
+				"src": src,
+				"animationData": self.animationData,
+				"width": self.width,
+				"height": self.height,
+				"offsetX": self.offsetX,
+				"offsetY": self.offsetY
+			});
+		},
+
         createAnimations: function() {
             var animations = {};
         

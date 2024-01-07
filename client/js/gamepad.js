@@ -101,7 +101,6 @@ class GamePadListener {
             //lastMoveTime = currentTime;
             change = false;
         }
-        
         /*
         // Process the gamepad buttons here (if needed)
         for (let i = 0; i < this.gamepad.buttons.length; i++) {

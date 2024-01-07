@@ -1009,6 +1009,12 @@ var Properties = {
         respawnDelay: 180000
     },
 
+    BORAC: {
+        level: 6,
+        xp: 100,
+        
+    },
+
     //Field effects
     magcrack: {
         aoe: {
@@ -1026,6 +1032,18 @@ var Properties = {
     },
 
     //Items
+    wildflowers: {
+        respawnDelay: 60000,
+    },
+    trinket: {
+        respawnDelay: 60000,
+    },
+    crystal: {
+        respawnDelay: 60000,
+    },
+    coffeebeans: {
+        respawnDelay: 60000,
+    },
     coblog: {
         respawnDelay: 60000,
     }
