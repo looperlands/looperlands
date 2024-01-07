@@ -656,12 +656,14 @@ define(['jquery', 'storage'], function ($, Storage) {
                 $("#inventorycontent").addClass("columns" + columns);
                 let equipFunc = function (item) {
                     if (document.getElementById(item) !== null) {
-                        let equip = function () {
+                        let equip = function (e) {
                             let itemId = Types.getKindFromString(item);
                             let nftId = item.replace("NFT_", "0x");
                             _this.game.client.sendEquipInventory(itemId, nftId);
                             _this.game.player.switchWeapon(item);
                             _this.hideInventory();
+                            e.preventDefault();
+                            e.stopImmediatePropagation();
                         }
                         document.getElementById(item).addEventListener("click", equip);
                     }
@@ -669,13 +671,15 @@ define(['jquery', 'storage'], function ($, Storage) {
 
                 let consumeFunc = function (item) {
                     if (document.getElementById(item) !== null) {
-                        let consume = function () {
+                        let consume = function (e) {
                             let count = parseInt(document.getElementById("count_" + item).innerHTML);
                             if (count > 0){
                                 _this.game.client.sendConsumeItem(item);
                                 document.getElementById("count_" + item).innerHTML = count - 1;
                             }
                             _this.hideInventory();
+                            e.preventDefault();
+                            e.stopImmediatePropagation();
                         }
                         document.getElementById(item).addEventListener("click", consume);
                     }
@@ -683,7 +687,7 @@ define(['jquery', 'storage'], function ($, Storage) {
 
                 let newBot = function (item) {
                     if (item.nftId && document.getElementById(item.nftId) !== null) {
-                        let spawnBot = function () {
+                        let spawnBot = function (e) {
                             let botNftId = item.nftId.replace("NFT_", "0x");
                             axios.post("/session/" + _this.storage.sessionId + "/newBot", {botNftId: botNftId}).then(function(response) {
                                 console.log("new bot", response);
@@ -693,6 +697,8 @@ define(['jquery', 'storage'], function ($, Storage) {
                                 _this.showMessage(errorMsg);
                             });
                             _this.hideInventory();
+                            e.preventDefault();
+                            e.stopImmediatePropagation();
                         }
                         document.getElementById(item.nftId).addEventListener("click", spawnBot);
                     }
