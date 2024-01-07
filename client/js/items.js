@@ -1,7 +1,7 @@
 define(['item'], function(Item) {
 
     let Items = {
-        
+
         Sword2: Item.extend({
             init: function(id) {
                 this._super(id, Types.Entities.SWORD2, "weapon");
@@ -119,7 +119,7 @@ define(['item'], function(Item) {
                 this._super(id, Types.Entities.FIREPOTION, "object");
                 this.lootMessage = "You feel the power of Loopring!";
             },
-    
+
             onLoot: function(player) {
                 player.startInvincibility();
             },
@@ -202,6 +202,7 @@ define(['item'], function(Item) {
         crystal:Item.extend({init:function(id){this._super(id,Types.Entities.CRYSTAL,"object");this.lootMessage="You collected a crystal.";}}),
         trinket:Item.extend({init:function(id){this._super(id,Types.Entities.TRINKET,"object");this.lootMessage="You collected a trinket.";}}),
         wildflowers:Item.extend({init:function(id){this._super(id,Types.Entities.WILDFLOWERS,"object");this.lootMessage="You collected a wildflower.";}}),
+        luminousstones:Item.extend({init:function(id){this._super(id,Types.Entities.LUMINOUSSTONES,"object");this.lootMessage="You collected a luminous stone.";}}),
         // @nextItemLine@
     };
 

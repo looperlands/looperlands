@@ -378,6 +378,11 @@ define(['character'], function (Character) {
             "Greetings, traveler.", "Our town thrives on the bravery of adventurers like you.", "Can you help us with our Slime predicament?"
         ],
 
+        "guardianfintan": [
+            "I am the guardian of these waters.", "Your deeds ripple through the town's destiny."
+
+        ],
+
         "newcomersilas": [
             "Willowdale Crossing seems like a fine place to call home, doesn't it?", "If only I could decide on the right spot.", "What do you think of the area near the market?"
         ],

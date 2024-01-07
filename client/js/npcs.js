@@ -330,6 +330,7 @@ define(['npc'], function(Npc) {
         cobmauve: Npc.extend({init: function(id) {this._super(id, Types.Entities.COBMAUVE, 1);}}),
         keeperariadne: Npc.extend({init: function(id) {this._super(id, Types.Entities.KEEPERARIADNE, 1);}}),
         mayoroswald: Npc.extend({init: function(id) {this._super(id, Types.Entities.MAYOROSWALD, 1);}}),
+        guardianfintan: Npc.extend({init: function(id) {this._super(id, Types.Entities.GUARDIANFINTAN, 1);}}),
         newcomersilas: Npc.extend({init: function(id) {this._super(id, Types.Entities.NEWCOMERSILAS, 1);}}),
         patroncora: Npc.extend({init: function(id) {this._super(id, Types.Entities.PATRONCORA, 1);}}),
         // @nextNPCLine@

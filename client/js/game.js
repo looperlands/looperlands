@@ -82,7 +82,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                 // sprites
                 this.spriteNames = ["hand", "sword", "loot", "target", "talk", "float", "sparks", "shadow16", "rat", "skeleton", "skeleton2", "spectre", "boss", "deathknight",
-                                "ogre", "crab", "snake", "eye", "bat", "goblin", "wizard", "guard", "king", "villagegirl", "villager", "coder", "agent", "rick", "scientist", "nyan", "priest", "coblumberjack", "cobhillsnpc", "cobcobmin", "cobellen", "cobjohnny", "cobashley",
+                    "ogre", "crab", "snake", "eye", "bat", "goblin", "wizard", "guard", "king", "villagegirl", "villager", "coder", "agent", "rick", "scientist", "nyan", "priest", "coblumberjack", "cobhillsnpc", "cobcobmin", "cobellen", "cobjohnny", "cobashley",
                     "king2", "goose", "tanashi", "slime","kingslime","silkshade","redslime","villagesign1","wildgrin","loomleaf","gnashling","arachweave","spider","fangwing", "minimag", "miner", "megamag", "seacreature", "tentacle", "tentacle2", "wildwill",
                     "cobchicken", "alaric","orlan","jayce", "cobcow", "cobpig", "cobgoat", "ghostie","cobslimered", "cobslimeyellow", "cobslimeblue", "cobslimepurple", "cobslimegreen", "cobslimepink", "cobslimecyan", "cobslimemint", "cobslimeking", "cobyorkie", "cobcat", "cobdirt", "cobincubator", "cobcoblin", "cobcobane", "cobogre",
                     "sorcerer", "octocat", "beachnpc", "forestnpc", "desertnpc", "lavanpc","thudlord", "clotharmor", "leatherarmor", "mailarmor","boar","grizzlefang","barrel","neena","athlyn","jeniper",
@@ -156,6 +156,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "mayoroswald",
                     "newcomersilas",
                     "BORAC",
+                    "guardianfintan",
                     // @nextCharacterLine@
                     "item-BOARHIDE",
                     "item-THUDKEY",
@@ -195,6 +196,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "item-crystal",
                     "item-trinket",
                     "item-wildflowers",
+                    "item-luminousstones",
                     // @nextObjectLine@
                     "NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6",
                     "NFT_38278eacc7d1c86fdbc85d798dca146fbca59a2e5e567dc15898ce2edac21f5f",
@@ -4782,7 +4784,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "NFT_ef4dbad11f6944c9ba3222b3e8aa63157178dd1857f0f4fcd7e16d58fcd1b4f1",
                     // @nextSpriteLine@
                 ];
-        },
+            },
 
             setup: function($bubbleContainer, canvas, background, foreground, input) {
                 this.setBubbleManager(new BubbleManager($bubbleContainer));
@@ -4991,11 +4993,11 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
             loadSprite: function(name) {
                 if(this.renderer.upscaledRendering) {
-                this.spritesets[0][name] = new Sprite(name, 1, this.renderer.worker);
+                    this.spritesets[0][name] = new Sprite(name, 1, this.renderer.worker);
                 } else {
-                this.spritesets[1][name] = new Sprite(name, 2, this.renderer.worker);
+                    this.spritesets[1][name] = new Sprite(name, 2, this.renderer.worker);
                     if(!this.renderer.mobile && !this.renderer.tablet) {
-                    this.spritesets[2][name] = new Sprite(name, 3, this.renderer.worker);
+                        this.spritesets[2][name] = new Sprite(name, 3, this.renderer.worker);
                     }
                 }
             },
@@ -5630,8 +5632,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     if(!self.storage.hasAlreadyPlayed()) {
                         self.storage.initPlayer(self.player.name);
                         self.storage.savePlayer(undefined,
-                        self.player.getSpriteName(),
-                        self.player.getWeaponName());
+                            self.player.getSpriteName(),
+                            self.player.getWeaponName());
                         self.showNotification("Welcome to LooperLands!");
                     } else {
                         self.showNotification("Welcome back to LooperLands!");
@@ -5930,7 +5932,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                     _self.doorCheck = false;
                                 });
                             } else if (dest.http_redirect !== undefined) {
-                            window.open(dest.http_redirect, '_blank');
+                                window.open(dest.http_redirect, '_blank');
                             }
                             else {
                                 checkTrigger();
@@ -6781,9 +6783,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 let shopName = shop.join(" ");
                                 self.app.openShop(shopId, shopName)
                             } else {
-                                self.createBubble(npc.id, msg);
-                                self.assignBubbleTo(npc);
-                                self.audioManager.playSound("npc");
+                            self.createBubble(npc.id, msg);
+                            self.assignBubbleTo(npc);
+                            self.audioManager.playSound("npc");
                             }
                         } else {
                             self.destroyBubble(npc.id);
@@ -7165,7 +7167,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
              */
             click: function(pos) {
 
-            if($('body').hasClass('inventory') || $('body').hasClass('settings')) {
+                if($('body').hasClass('inventory') || $('body').hasClass('settings')) {
                     return;
                 }
 
@@ -7882,14 +7884,14 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             if(response.data.weaponInfo.weaponLevelInfo.percentage === undefined) {
                                 $('#weaponProgressContainer').hide();
                             } else {
-                                $('#weaponProgress').text(weaponPercentage);
+                            $('#weaponProgress').text(weaponPercentage);
                                 $('#weaponProgressContainer').show();
                             }
 
                             if(response.data.weaponInfo.trait === undefined) {
                                 $('#weaponTraitContainer').hide();
                             } else {
-                                $('#weaponTrait').text(response.data.weaponInfo.trait);
+                            $('#weaponTrait').text(response.data.weaponInfo.trait);
                                 $('#weaponTraitContainer').show();
                             }
 

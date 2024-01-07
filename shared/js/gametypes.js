@@ -260,7 +260,8 @@ Types = {
         COFFEEBEANS: 21300047, 
         CRYSTAL: 21300048, 
         TRINKET: 21300049, 
-        WILDFLOWERS: 21300050, // @lastidObject@
+        WILDFLOWERS: 21300050, 
+        LUMINOUSSTONES: 21300051, // @lastidObject@
         //@nextIdLineObject@
         
         // NPCs
@@ -341,7 +342,8 @@ Types = {
         MAYOROSWALD: 34000051, 
         NEWCOMERSILAS: 34000052, 
         PATRONCORA: 34000053,
-        BORAC: 34000054, // @lastidCharacter@
+        BORAC: 34000054,
+        GUARDIANFINTAN: 34000055, // @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -4900,6 +4902,7 @@ var kinds = {
     crystal: [Types.Entities.CRYSTAL, "object"],
     trinket: [Types.Entities.TRINKET, "object"],
     wildflowers: [Types.Entities.WILDFLOWERS, "object"],
+    luminousstones: [Types.Entities.LUMINOUSSTONES, "object"],
     // @nextObjectLine@
 
     guard: [Types.Entities.GUARD, "npc"],
@@ -4993,6 +4996,7 @@ var kinds = {
     CITYSIGN10: [Types.Entities.CITYSIGN10, "npc"],
     keeperariadne: [Types.Entities.KEEPERARIADNE, "npc"],
     mayoroswald: [Types.Entities.MAYOROSWALD, "npc"],
+    guardianfintan: [Types.Entities.GUARDIANFINTAN, "npc"],
     newcomersilas: [Types.Entities.NEWCOMERSILAS, "npc"],
     patroncora: [Types.Entities.PATRONCORA, "npc"],
     BORAC: [Types.Entities.BORAC, "mob"],

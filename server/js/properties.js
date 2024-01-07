@@ -10,7 +10,7 @@ let Properties = {
         },
         respawnDelay: 10000,
     },
-    
+
     skeleton: {
         level: 4,
         drops: {
@@ -21,7 +21,7 @@ let Properties = {
         weaponMod: 1.5, //bigger mod cause attack rate is 50% slower
         respawnDelay: 45000,
     },
-    
+
     goblin: {
         level: 3,
         drops: {
@@ -30,7 +30,7 @@ let Properties = {
             firepotion: 5
         }
     },
-    
+
     ogre: {
         level: 6,
         drops: {
@@ -40,7 +40,7 @@ let Properties = {
             firepotion: 5
         }
     },
-    
+
     spectre: {
         level: 9,
         drops: {
@@ -51,7 +51,7 @@ let Properties = {
         weaponMod: 1.25,
         hpMod: 0.8
     },
-    
+
     deathknight: {
         level: 12,
         drops: {
@@ -61,7 +61,7 @@ let Properties = {
         weaponMod: 0.9,
         hpMod: 1.2
     },
-    
+
     crab: {
         level: 2,
         drops: {
@@ -70,7 +70,7 @@ let Properties = {
             firepotion: 5
         }
     },
-    
+
     snake: {
         level: 5,
         drops: {
@@ -81,7 +81,7 @@ let Properties = {
         weaponMod: 1.2,
         armorMod: 0.5
     },
-    
+
     skeleton2: {
         level: 20,
         drops: {
@@ -91,7 +91,7 @@ let Properties = {
         weaponMod: 1.5, //bgger mod cause attack rate is 50% slower
         respawnDelay: 30000
     },
-    
+
     eye: {
         level: 8,
         drops: {
@@ -100,7 +100,7 @@ let Properties = {
             firepotion: 5
         }
     },
-    
+
     bat: {
         level: 3,
         drops: {
@@ -109,7 +109,7 @@ let Properties = {
             firepotion: 5
         }
     },
-    
+
     wizard: {
         level: 4,
         drops: {
@@ -117,7 +117,7 @@ let Properties = {
             firepotion: 5
         }
     },
-    
+
     boss: {
         level: 13,
         drops: {
@@ -129,7 +129,7 @@ let Properties = {
         weaponMod: 2.5,
         redpacket: true,
         respawnDelay: 120000,
-        xp: 7500  
+        xp: 7500
     },
 
     slime: {
@@ -220,7 +220,7 @@ let Properties = {
             WILDBLADE: 40,
         },
     },
-    
+
 
 
 
@@ -230,10 +230,10 @@ let Properties = {
         level: 3,
         drops: {
             potion: 100,
-        messages: ['Bow to the gelatinous crown', 'Flowing, shifting, unstoppable', 'Dissolve within my embrace', 'I am boundless, ever-spreading', 'Your struggles make the kingdom grow'],
-        armorMod: 0.75,
-        hpMod: 3,
-        xp: 0,
+            messages: ['Bow to the gelatinous crown', 'Flowing, shifting, unstoppable', 'Dissolve within my embrace', 'I am boundless, ever-spreading', 'Your struggles make the kingdom grow'],
+            armorMod: 0.75,
+            hpMod: 3,
+            xp: 0,
         },
     },
 
@@ -242,7 +242,7 @@ let Properties = {
         drops: {
             potion: 50,
         },
-        messages: ['Darkness shall embrance you!', 'Your doom is woven', 'Fear binds you', 'Your end is spun', 'The old world beckons you'],   
+        messages: ['Darkness shall embrance you!', 'Your doom is woven', 'Fear binds you', 'Your end is spun', 'The old world beckons you'],
         armorMod: 1,
         hpMod: 3,
         weaponMod: 0.8,
@@ -254,29 +254,29 @@ let Properties = {
         level: 10,
         drops: {
             potion: 100,
-            
+
         },
         armorMod: 1.2,
         weaponMod: 1.9,
         hpMod: 2.8,
-        xp: 1200,  
+        xp: 1200,
         respawnDelay: 30000
-        
+
     },
 
-        glacialord: {
+    glacialord: {
         level: 20,
         drops: {
             potion: 50,
         },
-        messages: ['Frost consumes you!', 'Ice seals your fate!', 'I am eternal Cold!', 'Cold as death', 'Shatter!'],   
+        messages: ['Frost consumes you!', 'Ice seals your fate!', 'I am eternal Cold!', 'Cold as death', 'Shatter!'],
         armorMod: 1,
         hpMod: 5,
         weaponMod: 0.8,
         respawnDelay: 30000,
         xp: 3000
-        
-        
+
+
     },
 
     nightharrow: {
@@ -288,15 +288,15 @@ let Properties = {
             damage: 100,
             range: 2
         },
-        messages: ['Endings begin with me.', 'Kneel!', 'Dawn shall never rise.', 'Face the endless night!', 'Embrace the final dusk.!'],   
+        messages: ['Endings begin with me.', 'Kneel!', 'Dawn shall never rise.', 'Face the endless night!', 'Embrace the final dusk.!'],
         armorMod: 2,
         hpMod: 12,
         weaponMod: 1.6,
         respawnDelay: 1800000,
         xp: 5000
-        
-        
-        
+
+
+
     },
 
 
@@ -305,8 +305,8 @@ let Properties = {
         drops: {
             potion: 100,
         },
-    },      
-    
+    },
+
 
     redslime: {
         level: 2,
@@ -314,14 +314,14 @@ let Properties = {
             potion: 50,
             REDOOZE: 50,
         },
-    },     
+    },
 
     spider: {
         level: 4,
         drops: {
             potion: 65,
         },
-    },  
+    },
 
     fangwing: {
         level: 4,
@@ -329,15 +329,15 @@ let Properties = {
             potion: 40,
             BATWING: 65,
         },
-    },  
+    },
 
     arachweave: {
         level: 5,
         drops: {
             KEY_ARACHWEAVE: 100,
         },
-    },  
-    
+    },
+
     minimag: {
         level: 16,
         drops: {
@@ -412,12 +412,12 @@ let Properties = {
         level: 1,
         friendly: true
     },
-    
+
     cobpig: {
         level: 1,
         friendly: true
     },
-    
+
     cobgoat: {
         level: 1,
         friendly: true
@@ -470,7 +470,7 @@ let Properties = {
     cobslimegreen: {
         level: 11,
         drops: {
-            cobapple: 20,
+            cobapple: 30,
             cobcorn: 10,
             redsword: 5
         }
@@ -479,7 +479,8 @@ let Properties = {
     cobslimepink: {
         level: 14,
         drops: {
-            cobapple: 20,
+            cobapple: 30,
+            luminousstones: 20,
             cobcorn: 10,
             redsword: 5
         }
@@ -488,16 +489,16 @@ let Properties = {
     cobslimecyan: {
         level: 17,
         drops: {
-            cobapple: 20,
+            luminousstones: 50,
+            cobapple: 40,
             cobcorn: 10,
-            redsword: 5
         }
     },
 
     cobslimemint: {
         level: 20,
         drops: {
-            cobapple: 20,
+            cobapple: 50,
             cobcorn: 10,
             redsword: 5
         }
@@ -511,7 +512,7 @@ let Properties = {
         armorMod: 1.25,
         weaponMod: 2,
         hpMod: 10,
-        xp: 2500,  
+        xp: 2500,
         respawnDelay: 180000
     },
 
@@ -527,14 +528,14 @@ let Properties = {
         armor: 1,
         weapon: 1,
         friendly: true
-    },    
+    },
 
     turtle: {
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
-    },  
+    },
 
     brownspotdog: {
         hp: 10,
@@ -542,7 +543,7 @@ let Properties = {
         weapon: 1,
         friendly: true
     },
-    
+
     tabbycat: {
         hp: 10,
         armor: 1,
@@ -560,20 +561,20 @@ let Properties = {
         armor: 1,
         weapon: 1,
         friendly: true
-    },  
+    },
     whitedog: {
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
-    }, 
+    },
 
     fvillager1: {
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
-    },    
+    },
 
     villager1: {
         hp: 10,
@@ -935,7 +936,7 @@ let Properties = {
         weapon: 1,
         friendly: true
     },
-    
+
     jayce: {
         hp: 10,
         armor: 1,
@@ -1004,14 +1005,14 @@ let Properties = {
         armorMod: 1.25,
         weaponMod: 2.25,
         hpMod: 13,
-        xp: 5000,  
+        xp: 5000,
         respawnDelay: 180000
     },
 
     BORAC: {
         level: 6,
         xp: 100,
-        
+
     },
 
     //Field effects
@@ -1031,6 +1032,9 @@ let Properties = {
     },
 
     //Items
+    luminousstones: {
+        respawnDelay: 60000,
+    },
     wildflowers: {
         respawnDelay: 60000,
     },
