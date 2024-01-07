@@ -4746,7 +4746,6 @@ var kinds = {
     alaric: [Types.Entities.ALARIC, "mob"],
     cobdirt: [Types.Entities.COBDIRT, "mob"],
     cobincubator: [Types.Entities.COBINCUBATOR, "mob"],
-    BORAC: [Types.Entities.BORAC, "mob"],
 
     brownspotdog: [Types.Entities.BROWNSPOTDOG, "mob"],
     turtle: [Types.Entities.TURTLE, "mob"],
@@ -4996,6 +4995,7 @@ var kinds = {
     mayoroswald: [Types.Entities.MAYOROSWALD, "npc"],
     newcomersilas: [Types.Entities.NEWCOMERSILAS, "npc"],
     patroncora: [Types.Entities.PATRONCORA, "npc"],
+    BORAC: [Types.Entities.BORAC, "mob"],
     // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],
