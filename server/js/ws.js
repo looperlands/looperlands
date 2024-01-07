@@ -343,13 +343,13 @@ WS.socketIOServer = Server.extend({
 
             let rcvInventory = await axios.get(`${LOOPWORMS_LOOPERLANDS_BASE_URL}/looperInventoryDetails.php?walletID=${walletId}&nftId=${nftId}&APIKEY=${process.env.LOOPWORMS_API_KEY}`);
             if (rcvInventory?.data){
-                inventory = rcvInventory.data[0].weapons.map(function(item) {
+                inventory = rcvInventory.data[0].weapons ? rcvInventory.data[0].weapons.map(function(item) {
                     if (item){
                         item.nftId = item.nftId.replace("0x", "NFT_");
                         item.level = Formulas.calculatePercentageToNextLevel(item.xp).currentLevel;
                         return item;
                     }
-                });
+                }) : [];
                 if (inventory.length > 0) {
                     inventory = inventory.filter(item => {
                         if (item && Types.isWeapon(Types.getKindFromString(item.nftId))){
@@ -358,13 +358,13 @@ WS.socketIOServer = Server.extend({
                     });
                 }
 
-                special = rcvInventory.data[0].specialitems.map(function(item) {
+                special = rcvInventory.data[0].specialitems ? rcvInventory.data[0].specialitems.map(function(item) {
                     if (item){
                         item.nftId = item.nftId.replace("0x", "NFT_");
                         item.level = Formulas.calculateToolPercentageToNextLevel(item.xp).currentLevel;
                         return item;
                     }
-                });
+                }) : [];
                 if (special.length > 0) {
                     special = special.filter(item => {
                         if (item && Types.isSpecialItem(Types.getKindFromString(item.nftId))){
@@ -373,12 +373,12 @@ WS.socketIOServer = Server.extend({
                     });
                 }
 
-                bots = rcvInventory.data[0].bots.map(function(item) {
+                bots = rcvInventory.data[0].bots ? rcvInventory.data[0].bots.map(function(item) {
                     if (item){
                         item.nftId = item.nftId.replace("0x", "NFT_");
                         return item;
                     }
-                });
+                }) : [];
 
                 if (bots.length > 0) {
                     bots = bots.filter(item => {
