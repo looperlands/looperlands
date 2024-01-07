@@ -45,6 +45,9 @@ class GamePadListener {
         };
 
         let change = false;
+        //let debounceTime = 100; // Time in milliseconds
+        //let lastMoveTime = this.lastMoveTime || 0; // Track the last movement time
+
         // Left stick horizontal movement (axis 0)
         if (this.gamepad.axes[0] < -threshold) {
             //console.log('Left stick moved left (A)');
@@ -66,14 +69,37 @@ class GamePadListener {
             keys.s = 1;
             change = true;
         }
+
+        /*
+        // D-pad movement
+        if (this.gamepad.buttons[12].pressed) {
+            keys.w = 1;
+            change = true;
+        }
+        if (this.gamepad.buttons[13].pressed) {
+            keys.s = 1;
+            change = true;
+        }
+        if (this.gamepad.buttons[14].pressed) {
+            keys.a = 1;
+            change = true;
+        }
+        if (this.gamepad.buttons[15].pressed) {
+            keys.d = 1;
+            change = true;
+        }
         
-        if (change) {
+        let currentTime = Date.now();
+        */
+
+        if (change) { //&& (currentTime - lastMoveTime > debounceTime)
             let x = this.game.player.gridX;
             let y = this.game.player.gridY;
             this.game.click({ x: x + keys.d - keys.a, 
                               y: y + keys.s - keys.w, 
-                              keyboard: true});
-            change = false;    
+                              keyboard: true});  
+            //lastMoveTime = currentTime;
+            change = false;
         }
         
         /*
@@ -102,26 +128,26 @@ class GamePadListener {
 
     handleButtonPress(buttonIndex) {
         switch (buttonIndex) {
+            case 1:
+                this.simulateKeyPress('b', 'KeyB'); // Weapon Info
+                break;
+            case 2:
+                this.simulateKeyPress('v', 'KeyV'); // Avatar Info 
+                break;
             case 3:
                 this.simulateKeyPress('z', 'KeyZ'); // Inventory
+                break;
+            case 4:
+                this.simulateKeyPress('.', 'Period'); // Next Weapon
+                break;
+            case 5:
+                this.simulateKeyPress(',', 'Comma'); // Previous Weapon 
                 break;
             case 8:
                 this.simulateKeyPress('x', 'KeyX'); // Quests
                 break;
             case 9:
                 this.simulateKeyPress('c', 'KeyC'); // Settings
-                break;
-            case 12:
-                this.simulateKeyPress('v', 'KeyV'); // Weapon Info
-                break;
-            case 13:
-                this.simulateKeyPress('b', 'KeyB'); // Avatar Info
-                break;
-            case 14:
-                this.simulateKeyPress(',', 'Comma'); // Previous Weapon
-                break;
-            case 15:
-                this.simulateKeyPress('.', 'Period'); // Next Weapon
                 break;
         }
     }
