@@ -624,6 +624,7 @@ exports.getShopInventory = async function(shopId) {
   try {
     return shopResponse.data;
   } catch (error) {
+    console.log("getShopInventory", error)
     return null;
   }
 }
