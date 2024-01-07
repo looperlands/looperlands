@@ -8154,7 +8154,6 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             },
 
             updateResource: function (resource, amount) {
-                $('#resources').removeClass('hidden');
                 if (amount > 0) {
                     if ($('#resource-' + resource).length === 0) {
                         let resourceEl = $('<div id="resource-' + resource + '" class="resource"><span class="img"></span><span class="amount"></span></div>');
@@ -8166,6 +8165,11 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     $('#resource-' + resource).find('.amount').text(amount);
                 } else {
                     $('#resource-' + resource).remove()
+                }
+                if($('#resources').children().length === 0) {
+                    $('#resources').addClass('hidden');
+                } else {
+                    $('#resources').removeClass('hidden');
                 }
             }
         });
