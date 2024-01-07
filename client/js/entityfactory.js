@@ -598,6 +598,7 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.CRYSTAL] = function(id) { return new Items.crystal(id); };
     EntityFactory.builders[Types.Entities.TRINKET] = function(id) { return new Items.trinket(id); };
     EntityFactory.builders[Types.Entities.WILDFLOWERS] = function(id) { return new Items.wildflowers(id); };
+    EntityFactory.builders[Types.Entities.LUMINOUSSTONES] = function(id) { return new Items.luminousstones(id); };
     // @nextObjectLine@
 
     //====== NPCs ======

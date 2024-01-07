@@ -260,7 +260,8 @@ Types = {
         COFFEEBEANS: 21300047, 
         CRYSTAL: 21300048, 
         TRINKET: 21300049, 
-        WILDFLOWERS: 21300050, // @lastidObject@
+        WILDFLOWERS: 21300050, 
+        LUMINOUSSTONES: 21300051, // @lastidObject@
         //@nextIdLineObject@
         
         // NPCs
@@ -4891,6 +4892,7 @@ var kinds = {
     crystal: [Types.Entities.CRYSTAL, "object"],
     trinket: [Types.Entities.TRINKET, "object"],
     wildflowers: [Types.Entities.WILDFLOWERS, "object"],
+    luminousstones: [Types.Entities.LUMINOUSSTONES, "object"],
     // @nextObjectLine@
 
     guard: [Types.Entities.GUARD, "npc"],
