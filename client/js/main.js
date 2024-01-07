@@ -274,7 +274,7 @@ define(['jquery', 'app'], function($, App) {
 	
     		game.onGameStart(function() {
                 app.initEquipmentIcons();
-                keyboardHandler = new KeyBoardHandler(game);
+                keyboardHandler = new KeyBoardHandler(game, app);
                 game.gamepadListener = new GamePadListener(game);
     		});
     		
