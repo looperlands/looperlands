@@ -301,6 +301,7 @@ define(['jquery', 'app'], function($, App) {
 	
     		game.onPlayerEquipmentChange(function() {
     		    app.initEquipmentIcons();
+                setTimeout(() => game.renderStatistics(), 1000);
     		});
 	
     		game.onPlayerInvincible(function() {

@@ -5541,7 +5541,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             },
 
             connect: function(started_callback) {
-                var self = this,
+                let self = this,
                     connecting = false; // always in dispatcher mode in the build version
 
                 this.client = new GameClient(this.host, this.port, this.protocol, this.sessionId, this.mapId);
@@ -5619,13 +5619,14 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                     if(!self.storage.hasAlreadyPlayed()) {
                         self.storage.initPlayer(self.player.name);
-                    self.storage.savePlayer(undefined,
-                            self.player.getSpriteName(),
-                            self.player.getWeaponName());
+                        self.storage.savePlayer(undefined,
+                        self.player.getSpriteName(),
+                        self.player.getWeaponName());
                         self.showNotification("Welcome to LooperLands!");
                     } else {
                         self.showNotification("Welcome back to LooperLands!");
                         self.storage.setPlayerName(name);
+                        setTimeout(() => self.renderStatistics(), 1000);
                     }
 
                     self.player.onStartPathing(function(path) {
@@ -5996,9 +5997,12 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     });
 
                     self.player.onSwitchItem(function() {
-                        var weaponName = self.player.getWeaponName();
+                        let player = self.getEntityById(self.playerId);
+                        let weaponName = player.getWeaponName();
+
+                        setTimeout(() => self.renderStatistics(), 1000);
                         if (!weaponName.startsWith("NFT_")) {
-                            self.storage.setPlayerWeapon(self.player.getWeaponName());
+                            self.storage.setPlayerWeapon(player.getWeaponName());
                         }
 
                         if(this.isFishing) {
@@ -7866,8 +7870,20 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             weaponLevel = response.data.weaponInfo.weaponLevelInfo.currentLevel;
 
                             $('#weaponLevel').text(weaponLevel);
-                            $('#weaponProgress').text(weaponPercentage);
-                            $('#weaponTrait').text(response.data.weaponInfo.trait);
+                            if(response.data.weaponInfo.weaponLevelInfo.percentage === undefined) {
+                                $('#weaponProgressContainer').hide();
+                            } else {
+                                $('#weaponProgress').text(weaponPercentage);
+                                $('#weaponProgressContainer').show();
+                            }
+
+                            if(response.data.weaponInfo.trait === undefined) {
+                                $('#weaponTraitContainer').hide();
+                            } else {
+                                $('#weaponTrait').text(response.data.weaponInfo.trait);
+                                $('#weaponTraitContainer').show();
+                            }
+
                         }
 
                         if (self.player.level !== level) {

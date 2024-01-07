@@ -116,7 +116,7 @@ class KeyBoardHandler {
     }
 
     equipWeapon(weapon) {
-        let weaponId = Types.Entities[weapon];
+        let weaponId = Types.getKindFromString(weapon);
         let nftId = weapon.replace("NFT_", "0x");
         this.game.client.sendEquipInventory(weaponId, nftId);
         this.game.player.switchWeapon(weapon,1);
@@ -129,8 +129,8 @@ class KeyBoardHandler {
             this.weapons = [];
             axios.get(inventoryQuery).then(function(response) {
                 for(var i = 0; i < response.data.inventory.length; i++) {
-                    if (Types.isWeapon(Types.Entities[response.data.inventory[i]])) {
-                        self.weapons.push(response.data.inventory[i]);
+                    if (Types.isWeapon(Types.Entities[response.data.inventory[i].nftId])) {
+                        self.weapons.push(response.data.inventory[i].nftId);
                     }
                 }
                 callback(self.weapons);

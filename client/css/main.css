@@ -946,6 +946,11 @@ footer div  {display:inline-block;}
     visibility: visible;
 }
 
+.tooltiptext .tooltipHighlight {
+    color: #610b23;
+    font-size:12px;
+}
+
 #inventory .tooltiptext {
     visibility: hidden;
     padding: 0.25em 0.5em;

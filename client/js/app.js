@@ -573,7 +573,10 @@ define(['jquery', 'storage'], function ($, Storage) {
                 if (weaponInventory.length > 0) {
                     columns++;
                     weaponInventory.forEach(function(item) {
-                        imgTag = "<div class='item panelBorder'><img id='" + item + "' style='width: 32px; height: 32px; object-fit: cover; cursor: pointer; object-position: 100% 0;' src='img/3/item-" + item + ".png' /></div>";
+                        imgTag = "<div class='item panelBorder'>" +
+                            "<div class='tooltiptext'><span class='tooltipHighlight'>Level " + item.level + "</span> " + item.weaponName + " (" + item.Trait + ")</div>" +
+                            "<img id='" + item.nftId + "' style='width: 32px; height: 32px; object-fit: cover; cursor: pointer; object-position: 100% 0;' src='img/3/item-" + item.nftId + ".png' />" +
+                            "</div>";
                         inventoryHtml += imgTag;
                     });
                 }
@@ -585,7 +588,9 @@ define(['jquery', 'storage'], function ($, Storage) {
                     inventoryHtml += "<div class='inventorySectionItems'>"
 
                     specialInventory.forEach(function(item) {
-                        imgTag = "<div class='item panelBorder'><img id='" + item + "' style='width: 32px; height: 32px; object-fit: cover; cursor: pointer; object-position: 100% 0;' src='img/3/item-" + item + ".png' /></div>";
+                        imgTag = "<div class='item panelBorder'>" +
+                            "<div class='tooltiptext'><span class='tooltipHighlight'>Level " + item.level + "</span> " + item.specialItemName + " (" + item.Trait + ")</div>" +
+                            "<img id='" + item.nftId + "' style='width: 32px; height: 32px; object-fit: cover; cursor: pointer; object-position: 100% 0;' src='img/3/item-" + item.nftId + ".png' /></div>";
                         inventoryHtml += imgTag;
                     });
                     inventoryHtml += "</div></div>";
@@ -593,7 +598,6 @@ define(['jquery', 'storage'], function ($, Storage) {
 
 
                 if (Object.keys(consumablesInventory).length > 0) {
-                    columns++;
                     let itemHtml = "<div class='inventorySection' id='inventory-tools'><div class='inventoryTitle'>Items</div>";
                     itemHtml += "<div class='inventorySectionItems'>"
                     let hasItem = false;
@@ -618,6 +622,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                     itemHtml += "</div></div>";
 
                     if (hasItem) {
+                        columns++;
                         inventoryHtml += itemHtml;
                     }
                 }
@@ -628,9 +633,8 @@ define(['jquery', 'storage'], function ($, Storage) {
                     inventoryHtml += "<div class='inventorySectionItems'>"
 
                     botsInventory.forEach(function(bot) {
-                        let item = bot?.botNftId?.replace("0x", "");
-                        if (item) {
-                            imgTag = `<div class='item panelBorder'><img id=${item} style='width: 32px; height: 32px; object-fit: cover; cursor: pointer; object-position: 100% 0;' src='img/1/NFT_` + item + ".png' /></div>";
+                        if (bot) {
+                            imgTag = `<div class='item panelBorder'><div class='tooltiptext'><span class='tooltipHighlight'>Level ${bot.level}</span> ${bot.looperName}</div><img id=${bot.nftId} style='width: 32px; height: 32px; object-fit: cover; cursor: pointer; object-position: 100% 0;' src='img/1/` + bot.nftId + ".png' /></div>";
                             inventoryHtml += imgTag;
                         }
                     });
@@ -643,7 +647,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                 let equipFunc = function (item) {
                     if (document.getElementById(item) !== null) {
                         let equip = function () {
-                            let itemId = Types.Entities[item];
+                            let itemId = Types.getKindFromString(item);
                             let nftId = item.replace("NFT_", "0x");
                             _this.game.client.sendEquipInventory(itemId, nftId);
                             _this.game.player.switchWeapon(item);
@@ -666,10 +670,10 @@ define(['jquery', 'storage'], function ($, Storage) {
                 }
 
                 let newBot = function (item) {
-                    let itemId = item?.botNftId?.replace("0x", "");
-                    if (itemId && document.getElementById(itemId) !== null) {
+                    if (item.nftId && document.getElementById(item.nftId) !== null) {
                         let spawnBot = function () {
-                            axios.post("/session/" + _this.storage.sessionId + "/newBot", {botNftId: item.botNftId}).then(function(response) {
+                            let botNftId = item.nftId.replace("NFT_", "0x");
+                            axios.post("/session/" + _this.storage.sessionId + "/newBot", {botNftId: botNftId}).then(function(response) {
                                 console.log("new bot", response);
                             }).catch(function(error) {
                                 console.log(error);
@@ -677,16 +681,16 @@ define(['jquery', 'storage'], function ($, Storage) {
                                 _this.showMessage(errorMsg);
                             });
                         }
-                        document.getElementById(itemId).addEventListener("click", spawnBot);
+                        document.getElementById(item.nftId).addEventListener("click", spawnBot);
                     }
                 }
 
                 weaponInventory.forEach(function (item) {
-                    equipFunc(item);
+                    equipFunc(item.nftId);
                 });
 
                 specialInventory.forEach(function (item) {
-                    equipFunc(item);
+                    equipFunc(item.nftId);
                 });
 
                 botsInventory.forEach(function (item) {

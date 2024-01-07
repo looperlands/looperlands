@@ -1064,6 +1064,26 @@ let Properties = {
         inventoryDescription: "Gold",
         collectItem: Types.Entities.GOLD,
         collectAmount: 50
+    },
+
+    // Weapons
+    axe: {
+        level: 40,
+        name: "Axe",
+        consumables: {
+            GOLD: {
+                level: 40,
+                range: 6
+            },
+            COBLOG: {
+                level: 10,
+                range: 12
+            },
+            fireArrow: {
+                level: 20,
+                range: 15,
+            }
+        }
     }
 };
 
@@ -1095,12 +1115,31 @@ Properties.getWeaponLevel = function(kind, levelOffset) {
                 return Math.round((0.4 * (level + levelOffset) + (level + levelOffset - 1) * 0.5) * Properties.getWeaponMod(kind));
             }
         } else {
+            if (Properties[Types.getKindAsString(kind)] !== undefined) {
+                let weaponProps = Properties[Types.getKindAsString(kind)];
+
+                if(weaponProps.consumables) {
+                    let levelInfo = [];
+                    for(let consumable in weaponProps.consumables) {
+                        levelInfo.push({ consumable: consumable, level: weaponProps.consumables[consumable].level, range: weaponProps.consumables[consumable].range});
+                    }
+                    console.log(levelInfo);
+                    return levelInfo;
+                }
+
+                return weaponProps.level;
+            }
             return Types.getWeaponRank(kind);
         }
     } catch(e) {
         console.error("No level found for weapon: "+Types.getKindAsString(kind), e);
     }
 };
+
+Properties.getWeaponName = function(kind) {
+    let retName = Properties[Types.getKindAsString(kind)]?.name;
+    return retName !== undefined ? retName : Types.getKindAsString(kind);
+}
 
 Properties.getHitPoints = function(kind, levelOffset) {
     let level = Properties.getLevel(kind);

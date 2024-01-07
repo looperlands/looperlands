@@ -1123,6 +1123,17 @@ module.exports = World = cls.Class.extend({
         return weaponInfo;
     },
 
+    getItemWeaponStatistics: function(playerId) {
+        const player = this.getEntityById(playerId);
+        if (player === undefined) {
+            return;
+        }
+
+        return {
+            currentLevel: player.getWeaponLevel()
+        }
+    },
+
     doAoe: function (mob) {
         let kind = Types.getKindAsString(mob.kind);
         let aoeProps = Properties[kind].aoe;

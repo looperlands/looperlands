@@ -400,16 +400,26 @@ module.exports = Player = Character.extend({
                 let playerCache = self.server.server.cache.get(self.sessionId);
                 let _self = self;
                 let nftId = message[2];
-                dao.walletHasNFT(playerCache.walletId, nftId).then(function (result) {
+                if(nftId.startsWith("0x")) {
+                    dao.walletHasNFT(playerCache.walletId, nftId).then(function (result) {
+                        item = {kind: message[1]};
+                        _self.equipItem(item);
+                        _self.broadcast(_self.equip(item.kind));
+                    }).catch(function (error) {
+                        console.error("Asset validation error: " + error);
+                        item = {kind: Types.Entities.SWORD1};
+                        _self.equipItem(item);
+                        _self.broadcast(_self.equip(item.kind));
+                    });
+                } else {
                     item = {kind: message[1]};
-                    _self.equipItem(item);
-                    _self.broadcast(_self.equip(item.kind));
-                }).catch(function (error) {
-                    console.error("Asset validation error: " + error);
-                    item = {kind: Types.Entities.SWORD1};
-                    _self.equipItem(item);
-                    _self.broadcast(_self.equip(item.kind));
-                });
+                    if(self.getResourceAmount(item.kind) > 0 || await dao.getItemCount(playerCache.nftId, item.kind ) > 0) {
+                        _self.equipItem(item);
+                        _self.broadcast(_self.equip(item.kind));
+                    } else {
+                        console.log("Player " + _self.name + " tried to equip item " + nftId + " but does not have it.");
+                    }
+                }
             }
             else if(action === Types.Messages.TELEPORT) {
                 let _self = self;
@@ -754,8 +764,9 @@ module.exports = Player = Character.extend({
             this.nftWeapon = new NFTWeapon.NFTWeapon(this.walletId, kindString);
             this.nftWeapon.loadWeaponData();
         } else {
+            this.nftWeapon = undefined;
             if (this.nftWeapon === undefined) {
-                this.weaponLevel = Properties.getWeaponLevel(kind);
+                this.weaponLevel = this.getWeaponLevel(kindString);
             }
         }
     },
@@ -871,13 +882,31 @@ module.exports = Player = Character.extend({
         dao.updatePVPStats(playerKiller.walletId, playerKiller.nftId, 1, 0);
     },
 
-    getWeaponLevel: function() {
+    getWeaponLevel: function(kind) {
         const nftWeapon = this.getNFTWeapon();
         if (nftWeapon !== undefined) {
             return nftWeapon.getLevel();
-        } else {
-            return this.weaponLevel;
         }
+
+        if(kind === undefined) {
+            kind = this.weaponName;
+        }
+        let levelInfo = Properties.getWeaponLevel(Types.getKindFromString(kind));
+        let weaponLevel = 0;
+        if (typeof levelInfo === "object") {
+            let sortedLevelInfo = _.sortBy(levelInfo, ["level"]);
+            for (let i = 0; i < sortedLevelInfo.length; i++) {
+                let level = sortedLevelInfo[i];
+                if (this.getResourceAmount(Types.getKindFromString(level.consumable)) > 0) {
+                    weaponLevel = level.level;
+                    break;
+                }
+            }
+        } else {
+            weaponLevel = levelInfo;
+        }
+        return weaponLevel;
+
     },
 
     getNFTWeapon: function() {
