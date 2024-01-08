@@ -33,6 +33,30 @@ const Collectables = {
         return item;
     },
 
+    getCollectAmount: function(item) {
+        for (var i = 0; i < this.providers.length; i++) {
+            if (this.providers[i].isCollectable(item)) {
+                if(!this.providers[i].getCollectAmount) {
+                    return 1;
+                }
+                return this.providers[i].getCollectAmount(item);
+            }
+        }
+        return 1;
+    },
+
+    getCollectItem: function(item) {
+        for (var i = 0; i < this.providers.length; i++) {
+            if (this.providers[i].isCollectable(item)) {
+                if(!this.providers[i].getCollectItem) {
+                    return item;
+                }
+                return this.providers[i].getCollectItem(item);
+            }
+        }
+        return item;
+    },
+
     consume: function (item, player) {
         for (var i = 0; i < this.providers.length; i++) {
             if (this.providers[i].isConsumable(item) && this.providers[i].consume !== undefined) {

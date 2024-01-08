@@ -340,6 +340,8 @@ define(['jquery', 'storage'], function ($, Storage) {
             }
 
             $('#new-achievement-popup').addClass('hidden')
+            $('#shop-popup').addClass('hidden')
+            $('#shop-confirmation').removeClass('visible').addClass('hidden');
         },
 
         showAchievementNotification: function (questName, endText, xpReward, medal) {
@@ -548,6 +550,16 @@ define(['jquery', 'storage'], function ($, Storage) {
             }
         },
 
+        isInventoryVisible: false,
+
+        toggleInventory: function () {
+            if (this.isInventoryVisible) {
+                this.hideInventory();
+            } else {
+                this.showInventory();
+            }
+        },
+
         showInventory: function () {
             _this = this;
 
@@ -571,7 +583,10 @@ define(['jquery', 'storage'], function ($, Storage) {
                 if (weaponInventory.length > 0) {
                     columns++;
                     weaponInventory.forEach(function(item) {
-                        imgTag = "<div class='item panelBorder'><img id='" + item + "' style='width: 32px; height: 32px; object-fit: cover; cursor: pointer; object-position: 100% 0;' src='img/3/item-" + item + ".png' /></div>";
+                        imgTag = "<div class='item panelBorder'>" +
+                            "<div class='tooltiptext pixel-corners-xs'><span class='tooltipHighlight'>Level " + item.level + "</span> " + item.weaponName + " (" + item.Trait + ")</div>" +
+                            "<img id='" + item.nftId + "' style='width: 32px; height: 32px; object-fit: cover; cursor: pointer; object-position: 100% 0;' src='img/3/item-" + item.nftId + ".png' />" +
+                            "</div>";
                         inventoryHtml += imgTag;
                     });
                 }
@@ -583,7 +598,9 @@ define(['jquery', 'storage'], function ($, Storage) {
                     inventoryHtml += "<div class='inventorySectionItems'>"
 
                     specialInventory.forEach(function(item) {
-                        imgTag = "<div class='item panelBorder'><img id='" + item + "' style='width: 32px; height: 32px; object-fit: cover; cursor: pointer; object-position: 100% 0;' src='img/3/item-" + item + ".png' /></div>";
+                        imgTag = "<div class='item panelBorder'>" +
+                            "<div class='tooltiptext pixel-corners-xs'><span class='tooltipHighlight'>Level " + item.level + "</span> " + item.specialItemName + " (" + item.Trait + ")</div>" +
+                            "<img id='" + item.nftId + "' style='width: 32px; height: 32px; object-fit: cover; cursor: pointer; object-position: 100% 0;' src='img/3/item-" + item.nftId + ".png' /></div>";
                         inventoryHtml += imgTag;
                     });
                     inventoryHtml += "</div></div>";
@@ -591,20 +608,19 @@ define(['jquery', 'storage'], function ($, Storage) {
 
 
                 if (Object.keys(consumablesInventory).length > 0) {
-                    columns++;
                     let itemHtml = "<div class='inventorySection' id='inventory-tools'><div class='inventoryTitle'>Items</div>";
                     itemHtml += "<div class='inventorySectionItems'>"
                     let hasItem = false;
                     Object.keys(consumablesInventory).forEach(item => {
-                        // if (Types.isResource(item)) {
-                        //     return;
-                        // }
+                        if (Types.isResource(item)) {
+                            return;
+                        }
                         hasItem = true;
 
                         let description = consumablesInventory[item].description;
                         let tooltipText = "";
                         if (description){
-                            tooltipText = "<div class='tooltiptext'>" + description + "</div>";
+                            tooltipText = "<div class='tooltiptext pixel-corners-xs'>" + description + "</div>";
                         }
 
                         let cursor = consumablesInventory[item].consumable ? "pointer" : "not-allowed";
@@ -616,6 +632,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                     itemHtml += "</div></div>";
 
                     if (hasItem) {
+                        columns++;
                         inventoryHtml += itemHtml;
                     }
                 }
@@ -626,9 +643,8 @@ define(['jquery', 'storage'], function ($, Storage) {
                     inventoryHtml += "<div class='inventorySectionItems'>"
 
                     botsInventory.forEach(function(bot) {
-                        let item = bot?.botNftId?.replace("0x", "");
-                        if (item) {
-                            imgTag = `<div class='item panelBorder'><img id=${item} style='width: 32px; height: 32px; object-fit: cover; cursor: pointer; object-position: 100% 0;' src='img/1/NFT_` + item + ".png' /></div>";
+                        if (bot) {
+                            imgTag = `<div class='item panelBorder'><div class='tooltiptext pixel-corners-xs'><span class='tooltipHighlight'>Level ${bot.level}</span> ${bot.looperName}</div><img id=${bot.nftId} style='width: 32px; height: 32px; object-fit: cover; cursor: pointer; object-position: 100% 0;' src='img/1/` + bot.nftId + ".png' /></div>";
                             inventoryHtml += imgTag;
                         }
                     });
@@ -640,11 +656,14 @@ define(['jquery', 'storage'], function ($, Storage) {
                 $("#inventorycontent").addClass("columns" + columns);
                 let equipFunc = function (item) {
                     if (document.getElementById(item) !== null) {
-                        let equip = function () {
-                            let itemId = Types.Entities[item];
+                        let equip = function (e) {
+                            let itemId = Types.getKindFromString(item);
                             let nftId = item.replace("NFT_", "0x");
                             _this.game.client.sendEquipInventory(itemId, nftId);
                             _this.game.player.switchWeapon(item);
+                            _this.hideInventory();
+                            e.preventDefault();
+                            e.stopImmediatePropagation();
                         }
                         document.getElementById(item).addEventListener("click", equip);
                     }
@@ -652,39 +671,45 @@ define(['jquery', 'storage'], function ($, Storage) {
 
                 let consumeFunc = function (item) {
                     if (document.getElementById(item) !== null) {
-                        let consume = function () {
+                        let consume = function (e) {
                             let count = parseInt(document.getElementById("count_" + item).innerHTML);
                             if (count > 0){
                                 _this.game.client.sendConsumeItem(item);
                                 document.getElementById("count_" + item).innerHTML = count - 1;
                             }
+                            _this.hideInventory();
+                            e.preventDefault();
+                            e.stopImmediatePropagation();
                         }
                         document.getElementById(item).addEventListener("click", consume);
                     }
                 }
 
                 let newBot = function (item) {
-                    let itemId = item?.botNftId?.replace("0x", "");
-                    if (itemId && document.getElementById(itemId) !== null) {
-                        let spawnBot = function () {
-                            axios.post("/session/" + _this.storage.sessionId + "/newBot", {botNftId: item.botNftId}).then(function(response) {
+                    if (item.nftId && document.getElementById(item.nftId) !== null) {
+                        let spawnBot = function (e) {
+                            let botNftId = item.nftId.replace("NFT_", "0x");
+                            axios.post("/session/" + _this.storage.sessionId + "/newBot", {botNftId: botNftId}).then(function(response) {
                                 console.log("new bot", response);
                             }).catch(function(error) {
                                 console.log(error);
                                 let errorMsg = error?.response?.data?.error;
                                 _this.showMessage(errorMsg);
                             });
+                            _this.hideInventory();
+                            e.preventDefault();
+                            e.stopImmediatePropagation();
                         }
-                        document.getElementById(itemId).addEventListener("click", spawnBot);
+                        document.getElementById(item.nftId).addEventListener("click", spawnBot);
                     }
                 }
 
                 weaponInventory.forEach(function (item) {
-                    equipFunc(item);
+                    equipFunc(item.nftId);
                 });
 
                 specialInventory.forEach(function (item) {
-                    equipFunc(item);
+                    equipFunc(item.nftId);
                 });
 
                 botsInventory.forEach(function (item) {
@@ -702,6 +727,7 @@ define(['jquery', 'storage'], function ($, Storage) {
             }).catch(function(error) {
                 console.error(error);
             });
+            this.isInventoryVisible = true;
         },
 
         hideInventory: function () {
@@ -710,6 +736,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                 $('body').addClass('death');
             }
             $('#inventorybutton').removeClass('active');
+            this.isInventoryVisible = false;
         },
 
         toggleSettings: function () {
@@ -726,6 +753,23 @@ define(['jquery', 'storage'], function ($, Storage) {
                 $('body').toggleClass('death');
             }
 
+        },
+
+        initResourcesDisplay: function () {
+            _this = this;
+
+            let inventoryQuery = "/session/" + _this.storage.sessionId + "/inventory";
+
+            axios.get(inventoryQuery).then(function(response) {
+                let resourcesInventory = response.data.resources;
+                if (Object.keys(resourcesInventory).length > 0) {
+                    Object.keys(resourcesInventory).forEach(item => {
+                        if (Types.isResource(parseInt(item))) {
+                            _this.game.updateResource(parseInt(item), resourcesInventory[item]);
+                        }
+                    });
+                }
+            });
         },
 
         closeInGameCredits: function () {
@@ -802,6 +846,137 @@ define(['jquery', 'storage'], function ($, Storage) {
             if (window.focus) {
                 newwindow.focus()
             }
+        },
+
+        openShop: function(shopId, shopName) {
+            let self = this;
+            let shopPopup = $('#shop-popup');
+            shopPopup.find('#shop-popup-name').text(shopName);
+
+            let shopInventoryQuery = "/shop/" + shopId + "/inventory";
+            axios.get(shopInventoryQuery).then(function(response) {
+                let items = response.data;
+                shopPopup.find('#shop-popup-items').html('');
+                items.forEach(function (item) {
+
+                    let itemHtml = "<div class='item'>";
+                    itemHtml += "<div id='" + item.item + "' class='item-image' style='background: url(img/2/item-" + Types.getKindAsString(item.item) + ".png)' />";
+
+                    let levelInfo = "";
+                    if (item.level) {
+                        levelInfo = "<span class='level'>Lvl&nbsp;" + item.level + "</span>";
+                    }
+
+                    itemHtml += "<div class='name'>" + item.name + levelInfo + "</div>";
+                    itemHtml += "<div class='desc'>" + item.description + "</div>";
+                    itemHtml += "<div class='price'></div>";
+                    itemHtml += "</div>";
+
+                    let itemEl  = $(itemHtml);
+                    let playerHasEnoughResources = true;
+                    Object.keys(item.price).forEach(function (resource) {
+                        let resourceEl = $('<div id="resource-' + resource + '" class="resource"><span class="img"></span><span class="amount"></span></div>');
+                        let url = "img/1/item-" + resource + ".png";
+                        resourceEl.find('.img').css('background-image', "url('" + url + "')");
+                        resourceEl.find('.amount').text(item.price[resource]);
+                        itemEl.find('.price').append(resourceEl);
+
+                        // Find resource amount in player resource bar and check if player has enough
+                        if(parseInt($('#resources').find('#resource-' + Types.getKindFromString(resource)).find('.amount').text()) < parseInt(item.price[resource])) {
+                            playerHasEnoughResources = false;
+                        }
+                    });
+
+                    let playerHasMinimumLevel = true;
+                    if ((item.minPlayerLevel ?? 0) > 0) {
+                        let resourceEl = $('<div class="minLevel"><span class="img">Lvl</span><span class="amount"> ' + item.minPlayerLevel + '</span></div>');
+                        itemEl.find('.price').append(resourceEl);
+
+                        if (self.game.player.level < (item.minPlayerLevel ?? 0)) {
+                            playerHasMinimumLevel = false;
+                        }
+                    }
+
+                    if(!playerHasEnoughResources || !playerHasMinimumLevel) {
+                        itemEl.addClass('disabled');
+                    } else {
+                        itemEl.removeClass('disabled');
+                    }
+
+                    itemEl.on('click', function(e) {
+                        e.preventDefault();
+                        e.stopImmediatePropagation();
+
+                        $('#shop-popup .selected').removeClass('selected');
+                        $(e.currentTarget).addClass('selected');
+                        $('#shop-confirmation-text').html('Are you sure you want to buy <span class="highlight">' + item.name + '</span>?');
+                        $('#shop-confirmation-longtext').html(item.longDescription ?? item.description);
+                        $('#shop-confirmation').removeClass('hidden');
+
+                        $('#cancel-shop-purchase').off('click');
+                        $('#cancel-shop-purchase').click(function(e) {
+                            $('#shop-confirmation').addClass('hidden');
+                            itemEl.removeClass('selected');
+                            e.preventDefault();
+                            e.stopImmediatePropagation();
+                        });
+
+                        let itemId = item.id;
+                        $('#confirm-shop-purchase').off('click');
+                        if(playerHasEnoughResources && playerHasMinimumLevel) {
+                            $('#confirm-shop-purchase').click(function (e) {
+                                $('#shop-confirmation').addClass('hidden');
+                                itemEl.removeClass('selected');
+                                e.preventDefault();
+                                e.stopImmediatePropagation();
+                                self.purchaseShopItem(shopId, itemId);
+                            });
+
+                            $('#shop-confirmation-text').show();
+                            $('#confirm-shop-purchase').show();
+                            $('#cancel-shop-purchase').show();
+                            $('#confirm-shop-purchase').removeClass('disabled');
+                        } else {
+                            $('#shop-confirmation-text').hide();
+                            $('#confirm-shop-purchase').hide();
+                            $('#cancel-shop-purchase').hide();
+                            $('#confirm-shop-purchase').addClass('disabled');
+                        }
+                    })
+
+                    shopPopup.find('#shop-popup-items').append(itemEl);
+                });
+
+                $('#close-shop').click(function(e) {
+                    $('#shop-popup').addClass('hidden');
+                    $('#shop-confirmation-longtext').html('');
+                    $('#shop-confirmation').removeClass('visible').addClass('hidden');
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+                });
+
+                shopPopup.removeClass("hidden");
+                setTimeout(() => {
+                    $('#shop-confirmation').addClass('visible');
+                }, 1000);
+            });
+        },
+
+        purchaseShopItem: function(shopId, itemId) {
+            let self = this;
+            let shopInventoryQuery = "/session/" + _this.storage.sessionId + "/shop/" + shopId + "/buy/" + itemId;
+            axios.get(shopInventoryQuery)
+                .then(function(response) {
+                    self.initResourcesDisplay();
+                    self.game.audioManager.playSound("achievement");
+                    self.game.showNotification("Purchase successful!");
+                })
+                .catch(function(error) {
+                    console.error(error);
+                    let errorMsg = error?.response?.data?.error;
+                    self.game.audioManager.playSound("noloot");
+                    self.game.showNotification(errorMsg);
+                });
         },
 
         animateParchment: function (origin, destination) {

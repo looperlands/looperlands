@@ -1,7 +1,6 @@
-
 const Types = require("../../shared/js/gametypes");
 
-var Properties = {
+let Properties = {
     rat: {
         level: 1,
         drops: {
@@ -11,7 +10,7 @@ var Properties = {
         },
         respawnDelay: 10000,
     },
-    
+
     skeleton: {
         level: 4,
         drops: {
@@ -19,10 +18,10 @@ var Properties = {
             axe: 20,
             firepotion: 5
         },
-        weaponMod: 1.5, //bgger mod cause attack rate is 50% slower
+        weaponMod: 1.5, //bigger mod cause attack rate is 50% slower
         respawnDelay: 45000,
     },
-    
+
     goblin: {
         level: 3,
         drops: {
@@ -31,7 +30,7 @@ var Properties = {
             firepotion: 5
         }
     },
-    
+
     ogre: {
         level: 6,
         drops: {
@@ -41,7 +40,7 @@ var Properties = {
             firepotion: 5
         }
     },
-    
+
     spectre: {
         level: 9,
         drops: {
@@ -52,7 +51,7 @@ var Properties = {
         weaponMod: 1.25,
         hpMod: 0.8
     },
-    
+
     deathknight: {
         level: 12,
         drops: {
@@ -62,7 +61,7 @@ var Properties = {
         weaponMod: 0.9,
         hpMod: 1.2
     },
-    
+
     crab: {
         level: 2,
         drops: {
@@ -71,7 +70,7 @@ var Properties = {
             firepotion: 5
         }
     },
-    
+
     snake: {
         level: 5,
         drops: {
@@ -82,7 +81,7 @@ var Properties = {
         weaponMod: 1.2,
         armorMod: 0.5
     },
-    
+
     skeleton2: {
         level: 20,
         drops: {
@@ -92,7 +91,7 @@ var Properties = {
         weaponMod: 1.5, //bgger mod cause attack rate is 50% slower
         respawnDelay: 30000
     },
-    
+
     eye: {
         level: 8,
         drops: {
@@ -101,7 +100,7 @@ var Properties = {
             firepotion: 5
         }
     },
-    
+
     bat: {
         level: 3,
         drops: {
@@ -110,7 +109,7 @@ var Properties = {
             firepotion: 5
         }
     },
-    
+
     wizard: {
         level: 4,
         drops: {
@@ -118,7 +117,7 @@ var Properties = {
             firepotion: 5
         }
     },
-    
+
     boss: {
         level: 13,
         drops: {
@@ -130,7 +129,7 @@ var Properties = {
         weaponMod: 2.5,
         redpacket: true,
         respawnDelay: 120000,
-        xp: 7500  
+        xp: 7500
     },
 
     slime: {
@@ -221,7 +220,7 @@ var Properties = {
             WILDBLADE: 40,
         },
     },
-    
+
 
 
 
@@ -231,10 +230,10 @@ var Properties = {
         level: 3,
         drops: {
             potion: 100,
-        messages: ['Bow to the gelatinous crown', 'Flowing, shifting, unstoppable', 'Dissolve within my embrace', 'I am boundless, ever-spreading', 'Your struggles make the kingdom grow'],
-        armorMod: 0.75,
-        hpMod: 3,
-        xp: 0,
+            messages: ['Bow to the gelatinous crown', 'Flowing, shifting, unstoppable', 'Dissolve within my embrace', 'I am boundless, ever-spreading', 'Your struggles make the kingdom grow'],
+            armorMod: 0.75,
+            hpMod: 3,
+            xp: 0,
         },
     },
 
@@ -243,7 +242,7 @@ var Properties = {
         drops: {
             potion: 50,
         },
-        messages: ['Darkness shall embrance you!', 'Your doom is woven', 'Fear binds you', 'Your end is spun', 'The old world beckons you'],   
+        messages: ['Darkness shall embrance you!', 'Your doom is woven', 'Fear binds you', 'Your end is spun', 'The old world beckons you'],
         armorMod: 1,
         hpMod: 3,
         weaponMod: 0.8,
@@ -255,29 +254,29 @@ var Properties = {
         level: 10,
         drops: {
             potion: 100,
-            
+
         },
         armorMod: 1.2,
         weaponMod: 1.9,
         hpMod: 2.8,
-        xp: 1200,  
+        xp: 1200,
         respawnDelay: 30000
-        
+
     },
 
-        glacialord: {
+    glacialord: {
         level: 20,
         drops: {
             potion: 50,
         },
-        messages: ['Frost consumes you!', 'Ice seals your fate!', 'I am eternal Cold!', 'Cold as death', 'Shatter!'],   
+        messages: ['Frost consumes you!', 'Ice seals your fate!', 'I am eternal Cold!', 'Cold as death', 'Shatter!'],
         armorMod: 1,
         hpMod: 5,
         weaponMod: 0.8,
         respawnDelay: 30000,
         xp: 3000
-        
-        
+
+
     },
 
     nightharrow: {
@@ -289,15 +288,15 @@ var Properties = {
             damage: 100,
             range: 2
         },
-        messages: ['Endings begin with me.', 'Kneel!', 'Dawn shall never rise.', 'Face the endless night!', 'Embrace the final dusk.!'],   
+        messages: ['Endings begin with me.', 'Kneel!', 'Dawn shall never rise.', 'Face the endless night!', 'Embrace the final dusk.!'],
         armorMod: 2,
         hpMod: 12,
         weaponMod: 1.6,
         respawnDelay: 1800000,
         xp: 5000
-        
-        
-        
+
+
+
     },
 
 
@@ -306,8 +305,8 @@ var Properties = {
         drops: {
             potion: 100,
         },
-    },      
-    
+    },
+
 
     redslime: {
         level: 2,
@@ -315,14 +314,14 @@ var Properties = {
             potion: 50,
             REDOOZE: 50,
         },
-    },     
+    },
 
     spider: {
         level: 4,
         drops: {
             potion: 65,
         },
-    },  
+    },
 
     fangwing: {
         level: 4,
@@ -330,15 +329,15 @@ var Properties = {
             potion: 40,
             BATWING: 65,
         },
-    },  
+    },
 
     arachweave: {
         level: 5,
         drops: {
             KEY_ARACHWEAVE: 100,
         },
-    },  
-    
+    },
+
     minimag: {
         level: 16,
         drops: {
@@ -413,12 +412,12 @@ var Properties = {
         level: 1,
         friendly: true
     },
-    
+
     cobpig: {
         level: 1,
         friendly: true
     },
-    
+
     cobgoat: {
         level: 1,
         friendly: true
@@ -471,7 +470,7 @@ var Properties = {
     cobslimegreen: {
         level: 11,
         drops: {
-            cobapple: 20,
+            cobapple: 30,
             cobcorn: 10,
             redsword: 5
         }
@@ -480,7 +479,8 @@ var Properties = {
     cobslimepink: {
         level: 14,
         drops: {
-            cobapple: 20,
+            cobapple: 30,
+            luminousstones: 20,
             cobcorn: 10,
             redsword: 5
         }
@@ -489,16 +489,16 @@ var Properties = {
     cobslimecyan: {
         level: 17,
         drops: {
-            cobapple: 20,
+            luminousstones: 50,
+            cobapple: 40,
             cobcorn: 10,
-            redsword: 5
         }
     },
 
     cobslimemint: {
         level: 20,
         drops: {
-            cobapple: 20,
+            cobapple: 50,
             cobcorn: 10,
             redsword: 5
         }
@@ -512,7 +512,7 @@ var Properties = {
         armorMod: 1.25,
         weaponMod: 2,
         hpMod: 10,
-        xp: 2500,  
+        xp: 2500,
         respawnDelay: 180000
     },
 
@@ -528,14 +528,14 @@ var Properties = {
         armor: 1,
         weapon: 1,
         friendly: true
-    },    
+    },
 
     turtle: {
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
-    },  
+    },
 
     brownspotdog: {
         hp: 10,
@@ -543,7 +543,7 @@ var Properties = {
         weapon: 1,
         friendly: true
     },
-    
+
     tabbycat: {
         hp: 10,
         armor: 1,
@@ -561,20 +561,20 @@ var Properties = {
         armor: 1,
         weapon: 1,
         friendly: true
-    },  
+    },
     whitedog: {
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
-    }, 
+    },
 
     fvillager1: {
         hp: 10,
         armor: 1,
         weapon: 1,
         friendly: true
-    },    
+    },
 
     villager1: {
         hp: 10,
@@ -936,7 +936,7 @@ var Properties = {
         weapon: 1,
         friendly: true
     },
-    
+
     jayce: {
         hp: 10,
         armor: 1,
@@ -1005,8 +1005,14 @@ var Properties = {
         armorMod: 1.25,
         weaponMod: 2.25,
         hpMod: 13,
-        xp: 5000,  
+        xp: 5000,
         respawnDelay: 180000
+    },
+
+    BORAC: {
+        level: 6,
+        xp: 100,
+
     },
 
     //Short Destroyers
@@ -1048,9 +1054,55 @@ var Properties = {
     },
 
     //Items
+    luminousstones: {
+        respawnDelay: 60000,
+    },
+    wildflowers: {
+        respawnDelay: 60000,
+    },
+    trinket: {
+        respawnDelay: 60000,
+    },
+    crystal: {
+        respawnDelay: 60000,
+    },
+    coffeebeans: {
+        respawnDelay: 60000,
+    },
     coblog: {
         respawnDelay: 60000,
-    }
+    },
+    GOLD: {
+        collectable: true,
+        inventoryDescription: "Gold",
+    },
+    GOLD2: {
+        collectable: true,
+        inventoryDescription: "Gold",
+        collectItem: Types.Entities.GOLD,
+        collectAmount: 10
+    },
+    GOLD3: {
+        collectable: true,
+        inventoryDescription: "Gold",
+        collectItem: Types.Entities.GOLD,
+        collectAmount: 50
+    },
+
+    // Weapons
+    // axe: {
+    //     name: "Axe",
+    //     consumables: {
+    //         GOLD: {
+    //             level: 40,
+    //             range: 6
+    //         },
+    //         coblog: {
+    //             level: 10,
+    //             range: 12
+    //         }
+    //     }
+    // }
 };
 
 Properties.getArmorLevel = function(kind, levelOffset) {
@@ -1081,12 +1133,31 @@ Properties.getWeaponLevel = function(kind, levelOffset) {
                 return Math.round((0.4 * (level + levelOffset) + (level + levelOffset - 1) * 0.5) * Properties.getWeaponMod(kind));
             }
         } else {
+            if (Properties[Types.getKindAsString(kind)] !== undefined) {
+                let weaponProps = Properties[Types.getKindAsString(kind)];
+
+                if(weaponProps.consumables) {
+                    let levelInfo = [];
+                    for(let consumable in weaponProps.consumables) {
+                        levelInfo.push({ consumable: consumable, level: weaponProps.consumables[consumable].level, range: weaponProps.consumables[consumable].range});
+                    }
+
+                    return levelInfo;
+                }
+
+                return weaponProps.level;
+            }
             return Types.getWeaponRank(kind);
         }
     } catch(e) {
         console.error("No level found for weapon: "+Types.getKindAsString(kind), e);
     }
 };
+
+Properties.getWeaponName = function(kind) {
+    let retName = Properties[Types.getKindAsString(kind)]?.name;
+    return retName !== undefined ? retName : Types.getKindAsString(kind);
+}
 
 Properties.getHitPoints = function(kind, levelOffset) {
     let level = Properties.getLevel(kind);
@@ -1099,32 +1170,32 @@ Properties.getHitPoints = function(kind, levelOffset) {
 };
 
 Properties.getLevel = function(kind) {
-    retLevel = Properties[Types.getKindAsString(kind)].level;
+    let retLevel = Properties[Types.getKindAsString(kind)].level;
     return retLevel !== undefined ? retLevel : 1;
 };
 
 Properties.getHpMod = function(kind) {
-    retMod = Properties[Types.getKindAsString(kind)].hpMod;
+    let retMod = Properties[Types.getKindAsString(kind)].hpMod;
     return retMod !== undefined ? retMod : 1;
 };
 
 Properties.getArmorMod = function(kind) {
-    retMod = Properties[Types.getKindAsString(kind)].armorMod;
+    let retMod = Properties[Types.getKindAsString(kind)].armorMod;
     return retMod !== undefined ? retMod : 1;
 };
 
 Properties.getWeaponMod = function(kind) {
-    retMod = Properties[Types.getKindAsString(kind)].weaponMod;
+    let retMod = Properties[Types.getKindAsString(kind)].weaponMod;
     return retMod !== undefined ? retMod : 1;
 };
 
 Properties.isCollectable = function(kind) {
-    retCollectable = Properties[Types.getKindAsString(kind)]?.collectable;
+    let retCollectable = Properties[Types.getKindAsString(kind)]?.collectable;
     return retCollectable !== undefined ? retCollectable : false;
 }
 
 Properties.isConsumable = function(kind) {
-    retConsumable = Properties[Types.getKindAsString(kind)]?.consumable;
+    let retConsumable = Properties[Types.getKindAsString(kind)]?.consumable;
     return retConsumable !== undefined ? retConsumable : false;
 }
 
@@ -1132,15 +1203,25 @@ Properties.getCollectableImageName = function(kind) {
     return 'item-' + Types.getKindAsString(kind);
 }
 
+Properties.getCollectAmount = function(kind) {
+    let retCollectableAmount = Properties[Types.getKindAsString(kind)]?.collectAmount;
+    return retCollectableAmount !== undefined ? retCollectableAmount : 1;
+}
+
+Properties.getCollectItem = function(kind) {
+    let retCollectableItem = Properties[Types.getKindAsString(kind)]?.collectItem;
+    return retCollectableItem !== undefined ? retCollectableItem : kind;
+}
+
 Properties.consume = function(kind, player) {
-    onConsume = Properties[Types.getKindAsString(kind)]?.onConsume
+    let onConsume = Properties[Types.getKindAsString(kind)]?.onConsume
     if(onConsume !== undefined) {
         onConsume(player);
     }
 }
 
 Properties.getInventoryDescription = function(kind) {
-    retDescription = Properties[Types.getKindAsString(kind)]?.inventoryDescription;
+    let retDescription = Properties[Types.getKindAsString(kind)]?.inventoryDescription;
     return retDescription !== undefined ? retDescription : false;
 }
 

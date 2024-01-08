@@ -4,6 +4,7 @@ const Formulas = require('../formulas.js');
 const main = require('./main.js');
 const oa = require('./oa.js');
 const cobsfarm = require('./cobsfarm.js');
+const cobsfarmcity = require('./cobsfarmcity.js');
 const sdu = require('./shortdestroyer.js');
 const _ = require('underscore');
 
@@ -14,7 +15,7 @@ const STATES = {
 }
 
 // Put new quests from other files here
-let maps = [main.quests, oa.quests, cobsfarm.quests, sdu.quests]
+let maps = [main.quests, oa.quests, cobsfarm.quests, cobsfarmcity.quests, sdu.quests]
 
 function findDuplicateValues(arr) {
   const frequencyMap = {};

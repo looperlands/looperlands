@@ -2133,6 +2133,18 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
 
+        BORAC: Mob.extend({ 
+            init: function(id) { 
+                this._super(id, Types.Entities.BORAC); 
+                this.moveSpeed = 350; 
+                this.atkSpeed = 100; 
+                this.idleSpeed = 800; 
+                this.shadowOffsetY = 1; 
+                this.setAttackRate(1200);
+                this.aggroRange = 3;
+            }
+        }),
+
         //Short Destroyers
         Lateflea: Mob.extend({
             init: function(id) {

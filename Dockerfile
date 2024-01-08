@@ -14,7 +14,8 @@ ENV NODE_PATH $NVM_DIR/versions/node/$NODE_VERSION/bin
 ENV PATH $NODE_PATH:$PATH
 RUN apt-get update -yq \
     && apt-get install curl gnupg python2 -yq \
-    && apt-get install python3 -yq
+    && apt-get install python3 -yq \
+    && apt-get install build-essential -yq
 COPY . /opt/app
 WORKDIR /opt/app
 COPY shared/js/gametypes.js client/js/gametypes.js
