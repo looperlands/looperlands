@@ -1011,7 +1011,9 @@ let Properties = {
 
     BORAC: {
         level: 6,
-        xp: 100,
+        drops: {
+            flask: 40
+        },
 
     },
 
