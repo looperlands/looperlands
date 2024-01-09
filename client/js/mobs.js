@@ -2139,10 +2139,30 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.moveSpeed = 250; 
                 this.atkSpeed = 100; 
                 this.idleSpeed = 500; 
-                this.aggroRange = 3;
+                this.aggroRange = 2;
             }
         }),
        
+        INFERNOTH: Mob.extend({ 
+            init: function(id) {
+                this._super(id, Types.Entities.INFERNOTH); 
+                this.moveSpeed = 100; 
+                this.atkSpeed = 100; 
+                this.idleSpeed = 200;
+                this.aggroRange = 1; 
+            }
+        }),
+
+        WINGELLA: Mob.extend({ 
+            init: function(id) { 
+                this._super(id, Types.Entities.WINGELLA); 
+                this.moveSpeed = 350; 
+                this.atkSpeed = 100; 
+                this.idleSpeed = 800; 
+                this.shadowOffsetY = 1; 
+                this.aggroRange = 3;
+            }
+        }),
         // @nextMobLine@
     };
     return Mobs;

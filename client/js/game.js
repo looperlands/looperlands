@@ -157,7 +157,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "newcomersilas",
                     "guardianfintan",
                     "BORAC",
-                                // @nextCharacterLine@
+                    "INFERNOTH",
+                    "WINGELLA",
+                   // @nextCharacterLine@
                     "item-BOARHIDE",
                     "item-THUDKEY",
                     "item-BATWING",

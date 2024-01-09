@@ -343,7 +343,9 @@ Types = {
         NEWCOMERSILAS: 34000052,
         PATRONCORA: 34000053,
         GUARDIANFINTAN: 34000055,
-        BORAC: 34000056, // @lastidCharacter@
+        BORAC: 34000056,
+        INFERNOTH: 34000058,
+        WINGELLA: 34000059, // @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -5031,6 +5033,8 @@ var kinds = {
     patroncora: [Types.Entities.PATRONCORA, "npc"],
     
     BORAC: [Types.Entities.BORAC, "mob"],
+    INFERNOTH: [Types.Entities.INFERNOTH, "mob"],
+    WINGELLA: [Types.Entities.WINGELLA, "mob"],
     // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],
