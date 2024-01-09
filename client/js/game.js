@@ -5484,6 +5484,16 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.currentTime = new Date().getTime();
 
                 if(this.started) {
+
+                    if (this.lastFrameTime !== undefined) {
+                        let elaspedTime = this.currentTime - this.lastFrameTime;
+                        if (elaspedTime < this.renderer.frameTime) {
+                            this.renderer.worker.postMessage({"type": "idle"});
+                            return;
+                        }
+                    }
+                    this.lastFrameTime = this.currentTime;
+
                     this.updateCursorLogic();
                     this.updater.update();
                     if (this.canUseCenteredCamera()) {
