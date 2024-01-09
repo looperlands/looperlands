@@ -1267,7 +1267,7 @@ footer div  {display:inline-block;}
 
     #container {width:1470px;margin:0 auto;position:absolute;top:50%;margin-top:-378px;left:50%;margin-left:-735px;}
     #canvasborder {padding:15px;background:url('../img/3/border.png') no-repeat;}
-    #canvas {width:100%;height:672px;}
+    #canvas {width:100%;height:672px;user-select: none;}
     #fade {width:1440px;height:672px;top:15px;left:15px;}
 
     #instructions {height:516px;width:1251px;background-position:0 -1581px;margin-left:-624px;margin-top:-279px;color:#373737;}
