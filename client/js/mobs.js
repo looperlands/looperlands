@@ -2163,6 +2163,19 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.aggroRange = 3;
             }
         }),
+
+        GAUNTER: Mob.extend({ 
+            init: function(id) { 
+                this._super(id, Types.Entities.GAUNTER); 
+                this.moveSpeed = 200; 
+                this.atkSpeed = 200; 
+                this.idleSpeed = 420; 
+                this.weaponMod = 1.5;
+                this.hpMod = .7;
+                this.aggroRange = 2;
+                this.setAttackRate(1200);
+            }
+        }),
         // @nextMobLine@
     };
     return Mobs;

@@ -1033,6 +1033,14 @@ let Properties = {
 
     },
 
+    GAUNTER: {
+        level: 13,
+        drops: {
+            flask: 40
+        },
+    },
+
+
     //Field effects
     magcrack: {
         aoe: {

@@ -475,6 +475,9 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.WINGELLA]=function(id){
         return new Mobs.WINGELLA(id);
     };
+    EntityFactory.builders[Types.Entities.GAUNTER]=function(id){
+        return new Mobs.GAUNTER(id);
+    };
     // @nextMobLine@
     //===== items ======
  
