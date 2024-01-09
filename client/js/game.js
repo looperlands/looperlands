@@ -157,6 +157,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "newcomersilas",
                     "guardianfintan",
                     "BORAC",
+                    "RED_DRAGON",
                                 // @nextCharacterLine@
                     "item-BOARHIDE",
                     "item-THUDKEY",

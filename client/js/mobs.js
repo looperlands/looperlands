@@ -2143,6 +2143,16 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
        
+        RED_DRAGON: Mob.extend({ 
+            init: function(id) {
+                this._super(id, Types.Entities.RED_DRAGON); 
+                this.moveSpeed = 350; 
+                this.atkSpeed = 100; 
+                this.idleSpeed = 800; 
+                this.shadowOffsetY = 1; 
+                this.setAttackRate(1200);
+            }
+        }),
         // @nextMobLine@
     };
     return Mobs;

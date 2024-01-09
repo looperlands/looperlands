@@ -1017,6 +1017,14 @@ let Properties = {
 
     },
 
+    RED_DRAGON: {
+        level: 21,
+        drops: {
+            flask: 75
+        },
+
+    },
+
     //Field effects
     magcrack: {
         aoe: {

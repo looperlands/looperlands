@@ -1,0 +1,44 @@
+{
+  "id": "RED_DRAGON",
+  "width": 64,
+  "height": 64,
+  "animations": {
+    
+    "atk_right": {
+      "length": 3,
+      "row": 2
+    },
+    "walk_right": {
+      "length": 3,
+      "row": 2
+    },
+    "idle_right": {
+      "length": 3,
+      "row": 2
+    },
+    "atk_up": {
+      "length": 3,
+      "row": 3
+    },
+    "walk_up": {
+      "length": 3,
+      "row": 3
+    },
+    "idle_up": {
+      "length": 3,
+      "row": 3
+    },
+    "atk_down": {
+      "length": 3,
+      "row": 1
+    },
+    "walk_down": {
+      "length": 3,
+      "row": 1
+    },
+    "idle_down": {
+      "length": 2,
+      "row": 0
+    }
+  }
+}
