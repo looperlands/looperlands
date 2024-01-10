@@ -155,9 +155,12 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "patroncora",
                     "mayoroswald",
                     "newcomersilas",
-                    "BORAC",
                     "guardianfintan",
-
+                    "BORAC",
+                    "INFERNOTH",
+                    "WINGELLA",
+                    "GAUNTER",
+            
                     //Short Destroyers
                     "lateflea",
                     "wolfboss",
@@ -4790,7 +4793,37 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "NFT_b5893a75b74f9caccd3c23b4a974db5f53b4e9d2",
                     "NFT_d61fbdec9853a9b09956ef8d852ca066a48e5968eb8786aa6ab02fb3b4d30a35",
                     "NFT_ef4dbad11f6944c9ba3222b3e8aa63157178dd1857f0f4fcd7e16d58fcd1b4f1",
-                    // @nextSpriteLine@
+                                "NFT_01348c02000000000000000002386f26fc100000000000000000000000000164",
+                                "NFT_0b3edc80d7ec92657dfea9026e93747b1321b6d19cf43bef055d6e6860f48834",
+                                "NFT_47ba8458600ff9ad1a1b0b491ff0fc194371aa30d74a3267af0d7a3462a18048",
+                                "NFT_4bf7e4d0b3eb57a1c2eec39067b3e9076f9ad0e4ab1edf228d6f04a157dae862",
+                                "NFT_7449b1d14b8b75cb821d3ec02e571601e53b7d83e2f6527a0c1dfa1ab984cc25",
+                                "NFT_7d696015dff3275cf821a1b57a13d924ca4a14d69e73c87319dd94dedcea6478",
+                                "NFT_7ef75cc04c7b402ee451f35da8cd3c7e1da35f0d412a554e36fd812b185c4b8e",
+                                "NFT_96e76f5a947cf9683921d44bc024a7a18c46740c5a8ff5e22942608560cf88e8",
+                                "NFT_9c044104ee7e3ca03e88e1a69da4bbb433711cdeda27784845ae46dc73aab483",
+                                "NFT_a7cb0ef0b03620b5e00ee475d0b5b458b254f71c1056b11d64ea563896d44cd3",
+                                "NFT_b5893a75b74f9caccd3c23b4a974db5f53b4e9d2",
+                                "NFT_B5893a75b74F9cACCd3c23b4A974DB5F53B4E9D2_2107",
+                                "NFT_B5893a75b74F9cACCd3c23b4A974DB5F53B4E9D2_4671",
+                                "NFT_B5893a75b74F9cACCd3c23b4A974DB5F53B4E9D2_7194",
+                                "NFT_b99a5b4d6f1dd0f0afe810011cf7ae0c8b7a19602babf18e10eeb540dd448bcc",
+                                "NFT_bfae096ba8fb553472821f090562fb002b36f13b04a894cb8e97818fb6e20aa0",
+                                "NFT_C114f87326C0E07F40e73B6c9fCEa54888c2C67f_8490",
+                                "NFT_c305458767a8cd076c40b2173a16dcaba6ba1be85231d2ac4aaaa472a8b7e4d4",
+                                "NFT_c38a1cbc7b8c4de1cb4c382404b10074df02d5a3c80be3174ca080ec7b45d716",
+                                "NFT_c736cf7ce12651f07473a933fc094d3ac6cb2f1a6d848179cdeb1512d9ffc811",
+                                "NFT_caf4990be004267d088a5fa1e53248b4b78a10ae673789f65692c6508837fef8",
+                                "NFT_f7643234238c40c8d9fae0d2770f0ab8c5ed7ad7629f845d44c0a1da2c8d1889",
+                                "NFT_0dc6a550987426e53b874b1d55112c26035b36d01ac16aebba229aec0c4ebb34",
+                                "NFT_3aa11288fb0ad0c9a1225fa7725ac13196f60499523ebfdd1c07bde95be48f78",
+                                "NFT_5114029d89e58b94d30454306adfcfad10f606b4b95d1b73e826273a043efdca",
+                                "NFT_5b51bd2f8832b34cbe89075d326ed4b53449bae3df45e14b1daa58bd527627b4",
+                                "NFT_7a124cd266c4b097b65fdf20b90c93e606d133de9a8abd9a56468ae4490bb74f",
+                                "NFT_d32209f1ce94c2ec83b3546a7008b87bde59d48f0db0174af8006f3a9a0cb057",
+                                "NFT_d7e3bee32416b8fc2f47636d863094e7094a34ad199a1df1a2119eaff97a1fd4",
+                                "NFT_fde71b6ffc50c0137f992889919e1a2020994a000beec58afc62b89b185e8e03",
+                                // @nextSpriteLine@
                 ];
             },
 
@@ -5470,6 +5503,16 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.currentTime = new Date().getTime();
 
                 if(this.started) {
+
+                    if (this.lastFrameTime !== undefined) {
+                        let elaspedTime = this.currentTime - this.lastFrameTime;
+                        if (elaspedTime < this.renderer.frameTime) {
+                            this.renderer.worker.postMessage({"type": "idle"});
+                            return;
+                        }
+                    }
+                    this.lastFrameTime = this.currentTime;
+
                     this.updateCursorLogic();
                     this.updater.update();
                     if (this.canUseCenteredCamera()) {

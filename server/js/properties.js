@@ -1010,10 +1010,36 @@ let Properties = {
     },
 
     BORAC: {
-        level: 6,
-        xp: 100,
+        level: 8,
+        drops: {
+            flask: 40
+        },
 
     },
+
+    INFERNOTH: {
+        level: 27,
+        hpMod: 2.25,
+        weaponMod: 1.75,
+        xp:10000,
+        respawnDelay: 30000
+    },
+
+    WINGELLA: {
+        level: 6,
+        drops: {
+            flask: 40
+        },
+
+    },
+
+    GAUNTER: {
+        level: 13,
+        drops: {
+            flask: 40
+        },
+    },
+
 
     //Short Destroyers
     lateflea: {

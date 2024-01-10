@@ -1317,10 +1317,18 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.VILLAGER29] = function(id) {
         return new Mobs.Villager29(id);
     };
-
-
     EntityFactory.builders[Types.Entities.BORAC]=function(id){
-        return new Mobs.BORAC(id);};
+        return new Mobs.BORAC(id);
+    };
+    EntityFactory.builders[Types.Entities.INFERNOTH]=function(id){
+        return new Mobs.INFERNOTH(id);
+    };
+    EntityFactory.builders[Types.Entities.WINGELLA]=function(id){
+        return new Mobs.WINGELLA(id);
+    };
+    EntityFactory.builders[Types.Entities.GAUNTER]=function(id){
+        return new Mobs.GAUNTER(id);
+    };
     // @nextMobLine@
     //===== items ======
  
