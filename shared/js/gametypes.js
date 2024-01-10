@@ -343,7 +343,10 @@ Types = {
         NEWCOMERSILAS: 34000052,
         PATRONCORA: 34000053,
         GUARDIANFINTAN: 34000055,
-        BORAC: 34000056, // @lastidCharacter@
+        BORAC: 34000056,
+        INFERNOTH: 34000058,
+        WINGELLA: 34000059,
+        GAUNTER: 34000060, // @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -4696,7 +4699,8 @@ Types = {
         NFT_7a124cd266c4b097b65fdf20b90c93e606d133de9a8abd9a56468ae4490bb74f: 4404,
         NFT_d32209f1ce94c2ec83b3546a7008b87bde59d48f0db0174af8006f3a9a0cb057: 4405,
         NFT_d7e3bee32416b8fc2f47636d863094e7094a34ad199a1df1a2119eaff97a1fd4: 4406,
-        NFT_fde71b6ffc50c0137f992889919e1a2020994a000beec58afc62b89b185e8e03: 4407 // @lastid@
+        NFT_fde71b6ffc50c0137f992889919e1a2020994a000beec58afc62b89b185e8e03: 4407,
+        NFT_3a7e3663a9463dea86675ef78dfbc79e67460aacd2edd3d2903307a7eb1a5cda: 4408 // @lastid@
         //@nextIdLine@
     },
 
@@ -5031,6 +5035,9 @@ var kinds = {
     patroncora: [Types.Entities.PATRONCORA, "npc"],
     
     BORAC: [Types.Entities.BORAC, "mob"],
+    INFERNOTH: [Types.Entities.INFERNOTH, "mob"],
+    WINGELLA: [Types.Entities.WINGELLA, "mob"],
+    GAUNTER: [Types.Entities.GAUNTER, "mob"],
     // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],
@@ -9375,6 +9382,7 @@ var kinds = {
     NFT_d32209f1ce94c2ec83b3546a7008b87bde59d48f0db0174af8006f3a9a0cb057: [Types.Entities.NFT_d32209f1ce94c2ec83b3546a7008b87bde59d48f0db0174af8006f3a9a0cb057, "bot"],
     NFT_d7e3bee32416b8fc2f47636d863094e7094a34ad199a1df1a2119eaff97a1fd4: [Types.Entities.NFT_d7e3bee32416b8fc2f47636d863094e7094a34ad199a1df1a2119eaff97a1fd4, "bot"],
     NFT_fde71b6ffc50c0137f992889919e1a2020994a000beec58afc62b89b185e8e03: [Types.Entities.NFT_fde71b6ffc50c0137f992889919e1a2020994a000beec58afc62b89b185e8e03, "bot"],
+    NFT_3a7e3663a9463dea86675ef78dfbc79e67460aacd2edd3d2903307a7eb1a5cda: [Types.Entities.NFT_3a7e3663a9463dea86675ef78dfbc79e67460aacd2edd3d2903307a7eb1a5cda, "armor"],
     // @nextSpriteLine@
 
     getType: function(kind) {
