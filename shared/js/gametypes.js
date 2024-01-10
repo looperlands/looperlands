@@ -201,6 +201,9 @@ Types = {
         COBSLIMEPINK: 400019,
         COBSLIMECYAN: 400020,
         COBSLIMEMINT: 400021,
+        //Short Destroyers
+        LATEFLEA: 770001,
+        WOLFBOSS: 770002,
 
         // Armors
         FIREFOX: 20,
@@ -261,7 +264,12 @@ Types = {
         CRYSTAL: 21300048,
         TRINKET: 21300049,
         WILDFLOWERS: 21300050,
-        LUMINOUSSTONES: 21300051, // @lastidObject@
+        LUMINOUSSTONES: 21300051, 
+        //Short Destroyers
+        VHS: 77000001,
+        DVD: 77000002,
+        GAME: 77000003,
+        POPCORN: 77000004, // @lastidObject@
         //@nextIdLineObject@
 
         // NPCs
@@ -4870,6 +4878,10 @@ var kinds = {
     cobcoblin: [Types.Entities.COBCOBLIN, "mob"],
     cobcobane: [Types.Entities.COBCOBANE, "mob"],
     cobogre: [Types.Entities.COBOGRE, "mob"],
+    //Short Destroyers
+    lateflea: [Types.Entities.LATEFLEA, "mob"],
+    wolfboss: [Types.Entities.WOLFBOSS, "mob"],
+
     sword1: [Types.Entities.SWORD1, "weapon"],
     sword2: [Types.Entities.SWORD2, "weapon"],
     axe: [Types.Entities.AXE, "weapon"],
@@ -4937,6 +4949,11 @@ var kinds = {
     trinket: [Types.Entities.TRINKET, "object"],
     wildflowers: [Types.Entities.WILDFLOWERS, "object"],
     luminousstones: [Types.Entities.LUMINOUSSTONES, "object"],
+    //Short Destroyers
+    vhs: [Types.Entities.VHS, "object"],
+    dvd: [Types.Entities.DVD, "object"],
+    game: [Types.Entities.GAME, "object"],
+    popcorn: [Types.Entities.POPCORN, "object"],
     // @nextObjectLine@
 
     guard: [Types.Entities.GUARD, "npc"],

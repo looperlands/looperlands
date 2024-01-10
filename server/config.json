@@ -17,7 +17,8 @@
         "crimsonspace",
         "kbb",
         "m88n",
-        "duckville"
+        "duckville",
+        "shortdestroyers"
     ],
     "map_directory": "./server/maps/",
     "metrics_enabled": false,

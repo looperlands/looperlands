@@ -88,6 +88,11 @@ define(['text!../sprites/agent.json',
         'text!../sprites/item-trinket.json',
         'text!../sprites/item-wildflowers.json',
         'text!../sprites/item-luminousstones.json',
+        //Short Destroyers
+        'text!../sprites/item-vhs.json',
+        'text!../sprites/item-dvd.json',
+        'text!../sprites/item-game.json',
+        'text!../sprites/item-popcorn.json',
         // @nextObjectImport@
         'text!../sprites/king.json',
         'text!../sprites/king2.json',
@@ -369,6 +374,10 @@ define(['text!../sprites/agent.json',
         'text!../sprites/INFERNOTH.json',
         'text!../sprites/WINGELLA.json',
         'text!../sprites/GAUNTER.json',
+
+        //Short Destroyers
+        'text!../sprites/lateflea.json',
+        'text!../sprites/wolfboss.json',
         // @nextCharacterImport@
         'text!../sprites/NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6.json',
         'text!../sprites/NFT_38278eacc7d1c86fdbc85d798dca146fbca59a2e5e567dc15898ce2edac21f5f.json',

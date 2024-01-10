@@ -478,6 +478,13 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.GAUNTER]=function(id){
         return new Mobs.GAUNTER(id);
     };
+    //Short Destroyers
+    EntityFactory.builders[Types.Entities.LATEFLEA] = function(id) {
+        return new Mobs.lateflea(id);
+    };
+    EntityFactory.builders[Types.Entities.WOLFBOSS] = function(id) {
+        return new Mobs.wolfboss(id);
+    };
     // @nextMobLine@
     //===== items ======
  
@@ -607,6 +614,11 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.TRINKET] = function(id) { return new Items.trinket(id); };
     EntityFactory.builders[Types.Entities.WILDFLOWERS] = function(id) { return new Items.wildflowers(id); };
     EntityFactory.builders[Types.Entities.LUMINOUSSTONES] = function(id) { return new Items.luminousstones(id); };
+    //Short Destroyers
+    EntityFactory.builders[Types.Entities.VHS] = function(id) { return new Items.vhs(id); };
+    EntityFactory.builders[Types.Entities.DVD] = function(id) { return new Items.dvd(id); };
+    EntityFactory.builders[Types.Entities.GAME] = function(id) { return new Items.game(id); };
+    EntityFactory.builders[Types.Entities.POPCORN] = function(id) { return new Items.popcorn(id); };
     // @nextObjectLine@
 
     //====== NPCs ======
