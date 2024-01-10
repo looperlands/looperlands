@@ -27,6 +27,10 @@ class GameSettings {
           localStorage.setItem('renderText', 'true');
       }
 
+      if(!localStorage.getItem('inventorySlots')) {
+          localStorage.setItem('inventorySlots', JSON.stringify([]));
+      }
+
       // Initialize checkbox states based on localStorage
       document.getElementById('musicEnabled').checked = this.getMusicEnabled();
       document.getElementById('centeredCamera').checked = this.getCenteredCamera();
@@ -101,6 +105,13 @@ class GameSettings {
 
     getRenderText() { 
         return localStorage.getItem('renderText') === 'true';
+    }
+
+    getInventorySlots() {
+        return JSON.parse(localStorage.getItem('inventorySlots'));
+    }
+    setInventorySlots(slots) {
+        localStorage.setItem('inventorySlots', JSON.stringify(slots));
     }
 
     setSettings() {
