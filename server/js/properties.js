@@ -1042,7 +1042,7 @@ let Properties = {
         },
     },
 
-    MONSTROM: {
+    MASTROM: {
         level: 13,
         drops: {
             GREYPOTION: 100,
