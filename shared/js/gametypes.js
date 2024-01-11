@@ -274,7 +274,11 @@ Types = {
         VHS: 77000001,
         DVD: 77000002,
         GAME: 77000003,
-        POPCORN: 77000004, // @lastidObject@
+        POPCORN: 77000004,
+        //mycupbloody
+        EYEBALL: 77000005,
+        REDPOTION: 77000006,
+        GREYPOTION: 77000007, // @lastidObject@
         //@nextIdLineObject@
 
         // NPCs
@@ -359,7 +363,9 @@ Types = {
         BORAC: 34000056,
         INFERNOTH: 34000058,
         WINGELLA: 34000059,
-        GAUNTER: 34000060, // @lastidCharacter@
+        GAUNTER: 34000060,
+        MASTROM: 34000061,
+        VALKYM: 34000062, // @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -4972,6 +4978,10 @@ var kinds = {
     dvd: [Types.Entities.DVD, "object"],
     game: [Types.Entities.GAME, "object"],
     popcorn: [Types.Entities.POPCORN, "object"],
+    //mycupbloody
+    EYEBALL: [Types.Entities.EYEBALL, "object"],
+    REDPOTION: [Types.Entities.REDPOTION, "object"],
+    GREYPOTION: [Types.Entities.GREYPOTION, "object"],
     // @nextObjectLine@
 
     guard: [Types.Entities.GUARD, "npc"],
@@ -5073,6 +5083,8 @@ var kinds = {
     INFERNOTH: [Types.Entities.INFERNOTH, "mob"],
     WINGELLA: [Types.Entities.WINGELLA, "mob"],
     GAUNTER: [Types.Entities.GAUNTER, "mob"],
+    MASTROM: [Types.Entities.MASTROM, "mob"],
+    VALKYM: [Types.Entities.VALKYM, "mob"],
     // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],
