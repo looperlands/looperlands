@@ -2204,7 +2204,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.walkSpeed = 200;
                 this.shadowOffsetY = 1;
                 this.aggroRange = 3;
-                this.setAttackRate(1200);
+                this.setAttackRate(800);
             }
         }),
 

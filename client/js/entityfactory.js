@@ -478,6 +478,12 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.GAUNTER]=function(id){
         return new Mobs.GAUNTER(id);
     };
+    EntityFactory.builders[Types.Entities.MASTROM]=function(id){
+        return new Mobs.MASTROM(id);
+    };
+    EntityFactory.builders[Types.Entities.VALKYM]=function(id){
+        return new Mobs.VALKYM(id);
+    };
     //Short Destroyers
     EntityFactory.builders[Types.Entities.LATEFLEA] = function(id) {
         return new Mobs.lateflea(id);
@@ -500,12 +506,7 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.HORDE5] = function(id) {
         return new Mobs.horde5(id);
     };
-    EntityFactory.builders[Types.Entities.MASTROM]=function(id){
-        return new Mobs.MASTROM(id);
-    };
-    EntityFactory.builders[Types.Entities.VALKYM]=function(id){
-        return new Mobs.VALKYM(id);
-    };
+   
     // @nextMobLine@
     //===== items ======
  
