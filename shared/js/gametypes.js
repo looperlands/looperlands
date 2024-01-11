@@ -201,6 +201,14 @@ Types = {
         COBSLIMEPINK: 400019,
         COBSLIMECYAN: 400020,
         COBSLIMEMINT: 400021,
+        //Short Destroyers
+        LATEFLEA: 770001,
+        WOLFBOSS: 770002,
+        HORDE1: 770003,
+        HORDE2: 770004,
+        HORDE3: 770005,
+        HORDE4: 770006,
+        HORDE5: 770007,
 
         // Armors
         FIREFOX: 20,
@@ -261,7 +269,12 @@ Types = {
         CRYSTAL: 21300048,
         TRINKET: 21300049,
         WILDFLOWERS: 21300050,
-        LUMINOUSSTONES: 21300051, // @lastidObject@
+        LUMINOUSSTONES: 21300051, 
+        //Short Destroyers
+        VHS: 77000001,
+        DVD: 77000002,
+        GAME: 77000003,
+        POPCORN: 77000004, // @lastidObject@
         //@nextIdLineObject@
 
         // NPCs
@@ -4700,7 +4713,15 @@ Types = {
         NFT_d32209f1ce94c2ec83b3546a7008b87bde59d48f0db0174af8006f3a9a0cb057: 4405,
         NFT_d7e3bee32416b8fc2f47636d863094e7094a34ad199a1df1a2119eaff97a1fd4: 4406,
         NFT_fde71b6ffc50c0137f992889919e1a2020994a000beec58afc62b89b185e8e03: 4407,
-        NFT_3a7e3663a9463dea86675ef78dfbc79e67460aacd2edd3d2903307a7eb1a5cda: 4408 // @lastid@
+        NFT_3a7e3663a9463dea86675ef78dfbc79e67460aacd2edd3d2903307a7eb1a5cda: 4408,
+        NFT_26c66a58d2e52ebbb4215824a83e295d0705c1dcf8b3349f57b63b2650e92bea: 4409,
+        NFT_2a1aab978f311059db6a56ffac205a0e7b0b43c838064f1532fdb5e24ac2a799: 4410,
+        NFT_37484d6fe7cfa46a83f7ef690dc0daf2a8db90c0c747a7564b864d66d459baea: 4411,
+        NFT_4c0f1f1f58454f2243010c1366064322654622c572fe355fef1a951eff8cdab1: 4412,
+        NFT_5543355385c76ab6ac12a5eacac18893994bd66a6aaef4881d9165df4bf52cc0: 4413,
+        NFT_5c31425b1b29bc283d34e2cc0547dd8464a5207ba7800f03fa4aad5f45554916: 4414,
+        NFT_72b8af0ff7540ef136b170f2ed9ccef3148bc7ca9586c5f75eb847e9d5354dd1: 4415,
+        NFT_cded0af2147e916d7e2d6e62c1ea076bafe80f3c0913c50ce9a14adc11306a46: 4416 // @lastid@
         //@nextIdLine@
     },
 
@@ -4870,6 +4891,15 @@ var kinds = {
     cobcoblin: [Types.Entities.COBCOBLIN, "mob"],
     cobcobane: [Types.Entities.COBCOBANE, "mob"],
     cobogre: [Types.Entities.COBOGRE, "mob"],
+    //Short Destroyers
+    lateflea: [Types.Entities.LATEFLEA, "mob"],
+    wolfboss: [Types.Entities.WOLFBOSS, "mob"],
+    horde1: [Types.Entities.HORDE1, "mob"],
+    horde2: [Types.Entities.HORDE2, "mob"],
+    horde3: [Types.Entities.HORDE3, "mob"],
+    horde4: [Types.Entities.HORDE4, "mob"],
+    horde5: [Types.Entities.HORDE5, "mob"],
+
     sword1: [Types.Entities.SWORD1, "weapon"],
     sword2: [Types.Entities.SWORD2, "weapon"],
     axe: [Types.Entities.AXE, "weapon"],
@@ -4937,6 +4967,11 @@ var kinds = {
     trinket: [Types.Entities.TRINKET, "object"],
     wildflowers: [Types.Entities.WILDFLOWERS, "object"],
     luminousstones: [Types.Entities.LUMINOUSSTONES, "object"],
+    //Short Destroyers
+    vhs: [Types.Entities.VHS, "object"],
+    dvd: [Types.Entities.DVD, "object"],
+    game: [Types.Entities.GAME, "object"],
+    popcorn: [Types.Entities.POPCORN, "object"],
     // @nextObjectLine@
 
     guard: [Types.Entities.GUARD, "npc"],
@@ -9383,6 +9418,14 @@ var kinds = {
     NFT_d7e3bee32416b8fc2f47636d863094e7094a34ad199a1df1a2119eaff97a1fd4: [Types.Entities.NFT_d7e3bee32416b8fc2f47636d863094e7094a34ad199a1df1a2119eaff97a1fd4, "bot"],
     NFT_fde71b6ffc50c0137f992889919e1a2020994a000beec58afc62b89b185e8e03: [Types.Entities.NFT_fde71b6ffc50c0137f992889919e1a2020994a000beec58afc62b89b185e8e03, "bot"],
     NFT_3a7e3663a9463dea86675ef78dfbc79e67460aacd2edd3d2903307a7eb1a5cda: [Types.Entities.NFT_3a7e3663a9463dea86675ef78dfbc79e67460aacd2edd3d2903307a7eb1a5cda, "armor"],
+    NFT_26c66a58d2e52ebbb4215824a83e295d0705c1dcf8b3349f57b63b2650e92bea: [Types.Entities.NFT_26c66a58d2e52ebbb4215824a83e295d0705c1dcf8b3349f57b63b2650e92bea, "armor"],
+    NFT_2a1aab978f311059db6a56ffac205a0e7b0b43c838064f1532fdb5e24ac2a799: [Types.Entities.NFT_2a1aab978f311059db6a56ffac205a0e7b0b43c838064f1532fdb5e24ac2a799, "armor"],
+    NFT_37484d6fe7cfa46a83f7ef690dc0daf2a8db90c0c747a7564b864d66d459baea: [Types.Entities.NFT_37484d6fe7cfa46a83f7ef690dc0daf2a8db90c0c747a7564b864d66d459baea, "bot"],
+    NFT_4c0f1f1f58454f2243010c1366064322654622c572fe355fef1a951eff8cdab1: [Types.Entities.NFT_4c0f1f1f58454f2243010c1366064322654622c572fe355fef1a951eff8cdab1, "bot"],
+    NFT_5543355385c76ab6ac12a5eacac18893994bd66a6aaef4881d9165df4bf52cc0: [Types.Entities.NFT_5543355385c76ab6ac12a5eacac18893994bd66a6aaef4881d9165df4bf52cc0, "bot"],
+    NFT_5c31425b1b29bc283d34e2cc0547dd8464a5207ba7800f03fa4aad5f45554916: [Types.Entities.NFT_5c31425b1b29bc283d34e2cc0547dd8464a5207ba7800f03fa4aad5f45554916, "bot"],
+    NFT_72b8af0ff7540ef136b170f2ed9ccef3148bc7ca9586c5f75eb847e9d5354dd1: [Types.Entities.NFT_72b8af0ff7540ef136b170f2ed9ccef3148bc7ca9586c5f75eb847e9d5354dd1, "bot"],
+    NFT_cded0af2147e916d7e2d6e62c1ea076bafe80f3c0913c50ce9a14adc11306a46: [Types.Entities.NFT_cded0af2147e916d7e2d6e62c1ea076bafe80f3c0913c50ce9a14adc11306a46, "bot"],
     // @nextSpriteLine@
 
     getType: function(kind) {

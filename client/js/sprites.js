@@ -88,6 +88,11 @@ define(['text!../sprites/agent.json',
         'text!../sprites/item-trinket.json',
         'text!../sprites/item-wildflowers.json',
         'text!../sprites/item-luminousstones.json',
+        //Short Destroyers
+        'text!../sprites/item-vhs.json',
+        'text!../sprites/item-dvd.json',
+        'text!../sprites/item-game.json',
+        'text!../sprites/item-popcorn.json',
         // @nextObjectImport@
         'text!../sprites/king.json',
         'text!../sprites/king2.json',
@@ -369,6 +374,15 @@ define(['text!../sprites/agent.json',
         'text!../sprites/INFERNOTH.json',
         'text!../sprites/WINGELLA.json',
         'text!../sprites/GAUNTER.json',
+
+        //Short Destroyers
+        'text!../sprites/lateflea.json',
+        'text!../sprites/wolfboss.json',
+        'text!../sprites/horde1.json',
+        'text!../sprites/horde2.json',
+        'text!../sprites/horde3.json',
+        'text!../sprites/horde4.json',
+        'text!../sprites/horde5.json',
         // @nextCharacterImport@
         'text!../sprites/NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6.json',
         'text!../sprites/NFT_38278eacc7d1c86fdbc85d798dca146fbca59a2e5e567dc15898ce2edac21f5f.json',
@@ -4993,6 +5007,14 @@ define(['text!../sprites/agent.json',
         'text!../sprites/NFT_d7e3bee32416b8fc2f47636d863094e7094a34ad199a1df1a2119eaff97a1fd4.json',
         'text!../sprites/NFT_fde71b6ffc50c0137f992889919e1a2020994a000beec58afc62b89b185e8e03.json',
         'text!../sprites/NFT_3a7e3663a9463dea86675ef78dfbc79e67460aacd2edd3d2903307a7eb1a5cda.json',
+        'text!../sprites/NFT_26c66a58d2e52ebbb4215824a83e295d0705c1dcf8b3349f57b63b2650e92bea.json',
+        'text!../sprites/NFT_2a1aab978f311059db6a56ffac205a0e7b0b43c838064f1532fdb5e24ac2a799.json',
+        'text!../sprites/NFT_37484d6fe7cfa46a83f7ef690dc0daf2a8db90c0c747a7564b864d66d459baea.json',
+        'text!../sprites/NFT_4c0f1f1f58454f2243010c1366064322654622c572fe355fef1a951eff8cdab1.json',
+        'text!../sprites/NFT_5543355385c76ab6ac12a5eacac18893994bd66a6aaef4881d9165df4bf52cc0.json',
+        'text!../sprites/NFT_5c31425b1b29bc283d34e2cc0547dd8464a5207ba7800f03fa4aad5f45554916.json',
+        'text!../sprites/NFT_72b8af0ff7540ef136b170f2ed9ccef3148bc7ca9586c5f75eb847e9d5354dd1.json',
+        'text!../sprites/NFT_cded0af2147e916d7e2d6e62c1ea076bafe80f3c0913c50ce9a14adc11306a46.json',
         // @nextSpriteImport@
     ], function() {
     
