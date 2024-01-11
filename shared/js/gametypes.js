@@ -201,6 +201,14 @@ Types = {
         COBSLIMEPINK: 400019,
         COBSLIMECYAN: 400020,
         COBSLIMEMINT: 400021,
+        //Short Destroyers
+        LATEFLEA: 770001,
+        WOLFBOSS: 770002,
+        HORDE1: 770003,
+        HORDE2: 770004,
+        HORDE3: 770005,
+        HORDE4: 770006,
+        HORDE5: 770007,
 
         // Armors
         FIREFOX: 20,
@@ -261,7 +269,12 @@ Types = {
         CRYSTAL: 21300048,
         TRINKET: 21300049,
         WILDFLOWERS: 21300050,
-        LUMINOUSSTONES: 21300051, // @lastidObject@
+        LUMINOUSSTONES: 21300051, 
+        //Short Destroyers
+        VHS: 77000001,
+        DVD: 77000002,
+        GAME: 77000003,
+        POPCORN: 77000004, // @lastidObject@
         //@nextIdLineObject@
 
         // NPCs
@@ -4878,6 +4891,15 @@ var kinds = {
     cobcoblin: [Types.Entities.COBCOBLIN, "mob"],
     cobcobane: [Types.Entities.COBCOBANE, "mob"],
     cobogre: [Types.Entities.COBOGRE, "mob"],
+    //Short Destroyers
+    lateflea: [Types.Entities.LATEFLEA, "mob"],
+    wolfboss: [Types.Entities.WOLFBOSS, "mob"],
+    horde1: [Types.Entities.HORDE1, "mob"],
+    horde2: [Types.Entities.HORDE2, "mob"],
+    horde3: [Types.Entities.HORDE3, "mob"],
+    horde4: [Types.Entities.HORDE4, "mob"],
+    horde5: [Types.Entities.HORDE5, "mob"],
+
     sword1: [Types.Entities.SWORD1, "weapon"],
     sword2: [Types.Entities.SWORD2, "weapon"],
     axe: [Types.Entities.AXE, "weapon"],
@@ -4945,6 +4967,11 @@ var kinds = {
     trinket: [Types.Entities.TRINKET, "object"],
     wildflowers: [Types.Entities.WILDFLOWERS, "object"],
     luminousstones: [Types.Entities.LUMINOUSSTONES, "object"],
+    //Short Destroyers
+    vhs: [Types.Entities.VHS, "object"],
+    dvd: [Types.Entities.DVD, "object"],
+    game: [Types.Entities.GAME, "object"],
+    popcorn: [Types.Entities.POPCORN, "object"],
     // @nextObjectLine@
 
     guard: [Types.Entities.GUARD, "npc"],

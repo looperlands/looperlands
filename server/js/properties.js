@@ -1040,6 +1040,62 @@ let Properties = {
         },
     },
 
+    //Short Destroyers
+    lateflea: {
+        level: 5,
+        drops: {
+            flask: 50
+        }
+    },
+
+    wolfboss: {
+        level: 10,
+        drops: {
+            dvd: 50,
+            popcorn: 50,      
+        },
+        messages: ['Darkness shall embrance you!', 'Your doom is woven', 'Fear binds you', 'Your end is spun', 'The old world beckons you'],
+        armorMod: 1.1,
+        weaponMod: 1.6,
+        hpMod: 2.0,
+        xp: 1200,  
+        respawnDelay: 30000
+    },
+
+    horde1: {
+        level: 2,
+        drops: {
+            flask: 50
+        }
+    },
+
+    horde2: {
+        level: 4,
+        drops: {
+            flask: 50
+        }
+    },
+
+    horde3: {
+        level: 6,
+        drops: {
+            flask: 50
+        }
+    },
+
+    horde4: {
+        level: 8,
+        drops: {
+            flask: 50
+        }
+    },
+
+    horde5: {
+        level: 10,
+        drops: {
+            flask: 50
+        }
+    },
 
     //Field effects
     magcrack: {

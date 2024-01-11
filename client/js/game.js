@@ -160,6 +160,14 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "INFERNOTH",
                     "WINGELLA",
                     "GAUNTER",
+                    //Short Destroyers
+                    "lateflea",
+                    "wolfboss",
+                    "horde1",
+                    "horde2",
+                    "horde3",
+                    "horde4",
+                    "horde5",
                                 // @nextCharacterLine@
                     "item-BOARHIDE",
                     "item-THUDKEY",
@@ -200,6 +208,11 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "item-trinket",
                     "item-wildflowers",
                     "item-luminousstones",
+                    //Short Destroyers
+                    "item-vhs",
+                    "item-dvd",
+                    "item-game",
+                    "item-popcorn",
                     // @nextObjectLine@
                     "NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6",
                     "NFT_38278eacc7d1c86fdbc85d798dca146fbca59a2e5e567dc15898ce2edac21f5f",
