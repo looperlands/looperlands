@@ -485,6 +485,21 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.WOLFBOSS] = function(id) {
         return new Mobs.wolfboss(id);
     };
+    EntityFactory.builders[Types.Entities.HORDE1] = function(id) {
+        return new Mobs.horde1(id);
+    };
+    EntityFactory.builders[Types.Entities.HORDE2] = function(id) {
+        return new Mobs.horde2(id);
+    };
+    EntityFactory.builders[Types.Entities.HORDE3] = function(id) {
+        return new Mobs.horde3(id);
+    };
+    EntityFactory.builders[Types.Entities.HORDE4] = function(id) {
+        return new Mobs.horde4(id);
+    };
+    EntityFactory.builders[Types.Entities.HORDE5] = function(id) {
+        return new Mobs.horde5(id);
+    };
     // @nextMobLine@
     //===== items ======
  

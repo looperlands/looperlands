@@ -79,6 +79,11 @@ const AltNames = {
     //Short Destroyers
     lateflea: ".65 Late Flea",  
     wolfboss: "Victor Henry Stevenson",  
+    horde1: ".65 Late Flea",  
+    horde2: ".65 Late Flea",  
+    horde3: ".65 Late Flea",  
+    horde4: ".65 Late Flea",  
+    horde5: ".65 Late Flea",  
 };
 
 AltNames.getAltNameFromKind = function(kind){

@@ -204,6 +204,11 @@ Types = {
         //Short Destroyers
         LATEFLEA: 770001,
         WOLFBOSS: 770002,
+        HORDE1: 770003,
+        HORDE2: 770004,
+        HORDE3: 770005,
+        HORDE4: 770006,
+        HORDE5: 770007,
 
         // Armors
         FIREFOX: 20,
@@ -4881,6 +4886,11 @@ var kinds = {
     //Short Destroyers
     lateflea: [Types.Entities.LATEFLEA, "mob"],
     wolfboss: [Types.Entities.WOLFBOSS, "mob"],
+    horde1: [Types.Entities.HORDE1, "mob"],
+    horde2: [Types.Entities.HORDE2, "mob"],
+    horde3: [Types.Entities.HORDE3, "mob"],
+    horde4: [Types.Entities.HORDE4, "mob"],
+    horde5: [Types.Entities.HORDE5, "mob"],
 
     sword1: [Types.Entities.SWORD1, "weapon"],
     sword2: [Types.Entities.SWORD2, "weapon"],

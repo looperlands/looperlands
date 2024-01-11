@@ -2202,6 +2202,66 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.title = "Time To Test Your Might!";
             }
         }),
+
+        horde1: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.HORDE1);
+                this.moveSpeed = 250;
+                this.atkSpeed = 100;
+                this.idleSpeed = 750;
+                this.setAttackRate(1000);
+                this.deathAnimated = true;
+                this.aggroRange = 3;
+            }
+        }),
+        
+        horde2: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.HORDE2);
+                this.moveSpeed = 250;
+                this.atkSpeed = 100;
+                this.idleSpeed = 750;
+                this.setAttackRate(1000);
+                this.deathAnimated = true;
+                this.aggroRange = 3;
+            }
+        }),
+        
+        horde3: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.HORDE3);
+                this.moveSpeed = 250;
+                this.atkSpeed = 100;
+                this.idleSpeed = 750;
+                this.setAttackRate(1000);
+                this.deathAnimated = true;
+                this.aggroRange = 3;
+            }
+        }),
+
+        horde4: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.HORDE4);
+                this.moveSpeed = 250;
+                this.atkSpeed = 100;
+                this.idleSpeed = 750;
+                this.setAttackRate(1000);
+                this.deathAnimated = true;
+                this.aggroRange = 3;
+            }
+        }),
+
+        horde5: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.HORDE5);
+                this.moveSpeed = 250;
+                this.atkSpeed = 100;
+                this.idleSpeed = 750;
+                this.setAttackRate(1000);
+                this.deathAnimated = true;
+                this.aggroRange = 3;
+            }
+        }),
         // @nextMobLine@
     };
     return Mobs;

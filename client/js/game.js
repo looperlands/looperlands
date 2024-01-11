@@ -163,6 +163,11 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     //Short Destroyers
                     "lateflea",
                     "wolfboss",
+                    "horde1",
+                    "horde2",
+                    "horde3",
+                    "horde4",
+                    "horde5",
                                 // @nextCharacterLine@
                     "item-BOARHIDE",
                     "item-THUDKEY",

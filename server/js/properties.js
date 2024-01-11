@@ -1062,6 +1062,41 @@ let Properties = {
         respawnDelay: 30000
     },
 
+    horde1: {
+        level: 2,
+        drops: {
+            flask: 50
+        }
+    },
+
+    horde2: {
+        level: 4,
+        drops: {
+            flask: 50
+        }
+    },
+
+    horde3: {
+        level: 6,
+        drops: {
+            flask: 50
+        }
+    },
+
+    horde4: {
+        level: 8,
+        drops: {
+            flask: 50
+        }
+    },
+
+    horde5: {
+        level: 10,
+        drops: {
+            flask: 50
+        }
+    },
+
     //Field effects
     magcrack: {
         aoe: {
