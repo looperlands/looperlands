@@ -156,10 +156,13 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "mayoroswald",
                     "newcomersilas",
                     "guardianfintan",
+                    //mycupbloody
                     "BORAC",
                     "INFERNOTH",
                     "WINGELLA",
                     "GAUNTER",
+                    "MASTROM",
+                    "VALKYM",
                     //Short Destroyers
                     "lateflea",
                     "wolfboss",
@@ -168,6 +171,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "horde3",
                     "horde4",
                     "horde5",
+                               
                                 // @nextCharacterLine@
                     "item-BOARHIDE",
                     "item-THUDKEY",
@@ -213,7 +217,11 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "item-dvd",
                     "item-game",
                     "item-popcorn",
-                    // @nextObjectLine@
+                    //mycupbloody
+                    "item-EYEBALL",
+                    "item-REDPOTION",
+                     "item-GREYPOTION",
+                                // @nextObjectLine@
                     "NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6",
                     "NFT_38278eacc7d1c86fdbc85d798dca146fbca59a2e5e567dc15898ce2edac21f5f",
                     "NFT_d2fb1ad9308803ea4df2ba6b1fe0930ad4d6443b3ac6468eaedbc9e2c214e57a",

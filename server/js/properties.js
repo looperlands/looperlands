@@ -1012,7 +1012,8 @@ let Properties = {
     BORAC: {
         level: 8,
         drops: {
-            flask: 40
+            REDPOTION: 40,
+            EYEBALL: 10
         },
 
     },
@@ -1028,15 +1029,32 @@ let Properties = {
     WINGELLA: {
         level: 6,
         drops: {
-            flask: 40
+            REDPOTION: 40
         },
 
     },
 
     GAUNTER: {
+        level: 16,
+        drops: {
+            GREYPOTION: 100,
+            EYEBALL: 10
+        },
+    },
+
+    MASTROM: {
         level: 13,
         drops: {
-            flask: 40
+            GREYPOTION: 100,
+            EYEBALL: 10
+        },
+    },
+
+    VALKYM: {
+        level: 11,
+        drops: {
+            GREYPOTION: 100,
+            EYEBALL: 10
         },
     },
 

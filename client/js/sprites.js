@@ -93,6 +93,10 @@ define(['text!../sprites/agent.json',
         'text!../sprites/item-dvd.json',
         'text!../sprites/item-game.json',
         'text!../sprites/item-popcorn.json',
+        //mycupbloody
+        'text!../sprites/item-EYEBALL.json',
+        'text!../sprites/item-REDPOTION.json',
+        'text!../sprites/item-GREYPOTION.json',
         // @nextObjectImport@
         'text!../sprites/king.json',
         'text!../sprites/king2.json',
@@ -370,11 +374,13 @@ define(['text!../sprites/agent.json',
         'text!../sprites/CITYSIGN8.json',
         'text!../sprites/CITYSIGN9.json',
         'text!../sprites/CITYSIGN10.json',
+        //mycupbloody
         'text!../sprites/BORAC.json',
         'text!../sprites/INFERNOTH.json',
         'text!../sprites/WINGELLA.json',
         'text!../sprites/GAUNTER.json',
-
+        'text!../sprites/MASTROM.json',
+        'text!../sprites/VALKYM.json',
         //Short Destroyers
         'text!../sprites/lateflea.json',
         'text!../sprites/wolfboss.json',
@@ -383,6 +389,7 @@ define(['text!../sprites/agent.json',
         'text!../sprites/horde3.json',
         'text!../sprites/horde4.json',
         'text!../sprites/horde5.json',
+        
         // @nextCharacterImport@
         'text!../sprites/NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6.json',
         'text!../sprites/NFT_38278eacc7d1c86fdbc85d798dca146fbca59a2e5e567dc15898ce2edac21f5f.json',
