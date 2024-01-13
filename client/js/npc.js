@@ -390,6 +390,9 @@ define(['character'], function (Character) {
         "patroncora": [
             "This is the best spot in town for a cup of joe and the latest gossip."
         ],
+        "GOFFREY": ["Welcome to Duckville Portal!",
+                    "Mycupbloody sent me. Please help save Duckville!"
+        ],
         // @nextNPCLine@
     };
 

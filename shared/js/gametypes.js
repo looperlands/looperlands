@@ -365,7 +365,8 @@ Types = {
         WINGELLA: 34000059,
         GAUNTER: 34000060,
         MASTROM: 34000061,
-        VALKYM: 34000062, // @lastidCharacter@
+        VALKYM: 34000062,
+        GOFFREY: 34000063, // @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -5113,6 +5114,7 @@ var kinds = {
     GAUNTER: [Types.Entities.GAUNTER, "mob"],
     MASTROM: [Types.Entities.MASTROM, "mob"],
     VALKYM: [Types.Entities.VALKYM, "mob"],
+    GOFFREY: [Types.Entities.GOFFREY, "npc"],
     // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],
