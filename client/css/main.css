@@ -923,6 +923,15 @@ footer div  {display:inline-block;}
     min-width: 9px;
     padding: 2px 5px;
     text-align: center;
+    float: left;
+}
+#inventory .item .timer { 
+    position: relative;
+    top: -50px;
+    color: silver;
+    font-size: 11px;
+    margin-bottom: -20px;
+    height: 20px;
 }
 #inventory .inventorySectionItems {
     height:305px;

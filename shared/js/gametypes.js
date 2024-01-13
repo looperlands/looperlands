@@ -214,6 +214,9 @@ Types = {
         // Objects
         FLASK: 35,
         POTION: 300008,
+        CPOTION_S: 333009,
+        CPOTION_M: 333010,
+        CPOTION_L: 333011,
         BURGER: 36,
         CHEST: 37,
         FIREPOTION: 38,
@@ -4855,6 +4858,9 @@ var kinds = {
 
     flask: [Types.Entities.FLASK, "object"],
     potion: [Types.Entities.POTION, "object"],
+    cpotion_s: [Types.Entities.CPOTION_S, "object"],
+    cpotion_m: [Types.Entities.CPOTION_M, "object"],
+    cpotion_l: [Types.Entities.CPOTION_L, "object"],
     cobapple: [Types.Entities.COBAPPLE, "object"],
     cobcorn: [Types.Entities.COBCORN, "object"],
     coblog: [Types.Entities.COBLOG, "object"],

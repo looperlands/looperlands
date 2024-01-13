@@ -20,6 +20,7 @@ define(['jquery', 'storage'], function ($, Storage) {
             this.$playButton = $('.play');
             this.$playDiv = $('.play div');
             this.settings = new GameSettings(this);
+            this.cooldownIntervals = [];
         },
 
         setGame: function (game) {
@@ -625,6 +626,7 @@ define(['jquery', 'storage'], function ($, Storage) {
 
                         let cursor = consumablesInventory[item].consumable ? "pointer" : "not-allowed";
                         itemHtml += "<div class='item panelBorder'>" + tooltipText + "<img id='" + item + "' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0; cursor: " + cursor + ";' src='img/3/" + consumablesInventory[item].image + ".png' />";
+                        itemHtml += "<div class='timer' id='timer_" + item + "'></div>";
                         itemHtml += "<p id='count_" + item + "'>" + consumablesInventory[item].qty + "</p>"
                         itemHtml += "</div>";
                     });
@@ -685,6 +687,36 @@ define(['jquery', 'storage'], function ($, Storage) {
                     }
                 }
 
+                let updateCdDisplay = function (item) {
+                    //inverted %, hence the 100 -
+                    let cdPercent = 100 - Math.round(100*consumablesInventory[item].cooldown/consumablesInventory[item].maxCooldown);
+    
+                    document.getElementById("timer_" + item).innerHTML = _this.game.msToTime(consumablesInventory[item].cooldown);
+                    $('#'+item).parent().attr('style', 'background: linear-gradient(#341e28 ' + cdPercent + '%, #5b0000 ' + cdPercent + '%) !important');
+                }
+
+                let cooldownTick = function (item) {
+                    updateCdDisplay(item);
+                    $('#'+item).css({'cursor':"not-allowed"});
+
+                    let tickInterval = setInterval(function (){
+                        if (consumablesInventory[item].cooldown <= 0) {
+                            clearInterval(tickInterval);
+                            document.getElementById("timer_" + item).innerHTML = "";
+                            $('#'+item).css({'cursor':"pointer"});
+                            $('#'+item).parent().attr('style', 'background:');
+                            
+                            if (consumablesInventory[item].consumable) {
+                                consumeFunc(item);
+                            }
+                        } else {
+                            consumablesInventory[item].cooldown -= 1000;
+                            updateCdDisplay(item);
+                        }
+                    }, 1000);
+                    _this.cooldownIntervals.push(tickInterval);
+                }
+
                 let newBot = function (item) {
                     if (item.nftId && document.getElementById(item.nftId) !== null) {
                         let spawnBot = function (e) {
@@ -717,7 +749,9 @@ define(['jquery', 'storage'], function ($, Storage) {
                 });
 
                 Object.keys(consumablesInventory).forEach(item => {
-                    if(consumablesInventory[item].consumable) {
+                    if (consumablesInventory[item].cooldown > 0) {
+                        cooldownTick(item);
+                    } else if (consumablesInventory[item].consumable) {
                         consumeFunc(item);
                     }
                 });
@@ -737,6 +771,11 @@ define(['jquery', 'storage'], function ($, Storage) {
             }
             $('#inventorybutton').removeClass('active');
             this.isInventoryVisible = false;
+
+            this.cooldownIntervals.forEach((interval) => {
+                clearInterval(interval);
+            });
+            this.cooldownIntervals = [];
         },
 
         toggleSettings: function () {

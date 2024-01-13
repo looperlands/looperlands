@@ -40,6 +40,7 @@ module.exports = World = cls.Class.extend({
 
         this.entities = {};
         this.players = {};
+        this.consumeCooldowns = {};
         this.mobs = {};
         this.attackers = {};
         this.items = {};
@@ -133,6 +134,22 @@ module.exports = World = cls.Class.extend({
                 }
                 if (self.removed_callback) {
                     self.removed_callback();
+                }
+            });
+
+            player.onCheckCooldown(function (group) {
+                if (self.consumeCooldowns[player.nftId] !== undefined && self.consumeCooldowns[player.nftId][group] !== undefined) {
+                    return new Date().getTime() < self.consumeCooldowns[player.nftId][group];
+                }
+                return false; //not on cooldown
+            });
+
+            player.onApplyCooldown(function (group, duration) {
+                if (group && (duration > 0)) {
+                    if (!self.consumeCooldowns[player.nftId]) {
+                        self.consumeCooldowns[player.nftId] = {};
+                    }
+                    self.consumeCooldowns[player.nftId][group] = new Date().getTime() + duration;
                 }
             });
 
@@ -1516,6 +1533,18 @@ module.exports = World = cls.Class.extend({
 
     announceDespawnFloat: function(player) {
         this.pushToAdjacentGroups(player.group, new Messages.DespawnFloat(player.id), player.id);
+    },
+
+    getConsumeGroupCooldown: function(nftId, itemGroup) {
+        let playerCooldowns = this.consumeCooldowns[nftId];
+        if (playerCooldowns) {
+            let expireDate = playerCooldowns[itemGroup];
+            if (expireDate !== undefined) {
+                let remainingDuration = expireDate - new Date().getTime();
+                return remainingDuration > 0 ? remainingDuration : 0;
+            }
+        }
+        return 0;
     }
 });
 
