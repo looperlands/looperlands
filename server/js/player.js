@@ -347,7 +347,7 @@ module.exports = Player = Character.extend({
                         self.broadcast(item.despawn());
                         self.server.removeEntity(item);
 
-                        if(kind === Types.Entities.FIREPOTION || kind === Types.Entities.COBCORN) {
+                        if(kind === Types.Entities.FIREPOTION || kind === Types.Entities.COBCORN || kind === Types.Entities.EYEBALL) {
                             self.updateHitPoints();
 
                             if (self.firepotionTimeout != null) {
@@ -373,9 +373,11 @@ module.exports = Player = Character.extend({
                                 case Types.Entities.POTION:
                                 case Types.Entities.FLASK:
                                 case Types.Entities.COBAPPLE:
+                                case Types.Entities.REDPOTION:
                                     amount = 40;
                                     break;
                                 case Types.Entities.BURGER:
+                                case Types.Entities.GREYPOTION:
                                     amount = 100;
                                     break;
                             }

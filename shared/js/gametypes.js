@@ -9605,7 +9605,9 @@ Types.isHealingItem = function(kind) {
     return kind === Types.Entities.FLASK
         || kind === Types.Entities.BURGER
         || kind === Types.Entities.POTION
-        || kind === Types.Entities.COBAPPLE;
+        || kind === Types.Entities.COBAPPLE
+        || kind === Types.Entities.REDPOTION
+        || kind === Types.Entities.GREYPOTION;
 };
 
 Types.isExpendableItem = function(kind) {
@@ -9613,7 +9615,8 @@ Types.isExpendableItem = function(kind) {
         || kind === Types.Entities.FIREPOTION
         || kind === Types.Entities.CAKE
         || kind === Types.Entities.COBCORN
-        || kind === Types.Entities.COBCLOVER;
+        || kind === Types.Entities.COBCLOVER
+        || kind === Types.Entities.EYEBALL;
 };
 
 Types.getKindFromString = function(kind) {
