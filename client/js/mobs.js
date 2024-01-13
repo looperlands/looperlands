@@ -2133,13 +2133,18 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
 
+        //mycupbloody
+
         BORAC: Mob.extend({ 
             init: function(id) { 
                 this._super(id, Types.Entities.BORAC); 
-                this.moveSpeed = 250; 
-                this.atkSpeed = 100; 
-                this.idleSpeed = 500; 
-                this.aggroRange = 2;
+                this.moveSpeed = 200;
+                this.atkSpeed = 100;
+                this.idleSpeed = 800;
+                this.walkSpeed = 200;
+                this.shadowOffsetY = 1;
+                this.aggroRange = 3;
+                this.setAttackRate(1200);
             }
         }),
        
@@ -2149,7 +2154,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.moveSpeed = 100; 
                 this.atkSpeed = 100; 
                 this.idleSpeed = 200;
-                this.aggroRange = 1; 
+                this.aggroRange = 2; 
             }
         }),
 
@@ -2158,7 +2163,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this._super(id, Types.Entities.WINGELLA); 
                 this.moveSpeed = 350; 
                 this.atkSpeed = 100; 
-                this.idleSpeed = 800; 
+                this.idleSpeed = 620; 
                 this.shadowOffsetY = 1; 
                 this.aggroRange = 3;
             }
@@ -2167,16 +2172,42 @@ define(['mob', 'timer'], function(Mob, Timer) {
         GAUNTER: Mob.extend({ 
             init: function(id) { 
                 this._super(id, Types.Entities.GAUNTER); 
-                this.moveSpeed = 200; 
-                this.atkSpeed = 200; 
-                this.idleSpeed = 420; 
-                this.weaponMod = 1.5;
-                this.hpMod = .7;
-                this.aggroRange = 2;
+                this.moveSpeed = 200;
+                this.atkSpeed = 100;
+                this.idleSpeed = 800;
+                this.walkSpeed = 200;
+                this.shadowOffsetY = 1;
+                this.aggroRange = 3;
                 this.setAttackRate(1200);
             }
         }),
         
+        MASTROM: Mob.extend({ 
+            init: function(id) { 
+                this._super(id, Types.Entities.MASTROM); 
+                this.moveSpeed = 200;
+                this.atkSpeed = 100;
+                this.idleSpeed = 800;
+                this.walkSpeed = 200;
+                this.shadowOffsetY = 1;
+                this.aggroRange = 3;
+                this.setAttackRate(1200);
+            }
+        }),
+
+        VALKYM: Mob.extend({ 
+            init: function(id) { 
+                this._super(id, Types.Entities.VALKYM); 
+                this.moveSpeed = 200;
+                this.atkSpeed = 100;
+                this.idleSpeed = 800;
+                this.walkSpeed = 200;
+                this.shadowOffsetY = 1;
+                this.aggroRange = 3;
+                this.setAttackRate(800);
+            }
+        }),
+
         //Short Destroyers
         lateflea: Mob.extend({
             init: function(id) {
@@ -2262,6 +2293,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.aggroRange = 3;
             }
         }),
+        
         // @nextMobLine@
     };
     return Mobs;

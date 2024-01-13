@@ -478,6 +478,12 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.GAUNTER]=function(id){
         return new Mobs.GAUNTER(id);
     };
+    EntityFactory.builders[Types.Entities.MASTROM]=function(id){
+        return new Mobs.MASTROM(id);
+    };
+    EntityFactory.builders[Types.Entities.VALKYM]=function(id){
+        return new Mobs.VALKYM(id);
+    };
     //Short Destroyers
     EntityFactory.builders[Types.Entities.LATEFLEA] = function(id) {
         return new Mobs.lateflea(id);
@@ -500,6 +506,7 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.HORDE5] = function(id) {
         return new Mobs.horde5(id);
     };
+   
     // @nextMobLine@
     //===== items ======
  
@@ -590,6 +597,18 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
         return new Chest(id);
     };
 
+    EntityFactory.builders[Types.Entities.CPOTION_S] = function(id) {
+        return new Items.Cpotion_s(id);
+    };
+
+    EntityFactory.builders[Types.Entities.CPOTION_M] = function(id) {
+        return new Items.Cpotion_m(id);
+    };
+
+    EntityFactory.builders[Types.Entities.CPOTION_L] = function(id) {
+        return new Items.Cpotion_l(id);
+    };
+
     EntityFactory.builders[Types.Entities.KEY_ARACHWEAVE]=function(id){return new Items.KEY_ARACHWEAVE(id);};
     EntityFactory.builders[Types.Entities.BOARHIDE]=function(id){return new Items.BOARHIDE(id);};
     EntityFactory.builders[Types.Entities.THUDKEY]=function(id){return new Items.THUDKEY(id);};
@@ -634,6 +653,16 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.DVD] = function(id) { return new Items.dvd(id); };
     EntityFactory.builders[Types.Entities.GAME] = function(id) { return new Items.game(id); };
     EntityFactory.builders[Types.Entities.POPCORN] = function(id) { return new Items.popcorn(id); };
+    //mycupbloody
+    EntityFactory.builders[Types.Entities.EYEBALL]=function(id){
+        return new Items.EYEBALL(id);
+    };
+    EntityFactory.builders[Types.Entities.REDPOTION]=function(id){
+        return new Items.REDPOTION(id);
+    };
+    EntityFactory.builders[Types.Entities.GREYPOTION]=function(id){
+        return new Items.GREYPOTION(id);
+    };
     // @nextObjectLine@
 
     //====== NPCs ======

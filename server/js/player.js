@@ -974,13 +974,22 @@ module.exports = Player = Character.extend({
             gameData.consumables = {};
         }
         let itemCount = gameData.consumables[item];
-        if(itemCount > 0 && Collectables.isConsumable(item)) {
+
+        let cooldownData = Collectables.getCooldownData(item);
+        let cooldownGroup = cooldownData.group !== undefined ? cooldownData.group : "";
+        let onCooldown = cooldownGroup ? this.checkCooldown(cooldownGroup) : false;
+        if (itemCount > 0 && Collectables.isConsumable(item) && !onCooldown) {
             this.getFishBuff(item);
             Collectables.consume(item, this);
             dao.saveConsumable(this.nftId, item, -1);
             gameData.consumables[item] = itemCount - 1;
             cache.gameData = gameData;
             this.server.server.cache.set(this.sessionId, cache);
+            
+            let cooldownDuration = cooldownData.duration >= 0 ? cooldownData.duration : 0;
+            if (cooldownGroup && cooldownDuration){
+                this.applyCooldown(cooldownGroup, cooldownDuration);
+            }
         }
     },
 
@@ -1059,5 +1068,25 @@ module.exports = Player = Character.extend({
             this._isBot = Types.isBot(Types.getKindFromString(nftId));
         }
         return this._isBot;
+    },
+
+    onCheckCooldown: function(callback) {
+        this.checkCooldown_callback = callback;
+    },
+
+    onApplyCooldown: function(callback) {
+        this.applyCooldown_callback = callback;
+    },
+
+    checkCooldown: function(group) {
+        if(this.checkCooldown_callback) {
+            return this.checkCooldown_callback(group);
+        }
+    },
+
+    applyCooldown: function(group, duration) {
+        if(this.applyCooldown_callback) {
+            this.applyCooldown_callback(group, duration);
+        }
     }
 });

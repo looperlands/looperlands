@@ -1012,7 +1012,8 @@ let Properties = {
     BORAC: {
         level: 8,
         drops: {
-            flask: 40
+            REDPOTION: 40,
+            EYEBALL: 10
         },
 
     },
@@ -1028,15 +1029,32 @@ let Properties = {
     WINGELLA: {
         level: 6,
         drops: {
-            flask: 40
+            REDPOTION: 40
         },
 
     },
 
     GAUNTER: {
+        level: 16,
+        drops: {
+            GREYPOTION: 100,
+            EYEBALL: 10
+        },
+    },
+
+    MASTROM: {
         level: 13,
         drops: {
-            flask: 40
+            GREYPOTION: 100,
+            EYEBALL: 10
+        },
+    },
+
+    VALKYM: {
+        level: 11,
+        drops: {
+            GREYPOTION: 100,
+            EYEBALL: 10
         },
     },
 
@@ -1148,6 +1166,42 @@ let Properties = {
         collectItem: Types.Entities.GOLD,
         collectAmount: 50
     },
+    cpotion_s: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "hpPotions",
+            duration: 60000
+        },
+        inventoryDescription: "Small healing potion (75)",
+        onConsume: function(player){
+            player.regenHealthBy(75);
+        }
+    },
+    cpotion_m: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "hpPotions",
+            duration: 60000
+        },
+        inventoryDescription: "Medium healing potion (150)",
+        onConsume: function(player){
+            player.regenHealthBy(150);
+        }
+    },
+    cpotion_l: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "hpPotions",
+            duration: 60000
+        },
+        inventoryDescription: "Large healing potion (300)",
+        onConsume: function(player){
+            player.regenHealthBy(300);
+        }
+    }
 
     // Weapons
     // axe: {
@@ -1274,7 +1328,7 @@ Properties.getCollectItem = function(kind) {
 }
 
 Properties.consume = function(kind, player) {
-    let onConsume = Properties[Types.getKindAsString(kind)]?.onConsume
+    let onConsume = Properties[Types.getKindAsString(kind)]?.onConsume;
     if(onConsume !== undefined) {
         onConsume(player);
     }
@@ -1283,6 +1337,11 @@ Properties.consume = function(kind, player) {
 Properties.getInventoryDescription = function(kind) {
     let retDescription = Properties[Types.getKindAsString(kind)]?.inventoryDescription;
     return retDescription !== undefined ? retDescription : false;
+}
+
+Properties.getCooldownData = function(kind) {
+    let cooldownData = Properties[Types.getKindAsString(kind)]?.cooldown;
+    return cooldownData !== undefined ? cooldownData : {duration: 0, group: ""};
 }
 
 module.exports = Properties;

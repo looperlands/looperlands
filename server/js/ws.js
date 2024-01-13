@@ -425,10 +425,19 @@ WS.socketIOServer = Server.extend({
                 if (!item || !Collectables.isCollectable(parseInt(item)) || consumables[item] <= 0){
                     delete consumables[item];
                 } else {
+                    let remainingCooldown = 0;
+                    const cooldownData = Collectables.getCooldownData(item);
+                    const cooldownGroup = cooldownData?.group;
+                    if (cooldownGroup) {
+                        remainingCooldown = self.worldsMap[sessionData.mapId].getConsumeGroupCooldown(sessionData.nftId, cooldownGroup);
+                    }
+
                     consumables[item] = {qty: consumables[item], 
                                         consumable: Collectables.isConsumable(item), 
                                         image: Collectables.getCollectableImageName(item),
-                                        description: Collectables.getInventoryDescription(item)};
+                                        description: Collectables.getInventoryDescription(item),
+                                        cooldown: remainingCooldown,
+                                        maxCooldown: cooldownData.duration};
                 }
             });
 
