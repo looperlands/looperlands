@@ -1,45 +1,45 @@
 {
   "id": "INFERNOTH",
-  "width": 48,
-  "height": 48,
+  "width": 64,
+  "height": 64,
   "animations": {
 
 
     "atk_right": {
-      "length": 3,
-      "row": 2
+      "length": 5,
+      "row": 0
     },
     "walk_right": {
-      "length": 3,
-      "row": 2
+      "length": 4,
+      "row": 1
     },
     "idle_right": {
       "length": 2,
       "row": 2
     },
     "atk_up": {
-      "length": 3,
+      "length": 4,
       "row": 3
     },
     "walk_up": {
-      "length": 3,
-      "row": 3
+      "length": 4,
+      "row": 4
     },
     "idle_up": {
-      "length": 3,
-      "row": 2
+      "length": 2,
+      "row": 5
     },
     "atk_down": {
       "length": 3,
-      "row": 1
+      "row": 6
     },
     "walk_down": {
-      "length": 3,
-      "row": 1
+      "length": 4,
+      "row": 7
     },
     "idle_down": {
       "length": 2,
-      "row": 0
+      "row": 8
     }
   }
 }
