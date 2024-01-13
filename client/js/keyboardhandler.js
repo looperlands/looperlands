@@ -40,7 +40,7 @@ class KeyBoardHandler {
         }
 
         // Keyboard shortcuts
-        const shortCuts = 'zxcvb';
+        const shortCuts = 'zxcvb1234';
         if (shortCuts.indexOf(key) > -1) {
             if(!this.game.started || this.inputHasFocus()) {
                 return;
@@ -60,6 +60,18 @@ class KeyBoardHandler {
                     break;
                 case 'b':
                     this.app.toggleAvatarInfo(event);
+                    break;
+                case '1':
+                    this.app.consumeSlot(0);
+                    break;
+                case '2':
+                    this.app.consumeSlot(1);
+                    break;
+                case '3':
+                    this.app.consumeSlot(2);
+                    break
+                case '4':
+                    this.app.consumeSlot(3);
                     break;
             }
         }

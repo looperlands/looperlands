@@ -8,3 +8,5 @@ configs/*
 nft_template/sqlscript.sql
 *Zone.Identifier
 .idea
+client/config/config_build.json
+ecosystem.config.js

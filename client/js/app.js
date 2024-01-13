@@ -20,6 +20,7 @@ define(['jquery', 'storage'], function ($, Storage) {
             this.$playButton = $('.play');
             this.$playDiv = $('.play div');
             this.settings = new GameSettings(this);
+            this.cooldownIntervals = [];
         },
 
         setGame: function (game) {
@@ -606,11 +607,12 @@ define(['jquery', 'storage'], function ($, Storage) {
                     inventoryHtml += "</div></div>";
                 }
 
-
+                let hasConsumable = false;
                 if (Object.keys(consumablesInventory).length > 0) {
                     let itemHtml = "<div class='inventorySection' id='inventory-tools'><div class='inventoryTitle'>Items</div>";
                     itemHtml += "<div class='inventorySectionItems'>"
                     let hasItem = false;
+
                     Object.keys(consumablesInventory).forEach(item => {
                         if (Types.isResource(item)) {
                             return;
@@ -623,8 +625,14 @@ define(['jquery', 'storage'], function ($, Storage) {
                             tooltipText = "<div class='tooltiptext pixel-corners-xs'>" + description + "</div>";
                         }
 
+                        if(consumablesInventory[item].consumable) {
+                            hasConsumable = true;
+                        }
+
                         let cursor = consumablesInventory[item].consumable ? "pointer" : "not-allowed";
-                        itemHtml += "<div class='item panelBorder'>" + tooltipText + "<img id='" + item + "' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0; cursor: " + cursor + ";' src='img/3/" + consumablesInventory[item].image + ".png' />";
+                        let draggable = consumablesInventory[item].consumable ? "true" : "false";
+                        itemHtml += "<div class='item panelBorder " + (consumablesInventory[item].consumable ? 'consumable' : '') + "' draggable='" + draggable + "' data-item='" + item + "'>" + tooltipText + "<img id='" + item + "' draggable='false' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0; cursor: " + cursor + ";' src='img/3/" + consumablesInventory[item].image + ".png' />";
+                        itemHtml += "<div class='timer' id='timer_" + item + "'></div>";
                         itemHtml += "<p id='count_" + item + "'>" + consumablesInventory[item].qty + "</p>"
                         itemHtml += "</div>";
                     });
@@ -650,10 +658,70 @@ define(['jquery', 'storage'], function ($, Storage) {
                     });
                     inventoryHtml += "</div></div>";
                 }
+                let sidebar = '';
+                if(hasConsumable) {
+                    sidebar = '<div class="inventorySidebar panelBorder"><div class="header">Quick access slots</div><div class="slots">' +
+                        '<div id="consumableSlot1" class="slot"><div class="itemContainer panelBorder"></div><div class="shortcut">1</div></div>' +
+                        '<div id="consumableSlot2" class="slot"><div class="itemContainer panelBorder"></div><div class="shortcut">2</div></div>' +
+                        '<div id="consumableSlot3" class="slot"><div class="itemContainer panelBorder"></div><div class="shortcut">3</div></div>' +
+                        '<div id="consumableSlot4" class="slot"><div class="itemContainer panelBorder"></div><div class="shortcut">4</div></div>' +
+                        '</div></div>';
+                }
 
                 $("#inventorycontent").html(inventoryHtml);
+                let inventorySlots = _this.settings.getInventorySlots();
+
+                if (inventorySlots) {
+                    Object.keys(_.first(inventorySlots, 4)).forEach(slot => {
+                        let item = inventorySlots[slot];
+
+                        if (item && consumablesInventory[item]) {
+                            if (!consumablesInventory[item].consumable) {
+                                return;
+                            }
+
+                            let url = "img/3/" + consumablesInventory[item].image + ".png";
+                            let slotID = "consumableSlot" + (parseInt(slot) + 1);
+
+                            setTimeout(() => $('#' + slotID + ' .itemContainer').append('<img src="' + url + '" />'), 50);
+                        }
+                    });
+                }
+
+
+
+                if (!$('.inventorySidebar').length) {
+                   $('#inventory').before($(sidebar));
+                } else {
+                    $('.inventorySidebar').html($(sidebar).html());
+                }
+
+                if(hasConsumable) {
+                    $(".inventorySectionItems .consumable").on('dragstart', (e) => {
+                        $(e.target).find('.tooltiptext').hide();
+                        e.originalEvent.dataTransfer.setData("text/plain", $(e.target).data('item'));
+                    });
+
+                    for(let i = 0; i < 4; i++) {
+                        let slotEl = document.getElementById("consumableSlot" + (i + 1));
+                        slotEl.addEventListener('dragover', (e) => {e.preventDefault();});
+                        slotEl.addEventListener('dragenter', (e) => {e.preventDefault(); $(e.target).addClass('dragover');});
+                        slotEl.addEventListener('dragleave', (e) => {e.preventDefault(); $(e.target).removeClass('dragover');});
+                        slotEl.addEventListener('drop', (e) => {
+                            $(e.target).removeClass('dragover');
+                            let inventorySlots = _this.settings.getInventorySlots();
+                            let dropItem = parseInt(e.dataTransfer.getData("text/plain"));
+                            inventorySlots[i] = dropItem;
+                            _this.settings.setInventorySlots(inventorySlots);
+                            let url = "img/3/" + consumablesInventory[dropItem].image + ".png";
+                            $('#' + slotEl.id + ' .itemContainer').html('<img style="width: 32px; height: 32px; object-fit: cover; object-position: 100% 0; cursor: pointer;" src="' + url + '" />');
+                        });
+                    }
+                }
+
                 $('#inventorybutton').addClass('active');
                 $("#inventorycontent").addClass("columns" + columns);
+
                 let equipFunc = function (item) {
                     if (document.getElementById(item) !== null) {
                         let equip = function (e) {
@@ -683,6 +751,36 @@ define(['jquery', 'storage'], function ($, Storage) {
                         }
                         document.getElementById(item).addEventListener("click", consume);
                     }
+                }
+
+                let updateCdDisplay = function (item) {
+                    //inverted %, hence the 100 -
+                    let cdPercent = 100 - Math.round(100*consumablesInventory[item].cooldown/consumablesInventory[item].maxCooldown);
+    
+                    document.getElementById("timer_" + item).innerHTML = _this.game.msToTime(consumablesInventory[item].cooldown);
+                    $('#'+item).parent().attr('style', 'background: linear-gradient(#341e28 ' + cdPercent + '%, #5b0000 ' + cdPercent + '%) !important');
+                }
+
+                let cooldownTick = function (item) {
+                    updateCdDisplay(item);
+                    $('#'+item).css({'cursor':"not-allowed"});
+
+                    let tickInterval = setInterval(function (){
+                        if (consumablesInventory[item].cooldown <= 0) {
+                            clearInterval(tickInterval);
+                            document.getElementById("timer_" + item).innerHTML = "";
+                            $('#'+item).css({'cursor':"pointer"});
+                            $('#'+item).parent().attr('style', 'background:');
+                            
+                            if (consumablesInventory[item].consumable) {
+                                consumeFunc(item);
+                            }
+                        } else {
+                            consumablesInventory[item].cooldown -= 1000;
+                            updateCdDisplay(item);
+                        }
+                    }, 1000);
+                    _this.cooldownIntervals.push(tickInterval);
                 }
 
                 let newBot = function (item) {
@@ -717,7 +815,9 @@ define(['jquery', 'storage'], function ($, Storage) {
                 });
 
                 Object.keys(consumablesInventory).forEach(item => {
-                    if(consumablesInventory[item].consumable) {
+                    if (consumablesInventory[item].cooldown > 0) {
+                        cooldownTick(item);
+                    } else if (consumablesInventory[item].consumable) {
                         consumeFunc(item);
                     }
                 });
@@ -730,6 +830,14 @@ define(['jquery', 'storage'], function ($, Storage) {
             this.isInventoryVisible = true;
         },
 
+        consumeSlot: function(slot) {
+            let inventorySlots = _this.settings.getInventorySlots();
+            let item = inventorySlots[slot];
+            if (item) {
+                this.game.client.sendConsumeItem(String(item));
+            }
+        },
+
         hideInventory: function () {
             $('body').removeClass('inventory');
             if (!this.game.player) {
@@ -737,6 +845,11 @@ define(['jquery', 'storage'], function ($, Storage) {
             }
             $('#inventorybutton').removeClass('active');
             this.isInventoryVisible = false;
+
+            this.cooldownIntervals.forEach((interval) => {
+                clearInterval(interval);
+            });
+            this.cooldownIntervals = [];
         },
 
         toggleSettings: function () {
