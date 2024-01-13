@@ -41,6 +41,7 @@ module.exports = function processMap(json, options) {
     }
     if(mode === "server") {
         map.roamingAreas = [];
+        map.hordeAreas = [];
         map.chestAreas = [];
         map.staticChests = [];
         map.staticEntities = {};
@@ -176,6 +177,37 @@ module.exports = function processMap(json, options) {
         });
     }
 
+    var processHordeArea = function(area, idx) {
+        var nb = null, lvl = null, inc = null, waves = null;
+    
+        if(area.properties && area.properties.property) {
+            area.properties.property.forEach(function(prop) {
+                if (prop.name === "nb") {
+                    nb = prop.value;
+                } else if (prop.name === "lvl") {
+                    lvl = prop.value;
+                } else if (prop.name === "inc") {
+                    inc = prop.value;
+                } else if (prop.name === "waves") {
+                    waves = prop.value;
+                }
+            });
+        }
+    
+        map.hordeAreas.push({
+            id: idx,
+            x: area.x / 16,
+            y: area.y / 16,
+            width: area.width / 16,
+            height: area.height / 16,
+            type: area.type,
+            nb: nb,
+            lvl: lvl,
+            inc: inc,
+            waves: waves
+        });
+    };  
+
     var processTriggerArea = function(triggerArea, idx) {
         var trigger = {
             id: triggerArea.id,
@@ -274,6 +306,7 @@ module.exports = function processMap(json, options) {
 
     if (mode === 'server') {
         processGroup('roaming', processRoamingArea);
+        processGroup('horde', processHordeArea);
         processGroup('chestareas', processChestArea);
         processGroup('chests', processChest);
     }

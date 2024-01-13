@@ -138,6 +138,13 @@ module.exports = Mob = Character.extend({
         if (delay === undefined) {
             delay = 40000;
         }
+
+        // Check if the mob is part of a HordeArea
+        if (this.area instanceof HordeArea) {
+            this.area.removeFromArea(this);
+            // HordeArea manages its own respawn logic for the next wave
+            return;
+        }
         
         if(this.area && this.area instanceof MobArea) {
             // Respawn inside the area if part of a MobArea
@@ -229,5 +236,12 @@ module.exports = Mob = Character.extend({
         this.updateHitPoints();
         this.armorLevel = Properties.getArmorLevel(this.kind, this.levelOffset);
         this.weaponLevel = Properties.getWeaponLevel(this.kind, this.levelOffset);
-    }
+    },
+
+    //Function to handle manually setting mob level
+    setLevel: function(newLevel) {
+        this.level = newLevel;
+        this.levelOffset = 0; // Reset level offset
+        this.recalculateStats(); // Recalculate stats based on the new level
+    },
 });

@@ -10,6 +10,7 @@ var cls = require("./lib/class"),
     Player = require('./player'),
     Item = require('./item'),
     MobArea = require('./mobarea'),
+    HordeArea = require('./hordearea'),
     ChestArea = require('./chestarea'),
     Chest = require('./chest'),
     Messages = require('./message'),
@@ -47,6 +48,7 @@ module.exports = World = cls.Class.extend({
         this.hurt = {};
         this.npcs = {};
         this.mobAreas = [];
+        this.hordeAreas = [];
         this.chestAreas = [];
         this.triggerAreas = {};
         this.groups = {};
@@ -183,6 +185,13 @@ module.exports = World = cls.Class.extend({
                 area.onEmpty(self.handleEmptyMobArea.bind(self, area));
 
                 self.mobAreas.push(area);
+            });
+
+            // Initialize Horde Areas
+            _.each(self.map.hordeAreas, function (a) {
+                var area = new HordeArea(a.id, a.nb, a.type, a.lvl, a.inc, a.waves, a.x, a.y, a.width, a.height, self);
+
+                self.hordeAreas.push(area);
             });
 
             // Create all chest areas

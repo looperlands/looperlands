@@ -29,6 +29,7 @@ module.exports = class Mapx {
         this.height = map.height;
         this.collisions = map.collisions;
         this.mobAreas = map.roamingAreas;
+        this.hordeAreas = map.hordeAreas; // Horde 
         this.chestAreas = map.chestAreas;
         this.staticChests = map.staticChests;
         this.staticEntities = map.staticEntities;
