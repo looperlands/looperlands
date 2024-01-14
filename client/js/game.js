@@ -7290,7 +7290,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.highlightedTarget = _.min(this.getMobDistances(), (mobDistance) => {
                     return mobDistance.distance;
                 }).entity;
+
+                if (this.highlightedTarget) {
                 this.highlightedTarget.setHighlight(true);
+                }
             },
 
             highlightNextTarget: function() {
@@ -7326,7 +7329,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             getMobDistances: function() {
                 let mobDistances = [];
                 this.forEachVisibleEntityByDepth((entity) => {
-                    if (!Types.isMob(entity.kind)) {
+                    if (!Types.isMob(entity.kind) || entity.isFriendly || entity.isDead) {
                         return;
                     }
                     let distance = this.player.getDistanceToEntity(entity);
