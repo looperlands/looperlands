@@ -1010,9 +1010,9 @@ let Properties = {
     },
 
     BORAC: {
-        level: 8,
+        level: 11,
         drops: {
-            REDPOTION: 40,
+            GREYPOTION: 100,
             EYEBALL: 10
         },
 
@@ -1051,9 +1051,9 @@ let Properties = {
     },
 
     VALKYM: {
-        level: 11,
+        level: 8,
         drops: {
-            GREYPOTION: 100,
+            REDPOTION: 40,
             EYEBALL: 10
         },
     },

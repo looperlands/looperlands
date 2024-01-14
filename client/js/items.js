@@ -213,7 +213,10 @@ define(['item'], function(Item) {
         EYEBALL:Item.extend({
             init:function(id){
                 this._super(id,Types.Entities.EYEBALL,"object");
-                this.lootMessage="Keep an eye out!!";
+                this.lootMessage="Keep an eye out!!";}
+
+                ,onLoot: function(player) {
+                    player.startInvincibility();
             }
         }),
         REDPOTION:Item.extend({

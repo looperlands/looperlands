@@ -171,7 +171,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "horde3",
                     "horde4",
                     "horde5",
-                               
+                    //mycupbloody npc           
+                    "GOFFREY",
                                 // @nextCharacterLine@
                     "item-BOARHIDE",
                     "item-THUDKEY",
