@@ -1535,6 +1535,11 @@ module.exports = World = cls.Class.extend({
         this.pushToAdjacentGroups(player.group, new Messages.DespawnFloat(player.id), player.id);
     },
 
+    announceSpawnProjectile: function(player, projectileId, mob) {
+        console.log("announceSpawnProjectile", player.id, projectileId, mob);
+        this.pushToAdjacentGroups(player.group, new Messages.SpawnProjectile(player.id, projectileId, mob));
+    },
+
     getConsumeGroupCooldown: function(nftId, itemGroup) {
         let playerCooldowns = this.consumeCooldowns[nftId];
         if (playerCooldowns) {

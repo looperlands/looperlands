@@ -81,6 +81,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.slidingFish = null;
                 this.uniFishTimeout = null;
 
+                // Projectiles
+                this.lowAmmoThreshold = 10;
+
                 // sprites
                 this.spriteNames = ["hand", "sword", "loot", "target", "talk", "float", "sparks", "shadow16", "rat", "skeleton", "skeleton2", "spectre", "boss", "deathknight",
                     "ogre", "crab", "snake", "eye", "bat", "goblin", "wizard", "guard", "king", "villagegirl", "villager", "coder", "agent", "rick", "scientist", "nyan", "priest", "coblumberjack", "cobhillsnpc", "cobcobmin", "cobellen", "cobjohnny", "cobashley",
@@ -6691,6 +6694,16 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         self.removeFloat(id);
                     });
 
+                    self.client.onSpawnProjectile(function(projectile, target) {
+                        console.log('shoot projectile', projectile, target);
+                    });
+
+                    self.client.onOutOfAmmo(function() {
+                        self.player.idle();
+                        self.player.disengage();
+                        self.showNotification('I\'m Out of ammo!');
+                    });
+
                     self.client.onNotify(function(text) {
                         if(text){
                             self.showNotification(text);
@@ -7606,17 +7619,22 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 character.lookAtTarget();
                             }
 
-                            character.hit();
-
-                            if(character.id === this.playerId) {
-                                this.client.sendHit(character.target);
+                            if(Types.isRangedWeapon(Types.getKindFromString(character.weaponName))) {
+                                character.hit();
+                                if (character.id === this.playerId) {
+                                    this.client.sendShoot(character.target);
+                                }
+                            } else {
+                                character.hit();
+                                if (character.id === this.playerId) {
+                                    this.client.sendHit(character.target);
+                                }
+                                if (character instanceof Player && this.camera.isVisible(character)) {
+                                    this.audioManager.playSound("hit" + Math.floor(Math.random() * 2 + 1));
+                                }
                             }
 
-                            if(character instanceof Player && this.camera.isVisible(character)) {
-                                this.audioManager.playSound("hit"+Math.floor(Math.random()*2+1));
-                            }
-
-                            if(character.hasTarget() && character.target.id === this.playerId && this.player && !this.player.invincible & !(character instanceof Player)) {
+                            if(character.hasTarget() && character.target.id === this.playerId && this.player && !this.player.invincible && !(character instanceof Player)) {
                                 this.client.sendHurt(character);
                             }
                         }

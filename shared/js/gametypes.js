@@ -46,7 +46,10 @@ Types = {
         BUFFINFO: 43,
         EMOTE: 44,
         SUMMON_FOLLOW: 45,
-        RESOURCE: 46
+        RESOURCE: 46,
+        SHOOT: 47,
+        SPAWNPROJECTILE: 48,
+        OUTOFAMMO: 49,
     },
 
     Entities: {
@@ -383,6 +386,16 @@ Types = {
         // FieldEffects
         MAGCRACK: 40000001,
         COBFALLINGROCK: 40000002,
+        // Projectiles
+        STEEL_BULLET: 50000001,
+        SILVER_BULLET: 50000002,
+        GOLD_BULLET: 50000003,
+        BOTTLED_FIRE: 50000003,
+        BOTTLED_LIGHTNING: 50000004,
+        BOTTLED_POISON: 50000005,
+        BASIC_ARROW: 50000006,
+        FEATHER_ARROW: 50000007,
+        FIRE_ARROW: 50000008,
 
         // NFTs
         NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6: 70,
@@ -5137,6 +5150,17 @@ var kinds = {
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],
     cobfallingrock: [Types.Entities.COBFALLINGROCK, "fieldeffect"],
+
+    // Projectiles
+    STEEL_BULLET: [Types.Entities.STEEL_BULLET, 'projectile'],
+    SILVER_BULLET: [Types.Entities.SILVER_BULLET, 'projectile'],
+    GOLD_BULLET: [Types.Entities.GOLD_BULLET, 'projectile'],
+    BOTTLED_FIRE: [Types.Entities.BOTTLED_FIRE, 'projectile'],
+    BOTTLED_LIGHTNING: [Types.Entities.BOTTLED_LIGHTNING, 'projectile'],
+    BOTTLED_POISON: [Types.Entities.BOTTLED_POISON, 'projectile'],
+    BASIC_ARROW: [Types.Entities.BASIC_ARROW, 'projectile'],
+    FEATHER_ARROW: [Types.Entities.FEATHER_ARROW, 'projectile'],
+    FIRE_ARROW: [Types.Entities.FIRE_ARROW, 'projectile'],
 
     //NFT
     NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6: [Types.Entities.NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6, "armor"],

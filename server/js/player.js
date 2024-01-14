@@ -49,6 +49,8 @@ module.exports = Player = Character.extend({
         this.attackRate = BASE_ATTACK_RATE;
         this.accumulatedExperience = 0;
 
+        this.selectedProjectile = null;
+
         this.playerEventBroker = new PlayerEventBroker.PlayerEventBroker(this);
 
         this.connection.listen(async function(message) {
@@ -233,6 +235,47 @@ module.exports = Player = Character.extend({
                 if(mob) {
                     self.setTarget(mob);
                     self.server.broadcastAttacker(self);
+                }
+            }
+            else if(action === Types.Messages.SHOOT) {
+                let nftWeapon = self.getNFTWeapon();
+                if (nftWeapon !== undefined && !(nftWeapon instanceof NFTWeapon.NFTWeapon)){
+                    return;
+                }
+                var mob = self.server.getEntityById(message[1]);
+                if(mob) {
+                    let projectiles = nftWeapon.getProjectiles();
+                    let usedProjectile = null;
+                    let projectileCount = 0;
+
+                    if (self.selectedProjectile) {
+                        let projectile = projectiles.find(projectile => projectile.type === self.selectedProjectile);
+                        projectileCount = self.getResourceAmount(projectile)
+                        usedProjectile = projectile;
+                    }
+
+                    if(projectileCount <= 0) {
+                        for(let i = 0; i < projectiles.length; i++) {
+                            let projectile = projectiles[i];
+                            projectileCount = self.getResourceAmount(projectile)
+                            if(projectileCount > 0) {
+                                self.selectedProjectile = projectile;
+                                usedProjectile = projectile;
+                                break;
+                            }
+                        }
+                    }
+
+                    if(usedProjectile === null) {
+                        self.server.pushToPlayer(self, new Messages.OutOfAmmo());
+                        return;
+                    }
+
+                    if (projectileCount > 0) {
+                        self.server.announceSpawnProjectile(self, usedProjectile, message[1]);
+                    } else {
+                        self.server.pushToPlayer(self, new Messages.OutOfAmmo());
+                    }
                 }
             }
             else if(action === Types.Messages.HIT) {

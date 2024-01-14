@@ -12,6 +12,7 @@ class NFTWeapon {
         this.experience = undefined;
         this.level = 1;
         this.accumulatedExperience = 0;
+        this.projectileType = 'arrow';
     }
 
     async loadWeaponData() {
@@ -22,6 +23,10 @@ class NFTWeapon {
             await this.#setTraitInServer();
         }
         this.level = Formulas.level(this.experience);
+
+        if (response.projectileType) {
+            this.projectileType = response.projectileType;
+        }
     }
 
     async #setTraitInServer() {
@@ -83,6 +88,31 @@ class NFTWeapon {
     
     getTrait() {
         return this.trait;
+    }
+
+    getProjectiles() {
+        switch (self.projectileType) {
+            case 'bullet':
+                return [
+                    Types.Entities.STEEL_BULLET,
+                    Types.Entities.SILVER_BULLET,
+                    Types.Entities.GOLD_BULLET,
+                ];
+            case 'magic':
+                return [
+                    Types.Entities.BOTTLED_FIRE,
+                    Types.Entities.BOTTLED_LIGHTNING,
+                    Types.Entities.BOTTLED_POISON,
+                ];
+            case 'arrow':
+            default:
+                return [
+                    // Types.Entities.BASIC_ARROW,
+                    // Types.Entities.FEATHER_ARROW,
+                    // Types.Entities.FIRE_ARROW,
+                    Types.Entities.CPOTION_S,
+                ];
+        }
     }
 }
 

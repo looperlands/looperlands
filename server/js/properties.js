@@ -4,9 +4,12 @@ let Properties = {
     rat: {
         level: 1,
         drops: {
-            flask: 40,
-            burger: 10,
-            firepotion: 5
+            // flask: 40,
+            // burger: 10,
+            // firepotion: 5
+            cpotion_s: 80,
+            cpotion_m: 15,
+            cpotion_l: 5
         },
         respawnDelay: 10000,
     },
