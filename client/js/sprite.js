@@ -54,7 +54,8 @@ define(['jquery', 'animation', 'sprites'], function($, Animation, sprites) {
 				src = "http://127.0.0.1:8000/" + this.filepath;
 			} else {
 				src = this.filepath;
-			}			
+			}
+
 			self.renderWorker.postMessage({
 				"type": "loadSprite",
 				"id": self.id,
@@ -183,14 +184,26 @@ define(['jquery', 'animation', 'sprites'], function($, Animation, sprites) {
     	    finalData.data = fdata;
     	    ctx.putImageData(finalData, 0, 0);
 	    
-    	    this.silhouetteSprite = { 
+    	    this.silhouetteSprite = {
+				id: this.id + "_hl",
                 image: canvas,
         	    isLoaded: true,
         	    offsetX: this.offsetX,
         	    offsetY: this.offsetY,
         	    width: this.width,
-        	    height: this.height
+        	    height: this.height,
         	};
+
+			this.renderWorker.postMessage({
+				"type": "loadSprite",
+				"id": this.silhouetteSprite.id,
+				"src": canvas.toDataURL(),
+				"animationData": self.animationData,
+				"width": self.width,
+				"height": self.height,
+				"offsetX": self.offsetX,
+				"offsetY": self.offsetY
+			});
     	},
 
 		getUrlByScale: function(scale){

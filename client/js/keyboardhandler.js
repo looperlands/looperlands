@@ -13,7 +13,9 @@ class KeyBoardHandler {
 
         this.keyCallbacks = {
             'Comma': () => this.previousWeapon(),
-            'Period': () => this.nextWeapon()
+            'Period': () => this.nextWeapon(),
+            'Tab': (event) => this.highlightNextTarget(event),
+            'Space': () => this.engageTarget()
         };
         this.game = game;
         this.interval = false;
@@ -36,11 +38,11 @@ class KeyBoardHandler {
         }
 
         if(this.keyCallbacks.hasOwnProperty(event.code)) {
-            this.keyCallbacks[event.code]();
+            this.keyCallbacks[event.code](event);
         }
 
         // Keyboard shortcuts
-        const shortCuts = 'zxcvb1234';
+        const shortCuts = 'zxcvb1234t';
         if (shortCuts.indexOf(key) > -1) {
             if(!this.game.started || this.inputHasFocus()) {
                 return;
@@ -72,6 +74,9 @@ class KeyBoardHandler {
                     break
                 case '4':
                     this.app.consumeSlot(3);
+                    break;
+                case 't':
+                    this.highlightClosestTarget();
                     break;
             }
         }
@@ -197,5 +202,36 @@ class KeyBoardHandler {
         }
 
         return weapons[nextWeaponIndex];
+    }
+
+    highlightNextTarget(event) {
+        if(!this.game.started || this.inputHasFocus() || this.hasOpenPanel()) {
+            return;
+        }
+
+        if (event !== undefined) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+        }
+
+        this.game.highlightNextTarget();
+    }
+
+    highlightClosestTarget() {
+        if(!this.game.started || this.inputHasFocus() || this.hasOpenPanel()) {
+            return;
+        }
+
+        this.game.highlightClosestTarget();
+    }
+
+    engageTarget() {
+        if(!this.game.started || this.inputHasFocus() || this.hasOpenPanel()) {
+            return;
+        }
+
+        if(this.game.highlightedTarget) {
+            this.game.click({x: this.game.highlightedTarget.gridX, y: this.game.highlightedTarget.gridY });
+        }
     }
 }

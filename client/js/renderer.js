@@ -28,7 +28,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             this.tilesize = 16;
         
             this.upscaledRendering = true;
-            this.supportsSilhouettes = false;
+            this.supportsSilhouettes = true;
             this.worker = new Worker("js/renderer-webworker.js");
         
             this.lastTime = new Date();
