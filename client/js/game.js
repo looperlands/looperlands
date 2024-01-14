@@ -48,6 +48,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.hoveringCollidingTile = false;
                 this.doorCheck = false;
 
+                this.highlightedTarget = null;
                 this.toggledLayers = {};
 
                 // combat
@@ -7262,18 +7263,75 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         var entity = this.getEntityAt(x, y);
 
                         if(!entity.isHighlighted && this.renderer.supportsSilhouettes) {
-                            if(this.lastHovered) {
-                                this.lastHovered.setHighlight(false);
+                            if(this.highlightedTarget) {
+                                this.highlightedTarget.setHighlight(false);
                             }
-                            this.lastHovered = entity;
+                            this.highlightedTarget = entity;
                             entity.setHighlight(true);
                         }
                     }
-                    else if(this.lastHovered) {
-                        this.lastHovered.setHighlight(false);
-                        this.lastHovered = null;
+                    else if(this.highlightedTarget) {
+                        this.highlightedTarget.setHighlight(false);
+                        this.highlightedTarget = null;
                     }
                 }
+            },
+
+            highlightClosestTarget: function() {
+                if(this.highlightedTarget) {
+                    this.highlightedTarget.setHighlight(false);
+                }
+
+                this.highlightedTarget = _.min(this.getMobDistances(), (mobDistance) => {
+                    return mobDistance.distance;
+                }).entity;
+
+                if (this.highlightedTarget) {
+                    this.highlightedTarget.setHighlight(true);
+                }
+            },
+
+            highlightNextTarget: function() {
+                if (!this.highlightedTarget) {
+                    return this.highlightClosestTarget();
+                }
+
+                let mobDistances = _.sortBy(this.getMobDistances(), (mobDistance) => {
+                    return mobDistance.distance;
+                });
+
+                let highlightNext = false;
+                for(let i = 0; i < mobDistances.length; i++) {
+                    // continue till we find current highlighted mob
+                    if(mobDistances[i].entity.id === this.highlightedTarget.id) {
+                        highlightNext = true;
+                        continue;
+                    }
+
+                    // Highlight next mob and return
+                    if(highlightNext) {
+                        this.highlightedTarget.setHighlight(false);
+                        this.highlightedTarget = mobDistances[i].entity;
+                        this.highlightedTarget.setHighlight(true);
+                        return;
+                    }
+                    }
+
+                // If no is highlighted (current was furthest away), highlight closest
+                this.highlightClosestTarget();
+            },
+
+            getMobDistances: function() {
+                let mobDistances = [];
+                this.forEachVisibleEntityByDepth((entity) => {
+                    if (!Types.isMob(entity.kind) || entity.isFriendly || entity.isDead) {
+                        return;
+                }
+                    let distance = this.player.getDistanceToEntity(entity);
+                    mobDistances.push({entity: entity, distance: distance});
+                });
+
+                return mobDistances;
             },
 
             /**
