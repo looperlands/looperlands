@@ -15,7 +15,7 @@ class KeyBoardHandler {
             'Comma': () => this.previousWeapon(),
             'Period': () => this.nextWeapon(),
             'Tab': (event) => this.highlightNextTarget(event),
-            'Space': () => this.engageTarget()
+            'Space': (event) => this.engageTarget(event)
         };
         this.game = game;
         this.interval = false;
@@ -38,11 +38,11 @@ class KeyBoardHandler {
         }
 
         if(this.keyCallbacks.hasOwnProperty(event.code)) {
-            this.keyCallbacks[event.code]();
+            this.keyCallbacks[event.code](event);
         }
 
         // Keyboard shortcuts
-        const shortCuts = 'zxcvb';
+        const shortCuts = 'zxcvbt';
         if (shortCuts.indexOf(key) > -1) {
             if(!this.game.started || this.inputHasFocus()) {
                 return;
@@ -62,6 +62,9 @@ class KeyBoardHandler {
                     break;
                 case 'b':
                     this.app.toggleAvatarInfo(event);
+                    break;
+                case 't':
+                    this.highlightClosestTarget(event);
                     break;
             }
         }
@@ -210,9 +213,14 @@ class KeyBoardHandler {
         this.game.highlightClosestTarget();
     }
 
-    engageTarget() {
+    engageTarget(event) {
         if(!this.game.started || this.inputHasFocus() || this.hasOpenPanel()) {
             return;
+        }
+
+        if (event !== undefined) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
         }
 
         if(this.game.highlightedTarget) {
