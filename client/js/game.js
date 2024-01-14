@@ -7292,7 +7292,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 }).entity;
 
                 if (this.highlightedTarget) {
-                this.highlightedTarget.setHighlight(true);
+                    this.highlightedTarget.setHighlight(true);
                 }
             },
 
@@ -7308,6 +7308,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 let highlightNext = false;
                 for(let i = 0; i < mobDistances.length; i++) {
                     // continue till we find current highlighted mob
+
                     if (mobDistances[i].entity.id === this.highlightedTarget.id) {
                         highlightNext = true;
                         continue;

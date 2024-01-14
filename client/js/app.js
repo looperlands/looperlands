@@ -652,7 +652,7 @@ define(['jquery', 'storage'], function ($, Storage) {
 
                     botsInventory.forEach(function(bot) {
                         if (bot) {
-                            imgTag = `<div class='item panelBorder'><div class='tooltiptext pixel-corners-xs'><span class='tooltipHighlight'>Level ${bot.level}</span> ${bot.looperName}</div><img id=${bot.nftId} style='width: 32px; height: 32px; object-fit: cover; cursor: pointer; object-position: 100% 0;' src='img/1/` + bot.nftId + ".png' /></div>";
+                            imgTag = `<div class='item panelBorder'><div class='tooltiptext pixel-corners-xs'><span class='tooltipHighlight'>Level ${bot.level}</span> ${bot.looperName}</div><img id=${bot.nftId} style='width: 32px; height: 32px; object-fit: none; cursor: pointer; object-position: 100% 0;' src='img/1/` + bot.nftId + ".png' /></div>";
                             inventoryHtml += imgTag;
                         }
                     });
