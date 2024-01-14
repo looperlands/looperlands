@@ -54,7 +54,8 @@ define(['jquery', 'animation', 'sprites'], function($, Animation, sprites) {
 				src = "http://127.0.0.1:8000/" + this.filepath;
 			} else {
 				src = this.filepath;
-			}			
+			}
+
 			self.renderWorker.postMessage({
 				"type": "loadSprite",
 				"id": self.id,
@@ -69,26 +70,26 @@ define(['jquery', 'animation', 'sprites'], function($, Animation, sprites) {
 
         createAnimations: function() {
             var animations = {};
-        
+
     	    for(var name in this.animationData) {
     	        var a = this.animationData[name];
     	        animations[name] = new Animation(name, a.length, a.row, this.width, this.height);
     	    }
-	    
+
     	    return animations;
     	},
-	
+
     	createHurtSprite: function() {
     	    var canvas = document.createElement('canvas'),
     	        ctx = canvas.getContext('2d', { willReadFrequently: true }),
     	        width = this.image.width,
     		    height = this.image.height,
     	        spriteData, data;
-    
+
     	    canvas.width = width;
     	    canvas.height = height;
     	    ctx.drawImage(this.image, 0, 0, width, height);
-    	    
+
     	    try {
         	    spriteData = ctx.getImageData(0, 0, width, height);
 
@@ -102,7 +103,7 @@ define(['jquery', 'animation', 'sprites'], function($, Animation, sprites) {
 
         	    ctx.putImageData(spriteData, 0, 0);
 
-        	    this.whiteSprite = { 
+        	    this.whiteSprite = {
                     image: canvas,
             	    isLoaded: true,
             	    offsetX: this.offsetX,
@@ -114,42 +115,42 @@ define(['jquery', 'animation', 'sprites'], function($, Animation, sprites) {
     	        console.error("Error getting image data for sprite : "+this.name);
     	    }
         },
-	
+
     	getHurtSprite: function() {
     	    return this.whiteSprite;
     	},
-	
+
     	createSilhouette: function() {
     	    var canvas = document.createElement('canvas'),
     	        ctx = canvas.getContext('2d', { willReadFrequently: true }),
     	        width = this.image.width,
     		    height = this.image.height,
     	        spriteData, finalData, data;
-	    
+
     	    canvas.width = width;
     	    canvas.height = height;
     	    ctx.drawImage(this.image, 0, 0, width, height);
     	    data = ctx.getImageData(0, 0, width, height).data;
     	    finalData = ctx.getImageData(0, 0, width, height);
     	    fdata = finalData.data;
-	    
+
     	    var getIndex = function(x, y) {
     	        return ((width * (y-1)) + x - 1) * 4;
     	    };
-	    
+
     	    var getPosition = function(i) {
     	        var x, y;
-	        
+
     	        i = (i / 4) + 1;
     	        x = i % width;
     	        y = ((i - x) / width) + 1;
-	        
+
     	        return { x: x, y: y };
     	    };
-	    
+
     	    var hasAdjacentPixel = function(i) {
     	        var pos = getPosition(i);
-	        
+
     	        if(pos.x < width && !isBlankPixel(getIndex(pos.x + 1, pos.y))) {
     	            return true;
     	        }
@@ -164,14 +165,14 @@ define(['jquery', 'animation', 'sprites'], function($, Animation, sprites) {
     	        }
     	        return false;
     	    };
-	    
+
     	    var isBlankPixel = function(i) {
     	        if(i < 0 || i >= data.length) {
     	            return true;
     	        }
     	        return data[i] === 0 && data[i+1] === 0 && data[i+2] === 0 && data[i+3] === 0;
     	    };
-	    
+
     	    for(var i=0; i < data.length; i += 4) {
     	        if(isBlankPixel(i) && hasAdjacentPixel(i)) {
     	            fdata[i] = fdata[i+1] = 255;
@@ -182,15 +183,27 @@ define(['jquery', 'animation', 'sprites'], function($, Animation, sprites) {
 
     	    finalData.data = fdata;
     	    ctx.putImageData(finalData, 0, 0);
-	    
-    	    this.silhouetteSprite = { 
+
+    	    this.silhouetteSprite = {
+				id: this.id + "_hl",
                 image: canvas,
         	    isLoaded: true,
         	    offsetX: this.offsetX,
         	    offsetY: this.offsetY,
         	    width: this.width,
-        	    height: this.height
+        	    height: this.height,
         	};
+
+			this.renderWorker.postMessage({
+				"type": "loadSprite",
+				"id": this.silhouetteSprite.id,
+				"src": canvas.toDataURL(),
+				"animationData": self.animationData,
+				"width": self.width,
+				"height": self.height,
+				"offsetX": self.offsetX,
+				"offsetY": self.offsetY
+			});
     	},
 
 		getUrlByScale: function(scale){
