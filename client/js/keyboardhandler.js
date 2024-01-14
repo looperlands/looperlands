@@ -224,7 +224,9 @@ class KeyBoardHandler {
         }
 
         if(this.game.highlightedTarget) {
-            this.game.makePlayerAttack(this.game.highlightedTarget);
+            if(!this.game.highlightedTarget.isDead) {
+                this.game.makePlayerAttack(this.game.highlightedTarget);
+            }
         }
     }
 }
