@@ -224,7 +224,7 @@ class KeyBoardHandler {
         }
 
         if(this.game.highlightedTarget) {
-            this.game.click({x: this.game.highlightedTarget.gridX, y: this.game.highlightedTarget.gridY });
+            this.game.makePlayerAttack(this.game.highlightedTarget);
         }
     }
 }
