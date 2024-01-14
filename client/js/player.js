@@ -239,6 +239,18 @@ define(['character', 'exceptions', '../../shared/js/gametypes'], function(Charac
             }
 
             return false;
+        },
+
+        canReachTarget: function(target) {
+            return this._super(target) || (
+                        this.hasTarget() &&
+                        Types.isRangedWeapon(Types.getKindFromString(this.weaponName)) &&
+                        this.isNear(this.target, this.getWeaponRange())
+                    );
+        },
+
+        getWeaponRange: function() {
+            return 10;
         }
     });
 

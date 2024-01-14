@@ -172,7 +172,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "horde3",
                     "horde4",
                     "horde5",
-                               
+
                                 // @nextCharacterLine@
                     "item-BOARHIDE",
                     "item-THUDKEY",
@@ -5805,6 +5805,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         if(blockingEntity && blockingEntity.id !== self.playerId) {
                             console.debug("Blocked by " + blockingEntity.id);
                         }
+
                         self.unregisterEntityPosition(self.player);
                     });
 
@@ -5821,6 +5822,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                         if(self.isZoningTile(self.player.gridX, self.player.gridY)) {
                             self.enqueueZoningFrom(self.player.gridX, self.player.gridY);
+                        }
+
+                        if (self.player.hasTarget() && Types.isRangedWeapon(Types.getKindFromString(self.player.weaponName)) && self.player.isNear(self.player.target, self.player.getWeaponRange())) {
+                            self.player.stop();
                         }
 
                         self.player.forEachAttacker(function(attacker) {
@@ -7305,7 +7310,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         this.highlightedTarget.setHighlight(true);
                         return;
                     }
-                    }
+                }
 
                 // If no is highlighted (current was furthest away), highlight closest
                 this.highlightClosestTarget();
@@ -7316,7 +7321,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.forEachVisibleEntityByDepth((entity) => {
                     if (!Types.isMob(entity.kind)) {
                         return;
-                }
+                    }
                     let distance = this.player.getDistanceToEntity(entity);
                     mobDistances.push({entity: entity, distance: distance});
                 });
