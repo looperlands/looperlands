@@ -13,7 +13,9 @@ class KeyBoardHandler {
 
         this.keyCallbacks = {
             'Comma': () => this.previousWeapon(),
-            'Period': () => this.nextWeapon()
+            'Period': () => this.nextWeapon(),
+            'Tab': (event) => this.highlightNextTarget(event),
+            'Space': () => this.engageTarget()
         };
         this.game = game;
         this.interval = false;
@@ -185,5 +187,36 @@ class KeyBoardHandler {
         }
 
         return weapons[nextWeaponIndex];
+    }
+
+    highlightNextTarget(event) {
+        if(!this.game.started || this.inputHasFocus() || this.hasOpenPanel()) {
+            return;
+        }
+
+        if (event !== undefined) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+        }
+
+        this.game.highlightNextTarget();
+    }
+
+    highlightClosestTarget() {
+        if(!this.game.started || this.inputHasFocus() || this.hasOpenPanel()) {
+            return;
+        }
+
+        this.game.highlightClosestTarget();
+    }
+
+    engageTarget() {
+        if(!this.game.started || this.inputHasFocus() || this.hasOpenPanel()) {
+            return;
+        }
+
+        if(this.game.highlightedTarget) {
+            this.game.click({x: this.game.highlightedTarget.gridX, y: this.game.highlightedTarget.gridY });
+        }
     }
 }
