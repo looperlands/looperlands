@@ -15,7 +15,7 @@ class KeyBoardHandler {
             'Comma': () => this.previousWeapon(),
             'Period': () => this.nextWeapon(),
             'Tab': (event) => this.highlightNextTarget(event),
-            'Space': () => this.engageTarget()
+            'Space': (event) => this.engageTarget(event)
         };
         this.game = game;
         this.interval = false;
@@ -42,7 +42,7 @@ class KeyBoardHandler {
         }
 
         // Keyboard shortcuts
-        const shortCuts = 'zxcvb1234t';
+        const shortCuts = 'zxcvbt';
         if (shortCuts.indexOf(key) > -1) {
             if(!this.game.started || this.inputHasFocus()) {
                 return;
@@ -63,20 +63,8 @@ class KeyBoardHandler {
                 case 'b':
                     this.app.toggleAvatarInfo(event);
                     break;
-                case '1':
-                    this.app.consumeSlot(0);
-                    break;
-                case '2':
-                    this.app.consumeSlot(1);
-                    break;
-                case '3':
-                    this.app.consumeSlot(2);
-                    break
-                case '4':
-                    this.app.consumeSlot(3);
-                    break;
                 case 't':
-                    this.highlightClosestTarget();
+                    this.highlightClosestTarget(event);
                     break;
             }
         }
@@ -225,13 +213,20 @@ class KeyBoardHandler {
         this.game.highlightClosestTarget();
     }
 
-    engageTarget() {
+    engageTarget(event) {
         if(!this.game.started || this.inputHasFocus() || this.hasOpenPanel()) {
             return;
         }
 
+        if (event !== undefined) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+        }
+
         if(this.game.highlightedTarget) {
-            this.game.click({x: this.game.highlightedTarget.gridX, y: this.game.highlightedTarget.gridY });
+            if(!this.game.highlightedTarget.isDead) {
+                this.game.makePlayerAttack(this.game.highlightedTarget);
+            }
         }
     }
 }

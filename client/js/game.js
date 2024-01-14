@@ -172,8 +172,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "horde3",
                     "horde4",
                     "horde5",
-
-                                // @nextCharacterLine@
+                    //mycupbloody npc           
+                    "GOFFREY",
+                    // @nextCharacterLine@
                     "item-BOARHIDE",
                     "item-THUDKEY",
                     "item-BATWING",
@@ -4878,6 +4879,14 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 "NFT_d1dbae96176a398214d9fee6ba98ddb8d7137787dd765db6fe9f8ceebddc80b9",
                                 "NFT_eab688c9de6a367bf0d7097e47ba237e4203171bcffa55c62753d5d58f21333c",
                                 "NFT_fbe7761150cd3859d52553cba7ae66326429a03ca50e9d775e8b1337556a2c27",
+                                "NFT_0c97f40def8645c524f10585c2963aca2dcd5edd83e757e2f0cb521b442a65cc",
+                                "NFT_2d9c84dd95515ba82004082b46f2930c26d6da4a40b5ff317bd0f300c3edc5a7",
+                                "NFT_2e5132bc326fedd5d6097b1ec4ca11282ac105fc0a9ab36c9a45f8827b286831",
+                                "NFT_64cc602df5e930895bcd9a84b307f7ee96eb997315e73ee88f6d19684d8a7e62",
+                                "NFT_65d1e3109bc584c3b7d151632328e3a316e5fff016c80af2fc1984637adb678a",
+                                "NFT_b99548519ac91396cebb4dbe5f9cd09b871ad05936e57818743b1e59f8d92897",
+                                "NFT_d6a406c9ace43f67ad713abfe2b7deccb5bab86957880ec135fbb741b47f1896",
+                                "NFT_f851c1154260113694292f290215e7c4c0d7c317bb5acfa280921b1942467af2"
                                 // @nextSpriteLine@
                 ];
             },
@@ -7296,15 +7305,13 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 let highlightNext = false;
                 for(let i = 0; i < mobDistances.length; i++) {
                     // continue till we find current highlighted mob
-                    if(mobDistances[i].entity.id === this.highlightedTarget.id) {
+                    if (mobDistances[i].entity.id === this.highlightedTarget.id) {
                         highlightNext = true;
-                        console.log('highlight next');
                         continue;
                     }
 
                     // Highlight next mob and return
-                    if(highlightNext) {
-                        console.log('highlighting', mobDistances[i].entity);
+                    if (highlightNext) {
                         this.highlightedTarget.setHighlight(false);
                         this.highlightedTarget = mobDistances[i].entity;
                         this.highlightedTarget.setHighlight(true);
