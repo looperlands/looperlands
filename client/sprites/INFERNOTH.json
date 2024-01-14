@@ -6,7 +6,7 @@
 
 
     "atk_right": {
-      "length": 5,
+      "length": 6,
       "row": 0
     },
     "walk_right": {
@@ -14,11 +14,11 @@
       "row": 1
     },
     "idle_right": {
-      "length": 2,
+      "length": 4,
       "row": 2
     },
     "atk_up": {
-      "length": 4,
+      "length": 5,
       "row": 3
     },
     "walk_up": {
@@ -26,11 +26,11 @@
       "row": 4
     },
     "idle_up": {
-      "length": 2,
+      "length": 4,
       "row": 5
     },
     "atk_down": {
-      "length": 3,
+      "length": 6,
       "row": 6
     },
     "walk_down": {
@@ -38,7 +38,7 @@
       "row": 7
     },
     "idle_down": {
-      "length": 2,
+      "length": 4,
       "row": 8
     }
   }
