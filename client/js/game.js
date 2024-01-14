@@ -7302,13 +7302,11 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     // continue till we find current highlighted mob
                     if(mobDistances[i].entity.id === this.highlightedTarget.id) {
                         highlightNext = true;
-                        console.log('highlight next');
                         continue;
                     }
 
                     // Highlight next mob and return
                     if(highlightNext) {
-                        console.log('highlighting', mobDistances[i].entity);
                         this.highlightedTarget.setHighlight(false);
                         this.highlightedTarget = mobDistances[i].entity;
                         this.highlightedTarget.setHighlight(true);
