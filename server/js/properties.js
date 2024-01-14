@@ -1010,7 +1010,7 @@ let Properties = {
     },
 
     BORAC: {
-        level: 11,
+        level: 9,
         drops: {
             GREYPOTION: 100,
             EYEBALL: 10
@@ -1020,14 +1020,14 @@ let Properties = {
 
     INFERNOTH: {
         level: 27,
-        hpMod: 2.25,
-        weaponMod: 1.75,
+        hpMod: 6.25,
+        weaponMod: 2.75,
         xp:10000,
         respawnDelay: 30000
     },
 
     WINGELLA: {
-        level: 6,
+        level: 5,
         drops: {
             REDPOTION: 40
         },
@@ -1035,14 +1035,6 @@ let Properties = {
     },
 
     GAUNTER: {
-        level: 16,
-        drops: {
-            GREYPOTION: 100,
-            EYEBALL: 10
-        },
-    },
-
-    MASTROM: {
         level: 13,
         drops: {
             GREYPOTION: 100,
@@ -1050,8 +1042,16 @@ let Properties = {
         },
     },
 
+    MASTROM: {
+        level: 11,
+        drops: {
+            GREYPOTION: 100,
+            EYEBALL: 10
+        },
+    },
+
     VALKYM: {
-        level: 8,
+        level: 7,
         drops: {
             REDPOTION: 40,
             EYEBALL: 10
