@@ -3,8 +3,6 @@
   "width": 64,
   "height": 64,
   "animations": {
-
-
     "atk_right": {
       "length": 6,
       "row": 0
@@ -41,5 +39,7 @@
       "length": 4,
       "row": 8
     }
-  }
+  },
+  "offset_x": -20,
+	"offset_y": -40
 }
