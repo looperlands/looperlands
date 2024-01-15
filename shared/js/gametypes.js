@@ -366,7 +366,12 @@ Types = {
         GAUNTER: 34000060,
         MASTROM: 34000061,
         VALKYM: 34000062,
-        GOFFREY: 34000063, // @lastidCharacter@
+        GOFFREY: 34000063, 
+        COBWALKINGNPC1: 34000064, 
+        COBWALKINGNPC2: 34000065, 
+        COBWALKINGNPC3: 34000066, 
+        COBWALKINGNPC4: 34000067, 
+        COBWALKINGNPC5: 34000068, // @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -5127,6 +5132,11 @@ var kinds = {
     MASTROM: [Types.Entities.MASTROM, "mob"],
     VALKYM: [Types.Entities.VALKYM, "mob"],
     GOFFREY: [Types.Entities.GOFFREY, "npc"],
+    cobWalkingNpc1: [Types.Entities.COBWALKINGNPC1, "mob"],
+    cobWalkingNpc2: [Types.Entities.COBWALKINGNPC2, "mob"],
+    cobWalkingNpc3: [Types.Entities.COBWALKINGNPC3, "mob"],
+    cobWalkingNpc4: [Types.Entities.COBWALKINGNPC4, "mob"],
+    cobWalkingNpc5: [Types.Entities.COBWALKINGNPC5, "mob"],
     // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],

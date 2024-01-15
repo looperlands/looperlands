@@ -174,6 +174,11 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "horde5",
                     //mycupbloody npc           
                     "GOFFREY",
+                    "cobWalkingNpc1",
+                    "cobWalkingNpc2",
+                    "cobWalkingNpc3",
+                    "cobWalkingNpc4",
+                    "cobWalkingNpc5",
                                 // @nextCharacterLine@
                     "item-BOARHIDE",
                     "item-THUDKEY",

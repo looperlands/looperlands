@@ -1114,6 +1114,36 @@ let Properties = {
             flask: 50
         }
     },
+   cobWalkingNpc1: {
+       hp: 10,
+       armor: 1,
+       weapon: 1,
+       friendly: true
+   },
+   cobWalkingNpc2: {
+       hp: 10,
+       armor: 1,
+       weapon: 1,
+       friendly: true
+   },
+   cobWalkingNpc3: {
+       hp: 10,
+       armor: 1,
+       weapon: 1,
+       friendly: true
+   },
+   cobWalkingNpc4: {
+       hp: 10,
+       armor: 1,
+       weapon: 1,
+       friendly: true
+   },
+   cobWalkingNpc5: {
+       hp: 10,
+       armor: 1,
+       weapon: 1,
+       friendly: true
+   },
 
     //Field effects
     magcrack: {
