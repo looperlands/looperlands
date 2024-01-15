@@ -2140,21 +2140,22 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this._super(id, Types.Entities.BORAC); 
                 this.moveSpeed = 200;
                 this.atkSpeed = 100;
-                this.idleSpeed = 800;
+                this.idleSpeed = 400;
                 this.walkSpeed = 200;
-                this.shadowOffsetY = 1;
                 this.aggroRange = 3;
-                this.setAttackRate(1200);
+                this.setAttackRate(700);
             }
         }),
        
         INFERNOTH: Mob.extend({ 
             init: function(id) {
                 this._super(id, Types.Entities.INFERNOTH); 
-                this.moveSpeed = 100; 
+                this.moveSpeed = 250; 
                 this.atkSpeed = 100; 
-                this.idleSpeed = 200;
-                this.aggroRange = 2; 
+                this.idleSpeed = 100;
+                this.aggroRange = 2;
+                this.walkSpeed = 100;
+                this.title = "Dragon King";
             }
         }),
 
@@ -2178,7 +2179,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.walkSpeed = 200;
                 this.shadowOffsetY = 1;
                 this.aggroRange = 3;
-                this.setAttackRate(1200);
+                this.setAttackRate(800);
             }
         }),
         
@@ -2191,7 +2192,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.walkSpeed = 200;
                 this.shadowOffsetY = 1;
                 this.aggroRange = 3;
-                this.setAttackRate(1200);
+                this.setAttackRate(500);
             }
         }),
 

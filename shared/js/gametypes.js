@@ -365,7 +365,8 @@ Types = {
         WINGELLA: 34000059,
         GAUNTER: 34000060,
         MASTROM: 34000061,
-        VALKYM: 34000062, // @lastidCharacter@
+        VALKYM: 34000062,
+        GOFFREY: 34000063, // @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -4755,7 +4756,19 @@ Types = {
         NFT_c1e9d2673f11544fad34bbffdd76f054d1d342bbd63ab2fb1af142dc8bdc1a14: 4441,
         NFT_d1eeb5f8647f35a7ddef7d1cffcfa32228f01140deb3dba5a9e1d4e42382f9f3: 4442,
         NFT_df9b9f9f748c20b933411a58a38aa11974710eb081ff6207eca7636b83f20658: 4443,
-        NFT_f7e51ee3333b51081009f6868dcd149f9e7e6c94ba0a8102e9f70a71c9ce09b3: 4444 // @lastid@
+        NFT_f7e51ee3333b51081009f6868dcd149f9e7e6c94ba0a8102e9f70a71c9ce09b3: 4444,
+        NFT_2de7a994377a18f256c2ec6a06ad0d6ff50f5a5a27fd50f094c3ecbdaa945f76: 4445,
+        NFT_d1dbae96176a398214d9fee6ba98ddb8d7137787dd765db6fe9f8ceebddc80b9: 4446,
+        NFT_eab688c9de6a367bf0d7097e47ba237e4203171bcffa55c62753d5d58f21333c: 4447,
+        NFT_fbe7761150cd3859d52553cba7ae66326429a03ca50e9d775e8b1337556a2c27: 4448,
+        NFT_0c97f40def8645c524f10585c2963aca2dcd5edd83e757e2f0cb521b442a65cc: 4449,
+        NFT_2d9c84dd95515ba82004082b46f2930c26d6da4a40b5ff317bd0f300c3edc5a7: 4450,
+        NFT_2e5132bc326fedd5d6097b1ec4ca11282ac105fc0a9ab36c9a45f8827b286831: 4451,
+        NFT_64cc602df5e930895bcd9a84b307f7ee96eb997315e73ee88f6d19684d8a7e62: 4452,
+        NFT_65d1e3109bc584c3b7d151632328e3a316e5fff016c80af2fc1984637adb678a: 4453,
+        NFT_b99548519ac91396cebb4dbe5f9cd09b871ad05936e57818743b1e59f8d92897: 4454,
+        NFT_d6a406c9ace43f67ad713abfe2b7deccb5bab86957880ec135fbb741b47f1896: 4455,
+        NFT_f851c1154260113694292f290215e7c4c0d7c317bb5acfa280921b1942467af2: 4456 // @lastid@
         //@nextIdLine@
     },
 
@@ -5113,6 +5126,7 @@ var kinds = {
     GAUNTER: [Types.Entities.GAUNTER, "mob"],
     MASTROM: [Types.Entities.MASTROM, "mob"],
     VALKYM: [Types.Entities.VALKYM, "mob"],
+    GOFFREY: [Types.Entities.GOFFREY, "npc"],
     // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],
@@ -9477,7 +9491,7 @@ var kinds = {
     NFT_2baec30807583bb981ec8b2513571e8bac09d962fbda5ba1f360ee84be423915: [Types.Entities.NFT_2baec30807583bb981ec8b2513571e8bac09d962fbda5ba1f360ee84be423915, "bot"],
     NFT_2f46491664b6da130375e72ccca6c2b132bc020b85e7daec2609d44db5ef0c13: [Types.Entities.NFT_2f46491664b6da130375e72ccca6c2b132bc020b85e7daec2609d44db5ef0c13, "bot"],
     NFT_2f5e8edc36fadf7a163b7a2a470965edadbe441b190edf8b14d7524e22b9824c: [Types.Entities.NFT_2f5e8edc36fadf7a163b7a2a470965edadbe441b190edf8b14d7524e22b9824c, "bot"],
-    NFT_3ed143791f9a4fa6c2722c47596f5949c6296a0a8a3d86b49f4d4664da7c44b1: [Types.Entities.NFT_3ed143791f9a4fa6c2722c47596f5949c6296a0a8a3d86b49f4d4664da7c44b1, "armor"],
+    NFT_3ed143791f9a4fa6c2722c47596f5949c6296a0a8a3d86b49f4d4664da7c44b1: [Types.Entities.NFT_3ed143791f9a4fa6c2722c47596f5949c6296a0a8a3d86b49f4d4664da7c44b1, "bot"],
     NFT_47ba8458600ff9ad1a1b0b491ff0fc194371aa30d74a3267af0d7a3462a18048: [Types.Entities.NFT_47ba8458600ff9ad1a1b0b491ff0fc194371aa30d74a3267af0d7a3462a18048, "bot"],
     NFT_616fbfdb872b920f727f362bfe04225af9f4fe9ccce8eba2ab22e9cc711eb646: [Types.Entities.NFT_616fbfdb872b920f727f362bfe04225af9f4fe9ccce8eba2ab22e9cc711eb646, "bot"],
     NFT_698708cec7b3430638cfa1ea2fc52d3ea41e5539b4cf11e72b0f6384c04cadd9: [Types.Entities.NFT_698708cec7b3430638cfa1ea2fc52d3ea41e5539b4cf11e72b0f6384c04cadd9, "bot"],
@@ -9486,7 +9500,7 @@ var kinds = {
     NFT_8a7b1381c5d526550d8647813efece864a6e52362bb623c46e8543e5d4f96fa8: [Types.Entities.NFT_8a7b1381c5d526550d8647813efece864a6e52362bb623c46e8543e5d4f96fa8, "bot"],
     NFT_99e3c7979a5bb5453d459f39f06d11ff313dbec3ec0428d5f08a7d6ca2da7612: [Types.Entities.NFT_99e3c7979a5bb5453d459f39f06d11ff313dbec3ec0428d5f08a7d6ca2da7612, "bot"],
     NFT_9e07e0a811be66e02064713212e3694185e07c07fc9294f5ccd9db6da3ab0e57: [Types.Entities.NFT_9e07e0a811be66e02064713212e3694185e07c07fc9294f5ccd9db6da3ab0e57, "bot"],
-    NFT_9f177616246a7d339874987c7ce4cb30918d7f81e2cd0aa0a89cf1a188f483fe: [Types.Entities.NFT_9f177616246a7d339874987c7ce4cb30918d7f81e2cd0aa0a89cf1a188f483fe, "armor"],
+    NFT_9f177616246a7d339874987c7ce4cb30918d7f81e2cd0aa0a89cf1a188f483fe: [Types.Entities.NFT_9f177616246a7d339874987c7ce4cb30918d7f81e2cd0aa0a89cf1a188f483fe, "bot"],
     NFT_a799a76c5e2a23f8010941659e425fc528c504050707bd1235eede0e8a3f51d4: [Types.Entities.NFT_a799a76c5e2a23f8010941659e425fc528c504050707bd1235eede0e8a3f51d4, "armor"],
     NFT_a94172fb3e9a733b99f3c6bdad9842ae88dc2f2fc8065330f1cd8f6fee112999: [Types.Entities.NFT_a94172fb3e9a733b99f3c6bdad9842ae88dc2f2fc8065330f1cd8f6fee112999, "weapon"],
     NFT_b9f5f33839bc82b9bff99749ef8b91904e6082e702057a3bbca36350b00b5de0: [Types.Entities.NFT_b9f5f33839bc82b9bff99749ef8b91904e6082e702057a3bbca36350b00b5de0, "bot"],
@@ -9494,6 +9508,18 @@ var kinds = {
     NFT_d1eeb5f8647f35a7ddef7d1cffcfa32228f01140deb3dba5a9e1d4e42382f9f3: [Types.Entities.NFT_d1eeb5f8647f35a7ddef7d1cffcfa32228f01140deb3dba5a9e1d4e42382f9f3, "bot"],
     NFT_df9b9f9f748c20b933411a58a38aa11974710eb081ff6207eca7636b83f20658: [Types.Entities.NFT_df9b9f9f748c20b933411a58a38aa11974710eb081ff6207eca7636b83f20658, "bot"],
     NFT_f7e51ee3333b51081009f6868dcd149f9e7e6c94ba0a8102e9f70a71c9ce09b3: [Types.Entities.NFT_f7e51ee3333b51081009f6868dcd149f9e7e6c94ba0a8102e9f70a71c9ce09b3, "armor"],
+    NFT_2de7a994377a18f256c2ec6a06ad0d6ff50f5a5a27fd50f094c3ecbdaa945f76: [Types.Entities.NFT_2de7a994377a18f256c2ec6a06ad0d6ff50f5a5a27fd50f094c3ecbdaa945f76, "armor"],
+    NFT_d1dbae96176a398214d9fee6ba98ddb8d7137787dd765db6fe9f8ceebddc80b9: [Types.Entities.NFT_d1dbae96176a398214d9fee6ba98ddb8d7137787dd765db6fe9f8ceebddc80b9, "bot"],
+    NFT_eab688c9de6a367bf0d7097e47ba237e4203171bcffa55c62753d5d58f21333c: [Types.Entities.NFT_eab688c9de6a367bf0d7097e47ba237e4203171bcffa55c62753d5d58f21333c, "armor"],
+    NFT_fbe7761150cd3859d52553cba7ae66326429a03ca50e9d775e8b1337556a2c27: [Types.Entities.NFT_fbe7761150cd3859d52553cba7ae66326429a03ca50e9d775e8b1337556a2c27, "weapon"],
+    NFT_0c97f40def8645c524f10585c2963aca2dcd5edd83e757e2f0cb521b442a65cc: [Types.Entities.NFT_0c97f40def8645c524f10585c2963aca2dcd5edd83e757e2f0cb521b442a65cc, "weapon"],
+    NFT_2d9c84dd95515ba82004082b46f2930c26d6da4a40b5ff317bd0f300c3edc5a7: [Types.Entities.NFT_2d9c84dd95515ba82004082b46f2930c26d6da4a40b5ff317bd0f300c3edc5a7, "armor"],
+    NFT_2e5132bc326fedd5d6097b1ec4ca11282ac105fc0a9ab36c9a45f8827b286831: [Types.Entities.NFT_2e5132bc326fedd5d6097b1ec4ca11282ac105fc0a9ab36c9a45f8827b286831, "armor"],
+    NFT_64cc602df5e930895bcd9a84b307f7ee96eb997315e73ee88f6d19684d8a7e62: [Types.Entities.NFT_64cc602df5e930895bcd9a84b307f7ee96eb997315e73ee88f6d19684d8a7e62, "armor"],
+    NFT_65d1e3109bc584c3b7d151632328e3a316e5fff016c80af2fc1984637adb678a: [Types.Entities.NFT_65d1e3109bc584c3b7d151632328e3a316e5fff016c80af2fc1984637adb678a, "weapon"],
+    NFT_b99548519ac91396cebb4dbe5f9cd09b871ad05936e57818743b1e59f8d92897: [Types.Entities.NFT_b99548519ac91396cebb4dbe5f9cd09b871ad05936e57818743b1e59f8d92897, "armor"],
+    NFT_d6a406c9ace43f67ad713abfe2b7deccb5bab86957880ec135fbb741b47f1896: [Types.Entities.NFT_d6a406c9ace43f67ad713abfe2b7deccb5bab86957880ec135fbb741b47f1896, "armor"],
+    NFT_f851c1154260113694292f290215e7c4c0d7c317bb5acfa280921b1942467af2: [Types.Entities.NFT_f851c1154260113694292f290215e7c4c0d7c317bb5acfa280921b1942467af2, "armor"],
     // @nextSpriteLine@
 
     getType: function(kind) {
@@ -9605,7 +9631,9 @@ Types.isHealingItem = function(kind) {
     return kind === Types.Entities.FLASK
         || kind === Types.Entities.BURGER
         || kind === Types.Entities.POTION
-        || kind === Types.Entities.COBAPPLE;
+        || kind === Types.Entities.COBAPPLE
+        || kind === Types.Entities.REDPOTION
+        || kind === Types.Entities.GREYPOTION;
 };
 
 Types.isExpendableItem = function(kind) {
@@ -9613,7 +9641,8 @@ Types.isExpendableItem = function(kind) {
         || kind === Types.Entities.FIREPOTION
         || kind === Types.Entities.CAKE
         || kind === Types.Entities.COBCORN
-        || kind === Types.Entities.COBCLOVER;
+        || kind === Types.Entities.COBCLOVER
+        || kind === Types.Entities.EYEBALL;
 };
 
 Types.getKindFromString = function(kind) {

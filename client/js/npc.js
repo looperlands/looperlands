@@ -390,6 +390,12 @@ define(['character'], function (Character) {
         "patroncora": [
             "This is the best spot in town for a cup of joe and the latest gossip."
         ],
+        "GOFFREY": ["Welcome to Duckville Portal!",
+                    "Mycupbloody sent me.",
+                    "This portal is token gated.",
+                    'Here is where you can <a target="_blank" href="https://loopexchange.art/collection/dsgoinquackers">buy a duck</a>',
+                    "Please help save Duckville!"
+        ],
         // @nextNPCLine@
     };
 

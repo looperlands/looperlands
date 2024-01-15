@@ -389,7 +389,8 @@ define(['text!../sprites/agent.json',
         'text!../sprites/horde3.json',
         'text!../sprites/horde4.json',
         'text!../sprites/horde5.json',
-        
+        //mycupbloody npc
+        'text!../sprites/GOFFREY.json',
         // @nextCharacterImport@
         'text!../sprites/NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6.json',
         'text!../sprites/NFT_38278eacc7d1c86fdbc85d798dca146fbca59a2e5e567dc15898ce2edac21f5f.json',
@@ -5050,6 +5051,18 @@ define(['text!../sprites/agent.json',
         'text!../sprites/NFT_d1eeb5f8647f35a7ddef7d1cffcfa32228f01140deb3dba5a9e1d4e42382f9f3.json',
         'text!../sprites/NFT_df9b9f9f748c20b933411a58a38aa11974710eb081ff6207eca7636b83f20658.json',
         'text!../sprites/NFT_f7e51ee3333b51081009f6868dcd149f9e7e6c94ba0a8102e9f70a71c9ce09b3.json',
+        'text!../sprites/NFT_2de7a994377a18f256c2ec6a06ad0d6ff50f5a5a27fd50f094c3ecbdaa945f76.json',
+        'text!../sprites/NFT_d1dbae96176a398214d9fee6ba98ddb8d7137787dd765db6fe9f8ceebddc80b9.json',
+        'text!../sprites/NFT_eab688c9de6a367bf0d7097e47ba237e4203171bcffa55c62753d5d58f21333c.json',
+        'text!../sprites/NFT_fbe7761150cd3859d52553cba7ae66326429a03ca50e9d775e8b1337556a2c27.json',
+        'text!../sprites/NFT_0c97f40def8645c524f10585c2963aca2dcd5edd83e757e2f0cb521b442a65cc.json',
+        'text!../sprites/NFT_2d9c84dd95515ba82004082b46f2930c26d6da4a40b5ff317bd0f300c3edc5a7.json',
+        'text!../sprites/NFT_2e5132bc326fedd5d6097b1ec4ca11282ac105fc0a9ab36c9a45f8827b286831.json',
+        'text!../sprites/NFT_64cc602df5e930895bcd9a84b307f7ee96eb997315e73ee88f6d19684d8a7e62.json',
+        'text!../sprites/NFT_65d1e3109bc584c3b7d151632328e3a316e5fff016c80af2fc1984637adb678a.json',
+        'text!../sprites/NFT_b99548519ac91396cebb4dbe5f9cd09b871ad05936e57818743b1e59f8d92897.json',
+        'text!../sprites/NFT_d6a406c9ace43f67ad713abfe2b7deccb5bab86957880ec135fbb741b47f1896.json',
+        'text!../sprites/NFT_f851c1154260113694292f290215e7c4c0d7c317bb5acfa280921b1942467af2.json',
         // @nextSpriteImport@
     ], function() {
     

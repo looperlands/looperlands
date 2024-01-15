@@ -75,7 +75,7 @@ WorldEventBroker.WorldEventBroker.worldEventConsumers.push(worldEventConsumer);
 
 async function loadFlow(mapId, eventBroker, worldserver) {
     if (loadedFlow[eventBroker.player.nftId] != null) {
-        unloadFlow(eventBroker)
+        unloadFlow(eventBroker, mapId)
     }
 
     flows[mapId] = await dao.loadMapFlow(mapId);
@@ -87,16 +87,17 @@ async function loadFlow(mapId, eventBroker, worldserver) {
     assignEventHandlers(flows[mapId], eventBroker, worldserver);
 }
 
-function unloadFlow(eventBroker) {
+function unloadFlow(eventBroker, mapId) {
     playerEventConsumer.clearListeners(eventBroker.player.nftId);
+    worldEventConsumer.clearListeners(mapId.startsWith('world_') ? mapId : 'world_' + mapId);
     loadedBlocks[eventBroker.player.nftId] = {};
 }
 
-function assignEventHandlers(flow, eventBroker, worldserver, mapId) {
+function assignEventHandlers(flow, eventBroker, worldserver) {
     if (!loadedBlocks[eventBroker.player.nftId]) {
         loadedBlocks[eventBroker.player.nftId] = {};
     }
-
+    
     for (const handler of flow.handlers) {
         if (!loadedBlocks[eventBroker.player.nftId][handler.idx]) {
             loadedBlocks[eventBroker.player.nftId][handler.idx] = new events[handler.type](handler.options, worldserver);
