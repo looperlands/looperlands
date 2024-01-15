@@ -28,6 +28,8 @@ function add_nft() {
     long_nftid=$5
     operation=$6
     chain=$7
+    tokenId=$8
+    nftType=$9
     echo "Adding " $nftID $type $looperName $project_name $long_nftid
     # Prepare the tmp directory to add the NFT spritesheet to git
     rm -rf /tmp/$nftID
@@ -96,8 +98,8 @@ git pull
 git checkout -b $BRANCH_NAME
 
 #loop through each nft and add it
-echo $nftsToAddJSON | jq -r '.[] | {short_nftid, asset_type, looper_name, project_name, long_nftid, operation, chain} | join(",")' | while IFS=, read short_nftid asset_type looper_name project_name long_nftid operation chain; do
-    add_nft "$short_nftid" "$asset_type" "$looper_name" "$project_name" "$long_nftid" "$operation" "$chain"
+echo $nftsToAddJSON | jq -r '.[] | {short_nftid, asset_type, looper_name, project_name, long_nftid, operation, chain, tokenId, nftType} | join(",")' | while IFS=, read short_nftid asset_type looper_name project_name long_nftid operation  chain, tokenId, nftType; do
+    add_nft "$short_nftid" "$asset_type" "$looper_name" "$project_name" "$long_nftid" "$operation" "$chain" "$tokenId" "$nftType"
 done
 
 git push --set-upstream origin $BRANCH_NAME
