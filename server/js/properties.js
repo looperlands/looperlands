@@ -1081,7 +1081,7 @@ let Properties = {
     },
 
     horde1: {
-        level: 2,
+        level: 10,
         drops: {
             flask: 50
         }
