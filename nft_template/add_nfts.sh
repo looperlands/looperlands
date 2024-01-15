@@ -67,7 +67,7 @@ function add_nft() {
     if [ "$operation" = "add" ]; then
         # add the NFT to the loopworms platform
         echo "adding nft"
-        /root/add_looplands_nft.sh "$long_nftid" "$project_name" "$type" "$chain"
+        /root/add_looplands_nft.sh "$long_nftid" "$project_name" "$type" "$chain" "$tokenId" "$nftType"
         rm sqlscript.sql
     fi
     
