@@ -436,7 +436,7 @@ WS.socketIOServer = Server.extend({
                                         consumable: Collectables.isConsumable(item), 
                                         image: Collectables.getCollectableImageName(item),
                                         description: Collectables.getInventoryDescription(item),
-                                        cooldown: remainingCooldown,
+                                        cooldown: remainingCooldown, //this is either a date or 0
                                         maxCooldown: cooldownData.duration};
                 }
             });
@@ -1002,6 +1002,39 @@ WS.socketIOServer = Server.extend({
             cache.set(sessionId, sessionData);
 
             res.status(200).send({});
+        });
+
+        app.get("/session/:sessionId/consumeItem/:item", async (req, res) => {
+            const sessionId = req.params.sessionId;
+            const item = req.params.item;
+            const sessionData = cache.get(sessionId);
+
+            if (sessionData === undefined) {
+                res.status(404).json({
+                    status: false,
+                    "error" : "session not found",
+                    user: null
+                });
+            } else {
+                const player = self.worldsMap[sessionData.mapId].getPlayerById(sessionData.entityId);
+
+                let consumed = player.consumeItem(item);
+                let itemsOnCooldown = [];
+                let cooldown = 0;
+
+                let cdGroup = Collectables.getCooldownData(item).group;
+                let playerCds = self.worldsMap[sessionData.mapId].consumeCooldowns[player.nftId];
+                if (cdGroup && playerCds) {
+                    cooldown = playerCds[cdGroup];
+                    let itemsInGroup = Properties.getCdItemsByGroup(cdGroup);
+                    for (i = 0; i < itemsInGroup.length; i++) {
+                        itemsOnCooldown[i] = Types.getKindFromString(itemsInGroup[i]);
+                    }
+                }
+
+                let response = {consumed: consumed, cooldown: cooldown, items: itemsOnCooldown};
+                res.status(200).send(response);
+            }
         });
 
         self.io.on('connection', function(connection){

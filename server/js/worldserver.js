@@ -1540,8 +1540,7 @@ module.exports = World = cls.Class.extend({
         if (playerCooldowns) {
             let expireDate = playerCooldowns[itemGroup];
             if (expireDate !== undefined) {
-                let remainingDuration = expireDate - new Date().getTime();
-                return remainingDuration > 0 ? remainingDuration : 0;
+                return expireDate > new Date().getTime() ? expireDate : 0;
             }
         }
         return 0;

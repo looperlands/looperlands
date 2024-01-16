@@ -21,6 +21,7 @@ define(['jquery', 'storage'], function ($, Storage) {
             this.$playDiv = $('.play div');
             this.settings = new GameSettings(this);
             this.cooldownIntervals = [];
+            this.cooldownMap = {};
         },
 
         setGame: function (game) {
@@ -619,6 +620,10 @@ define(['jquery', 'storage'], function ($, Storage) {
                         }
                         hasItem = true;
 
+                        if (consumablesInventory[item].cooldown) {
+                            _this.cooldownMap[item] = consumablesInventory[item].cooldown;
+                        }
+
                         let description = consumablesInventory[item].description;
                         let tooltipText = "";
                         if (description){
@@ -742,8 +747,9 @@ define(['jquery', 'storage'], function ($, Storage) {
                         let consume = function (e) {
                             let count = parseInt(document.getElementById("count_" + item).innerHTML);
                             if (count > 0){
-                                _this.game.client.sendConsumeItem(item);
-                                document.getElementById("count_" + item).innerHTML = count - 1;
+                                if (_this.consumeItem(item)){
+                                    document.getElementById("count_" + item).innerHTML = count - 1;
+                                }
                             }
                             _this.hideInventory();
                             e.preventDefault();
@@ -755,9 +761,10 @@ define(['jquery', 'storage'], function ($, Storage) {
 
                 let updateCdDisplay = function (item) {
                     //inverted %, hence the 100 -
-                    let cdPercent = 100 - Math.round(100*consumablesInventory[item].cooldown/consumablesInventory[item].maxCooldown);
+                    let remainingTime = Math.max(0, _this.cooldownMap[item] - new Date().getTime());
+                    let cdPercent = 100 - Math.round(100*remainingTime/consumablesInventory[item].maxCooldown);
     
-                    document.getElementById("timer_" + item).innerHTML = _this.game.msToTime(consumablesInventory[item].cooldown);
+                    document.getElementById("timer_" + item).innerHTML = _this.game.msToTime(remainingTime);
                     $('#'+item).parent().attr('style', 'background: linear-gradient(#341e28 ' + cdPercent + '%, #5b0000 ' + cdPercent + '%) !important');
                 }
 
@@ -766,7 +773,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                     $('#'+item).css({'cursor':"not-allowed"});
 
                     let tickInterval = setInterval(function (){
-                        if (consumablesInventory[item].cooldown <= 0) {
+                        if (new Date().getTime() >= _this.cooldownMap[item]) {
                             clearInterval(tickInterval);
                             document.getElementById("timer_" + item).innerHTML = "";
                             $('#'+item).css({'cursor':"pointer"});
@@ -776,7 +783,6 @@ define(['jquery', 'storage'], function ($, Storage) {
                                 consumeFunc(item);
                             }
                         } else {
-                            consumablesInventory[item].cooldown -= 1000;
                             updateCdDisplay(item);
                         }
                     }, 1000);
@@ -815,7 +821,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                 });
 
                 Object.keys(consumablesInventory).forEach(item => {
-                    if (consumablesInventory[item].cooldown > 0) {
+                    if (new Date().getTime() < _this.cooldownMap[item]) {
                         cooldownTick(item);
                     } else if (consumablesInventory[item].consumable) {
                         consumeFunc(item);
@@ -833,8 +839,9 @@ define(['jquery', 'storage'], function ($, Storage) {
         consumeSlot: function(slot) {
             let inventorySlots = _this.settings.getInventorySlots();
             let item = inventorySlots[slot];
-            if (item) {
-                this.game.client.sendConsumeItem(String(item));
+            let cooldown = this.cooldownMap[item] !== undefined ? this.cooldownMap[item] : 0;
+            if (item && new Date().getTime() >= cooldown) {
+                this.consumeItem(String(item));
             }
         },
 
@@ -882,6 +889,25 @@ define(['jquery', 'storage'], function ($, Storage) {
                         }
                     });
                 }
+            });
+        },
+
+        consumeItem: function (item) {
+            _this = this;
+
+            let consumeQuery = "/session/" + _this.storage.sessionId + "/consumeItem/" + item;
+
+            axios.get(consumeQuery).then(function(response) {
+                let items = response.data.items;
+                let cooldown = response.data.cooldown;
+                if (cooldown && items.length > 0) {
+                    for (i = 0; i < items.length; i++) {
+                        _this.cooldownMap[items[i]] = cooldown;
+                    }
+                }
+                return response.data.consumed;
+            }).catch(function (error) {
+                console.error("Error while consuming item", error);
             });
         },
 

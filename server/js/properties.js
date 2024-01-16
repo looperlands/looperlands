@@ -1340,8 +1340,29 @@ Properties.getInventoryDescription = function(kind) {
 }
 
 Properties.getCooldownData = function(kind) {
-    let cooldownData = Properties[Types.getKindAsString(kind)]?.cooldown;
-    return cooldownData !== undefined ? cooldownData : {duration: 0, group: ""};
+    return Properties[Types.getKindAsString(kind)]?.cooldown; 
 }
+
+Properties.filterCooldownGroups = function() {
+    let ret = {};
+    Object.keys(Properties).forEach(key => {
+        let itemGroup = Properties[key].cooldown?.group;
+        if (itemGroup !== undefined) {
+            if (ret[itemGroup] === undefined) {
+                ret[itemGroup] = [];
+            }
+            ret[itemGroup].push(key);
+        }
+    });
+
+    return ret;
+}
+
+const COOLDOWNGROUP_MAP = Properties.filterCooldownGroups();
+
+Properties.getCdItemsByGroup = function(cdGroup) {
+    return COOLDOWNGROUP_MAP[cdGroup] !== undefined ? COOLDOWNGROUP_MAP[cdGroup] : [];
+}
+
 
 module.exports = Properties;

@@ -525,11 +525,6 @@ module.exports = Player = Character.extend({
                 }
                 self.pendingFish = null;
                 self.server.announceDespawnFloat(self);
-            } else if(action === Types.Messages.CONSUMEITEM) {
-                let item = message[1];
-                if (item) {
-                    self.consumeItem(item);
-                }
             }
             else {
                 if(self.message_callback) {
@@ -990,6 +985,9 @@ module.exports = Player = Character.extend({
             if (cooldownGroup && cooldownDuration){
                 this.applyCooldown(cooldownGroup, cooldownDuration);
             }
+            return true;
+        } else {
+            return false;
         }
     },
 
