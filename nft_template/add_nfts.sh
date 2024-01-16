@@ -98,7 +98,7 @@ git pull
 git checkout -b $BRANCH_NAME
 
 #loop through each nft and add it
-echo $nftsToAddJSON | jq -r '.[] | {short_nftid, asset_type, looper_name, project_name, long_nftid, operation, chain, tokenId, nftType} | join(",")' | while IFS=, read short_nftid asset_type looper_name project_name long_nftid operation  chain, tokenId, nftType; do
+echo $nftsToAddJSON | jq -r '.[] | {short_nftid, asset_type, looper_name, project_name, long_nftid, operation, chain, tokenId, nftType} | join(",")' | while IFS=, read short_nftid asset_type looper_name project_name long_nftid operation chain tokenId nftType; do
     add_nft "$short_nftid" "$asset_type" "$looper_name" "$project_name" "$long_nftid" "$operation" "$chain" "$tokenId" "$nftType"
 done
 
