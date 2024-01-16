@@ -15,6 +15,7 @@ define(['jquery', 'animation', 'sprites'], function($, Animation, sprites) {
 			} else {
 				this.baseImageURL = 'https://cdn.jsdelivr.net/gh/balkshamster/looperlands@main/client/img/';
 			}
+			
             this.loadJSON(sprites[name]);
         },
         

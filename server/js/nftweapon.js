@@ -107,10 +107,10 @@ class NFTWeapon {
             case 'arrow':
             default:
                 return [
-                    // Types.Entities.BASIC_ARROW,
+                    Types.Entities.BASIC_ARROW,
                     // Types.Entities.FEATHER_ARROW,
                     // Types.Entities.FIRE_ARROW,
-                    Types.Entities.CPOTION_S,
+                    //Types.Entities.CPOTION_S,
                 ];
         }
     }

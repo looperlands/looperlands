@@ -7,9 +7,10 @@ let Properties = {
             // flask: 40,
             // burger: 10,
             // firepotion: 5
-            cpotion_s: 80,
-            cpotion_m: 15,
-            cpotion_l: 5
+            // cpotion_s: 80,
+            // cpotion_m: 15,
+            // cpotion_l: 5
+            basicarrow: 100,
         },
         respawnDelay: 10000,
     },
@@ -1204,7 +1205,12 @@ let Properties = {
         onConsume: function(player){
             player.regenHealthBy(300);
         }
-    }
+    },
+    // Projectiles
+    basicarrow: {
+        collectable: true,
+        inventoryDescription: "Basic arrow (damage: low, range: medium)",
+    },
 
     // Weapons
     // axe: {

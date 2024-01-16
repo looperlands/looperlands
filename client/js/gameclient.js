@@ -514,12 +514,12 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
         },
 
         receiveSpawnProjectile: function(data) {
-            console.log('receiveSpawnProjectile', data);
-            let kind = data[1];
-            let target = data[2];
+            let playerId = data[1];
+            let kind = data[2];
+            let target = data[3];
 
             if(this.spawnProjectile_callback) {
-                this.spawnProjectile_callback(kind, target);
+                this.spawnProjectile_callback(playerId, kind, target);
             }
         },
 

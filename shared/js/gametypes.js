@@ -5158,7 +5158,7 @@ var kinds = {
     BOTTLED_FIRE: [Types.Entities.BOTTLED_FIRE, 'projectile'],
     BOTTLED_LIGHTNING: [Types.Entities.BOTTLED_LIGHTNING, 'projectile'],
     BOTTLED_POISON: [Types.Entities.BOTTLED_POISON, 'projectile'],
-    BASIC_ARROW: [Types.Entities.BASIC_ARROW, 'projectile'],
+    basicarrow: [Types.Entities.BASIC_ARROW, 'projectile'],
     FEATHER_ARROW: [Types.Entities.FEATHER_ARROW, 'projectile'],
     FIRE_ARROW: [Types.Entities.FIRE_ARROW, 'projectile'],
 
@@ -9630,6 +9630,10 @@ Types.isRangedWeapon = function(kind) {
     return kinds.getType(kind) === "ranged_weapon";
 }
 
+Types.isProjectile = function(kind) {
+    return kinds.getType(kind) === "projectile";
+}
+
 Types.isFishingRod = function(kind) {
     return kinds.getType(kind) === "fishingrod";
 };
@@ -9658,6 +9662,7 @@ Types.isItem = function(kind) {
     return Types.isWeapon(kind)
         || Types.isArmor(kind)
         || Types.isResource(kind)
+        || Types.isProjectile((kind))
         || (Types.isObject(kind) && !Types.isChest(kind));
 };
 

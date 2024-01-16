@@ -185,6 +185,14 @@ define(['item'], function(Item) {
                 this.lootMessage = "You pick up a large healing potion!";
             },
         }),
+
+        BasicArrow: Item.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.BASIC_ARROW, "object");
+                this.lootMessage = "You found an arrow!";
+            },
+        }),
+
         KEY_ARACHWEAVE:Item.extend({init:function(id){this._super(id,Types.Entities.KEY_ARACHWEAVE,"object");this.lootMessage="You picked up a strange webbed key";}}),
         BOARHIDE:Item.extend({init:function(id){this._super(id,Types.Entities.BOARHIDE,"object");this.lootMessage="Picked up Boar hide!";}}),
         THUDKEY:Item.extend({init:function(id){this._super(id,Types.Entities.THUDKEY,"object");this.lootMessage="Picked up Thudd's Key!";}}),

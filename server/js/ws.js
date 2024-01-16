@@ -393,6 +393,7 @@ WS.socketIOServer = Server.extend({
 
             let consumables = sessionData.gameData?.consumables || {};
             let resources = {};
+
             Object.keys(consumables).forEach(item => {
                 if(Types.isResource(parseInt(item))) {
                     resources[item] = consumables[item];

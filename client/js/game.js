@@ -1,10 +1,10 @@
 define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile',
         'warrior', 'gameclient', 'audio', 'updater', 'transition', 'pathfinder',
-        'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'config', 'fieldeffect', 'float', '../../shared/js/gametypes', '../../shared/js/altnames'],
+        'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'config', 'fieldeffect', 'float', 'projectile', '../../shared/js/gametypes', '../../shared/js/altnames'],
 
     function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, AnimatedTile,
              Warrior, GameClient, AudioManager, Updater, Transition, Pathfinder,
-             Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, config, Fieldeffect, Float) {
+             Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, config, Fieldeffect, Float, Projectile) {
 
         var Game = Class.extend({
             init: function(app) {
@@ -93,6 +93,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "platearmor", "redarmor", "goldenarmor", "firefox", "death", "sword1", "transparentweapon", "torin","elric","glink", "axe", "chest","elara","eldrin","draylen","thaelen","keldor","torvin","liora","aria",
                     "sword2", "redsword", "bluesword", "goldensword", "item-sword2", "item-axe", "item-redsword", "item-bluesword", "item-goldensword", "item-leatherarmor", "item-mailarmor","whiskers",
                     "item-platearmor", "item-redarmor", "item-goldenarmor", "item-flask", "item-potion","item-cake", "item-burger", "item-cobcorn", "item-cobapple", "item-coblog", "item-cobclover", "item-cobegg", "morningstar", "item-morningstar", "item-firepotion", "item-cpotion_s", "item-cpotion_m", "item-cpotion_l",
+                    "item-basicarrow", "basicarrow",
                     "item-KEY_ARACHWEAVE","shiverrock","shiverrockii","shiverrockiii","crystolith","stoneguard","glacialord","edur","lumi","snjor","gelidus","nightharrow",
                     "fieldeffect-magcrack","fieldeffect-cobfallingrock","gloomforged","torian","gripnar","blackdog","browndog","whitedog",
                     "villager1","villager2","villager3","villager4","villager5","villager6","brownspotdog",
@@ -5206,7 +5207,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     this.registerEntityPosition(entity);
 
                     if(!(entity instanceof Item && entity.wasDropped)
-                        && !(this.renderer.mobile || this.renderer.tablet)) {
+                        && !(this.renderer.mobile || this.renderer.tablet)
+                        && !(entity instanceof Projectile)
+                    ) {
                         entity.fadeIn(this.currentTime);
                     }
 
@@ -6694,8 +6697,17 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         self.removeFloat(id);
                     });
 
-                    self.client.onSpawnProjectile(function(projectile, target) {
-                        console.log('shoot projectile', projectile, target);
+                    self.client.onSpawnProjectile(function(shooterId, projectileId, targetId) {
+                        let shooter = self.getEntityById(shooterId);
+                        let target = self.getEntityById(targetId);
+                        let projectile = new Projectile(projectileId, shooter);
+                        projectile.onDestination((finishedProjectile) => {
+                            console.log(finishedProjectile);
+                            self.removeEntity(finishedProjectile);
+                            self.removeFromRenderingGrid(finishedProjectile, finishedProjectile.gridX, finishedProjectile.gridY);
+                        })
+                        projectile.flyTo(target.gridX, target.gridY);
+                        self.addEntity(projectile);
                     });
 
                     self.client.onOutOfAmmo(function() {

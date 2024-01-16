@@ -302,12 +302,15 @@ function drawEntities(drawEntitiesData) {
         let drawDataLength = entityData.drawData.length;
         for (let y = 0; y < drawDataLength; y++) {
             const drawData = entityData.drawData[y];
-            const {id, sx, sy, sW, sH, dx, dy, dW, dH} = drawData;
+            const {id, sx, sy, sW, sH, dx, dy, dW, dH, a} = drawData;
 
             let sprite = sprites[id];
             if (sprite) {
                 try {
                     ctx.drawImage(sprite.image, sx, sy, sW, sH, dx, dy, dW, dH);
+                    if(a) {
+                        ctx.rotate(a);
+                    }
                 } catch (e) {
                     if (sprite.image === undefined) {
                         sprite.load();
