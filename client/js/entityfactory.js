@@ -507,6 +507,11 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
         return new Mobs.horde5(id);
     };
    
+    EntityFactory.builders[Types.Entities.COBWALKINGNPC1] = function(id) { return new Mobs.cobWalkingNpc1(id); };
+    EntityFactory.builders[Types.Entities.COBWALKINGNPC2] = function(id) { return new Mobs.cobWalkingNpc2(id); };
+    EntityFactory.builders[Types.Entities.COBWALKINGNPC3] = function(id) { return new Mobs.cobWalkingNpc3(id); };
+    EntityFactory.builders[Types.Entities.COBWALKINGNPC4] = function(id) { return new Mobs.cobWalkingNpc4(id); };
+    EntityFactory.builders[Types.Entities.COBWALKINGNPC5] = function(id) { return new Mobs.cobWalkingNpc5(id); };
     // @nextMobLine@
     //===== items ======
  

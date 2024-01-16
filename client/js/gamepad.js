@@ -127,6 +127,9 @@ class GamePadListener {
 
     handleButtonPress(buttonIndex) {
         switch (buttonIndex) {
+            case 0:
+                this.simulateKeyPress(' ', 'Space'); // Weapon Info
+                break;
             case 1:
                 this.simulateKeyPress('b', 'KeyB'); // Weapon Info
                 break;
@@ -141,6 +144,12 @@ class GamePadListener {
                 break;
             case 5:
                 this.simulateKeyPress(',', 'Comma'); // Previous Weapon 
+                break;
+            case 6:
+                this.simulateKeyPress('t', 'KeyT'); // Select Closest Target
+                break;
+            case 7:
+                this.simulateKeyPress('Tab', 'Tab'); // Cycle Target 
                 break;
             case 8:
                 this.simulateKeyPress('x', 'KeyX'); // Quests

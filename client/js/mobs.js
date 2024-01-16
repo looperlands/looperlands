@@ -2295,6 +2295,96 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
         
+
+       cobWalkingNpc1: Mob.extend({
+           init: function(id) {
+               this._super(id, Types.Entities.COBWALKINGNPC1);
+               this.idleSpeed = 500;
+               this.walkSpeed = 250;
+               this.moveSpeed = 333;
+               this.isFriendly = true;
+           },
+
+           idle: function(orientation) {
+               if(!this.hasTarget()) {
+                   this._super(Types.Orientations.DOWN);
+                } else {
+                   this._super(orientation);
+               }
+            }
+       }),
+
+       cobWalkingNpc2: Mob.extend({
+           init: function(id) {
+               this._super(id, Types.Entities.COBWALKINGNPC2);
+               this.idleSpeed = 500;
+               this.walkSpeed = 250;
+               this.moveSpeed = 333;
+               this.isFriendly = true;
+           },
+
+           idle: function(orientation) {
+               if(!this.hasTarget()) {
+                   this._super(Types.Orientations.DOWN);
+                } else {
+                   this._super(orientation);
+               }
+            }
+       }),
+
+       cobWalkingNpc3: Mob.extend({
+           init: function(id) {
+               this._super(id, Types.Entities.COBWALKINGNPC3);
+               this.idleSpeed = 500;
+               this.walkSpeed = 250;
+               this.moveSpeed = 333;
+               this.isFriendly = true;
+           },
+
+           idle: function(orientation) {
+               if(!this.hasTarget()) {
+                   this._super(Types.Orientations.DOWN);
+                } else {
+                   this._super(orientation);
+               }
+            }
+       }),
+
+       cobWalkingNpc4: Mob.extend({
+           init: function(id) {
+               this._super(id, Types.Entities.COBWALKINGNPC4);
+               this.idleSpeed = 500;
+               this.walkSpeed = 250;
+               this.moveSpeed = 333;
+               this.isFriendly = true;
+           },
+
+           idle: function(orientation) {
+               if(!this.hasTarget()) {
+                   this._super(Types.Orientations.DOWN);
+                } else {
+                   this._super(orientation);
+               }
+            }
+       }),
+
+       cobWalkingNpc5: Mob.extend({
+           init: function(id) {
+               this._super(id, Types.Entities.COBWALKINGNPC5);
+               this.idleSpeed = 500;
+               this.walkSpeed = 250;
+               this.moveSpeed = 333;
+               this.isFriendly = true;
+           },
+
+           idle: function(orientation) {
+               if(!this.hasTarget()) {
+                   this._super(Types.Orientations.DOWN);
+                } else {
+                   this._super(orientation);
+               }
+            }
+       }),
         // @nextMobLine@
     };
     return Mobs;
