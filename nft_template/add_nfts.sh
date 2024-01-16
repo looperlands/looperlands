@@ -27,6 +27,9 @@ function add_nft() {
     project_name=$4
     long_nftid=$5
     operation=$6
+    chain=$7
+    tokenId=$8
+    nftType=$9
     echo "Adding " $nftID $type $looperName $project_name $long_nftid
     # Prepare the tmp directory to add the NFT spritesheet to git
     rm -rf /tmp/$nftID
@@ -46,12 +49,12 @@ function add_nft() {
 
     if [ "$operation" = "add" ]; then
         ./add_nft.sh /tmp/$nftID $nftID $type || {
-            echo "returning due to add_nft.sh error: $nfID $type"
+            echo "returning due to add_nft.sh error: $nftID $type"
             return 1
         }
     elif [ "$operation" = "update" ]; then
         ./update_nft.sh /tmp/$nftID $nftID $type || {
-            echo "returning due to update_nft.sh error: $nfID $type"
+            echo "returning due to update_nft.sh error: $nftID $type"
             return 1
         }
     else
@@ -64,7 +67,7 @@ function add_nft() {
     if [ "$operation" = "add" ]; then
         # add the NFT to the loopworms platform
         echo "adding nft"
-        /root/add_looplands_nft.sh "$long_nftid" "$project_name" "$type"
+        /root/add_looplands_nft.sh "$long_nftid" "$project_name" "$type" "$chain" "$tokenId" "$nftType"
         rm sqlscript.sql
     fi
     
@@ -76,7 +79,7 @@ function add_nft() {
         chgrp loopw4130 /home/loopworms.io/public_html/DEV/LooperLands/img/$nftID.png
     fi
     # update the status so it's not added again
-    updateStatus $nftID
+    updateStatus "$nftID"
     rm -rf /tmp/$nftID
 }
 
@@ -95,8 +98,8 @@ git pull
 git checkout -b $BRANCH_NAME
 
 #loop through each nft and add it
-echo $nftsToAddJSON | jq -r '.[] | {short_nftid, asset_type, looper_name, project_name, long_nftid, operation} | join(",")' | while IFS=, read short_nftid asset_type looper_name project_name long_nftid operation; do
-    add_nft "$short_nftid" "$asset_type" "$looper_name" "$project_name" "$long_nftid" "$operation"
+echo $nftsToAddJSON | jq -r '.[] | {short_nftid, asset_type, looper_name, project_name, long_nftid, operation, chain, tokenId, nftType} | join(",")' | while IFS=, read short_nftid asset_type looper_name project_name long_nftid operation chain tokenId nftType; do
+    add_nft "$short_nftid" "$asset_type" "$looper_name" "$project_name" "$long_nftid" "$operation" "$chain" "$tokenId" "$nftType"
 done
 
 git push --set-upstream origin $BRANCH_NAME
