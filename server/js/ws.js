@@ -422,7 +422,7 @@ WS.socketIOServer = Server.extend({
                     });
                 }
 
-                if (!item || !Collectables.isCollectable(parseInt(item)) || consumables[item] <= 0){
+                if (!item || !Collectables.isCollectable(item) || consumables[item] <= 0){
                     delete consumables[item];
                 } else {
                     consumables[item] = {qty: consumables[item], 
