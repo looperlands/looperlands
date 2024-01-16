@@ -49,12 +49,12 @@ function add_nft() {
 
     if [ "$operation" = "add" ]; then
         ./add_nft.sh /tmp/$nftID $nftID $type || {
-            echo "returning due to add_nft.sh error: $nfID $type"
+            echo "returning due to add_nft.sh error: $nftID $type"
             return 1
         }
     elif [ "$operation" = "update" ]; then
         ./update_nft.sh /tmp/$nftID $nftID $type || {
-            echo "returning due to update_nft.sh error: $nfID $type"
+            echo "returning due to update_nft.sh error: $nftID $type"
             return 1
         }
     else
@@ -79,7 +79,7 @@ function add_nft() {
         chgrp loopw4130 /home/loopworms.io/public_html/DEV/LooperLands/img/$nftID.png
     fi
     # update the status so it's not added again
-    updateStatus $nftID
+    updateStatus "$nftID"
     rm -rf /tmp/$nftID
 }
 
