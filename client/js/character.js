@@ -144,6 +144,11 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
             
             if(!this.isRooted)
             {
+                if(this.isAttacking() && this.hasTarget()) {
+                    if (this.weaponName && Types.isRangedWeapon(Types.getKindFromString(this.weaponName)) && this.canReachTarget(this.target)) {
+                        this.stop();
+                    }
+                }
                 if(this.isMoving()) {
                     this.continueTo(x, y);
                 }
@@ -383,6 +388,9 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
         follow: function(entity) {
             if(entity) {
                 this.followingMode = true;
+                if (this.weaponName && Types.isRangedWeapon(Types.getKindFromString(this.weaponName)) && this.canReachTarget(entity)) {
+                    return;
+                }
                 this.moveTo_(entity.gridX, entity.gridY);
             }
         },

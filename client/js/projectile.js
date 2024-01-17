@@ -6,9 +6,10 @@ define(['entity', 'transition'], function(Entity, Transition) {
             this._super('projectile_' + Math.random() * 99999999999, projectileId);
             this.moveSpeed = 300;
             this.flySpeed = 100;
+            this.shooter = shooter;
             this.sourceX = shooter.gridX;
             this.sourceY = shooter.gridY;
-            this.setGridPosition(shooter.gridX, shooter.gridY);
+            this.setGridPosition(this.sourceX, this.sourceY);
             this.setSprite(self.sprites[Types.getKindAsString(projectileId)]);
             this.movement = new Transition();
             this.moving = false;
@@ -24,21 +25,27 @@ define(['entity', 'transition'], function(Entity, Transition) {
             this.fly();
         },
 
-        fly: function(orientation) {
+        fly: function() {
             this.setAnimation("fly", this.flySpeed);
         },
 
         hasShadow: function() {
-            return true;
+            return false;
         },
 
         isMoving: function() {
             return this.moving;
         },
 
+        onMove: function(callback) {
+          this.onmove_callback = callback;
+        },
+
         hasMoved: function() {
-            console.log('pos', this.x, this.y);
             this.setDirty();
+            if(this.onmove_callback) {
+                this.onmove_callback();
+            }
         },
 
         onDestination: function(callback) {
@@ -75,7 +82,6 @@ define(['entity', 'transition'], function(Entity, Transition) {
         },
 
         updatePositionOnGrid: function() {
-            console.log('grid pos', Math.floor(this.x / 16), Math.floor(this.y / 16));
             this.setGridPosition(Math.floor(this.x / 16), Math.floor(this.y / 16));
         },
     });

@@ -6729,11 +6729,48 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     self.client.onSpawnProjectile(function(shooterId, projectileId, targetId) {
                         let shooter = self.getEntityById(shooterId);
                         let target = self.getEntityById(targetId);
-                        let projectile = new Projectile(projectileId, shooter);
+                        let projectile = new Projectile(projectileId, shooter, target);
+                        let lastHitPos = {x: null, y: null};
+                        projectile.onMove(() => {
+                            let projectilePos = {x: Math.floor(projectile.x / 16), y: Math.floor(projectile.y / 16)}
+                            if(lastHitPos.x !== projectilePos.x || lastHitPos.y !== projectilePos.y) {
+                                lastHitPos = projectilePos;
+                                let hitEntity = self.getEntityAt(projectilePos.x, projectilePos.y);
+                                if(hitEntity && Types.isMob(hitEntity.kind) && !hitEntity.isDead && !hitEntity.isFriendly) {
+                                    if(projectile.shooter.id === self.player.id) {
+                                        hitEntity.hit();
+                                        self.client.sendHit(hitEntity);
+                                        self.audioManager.playSound("hit" + Math.floor(Math.random() * 2 + 1));
+                                    }
+                                    projectile.setVisible(false);
+                                    self.removeFromRenderingGrid(projectile, projectilePos.x, projectilePos.y);
+                                    self.removeEntity(projectile);
+                                }
+                                if(self.map.isColliding(projectilePos.x, projectilePos.y)) {
+                                    if(projectile.shooter.id === self.player.id) {
+                                        self.audioManager.playSound("hit" + Math.floor(Math.random() * 2 + 1));
+                                    }
+                                    projectile.setVisible(false);
+                                    self.removeFromRenderingGrid(projectile, projectilePos.x, projectilePos.y);
+                                    self.removeEntity(projectile);
+                                    return;
+                                }
+                            }
+                        });
                         projectile.onDestination((finishedProjectile) => {
-                            console.log(finishedProjectile);
-                            self.removeEntity(finishedProjectile);
+                            if(lastHitPos.x !== finishedProjectile.gridX || lastHitPos.y !== finishedProjectile.gridY) {
+                                let hitEntity = self.getEntityAt(finishedProjectile.gridX, finishedProjectile.gridY);
+                                if(hitEntity && Types.isMob(hitEntity.kind) && !hitEntity.isDead && !hitEntity.isFriendly) {
+                                    if(finishedProjectile.shooter.id === self.player.id) {
+                                        self.client.sendHit(target);
+                                        target.hit();
+                                        self.audioManager.playSound("hit" + Math.floor(Math.random() * 2 + 1));
+                                    }
+                                }
+                            }
+                            finishedProjectile.setVisible(false);
                             self.removeFromRenderingGrid(finishedProjectile, finishedProjectile.gridX, finishedProjectile.gridY);
+                            self.removeEntity(finishedProjectile);
                         })
                         projectile.flyTo(target.gridX, target.gridY);
                         self.addEntity(projectile);

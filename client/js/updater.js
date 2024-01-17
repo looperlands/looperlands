@@ -211,26 +211,60 @@ define(['character', 'projectile', 'timer'], function(Character, Projectile, Tim
         },
 
         updateProjectile: function(p) {
-
-            // Estimate of the movement distance for one update
-            var tick = Math.round(16 / Math.round((p.moveSpeed / (1000 / this.game.renderer.FPS))));
-
             if(p.isMoving() && p.movement.inProgress === false) {
-                p.movement.start(this.game.currentTime,
-                    function (x) {
-                        p.x = x;
-                        p.hasMoved();
-                    },
-                    function () {
-                        p.x = p.targetX * 16;
-                        p.y = p.targetY * 16;
-                        p.hasMoved();
-                        p.nextStep();
-                    },
-                    p.x + tick,
-                    p.targetX * 16,
-                    p.moveSpeed
-                );
+                // Estimate of the movement distance for one update
+                let tick = 3;
+
+                let dx = Math.abs((p.targetX * 16) - (p.sourceX * 16));
+                let dy = Math.abs((p.targetY * 16) - (p.sourceY * 16));
+
+                if(dx === 0 && dy === 0) {
+                    return;
+                }
+
+                if(dx > dy) {
+                    let YXRatio = dy / dx;
+                    p.movement.start(this.game.currentTime,
+                        function (x) {
+                            let movedX = Math.abs(x - p.x);
+
+                            p.x = x;
+                            p.y = p.sourceY < p.targetY ? (p.y + (movedX * YXRatio)) : (p.y - (movedX * YXRatio));
+                            p.hasMoved();
+                        },
+                        function () {
+                            p.x = p.targetX * 16;
+                            p.y = p.targetY * 16;
+                            p.hasMoved();
+                            p.nextStep();
+                        },
+                        p.sourceX < p.targetX ? p.x + tick : p.x - tick ,
+                        p.sourceX < p.targetX ? p.targetX * 16 : (p.targetX * 16) + 16,
+                        p.moveSpeed
+                    );
+                } else {
+                    let XYRatio = dx / dy;
+                    p.movement.start(this.game.currentTime,
+                        function (y) {
+                            let movedY = Math.abs(y - p.y);
+
+                            p.y = y;
+                            p.x = p.sourceX < p.targetX ? (p.x + (movedY * XYRatio)) : (p.x - (movedY * XYRatio));
+                            p.hasMoved();
+                        },
+                        function () {
+                            p.y = p.targetY * 16;
+                            p.x = p.targetX * 16;
+                            p.hasMoved();
+                            p.nextStep();
+                            p.visible = false;
+                            p.setDirty();
+                        },
+                        p.y + tick,
+                        p.targetY * 16,
+                        p.moveSpeed
+                    );
+                }
             }
         },
 

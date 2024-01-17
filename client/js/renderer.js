@@ -378,7 +378,6 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                             "dy": entity.shadowOffsetY * ds,
                             "dW": shadow.width * os * ds,
                             "dH": shadow.height * os * ds,
-                            "a": a
                         });
                     }
 
