@@ -149,10 +149,7 @@ const Lakes = {
 const ConsumableFish = {
     hp: ["cobparadisefish","oafish27"],
     atk: ["cobbluegill","oafish31","oafish22"],
-    exp: ["cobgreensunfish,oafish36"],
-
-
-
+    exp: ["cobgreensunfish","oafish36"]
 };
 
 //---END CONFIG---
