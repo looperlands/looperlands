@@ -100,8 +100,6 @@ define(['jquery', 'storage'], function ($, Storage) {
                 let host = window.location.hostname;
                 let port = window.location.port;
 
-                console.log("Hi", protocol, host, port);
-
                 // Check if the port is not defined and assign default ports based on the protocol
                 if (!port) {
                     if (protocol === 'http:') {
