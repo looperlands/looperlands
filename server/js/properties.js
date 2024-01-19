@@ -1201,6 +1201,18 @@ let Properties = {
         onConsume: function(player){
             player.regenHealthBy(300);
         }
+    },
+    cimmupot: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "immunity",
+            duration: 180000
+        },
+        inventoryDescription: "Liquid loopium",
+        onConsume: function(player){
+            player.startInvincibility();
+        }
     }
 
     // Weapons

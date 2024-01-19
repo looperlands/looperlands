@@ -44,6 +44,7 @@ module.exports = Player = Character.extend({
         this.disconnectTimeout = null;
         this.pendingFish = null;
         this.consumableBuff = {};
+        this.invincible = false;
 
         this.moveSpeed = BASE_SPEED;
         this.attackRate = BASE_ATTACK_RATE;
@@ -348,24 +349,7 @@ module.exports = Player = Character.extend({
                         self.server.removeEntity(item);
 
                         if(kind === Types.Entities.FIREPOTION || kind === Types.Entities.COBCORN) {
-                            self.updateHitPoints();
-
-                            if (self.firepotionTimeout != null) {
-                                /* Issue #195: If the player is already a firefox when picking a firepotion
-                                Then cancel the queued "return to normal"
-                                New timeout will start and refresh the duration */
-                                clearTimeout(self.firepotionTimeout);
-                                self.firepotionTimeout = null;
-                            }
-                            else {
-                                self.broadcast(self.equip(Types.Entities.FIREFOX));
-                            }
-
-                            self.firepotionTimeout = setTimeout(function() {
-                                self.broadcast(self.equip(self.armor)); // return to normal
-                                self.firepotionTimeout = null;
-                            }, Types.timeouts[Types.Entities.FIREFOX]);
-                            self.send(new Messages.HitPoints(self.maxHitPoints).serialize());
+                            self.startInvincibility();
                         } else if(Types.isHealingItem(kind)) {
                             let amount;
 
@@ -561,7 +545,7 @@ module.exports = Player = Character.extend({
     },
 
     handleHurt: function(mob, damage) {
-        if(mob && this.hitPoints > 0) {
+        if(mob && this.hitPoints > 0 && !this.invincible) {
             if (damage === undefined) {
                 let level = this.getLevel();
                 let totalLevel =  Math.round(level * 0.5); //this is armor
@@ -1086,5 +1070,27 @@ module.exports = Player = Character.extend({
         if(this.applyCooldown_callback) {
             this.applyCooldown_callback(group, duration);
         }
+    },
+
+    startInvincibility: function () {
+        let self = this;
+
+        if (self.firepotionTimeout !== null) {
+            /* Issue #195: If the player is already a firefox when picking a firepotion
+            Then cancel the queued "return to normal"
+            New timeout will start and refresh the duration */
+            clearTimeout(self.firepotionTimeout);
+            self.firepotionTimeout = null;
+        }
+        else {
+            self.broadcast(self.equip(Types.Entities.FIREFOX), false);
+            self.invincible = true;
+        }
+
+        self.firepotionTimeout = setTimeout(function() {
+            self.broadcast(self.equip(self.armor), false); // return to normal
+            self.firepotionTimeout = null;
+            self.invincible = false;
+        }, Types.timeouts[Types.Entities.FIREFOX]);
     }
 });

@@ -88,7 +88,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "sorcerer", "octocat", "beachnpc", "forestnpc", "desertnpc", "lavanpc","thudlord", "clotharmor", "leatherarmor", "mailarmor","boar","grizzlefang","barrel","neena","athlyn","jeniper",
                     "platearmor", "redarmor", "goldenarmor", "firefox", "death", "sword1", "transparentweapon", "torin","elric","glink", "axe", "chest","elara","eldrin","draylen","thaelen","keldor","torvin","liora","aria",
                     "sword2", "redsword", "bluesword", "goldensword", "item-sword2", "item-axe", "item-redsword", "item-bluesword", "item-goldensword", "item-leatherarmor", "item-mailarmor","whiskers",
-                    "item-platearmor", "item-redarmor", "item-goldenarmor", "item-flask", "item-potion","item-cake", "item-burger", "item-cobcorn", "item-cobapple", "item-coblog", "item-cobclover", "item-cobegg", "morningstar", "item-morningstar", "item-firepotion", "item-cpotion_s", "item-cpotion_m", "item-cpotion_l",
+                    "item-platearmor", "item-redarmor", "item-goldenarmor", "item-flask", "item-potion","item-cake", "item-burger", "item-cobcorn", "item-cobapple", "item-coblog", "item-cobclover", "item-cobegg", "morningstar", "item-morningstar", "item-firepotion", "item-cpotion_s", "item-cpotion_m", "item-cpotion_l", "item-cimmupot",
                     "item-KEY_ARACHWEAVE","shiverrock","shiverrockii","shiverrockiii","crystolith","stoneguard","glacialord","edur","lumi","snjor","gelidus","nightharrow",
                     "fieldeffect-magcrack","fieldeffect-cobfallingrock","gloomforged","torian","gripnar","blackdog","browndog","whitedog",
                     "villager1","villager2","villager3","villager4","villager5","villager6","brownspotdog",
@@ -6133,7 +6133,6 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                     self.player.onInvincible(function() {
                         self.invincible_callback();
-                        self.player.switchArmor(self.sprites["firefox"]);
                     });
 
                     self.client.onSpawnItem(function(item, x, y) {
@@ -6501,7 +6500,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             diff,
                             isHurt;
 
-                        if(player && !player.isDead && !player.invincible) {
+                        if(player && !player.isDead) {
                             isHurt = points <= player.hitPoints;
                             diff = points - player.hitPoints;
                             player.hitPoints = points;
@@ -6534,11 +6533,17 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         var player = self.getEntityById(playerId),
                             itemName = Types.getKindAsString(itemKind);
 
-                        if(player) {
-                            if(Types.isArmor(itemKind)) {
+                        if (player) {
+                            if (Types.isArmor(itemKind)) {
+                                if (player.invincible && itemKind !== Types.Entities.FIREFOX) {
+                                    player.stopInvincibility();
+                                }
                                 player.setSprite(self.sprites[itemName]);
                             } else if(Types.isWeapon(itemKind)) {
                                 player.setWeaponName(itemName);
+                            }
+                            if (itemKind === Types.Entities.FIREFOX) {
+                                player.startInvincibility();
                             }
                         }
                     });
@@ -7543,7 +7548,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 this.audioManager.playSound("hit"+Math.floor(Math.random()*2+1));
                             }
 
-                            if(character.hasTarget() && character.target.id === this.playerId && this.player && !this.player.invincible & !(character instanceof Player)) {
+                            if(character.hasTarget() && character.target.id === this.playerId && this.player && !(character instanceof Player)) {
                                 this.client.sendHurt(character);
                             }
                         }

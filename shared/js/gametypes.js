@@ -224,6 +224,7 @@ Types = {
         CPOTION_S: 333009,
         CPOTION_M: 333010,
         CPOTION_L: 333011,
+        CIMMUPOT: 333012,
         BURGER: 36,
         CHEST: 37,
         FIREPOTION: 38,
@@ -4962,6 +4963,7 @@ var kinds = {
     cpotion_s: [Types.Entities.CPOTION_S, "object"],
     cpotion_m: [Types.Entities.CPOTION_M, "object"],
     cpotion_l: [Types.Entities.CPOTION_L, "object"],
+    cimmupot: [Types.Entities.CIMMUPOT, "object"],
     cobapple: [Types.Entities.COBAPPLE, "object"],
     cobcorn: [Types.Entities.COBCORN, "object"],
     coblog: [Types.Entities.COBLOG, "object"],
@@ -9710,7 +9712,7 @@ if(!(typeof exports === 'undefined')) {
 }
 
 Types.timeouts = {};
-Types.timeouts[Types.Entities.FIREFOX] = 5000;
+Types.timeouts[Types.Entities.FIREFOX] = 7500;
 Types.timeouts[Types.Entities.MEGAMAG] = 12000;
 Types.timeouts[Types.Entities.SEACREATURE] = 12000;
 Types.timeouts[Types.Entities.TENTACLE] = 12000;

@@ -119,21 +119,13 @@ define(['item'], function(Item) {
             init: function(id) {
                 this._super(id, Types.Entities.FIREPOTION, "object");
                 this.lootMessage = "You feel the power of Loopring!";
-            },
-
-            onLoot: function(player) {
-                player.startInvincibility();
-            },
+            }
         }),
 
         Cobcorn: Item.extend({
             init: function(id) {
                 this._super(id, Types.Entities.COBCORN, "object");
                 this.lootMessage = "It's corn time!";
-            },
-
-            onLoot: function(player) {
-                player.startInvincibility();
             }
         }),
 
@@ -185,6 +177,14 @@ define(['item'], function(Item) {
                 this.lootMessage = "You pick up a large healing potion!";
             },
         }),
+
+        Cimmupot: Item.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.CIMMUPOT, "object");
+                this.lootMessage = "You pick up liquid loopium!";
+            },
+        }),
+
         KEY_ARACHWEAVE:Item.extend({init:function(id){this._super(id,Types.Entities.KEY_ARACHWEAVE,"object");this.lootMessage="You picked up a strange webbed key";}}),
         BOARHIDE:Item.extend({init:function(id){this._super(id,Types.Entities.BOARHIDE,"object");this.lootMessage="Picked up Boar hide!";}}),
         THUDKEY:Item.extend({init:function(id){this._super(id,Types.Entities.THUDKEY,"object");this.lootMessage="Picked up Thudd's Key!";}}),
