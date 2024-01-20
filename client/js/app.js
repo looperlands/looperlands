@@ -95,21 +95,26 @@ define(['jquery', 'storage'], function ($, Storage) {
                 firstTimePlaying = !self.storage.hasAlreadyPlayed();
 
             if (username && !this.game.started) {
+                var optionsSet = false,
+                    config = this.config;
 
-                let protocol = window.location.protocol;
-                let host = window.location.hostname;
-                let port = window.location.port;
-
-                // Check if the port is not defined and assign default ports based on the protocol
-                if (!port) {
-                    if (protocol === 'http:') {
-                        port = '8000';
-                    } else if (protocol === 'https:') {
-                        port = '443';
-                    }
+                //>>includeStart("devHost", pragmas.devHost);
+                if (config.local) {
+                    console.debug("Starting game with local dev config.");
+                    this.game.setServerOptions(config.local.host, config.local.port, username, config.dev.protocol);
+                } else {
+                    console.debug("Starting game with default dev config.");
+                    this.game.setServerOptions(config.dev.host, config.dev.port, username, config.dev.protocol);
                 }
-                protocol = protocol.replace(":", "");
-                this.game.setServerOptions(host, port, username, protocol);
+                optionsSet = true;
+                //>>includeEnd("devHost");
+
+                //>>includeStart("prodHost", pragmas.prodHost);
+                if (!optionsSet) {
+                    console.debug("Starting game with build config.");
+                    this.game.setServerOptions(config.build.host, config.build.port, username, config.build.protocol);
+                }
+                //>>includeEnd("prodHost");
 
                 this.center();
                 this.game.run(function () {
