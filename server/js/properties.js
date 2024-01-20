@@ -1020,10 +1020,10 @@ let Properties = {
 
     INFERNOTH: {
         level: 30,
-        hpMod: 7.25,
-        weaponMod: 2.75,
+        hpMod: 6.75,
+        weaponMod: 2,
         xp:10000,
-        respawnDelay: 120000
+        respawnDelay: 60000
     },
 
     WINGELLA: {
