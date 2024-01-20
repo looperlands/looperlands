@@ -1,15 +1,14 @@
 define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile',
         'warrior', 'gameclient', 'audio', 'updater', 'transition', 'pathfinder',
-        'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'config', 'fieldeffect', 'float', '../../shared/js/gametypes', '../../shared/js/altnames'],
+        'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'fieldeffect', 'float', '../../shared/js/gametypes', '../../shared/js/altnames'],
 
     function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, AnimatedTile,
              Warrior, GameClient, AudioManager, Updater, Transition, Pathfinder,
-             Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, config, Fieldeffect, Float) {
+             Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, Fieldeffect, Float) {
 
         var Game = Class.extend({
             init: function(app) {
                 this.app = app;
-                this.app.config = config;
                 this.ready = false;
                 this.started = false;
                 this.hasNeverStarted = true;
@@ -5721,14 +5720,6 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                 this.client = new GameClient(this.host, this.port, this.protocol, this.sessionId, this.mapId);
                 this.renderStatistics();
-
-                //>>excludeStart("prodHost", pragmas.prodHost);
-                var config = this.app.config.local || this.app.config.dev;
-                if(config) {
-                    this.client.connect(config.dispatcher); // false if the client connects directly to a game server
-                    connecting = true;
-                }
-                //>>excludeEnd("prodHost");
 
                 //>>includeStart("prodHost", pragmas.prodHost);
                 if(!connecting) {
