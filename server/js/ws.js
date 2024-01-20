@@ -32,6 +32,26 @@ const cache = new NodeCache();
 const LOOPWORMS_LOOPERLANDS_BASE_URL = process.env.LOOPWORMS_LOOPERLANDS_BASE_URL;
 const APP_URL = process.env.APP_URL;
 
+function extractDetails(inputUrl) {
+    const parsedUrl = new URL(inputUrl);
+    let protocol = parsedUrl.protocol;
+    let host = parsedUrl.hostname;
+    let port;
+
+    if (protocol === 'http:') {
+        port = 8000;
+    } else if (protocol === 'https:') {
+        port = 443;
+    }
+
+    protocol = protocol.replace(':', '');
+
+    return { protocol, host, port };
+}
+
+// Example usage
+const urlDetails = extractDetails(APP_URL);
+
 /**
  * Abstract Server and Connection classes
  */
@@ -118,11 +138,13 @@ var Connection = cls.Class.extend({
             http://codevolution.com
  ***************/
 WS.socketIOServer = Server.extend({
-    init: function(host, port, protocol) {
+    init: function() {
         self = this;
-        self.protocol = protocol;
-        self.host = host;
-        self.port = port;
+        self.protocol = urlDetails.protocol;
+        self.host = urlDetails.host;
+        self.port = urlDetails.port;
+        const port = urlDetails.port;
+
         this.cache = cache;
         var express = require('express');
         var app = express();
