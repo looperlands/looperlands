@@ -50,6 +50,7 @@ Types = {
         SHOOT: 47,
         SPAWNPROJECTILE: 48,
         OUTOFAMMO: 49,
+        SELECTPROJECTILE: 50
     },
 
     Entities: {
@@ -5204,8 +5205,8 @@ var kinds = {
     BOTTLED_LIGHTNING: [Types.Entities.BOTTLED_LIGHTNING, 'projectile'],
     BOTTLED_POISON: [Types.Entities.BOTTLED_POISON, 'projectile'],
     basicarrow: [Types.Entities.BASIC_ARROW, 'projectile'],
-    FEATHER_ARROW: [Types.Entities.FEATHER_ARROW, 'projectile'],
-    FIRE_ARROW: [Types.Entities.FIRE_ARROW, 'projectile'],
+    featherarrow: [Types.Entities.FEATHER_ARROW, 'projectile'],
+    firearrow: [Types.Entities.FIRE_ARROW, 'projectile'],
 
     //NFT
     NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6: [Types.Entities.NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6, "armor"],

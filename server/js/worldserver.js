@@ -1135,7 +1135,9 @@ module.exports = World = cls.Class.extend({
         let weaponInfo = {
             constructor: nftWeapon.constructor.name,
             experience: nftWeapon.experience,
-            trait: nftWeapon.trait
+            trait: nftWeapon.trait,
+            projectiles: nftWeapon.getProjectiles(),
+            selectedProjectile: player.selectedProjectile
         }
         return weaponInfo;
     },

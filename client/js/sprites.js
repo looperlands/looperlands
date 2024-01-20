@@ -94,6 +94,10 @@ define(['text!../sprites/agent.json',
         //Projectiles
         'text!../sprites/basicarrow.json',
         'text!../sprites/item-basicarrow.json',
+        'text!../sprites/featherarrow.json',
+        'text!../sprites/item-featherarrow.json',
+        'text!../sprites/firearrow.json',
+        'text!../sprites/item-firearrow.json',
         //Short Destroyers
         'text!../sprites/item-vhs.json',
         'text!../sprites/item-dvd.json',

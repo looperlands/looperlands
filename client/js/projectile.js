@@ -4,7 +4,6 @@ define(['entity', 'transition'], function(Entity, Transition) {
     var Projectile = Entity.extend({
         init: function(projectileId, shooter) {
             this._super('projectile_' + Math.random() * 99999999999, projectileId);
-            this.moveSpeed = 300;
             this.flySpeed = 100;
             this.shooter = shooter;
             this.sourceX = shooter.gridX;
@@ -22,6 +21,10 @@ define(['entity', 'transition'], function(Entity, Transition) {
 
             this.angle = Math.atan2(targetY - this.sourceY, targetX -this.sourceX);
             this.moving = true;
+            this.moveSpeed = Math.sqrt(
+                Math.pow(Math.abs(targetX - this.sourceX), 2) +
+                    Math.pow(Math.abs(targetY - this.sourceY), 2)
+                ) * 50;
             this.fly();
         },
 

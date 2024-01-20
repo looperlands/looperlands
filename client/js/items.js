@@ -192,6 +192,18 @@ define(['item'], function(Item) {
                 this.lootMessage = "You found an arrow!";
             },
         }),
+        FeatherArrow: Item.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.FEATHER_ARROW, "object");
+                this.lootMessage = "You found a feather arrow!";
+            },
+        }),
+        FireArrow: Item.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.FIRE_ARROW, "object");
+                this.lootMessage = "You found a fire arrow!";
+            },
+        }),
 
         KEY_ARACHWEAVE:Item.extend({init:function(id){this._super(id,Types.Entities.KEY_ARACHWEAVE,"object");this.lootMessage="You picked up a strange webbed key";}}),
         BOARHIDE:Item.extend({init:function(id){this._super(id,Types.Entities.BOARHIDE,"object");this.lootMessage="Picked up Boar hide!";}}),

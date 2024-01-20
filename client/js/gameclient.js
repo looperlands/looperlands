@@ -805,6 +805,9 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             this.sendMessage([Types.Messages.CONSUMEITEM, itemId]);
         },
 
+        sendSelectProjectile: function(projectileType) {
+            this.sendMessage([Types.Messages.SELECTPROJECTILE, projectileType]);
+        }
     });
     
     return GameClient;

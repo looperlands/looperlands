@@ -12,11 +12,12 @@ class NFTWeapon {
         this.experience = undefined;
         this.level = 1;
         this.accumulatedExperience = 0;
-        this.projectileType = 'arrow';
+        this.projectileType = null;
     }
 
     async loadWeaponData() {
         const response = await dao.loadNFTWeapon(this.walletId, this.nftId);
+
         this.experience = response.experience;
         this.trait = response.trait;
         if (!this.trait) {
@@ -26,6 +27,8 @@ class NFTWeapon {
 
         if (response.projectileType) {
             this.projectileType = response.projectileType;
+        } else if (this.isRanged()) {
+            this.projectileType = "arrow";
         }
     }
 
@@ -90,7 +93,15 @@ class NFTWeapon {
         return this.trait;
     }
 
+    isRanged() {
+        return Types.isRangedWeapon(Types.getKindFromString(this.nftId.replace("0x", "NFT_")));
+    }
+
     getProjectiles() {
+        if(!this.projectileType) {
+            return;
+        }
+
         switch (self.projectileType) {
             case 'bullet':
                 return [

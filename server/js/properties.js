@@ -10,7 +10,9 @@ let Properties = {
             // cpotion_s: 80,
             // cpotion_m: 15,
             // cpotion_l: 5
-            basicarrow: 100,
+            basicarrow: 60,
+            featherarrow: 20,
+            firearrow: 20,
         },
         respawnDelay: 10000,
     },
@@ -1239,23 +1241,25 @@ let Properties = {
     // Projectiles
     basicarrow: {
         collectable: true,
-        inventoryDescription: "Basic arrow (damage: low, range: medium)",
+        consumable: true,
+        inventoryDescription: "Basic arrow (damage: medium, range: medium)",
+        damage: 1,
+        range: 8,
     },
-
-    // Weapons
-    // axe: {
-    //     name: "Axe",
-    //     consumables: {
-    //         GOLD: {
-    //             level: 40,
-    //             range: 6
-    //         },
-    //         coblog: {
-    //             level: 10,
-    //             range: 12
-    //         }
-    //     }
-    // }
+    featherarrow: {
+        collectable: true,
+        consumable: true,
+        inventoryDescription: "Basic arrow (damage: low, range: high)",
+        damage: 0,
+        range: 12
+    },
+    firearrow: {
+        collectable: true,
+        consumable: true,
+        inventoryDescription: "Fire arrow (damage: high, range: low)",
+        damage: 2,
+        range: 4
+    },
 };
 
 Properties.getArmorLevel = function(kind, levelOffset) {

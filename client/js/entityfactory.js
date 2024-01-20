@@ -617,6 +617,12 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.BASIC_ARROW] = function(id) {
         return new Items.BasicArrow(id);
     };
+    EntityFactory.builders[Types.Entities.FEATHER_ARROW] = function(id) {
+        return new Items.FeatherArrow(id);
+    };
+    EntityFactory.builders[Types.Entities.FIRE_ARROW] = function(id) {
+        return new Items.FireArrow(id);
+    };
 
     EntityFactory.builders[Types.Entities.KEY_ARACHWEAVE]=function(id){return new Items.KEY_ARACHWEAVE(id);};
     EntityFactory.builders[Types.Entities.BOARHIDE]=function(id){return new Items.BOARHIDE(id);};

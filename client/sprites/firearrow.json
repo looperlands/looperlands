@@ -1,0 +1,13 @@
+{
+  	"id": "firearrow",
+	"width": 32,
+	"height": 32,
+	"animations": {
+		"fly": {
+			"length": 5,
+			"row": 0
+		}
+	},
+	"offset_x": -18,
+	"offset_y": -8
+}

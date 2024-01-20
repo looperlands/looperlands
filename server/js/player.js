@@ -237,6 +237,9 @@ module.exports = Player = Character.extend({
                     self.server.broadcastAttacker(self);
                 }
             }
+            else if(action === Types.Messages.SELECTPROJECTILE) {
+                self.selectedProjectile = message[1];
+            }
             else if(action === Types.Messages.SHOOT) {
                 let nftWeapon = self.getNFTWeapon();
                 if (nftWeapon !== undefined && !(nftWeapon instanceof NFTWeapon.NFTWeapon)){
@@ -244,35 +247,16 @@ module.exports = Player = Character.extend({
                 }
                 var mob = self.server.getEntityById(message[1]);
                 if(mob) {
-                    let projectiles = nftWeapon.getProjectiles();
-                    let usedProjectile = null;
-                    let projectileCount = 0;
-
-                    if (self.selectedProjectile) {
-                        let projectile = projectiles.find(projectile => projectile.type === self.selectedProjectile);
-                        projectileCount = self.getResourceAmount(projectile)
-                        usedProjectile = projectile;
-                    }
-
-                    if(projectileCount <= 0) {
-                        for(let i = 0; i < projectiles.length; i++) {
-                            let projectile = projectiles[i];
-                            projectileCount = self.getResourceAmount(projectile)
-                            if(projectileCount > 0) {
-                                self.selectedProjectile = projectile;
-                                usedProjectile = projectile;
-                                break;
-                            }
-                        }
-                    }
-
+                    let usedProjectile = self.getProjectileToUse();
                     if(usedProjectile === null) {
                         self.server.pushToPlayer(self, new Messages.OutOfAmmo());
                         return;
                     }
 
+                    let projectileCount = self.getResourceAmount(usedProjectile);
                     if (projectileCount > 0) {
                         self.server.announceSpawnProjectile(self, usedProjectile, message[1]);
+                        self.consumeItem(usedProjectile);
                     } else {
                         self.server.pushToPlayer(self, new Messages.OutOfAmmo());
                     }
@@ -816,6 +800,24 @@ module.exports = Player = Character.extend({
         }
     },
 
+    getProjectileToUse: function() {
+        if (this.selectedProjectile) {
+            return this.selectedProjectile;
+        }
+
+        let projectiles = this.getNFTWeapon().getProjectiles();
+        for(let i = 0; i < projectiles.length; i++) {
+            let projectile = projectiles[i];
+            projectileCount = this.getResourceAmount(projectile)
+            console.log("Projectile count", projectileCount, projectile)
+            if(projectileCount > 0) {
+                return projectile;
+            }
+        }
+
+        return null;
+    },
+
     equipSpecialItem: function(kind) {
         this.weapon = kind;
         const kindString = Types.getKindAsString(kind);
@@ -930,6 +932,14 @@ module.exports = Player = Character.extend({
     getWeaponLevel: function(kind) {
         const nftWeapon = this.getNFTWeapon();
         if (nftWeapon !== undefined) {
+            if(nftWeapon.isRanged()) {
+                let projectile = this.getProjectileToUse();
+                if (projectile === null) {
+                    return 0;
+                }
+                return nftWeapon.getLevel() + Properties[Types.getKindAsString(projectile)].damage;
+            }
+
             return nftWeapon.getLevel();
         }
 
@@ -956,6 +966,20 @@ module.exports = Player = Character.extend({
 
         return weaponLevel;
 
+    },
+
+    getWeaponRange: function() {
+        const nftWeapon = this.getNFTWeapon();
+        if (nftWeapon !== undefined) {
+            if(nftWeapon.isRanged()) {
+                let projectile = this.getProjectileToUse();
+                if (projectile === null) {
+                    return 1;
+                }
+                return Properties[Types.getKindAsString(projectile)].range;
+            }
+        }
+        return 1;
     },
 
     getNFTWeapon: function() {
