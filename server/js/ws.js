@@ -30,7 +30,7 @@ const Types = require("../../shared/js/gametypes");
 const cache = new NodeCache();
 
 const LOOPWORMS_LOOPERLANDS_BASE_URL = process.env.LOOPWORMS_LOOPERLANDS_BASE_URL;
-const INSTANCE_URI = process.env.INSTANCE_URI ? process.env.INSTANCE_URI : "";
+const APP_URL = process.env.APP_URL;
 
 /**
  * Abstract Server and Connection classes
@@ -132,11 +132,10 @@ WS.socketIOServer = Server.extend({
         let http = new httpInclude.Server(app);
         
 
-        var corsAddress = self.protocol + "://" + self.host + INSTANCE_URI;
-        console.log("CORS Address", corsAddress);
+        console.log("APP_URL", APP_URL);
         self.io = require('socket.io')(http, {
             allowEIO3: true,
-            cors: {origin: corsAddress, credentials: true}
+            cors: {origin: APP_URL, credentials: true}
         });
 
         app.use(express.json())
