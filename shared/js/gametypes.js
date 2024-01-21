@@ -5135,6 +5135,7 @@ var kinds = {
     VILLAGESIGN8: [Types.Entities.VILLAGESIGN8, "npc"],
     VILLAGESIGN9: [Types.Entities.VILLAGESIGN9, "npc"],
     cobellen: [Types.Entities.COBELLEN, "npc"],
+    cobjohnny: [Types.Entities.COBJOHNNY, "npc"],
     cobfern: [Types.Entities.COBFERN, "npc"],
     cobelliott: [Types.Entities.COBELLIOTT, "npc"],
     cobmauve: [Types.Entities.COBMAUVE, "npc"],
