@@ -2150,7 +2150,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
         INFERNOTH: Mob.extend({ 
             init: function(id) {
                 this._super(id, Types.Entities.INFERNOTH); 
-                this.moveSpeed = 250; 
+                this.moveSpeed = 100; 
                 this.atkSpeed = 100; 
                 this.idleSpeed = 100;
                 this.aggroRange = 2;
