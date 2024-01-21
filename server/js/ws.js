@@ -920,7 +920,8 @@ WS.socketIOServer = Server.extend({
                     sessionData.walletId,
                     sessionData.entityId,
                     owner.x,
-                    owner.y
+                    owner.y,
+                    APP_URL
                 );
                 if (newBot?.sessionId) {
                     sessionData.botSessionId = newBot.sessionId;
