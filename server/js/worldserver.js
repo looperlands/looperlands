@@ -94,12 +94,14 @@ module.exports = World = cls.Class.extend({
                     var target = self.getEntityById(mob.target);
                     if (target) {
                         var pos = self.findPositionNextTo(mob, target);
-                        if (mob.distanceToSpawningPoint(pos.x, pos.y) > 25) {
-                            mob.clearTarget();
-                            mob.forgetEveryone();
-                            player.removeAttacker(mob);
-                        } else {
-                            self.moveEntity(mob, pos.x, pos.y);
+                        if (pos) {
+                            if (mob.distanceToSpawningPoint(pos.x, pos.y) > 25) {
+                                mob.clearTarget();
+                                mob.forgetEveryone();
+                                player.removeAttacker(mob);
+                            } else {
+                                self.moveEntity(mob, pos.x, pos.y);
+                            }
                         }
                     }
                 });
@@ -146,7 +148,9 @@ module.exports = World = cls.Class.extend({
             var target = self.getEntityById(attacker.target);
             if (target && attacker.type === "mob") {
                 var pos = self.findPositionNextTo(attacker, target);
-                self.moveEntity(attacker, pos.x, pos.y);
+                if (pos) {
+                    self.moveEntity(attacker, pos.x, pos.y);
+                }
             }
         });
 
@@ -851,14 +855,19 @@ module.exports = World = cls.Class.extend({
     },
 
     findPositionNextTo: function (entity, target) {
-        var valid = false,
-            pos;
+        let positions = ['N','S','W','E'];
 
-        while (!valid) {
-            pos = entity.getPositionNextTo(target);
-            valid = this.isValidPosition(pos.x, pos.y);
+        while (positions.length > 0) {
+            let randArrPos = Utils.random(positions.length);
+            let side = positions[randArrPos];
+           	
+            let pos = entity.getPositionNextTo(target, side);
+            if (this.isValidPosition(pos.x, pos.y)){
+                return pos;
+            }
+            positions.splice(randArrPos, 1);
         }
-        return pos;
+        return false;
     },
 
     initZoneGroups: function () {
