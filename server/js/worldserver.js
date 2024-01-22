@@ -861,7 +861,6 @@ module.exports = World = cls.Class.extend({
             let randArrPos = Utils.random(positions.length);
             let side = positions[randArrPos];
            	
-
             let pos = entity.getPositionNextTo(target, side);
             if (this.isValidPosition(pos.x, pos.y)){
                 return pos;
