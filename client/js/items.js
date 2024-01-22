@@ -185,6 +185,13 @@ define(['item'], function(Item) {
             },
         }),
 
+        Cagedrat: Item.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.CAGEDRAT, "object");
+                this.lootMessage = "You pick up a caged rat!";
+            },
+        }),
+
         KEY_ARACHWEAVE:Item.extend({init:function(id){this._super(id,Types.Entities.KEY_ARACHWEAVE,"object");this.lootMessage="You picked up a strange webbed key";}}),
         BOARHIDE:Item.extend({init:function(id){this._super(id,Types.Entities.BOARHIDE,"object");this.lootMessage="Picked up Boar hide!";}}),
         THUDKEY:Item.extend({init:function(id){this._super(id,Types.Entities.THUDKEY,"object");this.lootMessage="Picked up Thudd's Key!";}}),

@@ -1092,5 +1092,15 @@ module.exports = Player = Character.extend({
             self.firepotionTimeout = null;
             self.invincible = false;
         }, Types.timeouts[Types.Entities.FIREFOX]);
+    },
+
+    onReleaseMob: function(callback) {
+        this.releaseMob_callback = callback;
+    },
+
+    releaseMob: function(kind) {
+        if (this.releaseMob_callback) {
+            return this.releaseMob_callback(kind);
+        }
     }
 });

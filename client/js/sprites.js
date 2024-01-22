@@ -92,6 +92,7 @@ define(['text!../sprites/agent.json',
         'text!../sprites/item-cpotion_m.json',
         'text!../sprites/item-cpotion_l.json',
         'text!../sprites/item-cimmupot.json',
+        'text!../sprites/item-cagedrat.json',
         //Short Destroyers
         'text!../sprites/item-vhs.json',
         'text!../sprites/item-dvd.json',

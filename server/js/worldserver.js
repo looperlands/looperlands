@@ -152,6 +152,19 @@ module.exports = World = cls.Class.extend({
                     self.consumeCooldowns[player.nftId][group] = new Date().getTime() + duration;
                 }
             });
+            
+            player.onReleaseMob(function (kind) {
+                let mob = new Mob(self.nextMobId(), kind, player.x, player.y);
+                mob.handleRespawn = function () {
+                    return;
+                };// dont respawn
+                self.addMob(mob);
+
+                let pos = self.findPositionNextTo(mob, player);
+                if (pos) {
+                    self.moveEntity(mob, pos.x, pos.y);
+                }
+            });
 
             if (self.added_callback) {
                 self.added_callback();

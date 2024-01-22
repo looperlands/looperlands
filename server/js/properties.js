@@ -1213,6 +1213,18 @@ let Properties = {
         onConsume: function(player){
             player.startInvincibility();
         }
+    },
+    cagedrat: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "caged",
+            duration: 60000
+        },
+        inventoryDescription: "Caged rat",
+        onConsume: function(player) {
+            player.releaseMob(Types.Entities.RAT);
+        }
     }
 
     // Weapons
