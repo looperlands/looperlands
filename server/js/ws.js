@@ -27,10 +27,18 @@ const Lakes = require("./lakes.js");
 const Collectables = require('./collectables.js');
 const Properties = require('./properties.js')
 const Types = require("../../shared/js/gametypes");
+const platform = require('./looperlandsplatformclient.js');
 const cache = new NodeCache();
 
 const LOOPWORMS_LOOPERLANDS_BASE_URL = process.env.LOOPWORMS_LOOPERLANDS_BASE_URL;
 const APP_URL = process.env.APP_URL;
+const GAMESERVER_NAME = process.env.GAMESERVER_NAME;
+const LOOPERLANDS_PLATFORM_BASE_URL = process.env.LOOPERLANDS_PLATFORM_BASE_URL;
+const LOOPERLANDS_PLATFORM_API_KEY = process.env.LOOPERLANDS_PLATFORM_API_KEY;
+
+
+const platformClient = new platform.LooperLandsPlatformClient(LOOPERLANDS_PLATFORM_API_KEY, LOOPERLANDS_PLATFORM_BASE_URL);
+
 
 function extractDetails(inputUrl) {
     const parsedUrl = new URL(inputUrl);
@@ -144,6 +152,7 @@ WS.socketIOServer = Server.extend({
         self.host = urlDetails.host;
         self.port = urlDetails.port;
         const port = urlDetails.port;
+        const host = self.host;
 
         this.cache = cache;
         var express = require('express');
@@ -162,6 +171,7 @@ WS.socketIOServer = Server.extend({
 
         app.use(express.json())
 
+        platformClient.createOrUpdateGameServer(host, port, GAMESERVER_NAME);
 
         async function newSession(body, teleport) {
             const id = crypto.randomBytes(20).toString('hex');
