@@ -813,6 +813,10 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
         return new NPCs.WildWill(id);
     };
 
+    EntityFactory.builders[Types.Entities.SHOPOWNER] = function(id) {
+        return new NPCs.ShopOwner(id);
+    };
+
     EntityFactory.builders[Types.Entities.FORESTNPC] = function(id) {
         return new NPCs.ForestNpc(id);
     };

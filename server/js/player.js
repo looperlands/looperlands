@@ -818,6 +818,7 @@ module.exports = Player = Character.extend({
         return null;
     },
 
+
     equipSpecialItem: function(kind) {
         this.weapon = kind;
         const kindString = Types.getKindAsString(kind);
@@ -1157,5 +1158,13 @@ module.exports = Player = Character.extend({
         if(this.applyCooldown_callback) {
             this.applyCooldown_callback(group, duration);
         }
+    },
+
+    consumeScareAwayPotion: function() {
+        this.forEachAttacker(function(mob) {
+            mob.resetPosition();
+            mob.move(mob.x, mob.y);
+            mob.exitCombat();
+        });
     }
 });

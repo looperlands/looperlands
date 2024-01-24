@@ -10,9 +10,12 @@ let Properties = {
             // cpotion_s: 80,
             // cpotion_m: 15,
             // cpotion_l: 5
-            basicarrow: 60,
-            featherarrow: 20,
-            firearrow: 20,
+            // basicarrow: 60,
+            // featherarrow: 20,
+            // firearrow: 20,
+            GOLD: 60,
+            GOLD2: 20,
+            GOLD3: 10,
         },
         respawnDelay: 10000,
     },
@@ -1245,6 +1248,9 @@ let Properties = {
         inventoryDescription: "Basic arrow (damage: medium, range: medium)",
         damage: 1,
         range: 8,
+        onConsume: function(player) {
+            player.consumeScareAwayPotion();
+        }
     },
     featherarrow: {
         collectable: true,

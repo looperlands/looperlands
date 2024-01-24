@@ -201,6 +201,11 @@ define(['npc'], function(Npc) {
             }
         }),
 
+        ShopOwner: Npc.extend({
+           init: function (id) {
+                this._super(id, Types.Entities.SHOPOWNER, 1);
+           }
+        }),
 
         ForestNpc: Npc.extend({
             init: function(id) {
