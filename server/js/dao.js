@@ -56,7 +56,7 @@ loadMapFlow = async function (mapId) {
   try {
     return JSON.parse(responseData.data);
   } catch (error) {
-    console.error("Error parsing map flow");
+    //console.error("Error parsing map flow");
     return undefined;
   }
 }
