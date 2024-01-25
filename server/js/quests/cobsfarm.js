@@ -16,7 +16,7 @@ quests = [
     {
         id: "COB_BLUE_SLIMES",
         name: "Finding the lucky clover",
-        startText: "The blue slimes stole my lucky clover! Kill 20 of them, get it back!",
+        startText: "The blue slimes stole my lucky clover! Kill 40 of them, get it back!",
         endText: "Thank you! It weren't the blue slimes after all...",
         eventType: "KILL_MOB",
         npc: Types.Entities.COBHILLSNPC,
@@ -46,7 +46,7 @@ quests = [
         eventType: "KILL_MOB",
         npc: Types.Entities.COBHILLSNPC,
         target: Types.Entities.COBSLIMERED,
-        amount: 40,
+        amount: 60,
         requiredQuest: "COB_YELLOW_SLIMES",
         level: 6,
         medal: Types.Medals.SKULL

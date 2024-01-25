@@ -42,23 +42,20 @@ module.exports = Entity = cls.Class.extend({
         this.y = y;
     },
     
-    getPositionNextTo: function(entity) {
+    getPositionNextTo: function(entity, side) {
         var pos = null;
         if(entity) {
             pos = {};
-            // This is a quick & dirty way to give mobs a random position
-            // close to another entity.
-            var r = Utils.random(4);
-            
+
             pos.x = entity.x;
             pos.y = entity.y;
-            if(r === 0)
+            if(side === 'N')
                 pos.y -= 1;
-            if(r === 1)
+            if(side === 'S')
                 pos.y += 1;
-            if(r === 2)
+            if(side === 'W')
                 pos.x -= 1;
-            if(r === 3)
+            if(side === 'E')
                 pos.x += 1;
         }
         return pos;

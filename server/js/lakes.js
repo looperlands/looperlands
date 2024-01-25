@@ -149,10 +149,7 @@ const Lakes = {
 const ConsumableFish = {
     hp: ["cobparadisefish","oafish27"],
     atk: ["cobbluegill","oafish31","oafish22"],
-    exp: ["cobgreensunfish,oafish36"],
-
-
-
+    exp: ["cobgreensunfish","oafish36"]
 };
 
 //---END CONFIG---
@@ -302,6 +299,11 @@ Lakes.getBuffByFish = function(fishName) {
 Lakes.getInventoryDescription = function(fishName){
     let description = Lakes.getBuffByFish(fishName);
     return description ? description.percent + "% " + description.stat : false;
+};
+
+Lakes.getCooldownData = function(fishName){
+    //not implemented yet - maybe never will?
+    return;
 };
 
 module.exports = Lakes;

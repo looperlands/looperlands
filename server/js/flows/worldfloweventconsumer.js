@@ -30,6 +30,10 @@ class WorldMapFlowEventConsumer {
         }
         this.listeners[mapId][eventType].push(callback);
     }
+
+    clearListeners(mapId) {
+        this.listeners[mapId] = {};
+    }
 }
 
 exports.WorldMapFlowEventConsumer = WorldMapFlowEventConsumer;

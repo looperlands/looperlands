@@ -787,12 +787,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             this.sendMessage([Types.Messages.FISHINGRESULT,
                               result,
                               bullseye]);
-        },
-
-        sendConsumeItem: function(itemId) {
-            this.sendMessage([Types.Messages.CONSUMEITEM,
-                             itemId]);
-        },
+        }
 
     });
     

@@ -13,7 +13,9 @@ class KeyBoardHandler {
 
         this.keyCallbacks = {
             'Comma': () => this.previousWeapon(),
-            'Period': () => this.nextWeapon()
+            'Period': () => this.nextWeapon(),
+            'Tab': (event) => this.highlightNextTarget(event),
+            'Space': (event) => this.engageTarget(event)
         };
         this.game = game;
         this.interval = false;
@@ -36,11 +38,12 @@ class KeyBoardHandler {
         }
 
         if(this.keyCallbacks.hasOwnProperty(event.code)) {
-            this.keyCallbacks[event.code]();
+            this.keyCallbacks[event.code](event);
         }
 
         // Keyboard shortcuts
-        const shortCuts = 'zxcvb';
+        const shortCuts = 'zxcvb1234';
+
         if (shortCuts.indexOf(key) > -1) {
             if(!this.game.started || this.inputHasFocus()) {
                 return;
@@ -60,6 +63,22 @@ class KeyBoardHandler {
                     break;
                 case 'b':
                     this.app.toggleAvatarInfo(event);
+                    break;
+
+                case '1':
+                    this.app.consumeSlot(0);
+                    break;
+                case '2':
+                    this.app.consumeSlot(1);
+                    break;
+                case '3':
+                    this.app.consumeSlot(2);
+                    break
+                case '4':
+                    this.app.consumeSlot(3);
+
+                case 't':
+                    this.highlightClosestTarget(event);
                     break;
             }
         }
@@ -185,5 +204,43 @@ class KeyBoardHandler {
         }
 
         return weapons[nextWeaponIndex];
+    }
+
+    highlightNextTarget(event) {
+        if(!this.game.started || this.inputHasFocus() || this.hasOpenPanel()) {
+            return;
+        }
+
+        if (event !== undefined) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+        }
+
+        this.game.highlightNextTarget();
+    }
+
+    highlightClosestTarget() {
+        if(!this.game.started || this.inputHasFocus() || this.hasOpenPanel()) {
+            return;
+        }
+
+        this.game.highlightClosestTarget();
+    }
+
+    engageTarget(event) {
+        if(!this.game.started || this.inputHasFocus() || this.hasOpenPanel()) {
+            return;
+        }
+
+        if (event !== undefined) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+        }
+
+        if(this.game.highlightedTarget) {
+            if(!this.game.highlightedTarget.isDead) {
+                this.game.makePlayerAttack(this.game.highlightedTarget);
+            }
+        }
     }
 }

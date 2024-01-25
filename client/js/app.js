@@ -20,6 +20,8 @@ define(['jquery', 'storage'], function ($, Storage) {
             this.$playButton = $('.play');
             this.$playDiv = $('.play div');
             this.settings = new GameSettings(this);
+            this.cooldownIntervals = [];
+            this.cooldownMap = {};
         },
 
         setGame: function (game) {
@@ -95,26 +97,21 @@ define(['jquery', 'storage'], function ($, Storage) {
                 firstTimePlaying = !self.storage.hasAlreadyPlayed();
 
             if (username && !this.game.started) {
-                var optionsSet = false,
-                    config = this.config;
 
-                //>>includeStart("devHost", pragmas.devHost);
-                if (config.local) {
-                    console.debug("Starting game with local dev config.");
-                    this.game.setServerOptions(config.local.host, config.local.port, username, config.dev.protocol);
-                } else {
-                    console.debug("Starting game with default dev config.");
-                    this.game.setServerOptions(config.dev.host, config.dev.port, username, config.dev.protocol);
-                }
-                optionsSet = true;
-                //>>includeEnd("devHost");
+                let protocol = window.location.protocol;
+                let host = window.location.hostname;
+                let port = window.location.port;
 
-                //>>includeStart("prodHost", pragmas.prodHost);
-                if (!optionsSet) {
-                    console.debug("Starting game with build config.");
-                    this.game.setServerOptions(config.build.host, config.build.port, username, config.build.protocol);
+                // Check if the port is not defined and assign default ports based on the protocol
+                if (!port) {
+                    if (protocol === 'http:') {
+                        port = '8000';
+                    } else if (protocol === 'https:') {
+                        port = '443';
+                    }
                 }
-                //>>includeEnd("prodHost");
+                protocol = protocol.replace(":", "");
+                this.game.setServerOptions(host, port, username, protocol);
 
                 this.center();
                 this.game.run(function () {
@@ -606,16 +603,21 @@ define(['jquery', 'storage'], function ($, Storage) {
                     inventoryHtml += "</div></div>";
                 }
 
-
+                let hasConsumable = false;
                 if (Object.keys(consumablesInventory).length > 0) {
                     let itemHtml = "<div class='inventorySection' id='inventory-tools'><div class='inventoryTitle'>Items</div>";
                     itemHtml += "<div class='inventorySectionItems'>"
                     let hasItem = false;
+
                     Object.keys(consumablesInventory).forEach(item => {
                         if (Types.isResource(item)) {
                             return;
                         }
                         hasItem = true;
+
+                        if (consumablesInventory[item].cooldown) {
+                            _this.cooldownMap[item] = consumablesInventory[item].cooldown;
+                        }
 
                         let description = consumablesInventory[item].description;
                         let tooltipText = "";
@@ -623,8 +625,14 @@ define(['jquery', 'storage'], function ($, Storage) {
                             tooltipText = "<div class='tooltiptext pixel-corners-xs'>" + description + "</div>";
                         }
 
+                        if(consumablesInventory[item].consumable) {
+                            hasConsumable = true;
+                        }
+
                         let cursor = consumablesInventory[item].consumable ? "pointer" : "not-allowed";
-                        itemHtml += "<div class='item panelBorder'>" + tooltipText + "<img id='" + item + "' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0; cursor: " + cursor + ";' src='img/3/" + consumablesInventory[item].image + ".png' />";
+                        let draggable = consumablesInventory[item].consumable ? "true" : "false";
+                        itemHtml += "<div class='item panelBorder " + (consumablesInventory[item].consumable ? 'consumable' : '') + "' draggable='" + draggable + "' data-item='" + item + "'>" + tooltipText + "<img id='" + item + "' draggable='false' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0; cursor: " + cursor + ";' src='img/3/" + consumablesInventory[item].image + ".png' />";
+                        itemHtml += "<div class='timer' id='timer_" + item + "'></div>";
                         itemHtml += "<p id='count_" + item + "'>" + consumablesInventory[item].qty + "</p>"
                         itemHtml += "</div>";
                     });
@@ -644,16 +652,76 @@ define(['jquery', 'storage'], function ($, Storage) {
 
                     botsInventory.forEach(function(bot) {
                         if (bot) {
-                            imgTag = `<div class='item panelBorder'><div class='tooltiptext pixel-corners-xs'><span class='tooltipHighlight'>Level ${bot.level}</span> ${bot.looperName}</div><img id=${bot.nftId} style='width: 32px; height: 32px; object-fit: cover; cursor: pointer; object-position: 100% 0;' src='img/1/` + bot.nftId + ".png' /></div>";
+                            imgTag = `<div class='item panelBorder'><div class='tooltiptext pixel-corners-xs'><span class='tooltipHighlight'>Level ${bot.level}</span> ${bot.looperName}</div><img id=${bot.nftId} style='width: 32px; height: 32px; object-fit: none; cursor: pointer; object-position: 100% 0;' src='img/1/` + bot.nftId + ".png' /></div>";
                             inventoryHtml += imgTag;
                         }
                     });
                     inventoryHtml += "</div></div>";
                 }
+                let sidebar = '';
+                if(hasConsumable) {
+                    sidebar = '<div class="inventorySidebar panelBorder"><div class="header">Quick access slots</div><div class="slots">' +
+                        '<div id="consumableSlot1" class="slot"><div class="itemContainer panelBorder"></div><div class="shortcut">1</div></div>' +
+                        '<div id="consumableSlot2" class="slot"><div class="itemContainer panelBorder"></div><div class="shortcut">2</div></div>' +
+                        '<div id="consumableSlot3" class="slot"><div class="itemContainer panelBorder"></div><div class="shortcut">3</div></div>' +
+                        '<div id="consumableSlot4" class="slot"><div class="itemContainer panelBorder"></div><div class="shortcut">4</div></div>' +
+                        '</div></div>';
+                }
 
                 $("#inventorycontent").html(inventoryHtml);
+                let inventorySlots = _this.settings.getInventorySlots();
+
+                if (inventorySlots) {
+                    Object.keys(_.first(inventorySlots, 4)).forEach(slot => {
+                        let item = inventorySlots[slot];
+
+                        if (item && consumablesInventory[item]) {
+                            if (!consumablesInventory[item].consumable) {
+                                return;
+                            }
+
+                            let url = "img/3/" + consumablesInventory[item].image + ".png";
+                            let slotID = "consumableSlot" + (parseInt(slot) + 1);
+
+                            setTimeout(() => $('#' + slotID + ' .itemContainer').append('<img src="' + url + '" />'), 50);
+                        }
+                    });
+                }
+
+
+
+                if (!$('.inventorySidebar').length) {
+                   $('#inventory').before($(sidebar));
+                } else {
+                    $('.inventorySidebar').html($(sidebar).html());
+                }
+
+                if(hasConsumable) {
+                    $(".inventorySectionItems .consumable").on('dragstart', (e) => {
+                        $(e.target).find('.tooltiptext').hide();
+                        e.originalEvent.dataTransfer.setData("text/plain", $(e.target).data('item'));
+                    });
+
+                    for(let i = 0; i < 4; i++) {
+                        let slotEl = document.getElementById("consumableSlot" + (i + 1));
+                        slotEl.addEventListener('dragover', (e) => {e.preventDefault();});
+                        slotEl.addEventListener('dragenter', (e) => {e.preventDefault(); $(e.target).addClass('dragover');});
+                        slotEl.addEventListener('dragleave', (e) => {e.preventDefault(); $(e.target).removeClass('dragover');});
+                        slotEl.addEventListener('drop', (e) => {
+                            $(e.target).removeClass('dragover');
+                            let inventorySlots = _this.settings.getInventorySlots();
+                            let dropItem = parseInt(e.dataTransfer.getData("text/plain"));
+                            inventorySlots[i] = dropItem;
+                            _this.settings.setInventorySlots(inventorySlots);
+                            let url = "img/3/" + consumablesInventory[dropItem].image + ".png";
+                            $('#' + slotEl.id + ' .itemContainer').html('<img style="width: 32px; height: 32px; object-fit: cover; object-position: 100% 0; cursor: pointer;" src="' + url + '" />');
+                        });
+                    }
+                }
+
                 $('#inventorybutton').addClass('active');
                 $("#inventorycontent").addClass("columns" + columns);
+
                 let equipFunc = function (item) {
                     if (document.getElementById(item) !== null) {
                         let equip = function (e) {
@@ -674,8 +742,9 @@ define(['jquery', 'storage'], function ($, Storage) {
                         let consume = function (e) {
                             let count = parseInt(document.getElementById("count_" + item).innerHTML);
                             if (count > 0){
-                                _this.game.client.sendConsumeItem(item);
-                                document.getElementById("count_" + item).innerHTML = count - 1;
+                                if (_this.consumeItem(item)){
+                                    document.getElementById("count_" + item).innerHTML = count - 1;
+                                }
                             }
                             _this.hideInventory();
                             e.preventDefault();
@@ -683,6 +752,36 @@ define(['jquery', 'storage'], function ($, Storage) {
                         }
                         document.getElementById(item).addEventListener("click", consume);
                     }
+                }
+
+                let updateCdDisplay = function (item) {
+                    //inverted %, hence the 100 -
+                    let remainingTime = Math.max(0, _this.cooldownMap[item] - new Date().getTime());
+                    let cdPercent = 100 - Math.round(100*remainingTime/consumablesInventory[item].maxCooldown);
+    
+                    document.getElementById("timer_" + item).innerHTML = _this.game.msToTime(remainingTime);
+                    $('#'+item).parent().attr('style', 'background: linear-gradient(#341e28 ' + cdPercent + '%, #5b0000 ' + cdPercent + '%) !important');
+                }
+
+                let cooldownTick = function (item) {
+                    updateCdDisplay(item);
+                    $('#'+item).css({'cursor':"not-allowed"});
+
+                    let tickInterval = setInterval(function (){
+                        if (new Date().getTime() >= _this.cooldownMap[item]) {
+                            clearInterval(tickInterval);
+                            document.getElementById("timer_" + item).innerHTML = "";
+                            $('#'+item).css({'cursor':"pointer"});
+                            $('#'+item).parent().attr('style', 'background:');
+                            
+                            if (consumablesInventory[item].consumable) {
+                                consumeFunc(item);
+                            }
+                        } else {
+                            updateCdDisplay(item);
+                        }
+                    }, 1000);
+                    _this.cooldownIntervals.push(tickInterval);
                 }
 
                 let newBot = function (item) {
@@ -717,7 +816,9 @@ define(['jquery', 'storage'], function ($, Storage) {
                 });
 
                 Object.keys(consumablesInventory).forEach(item => {
-                    if(consumablesInventory[item].consumable) {
+                    if (new Date().getTime() < _this.cooldownMap[item]) {
+                        cooldownTick(item);
+                    } else if (consumablesInventory[item].consumable) {
                         consumeFunc(item);
                     }
                 });
@@ -730,6 +831,15 @@ define(['jquery', 'storage'], function ($, Storage) {
             this.isInventoryVisible = true;
         },
 
+        consumeSlot: function(slot) {
+            let inventorySlots = _this.settings.getInventorySlots();
+            let item = inventorySlots[slot];
+            let cooldown = this.cooldownMap[item] !== undefined ? this.cooldownMap[item] : 0;
+            if (item && new Date().getTime() >= cooldown) {
+                this.consumeItem(String(item));
+            }
+        },
+
         hideInventory: function () {
             $('body').removeClass('inventory');
             if (!this.game.player) {
@@ -737,6 +847,11 @@ define(['jquery', 'storage'], function ($, Storage) {
             }
             $('#inventorybutton').removeClass('active');
             this.isInventoryVisible = false;
+
+            this.cooldownIntervals.forEach((interval) => {
+                clearInterval(interval);
+            });
+            this.cooldownIntervals = [];
         },
 
         toggleSettings: function () {
@@ -769,6 +884,25 @@ define(['jquery', 'storage'], function ($, Storage) {
                         }
                     });
                 }
+            });
+        },
+
+        consumeItem: function (item) {
+            _this = this;
+
+            let consumeQuery = "/session/" + _this.storage.sessionId + "/consumeItem/" + item;
+
+            axios.get(consumeQuery).then(function(response) {
+                let items = response.data.items;
+                let cooldown = response.data.cooldown;
+                if (cooldown && items.length > 0) {
+                    for (i = 0; i < items.length; i++) {
+                        _this.cooldownMap[items[i]] = cooldown;
+                    }
+                }
+                return response.data.consumed;
+            }).catch(function (error) {
+                console.error("Error while consuming item", error);
             });
         },
 

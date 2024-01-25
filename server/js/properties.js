@@ -1010,12 +1010,140 @@ let Properties = {
     },
 
     BORAC: {
-        level: 6,
+        level: 9,
         drops: {
-            flask: 40
+            GREYPOTION: 100,
+            EYEBALL: 10
         },
 
     },
+
+    INFERNOTH: {
+        level: 30,
+        hpMod: 8.25,
+        weaponMod: 2,
+        xp:10000,
+        respawnDelay: 60000
+    },
+
+    WINGELLA: {
+        level: 5,
+        drops: {
+            REDPOTION: 40
+        },
+
+    },
+
+    GAUNTER: {
+        level: 13,
+        drops: {
+            GREYPOTION: 100,
+            EYEBALL: 10
+        },
+    },
+
+    MASTROM: {
+        level: 11,
+        drops: {
+            GREYPOTION: 100,
+            EYEBALL: 10
+        },
+    },
+
+    VALKYM: {
+        level: 7,
+        drops: {
+            REDPOTION: 40,
+            EYEBALL: 10
+        },
+    },
+
+    //Short Destroyers
+    lateflea: {
+        level: 5,
+        drops: {
+            flask: 50
+        }
+    },
+
+    wolfboss: {
+        level: 10,
+        drops: {
+            dvd: 50,
+            popcorn: 50,      
+        },
+        messages: ['Darkness shall embrance you!', 'Your doom is woven', 'Fear binds you', 'Your end is spun', 'The old world beckons you'],
+        armorMod: 1.1,
+        weaponMod: 1.6,
+        hpMod: 2.0,
+        xp: 1200,  
+        respawnDelay: 30000
+    },
+
+    horde1: {
+        level: 10,
+        drops: {
+            flask: 50
+        }
+    },
+
+    horde2: {
+        level: 4,
+        drops: {
+            flask: 50
+        }
+    },
+
+    horde3: {
+        level: 6,
+        drops: {
+            flask: 50
+        }
+    },
+
+    horde4: {
+        level: 8,
+        drops: {
+            flask: 50
+        }
+    },
+
+    horde5: {
+        level: 10,
+        drops: {
+            flask: 50
+        }
+    },
+   cobWalkingNpc1: {
+       hp: 10,
+       armor: 1,
+       weapon: 1,
+       friendly: true
+   },
+   cobWalkingNpc2: {
+       hp: 10,
+       armor: 1,
+       weapon: 1,
+       friendly: true
+   },
+   cobWalkingNpc3: {
+       hp: 10,
+       armor: 1,
+       weapon: 1,
+       friendly: true
+   },
+   cobWalkingNpc4: {
+       hp: 10,
+       armor: 1,
+       weapon: 1,
+       friendly: true
+   },
+   cobWalkingNpc5: {
+       hp: 10,
+       armor: 1,
+       weapon: 1,
+       friendly: true
+   },
 
     //Field effects
     magcrack: {
@@ -1068,6 +1196,66 @@ let Properties = {
         collectItem: Types.Entities.GOLD,
         collectAmount: 50
     },
+    cpotion_s: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "hpPotions",
+            duration: 60000
+        },
+        inventoryDescription: "Small healing potion (75)",
+        onConsume: function(player){
+            player.regenHealthBy(75);
+        }
+    },
+    cpotion_m: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "hpPotions",
+            duration: 60000
+        },
+        inventoryDescription: "Medium healing potion (150)",
+        onConsume: function(player){
+            player.regenHealthBy(150);
+        }
+    },
+    cpotion_l: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "hpPotions",
+            duration: 60000
+        },
+        inventoryDescription: "Large healing potion (300)",
+        onConsume: function(player){
+            player.regenHealthBy(300);
+        }
+    },
+    cimmupot: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "immunity",
+            duration: 180000
+        },
+        inventoryDescription: "Liquid loopium",
+        onConsume: function(player){
+            player.startInvincibility();
+        }
+    },
+    cagedrat: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "caged",
+            duration: 60000
+        },
+        inventoryDescription: "Caged rat",
+        onConsume: function(player) {
+            player.releaseMob(Types.Entities.RAT);
+        }
+    }
 
     // Weapons
     // axe: {
@@ -1194,7 +1382,7 @@ Properties.getCollectItem = function(kind) {
 }
 
 Properties.consume = function(kind, player) {
-    let onConsume = Properties[Types.getKindAsString(kind)]?.onConsume
+    let onConsume = Properties[Types.getKindAsString(kind)]?.onConsume;
     if(onConsume !== undefined) {
         onConsume(player);
     }
@@ -1203,6 +1391,31 @@ Properties.consume = function(kind, player) {
 Properties.getInventoryDescription = function(kind) {
     let retDescription = Properties[Types.getKindAsString(kind)]?.inventoryDescription;
     return retDescription !== undefined ? retDescription : false;
+}
+
+Properties.getCooldownData = function(kind) {
+    return Properties[Types.getKindAsString(kind)]?.cooldown; 
+}
+
+Properties.filterCooldownGroups = function() {
+    let ret = {};
+    Object.keys(Properties).forEach(key => {
+        let itemGroup = Properties[key].cooldown?.group;
+        if (itemGroup !== undefined) {
+            if (ret[itemGroup] === undefined) {
+                ret[itemGroup] = [];
+            }
+            ret[itemGroup].push(key);
+        }
+    });
+
+    return ret;
+}
+
+const COOLDOWNGROUP_MAP = Properties.filterCooldownGroups();
+
+Properties.getCdItemsByGroup = function(cdGroup) {
+    return COOLDOWNGROUP_MAP[cdGroup] !== undefined ? COOLDOWNGROUP_MAP[cdGroup] : [];
 }
 
 module.exports = Properties;

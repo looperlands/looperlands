@@ -201,6 +201,11 @@ define(['npc'], function(Npc) {
             }
         }),
 
+        ShopOwner: Npc.extend({
+           init: function (id) {
+                this._super(id, Types.Entities.SHOPOWNER, 1);
+           }
+        }),
 
         ForestNpc: Npc.extend({
             init: function(id) {
@@ -333,6 +338,7 @@ define(['npc'], function(Npc) {
         guardianfintan: Npc.extend({init: function(id) {this._super(id, Types.Entities.GUARDIANFINTAN, 1);}}),
         newcomersilas: Npc.extend({init: function(id) {this._super(id, Types.Entities.NEWCOMERSILAS, 1);}}),
         patroncora: Npc.extend({init: function(id) {this._super(id, Types.Entities.PATRONCORA, 1);}}),
+        GOFFREY: Npc.extend({init: function(id) {this._super(id, Types.Entities.GOFFREY, 1);}}),
         // @nextNPCLine@
     };
     

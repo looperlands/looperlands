@@ -28,7 +28,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             this.tilesize = 16;
         
             this.upscaledRendering = true;
-            this.supportsSilhouettes = false;
+            this.supportsSilhouettes = true;
             this.worker = new Worker("js/renderer-webworker.js");
         
             this.lastTime = new Date();
@@ -835,16 +835,6 @@ function(Camera, Item, Character, Player, Timer, Mob) {
         },
 
         renderFrame: function() {
-
-            if (this.lastFrameTime !== undefined) {
-                let elaspedTime = this.game.currentTime - this.lastFrameTime;
-                if (elaspedTime < this.frameTime) {
-                    this.worker.postMessage({"type": "idle"});
-                    return;
-                }
-            }
-
-            this.lastFrameTime = this.game.currentTime;
 
             let centeredCamera = !this.game.canUseCenteredCamera();
             let renderText = this.game.app.settings.getRenderText();

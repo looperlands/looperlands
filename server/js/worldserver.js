@@ -40,6 +40,7 @@ module.exports = World = cls.Class.extend({
 
         this.entities = {};
         this.players = {};
+        this.consumeCooldowns = {};
         this.mobs = {};
         this.attackers = {};
         this.items = {};
@@ -94,12 +95,14 @@ module.exports = World = cls.Class.extend({
                     var target = self.getEntityById(mob.target);
                     if (target) {
                         var pos = self.findPositionNextTo(mob, target);
-                        if (mob.distanceToSpawningPoint(pos.x, pos.y) > 25) {
-                            mob.clearTarget();
-                            mob.forgetEveryone();
-                            player.removeAttacker(mob);
-                        } else {
-                            self.moveEntity(mob, pos.x, pos.y);
+                        if (pos) {
+                            if (mob.distanceToSpawningPoint(pos.x, pos.y) > 25) {
+                                mob.clearTarget();
+                                mob.forgetEveryone();
+                                player.removeAttacker(mob);
+                            } else {
+                                self.moveEntity(mob, pos.x, pos.y);
+                            }
                         }
                     }
                 });
@@ -136,6 +139,35 @@ module.exports = World = cls.Class.extend({
                 }
             });
 
+            player.onCheckCooldown(function (group) {
+                if (self.consumeCooldowns[player.nftId] !== undefined && self.consumeCooldowns[player.nftId][group] !== undefined) {
+                    return new Date().getTime() < self.consumeCooldowns[player.nftId][group];
+                }
+                return false; //not on cooldown
+            });
+
+            player.onApplyCooldown(function (group, duration) {
+                if (group && (duration > 0)) {
+                    if (!self.consumeCooldowns[player.nftId]) {
+                        self.consumeCooldowns[player.nftId] = {};
+                    }
+                    self.consumeCooldowns[player.nftId][group] = new Date().getTime() + duration;
+                }
+            });
+            
+            player.onReleaseMob(function (kind) {
+                let mob = new Mob(self.nextMobId(), kind, player.x, player.y);
+                mob.handleRespawn = function () {
+                    return;
+                };// dont respawn
+                self.addMob(mob);
+
+                let pos = self.findPositionNextTo(mob, player);
+                if (pos) {
+                    self.moveEntity(mob, pos.x, pos.y);
+                }
+            });
+
             if (self.added_callback) {
                 self.added_callback();
             }
@@ -146,7 +178,9 @@ module.exports = World = cls.Class.extend({
             var target = self.getEntityById(attacker.target);
             if (target && attacker.type === "mob") {
                 var pos = self.findPositionNextTo(attacker, target);
-                self.moveEntity(attacker, pos.x, pos.y);
+                if (pos) {
+                    self.moveEntity(attacker, pos.x, pos.y);
+                }
             }
         });
 
@@ -851,14 +885,19 @@ module.exports = World = cls.Class.extend({
     },
 
     findPositionNextTo: function (entity, target) {
-        var valid = false,
-            pos;
+        let positions = ['N','S','W','E'];
 
-        while (!valid) {
-            pos = entity.getPositionNextTo(target);
-            valid = this.isValidPosition(pos.x, pos.y);
+        while (positions.length > 0) {
+            let randArrPos = Utils.random(positions.length);
+            let side = positions[randArrPos];
+           	
+            let pos = entity.getPositionNextTo(target, side);
+            if (this.isValidPosition(pos.x, pos.y)){
+                return pos;
+            }
+            positions.splice(randArrPos, 1);
         }
-        return pos;
+        return false;
     },
 
     initZoneGroups: function () {
@@ -1516,6 +1555,17 @@ module.exports = World = cls.Class.extend({
 
     announceDespawnFloat: function(player) {
         this.pushToAdjacentGroups(player.group, new Messages.DespawnFloat(player.id), player.id);
+    },
+
+    getConsumeGroupCooldown: function(nftId, itemGroup) {
+        let playerCooldowns = this.consumeCooldowns[nftId];
+        if (playerCooldowns) {
+            let expireDate = playerCooldowns[itemGroup];
+            if (expireDate !== undefined) {
+                return expireDate > new Date().getTime() ? expireDate : 0;
+            }
+        }
+        return 0;
     }
 });
 

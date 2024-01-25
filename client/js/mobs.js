@@ -2133,16 +2133,258 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
 
+        //mycupbloody
+
         BORAC: Mob.extend({ 
             init: function(id) { 
                 this._super(id, Types.Entities.BORAC); 
-                this.moveSpeed = 250; 
-                this.atkSpeed = 100; 
-                this.idleSpeed = 500; 
+                this.moveSpeed = 200;
+                this.atkSpeed = 100;
+                this.idleSpeed = 400;
+                this.walkSpeed = 200;
                 this.aggroRange = 3;
+                this.setAttackRate(700);
             }
         }),
        
+        INFERNOTH: Mob.extend({ 
+            init: function(id) {
+                this._super(id, Types.Entities.INFERNOTH); 
+                this.moveSpeed = 100; 
+                this.atkSpeed = 100; 
+                this.idleSpeed = 100;
+                this.aggroRange = 2;
+                this.walkSpeed = 100;
+                this.title = "Dragon King";
+            }
+        }),
+
+        WINGELLA: Mob.extend({ 
+            init: function(id) { 
+                this._super(id, Types.Entities.WINGELLA); 
+                this.moveSpeed = 350; 
+                this.atkSpeed = 100; 
+                this.idleSpeed = 620; 
+                this.shadowOffsetY = 1; 
+                this.aggroRange = 3;
+            }
+        }),
+
+        GAUNTER: Mob.extend({ 
+            init: function(id) { 
+                this._super(id, Types.Entities.GAUNTER); 
+                this.moveSpeed = 200;
+                this.atkSpeed = 100;
+                this.idleSpeed = 800;
+                this.walkSpeed = 200;
+                this.shadowOffsetY = 1;
+                this.aggroRange = 3;
+                this.setAttackRate(800);
+            }
+        }),
+        
+        MASTROM: Mob.extend({ 
+            init: function(id) { 
+                this._super(id, Types.Entities.MASTROM); 
+                this.moveSpeed = 200;
+                this.atkSpeed = 100;
+                this.idleSpeed = 800;
+                this.walkSpeed = 200;
+                this.shadowOffsetY = 1;
+                this.aggroRange = 3;
+                this.setAttackRate(500);
+            }
+        }),
+
+        VALKYM: Mob.extend({ 
+            init: function(id) { 
+                this._super(id, Types.Entities.VALKYM); 
+                this.moveSpeed = 200;
+                this.atkSpeed = 100;
+                this.idleSpeed = 800;
+                this.walkSpeed = 200;
+                this.shadowOffsetY = 1;
+                this.aggroRange = 3;
+                this.setAttackRate(800);
+            }
+        }),
+
+        //Short Destroyers
+        lateflea: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.LATEFLEA);
+                this.moveSpeed = 250;
+                this.atkSpeed = 100;
+                this.idleSpeed = 750;
+                this.setAttackRate(1000);
+                this.deathAnimated = true;
+                this.aggroRange = 3;
+            }
+        }),
+
+        wolfboss: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.WOLFBOSS);
+                this.moveSpeed = 300;
+                this.idleSpeed = 100;
+                this.atkSpeed = 50;  
+                this.shadowOffsetY = -3;              
+                this.isAggressive = true;
+                this.aggroRange = 3;
+                this.title = "Time To Test Your Might!";
+            }
+        }),
+
+        horde1: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.HORDE1);
+                this.moveSpeed = 250;
+                this.atkSpeed = 100;
+                this.idleSpeed = 750;
+                this.setAttackRate(1000);
+                this.deathAnimated = true;
+                this.aggroRange = 3;
+            }
+        }),
+        
+        horde2: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.HORDE2);
+                this.moveSpeed = 250;
+                this.atkSpeed = 100;
+                this.idleSpeed = 750;
+                this.setAttackRate(1000);
+                this.deathAnimated = true;
+                this.aggroRange = 3;
+            }
+        }),
+        
+        horde3: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.HORDE3);
+                this.moveSpeed = 250;
+                this.atkSpeed = 100;
+                this.idleSpeed = 750;
+                this.setAttackRate(1000);
+                this.deathAnimated = true;
+                this.aggroRange = 3;
+            }
+        }),
+
+        horde4: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.HORDE4);
+                this.moveSpeed = 250;
+                this.atkSpeed = 100;
+                this.idleSpeed = 750;
+                this.setAttackRate(1000);
+                this.deathAnimated = true;
+                this.aggroRange = 3;
+            }
+        }),
+
+        horde5: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.HORDE5);
+                this.moveSpeed = 250;
+                this.atkSpeed = 100;
+                this.idleSpeed = 750;
+                this.setAttackRate(1000);
+                this.deathAnimated = true;
+                this.aggroRange = 3;
+            }
+        }),
+        
+
+       cobWalkingNpc1: Mob.extend({
+           init: function(id) {
+               this._super(id, Types.Entities.COBWALKINGNPC1);
+               this.idleSpeed = 500;
+               this.walkSpeed = 250;
+               this.moveSpeed = 333;
+               this.isFriendly = true;
+           },
+
+           idle: function(orientation) {
+               if(!this.hasTarget()) {
+                   this._super(Types.Orientations.DOWN);
+                } else {
+                   this._super(orientation);
+               }
+            }
+       }),
+
+       cobWalkingNpc2: Mob.extend({
+           init: function(id) {
+               this._super(id, Types.Entities.COBWALKINGNPC2);
+               this.idleSpeed = 500;
+               this.walkSpeed = 250;
+               this.moveSpeed = 333;
+               this.isFriendly = true;
+           },
+
+           idle: function(orientation) {
+               if(!this.hasTarget()) {
+                   this._super(Types.Orientations.DOWN);
+                } else {
+                   this._super(orientation);
+               }
+            }
+       }),
+
+       cobWalkingNpc3: Mob.extend({
+           init: function(id) {
+               this._super(id, Types.Entities.COBWALKINGNPC3);
+               this.idleSpeed = 500;
+               this.walkSpeed = 250;
+               this.moveSpeed = 333;
+               this.isFriendly = true;
+           },
+
+           idle: function(orientation) {
+               if(!this.hasTarget()) {
+                   this._super(Types.Orientations.DOWN);
+                } else {
+                   this._super(orientation);
+               }
+            }
+       }),
+
+       cobWalkingNpc4: Mob.extend({
+           init: function(id) {
+               this._super(id, Types.Entities.COBWALKINGNPC4);
+               this.idleSpeed = 500;
+               this.walkSpeed = 250;
+               this.moveSpeed = 333;
+               this.isFriendly = true;
+           },
+
+           idle: function(orientation) {
+               if(!this.hasTarget()) {
+                   this._super(Types.Orientations.DOWN);
+                } else {
+                   this._super(orientation);
+               }
+            }
+       }),
+
+       cobWalkingNpc5: Mob.extend({
+           init: function(id) {
+               this._super(id, Types.Entities.COBWALKINGNPC5);
+               this.idleSpeed = 500;
+               this.walkSpeed = 250;
+               this.moveSpeed = 333;
+               this.isFriendly = true;
+           },
+
+           idle: function(orientation) {
+               if(!this.hasTarget()) {
+                   this._super(Types.Orientations.DOWN);
+                } else {
+                   this._super(orientation);
+               }
+            }
+       }),
         // @nextMobLine@
     };
     return Mobs;
