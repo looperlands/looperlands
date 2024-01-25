@@ -64,7 +64,6 @@ class KeyBoardHandler {
                 case 'b':
                     this.app.toggleAvatarInfo(event);
                     break;
-
                 case '1':
                     this.app.consumeSlot(0);
                     break;
@@ -76,7 +75,6 @@ class KeyBoardHandler {
                     break
                 case '4':
                     this.app.consumeSlot(3);
-
                 case 't':
                     this.highlightClosestTarget(event);
                     break;

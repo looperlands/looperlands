@@ -395,6 +395,7 @@ define(['text!../sprites/agent.json',
         'text!../sprites/horde3.json',
         'text!../sprites/horde4.json',
         'text!../sprites/horde5.json',
+
         //mycupbloody npc
         'text!../sprites/GOFFREY.json',
         'text!../sprites/cobWalkingNpc1.json',

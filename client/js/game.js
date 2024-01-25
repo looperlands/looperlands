@@ -5,10 +5,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
     function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, AnimatedTile,
              Warrior, GameClient, AudioManager, Updater, Transition, Pathfinder,
              Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, Fieldeffect, Float) {
-
         var Game = Class.extend({
             init: function(app) {
                 this.app = app;
+                this.app.config = config;
                 this.ready = false;
                 this.started = false;
                 this.hasNeverStarted = true;
@@ -46,7 +46,6 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.hoveringItem = false;
                 this.hoveringCollidingTile = false;
                 this.doorCheck = false;
-
                 this.highlightedTarget = null;
                 this.toggledLayers = {};
 
@@ -171,7 +170,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "horde3",
                     "horde4",
                     "horde5",
-                    //mycupbloody npc           
+                    //mycupbloody npc
                     "GOFFREY",
                     "cobWalkingNpc1",
                     "cobWalkingNpc2",
@@ -5743,6 +5742,14 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                 this.client = new GameClient(this.host, this.port, this.protocol, this.sessionId, this.mapId);
                 this.renderStatistics();
+
+                //>>excludeStart("prodHost", pragmas.prodHost);
+                var config = this.app.config.local || this.app.config.dev;
+                if(config) {
+                    this.client.connect(config.dispatcher); // false if the client connects directly to a game server
+                    connecting = true;
+                }
+                //>>excludeEnd("prodHost");
 
                 //>>includeStart("prodHost", pragmas.prodHost);
                 if(!connecting) {
