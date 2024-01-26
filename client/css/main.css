@@ -508,6 +508,7 @@ body.upscaled.game {background:#000;}
     box-sizing: border-box;
     color: #d7ab97;
     font-family: 'GraphicPixel';
+    background-color: #341e28 !important;
 }
 
 #shop-popup .close {
@@ -2131,6 +2132,10 @@ footer div  {display:inline-block;}
 
     footer {font-size:16px;}
     #resize-check {height:2px;}
+
+    #shop-popup .items {
+        max-height: 310px !important;
+    }
 }
 
 @media screen and (max-width: 1000px) {
