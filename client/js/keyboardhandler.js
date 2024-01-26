@@ -42,8 +42,12 @@ class KeyBoardHandler {
         }
 
         // Keyboard shortcuts
+<<<<<<< HEAD
         const shortCuts = 'zxcvb1234';
 
+=======
+        const shortCuts = 'zxcvbt';
+>>>>>>> main
         if (shortCuts.indexOf(key) > -1) {
             if(!this.game.started || this.inputHasFocus()) {
                 return;
@@ -64,6 +68,7 @@ class KeyBoardHandler {
                 case 'b':
                     this.app.toggleAvatarInfo(event);
                     break;
+<<<<<<< HEAD
                 case '1':
                     this.app.consumeSlot(0);
                     break;
@@ -75,6 +80,8 @@ class KeyBoardHandler {
                     break
                 case '4':
                     this.app.consumeSlot(3);
+=======
+>>>>>>> main
                 case 't':
                     this.highlightClosestTarget(event);
                     break;

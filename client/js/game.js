@@ -1,14 +1,22 @@
 define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile',
         'warrior', 'gameclient', 'audio', 'updater', 'transition', 'pathfinder',
+<<<<<<< HEAD
         'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'fieldeffect', 'config', 'float', '../../shared/js/gametypes', '../../shared/js/altnames'],
 
     function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, AnimatedTile,
              Warrior, GameClient, AudioManager, Updater, Transition, Pathfinder,
              Item, Mob, Npc, Player, Character, Chest, Mobs, config, Exceptions, Fieldeffect, Float) {
+=======
+        'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'fieldeffect', 'float', '../../shared/js/gametypes', '../../shared/js/altnames'],
+
+    function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, AnimatedTile,
+             Warrior, GameClient, AudioManager, Updater, Transition, Pathfinder,
+             Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, Fieldeffect, Float) {
+
+>>>>>>> main
         var Game = Class.extend({
             init: function(app) {
                 this.app = app;
-                this.app.config = config;
                 this.ready = false;
                 this.started = false;
                 this.hasNeverStarted = true;
@@ -46,6 +54,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.hoveringItem = false;
                 this.hoveringCollidingTile = false;
                 this.doorCheck = false;
+<<<<<<< HEAD
+=======
+
+>>>>>>> main
                 this.highlightedTarget = null;
                 this.toggledLayers = {};
 
@@ -170,7 +182,11 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "horde3",
                     "horde4",
                     "horde5",
+<<<<<<< HEAD
                     //mycupbloody npc
+=======
+                    //mycupbloody npc           
+>>>>>>> main
                     "GOFFREY",
                     "cobWalkingNpc1",
                     "cobWalkingNpc2",
@@ -4956,6 +4972,36 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 "NFT_7869adc15d6ffefc7ff96d0cd61723f7dcb68864490128381c74ed88f39316af",
                                 "NFT_d12dae765971aff4a14d6c262f5b5ce1df6e1ec6351e525dc4b0c0fcc671ba5c",
                                 "NFT_ee972ad3b8ac062de2e4d5e6ea4a37e36c849a11_134043",
+<<<<<<< HEAD
+=======
+                                "NFT_02bdc0b8c8a5cbfb9b8bd802c42a5f34877c06409b250e8ee8e57c87b6800d47",
+                                "NFT_034d8d27132a3006d6ec10ae92d829b1dbb6c7ebe1f1df7864c026e99e641b37",
+                                "NFT_04cc57f4b900cf26e30116827c782bb57038d771c847b5c0aacb113ee00c65c0",
+                                "NFT_0f91b3d60af1861367cb8be6b59f4c9c5dbde3be951fbd1cdffc7c709bed6cc3",
+                                "NFT_119877ec38b4ed677dd5fa6a47c2fd819a096ccd8c79182cd91b98675bc9ad76",
+                                "NFT_21268c6c502688d2e5662048b863c1f13c917a4e12f505c568b44459983b5046",
+                                "NFT_22322f8aff903eef327a5f4a4ae74e902b8f68bca9940df7f1216486e042994e",
+                                "NFT_2236927239b1d69bbcf761c7c9bb20cef5cc3ecca1e3d769781e5d3a05453977",
+                                "NFT_274a4d440bec9eaf0402a7d05d6250b88131c3f54b72936e2228d18274963ca5",
+                                "NFT_3606705e6f3015a0068bb80c59964e3e06ae10ef100377e1a1ae3dc870d376ea",
+                                "NFT_4956d6699e9b13cb40c6ff503675d37a7416973b138dc93014a25107495b007a",
+                                "NFT_4bf0ca555d0be98742684531595e57629e740bf1f3bc3b4866415fe4d7093242",
+                                "NFT_681365bb591a7abd32491af33830d857a6962153f64c84c9916fb164b7b36501",
+                                "NFT_6ed1b4bd32dada97e0b4a7b2b21573c45e2c08b591e866ddf3fa6ca3a3653e65",
+                                "NFT_7878060ff699bf8b8fc6c9e678cabbac376e237908e317eaa28b05dc6f4eddc0",
+                                "NFT_7d8dfe70ed18630a5724eb0f6f4babbe866a3607df5e21953dce327fbb3bfa60",
+                                "NFT_7db5057cf4e61201167b9881277d17a55e9d2011c378b5daacde42650a27ba2c",
+                                "NFT_87050110ba7489d5e9cd2956989c213fe3c26009c98a8c305fd4058322f90456",
+                                "NFT_88d5a053e36225c991c06fb9f64397e209bea2a8b1c4f53c923bbdf407c122e2",
+                                "NFT_90eefaedd432e061a23d091e0b19a7ec467c21306cc0c10dd3c8e22d7e45de6e",
+                                "NFT_9c2e70fdc8889da9ba9f910413403047190073cb5975a16c8150ec1eb72a224f",
+                                "NFT_a8710e2aef647dc965b8a1b057ebc0bdc5fcafc924bd9a2de1bcf1764898be2a",
+                                "NFT_b0239d75b913c6088134bc609a771848dbc9846e40ff3d9a876d35a5463bb966",
+                                "NFT_b27fcbe6f7c88d851e7d7f035ee852689aa81d98ef634cbd3b313cdec75b4e59",
+                                "NFT_d58bf6ccd4eb87ff37078a016d282f885c2be0625bb654d655346a36214f17b3",
+                                "NFT_d678d6fa4391fcfedfe937ab07a622fe6bb9416e8777f196d63e6157d62911e1",
+                                "NFT_f30f7895bad0a948eeef592a5dc978fea0bd748b11adc1073ab082e03feab37e",
+>>>>>>> main
                                 // @nextSpriteLine@
                 ];
             },
@@ -5742,14 +5788,6 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                 this.client = new GameClient(this.host, this.port, this.protocol, this.sessionId, this.mapId);
                 this.renderStatistics();
-
-                //>>excludeStart("prodHost", pragmas.prodHost);
-                var config = this.app.config.local || this.app.config.dev;
-                if(config) {
-                    this.client.connect(config.dispatcher); // false if the client connects directly to a game server
-                    connecting = true;
-                }
-                //>>excludeEnd("prodHost");
 
                 //>>includeStart("prodHost", pragmas.prodHost);
                 if(!connecting) {

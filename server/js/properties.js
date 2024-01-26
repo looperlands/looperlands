@@ -1393,6 +1393,7 @@ Properties.getInventoryDescription = function(kind) {
     return retDescription !== undefined ? retDescription : false;
 }
 
+<<<<<<< HEAD
 Properties.getCooldownData = function(kind) {
     return Properties[Types.getKindAsString(kind)]?.cooldown; 
 }
@@ -1419,3 +1420,6 @@ Properties.getCdItemsByGroup = function(cdGroup) {
 }
 
 module.exports = Properties;
+=======
+module.exports = Properties;
+>>>>>>> main
