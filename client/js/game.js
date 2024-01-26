@@ -1,19 +1,10 @@
 define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile',
         'warrior', 'gameclient', 'audio', 'updater', 'transition', 'pathfinder',
-<<<<<<< HEAD
         'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'fieldeffect', 'config', 'float', '../../shared/js/gametypes', '../../shared/js/altnames'],
 
     function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, AnimatedTile,
              Warrior, GameClient, AudioManager, Updater, Transition, Pathfinder,
              Item, Mob, Npc, Player, Character, Chest, Mobs, config, Exceptions, Fieldeffect, Float) {
-=======
-        'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'fieldeffect', 'float', '../../shared/js/gametypes', '../../shared/js/altnames'],
-
-    function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, AnimatedTile,
-             Warrior, GameClient, AudioManager, Updater, Transition, Pathfinder,
-             Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, Fieldeffect, Float) {
-
->>>>>>> main
         var Game = Class.extend({
             init: function(app) {
                 this.app = app;
@@ -54,10 +45,6 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.hoveringItem = false;
                 this.hoveringCollidingTile = false;
                 this.doorCheck = false;
-<<<<<<< HEAD
-=======
-
->>>>>>> main
                 this.highlightedTarget = null;
                 this.toggledLayers = {};
 
@@ -182,11 +169,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "horde3",
                     "horde4",
                     "horde5",
-<<<<<<< HEAD
                     //mycupbloody npc
-=======
-                    //mycupbloody npc           
->>>>>>> main
                     "GOFFREY",
                     "cobWalkingNpc1",
                     "cobWalkingNpc2",
@@ -4972,8 +4955,6 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 "NFT_7869adc15d6ffefc7ff96d0cd61723f7dcb68864490128381c74ed88f39316af",
                                 "NFT_d12dae765971aff4a14d6c262f5b5ce1df6e1ec6351e525dc4b0c0fcc671ba5c",
                                 "NFT_ee972ad3b8ac062de2e4d5e6ea4a37e36c849a11_134043",
-<<<<<<< HEAD
-=======
                                 "NFT_02bdc0b8c8a5cbfb9b8bd802c42a5f34877c06409b250e8ee8e57c87b6800d47",
                                 "NFT_034d8d27132a3006d6ec10ae92d829b1dbb6c7ebe1f1df7864c026e99e641b37",
                                 "NFT_04cc57f4b900cf26e30116827c782bb57038d771c847b5c0aacb113ee00c65c0",
