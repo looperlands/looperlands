@@ -395,10 +395,6 @@ define(['text!../sprites/agent.json',
         'text!../sprites/horde3.json',
         'text!../sprites/horde4.json',
         'text!../sprites/horde5.json',
-<<<<<<< HEAD
-
-=======
->>>>>>> main
         //mycupbloody npc
         'text!../sprites/GOFFREY.json',
         'text!../sprites/cobWalkingNpc1.json',
@@ -5144,8 +5140,6 @@ define(['text!../sprites/agent.json',
         'text!../sprites/NFT_7869adc15d6ffefc7ff96d0cd61723f7dcb68864490128381c74ed88f39316af.json',
         'text!../sprites/NFT_d12dae765971aff4a14d6c262f5b5ce1df6e1ec6351e525dc4b0c0fcc671ba5c.json',
         'text!../sprites/NFT_ee972ad3b8ac062de2e4d5e6ea4a37e36c849a11_134043.json',
-<<<<<<< HEAD
-=======
         'text!../sprites/NFT_02bdc0b8c8a5cbfb9b8bd802c42a5f34877c06409b250e8ee8e57c87b6800d47.json',
         'text!../sprites/NFT_034d8d27132a3006d6ec10ae92d829b1dbb6c7ebe1f1df7864c026e99e641b37.json',
         'text!../sprites/NFT_04cc57f4b900cf26e30116827c782bb57038d771c847b5c0aacb113ee00c65c0.json',
@@ -5173,7 +5167,6 @@ define(['text!../sprites/agent.json',
         'text!../sprites/NFT_d58bf6ccd4eb87ff37078a016d282f885c2be0625bb654d655346a36214f17b3.json',
         'text!../sprites/NFT_d678d6fa4391fcfedfe937ab07a622fe6bb9416e8777f196d63e6157d62911e1.json',
         'text!../sprites/NFT_f30f7895bad0a948eeef592a5dc978fea0bd748b11adc1073ab082e03feab37e.json',
->>>>>>> main
         // @nextSpriteImport@
     ], function() {
     

@@ -349,9 +349,7 @@ module.exports = Player = Character.extend({
                         self.server.removeEntity(item);
 
                         if(kind === Types.Entities.FIREPOTION || kind === Types.Entities.COBCORN || kind === Types.Entities.EYEBALL) {
-<<<<<<< HEAD
                             self.startInvincibility();
-=======
                             self.updateHitPoints();
 
                             if (self.firepotionTimeout != null) {
@@ -370,7 +368,6 @@ module.exports = Player = Character.extend({
                                 self.firepotionTimeout = null;
                             }, Types.timeouts[Types.Entities.FIREFOX]);
                             self.send(new Messages.HitPoints(self.maxHitPoints).serialize());
->>>>>>> main
                         } else if(Types.isHealingItem(kind)) {
                             let amount;
 

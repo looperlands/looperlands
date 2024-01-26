@@ -10,5 +10,6 @@ nft_template/sqlscript.sql
 .idea
 client/config/config_build.json
 ecosystem.config.js
+newrelic_agent.log
 # Ignore large map files. zip them and add that to the repo instead
 tools/maps/tmx/main.tmx
