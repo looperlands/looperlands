@@ -4871,7 +4871,19 @@ Types = {
         NFT_b27fcbe6f7c88d851e7d7f035ee852689aa81d98ef634cbd3b313cdec75b4e59: 4546,
         NFT_d58bf6ccd4eb87ff37078a016d282f885c2be0625bb654d655346a36214f17b3: 4547,
         NFT_d678d6fa4391fcfedfe937ab07a622fe6bb9416e8777f196d63e6157d62911e1: 4548,
-        NFT_f30f7895bad0a948eeef592a5dc978fea0bd748b11adc1073ab082e03feab37e: 4549 // @lastid@
+        NFT_f30f7895bad0a948eeef592a5dc978fea0bd748b11adc1073ab082e03feab37e: 4549,
+        NFT_2d8a81a3cd6e14c2d493273c86b16519209d723c3250936859f5e52c19f47090: 4550,
+        NFT_4135bb5e4ef5f381e357fb3ae1532b16926032e2c5d355fa08f3746130246c98: 4551,
+        NFT_446111d5084e7efc9f65b5d940a40915d762097ce76535aa5f813a8fa4ac37cf: 4552,
+        NFT_5bbc1a346b7002e07b548b7c58814e3b1a23a7f1d69847332515d74b50ed5981: 4553,
+        NFT_8ebdc76ff15587dea28f6b35ddd351dcb5a5d42d1a8fafae596e3eb24bf22a2d: 4554,
+        NFT_904339e3dd3fb4a35e198bff13a1955d1f78aa7ffbde42fce4d8b1d9cff9e593: 4555,
+        NFT_90d3764bc60e1bd4f6fe5d4a90f6587a3bfcb2cb0900909a1a28dc1a2aaeea9c: 4556,
+        NFT_c4ec0f3ced0d9ff396d07ec6c538a0737e046bb934fa2e3fc017fda956a2beae: 4557,
+        NFT_c6adbfabbc27bdb3c6a1a0a22a6d36bff04df14d80c4d0c18d4d25af0daf2549: 4558,
+        NFT_d42f123364d0dde8dd4bd7443b0d17c809a3a68ad5aa671ca3dbf939edc0b954: 4559,
+        NFT_d6b3f9fc8e4d65a68a3c2299ada0e17816cfe92e4e4249f4b223d19785a3f486: 4560,
+        NFT_fec3a05c4da18fc71a0359487835fe1c6fb922adbfc93d19d30bdef40a3b1abb: 4561 // @lastid@
         //@nextIdLine@
     },
 
@@ -9728,6 +9740,18 @@ var kinds = {
     NFT_d58bf6ccd4eb87ff37078a016d282f885c2be0625bb654d655346a36214f17b3: [Types.Entities.NFT_d58bf6ccd4eb87ff37078a016d282f885c2be0625bb654d655346a36214f17b3, "bot"],
     NFT_d678d6fa4391fcfedfe937ab07a622fe6bb9416e8777f196d63e6157d62911e1: [Types.Entities.NFT_d678d6fa4391fcfedfe937ab07a622fe6bb9416e8777f196d63e6157d62911e1, "bot"],
     NFT_f30f7895bad0a948eeef592a5dc978fea0bd748b11adc1073ab082e03feab37e: [Types.Entities.NFT_f30f7895bad0a948eeef592a5dc978fea0bd748b11adc1073ab082e03feab37e, "bot"],
+    NFT_2d8a81a3cd6e14c2d493273c86b16519209d723c3250936859f5e52c19f47090: [Types.Entities.NFT_2d8a81a3cd6e14c2d493273c86b16519209d723c3250936859f5e52c19f47090, "bot"],
+    NFT_4135bb5e4ef5f381e357fb3ae1532b16926032e2c5d355fa08f3746130246c98: [Types.Entities.NFT_4135bb5e4ef5f381e357fb3ae1532b16926032e2c5d355fa08f3746130246c98, "weapon"],
+    NFT_446111d5084e7efc9f65b5d940a40915d762097ce76535aa5f813a8fa4ac37cf: [Types.Entities.NFT_446111d5084e7efc9f65b5d940a40915d762097ce76535aa5f813a8fa4ac37cf, "bot"],
+    NFT_5bbc1a346b7002e07b548b7c58814e3b1a23a7f1d69847332515d74b50ed5981: [Types.Entities.NFT_5bbc1a346b7002e07b548b7c58814e3b1a23a7f1d69847332515d74b50ed5981, "bot"],
+    NFT_8ebdc76ff15587dea28f6b35ddd351dcb5a5d42d1a8fafae596e3eb24bf22a2d: [Types.Entities.NFT_8ebdc76ff15587dea28f6b35ddd351dcb5a5d42d1a8fafae596e3eb24bf22a2d, "bot"],
+    NFT_904339e3dd3fb4a35e198bff13a1955d1f78aa7ffbde42fce4d8b1d9cff9e593: [Types.Entities.NFT_904339e3dd3fb4a35e198bff13a1955d1f78aa7ffbde42fce4d8b1d9cff9e593, "bot"],
+    NFT_90d3764bc60e1bd4f6fe5d4a90f6587a3bfcb2cb0900909a1a28dc1a2aaeea9c: [Types.Entities.NFT_90d3764bc60e1bd4f6fe5d4a90f6587a3bfcb2cb0900909a1a28dc1a2aaeea9c, "bot"],
+    NFT_c4ec0f3ced0d9ff396d07ec6c538a0737e046bb934fa2e3fc017fda956a2beae: [Types.Entities.NFT_c4ec0f3ced0d9ff396d07ec6c538a0737e046bb934fa2e3fc017fda956a2beae, "bot"],
+    NFT_c6adbfabbc27bdb3c6a1a0a22a6d36bff04df14d80c4d0c18d4d25af0daf2549: [Types.Entities.NFT_c6adbfabbc27bdb3c6a1a0a22a6d36bff04df14d80c4d0c18d4d25af0daf2549, "bot"],
+    NFT_d42f123364d0dde8dd4bd7443b0d17c809a3a68ad5aa671ca3dbf939edc0b954: [Types.Entities.NFT_d42f123364d0dde8dd4bd7443b0d17c809a3a68ad5aa671ca3dbf939edc0b954, "bot"],
+    NFT_d6b3f9fc8e4d65a68a3c2299ada0e17816cfe92e4e4249f4b223d19785a3f486: [Types.Entities.NFT_d6b3f9fc8e4d65a68a3c2299ada0e17816cfe92e4e4249f4b223d19785a3f486, "bot"],
+    NFT_fec3a05c4da18fc71a0359487835fe1c6fb922adbfc93d19d30bdef40a3b1abb: [Types.Entities.NFT_fec3a05c4da18fc71a0359487835fe1c6fb922adbfc93d19d30bdef40a3b1abb, "bot"],
     // @nextSpriteLine@
 
     getType: function(kind) {
