@@ -1021,7 +1021,7 @@ let Properties = {
     INFERNOTH: {
         level: 30,
         hpMod: 8.25,
-        weaponMod: 2,
+        weaponMod: 2.15,
         xp:10000,
         respawnDelay: 60000
     },
