@@ -166,6 +166,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     //Short Destroyers
                     "lateflea",
                     "wolfboss",
+                    "fleaboss",
                     "horde1",
                     "horde2",
                     "horde3",

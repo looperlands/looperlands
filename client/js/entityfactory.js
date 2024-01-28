@@ -491,6 +491,9 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.WOLFBOSS] = function(id) {
         return new Mobs.wolfboss(id);
     };
+    EntityFactory.builders[Types.Entities.FLEABOSS] = function(id) {
+        return new Mobs.fleaboss(id);
+    };
     EntityFactory.builders[Types.Entities.HORDE1] = function(id) {
         return new Mobs.horde1(id);
     };

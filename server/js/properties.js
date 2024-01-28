@@ -1080,6 +1080,20 @@ let Properties = {
         respawnDelay: 30000
     },
 
+    fleaboss: {
+        level: 10,
+        drops: {
+            dvd: 50,
+            popcorn: 50,      
+        },
+        messages: ['Time to collect those late fees!'],
+        armorMod: 1.1,
+        weaponMod: 1.6,
+        hpMod: 2.0,
+        xp: 1200,  
+        respawnDelay: 30000
+    },
+
     horde1: {
         level: 10,
         drops: {
