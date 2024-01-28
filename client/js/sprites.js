@@ -384,6 +384,7 @@ define(['text!../sprites/agent.json',
         //Short Destroyers
         'text!../sprites/lateflea.json',
         'text!../sprites/wolfboss.json',
+        'text!../sprites/fleaboss.json',
         'text!../sprites/horde1.json',
         'text!../sprites/horde2.json',
         'text!../sprites/horde3.json',
