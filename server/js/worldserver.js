@@ -94,12 +94,14 @@ module.exports = World = cls.Class.extend({
                     var target = self.getEntityById(mob.target);
                     if (target) {
                         var pos = self.findPositionNextTo(mob, target);
-                        if (mob.distanceToSpawningPoint(pos.x, pos.y) > 25) {
-                            mob.clearTarget();
-                            mob.forgetEveryone();
-                            player.removeAttacker(mob);
-                        } else {
-                            self.moveEntity(mob, pos.x, pos.y);
+                        if (pos) {
+                            if (mob.distanceToSpawningPoint(pos.x, pos.y) > 25) {
+                                mob.clearTarget();
+                                mob.forgetEveryone();
+                                player.removeAttacker(mob);
+                            } else {
+                                self.moveEntity(mob, pos.x, pos.y);
+                            }
                         }
                     }
                 });
@@ -146,7 +148,9 @@ module.exports = World = cls.Class.extend({
             var target = self.getEntityById(attacker.target);
             if (target && attacker.type === "mob") {
                 var pos = self.findPositionNextTo(attacker, target);
-                self.moveEntity(attacker, pos.x, pos.y);
+                if (pos) {
+                    self.moveEntity(attacker, pos.x, pos.y);
+                }
             }
         });
 
@@ -219,6 +223,9 @@ module.exports = World = cls.Class.extend({
         var regenCount = this.ups * 2;
         var updateCount = 0;
         setInterval(function () {
+            if (self.getPlayerCount() < 1) {
+                return;
+            }
             self.processGroups();
             self.processQueues();
 
@@ -315,27 +322,29 @@ module.exports = World = cls.Class.extend({
     },
 
     pushToGroup: function (groupId, message, ignoredPlayer) {
-        var self = this,
-            group = this.groups[groupId];
+        let group = this.groups[groupId];
 
         if (group) {
             let removeList = [];
-            _.each(group.players, function (playerId) {
+
+            const groupPlayers = group.players;
+            const groupPlayersLength = groupPlayers.length;
+            for (let i = 0; i < groupPlayersLength; i++) {
+                let playerId = groupPlayers[i];
                 if (playerId != ignoredPlayer) {
-                    let entity = self.getEntityById(playerId);
+                    let entity = this.getEntityById(playerId);
                     if (entity === undefined) {
                         removeList.push(playerId);
                     } else {
-                        self.pushToPlayer(entity, message);
+                        this.pushToPlayer(entity, message);
                     }
                 }
-            });
-            if (removeList.length > 0) {
-                //console.log("Removing undefined players from group:", removeList);
-                removeList.forEach(function (playerId) {
-                    group.players = _.reject(group.players, function (id) {
-                        return id === playerId;
-                    });
+            }
+            const removeListLength = removeList.length;
+            for (let i = 0; i < removeListLength; i++) {
+                let playerId = removeList[i];
+                group.players = _.reject(group.players, function (id) {
+                    return id === playerId;
                 });
             }
         } else {
@@ -637,16 +646,6 @@ module.exports = World = cls.Class.extend({
         }
     },
 
-    getPlayerCount: function () {
-        var count = 0;
-        for (var p in this.players) {
-            if (this.players.hasOwnProperty(p)) {
-                count += 1;
-            }
-        }
-        return count;
-    },
-
     broadcastAttacker: function (character) {
         if (character) {
             this.pushToAdjacentGroups(character.group, character.attack(), character.id);
@@ -809,6 +808,10 @@ module.exports = World = cls.Class.extend({
         this.playerCount = count;
     },
 
+    getPlayerCount: function () {
+        return this.playerCount;
+    },
+
     incrementPlayerCount: function () {
         this.setPlayerCount(this.playerCount + 1);
     },
@@ -852,14 +855,19 @@ module.exports = World = cls.Class.extend({
     },
 
     findPositionNextTo: function (entity, target) {
-        var valid = false,
-            pos;
+        let positions = ['N','S','W','E'];
 
-        while (!valid) {
-            pos = entity.getPositionNextTo(target);
-            valid = this.isValidPosition(pos.x, pos.y);
+        while (positions.length > 0) {
+            let randArrPos = Utils.random(positions.length);
+            let side = positions[randArrPos];
+           	
+            let pos = entity.getPositionNextTo(target, side);
+            if (this.isValidPosition(pos.x, pos.y)){
+                return pos;
+            }
+            positions.splice(randArrPos, 1);
         }
-        return pos;
+        return false;
     },
 
     initZoneGroups: function () {
@@ -975,19 +983,21 @@ module.exports = World = cls.Class.extend({
     },
 
     processGroups: function () {
-        var self = this;
+        let self = this;
 
         if (this.zoneGroupsReady) {
             this.map.forEachGroup(function (id) {
-                var spawns = [];
-                if (self.groups[id].incoming.length > 0) {
-                    spawns = _.each(self.groups[id].incoming, function (entity) {
+                let incoming = self.groups[id].incoming;
+                const incomingLength = incoming.length;
+                if (incomingLength > 0) {
+                    for (let i = 0; i < incomingLength; i++) {
+                        let entity = incoming[i];
                         if (entity instanceof Player) {
                             self.pushToGroup(id, new Messages.Spawn(entity), entity.id);
                         } else {
                             self.pushToGroup(id, new Messages.Spawn(entity));
                         }
-                    });
+                    }
                     self.groups[id].incoming = [];
                 }
             });
@@ -1120,6 +1130,17 @@ module.exports = World = cls.Class.extend({
             trait: nftWeapon.trait
         }
         return weaponInfo;
+    },
+
+    getItemWeaponStatistics: function(playerId) {
+        const player = this.getEntityById(playerId);
+        if (player === undefined) {
+            return;
+        }
+
+        return {
+            currentLevel: player.getWeaponLevel()
+        }
     },
 
     doAoe: function (mob) {
@@ -1376,8 +1397,9 @@ module.exports = World = cls.Class.extend({
 
     despawnAllAdds: function (mob) {
         let self = this;
-        if (mob.addArray.length > 0) {
-            for (let i = mob.addArray.length - 1; i >= 0; i--) { // go backwards through the loop, because we do splice in despawn
+        const mobAddArrayLength = mob.addArray.length;
+        if (mobAddArrayLength > 0) {
+            for (let i = mobAddArrayLength - 1; i >= 0; i--) { // go backwards through the loop, because we do splice in despawn
                 let add = mob.addArray[i];
                 if (add !== undefined) {
                     self.despawn(add);
@@ -1470,7 +1492,6 @@ module.exports = World = cls.Class.extend({
 
     removeFromInventory(player, itemKind, amount) {
         let item = this.createItem(itemKind, 0, 0);
-        console.log(item);
         player.playerEventBroker.lootEvent(item, amount * -1);
     },
 

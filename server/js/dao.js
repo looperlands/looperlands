@@ -56,62 +56,8 @@ loadMapFlow = async function (mapId) {
   try {
     return JSON.parse(responseData.data);
   } catch (error) {
-    console.error("Error parsing map flow");
+    //console.error("Error parsing map flow");
     return undefined;
-  }
-}
-
-getCharacterData = async function (wallet, nft, retry) {
-  const options = {
-    method: 'POST',
-    headers: {
-      'X-Api-Key': API_KEY
-    },
-  };
-  try {
-    const responseData = await axios.get(`${LOOPWORMS_LOOPERLANDS_BASE_URL}/Load.php?NFTID=${nft}&WalletID=${wallet}`, options);
-    //console.log("ResponseData from Loopworms: ", responseData.status, responseData.text, responseData.data, `${LOOPWORMS_LOOPERLANDS_BASE_URL}/Load.php?NFTID=${nft}&WalletID=${wallet}`);
-
-    let parsedSaveData;
-    try {
-      if (responseData[1] !== '') {
-        parsedSaveData = JSON.parse(responseData.data[1]);
-      } else {
-        return;
-      }
-    } catch (error) {
-      if (retry === undefined) {
-        retry = MAX_RETRY_COUNT;
-      }
-      retry -= 1;
-      if (retry > 0) {
-        return getCharacterData(wallet, nft, retry);
-      } else {
-        //console.error("Error parsing save data ", error, responseData.data);
-        return
-      }
-    }
-    return parsedSaveData;
-  } catch (error) {
-    return;
-  }
-
-}
-
-saveCharacterData = async function (wallet, nft, saveGame) {
-  const options = {
-    headers: {
-      'X-Api-Key': API_KEY,
-      'Content-Type': 'application/json'
-    }
-  };
-
-  try {
-    const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/Save.php?NFTID=${nft}&WalletID=${wallet}`
-    axios.post(url, saveGame, options);
-  } catch (error) {
-    console.error(error);
-    return { "error": "Error saving character data" };
   }
 }
 
@@ -624,38 +570,13 @@ exports.saveConsumable = async function(nft, item, qty) {
   }
 }
 
-exports.getLooperAssetCount = async function(wallet, retry) {
-
-  const options = {
-    headers: {
-      'X-Api-Key': API_KEY
-    }
-  }
-  const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/getTotalAssets.php?walletID=${wallet}`;
-  try {
-    const response = await axios.get(url, options);
-    return response.data.totalLLAssetsOwned;
-  } catch (error) {
-    console.error("getLooperCount", error);
-    if (retry === undefined) {
-      retry = MAX_RETRY_COUNT;
-    }
-    retry -= 1;
-    if (retry > 0) {
-      return this.getLooperCount(wallet, retry);
-    } else {
-      console.error("getLooperCount", error);
-    }
-  }
-}
-
 exports.getBots = async function(walletId) {
   let botsResponse = await axios.get(`${LOOPWORMS_LOOPERLANDS_BASE_URL}/loadBot.php?walletID=${walletId}`);
   let bots = botsResponse.data;
   return bots;
 }
 
-exports.newBot = async function(mapId, botNftId, xp, name, walletId, ownerEntityId, x, y, retry) {
+exports.newBot = async function(mapId, botNftId, xp, name, walletId, ownerEntityId, x, y, gameServerURL, retry) {
   const options = {
     headers: {
       'X-Api-Key': LOOPERLANDS_BACKEND_API_KEY
@@ -672,6 +593,7 @@ exports.newBot = async function(mapId, botNftId, xp, name, walletId, ownerEntity
       "owner": ownerEntityId,
       "x" : x,
       "y" : y,
+      "gameServerURL" : gameServerURL
     }
     const response = await axios.post(url, sessionRequest, options);
     return response.data;
@@ -684,16 +606,32 @@ exports.newBot = async function(mapId, botNftId, xp, name, walletId, ownerEntity
     }
     retry -= 1;
     if (retry > 0) {
-      return this.newBot(mapId, botNftId, xp, name, walletId, ownerEntityId, x, y, retry);
+      return this.newBot(mapId, botNftId, xp, name, walletId, ownerEntityId, x, y, gameServerURL, retry);
     } else {
       console.error("newBot", error);
     }
   }
 }
 
+exports.getShopInventory = async function(shopId) {
+  const options = {
+    headers: {
+      'X-Api-Key': API_KEY,
+      'Content-Type': 'application/json'
+    }
+  }
+  const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/shopInventory.php?shopName=${shopId}`;
+  const shopResponse = await axios.get(url, options);
+  try {
+    return shopResponse.data;
+  } catch (error) {
+    console.log("getShopInventory", error)
+    return null;
+  }
+}
+
+
 exports.updateExperience = updateExperience;
-exports.saveCharacterData = saveCharacterData;
-exports.getCharacterData = getCharacterData;
 exports.saveWeapon = saveWeapon;
 exports.loadWeapon = loadWeapon;
 exports.loadExperience = loadExperience;

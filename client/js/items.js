@@ -1,8 +1,8 @@
 
 define(['item'], function(Item) {
-    
-    var Items = {
-        
+
+    let Items = {
+
         Sword2: Item.extend({
             init: function(id) {
                 this._super(id, Types.Entities.SWORD2, "weapon");
@@ -120,7 +120,7 @@ define(['item'], function(Item) {
                 this._super(id, Types.Entities.FIREPOTION, "object");
                 this.lootMessage = "You feel the power of Loopring!";
             },
-    
+
             onLoot: function(player) {
                 player.startInvincibility();
             },
@@ -190,10 +190,46 @@ define(['item'], function(Item) {
         BANNER:Item.extend({init:function(id){this._super(id,Types.Entities.BANNER,"object");this.lootMessage="Picked up banner";}}),
         PNEUMA_SIGN:Item.extend({init:function(id){this._super(id,Types.Entities.PNEUMA_SIGN,"object");this.lootMessage="";}}),
         VILLAGESIGN10:Item.extend({init:function(id){this._super(id,Types.Entities.VILLAGESIGN10,"object");this.lootMessage="";}}),
-        GOLD1:Item.extend({init:function(id){this._super(id,Types.Entities.GOLD1,"object");this.lootMessage="";}}),
-        GOLD2:Item.extend({init:function(id){this._super(id,Types.Entities.GOLD2,"object");this.lootMessage="";}}),
-        GOLD3:Item.extend({init:function(id){this._super(id,Types.Entities.GOLD3,"object");this.lootMessage="";}}),
-        GOLD:Item.extend({init:function(id){this._super(id,Types.Entities.GOLD,"object");this.lootMessage="Picked up gold!";}}),
+        GOLD:Item.extend({init:function(id){this._super(id,Types.Entities.GOLD,"resource");this.lootMessage="Picked up gold!";}}),
+        GOLD1:Item.extend({init:function(id){this._super(id,Types.Entities.GOLD1,"resource");this.lootMessage="Picked up gold!";}}),
+        GOLD2:Item.extend({init:function(id){this._super(id,Types.Entities.GOLD2,"resource");this.lootMessage="Picked up gold!";}}),
+        GOLD3:Item.extend({init:function(id){this._super(id,Types.Entities.GOLD3,"resource");this.lootMessage="Picked up gold!";}}),
+        EVERPEAKMAP1:Item.extend({init:function(id){this._super(id,Types.Entities.EVERPEAKMAP1,"object");this.lootMessage="Discovered Fishing isle!";}}),
+        EVERPEAKMAP2:Item.extend({init:function(id){this._super(id,Types.Entities.EVERPEAKMAP2,"object");this.lootMessage="Discovered Gilded Gryphon";}}),
+        EVERPEAKMAP3:Item.extend({init:function(id){this._super(id,Types.Entities.EVERPEAKMAP3,"object");this.lootMessage="Discovered Enchanted Isle";}}),
+        EVERPEAKMAP4:Item.extend({init:function(id){this._super(id,Types.Entities.EVERPEAKMAP4,"object");this.lootMessage="Discovered Stormhelm Arena";}}),
+        EVERPEAKMAP5:Item.extend({init:function(id){this._super(id,Types.Entities.EVERPEAKMAP5,"object");this.lootMessage="Discovered Riverbreeze District";}}),
+        coffeebeans:Item.extend({init:function(id){this._super(id,Types.Entities.COFFEEBEANS,"object");this.lootMessage="You collected a coffee bean.";}}),
+        crystal:Item.extend({init:function(id){this._super(id,Types.Entities.CRYSTAL,"object");this.lootMessage="You collected a crystal.";}}),
+        trinket:Item.extend({init:function(id){this._super(id,Types.Entities.TRINKET,"object");this.lootMessage="You collected a trinket.";}}),
+        wildflowers:Item.extend({init:function(id){this._super(id,Types.Entities.WILDFLOWERS,"object");this.lootMessage="You collected a wildflower.";}}),
+        luminousstones:Item.extend({init:function(id){this._super(id,Types.Entities.LUMINOUSSTONES,"object");this.lootMessage="You collected a luminous stone.";}}),
+        //Short Destroyers
+        vhs:Item.extend({init:function(id){this._super(id,Types.Entities.VHS,"object");this.lootMessage="You collected a VHS.";}}),
+        dvd:Item.extend({init:function(id){this._super(id,Types.Entities.DVD,"object");this.lootMessage="You collected a DVD.";}}),
+        game:Item.extend({init:function(id){this._super(id,Types.Entities.GAME,"object");this.lootMessage="You collected a Game Cartridge.";}}),
+        popcorn:Item.extend({init:function(id){this._super(id,Types.Entities.POPCORN,"object");this.lootMessage="You collected a Bag of Popcorn.";}}),
+        //mycupbloody
+        EYEBALL:Item.extend({
+            init:function(id){
+                this._super(id,Types.Entities.EYEBALL,"object");
+                this.lootMessage="Keep an eye out!!";}
+
+                ,onLoot: function(player) {
+                    player.startInvincibility();
+            }
+        }),
+        REDPOTION:Item.extend({
+            init:function(id){
+                this._super(id,Types.Entities.REDPOTION,"object");
+                this.lootMessage="Gotcha self a splash of health";
+            }
+        }),
+        GREYPOTION:Item.extend({init:function(id){
+            this._super(id,Types.Entities.GREYPOTION,"object");
+            this.lootMessage="CACHOW! STAY ALIVE LOOPER!";
+        }
+    }),
         // @nextItemLine@
     };
 

@@ -1,5 +1,5 @@
 Types = require("../../../shared/js/gametypes");
-quests = [
+quests = [        
     {
         id: "COB_COLLECT_LOGS",
         name: "Maintaining the campfire",
@@ -16,12 +16,12 @@ quests = [
     {
         id: "COB_BLUE_SLIMES",
         name: "Finding the lucky clover",
-        startText: "The blue slimes stole my lucky clover! Kill 20 of them, get it back!",
+        startText: "The blue slimes stole my lucky clover! Kill 40 of them, get it back!",
         endText: "Thank you! It weren't the blue slimes after all...",
         eventType: "KILL_MOB",
         npc: Types.Entities.COBHILLSNPC,
         target: Types.Entities.COBSLIMEBLUE,
-        amount: 20,
+        amount: 40,
         level: 2,
         medal: Types.Medals.SKULL
     },

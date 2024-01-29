@@ -12,17 +12,11 @@ RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | b
 RUN /bin/bash -c "source $NVM_DIR/nvm.sh && nvm install $NODE_VERSION && nvm use --delete-prefix $NODE_VERSION"
 ENV NODE_PATH $NVM_DIR/versions/node/$NODE_VERSION/bin
 ENV PATH $NODE_PATH:$PATH
-RUN apt-get update -yq \
-    && apt-get install curl gnupg python2 -yq \
-    && apt-get install python3 -yq
 
 COPY . /opt/app
 WORKDIR /opt/app
 COPY shared/js/gametypes.js client/js/gametypes.js
 RUN npm ci
-RUN mkdir -p client/config
-RUN python3 ./config_manager.py configs/prod_config_na.json
-RUN cp configs/config_build.json client/config
 WORKDIR /opt/app/bin
 RUN ./build.sh
 WORKDIR /opt/app

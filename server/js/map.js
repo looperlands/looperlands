@@ -36,6 +36,7 @@ module.exports = class Mapx {
         this.hiddenLayers = map.hiddenLayers || {};
         this.collidingTiles = map.collidingTiles || {};
         this.toggledLayers = [];
+        this.getAdjacentGroupPositionsMap = {};
 
         // zone groups
     	this.zoneWidth = 28;
@@ -144,11 +145,11 @@ module.exports = class Mapx {
     }
     
     forEachGroup(callback) {
-        var width = this.groupWidth,
+        let width = this.groupWidth,
             height = this.groupHeight;
         
-        for(var x = 0; x < width; x += 1) {
-            for(var y = 0; y < height; y += 1) {
+        for(let x = 0; x < width; x += 1) {
+            for(let y = 0; y < height; y += 1) {
                 callback(x+'-'+y);
             }
         }
@@ -164,7 +165,12 @@ module.exports = class Mapx {
     }
     
     getAdjacentGroupPositions(id) {
-        var self = this,
+
+        if (this.getAdjacentGroupPositionsMap[id] !== undefined) {
+            return this.getAdjacentGroupPositionsMap[id];
+        }
+
+        let self = this,
             position = this.GroupIdToGroupPosition(id),
             x = position.x,
             y = position.y,
@@ -180,17 +186,23 @@ module.exports = class Mapx {
                 list.push(position);
             }
         });
-        
-        return _.reject(list, function(pos) { 
+
+        let ret = _.reject(list, function(pos) {
             return pos.x < 0 || pos.y < 0 || pos.x >= self.groupWidth || pos.y >= self.groupHeight;
         });
+
+        this.getAdjacentGroupPositionsMap[id] = ret;
+        return ret;
     }
     
     forEachAdjacentGroup(groupId, callback) {
         if(groupId) {
-            _.each(this.getAdjacentGroupPositions(groupId), function(pos) {
-                callback(pos.x+'-'+pos.y);
-            });
+            let adjacentGroupPositions = this.getAdjacentGroupPositions(groupId);
+            const length = adjacentGroupPositions.length;
+            for (let i = 0; i < length; i++) {
+                let pos = adjacentGroupPositions[i];
+                callback(`${pos.x}-${pos.y}`);
+            }
         }
     }
     

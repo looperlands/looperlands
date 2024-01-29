@@ -29,8 +29,8 @@ define(['jquery', 'app'], function($, App) {
                         app.toggleCredits();
                     }
                     
-                    if($('#parchment').hasClass('about')) {
-                        app.toggleAbout();
+                    if($('body').hasClass('inventory')) {
+                        app.toggleInventory();
                     }
 
                     if($('#parchment').hasClass('settings')) {
@@ -50,8 +50,8 @@ define(['jquery', 'app'], function($, App) {
                     }
                 });
         
-                $('#helpbutton').click(function() {
-                    app.toggleAbout();
+                $('#inventorybutton').click(function() {
+                    app.showInventory();
                 });
         
                 $('#achievementsbutton').click(function() {
@@ -144,7 +144,7 @@ define(['jquery', 'app'], function($, App) {
                 });
                 
                 $('.ribbon').click(function() {
-                    app.toggleAbout();
+                    app.toggleInventory();
                 });
 
                 $('#nameinput').bind("keyup", function() {
@@ -274,7 +274,8 @@ define(['jquery', 'app'], function($, App) {
 	
     		game.onGameStart(function() {
                 app.initEquipmentIcons();
-                keyboardHandler = new KeyBoardHandler(game);
+                keyboardHandler = new KeyBoardHandler(game, app);
+                touchListener = new TouchListener(game);
                 game.gamepadListener = new GamePadListener(game);
     		});
     		
@@ -283,8 +284,8 @@ define(['jquery', 'app'], function($, App) {
     		        $('body').removeClass('credits');
     		    }
 
-                if($('body').hasClass('about')) {
-                    $('body').removeClass('about');
+                if($('body').hasClass('inventory')) {
+                    $('body').removeClass('inventory');
                 }
 
                 $('body').addClass('death');
@@ -301,6 +302,7 @@ define(['jquery', 'app'], function($, App) {
 	
     		game.onPlayerEquipmentChange(function() {
     		    app.initEquipmentIcons();
+                setTimeout(() => game.renderStatistics(), 1000);
     		});
 	
     		game.onPlayerInvincible(function() {
@@ -346,6 +348,7 @@ define(['jquery', 'app'], function($, App) {
     		});
 	
             app.initHealthBar();
+            app.initResourcesDisplay();
 	
             $('#nameinput').val('');
     		$('#chatbox').attr('value', '');
@@ -390,15 +393,6 @@ define(['jquery', 'app'], function($, App) {
                         hasClosedParchment = true;
                     } else {
                         app.toggleCredits();
-                    }
-                }
-                
-                if($('#parchment').hasClass('about')) {
-                    if(game.started) {
-                        app.closeInGameAbout();
-                        hasClosedParchment = true;
-                    } else {
-                        app.toggleAbout();
                     }
                 }
                 
@@ -497,7 +491,7 @@ define(['jquery', 'app'], function($, App) {
 
             let emoIdx = 0;
             for (var emotion in Types.emotions) {
-                var emotionDiv = $('<div class="emote" data-emotion="' + emotion + '" style="--n: ' + emoIdx++ + '">' + Types.emotions[emotion] + '</div>');
+                var emotionDiv = $('<div class="emote pixel-corners-xs" data-emotion="' + emotion + '" style="--n: ' + emoIdx++ + '">' + Types.emotions[emotion] + '</div>');
                 emotionDiv.click(function(event) {
                     game.emote($(event.target).data('emotion'));
                     $('#emoteMenu').removeClass('active');

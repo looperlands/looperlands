@@ -77,3 +77,19 @@ This will print out a URL and open up the URL in your browser
 * Add the new mob to properties.js
 * Add the mob to mobset_oa.png. Reopen tiled and note the id.
 * Add the mob to the .tmx file noting the id in tiled. 
+
+# Performance profiling
+This is useful to determine bottle necks.
+1) Edit the Docker file to have this command (note the --prof):
+```Dockerfile
+CMD node --prof server/js/main.js
+```
+2) Run the game server
+3) `docker ps` to find its id
+4) `docker exec -it <id> /bin/bash` where id from step 3. Then run `ls` in the terminal to find the .log file
+5) `docker cp <id>:/opt/app/isolate<find real path from step 4>.log ~/isolate.log` to copy the .log file from the container to your host
+6) Process the `.log` file to human readable (make sure node version is modern): 
+```bash 
+node --prof-process isolate.log > isolate.out
+```
+7) Read your version of `isolate.out`

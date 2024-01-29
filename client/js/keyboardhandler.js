@@ -1,5 +1,5 @@
 class KeyBoardHandler {
-    constructor(game) {
+    constructor(game, app) {
         this.keys = {
             w: 0,
             a: 0,
@@ -7,11 +7,15 @@ class KeyBoardHandler {
             d: 0
         };
 
+        this.app = app;
+
         this.weapons = null;
 
         this.keyCallbacks = {
             'Comma': () => this.previousWeapon(),
-            'Period': () => this.nextWeapon()
+            'Period': () => this.nextWeapon(),
+            'Tab': (event) => this.highlightNextTarget(event),
+            'Space': (event) => this.engageTarget(event)
         };
         this.game = game;
         this.interval = false;
@@ -34,7 +38,35 @@ class KeyBoardHandler {
         }
 
         if(this.keyCallbacks.hasOwnProperty(event.code)) {
-            this.keyCallbacks[event.code]();
+            this.keyCallbacks[event.code](event);
+        }
+
+        // Keyboard shortcuts
+        const shortCuts = 'zxcvbt';
+        if (shortCuts.indexOf(key) > -1) {
+            if(!this.game.started || this.inputHasFocus()) {
+                return;
+            }
+            switch (key) {
+                case 'z':
+                    this.app.toggleInventory();
+                    break;
+                case 'x':
+                    this.app.toggleAchievements();
+                    break;
+                case 'c':
+                    this.app.toggleSettings();
+                    break;
+                case 'v':
+                    this.app.toggleWeaponInfo(event);
+                    break;
+                case 'b':
+                    this.app.toggleAvatarInfo(event);
+                    break;
+                case 't':
+                    this.highlightClosestTarget(event);
+                    break;
+            }
         }
     }
 
@@ -105,18 +137,17 @@ class KeyBoardHandler {
     inputHasFocus() {
         const elem = document.activeElement;
         return elem && (elem.tagName.toLowerCase() === "input" || elem.tagName.toLowerCase() === "textarea");
-
     }
 
     hasOpenPanel() {
         return $('body').hasClass('settings') ||
-            $('body').hasClass('about') ||
+            $('body').hasClass('inventory') ||
             $('body').hasClass('credits') ||
             $('#chatbox').hasClass("active");
     }
 
     equipWeapon(weapon) {
-        let weaponId = Types.Entities[weapon];
+        let weaponId = Types.getKindFromString(weapon);
         let nftId = weapon.replace("NFT_", "0x");
         this.game.client.sendEquipInventory(weaponId, nftId);
         this.game.player.switchWeapon(weapon,1);
@@ -129,8 +160,8 @@ class KeyBoardHandler {
             this.weapons = [];
             axios.get(inventoryQuery).then(function(response) {
                 for(var i = 0; i < response.data.inventory.length; i++) {
-                    if (Types.isWeapon(Types.Entities[response.data.inventory[i]])) {
-                        self.weapons.push(response.data.inventory[i]);
+                    if (Types.isWeapon(Types.Entities[response.data.inventory[i].nftId])) {
+                        self.weapons.push(response.data.inventory[i].nftId);
                     }
                 }
                 callback(self.weapons);
@@ -159,5 +190,43 @@ class KeyBoardHandler {
         }
 
         return weapons[nextWeaponIndex];
+    }
+
+    highlightNextTarget(event) {
+        if(!this.game.started || this.inputHasFocus() || this.hasOpenPanel()) {
+            return;
+        }
+
+        if (event !== undefined) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+        }
+
+        this.game.highlightNextTarget();
+    }
+
+    highlightClosestTarget() {
+        if(!this.game.started || this.inputHasFocus() || this.hasOpenPanel()) {
+            return;
+        }
+
+        this.game.highlightClosestTarget();
+    }
+
+    engageTarget(event) {
+        if(!this.game.started || this.inputHasFocus() || this.hasOpenPanel()) {
+            return;
+        }
+
+        if (event !== undefined) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+        }
+
+        if(this.game.highlightedTarget) {
+            if(!this.game.highlightedTarget.isDead) {
+                this.game.makePlayerAttack(this.game.highlightedTarget);
+            }
+        }
     }
 }

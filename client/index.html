@@ -1,17 +1,28 @@
 <!DOCTYPE html>
 <!-- 
 
- , __                                   __                      
-/|/  \                                 /  \                     
- | __/ ,_    __           ,   _   ,_  | __ |          _   , _|_ 
- |   \/  |  /  \_|  |  |_/ \_|/  /  | |/  \|  |   |  |/  / \_|  
- |(__/   |_/\__/  \/ \/   \/ |__/   |_/\__/\_/ \_/|_/|__/ \/ |_/
+ ___       ________  ________  ________  _______   ________     
+|\  \     |\   __  \|\   __  \|\   __  \|\  ___ \ |\   __  \    
+\ \  \    \ \  \|\  \ \  \|\  \ \  \|\  \ \   __/|\ \  \|\  \   
+ \ \  \    \ \  \\\  \ \  \\\  \ \   ____\ \  \_|/_\ \   _  _\  
+  \ \  \____\ \  \\\  \ \  \\\  \ \  \___|\ \  \_|\ \ \  \\  \| 
+   \ \_______\ \_______\ \_______\ \__\    \ \_______\ \__\\ _\ 
+    \|_______|\|_______|\|_______|\|__|     \|_______|\|__|\|__|
+                                                                
+                                                                
+                                                                
+ ___       ________  ________   ________  ________              
+|\  \     |\   __  \|\   ___  \|\   ___ \|\   ____\             
+\ \  \    \ \  \|\  \ \  \\ \  \ \  \_|\ \ \  \___|_            
+ \ \  \    \ \   __  \ \  \\ \  \ \  \ \\ \ \_____  \           
+  \ \  \____\ \  \ \  \ \  \\ \  \ \  \_\\ \|____|\  \          
+   \ \_______\ \__\ \__\ \__\\ \__\ \_______\____\_\  \         
+    \|_______|\|__|\|__|\|__| \|__|\|_______|\_________\        
+                                            \|_________|        
+                                                                
+                                                                
 
-Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworkshop.fr
-
-* Client libraries used: RequireJS, Underscore.js, jQuery, Modernizr
-* Server-side: Node.js, Worlize/WebSocket-Node, miksago/node-websocket-server
-* Should work in latest versions of Firefox, Chrome, Safari, Opera, Safari Mobile and Firefox for Android
+LooperLands (https://looperlands.io), initially conceived by BalksHamster and built out by the LooperLands community, is forked from Little Workshop's BrowserQuest.
 
  -->
 <html lang="en">
@@ -32,10 +43,10 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
         <script src="js/lib/modernizr.js" type="text/javascript"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.1/socket.io.js"></script>
         <script src="js/lib/axios.min.js"></script>
-        <script src="js/saveworker.js"></script>
 		<script src="js/keyboardhandler.js"></script>
 		<script src="js/settings.js"></script>
 		<script src="js/gamepad.js"></script>
+		<script src="js/touchListener.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/console-ban@5.0.0/dist/console-ban.min.js"></script>
 		<!--
 		<script>
@@ -111,21 +122,6 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
 	                        <span>Close</span>
                         </div>
     	            </article>
-    	            <article id="about">
-        	            <h1>
-         	               <span class="left-ornament"></span>
-         	               <span class="title">
-         	                   Inventory
-         	               </span>
-         	               <span class="right-ornament"></span>
-                        </h1>
-                        <p id="inventory">
-                            Your inventory is empty.
-                        </p>
-	                    <span id="close-about">
-	                        <span>- click anywhere to close -</span>
-                        </span>
-    	            </article>
     	            <article id="death">
                         <p>You are dead...</p>
 						<a href="https://loopworms.io/DEV/LooperLands/">Character Selection</a>
@@ -143,47 +139,11 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
                              In order to play, we recommend using the latest version of Firefox, Chrome or Safari.
                          </p>
                     </article>
-    	            <article id="settings">
-        	            <h1>
-         	               <span class="left-ornament"></span>
-         	               <span class="title">
-         	                   Game Settings
-         	               </span>
-         	               <span class="right-ornament"></span>
-                        </h1>
-						<small>Disable centered camera and/or animated tiles for performance.</small>
-						<form id="settingsForm">
-							<ul style="text-align: left;">
-								<li>
-									<input type="checkbox" id="musicEnabled" name="musicEnabled" value="true">
-									<label for="musicEnabled">Music Enabled</label>
-								</li>
-								<li>
-									<input type="checkbox" id="centeredCamera" name="centeredCamera" value="true">
-									<label for="centeredCamera">Centered Camera</label>
-								</li>
-								<li>
-									<input type="checkbox" id="animatedTiles" name="animatedTiles" value="true">
-									<label for="animatedTiles">Animated Tiles</label>
-								</li>
-								<li>
-									<input type="checkbox" id="highlightTargetTiles" name="highlightTargetTiles" value="true">
-									<label for="highlightTargetTiles">Highlight Target Tiles</label>
-								</li>
-								<li>
-									<input type="checkbox" id="fullscreen" name="fullscreen" value="true">
-									<label for="fullscreen">Fullscreen</label>
-								</li>
-							</ul>
-							<br>
-							<button type="submit">Save Settings</button>
-						</form>
-    	            </article>
 	            </div>
 	            <div class="parchment-right"></div>
 	        </section>
 	    </div>
-		<div id="container">
+		<div id="container" class="pixel-corners">
 		    <div id="canvasborder">
 		        <article id="instructions" class="clickable">
 		            <div class="close"></div>
@@ -199,9 +159,52 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
 	                </ul>
 	                    <p>- click anywhere to close -</p>
 		        </article>
+				<article id="inventory" class="panel">
+					<div class="panelTitle pixel-corners-xs">Inventory</div>
+					<div class="panelContent">
+						<div id="inventorycontent">
+							Your inventory is empty.
+						</div>
+						<span id="close-inventory" class="close" onclick="(e) => { e.stopImmediatePropagation(); e.preventDefault(); return false}"></span>
+					</div>
+				</article>
+				<article id="settings" class="panel">
+					<div class="panelTitle pixel-corners-xs" style="margin: 0 auto; width:250px;">Game Settings</div>
+					<small>Disable centered camera and/or animated tiles for performance.</small>
+					<form id="settingsForm">
+						<ul style="text-align: left;">
+							<li>
+								<input type="checkbox" id="musicEnabled" name="musicEnabled" value="true">
+								<label for="musicEnabled">Music Enabled</label>
+							</li>
+							<li>
+								<input type="checkbox" id="centeredCamera" name="centeredCamera" value="true">
+								<label for="centeredCamera">Centered Camera</label>
+							</li>
+							<li>
+								<input type="checkbox" id="animatedTiles" name="animatedTiles" value="true">
+								<label for="animatedTiles">Animated Tiles</label>
+							</li>
+							<li>
+								<input type="checkbox" id="highlightTargetTiles" name="highlightTargetTiles" value="true">
+								<label for="highlightTargetTiles">Highlight Target Tiles</label>
+							</li>
+							<li>
+								<input type="checkbox" id="fullscreen" name="fullscreen" value="true">
+								<label for="fullscreen">Fullscreen</label>
+							</li>
+							<li>
+								<input type="checkbox" id="renderText" name="renderText" value="true">
+								<label for="renderText">Render Text (names of entities and combat info)</label>
+							</li>
+						</ul>
+						<br>
+						<button type="submit" class="panelBorder">Save Settings</button>
+					</form>
+				</article>
 		        <article id="achievements" class="page1 clickable panel">
 		            <div class="close"></div>
-					<div class="panelTitle">Quests</div>
+					<div class="panelTitle pixel-corners-xs">Quests</div>
 		            <div id="achievements-wrapper">
 		                <div id="lists">
         		        </div>
@@ -242,10 +245,9 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
 						<div id="close-achievement-details"></div>
 					</div>
 		        </article>
-    			<div id="canvas">
+    			<div id="canvas" class="pixel-corners-top">
     				<canvas id="background"></canvas>
     				<canvas id="entities"></canvas>
-					<canvas id="high-canvas"></canvas>
     				<canvas id="foreground" class="clickable"></canvas>
     			</div>
     			<div id="bubbles">
@@ -272,7 +274,7 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
 					</div>
 					<div id="bullseye">BULLSEYE</div>
 				</div>
-    			<div id="bar-container">
+    			<div id="bar-container" class="pixel-corners-bottom">
 					<div id="healthbar">
 					</div>
 					<div id="hitpoints">
@@ -291,7 +293,7 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
                     <div id="barbuttons">
                         <div id="chatbutton" class="barbutton clickable"></div>
                         <div id="achievementsbutton" class="barbutton clickable"></div>
-                        <div id="helpbutton" class="barbutton clickable"></div>
+                        <div id="inventorybutton" class="barbutton clickable"></div>
                         <div id="mutebutton" class="barbutton clickable active"></div>
                     </div>
     			</div>
@@ -302,7 +304,7 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
 						<div id="emoteMenu"></div>
 				    </form>
 				</div>
-                <div id="population">
+                <div id="population" class="pixel-corners-top">
                     <div id="instance-population" class="">
                         <span>0</span> <span>players</span> in this world
                     </div>
@@ -311,7 +313,7 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
                     </div>
                 </div>
 
-				<div id="avatarStats">
+				<div id="avatarStats" class="pixel-corners-top">
 					<span>Level: </span><span id="avatarLevel" style="color:#FCE045; padding-right: 10px;"></span>(<span id="avatarProgress"></span>%)
 					<span id="buffInfo"></span>
 					<br>
@@ -320,13 +322,14 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
 					</span>
 				</div>
 
-				<div id="weaponStats">
-					<div><span>Level: </span><span id="weaponLevel" style="color:#FCE045; padding-right: 10px;"></span>(<span id="weaponProgress"></span>%)</div>
-					<div>Trait: <span id="weaponTrait" style="color: #FCE045;"></span></div>
+				<div id="weaponStats" class="pixel-corners-top">
+					<div><span>Level: </span><span id="weaponLevel" style="color:#FCE045; padding-right: 10px;"></span><span id="weaponProgressContainer">(<span id="weaponProgress"></span>%)</span></div>
+					<div id="weaponTraitContainer">Trait: <span id="weaponTrait" style="color: #FCE045;"></span></div>
 				</div>
 
+				<div id="resources" class="hidden pixel-corners-bottom"></div>
 				<div id="new-achievement-popup" class="panel hidden">
-					<div class="panelTitle">New Quest Received</div>
+					<div class="panelTitle pixel-corners-xs">New Quest Received</div>
 					<div class="header">
 						<div id="new-achievement-name" class="stroke"></div>
 					</div>
@@ -334,6 +337,18 @@ Mozilla presents an HTML5 mini-MMORPG by Little Workshop http://www.littleworksh
 						<div id="new-achievement-text"></div>
 					</div>
 					<div id="close-new-achievement"></div>
+				</div>
+
+				<div id="shop-confirmation" class="panel hidden">
+					<div id="shop-confirmation-longtext"></div>
+					<div id="shop-confirmation-text"></div>
+					<div id="cancel-shop-purchase">Cancel</div>
+					<div id="confirm-shop-purchase">Buy</div>
+				</div>
+				<div id="shop-popup" class="panel hidden">
+					<div class="panelTitle pixel-corners-xs" id="shop-popup-name"></div>
+					<div class="items" id="shop-popup-items"></div>
+					<div id="close-shop" class="close"></div>
 				</div>
 		    </div>
 		</div>

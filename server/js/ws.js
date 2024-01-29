@@ -25,11 +25,40 @@ const chat = require("./chat.js");
 const quests = require("./quests/quests.js");
 const Lakes = require("./lakes.js");
 const Collectables = require('./collectables.js');
+const Properties = require('./properties.js')
+const Types = require("../../shared/js/gametypes");
+const platform = require('./looperlandsplatformclient.js');
 const cache = new NodeCache();
-const LooperManager = require('./ownyourlooperboost.js');
 
 const LOOPWORMS_LOOPERLANDS_BASE_URL = process.env.LOOPWORMS_LOOPERLANDS_BASE_URL;
-const INSTANCE_URI = process.env.INSTANCE_URI ? process.env.INSTANCE_URI : "";
+const APP_URL = process.env.APP_URL;
+const GAMESERVER_NAME = process.env.GAMESERVER_NAME;
+const LOOPERLANDS_PLATFORM_BASE_URL = process.env.LOOPERLANDS_PLATFORM_BASE_URL;
+const LOOPERLANDS_PLATFORM_API_KEY = process.env.LOOPERLANDS_PLATFORM_API_KEY;
+
+
+const platformClient = new platform.LooperLandsPlatformClient(LOOPERLANDS_PLATFORM_API_KEY, LOOPERLANDS_PLATFORM_BASE_URL);
+
+
+function extractDetails(inputUrl) {
+    const parsedUrl = new URL(inputUrl);
+    let protocol = parsedUrl.protocol;
+    let host = parsedUrl.hostname;
+    let port;
+
+    if (protocol === 'http:') {
+        port = 8000;
+    } else if (protocol === 'https:') {
+        port = 443;
+    }
+
+    protocol = protocol.replace(':', '');
+
+    return { protocol, host, port };
+}
+
+// Example usage
+const urlDetails = extractDetails(APP_URL);
 
 /**
  * Abstract Server and Connection classes
@@ -117,11 +146,14 @@ var Connection = cls.Class.extend({
             http://codevolution.com
  ***************/
 WS.socketIOServer = Server.extend({
-    init: function(host, port, protocol) {
+    init: function() {
         self = this;
-        self.protocol = protocol;
-        self.host = host;
-        self.port = port;
+        self.protocol = urlDetails.protocol;
+        self.host = urlDetails.host;
+        self.port = urlDetails.port;
+        const port = urlDetails.port;
+        const host = self.host;
+
         this.cache = cache;
         var express = require('express');
         var app = express();
@@ -131,15 +163,15 @@ WS.socketIOServer = Server.extend({
         let http = new httpInclude.Server(app);
         
 
-        var corsAddress = self.protocol + "://" + self.host + INSTANCE_URI;
-        console.log("CORS Address", corsAddress);
+        console.log("APP_URL", APP_URL);
         self.io = require('socket.io')(http, {
             allowEIO3: true,
-            cors: {origin: corsAddress, credentials: true}
+            cors: {origin: APP_URL, credentials: true}
         });
 
         app.use(express.json())
 
+        platformClient.createOrUpdateGameServer(host, port, GAMESERVER_NAME);
 
         async function newSession(body, teleport) {
             const id = crypto.randomBytes(20).toString('hex');
@@ -157,22 +189,7 @@ WS.socketIOServer = Server.extend({
                 }
             }
 
-
-            if (teleport) {
-                body.xp = parseInt(body.xp);
-            } else {
-                let ownYourLoopersBuff = 0;
-                if (!body.bot) {
-                    let manager = new LooperManager(body.walletId);
-                    await manager.fetchLoopers();
-                    ownYourLoopersBuff = manager.getTotalExperienceBoost();
-                }
-
-                //console.log("Asset count: ", total,  " for wallet " + playerCache.walletId + " and nft " + playerCache.nftId);
-                body.xp = parseInt(body.xp) + ownYourLoopersBuff;
-                body.ownYourLoopersBuff = ownYourLoopersBuff;
-            }
-            
+            body.xp = parseInt(body.xp);
 
             cache.set(id, body);
             let responseJson = {
@@ -281,7 +298,7 @@ WS.socketIOServer = Server.extend({
             const walletId = sessionData.walletId;
             const isDirty = sessionData.isDirty;
 
-            let parsedSaveData;
+            let parsedSaveData = undefined;
             let weapon;
             let avatarGameData;
 
@@ -293,8 +310,6 @@ WS.socketIOServer = Server.extend({
                 });
                 return;
             } else {
-                //console.log("Session ID", sessionId, "Wallet ID", walletId, "NFT ID", nftId);
-                parsedSaveData = await dao.getCharacterData(walletId, nftId);
                 weapon = await dao.loadWeapon(walletId, nftId);
                 avatarGameData = await dao.loadAvatarGameData(nftId);
 
@@ -311,7 +326,7 @@ WS.socketIOServer = Server.extend({
                     looperlands: true,
                     nftId: nftId,
                     walletId: walletId,
-                    hasAlreadyPlayed: false,
+                    hasAlreadyPlayed: sessionData.xp > 0,
                     player: {
                         name: name,
                         weapon: "",
@@ -337,26 +352,6 @@ WS.socketIOServer = Server.extend({
             
             res.status(200).json(parsedSaveData);
         });
-        
-        app.put('/session/:sessionId', (req, res) => {
-            const sessionId = req.params.sessionId;
-            const sessionData = cache.get(sessionId);
-            if (sessionData === undefined) {
-                //console.error("Session data is undefined for session id, params: ", sessionId, req.params);
-                res.status(404).json({
-                    status: false,
-                    "error" : "session not found",
-                    user: null
-                });
-                return;
-            }
-            const nftId = sessionData.nftId;
-            const walletId = sessionData.walletId;
-
-            const body = req.body;
-            dao.saveCharacterData(walletId, nftId, body);
-            res.status(200).send(true);
-        });
 
         app.get("/session/:sessionId/inventory", async (req, res) => {
             const sessionId = req.params.sessionId;
@@ -373,33 +368,54 @@ WS.socketIOServer = Server.extend({
             const walletId = sessionData.walletId;
 
             let inventory = [];
-            let rcvInventory = await axios.get(`${LOOPWORMS_LOOPERLANDS_BASE_URL}/selectLooperLands_Item.php?WalletID=${walletId}&APIKEY=${process.env.LOOPWORMS_API_KEY}`);
+            let special = [];
+            let bots = [];
+            const nftId = sessionData.nftId;
+
+            let rcvInventory = await axios.get(`${LOOPWORMS_LOOPERLANDS_BASE_URL}/looperInventoryDetails.php?walletID=${walletId}&nftId=${nftId}&APIKEY=${process.env.LOOPWORMS_API_KEY}`);
             if (rcvInventory?.data){
-                inventory = rcvInventory.data.map(function(item) {
+                inventory = rcvInventory.data[0].weapons ? rcvInventory.data[0].weapons.map(function(item) {
                     if (item){
-                        return item.replace("0x", "NFT_");
+                        item.nftId = item.nftId.replace("0x", "NFT_");
+                        item.level = Formulas.calculatePercentageToNextLevel(item.xp).currentLevel;
+                        return item;
                     }
-                });
+                }) : [];
                 if (inventory.length > 0) {
                     inventory = inventory.filter(item => {
-                        if (item && Types.isWeapon(Types.getKindFromString(item))){
+                        if (item && Types.isWeapon(Types.getKindFromString(item.nftId))){
                             return item;
                         }
                     });
                 }
-            }
 
-            let special = [];
-            let rcvSpecial = await dao.getSpecialItems(walletId);
-            if (rcvSpecial) {
-                special = rcvSpecial.map(function(item) {
+                special = rcvInventory.data[0].specialitems ? rcvInventory.data[0].specialitems.map(function(item) {
                     if (item){
-                        return item.NFTID.replace("0x", "NFT_");
+                        item.nftId = item.nftId.replace("0x", "NFT_");
+                        item.level = Formulas.calculateToolPercentageToNextLevel(item.xp).currentLevel;
+                        return item;
                     }
-                });
+                }) : [];
                 if (special.length > 0) {
                     special = special.filter(item => {
-                        if (item && Types.isSpecialItem(Types.getKindFromString(item))){
+                        if (item && Types.isSpecialItem(Types.getKindFromString(item.nftId))){
+                            return item;
+                        }
+                    });
+                }
+
+                bots = rcvInventory.data[0].bots ? rcvInventory.data[0].bots.map(function(item) {
+                    if (item){
+                        item.nftId = item.nftId.replace("0x", "NFT_");
+                        return item;
+                    }
+                }) : [];
+
+                if (bots.length > 0) {
+                    bots = bots.filter(item => {
+                        if (item && Types.isBot(Types.getKindFromString(item.nftId))){
+                            item.nftId = item.nftId.replace("0x", "NFT_");
+                            item.level = Formulas.calculateToolPercentageToNextLevel(item.xp).currentLevel;
                             return item;
                         }
                     });
@@ -407,7 +423,36 @@ WS.socketIOServer = Server.extend({
             }
 
             let consumables = sessionData.gameData?.consumables || {};
+            let resources = {};
             Object.keys(consumables).forEach(item => {
+                if(Types.isResource(parseInt(item))) {
+                    resources[item] = consumables[item];
+                    delete consumables[item];
+                }
+
+                if (Types.isWeapon(parseInt(item)) && consumables[item] > 0) {
+                    let levelInfo = Properties.getWeaponLevel(item);
+                    let weaponLevel = 0;
+                    if (typeof levelInfo === "object") {
+                        let sortedLevelInfo = _(levelInfo).chain().sortBy("level").reverse().value()
+                        for (let i = 0; i < sortedLevelInfo.length; i++) {
+                            let level = sortedLevelInfo[i];
+                            if (consumables[Types.getKindFromString(level.consumable)] > 0) {
+                                weaponLevel = level.level;
+                                break;
+                            }
+                        }
+                    } else {
+                        weaponLevel = levelInfo;
+                    }
+                    inventory.push({
+                        nftId: Types.getKindAsString(item),
+                        weaponName: Properties.getWeaponName(item),
+                        level: weaponLevel,
+                        Trait: "regular"
+                    });
+                }
+
                 if (!item || !Collectables.isCollectable(item) || consumables[item] <= 0){
                     delete consumables[item];
                 } else {
@@ -418,8 +463,9 @@ WS.socketIOServer = Server.extend({
                 }
             });
 
-            let bots = await dao.getBots(walletId);
-            res.status(200).json({inventory: inventory, special: special, consumables: consumables, bots: bots});
+            inventory = _(inventory).chain().sortBy("level").reverse().sortBy("Trait").value();
+            special = _(special).chain().sortBy("level").reverse().sortBy("Trait").value();
+            res.status(200).json({inventory: inventory, special: special, consumables: consumables, bots: bots, resources: resources});
         });
 
         app.get("/session/:sessionId/quests", async (req, res) => {
@@ -624,8 +670,6 @@ WS.socketIOServer = Server.extend({
                     user: null
                 });
             } else {
-                let looperManager = new LooperManager(sessionData.walletId);
-                await looperManager.fetchLoopers();
                 let avatarLevelInfo = Formulas.calculatePercentageToNextLevel(sessionData.xp);
                 let maxHp = Formulas.hp(avatarLevelInfo.currentLevel);
                 let weaponInfo = self.worldsMap[sessionData.mapId].getNFTWeaponStatistics(sessionData.entityId);
@@ -635,6 +679,9 @@ WS.socketIOServer = Server.extend({
                     } else if (weaponInfo.constructor === "NFTSpecialItem")  {
                         weaponInfo['weaponLevelInfo'] = Formulas.calculateToolPercentageToNextLevel(weaponInfo.experience);
                     }
+                } else {
+                    weaponInfo = {};
+                    weaponInfo['weaponLevelInfo'] = self.worldsMap[sessionData.mapId].getItemWeaponStatistics(sessionData.entityId);
                 }
 
                 let botInfo = {};
@@ -647,8 +694,6 @@ WS.socketIOServer = Server.extend({
 
                 let ret = {
                     avatarLevelInfo: avatarLevelInfo,
-                    ownYourLoopersBuff: looperManager.getTotalExperienceBoost(),
-                    totalLoopers: looperManager.getTotalAssets(),
                     maxHp: maxHp,
                     weaponInfo: weaponInfo,
                     botInfo: botInfo
@@ -872,6 +917,7 @@ WS.socketIOServer = Server.extend({
             const sessionId = req.params.sessionId;
             const sessionData = cache.get(sessionId);
             let botNftId = req.body.botNftId;
+
             let ownedBots = await dao.getBots(sessionData.walletId);
             let botInfo = ownedBots.find(bot => bot.botNftId === botNftId);
             if (botInfo) {
@@ -884,9 +930,10 @@ WS.socketIOServer = Server.extend({
                     sessionData.walletId,
                     sessionData.entityId,
                     owner.x,
-                    owner.y
+                    owner.y,
+                    APP_URL
                 );
-                if (newBot.sessionId) {
+                if (newBot?.sessionId) {
                     sessionData.botSessionId = newBot.sessionId;
                     cache.set(sessionId, sessionData);
                     res.status(200).send({});
@@ -897,6 +944,87 @@ WS.socketIOServer = Server.extend({
                 console.error("Bot not found " + sessionData);
                 res.status(404).send({});
             }
+        });
+
+        app.get("/shop/:shopId/inventory", async (req, res) => {
+            const shopId = req.params.shopId;
+            let shopInventory = await dao.getShopInventory(shopId);
+            res.status(200).json(shopInventory);
+        });
+
+        app.get("/session/:sessionId/shop/:shopId/buy/:itemId", async (req, res) => {
+            const sessionId = req.params.sessionId;
+            const sessionData = cache.get(sessionId);
+            let player = self.worldsMap[sessionData.mapId].getPlayerById(sessionData.entityId);
+            let gameData = sessionData.gameData;
+            if (sessionData === undefined) {
+                res.status(404).json({
+                    status: false,
+                    error: "No session with id " + sessionId + " found",
+                    user: null
+                });
+                return;
+            }
+
+            const nftId = sessionData.nftId;
+            const shopInventory = await dao.getShopInventory(req.params.shopId);
+            const item = shopInventory.find(item => item.id === req.params.itemId);
+
+            if (gameData.consumables === undefined) {
+                gameData.consumables = {};
+            }
+
+            // Check player min level
+            let minPlayerLvl = parseInt(item.minPlayerLevel ?? 0);
+            if (minPlayerLvl !== undefined && !_.isNaN(minPlayerLvl) && minPlayerLvl > 0 && minPlayerLvl > player.level) {
+                res.status(400).json({
+                    status: false,
+                    error: "You're almost there! Achieve level " + item.minPlayerLevel + " to unlock this item.",
+                    user: null
+                });
+
+                return;
+            }
+
+            // Loop over all keys of price and check if player has enough of that resource
+            for (const [key, value] of Object.entries(item.price)) {
+                let resourceId = Types.getKindFromString(key);
+                let cost = parseInt(value);
+                let resource = parseInt(gameData.consumables[resourceId]);
+                if (_.isNaN(resource) || !_.isNumber(resource) || (resource < cost)) {
+                    res.status(400).json({
+                        status: false,
+                        error: "Not enough " + key,
+                        user: null
+                    });
+
+                    return;
+                }
+            }
+
+            // Loop over all keys of price again and remove that amount of resource from player
+            for (const [key, value] of Object.entries(item.price)) {
+                let resourceId = Types.getKindFromString(key);
+                let cost = parseInt(value);
+                dao.saveConsumable(nftId, resourceId, -1 * cost);
+                gameData.consumables[resourceId] = gameData.consumables[resourceId] - cost;
+            }
+
+            // Add item to player inventory
+            dao.saveConsumable(nftId, item.item, item.amount ?? 1);
+
+            let itemCount = gameData.consumables[item.item];
+            if (itemCount) {
+                gameData.consumables[item.item] = itemCount + 1;
+            } else {
+                gameData.consumables[item.item] = 1;
+            }
+
+            // Store changes in session data
+            sessionData.gameData = gameData;
+            cache.set(sessionId, sessionData);
+
+            res.status(200).send({});
         });
 
         self.io.on('connection', function(connection){
@@ -910,7 +1038,6 @@ WS.socketIOServer = Server.extend({
                 self.connection_callback(c);
           }
           self.addConnection(c);
-
         });
 
         
@@ -986,7 +1113,5 @@ WS.socketIOConnection = Connection.extend({
         //console.log("Closing connection to socket"+". Error: " + logError);
         this._connection.disconnect();
     }
-    
-
 
 });

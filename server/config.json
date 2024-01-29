@@ -1,6 +1,4 @@
 {
-    "host": "127.0.0.1",
-    "port": 8000,
     "debug_level": "info",
     "nb_players_per_world": 1000,
     "nb_worlds": 1,
@@ -16,9 +14,11 @@
         "wk",
         "crimsonspace",
         "kbb",
-        "bitcorn"
+        "bitcorn",
+        "m88n",
+        "duckville",
+        "shortdestroyers"
     ],
     "map_directory": "./server/maps/",
-    "metrics_enabled": false,
-    "protocol": "http"
+    "metrics_enabled": false
 }

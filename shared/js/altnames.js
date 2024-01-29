@@ -2,9 +2,14 @@ const AltNames = {
     skeleton2: 'greater skeleton',
     eye: 'evil eye',
     deathknight: 'death knight',
-    cobslimeblue: "slime",
-    cobslimeyellow: "slime",
-    cobslimered: "slime",
+    cobslimeblue: "Blinky",
+    cobslimeyellow: "Winky",
+    cobslimered: "Inky",
+    cobslimepurple: "Plum",
+    cobslimegreen: "Glimmer",
+    cobslimepink: "Pinky",
+    cobslimecyan: "Zippy",
+    cobslimemint: "Minty",
     cobslimeking: "slime king",
     magcrack: "megamag",
     cobdirt: "pile of dirt",
@@ -69,7 +74,16 @@ const AltNames = {
     oafish33: "Tropic Pinchmarvel",
     oafish34: "Cobalt Asteroidea",
     oafish35: "Orbhead Oceantwirl",
-    oafish36: "Emerald Jellyfloat",    
+    oafish36: "Emerald Jellyfloat",  
+
+    //Short Destroyers
+    lateflea: ".65 Late Flea",  
+    wolfboss: "Victor Henry Stevenson",  
+    horde1: ".65 Late Flea",  
+    horde2: ".65 Late Flea",  
+    horde3: ".65 Late Flea",  
+    horde4: ".65 Late Flea",  
+    horde5: ".65 Late Flea",  
 };
 
 AltNames.getAltNameFromKind = function(kind){
