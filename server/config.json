@@ -15,7 +15,8 @@
         "fhf",
         "wk",
         "crimsonspace",
-        "kbb"
+        "kbb",
+        "bitcorn"
     ],
     "map_directory": "./server/maps/",
     "metrics_enabled": false,
