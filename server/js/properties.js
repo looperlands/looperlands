@@ -1062,7 +1062,8 @@ let Properties = {
     lateflea: {
         level: 5,
         drops: {
-            flask: 50
+            popcorn: 50,
+            energydrink: 10,
         }
     },
 
@@ -1072,7 +1073,7 @@ let Properties = {
             dvd: 50,
             popcorn: 50,      
         },
-        messages: ['Darkness shall embrance you!', 'Your doom is woven', 'Fear binds you', 'Your end is spun', 'The old world beckons you'],
+        messages: ['Prepare for Death!'],
         armorMod: 1.1,
         weaponMod: 1.6,
         hpMod: 2.0,
@@ -1081,30 +1082,31 @@ let Properties = {
     },
 
     fleaboss: {
-        level: 10,
+        level: 30,
         drops: {
-            dvd: 50,
-            popcorn: 50,      
+            energydrink: 100,      
         },
         messages: ['Time to collect those late fees!'],
-        armorMod: 1.1,
-        weaponMod: 1.6,
-        hpMod: 2.0,
-        xp: 1200,  
-        respawnDelay: 30000
+        armorMod: 1.5,
+        weaponMod: 1.5,
+        hpMod: 2.5,
+        xp: 15000,  
+        respawnDelay: 600000
     },
 
     horde1: {
-        level: 10,
+        level: 8,
         drops: {
-            flask: 50
+            popcorn: 50,
+            energydrink: 10,
         }
     },
 
     horde2: {
-        level: 4,
+        level: 12,
         drops: {
-            flask: 50
+            popcorn: 50,
+            energydrink: 10,
         }
     },
 

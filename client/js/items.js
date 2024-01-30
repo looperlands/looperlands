@@ -209,6 +209,16 @@ define(['item'], function(Item) {
         dvd:Item.extend({init:function(id){this._super(id,Types.Entities.DVD,"object");this.lootMessage="You collected a DVD.";}}),
         game:Item.extend({init:function(id){this._super(id,Types.Entities.GAME,"object");this.lootMessage="You collected a Game Cartridge.";}}),
         popcorn:Item.extend({init:function(id){this._super(id,Types.Entities.POPCORN,"object");this.lootMessage="You collected a Bag of Popcorn.";}}),
+        energydrink:Item.extend({
+            init:function(id) {
+                this._super(id,Types.Entities.ENERGYDRINK,"object");
+                this.lootMessage="You collected an Energy Drink.";
+            },
+
+            onLoot: function(player) {
+                player.startInvincibility();
+            }
+        }),
         //mycupbloody
         EYEBALL:Item.extend({
             init:function(id){

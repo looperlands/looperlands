@@ -224,6 +224,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "item-dvd",
                     "item-game",
                     "item-popcorn",
+                    "item-energydrink",
                     //mycupbloody
                     "item-EYEBALL",
                     "item-REDPOTION",

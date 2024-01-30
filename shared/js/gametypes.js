@@ -276,6 +276,7 @@ Types = {
         DVD: 77000002,
         GAME: 77000003,
         POPCORN: 77000004,
+        ENERGYDRINK: 77000005,
         //mycupbloody
         EYEBALL: 77000005,
         REDPOTION: 77000006,
@@ -5141,6 +5142,7 @@ var kinds = {
     dvd: [Types.Entities.DVD, "object"],
     game: [Types.Entities.GAME, "object"],
     popcorn: [Types.Entities.POPCORN, "object"],
+    energydrink: [Types.Entities.ENERGYDRINK, "object"],
     //mycupbloody
     EYEBALL: [Types.Entities.EYEBALL, "object"],
     REDPOTION: [Types.Entities.REDPOTION, "object"],
@@ -9876,7 +9878,8 @@ Types.isHealingItem = function(kind) {
         || kind === Types.Entities.POTION
         || kind === Types.Entities.COBAPPLE
         || kind === Types.Entities.REDPOTION
-        || kind === Types.Entities.GREYPOTION;
+        || kind === Types.Entities.GREYPOTION
+        || kind === Types.Entities.POPCORN;
 };
 
 Types.isExpendableItem = function(kind) {
@@ -9885,7 +9888,8 @@ Types.isExpendableItem = function(kind) {
         || kind === Types.Entities.CAKE
         || kind === Types.Entities.COBCORN
         || kind === Types.Entities.COBCLOVER
-        || kind === Types.Entities.EYEBALL;
+        || kind === Types.Entities.EYEBALL
+        || kind === Types.Entities.ENERGYDRINK;
 };
 
 Types.getKindFromString = function(kind) {
