@@ -93,6 +93,7 @@ define(['text!../sprites/agent.json',
         'text!../sprites/item-dvd.json',
         'text!../sprites/item-game.json',
         'text!../sprites/item-popcorn.json',
+        'text!../sprites/item-energydrink.json',
         //mycupbloody
         'text!../sprites/item-EYEBALL.json',
         'text!../sprites/item-REDPOTION.json',
