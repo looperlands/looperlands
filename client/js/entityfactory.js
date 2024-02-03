@@ -491,6 +491,9 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.WOLFBOSS] = function(id) {
         return new Mobs.wolfboss(id);
     };
+    EntityFactory.builders[Types.Entities.FLEABOSS] = function(id) {
+        return new Mobs.fleaboss(id);
+    };
     EntityFactory.builders[Types.Entities.HORDE1] = function(id) {
         return new Mobs.horde1(id);
     };
@@ -666,6 +669,7 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.DVD] = function(id) { return new Items.dvd(id); };
     EntityFactory.builders[Types.Entities.GAME] = function(id) { return new Items.game(id); };
     EntityFactory.builders[Types.Entities.POPCORN] = function(id) { return new Items.popcorn(id); };
+    EntityFactory.builders[Types.Entities.ENERGYDRINK] = function(id) { return new Items.energydrink(id); };
     //mycupbloody
     EntityFactory.builders[Types.Entities.EYEBALL]=function(id){
         return new Items.EYEBALL(id);

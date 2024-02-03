@@ -2235,6 +2235,18 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
 
+        fleaboss: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.FLEABOSS);
+                this.moveSpeed = 300;
+                this.idleSpeed = 100;
+                this.atkSpeed = 50;  
+                this.shadowOffsetY = -3;              
+                this.isAggressive = true;
+                this.aggroRange = 3;
+            }
+        }),
+
         horde1: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.HORDE1);

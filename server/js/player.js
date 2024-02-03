@@ -348,8 +348,8 @@ module.exports = Player = Character.extend({
                         self.broadcast(item.despawn());
                         self.server.removeEntity(item);
 
-                        if(kind === Types.Entities.FIREPOTION || kind === Types.Entities.COBCORN || kind === Types.Entities.EYEBALL) {
                             self.startInvincibility();
+                        if(kind === Types.Entities.FIREPOTION || kind === Types.Entities.COBCORN || kind === Types.Entities.EYEBALL || kind === Types.Entities.ENERGYDRINK) {
                             self.updateHitPoints();
 
                             if (self.firepotionTimeout != null) {
@@ -375,6 +375,7 @@ module.exports = Player = Character.extend({
                                 case Types.Entities.POTION:
                                 case Types.Entities.FLASK:
                                 case Types.Entities.COBAPPLE:
+                                case Types.Entities.POPCORN:
                                 case Types.Entities.REDPOTION:
                                     amount = 40;
                                     break;
@@ -984,7 +985,7 @@ module.exports = Player = Character.extend({
             gameData.consumables[item] = itemCount - 1;
             cache.gameData = gameData;
             this.server.server.cache.set(this.sessionId, cache);
-            
+
             let cooldownDuration = cooldownData.duration >= 0 ? cooldownData.duration : 0;
             if (cooldownGroup && cooldownDuration){
                 this.applyCooldown(cooldownGroup, cooldownDuration);
