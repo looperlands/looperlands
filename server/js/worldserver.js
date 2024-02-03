@@ -222,6 +222,9 @@ module.exports = World = cls.Class.extend({
             // Create all chest areas
             _.each(self.map.chestAreas, function (a) {
                 var area = new ChestArea(a.id, a.x, a.y, a.w, a.h, a.tx, a.ty, a.i, self);
+                if(a.c) {
+                    area.setChances(a.c);
+                }
                 self.chestAreas.push(area);
                 area.onEmpty(self.handleEmptyChestArea.bind(self, area));
             });
@@ -238,6 +241,12 @@ module.exports = World = cls.Class.extend({
             // Spawn static chests
             _.each(self.map.staticChests, function (chest) {
                 var c = self.createChest(chest.x, chest.y, chest.i);
+                if(chest.c) {
+                    c.setChances(chest.c);
+                }
+                if(chest.d) {
+                    c.setDelay(chest.d);
+                }
                 self.addStaticItem(c);
             });
 
@@ -562,9 +571,12 @@ module.exports = World = cls.Class.extend({
         return item;
     },
 
-    createChest: function (x, y, items) {
+    createChest: function (x, y, items, chances) {
         var chest = this.createItem(Types.Entities.CHEST, x, y);
         chest.setItems(items);
+        if(chances) {
+            chest.setChances(chances)
+        }
         return chest;
     },
 
@@ -1065,7 +1077,7 @@ module.exports = World = cls.Class.extend({
 
     handleEmptyChestArea: function (area) {
         if (area) {
-            var chest = this.addItem(this.createChest(area.chestX, area.chestY, area.items));
+            var chest = this.addItem(this.createChest(area.chestX, area.chestY, area.items, area.chances));
             this.handleItemDespawn(chest);
         }
     },

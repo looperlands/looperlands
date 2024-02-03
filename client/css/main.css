@@ -665,6 +665,24 @@ body.upscaled.game {background:#000;}
 #shop-confirmation-text .highlight {
     color: #fce045;
 }
+#shop-confirmation-longtext {
+    max-height: 135px;
+    overflow: auto;
+}
+#shop-confirmation-longtext::-webkit-scrollbar {
+    width: 10px;
+    background-color: #533643;
+}
+#shop-confirmation-longtext::-webkit-scrollbar-thumb {
+    background-color: #b86f50;
+}
+#shop-confirmation-longtext::-webkit-scrollbar-thumb:hover {
+    background-color: #FCE045;
+}
+#shop-confirmation-longtext::-webkit-scrollbar-thumb:active {
+    background-color: #FCE045;
+}
+
 #cancel-shop-purchase {
     display: inline-block;
     padding: 5px 10px;

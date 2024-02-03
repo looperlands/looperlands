@@ -348,8 +348,8 @@ module.exports = Player = Character.extend({
                         self.broadcast(item.despawn());
                         self.server.removeEntity(item);
 
-                            self.startInvincibility();
                         if(kind === Types.Entities.FIREPOTION || kind === Types.Entities.COBCORN || kind === Types.Entities.EYEBALL || kind === Types.Entities.ENERGYDRINK) {
+                            self.startInvincibility();
                             self.updateHitPoints();
 
                             if (self.firepotionTimeout != null) {

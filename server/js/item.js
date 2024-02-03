@@ -16,6 +16,11 @@ module.exports = Item = Entity.extend({
             self.despawnTimeout = setTimeout(params.despawnCallback, params.blinkingDuration);
         }, params.beforeBlinkDelay);
     },
+
+    setDelay: function(delay) {
+        this.delay = delay;
+        console.log('set delay: ' + this.delay);
+    },
     
     destroy: function() {
         if(this.blinkTimeout) {
@@ -26,7 +31,7 @@ module.exports = Item = Entity.extend({
         }
         
         if(this.isStatic) {
-            let delay = 30000;
+            let delay = this.delay ?? 30000;
             if(Properties[Types.getKindAsString(this.kind)] !== undefined && 
                Properties[Types.getKindAsString(this.kind)].respawnDelay !== undefined) {
                 delay = Properties[Types.getKindAsString(this.kind)].respawnDelay;    

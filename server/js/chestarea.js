@@ -10,7 +10,11 @@ module.exports = ChestArea = Area.extend({
         this.chestX = cx;
         this.chestY = cy;
     },
-    
+
+    setChances: function(chances) {
+        this.chances = chances;
+    },
+
     contains: function(entity) {
         if(entity) {
             return entity.x >= this.x
