@@ -273,6 +273,8 @@ define(['jquery', 'storage'], function ($, Storage) {
 
             let questText = quest.longText ?? (_.isArray(quest.startText) ? quest.startText.join("<br/>") : quest.startText)
             newQuestPopup.find('#new-achievement-text').html(questText);
+            newQuestPopup.scrollTop(0);
+
             let eventTypeText = "";
             if(quest.type === "KILL_MOB") {
                 eventTypeText = "Kill ";
@@ -991,6 +993,7 @@ define(['jquery', 'storage'], function ($, Storage) {
             axios.get(shopInventoryQuery).then(function(response) {
                 let items = response.data;
                 shopPopup.find('#shop-popup-items').html('');
+                shopPopup.scrollTop(0);
                 items.forEach(function (item) {
 
                     let itemHtml = "<div class='item'>";
@@ -1046,7 +1049,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                         $('#shop-confirmation-text').html('Are you sure you want to buy <span class="highlight">' + item.name + '</span>?');
                         $('#shop-confirmation-longtext').html(item.longDescription ?? item.description);
                         $('#shop-confirmation').removeClass('hidden');
-
+                        $('#shop-confirmation-longtext').scrollTop(0);
                         $('#cancel-shop-purchase').off('click');
                         $('#cancel-shop-purchase').click(function(e) {
                             $('#shop-confirmation').addClass('hidden');

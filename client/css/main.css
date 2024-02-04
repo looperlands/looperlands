@@ -668,6 +668,7 @@ body.upscaled.game {background:#000;}
 #shop-confirmation-longtext {
     max-height: 135px;
     overflow: auto;
+    font-size: 12px;
 }
 #shop-confirmation-longtext::-webkit-scrollbar {
     width: 10px;
@@ -1382,7 +1383,7 @@ footer div  {display:inline-block;}
     #playerimage {height: 96px; width: 96px;}
 
     #settings small {
-        padding-top: 50px;
+        padding-top: 25px;
         display: block;
     }
 
