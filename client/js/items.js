@@ -242,18 +242,12 @@ define(['item'], function(Item) {
                 this.lootMessage="You collected an Energy Drink.";
             },
 
-            onLoot: function(player) {
-                player.startInvincibility();
-            }
         }),
         //mycupbloody
         EYEBALL:Item.extend({
             init:function(id){
                 this._super(id,Types.Entities.EYEBALL,"object");
-                this.lootMessage="Keep an eye out!!";}
-
-                ,onLoot: function(player) {
-                    player.startInvincibility();
+                this.lootMessage="Keep an eye out!!";
             }
         }),
         REDPOTION:Item.extend({
