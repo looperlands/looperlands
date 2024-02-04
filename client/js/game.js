@@ -6320,7 +6320,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         }
 
                         if(!self.entityIdExists(entity.id)) {
-                            try {
+                            try {
                                 if(entity.id !== self.playerId) {
                                     entity.setSprite(self.sprites[entity.getSpriteName()]);
                                     entity.setGridPosition(x, y);
@@ -8187,7 +8187,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             $('#companionProgress').text(response.data.botInfo.percentage);
                         }
 
-                        if (response.data.weaponInfo !== null && response.data.weaponInfo !== undefined) {
+                        if (response.data.weaponInfo !== null &&
+                            response.data.weaponInfo !== undefined &&
+                            response.data.weaponInfo.weaponLevelInfo !== undefined
+                        ) {
                             weaponPercentage = response.data.weaponInfo.weaponLevelInfo.percentage;
                             weaponLevel = response.data.weaponInfo.weaponLevelInfo.currentLevel;
 
