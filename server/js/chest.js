@@ -34,12 +34,11 @@ module.exports = Chest = Item.extend({
     getRandomItemByChances: function() {
         let sum = Object.values(this.chances).reduce((a, b) => a + b, 0);
         let rnd = Utils.random(sum);
-
         let tmpSum = 0;
         for(let i = 0; i < Object.keys(this.chances).length; i++) {
             tmpSum += Object.values(this.chances)[i];
             if(rnd < tmpSum) {
-                return Object.keys(this.chances)[i];
+                return parseInt(Object.keys(this.chances)[i]);
             }
         }
     }
