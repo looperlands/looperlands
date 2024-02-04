@@ -2150,7 +2150,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
         INFERNOTH: Mob.extend({ 
             init: function(id) {
                 this._super(id, Types.Entities.INFERNOTH); 
-                this.moveSpeed = 250; 
+                this.moveSpeed = 250;
                 this.atkSpeed = 250; 
                 this.idleSpeed = 800;
                 this.aggroRange = 2;
@@ -2306,7 +2306,6 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.aggroRange = 3;
             }
         }),
-        
 
        cobWalkingNpc1: Mob.extend({
            init: function(id) {

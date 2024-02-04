@@ -240,6 +240,10 @@ define(['character'], function (Character) {
             'Follow <a href="https://loopworms.io/DEV/LooperLands/QR/qr.php?NPC=wildwill" target="blank">this link</a> - it might be a Red Packet!',
         ],
 
+        "shopowner": [
+            "/openShop potionshop Potion Shop",
+        ],
+
         "desertnpc": [
             "I'm NFTSpike and should need no introduction.",
             "I make Web3 games on Loopring that are dope AF",

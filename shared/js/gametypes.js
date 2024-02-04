@@ -42,7 +42,6 @@ Types = {
         MUSIC: 39,
         LAYER: 40,
         ANIMATE: 41,
-        CONSUMEITEM: 42,
         BUFFINFO: 43,
         EMOTE: 44,
         SUMMON_FOLLOW: 45,
@@ -223,6 +222,11 @@ Types = {
         // Objects
         FLASK: 35,
         POTION: 300008,
+        CPOTION_S: 333009,
+        CPOTION_M: 333010,
+        CPOTION_L: 333011,
+        CIMMUPOT: 333012,
+        CAGEDRAT: 333013,
         BURGER: 36,
         CHEST: 37,
         FIREPOTION: 38,
@@ -307,6 +311,7 @@ Types = {
         TANASHI: 1000043,
         MINER: 1000044,
         WILDWILL: 1000045,
+        SHOPOWNER: 1000046,
         VILLAGESIGN1: 30000001,
         COBLUMBERJACK: 34000001,
         COBHILLSNPC: 34000002,
@@ -5114,6 +5119,11 @@ var kinds = {
 
     flask: [Types.Entities.FLASK, "object"],
     potion: [Types.Entities.POTION, "object"],
+    cpotion_s: [Types.Entities.CPOTION_S, "object"],
+    cpotion_m: [Types.Entities.CPOTION_M, "object"],
+    cpotion_l: [Types.Entities.CPOTION_L, "object"],
+    cimmupot: [Types.Entities.CIMMUPOT, "object"],
+    cagedrat: [Types.Entities.CAGEDRAT, "object"],
     cobapple: [Types.Entities.COBAPPLE, "object"],
     cobcorn: [Types.Entities.COBCORN, "object"],
     coblog: [Types.Entities.COBLOG, "object"],
@@ -5210,6 +5220,7 @@ var kinds = {
     octocat: [Types.Entities.OCTOCAT, "npc"],
     beachnpc: [Types.Entities.BEACHNPC, "npc"],
     wildwill: [Types.Entities.WILDWILL, "npc"],
+    shopowner: [Types.Entities.SHOPOWNER, "npc"],
     forestnpc: [Types.Entities.FORESTNPC, "npc"],
     desertnpc: [Types.Entities.DESERTNPC, "npc"],
     lavanpc: [Types.Entities.LAVANPC, "npc"],
@@ -10023,7 +10034,7 @@ if(!(typeof exports === 'undefined')) {
 }
 
 Types.timeouts = {};
-Types.timeouts[Types.Entities.FIREFOX] = 5000;
+Types.timeouts[Types.Entities.FIREFOX] = 7500;
 Types.timeouts[Types.Entities.MEGAMAG] = 12000;
 Types.timeouts[Types.Entities.SEACREATURE] = 12000;
 Types.timeouts[Types.Entities.TENTACLE] = 12000;

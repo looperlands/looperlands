@@ -1212,6 +1212,66 @@ let Properties = {
         collectItem: Types.Entities.GOLD,
         collectAmount: 50
     },
+    cpotion_s: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "hpPotions",
+            duration: 60000
+        },
+        inventoryDescription: "Small healing potion (75)",
+        onConsume: function(player){
+            player.regenHealthBy(75);
+        }
+    },
+    cpotion_m: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "hpPotions",
+            duration: 60000
+        },
+        inventoryDescription: "Medium healing potion (150)",
+        onConsume: function(player){
+            player.regenHealthBy(150);
+        }
+    },
+    cpotion_l: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "hpPotions",
+            duration: 60000
+        },
+        inventoryDescription: "Large healing potion (300)",
+        onConsume: function(player){
+            player.regenHealthBy(300);
+        }
+    },
+    cimmupot: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "immunity",
+            duration: 180000
+        },
+        inventoryDescription: "Liquid loopium",
+        onConsume: function(player){
+            player.startInvincibility();
+        }
+    },
+    cagedrat: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "caged",
+            duration: 60000
+        },
+        inventoryDescription: "Caged rat",
+        onConsume: function(player) {
+            player.releaseMob(Types.Entities.RAT);
+        }
+    }
 
     // Weapons
     // axe: {
@@ -1338,7 +1398,7 @@ Properties.getCollectItem = function(kind) {
 }
 
 Properties.consume = function(kind, player) {
-    let onConsume = Properties[Types.getKindAsString(kind)]?.onConsume
+    let onConsume = Properties[Types.getKindAsString(kind)]?.onConsume;
     if(onConsume !== undefined) {
         onConsume(player);
     }
@@ -1347,6 +1407,31 @@ Properties.consume = function(kind, player) {
 Properties.getInventoryDescription = function(kind) {
     let retDescription = Properties[Types.getKindAsString(kind)]?.inventoryDescription;
     return retDescription !== undefined ? retDescription : false;
+}
+
+Properties.getCooldownData = function(kind) {
+    return Properties[Types.getKindAsString(kind)]?.cooldown; 
+}
+
+Properties.filterCooldownGroups = function() {
+    let ret = {};
+    Object.keys(Properties).forEach(key => {
+        let itemGroup = Properties[key].cooldown?.group;
+        if (itemGroup !== undefined) {
+            if (ret[itemGroup] === undefined) {
+                ret[itemGroup] = [];
+            }
+            ret[itemGroup].push(key);
+        }
+    });
+
+    return ret;
+}
+
+const COOLDOWNGROUP_MAP = Properties.filterCooldownGroups();
+
+Properties.getCdItemsByGroup = function(cdGroup) {
+    return COOLDOWNGROUP_MAP[cdGroup] !== undefined ? COOLDOWNGROUP_MAP[cdGroup] : [];
 }
 
 module.exports = Properties;

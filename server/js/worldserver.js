@@ -40,6 +40,7 @@ module.exports = World = cls.Class.extend({
 
         this.entities = {};
         this.players = {};
+        this.consumeCooldowns = {};
         this.mobs = {};
         this.attackers = {};
         this.items = {};
@@ -138,6 +139,35 @@ module.exports = World = cls.Class.extend({
                 }
             });
 
+            player.onCheckCooldown(function (group) {
+                if (self.consumeCooldowns[player.nftId] !== undefined && self.consumeCooldowns[player.nftId][group] !== undefined) {
+                    return new Date().getTime() < self.consumeCooldowns[player.nftId][group];
+                }
+                return false; //not on cooldown
+            });
+
+            player.onApplyCooldown(function (group, duration) {
+                if (group && (duration > 0)) {
+                    if (!self.consumeCooldowns[player.nftId]) {
+                        self.consumeCooldowns[player.nftId] = {};
+                    }
+                    self.consumeCooldowns[player.nftId][group] = new Date().getTime() + duration;
+                }
+            });
+            
+            player.onReleaseMob(function (kind) {
+                let mob = new Mob(self.nextMobId(), kind, player.x, player.y);
+                mob.handleRespawn = function () {
+                    return;
+                };// dont respawn
+                self.addMob(mob);
+
+                let pos = self.findPositionNextTo(mob, player);
+                if (pos) {
+                    self.moveEntity(mob, pos.x, pos.y);
+                }
+            });
+
             if (self.added_callback) {
                 self.added_callback();
             }
@@ -192,6 +222,9 @@ module.exports = World = cls.Class.extend({
             // Create all chest areas
             _.each(self.map.chestAreas, function (a) {
                 var area = new ChestArea(a.id, a.x, a.y, a.w, a.h, a.tx, a.ty, a.i, self);
+                if(a.c) {
+                    area.setChances(a.c);
+                }
                 self.chestAreas.push(area);
                 area.onEmpty(self.handleEmptyChestArea.bind(self, area));
             });
@@ -208,6 +241,12 @@ module.exports = World = cls.Class.extend({
             // Spawn static chests
             _.each(self.map.staticChests, function (chest) {
                 var c = self.createChest(chest.x, chest.y, chest.i);
+                if(chest.c) {
+                    c.setChances(chest.c);
+                }
+                if(chest.d) {
+                    c.setDelay(chest.d);
+                }
                 self.addStaticItem(c);
             });
 
@@ -532,9 +571,12 @@ module.exports = World = cls.Class.extend({
         return item;
     },
 
-    createChest: function (x, y, items) {
+    createChest: function (x, y, items, chances) {
         var chest = this.createItem(Types.Entities.CHEST, x, y);
         chest.setItems(items);
+        if(chances) {
+            chest.setChances(chances)
+        }
         return chest;
     },
 
@@ -1035,7 +1077,7 @@ module.exports = World = cls.Class.extend({
 
     handleEmptyChestArea: function (area) {
         if (area) {
-            var chest = this.addItem(this.createChest(area.chestX, area.chestY, area.items));
+            var chest = this.addItem(this.createChest(area.chestX, area.chestY, area.items, area.chances));
             this.handleItemDespawn(chest);
         }
     },
@@ -1525,6 +1567,17 @@ module.exports = World = cls.Class.extend({
 
     announceDespawnFloat: function(player) {
         this.pushToAdjacentGroups(player.group, new Messages.DespawnFloat(player.id), player.id);
+    },
+
+    getConsumeGroupCooldown: function(nftId, itemGroup) {
+        let playerCooldowns = this.consumeCooldowns[nftId];
+        if (playerCooldowns) {
+            let expireDate = playerCooldowns[itemGroup];
+            if (expireDate !== undefined) {
+                return expireDate > new Date().getTime() ? expireDate : 0;
+            }
+        }
+        return 0;
     }
 });
 

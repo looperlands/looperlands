@@ -1,11 +1,10 @@
 define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile',
         'warrior', 'gameclient', 'audio', 'updater', 'transition', 'pathfinder',
-        'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'fieldeffect', 'float', '../../shared/js/gametypes', '../../shared/js/altnames'],
+        'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'fieldeffect', 'config', 'float', '../../shared/js/gametypes', '../../shared/js/altnames'],
 
     function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, AnimatedTile,
              Warrior, GameClient, AudioManager, Updater, Transition, Pathfinder,
-             Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, Fieldeffect, Float) {
-
+             Item, Mob, Npc, Player, Character, Chest, Mobs, config, Exceptions, Fieldeffect, Float) {
         var Game = Class.extend({
             init: function(app) {
                 this.app = app;
@@ -46,7 +45,6 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.hoveringItem = false;
                 this.hoveringCollidingTile = false;
                 this.doorCheck = false;
-
                 this.highlightedTarget = null;
                 this.toggledLayers = {};
 
@@ -83,12 +81,12 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 // sprites
                 this.spriteNames = ["hand", "sword", "loot", "target", "talk", "float", "sparks", "shadow16", "rat", "skeleton", "skeleton2", "spectre", "boss", "deathknight",
                     "ogre", "crab", "snake", "eye", "bat", "goblin", "wizard", "guard", "king", "villagegirl", "villager", "coder", "agent", "rick", "scientist", "nyan", "priest", "coblumberjack", "cobhillsnpc", "cobcobmin", "cobellen", "cobjohnny", "cobashley",
-                    "king2", "goose", "tanashi", "slime","kingslime","silkshade","redslime","villagesign1","wildgrin","loomleaf","gnashling","arachweave","spider","fangwing", "minimag", "miner", "megamag", "seacreature", "tentacle", "tentacle2", "wildwill",
+                    "king2", "goose", "tanashi", "slime","kingslime","silkshade","redslime","villagesign1","wildgrin","loomleaf","gnashling","arachweave","spider","fangwing", "minimag", "miner", "megamag", "seacreature", "tentacle", "tentacle2", "wildwill","shopowner",
                     "cobchicken", "alaric","orlan","jayce", "cobcow", "cobpig", "cobgoat", "ghostie","cobslimered", "cobslimeyellow", "cobslimeblue", "cobslimepurple", "cobslimegreen", "cobslimepink", "cobslimecyan", "cobslimemint", "cobslimeking", "cobyorkie", "cobcat", "cobdirt", "cobincubator", "cobcoblin", "cobcobane", "cobogre",
                     "sorcerer", "octocat", "beachnpc", "forestnpc", "desertnpc", "lavanpc","thudlord", "clotharmor", "leatherarmor", "mailarmor","boar","grizzlefang","barrel","neena","athlyn","jeniper",
                     "platearmor", "redarmor", "goldenarmor", "firefox", "death", "sword1", "transparentweapon", "torin","elric","glink", "axe", "chest","elara","eldrin","draylen","thaelen","keldor","torvin","liora","aria",
                     "sword2", "redsword", "bluesword", "goldensword", "item-sword2", "item-axe", "item-redsword", "item-bluesword", "item-goldensword", "item-leatherarmor", "item-mailarmor","whiskers",
-                    "item-platearmor", "item-redarmor", "item-goldenarmor", "item-flask", "item-potion","item-cake", "item-burger", "item-cobcorn", "item-cobapple", "item-coblog", "item-cobclover", "item-cobegg", "morningstar", "item-morningstar", "item-firepotion",
+                    "item-platearmor", "item-redarmor", "item-goldenarmor", "item-flask", "item-potion","item-cake", "item-burger", "item-cobcorn", "item-cobapple", "item-coblog", "item-cobclover", "item-cobegg", "morningstar", "item-morningstar", "item-firepotion", "item-cpotion_s", "item-cpotion_m", "item-cpotion_l", "item-cimmupot", "item-cagedrat",
                     "item-KEY_ARACHWEAVE","shiverrock","shiverrockii","shiverrockiii","crystolith","stoneguard","glacialord","edur","lumi","snjor","gelidus","nightharrow",
                     "fieldeffect-magcrack","fieldeffect-cobfallingrock","gloomforged","torian","gripnar","blackdog","browndog","whitedog",
                     "villager1","villager2","villager3","villager4","villager5","villager6","brownspotdog",
@@ -172,7 +170,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "horde3",
                     "horde4",
                     "horde5",
-                    //mycupbloody npc           
+                    //mycupbloody npc
                     "GOFFREY",
                     "cobWalkingNpc1",
                     "cobWalkingNpc2",
@@ -6281,7 +6279,6 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                     self.player.onInvincible(function() {
                         self.invincible_callback();
-                        self.player.switchArmor(self.sprites["firefox"]);
                     });
 
                     self.client.onSpawnItem(function(item, x, y) {
@@ -6325,7 +6322,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         }
 
                         if(!self.entityIdExists(entity.id)) {
-                            try {
+                            try {
                                 if(entity.id !== self.playerId) {
                                     entity.setSprite(self.sprites[entity.getSpriteName()]);
                                     entity.setGridPosition(x, y);
@@ -6649,7 +6646,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             diff,
                             isHurt;
 
-                        if(player && !player.isDead && !player.invincible) {
+                        if(player && !player.isDead) {
                             isHurt = points <= player.hitPoints;
                             diff = points - player.hitPoints;
                             player.hitPoints = points;
@@ -6682,11 +6679,17 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         var player = self.getEntityById(playerId),
                             itemName = Types.getKindAsString(itemKind);
 
-                        if(player) {
-                            if(Types.isArmor(itemKind)) {
+                        if (player) {
+                            if (Types.isArmor(itemKind)) {
+                                if (player.invincible && itemKind !== Types.Entities.FIREFOX) {
+                                    player.stopInvincibility();
+                                }
                                 player.setSprite(self.sprites[itemName]);
                             } else if(Types.isWeapon(itemKind)) {
                                 player.setWeaponName(itemName);
+                            }
+                            if (itemKind === Types.Entities.FIREFOX) {
+                                player.startInvincibility();
                             }
                         }
                     });
@@ -7748,7 +7751,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 this.audioManager.playSound("hit"+Math.floor(Math.random()*2+1));
                             }
 
-                            if(character.hasTarget() && character.target.id === this.playerId && this.player && !this.player.invincible & !(character instanceof Player)) {
+                            if(character.hasTarget() && character.target.id === this.playerId && this.player && !(character instanceof Player)) {
                                 this.client.sendHurt(character);
                             }
                         }
@@ -8186,7 +8189,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             $('#companionProgress').text(response.data.botInfo.percentage);
                         }
 
-                        if (response.data.weaponInfo !== null && response.data.weaponInfo !== undefined) {
+                        if (response.data.weaponInfo !== null &&
+                            response.data.weaponInfo !== undefined &&
+                            response.data.weaponInfo.weaponLevelInfo !== undefined
+                        ) {
                             weaponPercentage = response.data.weaponInfo.weaponLevelInfo.percentage;
                             weaponLevel = response.data.weaponInfo.weaponLevelInfo.currentLevel;
 

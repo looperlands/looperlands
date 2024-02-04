@@ -473,7 +473,7 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
             if(this.isAttackedBy(character)) {
                 delete this.attackers[character.id];
             } else {
-                console.error(this.id + " is not attacked by " + character.id);
+                //console.error(this.id + " is not attacked by " + character.id);
                 this.previousTarget = null;
             }
         },

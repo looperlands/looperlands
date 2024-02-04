@@ -301,4 +301,9 @@ Lakes.getInventoryDescription = function(fishName){
     return description ? description.percent + "% " + description.stat : false;
 };
 
+Lakes.getCooldownData = function(fishName){
+    //not implemented yet - maybe never will?
+    return;
+};
+
 module.exports = Lakes;

@@ -8,3 +8,5 @@ configs/*
 nft_template/sqlscript.sql
 *Zone.Identifier
 .idea
+ecosystem.config.js
+newrelic_agent.log

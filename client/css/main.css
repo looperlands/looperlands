@@ -508,6 +508,7 @@ body.upscaled.game {background:#000;}
     box-sizing: border-box;
     color: #d7ab97;
     font-family: 'GraphicPixel';
+    background-color: #341e28 !important;
 }
 
 #shop-popup .close {
@@ -664,6 +665,25 @@ body.upscaled.game {background:#000;}
 #shop-confirmation-text .highlight {
     color: #fce045;
 }
+#shop-confirmation-longtext {
+    max-height: 135px;
+    overflow: auto;
+    font-size: 12px;
+}
+#shop-confirmation-longtext::-webkit-scrollbar {
+    width: 10px;
+    background-color: #533643;
+}
+#shop-confirmation-longtext::-webkit-scrollbar-thumb {
+    background-color: #b86f50;
+}
+#shop-confirmation-longtext::-webkit-scrollbar-thumb:hover {
+    background-color: #FCE045;
+}
+#shop-confirmation-longtext::-webkit-scrollbar-thumb:active {
+    background-color: #FCE045;
+}
+
 #cancel-shop-purchase {
     display: inline-block;
     padding: 5px 10px;
@@ -709,19 +729,21 @@ body.upscaled.game {background:#000;}
     z-index: 0;
     position: absolute;
     top: 8%;
-    width:800px;
+    width:750px;
     left: calc(50% - 425px);
     opacity: 0;
     height:400px;
-    transition: ease-in all 0.3s;
+    transition: ease-in all 0.2s;
     user-select: none;
     padding:0 25px;
+    transition-delay: 500ms;
 }
 body.inventory #inventory {
     pointer-events: all;
     z-index: 9999;
     opacity: 1;
-    transition: ease-in-out all 0.3s;
+    transition: ease-in-out all 0.2s;
+    transition-delay: 0ms;
 }
 
 #inventorycontent {
@@ -761,6 +783,66 @@ body.inventory #inventory {
     padding: 0 9px 12px;
     font-size: 18px;
     text-shadow: 0 2px black;
+}
+
+body .inventorySidebar {
+    position: absolute;
+    top: 21%;
+    left: calc(50% + 250px);
+    z-index: 9;
+    background-color: #341e28 !important;
+    width: 38px;
+    padding: 15px;
+    padding-left: 18px;
+    height: 210px;
+    transition: cubic-bezier(0.18, 0.89, 0.32, 1.28) all 0.8s;
+    transition-delay: 0ms;
+    pointer-events: none;
+    opacity: 0;
+}
+
+body.inventory .inventorySidebar {
+    transition-delay: 350ms;
+    transition-duration: 400ms;
+    left: calc(50% + 360px);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.inventorySidebar .header {
+    margin-bottom: 10px;
+    font-size: 12px;
+    color: #e4a672;
+    text-align: center;
+}
+
+.inventorySidebar .slots .slot {
+    position: relative;
+    margin-bottom: 10px;
+    margin-left:5px;
+}
+
+.inventorySidebar .slots .slot img {
+    width: 32px;
+    height: 32px;
+    object-fit: cover;
+    object-position: 100% 0;
+    cursor: pointer;
+}
+
+.inventorySidebar .slot .itemContainer {
+    width: 32px;
+    border-image-width: 3px;
+    height: 32px;
+    background-color: #b86f50 !important;
+}
+
+.inventorySidebar .shortcut {
+    position: absolute;
+    bottom: 5px;
+    right: 6px;
+    color: white;
+    font-size: 10px;
 }
 
 #instructions {position:absolute;top:50%;left:50%;z-index:1000;font-family:'GraphicPixel';pointer-events:none;opacity:0;-moz-transition:0.25s opacity linear;-webkit-transition:0.4s top ease, 0.4s opacity linear;-o-transition:0.4s top ease, 0.4s opacity linear;-ms-transition:0.4s top ease, 0.4s opacity linear;transition:0.4s top ease, 0.4s opacity linear;}
@@ -818,6 +900,7 @@ body.inventory #inventory {
     text-align: center;
     overflow: hidden;
     border-radius: 5px;
+    z-index: 99;
 }
 
 
@@ -923,6 +1006,15 @@ footer div  {display:inline-block;}
     min-width: 9px;
     padding: 2px 5px;
     text-align: center;
+    float: left;
+}
+#inventory .item .timer { 
+    position: relative;
+    top: -50px;
+    color: silver;
+    font-size: 11px;
+    margin-bottom: -20px;
+    height: 20px;
 }
 #inventory .inventorySectionItems {
     height:305px;
@@ -1171,12 +1263,21 @@ footer div  {display:inline-block;}
     #inventory {
         top: 10%;
         width: 1000px;
-        left: calc(50% - 500px);
+        left: calc(50% - 590px);
         height:450px;
     }
 
     #inventory .inventorySectionItems {
         height: 355px;
+    }
+
+    .inventorySidebar .shortcut {
+        right: 13px;
+    }
+
+    body.inventory .inventorySidebar {
+        left: calc(50% + 450px);
+        width: 46px;
     }
 
     .upscaled #emoteMenu {
@@ -1282,7 +1383,7 @@ footer div  {display:inline-block;}
     #playerimage {height: 96px; width: 96px;}
 
     #settings small {
-        padding-top: 50px;
+        padding-top: 25px;
         display: block;
     }
 
@@ -1516,7 +1617,7 @@ footer div  {display:inline-block;}
 
     #shop-popup .items {
         padding-top: 33px;
-        max-height:522px;
+        max-height:380px;
         grid: auto-flow / 1fr 1fr;
     }
 
@@ -2050,6 +2151,10 @@ footer div  {display:inline-block;}
 
     footer {font-size:16px;}
     #resize-check {height:2px;}
+
+    #shop-popup .items {
+        max-height: 310px !important;
+    }
 }
 
 @media screen and (max-width: 1000px) {

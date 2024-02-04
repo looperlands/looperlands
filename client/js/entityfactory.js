@@ -605,6 +605,26 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
         return new Chest(id);
     };
 
+    EntityFactory.builders[Types.Entities.CPOTION_S] = function(id) {
+        return new Items.Cpotion_s(id);
+    };
+
+    EntityFactory.builders[Types.Entities.CPOTION_M] = function(id) {
+        return new Items.Cpotion_m(id);
+    };
+
+    EntityFactory.builders[Types.Entities.CPOTION_L] = function(id) {
+        return new Items.Cpotion_l(id);
+    };
+
+    EntityFactory.builders[Types.Entities.CIMMUPOT] = function(id) {
+        return new Items.Cimmupot(id);
+    };
+
+    EntityFactory.builders[Types.Entities.CAGEDRAT] = function(id) {
+        return new Items.Cagedrat(id);
+    };
+
     EntityFactory.builders[Types.Entities.KEY_ARACHWEAVE]=function(id){return new Items.KEY_ARACHWEAVE(id);};
     EntityFactory.builders[Types.Entities.BOARHIDE]=function(id){return new Items.BOARHIDE(id);};
     EntityFactory.builders[Types.Entities.THUDKEY]=function(id){return new Items.THUDKEY(id);};
@@ -793,6 +813,10 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
 
     EntityFactory.builders[Types.Entities.WILDWILL] = function(id) {
         return new NPCs.WildWill(id);
+    };
+
+    EntityFactory.builders[Types.Entities.SHOPOWNER] = function(id) {
+        return new NPCs.ShopOwner(id);
     };
 
     EntityFactory.builders[Types.Entities.FORESTNPC] = function(id) {

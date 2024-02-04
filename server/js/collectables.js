@@ -74,7 +74,17 @@ const Collectables = {
             }
         }
         return "";
-    }
+    },
+
+    getCooldownData: function(item) {
+        for (var i = 0; i < this.providers.length; i++) {
+            let cooldownData = this.providers[i].getCooldownData(item);
+            if (cooldownData) {
+                return cooldownData;
+            }
+        }
+        return {duration: 0, group: ""};
+    },
 };
 
 module.exports = Collectables;
