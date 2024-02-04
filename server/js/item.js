@@ -19,7 +19,6 @@ module.exports = Item = Entity.extend({
 
     setDelay: function(delay) {
         this.delay = delay;
-        console.log('set delay: ' + this.delay);
     },
     
     destroy: function() {
