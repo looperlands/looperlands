@@ -351,22 +351,6 @@ module.exports = Player = Character.extend({
                         if(kind === Types.Entities.FIREPOTION || kind === Types.Entities.COBCORN || kind === Types.Entities.EYEBALL || kind === Types.Entities.ENERGYDRINK) {
                             self.startInvincibility();
                             self.updateHitPoints();
-
-                            if (self.firepotionTimeout != null) {
-                                /* Issue #195: If the player is already a firefox when picking a firepotion
-                                Then cancel the queued "return to normal"
-                                New timeout will start and refresh the duration */
-                                clearTimeout(self.firepotionTimeout);
-                                self.firepotionTimeout = null;
-                            }
-                            else {
-                                self.broadcast(self.equip(Types.Entities.FIREFOX));
-                            }
-
-                            self.firepotionTimeout = setTimeout(function() {
-                                self.broadcast(self.equip(self.armor)); // return to normal
-                                self.firepotionTimeout = null;
-                            }, Types.timeouts[Types.Entities.FIREFOX]);
                             self.send(new Messages.HitPoints(self.maxHitPoints).serialize());
                         } else if(Types.isHealingItem(kind)) {
                             let amount;
@@ -1096,7 +1080,7 @@ module.exports = Player = Character.extend({
     startInvincibility: function () {
         let self = this;
 
-        if (self.firepotionTimeout !== null) {
+        if (self.firepotionTimeout !== null && self.firepotionTimeout !== undefined) {
             /* Issue #195: If the player is already a firefox when picking a firepotion
             Then cancel the queued "return to normal"
             New timeout will start and refresh the duration */
