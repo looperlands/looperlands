@@ -729,31 +729,36 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
         },
 
         sendMove: function(x, y) {
-            this.sendMessage([Types.Messages.MOVE, x, y]);
+            this.sendMessage([Types.Messages.MOVE,
+                              x,
+                              y]);
         },
     
         sendLootMove: function(item, x, y) {
-            this.sendMessage([Types.Messages.LOOTMOVE, x, y, item.id]);
+            this.sendMessage([Types.Messages.LOOTMOVE,
+                              x,
+                              y,
+                              item.id]);
         },
     
         sendAggro: function(mob) {
-            this.sendMessage([Types.Messages.AGGRO, mob.id]);
+            this.sendMessage([Types.Messages.AGGRO,
+                              mob.id]);
         },
     
         sendAttack: function(mob) {
-            this.sendMessage([Types.Messages.ATTACK, mob.id]);
+            this.sendMessage([Types.Messages.ATTACK,
+                              mob.id]);
         },
     
         sendHit: function(mob) {
-            this.sendMessage([Types.Messages.HIT, mob.id]);
-        },
-
-        sendShoot: function(mob) {
-            this.sendMessage([Types.Messages.SHOOT, mob.id]);
+            this.sendMessage([Types.Messages.HIT,
+                              mob.id]);
         },
     
         sendHurt: function(mob) {
-            this.sendMessage([Types.Messages.HURT, mob.id]);
+            this.sendMessage([Types.Messages.HURT,
+                              mob.id]);
         },
     
         sendChat: function(text) {
@@ -765,11 +770,14 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
         },
     
         sendLoot: function(item) {
-            this.sendMessage([Types.Messages.LOOT, item.id]);
+            this.sendMessage([Types.Messages.LOOT,
+                              item.id]);
         },
     
         sendTeleport: function(x, y) {
-            this.sendMessage([Types.Messages.TELEPORT, x, y]);
+            this.sendMessage([Types.Messages.TELEPORT,
+                              x,
+                              y]);
         },
     
         sendWho: function(ids) {
@@ -782,11 +790,13 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
         },
     
         sendOpen: function(chest) {
-            this.sendMessage([Types.Messages.OPEN, chest.id]);
+            this.sendMessage([Types.Messages.OPEN,
+                              chest.id]);
         },
     
         sendCheck: function(id) {
-            this.sendMessage([Types.Messages.CHECK, id]);
+            this.sendMessage([Types.Messages.CHECK,
+                              id]);
         },
 
         sendTrigger: function(id, activated) {
@@ -794,15 +804,15 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
         },
 
         sendEquipInventory: function(kind, nftId) {
-            this.sendMessage([Types.Messages.EQUIP_INVENTORY, kind, nftId]);
+            this.sendMessage([Types.Messages.EQUIP_INVENTORY,
+                              kind,
+                              nftId]);
         },
 
         sendFishingResult: function(result, bullseye) {
-            this.sendMessage([Types.Messages.FISHINGRESULT, result, bullseye]);
-        },
-
-        sendConsumeItem: function(itemId) {
-            this.sendMessage([Types.Messages.CONSUMEITEM, itemId]);
+            this.sendMessage([Types.Messages.FISHINGRESULT,
+                              result,
+                              bullseye]);
         },
 
         sendSelectProjectile: function(projectileType) {

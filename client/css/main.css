@@ -531,6 +531,7 @@ body.upscaled.game {background:#000;}
     box-sizing: border-box;
     color: #d7ab97;
     font-family: 'GraphicPixel';
+    background-color: #341e28 !important;
 }
 
 #shop-popup .close {
@@ -687,6 +688,25 @@ body.upscaled.game {background:#000;}
 #shop-confirmation-text .highlight {
     color: #fce045;
 }
+#shop-confirmation-longtext {
+    max-height: 135px;
+    overflow: auto;
+    font-size: 12px;
+}
+#shop-confirmation-longtext::-webkit-scrollbar {
+    width: 10px;
+    background-color: #533643;
+}
+#shop-confirmation-longtext::-webkit-scrollbar-thumb {
+    background-color: #b86f50;
+}
+#shop-confirmation-longtext::-webkit-scrollbar-thumb:hover {
+    background-color: #FCE045;
+}
+#shop-confirmation-longtext::-webkit-scrollbar-thumb:active {
+    background-color: #FCE045;
+}
+
 #cancel-shop-purchase {
     display: inline-block;
     padding: 5px 10px;
@@ -903,6 +923,7 @@ body.inventory .inventorySidebar {
     text-align: center;
     overflow: hidden;
     border-radius: 5px;
+    z-index: 99;
 }
 
 
@@ -1383,7 +1404,7 @@ footer div  {display:inline-block;}
     #playerimage {height: 96px; width: 96px;}
 
     #settings small {
-        padding-top: 50px;
+        padding-top: 25px;
         display: block;
     }
 
@@ -1617,7 +1638,7 @@ footer div  {display:inline-block;}
 
     #shop-popup .items {
         padding-top: 33px;
-        max-height:522px;
+        max-height:380px;
         grid: auto-flow / 1fr 1fr;
     }
 
@@ -2143,6 +2164,10 @@ footer div  {display:inline-block;}
 
     footer {font-size:16px;}
     #resize-check {height:2px;}
+
+    #shop-popup .items {
+        max-height: 310px !important;
+    }
 }
 
 @media screen and (max-width: 1000px) {

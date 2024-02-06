@@ -51,9 +51,6 @@ define(['character', 'exceptions', '../../shared/js/gametypes'], function(Charac
                 }
             
                 console.log('Player '+this.id+' has looted '+item.id);
-                if(Types.isArmor(item.kind) && this.invincible) {
-                    this.stopInvincibility();
-                }
                 item.onLoot(this);
             }
         },
@@ -185,36 +182,20 @@ define(['character', 'exceptions', '../../shared/js/gametypes'], function(Charac
         },
 
         startInvincibility: function() {
-            var self = this;
-        
             if(!this.invincible) {
-                this.currentArmorSprite = this.getSprite();
                 this.invincible = true;
-                this.invincible_callback();      
-            } else {
-                // If the player already has invincibility, just reset its duration.
-                if(this.invincibleTimeout) {
-                    clearTimeout(this.invincibleTimeout);
-                }
+                if (this.invincible_callback) { // only the player itself has invincible callback (UI changes)
+                    this.invincible_callback();
+                }      
             }
-        
-            this.invincibleTimeout = setTimeout(function() {
-                self.stopInvincibility();
-                self.idle();
-            }, Types.timeouts[Types.Entities.FIREFOX]);
         },
     
         stopInvincibility: function() {
-            this.invincible_callback();
-            this.invincible = false;
-        
-            if(this.currentArmorSprite) {
-                this.setSprite(this.currentArmorSprite);
-                this.setSpriteName(this.currentArmorSprite.id);
-                this.currentArmorSprite = null;
-            }
-            if(this.invincibleTimeout) {
-                clearTimeout(this.invincibleTimeout);
+            if(this.invincible) {
+                this.invincible = false;
+                if (this.invincible_callback) { // only the player itself has invincible callback (UI changes)
+                    this.invincible_callback();
+                }
             }
         },
 

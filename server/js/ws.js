@@ -27,10 +27,38 @@ const Lakes = require("./lakes.js");
 const Collectables = require('./collectables.js');
 const Properties = require('./properties.js')
 const Types = require("../../shared/js/gametypes");
+const platform = require('./looperlandsplatformclient.js');
 const cache = new NodeCache();
 
 const LOOPWORMS_LOOPERLANDS_BASE_URL = process.env.LOOPWORMS_LOOPERLANDS_BASE_URL;
-const INSTANCE_URI = process.env.INSTANCE_URI ? process.env.INSTANCE_URI : "";
+const APP_URL = process.env.APP_URL;
+const GAMESERVER_NAME = process.env.GAMESERVER_NAME;
+const LOOPERLANDS_PLATFORM_BASE_URL = process.env.LOOPERLANDS_PLATFORM_BASE_URL;
+const LOOPERLANDS_PLATFORM_API_KEY = process.env.LOOPERLANDS_PLATFORM_API_KEY;
+
+
+const platformClient = new platform.LooperLandsPlatformClient(LOOPERLANDS_PLATFORM_API_KEY, LOOPERLANDS_PLATFORM_BASE_URL);
+
+
+function extractDetails(inputUrl) {
+    const parsedUrl = new URL(inputUrl);
+    let protocol = parsedUrl.protocol;
+    let host = parsedUrl.hostname;
+    let port;
+
+    if (protocol === 'http:') {
+        port = 8000;
+    } else if (protocol === 'https:') {
+        port = 443;
+    }
+
+    protocol = protocol.replace(':', '');
+
+    return { protocol, host, port };
+}
+
+// Example usage
+const urlDetails = extractDetails(APP_URL);
 
 /**
  * Abstract Server and Connection classes
@@ -118,11 +146,14 @@ var Connection = cls.Class.extend({
             http://codevolution.com
  ***************/
 WS.socketIOServer = Server.extend({
-    init: function(host, port, protocol) {
+    init: function() {
         self = this;
-        self.protocol = protocol;
-        self.host = host;
-        self.port = port;
+        self.protocol = urlDetails.protocol;
+        self.host = urlDetails.host;
+        self.port = urlDetails.port;
+        const port = urlDetails.port;
+        const host = self.host;
+
         this.cache = cache;
         var express = require('express');
         var app = express();
@@ -132,15 +163,15 @@ WS.socketIOServer = Server.extend({
         let http = new httpInclude.Server(app);
         
 
-        var corsAddress = self.protocol + "://" + self.host + INSTANCE_URI;
-        console.log("CORS Address", corsAddress);
+        console.log("APP_URL", APP_URL);
         self.io = require('socket.io')(http, {
             allowEIO3: true,
-            cors: {origin: corsAddress, credentials: true}
+            cors: {origin: APP_URL, credentials: true}
         });
 
         app.use(express.json())
 
+        platformClient.createOrUpdateGameServer(host, port, GAMESERVER_NAME);
 
         async function newSession(body, teleport) {
             const id = crypto.randomBytes(20).toString('hex');
@@ -393,7 +424,6 @@ WS.socketIOServer = Server.extend({
 
             let consumables = sessionData.gameData?.consumables || {};
             let resources = {};
-
             Object.keys(consumables).forEach(item => {
                 if(Types.isResource(parseInt(item))) {
                     resources[item] = consumables[item];
@@ -433,11 +463,11 @@ WS.socketIOServer = Server.extend({
                         remainingCooldown = self.worldsMap[sessionData.mapId].getConsumeGroupCooldown(sessionData.nftId, cooldownGroup);
                     }
 
-                    consumables[item] = {qty: consumables[item], 
+                    consumables[item] = {qty: consumables[item],
                                         consumable: Collectables.isConsumable(item), 
                                         image: Collectables.getCollectableImageName(item),
                                         description: Collectables.getInventoryDescription(item),
-                                        cooldown: remainingCooldown,
+                                        cooldown: remainingCooldown, //this is either a date or 0
                                         maxCooldown: cooldownData.duration};
                 }
             });
@@ -909,7 +939,8 @@ WS.socketIOServer = Server.extend({
                     sessionData.walletId,
                     sessionData.entityId,
                     owner.x,
-                    owner.y
+                    owner.y,
+                    APP_URL
                 );
                 if (newBot?.sessionId) {
                     sessionData.botSessionId = newBot.sessionId;
@@ -1003,6 +1034,39 @@ WS.socketIOServer = Server.extend({
             cache.set(sessionId, sessionData);
 
             res.status(200).send({});
+        });
+
+        app.get("/session/:sessionId/consumeItem/:item", async (req, res) => {
+            const sessionId = req.params.sessionId;
+            const item = req.params.item;
+            const sessionData = cache.get(sessionId);
+
+            if (sessionData === undefined) {
+                res.status(404).json({
+                    status: false,
+                    "error" : "session not found",
+                    user: null
+                });
+            } else {
+                const player = self.worldsMap[sessionData.mapId].getPlayerById(sessionData.entityId);
+
+                let consumed = player.consumeItem(item);
+                let itemsOnCooldown = [];
+                let cooldown = 0;
+
+                let cdGroup = Collectables.getCooldownData(item).group;
+                let playerCds = self.worldsMap[sessionData.mapId].consumeCooldowns[player.nftId];
+                if (cdGroup && playerCds) {
+                    cooldown = playerCds[cdGroup];
+                    let itemsInGroup = Properties.getCdItemsByGroup(cdGroup);
+                    for (i = 0; i < itemsInGroup.length; i++) {
+                        itemsOnCooldown[i] = Types.getKindFromString(itemsInGroup[i]);
+                    }
+                }
+
+                let response = {consumed: consumed, cooldown: cooldown, items: itemsOnCooldown};
+                res.status(200).send(response);
+            }
         });
 
         self.io.on('connection', function(connection){

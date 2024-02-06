@@ -44,6 +44,7 @@ module.exports = Player = Character.extend({
         this.disconnectTimeout = null;
         this.pendingFish = null;
         this.consumableBuff = {};
+        this.invincible = false;
 
         this.moveSpeed = BASE_SPEED;
         this.attackRate = BASE_ATTACK_RATE;
@@ -374,24 +375,9 @@ module.exports = Player = Character.extend({
                         self.broadcast(item.despawn());
                         self.server.removeEntity(item);
 
-                        if(kind === Types.Entities.FIREPOTION || kind === Types.Entities.COBCORN || kind === Types.Entities.EYEBALL) {
+                        if(kind === Types.Entities.FIREPOTION || kind === Types.Entities.COBCORN || kind === Types.Entities.EYEBALL || kind === Types.Entities.ENERGYDRINK) {
+                            self.startInvincibility();
                             self.updateHitPoints();
-
-                            if (self.firepotionTimeout != null) {
-                                /* Issue #195: If the player is already a firefox when picking a firepotion
-                                Then cancel the queued "return to normal"
-                                New timeout will start and refresh the duration */
-                                clearTimeout(self.firepotionTimeout);
-                                self.firepotionTimeout = null;
-                            }
-                            else {
-                                self.broadcast(self.equip(Types.Entities.FIREFOX));
-                            }
-
-                            self.firepotionTimeout = setTimeout(function() {
-                                self.broadcast(self.equip(self.armor)); // return to normal
-                                self.firepotionTimeout = null;
-                            }, Types.timeouts[Types.Entities.FIREFOX]);
                             self.send(new Messages.HitPoints(self.maxHitPoints).serialize());
                         } else if(Types.isHealingItem(kind)) {
                             let amount;
@@ -400,6 +386,7 @@ module.exports = Player = Character.extend({
                                 case Types.Entities.POTION:
                                 case Types.Entities.FLASK:
                                 case Types.Entities.COBAPPLE:
+                                case Types.Entities.POPCORN:
                                 case Types.Entities.REDPOTION:
                                     amount = 40;
                                     break;
@@ -554,11 +541,6 @@ module.exports = Player = Character.extend({
                 }
                 self.pendingFish = null;
                 self.server.announceDespawnFloat(self);
-            } else if(action === Types.Messages.CONSUMEITEM) {
-                let item = message[1];
-                if (item) {
-                    self.consumeItem(item);
-                }
             }
             else {
                 if(self.message_callback) {
@@ -595,7 +577,7 @@ module.exports = Player = Character.extend({
     },
 
     handleHurt: function(mob, damage) {
-        if(mob && this.hitPoints > 0) {
+        if(mob && this.hitPoints > 0 && !this.invincible) {
             if (damage === undefined) {
                 let level = this.getLevel();
                 let totalLevel =  Math.round(level * 0.5); //this is armor
@@ -1055,11 +1037,14 @@ module.exports = Player = Character.extend({
             gameData.consumables[item] = itemCount - 1;
             cache.gameData = gameData;
             this.server.server.cache.set(this.sessionId, cache);
-            
+
             let cooldownDuration = cooldownData.duration >= 0 ? cooldownData.duration : 0;
             if (cooldownGroup && cooldownDuration){
                 this.applyCooldown(cooldownGroup, cooldownDuration);
             }
+            return true;
+        } else {
+            return false;
         }
     },
 
@@ -1160,11 +1145,35 @@ module.exports = Player = Character.extend({
         }
     },
 
-    consumeScareAwayPotion: function() {
-        this.forEachAttacker(function(mob) {
-            mob.resetPosition();
-            mob.move(mob.x, mob.y);
-            mob.exitCombat();
-        });
+    startInvincibility: function () {
+        let self = this;
+
+        if (self.firepotionTimeout !== null && self.firepotionTimeout !== undefined) {
+            /* Issue #195: If the player is already a firefox when picking a firepotion
+            Then cancel the queued "return to normal"
+            New timeout will start and refresh the duration */
+            clearTimeout(self.firepotionTimeout);
+            self.firepotionTimeout = null;
+        }
+        else {
+            self.broadcast(self.equip(Types.Entities.FIREFOX), false);
+            self.invincible = true;
+        }
+
+        self.firepotionTimeout = setTimeout(function() {
+            self.broadcast(self.equip(self.armor), false); // return to normal
+            self.firepotionTimeout = null;
+            self.invincible = false;
+        }, Types.timeouts[Types.Entities.FIREFOX]);
+    },
+
+    onReleaseMob: function(callback) {
+        this.releaseMob_callback = callback;
+    },
+
+    releaseMob: function(kind) {
+        if (this.releaseMob_callback) {
+            return this.releaseMob_callback(kind);
+        }
     }
 });

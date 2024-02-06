@@ -21,6 +21,7 @@ define(['jquery', 'storage'], function ($, Storage) {
             this.$playDiv = $('.play div');
             this.settings = new GameSettings(this);
             this.cooldownIntervals = [];
+            this.cooldownMap = {};
         },
 
         setGame: function (game) {
@@ -96,26 +97,21 @@ define(['jquery', 'storage'], function ($, Storage) {
                 firstTimePlaying = !self.storage.hasAlreadyPlayed();
 
             if (username && !this.game.started) {
-                var optionsSet = false,
-                    config = this.config;
 
-                //>>includeStart("devHost", pragmas.devHost);
-                if (config.local) {
-                    console.debug("Starting game with local dev config.");
-                    this.game.setServerOptions(config.local.host, config.local.port, username, config.dev.protocol);
-                } else {
-                    console.debug("Starting game with default dev config.");
-                    this.game.setServerOptions(config.dev.host, config.dev.port, username, config.dev.protocol);
-                }
-                optionsSet = true;
-                //>>includeEnd("devHost");
+                let protocol = window.location.protocol;
+                let host = window.location.hostname;
+                let port = window.location.port;
 
-                //>>includeStart("prodHost", pragmas.prodHost);
-                if (!optionsSet) {
-                    console.debug("Starting game with build config.");
-                    this.game.setServerOptions(config.build.host, config.build.port, username, config.build.protocol);
+                // Check if the port is not defined and assign default ports based on the protocol
+                if (!port) {
+                    if (protocol === 'http:') {
+                        port = '8000';
+                    } else if (protocol === 'https:') {
+                        port = '443';
+                    }
                 }
-                //>>includeEnd("prodHost");
+                protocol = protocol.replace(":", "");
+                this.game.setServerOptions(host, port, username, protocol);
 
                 this.center();
                 this.game.run(function () {
@@ -277,6 +273,8 @@ define(['jquery', 'storage'], function ($, Storage) {
 
             let questText = quest.longText ?? (_.isArray(quest.startText) ? quest.startText.join("<br/>") : quest.startText)
             newQuestPopup.find('#new-achievement-text').html(questText);
+            newQuestPopup.scrollTop(0);
+
             let eventTypeText = "";
             if(quest.type === "KILL_MOB") {
                 eventTypeText = "Kill ";
@@ -619,6 +617,10 @@ define(['jquery', 'storage'], function ($, Storage) {
                         }
                         hasItem = true;
 
+                        if (consumablesInventory[item].cooldown) {
+                            _this.cooldownMap[item] = consumablesInventory[item].cooldown;
+                        }
+
                         let description = consumablesInventory[item].description;
                         let tooltipText = "";
                         if (description){
@@ -742,8 +744,9 @@ define(['jquery', 'storage'], function ($, Storage) {
                         let consume = function (e) {
                             let count = parseInt(document.getElementById("count_" + item).innerHTML);
                             if (count > 0){
-                                _this.game.client.sendConsumeItem(item);
-                                document.getElementById("count_" + item).innerHTML = count - 1;
+                                if (_this.consumeItem(item)){
+                                    document.getElementById("count_" + item).innerHTML = count - 1;
+                                }
                             }
                             _this.hideInventory();
                             e.preventDefault();
@@ -755,9 +758,10 @@ define(['jquery', 'storage'], function ($, Storage) {
 
                 let updateCdDisplay = function (item) {
                     //inverted %, hence the 100 -
-                    let cdPercent = 100 - Math.round(100*consumablesInventory[item].cooldown/consumablesInventory[item].maxCooldown);
-    
-                    document.getElementById("timer_" + item).innerHTML = _this.game.msToTime(consumablesInventory[item].cooldown);
+                    let remainingTime = Math.max(0, _this.cooldownMap[item] - new Date().getTime());
+                    let cdPercent = 100 - Math.round(100*remainingTime/consumablesInventory[item].maxCooldown);
+
+                    document.getElementById("timer_" + item).innerHTML = _this.game.msToTime(remainingTime);
                     $('#'+item).parent().attr('style', 'background: linear-gradient(#341e28 ' + cdPercent + '%, #5b0000 ' + cdPercent + '%) !important');
                 }
 
@@ -766,17 +770,16 @@ define(['jquery', 'storage'], function ($, Storage) {
                     $('#'+item).css({'cursor':"not-allowed"});
 
                     let tickInterval = setInterval(function (){
-                        if (consumablesInventory[item].cooldown <= 0) {
+                        if (new Date().getTime() >= _this.cooldownMap[item]) {
                             clearInterval(tickInterval);
                             document.getElementById("timer_" + item).innerHTML = "";
                             $('#'+item).css({'cursor':"pointer"});
                             $('#'+item).parent().attr('style', 'background:');
-                            
+
                             if (consumablesInventory[item].consumable) {
                                 consumeFunc(item);
                             }
                         } else {
-                            consumablesInventory[item].cooldown -= 1000;
                             updateCdDisplay(item);
                         }
                     }, 1000);
@@ -815,7 +818,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                 });
 
                 Object.keys(consumablesInventory).forEach(item => {
-                    if (consumablesInventory[item].cooldown > 0) {
+                    if (new Date().getTime() < _this.cooldownMap[item]) {
                         cooldownTick(item);
                     } else if (consumablesInventory[item].consumable) {
                         consumeFunc(item);
@@ -833,8 +836,9 @@ define(['jquery', 'storage'], function ($, Storage) {
         consumeSlot: function(slot) {
             let inventorySlots = _this.settings.getInventorySlots();
             let item = inventorySlots[slot];
-            if (item) {
-                this.game.client.sendConsumeItem(String(item));
+            let cooldown = this.cooldownMap[item] !== undefined ? this.cooldownMap[item] : 0;
+            if (item && new Date().getTime() >= cooldown) {
+                this.consumeItem(String(item));
             }
         },
 
@@ -882,6 +886,25 @@ define(['jquery', 'storage'], function ($, Storage) {
                         }
                     });
                 }
+            });
+        },
+
+        consumeItem: function (item) {
+            _this = this;
+
+            let consumeQuery = "/session/" + _this.storage.sessionId + "/consumeItem/" + item;
+
+            axios.get(consumeQuery).then(function(response) {
+                let items = response.data.items;
+                let cooldown = response.data.cooldown;
+                if (cooldown && items.length > 0) {
+                    for (i = 0; i < items.length; i++) {
+                        _this.cooldownMap[items[i]] = cooldown;
+                    }
+                }
+                return response.data.consumed;
+            }).catch(function (error) {
+                console.error("Error while consuming item", error);
             });
         },
 
@@ -970,6 +993,7 @@ define(['jquery', 'storage'], function ($, Storage) {
             axios.get(shopInventoryQuery).then(function(response) {
                 let items = response.data;
                 shopPopup.find('#shop-popup-items').html('');
+                shopPopup.scrollTop(0);
                 items.forEach(function (item) {
 
                     let itemHtml = "<div class='item'>";
@@ -1025,7 +1049,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                         $('#shop-confirmation-text').html('Are you sure you want to buy <span class="highlight">' + item.name + '</span>?');
                         $('#shop-confirmation-longtext').html(item.longDescription ?? item.description);
                         $('#shop-confirmation').removeClass('hidden');
-
+                        $('#shop-confirmation-longtext').scrollTop(0);
                         $('#cancel-shop-purchase').off('click');
                         $('#cancel-shop-purchase').click(function(e) {
                             $('#shop-confirmation').addClass('hidden');

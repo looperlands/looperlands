@@ -203,9 +203,10 @@
     transition: ease-in-out 500ms;
 }
 #new-achievement-popup .body{
-    padding:0 25px;
-    max-height: 320px;
+    padding:2px 25px;
+    max-height: 250px;
     overflow-y: auto;
+    font-size:14px;
 }
 
 #new-achievement-popup .header {
@@ -376,7 +377,7 @@
     .achievement19 .coin {background-position:-480px -548px;}
     .achievement20 .coin {background-position:-528px -548px;}
 
-    #achievements-wrapper {height:266px;width:744px;margin:40px 0 20px 40px;}
+    #achievements-wrapper {height:266px;width:744px;margin:40px 0 5px 40px;}
     #achievements ul {margin-left:40px;}
     #achievements nav {height:44px;width:135px;margin:0 auto;}
     #previous, #next {height:44px;width:68px;display:inline-block;}

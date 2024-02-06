@@ -119,21 +119,13 @@ define(['item'], function(Item) {
             init: function(id) {
                 this._super(id, Types.Entities.FIREPOTION, "object");
                 this.lootMessage = "You feel the power of Loopring!";
-            },
-
-            onLoot: function(player) {
-                player.startInvincibility();
-            },
+            }
         }),
 
         Cobcorn: Item.extend({
             init: function(id) {
                 this._super(id, Types.Entities.COBCORN, "object");
                 this.lootMessage = "It's corn time!";
-            },
-
-            onLoot: function(player) {
-                player.startInvincibility();
             }
         }),
 
@@ -183,6 +175,20 @@ define(['item'], function(Item) {
             init: function(id) {
                 this._super(id, Types.Entities.CPOTION_L, "object");
                 this.lootMessage = "You pick up a large healing potion!";
+            },
+        }),
+
+        Cimmupot: Item.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.CIMMUPOT, "object");
+                this.lootMessage = "You pick up liquid loopium!";
+            },
+        }),
+
+        Cagedrat: Item.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.CAGEDRAT, "object");
+                this.lootMessage = "You pick up a caged rat!";
             },
         }),
 
@@ -249,14 +255,18 @@ define(['item'], function(Item) {
         dvd:Item.extend({init:function(id){this._super(id,Types.Entities.DVD,"object");this.lootMessage="You collected a DVD.";}}),
         game:Item.extend({init:function(id){this._super(id,Types.Entities.GAME,"object");this.lootMessage="You collected a Game Cartridge.";}}),
         popcorn:Item.extend({init:function(id){this._super(id,Types.Entities.POPCORN,"object");this.lootMessage="You collected a Bag of Popcorn.";}}),
+        energydrink:Item.extend({
+            init:function(id) {
+                this._super(id,Types.Entities.ENERGYDRINK,"object");
+                this.lootMessage="You collected an Energy Drink.";
+            },
+
+        }),
         //mycupbloody
         EYEBALL:Item.extend({
             init:function(id){
                 this._super(id,Types.Entities.EYEBALL,"object");
-                this.lootMessage="Keep an eye out!!";}
-
-                ,onLoot: function(player) {
-                    player.startInvincibility();
+                this.lootMessage="Keep an eye out!!";
             }
         }),
         REDPOTION:Item.extend({

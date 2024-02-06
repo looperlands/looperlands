@@ -56,7 +56,7 @@ loadMapFlow = async function (mapId) {
   try {
     return JSON.parse(responseData.data);
   } catch (error) {
-    console.error("Error parsing map flow");
+    //console.error("Error parsing map flow");
     return undefined;
   }
 }
@@ -576,7 +576,7 @@ exports.getBots = async function(walletId) {
   return bots;
 }
 
-exports.newBot = async function(mapId, botNftId, xp, name, walletId, ownerEntityId, x, y, retry) {
+exports.newBot = async function(mapId, botNftId, xp, name, walletId, ownerEntityId, x, y, gameServerURL, retry) {
   const options = {
     headers: {
       'X-Api-Key': LOOPERLANDS_BACKEND_API_KEY
@@ -593,6 +593,7 @@ exports.newBot = async function(mapId, botNftId, xp, name, walletId, ownerEntity
       "owner": ownerEntityId,
       "x" : x,
       "y" : y,
+      "gameServerURL" : gameServerURL
     }
     const response = await axios.post(url, sessionRequest, options);
     return response.data;
@@ -605,7 +606,7 @@ exports.newBot = async function(mapId, botNftId, xp, name, walletId, ownerEntity
     }
     retry -= 1;
     if (retry > 0) {
-      return this.newBot(mapId, botNftId, xp, name, walletId, ownerEntityId, x, y, retry);
+      return this.newBot(mapId, botNftId, xp, name, walletId, ownerEntityId, x, y, gameServerURL, retry);
     } else {
       console.error("newBot", error);
     }

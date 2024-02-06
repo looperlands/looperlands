@@ -4,18 +4,9 @@ let Properties = {
     rat: {
         level: 1,
         drops: {
-            // flask: 40,
-            // burger: 10,
-            // firepotion: 5
-            // cpotion_s: 80,
-            // cpotion_m: 15,
-            // cpotion_l: 5
-            // basicarrow: 60,
-            // featherarrow: 20,
-            // firearrow: 20,
-            GOLD: 60,
-            GOLD2: 20,
-            GOLD3: 10,
+            flask: 40,
+            burger: 10,
+            firepotion: 5
         },
         respawnDelay: 10000,
     },
@@ -1029,10 +1020,10 @@ let Properties = {
 
     INFERNOTH: {
         level: 30,
-        hpMod: 7.25,
-        weaponMod: 2.75,
+        hpMod: 8.25,
+        weaponMod: 2.2,
         xp:10000,
-        respawnDelay: 120000
+        respawnDelay: 60000
     },
 
     WINGELLA: {
@@ -1071,7 +1062,8 @@ let Properties = {
     lateflea: {
         level: 5,
         drops: {
-            flask: 50
+            popcorn: 50,
+            energydrink: 10,
         }
     },
 
@@ -1081,7 +1073,7 @@ let Properties = {
             dvd: 50,
             popcorn: 50,      
         },
-        messages: ['Darkness shall embrance you!', 'Your doom is woven', 'Fear binds you', 'Your end is spun', 'The old world beckons you'],
+        messages: ['Prepare for Death!'],
         armorMod: 1.1,
         weaponMod: 1.6,
         hpMod: 2.0,
@@ -1089,17 +1081,32 @@ let Properties = {
         respawnDelay: 30000
     },
 
-    horde1: {
-        level: 10,
+    fleaboss: {
+        level: 30,
         drops: {
-            flask: 50
+            energydrink: 100,
+        },
+        messages: ['Time to collect those late fees!'],
+        armorMod: 1.5,
+        weaponMod: 1.5,
+        hpMod: 2.5,
+        xp: 15000,
+        respawnDelay: 600000
+    },
+
+    horde1: {
+        level: 8,
+        drops: {
+            popcorn: 50,
+            energydrink: 10,
         }
     },
 
     horde2: {
-        level: 4,
+        level: 12,
         drops: {
-            flask: 50
+            popcorn: 50,
+            energydrink: 10,
         }
     },
 
@@ -1241,6 +1248,31 @@ let Properties = {
             player.regenHealthBy(300);
         }
     },
+    cimmupot: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "immunity",
+            duration: 180000
+        },
+        inventoryDescription: "Liquid loopium",
+        onConsume: function(player){
+            player.startInvincibility();
+        }
+    },
+    cagedrat: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "caged",
+            duration: 60000
+        },
+        inventoryDescription: "Caged rat",
+        onConsume: function(player) {
+            player.releaseMob(Types.Entities.RAT);
+        }
+    },
+
     // Projectiles
     basicarrow: {
         collectable: true,
@@ -1266,6 +1298,21 @@ let Properties = {
         damage: 2,
         range: 4
     },
+
+    // Weapons
+    // axe: {
+    //     name: "Axe",
+    //     consumables: {
+    //         GOLD: {
+    //             level: 40,
+    //             range: 6
+    //         },
+    //         coblog: {
+    //             level: 10,
+    //             range: 12
+    //         }
+    //     }
+    // }
 };
 
 Properties.getArmorLevel = function(kind, levelOffset) {
@@ -1377,7 +1424,7 @@ Properties.getCollectItem = function(kind) {
 }
 
 Properties.consume = function(kind, player) {
-    let onConsume = Properties[Types.getKindAsString(kind)]?.onConsume;
+    let onConsume = Properties[Types.getKindAsString(kind)]?.onConsume
     if(onConsume !== undefined) {
         onConsume(player);
     }
@@ -1389,8 +1436,28 @@ Properties.getInventoryDescription = function(kind) {
 }
 
 Properties.getCooldownData = function(kind) {
-    let cooldownData = Properties[Types.getKindAsString(kind)]?.cooldown;
-    return cooldownData !== undefined ? cooldownData : {duration: 0, group: ""};
+    return Properties[Types.getKindAsString(kind)]?.cooldown;
+}
+
+Properties.filterCooldownGroups = function() {
+    let ret = {};
+    Object.keys(Properties).forEach(key => {
+        let itemGroup = Properties[key].cooldown?.group;
+        if (itemGroup !== undefined) {
+            if (ret[itemGroup] === undefined) {
+                ret[itemGroup] = [];
+            }
+            ret[itemGroup].push(key);
+        }
+    });
+
+    return ret;
+}
+
+const COOLDOWNGROUP_MAP = Properties.filterCooldownGroups();
+
+Properties.getCdItemsByGroup = function(cdGroup) {
+    return COOLDOWNGROUP_MAP[cdGroup] !== undefined ? COOLDOWNGROUP_MAP[cdGroup] : [];
 }
 
 module.exports = Properties;
