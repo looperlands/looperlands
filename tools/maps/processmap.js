@@ -116,7 +116,9 @@ module.exports = function processMap(json, options) {
                 console.log("Processing terrain properties...");
                 tileProperties = tileset.tile;
                 for(var i=0; i < tileProperties.length; i += 1) {
-                    var property = tileProperties[i].properties.property;
+                    var property = tileProperties[i]?.properties?.property;
+                    if(!property) { continue }
+
                     var tilePropertyId = tileProperties[i].id + 1;
                     if(property instanceof Array) {
                         for(var pi=0; pi < property.length; pi += 1) {
