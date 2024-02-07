@@ -9,6 +9,12 @@ const rarities = {common: {chance: 700, expMultiplier: 1, speed: 20},
 //---START CONFIG---
 //Not all rarities have to be defined within a lake, but a COMMON is mandatory
 const Lakes = {
+    duckvillepond: {
+        level: 1,
+        fish: {
+            
+        },
+    },
     cobFarmLake: {
         level: 1,
         fish: {
