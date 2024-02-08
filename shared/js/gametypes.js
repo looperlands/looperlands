@@ -282,9 +282,9 @@ Types = {
         POPCORN: 77000004,
         ENERGYDRINK: 77000005,
         //mycupbloody
-        EYEBALL: 77000005,
-        REDPOTION: 77000006,
-        GREYPOTION: 77000007, // @lastidObject@
+        EYEBALL: 80000005,
+        REDPOTION: 80000006,
+        GREYPOTION: 80000007, // @lastidObject@
         //@nextIdLineObject@
 
         // NPCs
