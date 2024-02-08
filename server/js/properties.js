@@ -1088,9 +1088,9 @@ let Properties = {
         },
         messages: ['Time to collect those late fees!'],
         armorMod: 1.5,
-        weaponMod: 1.5,
-        hpMod: 2.5,
-        xp: 15000,  
+        weaponMod: 1.8,
+        hpMod: 3.0,
+        xp: 15000,   
         respawnDelay: 600000
     },
 
