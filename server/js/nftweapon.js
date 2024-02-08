@@ -12,7 +12,7 @@ class NFTWeapon {
         this.experience = undefined;
         this.level = 1;
         this.accumulatedExperience = 0;
-        this.projectileType = null;
+        this.weaponClass = null;
     }
 
     async loadWeaponData() {
@@ -25,10 +25,10 @@ class NFTWeapon {
         }
         this.level = Formulas.level(this.experience);
 
-        if (response.projectileType) {
-            this.projectileType = response.projectileType;
+        if (response.weaponClass) {
+            this.weaponClass = response.weaponClass;
         } else if (this.isRanged()) {
-            this.projectileType = "arrow";
+            this.weaponClass = "bow";
         }
     }
 
@@ -95,34 +95,6 @@ class NFTWeapon {
 
     isRanged() {
         return Types.isRangedWeapon(Types.getKindFromString(this.nftId.replace("0x", "NFT_")));
-    }
-
-    getProjectiles() {
-        if(!this.projectileType) {
-            return;
-        }
-
-        switch (self.projectileType) {
-            case 'bullet':
-                return [
-                    Types.Entities.STEEL_BULLET,
-                    Types.Entities.SILVER_BULLET,
-                    Types.Entities.GOLD_BULLET,
-                ];
-            case 'magic':
-                return [
-                    Types.Entities.BOTTLED_FIRE,
-                    Types.Entities.BOTTLED_LIGHTNING,
-                    Types.Entities.BOTTLED_POISON,
-                ];
-            case 'arrow':
-            default:
-                return [
-                    Types.Entities.BASIC_ARROW,
-                    Types.Entities.FEATHER_ARROW,
-                    Types.Entities.FIRE_ARROW,
-                ];
-        }
     }
 }
 

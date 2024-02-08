@@ -5384,9 +5384,6 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     this.unregisterEntityPosition(entity);
                     delete this.entities[entity.id];
                 }
-                else {
-                    console.error("Cannot remove entity. Unknown ID : " + entity.id);
-                }
             },
 
             addItem: function(item, x, y) {
@@ -6845,10 +6842,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         self.removeFloat(id);
                     });
 
-                    self.client.onSpawnProjectile(function (shooterId, projectileId, targetId) {
+                    self.client.onSpawnProjectile(function (shooterId, projectileType, targetId) {
                         let shooter = self.getEntityById(shooterId);
                         let target = self.getEntityById(targetId);
-                        let projectile = new Projectile(projectileId, shooter, target);
+                        let projectile = new Projectile(projectileType, shooter, target);
                         let lastHitPos = {x: null, y: null};
                         projectile.onMove(() => {
                             let projectilePos = {x: Math.floor(projectile.x / 16), y: Math.floor(projectile.y / 16)}
@@ -7811,9 +7808,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 if(character.isAttacking() && !character.previousTarget) {
                     var isMoving = this.tryMovingToADifferentTile(character); // Don't let multiple mobs stack on the same tile when attacking a player.
 
-                    if(character.canAttack(time)) {
-                        if(!isMoving) { // don't hit target if moving to a different tile.
-                            if(character.hasTarget() && character.getOrientationTo(character.target) !== character.orientation) {
+                    if (character.canAttack(time)) {
+                        if (!isMoving) { // don't hit target if moving to a different tile.
+                            if (character.hasTarget() && character.getOrientationTo(character.target) !== character.orientation) {
                                 character.lookAtTarget();
                             }
 
@@ -7823,26 +7820,27 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                     this.client.sendShoot(character.target);
                                 }
                             } else {
-                            character.hit();
+                                character.hit();
 
-                            if(character.id === this.playerId) {
-                                this.client.sendHit(character.target);
-                            }
+                                if (character.id === this.playerId) {
+                                    this.client.sendHit(character.target);
+                                }
 
-                            if(character instanceof Player && this.camera.isVisible(character)) {
-                                this.audioManager.playSound("hit"+Math.floor(Math.random()*2+1));
-                            }
+                                if (character instanceof Player && this.camera.isVisible(character)) {
+                                    this.audioManager.playSound("hit" + Math.floor(Math.random() * 2 + 1));
+                                }
 
-                            if(character.hasTarget() && character.target.id === this.playerId && this.player && !(character instanceof Player)) {
-                                this.client.sendHurt(character);
+                                if (character.hasTarget() && character.target.id === this.playerId && this.player && !(character instanceof Player)) {
+                                    this.client.sendHurt(character);
+                                }
                             }
-                        }
-                    } else {
-                        if(character.hasTarget()
-                            && character.isDiagonallyAdjacent(character.target)
-                            && character.target instanceof Player
-                            && !character.target.isMoving()) {
-                            character.follow(character.target);
+                        } else {
+                            if (character.hasTarget()
+                                && character.isDiagonallyAdjacent(character.target)
+                                && character.target instanceof Player
+                                && !character.target.isMoving()) {
+                                character.follow(character.target);
+                            }
                         }
                     }
                 }
@@ -8292,21 +8290,20 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                             // render projectile tiles
                             $('#projectileContainer').html('');
-                            if (response.data.weaponInfo.projectiles !== undefined) {
-                                for (let i = 0; i < response.data.weaponInfo.projectiles.length; i++) {
-                                    let projectile = response.data.weaponInfo.projectiles[i];
-                                    let projectileTile = self.sprites[Types.getKindAsString(projectile)];
-                                    if (projectileTile !== undefined) {
-                                        let selected = response.data.weaponInfo.projectiles[i] === response.data.weaponInfo.selectedProjectile ? 'selected' : '';
-                                        let projectileHtml = "<div class='item panelBorder pixel-corners-xs " + selected + "'><img id='" + projectile + "' style='width: 100%; height: 100%; object-fit: cover; object-position: 100% 0;' src='img/2/" + Types.getKindAsString(projectile) + ".png' /></div>";
-                                        let projectileElement = $(projectileHtml);
-                                        projectileElement.click(function (event) {
-                                            self.client.sendSelectProjectile(projectile);
-                                            self.app.toggleWeaponInfo(event)
-                                        });
-                                        $('#projectileContainer').append(projectileElement);
 
-                                    }
+                            let spriteInfo = self.sprites[self.player.weaponName];
+                            if (spriteInfo.projectiles !== undefined) {
+                                for (let i = 0; i < Object.keys(spriteInfo.projectiles).length; i++) {
+                                    let projectileType = Object.keys(spriteInfo.projectiles)[i];
+                                    let projectile = spriteInfo.projectiles[projectileType];
+                                    let selected = projectileType === response.data.weaponInfo.selectedProjectile ? 'selected' : '';
+                                    let projectileHtml = "<div class='item panelBorder pixel-corners-xs " + selected + "'><img id='" + projectile + "' style='width: 100%; height: 100%; object-fit: none; object-position: 100% 0;' src='img/1/" + projectile + ".png' /></div>";
+                                    let projectileElement = $(projectileHtml);
+                                    projectileElement.click(function (event) {
+                                        self.client.sendSelectProjectile(projectileType);
+                                        self.app.toggleWeaponInfo(event)
+                                    });
+                                    $('#projectileContainer').append(projectileElement);
                                 }
                             }
 

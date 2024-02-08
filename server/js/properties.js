@@ -1280,9 +1280,6 @@ let Properties = {
         inventoryDescription: "Basic arrow (damage: medium, range: medium)",
         damage: 1,
         range: 8,
-        onConsume: function(player) {
-            player.consumeScareAwayPotion();
-        }
     },
     featherarrow: {
         collectable: true,

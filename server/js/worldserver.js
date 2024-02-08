@@ -1170,7 +1170,6 @@ module.exports = World = cls.Class.extend({
             constructor: nftWeapon.constructor.name,
             experience: nftWeapon.experience,
             trait: nftWeapon.trait,
-            projectiles: nftWeapon.getProjectiles(),
             selectedProjectile: player.selectedProjectile
         }
         return weaponInfo;
@@ -1583,12 +1582,9 @@ module.exports = World = cls.Class.extend({
     },
 
 
-    announceSpawnProjectile: function(player, projectileId, mob) {
-        console.log("announceSpawnProjectile", player.id, projectileId, mob);
-        this.pushToAdjacentGroups(player.group, new Messages.SpawnProjectile(player.id, projectileId, mob));
+    announceSpawnProjectile: function(player, projectileType, mob) {
+        console.log("announceSpawnProjectile", player.id, projectileType, mob);
+        this.pushToAdjacentGroups(player.group, new Messages.SpawnProjectile(player.id, projectileType, mob));
     },
 
 });
-
-
-

@@ -249,6 +249,7 @@ module.exports = Player = Character.extend({
                 var mob = self.server.getEntityById(message[1]);
                 if(mob) {
                     let usedProjectile = self.getProjectileToUse();
+
                     if(usedProjectile === null) {
                         self.server.pushToPlayer(self, new Messages.OutOfAmmo());
                         return;
@@ -256,7 +257,7 @@ module.exports = Player = Character.extend({
 
                     let projectileCount = self.getResourceAmount(usedProjectile);
                     if (projectileCount > 0) {
-                        self.server.announceSpawnProjectile(self, usedProjectile, message[1]);
+                        self.server.announceSpawnProjectile(self, self.currentProjectileType, message[1]);
                         self.consumeItem(usedProjectile);
                     } else {
                         self.server.pushToPlayer(self, new Messages.OutOfAmmo());
@@ -783,16 +784,30 @@ module.exports = Player = Character.extend({
     },
 
     getProjectileToUse: function() {
-        if (this.selectedProjectile) {
-            return this.selectedProjectile;
+        const projectiles = {
+            gun: {short: Types.FIRE_ARROW, medium: Types.Entities.BASIC_ARROW, long: Types.Entities.FEATHER_ARROW},
+            bow: {short: Types.FIRE_ARROW, medium: Types.Entities.BASIC_ARROW, long: Types.Entities.FEATHER_ARROW},
+            wand: {short: Types.FIRE_ARROW, medium: Types.Entities.BASIC_ARROW, long: Types.Entities.FEATHER_ARROW},
         }
 
-        let projectiles = this.getNFTWeapon().getProjectiles();
-        for(let i = 0; i < projectiles.length; i++) {
-            let projectile = projectiles[i];
-            projectileCount = this.getResourceAmount(projectile)
+        if (!this.getNFTWeapon()?.weaponClass) {
+            this.currentProjectileType = null;
+            return null;
+        }
+
+        if (this.selectedProjectile) {
+            this.currentProjectileType = this.selectedProjectile;
+            return projectiles[this.getNFTWeapon().weaponClass][this.selectedProjectile];
+        }
+
+        const classProjectiles = projectiles[this.getNFTWeapon().weaponClass]
+        for (let i = 0; i < Object.keys(classProjectiles).length; i++) {
+            let projectileType = Object.keys(classProjectiles)[i];
+            let projectile = classProjectiles[projectileType];
+            let projectileCount = this.getResourceAmount(projectile)
             console.log("Projectile count", projectileCount, projectile)
-            if(projectileCount > 0) {
+            if (projectileCount > 0) {
+                this.currentProjectileType = projectileType;
                 return projectile;
             }
         }

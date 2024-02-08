@@ -2,14 +2,17 @@
 define(['entity', 'transition'], function(Entity, Transition) {
 
     var Projectile = Entity.extend({
-        init: function(projectileId, shooter) {
-            this._super('projectile_' + Math.random() * 99999999999, projectileId);
+        init: function(projectileKind, shooter) {
+            console.log('kind', projectileKind);
+            let projectileId = self.sprites[shooter.weaponName].projectiles[projectileKind];
+            console.log('pid', projectileId);
+            this._super('projectile_' + Math.random() * 99999999999, Types.getTypeFromString(projectileId));
             this.flySpeed = 100;
             this.shooter = shooter;
             this.sourceX = shooter.gridX;
             this.sourceY = shooter.gridY;
             this.setGridPosition(this.sourceX, this.sourceY);
-            this.setSprite(self.sprites[Types.getKindAsString(projectileId)]);
+            this.setSprite(self.sprites[projectileId]);
             this.movement = new Transition();
             this.moving = false;
             this.nameless = true;

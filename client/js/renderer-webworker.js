@@ -75,17 +75,28 @@ function drawScaledImage(ctx, image, x, y, w, h, dx, dy, scale) {
         h * scale);
 }
 
+const tileCache = {};
+
 function drawTile(ctx, tileid, tileset, setW, gridW, cellid, scale) {
     if (tileid !== -1) { // -1 when tile is empty in Tiled. Don't attempt to draw it.
-        this.drawScaledImage(ctx,
-            tileset,
-            getX(tileid + 1, setW) * tilesize,
-            Math.floor(tileid / setW) * tilesize,
-            tilesize,
-            tilesize,
-            getX(cellid + 1, gridW) * tilesize,
-            Math.floor(cellid / gridW) * tilesize,
-            scale);
+        if(tileCache[tileid] === undefined) {
+            // create offcreen canvas to cache the tile
+            let offscreenCanvas = new OffscreenCanvas(tilesize, tilesize);
+            let offscreenCtx = offscreenCanvas.getContext('2d');
+            drawScaledImage(offscreenCtx,
+                tileset,
+                getX(tileid + 1, setW) * tilesize,
+                Math.floor(tileid / setW) * tilesize,
+                tilesize,
+                tilesize,
+                getX(cellid + 1, gridW) * tilesize,
+                Math.floor(cellid / gridW) * tilesize,
+                scale);
+            tileCache[tileid] = offscreenCanvas;
+        }
+
+        // draw from cache
+        ctx.drawImage(tileCache[tileid], 0, 0);
     }
 };
 

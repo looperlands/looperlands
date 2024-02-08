@@ -34,7 +34,7 @@ var _ = require('underscore'),
             this.formats[Types.Messages.FISHINGRESULT] = ['b', 'b'],
             this.formats[Types.Messages.SHOOT] = ['n'],
             this.formats[Types.Messages.OUTOFAMMO] = [],
-            this.formats[Types.Messages.SELECTPROJECTILE] = ['n']
+            this.formats[Types.Messages.SELECTPROJECTILE] = ['s']
         },
         
         check: function(msg) {
