@@ -1088,8 +1088,8 @@ let Properties = {
         },
         messages: ['Time to collect those late fees!'],
         armorMod: 1.5,
-        weaponMod: 1.5,
-        hpMod: 2.5,
+        weaponMod: 1.8,
+        hpMod: 3.0,
         xp: 15000,
         respawnDelay: 600000
     },
@@ -1421,7 +1421,7 @@ Properties.getCollectItem = function(kind) {
 }
 
 Properties.consume = function(kind, player) {
-    let onConsume = Properties[Types.getKindAsString(kind)]?.onConsume
+    let onConsume = Properties[Types.getKindAsString(kind)]?.onConsume;
     if(onConsume !== undefined) {
         onConsume(player);
     }
