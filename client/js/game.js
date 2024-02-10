@@ -90,7 +90,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "sorcerer", "octocat", "beachnpc", "forestnpc", "desertnpc", "lavanpc","thudlord", "clotharmor", "leatherarmor", "mailarmor","boar","grizzlefang","barrel","neena","athlyn","jeniper",
                     "platearmor", "redarmor", "goldenarmor", "firefox", "death", "sword1", "transparentweapon", "torin","elric","glink", "axe", "chest","elara","eldrin","draylen","thaelen","keldor","torvin","liora","aria",
                     "sword2", "redsword", "bluesword", "goldensword", "item-sword2", "item-axe", "item-redsword", "item-bluesword", "item-goldensword", "item-leatherarmor", "item-mailarmor","whiskers",
-                    "basicarrow", "item-basicarrow", "featherarrow", "item-featherarrow", "firearrow", "item-firearrow",
+                    "shortarrow", "item-shortarrow", "mediumarrow", "item-mediumarrow", "longarrow", "item-longarrow",
                     "item-platearmor", "item-redarmor", "item-goldenarmor", "item-flask", "item-potion","item-cake", "item-burger", "item-cobcorn", "item-cobapple", "item-coblog", "item-cobclover", "item-cobegg", "morningstar", "item-morningstar", "item-firepotion", "item-cpotion_s", "item-cpotion_m", "item-cpotion_l", "item-cimmupot", "item-cagedrat",
                     "item-KEY_ARACHWEAVE","shiverrock","shiverrockii","shiverrockiii","crystolith","stoneguard","glacialord","edur","lumi","snjor","gelidus","nightharrow",
                     "fieldeffect-magcrack","fieldeffect-cobfallingrock","gloomforged","torian","gripnar","blackdog","browndog","whitedog",
@@ -5423,7 +5423,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     }
                 }
                 else {
-                    console.error("This entity already exists : " + entity.id + " ("+entity.kind+")");
+                    //console.error("This entity already exists : " + entity.id + " ("+entity.kind+")");
                 }
             },
 
@@ -6894,6 +6894,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         let shooter = self.getEntityById(shooterId);
                         let target = self.getEntityById(targetId);
                         let projectile = new Projectile(projectileType, shooter, target);
+                        if (projectile.shooter.id === self.player.id) {
+                            self.player.currentProjectileType = projectileType;
+                        }
                         let lastHitPos = {x: null, y: null};
                         projectile.onMove(() => {
                             let projectilePos = {x: Math.floor(projectile.x / 16), y: Math.floor(projectile.y / 16)}
@@ -6906,9 +6909,12 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                         self.client.sendHit(hitEntity);
                                         self.audioManager.playSound("hit" + Math.floor(Math.random() * 2 + 1));
                                     }
-                                    projectile.setVisible(false);
-                                    self.removeFromRenderingGrid(projectile, projectilePos.x, projectilePos.y);
-                                    self.removeEntity(projectile);
+
+                                    projectile.impact(() => {
+                                        projectile.setVisible(false);
+                                        self.removeFromRenderingGrid(projectile, projectilePos.x, projectilePos.y);
+                                        self.removeEntity(projectile);
+                                    });
                                 }
                                 if (self.map.isColliding(projectilePos.x, projectilePos.y)) {
                                     if (projectile.shooter.id === self.player.id) {
@@ -6932,9 +6938,12 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                     }
                                 }
                             }
-                            finishedProjectile.setVisible(false);
-                            self.removeFromRenderingGrid(finishedProjectile, finishedProjectile.gridX, finishedProjectile.gridY);
-                            self.removeEntity(finishedProjectile);
+
+                            finishedProjectile.impact(() => {
+                                finishedProjectile.setVisible(false);
+                                self.removeFromRenderingGrid(projectile, finishedProjectile.gridX, finishedProjectile.gridY);
+                                self.removeEntity(projectile);
+                            });
                         })
                         projectile.flyTo(target.gridX, target.gridY);
                         self.addEntity(projectile);
@@ -8317,7 +8326,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             $('#companionProgress').text(response.data.botInfo.percentage);
                         }
 
-                        if (response.data.weaponInfo !== null && response.data.weaponInfo !== undefined) {
+                        if (response.data.weaponInfo !== null && response.data.weaponInfo !== undefined && response.data.weaponInfo.weaponLevelInfo !== undefined) {
                             weaponPercentage = response.data.weaponInfo.weaponLevelInfo.percentage;
                             weaponLevel = response.data.weaponInfo.weaponLevelInfo.currentLevel;
 
@@ -8345,11 +8354,13 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                     let projectileType = Object.keys(spriteInfo.projectiles)[i];
                                     let projectile = spriteInfo.projectiles[projectileType];
                                     let selected = projectileType === response.data.weaponInfo.selectedProjectile ? 'selected' : '';
-                                    let projectileHtml = "<div class='item panelBorder pixel-corners-xs " + selected + "'><img id='" + projectile + "' style='width: 100%; height: 100%; object-fit: none; object-position: 100% 0;' src='img/1/" + projectile + ".png' /></div>";
+                                    let projectileHtml = "<div class='item panelBorder pixel-corners-xs " + selected + "'><img id='" + projectile + "' style='width: 32px; height: 32px; object-fit: none; object-position: 100% 0;' src='img/1/" + projectile + ".png' /></div>";
                                     let projectileElement = $(projectileHtml);
                                     projectileElement.click(function (event) {
+                                        self.player.currentProjectileType = projectileType;
                                         self.client.sendSelectProjectile(projectileType);
                                         self.app.toggleWeaponInfo(event)
+                                        self.renderStatistics();
                                     });
                                     $('#projectileContainer').append(projectileElement);
                                 }

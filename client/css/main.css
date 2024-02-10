@@ -413,8 +413,8 @@ body.upscaled.game {background:#000;}
 }
 
 #projectileContainer .item {
-    width: 48px;
-    height: 48px;
+    width: 32px;
+    height: 32px;
     padding: 0;
     border: none;
     border-radius: 0;

@@ -249,7 +249,6 @@ module.exports = Player = Character.extend({
                 var mob = self.server.getEntityById(message[1]);
                 if(mob) {
                     let usedProjectile = self.getProjectileToUse();
-
                     if(usedProjectile === null) {
                         self.server.pushToPlayer(self, new Messages.OutOfAmmo());
                         return;
@@ -785,9 +784,9 @@ module.exports = Player = Character.extend({
 
     getProjectileToUse: function() {
         const projectiles = {
-            gun: {short: Types.FIRE_ARROW, medium: Types.Entities.BASIC_ARROW, long: Types.Entities.FEATHER_ARROW},
-            bow: {short: Types.FIRE_ARROW, medium: Types.Entities.BASIC_ARROW, long: Types.Entities.FEATHER_ARROW},
-            wand: {short: Types.FIRE_ARROW, medium: Types.Entities.BASIC_ARROW, long: Types.Entities.FEATHER_ARROW},
+            gun:  {short: Types.Entities.SHORT_ARROW, medium: Types.Entities.MEDIUM_ARROW, long: Types.Entities.LONG_ARROW},
+            bow:  {short: Types.Entities.SHORT_ARROW, medium: Types.Entities.MEDIUM_ARROW, long: Types.Entities.LONG_ARROW},
+            wand: {short: Types.Entities.SHORT_ARROW, medium: Types.Entities.MEDIUM_ARROW, long: Types.Entities.LONG_ARROW},
         }
 
         if (!this.getNFTWeapon()?.weaponClass) {
@@ -801,11 +800,11 @@ module.exports = Player = Character.extend({
         }
 
         const classProjectiles = projectiles[this.getNFTWeapon().weaponClass]
+
         for (let i = 0; i < Object.keys(classProjectiles).length; i++) {
             let projectileType = Object.keys(classProjectiles)[i];
             let projectile = classProjectiles[projectileType];
-            let projectileCount = this.getResourceAmount(projectile)
-            console.log("Projectile count", projectileCount, projectile)
+            let projectileCount = this.getResourceAmount(projectile);
             if (projectileCount > 0) {
                 this.currentProjectileType = projectileType;
                 return projectile;
@@ -935,7 +934,7 @@ module.exports = Player = Character.extend({
                 if (projectile === null) {
                     return 0;
                 }
-                return nftWeapon.getLevel() + Properties[Types.getKindAsString(projectile)].damage;
+                return Math.ceil(nftWeapon.getLevel() * Properties[Types.getKindAsString(projectile)].damage);
             }
 
             return nftWeapon.getLevel();

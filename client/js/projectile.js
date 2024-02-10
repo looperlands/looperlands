@@ -8,6 +8,7 @@ define(['entity', 'transition'], function(Entity, Transition) {
             console.log('pid', projectileId);
             this._super('projectile_' + Math.random() * 99999999999, Types.getTypeFromString(projectileId));
             this.flySpeed = 100;
+            this.impactSpeed = 100;
             this.shooter = shooter;
             this.sourceX = shooter.gridX;
             this.sourceY = shooter.gridY;
@@ -33,6 +34,10 @@ define(['entity', 'transition'], function(Entity, Transition) {
 
         fly: function() {
             this.setAnimation("fly", this.flySpeed);
+        },
+
+        impact: function(onEnd) {
+            this.setAnimation("impact", this.impactSpeed, 1, onEnd )
         },
 
         hasShadow: function() {

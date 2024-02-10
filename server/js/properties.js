@@ -4,9 +4,12 @@ let Properties = {
     rat: {
         level: 1,
         drops: {
-            flask: 40,
-            burger: 10,
-            firepotion: 5
+            // flask: 40,
+            // burger: 10,
+            // firepotion: 5
+            shortarrow: 33,
+            mediumarrow: 34,
+            longarrow: 33
         },
         respawnDelay: 10000,
     },
@@ -1274,26 +1277,27 @@ let Properties = {
     },
 
     // Projectiles
-    basicarrow: {
+    shortarrow: {
         collectable: true,
-        consumable: true,
+        consumable: false,
+        inventoryDescription: "Short range arrow (damage: high, range: low)",
+        damage: 1.2,
+        range: 4
+    },
+
+    mediumarrow: {
+        collectable: true,
+        consumable: false,
         inventoryDescription: "Basic arrow (damage: medium, range: medium)",
         damage: 1,
-        range: 8,
+        range: 6
     },
-    featherarrow: {
+    longarrow: {
         collectable: true,
-        consumable: true,
-        inventoryDescription: "Basic arrow (damage: low, range: high)",
-        damage: 0,
-        range: 12
-    },
-    firearrow: {
-        collectable: true,
-        consumable: true,
-        inventoryDescription: "Fire arrow (damage: high, range: low)",
-        damage: 2,
-        range: 4
+        consumable: false,
+        inventoryDescription: "Long range arrow (damage: low, range: high)",
+        damage: 0.8,
+        range: 10
     },
 
     // Weapons

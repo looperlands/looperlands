@@ -192,22 +192,22 @@ define(['item'], function(Item) {
             },
         }),
 
-        BasicArrow: Item.extend({
+        ShortArrow: Item.extend({
             init: function(id) {
-                this._super(id, Types.Entities.BASIC_ARROW, "object");
+                this._super(id, Types.Entities.SHORT_ARROW, "object");
+                this.lootMessage = "You found a short range arrow!";
+            },
+        }),
+        MediumArrow: Item.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.MEDIUM_ARROW, "object");
                 this.lootMessage = "You found an arrow!";
             },
         }),
-        FeatherArrow: Item.extend({
+        LongArrow: Item.extend({
             init: function(id) {
-                this._super(id, Types.Entities.FEATHER_ARROW, "object");
-                this.lootMessage = "You found a feather arrow!";
-            },
-        }),
-        FireArrow: Item.extend({
-            init: function(id) {
-                this._super(id, Types.Entities.FIRE_ARROW, "object");
-                this.lootMessage = "You found a fire arrow!";
+                this._super(id, Types.Entities.LONG_ARROW, "object");
+                this.lootMessage = "You found a long range arrow!";
             },
         }),
 

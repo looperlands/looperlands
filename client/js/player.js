@@ -20,6 +20,7 @@ define(['character', 'exceptions', '../../shared/js/gametypes'], function(Charac
             this.isLootMoving = false;
             this.isSwitchingWeapon = true;
             this.level = null;
+            this.currentProjectileType = null;
         },
     
         loot: function(item) {
@@ -231,7 +232,15 @@ define(['character', 'exceptions', '../../shared/js/gametypes'], function(Charac
         },
 
         getWeaponRange: function() {
-            return 10;
+            if(this.currentProjectileType === 'short') {
+                return 4;
+            }
+
+            if(this.currentProjectileType === 'long') {
+                return 10;
+            }
+
+            return 6;
         }
     });
 

@@ -403,9 +403,9 @@ Types = {
         BOTTLED_FIRE: 50000003,
         BOTTLED_LIGHTNING: 50000004,
         BOTTLED_POISON: 50000005,
-        BASIC_ARROW: 50000006,
-        FEATHER_ARROW: 50000007,
-        FIRE_ARROW: 50000008,
+        SHORT_ARROW: 50000006,
+        MEDIUM_ARROW: 50000007,
+        LONG_ARROW: 50000008,
 
         // NFTs
         NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6: 70,
@@ -5374,9 +5374,9 @@ var kinds = {
     BOTTLED_FIRE: [Types.Entities.BOTTLED_FIRE, 'projectile'],
     BOTTLED_LIGHTNING: [Types.Entities.BOTTLED_LIGHTNING, 'projectile'],
     BOTTLED_POISON: [Types.Entities.BOTTLED_POISON, 'projectile'],
-    basicarrow: [Types.Entities.BASIC_ARROW, 'projectile'],
-    featherarrow: [Types.Entities.FEATHER_ARROW, 'projectile'],
-    firearrow: [Types.Entities.FIRE_ARROW, 'projectile'],
+    shortarrow: [Types.Entities.SHORT_ARROW, 'projectile'],
+    mediumarrow: [Types.Entities.MEDIUM_ARROW, 'projectile'],
+    longarrow: [Types.Entities.LONG_ARROW, 'projectile'],
 
     //NFT
     NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6: [Types.Entities.NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6, "armor"],
