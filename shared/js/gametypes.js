@@ -281,6 +281,16 @@ Types = {
         GAME: 77000003,
         POPCORN: 77000004,
         ENERGYDRINK: 77000005,
+        DERRICK: 77000006,
+        FROG: 77000007,
+        ANGRYMOM: 77000008,
+        DEVON: 77000009,
+        MISTY: 77000010,
+        MANAGERTIM: 77000011,
+        ORACLE: 77000012,
+        GILL: 77000013,
+        CUSTOMER1: 77000014,
+        CUSTOMER2: 77000015,
         //mycupbloody
         EYEBALL: 80000005,
         REDPOTION: 80000006,
@@ -378,18 +388,7 @@ Types = {
         COBWALKINGNPC2: 34000065, 
         COBWALKINGNPC3: 34000066, 
         COBWALKINGNPC4: 34000067, 
-        COBWALKINGNPC5: 34000068,
-        //Short Destroyers
-        DERRICK: 77000001,
-        FROG: 77000002,
-        ANGRYMOM: 77000003,
-        DEVON: 77000004,
-        MISTY: 77000005,
-        MANAGERTIM: 77000006,
-        ORACLE: 77000007,
-        GILL: 77000008,
-        CUSTOMER1: 77000009,
-        CUSTOMER2: 77000010, // @lastidCharacter@
+        COBWALKINGNPC5: 34000068, // @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
