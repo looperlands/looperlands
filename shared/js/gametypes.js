@@ -378,7 +378,18 @@ Types = {
         COBWALKINGNPC2: 34000065, 
         COBWALKINGNPC3: 34000066, 
         COBWALKINGNPC4: 34000067, 
-        COBWALKINGNPC5: 34000068, // @lastidCharacter@
+        COBWALKINGNPC5: 34000068,
+        //Short Destroyers
+        DERRICK: 77000001,
+        FROG: 77000002,
+        ANGRYMOM: 77000003,
+        DEVON: 77000004,
+        MISTY: 77000005,
+        MANAGERTIM: 77000006,
+        ORACLE: 77000007,
+        GILL: 77000008,
+        CUSTOMER1: 77000009,
+        CUSTOMER2: 77000010, // @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -5348,6 +5359,17 @@ var kinds = {
     cobWalkingNpc3: [Types.Entities.COBWALKINGNPC3, "mob"],
     cobWalkingNpc4: [Types.Entities.COBWALKINGNPC4, "mob"],
     cobWalkingNpc5: [Types.Entities.COBWALKINGNPC5, "mob"],
+    //Short Destroyers
+    derrick: [Types.Entities.DERRICK, "npc"],
+    frog: [Types.Entities.FROG, "npc"],
+    angrymom: [Types.Entities.ANGRYMOM, "npc"],
+    devon: [Types.Entities.DEVON, "npc"],
+    misty: [Types.Entities.MISTY, "npc"],
+    managertim: [Types.Entities.MANAGERTIM, "npc"],
+    oracle: [Types.Entities.ORACLE, "npc"],
+    gill: [Types.Entities.GILL, "npc"],
+    customer1: [Types.Entities.CUSTOMER1, "npc"],
+    customer2: [Types.Entities.CUSTOMER2, "npc"],
     // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],
