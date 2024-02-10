@@ -192,25 +192,6 @@ define(['item'], function(Item) {
             },
         }),
 
-        ShortArrow: Item.extend({
-            init: function(id) {
-                this._super(id, Types.Entities.SHORT_ARROW, "object");
-                this.lootMessage = "You found a short range arrow!";
-            },
-        }),
-        MediumArrow: Item.extend({
-            init: function(id) {
-                this._super(id, Types.Entities.MEDIUM_ARROW, "object");
-                this.lootMessage = "You found an arrow!";
-            },
-        }),
-        LongArrow: Item.extend({
-            init: function(id) {
-                this._super(id, Types.Entities.LONG_ARROW, "object");
-                this.lootMessage = "You found a long range arrow!";
-            },
-        }),
-
         KEY_ARACHWEAVE:Item.extend({init:function(id){this._super(id,Types.Entities.KEY_ARACHWEAVE,"object");this.lootMessage="You picked up a strange webbed key";}}),
         BOARHIDE:Item.extend({init:function(id){this._super(id,Types.Entities.BOARHIDE,"object");this.lootMessage="Picked up Boar hide!";}}),
         THUDKEY:Item.extend({init:function(id){this._super(id,Types.Entities.THUDKEY,"object");this.lootMessage="Picked up Thudd's Key!";}}),

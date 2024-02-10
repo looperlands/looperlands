@@ -397,15 +397,16 @@ Types = {
         MAGCRACK: 40000001,
         COBFALLINGROCK: 40000002,
         // Projectiles
-        STEEL_BULLET: 50000001,
-        SILVER_BULLET: 50000002,
-        GOLD_BULLET: 50000003,
-        BOTTLED_FIRE: 50000003,
-        BOTTLED_LIGHTNING: 50000004,
-        BOTTLED_POISON: 50000005,
-        SHORT_ARROW: 50000006,
-        MEDIUM_ARROW: 50000007,
-        LONG_ARROW: 50000008,
+        PROJECTILE: 50000000,
+        SHORT_ARROW: 50000001,
+        MEDIUM_ARROW: 50000002,
+        LONG_ARROW: 50000003,
+        SHORT_BULLET: 50000004,
+        MEDIUM_BULLET: 50000005,
+        LONG_BULLET: 50000006,
+        SHORT_MANA: 50000007,
+        MEDIUM_MANA: 50000008,
+        LONG_MANA: 50000009,
 
         // NFTs
         NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6: 70,
@@ -5386,15 +5387,16 @@ var kinds = {
     cobfallingrock: [Types.Entities.COBFALLINGROCK, "fieldeffect"],
 
     // Projectiles
-    STEEL_BULLET: [Types.Entities.STEEL_BULLET, 'projectile'],
-    SILVER_BULLET: [Types.Entities.SILVER_BULLET, 'projectile'],
-    GOLD_BULLET: [Types.Entities.GOLD_BULLET, 'projectile'],
-    BOTTLED_FIRE: [Types.Entities.BOTTLED_FIRE, 'projectile'],
-    BOTTLED_LIGHTNING: [Types.Entities.BOTTLED_LIGHTNING, 'projectile'],
-    BOTTLED_POISON: [Types.Entities.BOTTLED_POISON, 'projectile'],
+    projectile: [Types.Entities.PROJECTILE, 'projectile'],
     shortarrow: [Types.Entities.SHORT_ARROW, 'projectile'],
     mediumarrow: [Types.Entities.MEDIUM_ARROW, 'projectile'],
     longarrow: [Types.Entities.LONG_ARROW, 'projectile'],
+    shortbullet: [Types.Entities.SHORT_BULLET, 'projectile'],
+    mediumbullet: [Types.Entities.MEDIUM_BULLET, 'projectile'],
+    longbullet: [Types.Entities.LONG_BULLET, 'projectile'],
+    shortmana: [Types.Entities.SHORT_MANA, 'projectile'],
+    mediummana: [Types.Entities.MEDIUM_MANA, 'projectile'],
+    longmana: [Types.Entities.LONG_MANA, 'projectile'],
 
     //NFT
     NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6: [Types.Entities.NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6, "armor"],

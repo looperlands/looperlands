@@ -256,6 +256,7 @@ module.exports = Player = Character.extend({
 
                     let projectileCount = self.getResourceAmount(usedProjectile);
                     if (projectileCount > 0) {
+                        console.log('used projectile', usedProjectile)
                         self.server.announceSpawnProjectile(self, self.currentProjectileType, message[1]);
                         self.consumeItem(usedProjectile);
                     } else {
@@ -784,9 +785,9 @@ module.exports = Player = Character.extend({
 
     getProjectileToUse: function() {
         const projectiles = {
-            gun:  {short: Types.Entities.SHORT_ARROW, medium: Types.Entities.MEDIUM_ARROW, long: Types.Entities.LONG_ARROW},
             bow:  {short: Types.Entities.SHORT_ARROW, medium: Types.Entities.MEDIUM_ARROW, long: Types.Entities.LONG_ARROW},
-            wand: {short: Types.Entities.SHORT_ARROW, medium: Types.Entities.MEDIUM_ARROW, long: Types.Entities.LONG_ARROW},
+            gun:  {short: Types.Entities.SHORT_BULLET, medium: Types.Entities.MEDIUM_BULLET, long: Types.Entities.LONG_BULLET},
+            wand: {short: Types.Entities.SHORT_MANA, medium: Types.Entities.MEDIUM_MANA, long: Types.Entities.LONG_MANA},
         }
 
         if (!this.getNFTWeapon()?.weaponClass) {
@@ -1044,10 +1045,14 @@ module.exports = Player = Character.extend({
         let cooldownData = Collectables.getCooldownData(item);
         let cooldownGroup = cooldownData.group !== undefined ? cooldownData.group : "";
         let onCooldown = cooldownGroup ? this.checkCooldown(cooldownGroup) : false;
-        if (itemCount > 0 && Collectables.isConsumable(item) && !onCooldown) {
+
+        console.log('consume?', itemCount > 0, Collectables.isConsumable(item), Types.isProjectile(item), !onCooldown);
+        if (itemCount > 0 && (Collectables.isConsumable(item) || Types.isProjectile(item)) && !onCooldown) {
+            console.log('do consume');
             this.getFishBuff(item);
             Collectables.consume(item, this);
             dao.saveConsumable(this.nftId, item, -1);
+
             gameData.consumables[item] = itemCount - 1;
             cache.gameData = gameData;
             this.server.server.cache.set(this.sessionId, cache);

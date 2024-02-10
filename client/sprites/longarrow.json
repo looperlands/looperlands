@@ -3,13 +3,9 @@
 	"width": 32,
 	"height": 32,
 	"animations": {
-		"fly": {
-			"length": 5,
+		"idle": {
+			"length": 1,
 			"row": 0
-		},
-		"impact": {
-			"length": 5,
-			"row": 1
 		}
 	},
 	"offset_x": -18,

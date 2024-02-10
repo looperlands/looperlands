@@ -43,8 +43,8 @@
   "offset_x": -16,
   "offset_y": -20,
   "projectiles": {
-    "short": "shortarrow",
-    "medium": "mediumarrow",
-    "long": "longarrow"
+    "short": "projectile",
+    "medium": "projectile",
+    "long": "projectile"
   }
 }

@@ -625,16 +625,6 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
         return new Items.Cagedrat(id);
     };
 
-    EntityFactory.builders[Types.Entities.SHORT_ARROW] = function(id) {
-        return new Items.ShortArrow(id);
-    };
-    EntityFactory.builders[Types.Entities.MEDIUM_ARROW] = function(id) {
-        return new Items.MediumArrow(id);
-    };
-    EntityFactory.builders[Types.Entities.LONG_ARROW] = function(id) {
-        return new Items.LongArrow(id);
-    };
-
     EntityFactory.builders[Types.Entities.KEY_ARACHWEAVE]=function(id){return new Items.KEY_ARACHWEAVE(id);};
     EntityFactory.builders[Types.Entities.BOARHIDE]=function(id){return new Items.BOARHIDE(id);};
     EntityFactory.builders[Types.Entities.THUDKEY]=function(id){return new Items.THUDKEY(id);};

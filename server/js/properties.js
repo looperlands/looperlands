@@ -4,12 +4,9 @@ let Properties = {
     rat: {
         level: 1,
         drops: {
-            // flask: 40,
-            // burger: 10,
-            // firepotion: 5
-            shortarrow: 33,
-            mediumarrow: 34,
-            longarrow: 33
+            flask: 40,
+            burger: 10,
+            firepotion: 5
         },
         respawnDelay: 10000,
     },
@@ -1282,22 +1279,65 @@ let Properties = {
         consumable: false,
         inventoryDescription: "Short range arrow (damage: high, range: low)",
         damage: 1.2,
-        range: 4
+        range: 6
     },
-
     mediumarrow: {
         collectable: true,
         consumable: false,
         inventoryDescription: "Basic arrow (damage: medium, range: medium)",
         damage: 1,
-        range: 6
+        range: 9
     },
     longarrow: {
         collectable: true,
         consumable: false,
         inventoryDescription: "Long range arrow (damage: low, range: high)",
         damage: 0.8,
-        range: 10
+        range: 12
+    },
+
+    shortbullet: {
+        collectable: true,
+        consumable: false,
+        inventoryDescription: "Short range bullet (damage: high, range: low)",
+        damage: 1.2,
+        range: 6
+    },
+    mediumbullet: {
+        collectable: true,
+        consumable: false,
+        inventoryDescription: "Basic bullet (damage: medium, range: medium)",
+        damage: 1,
+        range: 9
+    },
+    longbullet: {
+        collectable: true,
+        consumable: false,
+        inventoryDescription: "Long range bullet (damage: low, range: high)",
+        damage: 0.8,
+        range: 12
+    },
+
+    shortmana: {
+        collectable: true,
+        consumable: false,
+        inventoryDescription: "Short range bottled mana (damage: high, range: low)",
+        damage: 1.2,
+        range: 6
+    },
+    mediummana: {
+        collectable: true,
+        consumable: false,
+        inventoryDescription: "Bottled mana (damage: medium, range: medium)",
+        damage: 1,
+        range: 9
+    },
+    longmana: {
+        collectable: true,
+        consumable: false,
+        inventoryDescription: "Long range bottled mana (damage: low, range: high)",
+        damage: 0.8,
+        range: 12
     },
 
     // Weapons
