@@ -1087,11 +1087,11 @@ let Properties = {
             energydrink: 100,      
         },
         messages: ['Time to collect those late fees!'],
-        armorMod: 1.5,
-        weaponMod: 1.8,
-        hpMod: 3.0,
-        xp: 15000,   
-        respawnDelay: 600000
+        armorMod: 2.2,
+        weaponMod: 2.0,
+        hpMod: 4.0,
+        xp: 7500,   
+        respawnDelay: 300000
     },
 
     horde1: {
