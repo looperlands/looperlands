@@ -2213,7 +2213,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
         lateflea: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.LATEFLEA);
-                this.moveSpeed = 250;
+                this.moveSpeed = 100;
                 this.atkSpeed = 100;
                 this.idleSpeed = 750;
                 this.setAttackRate(1000);
