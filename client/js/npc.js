@@ -400,6 +400,54 @@ define(['character'], function (Character) {
                     'Here is where you can <a target="_blank" href="https://loopexchange.art/collection/dsgoinquackers">buy a duck</a>',
                     "Please help save Duckville!"
         ],
+
+        //Short Destroyers
+        "derrick": [
+            "Sup man. Heard you got stuck doing Misty's shelving duty. We've all been there.",
+            "Sucks man. She's never gonna leave that suited dude for us. He's going places.",
+            "Listen… I've got this acid, but I can't do it."
+        ],
+        "frog": [
+            "How many licks does it take to get to the center of the video store?",
+            "Want to find out? Go fish."
+        ],
+        "angrymom": [
+            "You should be ashamed of yourselves. This store is full of filth! What if a child had seen this garbage? I don't think this is the kind of image you want to project to the world."
+        ],
+        "devon": [
+            'Yooo... Hit up my <a target="_blank" href="https://twitter.com/shortdestroyers">MySpace</a>, dawg.',
+            "I heard Misty was talkin bout you on her Xanga.",
+            "Y'all ever think about how... we're just in it now?",
+            "My band Rico's Tacos has a show this weekend at The Cellar. You should pop by man."
+        ],
+        "misty": [
+            "Oh hey.",
+            "I'm alright... just not feeling very good today.",
+            "I didn't call in sick because I thought it would be messed up for y'all with the A.M. here all day, but... *makes puppy dog eyes at you* It would be so chill of you if you could cover for me?",
+            "Yeah... I was on shelving duty."
+        ],
+        "managertim": [
+            "Get back to work.",
+            "Have you seen that lady's kid?",
+            "That guy's been staring at that video game wall for hours. Can you help him?"
+        ],
+        "oracle": [
+            "This is the best time to be alive, don't you think?"
+        ],
+        "gill": [
+            "I'm looking for this game. Do you have it? Rampage"
+        ],
+        "customer1": [
+            "You know what movie was really good? Hitch. I don't even care if it's for girls.",
+            "Did you see the news yesterday? That new factory just finished up the road. Can't believe this shithole town's just getting worse.",
+            "Do y'all got a box set of The OC? It's for my girlfriend..."
+        ],
+        "customer2": [
+            "I don't really like scary movies. Is there anything less frightening in this section?",
+            "I'm not really in the mood for anything too action-y, either.",
+            "Do y'all have a box set of The OC?"
+        ],
+        
         // @nextNPCLine@
     };
 

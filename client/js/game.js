@@ -170,6 +170,17 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "horde3",
                     "horde4",
                     "horde5",
+                    //SDU NPCs
+                    "derrick",
+                    "frog",
+                    "angrymom",
+                    "devon",
+                    "misty",
+                    "managertim",
+                    "oracle",
+                    "gill",
+                    "customer1",
+                    "customer2",
                     //mycupbloody npc
                     "GOFFREY",
                     "cobWalkingNpc1",

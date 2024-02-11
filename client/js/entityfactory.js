@@ -917,6 +917,18 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.PATRONCORA]=function(id){return new NPCs.patroncora(id);};
     EntityFactory.builders[Types.Entities.GUARDIANFINTAN]=function(id){return new NPCs.guardianfintan(id);};
     EntityFactory.builders[Types.Entities.GOFFREY]=function(id){return new NPCs.GOFFREY(id);};
+
+    //ShortDestroyers
+    EntityFactory.builders[Types.Entities.DERRICK]=function(id){return new NPCs.derrick(id);};
+    EntityFactory.builders[Types.Entities.FROG]=function(id){return new NPCs.frog(id);};
+    EntityFactory.builders[Types.Entities.ANGRYMOM]=function(id){return new NPCs.angrymom(id);};
+    EntityFactory.builders[Types.Entities.DEVON]=function(id){return new NPCs.devon(id);};
+    EntityFactory.builders[Types.Entities.MISTY]=function(id){return new NPCs.misty(id);};
+    EntityFactory.builders[Types.Entities.MANAGERTIM]=function(id){return new NPCs.managertim(id);};
+    EntityFactory.builders[Types.Entities.ORACLE]=function(id){return new NPCs.oracle(id);};
+    EntityFactory.builders[Types.Entities.GILL]=function(id){return new NPCs.gill(id);};
+    EntityFactory.builders[Types.Entities.CUSTOMER1]=function(id){return new NPCs.customer1(id);};
+    EntityFactory.builders[Types.Entities.CUSTOMER2]=function(id){return new NPCs.customer2(id);};
     // @nextNPCLine@
 
      //====== FieldEffectss ======
