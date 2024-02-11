@@ -10,6 +10,7 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
         }
     
         if(!_.isFunction(EntityFactory.builders[kind])) {
+            console.log(kind, EntityFactory.builders[kind], 'is not a function');
             throw Error(kind + " is not a valid Entity type");
         }
     
@@ -624,6 +625,19 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.CAGEDRAT] = function(id) {
         return new Items.Cagedrat(id);
     };
+
+    EntityFactory.builders[Types.Entities.WOOD] = function(id) {
+        return new Items.Wood(id);
+    };
+
+    EntityFactory.builders[Types.Entities.ORE] = function(id) {
+        return new Items.Ore(id);
+    };
+
+    EntityFactory.builders[Types.Entities.MANACRYSTAL] = function(id) {
+        return new Items.Manacrystal(id);
+    };
+
 
     EntityFactory.builders[Types.Entities.KEY_ARACHWEAVE]=function(id){return new Items.KEY_ARACHWEAVE(id);};
     EntityFactory.builders[Types.Entities.BOARHIDE]=function(id){return new Items.BOARHIDE(id);};

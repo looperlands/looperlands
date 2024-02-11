@@ -256,7 +256,6 @@ module.exports = Player = Character.extend({
 
                     let projectileCount = self.getResourceAmount(usedProjectile);
                     if (projectileCount > 0) {
-                        console.log('used projectile', usedProjectile)
                         self.server.announceSpawnProjectile(self, self.currentProjectileType, message[1]);
                         self.consumeItem(usedProjectile);
                     } else {
@@ -1046,9 +1045,7 @@ module.exports = Player = Character.extend({
         let cooldownGroup = cooldownData.group !== undefined ? cooldownData.group : "";
         let onCooldown = cooldownGroup ? this.checkCooldown(cooldownGroup) : false;
 
-        console.log('consume?', itemCount > 0, Collectables.isConsumable(item), Types.isProjectile(item), !onCooldown);
         if (itemCount > 0 && (Collectables.isConsumable(item) || Types.isProjectile(item)) && !onCooldown) {
-            console.log('do consume');
             this.getFishBuff(item);
             Collectables.consume(item, this);
             dao.saveConsumable(this.nftId, item, -1);

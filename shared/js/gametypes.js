@@ -234,6 +234,7 @@ Types = {
         BURGER: 36,
         CHEST: 37,
         FIREPOTION: 38,
+
         COBEGG: 21300007,
         COBLOG: 21300008,
         COBCLOVER: 21300009,
@@ -407,7 +408,9 @@ Types = {
         SHORT_MANA: 50000007,
         MEDIUM_MANA: 50000008,
         LONG_MANA: 50000009,
-
+        WOOD: 50000010,
+        ORE: 50000011,
+        MANACRYSTAL: 50000012,
         // NFTs
         NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6: 70,
         NFT_38278eacc7d1c86fdbc85d798dca146fbca59a2e5e567dc15898ce2edac21f5f: 71,
@@ -5206,6 +5209,9 @@ var kinds = {
     goldenarmor: [Types.Entities.GOLDENARMOR, "armor"],
 
     flask: [Types.Entities.FLASK, "object"],
+    wood: [Types.Entities.WOOD, "object"],
+    ore: [Types.Entities.ORE, "object"],
+    manacrystal: [Types.Entities.MANACRYSTAL, "object"],
     potion: [Types.Entities.POTION, "object"],
     cpotion_s: [Types.Entities.CPOTION_S, "object"],
     cpotion_m: [Types.Entities.CPOTION_M, "object"],

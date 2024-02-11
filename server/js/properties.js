@@ -8,7 +8,7 @@ let Properties = {
             burger: 10,
             firepotion: 5
         },
-        respawnDelay: 10000,
+        nDelay: 10000,
     },
 
     skeleton: {
@@ -19,7 +19,7 @@ let Properties = {
             firepotion: 5
         },
         weaponMod: 1.5, //bigger mod cause attack rate is 50% slower
-        respawnDelay: 45000,
+        nDelay: 45000,
     },
 
     goblin: {
@@ -89,7 +89,7 @@ let Properties = {
             firepotion: 10
         },
         weaponMod: 1.5, //bgger mod cause attack rate is 50% slower
-        respawnDelay: 30000
+        nDelay: 30000
     },
 
     eye: {
@@ -128,7 +128,7 @@ let Properties = {
         armorMod: 1.5,
         weaponMod: 2.5,
         redpacket: true,
-        respawnDelay: 120000,
+        nDelay: 120000,
         xp: 7500
     },
 
@@ -246,7 +246,7 @@ let Properties = {
         armorMod: 1,
         hpMod: 3,
         weaponMod: 0.8,
-        respawnDelay: 30000,
+        nDelay: 30000,
         xp: 600
     },
 
@@ -260,7 +260,7 @@ let Properties = {
         weaponMod: 1.9,
         hpMod: 2.8,
         xp: 1200,
-        respawnDelay: 30000
+        nDelay: 30000
 
     },
 
@@ -273,7 +273,7 @@ let Properties = {
         armorMod: 1,
         hpMod: 5,
         weaponMod: 0.8,
-        respawnDelay: 30000,
+        nDelay: 30000,
         xp: 3000
 
 
@@ -292,7 +292,7 @@ let Properties = {
         armorMod: 2,
         hpMod: 12,
         weaponMod: 1.6,
-        respawnDelay: 1800000,
+        nDelay: 1800000,
         xp: 5000
 
 
@@ -1272,6 +1272,21 @@ let Properties = {
             player.releaseMob(Types.Entities.RAT);
         }
     },
+    wood: {
+        collectable: true,
+        inventoryDescription: "Wood",
+        respawnDelay: 150000
+    },
+    ore: {
+        collectable: true,
+        inventoryDescription: "Iron ore",
+        respawnDelay: 150000
+    },
+    manacrystal: {
+        collectable: true,
+        inventoryDescription: "Crystal",
+        respawnDelay: 150000
+    },
 
     // Projectiles
     shortarrow: {
@@ -1339,21 +1354,6 @@ let Properties = {
         damage: 0.8,
         range: 12
     },
-
-    // Weapons
-    // axe: {
-    //     name: "Axe",
-    //     consumables: {
-    //         GOLD: {
-    //             level: 40,
-    //             range: 6
-    //         },
-    //         coblog: {
-    //             level: 10,
-    //             range: 12
-    //         }
-    //     }
-    // }
 };
 
 Properties.getArmorLevel = function(kind, levelOffset) {
