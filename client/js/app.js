@@ -997,7 +997,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                 items.forEach(function (item) {
 
                     let itemHtml = "<div class='item'>";
-                    itemHtml += "<div id='" + item.item + "' class='item-image' style='background: url(img/2/item-" + Types.getKindAsString(item.item) + ".png)' />";
+                    itemHtml += "<div id='" + item.item + "' class='item-image' style='background: url(img/2/item-" + Types.getKindAsString(item.item) + ".png); background-size:cover;' />";
 
                     let levelInfo = "";
                     if (item.level) {
