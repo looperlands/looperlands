@@ -833,6 +833,10 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
         return new NPCs.ShopOwner(id);
     };
 
+    EntityFactory.builders[Types.Entities.BLACKSMITH] = function(id) {
+        return new NPCs.Blacksmith(id);
+    };
+
     EntityFactory.builders[Types.Entities.FORESTNPC] = function(id) {
         return new NPCs.ForestNpc(id);
     };

@@ -207,6 +207,12 @@ define(['npc'], function(Npc) {
            }
         }),
 
+        Blacksmith: Npc.extend({
+            init: function (id) {
+                this._super(id, Types.Entities.BLACKSMITH, 1);
+            }
+        }),
+
         ForestNpc: Npc.extend({
             init: function(id) {
                 this._super(id, Types.Entities.FORESTNPC, 1);
