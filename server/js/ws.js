@@ -1024,9 +1024,9 @@ WS.socketIOServer = Server.extend({
 
             let itemCount = gameData.consumables[item.item];
             if (itemCount) {
-                gameData.consumables[item.item] = itemCount + 1;
+                gameData.consumables[item.item] = itemCount + (item.amount ?? 1);
             } else {
-                gameData.consumables[item.item] = 1;
+                gameData.consumables[item.item] = (item.amount ?? 1);
             }
 
             // Store changes in session data
