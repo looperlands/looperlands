@@ -1084,7 +1084,10 @@ let Properties = {
     fleaboss: {
         level: 30,
         drops: {
-            energydrink: 100,      
+            energydrink: 50,
+            GOLD: 50,
+            GOLD2: 10,
+            GOLD3: 2,      
         },
         messages: ['Time to collect those late fees!'],
         armorMod: 2.2,
