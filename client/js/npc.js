@@ -447,6 +447,11 @@ define(['character'], function (Character) {
             "I'm not really in the mood for anything too action-y, either.",
             "Do y'all have a box set of The OC?"
         ],
+        "portalgill": [
+            'Rumors of their death are greatly exaggerated...',
+            'Pickup a <a target="_blank" href="https://loopexchange.art/collection/riseofthezombiestockloopers">Zombie Short Destroyer here</a> for access!',
+            'Or you can grab an <a target="_blank" href="https://loopexchange.art/collection/riseofthezombiestockweapons">SDU weapon here</a>!'
+        ],
         
         // @nextNPCLine@
     };

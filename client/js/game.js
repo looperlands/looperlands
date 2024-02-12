@@ -181,6 +181,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "gill",
                     "customer1",
                     "customer2",
+                    "portalgill",
                     //mycupbloody npc
                     "GOFFREY",
                     "cobWalkingNpc1",

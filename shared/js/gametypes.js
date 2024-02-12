@@ -291,6 +291,7 @@ Types = {
         GILL: 77000013,
         CUSTOMER1: 77000014,
         CUSTOMER2: 77000015,
+        PORTALGILL: 77000016,
         //mycupbloody
         EYEBALL: 80000005,
         REDPOTION: 80000006,
@@ -5396,6 +5397,7 @@ var kinds = {
     gill: [Types.Entities.GILL, "npc"],
     customer1: [Types.Entities.CUSTOMER1, "npc"],
     customer2: [Types.Entities.CUSTOMER2, "npc"],
+    portalgill: [Types.Entities.PORTALGILL, "npc"],
     // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],
