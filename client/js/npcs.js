@@ -350,6 +350,7 @@ define(['npc'], function(Npc) {
         gill: Npc.extend({init: function(id) {this._super(id, Types.Entities.GILL, 1);}}),
         customer1: Npc.extend({init: function(id) {this._super(id, Types.Entities.CUSTOMER1, 1);}}),
         customer2: Npc.extend({init: function(id) {this._super(id, Types.Entities.CUSTOMER2, 1);}}),
+        portalgill: Npc.extend({init: function(id) {this._super(id, Types.Entities.PORTALGILL, 1);}}),
         // @nextNPCLine@
     };
     

@@ -1090,8 +1090,8 @@ let Properties = {
         armorMod: 2.2,
         weaponMod: 2.0,
         hpMod: 4.0,
-        xp: 7500,   
-        respawnDelay: 300000
+        xp: 18000,   
+        respawnDelay: 180000
     },
 
     horde1: {

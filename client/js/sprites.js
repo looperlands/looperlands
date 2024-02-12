@@ -110,6 +110,7 @@ define(['text!../sprites/agent.json',
         'text!../sprites/gill.json',
         'text!../sprites/customer1.json',
         'text!../sprites/customer2.json',
+        'text!../sprites/portalgill.json',
         //mycupbloody
         'text!../sprites/item-EYEBALL.json',
         'text!../sprites/item-REDPOTION.json',
