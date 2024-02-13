@@ -345,6 +345,18 @@ define(['npc'], function(Npc) {
         newcomersilas: Npc.extend({init: function(id) {this._super(id, Types.Entities.NEWCOMERSILAS, 1);}}),
         patroncora: Npc.extend({init: function(id) {this._super(id, Types.Entities.PATRONCORA, 1);}}),
         GOFFREY: Npc.extend({init: function(id) {this._super(id, Types.Entities.GOFFREY, 1);}}),
+        //ShortDestroyers
+        derrick: Npc.extend({init: function(id) {this._super(id, Types.Entities.DERRICK, 1);}}),
+        frog: Npc.extend({init: function(id) {this._super(id, Types.Entities.FROG, 1);}}),
+        angrymom: Npc.extend({init: function(id) {this._super(id, Types.Entities.ANGRYMOM, 1);}}),
+        devon: Npc.extend({init: function(id) {this._super(id, Types.Entities.DEVON, 1);}}),
+        misty: Npc.extend({init: function(id) {this._super(id, Types.Entities.MISTY, 1);}}),
+        managertim: Npc.extend({init: function(id) {this._super(id, Types.Entities.MANAGERTIM, 1);}}),
+        oracle: Npc.extend({init: function(id) {this._super(id, Types.Entities.ORACLE, 1);}}),
+        gill: Npc.extend({init: function(id) {this._super(id, Types.Entities.GILL, 1);}}),
+        customer1: Npc.extend({init: function(id) {this._super(id, Types.Entities.CUSTOMER1, 1);}}),
+        customer2: Npc.extend({init: function(id) {this._super(id, Types.Entities.CUSTOMER2, 1);}}),
+        portalgill: Npc.extend({init: function(id) {this._super(id, Types.Entities.PORTALGILL, 1);}}),
         // @nextNPCLine@
     };
     

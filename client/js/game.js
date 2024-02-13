@@ -175,6 +175,18 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "horde3",
                     "horde4",
                     "horde5",
+                    //SDU NPCs
+                    "derrick",
+                    "frog",
+                    "angrymom",
+                    "devon",
+                    "misty",
+                    "managertim",
+                    "oracle",
+                    "gill",
+                    "customer1",
+                    "customer2",
+                    "portalgill",
                     //mycupbloody npc
                     "GOFFREY",
                     "cobWalkingNpc1",
@@ -5115,6 +5127,13 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 "NFT_ad9d9c0e92ff9012317e303447dcaeb6370dca408c2257a3258f475d6a29443f",
                                 "NFT_c2086c06034f03b8ea88ceb4938d8b3b7128f34e0e363632e5fc164f4404334c",
                                 "NFT_ec28e8db0ae7db4bf6860a47392f7dd0d4258626b19b3bd18d1dbfc811d969bd",
+                                "NFT_0041bd1db10b61f1e5d4416082b289110f18d72837d0813a424a182ee19c69e7",
+                                "NFT_2646f2c912ae540814a85974738b222af0f803197ad64c4d6a8247dbb420a9db",
+                                "NFT_27533a711ba386f1bd0a283d52c68b15e4e983f60bd36c7d4299725fb9348f5c",
+                                "NFT_1c5c8b927415fcdda1c244b624e4cad24c78901fbe45938907a7a30dc6010b77",
+                                "NFT_4d274092ea5dc3e5535c58436d2ea746cdaba54789a7dacd0c9e7557828e02fe",
+                                "NFT_6b100310c953de70a861d313f03aea32b2c6469c572ec0ba007377b2bf2ffbe4",
+                                "NFT_eccf2de74e7663a51440298d35790074e9a5439e9e4dbb3782f29bbb68eab6f6",
                                 // @nextSpriteLine@
                 ];
             },
