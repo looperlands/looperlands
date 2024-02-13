@@ -233,14 +233,14 @@ define(['character', 'exceptions', '../../shared/js/gametypes'], function(Charac
 
         getWeaponRange: function() {
             if(this.currentProjectileType === 'short') {
-                return 4;
+                return 6;
             }
 
             if(this.currentProjectileType === 'long') {
-                return 10;
+                return 12;
             }
 
-            return 6;
+            return 9;
         }
     });
 
