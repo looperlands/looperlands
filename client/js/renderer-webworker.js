@@ -75,8 +75,6 @@ function drawScaledImage(ctx, image, x, y, w, h, dx, dy, scale) {
         h * scale);
 }
 
-const tileCache = {};
-
 function drawTile(ctx, tileid, tileset, setW, gridW, cellid, scale) {
     if (tileid !== -1) { // -1 when tile is empty in Tiled. Don't attempt to draw it.
         drawScaledImage(ctx,
