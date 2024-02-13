@@ -10,7 +10,6 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
         }
     
         if(!_.isFunction(EntityFactory.builders[kind])) {
-            console.log(kind, EntityFactory.builders[kind], 'is not a function');
             throw Error(kind + " is not a valid Entity type");
         }
     
