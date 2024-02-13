@@ -13,7 +13,7 @@ define(['jquery', 'animation', 'sprites'], function($, Animation, sprites) {
 			if (window.location.href.indexOf("127.0.0.1") > -1) {
 				this.baseImageURL = 'img/';
 			} else {
-				this.baseImageURL = 'w';
+				this.baseImageURL = 'https://cdn.jsdelivr.net/gh/balkshamster/looperlands@main/client/img/';
 			}
 			
             this.loadJSON(sprites[name]);
