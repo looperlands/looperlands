@@ -41,10 +41,5 @@
     }
   },
   "offset_x": -16,
-  "offset_y": -20,
-  "projectiles": {
-    "short": "projectile",
-    "medium": "projectile",
-    "long": "projectile"
-  }
+  "offset_y": -20
 }

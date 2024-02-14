@@ -8,7 +8,7 @@ let Properties = {
             burger: 10,
             firepotion: 5
         },
-        nDelay: 10000,
+        respawnDelay: 10000,
     },
 
     skeleton: {
@@ -19,7 +19,7 @@ let Properties = {
             firepotion: 5
         },
         weaponMod: 1.5, //bigger mod cause attack rate is 50% slower
-        nDelay: 45000,
+        respawnDelay: 45000,
     },
 
     goblin: {
@@ -89,7 +89,7 @@ let Properties = {
             firepotion: 10
         },
         weaponMod: 1.5, //bgger mod cause attack rate is 50% slower
-        nDelay: 30000
+        respawnDelay: 30000
     },
 
     eye: {
@@ -128,7 +128,7 @@ let Properties = {
         armorMod: 1.5,
         weaponMod: 2.5,
         redpacket: true,
-        nDelay: 120000,
+        respawnDelay: 120000,
         xp: 7500
     },
 
@@ -246,7 +246,7 @@ let Properties = {
         armorMod: 1,
         hpMod: 3,
         weaponMod: 0.8,
-        nDelay: 30000,
+        respawnDelay: 30000,
         xp: 600
     },
 
@@ -260,7 +260,7 @@ let Properties = {
         weaponMod: 1.9,
         hpMod: 2.8,
         xp: 1200,
-        nDelay: 30000
+        respawnDelay: 30000
 
     },
 
@@ -273,7 +273,7 @@ let Properties = {
         armorMod: 1,
         hpMod: 5,
         weaponMod: 0.8,
-        nDelay: 30000,
+        respawnDelay: 30000,
         xp: 3000
 
 
@@ -292,7 +292,7 @@ let Properties = {
         armorMod: 2,
         hpMod: 12,
         weaponMod: 1.6,
-        nDelay: 1800000,
+        respawnDelay: 1800000,
         xp: 5000
 
 
@@ -1084,14 +1084,17 @@ let Properties = {
     fleaboss: {
         level: 30,
         drops: {
-            energydrink: 100,
+            energydrink: 50,
+            GOLD: 50,
+            GOLD2: 10,
+            GOLD3: 2,
         },
         messages: ['Time to collect those late fees!'],
-        armorMod: 1.5,
-        weaponMod: 1.8,
-        hpMod: 3.0,
-        xp: 15000,
-        respawnDelay: 600000
+        armorMod: 2.2,
+        weaponMod: 2.0,
+        hpMod: 4.0,
+        xp: 18000,
+        respawnDelay: 180000
     },
 
     horde1: {
