@@ -1084,14 +1084,17 @@ let Properties = {
     fleaboss: {
         level: 30,
         drops: {
-            energydrink: 100,      
+            energydrink: 50,
+            GOLD: 50,
+            GOLD2: 10,
+            GOLD3: 2,      
         },
         messages: ['Time to collect those late fees!'],
-        armorMod: 1.5,
-        weaponMod: 1.5,
-        hpMod: 2.5,
-        xp: 15000,  
-        respawnDelay: 600000
+        armorMod: 2.2,
+        weaponMod: 2.0,
+        hpMod: 4.0,
+        xp: 18000,   
+        respawnDelay: 180000
     },
 
     horde1: {
