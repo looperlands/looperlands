@@ -58,9 +58,9 @@ done
 
 if [ "$type" = "ranged_weapon" ]; then
   for i in {1..3}; do 
-    cp $IMAGE_DIR/short-$i.png ../client/img/$i/NFT_short_$NFT_ID.png
-    cp $IMAGE_DIR/medium-$i.png ../client/img/$i/NFT_medium_$NFT_ID.png
-    cp $IMAGE_DIR/long-$i.png ../client/img/$i/NFT_long_$NFT_ID.png
+    cp $IMAGE_DIR/$i.png ../client/img/$i/NFT_short_$NFT_ID.png
+    cp $IMAGE_DIR/$i.png ../client/img/$i/NFT_medium_$NFT_ID.png
+    cp $IMAGE_DIR/$i.png ../client/img/$i/NFT_long_$NFT_ID.png
   done
 fi
 
