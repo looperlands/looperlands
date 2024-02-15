@@ -31,7 +31,7 @@ stat $IMAGE_DIR/1.png 1> /dev/null ||  missingFile $IMAGE_DIR/1.png
 stat $IMAGE_DIR/2.png 1> /dev/null ||  missingFile $IMAGE_DIR/2.png
 stat $IMAGE_DIR/3.png 1> /dev/null ||  missingFile $IMAGE_DIR/3.png
 
-if [ "$type" = "weapon" ] || [ "$type" = "fishingrod" ] || [ "$type" = "ranged_weapon" ]; then
+if [ "$type" = "weapon" ] || [ "$type" = "fishingrod" ] then
   stat $IMAGE_DIR/item-1.png 1> /dev/null ||  missingFile $IMAGE_DIR/item-1.png
   stat $IMAGE_DIR/item-2.png 1> /dev/null ||  missingFile $IMAGE_DIR/item-2.png
   stat $IMAGE_DIR/item-3.png 1> /dev/null ||  missingFile $IMAGE_DIR/item-3.png
