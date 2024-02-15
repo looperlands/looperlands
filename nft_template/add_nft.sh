@@ -49,7 +49,7 @@ jq ".id=\"item-${NFT_ID}\"" itemspritemap.json > ../client/sprites/item-$NFT_ID.
 
 for i in {1..3}; do
     cp $IMAGE_DIR/$i.png ../client/img/$i/$NFT_ID.png
-    if [ "$3" = "weapon" ] || [ "$type" = "fishingrod" ] then
+    if [ "$3" = "weapon" ] || [ "$type" = "fishingrod" ]; then
       cp $IMAGE_DIR/item-$i.png ../client/img/$i/item-$NFT_ID.png
     elif [ "$3" = "armor" ]; then
       cp armor$i.png ../client/img/$i/item-$NFT_ID.png
