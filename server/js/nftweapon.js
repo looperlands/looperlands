@@ -25,6 +25,10 @@ class NFTWeapon {
         }
         this.level = Formulas.level(this.experience);
 
+        if(response.weaponClass === 'null') {
+            response.weaponClass = null;
+        }
+        
         if (response.weaponClass) {
             this.weaponClass = response.weaponClass;
         } else if (this.isRanged()) {
