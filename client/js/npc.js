@@ -307,7 +307,7 @@ define(['character'], function (Character) {
         "VILLAGESIGN3": ["Home of Ripnatius Ironhand"], //RIPNTEAR
         "VILLAGESIGN4": ["Pneuma's Dispensary"], //PNEUMA
         "VILLAGESIGN5": ["Bertles Turtle Club"],
-        "VILLAGESIGN6": ["Scrimp House"],
+        "VILLAGESIGN6": ["Bruv Shack"],
         "VILLAGESIGN7": ["Home of Chocolate Wheystead"],
         "VILLAGESIGN8": ["BFA"], //BFA (Alex)
         "VILLAGESIGN9": ["Home of JackStraw"], // Jackstraw
