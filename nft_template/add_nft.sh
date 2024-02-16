@@ -41,7 +41,7 @@ echo Adding NFT with id $NFT_ID, type $type
 if [ "$3" = "weapon" ] || [ "$type" = "fishingrod" ]; then
   jq ".id=\"${NFT_ID}\"" weaponspritemap.json > ../client/sprites/$NFT_ID.json
 elif [ "$3" = "ranged_weapon" ]; then
-  jq ".id=\"${NFT_ID}\"" rangedspritemap.json > ../client/sprites/$NFT_ID.json
+  jq ".id=\"${NFT_ID}\" | .projectiles.short=\"NFT_short$NFT_ID\" | .projectiles.medium=\"NFT_medium$NFT_ID\" | .projectiles.long=\"NFT_long$NFT_ID\"" rangedspritemap.json > ../client/sprites/$NFT_ID.json
 else
   jq ".id=\"${NFT_ID}\"" armorspritemap.json > ../client/sprites/$NFT_ID.json
 fi
