@@ -59,9 +59,9 @@ done
 if [ "$type" = "ranged_weapon" ]; then
   rm ../client/sprites/item-$NFT_ID.json
   for i in {1..3}; do 
-    cp $IMAGE_DIR/$i.png ../client/img/$i/NFT_short$NFT_ID.png
-    cp $IMAGE_DIR/$i.png ../client/img/$i/NFT_medium$NFT_ID.png
-    cp $IMAGE_DIR/$i.png ../client/img/$i/NFT_long$NFT_ID.png
+    cp $IMAGE_DIR/short-$i.png ../client/img/$i/NFT_short$NFT_ID.png
+    cp $IMAGE_DIR/medium-$i.png ../client/img/$i/NFT_medium$NFT_ID.png
+    cp $IMAGE_DIR/long-$i.png ../client/img/$i/NFT_long$NFT_ID.png
   done
 fi
 
