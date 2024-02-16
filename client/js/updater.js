@@ -1,5 +1,5 @@
 
-define(['character', 'timer'], function(Character, Timer) {
+define(['character', 'projectile', 'timer'], function(Character, Projectile, Timer) {
 
     var Updater = Class.extend({
         init: function(game) {
@@ -10,6 +10,7 @@ define(['character', 'timer'], function(Character, Timer) {
         update: function() {
             this.updateZoning();
             this.updateCharacters();
+            this.updateProjectiles();
             this.updatePlayerAggro();
             this.updateTransitions();
             this.updateAnimations();
@@ -20,10 +21,10 @@ define(['character', 'timer'], function(Character, Timer) {
 
         updateCharacters: function() {
             var self = this;
-        
+
             this.game.forEachEntity(function(entity) {
                 var isCharacter = entity instanceof Character;
-            
+
                 if(entity.isLoaded) {
                     if(isCharacter) {
                         self.updateCharacter(entity);
@@ -33,23 +34,34 @@ define(['character', 'timer'], function(Character, Timer) {
                 }
             });
         },
-        
+
+        updateProjectiles: function() {
+          var self = this;
+
+            this.game.forEachEntity(function(projectile) {
+                var isProjectile = projectile instanceof Projectile;
+                if (isProjectile && projectile.isLoaded) {
+                    self.updateProjectile(projectile);
+                }
+            });
+        },
+
         updatePlayerAggro: function() {
             var t = this.game.currentTime,
                 player = this.game.player;
-            
+
             // Check player aggro every 1s when not moving nor attacking
             if(player && !player.isMoving() && !player.isAttacking()  && this.playerAggroTimer.isOver(t)) {
                 player.checkAggro();
             }
         },
-    
+
         updateEntityFading: function(entity) {
             if(entity && entity.isFading) {
                 var duration = 1000,
                     t = this.game.currentTime,
                     dt = t - entity.startFadingTime;
-            
+
                 if(dt > duration) {
                     this.isFading = false;
                     entity.fadingAlpha = 1;
@@ -63,7 +75,7 @@ define(['character', 'timer'], function(Character, Timer) {
             var self = this,
                 m = null,
                 z = this.game.currentZoning;
-    
+
             this.game.forEachEntity(function(entity) {
                 if (entity === undefined) {
                     return;
@@ -75,14 +87,14 @@ define(['character', 'timer'], function(Character, Timer) {
                     }
                 }
             });
-        
+
             if(z) {
                 if(z.inProgress) {
                     z.step(this.game.currentTime);
                 }
             }
         },
-    
+
         updateZoning: function() {
             var g = this.game,
                 c = g.camera,
@@ -95,7 +107,7 @@ define(['character', 'timer'], function(Character, Timer) {
                     startValue = endValue = offset = 0,
                     updateFunc = null,
                     endFunc = null;
-            
+
                 if(orientation === Types.Orientations.LEFT || orientation === Types.Orientations.RIGHT) {
                     offset = (c.gridW - 2) * ts;
                     startValue = (orientation === Types.Orientations.LEFT) ? c.x - ts : c.x + ts;
@@ -113,7 +125,7 @@ define(['character', 'timer'], function(Character, Timer) {
                     offset = (c.gridH - 2) * ts;
                     startValue = (orientation === Types.Orientations.UP) ? c.y - ts : c.y + ts;
                     endValue = (orientation === Types.Orientations.UP) ? c.y - offset : c.y + offset;
-                    updateFunc = function(y) { 
+                    updateFunc = function(y) {
                         c.setPosition(c.x, y);
                         g.initAnimatedTiles();
                         g.renderer.renderStaticCanvases();
@@ -123,17 +135,17 @@ define(['character', 'timer'], function(Character, Timer) {
                         g.endZoning();
                     }
                 }
-            
+
                 z.start(this.game.currentTime, updateFunc, endFunc, startValue, endValue, speed);
             }
         },
 
         updateCharacter: function(c) {
             var self = this;
-    
+
             // Estimate of the movement distance for one update
             var tick = Math.round(16 / Math.round((c.moveSpeed / (1000 / this.game.renderer.FPS))));
-    
+
             if(c.isMoving() && c.movement.inProgress === false) {
                 if(c.orientation === Types.Orientations.LEFT) {
                     c.movement.start(this.game.currentTime,
@@ -198,24 +210,82 @@ define(['character', 'timer'], function(Character, Timer) {
             }
         },
 
+        updateProjectile: function(p) {
+            if(p.isMoving() && p.movement.inProgress === false) {
+                // Estimate of the movement distance for one update
+                let tick = 3;
+
+                let dx = Math.abs((p.targetX * 16) - (p.sourceX * 16));
+                let dy = Math.abs((p.targetY * 16) - (p.sourceY * 16));
+
+                if(dx === 0 && dy === 0) {
+                    return;
+                }
+
+                if(dx > dy) {
+                    let YXRatio = dy / dx;
+                    p.movement.start(this.game.currentTime,
+                        function (x) {
+                            let movedX = Math.abs(x - p.x);
+
+                            p.x = x;
+                            p.y = p.sourceY < p.targetY ? (p.y + (movedX * YXRatio)) : (p.y - (movedX * YXRatio));
+                            p.hasMoved();
+                        },
+                        function () {
+                            p.x = p.targetX * 16;
+                            p.y = p.targetY * 16;
+                            p.hasMoved();
+                            p.nextStep();
+                        },
+                        p.sourceX < p.targetX ? p.x + tick : p.x - tick ,
+                        p.sourceX < p.targetX ? p.targetX * 16 : (p.targetX * 16) + 16,
+                        p.moveSpeed
+                    );
+                } else {
+                    let XYRatio = dx / dy;
+                    p.movement.start(this.game.currentTime,
+                        function (y) {
+                            let movedY = Math.abs(y - p.y);
+
+                            p.y = y;
+                            p.x = p.sourceX < p.targetX ? (p.x + (movedY * XYRatio)) : (p.x - (movedY * XYRatio));
+                            p.hasMoved();
+                        },
+                        function () {
+                            p.y = p.targetY * 16;
+                            p.x = p.targetX * 16;
+                            p.hasMoved();
+                            p.nextStep();
+                            p.visible = false;
+                            p.setDirty();
+                        },
+                        p.y + tick,
+                        p.targetY * 16,
+                        p.moveSpeed
+                    );
+                }
+            }
+        },
+
         updateAnimations: function() {
             var t = this.game.currentTime;
-    
+
             this.game.forEachEntity(function(entity) {
                 var anim = entity.currentAnimation;
-                
+
                 if(anim) {
                     if(anim.update(t)) {
                         entity.setDirty();
                     }
                 }
             });
-        
+
             var sparks = this.game.sparksAnimation;
             if(sparks) {
                 sparks.update(t);
             }
-    
+
             var target = this.game.targetAnimation;
             if(target) {
                 target.update(t);
@@ -226,11 +296,11 @@ define(['character', 'timer'], function(Character, Timer) {
                 floats.update(t);
             }
         },
-    
+
         updateAnimatedTiles: function() {
             var self = this,
                 t = this.game.currentTime;
-        
+
             let animatedTilesEnabled = this.game.app.settings.getAnimatedTiles();
             let updateAnimatedTilesFn = function (tile) {
                 if(animatedTilesEnabled) {
@@ -240,19 +310,19 @@ define(['character', 'timer'], function(Character, Timer) {
             this.game.forEachAnimatedTile(updateAnimatedTilesFn);
             this.game.forEachHighAnimatedTile(updateAnimatedTilesFn);
         },
-    
+
         updateChatBubbles: function() {
             var t = this.game.currentTime;
-        
+
             this.game.bubbleManager.update(t);
         },
-    
+
         updateInfos: function() {
             var t = this.game.currentTime;
-        
+
             this.game.infoManager.update(t);
         }
     });
-    
+
     return Updater;
 });

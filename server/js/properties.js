@@ -1087,13 +1087,13 @@ let Properties = {
             energydrink: 50,
             GOLD: 50,
             GOLD2: 10,
-            GOLD3: 2,      
+            GOLD3: 2,
         },
         messages: ['Time to collect those late fees!'],
         armorMod: 2.2,
         weaponMod: 2.0,
         hpMod: 4.0,
-        xp: 18000,   
+        xp: 18000,
         respawnDelay: 180000
     },
 
@@ -1274,22 +1274,89 @@ let Properties = {
         onConsume: function(player) {
             player.releaseMob(Types.Entities.RAT);
         }
-    }
+    },
+    wood: {
+        collectable: true,
+        inventoryDescription: "Wood",
+        respawnDelay: 150000
+    },
+    ore: {
+        collectable: true,
+        inventoryDescription: "Iron ore",
+        respawnDelay: 150000
+    },
+    manacrystal: {
+        collectable: true,
+        inventoryDescription: "Crystal",
+        respawnDelay: 150000
+    },
 
-    // Weapons
-    // axe: {
-    //     name: "Axe",
-    //     consumables: {
-    //         GOLD: {
-    //             level: 40,
-    //             range: 6
-    //         },
-    //         coblog: {
-    //             level: 10,
-    //             range: 12
-    //         }
-    //     }
-    // }
+    // Projectiles
+    shortarrow: {
+        collectable: true,
+        consumable: false,
+        inventoryDescription: "Short range arrow (damage: high, range: low)",
+        damage: 1.2,
+        range: 6
+    },
+    mediumarrow: {
+        collectable: true,
+        consumable: false,
+        inventoryDescription: "Basic arrow (damage: medium, range: medium)",
+        damage: 1,
+        range: 9
+    },
+    longarrow: {
+        collectable: true,
+        consumable: false,
+        inventoryDescription: "Long range arrow (damage: low, range: high)",
+        damage: 0.8,
+        range: 12
+    },
+
+    shortbullet: {
+        collectable: true,
+        consumable: false,
+        inventoryDescription: "Short range bullet (damage: high, range: low)",
+        damage: 1.2,
+        range: 6
+    },
+    mediumbullet: {
+        collectable: true,
+        consumable: false,
+        inventoryDescription: "Basic bullet (damage: medium, range: medium)",
+        damage: 1,
+        range: 9
+    },
+    longbullet: {
+        collectable: true,
+        consumable: false,
+        inventoryDescription: "Long range bullet (damage: low, range: high)",
+        damage: 0.8,
+        range: 12
+    },
+
+    shortmana: {
+        collectable: true,
+        consumable: false,
+        inventoryDescription: "Short range bottled mana (damage: high, range: low)",
+        damage: 1.2,
+        range: 6
+    },
+    mediummana: {
+        collectable: true,
+        consumable: false,
+        inventoryDescription: "Bottled mana (damage: medium, range: medium)",
+        damage: 1,
+        range: 9
+    },
+    longmana: {
+        collectable: true,
+        consumable: false,
+        inventoryDescription: "Long range bottled mana (damage: low, range: high)",
+        damage: 0.8,
+        range: 12
+    },
 };
 
 Properties.getArmorLevel = function(kind, levelOffset) {
@@ -1413,7 +1480,7 @@ Properties.getInventoryDescription = function(kind) {
 }
 
 Properties.getCooldownData = function(kind) {
-    return Properties[Types.getKindAsString(kind)]?.cooldown; 
+    return Properties[Types.getKindAsString(kind)]?.cooldown;
 }
 
 Properties.filterCooldownGroups = function() {

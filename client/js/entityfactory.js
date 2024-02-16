@@ -625,6 +625,19 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
         return new Items.Cagedrat(id);
     };
 
+    EntityFactory.builders[Types.Entities.WOOD] = function(id) {
+        return new Items.Wood(id);
+    };
+
+    EntityFactory.builders[Types.Entities.ORE] = function(id) {
+        return new Items.Ore(id);
+    };
+
+    EntityFactory.builders[Types.Entities.MANACRYSTAL] = function(id) {
+        return new Items.Manacrystal(id);
+    };
+
+
     EntityFactory.builders[Types.Entities.KEY_ARACHWEAVE]=function(id){return new Items.KEY_ARACHWEAVE(id);};
     EntityFactory.builders[Types.Entities.BOARHIDE]=function(id){return new Items.BOARHIDE(id);};
     EntityFactory.builders[Types.Entities.THUDKEY]=function(id){return new Items.THUDKEY(id);};
@@ -817,6 +830,10 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
 
     EntityFactory.builders[Types.Entities.SHOPOWNER] = function(id) {
         return new NPCs.ShopOwner(id);
+    };
+
+    EntityFactory.builders[Types.Entities.BLACKSMITH] = function(id) {
+        return new NPCs.Blacksmith(id);
     };
 
     EntityFactory.builders[Types.Entities.FORESTNPC] = function(id) {

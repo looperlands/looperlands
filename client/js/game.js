@@ -1,12 +1,12 @@
 define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile',
         'warrior', 'gameclient', 'audio', 'updater', 'transition', 'pathfinder',
-        'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'fieldeffect', 'config', 'float', '../../shared/js/gametypes', '../../shared/js/altnames'],
+        'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'fieldeffect', 'config', 'float', 'projectile', '../../shared/js/gametypes', '../../shared/js/altnames'],
 
     function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, AnimatedTile,
              Warrior, GameClient, AudioManager, Updater, Transition, Pathfinder,
-             Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, Fieldeffect, Config, Float) {
+             Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, Fieldeffect, Config, Float, Projectile) {
         var Game = Class.extend({
-            init: function(app) {
+            init: function (app) {
                 this.app = app;
                 this.ready = false;
                 this.started = false;
@@ -78,14 +78,18 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.slidingFish = null;
                 this.uniFishTimeout = null;
 
+                // Projectiles
+                this.lowAmmoThreshold = 10;
+
                 // sprites
                 this.spriteNames = ["hand", "sword", "loot", "target", "talk", "float", "sparks", "shadow16", "rat", "skeleton", "skeleton2", "spectre", "boss", "deathknight",
                     "ogre", "crab", "snake", "eye", "bat", "goblin", "wizard", "guard", "king", "villagegirl", "villager", "coder", "agent", "rick", "scientist", "nyan", "priest", "coblumberjack", "cobhillsnpc", "cobcobmin", "cobellen", "cobjohnny", "cobashley",
-                    "king2", "goose", "tanashi", "slime","kingslime","silkshade","redslime","villagesign1","wildgrin","loomleaf","gnashling","arachweave","spider","fangwing", "minimag", "miner", "megamag", "seacreature", "tentacle", "tentacle2", "wildwill","shopowner",
+                    "king2", "goose", "tanashi", "slime","kingslime","silkshade","redslime","villagesign1","wildgrin","loomleaf","gnashling","arachweave","spider","fangwing", "minimag", "miner", "megamag", "seacreature", "tentacle", "tentacle2", "wildwill","shopowner","blacksmith",
                     "cobchicken", "alaric","orlan","jayce", "cobcow", "cobpig", "cobgoat", "ghostie","cobslimered", "cobslimeyellow", "cobslimeblue", "cobslimepurple", "cobslimegreen", "cobslimepink", "cobslimecyan", "cobslimemint", "cobslimeking", "cobyorkie", "cobcat", "cobdirt", "cobincubator", "cobcoblin", "cobcobane", "cobogre",
                     "sorcerer", "octocat", "beachnpc", "forestnpc", "desertnpc", "lavanpc","thudlord", "clotharmor", "leatherarmor", "mailarmor","boar","grizzlefang","barrel","neena","athlyn","jeniper",
                     "platearmor", "redarmor", "goldenarmor", "firefox", "death", "sword1", "transparentweapon", "torin","elric","glink", "axe", "chest","elara","eldrin","draylen","thaelen","keldor","torvin","liora","aria",
                     "sword2", "redsword", "bluesword", "goldensword", "item-sword2", "item-axe", "item-redsword", "item-bluesword", "item-goldensword", "item-leatherarmor", "item-mailarmor","whiskers",
+                    "item-wood", "item-ore", "item-manacrystal", "projectile", "shortarrow", "mediumarrow", "longarrow", "shortbullet", "mediumbullet", "longbullet", "shortmana", "mediummana", "longmana",
                     "item-platearmor", "item-redarmor", "item-goldenarmor", "item-flask", "item-potion","item-cake", "item-burger", "item-cobcorn", "item-cobapple", "item-coblog", "item-cobclover", "item-cobegg", "morningstar", "item-morningstar", "item-firepotion", "item-cpotion_s", "item-cpotion_m", "item-cpotion_l", "item-cimmupot", "item-cagedrat",
                     "item-KEY_ARACHWEAVE","shiverrock","shiverrockii","shiverrockiii","crystolith","stoneguard","glacialord","edur","lumi","snjor","gelidus","nightharrow",
                     "fieldeffect-magcrack","fieldeffect-cobfallingrock","gloomforged","torian","gripnar","blackdog","browndog","whitedog",
@@ -5450,7 +5454,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     this.registerEntityPosition(entity);
 
                     if(!(entity instanceof Item && entity.wasDropped)
-                        && !(this.renderer.mobile || this.renderer.tablet)) {
+                        && !(this.renderer.mobile || this.renderer.tablet)
+                        && !(entity instanceof Projectile)
+                    ) {
                         entity.fadeIn(this.currentTime);
                     }
 
@@ -5464,7 +5470,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     }
                 }
                 else {
-                    console.error("This entity already exists : " + entity.id + " ("+entity.kind+")");
+                    //console.error("This entity already exists : " + entity.id + " ("+entity.kind+")");
                 }
             },
 
@@ -5472,9 +5478,6 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 if(entity.id in this.entities) {
                     this.unregisterEntityPosition(entity);
                     delete this.entities[entity.id];
-                }
-                else {
-                    console.error("Cannot remove entity. Unknown ID : " + entity.id);
                 }
             },
 
@@ -6069,6 +6072,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                         if(self.isZoningTile(self.player.gridX, self.player.gridY)) {
                             self.enqueueZoningFrom(self.player.gridX, self.player.gridY);
+                        }
+
+                        if (self.player.hasTarget() && Types.isRangedWeapon(Types.getKindFromString(self.player.weaponName)) && self.player.isNear(self.player.target, self.player.getWeaponRange())) {
+                            self.player.stop();
                         }
 
                         self.player.forEachAttacker(function(attacker) {
@@ -6930,6 +6937,71 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         self.removeFloat(id);
                     });
 
+                    self.client.onSpawnProjectile(function (shooterId, projectileType, targetId) {
+                        let shooter = self.getEntityById(shooterId);
+                        let target = self.getEntityById(targetId);
+                        let projectile = new Projectile(projectileType, shooter, target);
+                        if (projectile.shooter.id === self.player.id) {
+                            self.player.currentProjectileType = projectileType;
+                        }
+                        let lastHitPos = {x: null, y: null};
+                        projectile.onMove(() => {
+                            let projectilePos = {x: Math.floor(projectile.x / 16), y: Math.floor(projectile.y / 16)}
+                            if (lastHitPos.x !== projectilePos.x || lastHitPos.y !== projectilePos.y) {
+                                lastHitPos = projectilePos;
+                                let hitEntity = self.getEntityAt(projectilePos.x, projectilePos.y);
+                                if (hitEntity && Types.isMob(hitEntity.kind) && !hitEntity.isDead && !hitEntity.isFriendly) {
+                                    if (projectile.shooter.id === self.player.id) {
+                                        hitEntity.hit();
+                                        self.client.sendHit(hitEntity);
+                                        self.audioManager.playSound("hit" + Math.floor(Math.random() * 2 + 1));
+                                    }
+
+                                    projectile.impact(() => {
+                                        projectile.setVisible(false);
+                                        self.removeFromRenderingGrid(projectile, projectilePos.x, projectilePos.y);
+                                        self.removeEntity(projectile);
+                                    });
+                                }
+                                if (self.map.isColliding(projectilePos.x, projectilePos.y)) {
+                                    if (projectile.shooter.id === self.player.id) {
+                                        self.audioManager.playSound("hit" + Math.floor(Math.random() * 2 + 1));
+                                    }
+                                    projectile.setVisible(false);
+                                    self.removeFromRenderingGrid(projectile, projectilePos.x, projectilePos.y);
+                                    self.removeEntity(projectile);
+                                    return;
+                                }
+                            }
+                        });
+                        projectile.onDestination((finishedProjectile) => {
+                            if (lastHitPos.x !== finishedProjectile.gridX || lastHitPos.y !== finishedProjectile.gridY) {
+                                let hitEntity = self.getEntityAt(finishedProjectile.gridX, finishedProjectile.gridY);
+                                if (hitEntity && Types.isMob(hitEntity.kind) && !hitEntity.isDead && !hitEntity.isFriendly) {
+                                    if (finishedProjectile.shooter.id === self.player.id) {
+                                        self.client.sendHit(target);
+                                        target.hit();
+                                        self.audioManager.playSound("hit" + Math.floor(Math.random() * 2 + 1));
+                                    }
+                                }
+                            }
+
+                            finishedProjectile.impact(() => {
+                                finishedProjectile.setVisible(false);
+                                self.removeFromRenderingGrid(projectile, finishedProjectile.gridX, finishedProjectile.gridY);
+                                self.removeEntity(projectile);
+                            });
+                        })
+                        projectile.flyTo(target.gridX, target.gridY);
+                        self.addEntity(projectile);
+                    });
+
+                    self.client.onOutOfAmmo(function () {
+                        self.player.idle();
+                        self.player.disengage();
+                        self.showNotification('I\'m Out of ammo!');
+                    });
+
                     self.client.onNotify(function(text) {
                         if(text){
                             self.showNotification(text);
@@ -7619,6 +7691,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 } else {
                     this.previousClickPosition = pos;
                 }
+                let hoveringPanel = !!$('.panel').filter(function() { return $(this).is(":hover"); }).length;
 
                 if(this.started
                     && this.player
@@ -7627,6 +7700,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     && !this.player.isDead
                     && (!this.hoveringCollidingTile || pos.keyboard || this.hoveringFishableTile)
                     && (!this.hoveringPlateauTile || pos.keyboard)
+                    && !hoveringPanel
                     && !(this.doorCheck)) {
                     entity = this.getEntityAt(pos.x, pos.y);
 
@@ -7838,32 +7912,39 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 if(character.isAttacking() && !character.previousTarget) {
                     var isMoving = this.tryMovingToADifferentTile(character); // Don't let multiple mobs stack on the same tile when attacking a player.
 
-                    if(character.canAttack(time)) {
-                        if(!isMoving) { // don't hit target if moving to a different tile.
-                            if(character.hasTarget() && character.getOrientationTo(character.target) !== character.orientation) {
+                    if (character.canAttack(time)) {
+                        if (!isMoving) { // don't hit target if moving to a different tile.
+                            if (character.hasTarget() && character.getOrientationTo(character.target) !== character.orientation) {
                                 character.lookAtTarget();
                             }
 
-                            character.hit();
+                            if (Types.isRangedWeapon(Types.getKindFromString(character.weaponName))) {
+                                character.hit();
+                                if (character.id === this.playerId) {
+                                    this.client.sendShoot(character.target);
+                                }
+                            } else {
+                                character.hit();
 
-                            if(character.id === this.playerId) {
-                                this.client.sendHit(character.target);
-                            }
+                                if (character.id === this.playerId) {
+                                    this.client.sendHit(character.target);
+                                }
 
-                            if(character instanceof Player && this.camera.isVisible(character)) {
-                                this.audioManager.playSound("hit"+Math.floor(Math.random()*2+1));
-                            }
+                                if (character instanceof Player && this.camera.isVisible(character)) {
+                                    this.audioManager.playSound("hit" + Math.floor(Math.random() * 2 + 1));
+                                }
 
-                            if(character.hasTarget() && character.target.id === this.playerId && this.player && !(character instanceof Player)) {
-                                this.client.sendHurt(character);
+                                if (character.hasTarget() && character.target.id === this.playerId && this.player && !(character instanceof Player)) {
+                                    this.client.sendHurt(character);
+                                }
                             }
-                        }
-                    } else {
-                        if(character.hasTarget()
-                            && character.isDiagonallyAdjacent(character.target)
-                            && character.target instanceof Player
-                            && !character.target.isMoving()) {
-                            character.follow(character.target);
+                        } else {
+                            if (character.hasTarget()
+                                && character.isDiagonallyAdjacent(character.target)
+                                && character.target instanceof Player
+                                && !character.target.isMoving()) {
+                                character.follow(character.target);
+                            }
                         }
                     }
                 }
@@ -8292,10 +8373,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             $('#companionProgress').text(response.data.botInfo.percentage);
                         }
 
-                        if (response.data.weaponInfo !== null &&
-                            response.data.weaponInfo !== undefined &&
-                            response.data.weaponInfo.weaponLevelInfo !== undefined
-                        ) {
+                        if (response.data.weaponInfo !== null && response.data.weaponInfo !== undefined && response.data.weaponInfo.weaponLevelInfo !== undefined) {
                             weaponPercentage = response.data.weaponInfo.weaponLevelInfo.percentage;
                             weaponLevel = response.data.weaponInfo.weaponLevelInfo.currentLevel;
 
@@ -8312,6 +8390,27 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             } else {
                             $('#weaponTrait').text(response.data.weaponInfo.trait);
                                 $('#weaponTraitContainer').show();
+                            }
+
+                            // render projectile tiles
+                            $('#projectileContainer').html('');
+
+                            let spriteInfo = self.sprites[self.player.weaponName];
+                            if (spriteInfo.projectiles !== undefined) {
+                                for (let i = 0; i < Object.keys(spriteInfo.projectiles).length; i++) {
+                                    let projectileType = Object.keys(spriteInfo.projectiles)[i];
+                                    let projectile = spriteInfo.projectiles[projectileType];
+                                    let selected = projectileType === response.data.weaponInfo.selectedProjectile ? 'selected' : '';
+                                    let projectileHtml = "<div class='item panelBorder pixel-corners-xs " + selected + "'><img id='" + projectile + "' style='width: 32px; height: 32px; object-fit: none; object-position: 100% 0;' src='img/1/" + projectile + ".png' /></div>";
+                                    let projectileElement = $(projectileHtml);
+                                    projectileElement.click(function (event) {
+                                        self.player.currentProjectileType = projectileType;
+                                        self.client.sendSelectProjectile(projectileType);
+                                        self.app.toggleWeaponInfo(event)
+                                        self.renderStatistics();
+                                    });
+                                    $('#projectileContainer').append(projectileElement);
+                                }
                             }
 
                         }

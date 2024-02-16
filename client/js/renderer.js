@@ -338,7 +338,8 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                     dx = entity.x * s,
                     dy = entity.y * s,
                     dw = w * ds,
-                    dh = h * ds;
+                    dh = h * ds,
+                    a = entity.angle;
             
                 if(entity.isFading) {
                     entityData.globalAlpha = entity.fadingAlpha;
@@ -376,7 +377,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                             "dx": 0,
                             "dy": entity.shadowOffsetY * ds,
                             "dW": shadow.width * os * ds,
-                            "dH": shadow.height * os * ds
+                            "dH": shadow.height * os * ds,
                         });
                     }
 
@@ -389,7 +390,8 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                         "dx": ox,
                         "dy": oy,
                         "dW": dw,
-                        "dH": dh
+                        "dH": dh,
+                        "a": a
                     });
 
                     if(entity instanceof Item && entity.kind !== Types.Entities.CAKE && !entity.nosparks) {

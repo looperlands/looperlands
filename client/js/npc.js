@@ -244,6 +244,10 @@ define(['character'], function (Character) {
             "/openShop potionshop Potion Shop",
         ],
 
+        "blacksmith": [
+            "/openShop blacksmith Blacksmith\'s shop"
+        ],
+
         "desertnpc": [
             "I'm NFTSpike and should need no introduction.",
             "I make Web3 games on Loopring that are dope AF",
