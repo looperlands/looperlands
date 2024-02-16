@@ -69,7 +69,7 @@ fi
 
 function add_projectile() {
   echo "Adding projectile"
-  jq ".id=\"$1\"" projectilespritemap.json > ../client/sprites/$1.json
+  jq ".id=\"$1\"" projectilespritemap.json > ../client/sprites/NFT_$1.json
   ./add_nft_js.sh "$1" "projectile"
 }
 
