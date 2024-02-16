@@ -45,7 +45,11 @@ Types = {
         BUFFINFO: 43,
         EMOTE: 44,
         SUMMON_FOLLOW: 45,
-        RESOURCE: 46
+        RESOURCE: 46,
+        SHOOT: 47,
+        SPAWNPROJECTILE: 48,
+        OUTOFAMMO: 49,
+        SELECTPROJECTILE: 50
     },
 
     Entities: {
@@ -230,6 +234,7 @@ Types = {
         BURGER: 36,
         CHEST: 37,
         FIREPOTION: 38,
+
         COBEGG: 21300007,
         COBLOG: 21300008,
         COBCLOVER: 21300009,
@@ -323,6 +328,7 @@ Types = {
         MINER: 1000044,
         WILDWILL: 1000045,
         SHOPOWNER: 1000046,
+        BLACKSMITH: 1000047,
         VILLAGESIGN1: 30000001,
         COBLUMBERJACK: 34000001,
         COBHILLSNPC: 34000002,
@@ -403,7 +409,20 @@ Types = {
         // FieldEffects
         MAGCRACK: 40000001,
         COBFALLINGROCK: 40000002,
-
+        // Projectiles
+        PROJECTILE: 50000000,
+        SHORT_ARROW: 50000001,
+        MEDIUM_ARROW: 50000002,
+        LONG_ARROW: 50000003,
+        SHORT_BULLET: 50000004,
+        MEDIUM_BULLET: 50000005,
+        LONG_BULLET: 50000006,
+        SHORT_MANA: 50000007,
+        MEDIUM_MANA: 50000008,
+        LONG_MANA: 50000009,
+        WOOD: 50000010,
+        ORE: 50000011,
+        MANACRYSTAL: 50000012,
         // NFTs
         NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6: 70,
         NFT_38278eacc7d1c86fdbc85d798dca146fbca59a2e5e567dc15898ce2edac21f5f: 71,
@@ -5220,6 +5239,9 @@ var kinds = {
     goldenarmor: [Types.Entities.GOLDENARMOR, "armor"],
 
     flask: [Types.Entities.FLASK, "object"],
+    wood: [Types.Entities.WOOD, "object"],
+    ore: [Types.Entities.ORE, "object"],
+    manacrystal: [Types.Entities.MANACRYSTAL, "object"],
     potion: [Types.Entities.POTION, "object"],
     cpotion_s: [Types.Entities.CPOTION_S, "object"],
     cpotion_m: [Types.Entities.CPOTION_M, "object"],
@@ -5323,6 +5345,7 @@ var kinds = {
     beachnpc: [Types.Entities.BEACHNPC, "npc"],
     wildwill: [Types.Entities.WILDWILL, "npc"],
     shopowner: [Types.Entities.SHOPOWNER, "npc"],
+    blacksmith: [Types.Entities.BLACKSMITH, "npc"],
     forestnpc: [Types.Entities.FORESTNPC, "npc"],
     desertnpc: [Types.Entities.DESERTNPC, "npc"],
     lavanpc: [Types.Entities.LAVANPC, "npc"],
@@ -5411,6 +5434,18 @@ var kinds = {
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],
     cobfallingrock: [Types.Entities.COBFALLINGROCK, "fieldeffect"],
+
+    // Projectiles
+    projectile: [Types.Entities.PROJECTILE, 'projectile'],
+    shortarrow: [Types.Entities.SHORT_ARROW, 'projectile'],
+    mediumarrow: [Types.Entities.MEDIUM_ARROW, 'projectile'],
+    longarrow: [Types.Entities.LONG_ARROW, 'projectile'],
+    shortbullet: [Types.Entities.SHORT_BULLET, 'projectile'],
+    mediumbullet: [Types.Entities.MEDIUM_BULLET, 'projectile'],
+    longbullet: [Types.Entities.LONG_BULLET, 'projectile'],
+    shortmana: [Types.Entities.SHORT_MANA, 'projectile'],
+    mediummana: [Types.Entities.MEDIUM_MANA, 'projectile'],
+    longmana: [Types.Entities.LONG_MANA, 'projectile'],
 
     //NFT
     NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6: [Types.Entities.NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6, "armor"],
@@ -10100,12 +10135,20 @@ Types.isArmor = function(kind) {
 
 Types.isWeapon = function(kind) {
     try {
-        return kinds.getType(kind) === "weapon";
+        return kinds.getType(kind) === "weapon" || kinds.getType(kind) === "ranged_weapon";
     } catch (error) {
         console.log("Unknown kind: " + kind, error);
         return false;
     }
 };
+
+Types.isRangedWeapon = function(kind) {
+    return kinds.getType(kind) === "ranged_weapon";
+}
+
+Types.isProjectile = function(kind) {
+    return kinds.getType(kind) === "projectile";
+}
 
 Types.isFishingRod = function(kind) {
     return kinds.getType(kind) === "fishingrod";
@@ -10135,6 +10178,7 @@ Types.isItem = function(kind) {
     return Types.isWeapon(kind)
         || Types.isArmor(kind)
         || Types.isResource(kind)
+        || Types.isProjectile((kind))
         || (Types.isObject(kind) && !Types.isChest(kind));
 };
 

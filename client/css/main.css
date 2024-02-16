@@ -388,20 +388,43 @@ body.upscaled.game {background:#000;}
     opacity: 0;
     padding: 20px;
     padding-top: 0;
-    padding-bottom: 0;
     transition: 0.2s ease-in-out all;
     bottom: 18px;
+
+    border-image-width: 8px;
+
 }
 
 #weaponStats.visible {
-    height: 20px;
     padding-top: 5px;
-    padding-bottom: 10px;
+    margin-bottom: -5px;
     opacity: 100;
     transition: 0.2s ease-in-out all;
     line-height: 9px;
+    padding-bottom: 20px;
+    height:max-content;
 }
 
+#projectileContainer {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    padding-top: 10px;
+}
+
+#projectileContainer .item {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+}
+
+#projectileContainer .item:hover,
+#projectileContainer .item.selected {
+    background-color: #624a4d !important;
+    cursor: pointer;
+}
 
 .barbutton {background:url('../img/1/barsheet.png');image-rendering:-moz-crispt-edges;position:absolute;}
 
@@ -1332,9 +1355,7 @@ footer div  {display:inline-block;}
         line-height: 24px;
     }
     .upscaled #weaponStats.visible {
-        height: 43px;
         padding-top: 28px;
-        padding-bottom: 20px;
     }
 
     body {background:-moz-radial-gradient(rgba(0,0,0,0) 40%,rgba(0,0,0,1) 125%), #000; background-size:auto, 15px auto, 15px auto, 60px auto, 384px;}
@@ -1722,19 +1743,15 @@ footer div  {display:inline-block;}
         font-family: 'GraphicPixel';
         font-size: 12px;
         text-align: center;
-        height:0;
         padding:20px;
         padding-top: 0;
-        padding-bottom: 0;
         opacity: 0;
         transition: 0.2s ease-in-out all;
         border-radius: 10px 0 0 0;
     }
 
     #weaponStats.visible {
-        height: 20px;
         padding-top: 16px;
-        padding-bottom: 20px;
         opacity: 100;
         line-height:16px;
         transition: 0.2s ease-in-out all;
@@ -1999,18 +2016,14 @@ footer div  {display:inline-block;}
         font-family: 'GraphicPixel';
         font-size: 12px;
         text-align: center;
-        height:0;
         padding:20px;
         padding-top: 0;
-        padding-bottom: 0;
         opacity: 0;
         transition: 0.2s ease-in-out all;
     }
 
     .upscaled #weaponStats.visible {
-        height: 20px;
         padding-top: 16px;
-        padding-bottom: 20px;
         opacity: 100;
         line-height:16px;
         transition: 0.2s ease-in-out all;
@@ -2348,19 +2361,15 @@ footer div  {display:inline-block;}
         font-family: 'GraphicPixel';
         font-size: 9px;
         text-align: center;
-        height: 0;
         opacity: 0;
         padding: 20px;
         padding-top: 0;
-        padding-bottom: 0;
         transition: 0.2s ease-in-out all;
         bottom: 18px;
     }
 
     #weaponStats.visible {
-        height: 20px;
         padding-top: 5px;
-        padding-bottom: 10px;
         opacity: 100;
         transition: 0.2s ease-in-out all;
         line-height: 9px;
@@ -2541,19 +2550,15 @@ footer div  {display:inline-block;}
         font-family: 'GraphicPixel';
         font-size: 9px;
         text-align: center;
-        height: 0;
         opacity: 0;
         padding: 20px;
         padding-top: 0;
-        padding-bottom: 0;
         transition: 0.2s ease-in-out all;
         bottom: 18px;
     }
 
     #weaponStats.visible {
-        height: 20px;
         padding-top: 5px;
-        padding-bottom: 10px;
         opacity: 100;
         transition: 0.2s ease-in-out all;
         line-height: 9px;

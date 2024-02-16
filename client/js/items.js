@@ -94,6 +94,27 @@ define(['item'], function(Item) {
             },
         }),
 
+        Wood: Item.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.WOOD, "object");
+                this.lootMessage = "Picked up some wood";
+            },
+        }),
+
+        Ore: Item.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.ORE, "object");
+                this.lootMessage = "You picked up some iron ore";
+            },
+        }),
+
+        Manacrystal: Item.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.MANACRYSTAL, "object");
+                this.lootMessage = "You found a mana crystal";
+            },
+        }),
+
         Potion: Item.extend({
             init: function(id) {
                 this._super(id, Types.Entities.POTION, "object");

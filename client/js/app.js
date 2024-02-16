@@ -760,7 +760,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                     //inverted %, hence the 100 -
                     let remainingTime = Math.max(0, _this.cooldownMap[item] - new Date().getTime());
                     let cdPercent = 100 - Math.round(100*remainingTime/consumablesInventory[item].maxCooldown);
-    
+
                     document.getElementById("timer_" + item).innerHTML = _this.game.msToTime(remainingTime);
                     $('#'+item).parent().attr('style', 'background: linear-gradient(#341e28 ' + cdPercent + '%, #5b0000 ' + cdPercent + '%) !important');
                 }
@@ -775,7 +775,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                             document.getElementById("timer_" + item).innerHTML = "";
                             $('#'+item).css({'cursor':"pointer"});
                             $('#'+item).parent().attr('style', 'background:');
-                            
+
                             if (consumablesInventory[item].consumable) {
                                 consumeFunc(item);
                             }
@@ -997,7 +997,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                 items.forEach(function (item) {
 
                     let itemHtml = "<div class='item'>";
-                    itemHtml += "<div id='" + item.item + "' class='item-image' style='background: url(img/2/item-" + Types.getKindAsString(item.item) + ".png)' />";
+                    itemHtml += "<div id='" + item.item + "' class='item-image' style='background: url(img/2/item-" + Types.getKindAsString(item.item) + ".png); background-size:cover;' />";
 
                     let levelInfo = "";
                     if (item.level) {

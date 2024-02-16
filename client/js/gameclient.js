@@ -52,6 +52,8 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             this.handlers[Types.Messages.NOTIFY] = this.receiveNotify;
             this.handlers[Types.Messages.BUFFINFO] = this.receiveBuffInfo;
             this.handlers[Types.Messages.RESOURCE] = this.receiveResource;
+            this.handlers[Types.Messages.SPAWNPROJECTILE] = this.receiveSpawnProjectile;
+            this.handlers[Types.Messages.OUTOFAMMO] = this.receiveOutOfAmmo;
 
             this.useBison = false;
             this.enable();
@@ -511,6 +513,22 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             }
         },
 
+        receiveSpawnProjectile: function(data) {
+            let playerId = data[1];
+            let kind = data[2];
+            let target = data[3];
+
+            if(this.spawnProjectile_callback) {
+                this.spawnProjectile_callback(playerId, kind, target);
+            }
+        },
+
+        receiveOutOfAmmo: function(data) {
+            if(this.outOfAmmo_callback) {
+                this.outOfAmmo_callback();
+            }
+        },
+
         receiveNotify: function(data) {
             let text = data[1];
         
@@ -682,6 +700,14 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             this.despawnFloat_callback = callback;
         },
 
+        onSpawnProjectile: function(callback) {
+            this.spawnProjectile_callback = callback;
+        },
+
+        onOutOfAmmo: function(callback) {
+            this.outOfAmmo_callback = callback;
+        },
+
         onNotify: function(callback) {
             this.notify_callback = callback;
         },
@@ -726,10 +752,13 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
         },
     
         sendHit: function(mob) {
-            this.sendMessage([Types.Messages.HIT,
-                              mob.id]);
+            this.sendMessage([Types.Messages.HIT, mob.id]);
         },
-    
+
+        sendShoot: function(mob) {
+            this.sendMessage([Types.Messages.SHOOT, mob.id]);
+        },
+
         sendHurt: function(mob) {
             this.sendMessage([Types.Messages.HURT,
                               mob.id]);
@@ -787,8 +816,11 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             this.sendMessage([Types.Messages.FISHINGRESULT,
                               result,
                               bullseye]);
-        }
+        },
 
+        sendSelectProjectile: function(projectileType) {
+            this.sendMessage([Types.Messages.SELECTPROJECTILE, projectileType]);
+        }
     });
     
     return GameClient;
