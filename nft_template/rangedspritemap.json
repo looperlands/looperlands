@@ -42,9 +42,9 @@
 	},
 	"offset_x": -16,
 	"offset_y": -20,
-    "sprites" : {
-        "short" : "projectile",
-        "medium" : "projectile",
-        "long" : "projectile"
+    "projectiles" : {
+        "short" : "",
+        "medium" : "",
+        "long" : ""
     }
 }
