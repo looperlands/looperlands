@@ -19,8 +19,7 @@
         "MRMlabs",
         "duckville",
         "taikotown",
-        "shortdestroyers",
-        "robits"
+        "shortdestroyers"
     ],
     "map_directory": "./server/maps/",
     "metrics_enabled": false
