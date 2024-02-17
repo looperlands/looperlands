@@ -42,9 +42,9 @@
   },
   "offset_x": -16,
   "offset_y": -20,
-  "sprites": {
-    "short": "projectile",
-    "medium": "projectile",
-    "long": "projectile"
+  "projectiles": {
+    "short": "NFT_shortee955c3f7980209b84143b0d67f6e6617d22d13cbc8965054305a2080296b273",
+    "medium": "NFT_mediumee955c3f7980209b84143b0d67f6e6617d22d13cbc8965054305a2080296b273",
+    "long": "NFT_longee955c3f7980209b84143b0d67f6e6617d22d13cbc8965054305a2080296b273"
   }
 }

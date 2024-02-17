@@ -49,13 +49,13 @@ function add_nft() {
 
     if [ "$type" = "ranged_weapon" ]; then
         cp /home/loopworms.io/public_html/DEV/LooperLands/AddNewLooper/images/4/$nftID.png /tmp/$nftID/short-1.png
-        cp /home/loopworms.io/public_html/DEV/LooperLands/AddNewLooper/images/5/$nftID.png /tmp/$nftID/medium-1.png
-        cp /home/loopworms.io/public_html/DEV/LooperLands/AddNewLooper/images/6/$nftID.png /tmp/$nftID/long-1.png
-        cp /home/loopworms.io/public_html/DEV/LooperLands/AddNewLooper/images/7/$nftID.png /tmp/$nftID/short-2.png
+        cp /home/loopworms.io/public_html/DEV/LooperLands/AddNewLooper/images/5/$nftID.png /tmp/$nftID/short-2.png
+        cp /home/loopworms.io/public_html/DEV/LooperLands/AddNewLooper/images/6/$nftID.png /tmp/$nftID/short-3.png
+        cp /home/loopworms.io/public_html/DEV/LooperLands/AddNewLooper/images/7/$nftID.png /tmp/$nftID/medium-1.png
         cp /home/loopworms.io/public_html/DEV/LooperLands/AddNewLooper/images/8/$nftID.png /tmp/$nftID/medium-2.png
-        cp /home/loopworms.io/public_html/DEV/LooperLands/AddNewLooper/images/9/$nftID.png /tmp/$nftID/long-2.png
-        cp /home/loopworms.io/public_html/DEV/LooperLands/AddNewLooper/images/10/$nftID.png /tmp/$nftID/short-3.png
-        cp /home/loopworms.io/public_html/DEV/LooperLands/AddNewLooper/images/11/$nftID.png /tmp/$nftID/medium-3.png
+        cp /home/loopworms.io/public_html/DEV/LooperLands/AddNewLooper/images/9/$nftID.png /tmp/$nftID/medium-3.png
+        cp /home/loopworms.io/public_html/DEV/LooperLands/AddNewLooper/images/10/$nftID.png /tmp/$nftID/long-1.png
+        cp /home/loopworms.io/public_html/DEV/LooperLands/AddNewLooper/images/11/$nftID.png /tmp/$nftID/long-2.png
         cp /home/loopworms.io/public_html/DEV/LooperLands/AddNewLooper/images/12/$nftID.png /tmp/$nftID/long-3.png            
     fi    
 
