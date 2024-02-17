@@ -5050,7 +5050,11 @@ Types = {
         NFT_shortf49308e033301819885fb9ea18103a27b69eed5138193b3309998d4d2f5fb1e0: 4693,
         NFT_mediumf49308e033301819885fb9ea18103a27b69eed5138193b3309998d4d2f5fb1e0: 4694,
         NFT_longf49308e033301819885fb9ea18103a27b69eed5138193b3309998d4d2f5fb1e0: 4695,
-        NFT_da93747e4c9e54916c621ec9f6fe235ef6e260005302b9cd5ae37c22bf9dcfc1: 4696 // @lastid@
+        NFT_da93747e4c9e54916c621ec9f6fe235ef6e260005302b9cd5ae37c22bf9dcfc1: 4696,
+        NFT_0bcf24bf800cf39ced029060ef352ba1f668d1f531f2c17e55f442992ec0c8b6: 4697,
+        NFT_short0bcf24bf800cf39ced029060ef352ba1f668d1f531f2c17e55f442992ec0c8b6: 4698,
+        NFT_medium0bcf24bf800cf39ced029060ef352ba1f668d1f531f2c17e55f442992ec0c8b6: 4699,
+        NFT_long0bcf24bf800cf39ced029060ef352ba1f668d1f531f2c17e55f442992ec0c8b6: 4700 // @lastid@
         //@nextIdLine@
     },
 
@@ -10084,6 +10088,10 @@ var kinds = {
     NFT_mediumf49308e033301819885fb9ea18103a27b69eed5138193b3309998d4d2f5fb1e0: [Types.Entities.NFT_mediumf49308e033301819885fb9ea18103a27b69eed5138193b3309998d4d2f5fb1e0, "projectile"],
     NFT_longf49308e033301819885fb9ea18103a27b69eed5138193b3309998d4d2f5fb1e0: [Types.Entities.NFT_longf49308e033301819885fb9ea18103a27b69eed5138193b3309998d4d2f5fb1e0, "projectile"],
     NFT_da93747e4c9e54916c621ec9f6fe235ef6e260005302b9cd5ae37c22bf9dcfc1: [Types.Entities.NFT_da93747e4c9e54916c621ec9f6fe235ef6e260005302b9cd5ae37c22bf9dcfc1, "weapon"],
+    NFT_0bcf24bf800cf39ced029060ef352ba1f668d1f531f2c17e55f442992ec0c8b6: [Types.Entities.NFT_0bcf24bf800cf39ced029060ef352ba1f668d1f531f2c17e55f442992ec0c8b6, "ranged_weapon"],
+    NFT_short0bcf24bf800cf39ced029060ef352ba1f668d1f531f2c17e55f442992ec0c8b6: [Types.Entities.NFT_short0bcf24bf800cf39ced029060ef352ba1f668d1f531f2c17e55f442992ec0c8b6, "projectile"],
+    NFT_medium0bcf24bf800cf39ced029060ef352ba1f668d1f531f2c17e55f442992ec0c8b6: [Types.Entities.NFT_medium0bcf24bf800cf39ced029060ef352ba1f668d1f531f2c17e55f442992ec0c8b6, "projectile"],
+    NFT_long0bcf24bf800cf39ced029060ef352ba1f668d1f531f2c17e55f442992ec0c8b6: [Types.Entities.NFT_long0bcf24bf800cf39ced029060ef352ba1f668d1f531f2c17e55f442992ec0c8b6, "projectile"],
     // @nextSpriteLine@
 
     getType: function(kind) {
