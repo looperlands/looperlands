@@ -59,7 +59,6 @@ function getX(id, w) {
     return (id % w == 0) ? w - 1 : (id % w) - 1;
 };
 
-
 function drawScaledImage(ctx, image, x, y, w, h, dx, dy, scale) {
 
     //console.log(arguments);
