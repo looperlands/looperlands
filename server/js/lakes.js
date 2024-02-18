@@ -142,6 +142,13 @@ const Lakes = {
             oafish35: "common",
             oafish36: "epic",
         }
+    },
+
+    cornsinoSludgeRiver: {
+        level: 1,
+        fish: {
+            cornfish_placeholder: "common",
+        }
     }
 
 };
@@ -189,6 +196,10 @@ generateFishDataMap = function() { // also do config checks
 const fishDataMap = generateFishDataMap();
 
 Lakes.getRandomFish = function(lake, lucky) {
+    if(Object.keys(Lakes[lake].fish).length == 1){
+        return Object.keys(Lakes[lake].fish)[0];
+    }
+
     let luckyFish = false;
     if (lucky){
         luckyFish = Lakes.getRandomFish(lake, false);
