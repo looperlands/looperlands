@@ -20,6 +20,7 @@ define(['character', 'exceptions', '../../shared/js/gametypes'], function(Charac
             this.isLootMoving = false;
             this.isSwitchingWeapon = true;
             this.level = null;
+            this.currentProjectileType = null;
         },
     
         loot: function(item) {
@@ -220,6 +221,26 @@ define(['character', 'exceptions', '../../shared/js/gametypes'], function(Charac
             }
 
             return false;
+        },
+
+        canReachTarget: function(target) {
+            return this._super(target) || (
+                        this.hasTarget() &&
+                        Types.isRangedWeapon(Types.getKindFromString(this.weaponName)) &&
+                        this.isNear(this.target, this.getWeaponRange())
+                    );
+        },
+
+        getWeaponRange: function() {
+            if(this.currentProjectileType === 'short') {
+                return 6;
+            }
+
+            if(this.currentProjectileType === 'long') {
+                return 12;
+            }
+
+            return 9;
         }
     });
 

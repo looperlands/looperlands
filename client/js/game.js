@@ -1,12 +1,12 @@
 define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile',
         'warrior', 'gameclient', 'audio', 'updater', 'transition', 'pathfinder',
-        'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'fieldeffect', 'config', 'float', '../../shared/js/gametypes', '../../shared/js/altnames'],
+        'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'fieldeffect', 'config', 'float', 'projectile', '../../shared/js/gametypes', '../../shared/js/altnames'],
 
     function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, AnimatedTile,
              Warrior, GameClient, AudioManager, Updater, Transition, Pathfinder,
-             Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, Fieldeffect, Config, Float) {
+             Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, Fieldeffect, Config, Float, Projectile) {
         var Game = Class.extend({
-            init: function(app) {
+            init: function (app) {
                 this.app = app;
                 this.ready = false;
                 this.started = false;
@@ -78,14 +78,18 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.slidingFish = null;
                 this.uniFishTimeout = null;
 
+                // Projectiles
+                this.lowAmmoThreshold = 10;
+
                 // sprites
                 this.spriteNames = ["hand", "sword", "loot", "target", "talk", "float", "sparks", "shadow16", "rat", "skeleton", "skeleton2", "spectre", "boss", "deathknight",
                     "ogre", "crab", "snake", "eye", "bat", "goblin", "wizard", "guard", "king", "villagegirl", "villager", "coder", "agent", "rick", "scientist", "nyan", "priest", "coblumberjack", "cobhillsnpc", "cobcobmin", "cobellen", "cobjohnny", "cobashley",
-                    "king2", "goose", "tanashi", "slime","kingslime","silkshade","redslime","villagesign1","wildgrin","loomleaf","gnashling","arachweave","spider","fangwing", "minimag", "miner", "megamag", "seacreature", "tentacle", "tentacle2", "wildwill","shopowner",
+                    "king2", "goose", "tanashi", "slime","kingslime","silkshade","redslime","villagesign1","wildgrin","loomleaf","gnashling","arachweave","spider","fangwing", "minimag", "miner", "megamag", "seacreature", "tentacle", "tentacle2", "wildwill","shopowner","blacksmith",
                     "cobchicken", "alaric","orlan","jayce", "cobcow", "cobpig", "cobgoat", "ghostie","cobslimered", "cobslimeyellow", "cobslimeblue", "cobslimepurple", "cobslimegreen", "cobslimepink", "cobslimecyan", "cobslimemint", "cobslimeking", "cobyorkie", "cobcat", "cobdirt", "cobincubator", "cobcoblin", "cobcobane", "cobogre",
                     "sorcerer", "octocat", "beachnpc", "forestnpc", "desertnpc", "lavanpc","thudlord", "clotharmor", "leatherarmor", "mailarmor","boar","grizzlefang","barrel","neena","athlyn","jeniper",
                     "platearmor", "redarmor", "goldenarmor", "firefox", "death", "sword1", "transparentweapon", "torin","elric","glink", "axe", "chest","elara","eldrin","draylen","thaelen","keldor","torvin","liora","aria",
                     "sword2", "redsword", "bluesword", "goldensword", "item-sword2", "item-axe", "item-redsword", "item-bluesword", "item-goldensword", "item-leatherarmor", "item-mailarmor","whiskers",
+                    "item-wood", "item-ore", "item-manacrystal", "projectile", "shortarrow", "mediumarrow", "longarrow", "shortbullet", "mediumbullet", "longbullet", "shortmana", "mediummana", "longmana",
                     "item-platearmor", "item-redarmor", "item-goldenarmor", "item-flask", "item-potion","item-cake", "item-burger", "item-cobcorn", "item-cobapple", "item-coblog", "item-cobclover", "item-cobegg", "morningstar", "item-morningstar", "item-firepotion", "item-cpotion_s", "item-cpotion_m", "item-cpotion_l", "item-cimmupot", "item-cagedrat",
                     "item-KEY_ARACHWEAVE","shiverrock","shiverrockii","shiverrockiii","crystolith","stoneguard","glacialord","edur","lumi","snjor","gelidus","nightharrow",
                     "fieldeffect-magcrack","fieldeffect-cobfallingrock","gloomforged","torian","gripnar","blackdog","browndog","whitedog",
@@ -224,8 +228,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     //mycupbloody
                     "item-EYEBALL",
                     "item-REDPOTION",
-                     "item-GREYPOTION",
-                                // @nextObjectLine@
+                    "item-GREYPOTION",
+                     //Bitcorn Phishes
+                    "cornfish_placeholder",
+                    // @nextObjectLine@
                     "NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6",
                     "NFT_38278eacc7d1c86fdbc85d798dca146fbca59a2e5e567dc15898ce2edac21f5f",
                     "NFT_d2fb1ad9308803ea4df2ba6b1fe0930ad4d6443b3ac6468eaedbc9e2c214e57a",
@@ -5120,6 +5126,85 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 "NFT_b2bd12264fa346293b37a521e4f5b0d2342a561a5491a7a528e393080bd6826e",
                                 "NFT_bcc85340addad09ab47b29690b3adaae7be035c47e541a91b2b702fd8e1b08f1",
                                 "NFT_dff6df3fbee0a9fec4d8c803602079aab0e7d2c0ef67428fbac56f21280bfc20",
+                                "NFT_ee955c3f7980209b84143b0d67f6e6617d22d13cbc8965054305a2080296b273",
+                                "NFT_shortee955c3f7980209b84143b0d67f6e6617d22d13cbc8965054305a2080296b273",
+                                "NFT_mediumee955c3f7980209b84143b0d67f6e6617d22d13cbc8965054305a2080296b273",
+                                "NFT_longee955c3f7980209b84143b0d67f6e6617d22d13cbc8965054305a2080296b273",
+                                "NFT_f49308e033301819885fb9ea18103a27b69eed5138193b3309998d4d2f5fb1e0",
+                                "NFT_shortf49308e033301819885fb9ea18103a27b69eed5138193b3309998d4d2f5fb1e0",
+                                "NFT_mediumf49308e033301819885fb9ea18103a27b69eed5138193b3309998d4d2f5fb1e0",
+                                "NFT_longf49308e033301819885fb9ea18103a27b69eed5138193b3309998d4d2f5fb1e0",
+                                "NFT_da93747e4c9e54916c621ec9f6fe235ef6e260005302b9cd5ae37c22bf9dcfc1",
+                                "NFT_0bcf24bf800cf39ced029060ef352ba1f668d1f531f2c17e55f442992ec0c8b6",
+                                "NFT_short0bcf24bf800cf39ced029060ef352ba1f668d1f531f2c17e55f442992ec0c8b6",
+                                "NFT_medium0bcf24bf800cf39ced029060ef352ba1f668d1f531f2c17e55f442992ec0c8b6",
+                                "NFT_long0bcf24bf800cf39ced029060ef352ba1f668d1f531f2c17e55f442992ec0c8b6",
+                                "NFT_7dbcdd6ab36b736aad8956fc8317e3d38f511cabd956a20a429426ee2ef89ed5",
+                                "NFT_short7dbcdd6ab36b736aad8956fc8317e3d38f511cabd956a20a429426ee2ef89ed5",
+                                "NFT_medium7dbcdd6ab36b736aad8956fc8317e3d38f511cabd956a20a429426ee2ef89ed5",
+                                "NFT_long7dbcdd6ab36b736aad8956fc8317e3d38f511cabd956a20a429426ee2ef89ed5",
+                                "NFT_068fea3616941919281efb00daf6a7a015db508eff6231d929cac34bdfb70818",
+                                "NFT_2b7673257778094d9b65067c5f8fe0a0091cddac2b9438ef29b0413ef4e68095",
+                                "NFT_69f1986ed90de699616e54f5090027ce25e8f8549899ea50cb3675ef06455196",
+                                "NFT_6a00be285f1c050ae454e1fa089cd2a25080759c1c8f0094673c6856b32e2e27",
+                                "NFT_78087164044b9eba61c85ae6820e315ff44fbe179dca27c27a53c2f42c4e8bcd",
+                                "NFT_85081d01bac63ba2896799a250ee4b00d864458257e22fdbd637f04e20f9e79f",
+                                "NFT_971496348ac8582d7795101b9ca7e27bb316bbbdc22590d09ebbb72b22c341c5",
+                                "NFT_9eda1e9b159ccaff4b0e462e640395d3c7091420c3f0e5c1928bef34bfc3413e",
+                                "NFT_c6d3f76464f64cfe3b3e7efc346f1aba17360f064c0ef3699de614ee48188283",
+                                "NFT_shortc6d3f76464f64cfe3b3e7efc346f1aba17360f064c0ef3699de614ee48188283",
+                                "NFT_mediumc6d3f76464f64cfe3b3e7efc346f1aba17360f064c0ef3699de614ee48188283",
+                                "NFT_longc6d3f76464f64cfe3b3e7efc346f1aba17360f064c0ef3699de614ee48188283",
+                                "NFT_ef05e3d327ff124b3c180bb236d08c12eace6944139143648cc3753d6d7033db",
+                                "NFT_4f3a404d96cdd021449b3ab5908d2eb3b84e831c_5496305",
+                                "NFT_F85364c9Ee2bB9ed85A3b32b19C7493fdCB569BD_19918615690146066355690800931375925985630387238563754968424641628807186370381",
+                                "NFT_F85364c9Ee2bB9ed85A3b32b19C7493fdCB569BD_77123044749293774652580068647803968014499430784804917820666958229293037486712",
+                                "NFT_1438f740c51c543a6dfcff955e1aff22c2b97e13ce18d3bed1e3d6025d404429",
+                                "NFT_15d4a3c86f6c98e27063da3678675ea63ac392fc888f2f9f8c1ba4b07a0d2c38",
+                                "NFT_short15d4a3c86f6c98e27063da3678675ea63ac392fc888f2f9f8c1ba4b07a0d2c38",
+                                "NFT_medium15d4a3c86f6c98e27063da3678675ea63ac392fc888f2f9f8c1ba4b07a0d2c38",
+                                "NFT_long15d4a3c86f6c98e27063da3678675ea63ac392fc888f2f9f8c1ba4b07a0d2c38",
+                                "NFT_1786f06ebc4e8519c964b312acf66a95e14adc633d23ea1fd71145d856c26972",
+                                "NFT_short1786f06ebc4e8519c964b312acf66a95e14adc633d23ea1fd71145d856c26972",
+                                "NFT_medium1786f06ebc4e8519c964b312acf66a95e14adc633d23ea1fd71145d856c26972",
+                                "NFT_long1786f06ebc4e8519c964b312acf66a95e14adc633d23ea1fd71145d856c26972",
+                                "NFT_1a81e741826106eb47acdeec2c3ff420db401f560e743deca785a15499493338",
+                                "NFT_short1a81e741826106eb47acdeec2c3ff420db401f560e743deca785a15499493338",
+                                "NFT_medium1a81e741826106eb47acdeec2c3ff420db401f560e743deca785a15499493338",
+                                "NFT_long1a81e741826106eb47acdeec2c3ff420db401f560e743deca785a15499493338",
+                                "NFT_366cade0dcf755747c099d7485ea650ad7f50ce902380d9b34fd879fc76e4bbd",
+                                "NFT_short366cade0dcf755747c099d7485ea650ad7f50ce902380d9b34fd879fc76e4bbd",
+                                "NFT_medium366cade0dcf755747c099d7485ea650ad7f50ce902380d9b34fd879fc76e4bbd",
+                                "NFT_long366cade0dcf755747c099d7485ea650ad7f50ce902380d9b34fd879fc76e4bbd",
+                                "NFT_36ee162fecde9158ae4c87787062bc85053afa843e3a081180c1ee081d1adae0",
+                                "NFT_3b092b4c195d0e43ffe4273513f531bd7a1985fbc192aa08292b9fe129996364",
+                                "NFT_short3b092b4c195d0e43ffe4273513f531bd7a1985fbc192aa08292b9fe129996364",
+                                "NFT_medium3b092b4c195d0e43ffe4273513f531bd7a1985fbc192aa08292b9fe129996364",
+                                "NFT_long3b092b4c195d0e43ffe4273513f531bd7a1985fbc192aa08292b9fe129996364",
+                                "NFT_4d3cbfbda26ccb9a7002bd541397d9280efe723b16e3d7b7dee027155ca50f6f",
+                                "NFT_short4d3cbfbda26ccb9a7002bd541397d9280efe723b16e3d7b7dee027155ca50f6f",
+                                "NFT_medium4d3cbfbda26ccb9a7002bd541397d9280efe723b16e3d7b7dee027155ca50f6f",
+                                "NFT_long4d3cbfbda26ccb9a7002bd541397d9280efe723b16e3d7b7dee027155ca50f6f",
+                                "NFT_7bc7408bed195f28aaeec8449c6bb0237d07b03c2577946793db77d2ac08ece9",
+                                "NFT_93725b85a37e9b4c3932efbf57a87e63fb9c4d07858001e948945dde73cd799e",
+                                "NFT_short93725b85a37e9b4c3932efbf57a87e63fb9c4d07858001e948945dde73cd799e",
+                                "NFT_medium93725b85a37e9b4c3932efbf57a87e63fb9c4d07858001e948945dde73cd799e",
+                                "NFT_long93725b85a37e9b4c3932efbf57a87e63fb9c4d07858001e948945dde73cd799e",
+                                "NFT_a403f72cf284a4968862f9acca0f53c95575b28481fb4b2fee64febc0ad613d0",
+                                "NFT_b104e4f4e1924b712d513423a7dcce79cd35e3f90dd34e6dcdd8511c5d17724f",
+                                "NFT_shortb104e4f4e1924b712d513423a7dcce79cd35e3f90dd34e6dcdd8511c5d17724f",
+                                "NFT_mediumb104e4f4e1924b712d513423a7dcce79cd35e3f90dd34e6dcdd8511c5d17724f",
+                                "NFT_longb104e4f4e1924b712d513423a7dcce79cd35e3f90dd34e6dcdd8511c5d17724f",
+                                "NFT_c3b5e0bf7d84c267a08b190ccf53a49c686e57ba157d7200fc81132647396f67",
+                                "NFT_shortc3b5e0bf7d84c267a08b190ccf53a49c686e57ba157d7200fc81132647396f67",
+                                "NFT_mediumc3b5e0bf7d84c267a08b190ccf53a49c686e57ba157d7200fc81132647396f67",
+                                "NFT_longc3b5e0bf7d84c267a08b190ccf53a49c686e57ba157d7200fc81132647396f67",
+                                "NFT_d9c8a6cc44f6874f6b76c844ffc7263f184dcc5d86fb91d2d389caddf905a4ef",
+                                "NFT_shortd9c8a6cc44f6874f6b76c844ffc7263f184dcc5d86fb91d2d389caddf905a4ef",
+                                "NFT_mediumd9c8a6cc44f6874f6b76c844ffc7263f184dcc5d86fb91d2d389caddf905a4ef",
+                                "NFT_longd9c8a6cc44f6874f6b76c844ffc7263f184dcc5d86fb91d2d389caddf905a4ef",
+                                "NFT_e6bfd0633603fe1dfcf8613a0d7164c9956e830ce66d7f56d18fb1572d6dd67e",
+                                "NFT_ff3ada53b8f1d288a82615263441078f06e024c456b6105ce714df6e56c07e7a",
                                 // @nextSpriteLine@
                 ];
             },
@@ -5264,7 +5349,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.fish["oafish34"] = this.sprites["oafish34"];
                 this.fish["oafish35"] = this.sprites["oafish35"];
                 this.fish["oafish36"] = this.sprites["oafish36"];
-                ////
+                //Bitcorn Phish
+                this.fish["cornfish_placeholder"] = this.sprites["cornfish_placeholder"];
                 //SDU FISH
                 this.fish["clownfish"] = this.sprites["clownfish"];
                 this.fish["swedishfish"] = this.sprites["swedishfish"];
@@ -5441,7 +5527,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     this.registerEntityPosition(entity);
 
                     if(!(entity instanceof Item && entity.wasDropped)
-                        && !(this.renderer.mobile || this.renderer.tablet)) {
+                        && !(this.renderer.mobile || this.renderer.tablet)
+                        && !(entity instanceof Projectile)
+                    ) {
                         entity.fadeIn(this.currentTime);
                     }
 
@@ -5455,7 +5543,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     }
                 }
                 else {
-                    console.error("This entity already exists : " + entity.id + " ("+entity.kind+")");
+                    //console.error("This entity already exists : " + entity.id + " ("+entity.kind+")");
                 }
             },
 
@@ -5463,9 +5551,6 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 if(entity.id in this.entities) {
                     this.unregisterEntityPosition(entity);
                     delete this.entities[entity.id];
-                }
-                else {
-                    console.error("Cannot remove entity. Unknown ID : " + entity.id);
                 }
             },
 
@@ -6060,6 +6145,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                         if(self.isZoningTile(self.player.gridX, self.player.gridY)) {
                             self.enqueueZoningFrom(self.player.gridX, self.player.gridY);
+                        }
+
+                        if (self.player.hasTarget() && Types.isRangedWeapon(Types.getKindFromString(self.player.weaponName)) && self.player.isNear(self.player.target, self.player.getWeaponRange())) {
+                            self.player.stop();
                         }
 
                         self.player.forEachAttacker(function(attacker) {
@@ -6921,6 +7010,77 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         self.removeFloat(id);
                     });
 
+                    function cleanProjectile(projectile, x, y) {
+                        if (projectile) {
+                            projectile.setVisible(false);
+                            self.removeFromRenderingGrid(projectile, x, y);
+                            self.removeEntity(projectile);
+                            delete projectile;
+                        }
+                    }
+
+                    self.client.onSpawnProjectile(function (shooterId, projectileType, targetId) {
+                        let shooter = self.getEntityById(shooterId);
+                        let target = self.getEntityById(targetId);
+                        let projectile = new Projectile(projectileType, shooter, target);
+                        if (projectile.shooter.id === self.player.id) {
+                            self.player.currentProjectileType = projectileType;
+                        }
+                        let lastHitPos = {x: null, y: null};
+                        projectile.onMove(() => {
+                            let projectilePos = {x: Math.floor(projectile.x / 16), y: Math.floor(projectile.y / 16)}
+                            if (lastHitPos.x !== projectilePos.x || lastHitPos.y !== projectilePos.y) {
+                                lastHitPos = projectilePos;
+                                let hitEntity = self.getEntityAt(projectilePos.x, projectilePos.y);
+                                if (hitEntity && Types.isMob(hitEntity.kind) && !hitEntity.isDead && !hitEntity.isFriendly) {
+                                    if (projectile.shooter.id === self.player.id) {
+                                        hitEntity.hit();
+                                        self.client.sendHit(hitEntity);
+                                        self.audioManager.playSound("hit" + Math.floor(Math.random() * 2 + 1));
+                                    }
+
+                                    projectile.impact(() => {
+                                        cleanProjectile(projectile, projectilePos.x, projectilePos.y);
+                                    });
+                                }
+                                if (self.map.isColliding(projectilePos.x, projectilePos.y)) {
+                                    if (projectile.shooter.id === self.player.id) {
+                                        self.audioManager.playSound("hit" + Math.floor(Math.random() * 2 + 1));
+                                    }
+                                    cleanProjectile(projectile, projectilePos.x, projectilePos.y);
+                                    return;
+                                }
+                            }
+                        });
+                        projectile.onDestination((finishedProjectile) => {
+                            if (lastHitPos.x !== finishedProjectile.gridX || lastHitPos.y !== finishedProjectile.gridY) {
+                                let hitEntity = self.getEntityAt(finishedProjectile.gridX, finishedProjectile.gridY);
+                                if (hitEntity && Types.isMob(hitEntity.kind) && !hitEntity.isDead && !hitEntity.isFriendly) {
+                                    if (finishedProjectile.shooter.id === self.player.id) {
+                                        self.client.sendHit(target);
+                                        target.hit();
+                                        self.audioManager.playSound("hit" + Math.floor(Math.random() * 2 + 1));
+                                    }
+                                }
+                            }
+
+                            finishedProjectile.impact(() => {
+                                cleanProjectile(projectile, finishedProjectile.gridX, finishedProjectile.gridY);
+                            });
+                        })
+                        projectile.flyTo(target.gridX, target.gridY);
+                        self.addEntity(projectile);
+                        setTimeout(() => {
+                            cleanProjectile(projectile, projectile.gridX, projectile.gridY);
+                        }, 5000);
+                    });
+
+                    self.client.onOutOfAmmo(function () {
+                        self.player.idle();
+                        self.player.disengage();
+                        self.showNotification('I\'m Out of ammo!');
+                    });
+
                     self.client.onNotify(function(text) {
                         if(text){
                             self.showNotification(text);
@@ -7610,6 +7770,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 } else {
                     this.previousClickPosition = pos;
                 }
+                let hoveringPanel = !!$('.panel').filter(function() { return $(this).is(":hover"); }).length;
 
                 if(this.started
                     && this.player
@@ -7618,6 +7779,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     && !this.player.isDead
                     && (!this.hoveringCollidingTile || pos.keyboard || this.hoveringFishableTile)
                     && (!this.hoveringPlateauTile || pos.keyboard)
+                    && !hoveringPanel
                     && !(this.doorCheck)) {
                     entity = this.getEntityAt(pos.x, pos.y);
 
@@ -7829,32 +7991,39 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 if(character.isAttacking() && !character.previousTarget) {
                     var isMoving = this.tryMovingToADifferentTile(character); // Don't let multiple mobs stack on the same tile when attacking a player.
 
-                    if(character.canAttack(time)) {
-                        if(!isMoving) { // don't hit target if moving to a different tile.
-                            if(character.hasTarget() && character.getOrientationTo(character.target) !== character.orientation) {
+                    if (character.canAttack(time)) {
+                        if (!isMoving) { // don't hit target if moving to a different tile.
+                            if (character.hasTarget() && character.getOrientationTo(character.target) !== character.orientation) {
                                 character.lookAtTarget();
                             }
 
-                            character.hit();
+                            if (Types.isRangedWeapon(Types.getKindFromString(character.weaponName))) {
+                                character.hit();
+                                if (character.id === this.playerId) {
+                                    this.client.sendShoot(character.target);
+                                }
+                            } else {
+                                character.hit();
 
-                            if(character.id === this.playerId) {
-                                this.client.sendHit(character.target);
-                            }
+                                if (character.id === this.playerId) {
+                                    this.client.sendHit(character.target);
+                                }
 
-                            if(character instanceof Player && this.camera.isVisible(character)) {
-                                this.audioManager.playSound("hit"+Math.floor(Math.random()*2+1));
-                            }
+                                if (character instanceof Player && this.camera.isVisible(character)) {
+                                    this.audioManager.playSound("hit" + Math.floor(Math.random() * 2 + 1));
+                                }
 
-                            if(character.hasTarget() && character.target.id === this.playerId && this.player && !(character instanceof Player)) {
-                                this.client.sendHurt(character);
+                                if (character.hasTarget() && character.target.id === this.playerId && this.player && !(character instanceof Player)) {
+                                    this.client.sendHurt(character);
+                                }
                             }
-                        }
-                    } else {
-                        if(character.hasTarget()
-                            && character.isDiagonallyAdjacent(character.target)
-                            && character.target instanceof Player
-                            && !character.target.isMoving()) {
-                            character.follow(character.target);
+                        } else {
+                            if (character.hasTarget()
+                                && character.isDiagonallyAdjacent(character.target)
+                                && character.target instanceof Player
+                                && !character.target.isMoving()) {
+                                character.follow(character.target);
+                            }
                         }
                     }
                 }
@@ -8283,10 +8452,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             $('#companionProgress').text(response.data.botInfo.percentage);
                         }
 
-                        if (response.data.weaponInfo !== null &&
-                            response.data.weaponInfo !== undefined &&
-                            response.data.weaponInfo.weaponLevelInfo !== undefined
-                        ) {
+                        if (response.data.weaponInfo !== null && response.data.weaponInfo !== undefined && response.data.weaponInfo.weaponLevelInfo !== undefined) {
                             weaponPercentage = response.data.weaponInfo.weaponLevelInfo.percentage;
                             weaponLevel = response.data.weaponInfo.weaponLevelInfo.currentLevel;
 
@@ -8303,6 +8469,27 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             } else {
                             $('#weaponTrait').text(response.data.weaponInfo.trait);
                                 $('#weaponTraitContainer').show();
+                            }
+
+                            // render projectile tiles
+                            $('#projectileContainer').html('');
+
+                            let spriteInfo = self.sprites[self.player.weaponName];
+                            if (spriteInfo.projectiles !== undefined) {
+                                for (let i = 0; i < Object.keys(spriteInfo.projectiles).length; i++) {
+                                    let projectileType = Object.keys(spriteInfo.projectiles)[i];
+                                    let projectile = spriteInfo.projectiles[projectileType];
+                                    let selected = projectileType === response.data.weaponInfo.selectedProjectile ? 'selected' : '';
+                                    let projectileHtml = "<div class='item panelBorder pixel-corners-xs " + selected + "'><img id='" + projectile + "' style='width: 32px; height: 32px; object-fit: none; object-position: 100% 0;' src='img/1/" + projectile + ".png' /></div>";
+                                    let projectileElement = $(projectileHtml);
+                                    projectileElement.click(function (event) {
+                                        self.player.currentProjectileType = projectileType;
+                                        self.client.sendSelectProjectile(projectileType);
+                                        self.app.toggleWeaponInfo(event)
+                                        self.renderStatistics();
+                                    });
+                                    $('#projectileContainer').append(projectileElement);
+                                }
                             }
 
                         }

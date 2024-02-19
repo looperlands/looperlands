@@ -59,7 +59,6 @@ function getX(id, w) {
     return (id % w == 0) ? w - 1 : (id % w) - 1;
 };
 
-
 function drawScaledImage(ctx, image, x, y, w, h, dx, dy, scale) {
 
     //console.log(arguments);
@@ -302,12 +301,28 @@ function drawEntities(drawEntitiesData) {
         let drawDataLength = entityData.drawData.length;
         for (let y = 0; y < drawDataLength; y++) {
             const drawData = entityData.drawData[y];
-            const {id, sx, sy, sW, sH, dx, dy, dW, dH} = drawData;
+            const {id, sx, sy, sW, sH, dx, dy, dW, dH, a} = drawData;
 
             let sprite = sprites[id];
             if (sprite) {
                 try {
-                    ctx.drawImage(sprite.image, sx, sy, sW, sH, dx, dy, dW, dH);
+
+                    if(a) {
+                        let centerX = dW / 2;
+                        let centerY = dH / 2;
+
+                        ctx.translate(centerX , centerY);
+                        ctx.rotate(a);
+
+                        let offsetFactorX = Math.cos(a);
+                        let offsetFactoryY = Math.cos(a);
+
+                        ctx.drawImage(sprite.image, sx, sy, sW, sH, ((offsetFactorX * dx)  - (dW / 2)), ((offsetFactoryY * dy) - (dW / 2)), dW, dH);
+                        ctx.rotate(-a);
+                        ctx.translate(-centerX, -centerY);
+                    } else {
+                        ctx.drawImage(sprite.image, sx, sy, sW, sH, dx, dy, dW, dH);
+                    }
                 } catch (e) {
                     if (sprite.image === undefined) {
                         sprite.load();

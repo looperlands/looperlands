@@ -309,7 +309,30 @@ define(['jquery', 'storage'], function ($, Storage) {
                 weaponPath = getIconPath(weapon),
                 armorPath = 'img/3/' + armor + '.png';
 
-            $('#weapon').css('background-image', 'url("' + weaponPath + '")');
+            const imageUrl = weaponPath;
+            const bgElement = document.querySelector("body");
+            let preloaderImg = document.createElement("img");
+            preloaderImg.src = imageUrl;
+            preloaderImg.onerror = function () {
+                const spriteWeaponPath = 'img/1/' + weapon + '.png';
+                $('#weapon').css({
+                    'background-image': 'url("' + spriteWeaponPath + '")',
+                    'background-size': 'initial',
+                    'background-position': '-5px -402px'
+                });
+            }
+            preloaderImg.addEventListener('load', (event) => {
+                $('#weapon').css({
+                    'background-image': 'url("' + weaponPath + '")',
+                    'background-size': 'cover',
+                    'background-position': '0 0'
+                });
+
+                preloaderImg = null;
+            });
+
+
+
             if (armor !== 'firefox') {
                 if (scale === 2) {
                     $('#armor').css('background-image', 'url("' + armorPath + '")').css('object-fit', 'cover').css('background-position', '-4px -311px');
@@ -584,7 +607,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                     weaponInventory.forEach(function(item) {
                         imgTag = "<div class='item panelBorder'>" +
                             "<div class='tooltiptext pixel-corners-xs'><span class='tooltipHighlight'>Level " + item.level + "</span> " + item.weaponName + " (" + item.Trait + ")</div>" +
-                            "<img id='" + item.nftId + "' style='width: 32px; height: 32px; object-fit: cover; cursor: pointer; object-position: 100% 0;' src='img/3/item-" + item.nftId + ".png' />" +
+                            "<img id='" + item.nftId + "' style='width: 32px; height: 32px; object-fit: none; object-position: 0 4px; cursor: pointer;' src='img/2/item-" + item.nftId + ".png' onerror='this.src=\"img/1/" + item.nftId + ".png\"; $(this).css({objectPosition: \"0 -400px\"});' />" +
                             "</div>";
                         inventoryHtml += imgTag;
                     });
@@ -760,7 +783,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                     //inverted %, hence the 100 -
                     let remainingTime = Math.max(0, _this.cooldownMap[item] - new Date().getTime());
                     let cdPercent = 100 - Math.round(100*remainingTime/consumablesInventory[item].maxCooldown);
-    
+
                     document.getElementById("timer_" + item).innerHTML = _this.game.msToTime(remainingTime);
                     $('#'+item).parent().attr('style', 'background: linear-gradient(#341e28 ' + cdPercent + '%, #5b0000 ' + cdPercent + '%) !important');
                 }
@@ -775,7 +798,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                             document.getElementById("timer_" + item).innerHTML = "";
                             $('#'+item).css({'cursor':"pointer"});
                             $('#'+item).parent().attr('style', 'background:');
-                            
+
                             if (consumablesInventory[item].consumable) {
                                 consumeFunc(item);
                             }
@@ -997,7 +1020,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                 items.forEach(function (item) {
 
                     let itemHtml = "<div class='item'>";
-                    itemHtml += "<div id='" + item.item + "' class='item-image' style='background: url(img/2/item-" + Types.getKindAsString(item.item) + ".png)' />";
+                    itemHtml += "<div id='" + item.item + "' class='item-image' style='background: url(img/2/item-" + Types.getKindAsString(item.item) + ".png); background-size:cover;' />";
 
                     let levelInfo = "";
                     if (item.level) {
