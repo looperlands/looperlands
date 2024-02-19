@@ -7019,6 +7019,15 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         self.removeFloat(id);
                     });
 
+                    function cleanProjectile(projectile, x, y) {
+                        if (projectile) {
+                            projectile.setVisible(false);
+                            self.removeFromRenderingGrid(projectile, x, y);
+                            self.removeEntity(projectile);
+                            delete projectile;
+                        }
+                    }
+
                     self.client.onSpawnProjectile(function (shooterId, projectileType, targetId) {
                         let shooter = self.getEntityById(shooterId);
                         let target = self.getEntityById(targetId);
@@ -7040,18 +7049,14 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                     }
 
                                     projectile.impact(() => {
-                                        projectile.setVisible(false);
-                                        self.removeFromRenderingGrid(projectile, projectilePos.x, projectilePos.y);
-                                        self.removeEntity(projectile);
+                                        cleanProjectile(projectile, projectilePos.x, projectilePos.y);
                                     });
                                 }
                                 if (self.map.isColliding(projectilePos.x, projectilePos.y)) {
                                     if (projectile.shooter.id === self.player.id) {
                                         self.audioManager.playSound("hit" + Math.floor(Math.random() * 2 + 1));
                                     }
-                                    projectile.setVisible(false);
-                                    self.removeFromRenderingGrid(projectile, projectilePos.x, projectilePos.y);
-                                    self.removeEntity(projectile);
+                                    cleanProjectile(projectile, projectilePos.x, projectilePos.y);
                                     return;
                                 }
                             }
@@ -7069,13 +7074,14 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             }
 
                             finishedProjectile.impact(() => {
-                                finishedProjectile.setVisible(false);
-                                self.removeFromRenderingGrid(projectile, finishedProjectile.gridX, finishedProjectile.gridY);
-                                self.removeEntity(projectile);
+                                cleanProjectile(projectile, finishedProjectile.gridX, finishedProjectile.gridY);
                             });
                         })
                         projectile.flyTo(target.gridX, target.gridY);
                         self.addEntity(projectile);
+                        setTimeout(() => {
+                            cleanProjectile(projectile, projectile.gridX, projectile.gridY);
+                        }, 5000);
                     });
 
                     self.client.onOutOfAmmo(function () {
