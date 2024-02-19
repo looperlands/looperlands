@@ -40,6 +40,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.selectedCellVisible = false;
                 this.targetColor = "rgba(255, 255, 255, 0.5)";
                 this.targetCellVisible = true;
+                this.mousedown = false;
+                this.lastMousedown = null;
+                this.clickDuration = 100;   //minimum click duration to show handclick.png cursor
                 this.hoveringTarget = false;
                 this.hoveringMob = false;
                 this.hoveringItem = false;
@@ -82,7 +85,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.lowAmmoThreshold = 10;
 
                 // sprites
-                this.spriteNames = ["hand", "sword", "loot", "target", "talk", "float", "sparks", "shadow16", "rat", "skeleton", "skeleton2", "spectre", "boss", "deathknight",
+                this.spriteNames = ["hand", "handclick", "sword", "loot", "target", "talk", "float", "sparks", "shadow16", "rat", "skeleton", "skeleton2", "spectre", "boss", "deathknight",
                     "ogre", "crab", "snake", "eye", "bat", "goblin", "wizard", "guard", "king", "villagegirl", "villager", "coder", "agent", "rick", "scientist", "nyan", "priest", "coblumberjack", "cobhillsnpc", "cobcobmin", "cobellen", "cobjohnny", "cobashley",
                     "king2", "goose", "tanashi", "slime","kingslime","silkshade","redslime","villagesign1","wildgrin","loomleaf","gnashling","arachweave","spider","fangwing", "minimag", "miner", "megamag", "seacreature", "tentacle", "tentacle2", "wildwill","shopowner","blacksmith",
                     "cobchicken", "alaric","orlan","jayce", "cobcow", "cobpig", "cobgoat", "ghostie","cobslimered", "cobslimeyellow", "cobslimeblue", "cobslimepurple", "cobslimegreen", "cobslimepink", "cobslimecyan", "cobslimemint", "cobslimeking", "cobyorkie", "cobcat", "cobdirt", "cobincubator", "cobcoblin", "cobcobane", "cobogre",
@@ -5241,6 +5244,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
             initCursors: function() {
                 this.cursors["hand"] = this.sprites["hand"];
+                this.cursors["handclick"] = this.sprites["handclick"];
                 this.cursors["sword"] = this.sprites["sword"];
                 this.cursors["loot"] = this.sprites["loot"];
                 this.cursors["target"] = this.sprites["target"];
@@ -5468,8 +5472,19 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     this.setCursor("float");
                     this.hoveringTarget = false;
                     this.targetCellVisible = true;
-                }
-                else {
+                } else if(this.mousedown) {
+                    if (!this.lastMousedown) {
+                        this.setCursor("handclick");
+                        this.lastMousedown = new Date().getTime();
+                    } 
+                    else if(this.currentCursorName == "handclick" && this.currentTime > this.lastMousedown + this.clickDuration) {
+                        //wait to make sure the cursor was changed, then allow the duration to be checked.     
+                        this.lastMousedown = null;
+                        this.mousedown = false;
+                    }
+                    this.hoveringTarget = false;
+                    this.targetCellVisible = true;
+                } else {
                     this.setCursor("hand");
                     this.hoveringTarget = false;
                     this.targetCellVisible = true;
@@ -7689,6 +7704,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
              */
             click: function(pos) {
 
+                this.mousedown = true;
+
                 if($('body').hasClass('inventory') || $('body').hasClass('settings')) {
                     return;
                 }
@@ -7716,6 +7733,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         return;
                     }
                 }
+
                 self.lastClick = now;
 
                 if(pos.x === this.previousClickPosition.x
