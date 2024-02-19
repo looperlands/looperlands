@@ -292,6 +292,7 @@ Types = {
         CUSTOMER1: 77000014,
         CUSTOMER2: 77000015,
         PORTALGILL: 77000016,
+        FLYER: 77000017,
         //mycupbloody
         EYEBALL: 80000005,
         REDPOTION: 80000006,
@@ -5280,6 +5281,7 @@ var kinds = {
     game: [Types.Entities.GAME, "object"],
     popcorn: [Types.Entities.POPCORN, "object"],
     energydrink: [Types.Entities.ENERGYDRINK, "object"],
+    flyer: [Types.Entities.FLYER, "object"],
     //mycupbloody
     EYEBALL: [Types.Entities.EYEBALL, "object"],
     REDPOTION: [Types.Entities.REDPOTION, "object"],

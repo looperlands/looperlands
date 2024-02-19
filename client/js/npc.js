@@ -415,10 +415,7 @@ define(['character'], function (Character) {
             "You should be ashamed of yourselves. This store is full of filth! What if a child had seen this garbage? I don't think this is the kind of image you want to project to the world."
         ],
         "devon": [
-            'Yooo... Hit up my <a target="_blank" href="https://twitter.com/shortdestroyers">MySpace</a>, dawg.',
-            "I heard Misty was talkin bout you on her Xanga.",
-            "Y'all ever think about how... we're just in it now?",
-            "My band Rico's Tacos has a show this weekend at The Cellar. You should pop by man."
+            "Hey man. My band Old Kids has a show at The Cellar this weekend. You should come out."
         ],
         "misty": [
             "Oh hey.",

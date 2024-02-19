@@ -161,27 +161,12 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "GAUNTER",
                     "MASTROM",
                     "VALKYM",
-                    //Short Destroyers
-                    "lateflea",
-                    "wolfboss",
-                    "fleaboss",
-                    "horde1",
-                    "horde2",
-                    "horde3",
-                    "horde4",
-                    "horde5",
+                    //SDU Mobs
+                    "lateflea", "wolfboss", "fleaboss", "horde1", "horde2", "horde3", "horde4", "horde5",
                     //SDU NPCs
-                    "derrick",
-                    "frog",
-                    "angrymom",
-                    "devon",
-                    "misty",
-                    "managertim",
-                    "oracle",
-                    "gill",
-                    "customer1",
-                    "customer2",
-                    "portalgill",
+                    "derrick", "frog", "angrymom", "devon", "misty", "managertim", "oracle", "gill", "customer1", "customer2", "portalgill",
+                    //SDU Fish
+                    "clownfish", "swedishfish", "rainbowfish", "lollipop",
                     //mycupbloody npc
                     "GOFFREY",
                     "cobWalkingNpc1",
@@ -235,6 +220,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "item-game",
                     "item-popcorn",
                     "item-energydrink",
+                    "item-flyer",
                     //mycupbloody
                     "item-EYEBALL",
                     "item-REDPOTION",
@@ -5279,6 +5265,11 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.fish["oafish35"] = this.sprites["oafish35"];
                 this.fish["oafish36"] = this.sprites["oafish36"];
                 ////
+                //SDU FISH
+                this.fish["clownfish"] = this.sprites["clownfish"];
+                this.fish["swedishfish"] = this.sprites["swedishfish"];
+                this.fish["rainbowfish"] = this.sprites["rainbowfish"];
+                this.fish["lollipop"] = this.sprites["lollipop"];
             },
 
             initAnimations: function() {
