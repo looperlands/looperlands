@@ -412,14 +412,14 @@ define(['character'], function (Character) {
             "Listen… I've got this acid, but I can't do it."
         ],
         "frog": [
-            "How many licks does it take to get to the center of the video store?",
-            "Want to find out? Go fish."
+            "Checkout the Acid Lake! It might be hiding some goodies..."
         ],
         "angrymom": [
             "You should be ashamed of yourselves. This store is full of filth! What if a child had seen this garbage? I don't think this is the kind of image you want to project to the world."
         ],
         "devon": [
-            "Hey man. My band Old Kids has a show at The Cellar this weekend. You should come out."
+            "Here's a flier with all the info... Whoaaaa! All the fliers flew away!",
+            "Appreciate the help... This show will be a blast!"
         ],
         "misty": [
             "Oh hey.",

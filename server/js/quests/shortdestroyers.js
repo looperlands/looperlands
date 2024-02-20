@@ -1,10 +1,10 @@
 Types = require("../../../shared/js/gametypes");
 quests = [
     {
-        id: "SDU_TEST_1",
-        name: "test123", //Concert in The Cellar
-        startText: "Here's a flier with all the info... Whoaaaa! All the fliers flew away!",
-        longText: "Hey dude! My band, Old Kids has a show in The Cellar this weekend! I'm trying to get the word out, but the wind just blew my fliers all over the parking lot! This city is so windy, the fliers are everywhere! If you can help me pick up these fliers, I'll make sure your name is on the list so you can get into the show.",
+        id: "SDU_QUEST_1",
+        name: "Concert in The Cellar", 
+        startText: "Hey, my band Old Kids has a show at The Cellar this weekend. You should come out!",
+        longText: "Old Kids has a show in The Cellar this weekend but the wind just blew the flyers all over the parking lot! This city is so windy, the flyers are everywhere! If you can help pick up the flyers, Chase said he would add your name to the list so you can get into the show.",
         endText: "Chase: You're a lifesaver! I'll put your name on the list.",
         eventType: "LOOT_ITEM",
         npc: Types.Entities.DEVON,
