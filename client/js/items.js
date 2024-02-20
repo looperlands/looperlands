@@ -262,8 +262,8 @@ define(['item'], function(Item) {
                 this._super(id,Types.Entities.ENERGYDRINK,"object");
                 this.lootMessage="You collected an Energy Drink.";
             },
-
         }),
+        flyer:Item.extend({init:function(id){this._super(id,Types.Entities.FLYER,"object");this.lootMessage="You collected a Flyer.";}}),
         //mycupbloody
         EYEBALL:Item.extend({
             init:function(id){

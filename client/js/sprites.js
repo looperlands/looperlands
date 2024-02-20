@@ -110,12 +110,14 @@ define(['text!../sprites/agent.json',
         'text!../sprites/item-cpotion_l.json',
         'text!../sprites/item-cimmupot.json',
         'text!../sprites/item-cagedrat.json',
-        //Short Destroyers
+        //SDU Items
         'text!../sprites/item-vhs.json',
         'text!../sprites/item-dvd.json',
         'text!../sprites/item-game.json',
         'text!../sprites/item-popcorn.json',
         'text!../sprites/item-energydrink.json',
+        'text!../sprites/item-flyer.json',
+        //SDU NPCs
         'text!../sprites/derrick.json',
         'text!../sprites/frog.json',
         'text!../sprites/angrymom.json',
@@ -127,6 +129,11 @@ define(['text!../sprites/agent.json',
         'text!../sprites/customer1.json',
         'text!../sprites/customer2.json',
         'text!../sprites/portalgill.json',
+        //SDU Fish
+        'text!../sprites/clownfish.json',
+        'text!../sprites/swedishfish.json',
+        'text!../sprites/rainbowfish.json',
+        'text!../sprites/lollipop.json',
         //mycupbloody
         'text!../sprites/item-EYEBALL.json',
         'text!../sprites/item-REDPOTION.json',

@@ -149,14 +149,25 @@ const Lakes = {
         fish: {
             cornfish_placeholder: "common",
         }
-    }
+    },
+
+    //Short Destroyers
+    acidlake: {
+        level: 1,
+        fish: {
+            clownfish: "common",
+            swedishfish: "uncommon",
+            rainbowfish: "rare",
+            lollipop: "epic",
+        }
+    },
 
 };
 // only EPIC fish can be a consumable
 const ConsumableFish = {
     hp: ["cobparadisefish","oafish27"],
     atk: ["cobbluegill","oafish31","oafish22"],
-    exp: ["cobgreensunfish","oafish36"]
+    exp: ["cobgreensunfish","oafish36", "lollipop"]
 };
 
 //---END CONFIG---
