@@ -91,6 +91,7 @@ const AltNames = {
     cornCanFish: "a Can of Mother Shucker",
     cornWinkyFish: "the Legendary Winky",
 
+    devon: "Chase", 
 };
 
 AltNames.getAltNameFromKind = function(kind){

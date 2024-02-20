@@ -1,0 +1,17 @@
+{
+  "id": "NFT_short8713dfc6c0c0860ad8ed6f073680c6449e66dcd51c843d5b0b1d6402c7b99672",
+  "width": 32,
+  "height": 32,
+  "animations": {
+    "fly": {
+      "length": 5,
+      "row": 0
+    },
+    "impact": {
+      "length": 5,
+      "row": 1
+    }
+  },
+  "offset_x": -18,
+  "offset_y": -8
+}

@@ -168,27 +168,12 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "GAUNTER",
                     "MASTROM",
                     "VALKYM",
-                    //Short Destroyers
-                    "lateflea",
-                    "wolfboss",
-                    "fleaboss",
-                    "horde1",
-                    "horde2",
-                    "horde3",
-                    "horde4",
-                    "horde5",
+                    //SDU Mobs
+                    "lateflea", "wolfboss", "fleaboss", "horde1", "horde2", "horde3", "horde4", "horde5",
                     //SDU NPCs
-                    "derrick",
-                    "frog",
-                    "angrymom",
-                    "devon",
-                    "misty",
-                    "managertim",
-                    "oracle",
-                    "gill",
-                    "customer1",
-                    "customer2",
-                    "portalgill",
+                    "derrick", "frog", "angrymom", "devon", "misty", "managertim", "oracle", "gill", "customer1", "customer2", "portalgill",
+                    //SDU Fish
+                    "clownfish", "swedishfish", "rainbowfish", "lollipop",
                     //mycupbloody npc
                     "GOFFREY",
                     "cobWalkingNpc1",
@@ -242,6 +227,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "item-game",
                     "item-popcorn",
                     "item-energydrink",
+                    "item-flyer",
                     //mycupbloody
                     "item-EYEBALL",
                     "item-REDPOTION",
@@ -5224,6 +5210,56 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 "NFT_longd9c8a6cc44f6874f6b76c844ffc7263f184dcc5d86fb91d2d389caddf905a4ef",
                                 "NFT_e6bfd0633603fe1dfcf8613a0d7164c9956e830ce66d7f56d18fb1572d6dd67e",
                                 "NFT_ff3ada53b8f1d288a82615263441078f06e024c456b6105ce714df6e56c07e7a",
+                                "NFT_0ac27578ec1d734714960d306e4daa6907164c6e9067864c0b1d2128d33f1ad0",
+                                "NFT_short0ac27578ec1d734714960d306e4daa6907164c6e9067864c0b1d2128d33f1ad0",
+                                "NFT_medium0ac27578ec1d734714960d306e4daa6907164c6e9067864c0b1d2128d33f1ad0",
+                                "NFT_long0ac27578ec1d734714960d306e4daa6907164c6e9067864c0b1d2128d33f1ad0",
+                                "NFT_21263d17e53bef91cd691668a6d64dde878bd68379c20d0a3ea3a2e343b3ca6a",
+                                "NFT_short21263d17e53bef91cd691668a6d64dde878bd68379c20d0a3ea3a2e343b3ca6a",
+                                "NFT_medium21263d17e53bef91cd691668a6d64dde878bd68379c20d0a3ea3a2e343b3ca6a",
+                                "NFT_long21263d17e53bef91cd691668a6d64dde878bd68379c20d0a3ea3a2e343b3ca6a",
+                                "NFT_24c0913172301c0edd6ae8a7240e6e78f6d1226ca2bac1215af3c78eddfe0b40",
+                                "NFT_short24c0913172301c0edd6ae8a7240e6e78f6d1226ca2bac1215af3c78eddfe0b40",
+                                "NFT_medium24c0913172301c0edd6ae8a7240e6e78f6d1226ca2bac1215af3c78eddfe0b40",
+                                "NFT_long24c0913172301c0edd6ae8a7240e6e78f6d1226ca2bac1215af3c78eddfe0b40",
+                                "NFT_3baf6e547521920d018290967fcdf3430d9f133b0b54774532a5f6cf53cf9023",
+                                "NFT_short3baf6e547521920d018290967fcdf3430d9f133b0b54774532a5f6cf53cf9023",
+                                "NFT_medium3baf6e547521920d018290967fcdf3430d9f133b0b54774532a5f6cf53cf9023",
+                                "NFT_long3baf6e547521920d018290967fcdf3430d9f133b0b54774532a5f6cf53cf9023",
+                                "NFT_46119fac7772f647532cb6c0ae29603d2a2226000fbbf0a8073158fadca526e7",
+                                "NFT_short46119fac7772f647532cb6c0ae29603d2a2226000fbbf0a8073158fadca526e7",
+                                "NFT_medium46119fac7772f647532cb6c0ae29603d2a2226000fbbf0a8073158fadca526e7",
+                                "NFT_long46119fac7772f647532cb6c0ae29603d2a2226000fbbf0a8073158fadca526e7",
+                                "NFT_491076f855b5e0238f5a9d5edc47b52fcf28dba3dcd73066bb924f3ef92c632e",
+                                "NFT_short491076f855b5e0238f5a9d5edc47b52fcf28dba3dcd73066bb924f3ef92c632e",
+                                "NFT_medium491076f855b5e0238f5a9d5edc47b52fcf28dba3dcd73066bb924f3ef92c632e",
+                                "NFT_long491076f855b5e0238f5a9d5edc47b52fcf28dba3dcd73066bb924f3ef92c632e",
+                                "NFT_4f3a404d96cdd021449b3ab5908d2eb3b84e831c_5491371",
+                                "NFT_4f3a404d96cdd021449b3ab5908d2eb3b84e831c_5498761",
+                                "NFT_5589c2e5be5eb4558f0092eb642a80e538ef96899cdb7dbc335f0ae78179d075",
+                                "NFT_short5589c2e5be5eb4558f0092eb642a80e538ef96899cdb7dbc335f0ae78179d075",
+                                "NFT_medium5589c2e5be5eb4558f0092eb642a80e538ef96899cdb7dbc335f0ae78179d075",
+                                "NFT_long5589c2e5be5eb4558f0092eb642a80e538ef96899cdb7dbc335f0ae78179d075",
+                                "NFT_7d08a736f155d3e648702a6302c40a071dafa4c6fb714aa2591e475d0707b0eb",
+                                "NFT_short7d08a736f155d3e648702a6302c40a071dafa4c6fb714aa2591e475d0707b0eb",
+                                "NFT_medium7d08a736f155d3e648702a6302c40a071dafa4c6fb714aa2591e475d0707b0eb",
+                                "NFT_long7d08a736f155d3e648702a6302c40a071dafa4c6fb714aa2591e475d0707b0eb",
+                                "NFT_8713dfc6c0c0860ad8ed6f073680c6449e66dcd51c843d5b0b1d6402c7b99672",
+                                "NFT_short8713dfc6c0c0860ad8ed6f073680c6449e66dcd51c843d5b0b1d6402c7b99672",
+                                "NFT_medium8713dfc6c0c0860ad8ed6f073680c6449e66dcd51c843d5b0b1d6402c7b99672",
+                                "NFT_long8713dfc6c0c0860ad8ed6f073680c6449e66dcd51c843d5b0b1d6402c7b99672",
+                                "NFT_9de4a76297ab114361f7c39e33351f52c17d107607a56e0979a20543e0e93c19",
+                                "NFT_short9de4a76297ab114361f7c39e33351f52c17d107607a56e0979a20543e0e93c19",
+                                "NFT_medium9de4a76297ab114361f7c39e33351f52c17d107607a56e0979a20543e0e93c19",
+                                "NFT_long9de4a76297ab114361f7c39e33351f52c17d107607a56e0979a20543e0e93c19",
+                                "NFT_d2a6bfea80e32045b826dc584d46993f45fbd9423239a4c1d56f82c775702381",
+                                "NFT_shortd2a6bfea80e32045b826dc584d46993f45fbd9423239a4c1d56f82c775702381",
+                                "NFT_mediumd2a6bfea80e32045b826dc584d46993f45fbd9423239a4c1d56f82c775702381",
+                                "NFT_longd2a6bfea80e32045b826dc584d46993f45fbd9423239a4c1d56f82c775702381",
+                                "NFT_e1a75cbbe429d12927228dc809b12b9297ecb31bb1d4e8112b2997b6b85cc111",
+                                "NFT_shorte1a75cbbe429d12927228dc809b12b9297ecb31bb1d4e8112b2997b6b85cc111",
+                                "NFT_mediume1a75cbbe429d12927228dc809b12b9297ecb31bb1d4e8112b2997b6b85cc111",
+                                "NFT_longe1a75cbbe429d12927228dc809b12b9297ecb31bb1d4e8112b2997b6b85cc111",
                                 // @nextSpriteLine@
                 ];
             },
@@ -5373,6 +5409,12 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.fish["cornBootFish"] = this.sprites["cornBootFish"];
                 this.fish["cornCanFish"] = this.sprites["cornCanFish"];
                 this.fish["cornWinkyFish"] = this.sprites["cornWinkyFish"];
+                
+                //SDU FISH
+                this.fish["clownfish"] = this.sprites["clownfish"];
+                this.fish["swedishfish"] = this.sprites["swedishfish"];
+                this.fish["rainbowfish"] = this.sprites["rainbowfish"];
+                this.fish["lollipop"] = this.sprites["lollipop"];
             },
 
             initAnimations: function() {
