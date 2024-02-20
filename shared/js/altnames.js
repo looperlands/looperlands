@@ -84,7 +84,13 @@ const AltNames = {
     horde3: ".65 Late Flea",  
     horde4: ".65 Late Flea",  
     horde5: ".65 Late Flea", 
-    fleaboss: "Giant Late Flea", 
+    fleaboss: "Giant Late Flea",
+
+    //bitcorn
+    cornBootFish: "a Boot",
+    cornCanFish: "a Can of Mother Shucker",
+    cornWinkyFish: "the Legendary Winky",
+
 };
 
 AltNames.getAltNameFromKind = function(kind){

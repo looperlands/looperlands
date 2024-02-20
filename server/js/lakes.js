@@ -147,7 +147,9 @@ const Lakes = {
     cornsinoSludgeRiver: {
         level: 1,
         fish: {
-            cornfish_placeholder: "common",
+            cornBootFish: "common",
+            cornCanFish: "epic",
+            cornWinkyFish: "legendary",
         }
     }
 
@@ -156,7 +158,7 @@ const Lakes = {
 const ConsumableFish = {
     hp: ["cobparadisefish","oafish27"],
     atk: ["cobbluegill","oafish31","oafish22"],
-    exp: ["cobgreensunfish","oafish36"]
+    exp: ["cobgreensunfish","oafish36","cornCanFish"]
 };
 
 //---END CONFIG---

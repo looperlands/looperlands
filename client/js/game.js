@@ -247,7 +247,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "item-REDPOTION",
                     "item-GREYPOTION",
                      //Bitcorn Phishes
-                    "cornfish_placeholder",
+                    "cornBootFish",
+                    "cornCanFish",
+                    "cornWinkyFish",
                     // @nextObjectLine@
                     "NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6",
                     "NFT_38278eacc7d1c86fdbc85d798dca146fbca59a2e5e567dc15898ce2edac21f5f",
@@ -5320,7 +5322,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.fish["oafish35"] = this.sprites["oafish35"];
                 this.fish["oafish36"] = this.sprites["oafish36"];
                 //Bitcorn Phish
-                this.fish["cornfish_placeholder"] = this.sprites["cornfish_placeholder"];
+                this.fish["cornBootFish"] = this.sprites["cornBootFish"];
+                this.fish["cornCanFish"] = this.sprites["cornCanFish"];
+                this.fish["cornWinkyFish"] = this.sprites["cornWinkyFish"];
             },
 
             initAnimations: function() {
