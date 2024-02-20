@@ -5219,6 +5219,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 "NFT_longd9c8a6cc44f6874f6b76c844ffc7263f184dcc5d86fb91d2d389caddf905a4ef",
                                 "NFT_e6bfd0633603fe1dfcf8613a0d7164c9956e830ce66d7f56d18fb1572d6dd67e",
                                 "NFT_ff3ada53b8f1d288a82615263441078f06e024c456b6105ce714df6e56c07e7a",
+                                "NFT_0ac27578ec1d734714960d306e4daa6907164c6e9067864c0b1d2128d33f1ad0",
+                                "NFT_short0ac27578ec1d734714960d306e4daa6907164c6e9067864c0b1d2128d33f1ad0",
+                                "NFT_medium0ac27578ec1d734714960d306e4daa6907164c6e9067864c0b1d2128d33f1ad0",
+                                "NFT_long0ac27578ec1d734714960d306e4daa6907164c6e9067864c0b1d2128d33f1ad0",
                                 // @nextSpriteLine@
                 ];
             },
