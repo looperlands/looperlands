@@ -5176,6 +5176,54 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 "NFT_longc6d3f76464f64cfe3b3e7efc346f1aba17360f064c0ef3699de614ee48188283",
                                 "NFT_ef05e3d327ff124b3c180bb236d08c12eace6944139143648cc3753d6d7033db",
                                 "NFT_4f3a404d96cdd021449b3ab5908d2eb3b84e831c_5496305",
+                                "NFT_F85364c9Ee2bB9ed85A3b32b19C7493fdCB569BD_19918615690146066355690800931375925985630387238563754968424641628807186370381",
+                                "NFT_F85364c9Ee2bB9ed85A3b32b19C7493fdCB569BD_77123044749293774652580068647803968014499430784804917820666958229293037486712",
+                                "NFT_1438f740c51c543a6dfcff955e1aff22c2b97e13ce18d3bed1e3d6025d404429",
+                                "NFT_15d4a3c86f6c98e27063da3678675ea63ac392fc888f2f9f8c1ba4b07a0d2c38",
+                                "NFT_short15d4a3c86f6c98e27063da3678675ea63ac392fc888f2f9f8c1ba4b07a0d2c38",
+                                "NFT_medium15d4a3c86f6c98e27063da3678675ea63ac392fc888f2f9f8c1ba4b07a0d2c38",
+                                "NFT_long15d4a3c86f6c98e27063da3678675ea63ac392fc888f2f9f8c1ba4b07a0d2c38",
+                                "NFT_1786f06ebc4e8519c964b312acf66a95e14adc633d23ea1fd71145d856c26972",
+                                "NFT_short1786f06ebc4e8519c964b312acf66a95e14adc633d23ea1fd71145d856c26972",
+                                "NFT_medium1786f06ebc4e8519c964b312acf66a95e14adc633d23ea1fd71145d856c26972",
+                                "NFT_long1786f06ebc4e8519c964b312acf66a95e14adc633d23ea1fd71145d856c26972",
+                                "NFT_1a81e741826106eb47acdeec2c3ff420db401f560e743deca785a15499493338",
+                                "NFT_short1a81e741826106eb47acdeec2c3ff420db401f560e743deca785a15499493338",
+                                "NFT_medium1a81e741826106eb47acdeec2c3ff420db401f560e743deca785a15499493338",
+                                "NFT_long1a81e741826106eb47acdeec2c3ff420db401f560e743deca785a15499493338",
+                                "NFT_366cade0dcf755747c099d7485ea650ad7f50ce902380d9b34fd879fc76e4bbd",
+                                "NFT_short366cade0dcf755747c099d7485ea650ad7f50ce902380d9b34fd879fc76e4bbd",
+                                "NFT_medium366cade0dcf755747c099d7485ea650ad7f50ce902380d9b34fd879fc76e4bbd",
+                                "NFT_long366cade0dcf755747c099d7485ea650ad7f50ce902380d9b34fd879fc76e4bbd",
+                                "NFT_36ee162fecde9158ae4c87787062bc85053afa843e3a081180c1ee081d1adae0",
+                                "NFT_3b092b4c195d0e43ffe4273513f531bd7a1985fbc192aa08292b9fe129996364",
+                                "NFT_short3b092b4c195d0e43ffe4273513f531bd7a1985fbc192aa08292b9fe129996364",
+                                "NFT_medium3b092b4c195d0e43ffe4273513f531bd7a1985fbc192aa08292b9fe129996364",
+                                "NFT_long3b092b4c195d0e43ffe4273513f531bd7a1985fbc192aa08292b9fe129996364",
+                                "NFT_4d3cbfbda26ccb9a7002bd541397d9280efe723b16e3d7b7dee027155ca50f6f",
+                                "NFT_short4d3cbfbda26ccb9a7002bd541397d9280efe723b16e3d7b7dee027155ca50f6f",
+                                "NFT_medium4d3cbfbda26ccb9a7002bd541397d9280efe723b16e3d7b7dee027155ca50f6f",
+                                "NFT_long4d3cbfbda26ccb9a7002bd541397d9280efe723b16e3d7b7dee027155ca50f6f",
+                                "NFT_7bc7408bed195f28aaeec8449c6bb0237d07b03c2577946793db77d2ac08ece9",
+                                "NFT_93725b85a37e9b4c3932efbf57a87e63fb9c4d07858001e948945dde73cd799e",
+                                "NFT_short93725b85a37e9b4c3932efbf57a87e63fb9c4d07858001e948945dde73cd799e",
+                                "NFT_medium93725b85a37e9b4c3932efbf57a87e63fb9c4d07858001e948945dde73cd799e",
+                                "NFT_long93725b85a37e9b4c3932efbf57a87e63fb9c4d07858001e948945dde73cd799e",
+                                "NFT_a403f72cf284a4968862f9acca0f53c95575b28481fb4b2fee64febc0ad613d0",
+                                "NFT_b104e4f4e1924b712d513423a7dcce79cd35e3f90dd34e6dcdd8511c5d17724f",
+                                "NFT_shortb104e4f4e1924b712d513423a7dcce79cd35e3f90dd34e6dcdd8511c5d17724f",
+                                "NFT_mediumb104e4f4e1924b712d513423a7dcce79cd35e3f90dd34e6dcdd8511c5d17724f",
+                                "NFT_longb104e4f4e1924b712d513423a7dcce79cd35e3f90dd34e6dcdd8511c5d17724f",
+                                "NFT_c3b5e0bf7d84c267a08b190ccf53a49c686e57ba157d7200fc81132647396f67",
+                                "NFT_shortc3b5e0bf7d84c267a08b190ccf53a49c686e57ba157d7200fc81132647396f67",
+                                "NFT_mediumc3b5e0bf7d84c267a08b190ccf53a49c686e57ba157d7200fc81132647396f67",
+                                "NFT_longc3b5e0bf7d84c267a08b190ccf53a49c686e57ba157d7200fc81132647396f67",
+                                "NFT_d9c8a6cc44f6874f6b76c844ffc7263f184dcc5d86fb91d2d389caddf905a4ef",
+                                "NFT_shortd9c8a6cc44f6874f6b76c844ffc7263f184dcc5d86fb91d2d389caddf905a4ef",
+                                "NFT_mediumd9c8a6cc44f6874f6b76c844ffc7263f184dcc5d86fb91d2d389caddf905a4ef",
+                                "NFT_longd9c8a6cc44f6874f6b76c844ffc7263f184dcc5d86fb91d2d389caddf905a4ef",
+                                "NFT_e6bfd0633603fe1dfcf8613a0d7164c9956e830ce66d7f56d18fb1572d6dd67e",
+                                "NFT_ff3ada53b8f1d288a82615263441078f06e024c456b6105ce714df6e56c07e7a",
                                 // @nextSpriteLine@
                 ];
             },
@@ -6990,6 +7038,15 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         self.removeFloat(id);
                     });
 
+                    function cleanProjectile(projectile, x, y) {
+                        if (projectile) {
+                            projectile.setVisible(false);
+                            self.removeFromRenderingGrid(projectile, x, y);
+                            self.removeEntity(projectile);
+                            delete projectile;
+                        }
+                    }
+
                     self.client.onSpawnProjectile(function (shooterId, projectileType, targetId) {
                         let shooter = self.getEntityById(shooterId);
                         let target = self.getEntityById(targetId);
@@ -7011,18 +7068,14 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                     }
 
                                     projectile.impact(() => {
-                                        projectile.setVisible(false);
-                                        self.removeFromRenderingGrid(projectile, projectilePos.x, projectilePos.y);
-                                        self.removeEntity(projectile);
+                                        cleanProjectile(projectile, projectilePos.x, projectilePos.y);
                                     });
                                 }
                                 if (self.map.isColliding(projectilePos.x, projectilePos.y)) {
                                     if (projectile.shooter.id === self.player.id) {
                                         self.audioManager.playSound("hit" + Math.floor(Math.random() * 2 + 1));
                                     }
-                                    projectile.setVisible(false);
-                                    self.removeFromRenderingGrid(projectile, projectilePos.x, projectilePos.y);
-                                    self.removeEntity(projectile);
+                                    cleanProjectile(projectile, projectilePos.x, projectilePos.y);
                                     return;
                                 }
                             }
@@ -7040,13 +7093,14 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             }
 
                             finishedProjectile.impact(() => {
-                                finishedProjectile.setVisible(false);
-                                self.removeFromRenderingGrid(projectile, finishedProjectile.gridX, finishedProjectile.gridY);
-                                self.removeEntity(projectile);
+                                cleanProjectile(projectile, finishedProjectile.gridX, finishedProjectile.gridY);
                             });
                         })
                         projectile.flyTo(target.gridX, target.gridY);
                         self.addEntity(projectile);
+                        setTimeout(() => {
+                            cleanProjectile(projectile, projectile.gridX, projectile.gridY);
+                        }, 5000);
                     });
 
                     self.client.onOutOfAmmo(function () {
