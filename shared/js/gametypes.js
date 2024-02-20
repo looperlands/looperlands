@@ -5146,7 +5146,11 @@ Types = {
         NFT_medium491076f855b5e0238f5a9d5edc47b52fcf28dba3dcd73066bb924f3ef92c632e: 4789,
         NFT_long491076f855b5e0238f5a9d5edc47b52fcf28dba3dcd73066bb924f3ef92c632e: 4790,
         NFT_4f3a404d96cdd021449b3ab5908d2eb3b84e831c_5491371: 4791,
-        NFT_4f3a404d96cdd021449b3ab5908d2eb3b84e831c_5498761: 4792 // @lastid@
+        NFT_4f3a404d96cdd021449b3ab5908d2eb3b84e831c_5498761: 4792,
+        NFT_5589c2e5be5eb4558f0092eb642a80e538ef96899cdb7dbc335f0ae78179d075: 4793,
+        NFT_short5589c2e5be5eb4558f0092eb642a80e538ef96899cdb7dbc335f0ae78179d075: 4794,
+        NFT_medium5589c2e5be5eb4558f0092eb642a80e538ef96899cdb7dbc335f0ae78179d075: 4795,
+        NFT_long5589c2e5be5eb4558f0092eb642a80e538ef96899cdb7dbc335f0ae78179d075: 4796 // @lastid@
         //@nextIdLine@
     },
 
@@ -10276,6 +10280,10 @@ var kinds = {
     NFT_long491076f855b5e0238f5a9d5edc47b52fcf28dba3dcd73066bb924f3ef92c632e: [Types.Entities.NFT_long491076f855b5e0238f5a9d5edc47b52fcf28dba3dcd73066bb924f3ef92c632e, "projectile"],
     NFT_4f3a404d96cdd021449b3ab5908d2eb3b84e831c_5491371: [Types.Entities.NFT_4f3a404d96cdd021449b3ab5908d2eb3b84e831c_5491371, "armor"],
     NFT_4f3a404d96cdd021449b3ab5908d2eb3b84e831c_5498761: [Types.Entities.NFT_4f3a404d96cdd021449b3ab5908d2eb3b84e831c_5498761, "armor"],
+    NFT_5589c2e5be5eb4558f0092eb642a80e538ef96899cdb7dbc335f0ae78179d075: [Types.Entities.NFT_5589c2e5be5eb4558f0092eb642a80e538ef96899cdb7dbc335f0ae78179d075, "ranged_weapon"],
+    NFT_short5589c2e5be5eb4558f0092eb642a80e538ef96899cdb7dbc335f0ae78179d075: [Types.Entities.NFT_short5589c2e5be5eb4558f0092eb642a80e538ef96899cdb7dbc335f0ae78179d075, "projectile"],
+    NFT_medium5589c2e5be5eb4558f0092eb642a80e538ef96899cdb7dbc335f0ae78179d075: [Types.Entities.NFT_medium5589c2e5be5eb4558f0092eb642a80e538ef96899cdb7dbc335f0ae78179d075, "projectile"],
+    NFT_long5589c2e5be5eb4558f0092eb642a80e538ef96899cdb7dbc335f0ae78179d075: [Types.Entities.NFT_long5589c2e5be5eb4558f0092eb642a80e538ef96899cdb7dbc335f0ae78179d075, "projectile"],
     // @nextSpriteLine@
 
     getType: function(kind) {
