@@ -349,6 +349,7 @@ WS.socketIOServer = Server.extend({
             parsedSaveData.nftId = nftId;
             parsedSaveData.walletId = walletId;
             parsedSaveData.mapId = sessionData.mapId;
+            parsedSaveData.f2p = sessionData.f2p;
             
             res.status(200).json(parsedSaveData);
         });

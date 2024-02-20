@@ -116,7 +116,9 @@ define(['jquery', 'storage'], function ($, Storage) {
                 this.center();
                 this.game.run(function () {
                     $('body').addClass('started');
-                    if (firstTimePlaying) {
+                    $('.f2p').hide();
+                    if (firstTimePlaying || self.storage.f2p) {
+                        $('.f2p').hide();
                         self.toggleInstructions();
                     }
                 });
