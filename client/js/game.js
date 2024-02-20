@@ -7708,8 +7708,6 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
              */
             click: function(pos) {
 
-                this.mousedown = true;
-
                 if($('body').hasClass('inventory') || $('body').hasClass('settings')) {
                     return;
                 }
@@ -7726,8 +7724,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     this.keyboardMovement = true;
                     clickThrottle = 25;
                 } else {
-                    clickThrottle = 500;
+                    this.mousedown = true;
                     this.keyboardMovement = false;
+                    clickThrottle = 500;
                 }
 
                 let now = new Date().getTime();
