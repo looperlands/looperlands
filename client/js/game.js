@@ -40,6 +40,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.selectedCellVisible = false;
                 this.targetColor = "rgba(255, 255, 255, 0.5)";
                 this.targetCellVisible = true;
+                this.mousedown = false;
+                this.lastMousedown = null;
+                this.clickDuration = 100;   //minimum click duration to show handclick.png cursor
                 this.hoveringTarget = false;
                 this.hoveringMob = false;
                 this.hoveringItem = false;
@@ -82,7 +85,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.lowAmmoThreshold = 10;
 
                 // sprites
-                this.spriteNames = ["hand", "sword", "loot", "target", "talk", "float", "sparks", "shadow16", "rat", "skeleton", "skeleton2", "spectre", "boss", "deathknight",
+                this.spriteNames = ["hand", "handclick", "sword", "loot", "target", "talk", "float", "sparks", "shadow16", "rat", "skeleton", "skeleton2", "spectre", "boss", "deathknight",
                     "ogre", "crab", "snake", "eye", "bat", "goblin", "wizard", "guard", "king", "villagegirl", "villager", "coder", "agent", "rick", "scientist", "nyan", "priest", "coblumberjack", "cobhillsnpc", "cobcobmin", "cobellen", "cobjohnny", "cobashley",
                     "king2", "goose", "tanashi", "slime","kingslime","silkshade","redslime","villagesign1","wildgrin","loomleaf","gnashling","arachweave","spider","fangwing", "minimag", "miner", "megamag", "seacreature", "tentacle", "tentacle2", "wildwill","shopowner","blacksmith",
                     "cobchicken", "alaric","orlan","jayce", "cobcow", "cobpig", "cobgoat", "ghostie","cobslimered", "cobslimeyellow", "cobslimeblue", "cobslimepurple", "cobslimegreen", "cobslimepink", "cobslimecyan", "cobslimemint", "cobslimeking", "cobyorkie", "cobcat", "cobdirt", "cobincubator", "cobcoblin", "cobcobane", "cobogre",
@@ -229,8 +232,19 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "item-EYEBALL",
                     "item-REDPOTION",
                     "item-GREYPOTION",
-                     //Bitcorn Phishes
-                    "cornfish_placeholder",
+                     //BITCORN PHISHIES
+                    "bit_BoneFish",
+                    "bit_Corn",
+                    "bit_FEET",
+                    "bit_freshPrawnce",
+                    "bit_JEFF",
+                    "bit_Kickle",
+                    "bit_maCORNtosh",
+                    "bit_MrPunchy",
+                    "bit_NOPEmato",
+                    "cornBootFish",
+                    "cornCanFish",
+                    "cornWinkyFish",
                     // @nextObjectLine@
                     "NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6",
                     "NFT_38278eacc7d1c86fdbc85d798dca146fbca59a2e5e567dc15898ce2edac21f5f",
@@ -5347,6 +5361,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
             initCursors: function() {
                 this.cursors["hand"] = this.sprites["hand"];
+                this.cursors["handclick"] = this.sprites["handclick"];
                 this.cursors["sword"] = this.sprites["sword"];
                 this.cursors["loot"] = this.sprites["loot"];
                 this.cursors["target"] = this.sprites["target"];
@@ -5421,8 +5436,25 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.fish["oafish34"] = this.sprites["oafish34"];
                 this.fish["oafish35"] = this.sprites["oafish35"];
                 this.fish["oafish36"] = this.sprites["oafish36"];
-                //Bitcorn Phish
-                this.fish["cornfish_placeholder"] = this.sprites["cornfish_placeholder"];
+                //BITCORN PHISHIES
+                const bitcornFish = ["bit_BoneFish", 
+                "bit_Corn", 
+                "bit_FEET", 
+                "bit_freshPrawnce", 
+                "bit_JEFF", 
+                "bit_Kickle", 
+                "bit_maCORNtosh", 
+                "bit_MrPunchy", 
+                "bit_NOPEmato",
+                "cornBootFish",
+                "cornCanFish",
+                "cornWinkyFish",
+            ];
+
+                bitcornFish.forEach(key => {
+                    this.fish[key] = this.sprites[key];
+                });
+                
                 //SDU FISH
                 this.fish["clownfish"] = this.sprites["clownfish"];
                 this.fish["swedishfish"] = this.sprites["swedishfish"];
@@ -5579,8 +5611,19 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     this.setCursor("float");
                     this.hoveringTarget = false;
                     this.targetCellVisible = true;
-                }
-                else {
+                } else if(this.mousedown) {
+                    if (!this.lastMousedown) {
+                        this.setCursor("handclick");
+                        this.lastMousedown = new Date().getTime();
+                    } 
+                    else if(this.currentCursorName == "handclick" && this.currentTime > this.lastMousedown + this.clickDuration) {
+                        //wait to make sure the cursor was changed, then allow the duration to be checked.     
+                        this.lastMousedown = null;
+                        this.mousedown = false;
+                    }
+                    this.hoveringTarget = false;
+                    this.targetCellVisible = true;
+                } else {
                     this.setCursor("hand");
                     this.hoveringTarget = false;
                     this.targetCellVisible = true;
@@ -7822,8 +7865,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     this.keyboardMovement = true;
                     clickThrottle = 25;
                 } else {
-                    clickThrottle = 500;
+                    this.mousedown = true;
                     this.keyboardMovement = false;
+                    clickThrottle = 500;
                 }
 
                 let now = new Date().getTime();
@@ -7833,6 +7877,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         return;
                     }
                 }
+
                 self.lastClick = now;
 
                 if(pos.x === this.previousClickPosition.x
