@@ -170,9 +170,9 @@ const Lakes = {
 };
 // only EPIC fish can be a consumable
 const ConsumableFish = {
-    hp: ["cobparadisefish","oafish27", "bit_Corn", "bit_NOPEmato"],
-    atk: ["cobbluegill","oafish31","oafish22", "bit_FEET", "bit_Kickle"],
-    exp: ["cobgreensunfish","oafish36","cornCanFish", "lollipop"]
+    hp: ["cobparadisefish","oafish27"],
+    atk: ["cobbluegill","oafish31","oafish22"],
+    exp: ["cobgreensunfish","oafish36", "lollipop"]
 };
 
 //---END CONFIG---
