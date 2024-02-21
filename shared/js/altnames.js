@@ -86,10 +86,19 @@ const AltNames = {
     horde5: ".65 Late Flea", 
     fleaboss: "Giant Late Flea",
 
-    //bitcorn
-    cornBootFish: "a Boot",
-    cornCanFish: "a Can of Mother Shucker",
-    cornWinkyFish: "the Legendary Winky",
+    //BITCORN PHISHIES
+    bit_BoneFish: "BoneFish",
+    bit_Corn: "RIVER CORN!",
+    bit_FEET: "FEET",
+    bit_freshPrawnce: "The Fresh Prawnce",
+    bit_JEFF: "JEFF",
+    bit_Kickle: "Kickle the Pickle",
+    bit_maCORNtosh: "maCORNtosh CORNputer",
+    bit_MrPunchy: "Mr. Punchy",
+    bit_NOPEmato: "NOPEmato",
+    cornBootFish: "Shoe (may contain Baileys)",
+    cornCanFish: "Can of Mother Shucker",
+    cornWinkyFish: "Legendary Winky",
 
     devon: "Chase", 
 };

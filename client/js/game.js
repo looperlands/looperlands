@@ -232,7 +232,16 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "item-EYEBALL",
                     "item-REDPOTION",
                     "item-GREYPOTION",
-                     //Bitcorn Phishes
+                     //BITCORN PHISHIES
+                    "bit_BoneFish",
+                    "bit_Corn",
+                    "bit_FEET",
+                    "bit_freshPrawnce",
+                    "bit_JEFF",
+                    "bit_Kickle",
+                    "bit_maCORNtosh",
+                    "bit_MrPunchy",
+                    "bit_NOPEmato",
                     "cornBootFish",
                     "cornCanFish",
                     "cornWinkyFish",
@@ -5405,10 +5414,24 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.fish["oafish34"] = this.sprites["oafish34"];
                 this.fish["oafish35"] = this.sprites["oafish35"];
                 this.fish["oafish36"] = this.sprites["oafish36"];
-                //Bitcorn Phish
-                this.fish["cornBootFish"] = this.sprites["cornBootFish"];
-                this.fish["cornCanFish"] = this.sprites["cornCanFish"];
-                this.fish["cornWinkyFish"] = this.sprites["cornWinkyFish"];
+                //BITCORN PHISHIES
+                const bitcornFish = ["bit_BoneFish", 
+                "bit_Corn", 
+                "bit_FEET", 
+                "bit_freshPrawnce", 
+                "bit_JEFF", 
+                "bit_Kickle", 
+                "bit_maCORNtosh", 
+                "bit_MrPunchy", 
+                "bit_NOPEmato",
+                "cornBootFish",
+                "cornCanFish",
+                "cornWinkyFish",
+            ];
+
+                bitcornFish.forEach(key => {
+                    this.fish[key] = this.sprites[key];
+                });
                 
                 //SDU FISH
                 this.fish["clownfish"] = this.sprites["clownfish"];

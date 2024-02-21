@@ -147,9 +147,9 @@ const Lakes = {
     cornsinoSludgeRiver: {
         level: 1,
         fish: {
-            cornBootFish: "common",
-            cornCanFish: "epic",
-            cornWinkyFish: "legendary",
+            ...Object.fromEntries(["bit_BoneFish", "bit_Corn", "bit_freshPrawnce", "bit_maCORNtosh", "cornBootFish"].map(fish => [fish, "common"])),
+            ...Object.fromEntries(["bit_FEET", "bit_Kickle", "bit_NOPEmato", "cornCanFish"].map(fish => [fish, "epic"])),
+            ...Object.fromEntries(["bit_JEFF", "bit_MrPunchy", "cornWinkyFish"].map(fish => [fish, "legendary"]))
         }
     },
 

@@ -439,10 +439,20 @@ define(['text!../sprites/agent.json',
         'text!../sprites/cobWalkingNpc3.json',
         'text!../sprites/cobWalkingNpc4.json',
         'text!../sprites/cobWalkingNpc5.json',
-        //Bitcorn Phish
+        //BITCORN PHISHIES
+        'text!../sprites/bit_BoneFish.json',
+        'text!../sprites/bit_Corn.json',
+        'text!../sprites/bit_FEET.json',
+        'text!../sprites/bit_freshPrawnce.json',
+        'text!../sprites/bit_JEFF.json',
+        'text!../sprites/bit_Kickle.json',
+        'text!../sprites/bit_maCORNtosh.json',
+        'text!../sprites/bit_MrPunchy.json',
+        'text!../sprites/bit_NOPEmato.json',
         'text!../sprites/cornBootFish.json',
         'text!../sprites/cornCanFish.json',
         'text!../sprites/cornWinkyFish.json',
+
         // @nextCharacterImport@
         'text!../sprites/NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6.json',
         'text!../sprites/NFT_38278eacc7d1c86fdbc85d798dca146fbca59a2e5e567dc15898ce2edac21f5f.json',
