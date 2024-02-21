@@ -233,18 +233,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "item-REDPOTION",
                     "item-GREYPOTION",
                      //BITCORN PHISHIES
-                    "bit_BoneFish",
-                    "bit_Corn",
-                    "bit_FEET",
-                    "bit_freshPrawnce",
-                    "bit_JEFF",
-                    "bit_Kickle",
-                    "bit_maCORNtosh",
-                    "bit_MrPunchy",
-                    "bit_NOPEmato",
-                    "cornBootFish",
-                    "cornCanFish",
-                    "cornWinkyFish",
+                    "bit_BoneFish", "bit_Corn", "bit_FEET", "bit_freshPrawnce", "bit_JEFF", "bit_Kickle", "bit_maCORNtosh", "bit_MrPunchy", "bit_NOPEmato", "cornBootFish", "cornCanFish", "cornWinkyFish",
                     // @nextObjectLine@
                     "NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6",
                     "NFT_38278eacc7d1c86fdbc85d798dca146fbca59a2e5e567dc15898ce2edac21f5f",
@@ -5381,85 +5370,19 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
             initFish: function() {
                 this.fish = {};
-                this.fish["cobneon"] = this.sprites["cobneon"];
-                this.fish["cobguppy"] = this.sprites["cobguppy"];
-                this.fish["cobgoldfish"] = this.sprites["cobgoldfish"];
-                this.fish["coblobster"] = this.sprites["coblobster"];
-                this.fish["cobcatfish"] = this.sprites["cobcatfish"];
-                this.fish["cobtrout"] = this.sprites["cobtrout"];
-                this.fish["cobangelfish"] = this.sprites["cobangelfish"];
-                this.fish["cobsardine"] = this.sprites["cobsardine"];
-                this.fish["cobstingray"] = this.sprites["cobstingray"];
-                this.fish["cobwhiting"] = this.sprites["cobwhiting"];
-                this.fish["cobrosette"] = this.sprites["cobrosette"];
-                this.fish["cobparadisefish"] = this.sprites["cobparadisefish"];
-                this.fish["cobfatheadminnow"] = this.sprites["cobfatheadminnow"];
-                this.fish["cobgrasscarp"] = this.sprites["cobgrasscarp"];
-                this.fish["cobgreensunfish"] = this.sprites["cobgreensunfish"];
-                this.fish["cobcruciancarp"] = this.sprites["cobcruciancarp"];
-                this.fish["cobbluegill"] = this.sprites["cobbluegill"];
-                ////OAFISHIES
-                this.fish["oagreyfish"] = this.sprites["oagreyfish"];
-                this.fish["oafish1"] = this.sprites["oafish1"];
-                this.fish["oafish2"] = this.sprites["oafish2"];
-                this.fish["oafish3"] = this.sprites["oafish3"];
-                this.fish["oafish4"] = this.sprites["oafish4"];
-                this.fish["oafish5"] = this.sprites["oafish5"];
-                this.fish["oafish6"] = this.sprites["oafish6"];
-                this.fish["oafish7"] = this.sprites["oafish7"];
-                this.fish["oafish8"] = this.sprites["oafish8"];
-                this.fish["oafish9"] = this.sprites["oafish9"];
-                this.fish["oafish10"] = this.sprites["oafish10"];
-                this.fish["oafish11"] = this.sprites["oafish11"];
-                this.fish["oafish12"] = this.sprites["oafish12"];
-                this.fish["oafish13"] = this.sprites["oafish13"];
-                this.fish["oafish14"] = this.sprites["oafish14"];
-                this.fish["oafish15"] = this.sprites["oafish15"];
-                this.fish["oafish16"] = this.sprites["oafish16"];
-                this.fish["oafish17"] = this.sprites["oafish17"];
-                this.fish["oafish18"] = this.sprites["oafish18"];
-                this.fish["oafish19"] = this.sprites["oafish19"];
-                this.fish["oafish20"] = this.sprites["oafish20"];
-                this.fish["oafish21"] = this.sprites["oafish21"];
-                this.fish["oafish22"] = this.sprites["oafish22"];
-                this.fish["oafish23"] = this.sprites["oafish23"];
-                this.fish["oafish24"] = this.sprites["oafish24"];
-                this.fish["oafish25"] = this.sprites["oafish25"];
-                this.fish["oafish26"] = this.sprites["oafish26"];
-                this.fish["oafish27"] = this.sprites["oafish27"];
-                this.fish["oafish28"] = this.sprites["oafish28"];
-                this.fish["oafish29"] = this.sprites["oafish29"];
-                this.fish["oafish30"] = this.sprites["oafish30"];
-                this.fish["oafish31"] = this.sprites["oafish31"];
-                this.fish["oafish32"] = this.sprites["oafish32"];
-                this.fish["oafish33"] = this.sprites["oafish33"];
-                this.fish["oafish34"] = this.sprites["oafish34"];
-                this.fish["oafish35"] = this.sprites["oafish35"];
-                this.fish["oafish36"] = this.sprites["oafish36"];
-                //BITCORN PHISHIES
-                const bitcornFish = ["bit_BoneFish", 
-                "bit_Corn", 
-                "bit_FEET", 
-                "bit_freshPrawnce", 
-                "bit_JEFF", 
-                "bit_Kickle", 
-                "bit_maCORNtosh", 
-                "bit_MrPunchy", 
-                "bit_NOPEmato",
-                "cornBootFish",
-                "cornCanFish",
-                "cornWinkyFish",
-            ];
 
-                bitcornFish.forEach(key => {
-                    this.fish[key] = this.sprites[key];
+                const fishGroups = [
+                    /* COBS FARM FISH*/ ["cobneon", "cobguppy", "cobgoldfish", "coblobster", "cobcatfish", "cobtrout", "cobangelfish", "cobsardine", "cobstingray", "cobwhiting", "cobrosette", "cobparadisefish", "cobfatheadminnow", "cobgrasscarp", "cobgreensunfish", "cobcruciancarp", "cobbluegill"],
+                    /* OAFISHIES*/ ["oagreyfish", "oafish1", "oafish2", "oafish3", "oafish4", "oafish5", "oafish6", "oafish7", "oafish8", "oafish9", "oafish10", "oafish11", "oafish12", "oafish13", "oafish14", "oafish15", "oafish16", "oafish17", "oafish18", "oafish19", "oafish20", "oafish21", "oafish22", "oafish23", "oafish24", "oafish25", "oafish26", "oafish27", "oafish28", "oafish29", "oafish30", "oafish31", "oafish32", "oafish33", "oafish34", "oafish35", "oafish36"],
+                    /* SDU FISH*/ ["clownfish", "swedishfish", "rainbowfish", "lollipop"],
+                    /*BITCORN PHISHIES*/ ["bit_BoneFish", "bit_Corn", "bit_FEET", "bit_freshPrawnce", "bit_JEFF", "bit_Kickle", "bit_maCORNtosh", "bit_MrPunchy", "bit_NOPEmato", "cornBootFish", "cornCanFish", "cornWinkyFish"]
+                ];
+
+                fishGroups.forEach(group => {
+                    group.forEach(key => {
+                        this.fish[key] = this.sprites[key];
+                    });
                 });
-                
-                //SDU FISH
-                this.fish["clownfish"] = this.sprites["clownfish"];
-                this.fish["swedishfish"] = this.sprites["swedishfish"];
-                this.fish["rainbowfish"] = this.sprites["rainbowfish"];
-                this.fish["lollipop"] = this.sprites["lollipop"];
             },
 
             initAnimations: function() {
