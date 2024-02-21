@@ -349,6 +349,26 @@ Messages.SpawnFloat = Message.extend({
     }
 });
 
+Messages.SpawnProjectile = Message.extend({
+    init: function(playerId, projectile, mob) {
+        this.playerId = playerId;
+        this.projectile = projectile;
+        this.mob = mob;
+    },
+    serialize: function() {
+        return [Types.Messages.SPAWNPROJECTILE, this.playerId, this.projectile, this.mob];
+    }
+});
+
+Messages.OutOfAmmo = Message.extend({
+   init: function() {
+
+    },
+    serialize: function() {
+       return [Types.Messages.OUTOFAMMO];
+    }
+});
+
 Messages.DespawnFloat = Message.extend({
     init: function(playerId) {
         this.playerId = playerId;

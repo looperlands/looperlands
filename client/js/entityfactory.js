@@ -625,6 +625,19 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
         return new Items.Cagedrat(id);
     };
 
+    EntityFactory.builders[Types.Entities.WOOD] = function(id) {
+        return new Items.Wood(id);
+    };
+
+    EntityFactory.builders[Types.Entities.ORE] = function(id) {
+        return new Items.Ore(id);
+    };
+
+    EntityFactory.builders[Types.Entities.MANACRYSTAL] = function(id) {
+        return new Items.Manacrystal(id);
+    };
+
+
     EntityFactory.builders[Types.Entities.KEY_ARACHWEAVE]=function(id){return new Items.KEY_ARACHWEAVE(id);};
     EntityFactory.builders[Types.Entities.BOARHIDE]=function(id){return new Items.BOARHIDE(id);};
     EntityFactory.builders[Types.Entities.THUDKEY]=function(id){return new Items.THUDKEY(id);};
@@ -670,6 +683,7 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.GAME] = function(id) { return new Items.game(id); };
     EntityFactory.builders[Types.Entities.POPCORN] = function(id) { return new Items.popcorn(id); };
     EntityFactory.builders[Types.Entities.ENERGYDRINK] = function(id) { return new Items.energydrink(id); };
+    EntityFactory.builders[Types.Entities.FLYER] = function(id) { return new Items.flyer(id); };
     //mycupbloody
     EntityFactory.builders[Types.Entities.EYEBALL]=function(id){
         return new Items.EYEBALL(id);
@@ -817,6 +831,10 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
 
     EntityFactory.builders[Types.Entities.SHOPOWNER] = function(id) {
         return new NPCs.ShopOwner(id);
+    };
+
+    EntityFactory.builders[Types.Entities.BLACKSMITH] = function(id) {
+        return new NPCs.Blacksmith(id);
     };
 
     EntityFactory.builders[Types.Entities.FORESTNPC] = function(id) {

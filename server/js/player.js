@@ -50,6 +50,8 @@ module.exports = Player = Character.extend({
         this.attackRate = BASE_ATTACK_RATE;
         this.accumulatedExperience = 0;
 
+        this.selectedProjectile = null;
+
         this.playerEventBroker = new PlayerEventBroker.PlayerEventBroker(this);
 
         this.connection.listen(async function(message) {
@@ -234,6 +236,31 @@ module.exports = Player = Character.extend({
                 if(mob) {
                     self.setTarget(mob);
                     self.server.broadcastAttacker(self);
+                }
+            }
+            else if(action === Types.Messages.SELECTPROJECTILE) {
+                self.selectedProjectile = message[1];
+            }
+            else if(action === Types.Messages.SHOOT) {
+                let nftWeapon = self.getNFTWeapon();
+                if (nftWeapon !== undefined && !(nftWeapon instanceof NFTWeapon.NFTWeapon)){
+                    return;
+                }
+                var mob = self.server.getEntityById(message[1]);
+                if(mob) {
+                    let usedProjectile = self.getProjectileToUse();
+                    if(usedProjectile === null) {
+                        self.server.pushToPlayer(self, new Messages.OutOfAmmo());
+                        return;
+                    }
+
+                    let projectileCount = self.getResourceAmount(usedProjectile);
+                    if (projectileCount > 0) {
+                        self.server.announceSpawnProjectile(self, self.currentProjectileType, message[1]);
+                        self.consumeItem(usedProjectile);
+                    } else {
+                        self.server.pushToPlayer(self, new Messages.OutOfAmmo());
+                    }
                 }
             }
             else if(action === Types.Messages.HIT) {
@@ -755,6 +782,39 @@ module.exports = Player = Character.extend({
         }
     },
 
+    getProjectileToUse: function() {
+        const projectiles = {
+            bow:  {short: Types.Entities.SHORT_ARROW, medium: Types.Entities.MEDIUM_ARROW, long: Types.Entities.LONG_ARROW},
+            gun:  {short: Types.Entities.SHORT_BULLET, medium: Types.Entities.MEDIUM_BULLET, long: Types.Entities.LONG_BULLET},
+            wand: {short: Types.Entities.SHORT_MANA, medium: Types.Entities.MEDIUM_MANA, long: Types.Entities.LONG_MANA},
+        }
+
+        if (!this.getNFTWeapon()?.weaponClass) {
+            this.currentProjectileType = null;
+            return null;
+        }
+
+        if (this.selectedProjectile) {
+            this.currentProjectileType = this.selectedProjectile;
+            return projectiles[this.getNFTWeapon().weaponClass][this.selectedProjectile];
+        }
+
+        const classProjectiles = projectiles[this.getNFTWeapon().weaponClass]
+
+        for (let i = 0; i < Object.keys(classProjectiles).length; i++) {
+            let projectileType = Object.keys(classProjectiles)[i];
+            let projectile = classProjectiles[projectileType];
+            let projectileCount = this.getResourceAmount(projectile);
+            if (projectileCount > 0) {
+                this.currentProjectileType = projectileType;
+                return projectile;
+            }
+        }
+
+        return null;
+    },
+
+
     equipSpecialItem: function(kind) {
         this.weapon = kind;
         const kindString = Types.getKindAsString(kind);
@@ -869,6 +929,14 @@ module.exports = Player = Character.extend({
     getWeaponLevel: function(kind) {
         const nftWeapon = this.getNFTWeapon();
         if (nftWeapon !== undefined) {
+            if(nftWeapon.isRanged()) {
+                let projectile = this.getProjectileToUse();
+                if (projectile === null) {
+                    return 0;
+                }
+                return Math.ceil(nftWeapon.getLevel() * Properties[Types.getKindAsString(projectile)].damage);
+            }
+
             return nftWeapon.getLevel();
         }
 
@@ -895,6 +963,20 @@ module.exports = Player = Character.extend({
 
         return weaponLevel;
 
+    },
+
+    getWeaponRange: function() {
+        const nftWeapon = this.getNFTWeapon();
+        if (nftWeapon !== undefined) {
+            if(nftWeapon.isRanged()) {
+                let projectile = this.getProjectileToUse();
+                if (projectile === null) {
+                    return 1;
+                }
+                return Properties[Types.getKindAsString(projectile)].range;
+            }
+        }
+        return 1;
     },
 
     getNFTWeapon: function() {
@@ -962,10 +1044,12 @@ module.exports = Player = Character.extend({
         let cooldownData = Collectables.getCooldownData(item);
         let cooldownGroup = cooldownData.group !== undefined ? cooldownData.group : "";
         let onCooldown = cooldownGroup ? this.checkCooldown(cooldownGroup) : false;
-        if (itemCount > 0 && Collectables.isConsumable(item) && !onCooldown) {
+
+        if (itemCount > 0 && (Collectables.isConsumable(item) || Types.isProjectile(item)) && !onCooldown) {
             this.getFishBuff(item);
             Collectables.consume(item, this);
             dao.saveConsumable(this.nftId, item, -1);
+
             gameData.consumables[item] = itemCount - 1;
             cache.gameData = gameData;
             this.server.server.cache.set(this.sessionId, cache);

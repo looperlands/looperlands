@@ -154,7 +154,7 @@ module.exports = World = cls.Class.extend({
                     self.consumeCooldowns[player.nftId][group] = new Date().getTime() + duration;
                 }
             });
-            
+
             player.onReleaseMob(function (kind) {
                 let mob = new Mob(self.nextMobId(), kind, player.x, player.y);
                 mob.handleRespawn = function () {
@@ -902,7 +902,7 @@ module.exports = World = cls.Class.extend({
         while (positions.length > 0) {
             let randArrPos = Utils.random(positions.length);
             let side = positions[randArrPos];
-           	
+
             let pos = entity.getPositionNextTo(target, side);
             if (this.isValidPosition(pos.x, pos.y)){
                 return pos;
@@ -1169,7 +1169,8 @@ module.exports = World = cls.Class.extend({
         let weaponInfo = {
             constructor: nftWeapon.constructor.name,
             experience: nftWeapon.experience,
-            trait: nftWeapon.trait
+            trait: nftWeapon.trait,
+            selectedProjectile: player.selectedProjectile
         }
         return weaponInfo;
     },
@@ -1578,8 +1579,11 @@ module.exports = World = cls.Class.extend({
             }
         }
         return 0;
-    }
+    },
+
+
+    announceSpawnProjectile: function(player, projectileType, mob) {
+        this.pushToAdjacentGroups(player.group, new Messages.SpawnProjectile(player.id, projectileType, mob));
+    },
+
 });
-
-
-

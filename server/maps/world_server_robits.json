@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 {"width":172,"height":500,"collisions":[],"doors":[],"checkpoints":[{"id":1,"x":39.6875,"y":462.8125,"w":10.375,"h":4.875,"s":1}],"triggers":[],"hiddenLayers":{},"collidingTiles":{"1":true},"roamingAreas":[],"chestAreas":[],"staticChests":[],"staticEntities":{},"tilesize":16}
+=======
+{"width":172,"height":500,"collisions":[],"doors":[{"x":23,"y":498,"p":0,"to":"u","tx":64,"ty":346},{"x":24,"y":498,"p":0,"to":"u","tx":64,"ty":346},{"x":22,"y":498,"p":0,"to":"u","tx":64,"ty":346},{"x":65,"y":346,"p":0,"to":"d","tx":23,"ty":498},{"x":64,"y":346,"p":0,"to":"d","tx":23,"ty":498}],"checkpoints":[{"id":1,"x":22.75,"y":493.583125,"w":4.79166875,"h":1.875,"s":1}],"triggers":[],"hiddenLayers":{},"collidingTiles":{"1":true},"roamingAreas":[],"chestAreas":[],"staticChests":[],"staticEntities":{},"tilesize":16}
+>>>>>>> 77be6aad7dce08247b60828c08724f2b3889b692

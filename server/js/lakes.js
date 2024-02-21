@@ -142,14 +142,32 @@ const Lakes = {
             oafish35: "common",
             oafish36: "epic",
         }
-    }
+    },
+
+    cornsinoSludgeRiver: {
+        level: 1,
+        fish: {
+            cornfish_placeholder: "common",
+        }
+    },
+
+    //Short Destroyers
+    acidlake: {
+        level: 1,
+        fish: {
+            clownfish: "common",
+            swedishfish: "uncommon",
+            rainbowfish: "rare",
+            lollipop: "epic",
+        }
+    },
 
 };
 // only EPIC fish can be a consumable
 const ConsumableFish = {
     hp: ["cobparadisefish","oafish27"],
     atk: ["cobbluegill","oafish31","oafish22"],
-    exp: ["cobgreensunfish","oafish36"]
+    exp: ["cobgreensunfish","oafish36", "lollipop"]
 };
 
 //---END CONFIG---
@@ -189,6 +207,10 @@ generateFishDataMap = function() { // also do config checks
 const fishDataMap = generateFishDataMap();
 
 Lakes.getRandomFish = function(lake, lucky) {
+    if(Object.keys(Lakes[lake].fish).length == 1){
+        return Object.keys(Lakes[lake].fish)[0];
+    }
+
     let luckyFish = false;
     if (lucky){
         luckyFish = Lakes.getRandomFish(lake, false);

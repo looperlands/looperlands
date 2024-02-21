@@ -1,21 +1,18 @@
 Types = require("../../../shared/js/gametypes");
 quests = [
-    /*
     {
         id: "SDU_QUEST_1",
-        name: "Passed The Picketer",
-        startText: "???",
-        longText: "???",
-        endText: "You have a feeling her kid is watching something he shouldn't anyways. It's not your fault she's so uptight. ",
+        name: "Concert in The Cellar", 
+        startText: "Hey, my band Old Kids has a show at The Cellar this weekend. You should come out!",
+        longText: "Old Kids has a show in The Cellar this weekend but the wind just blew the flyers all over the parking lot! This city is so windy, the flyers are everywhere! If you can help pick up the flyers, Chase said he would add your name to the list so you can get into the show.",
+        endText: "Chase: You're a lifesaver! I'll put your name on the list.",
         eventType: "LOOT_ITEM",
-        npc: Types.Entities.ANGRYMOM,
-        target: Types.Entities.DVD,
+        npc: Types.Entities.DEVON,
+        target: Types.Entities.FLYER,
         amount: 10,
         level: 1,
-        medal: Types.Medals.TREE
+        medal: Types.Medals.HEARTH
     },
-    */
-
 //     { //DONE
 //         id: "OA_QUEST_3",
 //         name: "The Slime King's Reign",
