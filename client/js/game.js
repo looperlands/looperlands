@@ -5372,10 +5372,18 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.fish = {};
 
                 const fishGroups = [
-                    /* COBS FARM FISH*/ ["cobneon", "cobguppy", "cobgoldfish", "coblobster", "cobcatfish", "cobtrout", "cobangelfish", "cobsardine", "cobstingray", "cobwhiting", "cobrosette", "cobparadisefish", "cobfatheadminnow", "cobgrasscarp", "cobgreensunfish", "cobcruciancarp", "cobbluegill"],
-                    /* OAFISHIES*/ ["oagreyfish", "oafish1", "oafish2", "oafish3", "oafish4", "oafish5", "oafish6", "oafish7", "oafish8", "oafish9", "oafish10", "oafish11", "oafish12", "oafish13", "oafish14", "oafish15", "oafish16", "oafish17", "oafish18", "oafish19", "oafish20", "oafish21", "oafish22", "oafish23", "oafish24", "oafish25", "oafish26", "oafish27", "oafish28", "oafish29", "oafish30", "oafish31", "oafish32", "oafish33", "oafish34", "oafish35", "oafish36"],
-                    /* SDU FISH*/ ["clownfish", "swedishfish", "rainbowfish", "lollipop"],
-                    /*BITCORN PHISHIES*/ ["bit_BoneFish", "bit_Corn", "bit_FEET", "bit_freshPrawnce", "bit_JEFF", "bit_Kickle", "bit_maCORNtosh", "bit_MrPunchy", "bit_SnaggletoothEel", "bit_NOPEmato", "cornBootFish", "cornCanFish", "cornWinkyFish"]
+                    /* COBS FARM FISH*/ 
+                    ["cobneon", "cobguppy", "cobgoldfish", "coblobster", "cobcatfish", "cobtrout", "cobangelfish", "cobsardine", "cobstingray", "cobwhiting", "cobrosette", "cobparadisefish", "cobfatheadminnow", "cobgrasscarp", "cobgreensunfish", "cobcruciancarp", "cobbluegill"],
+
+                    /* OAFISHIES*/ 
+                    ["oagreyfish", "oafish1", "oafish2", "oafish3", "oafish4", "oafish5", "oafish6", "oafish7", "oafish8", "oafish9", "oafish10", "oafish11", "oafish12", "oafish13", "oafish14", "oafish15", "oafish16", "oafish17", "oafish18", "oafish19", "oafish20", "oafish21", "oafish22", "oafish23", "oafish24", "oafish25", "oafish26", "oafish27", "oafish28", "oafish29", "oafish30", "oafish31", "oafish32", "oafish33", "oafish34", "oafish35", "oafish36"],
+
+                    /* SDU FISH*/
+                    ["clownfish", "swedishfish", "rainbowfish", "lollipop"],
+
+                    /*BITCORN PHISHIES*/
+                    ["bit_BoneFish", "bit_Corn", "bit_FEET", "bit_freshPrawnce", "bit_JEFF", "bit_Kickle", "bit_maCORNtosh", "bit_MrPunchy", "bit_SnaggletoothEel", "bit_NOPEmato", "cornBootFish", "cornCanFish", "cornWinkyFish"],
+                
                 ];
 
                 fishGroups.forEach(group => {
