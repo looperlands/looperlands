@@ -87,18 +87,19 @@ const AltNames = {
     fleaboss: "Giant Late Flea",
 
     //BITCORN PHISHIES
-    bit_BoneFish: "BoneFish",
+    bit_BoneFish: "a BoneFish",
     bit_Corn: "RIVER CORN!",
     bit_FEET: "FEET",
     bit_freshPrawnce: "The Fresh Prawnce",
     bit_JEFF: "JEFF",
     bit_Kickle: "Kickle the Pickle",
-    bit_maCORNtosh: "maCORNtosh CORNputer",
+    bit_maCORNtosh: "one of dem' maCORNtosh CORNputers",
     bit_MrPunchy: "Mr. Punchy",
-    bit_NOPEmato: "NOPEmato",
-    cornBootFish: "Shoe (may contain Baileys)",
-    cornCanFish: "Can of Mother Shucker",
-    cornWinkyFish: "Legendary Winky",
+    bit_SnaggletoothEel: "a nasty Snaggletooth Eel!",
+    bit_NOPEmato: "a NOPEmato",
+    cornBootFish: "Old Gregg's Shoe",
+    cornCanFish: "an empty can of Mother Shucker",
+    cornWinkyFish: "The Legendary Winky",
 
     devon: "Chase", 
 };
