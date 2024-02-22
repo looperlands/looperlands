@@ -95,6 +95,7 @@ const AltNames = {
     bit_Kickle: "Kickle the Pickle",
     bit_maCORNtosh: "one of dem' maCORNtosh CORNputers",
     bit_MrPunchy: "Mr. Punchy",
+    bit_SnaggletoothEel: "a nasty Snaggletooth Eel!",
     bit_NOPEmato: "a NOPEmato",
     cornBootFish: "Old Gregg's Shoe",
     cornCanFish: "an empty can of Mother Shucker",

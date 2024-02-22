@@ -151,7 +151,7 @@ const Lakes = {
         fish: {
             ...Object.fromEntries(["bit_BoneFish", "bit_freshPrawnce", "bit_maCORNtosh", "cornBootFish"].map(fish => [fish, "common"])),
             ...Object.fromEntries(["bit_FEET", "bit_Kickle", "bit_Corn", "bit_NOPEmato", "cornCanFish"].map(fish => [fish, "epic"])),
-            ...Object.fromEntries(["bit_MrPunchy"].map(fish => [fish, "rare"])),
+            ...Object.fromEntries(["bit_MrPunchy, bit_SnaggletoothEel"].map(fish => [fish, "rare"])),
             ...Object.fromEntries(["bit_JEFF", "cornWinkyFish"].map(fish => [fish, "legendary"]))
         }
     },

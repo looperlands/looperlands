@@ -233,7 +233,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "item-REDPOTION",
                     "item-GREYPOTION",
                      //BITCORN PHISHIES
-                    "bit_BoneFish", "bit_Corn", "bit_FEET", "bit_freshPrawnce", "bit_JEFF", "bit_Kickle", "bit_maCORNtosh", "bit_MrPunchy", "bit_NOPEmato", "cornBootFish", "cornCanFish", "cornWinkyFish",
+                    "bit_BoneFish", "bit_Corn", "bit_FEET", "bit_freshPrawnce", "bit_JEFF", "bit_Kickle", "bit_maCORNtosh", "bit_MrPunchy", "bit_SnaggletoothEel", "bit_NOPEmato", "cornBootFish", "cornCanFish", "cornWinkyFish",
                     // @nextObjectLine@
                     "NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6",
                     "NFT_38278eacc7d1c86fdbc85d798dca146fbca59a2e5e567dc15898ce2edac21f5f",
@@ -5375,7 +5375,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     /* COBS FARM FISH*/ ["cobneon", "cobguppy", "cobgoldfish", "coblobster", "cobcatfish", "cobtrout", "cobangelfish", "cobsardine", "cobstingray", "cobwhiting", "cobrosette", "cobparadisefish", "cobfatheadminnow", "cobgrasscarp", "cobgreensunfish", "cobcruciancarp", "cobbluegill"],
                     /* OAFISHIES*/ ["oagreyfish", "oafish1", "oafish2", "oafish3", "oafish4", "oafish5", "oafish6", "oafish7", "oafish8", "oafish9", "oafish10", "oafish11", "oafish12", "oafish13", "oafish14", "oafish15", "oafish16", "oafish17", "oafish18", "oafish19", "oafish20", "oafish21", "oafish22", "oafish23", "oafish24", "oafish25", "oafish26", "oafish27", "oafish28", "oafish29", "oafish30", "oafish31", "oafish32", "oafish33", "oafish34", "oafish35", "oafish36"],
                     /* SDU FISH*/ ["clownfish", "swedishfish", "rainbowfish", "lollipop"],
-                    /*BITCORN PHISHIES*/ ["bit_BoneFish", "bit_Corn", "bit_FEET", "bit_freshPrawnce", "bit_JEFF", "bit_Kickle", "bit_maCORNtosh", "bit_MrPunchy", "bit_NOPEmato", "cornBootFish", "cornCanFish", "cornWinkyFish"]
+                    /*BITCORN PHISHIES*/ ["bit_BoneFish", "bit_Corn", "bit_FEET", "bit_freshPrawnce", "bit_JEFF", "bit_Kickle", "bit_maCORNtosh", "bit_MrPunchy", "bit_SnaggletoothEel", "bit_NOPEmato", "cornBootFish", "cornCanFish", "cornWinkyFish"]
                 ];
 
                 fishGroups.forEach(group => {
