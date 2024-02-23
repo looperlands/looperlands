@@ -7986,14 +7986,14 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         self.showNotification(trigger.message);
                     }
 
-                    if (trigger.css){
+                    if (entity.id === self.player.id && trigger.css){
                         $(trigger.css).addClass('active');
                     }
 
                     entity.onLeave(trigger, function () {
                         entity.triggerArea = null;
                         self.client.sendTrigger(trigger.id, false);
-                        if (trigger.css){
+                        if (entity.id === self.player.id && trigger.css){
                             $(trigger.css).removeClass('active');
                         }
                     })
