@@ -330,8 +330,9 @@ body.upscaled.game {background:#000;}
 #fish-marker{background:url('../img/1/fishing.png');image-rendering:-moz-crisp-edges;position:absolute;z-index:58;}
 #fish {z-index:60;}
 
-#slotsprompt {background:url('../img/1/cornWinkyFish.png');image-rendering:-moz-crisp-edges;position:absolute;top:15%;left:33%;z-index:50;display:none;pointer-events:none;cursor:pointer;}
+#slotsprompt {background:url('../img/1/cornplayslots.png');image-rendering:-moz-crisp-edges;position:absolute;top:35%;left:50%;z-index:50;display:none;pointer-events:none;cursor:none;}
 #slotsprompt.active {display:block;pointer-events:auto;}
+#slotsprompt:hover{background:url('../img/1/cornplayslotshover.png');}
 
 #notifications {position:absolute;left:50%;text-align:center;font-family:'GraphicPixel';overflow:hidden;}
 #notifications div {position:absolute;-moz-transition:none;-webkit-transition:none;top:0;width:100%;}
@@ -1332,6 +1333,8 @@ footer div  {display:inline-block;}
     .upscaled #bar-container, .upscaled #healthbar, .upscaled .barbutton, .upscaled #chatbox, .upscaled #population {background-image:url('../img/3/barsheet.png');}
     .upscaled #achievements, .upscaled #achievements li, .upscaled .coin, .upscaled #achievement-notification, .upscaled #coinsparks, .upscaled .achievement-sharing a, .upscaled #previous, .upscaled #next {background:url('../img/3/achievements.png');}
     .upscaled #fishingbar, #fishing-marker {background:url('../img/3/fishing.png');}
+    .upscaled #slotsprompt {background:url("../img/3/cornplayslots.png");}
+    .upscaled #slotsprompt:hover {background:url("../img/3/cornplayslotshover.png");}
 
     .upscaled #avatarStats {
         left: 210px;
@@ -1696,6 +1699,8 @@ footer div  {display:inline-block;}
     .upscaled #bar-container, .upscaled #healthbar, .upscaled .barbutton, .upscaled #chatbox, .upscaled #population {background-image:url('../img/2/barsheet.png');}
     .upscaled #achievements, .upscaled #achievements li, .upscaled .coin, .upscaled #achievement-notification, .upscaled #coinsparks, .upscaled .achievement-sharing a, .upscaled #previous, .upscaled #next {background:url('../img/2/achievements.png');}
     .upscaled #fishingbar, #fish-marker {background:url('../img/2/fishing.png');}
+    .upscaled #slotsprompt {background:url("../img/2/cornplayslots.png");}
+    .upscaled #slotsprompt:hover {background:url("../img/2/cornplayslotshover.png");}
 
     #emoteMenuToggle {
         width: 24px;
@@ -1940,6 +1945,8 @@ footer div  {display:inline-block;}
     .upscaled #bar-container, .upscaled #healthbar, .upscaled .barbutton, .upscaled #chatbox, .upscaled #population {background-image:url('../img/2/barsheet.png');}
     .upscaled #achievements, .upscaled #achievements li, .upscaled .coin, .upscaled #achievement-notification, .upscaled #coinsparks, .upscaled .achievement-sharing a, .upscaled #previous, .upscaled #next {background:url('../img/2/achievements.png');}
     .upscaled #fishingbar, #fish-marker {background:url('../img/2/fishing.png');}
+    .upscaled #slotsprompt {background:url("../img/2/cornplayslots.png");}
+    .upscaled #slotsprompt:hover {background:url("../img/2/cornplayslotshover.png");}
 
     body {background:-moz-radial-gradient(rgba(0,0,0,0) 40%,rgba(0,0,0,1) 125%), #000; background-size:auto, 256px;}
     body {background:-webkit-gradient(radial, center center, 240, center center, 800, from(rgba(0,0,0,0)), to(rgba(0,0,0,1))),#000; background-size:auto, 256px;}
@@ -2475,7 +2482,7 @@ footer div  {display:inline-block;}
     #slotsprompt {width:32px;;height:32px;}
 
     #armor, #weapon {width:32px;height:32px;position:absolute;background-size:192px;background-position:-64px;}
-    #weapon {left:208px;top:2px;}
+    #weapon {left:208px;top:2px;} 
     #armor {left:242px;top:2px;}
 
     #notifications {display:none;}
