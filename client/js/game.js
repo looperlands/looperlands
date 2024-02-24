@@ -7984,7 +7984,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         return;
                     }
                     self.client.sendTrigger(trigger.id, true);
-                    if (trigger.message) {
+                    if(entity.id === self.player.id  && trigger.player_message) {
+                        self.showNotification(trigger.player_message);
+                    } else if(trigger.message) {
                         self.showNotification(trigger.message);
                     }
 
