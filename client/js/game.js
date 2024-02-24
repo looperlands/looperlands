@@ -7076,10 +7076,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                     function cleanProjectile(projectile, x, y) {
                         if (projectile) {
+                            projectile.lastUpdate = self.currentTime;
                             projectile.setVisible(false);
                             self.removeFromRenderingGrid(projectile, x, y);
                             self.removeEntity(projectile);
-                            delete projectile;
                         }
                     }
 
@@ -7115,6 +7115,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                     return;
                                 }
                             }
+                            projectile.lastUpdate = self.currentTime;
                         });
                         projectile.onDestination((finishedProjectile) => {
                             if (lastHitPos.x !== finishedProjectile.gridX || lastHitPos.y !== finishedProjectile.gridY) {
