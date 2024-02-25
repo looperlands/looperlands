@@ -6480,7 +6480,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                             self.player = null;
                             self.client.disable();
-
+fsadf
                             setTimeout(function() {
                                 self.playerdeath_callback();
                             }, 1000);
