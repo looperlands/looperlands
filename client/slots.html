@@ -16,11 +16,14 @@
           background-color: #ccc;
           height: 20px;
           padding: 3px;
-          max-width: 200px;
-          width: 80%;
+          /* max-width: 200px; */
+          width: 22%;
           margin: 25px 0;
           border-radius: 5px;
           box-shadow: 0 1px 5px #000 inset, 0 1px 0 #444;
+          position: absolute;
+          left: 37.5%;
+          top: 37%;
         }
 
         .progress-bar span {
@@ -36,15 +39,18 @@
         }
 
         .wrapper {
-            background: black;
-            width: 100%;
-            height: 100%;
+            background: url('./assets/images/background/Lucky FUNKZ.png');
+            background-size: 91% 100%;
+            width: 98%;
+            height: 90%;
             position: absolute;
-            display: flex;
+            display: block;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             touch-action: none;
+            top: 1.8%;
+            left: 1%;
         }
 
         .loading-text {
@@ -90,7 +96,7 @@
           height: auto;
           margin: 0 auto;
           display: block;
-        }</style><link rel="shortcut icon" href="./../../favicon.ico"><script defer="defer" src="js/index.js?114b1344c5ddf4291ce8"></script></head><body><script>var timeout;
+        }</style><link rel="shortcut icon" href="./../../favicon.ico"><script defer="defer" src="js/slots.js"></script></head><body><script>var timeout;
 
         function loadUpdater(val) {
             var loader = document.querySelector('.loader');
@@ -115,4 +121,4 @@
             Urso.observer.addListener('modules.assets.load.progress', loadUpdater, true);
         };
 
-        checker();</script><div class="wrapper"><div class="progress-bar blue stripes"><span class="loader" style="width: 0%"></span></div></div></body></html>
+        checker();</script><div class="wrapper"></div><div class="progress-bar blue stripes"><span class="loader" style="width: 0%"></span></div></body></html>

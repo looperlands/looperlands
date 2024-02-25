@@ -7990,7 +7990,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         self.showNotification(trigger.message);
                     }
 
-                    if (entity.id === self.player.id && trigger.css){
+                    if (entity.id === self.player.id && trigger.css && !$("#minigame").hasClass('active')){
                         $(trigger.css).addClass('active');
                     }
 
@@ -7999,6 +7999,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         self.client.sendTrigger(trigger.id, false);
                         if (entity.id === self.player.id && trigger.css){
                             $(trigger.css).removeClass('active');
+                            $("#minigame").removeClass('active');
                         }
                     })
                 }
