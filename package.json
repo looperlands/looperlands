@@ -18,5 +18,8 @@
         "sanitizer": "0.1.2",
         "socket.io": ">0",
         "underscore": "^1.13.6"
+    },
+    "devDependencies": {
+        "eslint": "^8.57.0"
     }
 }
