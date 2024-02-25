@@ -7103,9 +7103,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                         self.audioManager.playSound("hit" + Math.floor(Math.random() * 2 + 1));
                                     }
 
-                                    projectile.impact(() => {
+                                    projectile.impact();
+                                    setTimeout(() => {
                                         cleanProjectile(projectile, projectilePos.x, projectilePos.y);
-                                    });
+                                    }, 1000);s
                                 }
                                 if (self.map.isColliding(projectilePos.x, projectilePos.y)) {
                                     if (projectile.shooter.id === self.player.id) {
