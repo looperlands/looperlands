@@ -64,6 +64,7 @@ define(['jquery', 'animation', 'sprites'], function($, Animation, sprites) {
 			self.renderWorker.postMessage({
 				"type": "loadSprite",
 				"id": self.id,
+				"spriteName": self.name,
 				"src": src,
 				"animationData": self.animationData,
 				"width": self.width,
@@ -190,7 +191,8 @@ define(['jquery', 'animation', 'sprites'], function($, Animation, sprites) {
     	    ctx.putImageData(finalData, 0, 0);
 	    
     	    this.silhouetteSprite = {
-				id: this.id + "_hl",
+				id: this.name + "_hl",
+				name: this.name + "_silhouette",
                 image: canvas,
         	    isLoaded: true,
         	    offsetX: this.offsetX,
@@ -202,6 +204,7 @@ define(['jquery', 'animation', 'sprites'], function($, Animation, sprites) {
 			this.renderWorker.postMessage({
 				"type": "loadSprite",
 				"id": this.silhouetteSprite.id,
+				"spriteName": this.name + "_silhouette",
 				"src": canvas.toDataURL(),
 				"animationData": self.animationData,
 				"width": self.width,
