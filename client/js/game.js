@@ -7106,7 +7106,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                     projectile.impact();
                                     setTimeout(() => {
                                         cleanProjectile(projectile, projectilePos.x, projectilePos.y);
-                                    }, 1000);s
+                                    }, 1000);
                                 }
                                 if (self.map.isColliding(projectilePos.x, projectilePos.y)) {
                                     if (projectile.shooter.id === self.player.id) {
