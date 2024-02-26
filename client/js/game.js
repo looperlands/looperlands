@@ -7859,7 +7859,6 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     } else if (entity instanceof Player && entity.id !== this.player.id) {
                         var inPvpZone = this.map.isInsidePvpZone(entity.gridX, entity.gridY);
                         if (inPvpZone) {
-                            console.log('PvP attack');
                             this.makePlayerAttack(entity);
                         } else {
                             this.removeFromPathingGrid(pos.x, pos.y);
