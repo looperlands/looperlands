@@ -5976,16 +5976,6 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         this.gamepadListener = new GamepadListener(this);
                     }
                 }
-
-                /*
-            if(!this.isStopped) {
-                if (this.windowHidden) {
-                    setTimeout(this.tick.bind(this), 1000/60);
-                } else {
-                    requestAnimFrame(this.tick.bind(this));
-                }
-            }
-            */
             },
 
             start: function() {
@@ -5993,6 +5983,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.hasNeverStarted = false;
                 $("#background").css('background', 'none');
                 console.log("Game loop started.");
+
+                setInterval(this.garbageCollectEntities.bind(this), 5000);
             },
 
             stop: function() {
@@ -6480,7 +6472,6 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                             self.player = null;
                             self.client.disable();
-
                             setTimeout(function() {
                                 self.playerdeath_callback();
                             }, 1000);
@@ -8854,7 +8845,25 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 } else {
                     $('#resources').removeClass('hidden');
                 }
+            },
+
+        
+            garbageCollectEntities: function() {
+                let self = this;
+                this.camera.forEachVisiblePosition(function(x, y) {
+                    if(!self.map.isOutOfBounds(x, y)) {
+                        if(self.renderingGrid[y][x]) {
+                            _.each(self.renderingGrid[y][x], function(entity) {
+                                if (entity && self.currentTime - entity.lastUpdate > 5000) {
+                                    //console.log("Garbage collecting entity " + entity.id);
+                                    self.removeFromRenderingGrid(entity, x, y);
+                                }
+                            });
+                        }
+                    }
+                }, this.renderer.mobile ? 0 : 2);
             }
+
         });
 
         return Game;
