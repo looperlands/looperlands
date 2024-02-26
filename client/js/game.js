@@ -7089,7 +7089,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 let hitEntity = self.getEntityAt(projectilePos.x, projectilePos.y);
                                 if (hitEntity && (
                                         Types.isMob(hitEntity.kind) ||
-                                        (Types.isPlayer(hitEntity.kind) && self.map.isInsidePvpZone(hitEntity.gridX, hitEntity.gridY))
+                                        (Types.isPlayer(hitEntity.kind) && hitEntity.id !==shooterId && self.map.isInsidePvpZone(hitEntity.gridX, hitEntity.gridY))
                                     ) &&
                                     !hitEntity.isDead &&
                                     !hitEntity.isFriendly
@@ -7858,7 +7858,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         this.makePlayerAttack(entity);
                     } else if (entity instanceof Player && entity.id !== this.player.id) {
                         var inPvpZone = this.map.isInsidePvpZone(entity.gridX, entity.gridY);
-                        if (inPvpZone) {
+                        var playerInPvpZone = this.map.isInsidePvpZone(self.player.gridX, self.player.gridY);
+                        if (inPvpZone && playerInPvpZone) {
                             this.makePlayerAttack(entity);
                         } else {
                             this.removeFromPathingGrid(pos.x, pos.y);
