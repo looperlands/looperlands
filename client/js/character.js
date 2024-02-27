@@ -388,7 +388,7 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
         follow: function(entity) {
             if(entity) {
                 this.followingMode = true;
-                if (this.weaponName && Types.isRangedWeapon(Types.getKindFromString(this.weaponName)) && this.canReachTarget(entity)) {
+                if (Types.isMob(entity.kind) && this.weaponName && Types.isRangedWeapon(Types.getKindFromString(this.weaponName)) && this.canReachTarget(entity)) {
                     return;
                 }
                 this.moveTo_(entity.gridX, entity.gridY);

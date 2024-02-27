@@ -7092,7 +7092,13 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             if (lastHitPos.x !== projectilePos.x || lastHitPos.y !== projectilePos.y) {
                                 lastHitPos = projectilePos;
                                 let hitEntity = self.getEntityAt(projectilePos.x, projectilePos.y);
-                                if (hitEntity && Types.isMob(hitEntity.kind) && !hitEntity.isDead && !hitEntity.isFriendly) {
+                                if (hitEntity && (
+                                        Types.isMob(hitEntity.kind) ||
+                                        (Types.isPlayer(hitEntity.kind) && hitEntity.id !==shooterId && self.map.isInsidePvpZone(hitEntity.gridX, hitEntity.gridY))
+                                    ) &&
+                                    !hitEntity.isDead &&
+                                    !hitEntity.isFriendly
+                                ) {
                                     if (projectile.shooter.id === self.player.id) {
                                         hitEntity.hit();
                                         self.client.sendHit(hitEntity);
@@ -7844,6 +7850,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     && (!this.hoveringPlateauTile || pos.keyboard)
                     && !hoveringPanel
                     && !(this.doorCheck)) {
+
                     entity = this.getEntityAt(pos.x, pos.y);
 
                     // an entity is not in the entity grid but is on the pathing grid
@@ -7856,7 +7863,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         this.makePlayerAttack(entity);
                     } else if (entity instanceof Player && entity.id !== this.player.id) {
                         var inPvpZone = this.map.isInsidePvpZone(entity.gridX, entity.gridY);
-                        if (inPvpZone) {
+                        var playerInPvpZone = this.map.isInsidePvpZone(self.player.gridX, self.player.gridY);
+                        if (inPvpZone && playerInPvpZone) {
                             this.makePlayerAttack(entity);
                         } else {
                             this.removeFromPathingGrid(pos.x, pos.y);
