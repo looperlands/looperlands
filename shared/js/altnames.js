@@ -86,6 +86,13 @@ const AltNames = {
     horde5: ".65 Late Flea", 
     fleaboss: "Giant Late Flea",
 
+    //m88n Dreamland Duckies
+    m88ndreamduckyy: "Yellow Rubber Ducky",  
+    m88ndreamduckyg: "Green Rubber Ducky",  
+    m88ndreamduckyb: "Blue Rubber Ducky",  
+    m88ndreamduckyp: "Purple Rubber Ducky",  
+    m88ndreamduckyr: "Red Rubber Ducky",
+
     //BITCORN PHISHIES
     bit_BoneFish: "a BoneFish",
     bit_Corn: "RIVER CORN!",

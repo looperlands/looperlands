@@ -432,6 +432,12 @@ define(['text!../sprites/agent.json',
         'text!../sprites/horde3.json',
         'text!../sprites/horde4.json',
         'text!../sprites/horde5.json',
+        //m88n's dream duckies
+        'text!../sprites/m88ndreamduckyy.json',
+        'text!../sprites/m88ndreamduckyg.json',
+        'text!../sprites/m88ndreamduckyb.json',
+        'text!../sprites/m88ndreamduckyp.json',
+        'text!../sprites/m88ndreamduckyr.json',
         //mycupbloody npc
         'text!../sprites/GOFFREY.json',
         'text!../sprites/cobWalkingNpc1.json',
