@@ -75,7 +75,7 @@ define(['area'], function(Area) {
     
         load: function (basePath, name, loaded_callback, channels) {
 
-			if (!window.location.href.indexOf("127.0.0.1") > -1) {
+			if (!(window.location.href.indexOf("127.0.0.1") > -1)) {
 				basePath = 'https://cdn.jsdelivr.net/gh/balkshamster/looperlands@main/client/' + basePath;
 			}
 
