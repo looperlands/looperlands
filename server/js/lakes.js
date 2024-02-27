@@ -146,6 +146,17 @@ const Lakes = {
         }
     },
 
+    m88nDreamPond1: {
+        level: 1,
+        fish: {
+            m88ndreamduckyy: "common",
+            m88ndreamduckyg: "uncommon",
+            m88ndreamduckyb: "rare",
+            m88ndreamduckyp: "epic",
+            m88ndreamduckyr: "legendary",
+        }
+    },
+
     cornsinoSludgeRiver: {
         level: 1,
         fish: {
@@ -171,7 +182,7 @@ const Lakes = {
 // only EPIC fish can be a consumable
 const ConsumableFish = {
     hp: ["cobparadisefish","oafish27"],
-    atk: ["cobbluegill","oafish31","oafish22"],
+    atk: ["cobbluegill","oafish31","oafish22","m88ndreamduckyp"],
     exp: ["cobgreensunfish","oafish36", "lollipop"]
 };
 
