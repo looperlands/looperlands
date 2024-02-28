@@ -330,6 +330,9 @@ body.upscaled.game {background:#000;}
 #fish-marker{background:url('../img/1/fishing.png');image-rendering:-moz-crisp-edges;position:absolute;z-index:58;}
 #fish {z-index:60;}
 
+#slotsprompt {background:url('../img/1/cornWinkyFish.png');image-rendering:-moz-crisp-edges;position:absolute;top:50%;left:50%;z-index:50;display:none;pointer-events:none;cursor:pointer;}
+#slotsprompt.active {display:block;pointer-events:auto;}
+
 #notifications {position:absolute;left:50%;text-align:center;font-family:'GraphicPixel';overflow:hidden;}
 #notifications div {position:absolute;-moz-transition:none;-webkit-transition:none;top:0;width:100%;}
 #notifications div.top {-moz-transition:0.5s top ease;-webkit-transition:0.5s top ease;-o-transition:0.5s top ease;-ms-transition:0.5s top ease;transition:0.5s top ease;}

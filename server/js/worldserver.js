@@ -234,6 +234,7 @@ module.exports = World = cls.Class.extend({
                 var area = new Area(a.id, a.x, a.y, a.w, a.h, self);
                 area.trigger = a.trigger;
                 area.message = a.message;
+                area.css = a.css;
                 area.delay = a.delay;
                 self.triggerAreas[a.id] = area;
             });
@@ -261,22 +262,28 @@ module.exports = World = cls.Class.extend({
 
         var regenCount = this.ups * 2;
         var updateCount = 0;
-        setInterval(function () {
-            if (self.getPlayerCount() < 1) {
-                return;
-            }
-            self.processGroups();
-            self.processQueues();
 
-            if (updateCount < regenCount) {
-                updateCount += 1;
-            } else {
-                if (self.regen_callback) {
-                    self.regen_callback();
+        function mainLoop() {
+            try {
+                if (self.getPlayerCount() < 1) {
+                    return;
                 }
-                updateCount = 0;
+                self.processGroups();
+                self.processQueues();
+    
+                if (updateCount < regenCount) {
+                    updateCount += 1;
+                } else {
+                    if (self.regen_callback) {
+                        self.regen_callback();
+                    }
+                    updateCount = 0;
+                }
+            } finally {
+                setTimeout(mainLoop, 1000 / self.ups);
             }
-        }, 1000 / this.ups);
+        }
+        mainLoop();
 
         console.log(""+this.id+" created (capacity: "+this.maxPlayers+" players).");
     },

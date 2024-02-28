@@ -40,6 +40,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.selectedCellVisible = false;
                 this.targetColor = "rgba(255, 255, 255, 0.5)";
                 this.targetCellVisible = true;
+                this.mousedown = false;
+                this.lastMousedown = null;
+                this.clickDuration = 100;   //minimum click duration to show handclick.png cursor
                 this.hoveringTarget = false;
                 this.hoveringMob = false;
                 this.hoveringItem = false;
@@ -82,7 +85,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.lowAmmoThreshold = 10;
 
                 // sprites
-                this.spriteNames = ["hand", "sword", "loot", "target", "talk", "float", "sparks", "shadow16", "rat", "skeleton", "skeleton2", "spectre", "boss", "deathknight",
+                this.spriteNames = ["hand", "handclick", "sword", "loot", "target", "talk", "float", "sparks", "shadow16", "rat", "skeleton", "skeleton2", "spectre", "boss", "deathknight",
                     "ogre", "crab", "snake", "eye", "bat", "goblin", "wizard", "guard", "king", "villagegirl", "villager", "coder", "agent", "rick", "scientist", "nyan", "priest", "coblumberjack", "cobhillsnpc", "cobcobmin", "cobellen", "cobjohnny", "cobashley",
                     "king2", "goose", "tanashi", "slime","kingslime","silkshade","redslime","villagesign1","wildgrin","loomleaf","gnashling","arachweave","spider","fangwing", "minimag", "miner", "megamag", "seacreature", "tentacle", "tentacle2", "wildwill","shopowner","blacksmith",
                     "cobchicken", "alaric","orlan","jayce", "cobcow", "cobpig", "cobgoat", "ghostie","cobslimered", "cobslimeyellow", "cobslimeblue", "cobslimepurple", "cobslimegreen", "cobslimepink", "cobslimecyan", "cobslimemint", "cobslimeking", "cobyorkie", "cobcat", "cobdirt", "cobincubator", "cobcoblin", "cobcobane", "cobogre",
@@ -119,6 +122,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "oafish11", "oafish12", "oafish13", "oafish14", "oafish15", "oafish16", "oafish17", "oafish18", "oafish19", "oafish20",
                     "oafish21", "oafish22", "oafish23", "oafish24", "oafish25", "oafish26", "oafish27", "oafish28", "oafish29", "oafish30",
                     "oafish31", "oafish32", "oafish33", "oafish34", "oafish35", "oafish36",
+                    //m88n Dream Duckies
+                    "m88ndreamduckyy", "m88ndreamduckyg", "m88ndreamduckyb", "m88ndreamduckyp", "m88ndreamduckyr",
                     /////
                     "VILLAGESIGN11",
                     "VILLAGESIGN12",
@@ -229,8 +234,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "item-EYEBALL",
                     "item-REDPOTION",
                     "item-GREYPOTION",
-                     //Bitcorn Phishes
-                    "cornfish_placeholder",
+                     //BITCORN PHISHIES
+                    "bit_BoneFish", "bit_Corn", "bit_FEET", "bit_freshPrawnce", "bit_JEFF", "bit_Kickle", "bit_maCORNtosh", "bit_MrPunchy", "bit_SnaggletoothEel", "bit_NOPEmato", "cornBootFish", "cornCanFish", "cornWinkyFish",
                     // @nextObjectLine@
                     "NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6",
                     "NFT_38278eacc7d1c86fdbc85d798dca146fbca59a2e5e567dc15898ce2edac21f5f",
@@ -5259,7 +5264,6 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 "NFT_short2d716d24c454a4616f810e8f439a05017fa7d43ab3ccafaa3de39a517c5eb38b",
                                 "NFT_medium2d716d24c454a4616f810e8f439a05017fa7d43ab3ccafaa3de39a517c5eb38b",
                                 "NFT_long2d716d24c454a4616f810e8f439a05017fa7d43ab3ccafaa3de39a517c5eb38b",
-                                "NFT_4F3A404D96CDD021449B3AB5908D2EB3B84E831C_5498761",
                                 "NFT_52e7cfbbb559453de7344835957efd130d35e3bbed45fba656994e010a2759cb",
                                 "NFT_short52e7cfbbb559453de7344835957efd130d35e3bbed45fba656994e010a2759cb",
                                 "NFT_medium52e7cfbbb559453de7344835957efd130d35e3bbed45fba656994e010a2759cb",
@@ -5277,6 +5281,42 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 "NFT_shortd0a588d08323f2a513096f8bf5856b6162e7ff42a7e0c96c4d589e61cb163d7a",
                                 "NFT_mediumd0a588d08323f2a513096f8bf5856b6162e7ff42a7e0c96c4d589e61cb163d7a",
                                 "NFT_longd0a588d08323f2a513096f8bf5856b6162e7ff42a7e0c96c4d589e61cb163d7a",
+                                "NFT_5f4bc89474f0309e5ba74400f10a2299729135232479286ef8a5ff635eed9299",
+                                "NFT_short5f4bc89474f0309e5ba74400f10a2299729135232479286ef8a5ff635eed9299",
+                                "NFT_medium5f4bc89474f0309e5ba74400f10a2299729135232479286ef8a5ff635eed9299",
+                                "NFT_long5f4bc89474f0309e5ba74400f10a2299729135232479286ef8a5ff635eed9299",
+                                "NFT_15c7740cfff7273804d2a86702e99697c15f06bd54d4ab11a13a173791c89ebc",
+                                "NFT_73964119930274d788fef6ff88c4d2652edd6dca5e97a691e58580072f52804c",
+                                "NFT_short73964119930274d788fef6ff88c4d2652edd6dca5e97a691e58580072f52804c",
+                                "NFT_medium73964119930274d788fef6ff88c4d2652edd6dca5e97a691e58580072f52804c",
+                                "NFT_long73964119930274d788fef6ff88c4d2652edd6dca5e97a691e58580072f52804c",
+                                "NFT_882879c64e870c681d6f76e59270fdeef85ba4d22d281e60fedb4be82fcb1a81",
+                                "NFT_d05998eff1ae3bb65dcaa0077d02e39a3a35d06a24d6c43576360b7feae55a99",
+                                "NFT_139b4906d04d012fd7b296bb06182b67d9f88734cf89a1de9b87e97508a82500",
+                                "NFT_6584b6eba303f6c76dd151e6f4c184e6d7139ffb46233d8779b59d34686d3f8f",
+                                "NFT_8768a3c1e45e4ea63efe312b81778244d69601867db9f229caf83f66314634be",
+                                "NFT_adbfc05a478d0b3f1ccfc28ae408dcd9cc6e9eebca7877fad19b9b233438af24",
+                                "NFT_shortadbfc05a478d0b3f1ccfc28ae408dcd9cc6e9eebca7877fad19b9b233438af24",
+                                "NFT_mediumadbfc05a478d0b3f1ccfc28ae408dcd9cc6e9eebca7877fad19b9b233438af24",
+                                "NFT_longadbfc05a478d0b3f1ccfc28ae408dcd9cc6e9eebca7877fad19b9b233438af24",
+                                "NFT_4F3A404D96CDD021449B3AB5908D2EB3B84E831C_5493562",
+                                "NFT_19531ea970b310f8867dda6219614cff6592c31240742fe106baa46fcdab73bc",
+                                "NFT_25731e27bda51085704998afda5332c16696a34b416eb5f1859082839bbf7196",
+                                "NFT_6553fb56030bf2290678f0ff88664c9da2167428591ab013381a98c17de3f533",
+                                "NFT_7c2c2a3bd8a8d002e5672e7a085d2dc142fdec571466c89f213e5b096aa376a3",
+                                "NFT_91088446ca4625ef0936bbf5a9a60aaf2012d6a084cf9bc6598141e3711a7cfa",
+                                "NFT_96a11a0753ae414fa5a3682d5a5ada484e8a0e9cbb44e29df93e1720b0fbc25a",
+                                "NFT_9f3ae3dadf8709267f19af03b9aa35afa703d6d61a6e99fe75ba16c5d28cbefb",
+                                "NFT_a650c965bf0f754be062b2f5c9982a65a95c18f6b36a890885b2bd582b2badd8",
+                                "NFT_c4631a2d92d1c6e33fe7167dc2eb6e49e2fb9c5df6f741e70f6d66f8cf8e30f1",
+                                "NFT_shortc4631a2d92d1c6e33fe7167dc2eb6e49e2fb9c5df6f741e70f6d66f8cf8e30f1",
+                                "NFT_mediumc4631a2d92d1c6e33fe7167dc2eb6e49e2fb9c5df6f741e70f6d66f8cf8e30f1",
+                                "NFT_longc4631a2d92d1c6e33fe7167dc2eb6e49e2fb9c5df6f741e70f6d66f8cf8e30f1",
+                                "NFT_f06afcab0bac5f5e7b40edb0b2c1127886853dd1421c1636b5717744fecf80dd",
+                                "NFT_f17959056e4d31e16376b32c960c68c865d43efeb43b098a05dbd5e5f0d7d063",
+                                "NFT_shortf17959056e4d31e16376b32c960c68c865d43efeb43b098a05dbd5e5f0d7d063",
+                                "NFT_mediumf17959056e4d31e16376b32c960c68c865d43efeb43b098a05dbd5e5f0d7d063",
+                                "NFT_longf17959056e4d31e16376b32c960c68c865d43efeb43b098a05dbd5e5f0d7d063",
                                 // @nextSpriteLine@
                 ];
             },
@@ -5347,6 +5387,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
             initCursors: function() {
                 this.cursors["hand"] = this.sprites["hand"];
+                this.cursors["handclick"] = this.sprites["handclick"];
                 this.cursors["sword"] = this.sprites["sword"];
                 this.cursors["loot"] = this.sprites["loot"];
                 this.cursors["target"] = this.sprites["target"];
@@ -5366,68 +5407,30 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
             initFish: function() {
                 this.fish = {};
-                this.fish["cobneon"] = this.sprites["cobneon"];
-                this.fish["cobguppy"] = this.sprites["cobguppy"];
-                this.fish["cobgoldfish"] = this.sprites["cobgoldfish"];
-                this.fish["coblobster"] = this.sprites["coblobster"];
-                this.fish["cobcatfish"] = this.sprites["cobcatfish"];
-                this.fish["cobtrout"] = this.sprites["cobtrout"];
-                this.fish["cobangelfish"] = this.sprites["cobangelfish"];
-                this.fish["cobsardine"] = this.sprites["cobsardine"];
-                this.fish["cobstingray"] = this.sprites["cobstingray"];
-                this.fish["cobwhiting"] = this.sprites["cobwhiting"];
-                this.fish["cobrosette"] = this.sprites["cobrosette"];
-                this.fish["cobparadisefish"] = this.sprites["cobparadisefish"];
-                this.fish["cobfatheadminnow"] = this.sprites["cobfatheadminnow"];
-                this.fish["cobgrasscarp"] = this.sprites["cobgrasscarp"];
-                this.fish["cobgreensunfish"] = this.sprites["cobgreensunfish"];
-                this.fish["cobcruciancarp"] = this.sprites["cobcruciancarp"];
-                this.fish["cobbluegill"] = this.sprites["cobbluegill"];
-                ////OAFISHIES
-                this.fish["oagreyfish"] = this.sprites["oagreyfish"];
-                this.fish["oafish1"] = this.sprites["oafish1"];
-                this.fish["oafish2"] = this.sprites["oafish2"];
-                this.fish["oafish3"] = this.sprites["oafish3"];
-                this.fish["oafish4"] = this.sprites["oafish4"];
-                this.fish["oafish5"] = this.sprites["oafish5"];
-                this.fish["oafish6"] = this.sprites["oafish6"];
-                this.fish["oafish7"] = this.sprites["oafish7"];
-                this.fish["oafish8"] = this.sprites["oafish8"];
-                this.fish["oafish9"] = this.sprites["oafish9"];
-                this.fish["oafish10"] = this.sprites["oafish10"];
-                this.fish["oafish11"] = this.sprites["oafish11"];
-                this.fish["oafish12"] = this.sprites["oafish12"];
-                this.fish["oafish13"] = this.sprites["oafish13"];
-                this.fish["oafish14"] = this.sprites["oafish14"];
-                this.fish["oafish15"] = this.sprites["oafish15"];
-                this.fish["oafish16"] = this.sprites["oafish16"];
-                this.fish["oafish17"] = this.sprites["oafish17"];
-                this.fish["oafish18"] = this.sprites["oafish18"];
-                this.fish["oafish19"] = this.sprites["oafish19"];
-                this.fish["oafish20"] = this.sprites["oafish20"];
-                this.fish["oafish21"] = this.sprites["oafish21"];
-                this.fish["oafish22"] = this.sprites["oafish22"];
-                this.fish["oafish23"] = this.sprites["oafish23"];
-                this.fish["oafish24"] = this.sprites["oafish24"];
-                this.fish["oafish25"] = this.sprites["oafish25"];
-                this.fish["oafish26"] = this.sprites["oafish26"];
-                this.fish["oafish27"] = this.sprites["oafish27"];
-                this.fish["oafish28"] = this.sprites["oafish28"];
-                this.fish["oafish29"] = this.sprites["oafish29"];
-                this.fish["oafish30"] = this.sprites["oafish30"];
-                this.fish["oafish31"] = this.sprites["oafish31"];
-                this.fish["oafish32"] = this.sprites["oafish32"];
-                this.fish["oafish33"] = this.sprites["oafish33"];
-                this.fish["oafish34"] = this.sprites["oafish34"];
-                this.fish["oafish35"] = this.sprites["oafish35"];
-                this.fish["oafish36"] = this.sprites["oafish36"];
-                //Bitcorn Phish
-                this.fish["cornfish_placeholder"] = this.sprites["cornfish_placeholder"];
-                //SDU FISH
-                this.fish["clownfish"] = this.sprites["clownfish"];
-                this.fish["swedishfish"] = this.sprites["swedishfish"];
-                this.fish["rainbowfish"] = this.sprites["rainbowfish"];
-                this.fish["lollipop"] = this.sprites["lollipop"];
+
+                const fishGroups = [
+                    /* COBS FARM FISH*/ 
+                    ["cobneon", "cobguppy", "cobgoldfish", "coblobster", "cobcatfish", "cobtrout", "cobangelfish", "cobsardine", "cobstingray", "cobwhiting", "cobrosette", "cobparadisefish", "cobfatheadminnow", "cobgrasscarp", "cobgreensunfish", "cobcruciancarp", "cobbluegill"],
+
+                    /* OAFISHIES*/ 
+                    ["oagreyfish", "oafish1", "oafish2", "oafish3", "oafish4", "oafish5", "oafish6", "oafish7", "oafish8", "oafish9", "oafish10", "oafish11", "oafish12", "oafish13", "oafish14", "oafish15", "oafish16", "oafish17", "oafish18", "oafish19", "oafish20", "oafish21", "oafish22", "oafish23", "oafish24", "oafish25", "oafish26", "oafish27", "oafish28", "oafish29", "oafish30", "oafish31", "oafish32", "oafish33", "oafish34", "oafish35", "oafish36"],
+
+                    /* SDU FISH*/
+                    ["clownfish", "swedishfish", "rainbowfish", "lollipop"],
+
+                    /* m88n Duckies*/
+                    ["m88ndreamduckyy", "m88ndreamduckyg", "m88ndreamduckyb", "m88ndreamduckyp", "m88ndreamduckyr",],
+
+                    /*BITCORN PHISHIES*/
+                    ["bit_BoneFish", "bit_Corn", "bit_FEET", "bit_freshPrawnce", "bit_JEFF", "bit_Kickle", "bit_maCORNtosh", "bit_MrPunchy", "bit_SnaggletoothEel", "bit_NOPEmato", "cornBootFish", "cornCanFish", "cornWinkyFish"],
+                
+                ];
+
+                fishGroups.forEach(group => {
+                    group.forEach(key => {
+                        this.fish[key] = this.sprites[key];
+                    });
+                });
             },
 
             initAnimations: function() {
@@ -5579,8 +5582,19 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     this.setCursor("float");
                     this.hoveringTarget = false;
                     this.targetCellVisible = true;
-                }
-                else {
+                } else if(this.mousedown) {
+                    if (!this.lastMousedown) {
+                        this.setCursor("handclick");
+                        this.lastMousedown = new Date().getTime();
+                    } 
+                    else if(this.currentCursorName == "handclick" && this.currentTime > this.lastMousedown + this.clickDuration) {
+                        //wait to make sure the cursor was changed, then allow the duration to be checked.     
+                        this.lastMousedown = null;
+                        this.mousedown = false;
+                    }
+                    this.hoveringTarget = false;
+                    this.targetCellVisible = true;
+                } else {
                     this.setCursor("hand");
                     this.hoveringTarget = false;
                     this.targetCellVisible = true;
@@ -5984,16 +5998,6 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         this.gamepadListener = new GamepadListener(this);
                     }
                 }
-
-                /*
-            if(!this.isStopped) {
-                if (this.windowHidden) {
-                    setTimeout(this.tick.bind(this), 1000/60);
-                } else {
-                    requestAnimFrame(this.tick.bind(this));
-                }
-            }
-            */
             },
 
             start: function() {
@@ -6001,6 +6005,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.hasNeverStarted = false;
                 $("#background").css('background', 'none');
                 console.log("Game loop started.");
+
+                setInterval(this.garbageCollectEntities.bind(this), 5000);
             },
 
             stop: function() {
@@ -6488,7 +6494,6 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                             self.player = null;
                             self.client.disable();
-
                             setTimeout(function() {
                                 self.playerdeath_callback();
                             }, 1000);
@@ -7084,10 +7089,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                     function cleanProjectile(projectile, x, y) {
                         if (projectile) {
+                            projectile.lastUpdate = self.currentTime;
                             projectile.setVisible(false);
                             self.removeFromRenderingGrid(projectile, x, y);
                             self.removeEntity(projectile);
-                            delete projectile;
                         }
                     }
 
@@ -7104,7 +7109,13 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             if (lastHitPos.x !== projectilePos.x || lastHitPos.y !== projectilePos.y) {
                                 lastHitPos = projectilePos;
                                 let hitEntity = self.getEntityAt(projectilePos.x, projectilePos.y);
-                                if (hitEntity && Types.isMob(hitEntity.kind) && !hitEntity.isDead && !hitEntity.isFriendly) {
+                                if (hitEntity && (
+                                        Types.isMob(hitEntity.kind) ||
+                                        (Types.isPlayer(hitEntity.kind) && hitEntity.id !==shooterId && self.map.isInsidePvpZone(hitEntity.gridX, hitEntity.gridY))
+                                    ) &&
+                                    !hitEntity.isDead &&
+                                    !hitEntity.isFriendly
+                                ) {
                                     if (projectile.shooter.id === self.player.id) {
                                         hitEntity.hit();
                                         self.client.sendHit(hitEntity);
@@ -7123,6 +7134,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                     return;
                                 }
                             }
+                            projectile.lastUpdate = self.currentTime;
                         });
                         projectile.onDestination((finishedProjectile) => {
                             if (lastHitPos.x !== finishedProjectile.gridX || lastHitPos.y !== finishedProjectile.gridY) {
@@ -7822,8 +7834,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     this.keyboardMovement = true;
                     clickThrottle = 25;
                 } else {
-                    clickThrottle = 500;
+                    this.mousedown = true;
                     this.keyboardMovement = false;
+                    clickThrottle = 500;
                 }
 
                 let now = new Date().getTime();
@@ -7833,6 +7846,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         return;
                     }
                 }
+
                 self.lastClick = now;
 
                 if(pos.x === this.previousClickPosition.x
@@ -7853,6 +7867,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     && (!this.hoveringPlateauTile || pos.keyboard)
                     && !hoveringPanel
                     && !(this.doorCheck)) {
+
                     entity = this.getEntityAt(pos.x, pos.y);
 
                     // an entity is not in the entity grid but is on the pathing grid
@@ -7865,7 +7880,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         this.makePlayerAttack(entity);
                     } else if (entity instanceof Player && entity.id !== this.player.id) {
                         var inPvpZone = this.map.isInsidePvpZone(entity.gridX, entity.gridY);
-                        if (inPvpZone) {
+                        var playerInPvpZone = this.map.isInsidePvpZone(self.player.gridX, self.player.gridY);
+                        if (inPvpZone && playerInPvpZone) {
                             this.makePlayerAttack(entity);
                         } else {
                             this.removeFromPathingGrid(pos.x, pos.y);
@@ -7989,13 +8005,22 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         return;
                     }
                     self.client.sendTrigger(trigger.id, true);
-                    if (trigger.message) {
+                    if(entity.id === self.player.id  && trigger.player_message) {
+                        self.showNotification(trigger.player_message);
+                    } else if(trigger.message) {
                         self.showNotification(trigger.message);
+                    }
+
+                    if (trigger.css){
+                        $(trigger.css).addClass('active');
                     }
 
                     entity.onLeave(trigger, function () {
                         entity.triggerArea = null;
                         self.client.sendTrigger(trigger.id, false);
+                        if (trigger.css){
+                            $(trigger.css).removeClass('active');
+                        }
                     })
                 }
             },
@@ -8842,7 +8867,25 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 } else {
                     $('#resources').removeClass('hidden');
                 }
+            },
+
+        
+            garbageCollectEntities: function() {
+                let self = this;
+                this.camera.forEachVisiblePosition(function(x, y) {
+                    if(!self.map.isOutOfBounds(x, y)) {
+                        if(self.renderingGrid[y][x]) {
+                            _.each(self.renderingGrid[y][x], function(entity) {
+                                if (entity && self.currentTime - entity.lastUpdate > 5000) {
+                                    //console.log("Garbage collecting entity " + entity.id);
+                                    self.removeFromRenderingGrid(entity, x, y);
+                                }
+                            });
+                        }
+                    }
+                }, this.renderer.mobile ? 0 : 2);
             }
+
         });
 
         return Game;

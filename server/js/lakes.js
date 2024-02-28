@@ -1,10 +1,12 @@
+const { all } = require("underscore");
 const Utils = require("./utils");
 
-const rarities = {common: {chance: 700, expMultiplier: 1, speed: 20},
-                uncommon: {chance: 243, expMultiplier: 2, speed: 15},
-                rare: {chance: 40, expMultiplier: 5, speed: 11},
-                epic: {chance: 15, expMultiplier: 20, speed: 8},
-                legendary: {chance: 2, expMultiplier: 50, speed: 6}};
+const rarities = {
+    common: {chance: 700, expMultiplier: 1, speed: 20},
+    uncommon: {chance: 243, expMultiplier: 2, speed: 15},
+    rare: {chance: 40, expMultiplier: 5, speed: 11},
+    epic: {chance: 15, expMultiplier: 20, speed: 8},
+    legendary: {chance: 2, expMultiplier: 50, speed: 6}};
 
 //---START CONFIG---
 //Not all rarities have to be defined within a lake, but a COMMON is mandatory
@@ -144,10 +146,24 @@ const Lakes = {
         }
     },
 
+    m88nDreamPond1: {
+        level: 1,
+        fish: {
+            m88ndreamduckyy: "common",
+            m88ndreamduckyg: "uncommon",
+            m88ndreamduckyb: "rare",
+            m88ndreamduckyp: "epic",
+            m88ndreamduckyr: "legendary",
+        }
+    },
+
     cornsinoSludgeRiver: {
         level: 1,
         fish: {
-            cornfish_placeholder: "common",
+            ...Object.fromEntries(["bit_BoneFish", "bit_freshPrawnce", "bit_maCORNtosh", "cornBootFish"].map(fish => [fish, "common"])),
+            ...Object.fromEntries(["bit_FEET", "bit_Kickle", "bit_Corn", "bit_NOPEmato", "cornCanFish"].map(fish => [fish, "epic"])),
+            ...Object.fromEntries(["bit_MrPunchy, bit_SnaggletoothEel"].map(fish => [fish, "rare"])),
+            ...Object.fromEntries(["bit_JEFF", "cornWinkyFish"].map(fish => [fish, "legendary"]))
         }
     },
 
@@ -166,7 +182,7 @@ const Lakes = {
 // only EPIC fish can be a consumable
 const ConsumableFish = {
     hp: ["cobparadisefish","oafish27"],
-    atk: ["cobbluegill","oafish31","oafish22"],
+    atk: ["cobbluegill","oafish31","oafish22","m88ndreamduckyp"],
     exp: ["cobgreensunfish","oafish36", "lollipop"]
 };
 
@@ -211,29 +227,27 @@ Lakes.getRandomFish = function(lake, lucky) {
         return Object.keys(Lakes[lake].fish)[0];
     }
 
-    let luckyFish = false;
-    if (lucky){
-        luckyFish = Lakes.getRandomFish(lake, false);
-    }
+    let luckyFish = lucky ? Lakes.getRandomFish(lake,false) : false;
+
     let allFish = Lakes[lake].fish,
         p = 0,
         retRarity = null,
         oddsSum = Object.values(rarities).reduce((partialSum, curr) => partialSum + curr.chance, 0),
         v = Utils.random(oddsSum);
+
         for(let rarity in rarities) {
             let percentage = rarities[rarity].chance;
-            
             p += percentage;
+            
             if(v < p) {
                 retRarity = rarity;
                 break;
             }
         }
 
-        let retFish = Object.keys(allFish).find(key => allFish[key] === retRarity);
-        if (retFish === undefined){
-            retFish = Object.keys(allFish).find(key => allFish[key] === "common");
-        }
+    let retFish = Object.keys(allFish).filter(key => allFish[key] === retRarity) || Object.keys(allFish).filter(key => allFish[key] === "common");
+    retFish = Utils.shuffleAndGetRandom(retFish);
+
         if(luckyFish && rarities[allFish[luckyFish]].chance < rarities[allFish[retFish]].chance) {
             return luckyFish;
         } else {

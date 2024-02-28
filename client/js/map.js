@@ -221,6 +221,8 @@ define(['jquery', 'area'], function ($, Area) {
                 var area = new Area(trigger.x, trigger.y, trigger.w, trigger.h);
                 area.id = trigger.id;
                 area.message = trigger.message;
+                area.player_message = trigger.player_message;
+                area.css = trigger.css;
                 triggers[self.GridPositionToTileIndex(trigger.x, trigger.y)] = area;
             });
             return triggers;

@@ -73,3 +73,17 @@ Utils.distanceTo = function(x, y, x2, y2) {
 
     return (distX > distY) ? distX : distY;
 };
+
+Utils.shuffleArray = function(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+};
+
+Utils.shuffleAndGetRandom = function(arrayOrValue) {
+    const shuffledArray = Array.isArray(arrayOrValue) ? Utils.shuffleArray([...arrayOrValue]) : arrayOrValue;
+    return Array.isArray(shuffledArray) ? shuffledArray[Math.floor(Math.random() * shuffledArray.length)] : shuffledArray;
+};
+
