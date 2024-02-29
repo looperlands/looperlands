@@ -157,6 +157,32 @@ const Lakes = {
         }
     },
 
+    m88nDreamPond2: {
+        level: 2,
+        fish: {
+            m88ndreamcandyy: "common",
+            m88ndreamcandyo: "common",
+            m88ndreamcandyp: "common",
+            m88ndreamcandyg: "uncommon",
+            m88ndreamcandyb: "rare",
+            m88ndreamcandyr: "epic",
+            m88ndreamcandya: "legendary",
+        }
+    },
+
+    m88nDreamPond3: {
+        level: 3,
+        fish: {
+            m88ndreamgumbally: "common",
+            m88ndreamgumballo: "common",
+            m88ndreamgumballp: "common",
+            m88ndreamgumballg: "uncommon",
+            m88ndreamgumballb: "rare",
+            m88ndreamgumballa: "epic",
+            m88ndreamgumballr: "legendary",
+        }
+    },
+
     cornsinoSludgeRiver: {
         level: 1,
         fish: {
@@ -181,9 +207,9 @@ const Lakes = {
 };
 // only EPIC fish can be a consumable
 const ConsumableFish = {
-    hp: ["cobparadisefish","oafish27"],
+    hp: ["cobparadisefish","oafish27","m88ndreamcandyr"],
     atk: ["cobbluegill","oafish31","oafish22","m88ndreamduckyp"],
-    exp: ["cobgreensunfish","oafish36", "lollipop"]
+    exp: ["cobgreensunfish","oafish36", "lollipop","m88ndreamgumballa"]
 };
 
 //---END CONFIG---
