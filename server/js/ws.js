@@ -185,7 +185,7 @@ WS.socketIOServer = Server.extend({
                 // teleport request
                 if (body.x !== undefined && body.y !== undefined) {
                     let checkpoint = self.worldsMap[body.mapId].map.findClosestCheckpoint(body.x, body.y);
-                    await dao.saveAvatarCheckpointId(body.nftId, checkpoint.id);
+                    await dao.saveAvatarMapAndCheckpoint(body.nftId, body.mapId, checkpoint.id);
                 }
             }
 
