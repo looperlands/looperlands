@@ -1,6 +1,6 @@
 function slotsButtonClick(){
     console.log("Slots button pressed!");
-    $("#slotsprompt").removeClass("active");
+    $("#minigameprompt").removeClass("active");
     $("#minigame").addClass("active");
     $('#minigame').load("apps/luckyfunkz/slots.html");
 }

@@ -24,6 +24,14 @@
         </div>
         <script type="text/javascript">
             init();
+
+            window.addEventListener('resize', function () {
+                var buttonPanel = document.getElementById("buttonPanel");
+
+                if (buttonPanel) {
+                    updateButtonPanelWidth(window.innerHeight, buttonPanel);
+                }
+            });
         </script>
     </body>
 </html>
