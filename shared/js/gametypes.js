@@ -298,6 +298,8 @@ Types = {
         CUSTOMER2: 77000015,
         PORTALGILL: 77000016,
         FLYER: 77000017,
+        //m88n
+        WENMOON: 78000000,
         //mycupbloody
         EYEBALL: 80000005,
         REDPOTION: 80000006,
@@ -5637,6 +5639,8 @@ var kinds = {
     customer1: [Types.Entities.CUSTOMER1, "npc"],
     customer2: [Types.Entities.CUSTOMER2, "npc"],
     portalgill: [Types.Entities.PORTALGILL, "npc"],
+    //m88n NPCs
+    wenmoon: [Types.Entities.WENMOON, "npc"],
     // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],
