@@ -268,37 +268,24 @@ exports.getSpecialItems = async function (wallet) {
   }
 }
 
-exports.saveAvatarMapId = async function(nft, mapId) {
+exports.saveAvatarMapAndCheckpoint = async function(nft, mapId, checkpointId) {
+  // Define base options for the request
   const options = {
     headers: {
       'X-Api-Key': API_KEY
     }
-  }
-  const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/SaveMap.php?NFTID=${nft}&mapId=${mapId}`;
+  };
+
+  // Construct the URL with both mapId and checkpointId
+  const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/SaveMapCheckpoint.php?NFTID=${nft}&mapId=${mapId}&checkpointId=${checkpointId}`;
+
+  // Attempt to make the HTTP request
   try {
     const response = await axios.get(url, options);
     return response.data;
   } catch (error) {
-    console.error("saveAvatarMapId", error);
-    return { "error": "Error saving avatar map id" };
-  }
-}
-
-exports.saveAvatarCheckpointId = async function(nft, checkpointId) {
-
-  //console.log("saveAvatarCheckpointId", nft, checkpointId);
-  const options = {
-    headers: {
-      'X-Api-Key': API_KEY
-    }
-  }
-  const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/SaveCheckpoint.php?NFTID=${nft}&checkpointId=${checkpointId}`;
-  try {
-    const response = await axios.get(url, options);
-    return response.data;
-  } catch (error) {
-    console.error("saveAvatarCheckpoint", error);
-    return { "error": "Error saving avatar checkpoint id" };
+    console.error("saveAvatarMapAndCheckpoint", error);
+    return { "error": "Error saving avatar map and checkpoint id" };
   }
 }
 
