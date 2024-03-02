@@ -334,7 +334,7 @@ body.upscaled.game {background:#000;}
 #slotsprompt.active {display:block;pointer-events:auto;}
 #slotsprompt:hover{background:url('../img/1/cornplayslotshover.png');}
 
-#minigame {top:0%;left:0%;width:auto;height:auto;display:none;cursor:none;z-index:50;pointer-events:none;}
+#minigame {position:absolute;top:0%;left:0%;width:100%;height:100%;display:none;cursor:none;z-index:50;pointer-events:none;}
 #minigame.active {display:block;pointer-events:auto;}
 
 #notifications {position:absolute;left:50%;text-align:center;font-family:'GraphicPixel';overflow:hidden;}
