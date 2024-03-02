@@ -936,6 +936,9 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.GUARDIANFINTAN]=function(id){return new NPCs.guardianfintan(id);};
     EntityFactory.builders[Types.Entities.GOFFREY]=function(id){return new NPCs.GOFFREY(id);};
 
+    //m88n NPCs
+    EntityFactory.builders[Types.Entities.WENMOON]=function(id){return new NPCs.wenmoon(id);};
+
     //ShortDestroyers
     EntityFactory.builders[Types.Entities.DERRICK]=function(id){return new NPCs.derrick(id);};
     EntityFactory.builders[Types.Entities.FROG]=function(id){return new NPCs.frog(id);};

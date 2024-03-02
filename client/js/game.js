@@ -124,6 +124,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "oafish31", "oafish32", "oafish33", "oafish34", "oafish35", "oafish36",
                     //m88n Dream Fishing
                     "m88ndreamduckyy", "m88ndreamduckyg", "m88ndreamduckyb", "m88ndreamduckyp", "m88ndreamduckyr","m88ndreamcandyy", "m88ndreamcandyg", "m88ndreamcandyb", "m88ndreamcandyp", "m88ndreamcandyr","m88ndreamgumbally", "m88ndreamgumballg", "m88ndreamgumballb", "m88ndreamgumballp", "m88ndreamgumballr",
+                    //m88n's NPCs
+                    "wenmoon",
                     /////
                     "VILLAGESIGN11",
                     "VILLAGESIGN12",
