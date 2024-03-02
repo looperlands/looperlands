@@ -486,7 +486,7 @@ function init() {
         can.width = reels_bg.naturalWidth;
         can.height = reels_bg.naturalHeight;
         var buttonPanel = document.getElementById("buttonPanel");
-        updateButtonPanelWidth(buttonPanel);
+        updateButtonPanelWidth(window.height, buttonPanel);
         
         reels_bg_loaded = true;
         if (font_loaded && symbols_loaded && reels_bg_loaded) render_reel();
