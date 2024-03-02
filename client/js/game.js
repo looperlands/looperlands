@@ -122,8 +122,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "oafish11", "oafish12", "oafish13", "oafish14", "oafish15", "oafish16", "oafish17", "oafish18", "oafish19", "oafish20",
                     "oafish21", "oafish22", "oafish23", "oafish24", "oafish25", "oafish26", "oafish27", "oafish28", "oafish29", "oafish30",
                     "oafish31", "oafish32", "oafish33", "oafish34", "oafish35", "oafish36",
-                    //m88n Dream Duckies
-                    "m88ndreamduckyy", "m88ndreamduckyg", "m88ndreamduckyb", "m88ndreamduckyp", "m88ndreamduckyr",
+                    //m88n Dream Fishing
+                    "m88ndreamduckyy", "m88ndreamduckyg", "m88ndreamduckyb", "m88ndreamduckyp", "m88ndreamduckyr","m88ndreamcandyy", "m88ndreamcandyg", "m88ndreamcandyb", "m88ndreamcandyp", "m88ndreamcandyr","m88ndreamgumbally", "m88ndreamgumballg", "m88ndreamgumballb", "m88ndreamgumballp", "m88ndreamgumballr",
+                    //m88n's NPCs
+                    "wenmoon",
                     /////
                     "VILLAGESIGN11",
                     "VILLAGESIGN12",
@@ -5317,6 +5319,24 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 "NFT_shortf17959056e4d31e16376b32c960c68c865d43efeb43b098a05dbd5e5f0d7d063",
                                 "NFT_mediumf17959056e4d31e16376b32c960c68c865d43efeb43b098a05dbd5e5f0d7d063",
                                 "NFT_longf17959056e4d31e16376b32c960c68c865d43efeb43b098a05dbd5e5f0d7d063",
+                                "NFT_06dccb87e3d6807373b15e08da48ef625d307128f69bde62ba36bca81ee7c958",
+                                "NFT_0dee5fafc7aed9124a66005658b261492dbd98401b2064e0a6962b0957baef1e",
+                                "NFT_26b24f90ccd41bee364f1624dd8bf357afa1a0441b1d2e9ccadd7dd5d9da5d6c",
+                                "NFT_4582bba8f9088939f06a326bce23239279e8281de331a746a5832e0a17e3b508",
+                                "NFT_4e15926d9346a8008aeae64bf9b5398d33325b2051014cc06f648dde71833277",
+                                "NFT_9600392b1c867a764c560c72650895b6d99b94bff4d0e077216f0bb7ad03ea41",
+                                "NFT_a15113517c1ec4314765480482bd6234b571491c93ebe9f7072c16287cae142b",
+                                "NFT_a3dbb1750426dfc5db7ad44ee156c55d03d925a4606d06f19e99958fbd38038d",
+                                "NFT_ada59adeaa732ec7d0a9f9f6d1fdcc2d429aeb86bb295879ee1fa57c3e5715b7",
+                                "NFT_c499ec0d472afa324b8e51ae2d72d1ae0346c0b86a7829240613c196aff642d3",
+                                "NFT_c9e9e1544bf1915e1f3b7138471bac20c3bd19ffea5cd0950b43345429bc73ba",
+                                "NFT_cbb1d9185b658e448885206d3dfdd853d92f1de4b399e3b8732b43a13cf8a0bd",
+                                "NFT_d6f29872d3065fb5e1440dc2f9b491df0d26799d0b21eca25f61a2213a3b77cf",
+                                "NFT_f33799148147b53c97bc105fec1ae30e45580738bec91f7819ecde96c365158c",
+                                "NFT_f70f44a3ee5b375450f8363cb987f5511700339bbefbc6e4ec16453b0c4261cc",
+                                "NFT_shortf70f44a3ee5b375450f8363cb987f5511700339bbefbc6e4ec16453b0c4261cc",
+                                "NFT_mediumf70f44a3ee5b375450f8363cb987f5511700339bbefbc6e4ec16453b0c4261cc",
+                                "NFT_longf70f44a3ee5b375450f8363cb987f5511700339bbefbc6e4ec16453b0c4261cc",
                                 // @nextSpriteLine@
                 ];
             },
@@ -5418,8 +5438,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     /* SDU FISH*/
                     ["clownfish", "swedishfish", "rainbowfish", "lollipop"],
 
-                    /* m88n Duckies*/
-                    ["m88ndreamduckyy", "m88ndreamduckyg", "m88ndreamduckyb", "m88ndreamduckyp", "m88ndreamduckyr",],
+                    /* m88n Fishing*/
+                    ["m88ndreamduckyy", "m88ndreamduckyg", "m88ndreamduckyb", "m88ndreamduckyp", "m88ndreamduckyr", "m88ndreamcandyy", "m88ndreamcandyo", "m88ndreamcandya", "m88ndreamcandyg", "m88ndreamcandyb", "m88ndreamcandyp", "m88ndreamcandyr", "m88ndreamgumbally", "m88ndreamgumballo", "m88ndreamgumballa", "m88ndreamgumballg", "m88ndreamgumballb", "m88ndreamgumballp", "m88ndreamgumballr"],
 
                     /*BITCORN PHISHIES*/
                     ["bit_BoneFish", "bit_Corn", "bit_FEET", "bit_freshPrawnce", "bit_JEFF", "bit_Kickle", "bit_maCORNtosh", "bit_MrPunchy", "bit_SnaggletoothEel", "bit_NOPEmato", "cornBootFish", "cornCanFish", "cornWinkyFish"],
