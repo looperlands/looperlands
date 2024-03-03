@@ -86,6 +86,27 @@ const AltNames = {
     horde5: ".65 Late Flea", 
     fleaboss: "Giant Late Flea",
 
+    //m88n Dreamland Fishing
+    m88ndreamduckyy: "Yellow Rubber Ducky",  
+    m88ndreamduckyg: "Green Rubber Ducky",  
+    m88ndreamduckyb: "Blue Rubber Ducky",  
+    m88ndreamduckyp: "Purple Rubber Ducky",  
+    m88ndreamduckyr: "Red Rubber Ducky",
+    m88ndreamcandyy: "Yellow Lemonhead",
+    m88ndreamcandyo: "Orange Gobstopper",
+    m88ndreamcandya: "Tropical Warhead",  
+    m88ndreamcandyg: "Green Apple Gobstopper",  
+    m88ndreamcandyb: "Blue Raspberry Warhead",  
+    m88ndreamcandyp: "Guava Gobstopper",  
+    m88ndreamcandyr: "Fireball",
+    m88ndreamgumbally: "Banana Gumball",
+    m88ndreamgumballo: "Mango Gumball",
+    m88ndreamgumballa: "Cotton Candy Gumball",  
+    m88ndreamgumballg: "Sour Apple Gumball",  
+    m88ndreamgumballb: "Blueberry Gumball",  
+    m88ndreamgumballp: "OG Gumball",  
+    m88ndreamgumballr: "Cinnamon Gumball",
+
     //BITCORN PHISHIES
     bit_BoneFish: "a BoneFish",
     bit_Corn: "RIVER CORN!",

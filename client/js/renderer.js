@@ -365,11 +365,12 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                     entityData.translateX = dx;
                     entityData.translateY = dy;
                 }
-            
+
                 if(entity.isVisible()) {
                     if(entity.hasShadow()) {
                         entityData.drawData.push({
                             "id": shadow.id,
+                            "spriteName": "shadow16",
                             "sx": 0,
                             "sy": 0,
                             "sW": shadow.width * os,
@@ -383,6 +384,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
 
                     entityData.drawData.push({
                         "id": sprite.id,
+                        "spriteName": entity.sprite.name,
                         "sx": x,
                         "sy": y,
                         "sW": w,
@@ -405,6 +407,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
 
                         entityData.drawData.push({
                             "id": sparks.id,
+                            "spriteName": "sparks",
                             "sx": sx,
                             "sy": sy,
                             "sW": sw,
@@ -430,6 +433,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
 
                         entityData.drawData.push({
                             "id": weapon.id,
+                            "spriteName": entity.getWeaponName(),
                             "sx": wx,
                             "sy": wy,
                             "sW": ww,

@@ -262,7 +262,8 @@ module.exports = World = cls.Class.extend({
 
         var regenCount = this.ups * 2;
         var updateCount = 0;
-        setInterval(function () {
+
+        setInterval(function() {
             if (self.getPlayerCount() < 1) {
                 return;
             }

@@ -62,7 +62,6 @@ function getX(id, w) {
 function drawScaledImage(ctx, image, x, y, w, h, dx, dy, scale) {
 
     //console.log(arguments);
-
     ctx.drawImage(image,
         x,
         y,
@@ -169,10 +168,11 @@ onmessage = (e) => {
         ctx.imageSmoothingEnabled  = false;
         contexes[id] = ctx;
     } else if (e.data.type === "loadSprite") {
-        let sprite = new Sprite(e.data.id, e.data.src, e.data.animationData, e.data.width, e.data.height, e.data.offsetX, e.data.offsetY);
-        sprites[sprite.id] = sprite;
+        sprites[e.data.spriteName] = new Sprite(e.data.spriteName, e.data.src, e.data.animationData, e.data.width, e.data.height, e.data.offsetX, e.data.offsetY);
     } else if (e.data.type === "idle") {
-        postMessage({ type: "rendered" });
+        requestAnimationFrame(() => {
+            postMessage({ type: "rendered" });
+        });
     }
 };
 
@@ -299,14 +299,15 @@ function drawEntities(drawEntitiesData) {
             ctx.scale(entityData.scaleX, entityData.scaleY);
         }
         let drawDataLength = entityData.drawData.length;
+
         for (let y = 0; y < drawDataLength; y++) {
             const drawData = entityData.drawData[y];
-            const {id, sx, sy, sW, sH, dx, dy, dW, dH, a} = drawData;
+            const {id, spriteName, sx, sy, sW, sH, dx, dy, dW, dH, a} = drawData;
 
-            let sprite = sprites[id];
+            let sprite = sprites[spriteName];
+
             if (sprite) {
                 try {
-
                     if(a) {
                         let centerX = dW / 2;
                         let centerY = dH / 2;
@@ -324,12 +325,15 @@ function drawEntities(drawEntitiesData) {
                         ctx.drawImage(sprite.image, sx, sy, sW, sH, dx, dy, dW, dH);
                     }
                 } catch (e) {
+                    console.log('exception', e);
                     if (sprite.image === undefined) {
                         sprite.load();
                     } else {
                         console.log(e);
                     }
                 }
+            } else {
+                console.log('no sprite', spriteName);
             }
         }
         ctx.restore();
