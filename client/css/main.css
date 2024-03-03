@@ -334,7 +334,7 @@ body.upscaled.game {background:#000;}
 #minigameprompt.active {display:block;pointer-events:auto;}
 #minigameprompt:hover{background:url('../img/1/playHover.png');animation: minigamebounce 2s infinite ease-in-out, minigameglow 2s infinite alternate;}
 
-#minigame {position:absolute;top:0%;left:0%;width:100%;height:100%;display:none;cursor:none;z-index:50;pointer-events:none;}
+#minigame {position:absolute;top:0%;left:0%;width:100%;height:100%;display:none; cursor:url("../img/3/hand.png"), auto;z-index:50;pointer-events:none;}
 #minigame.active {display:block;pointer-events:auto;}
 
 #notifications {position:absolute;left:50%;text-align:center;font-family:'GraphicPixel';overflow:hidden;}
