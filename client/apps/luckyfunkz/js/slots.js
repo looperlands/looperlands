@@ -144,8 +144,11 @@ function draw_symbol(symbol_index, x, y, reel) {
 }
 
 function render_reel() {
-    // clear reel
+
     ctx.clearRect(0, 0, can.width, can.height);
+
+    ctx.fillStyle = "black";
+	ctx.fillRect(580, 280, 760, 510);
 
     const aspectRatio = reels_bg.width / reels_bg.height;
     ctx.imageSmoothingEnabled = false;
@@ -497,7 +500,6 @@ function init() {
     can.width = can.clientWidth * devicePixelRatio;
     can.height = can.clientHeight * devicePixelRatio;
     ctx.scale(devicePixelRatio, devicePixelRatio);
-
 }
 
 function updateButtonPanelWidth(windowHeight, buttonPanel) {

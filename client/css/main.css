@@ -330,9 +330,11 @@ body.upscaled.game {background:#000;}
 #fish-marker{background:url('../img/1/fishing.png');image-rendering:-moz-crisp-edges;position:absolute;z-index:58;}
 #fish {z-index:60;}
 
-#minigameprompt {background:url('../img/1/play.png');image-rendering:-moz-crisp-edges;position:absolute;top:35%;left:50%;z-index:50;display:none;pointer-events:none;cursor:none;animation: minigamebounce 2s infinite ease-in-out;}
+#minigameprompt {overflow:hidden;position:absolute;top:35%;left:50%;display:none;cursor:none;background:url('../img/1/play.png') no-repeat center center / 100%;image-rendering: pixelated; animation: minigamebounce 2s infinite ease-in-out alternate;}
 #minigameprompt.active {display:block;pointer-events:auto;}
-#minigameprompt:hover{background:url('../img/1/playHover.png');animation: minigamebounce 2s infinite ease-in-out, minigameglow 2s infinite alternate;}
+#minigameprompt:hover {filter:saturate(5);mask-image:url('../img/1/play.png');mask-size: cover;}
+#minigameprompt:before {content: "";position:absolute;height:200%;width:400%;top:-200%;left:-150%;background:radial-gradient(transparent 40%, rgba(255, 255, 255, 0.7) 60%, transparent 75%);transform-origin:bottom center;z-index:10;}
+#minigameprompt:hover:before {animation:minigameglow 1.5s infinite forwards ease-in-out;}
 
 #minigame {position:absolute;top:0%;left:0%;width:100%;height:100%;display:none;cursor:none;z-index:50;pointer-events:none;}
 #minigame.active {display:block;pointer-events:auto;}
@@ -1163,17 +1165,9 @@ footer div  {display:inline-block;}
 
 #logo, #parchment {-moz-transition:0.5s opacity linear;-webkit-transition:0.5s opacity linear;-o-transition:0.5s opacity linear;-ms-transition:0.5s opacity linear;transition:0.5s opacity linear;}
 
-/* Animation for minigame play button */
-@keyframes minigamebounce {0% {box-shadow: 0 5px 15px 0px rgba(255, 255, 255, 0.6); transform: translateY(0px);} 50% {box-shadow: 0 25px 15px 0px rgba(0,0,0,0.2); transform: translateY(-20px);} 100% {box-shadow: 0 5px 15px 0px rgba(0,0,0,0.6); transform: translateY(0px);}}
-@-moz-keyframes minigamebounce {0% {box-shadow: 0 5px 15px 0px rgba(0,0,0,0.6); transform: translateY(0px);} 50% {box-shadow: 0 25px 15px 0px rgba(0,0,0,0.2); transform: translateY(-20px);} 100% {box-shadow: 0 5px 15px 0px rgba(0,0,0,0.6); transform: translateY(0px);}}
-@-webkit-keyframes minigamebounce {0% {box-shadow: 0 5px 15px 0px rgba(0,0,0,0.6); transform: translateY(0px);} 50% {box-shadow: 0 25px 15px 0px rgba(0,0,0,0.2); transform: translateY(-20px);} 100% {box-shadow: 0 5px 15px 0px rgba(0,0,0,0.6); transform: translateY(0px);}}
-@-o-keyframes minigamebounce {0% {box-shadow: 0 5px 15px 0px rgba(0,0,0,0.6); transform: translateY(0px);} 50% {box-shadow: 0 25px 15px 0px rgba(0,0,0,0.2); transform: translateY(-20px);} 100% {box-shadow: 0 5px 15px 0px rgba(0,0,0,0.6); transform: translateY(0px);}}
-@-ms-keyframes minigamebounce {0% {box-shadow: 0 5px 15px 0px rgba(0,0,0,0.6); transform: translateY(0px);} 50% {box-shadow: 0 25px 15px 0px rgba(0,0,0,0.2); transform: translateY(-20px);} 100% {box-shadow: 0 5px 15px 0px rgba(0,0,0,0.6); transform: translateY(0px);}}
-
-@keyframes minigameglow {
-  from {box-shadow: 0 0 10px -10px rgba(255, 255, 0, 0.69);} to { box-shadow: 0 0 10px 10px rgba(255, 255, 255, 0.42);
-  }
-}
+/* Animations for minigame play button */
+@keyframes minigameglow { 0% { top: -210%; transform: scale(0); } 100% { top: -60%; transform: scale(1); } }
+@keyframes minigamebounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(10%); } }
 
 /* Other animations */
 @keyframes flash { 0% {background:#ffa2a2;} 100% {background:#e22525; }}
@@ -1385,8 +1379,12 @@ footer div  {display:inline-block;}
     .upscaled #bar-container, .upscaled #healthbar, .upscaled .barbutton, .upscaled #chatbox, .upscaled #population {background-image:url('../img/3/barsheet.png');}
     .upscaled #achievements, .upscaled #achievements li, .upscaled .coin, .upscaled #achievement-notification, .upscaled #coinsparks, .upscaled .achievement-sharing a, .upscaled #previous, .upscaled #next {background:url('../img/3/achievements.png');}
     .upscaled #fishingbar, #fishing-marker {background:url('../img/3/fishing.png');}
-    .upscaled #minigameprompt {background:url("../img/3/play.png");animation: minigamebounce 2s infinite ease-in-out;}
-    .upscaled #minigameprompt:hover {background:url("../img/3/playHover.png");animation: minigamebounce 2s infinite ease-in-out, minigameglow 2s infinite alternate;}
+
+    .upscaled #minigameprompt {overflow:hidden;position:absolute;top:35%;left:50%;display:none;cursor:none;background:url('../img/3/play.png') no-repeat center center / 100%;image-rendering: pixelated; animation: minigamebounce 2s infinite ease-in-out alternate;}
+    .upscaled #minigameprompt.active {display:block;pointer-events:auto;}
+    .upscaled #minigameprompt:hover {filter:saturate(5);mask-image:url('../img/3/play.png');mask-size: cover;}
+    .upscaled #minigameprompt:before {content: "";position:absolute;height:200%;width:400%;top:-200%;left:-150%;background:radial-gradient(transparent 40%, rgba(255, 255, 255, 0.7) 60%, transparent 75%);transform-origin:bottom center;z-index:10;}
+    .upscaled #minigameprompt:hover:before {animation:minigameglow 1.5s infinite forwards ease-in-out;}
 
     .upscaled #avatarStats {
         left: 210px;
@@ -1751,8 +1749,11 @@ footer div  {display:inline-block;}
     .upscaled #bar-container, .upscaled #healthbar, .upscaled .barbutton, .upscaled #chatbox, .upscaled #population {background-image:url('../img/2/barsheet.png');}
     .upscaled #achievements, .upscaled #achievements li, .upscaled .coin, .upscaled #achievement-notification, .upscaled #coinsparks, .upscaled .achievement-sharing a, .upscaled #previous, .upscaled #next {background:url('../img/2/achievements.png');}
     .upscaled #fishingbar, #fish-marker {background:url('../img/2/fishing.png');}
-    .upscaled #minigameprompt {background:url("../img/2/play.png");animation: minigamebounce 2s infinite ease-in-out;}
-    .upscaled #minigameprompt:hover {background:url("../img/2/playHover.png");animation: minigamebounce 2s infinite ease-in-out, minigameglow 2s infinite alternate;}
+    .upscaled #minigameprompt {overflow:hidden;position:absolute;top:35%;left:50%;display:none;cursor:none;background:url('../img/2/play.png') no-repeat center center / 100%;image-rendering: pixelated; animation: minigamebounce 2s infinite ease-in-out alternate;}
+    .upscaled #minigameprompt.active {display:block;pointer-events:auto;}
+    .upscaled #minigameprompt:hover {filter:saturate(5);mask-image:url('../img/2/play.png');mask-size: cover;}
+    .upscaled #minigameprompt:before {content: "";position:absolute;height:200%;width:400%;top:-200%;left:-150%;background:radial-gradient(transparent 40%, rgba(255, 255, 255, 0.7) 60%, transparent 75%);transform-origin:bottom center;z-index:10;}
+    .upscaled #minigameprompt:hover:before {animation:minigameglow 1.5s infinite forwards ease-in-out;}
 
     #emoteMenuToggle {
         width: 24px;
@@ -1997,8 +1998,11 @@ footer div  {display:inline-block;}
     .upscaled #bar-container, .upscaled #healthbar, .upscaled .barbutton, .upscaled #chatbox, .upscaled #population {background-image:url('../img/2/barsheet.png');}
     .upscaled #achievements, .upscaled #achievements li, .upscaled .coin, .upscaled #achievement-notification, .upscaled #coinsparks, .upscaled .achievement-sharing a, .upscaled #previous, .upscaled #next {background:url('../img/2/achievements.png');}
     .upscaled #fishingbar, #fish-marker {background:url('../img/2/fishing.png');}
-    .upscaled #minigameprompt {background:url("../img/2/play.png");animation: minigamebounce 2s infinite ease-in-out;}
-    .upscaled #minigameprompt:hover {background:url("../img/2/playHover.png");animation: minigamebounce 2s infinite ease-in-out, minigameglow 2s infinite alternate;}
+    .upscaled #minigameprompt {overflow:hidden;position:absolute;top:35%;left:50%;display:none;cursor:none;background:url('../img/2/play.png') no-repeat center center / 100%;image-rendering: pixelated; animation: minigamebounce 2s infinite ease-in-out alternate;}
+    .upscaled #minigameprompt.active {display:block;pointer-events:auto;}
+    .upscaled #minigameprompt:hover {filter:saturate(5);mask-image:url('../img/2/play.png');mask-size: cover;}
+    .upscaled #minigameprompt:before {content: "";position:absolute;height:200%;width:400%;top:-200%;left:-150%;background:radial-gradient(transparent 40%, rgba(255, 255, 255, 0.7) 60%, transparent 75%);transform-origin:bottom center;z-index:10;}
+    .upscaled #minigameprompt:hover:before {animation:minigameglow 1.5s infinite forwards ease-in-out;}
 
     body {background:-moz-radial-gradient(rgba(0,0,0,0) 40%,rgba(0,0,0,1) 125%), #000; background-size:auto, 256px;}
     body {background:-webkit-gradient(radial, center center, 240, center center, 800, from(rgba(0,0,0,0)), to(rgba(0,0,0,1))),#000; background-size:auto, 256px;}
