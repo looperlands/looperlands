@@ -7990,15 +7990,16 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         self.showNotification(trigger.message);
                     }
 
-                    if (entity.id === self.player.id && trigger.css && !$("#minigame").hasClass('active')){
-                        $(trigger.css).addClass('active');
+                    if (entity.id === self.player.id && trigger.minigame && !$("#minigame").hasClass('active')){
+                        $("#minigameprompt").addClass('active');
+                        $("#minigameprompt").on("click", function(){StartMinigame(trigger.minigame);});
                     }
 
                     entity.onLeave(trigger, function () {
                         entity.triggerArea = null;
                         self.client.sendTrigger(trigger.id, false);
-                        if (entity.id === self.player.id && trigger.css){
-                            $(trigger.css).removeClass('active');
+                        if (entity.id === self.player.id){
+                            $("#minigameprompt").removeClass('active');
                             $("#minigame").removeClass('active');
                         }
                     })
