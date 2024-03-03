@@ -21,4 +21,4 @@ RUN npm ci
 WORKDIR /opt/app/bin
 RUN ./build.sh
 WORKDIR /opt/app
-CMD node --prof server/js/main.js
+CMD node server/js/main.js

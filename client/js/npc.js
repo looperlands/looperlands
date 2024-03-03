@@ -405,6 +405,16 @@ define(['character'], function (Character) {
                     "Please help save Duckville!"
         ],
 
+        //m88n NPCs
+        "wenmoon": [
+            "Yo! I'm wenmoon, M88nwalker sent me down here to be your lunar envoy.",
+            "Where Worlds Collide, Secrets Reside: Welcome to the Nexus!",
+            'First stop: Dreamland! Own a piece from the <a target="_blank" href="https://loopexchange.art/collection/onesie-party">Its a Onesie Party! collection</a> for access to the VIP Lounge!',
+            'On X? <a target="_blank" href="https://twitter.com/moonwalker_nfts">Give him a follow</a> to stay updated.',
+            'How about Discord? <a target="_blank" href="https://discord.gg/bjjNewZegM">Checkout PLANET M88NWALKER</a> for lots more!',
+            "Have fun!"
+        ],
+
         //Short Destroyers
         "derrick": [
             "Sup man. Heard you got stuck doing Misty's shelving duty. We've all been there.",

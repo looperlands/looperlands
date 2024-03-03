@@ -127,7 +127,8 @@ module.exports = Player = Character.extend({
                 if (!self.isBot()) {
                     discord.sendMessage(`Player ${self.name} joined the game.`);
                 }
-                dao.saveAvatarMapId(playerCache.nftId, playerCache.mapId);
+                dao.saveAvatarMapAndCheckpoint(playerCache.nftId, playerCache.mapId, playerCache.checkpointId);
+                self.mapId = playerCache.mapId;
                 self.playerEventBroker.setPlayer(self);
 
                 try {
@@ -492,8 +493,7 @@ module.exports = Player = Character.extend({
             else if(action === Types.Messages.CHECK) {
                 var checkpoint = self.server.map.getCheckpoint(message[1]);
                 if(checkpoint) {
-                    //dao.saveAvatarMapId(self.nftId, checkpoint.mapId);
-                    dao.saveAvatarCheckpointId(self.nftId, checkpoint.id);
+                    dao.saveAvatarMapAndCheckpoint(self.nftId, self.mapId, checkpoint.id);
                     self.lastCheckpoint = checkpoint;
                 }
             } else if(action === Types.Messages.TRIGGER) {
