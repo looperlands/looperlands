@@ -2209,6 +2209,111 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
 
+        //m88n
+        balloondogb: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.BALLOONDOGB);
+                this.moveSpeed = 300;
+                this.atkSpeed = 100;
+                this.idleSpeed = 750;
+                this.setAttackRate(1000);
+                this.deathAnimated = true;
+                this.isAggressive = true;
+                this.aggroRange = 3;
+            }
+        }),
+
+        balloondogy: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.BALLOONDOGY);
+                this.moveSpeed = 300;
+                this.atkSpeed = 100;
+                this.idleSpeed = 750;
+                this.setAttackRate(1000);
+                this.deathAnimated = true;
+                this.isAggressive = true;
+                this.aggroRange = 3;
+            }
+        }),
+
+        balloondoga: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.BALLOONDOGA);
+                this.moveSpeed = 300;
+                this.atkSpeed = 100;
+                this.idleSpeed = 750;
+                this.setAttackRate(1000);
+                this.deathAnimated = true;
+                this.isAggressive = true;
+                this.aggroRange = 3;
+            }
+        }),
+
+        balloondogv: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.BALLOONDOGV);
+                this.moveSpeed = 300;
+                this.atkSpeed = 100;
+                this.idleSpeed = 750;
+                this.setAttackRate(1000);
+                this.deathAnimated = true;
+                this.isAggressive = true;
+                this.aggroRange = 3;
+            }
+        }),
+
+        balloondogp: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.BALLOONDOGP);
+                this.moveSpeed = 300;
+                this.atkSpeed = 100;
+                this.idleSpeed = 750;
+                this.setAttackRate(1000);
+                this.deathAnimated = true;
+                this.isAggressive = true;
+                this.aggroRange = 3;
+            }
+        }),
+
+        balloondogg: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.BALLOONDOGG);
+                this.moveSpeed = 300;
+                this.atkSpeed = 100;
+                this.idleSpeed = 750;
+                this.setAttackRate(1000);
+                this.deathAnimated = true;
+                this.isAggressive = true;
+                this.aggroRange = 3;
+            }
+        }),
+
+        balloonhotdogr: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.BALLOONHOTDOGR);
+                this.moveSpeed = 300;
+                this.atkSpeed = 100;
+                this.idleSpeed = 750;
+                this.setAttackRate(1000);
+                this.deathAnimated = true;
+                this.isAggressive = true;
+                this.aggroRange = 3;
+            }
+        }),
+
+        balloongiraffeo: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.BALLOONGIRAFFEO);
+                this.moveSpeed = 300;
+                this.atkSpeed = 100;
+                this.idleSpeed = 750;
+                this.setAttackRate(1000);
+                this.deathAnimated = true;
+                this.isAggressive = true;
+                this.aggroRange = 3;
+            }
+        }),
+
         //Short Destroyers
         lateflea: Mob.extend({
             init: function(id) {

@@ -415,6 +415,13 @@ define(['character'], function (Character) {
             "Have fun!"
         ],
 
+        "kingfroggy": [
+            "Greetings! I'm Froggy, the King of DreamLand.",
+            'Wanna be King of the next pillow fight? Own a piece from the <a target="_blank" href="https://loopexchange.art/collection/onesie-party">Its a Onesie Party! collection</a> for access to the VIP Lounge!',
+            'Join us in Discord! <a target="_blank" href="https://discord.gg/bjjNewZegM">Checkout PLANET M88NWALKER</a> for insider details.',
+            "Have fun!"
+        ],
+
         //Short Destroyers
         "derrick": [
             "Sup man. Heard you got stuck doing Misty's shelving duty. We've all been there.",

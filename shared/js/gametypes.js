@@ -298,8 +298,18 @@ Types = {
         CUSTOMER2: 77000015,
         PORTALGILL: 77000016,
         FLYER: 77000017,
-        //m88n
+        //m88n NPCs
         WENMOON: 78000000,
+        KINGFROGGY: 78010000,
+        //m88n Mobs
+        BALLOONDOGB: 78000001,
+        BALLOONDOGY: 78000002,
+        BALLOONDOGG: 78000003,
+        BALLOONDOGA: 78000004,
+        BALLOONDOGV: 78000005,
+        BALLOONDOGP: 78000006,
+        BALLOONHOTDOGR: 78000007,
+        BALLOONGIRAFFEO: 78000008,
         //mycupbloody
         EYEBALL: 80000005,
         REDPOTION: 80000006,
@@ -5429,6 +5439,15 @@ var kinds = {
     horde3: [Types.Entities.HORDE3, "mob"],
     horde4: [Types.Entities.HORDE4, "mob"],
     horde5: [Types.Entities.HORDE5, "mob"],
+    //m88ns Mobs
+    balloondogb: [Types.Entities.BALLOONDOGB, "mob"],
+    balloondogy: [Types.Entities.BALLOONDOGY, "mob"],
+    balloondogg: [Types.Entities.BALLOONDOGG, "mob"],
+    balloondoga: [Types.Entities.BALLOONDOGA, "mob"],
+    balloondogv: [Types.Entities.BALLOONDOGV, "mob"],
+    balloondogp: [Types.Entities.BALLOONDOGP, "mob"],
+    balloonhotdogr: [Types.Entities.BALLOONHOTDOGR, "mob"],
+    balloongiraffeo: [Types.Entities.BALLOONGIRAFFEO, "mob"],
 
     sword1: [Types.Entities.SWORD1, "weapon"],
     sword2: [Types.Entities.SWORD2, "weapon"],
@@ -5642,6 +5661,7 @@ var kinds = {
     portalgill: [Types.Entities.PORTALGILL, "npc"],
     //m88n NPCs
     wenmoon: [Types.Entities.WENMOON, "npc"],
+    kingfroggy: [Types.Entities.KINGFROGGY, "npc"],
     // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],

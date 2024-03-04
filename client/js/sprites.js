@@ -452,8 +452,18 @@ define(['text!../sprites/agent.json',
         'text!../sprites/m88ndreamgumballb.json',
         'text!../sprites/m88ndreamgumballp.json',
         'text!../sprites/m88ndreamgumballr.json',
-        //m88n's npcs
+        //m88n's NPCs
         'text!../sprites/wenmoon.json',
+        'text!../sprites/kingfroggy.json',
+        //m88n's Mobs
+        'text!../sprites/balloondogb.json',
+        'text!../sprites/balloondogy.json',
+        'text!../sprites/balloondoga.json',
+        'text!../sprites/balloondogv.json',
+        'text!../sprites/balloondogp.json',
+        'text!../sprites/balloondogg.json',
+        'text!../sprites/balloonhotdogr.json',
+        'text!../sprites/balloongiraffeo.json',
         //mycupbloody npc
         'text!../sprites/GOFFREY.json',
         'text!../sprites/cobWalkingNpc1.json',
