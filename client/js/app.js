@@ -116,10 +116,13 @@ define(['jquery', 'storage'], function ($, Storage) {
                 this.center();
                 this.game.run(function () {
                     $('body').addClass('started');
-                    $('.f2p').hide();
                     if (firstTimePlaying || self.storage.f2p) {
-                        $('.f2p').hide();
                         self.toggleInstructions();
+                    }
+                    if (self.storage.f2p) {
+                        setInterval(() => {
+                            self.game.showNotification("F2P progress is not saved. Buy a premium Looper.");
+                        }, 60000);
                     }
                 });
             }
