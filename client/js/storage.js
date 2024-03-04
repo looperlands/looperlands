@@ -11,6 +11,7 @@ define(function() {
             this.data = response.data;
             this.nftId = this.data.nftId;
             this.walletId = this.data.walletId;
+            this.f2p = this.data.f2p;
 
             _this = this;
         },
