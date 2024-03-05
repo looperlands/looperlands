@@ -8038,7 +8038,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                     if (entity.id === self.player.id && trigger.minigame && !$("#minigame").hasClass('active')){
                         $("#minigameprompt").addClass('active');
-                        $("#minigameprompt").on("click", function(){openMinigame(trigger.minigame);});
+                        $("#minigameprompt").on("click", function(){loadMinigame(trigger.minigame);});
                     }
 
                     entity.onLeave(trigger, function () {

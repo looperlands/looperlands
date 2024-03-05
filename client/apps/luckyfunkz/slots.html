@@ -7,7 +7,6 @@
     </head>
     <body>
         <div id="wrapper">
-        <button id="closeMinigame">CLOSE</button>
             <canvas id="slotsArea"></canvas>
             <div id="buttonPanel">
                 <div id="autoSpinButton" class="off" onclick="AutoSpin_Toggle()">
@@ -28,19 +27,7 @@
             if (buttonPanel) {
                 updateButtonPanelWidth(window.innerHeight, buttonPanel);
             }
-
-            document.getElementById('closeMinigame').addEventListener('click', function() {
-                var closeMinigameElement = document.getElementById('closeMinigame');
-                var minigameElement = document.getElementById('minigame');
-
-                if (minigameElement && closeMinigameElement) {
-                    if (!closeMinigameElement.classList.contains('spin')) {
-                        minigameElement.classList.remove('active');
-                    }
-                }
-            });
-
-
+            
             window.addEventListener('resize', function () {
                 var buttonPanel = document.getElementById("buttonPanel");
 

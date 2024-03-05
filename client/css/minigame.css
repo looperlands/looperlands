@@ -1,0 +1,74 @@
+.menubtn {
+  background: radial-gradient(ellipse farthest-corner at 5% 5%, #FEDB37 0%, #FDc931 15%, #9f7928 60%, transparent 69%),
+    radial-gradient(ellipse at 69% 100%, #ffffff 0%, #F2B169 15%, #5d4a1f 100%);
+  background-size: 150%;
+  color: #222222;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 12%;
+  height: 100%;
+  border: 1px solid #424211;
+  box-shadow: 2px 2px 5px 3px rgba(0, 0, 0, 0.9);
+  cursor: pointer;
+  filter: brightness(115%);
+}
+
+.minigameMenu {
+  width: 30%;
+  height: auto;
+  left: 100%;
+  z-index: 9999;
+  position: absolute;
+  display: block;
+  transform: translate(-103%,15%);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  justify-content: flex-end;
+}
+
+.minigameMenu-content {
+  white-space: nowrap;
+  font-family: v-sans, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-size: clamp(40%, 50%, 100%);
+  background-color: #FAFAFA;
+  width: 69%;
+  box-shadow: 2px 2px 5px 3px rgba(0, 0, 0, 0.9);
+  z-index: 1;
+  opacity: 0;
+  transform: scale(0.25, 0);
+  transform-origin: top right;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.minigameMenu-content a {
+  color: #4f3f19;
+  padding: 6px 10px;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+}
+
+.minigameMenu-content a:hover {
+  color: #FAFAFA;
+  background-color: rgb(17 24 39);
+  font-weight: bold;
+}
+
+.minigameMenu:not(:hover) .minigameMenu-content {
+  transform: translate(-50%,0%);
+  transform-origin: top right;
+  min-width: 12%;
+  transform: scale(0.25, 0);
+  opacity: 0;
+}
+
+.minigameMenu:hover .minigameMenu-content {
+  display: block;
+  position: absolute;
+  transform: scale(1);
+  opacity: 1;
+}
+
+.minigameMenu:hover .menubtn {
+  filter: brightness(125%);
+}
