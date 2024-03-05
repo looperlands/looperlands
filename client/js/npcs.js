@@ -9,6 +9,12 @@ define(['npc'], function(Npc) {
             }
         }),
 
+        TAIKOGUARD: Npc.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.TAIKOGUARD, 1);
+            }
+        }),        
+
         King: Npc.extend({
             init: function(id) {
                 this._super(id, Types.Entities.KING, 1);

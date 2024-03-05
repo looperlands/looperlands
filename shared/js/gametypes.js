@@ -318,6 +318,7 @@ Types = {
 
         // NPCs
         GUARD: 40,
+        TAIKOGUARD: 991336,
         KING: 41,
         KING2: 1000041,
         OCTOCAT: 42,
@@ -5543,6 +5544,7 @@ var kinds = {
     // @nextObjectLine@
 
     guard: [Types.Entities.GUARD, "npc"],
+    taikoguard: [Types.Entities.TAIKOGUARD, "npc"],
     villagegirl: [Types.Entities.VILLAGEGIRL, "npc"],
     villager: [Types.Entities.VILLAGER, "npc"],
     coder: [Types.Entities.CODER, "npc"],
