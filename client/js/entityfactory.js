@@ -901,7 +901,10 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
 
     EntityFactory.builders[Types.Entities.COBCOBMIN] = function(id) {
         return new NPCs.Cobcobmin(id);
-    };  
+    };
+
+    EntityFactory.builders[Types.Entities.TAIKOGUARD]=function(id){return new NPCs.TAIKOGUARD(id);};
+
     EntityFactory.builders[Types.Entities.VILLAGESIGN2]=function(id){return new NPCs.VILLAGESIGN2(id);};
     EntityFactory.builders[Types.Entities.VILLAGESIGN3]=function(id){return new NPCs.VILLAGESIGN3(id);};
     EntityFactory.builders[Types.Entities.VILLAGESIGN4]=function(id){return new NPCs.VILLAGESIGN4(id);};

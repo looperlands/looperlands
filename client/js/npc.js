@@ -9,7 +9,14 @@ define(['character'], function (Character) {
             'Follow <a href="https://loopworms.io/DEV/LooperLands/QR/qr.php?NPC=guard" target="blank">this link</a> - it might be a Red Packet!',
             "Now go about your adventure, Looper!"
         ],
-
+        "taikoguard" : [
+            "Welcome to LooperLands, Taikonaut!",
+            'Your F2P Looper (avatar) will allow you to explore but the best experience is with a premium asset which retains progress.',
+            "Go explore - there is a GOOSE near the town with a Golden Sword NFT - get your own Red Packet with the Loopring wallet!",
+            'See if you can get a Taiko powerup!',
+            'More quests and TaikoTown are coming.',
+            "Follow us on <a href='https://twitter.com/LooperLands' target='blank'>Twitter</a>."
+        ],
         "king": [
             //"/openShop wormking King's Shop",
             "Hi Looper, I'm the LoopWorm King",
