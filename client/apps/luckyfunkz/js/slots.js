@@ -354,6 +354,7 @@ function logic() {
         logic_spindown();
     } else if (game_state == STATE_REWARD) {
         logic_reward();
+        $('#closeMinigame').removeClass("spin");
     } else if (game_state == STATE_REST && $("#autoSpinButton").hasClass("on")) {
         spin();
     }
@@ -439,6 +440,7 @@ function renderTextOnCanvas() {
 }
 
 function spin() {
+    $('#closeMinigame').addClass("spin");
     if (game_state != STATE_REST) return;
     if (credits < playing_lines * bet) return;
 

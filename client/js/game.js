@@ -5615,6 +5615,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     }
                     this.hoveringTarget = false;
                     this.targetCellVisible = true;
+                } else if($(`#minigame`).hasClass("active")){
+                    
+                    this.hoveringTarget = false;
+                    this.targetCellVisible = false;
                 } else {
                     this.setCursor("hand");
                     this.hoveringTarget = false;
@@ -7839,7 +7843,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
              */
             click: function(pos) {
 
-                if($('body').hasClass('inventory') || $('body').hasClass('settings')) {
+                if($('body').hasClass('inventory') || $('body').hasClass('settings') || $(`#minigame`).hasClass("active")) {
                     return;
                 }
 
@@ -8034,7 +8038,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                     if (entity.id === self.player.id && trigger.minigame && !$("#minigame").hasClass('active')){
                         $("#minigameprompt").addClass('active');
-                        $("#minigameprompt").on("click", function(){StartMinigame(trigger.minigame);});
+                        $("#minigameprompt").on("click", function(){openMinigame(trigger.minigame);});
                     }
 
                     entity.onLeave(trigger, function () {

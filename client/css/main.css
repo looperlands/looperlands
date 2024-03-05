@@ -330,13 +330,13 @@ body.upscaled.game {background:#000;}
 #fish-marker{background:url('../img/1/fishing.png');image-rendering:-moz-crisp-edges;position:absolute;z-index:58;}
 #fish {z-index:60;}
 
-#minigameprompt {overflow:hidden;position:absolute;top:35%;left:50%;display:none;cursor:none;background:url('../img/1/play.png') no-repeat center center / 100%;image-rendering: pixelated; animation: minigamebounce 2s infinite ease-in-out alternate;}
+#minigameprompt {overflow:hidden;position:absolute;top:35%;left:50%;display:none;cursor:none;background:url('../img/1/play.png') no-repeat center center / 100%;image-rendering: pixelated; animation: minigamebounce 2s infinite ease-in-out alternate;filter:saturate(3);}
 #minigameprompt.active {display:block;pointer-events:auto;}
 #minigameprompt:hover {filter:saturate(5);mask-image:url('../img/1/play.png');mask-size: cover;}
 #minigameprompt:before {content: "";position:absolute;height:200%;width:400%;top:-200%;left:-150%;background:radial-gradient(transparent 40%, rgba(255, 255, 255, 0.7) 60%, transparent 75%);transform-origin:bottom center;z-index:10;}
 #minigameprompt:hover:before {animation:minigameglow 1.5s infinite forwards ease-in-out;}
 
-#minigame {position:absolute;top:0%;left:0%;width:100%;height:100%;display:none; cursor:url("../img/3/hand.png"), auto;z-index:50;pointer-events:none;}
+#minigame {position:absolute;top:0%;left:0%;width:100%;height:100%;display:none; cursor:url("../img/3/hand.png"), auto;z-index:100;pointer-events:none;}
 #minigame.active {display:block;pointer-events:auto;}
 
 #notifications {position:absolute;left:50%;text-align:center;font-family:'GraphicPixel';overflow:hidden;}
@@ -1380,7 +1380,7 @@ footer div  {display:inline-block;}
     .upscaled #achievements, .upscaled #achievements li, .upscaled .coin, .upscaled #achievement-notification, .upscaled #coinsparks, .upscaled .achievement-sharing a, .upscaled #previous, .upscaled #next {background:url('../img/3/achievements.png');}
     .upscaled #fishingbar, #fishing-marker {background:url('../img/3/fishing.png');}
 
-    .upscaled #minigameprompt {overflow:hidden;position:absolute;top:35%;left:50%;display:none;cursor:none;background:url('../img/3/play.png') no-repeat center center / 100%;image-rendering: pixelated; animation: minigamebounce 2s infinite ease-in-out alternate;}
+    .upscaled #minigameprompt {overflow:hidden;position:absolute;top:35%;left:50%;display:none;cursor:none;background:url('../img/3/play.png') no-repeat center center / 100%;image-rendering: pixelated; animation: minigamebounce 2s infinite ease-in-out alternate;filter:saturate(3);}
     .upscaled #minigameprompt.active {display:block;pointer-events:auto;}
     .upscaled #minigameprompt:hover {filter:saturate(5);mask-image:url('../img/3/play.png');mask-size: cover;}
     .upscaled #minigameprompt:before {content: "";position:absolute;height:200%;width:400%;top:-200%;left:-150%;background:radial-gradient(transparent 40%, rgba(255, 255, 255, 0.7) 60%, transparent 75%);transform-origin:bottom center;z-index:10;}
@@ -1749,7 +1749,7 @@ footer div  {display:inline-block;}
     .upscaled #bar-container, .upscaled #healthbar, .upscaled .barbutton, .upscaled #chatbox, .upscaled #population {background-image:url('../img/2/barsheet.png');}
     .upscaled #achievements, .upscaled #achievements li, .upscaled .coin, .upscaled #achievement-notification, .upscaled #coinsparks, .upscaled .achievement-sharing a, .upscaled #previous, .upscaled #next {background:url('../img/2/achievements.png');}
     .upscaled #fishingbar, #fish-marker {background:url('../img/2/fishing.png');}
-    .upscaled #minigameprompt {overflow:hidden;position:absolute;top:35%;left:50%;display:none;cursor:none;background:url('../img/2/play.png') no-repeat center center / 100%;image-rendering: pixelated; animation: minigamebounce 2s infinite ease-in-out alternate;}
+    .upscaled #minigameprompt {overflow:hidden;position:absolute;top:35%;left:50%;display:none;cursor:none;background:url('../img/2/play.png') no-repeat center center / 100%;image-rendering: pixelated; animation: minigamebounce 2s infinite ease-in-out alternate;filter:saturate(3);}
     .upscaled #minigameprompt.active {display:block;pointer-events:auto;}
     .upscaled #minigameprompt:hover {filter:saturate(5);mask-image:url('../img/2/play.png');mask-size: cover;}
     .upscaled #minigameprompt:before {content: "";position:absolute;height:200%;width:400%;top:-200%;left:-150%;background:radial-gradient(transparent 40%, rgba(255, 255, 255, 0.7) 60%, transparent 75%);transform-origin:bottom center;z-index:10;}
@@ -1998,7 +1998,7 @@ footer div  {display:inline-block;}
     .upscaled #bar-container, .upscaled #healthbar, .upscaled .barbutton, .upscaled #chatbox, .upscaled #population {background-image:url('../img/2/barsheet.png');}
     .upscaled #achievements, .upscaled #achievements li, .upscaled .coin, .upscaled #achievement-notification, .upscaled #coinsparks, .upscaled .achievement-sharing a, .upscaled #previous, .upscaled #next {background:url('../img/2/achievements.png');}
     .upscaled #fishingbar, #fish-marker {background:url('../img/2/fishing.png');}
-    .upscaled #minigameprompt {overflow:hidden;position:absolute;top:35%;left:50%;display:none;cursor:none;background:url('../img/2/play.png') no-repeat center center / 100%;image-rendering: pixelated; animation: minigamebounce 2s infinite ease-in-out alternate;}
+    .upscaled #minigameprompt {overflow:hidden;position:absolute;top:35%;left:50%;display:none;cursor:none;background:url('../img/2/play.png') no-repeat center center / 100%;image-rendering: pixelated; animation: minigamebounce 2s infinite ease-in-out alternate;filter:saturate(3);}
     .upscaled #minigameprompt.active {display:block;pointer-events:auto;}
     .upscaled #minigameprompt:hover {filter:saturate(5);mask-image:url('../img/2/play.png');mask-size: cover;}
     .upscaled #minigameprompt:before {content: "";position:absolute;height:200%;width:400%;top:-200%;left:-150%;background:radial-gradient(transparent 40%, rgba(255, 255, 255, 0.7) 60%, transparent 75%);transform-origin:bottom center;z-index:10;}
