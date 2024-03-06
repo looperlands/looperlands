@@ -300,6 +300,8 @@ Types = {
         FLYER: 77000017,
         //m88n
         WENMOON: 78000000,
+        //robits
+        ROBITS1: 79000000,
         //mycupbloody
         EYEBALL: 80000005,
         REDPOTION: 80000006,
@@ -5642,6 +5644,8 @@ var kinds = {
     portalgill: [Types.Entities.PORTALGILL, "npc"],
     //m88n NPCs
     wenmoon: [Types.Entities.WENMOON, "npc"],
+    //robits NPCs
+    robits1: [Types.Entities.ROBITS1, "npc"],
     // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],

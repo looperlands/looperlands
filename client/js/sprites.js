@@ -454,6 +454,8 @@ define(['text!../sprites/agent.json',
         'text!../sprites/m88ndreamgumballr.json',
         //m88n's npcs
         'text!../sprites/wenmoon.json',
+        //robits npcs
+        'text!../sprites/robits1.json',
         //mycupbloody npc
         'text!../sprites/GOFFREY.json',
         'text!../sprites/cobWalkingNpc1.json',

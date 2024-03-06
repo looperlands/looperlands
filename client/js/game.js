@@ -126,6 +126,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "m88ndreamduckyy", "m88ndreamduckyg", "m88ndreamduckyb", "m88ndreamduckyp", "m88ndreamduckyr","m88ndreamcandyy", "m88ndreamcandyg", "m88ndreamcandyb", "m88ndreamcandyp", "m88ndreamcandyr","m88ndreamgumbally", "m88ndreamgumballg", "m88ndreamgumballb", "m88ndreamgumballp", "m88ndreamgumballr",
                     //m88n's NPCs
                     "wenmoon",
+                    //robits NPCs
+                    "robits1",
                     /////
                     "VILLAGESIGN11",
                     "VILLAGESIGN12",
