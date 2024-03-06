@@ -8,13 +8,16 @@ const gameLookup = {
 //////////////////////////////
 
 function loadMinigame(game) {
-
     $("#minigameprompt").removeClass("active");
-    $("#minigame").addClass("active");
+
+    var minigameDiv = $('<div id="minigame" class="clickable active"></div>');
+    if ($('#minigame').length === 0){
+        $('body').prepend(minigameDiv);
+    }
 
     // Create minigame menu
     var minigameMenu = $('<div id="minigameMenu">' +
-        '<button id="menubtn" type="button">≡</button>' +
+        '<div id="menubtn">≡</div>' +
         '<div id="minigameMenu-content">' +
         '<a href="#" id="mgSettings">⚙ Settings</a>' +
         '<a href="#" id="mgClose">❌ Close Minigame</a>' +
@@ -24,18 +27,14 @@ function loadMinigame(game) {
     $("#minigame").empty().append(minigameMenu).append('<div id="minigameContent"></div>');
 
     // Fetch and append minigame menu styles
-    var cssAdded = false;
-    if ($('#mgMenuStyle').length === 0) {
-        fetch('css/minigame.css')
-            .then(response => response.text())
-            .then(cssContent => {
-                if(!cssAdded){
+    fetch('css/minigame.css')
+        .then(response => response.text())
+        .then(cssContent => {
+                if ($('#mgMenuStyle').length === 0){
                     $('head').append($('<style></style>').html(cssContent).attr('id', 'mgMenuStyle'));
-                    cssAdded = true;
                 }
             })
-            .catch(error => console.error('Error fetching CSS:', error));
-    }
+        .catch(error => console.error('Error fetching CSS:', error));
 
     // Event listener to close minigame
     $('#mgClose').on('click', function () {
@@ -44,7 +43,7 @@ function loadMinigame(game) {
         // EXAMPLE: For LuckyFunkz, the close function is paused during the spin process to ensure users see the spin result before closing
         // Even though the spin and result is processed server side, it enhances the user experience by visually presenting the spin outcome
         if (minigameElement.length && !minigameElement.hasClass('pauseClose')) {
-            minigameElement.empty().removeClass('active');
+            minigameElement.remove();
             $('#mgMenuStyle').remove();
         }
     });
