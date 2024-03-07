@@ -34,10 +34,10 @@ var reels_bg_loaded = false;
 
 // art
 var symbols = [];
-var symbol_count = 10;
+var symbol_count = 12;
 var loadedSymbolCount = 0;
 
-for (var i = 0; i <= symbol_count; i++) {
+for (var i = 0; i < symbol_count; i++) {
     var symbol = new Image();
     symbol.onload = function () {
         loadedSymbolCount++;
@@ -87,7 +87,34 @@ var maxLines = 3;
 
 var match_payout = new Array(symbol_count);
 //payouts for symbol 1 through 11 (index 0 through 10)
-match_payout = [50, 10, 15, 20, 25, 8, 6, 4, 250, 75, 100];
+/*
+0 King	//wild
+1 Queen	//wild
+2 Standard
+3 Fish
+4 Clown
+5 General
+6 Choco
+7 tacOS
+8 Punk
+9 Zombie
+10 DocGuac
+11 Bassmint
+
+combinations
+11	1337 1
+10	741	 2
+9	420	 2
+8	69	 24 (trip wild included here)
+7	42	 36
+6	21	 36
+5	10	 48
+4	5	 64
+3	2	 64
+2	1	 128
+*/
+
+match_payout = [69, 69, 1, 2, 5, 10, 21, 42, 69, 420, 741, 1337];
 var wildCards = [0, 1];
 
 var reel_area_width = symbol_size * reel_count + reel_padding * (reel_count - 1);
@@ -97,9 +124,9 @@ var reel_area_top = 0;
 
 // set up reels
 var reels = new Array(reel_count);
-reels[0] = new Array(2, 1, 7, 1, 2, 7, 6, 7, 3, 10, 1, 6, 1, 7, 3, 4, 3, 2, 4, 5, 0, 6, 10, 5, 6, 5, 8, 3, 0, 9, 5, 4);
-reels[1] = new Array(6, 0, 10, 3, 6, 7, 9, 2, 5, 2, 3, 1, 5, 2, 1, 10, 4, 5, 8, 4, 7, 6, 0, 1, 7, 6, 3, 1, 5, 9, 7, 4);
-reels[2] = new Array(1, 4, 2, 7, 5, 6, 4, 10, 7, 5, 2, 0, 6, 4, 10, 1, 7, 6, 3, 0, 5, 7, 2, 3, 9, 3, 5, 6, 1, 8, 1, 3);
+reels[0] = new Array(2, 1, 7, 1, 2, 7, 6, 7, 3, 10, 1, 6, 1, 7, 3, 4, 11, 3, 2, 4, 5, 0, 6, 10, 5, 6, 5, 8, 3, 0, 9, 5, 4);
+reels[1] = new Array(6, 0, 10, 3, 6, 11, 7, 9, 2, 5, 2, 3, 1, 5, 2, 1, 10, 4, 5, 8, 4, 7, 6, 0, 1, 7, 6, 3, 1, 5, 9, 7, 4);
+reels[2] = new Array(1, 4, 2, 7, 5, 6, 4, 10, 7, 5, 2, 0, 6, 4, 10, 1, 7, 6, 3, 0, 5, 7, 2, 3, 11, 9, 3, 5, 6, 1, 8, 1, 3);
 var reel_positions = Math.min(reels[0].length, reels[1].length, reels[2].length);
 var reel_pixel_length = reel_positions * symbol_size;
 
