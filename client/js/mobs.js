@@ -2226,7 +2226,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
         balloondogy: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.BALLOONDOGY);
-                this.moveSpeed = 300;
+                this.moveSpeed = 250;
                 this.atkSpeed = 100;
                 this.idleSpeed = 750;
                 this.setAttackRate(1000);
@@ -2239,36 +2239,36 @@ define(['mob', 'timer'], function(Mob, Timer) {
         balloondoga: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.BALLOONDOGA);
-                this.moveSpeed = 300;
+                this.moveSpeed = 200;
                 this.atkSpeed = 100;
                 this.idleSpeed = 750;
                 this.setAttackRate(1000);
                 this.deathAnimated = true;
                 this.isAggressive = true;
-                this.aggroRange = 3;
+                this.aggroRange = 4;
             }
         }),
 
         balloondogv: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.BALLOONDOGV);
-                this.moveSpeed = 300;
-                this.atkSpeed = 100;
+                this.moveSpeed = 150;
+                this.atkSpeed = 200;
                 this.idleSpeed = 750;
                 this.setAttackRate(1000);
                 this.deathAnimated = true;
                 this.isAggressive = true;
-                this.aggroRange = 3;
+                this.aggroRange = 4;
             }
         }),
 
         balloondogp: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.BALLOONDOGP);
-                this.moveSpeed = 300;
-                this.atkSpeed = 100;
+                this.moveSpeed = 150;
+                this.atkSpeed = 200;
                 this.idleSpeed = 750;
-                this.setAttackRate(1000);
+                this.setAttackRate(750);
                 this.deathAnimated = true;
                 this.isAggressive = true;
                 this.aggroRange = 3;
@@ -2278,13 +2278,13 @@ define(['mob', 'timer'], function(Mob, Timer) {
         balloondogg: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.BALLOONDOGG);
-                this.moveSpeed = 300;
+                this.moveSpeed = 200;
                 this.atkSpeed = 100;
                 this.idleSpeed = 750;
                 this.setAttackRate(1000);
                 this.deathAnimated = true;
                 this.isAggressive = true;
-                this.aggroRange = 3;
+                this.aggroRange = 4;
             }
         }),
 
@@ -2292,9 +2292,9 @@ define(['mob', 'timer'], function(Mob, Timer) {
             init: function(id) {
                 this._super(id, Types.Entities.BALLOONHOTDOGR);
                 this.moveSpeed = 300;
-                this.atkSpeed = 100;
+                this.atkSpeed = 250;
                 this.idleSpeed = 750;
-                this.setAttackRate(1000);
+                this.setAttackRate(750);
                 this.deathAnimated = true;
                 this.isAggressive = true;
                 this.aggroRange = 3;
@@ -2305,9 +2305,9 @@ define(['mob', 'timer'], function(Mob, Timer) {
             init: function(id) {
                 this._super(id, Types.Entities.BALLOONGIRAFFEO);
                 this.moveSpeed = 300;
-                this.atkSpeed = 100;
+                this.atkSpeed = 250;
                 this.idleSpeed = 750;
-                this.setAttackRate(1000);
+                this.setAttackRate(500);
                 this.deathAnimated = true;
                 this.isAggressive = true;
                 this.aggroRange = 3;
