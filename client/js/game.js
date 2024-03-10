@@ -42,7 +42,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.targetCellVisible = true;
                 this.mousedown = false;
                 this.lastMousedown = null;
-                this.clickDuration = 100;   //minimum click duration to show handclick.png cursor
+                
                 this.hoveringTarget = false;
                 this.hoveringMob = false;
                 this.hoveringItem = false;
@@ -50,6 +50,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.doorCheck = false;
                 this.highlightedTarget = null;
                 this.toggledLayers = {};
+
+                // minigame
+                this.minigameLoaded = false;
 
                 // combat
                 this.infoManager = new InfoManager(this);
@@ -5603,23 +5606,36 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     this.setCursor("float");
                     this.hoveringTarget = false;
                     this.targetCellVisible = true;
-                } else if(this.mousedown) {
+                }
+                else if($(`#minigame`).length){
+                    this.minigameLoaded = true;
+                    this.hoveringTarget = false;
+                    this.targetCellVisible = false;
+                }
+                else if(this.minigameLoaded){
+                    let clickThrottle = 500;
+                    if(!this.lastMousedown){
+                        this.lastMousedown = new Date().getTime();  //Set last click for use in clickthrottle
+                    }
+                    else if(this.currentTime > this.lastMousedown + clickThrottle){ 
+                        this.minigameLoaded = false;
+                    }
+                }
+                else if(this.mousedown) {
+                    let clickThrottle = 100;   //minimum click duration to show handclick.png cursor
                     if (!this.lastMousedown) {
                         this.setCursor("handclick");
                         this.lastMousedown = new Date().getTime();
                     } 
-                    else if(this.currentCursorName == "handclick" && this.currentTime > this.lastMousedown + this.clickDuration) {
+                    else if(this.currentCursorName == "handclick" && this.currentTime > this.lastMousedown + clickThrottle) {
                         //wait to make sure the cursor was changed, then allow the duration to be checked.     
                         this.lastMousedown = null;
                         this.mousedown = false;
                     }
                     this.hoveringTarget = false;
                     this.targetCellVisible = true;
-                } else if($(`#minigame`).hasClass("active")){
-                    
-                    this.hoveringTarget = false;
-                    this.targetCellVisible = false;
-                } else {
+                }
+                else {
                     this.setCursor("hand");
                     this.hoveringTarget = false;
                     this.targetCellVisible = true;
@@ -7843,7 +7859,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
              */
             click: function(pos) {
 
-                if($('body').hasClass('inventory') || $('body').hasClass('settings') || $(`#minigame`).hasClass("active")) {
+
+                if($('body').hasClass('inventory') 
+                    || $('body').hasClass('settings') 
+                    || this.minigameLoaded) {
                     return;
                 }
 
@@ -7851,8 +7870,6 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 if (pos === undefined) {
                     pos = this.getMouseGridPosition();
                 }
-                var entity;
-                let fishablePos;
 
                 let clickThrottle;
                 if (pos.keyboard) {
@@ -7866,12 +7883,11 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                 let now = new Date().getTime();
 
-                if (this.lastClick !== undefined) {
-                    if (now - self.lastClick < clickThrottle) {
+                if (this.lastClick !== undefined 
+                    && now - self.lastClick < clickThrottle) {
                         return;
-                    }
                 }
-
+    
                 self.lastClick = now;
 
                 if(pos.x === this.previousClickPosition.x
@@ -7882,6 +7898,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     this.previousClickPosition = pos;
                 }
                 let hoveringPanel = !!$('.panel').filter(function() { return $(this).is(":hover"); }).length;
+
+                var entity;
+                let fishablePos;
 
                 if(this.started
                     && this.player
@@ -8036,7 +8055,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         self.showNotification(trigger.message);
                     }
 
-                    if (entity.id === self.player.id && trigger.minigame && !$("#minigame").hasClass('active')){
+                    if (entity.id === self.player.id && trigger.minigame && !this.minigameLoaded){
                         $("#minigameprompt").addClass('active');
                         $("#minigameprompt").on("click", function(){loadMinigame(trigger.minigame);});
                     }
