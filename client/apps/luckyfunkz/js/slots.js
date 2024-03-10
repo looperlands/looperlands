@@ -535,7 +535,12 @@ function updateButtonPanelWidth(windowHeight, buttonPanel) {
     if (!buttonPanel) return;
     buttonPanel.style.height = "10%";
     //set the width as a function of height using the aspect ratio since we use height as control
-    buttonPanel.style.width = windowHeight * (1080/1920) * 0.055 + "%"; 
+    //buttonPanel.style.width = windowHeight * (1080/1920) * 0.081 + "%"; 
+    buttonPanel.style.width = windowHeight * (2/3) + "px"; 
+}
+
+function getGoldAmount(){
+    
 }
 
 
