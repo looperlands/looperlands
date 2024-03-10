@@ -86,7 +86,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                 // sprites
                 this.spriteNames = ["hand", "handclick", "sword", "loot", "target", "talk", "float", "sparks", "shadow16", "rat", "skeleton", "skeleton2", "spectre", "boss", "deathknight",
-                    "ogre", "crab", "snake", "eye", "bat", "goblin", "wizard", "guard", "king", "villagegirl", "villager", "coder", "agent", "rick", "scientist", "nyan", "priest", "coblumberjack", "cobhillsnpc", "cobcobmin", "cobellen", "cobjohnny", "cobashley",
+                    "ogre", "crab", "snake", "eye", "bat", "goblin", "wizard", "guard", "taikoguard", "king", "villagegirl", "villager", "coder", "agent", "rick", "scientist", "nyan", "priest", "coblumberjack", "cobhillsnpc", "cobcobmin", "cobellen", "cobjohnny", "cobashley",
                     "king2", "goose", "tanashi", "slime","kingslime","silkshade","redslime","villagesign1","wildgrin","loomleaf","gnashling","arachweave","spider","fangwing", "minimag", "miner", "megamag", "seacreature", "tentacle", "tentacle2", "wildwill","shopowner","blacksmith",
                     "cobchicken", "alaric","orlan","jayce", "cobcow", "cobpig", "cobgoat", "ghostie","cobslimered", "cobslimeyellow", "cobslimeblue", "cobslimepurple", "cobslimegreen", "cobslimepink", "cobslimecyan", "cobslimemint", "cobslimeking", "cobyorkie", "cobcat", "cobdirt", "cobincubator", "cobcoblin", "cobcobane", "cobogre",
                     "sorcerer", "octocat", "beachnpc", "forestnpc", "desertnpc", "lavanpc","thudlord", "clotharmor", "leatherarmor", "mailarmor","boar","grizzlefang","barrel","neena","athlyn","jeniper",
@@ -126,6 +126,16 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "m88ndreamduckyy", "m88ndreamduckyg", "m88ndreamduckyb", "m88ndreamduckyp", "m88ndreamduckyr","m88ndreamcandyy", "m88ndreamcandyg", "m88ndreamcandyb", "m88ndreamcandyp", "m88ndreamcandyr","m88ndreamgumbally", "m88ndreamgumballg", "m88ndreamgumballb", "m88ndreamgumballp", "m88ndreamgumballr",
                     //m88n's NPCs
                     "wenmoon",
+                    "kingfroggy",
+                    //m88n's Mobs
+                    "balloondogb",
+                    "balloondogy",
+                    "balloondoga",
+                    "balloondogv",
+                    "balloondogp",
+                    "balloondogg",
+                    "balloonhotdogr",
+                    "balloongiraffeo",
                     /////
                     "VILLAGESIGN11",
                     "VILLAGESIGN12",
@@ -5338,6 +5348,23 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 "NFT_mediumf70f44a3ee5b375450f8363cb987f5511700339bbefbc6e4ec16453b0c4261cc",
                                 "NFT_longf70f44a3ee5b375450f8363cb987f5511700339bbefbc6e4ec16453b0c4261cc",
                                 "NFT_686bee99e15e71659a960a9614816fc97a983e5cb769580267478a3d9dffe850",
+                                "NFT_7ce14f2f5d7ac1287e9173cc5dfa3fb9dadd15780e6ce73ee89b90ef2b3fc4a7",
+                                "NFT_short7ce14f2f5d7ac1287e9173cc5dfa3fb9dadd15780e6ce73ee89b90ef2b3fc4a7",
+                                "NFT_medium7ce14f2f5d7ac1287e9173cc5dfa3fb9dadd15780e6ce73ee89b90ef2b3fc4a7",
+                                "NFT_long7ce14f2f5d7ac1287e9173cc5dfa3fb9dadd15780e6ce73ee89b90ef2b3fc4a7",
+                                "NFT_d300d9508cc8b13f0fe022829afcb2e5516d82cb0bf7cfbd88ed3c10f0dd243b",
+                                "NFT_729809cce2bbf0d01c5188dc483c97a0c9fa02b464ff7adac13de40c2bb82740",
+                                "NFT_7b47737a2762649a8193974cd38545a3be98b41357eabe76e8e9d1c07fd45959",
+                                "NFT_2860af7b79f21335f6573c95795ce71f2e036ba525858ce7943c94f59ace7025",
+                                "NFT_345b0bb88b67cf6799aaa240cb7edbbfbf2584ff42fa7447fcd5f7f97eb30e68",
+                                "NFT_426e692855b731db9a0bb6cb74a3521ab3244a61b3d61804cc3e802488796af3",
+                                "NFT_f778236c33d8157211619ec572de5b6491e4720cb4861f4415d5ad812107bf9b",
+                                "NFT_84b4b8873d24de7b8d6bed1f361f9da37d5e4047ee5219c039759e9a5e018a62",
+                                "NFT_0a4dfa6a08fc82ce0a0cd7b0e402bc86240e6150e68eb67389e1b8a59711f74d",
+                                "NFT_329efa92b1c63d69303d548067d3019f4f930a3ce95881d0e4ea84964d469a49",
+                                "NFT_5910266c85469c4ac0e970be6ef7fd1fcd80d8d021d3ffe94503ec41f4bbb884",
+                                "NFT_7843137692a1007efba37c0c428d960ff7f0a699bf7f0f0cd9848e2a27a5e256",
+                                "NFT_83471d24a3eb9ac41147b6fea327a726bf873dc40f4554cf7cefddacb6089e61",
                                 // @nextSpriteLine@
                 ];
             },

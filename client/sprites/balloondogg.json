@@ -1,0 +1,49 @@
+{
+	"id": "balloondogg",
+	"width": 32,
+	"height": 32,
+	"animations": {
+		"death": {
+			"length": 6,
+			"row": 0
+		},
+		"atk_right": {
+			"length": 4,
+			"row": 1
+		},
+		"walk_right": {
+			"length": 4,
+			"row": 2
+		},
+		"idle_right": {
+			"length": 2,
+			"row": 3
+		},
+		"atk_up": {
+			"length": 4,
+			"row": 4
+		},
+		"walk_up": {
+			"length": 4,
+			"row": 5
+		},
+		"idle_up": {
+			"length": 2,
+			"row": 6
+		},
+		"atk_down": {
+			"length": 4,
+			"row": 7
+		},
+		"walk_down": {
+			"length": 4,
+			"row": 8
+		},
+		"idle_down": {
+			"length": 2,
+			"row": 9
+		}
+	},
+	"offset_x": -16,
+	"offset_y": -20
+}

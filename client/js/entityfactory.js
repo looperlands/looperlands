@@ -484,6 +484,32 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.VALKYM]=function(id){
         return new Mobs.VALKYM(id);
     };
+    //m88n Mobs
+    EntityFactory.builders[Types.Entities.BALLOONDOGB] = function(id) {
+        return new Mobs.balloondogb(id);
+    };
+    EntityFactory.builders[Types.Entities.BALLOONDOGY] = function(id) {
+        return new Mobs.balloondogy(id);
+    };
+    EntityFactory.builders[Types.Entities.BALLOONDOGA] = function(id) {
+        return new Mobs.balloondoga(id);
+    };
+    EntityFactory.builders[Types.Entities.BALLOONDOGV] = function(id) {
+        return new Mobs.balloondogv(id);
+    };
+    EntityFactory.builders[Types.Entities.BALLOONDOGP] = function(id) {
+        return new Mobs.balloondogp(id);
+    };
+    EntityFactory.builders[Types.Entities.BALLOONDOGG] = function(id) {
+        return new Mobs.balloondogg(id);
+    };
+    EntityFactory.builders[Types.Entities.BALLOONHOTDOGR] = function(id) {
+        return new Mobs.balloonhotdogr(id);
+    };
+    EntityFactory.builders[Types.Entities.BALLOONGIRAFFEO] = function(id) {
+        return new Mobs.balloongiraffeo(id);
+    };
+    
     //Short Destroyers
     EntityFactory.builders[Types.Entities.LATEFLEA] = function(id) {
         return new Mobs.lateflea(id);
@@ -875,7 +901,10 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
 
     EntityFactory.builders[Types.Entities.COBCOBMIN] = function(id) {
         return new NPCs.Cobcobmin(id);
-    };  
+    };
+
+    EntityFactory.builders[Types.Entities.TAIKOGUARD]=function(id){return new NPCs.TAIKOGUARD(id);};
+
     EntityFactory.builders[Types.Entities.VILLAGESIGN2]=function(id){return new NPCs.VILLAGESIGN2(id);};
     EntityFactory.builders[Types.Entities.VILLAGESIGN3]=function(id){return new NPCs.VILLAGESIGN3(id);};
     EntityFactory.builders[Types.Entities.VILLAGESIGN4]=function(id){return new NPCs.VILLAGESIGN4(id);};
@@ -938,6 +967,7 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
 
     //m88n NPCs
     EntityFactory.builders[Types.Entities.WENMOON]=function(id){return new NPCs.wenmoon(id);};
+    EntityFactory.builders[Types.Entities.KINGFROGGY]=function(id){return new NPCs.kingfroggy(id);};
 
     //ShortDestroyers
     EntityFactory.builders[Types.Entities.DERRICK]=function(id){return new NPCs.derrick(id);};
