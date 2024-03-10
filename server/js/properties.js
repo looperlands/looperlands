@@ -1058,6 +1058,74 @@ let Properties = {
         },
     },
 
+    //m88n Mobs
+    balloondogb: {
+        level: 2,
+        drops: {
+            burger: 90,
+            GOLD: 10
+        },
+    },
+
+    balloondogy: {
+        level: 4,
+        drops: {
+            burger: 75,
+            GOLD: 25
+        },
+    },
+
+    balloondogg: {
+        level: 6,
+        drops: {
+            burger: 50,
+            GOLD: 50
+        },
+    },
+
+    balloondoga: {
+        level: 8,
+        drops: {
+            burger: 25,
+            GOLD: 75
+        },
+    },
+
+    balloondogv: {
+        level: 10,
+        drops: {
+            burger: 40,
+            GOLD: 50,
+            GOLD2: 10
+        },
+    },
+
+    balloondogp: {
+        level: 12,
+        drops: {
+            burger: 25,
+            GOLD: 50,
+            GOLD2: 25
+        },
+    },
+
+    balloonhotdogr: {
+        level: 20,
+        drops: {
+            burger: 5,
+            GOLD2: 20,
+            GOLD3: 75
+        },
+    },
+
+    balloongiraffeo: {
+        level: 30,
+        drops: {
+            burger: 5,
+            GOLD3: 95
+        },
+    },
+
     //Short Destroyers
     lateflea: {
         level: 5,

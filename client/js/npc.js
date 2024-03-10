@@ -9,7 +9,14 @@ define(['character'], function (Character) {
             'Follow <a href="https://loopworms.io/DEV/LooperLands/QR/qr.php?NPC=guard" target="blank">this link</a> - it might be a Red Packet!',
             "Now go about your adventure, Looper!"
         ],
-
+        "taikoguard" : [
+            "Welcome to LooperLands, Taikonaut!",
+            'Your F2P Looper (avatar) will allow you to explore but the best experience is with a premium asset which retains progress.',
+            "Go explore - there is a GOOSE near the town with a Golden Sword NFT - get your own Red Packet with the Loopring wallet!",
+            'See if you can get a Taiko powerup!',
+            'More quests and TaikoTown are coming.',
+            "Follow us on <a href='https://twitter.com/LooperLands' target='blank'>Twitter</a>."
+        ],
         "king": [
             //"/openShop wormking King's Shop",
             "Hi Looper, I'm the LoopWorm King",
@@ -412,6 +419,13 @@ define(['character'], function (Character) {
             'First stop: Dreamland! Own a piece from the <a target="_blank" href="https://loopexchange.art/collection/onesie-party">Its a Onesie Party! collection</a> for access to the VIP Lounge!',
             'On X? <a target="_blank" href="https://twitter.com/moonwalker_nfts">Give him a follow</a> to stay updated.',
             'How about Discord? <a target="_blank" href="https://discord.gg/bjjNewZegM">Checkout PLANET M88NWALKER</a> for lots more!',
+            "Have fun!"
+        ],
+
+        "kingfroggy": [
+            "Greetings! I'm Froggy, the King of DreamLand.",
+            'Wanna be King of the next pillow fight? Own a piece from the <a target="_blank" href="https://loopexchange.art/collection/onesie-party">Its a Onesie Party! collection</a> for access to the VIP Lounge!',
+            'Join us in Discord! <a target="_blank" href="https://discord.gg/bjjNewZegM">Checkout PLANET M88NWALKER</a> for insider details.',
             "Have fun!"
         ],
 

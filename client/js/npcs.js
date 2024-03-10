@@ -9,6 +9,12 @@ define(['npc'], function(Npc) {
             }
         }),
 
+        TAIKOGUARD: Npc.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.TAIKOGUARD, 1);
+            }
+        }),        
+
         King: Npc.extend({
             init: function(id) {
                 this._super(id, Types.Entities.KING, 1);
@@ -347,6 +353,7 @@ define(['npc'], function(Npc) {
         GOFFREY: Npc.extend({init: function(id) {this._super(id, Types.Entities.GOFFREY, 1);}}),
         //m88n NPCs
         wenmoon: Npc.extend({init: function(id) {this._super(id, Types.Entities.WENMOON, 1);}}),
+        kingfroggy: Npc.extend({init: function(id) {this._super(id, Types.Entities.KINGFROGGY, 1);}}),
         //ShortDestroyers
         derrick: Npc.extend({init: function(id) {this._super(id, Types.Entities.DERRICK, 1);}}),
         frog: Npc.extend({init: function(id) {this._super(id, Types.Entities.FROG, 1);}}),
