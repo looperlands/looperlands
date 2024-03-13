@@ -499,6 +499,10 @@ function setBetMax() {
 //---- Init Functions -----------------------------------------------
 
 function init() {
+    $('#resources').addClass('hidden'); 
+    // hide the in game display for gold so we can provide our own 
+    // this will make sure updates applied to balance server side aren't shown prior to spin animation
+
     can = document.getElementById("slotsArea");
     ctx = can.getContext("2d");
     ctx.imageSmoothingEnabled = false;

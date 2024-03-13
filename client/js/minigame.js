@@ -7,7 +7,9 @@ const gameLookup = {
 // MINIGAME LOADER FUNCTION //
 //////////////////////////////
 
-function loadMinigame(game) {
+function loadMinigame(minigame, app) {
+    app.audioManager.fadeOutCurrentMusic();
+    
     $("#minigameprompt").removeClass("active");
 
     var minigameDiv = $('<div id="minigame" class="clickable active"></div>');
@@ -19,7 +21,7 @@ function loadMinigame(game) {
     var minigameMenu = $('<div id="minigameMenu">' +
         '<div id="menubtn">≡</div>' +
         '<div id="minigameMenu-content">' +
-        '<a href="#" id="mgSettings">⚙ Settings</a>' +
+        //'<a href="#" id="mgSettings">⚙ Settings</a>' + //hiding settings menu for now, we'll add this later.
         '<a href="#" id="mgClose">❌ Close Minigame</a>' +
         '</div></div>');
 
@@ -45,8 +47,14 @@ function loadMinigame(game) {
         if (minigameElement.length && !minigameElement.hasClass('pauseClose')) {
             minigameElement.remove();
             $('#mgMenuStyle').remove();
+
+            if($('#resources').children().length === 0) {  //update visuals for resources on exit
+                $('#resources').addClass('hidden');
+            } else {
+                $('#resources').removeClass('hidden');
+            }
         }
     });
 
-    $('#minigameContent').empty().load(`apps/${game}/${gameLookup[game]}`);
+    $('#minigameContent').empty().load(`apps/${minigame}/${gameLookup[minigame]}`);
 }
