@@ -77,7 +77,6 @@ var stopping_distance = 528 * scale;
 var max_reel_speed = symbol_size;
 var spinup_acceleration = 2;
 var spindown_acceleration = 1;
-var starting_credits = 100;
 var reward_delay = 3; // how many frames between each credit tick
 var reward_delay_grand = 1; // delay for grand-prize winning
 var reward_grand_threshhold = 25; // count faster if the reward is over this size
@@ -150,7 +149,7 @@ for (var i = 0; i < reel_count; i++) {
 }
 
 var game_state = STATE_REST;
-var credits = starting_credits;
+var credits = -1;
 var payout = 0;
 var reward_delay_counter = 0;
 var playing_lines = 1;
@@ -461,7 +460,9 @@ function drawText(context, text, x, y) {
 }
 
 function renderTextOnCanvas() {
-    drawText(ctx, "CREDITS: " + credits, can.width * 0.74, can.height * 0.05);
+    if(credits != -1){
+        drawText(ctx, "CREDITS: " + credits, can.width * 0.74, can.height * 0.05);
+    }
     drawText(ctx, "LINES: " + playing_lines, can.width * 0.38, can.height * 0.78);
     drawText(ctx, "BET: " + bet, can.width * 0.55, can.height * 0.78);
 }
@@ -509,7 +510,7 @@ function init() {
 
     var font = new FontFace('GraphicPixel', `url(./apps/luckyfunkz/assets/fonts/GraphicPixel-Regular.ttf)`);
 
-    credits = getGoldAmount();
+    getGoldAmount().then(goldAmount => {credits = goldAmount; render_reel();});
 
     font.load().then(function (loadedFont) {
         document.fonts.add(loadedFont);
@@ -546,18 +547,25 @@ function updateButtonPanelWidth(windowHeight, buttonPanel) {
 }
 
 function getGoldAmount() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const sessionId = urlParams.get('sessionId');
-    let inventoryQuery = "/session/" + sessionId + "/inventory";
-    axios.get(inventoryQuery).then(function(response) {
-        if (response.data.resources){
-            console.log(response.data.resources);
-            //return response.data.resources."21300041";
-        } 
-        return 99;
+    return new Promise((resolve, reject) => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const sessionId = urlParams.get('sessionId');
+        let inventoryQuery = "/session/" + sessionId + "/inventory";
+        axios.get(inventoryQuery).then(function(response) {
+            if (response.data.resources["21300041"]){
+                console.log(response.data.resources["21300041"]);
+                resolve(response.data.resources["21300041"]);
+            }
+            else{
+                resolve(0);
+            } 
+        });
     });
 }
 
+function updateCredits(){
+
+}
 
 //----- Autospin Functions -----------------------------------------------
 // Autospin functions
