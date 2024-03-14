@@ -511,6 +511,8 @@ function init() {
 
     var font = new FontFace('GraphicPixel', `url(./apps/luckyfunkz/assets/fonts/GraphicPixel-Regular.ttf)`);
 
+    credits = getGoldAmount();
+
     font.load().then(function (loadedFont) {
         document.fonts.add(loadedFont);
         font_loaded = true;
@@ -545,8 +547,17 @@ function updateButtonPanelWidth(windowHeight, buttonPanel) {
     buttonPanel.style.width = windowHeight * (2/3) + "px"; 
 }
 
-function getGoldAmount(){
-    
+function getGoldAmount() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const sessionId = urlParams.get('sessionId');
+    let inventoryQuery = "/session/" + sessionId + "/inventory";
+    axios.get(inventoryQuery).then(function(response) {
+        if (response.data.resources){
+            console.log(response.data.resources);
+            //return response.data.resources."21300041";
+        } 
+        return 99;
+    });
 }
 
 
