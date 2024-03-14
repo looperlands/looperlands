@@ -1,25 +1,27 @@
 const axios = require('axios');
 
-async function getSpinFromServer() {
+async function getSpinFromServer(linesPlayed, betPerLine) {
   try {
-    const response = await axios.get('http://localhost:3000/getSpin');
-    const spin = response.data;
-    return spin;
+    console.log(`linesPlayed: ${linesPlayed} + betPerLine: ${betPerLine}`);
+    const response = await axios.get(`http://localhost:3000/getSpin/${linesPlayed}/${betPerLine}`);
+    console.log(response.data);
+    const {randomSpin, linePayouts} = response.data;
+    return {randomSpin, linePayouts};
   } catch (error) {
     console.error('Error getting spin:', error.message);
     throw error;
   }
 }
 
-async function getSpin() {
+async function getSpin(linesPlayed, betPerLine) {
   const maxRetries = 3;
   let retryCount = 0;
 
   while (retryCount < maxRetries) {
     try {
-      const spin = await getSpinFromServer();
-      console.log(spin);
-      return spin;
+      const {randomSpin, linePayouts} = await getSpinFromServer(linesPlayed, betPerLine);
+      console.log(randomSpin, " : ", linePayouts);
+      return {randomSpin, linePayouts};
       break; // Exit the loop if successful
     } catch (error) {
       if (error.code === 'EADDRINUSE') {
@@ -38,4 +40,4 @@ async function getSpin() {
   }
 }
 
-const spin = getSpin();
+const {randomSpin, linePayouts} = getSpin(3,1);
