@@ -7423,7 +7423,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         self.assignBubbleTo(npc);
                         self.audioManager.playSound("npc");
                     } else {
-                        msg = npc.talk();
+                        msg = npc.talk(self.storage.walletId);
                         self.previousClickPosition = {};
                         if(msg) {
                             if (msg.startsWith("/openShop")) {
