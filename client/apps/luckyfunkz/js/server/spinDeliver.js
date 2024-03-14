@@ -5,6 +5,10 @@ const port = 3000;
 
 const { spins } = require('./data/spinSet');
 
+const WILD_NUMBERS = [0, 1];
+const PAYOUTS_BASE = [0, 0, 1, 4, 7, 13, 42, 69, 350, 1337, 9001, 42069];
+
+
 let spinsAvailableForDelivery;
 
 const requestQueue = [];
@@ -30,7 +34,7 @@ async function loadState() {
   }
 }
 
-function getSpin() {
+async function getSpin(linesPlayed, betPerLine) {
   if (spinsAvailableForDelivery.length === 0) {
     spinsAvailableForDelivery = [...spins];
     shuffle(spinsAvailableForDelivery);
@@ -39,7 +43,9 @@ function getSpin() {
   shuffle(spinsAvailableForDelivery); //shuffle array prior to pulling a spin.
   const randomSpin = spinsAvailableForDelivery.pop();
   saveState();
-  return randomSpin;
+  const linePayouts = await calcRewards(randomSpin, linesPlayed, betPerLine);
+  console.log(randomSpin, `\n`, linePayouts);
+  return {randomSpin, linePayouts};
 }
 
 function shuffle(array) {
@@ -65,20 +71,98 @@ function processNextRequest() {
 
 loadState();
 
-app.get('/getSpin', (req, res) => {
-  const spinPromise = () => {
-    return new Promise((resolve) => {
-      resolve(getSpin());
-    });
-  };
-  requestQueue.push({ promise: spinPromise, res });
+app.get('/getSpin/:linesPlayed/:betPerLine', async (req, res) => {
+ ///session/:sessionId/
+  //const sessionId = req.params.sessionId;
+  //const sessionData = cache.get(sessionId);
+  //let player = self.worldsMap[sessionData.mapId].getPlayerById(sessionData.entityId);
+  //let gameData = sessionData.gameData;
+  /*if (sessionData === undefined) {
+      res.status(404).json({
+          status: false,
+          error: "No session with id " + sessionId + " found",
+          user: null
+      });
+      return;
+  }*/
 
-  if (!isProcessingQueue) {
-    isProcessingQueue = true;
-    processNextRequest();
-  }
+  const linesPlayed = req.params.linesPlayed;
+  const betPerLine = req.params.betPerLine;
+  console.log(`linesPlayed: ${linesPlayed} + betPerLine: ${betPerLine}`);
+  const minGold = linesPlayed * betPerLine;
+  const resourceToCheck = "21300041"
+
+  if(isBalanceEnough(minGold,resourceToCheck)){
+    const spinPromise = () => {
+      return new Promise(async (resolve) => {
+        resolve(await getSpin(linesPlayed,betPerLine));
+      });
+    };
+    requestQueue.push({ promise: spinPromise, res });
+  
+    if (!isProcessingQueue) {
+      isProcessingQueue = true;
+      processNextRequest();
+    }
+  }else{
+      res.status(400).json({
+        status: false,
+        error: "Not enough " + key,
+        user: null
+    });
+
+  } 
 });
 
 app.listen(port, () => {
   console.log(`Server is listening for /getSpin at http://localhost:${port}`);
 });
+
+
+async function isBalanceEnough(cost, resourceId){
+  //let resource = parseInt(gameData.consumables[resourceId]); //i think resource might be the 21300041 and resourceId might be the string "gold"
+  let resource = 3;  //this will allow a min bet across the 3 lines, but error for more than that
+
+  if (isNaN(resource) || typeof resource !== 'number' || resource < cost) {
+      return false;
+  } 
+  else{
+      //transfer that amount from player to CORNHOLE prior to selecting a spin
+      return true;
+  }
+}
+
+async function calcRewards(randomSpin, linesPlayed, betPerLine){
+  //reorder randomSpin so line 1 = middle, line 2 = top, line 3 = bottom.
+  const lines = [randomSpin[1], randomSpin[0], randomSpin[2]];
+
+  let payout = [0,0,0];
+  for(let i = 0; i < linesPlayed; i++){
+    payout[i] = winCheck(lines[i]) * betPerLine;
+    //compute the winnings for the lines played and add to payout... multiply winnings by betPerLine
+  }
+  return payout;
+}
+
+function winCheck(lineData) {
+  const firstNumber = lineData[0];
+  const secondNumber = lineData[1];
+  const thirdNumber = lineData[2];
+
+  const wildCount = [firstNumber, secondNumber, thirdNumber].filter(num => WILD_NUMBERS.includes(num)).length;
+  // Check if all three numbers are equal
+  if (firstNumber === secondNumber && secondNumber === thirdNumber) {
+      return PAYOUTS_BASE[wildCount === 3 ? WILD_COUNTS_AS : firstNumber];
+  } else {
+      if (wildCount === 1 && (firstNumber === thirdNumber || firstNumber === secondNumber || secondNumber === thirdNumber)) {
+          // one wild and other two numbers match
+          return PAYOUTS_BASE[!WILD_NUMBERS.includes(firstNumber) ? firstNumber : (!WILD_NUMBERS.includes(secondNumber) ? secondNumber : thirdNumber)];
+      }
+      if (wildCount === 2 && (firstNumber === thirdNumber || firstNumber === secondNumber || secondNumber === thirdNumber)) {
+          // two wilds and another number
+          return PAYOUTS_BASE[!WILD_NUMBERS.includes(firstNumber) ? firstNumber : (!WILD_NUMBERS.includes(secondNumber) ? secondNumber : thirdNumber)];
+      }
+  }
+
+  return 0;
+}
