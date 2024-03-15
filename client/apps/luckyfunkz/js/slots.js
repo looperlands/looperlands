@@ -590,7 +590,6 @@ function AutoSpin_Toggle() {
 
 
 //-----Spin Request Functions------------------------------------------------
-const axios = require('axios');
 
 async function getSpinFromServer(linesPlayed, betPerLine) {
   try {
