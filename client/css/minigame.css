@@ -55,7 +55,7 @@
   transform: scale(0);
   transform-origin: top right;
   opacity: 0;
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  transition: transform 0.5s ease, opacity 0.25s ease;
   width:  2.5vh;
 }
 
@@ -64,7 +64,7 @@
   transform-origin: top right;
   width: fit-content;
   opacity: 1;
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  transition: transform 0.5s ease, opacity 0.25s ease;
 }
 
 #menubtn:hover {
@@ -107,7 +107,7 @@
     transform: scale(0);
     transform-origin: top right;
     opacity: 0;
-    transition: transform 0.3s ease, opacity 0.3s ease;
+    transition: transform 0.5s ease, opacity 0.25s ease;
     width: 2.5vh;
   }
 
@@ -116,6 +116,6 @@
     transform-origin: top right;
     width: fit-content;
     opacity: 1;
-    transition: transform 0.3s ease, opacity 0.3s ease;
+    transition: transform 0.5s ease, opacity 0.25s ease;
   }
 }

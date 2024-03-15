@@ -56,7 +56,6 @@ reels_bg.src = "./apps/luckyfunkz/assets/images/ui/background/LuckyFUNKZ.png";
 var credit_panel = new Image();
 credit_panel.src = "./apps/luckyfunkz/assets/images/ui/panels/credit_panel.png";
 
-
 var snd_win;
 snd_win = new Audio("apps/luckyfunkz/assets/audio/win.wav");
 
@@ -515,6 +514,16 @@ function init() {
     $('#resources').addClass('hidden');
     // hide the in game display for gold so we can provide our own 
     // this will make sure updates applied to balance server side aren't shown prior to spin animation
+
+    // Update minigame menu
+    var addToMinigameMenu = $('<a href="#" id="mgPayouts">🎰 Payouts</a>');
+    $('#minigameMenu-content').prepend(addToMinigameMenu);
+
+
+    $('#mgPayouts').on('click', function () {
+        //show payout window overlay
+        //have a close button to hide it again
+    });
 
     can = document.getElementById("slotsArea");
     ctx = can.getContext("2d");
