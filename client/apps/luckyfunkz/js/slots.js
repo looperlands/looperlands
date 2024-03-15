@@ -51,12 +51,16 @@ for (var i = 0; i < symbol_count; i++) {
 }
 
 var reels_bg = new Image();
-var snd_reel_stop = new Array();
-var snd_win;
-
 reels_bg.src = "./apps/luckyfunkz/assets/images/ui/background/LuckyFUNKZ.png";
 
+var credit_panel = new Image();
+credit_panel.src = "./apps/luckyfunkz/assets/images/ui/panels/credit_panel.png";
+
+
+var snd_win;
 snd_win = new Audio("apps/luckyfunkz/assets/audio/win.wav");
+
+var snd_reel_stop = new Array();
 snd_reel_stop[0] = new Audio("apps/luckyfunkz/assets/audio/reel_stop.wav");
 snd_reel_stop[1] = new Audio("apps/luckyfunkz/assets/audio/reel_stop.wav");
 snd_reel_stop[2] = new Audio("apps/luckyfunkz/assets/audio/reel_stop.wav");
@@ -164,7 +168,7 @@ function draw_symbol(symbol_index, x, y, reel) {
     ctx.imageSmoothingEnabled = false;
     ctx.drawImage(symbols[symbol_index], fillX, fillY, symbol_size, symbol_size);
     ctx.strokeStyle = "black";
-    ctx.lineWidth = Math.trunc(scale/2+1);
+    ctx.lineWidth = Math.trunc(scale / 2 + 1);
     ctx.strokeRect(fillX, fillY, symbol_size, symbol_size);
 
 }
@@ -174,7 +178,7 @@ function render_reel() {
     ctx.clearRect(0, 0, can.width, can.height);
 
     ctx.fillStyle = "black";
-	ctx.fillRect(580, 280, 760, 510);
+    ctx.fillRect(580, 280, 760, 510);
 
     const aspectRatio = reels_bg.width / reels_bg.height;
     ctx.imageSmoothingEnabled = false;
@@ -193,6 +197,7 @@ function render_reel() {
         }
     }
     ctx.drawImage(reels_bg, 0, 0, aspectRatio * can.height, can.height);
+    ctx.drawImage(credit_panel, can.width * 0.80, can.height * 0.05, credit_panel.width, credit_panel.height)
     renderTextOnCanvas();
 }
 
@@ -257,9 +262,9 @@ function render() {
 function set_stops() {
     for (var i = 0; i < reel_count; i++) {
         start_slowing[i] = false;
-        
-        const {spin, payouts} = getSpin();  //get a spin and set the stops with that spin.
-        
+
+        const { spin, payouts } = getSpin();  //get a spin and set the stops with that spin.
+
         stop_index = Math.floor(Math.random() * reel_positions);
         stopping_position[i] = stop_index * symbol_size;
 
@@ -338,7 +343,7 @@ function logic_spindown() {
                     try {
                         snd_reel_stop[i].currentTime = 0;
                         snd_reel_stop[i].play();
-                    } catch (err) {}
+                    } catch (err) { }
                 }
             }
         }
@@ -361,7 +366,7 @@ function logic_reward() {
     payout--;
     var metrics = ctx.measureText(`CREDITS: ${credits}`);
     credits++;
-    ctx.clearRect(can.width * 0.74, ((can.height * 0.05) - (can.width*.025)), metrics.width, can.width*.025);
+    ctx.clearRect(can.width * 0.74, ((can.height * 0.05) - (can.width * .025)), metrics.width, can.width * .025);
     drawText(ctx, "CREDITS: " + credits, can.width * 0.74, can.height * 0.05);
 
     if (payout < reward_grand_threshhold) {
@@ -437,7 +442,7 @@ function calc_reward() {
         try {
             snd_win.currentTime = 0;
             snd_win.play();
-        } catch (err) {}
+        } catch (err) { }
     }
 }
 
@@ -454,19 +459,24 @@ function calc_reward() {
 //   }
 // }
 
-function drawText(context, text, x, y) {
-    context.fillStyle = "aqua";
+function drawText(context, color, textalign, text, x, y) {
+    context.fillStyle = color;
     context.font = can.width * 0.025 + "px GraphicPixel";
-    context.textAlign = "left";
+    context.textAlign = textalign;
     context.fillText(text, x, y);
 }
 
 function renderTextOnCanvas() {
-    if(credits != -1){
-        drawText(ctx, "CREDITS: " + credits, can.width * 0.74, can.height * 0.05);
+    if (credits != -1) {
+        ctx.fillStyle = "white";
+        ctx.font = can.width * 0.025 + "px GraphicPixel";
+        ctx.textAlign = "left";
+        let text = ctx.measureText(credits);
+        console.log(text.height);
+        drawText(ctx, "white", "center", credits, can.width * 0.80 + credit_panel.width * 0.55, can.height * 0.05 + credit_panel.height * 0.67);
     }
-    drawText(ctx, "LINES: " + playing_lines, can.width * 0.38, can.height * 0.78);
-    drawText(ctx, "BET: " + bet, can.width * 0.55, can.height * 0.78);
+    drawText(ctx, "aqua", "left", "LINES: " + playing_lines, can.width * 0.38, can.height * 0.78);
+    drawText(ctx, "aqua", "left", "BET: " + bet, can.width * 0.55, can.height * 0.78);
 }
 
 function spin() {
@@ -502,7 +512,7 @@ function setBetMax() {
 //---- Init Functions -----------------------------------------------
 
 function init() {
-    $('#resources').addClass('hidden'); 
+    $('#resources').addClass('hidden');
     // hide the in game display for gold so we can provide our own 
     // this will make sure updates applied to balance server side aren't shown prior to spin animation
 
@@ -512,7 +522,7 @@ function init() {
 
     var font = new FontFace('GraphicPixel', `url(./apps/luckyfunkz/assets/fonts/GraphicPixel-Regular.ttf)`);
 
-    getGoldAmount().then(goldAmount => {credits = goldAmount; render_reel();});
+    getGoldAmount().then(goldAmount => { credits = goldAmount; render_reel(); });
 
     font.load().then(function (loadedFont) {
         document.fonts.add(loadedFont);
@@ -528,11 +538,11 @@ function init() {
         can.height = reels_bg.naturalHeight;
         var buttonPanel = document.getElementById("buttonPanel");
         updateButtonPanelWidth(window.height, buttonPanel);
-        
+
         reels_bg_loaded = true;
         if (font_loaded && symbols_loaded && reels_bg_loaded) render_reel();
     };
-    
+
 
     var devicePixelRatio = window.devicePixelRatio || 1;
     can.width = can.clientWidth * devicePixelRatio;
@@ -545,7 +555,7 @@ function updateButtonPanelWidth(windowHeight, buttonPanel) {
     buttonPanel.style.height = "10%";
     //set the width as a function of height using the aspect ratio since we use height as control
     //buttonPanel.style.width = windowHeight * (1080/1920) * 0.081 + "%"; 
-    buttonPanel.style.width = windowHeight * (2/3) + "px"; 
+    buttonPanel.style.width = windowHeight * (2 / 3) + "px";
 }
 
 function getGoldAmount() {
@@ -553,19 +563,19 @@ function getGoldAmount() {
         const urlParams = new URLSearchParams(window.location.search);
         const sessionId = urlParams.get('sessionId');
         let inventoryQuery = "/session/" + sessionId + "/inventory";
-        axios.get(inventoryQuery).then(function(response) {
-            if (response.data.resources["21300041"]){
+        axios.get(inventoryQuery).then(function (response) {
+            if (response.data.resources["21300041"]) {
                 console.log(response.data.resources["21300041"]);
                 resolve(response.data.resources["21300041"]);
             }
-            else{
+            else {
                 resolve(0);
-            } 
+            }
         });
     });
 }
 
-function updateCredits(){
+function updateCredits() {
 
 }
 
@@ -590,42 +600,41 @@ function AutoSpin_Toggle() {
 
 
 //-----Spin Request Functions------------------------------------------------
-const axios = require('axios');
 
 async function getSpinFromServer(linesPlayed, betPerLine) {
-  try {
-    const response = await axios.get(`http://localhost:3000/getSpin/${linesPlayed}/${betPerLine}`);
-    const {spin, payouts} = response.data;
-    return {spin, payouts};
-  } catch (error) {
-    console.error('Error getting spin:', error.message);
-    throw error;
-  }
+    try {
+        const response = await axios.get(`http://localhost:3000/getSpin/${linesPlayed}/${betPerLine}`);
+        const { spin, payouts } = response.data;
+        return { spin, payouts };
+    } catch (error) {
+        console.error('Error getting spin:', error.message);
+        throw error;
+    }
 }
 
 async function getSpin() {
-  const maxRetries = 3;
-  let retryCount = 0;
+    const maxRetries = 3;
+    let retryCount = 0;
 
-  while (retryCount < maxRetries) {
-    try {
-      const {spin, payouts} = await getSpinFromServer();
-      console.log(spin, " : ", payouts);
-      return {spin, payouts};
-      break; // Exit the loop if successful
-    } catch (error) {
-      if (error.code === 'EADDRINUSE') {
-        //console.log('Port in use, retrying...');
-        retryCount++;
-        await new Promise(resolve => setTimeout(resolve, 1000)); // Wait for 1 second before retrying
-      } else {
-        console.error('Failed to get spin:', error.message);
-        break; // Exit the loop if an unexpected error occurs
-      }
+    while (retryCount < maxRetries) {
+        try {
+            const { spin, payouts } = await getSpinFromServer();
+            console.log(spin, " : ", payouts);
+            return { spin, payouts };
+            break; // Exit the loop if successful
+        } catch (error) {
+            if (error.code === 'EADDRINUSE') {
+                //console.log('Port in use, retrying...');
+                retryCount++;
+                await new Promise(resolve => setTimeout(resolve, 1000)); // Wait for 1 second before retrying
+            } else {
+                console.error('Failed to get spin:', error.message);
+                break; // Exit the loop if an unexpected error occurs
+            }
+        }
     }
-  }
 
-  if (retryCount === maxRetries) {
-    console.error('Exceeded maximum retry attempts. Exiting.');
-  }
+    if (retryCount === maxRetries) {
+        console.error('Exceeded maximum retry attempts. Exiting.');
+    }
 }
