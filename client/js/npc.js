@@ -273,7 +273,7 @@ define(['character'], function (Character) {
             "Honk!",
             'I raise funds #ForTheChildren - <a target="_blank" href="https://twitter.com/hashtag/ForTheChildren?src=hashtag_click">click here</a> to help',
             'Check out <a target="_blank" href="https://twitter.com/RSKAGY">my twitter</a> and give me a follow or <a target="_blank" href="http://twitter.com/share?text=%40RSKAGY">tweet me</a>',
-            'Follow <a href="https://loopworms.io/DEV/LooperLands/QR/qr.php?NPC=king" target="blank">this link</a> - it might be a Red Packet!',
+            'Follow <a href="https://loopworms.io/DEV/LooperLands/QR/qr3.php?NPC=king&walletId={walletId}" target="blank">this link</a> - it might be a Red Packet!',
             "Now go about your adventure, Looper!"
         ],
 
@@ -491,8 +491,8 @@ define(['character'], function (Character) {
             this.thoughtsClearedCallback = null;
         },
 
-        talk: function () {
-            var msg = null;
+        talk: function (walletId) {
+            let msg = null;
 
             if (this.talkIndex > this.talkCount) {
                 this.talkIndex = 0;
@@ -501,6 +501,8 @@ define(['character'], function (Character) {
                 msg = NpcTalk[this.itemKind][this.talkIndex];
             }
             this.talkIndex += 1;
+
+            msg = msg.replace("{walletId}", walletId);
 
             return msg;
         },
