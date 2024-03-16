@@ -19,18 +19,17 @@ body {
 	height: 10vh;
   position: relative;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.2);
+  background: rgb(33 33 33 / 70%);
   font-family: "Helvetica Neue", "Futura", "Trebuchet MS", Arial;
   -webkit-user-select: none;
   user-select: none;
   border-radius: 2vh;
   box-shadow: 0 1vh 1vh rgba(0, 0, 0, 0.8);
-  border-top: rgba(200, 210, 210, 0.8) 0.5vh solid;
-  border-right:  rgb(200, 210, 210,0.8) 0.5vh solid;
-  border-bottom: rgb(110, 120, 120,0.8) 0.5vh solid;
-  border-left: rgb(110, 120, 120,0.8) 0.5vh solid;
-  backdrop-filter: blur(0.25vh);
-  
+  border-top: rgb(137 137 137) 0.3vh solid;
+  border-right: rgb(221 221 221) 0.3vh solid;
+  border-bottom: rgb(143 143 143) 0.5vh solid;
+  border-left: rgb(107 107 107) 0.3vh solid;
+  backdrop-filter: blur(0.25vh);  
 }
 
 /* Top Info */
@@ -44,15 +43,14 @@ body {
   text-align: center;
   font-size: 2vh;
   opacity: 1;
-  font-weight: 300;
   color: #f1fcff;
-  text-shadow: 1px 1px 4px rgba(0, 0, 0, 1);
+  filter: drop-shadow(-0.15vh -0.15vh 0.1vh rgba(0, 0, 0, 0.5)) drop-shadow(0.15vh 0.15vh 0.1vh rgba(0, 0, 0, 0.5));
 }
 
 #timer {
   position: absolute;
   bottom: 1vh;
-  left: 35%;
+  left: 30%;
   text-align: left;
   font-size: 1.5vh;
   opacity: 0.75;
@@ -64,7 +62,7 @@ body {
 #duration {
   position: absolute;
   bottom: 1vh;
-  right: 35%;
+  right: 30%;
   text-align: right;
   font-size: 1.5vh;
   opacity: 0.75;
@@ -90,22 +88,19 @@ body {
 .btn {
   position: absolute;
   cursor: pointer;
-  opacity: 0.9;
-  -webkit-filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.33));
-  filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.33));
+  opacity: 0.6;
   -webkit-user-select: none;
   user-select: none;
 }
 .btn:hover {
-  opacity: 1;
+  opacity: 0.9;
 }
 #playBtn {
   background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEUAAABGCAYAAACaGVmHAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyhpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMTExIDc5LjE1ODMyNSwgMjAxNS8wOS8xMC0wMToxMDoyMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgKE1hY2ludG9zaCkiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6QThERThENUFDNkJEMTFFNTk2RTBDMTRBMkYyNjVGMzQiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6QThERThENUJDNkJEMTFFNTk2RTBDMTRBMkYyNjVGMzQiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpBOERFOEQ1OEM2QkQxMUU1OTZFMEMxNEEyRjI2NUYzNCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDpBOERFOEQ1OUM2QkQxMUU1OTZFMEMxNEEyRjI2NUYzNCIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PnFM7yIAAAFWSURBVHja7NRJDoMwDEDRcPL2ZoVeLEUtCyoCZPBsf8mS10+Wp5zzK6X0XGdJ0bdpRcnbPgfOESUFzjmKe5wrFLc4NSjucFpQ3OD0oJjHGUExiwOBYg4HEsUMDgaKehxMFLU4FCjqcChR1OBwoIjH4UQRiyMBRRyOJBQxOBJR2HEko7DhaEAhx9GEQoajEQUdRzMKGo4FFHAcSyhgOBZRhnEso3TjeEBpxvGEUo3jEeUWxzPKKU6gFHACpYATKMfegbLDWOcRl/Jr2X7JHI+2gOEZ5RTDI8othieUagwPKM0YllG6MSyiDGNYQgHDsIACjqEZBQ1DIwo6hiYUMgwNKOQYklHYMCSisGNIQhGDIQFFHAYnilgMDhTxGJQoajAoUNRhYKKoxcBAUY8BiWIGAwLFHMYIilmMHhTzGC0objBqUNxhXKG4xSihuMfYo8yB8d9HgAEATyefBJWpw70AAAAASUVORK5CYII=');
   background-size: 100%;
   background-position: center;
   background-repeat: no-repeat;
-  opacity:0.5;
-  filter: drop-shadow(0.15vh 0.15vh 0.1vh rgba(0, 0, 0, 1));
+  filter: drop-shadow(-0.15vh -0.15vh 0.1vh rgba(0, 0, 0, 1)) drop-shadow(0.15vh 0.15vh 0.1vh rgba(0, 0, 0, 1));
   width: 2vh;
   height: 2vh;
   left: 50%;
@@ -117,8 +112,7 @@ body {
   background-size: 100%;
   background-position: center;
   background-repeat: no-repeat;
-  opacity:0.5;
-  filter: drop-shadow(0.15vh 0.15vh 0.1vh rgba(0, 0, 0, 1));
+  filter: drop-shadow(-0.15vh -0.15vh 0.1vh rgba(0, 0, 0, 1)) drop-shadow(0.15vh 0.15vh 0.1vh rgba(0, 0, 0, 1));
   width: 2vh;
   height: 2vh;
   left: 50%;
@@ -131,11 +125,10 @@ body {
   background-size: 100%;
   background-position: center;
   background-repeat: no-repeat;
-  opacity:0.5;
-  filter: drop-shadow(0.15vh 0.15vh 0.1vh rgba(0, 0, 0, 1));
+  filter: drop-shadow(-0.15vh -0.15vh 0.1vh rgba(0, 0, 0, 1)) drop-shadow(0.15vh 0.15vh 0.1vh rgba(0, 0, 0, 1));
   width: 2vh;
   height: 2vh;
-  left: 25%;
+  left: 20%;
   bottom: 1vh;
   margin: auto -1vh;
 }
@@ -144,11 +137,10 @@ body {
   background-size: 100%;
   background-position: center;
   background-repeat: no-repeat;
-  opacity:0.5;
-  filter: drop-shadow(0.15vh 0.15vh 0.1vh rgba(0, 0, 0, 1));
+  filter: drop-shadow(-0.15vh -0.15vh 0.1vh rgba(0, 0, 0, 1)) drop-shadow(0.15vh 0.15vh 0.1vh rgba(0, 0, 0, 1));
   width: 2vh;
   height: 2vh;
-  left: 75%;
+  left: 80%;
   bottom: 1vh;
   margin: auto -1vh;
 }
@@ -165,11 +157,11 @@ body {
   background-size: 100%;
   background-position: center;
   background-repeat: no-repeat;
-  filter: drop-shadow(0.15vh 0.15vh 0.1vh rgba(0, 0, 0, 1));
-  width: 2vh;
-  height: 2vh;
+  filter: drop-shadow(-0.15vh -0.15vh 0.1vh rgba(0, 0, 0, 1)) drop-shadow(0.15vh 0.15vh 0.1vh rgba(0, 0, 0, 1));
+  width: 2.5vh;
+  height: 2.5vh;
   top: 1vh;
-  right: 2vh;
+  right: 2.5vh;
   margin: auto -1vh;
 }
 
@@ -196,8 +188,8 @@ body {
   top: 50%;
   left: 0;
   width: 100%;
-  height: 0.2vh;
-  background-color: #000000;
+  height: 0.3vh;
+  background-color: #fff;
   box-shadow: 0.2vh 0.2vh 0.4vh rgba(0, 0, 0, 0.6);
   opacity: 0.1;
 }

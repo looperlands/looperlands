@@ -210,7 +210,8 @@ Player.prototype = {
     // Update the display on the slider.
     var barWidth = (val * 90) / 100;
     barFull.style.width = (barWidth * 100) + '%';
-    sliderBtn.style.left = (CORNRADIO.offsetWidth * barWidth) + 'px';
+    var posLeft = Math.max((CORNRADIO.offsetWidth * barWidth) , 10);
+    sliderBtn.style.left = posLeft + 'px';
   },
 
   /**
@@ -401,7 +402,7 @@ wave.start();
 // These are basically some hacks to get SiriWave.js to do what we want.
 var resize = function () {
   var height = CORNRADIO.offsetHeight * 0.25;
-  var width = CORNRADIO.offsetWidth*2;
+  var width = CORNRADIO.offsetWidth;
   wave.height = CORNRADIO.offsetHeight/2;
   wave.height_2 = height / 2;
   wave.MAX = wave.height_2;
@@ -411,14 +412,14 @@ var resize = function () {
   wave.canvas.height = height;
   wave.canvas.width = width;
   wave.container.style.margin = -(height / 2) + 'px auto';
-  wave.color = "#b9d1ee";
 
   // Update the position of the slider.
   var sound = player.playlist[player.index].howl;
   if (sound) {
     var vol = sound.volume();
     var barWidth = (vol * 0.9);
-    sliderBtn.style.left = (width * barWidth + width * 0.05 - 25) + 'px';
+    var posLeft = Math.max((width * barWidth + width * 0.05 - 25) , 10);
+    sliderBtn.style.left = posLeft + 'px';
   }
 };
 window.addEventListener('resize', resize);
