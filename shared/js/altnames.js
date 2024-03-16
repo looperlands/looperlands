@@ -106,6 +106,11 @@ const AltNames = {
     m88ndreamgumballb: "Blueberry Gumball",  
     m88ndreamgumballp: "OG Gumball",  
     m88ndreamgumballr: "Cinnamon Gumball",
+    m88ngmeshare: "1 GME Share",  
+    m88nwhiskey: "Whiskey",  
+    m88ndiamondhand: "Diamond Hand",  
+    m88ngoldenbanana: "Golden Banana",  
+    m88nshorts: "The Shorts",
 
     //BITCORN PHISHIES
     bit_BoneFish: "a BoneFish",
