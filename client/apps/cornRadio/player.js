@@ -27,7 +27,7 @@ var Player = function (playlist) {
   this.index = 0;
 
   // Display the title of the first track.
-  track.innerHTML = playlist[0].title;
+  track.innerHTML = playlist[0].title.toUpperCase();
 /*   var textWidth = track.offsetWidth*1.1;
   if (textWidth > CORNRADIO.offsetWidth * 0.9) {
     track.classList.add('scrolling');
@@ -77,7 +77,7 @@ Player.prototype = {
           // Start the wave animation if we have already loaded
           wave.container.style.display = 'block';
           bar.style.display = 'none';
-          pauseBtn.style.display = 'block';
+          pauseBtn.style.display = 'flex';
         },
         onload: function () {
           // Start the wave animation.
@@ -112,7 +112,7 @@ Player.prototype = {
     sound.play();
 
     // Update the track display.
-    track.innerHTML = data.title;
+    track.innerHTML = data.title.toUpperCase();;
 /*     var textWidth = track.scrollWidth;
     if (track.scrollWidth > CORNRADIO.offsetWidth * 0.9) {
       track.classList.add('scrolling');
@@ -126,7 +126,7 @@ Player.prototype = {
     // Show the pause button.
     if (sound.state() === 'loaded') {
       playBtn.style.display = 'none';
-      pauseBtn.style.display = 'block';
+      pauseBtn.style.display = 'flex';
     } else {
       loading.style.display = 'block';
       playBtn.style.display = 'none';
@@ -150,7 +150,7 @@ Player.prototype = {
     sound.pause();
 
     // Show the play button.
-    playBtn.style.display = 'block';
+    playBtn.style.display = 'flex';
     pauseBtn.style.display = 'none';
   },
 
@@ -210,7 +210,7 @@ Player.prototype = {
     // Update the display on the slider.
     var barWidth = (val * 90) / 100;
     barFull.style.width = (barWidth * 100) + '%';
-    var posLeft = Math.max((CORNRADIO.offsetWidth * barWidth) , 10);
+    var posLeft = Math.min(Math.max((CORNRADIO.offsetWidth * barWidth) , 10), barEmpty.scrollWidth);
     sliderBtn.style.left = posLeft + 'px';
   },
 

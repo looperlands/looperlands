@@ -20,7 +20,7 @@ function SiriWave(opt) {
   this.height_2 = this.height / 2;
 
   this.MAX = (this.height_2) - 4;
-  console.log(`width: ${this.width}, height: ${this.height}, max: ${this.MAX}`);
+
 
   // Constructor opt
 
@@ -36,13 +36,12 @@ function SiriWave(opt) {
     : null;
   })(opt.color || '#fff') || '255,255,255';
 
-  console.log(`amplitude: ${this.amplitude}, speed: ${this.speed}, freq: ${this.frequency}, color: ${this.color}`);
   // Canvas
 
   this.canvas = document.createElement('canvas');
   this.canvas.width = this.width;
   this.canvas.height = this.height;
-  console.log(opt);
+
   if (opt.cover) {
     this.canvas.style.width = this.canvas.style.height = '100%';
   } else {
