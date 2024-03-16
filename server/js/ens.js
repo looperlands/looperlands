@@ -4,19 +4,19 @@ const alchemy = require('alchemy-sdk');
 const ALCHEMY_API_KEY = process.env['ALCHEMY_API_KEY'];
 
 const config = {
-  apiKey: ALCHEMY_API_KEY,
-  network: alchemy.Network.ETH_MAINNET,
+    apiKey: ALCHEMY_API_KEY,
+    network: alchemy.Network.ETH_MAINNET,
 };
 
 const alchemyLib = new alchemy.Alchemy(config);
 
-const NodeCache = require( "node-cache" );
+const NodeCache = require("node-cache");
 const cache = new NodeCache();
 
-getEnsAlchemy = async function(walletId) {
+getEnsAlchemy = async function (walletId) {
     const ensContractAddress = "0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85";
     const nfts = await alchemyLib.nft.getNftsForOwner(walletId, {
-      contractAddresses: [ensContractAddress],
+        contractAddresses: [ensContractAddress],
     });
     try {
         //console.log(walletId, nfts);
@@ -29,12 +29,23 @@ getEnsAlchemy = async function(walletId) {
     }
 }
 
-getEns = async function(walletId) {
+getDotTaikoName = async function (walletId) {
+    try {
+        const endpoint = "https://api.dottaiko.me/api/resolveAddress/" + walletId;
+        const ens = await axios.get(endpoint);
+
+        return ens.data.data ?? "";
+    } catch (e) {
+        return "";
+    }
+}
+
+getEns = async function (walletId) {
     let cached = cache.get(walletId);
     if (cached !== undefined) {
         return cached;
     }
-    const shortEthAddressName = walletId.replace("0x", "").substring(0,6);
+    const shortEthAddressName = walletId.replace("0x", "").substring(0, 6);
     let name = shortEthAddressName;
     try {
         // first, try the loopring API
@@ -44,6 +55,12 @@ getEns = async function(walletId) {
             // try alchemy next
             name = await getEnsAlchemy(walletId);
         }
+
+        if (name === "") {
+            // try dotTaiko-name
+            name = await getDotTaikoName(walletId);
+        }
+
         if (name === "") {
             name = shortEthAddressName;
         }
