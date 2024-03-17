@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="user-scalable=no">
+  <title>🌽 MAIZ.FM</title>
+  <link href='https://fonts.googleapis.com/css?family=Orbitron' rel='stylesheet' type='text/css'>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <link rel="stylesheet" href="./apps/MAIZfm/styles.css">
+</head>
+<body>
+<div id="MAIZfm">
+  <!-- Top Info -->
+  <div class="btn" id="closeBtn"><span class="material-icons">close</span></div>
+  <div id="title">
+    <div id="track"></div>
+  </div>
+  <div class="btn" id="volumeBtn"><span class="material-icons">volume_up</span></div>
+
+  <!-- Controls -->
+  <div class="controlsOuter">
+    <div class="controlsInner">
+      <div id="loading"></div>
+      <div class="btn" id="prevBtn"><span class="material-symbols-outlined">skip_previous</span></div>
+      <div id="timer">0:00</div>
+      <div class="btn" id="playBtn"><span class="material-symbols-outlined">play_arrow</span></div>
+      <div class="btn" id="pauseBtn"><span class="material-symbols-outlined">pause</span></div>
+      <div id="duration">0:00</div>
+      <div class="btn" id="nextBtn"><span class="material-symbols-outlined">skip_next</span></div>
+    </div>
+    <!--<div class="btn" id="playlistBtn"></div>-->
+    
+  </div>
+
+  <!-- Progress -->
+  <div id="waveform"></div>
+  <div id="bar"></div>
+  <div id="progress"></div>
+
+  <!-- Playlist -->
+  <div id="playlist">
+    <div id="list"></div>
+  </div>
+
+  <!-- Volume -->
+  <div id="volume" class="fadeout">
+    <div id="barFull" class="bar"></div>
+    <div id="barEmpty" class="bar"></div>
+    <div id="sliderBtn"></div>
+  </div>
+</div>
+  <!-- Scripts -->
+  <script type="module" src="./apps/MAIZfm/js/player.js"></script>
+</body>
+</html>

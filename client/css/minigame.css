@@ -88,6 +88,7 @@
     right: 1%;
     width: fit-content;
     z-index: 9999;
+    display: none;
     position: absolute;
     transform: translate(0%, 8%);
     transform-origin: top right;
@@ -104,6 +105,7 @@
   }
 
   #minigameMenu:not(:hover) #minigameMenu-content {
+    display: unset;
     transform: scale(0);
     transform-origin: top right;
     opacity: 0;
@@ -112,6 +114,7 @@
   }
 
   #minigameMenu:hover #minigameMenu-content {
+    display: unset;
     transform: scale(1, 1);
     transform-origin: top right;
     width: fit-content;

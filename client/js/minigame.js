@@ -8,7 +8,8 @@ const gameLookup = {
 //////////////////////////////
 
 function loadMinigame(minigame, app) {
-    app.audioManager.fadeOutCurrentMusic();
+    app.audioManager.disable();
+
     
     $("#minigameprompt").removeClass("active");
 

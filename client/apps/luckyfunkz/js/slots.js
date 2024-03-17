@@ -471,7 +471,6 @@ function renderTextOnCanvas() {
         ctx.font = can.width * 0.025 + "px GraphicPixel";
         ctx.textAlign = "left";
         let text = ctx.measureText(credits);
-        console.log(text.height);
         drawText(ctx, "white", "center", credits, can.width * 0.80 + credit_panel.width * 0.55, can.height * 0.05 + credit_panel.height * 0.67);
     }
     drawText(ctx, "aqua", "left", "LINES: " + playing_lines, can.width * 0.38, can.height * 0.78);
@@ -516,13 +515,24 @@ function init() {
     // this will make sure updates applied to balance server side aren't shown prior to spin animation
 
     // Update minigame menu
-    var addToMinigameMenu = $('<a href="#" id="mgPayouts">🎰 Payouts</a>');
+
+    var addToMinigameMenu = $('<a href="#" id="mgPayouts">🎰 Payouts</a>' +
+                              '<a href="#" id="mgMAIZfm">🌽 MAIZ.fm</a>');
+
     $('#minigameMenu-content').prepend(addToMinigameMenu);
 
 
     $('#mgPayouts').on('click', function () {
         //show payout window overlay
         //have a close button to hide it again
+    });
+
+    $('#mgMAIZfm').on('click', function () {
+        var MAIZfmDiv = $('<div id="MAIZfm-container"></div>');
+        if ($('#MAIZfm-container').length === 0){
+            $('body').prepend(MAIZfmDiv);
+            $('#MAIZfm-container').empty().load(`apps/MAIZfm/MAIZfm.html`);
+        }
     });
 
     can = document.getElementById("slotsArea");
@@ -574,7 +584,7 @@ function getGoldAmount() {
         let inventoryQuery = "/session/" + sessionId + "/inventory";
         axios.get(inventoryQuery).then(function (response) {
             if (response.data.resources["21300041"]) {
-                console.log(response.data.resources["21300041"]);
+                //console.log(response.data.resources["21300041"]);
                 resolve(response.data.resources["21300041"]);
             }
             else {
