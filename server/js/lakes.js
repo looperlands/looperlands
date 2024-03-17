@@ -150,9 +150,6 @@ const Lakes = {
         level: 1,
         fish: {
             m88ndreamduckyy: "common",
-            m88ndreamduckyg: "uncommon",
-            m88ndreamduckyb: "rare",
-            m88ndreamduckyp: "epic",
             m88ndreamduckyr: "legendary",
         }
     },
@@ -170,7 +167,7 @@ const Lakes = {
     },
 
     m88nDreamPond3: {
-        level: 3,
+        level: 5,
         fish: {
             m88ndreamgumbally: "common",
             m88ndreamgumballp: "common",
@@ -181,8 +178,17 @@ const Lakes = {
         }
     },
 
+    m88nDreamPond4: {
+        level: 5,
+        fish: {
+            m88ndreamduckyg: "common",
+            m88ndreamduckyb: "rare",
+            m88ndreamduckyp: "epic",
+        }
+    },
+
     m88ndarkpool: {
-        level: 1,
+        level: 3,
         fish: {
             m88ngmeshare: "common",
             m88nwhiskey: "uncommon",
@@ -217,8 +223,8 @@ const Lakes = {
 // only EPIC fish can be a consumable
 const ConsumableFish = {
     hp: ["cobparadisefish","oafish27","m88ndreamcandyr"],
-    atk: ["cobbluegill","oafish31","oafish22","m88ndreamduckyp","m88ngoldenbanana"],
-    exp: ["cobgreensunfish","oafish36", "lollipop","m88ndreamgumballa"]
+    atk: ["cobbluegill","oafish31","oafish22","m88ndreamduckyp"],
+    exp: ["cobgreensunfish","oafish36", "lollipop","m88ndreamgumballa","m88ngoldenbanana"]
 };
 
 //---END CONFIG---

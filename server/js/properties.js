@@ -1062,40 +1062,40 @@ let Properties = {
     balloondogb: {
         level: 2,
         drops: {
-            burger: 90,
-            GOLD: 10
+            burger: 95,
+            GOLD: 5
         },
     },
 
     balloondogy: {
         level: 4,
         drops: {
-            burger: 75,
-            GOLD: 25
+            burger: 90,
+            GOLD: 10
         },
     },
 
     balloondogg: {
         level: 6,
         drops: {
-            burger: 50,
-            GOLD: 50
+            burger: 75,
+            GOLD: 25
         },
     },
 
     balloondoga: {
         level: 8,
         drops: {
-            burger: 25,
-            GOLD: 75
+            burger: 50,
+            GOLD: 50
         },
     },
 
     balloondogv: {
         level: 10,
         drops: {
-            burger: 40,
-            GOLD: 50,
+            burger: 50,
+            GOLD: 40,
             GOLD2: 10
         },
     },
