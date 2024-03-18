@@ -478,9 +478,10 @@ function renderTextOnCanvas() {
 }
 
 function spin() {
-    $('#minigame').addClass("pauseClose");
     if (game_state != STATE_REST) return;
     if (credits < playing_lines * bet) return;
+
+    $('#minigame').addClass("pauseClose");
 
     credits -= playing_lines * bet;
 
