@@ -588,6 +588,42 @@ function updateCredits() {
 
 }
 
+
+
+// Function to generate the payout table dynamically
+// need to mess with this and make sure it looks good... 
+//...then have it slide in from the left and have a button to hide it.
+function generatePayoutTable() {
+    const payoutTable = document.createElement('table');
+    const headerRow = payoutTable.insertRow();
+    const symbolHeader = headerRow.insertCell();
+    symbolHeader.textContent = 'Symbol';
+
+    // Add headers for different bet amounts
+    for (let bet = 1; bet <= 3; bet++) {
+        const betHeader = headerRow.insertCell();
+        betHeader.textContent = `Bet ${bet} Payout`;
+    }
+
+    // Add rows for each symbol
+    for (let i = 0; i < symbol_count; i++) {
+        const symbolRow = payoutTable.insertRow();
+        const symbolCell = symbolRow.insertCell();
+        const symbolImage = document.createElement('img');
+        symbolImage.src = symbols[i].src;
+        symbolCell.appendChild(symbolImage);
+
+        // Add corresponding payouts for different bet amounts
+        for (let bet = 1; bet <= 3; bet++) {
+            const payoutCell = symbolRow.insertCell();
+            const payout = match_payout[i] * bet;
+            payoutCell.textContent = payout;
+        }
+    }
+
+    document.body.appendChild(payoutTable);
+}
+
 //----- Autospin Functions -----------------------------------------------
 // Autospin functions
 function AutoSpin_On() {
