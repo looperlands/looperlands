@@ -84,7 +84,7 @@ var reward_delay = 3; // how many frames between each credit tick
 var reward_delay_grand = 1; // delay for grand-prize winning
 var reward_grand_threshhold = 25; // count faster if the reward is over this size
 var bet = 1;
-var maxBet = 5;
+var maxBet = 3;
 var maxLines = 3;
 
 var match_payout = new Array(symbol_count);
@@ -116,7 +116,7 @@ combinations
 2	1	 128
 */
 
-match_payout = [69, 69, 1, 2, 5, 10, 21, 42, 69, 420, 741, 1337];
+match_payout = [0, 0, 1, 4, 7, 13, 42, 69, 350, 1337, 9001, 42069];
 var wildCards = [0, 1];
 
 var reel_area_width = symbol_size * reel_count + reel_padding * (reel_count - 1);
@@ -521,8 +521,7 @@ function init() {
     $('#minigameMenu-content').prepend(addToMinigameMenu);
 
     $('#mgPayouts').on('click', function () {
-        //show payout window overlay
-        //have a close button to hide it again
+        generatePayoutTable();
     });
 
     can = document.getElementById("slotsArea");
@@ -594,34 +593,63 @@ function updateCredits() {
 // need to mess with this and make sure it looks good... 
 //...then have it slide in from the left and have a button to hide it.
 function generatePayoutTable() {
+    const container = document.createElement('div');
+    container.id = 'payoutContainer';
+    $('#minigameContent').append(container);
+
     const payoutTable = document.createElement('table');
-    const headerRow = payoutTable.insertRow();
+    container.appendChild(payoutTable);
+
+    const headerRow = payoutTable.createTHead().insertRow();
     const symbolHeader = headerRow.insertCell();
-    symbolHeader.textContent = 'Symbol';
+    symbolHeader.textContent = 'COMBINATION';
+    symbolHeader.classList.add("headerCell");
+
 
     // Add headers for different bet amounts
-    for (let bet = 1; bet <= 3; bet++) {
+    for (let bet = 1; bet <= maxBet; bet++) {
         const betHeader = headerRow.insertCell();
-        betHeader.textContent = `Bet ${bet} Payout`;
+        betHeader.textContent = `BET ${bet} PAYOUT`;
+        betHeader.classList.add("headerCell");
     }
 
     // Add rows for each symbol
-    for (let i = 0; i < symbol_count; i++) {
-        const symbolRow = payoutTable.insertRow();
-        const symbolCell = symbolRow.insertCell();
-        const symbolImage = document.createElement('img');
-        symbolImage.src = symbols[i].src;
-        symbolCell.appendChild(symbolImage);
+    for (let i = symbol_count-1; i >= 0; i--) {
+        if(!wildCards.includes(i)){
+            const symbolRow = payoutTable.insertRow();
+            const symbolCell = symbolRow.insertCell();
+            symbolCell.classList.add('symbolCell'); // Add class to symbol cell
 
-        // Add corresponding payouts for different bet amounts
-        for (let bet = 1; bet <= 3; bet++) {
-            const payoutCell = symbolRow.insertCell();
-            const payout = match_payout[i] * bet;
-            payoutCell.textContent = payout;
-        }
+            // Repeat symbol images 3 times horizontally
+            for (let j = 0; j < 3; j++) {
+                const symbolImage = document.createElement('img');
+                symbolImage.src = symbols[i].src;
+                symbolCell.appendChild(symbolImage);
+            }
+    
+            // Add corresponding payouts for different bet amounts
+            for (let bet = 1; bet <= 3; bet++) {
+                const payoutCell = symbolRow.insertCell();
+                const payout = match_payout[i] * bet;
+                payoutCell.textContent = payout;
+            }
+        }    
     }
 
-    document.body.appendChild(payoutTable);
+    // Apply GSAP animation
+    gsap.from('#payoutContainer', { x: '-100%', duration: 1, ease: 'power2.inOut' });
+
+    // Add button to hide the table
+    const closeButton = document.createElement('div');
+    closeButton.classList.add('closeButton');
+    closeButton.innerHTML = '<span class="material-symbols-outlined">arrow_back_ios</span>';
+    closeButton.addEventListener('click', () => {
+        gsap.to('#payoutContainer', { x: '-100%', duration: 1, ease: 'power2.inOut', onComplete: () => {
+            container.remove();
+        } });
+    });
+    container.appendChild(closeButton);
+
 }
 
 //----- Autospin Functions -----------------------------------------------
