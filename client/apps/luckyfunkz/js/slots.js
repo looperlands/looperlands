@@ -510,29 +510,19 @@ function setBetMax() {
 //---- Init Functions -----------------------------------------------
 
 function init() {
-    $('#resources').addClass('hidden');
+    $('#resources').fadeOut(300);
     // hide the in game display for gold so we can provide our own 
     // this will make sure updates applied to balance server side aren't shown prior to spin animation
 
     // Update minigame menu
 
-    var addToMinigameMenu = $('<a href="#" id="mgPayouts">🎰 Payouts</a>' +
-                              '<a href="#" id="mgMAIZfm">🌽 MAIZ.fm</a>');
+    var addToMinigameMenu = $('<a href="#" id="mgPayouts">🎰 Payouts</a>');
 
     $('#minigameMenu-content').prepend(addToMinigameMenu);
-
 
     $('#mgPayouts').on('click', function () {
         //show payout window overlay
         //have a close button to hide it again
-    });
-
-    $('#mgMAIZfm').on('click', function () {
-        var MAIZfmDiv = $('<div id="MAIZfm-container"></div>');
-        if ($('#MAIZfm-container').length === 0){
-            $('body').prepend(MAIZfmDiv);
-            $('#MAIZfm-container').empty().load(`apps/MAIZfm/MAIZfm.html`);
-        }
     });
 
     can = document.getElementById("slotsArea");

@@ -2545,29 +2545,29 @@ class Player {
         src: [`./apps/MAIZfm/audio/${data.file}.mp3`],
         html5: true,
         onplay: () => {
-          $('#track').text(title);
+          $('#duration').text(self.formatTime(Math.round(sound.duration())));
           requestAnimationFrame(self.step.bind(self));
-          $('#waveform').css('display', 'block');
+          $('#waveform').fadeIn(300);
           $('#bar').css('display', 'none');
           $('#playBtn').css('display', 'none');
           $('#pauseBtn').css('display','flex');
         },
         onload: () => {
-          $('#waveform').css('display', 'block');
+          $('#waveform').fadeIn(300);
           $('#bar').css('display', 'none');
         },
         onend: () => {
           // Stop the wave animation.
-          $('#waveform').css('display', 'none');
+          $('#waveform').fadeOut(300);
           $('#bar').css('display','block');
           self.skip('next');
         },
         onpause: () => {
-          $('#waveform').css('display', 'none');
+          $('#waveform').fadeOut(300);
           $('#bar').css('display', 'block');
         },
         onstop: () => {
-          $('#waveform').css('display', 'none');
+          $('#waveform').fadeOut(300);
           $('#bar').css('display', 'block');
         },
         onseek: () => {
@@ -2577,13 +2577,14 @@ class Player {
     }
 
     sound.play();
+    $('#track').text(data.title);
     self.index = index;
   }
 
   pause() {
     const self = this;
     const sound = self.playlist[self.index].howl;
-    sound.pause();
+    if(sound){sound.pause();}
     $('#playBtn').css('display', 'flex'); 
     $('#pauseBtn').css('display', 'none');
   }
@@ -2608,9 +2609,7 @@ class Player {
   close() {
     const self = this;
     self.pause();
-    $('#MAIZfm-container').remove();
-    const dynamicScripts = $('.MAIZfm-script'); 
-    dynamicScripts.each(function() {$(this).remove();});
+    $('#MAIZfm-container').fadeOut(300);
   }
 
   volume(val) {
@@ -2689,15 +2688,19 @@ var wave = new SiriWave({
 wave.start();
 
 const bindControls = () => {
-  $('#closeBtn').on('click', () => player.close());
-  $('#playBtn').on('click', () => player.play());
-  $('#pauseBtn').on('click', () => player.pause());
-  $('#prevBtn').on('click', () => player.skip('prev'));
-  $('#nextBtn').on('click', () => player.skip('next'));
-  $('#waveform').on('click', event => player.seek((event.clientX - $('#MAIZfm').offset().left) / $('#MAIZfm').width()));
-  $('#volumeBtn').on('click', () => player.toggleVolume());
-  $('#volume').on('click', () => player.toggleVolume());
-
+  $(document).on('click', '#mgClose', () => player.close());
+  $(document).on('click', '#closeBtn', () => player.close());
+  $(document).on('click', '#playBtn', () => player.play());
+  $(document).on('click', '#pauseBtn', () => player.pause());
+  $(document).on('click', '#prevBtn', () => player.skip('prev'));
+  $(document).on('click', '#nextBtn', () => player.skip('next'));
+  
+  $(document).on('click', '#waveform', event => {
+    player.seek((event.clientX - $('#MAIZfm').offset().left) / $('#MAIZfm').width());
+  });
+  
+  $(document).on('click', '#volumeBtn', () => player.toggleVolume());
+  $(document).on('click', '#volume', () => player.toggleVolume());
 
   // Setup the event listeners to enable dragging of volume slider.
   const handleVolumeDrag = event => {
@@ -2710,18 +2713,20 @@ const bindControls = () => {
     }
   };
 
-  $('#barEmpty').on('click', event => {
+  $(document).on('click', '#barEmpty', event => {
     player.volume((event.clientX - $('#MAIZfm').offset().left) / parseFloat($('#barEmpty').width()));
   });
-  $('#volume').on('mousemove', handleVolumeDrag);
-  $('#volume').on('touchmove', handleVolumeDrag);
-  $('#sliderBtn').on('mousedown', () => window.sliderDown = true);
-  $('#sliderBtn').on('touchstart', () => window.sliderDown = true);
-  $('#volume').on('mouseup', () => window.sliderDown = false);
-  $('#volume').on('touchend', () => window.sliderDown = false);
+  
+  $(document).on('mousemove', '#volume', handleVolumeDrag);
+  $(document).on('touchmove', '#volume', handleVolumeDrag);
+  $(document).on('mousedown', '#sliderBtn', () => window.sliderDown = true);
+  $(document).on('touchstart', '#sliderBtn', () => window.sliderDown = true);
+  $(document).on('mouseup', '#volume', () => window.sliderDown = false);
+  $(document).on('touchend', '#volume', () => window.sliderDown = false);
   $(document).on('mouseup', () => window.sliderDown = false);
   $(document).on('touchend', () => window.sliderDown = false);
 };
+
 
 // Update the height of the wave animation.
 const updateWaveHeight = () => {
