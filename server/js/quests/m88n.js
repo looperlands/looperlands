@@ -110,6 +110,20 @@ quests = [
         requiredQuest: "KINGFROGGY_QUEST_7",
         level: 20,
         medal: Types.Medals.SKULL
+    },
+    {
+        id: "KINGFROGGY_QUEST_9",
+        name: "The King's Mysterious Map Request",
+        startText: ["Every now and then I see a mysterious map pop up around here...",
+        "I wonder what would happen if you collected them? The next time you see one hang on to it!"],
+        endText: "Wow, great job collecting all of those maps! What an interesting number...Keep your eyes peeled for some sort of secret portal or something...",
+        eventType: "LOOT_ITEM",
+        npc: Types.Entities.KINGFROGGY,
+        target: Types.Entities.M88NMAP,
+        amount: 741,
+        requiredQuest: "KINGFROGGY_QUEST_8",
+        level: 30,
+        medal: Types.Medals.SKULL
     }
 ]
 
