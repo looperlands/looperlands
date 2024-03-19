@@ -56,8 +56,10 @@ function loadMinigame(minigame, app) {
         // EXAMPLE: For LuckyFunkz, the close function is paused during the spin process to ensure users see the spin result before closing
         // Even though the spin and result is processed server side, it enhances the user experience by visually presenting the spin outcome
         if (minigameElement.length && !minigameElement.hasClass('pauseClose')) {
-            minigameElement.fadeOut(500, function() {$(this).remove();});
-            $('#mgMenuStyle').remove();
+            minigameElement.fadeOut(500, function() {
+                $(this).remove();
+                $('#mgMenuStyle').remove();
+            });
 
             if($('#resources').children().length === 0) {  //update visuals for resources on exit
                 $('#resources').fadeIn(300).addClass('hidden');
