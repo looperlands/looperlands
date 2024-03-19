@@ -2,6 +2,7 @@ const express = require('express');
 const fs = require('fs/promises');
 const app = express();
 const port = 3000;
+const axios = require('axios');
 
 const { spins } = require('./data/spinSet');
 
@@ -120,14 +121,32 @@ app.listen(port, () => {
 
 
 async function isBalanceEnough(cost, resourceId){
+  const urlParams = new URLSearchParams(window.location.search);
+  const sessionId = urlParams.get('sessionId');
+  const sessionData = cache.get(sessionId);
+  const nftId = sessionData.nftId;
+  let resource = axios.get("https://loopworms.io/DEV/LooperLands/loadConsumableItem.php?nftId=" + nftId + "&itemId=21300008");
   //let resource = parseInt(gameData.consumables[resourceId]); //i think resource might be the 21300041 and resourceId might be the string "gold"
-  let resource = 3;  //this will allow a min bet across the 3 lines, but error for more than that
+  //let resource = 3;  //this will allow a min bet across the 3 lines, but error for more than that
 
   if (isNaN(resource) || typeof resource !== 'number' || resource < cost) {
       return false;
   } 
   else{
-      //transfer that amount from player to CORNHOLE prior to selecting a spin
+    const remainingBalance = resource - cost;
+    axios.post('https://loopworms.io/DEV/LooperLands/saveConsumable2.php', 
+    {
+      "avatarId": nftId,
+      "itemId": "21300008",
+      "quantity": remainingBalance.toString()
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": apiKey.toString()
+      }
+    })
+    //transfer that amount from player to CORNHOLE prior to selecting a spin
       return true;
   }
 }
