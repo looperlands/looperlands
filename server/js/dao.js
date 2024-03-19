@@ -90,7 +90,7 @@ const loadWeapon = async function (wallet, nft) {
   }
 }
 
-walletHasNFT = async function (wallet, nft, retry) {
+const walletHasNFT = async function (wallet, nft, retry) {
   let cached = daoCache.get(`${wallet}_${nft}`);
   if (cached !== undefined) {
     return cached;
