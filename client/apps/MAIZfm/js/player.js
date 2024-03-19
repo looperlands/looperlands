@@ -2616,10 +2616,12 @@ class Player {
     Howler.volume(val);
     var barWidth = (val * 90) / 100;
     $('#barFull').css('width', (barWidth * 100) + '%');
-    var posLeft = Math.min(Math.max(($('#MAIZfm').width() * barWidth), 10), $('#barEmpty').scrollWidth);
+
+    var halfCorn = $('#sliderBtn').width() / 2;
+    var posLeft = Math.min(Math.max(($('#MAIZfm').width() * barWidth), halfCorn), $('#barEmpty')[0].scrollWidth);
     $('#sliderBtn').css('left', posLeft + 'px');
   }
-
+ 
   seek(per) {
     var self = this;
     var sound = self.playlist[self.index].howl;
