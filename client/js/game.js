@@ -242,6 +242,17 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "item-popcorn",
                     "item-energydrink",
                     "item-flyer",
+                    //m88n
+                    "item-m88nmap",
+                    "item-m88negg1",
+                    "item-m88negg2",
+                    "item-m88negg3",
+                    "item-m88negg4",
+                    "item-m88negg5",
+                    "item-m88negg6",
+                    "item-m88negg7",
+                    "item-m88nfabergeegg",
+                    "item-m88ngem",
                     //mycupbloody
                     "item-EYEBALL",
                     "item-REDPOTION",

@@ -1062,39 +1062,41 @@ let Properties = {
     balloondogb: {
         level: 2,
         drops: {
-            burger: 95,
-            GOLD: 5
+            burger: 50,
+            GOLD: 2
         },
     },
 
     balloondogy: {
         level: 4,
         drops: {
-            burger: 90,
-            GOLD: 10
+            burger: 50,
+            GOLD: 5
         },
     },
 
     balloondogg: {
         level: 6,
         drops: {
-            burger: 75,
-            GOLD: 25
+            burger: 50,
+            GOLD: 20
         },
     },
 
     balloondoga: {
         level: 8,
         drops: {
-            burger: 50,
-            GOLD: 50
+            m88nmap: 1,
+            burger: 25,
+            GOLD: 49
         },
     },
 
     balloondogv: {
         level: 10,
         drops: {
-            burger: 50,
+            m88nmap: 2,
+            burger: 25,
             GOLD: 40,
             GOLD2: 10
         },
@@ -1103,8 +1105,9 @@ let Properties = {
     balloondogp: {
         level: 12,
         drops: {
+            m88nmap: 2,
             burger: 25,
-            GOLD: 50,
+            GOLD: 30,
             GOLD2: 25
         },
     },
@@ -1112,17 +1115,20 @@ let Properties = {
     balloonhotdogr: {
         level: 20,
         drops: {
+            m88nmap: 3,
             burger: 5,
             GOLD2: 20,
-            GOLD3: 75
+            GOLD3: 72
         },
     },
 
     balloongiraffeo: {
-        level: 30,
+        level: 50,
         drops: {
+            m88nmap: 5,
+            m88negg1: 1,
             burger: 5,
-            GOLD3: 95
+            GOLD3: 88
         },
     },
 
@@ -1357,6 +1363,25 @@ let Properties = {
         collectable: true,
         inventoryDescription: "Crystal",
         respawnDelay: 150000
+    },
+    m88nfabergeegg: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "caged",
+            duration: 60000
+        },
+        inventoryDescription: "Golden Faberge Egg",
+        respawnDelay: 1500000,
+        onConsume: function(player) {
+            player.releaseMob(Types.Entities.BALLOONGIRAFFEO);
+        }
+    },
+    m88ngem: {
+        collectable: true,
+        inventoryDescription: "m88n gems",
+        collectItem: Types.Entities.M88NGEM,
+        collectAmount: 1
     },
 
     // Projectiles
