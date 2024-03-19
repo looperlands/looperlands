@@ -11,7 +11,7 @@ const {
 const API_KEY = process.env.LOOPWORMS_API_KEY;
 const MAX_RETRY_COUNT = 5;
 
-const updateExperience = async (walletId, nftId, xp, retry) {
+const updateExperience = async function (walletId, nftId, xp, retry) {
   const options = { headers: { 'X-Api-Key': API_KEY } };
   let url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/SaveExperience.php?WalletID=${walletId}&NFTID=${nftId}&Experience=${xp}`;
   const responseData = await axios.get(url, options);
@@ -30,7 +30,7 @@ const updateExperience = async (walletId, nftId, xp, retry) {
   return updatedXp;
 }
 
-const loadExperience = async (walletId, nftId) {
+const loadExperience = async function (walletId, nftId) {
   const options = { headers: { 'X-Api-Key': API_KEY } };
   let url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/LoadExperience.php?WalletID=${walletId}&NFTID=${nftId}`;
   const responseData = await axios.get(url, options);
@@ -38,7 +38,7 @@ const loadExperience = async (walletId, nftId) {
   return xp;
 }
 
-const loadMapFlow = async (mapId) {
+const loadMapFlow = async function (mapId) {
   const options = { headers: { 'X-Api-Key': API_KEY } };
   let url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/Maps/selectLooperLands_Quest2.php?map=${mapId}`;
   const responseData = await axios.get(url, options);
@@ -49,7 +49,7 @@ const loadMapFlow = async (mapId) {
   }
 }
 
-const saveWeapon = async (wallet, nft, weaponName) {
+const saveWeapon = async function (wallet, nft, weaponName) {
   const options = { headers: { 'X-Api-Key': API_KEY, 'Content-Type': 'application/json' } };
   try {
     const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/SaveWeapon.php?NFTID=${nft}&WalletID=${wallet}`
@@ -63,7 +63,7 @@ const saveWeapon = async (wallet, nft, weaponName) {
 }
 
 
-const loadWeapon = async (wallet, nft) {
+const loadWeapon = async function (wallet, nft) {
   const options = { method: 'POST', headers: { 'X-Api-Key': API_KEY } };
   try {
     const responseData = await axios.get(`${LOOPWORMS_LOOPERLANDS_BASE_URL}/LoadWeapon.php?NFTID=${nft}&WalletID=${wallet}`, options);
@@ -115,7 +115,7 @@ walletHasNFT = async function (wallet, nft, retry) {
   }
 };
 
-const updatePVPStats = async (wallet, nft, killIncrement, deathIncrement) {
+const updatePVPStats = async function (wallet, nft, killIncrement, deathIncrement) {
   const options = { headers: { 'X-Api-Key': API_KEY } };
   try {
     const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/SavePvP.php?NFTID=${nft}&WalletID=${wallet}&PvPKills=${killIncrement}&PvPDeaths=${deathIncrement}`
@@ -127,7 +127,7 @@ const updatePVPStats = async (wallet, nft, killIncrement, deathIncrement) {
   }
 };
 
-const saveNFTWeaponTrait = async (wallet, nft) {
+const saveNFTWeaponTrait = async function (wallet, nft) {
   const options = { headers: { 'X-Api-Key': API_KEY } };
   const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/SaveWeaponTrait.php?WalletID=${wallet}&NFTID=${nft}`;
   try {
@@ -140,7 +140,7 @@ const saveNFTWeaponTrait = async (wallet, nft) {
   }
 }
 
-const saveNFTWeaponExperience = async (wallet, nft, experience) {
+const saveNFTWeaponExperience = async function (wallet, nft, experience) {
   const options = { headers: { 'X-Api-Key': API_KEY } };
   const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/SaveWeaponExperience.php?WalletID=${wallet}&NFTID=${nft}&Experience=${experience}`;
   try {
@@ -154,7 +154,7 @@ const saveNFTWeaponExperience = async (wallet, nft, experience) {
   }
 }
 
-const saveNFTSpecialItemTrait = async (wallet, nft) {
+const saveNFTSpecialItemTrait = async function (wallet, nft) {
   const options = { headers: { 'X-Api-Key': API_KEY } };
   const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/SaveSpecialItemTrait.php?WalletID=${wallet}&NFTID=${nft}`;
   try {
@@ -167,7 +167,7 @@ const saveNFTSpecialItemTrait = async (wallet, nft) {
   }
 }
 
-const saveNFTSpecialItemExperience = async (wallet, nft, experience) {
+const saveNFTSpecialItemExperience = async function (wallet, nft, experience) {
   const options = { headers: { 'X-Api-Key': API_KEY } };
   const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/SaveSpecialItemExperience.php?WalletID=${wallet}&NFTID=${nft}&Experience=${experience}`;
   try {
@@ -180,7 +180,7 @@ const saveNFTSpecialItemExperience = async (wallet, nft, experience) {
   }
 }
 
-const loadNFTWeapon = async (wallet, nft) {
+const loadNFTWeapon = async function (wallet, nft) {
   const options = { headers: { 'X-Api-Key': API_KEY } };
   const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/LoadNFTWeapon.php?WalletID=${wallet}&NFTID=${nft}`;
   try {
@@ -192,7 +192,7 @@ const loadNFTWeapon = async (wallet, nft) {
   }
 }
 
-const getSpecialItems = async (wallet) {
+const getSpecialItems = async function (wallet) {
   const options = { headers: { 'X-Api-Key': API_KEY } };
   const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/selectLooperLands_SpecialItem.php?WalletID=${wallet}`;
   try {
@@ -204,7 +204,7 @@ const getSpecialItems = async (wallet) {
   }
 }
 
-const saveAvatarMapAndCheckpoint = async (nft, mapId, checkpointId) {
+const saveAvatarMapAndCheckpoint = async function (nft, mapId, checkpointId) {
   const options = { headers: { 'X-Api-Key': API_KEY } };
   const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/SaveMapCheckpoint.php?NFTID=${nft}&mapId=${mapId}&checkpointId=${checkpointId}`;
   try {
@@ -218,7 +218,7 @@ const saveAvatarMapAndCheckpoint = async (nft, mapId, checkpointId) {
 
 LOOT_EVENTS_QUEUE = []
 
-const processLootEventQueue = async (retry) {
+const processLootEventQueue = async function (retry) {
   if (!LOOT_EVENTS_QUEUE?.length) { return; }
   const options = { headers: { 'X-Api-Key': API_KEY, 'Content-Type': 'application/json' } }
   const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/saveItemJson.php`;
@@ -238,7 +238,7 @@ const processLootEventQueue = async (retry) {
 
 let LOOT_QUEUE_INTERVAL = undefined;
 
-const saveLootEvent = async (avatarId, itemId, amount) {
+const saveLootEvent = async function (avatarId, itemId, amount) {
   if (amount === undefined) { amount = 1; }
   if (LOOT_QUEUE_INTERVAL === undefined) {
     LOOT_QUEUE_INTERVAL = setInterval(processLootEventQueue, 1000 * 30);     // save the loot event queue every 30 seconds
@@ -246,7 +246,7 @@ const saveLootEvent = async (avatarId, itemId, amount) {
   LOOT_EVENTS_QUEUE.push({ avatarId: avatarId, itemId: itemId, amount })
 }
 
-const getItemCount = async (avatarId, itemId, retry) {
+const getItemCount = async function (avatarId, itemId, retry) {
   const options = { headers: { 'X-Api-Key': API_KEY } }
   const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/loadItem.php?NFTID=${avatarId}&itemId=${itemId}`;
   try {
@@ -265,7 +265,7 @@ const getItemCount = async (avatarId, itemId, retry) {
   }
 }
 
-const avatarHasItem = async (avatarId, itemId) {
+const avatarHasItem = async function (avatarId, itemId) {
   let cached = daoCache.get(`${avatarId}_${itemId}`);
   if (cached !== undefined) { return cached; }
   const itemCount = await this.getItemCount(avatarId, itemId);
@@ -276,7 +276,7 @@ const avatarHasItem = async (avatarId, itemId) {
 
 
 MOB_KILL_QUEUE = []
-const processMobKillEventQueue = async (retry) {
+const processMobKillEventQueue = async function (retry) {
   if (!MOB_KILL_QUEUE?.length) { return; }
   const options = { headers: { 'X-Api-Key': API_KEY, 'Content-Type': 'application/json' } }
   const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/saveMobJson.php`;
@@ -296,14 +296,14 @@ const processMobKillEventQueue = async (retry) {
 
 let MOB_KILL_QUEUE_INTERVAL = undefined;
 
-const saveMobKillEvent = async (avatarId, mobId) {
+const saveMobKillEvent = async function (avatarId, mobId) {
   if (MOB_KILL_QUEUE_INTERVAL === undefined) {
     MOB_KILL_QUEUE_INTERVAL = setInterval(processMobKillEventQueue, 1000 * 30); // save the loot event queue every 30 seconds
   }
   MOB_KILL_QUEUE.push({ avatarId: avatarId, mobId: mobId });
 }
 
-const loadAvatarGameData = async (avatarId, retry) {
+const loadAvatarGameData = async function (avatarId, retry) {
   const options = { headers: { 'X-Api-Key': API_KEY } }
   const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/loadItemConsumableMobQuest.php?NFTID=${avatarId}`;
   try {
@@ -386,7 +386,7 @@ const loadAvatarGameData = async (avatarId, retry) {
   }
 }
 
-const setQuestStatus = async (avatarId, questId, status, retry) {
+const setQuestStatus = async function (avatarId, questId, status, retry) {
   const options = { headers: { 'X-Api-Key': API_KEY } }
   let url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/setQuestStatus.php?questId=${questId}&avatarID=${avatarId}&status=${status}`;
   try {
@@ -406,7 +406,7 @@ const setQuestStatus = async (avatarId, questId, status, retry) {
   }
 }
 
-const saveConsumable = async (nft, item, qty) {
+const saveConsumable = async function (nft, item, qty) {
   if (qty === undefined) { qty = 1; }
   const options = { headers: { 'X-Api-Key': API_KEY, 'Content-Type': 'application/json' } }
   const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/saveConsumable2.php`;
@@ -420,13 +420,13 @@ const saveConsumable = async (nft, item, qty) {
   }
 }
 
-const getBots = async (walletId) {
+const getBots = async function (walletId) {
   let botsResponse = await axios.get(`${LOOPWORMS_LOOPERLANDS_BASE_URL}/loadBot.php?walletID=${walletId}`);
   let bots = botsResponse.data;
   return bots;
 }
 
-const newBot = async (mapId, botNftId, xp, name, walletId, ownerEntityId, x, y, gameServerURL, retry) {
+const newBot = async function (mapId, botNftId, xp, name, walletId, ownerEntityId, x, y, gameServerURL, retry) {
   const options = { headers: { 'X-Api-Key': LOOPERLANDS_BACKEND_API_KEY } }
   const url = `${LOOPERLANDS_BACKEND_BASE_URL}/newBot`;
   try {
@@ -459,7 +459,7 @@ const newBot = async (mapId, botNftId, xp, name, walletId, ownerEntityId, x, y, 
   }
 }
 
-const getShopInventory = async (shopId) {
+const getShopInventory = async function (shopId) {
   const options = { headers: { 'X-Api-Key': API_KEY, 'Content-Type': 'application/json' } }
   const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/shopInventory.php?shopName=${shopId}`;
   const shopResponse = await axios.get(url, options);
@@ -471,7 +471,7 @@ const getShopInventory = async (shopId) {
   }
 }
 
-const getResourceBalance = async (nftId, itemId) => {
+const getResourceBalance = async function (nftId, itemId) {
   const options = { headers: { 'X-Api-Key': API_KEY } };
   try {
     const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/loadConsumableItem.php?nftId=${nftId}&itemId=${itemId}`
@@ -483,7 +483,7 @@ const getResourceBalance = async (nftId, itemId) => {
   }
 }
 
-const updateResourceBalance = async (nftId, itemId, quantity) => {
+const updateResourceBalance = async function (nftId, itemId, quantity) {
   const options = { headers: { 'X-Api-Key': API_KEY, 'Content-Type': 'application/json' } };
   try {
     const url = '${LOOPWORMS_LOOPERLANDS_BASE_URL}/saveConsumable2.php';
@@ -496,7 +496,7 @@ const updateResourceBalance = async (nftId, itemId, quantity) => {
   }
 }
 
-const transferResource = async (from, to, resource, amount) => {
+const transferResource = async function (from, to, resource, amount) {
   if (amount <= 0) { return false; }
   try {
     const fromBalanceStart = await getResourceBalance(from, resource);
