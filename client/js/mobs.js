@@ -2314,6 +2314,20 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
 
+        sharkboss: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.SHARKBOSS);
+                this.moveSpeed = 300;
+                this.idleSpeed = 100;
+                this.setAttackRate(1000);
+                this.atkSpeed = 100;                
+                this.isAggressive = true;
+                this.aggroRange = 3;
+                this.deathAnimated = true;
+                this.title = "Shark!";
+            }
+        }),
+
         //Short Destroyers
         lateflea: Mob.extend({
             init: function(id) {

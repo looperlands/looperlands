@@ -1132,6 +1132,27 @@ let Properties = {
         },
     },
 
+    sharkboss: {
+        level: 69,
+        drops: {
+            m88nmap: 15,
+            m88negg1: 15,
+            m88negg2: 15,
+            m88nfabergeegg: 25,
+            burger: 10,
+            m88ngem: 10,
+            GOLD3: 10,
+        },
+        messages: ['Mmmmm, tasty!', 'Yum!', 'Eww, that was a little tough...', 'Stay on land or come back with friends!'],
+        armorMod: 1,
+        hpMod: 5,
+        weaponMod: 0.8,
+        respawnDelay: 30000,
+        xp: 100000
+
+
+    },
+
     //Short Destroyers
     lateflea: {
         level: 5,
@@ -1363,6 +1384,30 @@ let Properties = {
         collectable: true,
         inventoryDescription: "Crystal",
         respawnDelay: 150000
+    },
+    m88negg1: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "immunity",
+            duration: 180000
+        },
+        inventoryDescription: "Immunity Easter Egg",
+        onConsume: function(player){
+            player.startInvincibility();
+        }
+    },
+    m88negg2: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "hpPotions",
+            duration: 60000
+        },
+        inventoryDescription: "HP Easter Egg",
+        onConsume: function(player){
+            player.regenHealthBy(300);
+        }
     },
     m88nfabergeegg: {
         collectable: true,

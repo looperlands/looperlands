@@ -310,6 +310,7 @@ Types = {
         BALLOONDOGP: 78000006,
         BALLOONHOTDOGR: 78000007,
         BALLOONGIRAFFEO: 78000008,
+        SHARKBOSS: 78000009,
         //m88n Items
         M88NMAP: 78000100,
         M88NEGG1: 78000200,
@@ -5505,6 +5506,7 @@ var kinds = {
     balloondogp: [Types.Entities.BALLOONDOGP, "mob"],
     balloonhotdogr: [Types.Entities.BALLOONHOTDOGR, "mob"],
     balloongiraffeo: [Types.Entities.BALLOONGIRAFFEO, "mob"],
+    sharkboss: [Types.Entities.SHARKBOSS, "mob"],
 
     sword1: [Types.Entities.SWORD1, "weapon"],
     sword2: [Types.Entities.SWORD2, "weapon"],
