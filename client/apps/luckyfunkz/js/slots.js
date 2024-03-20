@@ -43,7 +43,7 @@ for (var i = 0; i < symbol_count; i++) {
         loadedSymbolCount++;
         if (loadedSymbolCount == symbol_count) {
             symbols_loaded = true;
-            if (font_loaded && symbols_loaded && reels_bg_loaded) render_reel();
+                        if (font_loaded && symbols_loaded && reels_bg_loaded) render_reel();
         }
     };
     symbol.src = `./apps/luckyfunkz/assets/images/symbols/${i.toString().padStart(2, "0")}.png`;
@@ -520,10 +520,7 @@ function init() {
     var addToMinigameMenu = $('<a href="#" id="mgPayouts">🎰 Payouts</a>');
 
     $('#minigameMenu-content').prepend(addToMinigameMenu);
-
-    $('#mgPayouts').on('click', function () {
-        generatePayoutTable();
-    });
+    $(document).on('click', '#mgPayouts', () => getPayoutTable(true));
 
     can = document.getElementById("slotsArea");
     ctx = can.getContext("2d");
@@ -541,7 +538,6 @@ function init() {
         console.error('Font loading failed:', error);
     });
 
-
     reels_bg.onload = function () {
         can.width = reels_bg.naturalWidth;
         can.height = reels_bg.naturalHeight;
@@ -551,7 +547,6 @@ function init() {
         reels_bg_loaded = true;
         if (font_loaded && symbols_loaded && reels_bg_loaded) render_reel();
     };
-
 
     var devicePixelRatio = window.devicePixelRatio || 1;
     can.width = can.clientWidth * devicePixelRatio;
@@ -563,7 +558,6 @@ function updateButtonPanelWidth(windowHeight, buttonPanel) {
     if (!buttonPanel) return;
     buttonPanel.style.height = "10%";
     //set the width as a function of height using the aspect ratio since we use height as control
-    //buttonPanel.style.width = windowHeight * (1080/1920) * 0.081 + "%"; 
     buttonPanel.style.width = windowHeight * (2 / 3) + "px";
 }
 
@@ -589,69 +583,149 @@ function updateCredits() {
 }
 
 
+// Function to create linear gradient
+function createLinearGradient() {
+    const linearGradient = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
+    linearGradient.setAttribute('id', 'fill-gradient');
+    linearGradient.setAttribute('x1', '0%');
+    linearGradient.setAttribute('y1', '0%');
+    linearGradient.setAttribute('x2', '0%');
+    linearGradient.setAttribute('y2', '100%');
+    linearGradient.setAttribute('spreadMethod', 'pad');
 
-// Function to generate the payout table dynamically
-// need to mess with this and make sure it looks good... 
-//...then have it slide in from the left and have a button to hide it.
-function generatePayoutTable() {
-    const container = document.createElement('div');
-    container.id = 'payoutContainer';
-    $('#minigameContent').append(container);
+    // Define gradient stops
+    const stops = [
+        { offset: '0%', color: '#000' },
+        { offset: '5%', color: '#707' },
+        { offset: '15%', color: '#F0F' },
+        { offset: '40%', color: '#0FF' },
+        { offset: '60%', color: '#0FF' },
+        { offset: '74%', color: '#FFF' },
+        { offset: '78%', color: '#777' },
+        { offset: '85%', color: '#F0F' },
+        { offset: '100%', color: '#F0F' }
+    ];
 
-    const payoutTable = document.createElement('table');
-    container.appendChild(payoutTable);
-
-    const headerRow = payoutTable.createTHead().insertRow();
-    const symbolHeader = headerRow.insertCell();
-    symbolHeader.textContent = 'COMBINATION';
-    symbolHeader.classList.add("headerCell");
-
-
-    // Add headers for different bet amounts
-    for (let bet = 1; bet <= maxBet; bet++) {
-        const betHeader = headerRow.insertCell();
-        betHeader.textContent = `BET ${bet} PAYOUT`;
-        betHeader.classList.add("headerCell");
-    }
-
-    // Add rows for each symbol
-    for (let i = symbol_count-1; i >= 0; i--) {
-        if(!wildCards.includes(i)){
-            const symbolRow = payoutTable.insertRow();
-            const symbolCell = symbolRow.insertCell();
-            symbolCell.classList.add('symbolCell'); // Add class to symbol cell
-
-            // Repeat symbol images 3 times horizontally
-            for (let j = 0; j < 3; j++) {
-                const symbolImage = document.createElement('img');
-                symbolImage.src = symbols[i].src;
-                symbolCell.appendChild(symbolImage);
-            }
-    
-            // Add corresponding payouts for different bet amounts
-            for (let bet = 1; bet <= 3; bet++) {
-                const payoutCell = symbolRow.insertCell();
-                const payout = match_payout[i] * bet;
-                payoutCell.textContent = payout;
-            }
-        }    
-    }
-
-    // Apply GSAP animation
-    gsap.from('#payoutContainer', { x: '-100%', duration: 1, ease: 'power2.inOut' });
-
-    // Add button to hide the table
-    const closeButton = document.createElement('div');
-    closeButton.classList.add('closeButton');
-    closeButton.innerHTML = '<span class="material-symbols-outlined">arrow_back_ios</span>';
-    closeButton.addEventListener('click', () => {
-        gsap.to('#payoutContainer', { x: '-100%', duration: 1, ease: 'power2.inOut', onComplete: () => {
-            container.remove();
-        } });
+    // Add stops to gradient
+    stops.forEach(stop => {
+        const stopElement = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+        stopElement.setAttribute('offset', stop.offset);
+        stopElement.setAttribute('stop-color', stop.color);
+        stopElement.setAttribute('stop-opacity', '1');
+        linearGradient.appendChild(stopElement);
     });
-    container.appendChild(closeButton);
 
+    return linearGradient;
 }
+
+// Function to create SVG text element with gradient
+function createSvgText(textContent) {
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+
+    // Create <defs> element
+    const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+
+    // Create linear gradient and append to defs
+    const linearGradient = createLinearGradient();
+    defs.appendChild(linearGradient);
+
+    // Append defs to svg
+    svg.appendChild(defs);
+
+    // Create <text> element
+    const svgText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    svgText.setAttribute('class', 'headerText');
+    svgText.setAttribute('x', '50%');
+    svgText.setAttribute('y', '50%');
+    svgText.setAttribute('text-anchor', 'middle');
+    svgText.textContent = textContent;
+
+    // Apply additional styles directly to the <text> element
+    svgText.style.fill = 'url(#fill-gradient)';
+    svgText.style.stroke = 'rgba(255, 255, 255, 0.8)';
+    svgText.style.strokeWidth = '0.5px';
+
+    // Append text to svg
+    svg.appendChild(svgText);
+
+    return svg;
+}
+
+
+
+// Generate the payout table container
+let containerGenerated = false;
+function getPayoutTable(slideout = false) {
+    if (!containerGenerated) {
+        const container = document.createElement('div');
+        container.id = 'payoutContainer';
+        container.style.transform = 'translateX(-100%)';
+        $('#minigameContent').append(container);
+
+        const payoutTable = document.createElement('table');
+        container.appendChild(payoutTable);
+
+        const headerRow = payoutTable.createTHead().insertRow();
+        ['COMBINATION', 'PAYOUT/BET'].forEach(headerText => {
+            const headerCell = document.createElement('th');
+            const svgText = createSvgText(headerText);
+            headerCell.appendChild(svgText);
+            headerRow.appendChild(headerCell);
+        });
+
+        const tableBody = payoutTable.createTBody();
+        const bodyRow = tableBody.insertRow();
+
+        for (let i = symbol_count - 1; i >= 0; i--) {
+            if (!wildCards.includes(i)) {
+                const symbolCell = bodyRow.insertCell();
+                symbolCell.classList.add('symbolCell');
+
+                // Repeat symbol images 3 times horizontally
+                for (let j = 0; j < 3; j++) {
+                    const symbolImage = document.createElement('img');
+                    symbolImage.src = symbols[i].src;
+                    symbolCell.appendChild(symbolImage);
+                }
+
+                const payoutCell = bodyRow.insertCell();
+                payoutCell.textContent = match_payout[i];
+
+                // Insert a new row for the next set of symbols
+                if(j<3){bodyRow = tableBody.insertRow();}
+            }
+        }
+
+        // Add button to hide the table
+        const closeButton = document.createElement('div');
+        closeButton.classList.add('closeButton');
+        closeButton.innerHTML = '<span class="material-symbols-outlined">arrow_back_ios</span>';
+        closeButton.addEventListener('click', () => {
+            gsap.to('#payoutContainer', { x: '-100%', duration: 1, ease: 'power2.inOut' });
+        });
+        container.appendChild(closeButton);
+
+        // Set the flag to indicate that the container has been generated
+        containerGenerated = true;
+    }
+
+    if (slideout) {
+        gsap.to('#payoutContainer', {
+            x: '0%', duration: 1,
+            ease: 'power2.inOut',
+            onStart: () => {
+                // Force a redraw of the container to make its content visible during animation
+                container.style.opacity = '0'; // Set opacity to 0 to hide the content initially
+                requestAnimationFrame(() => {
+                    container.style.opacity = '1'; // Set opacity back to 1 to show the content during animation
+                });
+            }
+        });
+    }
+}
+
+
 
 //----- Autospin Functions -----------------------------------------------
 // Autospin functions
