@@ -28,6 +28,7 @@ const Collectables = require('./collectables.js');
 const Properties = require('./properties.js')
 const Types = require("../../shared/js/gametypes");
 const platform = require('./looperlandsplatformclient.js');
+const minigame = require('../apps/minigame.js');
 const cache = new NodeCache();
 
 const LOOPWORMS_LOOPERLANDS_BASE_URL = process.env.LOOPWORMS_LOOPERLANDS_BASE_URL;
