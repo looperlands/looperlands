@@ -1,13 +1,6 @@
 @import url('https://fonts.googleapis.com/css?family=Orbitron');
 @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
 
-@font-face {
-  font-family: 'GraphicPixel';
-  src: url('./assets/fonts/GraphicPixel-Regular.ttf') format('ttf');
-  font-weight: normal;
-  font-style: normal;
-}
-
 #wrapper {
     margin: 0 auto;
     background-size: auto 100%;
@@ -44,22 +37,23 @@
 #payoutContainer thead {
     font-family: "Orbitron", "Helvetica Neue", "Futura", "Trebuchet MS", Arial;
     font-weight: bold;
+    font-size: 5vh;
 }
 
-#payoutContainer td.headerCell {
+#payoutContainer .headerText {
     padding-top: 20px; /* Add top padding */
     padding-bottom: 20px; /* Add bottom padding */
 }
 
 #payoutContainer td {
-    padding: 6px 8px;
+    padding: 6px 20px;
     text-align: center;
     vertical-align: middle;
 }
 
 #payoutContainer td.symbolCell {
-    border: 2px solid #ff00ff; /* Fun border color */
-    border-radius: 10px; /* Rounded border corners */
+    border: 10px solid #ff00ff;
+    border-radius: 20px;
 }
 
 #payoutContainer td.symbolCell img{
