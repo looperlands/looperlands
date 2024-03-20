@@ -512,6 +512,9 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.SHARKBOSS] = function(id) {
         return new Mobs.sharkboss(id);
     };
+    EntityFactory.builders[Types.Entities.M88NDIRT] = function(id) {
+        return new Mobs.m88ndirt(id);
+    };
     
     //Short Destroyers
     EntityFactory.builders[Types.Entities.LATEFLEA] = function(id) {

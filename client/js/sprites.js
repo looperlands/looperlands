@@ -471,6 +471,7 @@ define(['text!../sprites/agent.json',
         'text!../sprites/balloonhotdogr.json',
         'text!../sprites/balloongiraffeo.json',
         'text!../sprites/sharkboss.json',
+        'text!../sprites/m88ndirt.json',
         //m88n Items
         'text!../sprites/item-m88nmap.json',
         'text!../sprites/item-m88negg1.json',
