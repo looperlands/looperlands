@@ -93,16 +93,16 @@ var match_payout = new Array(symbol_count);
 /*
 0 King	//wild
 1 Queen	//wild
-2 Standard
-3 Fish
-4 Clown
-5 General
-6 Choco
-7 tacOS
-8 Punk
-9 Zombie
-10 DocGuac
-11 Bassmint
+2 Standard = 1
+3 Fish = 4
+4 Clown = 7
+5 General = 13
+6 Choco = 42
+7 tacOS = 69
+8 Punk = 350
+9 Zombie = 1337
+10 DocGuac = 9001
+11 Bassmint = 42069
 
 combinations
 11	1337 1
@@ -116,9 +116,6 @@ combinations
 3	2	 64
 2	1	 128
 */
-
-match_payout = [0, 0, 1, 4, 7, 13, 42, 69, 350, 1337, 9001, 42069];
-var wildCards = [0, 1];
 
 var reel_area_width = symbol_size * reel_count + reel_padding * (reel_count - 1);
 var reel_area_height = symbol_size * row_count;
@@ -482,8 +479,10 @@ function renderTextOnCanvas() {
 
 async function spin() {
 
+//    const slots = require("../../../../server/apps/luckyfunkz/luckyfunkz.js");
+
     //ask server for spin
-    let {spinData, valueToPayout, winningLines} = await getSpin(playing_lines, bet);
+    let {spinData, valueToPayout, winningLines} = await slots.getSpin(playing_lines, bet);
     payout = valueToPayout;
     linesToHighlight = winningLines;
 

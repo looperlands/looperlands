@@ -103,6 +103,10 @@ function calc_reward(result, played_lines) {
 
 //need to import wildCards and match_payout (or define here)
 function calc_line(s1, s2, s3) {
+    //list of payouts and wild card symbols
+    const match_payout = [0, 0, 1, 4, 7, 13, 42, 69, 350, 1337, 9001, 42069];
+    const wildCards = [0, 1];
+
     console.log(`${s1}:${s2}:${s3}`);
     const isWild = (symbol) => wildCards.includes(symbol);
 
