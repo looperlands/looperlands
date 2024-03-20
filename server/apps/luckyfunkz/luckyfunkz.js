@@ -14,7 +14,7 @@ async function getSpin(sessionData, linesPlayed, betPerLine) {
 
     //Transfer resources to pay the bet
     const spinCost = linesPlayed * betPerLine;
-    const paid = await transferResourceFromTo(nftId, CORNHOLE, spinCost);
+    const paid = await dao.transferResourceFromTo(nftId, CORNHOLE, spinCost);
 
     //if the bet cannot be paid, exit immediately and do not get a spin
     if (!paid) { return "Not Enough Gold"; }
@@ -26,7 +26,7 @@ async function getSpin(sessionData, linesPlayed, betPerLine) {
             if (payout > 0) {
                 // PROCESS PAYOUT
                 const amountToPayout = payout * betPerLine;
-                await transferResourceFromTo(CORNHOLE, nftId, amountToPayout);
+                await dao.transferResourceFromTo(CORNHOLE, nftId, amountToPayout);
             }
             return { randomSpin, payout, winningLines };
             break;

@@ -260,7 +260,7 @@ function set_stops() {
     for (var i = 0; i < reel_count; i++) {
         start_slowing[i] = false;
 
-        const { spin, payouts } = getSpin();  //get a spin and set the stops with that spin.
+        //const { spin, payouts } = getSpin();  //get a spin and set the stops with that spin.
 
         stop_index = Math.floor(Math.random() * reel_positions);
         stopping_position[i] = stop_index * symbol_size;
@@ -392,58 +392,6 @@ function logic() {
     }
 }
 
-function calc_line(s1, s2, s3) {
-    console.log(`${s1}:${s2}:${s3}`);
-    const isWild = (symbol) => wildCards.includes(symbol);
-
-    // Perfect match
-    if (s1 === s2 && s2 === s3) return match_payout[s1] * bet;
-
-    // Wildcard with two of a kind
-    if (isWild(s1) && s2 === s3) return match_payout[s2] * bet;
-    if (isWild(s2) && s1 === s3) return match_payout[s1] * bet;
-    if (isWild(s3) && s1 === s2) return match_payout[s1] * bet;
-
-    // Double Wildcard
-    if (isWild(s2) && isWild(s3)) return match_payout[s1] * bet;
-    if (isWild(s1) && isWild(s3)) return match_payout[s2] * bet;
-    if (isWild(s1) && isWild(s2)) return match_payout[s3] * bet;
-
-    // No reward
-    return 0;
-}
-
-// calculate the reward
-function calc_reward() {
-    payout = 0;
-
-    // Define the lines to check
-    const linesToCheck = [
-        { row: 1, cells: [result[0][1], result[1][1], result[2][1]] }, //middle row
-        { row: 2, cells: [result[0][0], result[1][0], result[2][0]] }, //top row
-        { row: 3, cells: [result[0][2], result[1][2], result[2][2]] }, //bottom row
-        { row: 4, cells: [result[0][0], result[1][1], result[2][2]] }, //TL-BR diagonal
-        { row: 5, cells: [result[0][2], result[1][1], result[2][0]] }, //BL-TR diagonal
-    ];
-
-    // Loop through lines and check for payouts
-    for (const line of linesToCheck.slice(0, playing_lines)) {
-        const partial_payout = calc_line(...line.cells);
-        if (partial_payout > 0) {
-            payout += partial_payout;
-            highlight_line(line.row);
-        }
-    }
-
-    // Play win sound if there's a payout
-    if (payout > 0) {
-        console.log(">>>>> PAYOUT: ", payout);
-        try {
-            snd_win.currentTime = 0;
-            snd_win.play();
-        } catch (err) { }
-    }
-}
 
 //---- Input Functions ---------------------------------------------
 
@@ -479,10 +427,11 @@ function renderTextOnCanvas() {
 
 async function spin() {
 
-//    const slots = require("../../../../server/apps/luckyfunkz/luckyfunkz.js");
-
     //ask server for spin
-    let {spinData, valueToPayout, winningLines} = await slots.getSpin(playing_lines, bet);
+    const urlParams = new URLSearchParams(window.location.search);
+    const sessionId = urlParams.get('sessionId');
+    let spinRequest = "/session/" + sessionId + "/getSpin/" + playing_lines + "/" + bet;
+    let {spinData, valueToPayout, winningLines} = await axios.get(spinRequest);
     payout = valueToPayout;
     linesToHighlight = winningLines;
 
@@ -491,8 +440,6 @@ async function spin() {
         //Send message to player that they are broke !$$$
         return;
     }
-
-
 
     //Code below works but does not interact with server
     // if (game_state != STATE_REST) return;
