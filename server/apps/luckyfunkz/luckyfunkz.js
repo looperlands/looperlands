@@ -6,12 +6,10 @@ const CORNHOLE = 'CORNHOLE';
 const API_KEY = process.env.LOOPWORMS_API_KEY;
 const MAX_RETRY_COUNT = 5;
 
-async function getSpin(linesPlayed, betPerLine) {
+async function getSpin(sessionData, linesPlayed, betPerLine) {
     let retryCount = 0;
 
     //Get the players nftId
-    const sessionId = getSessionIdFromUrl();
-    const sessionData = cache.get(sessionId);
     const nftId = sessionData.nftId;
 
     //Transfer resources to pay the bet
