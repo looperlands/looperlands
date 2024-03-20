@@ -86,6 +86,7 @@ var reward_grand_threshhold = 25; // count faster if the reward is over this siz
 var bet = 1;
 var maxBet = 3;
 var maxLines = 3;
+var linesToHighlight = [];
 
 var match_payout = new Array(symbol_count);
 //payouts for symbol 1 through 11 (index 0 through 10)
@@ -314,7 +315,9 @@ function logic_spindown() {
     // if reels finished moving, begin rewards
     if (reel_speed[reel_count - 1] == 0) {
         console.log("[SPIN]");
-        calc_reward();
+        for(line in linesToHighlight){
+            highlight_line(line);
+        }
         game_state = STATE_REWARD;
     }
 
@@ -477,13 +480,28 @@ function renderTextOnCanvas() {
     drawText(ctx, "aqua", "left", "BET: " + bet, can.width * 0.55, can.height * 0.78);
 }
 
-function spin() {
-    if (game_state != STATE_REST) return;
-    if (credits < playing_lines * bet) return;
+async function spin() {
 
-    $('#minigame').addClass("pauseClose");
+    //ask server for spin
+    let {spinData, valueToPayout, winningLines} = await getSpin(playing_lines, bet);
+    payout = valueToPayout;
+    linesToHighlight = winningLines;
 
-    credits -= playing_lines * bet;
+    //This should only occur
+    if(spinData == "Low Funds"){
+        //Send message to player that they are broke !$$$
+        return;
+    }
+
+
+
+    //Code below works but does not interact with server
+    // if (game_state != STATE_REST) return;
+    // if (credits < playing_lines * bet) return;
+
+    // $('#minigame').addClass("pauseClose");
+
+    // credits -= playing_lines * bet;
 
     render_reel();
     game_state = STATE_SPINUP;
@@ -577,11 +595,6 @@ function getGoldAmount() {
         });
     });
 }
-
-function updateCredits() {
-
-}
-
 
 // Function to create linear gradient
 function createLinearGradient() {
@@ -744,45 +757,4 @@ function AutoSpin_Toggle() {
         AutoSpin_On();
     else
         AutoSpin_Off();
-}
-
-
-//-----Spin Request Functions------------------------------------------------
-
-async function getSpinFromServer(linesPlayed, betPerLine) {
-    try {
-        const response = await axios.get(`http://localhost:3000/getSpin/${linesPlayed}/${betPerLine}`);
-        const { spin, payouts } = response.data;
-        return { spin, payouts };
-    } catch (error) {
-        console.error('Error getting spin:', error.message);
-        throw error;
-    }
-}
-
-async function getSpin() {
-    const maxRetries = 3;
-    let retryCount = 0;
-
-    while (retryCount < maxRetries) {
-        try {
-            const { spin, payouts } = await getSpinFromServer();
-            console.log(spin, " : ", payouts);
-            return { spin, payouts };
-            break; // Exit the loop if successful
-        } catch (error) {
-            if (error.code === 'EADDRINUSE') {
-                //console.log('Port in use, retrying...');
-                retryCount++;
-                await new Promise(resolve => setTimeout(resolve, 1000)); // Wait for 1 second before retrying
-            } else {
-                console.error('Failed to get spin:', error.message);
-                break; // Exit the loop if an unexpected error occurs
-            }
-        }
-    }
-
-    if (retryCount === maxRetries) {
-        console.error('Exceeded maximum retry attempts. Exiting.');
-    }
 }
