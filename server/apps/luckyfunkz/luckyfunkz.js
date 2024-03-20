@@ -1,6 +1,7 @@
 const axios = require('axios');
 const spinSet = require('./data/spinSet');
 const dao = require('../../js/dao');
+const platform = require('../../js/looperlandsplatformclient');
 const CORNHOLE = 'CORNHOLE';
 const API_KEY = process.env.LOOPWORMS_API_KEY;
 const MAX_RETRY_COUNT = 5;
@@ -53,16 +54,8 @@ function getSessionIdFromUrl() {
 
 async function getSpinFromServer(linesPlayed, betPerLine) {
     try {
-        console.log(`linesPlayed: ${linesPlayed} + betPerLine: ${betPerLine}`);
-
-        //Get a spin number from with an api call
-        const options = { headers: { 'X-Api-Key': API_KEY } };
-        const url = "/api/maps/cornsino/spin";
-        const response = await axios.get(url, options);
-        console.log(response.data);
-
-        //Lookup spin data associated with chosen spin number
-        const chosenSpin = spinSet[response.data["spin"]];
+        const spinIndex = await platform.getSpinIndex();
+        const chosenSpin = spinSet[spinIndex];
 
         //Calculate the rewards associated with that spin
         const { payout, winningLines } = calc_reward(chosenSpin, linesPlayed);
@@ -101,7 +94,7 @@ function calc_reward(result, played_lines) {
     return { payout, winningLines };
 }
 
-//need to import wildCards and match_payout (or define here)
+
 function calc_line(s1, s2, s3) {
     //list of payouts and wild card symbols
     const match_payout = [0, 0, 1, 4, 7, 13, 42, 69, 350, 1337, 9001, 42069];
