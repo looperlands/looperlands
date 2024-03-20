@@ -544,17 +544,25 @@ function init() {
     ctx = can.getContext("2d");
     ctx.imageSmoothingEnabled = false;
 
-    var font = new FontFace('GraphicPixel', `url(./apps/luckyfunkz/assets/fonts/GraphicPixel-Regular.ttf)`);
 
+    
     getGoldAmount().then(goldAmount => { credits = goldAmount; render_reel(); });
 
+// Define font faces
+const fonts = [
+    new FontFace('GraphicPixel', `url(./apps/luckyfunkz/assets/fonts/GraphicPixel-Regular.ttf)`),
+    new FontFace('256BYTES', `url(./apps/luckyfunkz/assets/fonts/256BYTES.ttf)`)
+];
+
+// Load each font
+fonts.forEach(font => {
     font.load().then(function (loadedFont) {
         document.fonts.add(loadedFont);
-        font_loaded = true;
-        if (font_loaded && symbols_loaded && reels_bg_loaded) render_reel();
+        checkFontsLoaded();
     }).catch(function (error) {
         console.error('Font loading failed:', error);
     });
+});
 
     reels_bg.onload = function () {
         can.width = reels_bg.naturalWidth;
@@ -596,6 +604,16 @@ function getGoldAmount() {
     });
 }
 
+// Function to check if all fonts are loaded
+function checkFontsLoaded() {
+    const loadedFonts = Array.from(document.fonts.values()).map(font => font.family);
+    if (loadedFonts.includes('GraphicPixel') && loadedFonts.includes('256BYTES')) {
+        font_loaded = true;
+        if (font_loaded && symbols_loaded && reels_bg_loaded) {
+            render_reel();
+        }
+    }
+}
 // Function to create linear gradient
 function createLinearGradient() {
     const linearGradient = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
