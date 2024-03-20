@@ -1071,6 +1071,27 @@ WS.socketIOServer = Server.extend({
             }
         });
 
+        app.get("/session/:sessionId/getSpin/:playedLines/:bet", async(req,res) => {
+            const sessionId = req.params.sessionId;
+            const sessionData = cache.get(sessionId);
+    
+            if (sessionData === undefined) {
+                res.status(404).json({
+                    status: false,
+                    error: "No session with id " + sessionId + " found",
+                    user: null
+                });
+                return;
+            }
+            console.log("API recieved spin request");
+            const playedLines = parseInt(req.params.playedLines);
+            const bet = parseInt(req.params.bet);
+            let {spinData, valueToPayout, winningLines} = await minigame.getSpin(sessionData, playedLines, bet);
+
+            let response = {spinData: spinData, valueToPayout: valueToPayout, winningLines: winningLines};
+            res.status(200).send(response);
+        });
+
         self.io.on('connection', function(connection){
           //console.log('a user connected');
 
