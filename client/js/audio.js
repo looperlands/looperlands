@@ -226,12 +226,11 @@ define(['area'], function(Area) {
             }
         },
     
-        fadeOutMusic: function(music, ended_callback) {
+        fadeOutMusic: function(music, ended_callback, step) {
             var self = this;
             if(music && !music.sound.fadingOut) {
                 this.clearFadeIn(music);
                 music.sound.fadingOut = setInterval(function() {
-                    var step = 0.02;
                         volume = music.sound.volume - step;
                 
                     if(self.enabled && volume >= step) {
@@ -277,12 +276,12 @@ define(['area'], function(Area) {
             }
         },
     
-        fadeOutCurrentMusic : function() {
+        fadeOutCurrentMusic : function(step = 0.02) {
             var self = this;
             if(this.currentMusic) {
                 this.fadeOutMusic(this.currentMusic, function(music) {
                     self.resetMusic(music);
-                });
+                }, step);
                 this.currentMusic = null;
             }
         },

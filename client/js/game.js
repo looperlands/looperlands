@@ -5642,7 +5642,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     this.hoveringTarget = false;
                     this.targetCellVisible = true;
                 }
-                else if($(`#minigame`).length){
+                else if($(`#minigame`).length && $(`#minigame`).hasClass("clickable active")){
                     this.minigameLoaded = true;
                     this.hoveringTarget = false;
                     this.targetCellVisible = false;
@@ -8091,16 +8091,17 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     }
 
                     if (entity.id === self.player.id && trigger.minigame && !this.minigameLoaded){
+                        let minigamePromptClickHandler = function() {loadMinigame(trigger.minigame, self);};
                         $("#minigameprompt").addClass('active');
-                        $("#minigameprompt").on("click", function(){loadMinigame(trigger.minigame, self);});
+                        $("#minigameprompt").one("click", minigamePromptClickHandler); //limit the use of this to a single fire
                     }
 
                     entity.onLeave(trigger, function () {
                         entity.triggerArea = null;
                         self.client.sendTrigger(trigger.id, false);
-                        if (entity.id === self.player.id){
+                        if (entity.id === self.player.id && trigger.minigame){
                             $("#minigameprompt").removeClass('active');
-                            $("#minigame").removeClass('active');
+                            $("#minigameprompt").off(); // also, remove any listeners if player leaves area without click
                         }
                     })
                 }
