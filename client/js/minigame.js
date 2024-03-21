@@ -6,14 +6,14 @@ by = youLikeIt ? "bitcorn" : "anonymous";
 
 [THE BASICS]
     TO ADD A MINIGAME:
-        1. Add a custom property "css" with value "Minigame Name" to the tile in tiled you want to be the trigger
-        2. Add that "Minigame Name" and the "Initial File to Load" to MINIGAME_FILES below.
+        1. Add a Custom Property with name = "minigame" and value = "MINIGAME_NAME" to the tile in tiled you want to be the trigger
+        2. Add that "MINIGAME_NAME" and the "INITIAL_FILE_TO_LOAD" to MINIGAME_FILES below.
         3. Voila
 */
 
 const MINIGAME_FILES = {
     "luckyfunkz": "slots.html",
-    //"Minigame Name": "Initial File to Load",
+//  "MINIGAME_NAME": "INITIAL_FILE_TO_LOAD",
 };
 
 /*
