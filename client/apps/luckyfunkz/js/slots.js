@@ -13,24 +13,24 @@ DEALINGS IN THE SOFTWARE.
 Sounds by Brandon Morris (CC-BY 3.0)
 */
 {
-let FPS = 120;
+var FPS = 120;
 setInterval(function () {
     logic();
     render();
 }, 1000 / FPS);
 
 // Flags for resource loading
-let FONTS_loaded = false;
-let SYMBOLS_loaded = false;
-let REELS_BG_loaded = false;
+var FONTS_loaded = false;
+var SYMBOLS_loaded = false;
+var REELS_BG_loaded = false;
 
 // Art
-let SYMBOLS = [];
-let SYMBOL_COUNT = 12;
-let loadedSymbolCount = 0;
+var SYMBOLS = [];
+var SYMBOL_COUNT = 12;
+var loadedSymbolCount = 0;
 
-for (let i = 0; i < SYMBOL_COUNT; i++) {
-    let symbol = new Image();
+for (var i = 0; i < SYMBOL_COUNT; i++) {
+    var symbol = new Image();
     symbol.onload = function () {
         loadedSymbolCount++;
         if (loadedSymbolCount == SYMBOL_COUNT) {
@@ -42,39 +42,39 @@ for (let i = 0; i < SYMBOL_COUNT; i++) {
     SYMBOLS.push(symbol);
 }
 
-let REELS_BG = new Image();
+var REELS_BG = new Image();
 REELS_BG.src = "./apps/luckyfunkz/assets/images/ui/background/LuckyFUNKZ.png";
 
-let CREDIT_PANEL = new Image();
+var CREDIT_PANEL = new Image();
 CREDIT_PANEL.src = "./apps/luckyfunkz/assets/images/ui/panels/credit_panel.png";
 
-let SND_WIN = new Audio("apps/luckyfunkz/assets/audio/win.wav");
-let SND_REEL_STOP = Array.from({ length: 3 }, () => new Audio("apps/luckyfunkz/assets/audio/reel_stop.wav"));
+var SND_WIN = new Audio("apps/luckyfunkz/assets/audio/win.wav");
+var SND_REEL_STOP = Array.from({ length: 3 }, () => new Audio("apps/luckyfunkz/assets/audio/reel_stop.wav"));
 
 // Enums
-let STATE_REST = 0;
-let STATE_SPINUP = 1;
-let STATE_SPINDOWN = 2;
-let STATE_REWARD = 3;
-let STATE_SPININPROGRESS;
+var STATE_REST = 0;
+var STATE_SPINUP = 1;
+var STATE_SPINDOWN = 2;
+var STATE_REWARD = 3;
+var STATE_SPININPROGRESS;
 
 // Config
-let SCALE = 5;
-let SYMBOL_SIZE = 32 * SCALE;
-let REEL_COUNT = 3;
-let REEL_PADDING = 8;
-let ROW_COUNT = 3;
-let STOPPING_DISTANCE = 528 * SCALE;
-let MAX_REEL_SPEED = SYMBOL_SIZE;
-let SPINUP_ACCELERATION = 2;
-let SPINDOWN_ACCELERATION = 1;
-let REWARD_DELAY = 3;
-let REWARD_DELAY_GRAND = 1;
-let REWARD_GRAND_THRESHHOLD = 25;
-let MAXBET = 3;
-let MAXLINES = 3;
+var SCALE = 5;
+var SYMBOL_SIZE = 32 * SCALE;
+var REEL_COUNT = 3;
+var REEL_PADDING = 8;
+var ROW_COUNT = 3;
+var STOPPING_DISTANCE = 528 * SCALE;
+var MAX_REEL_SPEED = SYMBOL_SIZE;
+var SPINUP_ACCELERATION = 2;
+var SPINDOWN_ACCELERATION = 1;
+var REWARD_DELAY = 3;
+var REWARD_DELAY_GRAND = 1;
+var REWARD_GRAND_THRESHHOLD = 25;
+var MAXBET = 3;
+var MAXLINES = 3;
 
-let MATCH_PAYOUT = [
+var MATCH_PAYOUT = [
     1, // Wild
     1, // Wild
     1, // Standard
@@ -89,45 +89,45 @@ let MATCH_PAYOUT = [
     42069 // Bassmint
 ];
 
-let REEL_AREA_WIDTH = SYMBOL_SIZE * REEL_COUNT + REEL_PADDING * (REEL_COUNT - 1);
-let REEL_AREA_HEIGHT = SYMBOL_SIZE * ROW_COUNT;
+var REEL_AREA_WIDTH = SYMBOL_SIZE * REEL_COUNT + REEL_PADDING * (REEL_COUNT - 1);
+var REEL_AREA_HEIGHT = SYMBOL_SIZE * ROW_COUNT;
 
 // Set up reels
-let reels = [
+var reels = [
     [2, 1, 7, 1, 2, 7, 6, 7, 3, 10, 1, 6, 1, 7, 3, 4, 11, 3, 2, 4, 5, 0, 6, 10, 5, 6, 5, 8, 3, 0, 9, 5, 4],
     [6, 0, 10, 3, 6, 11, 7, 9, 2, 5, 2, 3, 1, 5, 2, 1, 10, 4, 5, 8, 4, 7, 6, 0, 1, 7, 6, 3, 1, 5, 9, 7, 4],
     [1, 4, 2, 7, 5, 6, 4, 10, 7, 5, 2, 0, 6, 4, 10, 1, 7, 6, 3, 0, 5, 7, 2, 3, 11, 9, 3, 5, 6, 1, 8, 1, 3]
 ];
 
-let reel_positions = Math.min(reels[0].length, reels[1].length, reels[2].length);
-let reel_pixel_length = reel_positions * SYMBOL_SIZE;
+var reel_positions = Math.min(reels[0].length, reels[1].length, reels[2].length);
+var reel_pixel_length = reel_positions * SYMBOL_SIZE;
 
-let reel_position = new Array(REEL_COUNT);
-for (let i = 0; i < REEL_COUNT; i++) {
+var reel_position = new Array(REEL_COUNT);
+for (var i = 0; i < REEL_COUNT; i++) {
     reel_position[i] = Math.floor(Math.random() * reel_positions) * SYMBOL_SIZE;
 }
 
-let stopping_position = new Array(REEL_COUNT);
-let start_slowing = new Array(REEL_COUNT);
+var stopping_position = new Array(REEL_COUNT);
+var start_slowing = new Array(REEL_COUNT);
 
 // reel spin speed in pixels per frame
-let reel_speed = new Array(REEL_COUNT);
-for (let i = 0; i < REEL_COUNT; i++) {
+var reel_speed = new Array(REEL_COUNT);
+for (var i = 0; i < REEL_COUNT; i++) {
     reel_speed[i] = 0;
 }
 
-let result = new Array(REEL_COUNT);
-for (let i = 0; i < REEL_COUNT; i++) {
+var result = new Array(REEL_COUNT);
+for (var i = 0; i < REEL_COUNT; i++) {
     result[i] = new Array(ROW_COUNT);
 }
 
-let game_state = STATE_REST;
-let credits = -1;
-let payout = 0;
-let reward_delay_counter = 0;
-let playing_lines = 1;
-let bet = 1;
-let linesToHighlight = [];
+var game_state = STATE_REST;
+var credits = -1;
+var payout = 0;
+var reward_delay_counter = 0;
+var playing_lines = 1;
+var bet = 1;
+var linesToHighlight = [];
 
 //---- Render Functions ---------------------------------------------
 function draw_symbol(symbol_index, x, y, reel) {
@@ -157,8 +157,8 @@ function render_reel() {
     const centerX = (can.width - REEL_AREA_WIDTH) / 2;
     const centerY = 304;
 
-    for (let i = 0; i < REEL_COUNT; i++) {
-        for (let j = 0; j < ROW_COUNT + 1; j++) {
+    for (var i = 0; i < REEL_COUNT; i++) {
+        for (var j = 0; j < ROW_COUNT + 1; j++) {
             const reel_index = (Math.floor(reel_position[i] / SYMBOL_SIZE) + j) % reel_positions;
             const symbol_offset = reel_position[i] % SYMBOL_SIZE;
             const symbol_index = reels[i][reel_index];
@@ -236,10 +236,10 @@ function render() {
 //---- Logic Functions ---------------------------------------------
 
 function set_stops() {
-    for (let i = 0; i < REEL_COUNT; i++) {
+    for (var i = 0; i < REEL_COUNT; i++) {
         start_slowing[i] = false;
 
-        //let { spin, payouts } = getSpin();  //get a spin and set the stops with that spin.
+        //var { spin, payouts } = getSpin();  //get a spin and set the stops with that spin.
 
         stop_index = Math.floor(Math.random() * reel_positions);
         stopping_position[i] = stop_index * SYMBOL_SIZE;
@@ -248,7 +248,7 @@ function set_stops() {
         if (stopping_position[i] >= reel_pixel_length) stopping_position[i] -= reel_pixel_length;
 
         // convenient here to remember the winning positions
-        for (let j = 0; j < ROW_COUNT; j++) {
+        for (var j = 0; j < ROW_COUNT; j++) {
             result[i][j] = stop_index + j;
             if (result[i][j] >= reel_positions) result[i][j] -= reel_positions;
 
@@ -269,7 +269,7 @@ function move_reel(i) {
 
 // handle reels accelerating to full speed
 function logic_spinup() {
-    for (let i = 0; i < REEL_COUNT; i++) {
+    for (var i = 0; i < REEL_COUNT; i++) {
         // move reel at current speed
         move_reel(i);
 
@@ -297,14 +297,14 @@ function logic_spindown() {
         game_state = STATE_REWARD;
     }
 
-    for (let i = 0; i < REEL_COUNT; i++) {
+    for (var i = 0; i < REEL_COUNT; i++) {
         // move reel at current speed
         move_reel(i);
 
         // start slowing this reel?
         if (start_slowing[i] == false) {
             // if the first reel, or the previous reel is already slowing
-            let check_position = false;
+            var check_position = false;
             if (i == 0) check_position = true;
             else if (start_slowing[i - 1]) check_position = true;
 
@@ -342,7 +342,7 @@ function logic_reward() {
     }
 
     payout--;
-    let metrics = ctx.measureText(`CREDITS: ${credits}`);
+    var metrics = ctx.measureText(`CREDITS: ${credits}`);
     credits++;
     ctx.clearRect(can.width * 0.74, ((can.height * 0.05) - (can.width * .025)), metrics.width, can.width * .025);
     drawText(ctx, "CREDITS: " + credits, can.width * 0.74, can.height * 0.05);
@@ -398,7 +398,7 @@ function renderTextOnCanvas() {
         ctx.fillStyle = "white";
         ctx.font = can.width * 0.025 + "px GraphicPixel";
         ctx.textAlign = "left";
-        let text = ctx.measureText(credits);
+        var text = ctx.measureText(credits);
         drawText(ctx, "white", "center", credits, can.width * 0.80 + CREDIT_PANEL.width * 0.55, can.height * 0.05 + CREDIT_PANEL.height * 0.67);
     }
     drawText(ctx, "aqua", "left", "LINES: " + playing_lines, can.width * 0.38, can.height * 0.78);
@@ -473,7 +473,7 @@ function init() {
 
     // Update minigame menu
 
-    let addToMinigameMenu = $('<a href="#" id="mgPayouts">🎰 Payouts</a>');
+    var addToMinigameMenu = $('<a href="#" id="mgPayouts">🎰 Payouts</a>');
 
     $('#minigameMenu-content').prepend(addToMinigameMenu);
     $(`#minigame`).on('click', '#mgPayouts', () => getPayoutTable(true));
@@ -491,7 +491,7 @@ function init() {
     getGoldAmount().then(goldAmount => { credits = goldAmount; render_reel(); });
 
     // Define font faces
-    let FONTS = [
+    var FONTS = [
         new FontFace('GraphicPixel', `url(./apps/luckyfunkz/assets/fonts/GraphicPixel-Regular.ttf)`),
         new FontFace('256BYTES', `url(./apps/luckyfunkz/assets/fonts/256BYTES.ttf)`)
     ];
@@ -509,14 +509,14 @@ function init() {
     REELS_BG.onload = function () {
         can.width = REELS_BG.naturalWidth;
         can.height = REELS_BG.naturalHeight;
-        let buttonPanel = document.getElementById("buttonPanel");
+        var buttonPanel = document.getElementById("buttonPanel");
         updateButtonPanelWidth(window.height, buttonPanel);
 
         REELS_BG_loaded = true;
         if (FONTS_loaded && SYMBOLS_loaded && REELS_BG_loaded) render_reel();
     };
 
-    let devicePixelRatio = window.devicePixelRatio || 1;
+    var devicePixelRatio = window.devicePixelRatio || 1;
     can.width = can.clientWidth * devicePixelRatio;
     can.height = can.clientHeight * devicePixelRatio;
     ctx.scale(devicePixelRatio, devicePixelRatio);
@@ -533,7 +533,7 @@ function getGoldAmount() {
     return new Promise((resolve, reject) => {
         const urlParams = new URLSearchParams(window.location.search);
         const sessionId = urlParams.get('sessionId');
-        let inventoryQuery = "/session/" + sessionId + "/inventory";
+        var inventoryQuery = "/session/" + sessionId + "/inventory";
         axios.get(inventoryQuery).then(function (response) {
             if (response.data.resources["21300041"]) {
                 //console.log(response.data.resources["21300041"]);
@@ -629,7 +629,7 @@ function createSvgText(textContent) {
 
 
 // Generate the payout table container
-let containerGenerated = false;
+var containerGenerated = false;
 function getPayoutTable(slideout = false) {
     if (!containerGenerated) {
         const container = document.createElement('div');
@@ -649,16 +649,16 @@ function getPayoutTable(slideout = false) {
         });
 
         const tableBody = payoutTable.createTBody();
-        let bodyRow = tableBody.insertRow();
+        var bodyRow = tableBody.insertRow();
 
         const wildCards = [0, 1];
-        for (let i = SYMBOL_COUNT - 1; i >= 0; i--) {
+        for (var i = SYMBOL_COUNT - 1; i >= 0; i--) {
             if (!wildCards.includes(i)) {
                 const symbolCell = bodyRow.insertCell();
                 symbolCell.classList.add('symbolCell');
 
                 // Repeat symbol images 3 times horizontally
-                for (let j = 0; j < 3; j++) {
+                for (var j = 0; j < 3; j++) {
                     const symbolImage = document.createElement('img');
                     symbolImage.src = SYMBOLS[i].src;
                     symbolCell.appendChild(symbolImage);
