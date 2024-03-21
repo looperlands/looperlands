@@ -12,12 +12,12 @@ DEALINGS IN THE SOFTWARE.
 
 Sounds by Brandon Morris (CC-BY 3.0)
 */
-
-let slotsFPS = 120;
+{
+let FPS = 120;
 setInterval(function () {
     logic();
     render();
-}, 1000 / slotsFPS);
+}, 1000 / FPS);
 
 // Flags for resource loading
 let FONTS_loaded = false;
@@ -56,6 +56,7 @@ let STATE_REST = 0;
 let STATE_SPINUP = 1;
 let STATE_SPINDOWN = 2;
 let STATE_REWARD = 3;
+let STATE_SPININPROGRESS;
 
 // Config
 let SCALE = 5;
@@ -365,6 +366,7 @@ function logic() {
     } else if (game_state == STATE_REWARD) {
         logic_reward();
         $('#minigame').removeClass("pauseClose");
+        STATE_SPININPROGRESS = false
     } else if (game_state == STATE_REST && $("#autoSpinButton").hasClass("on")) {
         spin();
     }
@@ -404,6 +406,8 @@ function renderTextOnCanvas() {
 }
 
 async function spin() {
+    if(STATE_SPININPROGRESS) return;
+    STATE_SPININPROGRESS = true;
     try {
         const protocol = window.location.protocol;
         const hostname = window.location.hostname;
@@ -472,7 +476,12 @@ function init() {
     let addToMinigameMenu = $('<a href="#" id="mgPayouts">🎰 Payouts</a>');
 
     $('#minigameMenu-content').prepend(addToMinigameMenu);
-    $(document).on('click', '#mgPayouts', () => getPayoutTable(true));
+    $(`#minigame`).on('click', '#mgPayouts', () => getPayoutTable(true));
+    $(`#minigame`).on('click', '#autoSpinButton', () => AutoSpin_Toggle());
+    $(`#minigame`).on('click', '#lineButton', () => increaseLines());
+    $(`#minigame`).on('click', '#betButton', () => increaseBet());
+    $(`#minigame`).on('click', '#maxBetButton', () => setBetMax());
+    $(`#minigame`).on('click', '#spinButton', () => spin());
 
     // HTML elements
     can = document.getElementById("slotsArea"); // canvas
@@ -561,12 +570,11 @@ function createLinearGradient() {
     const stops = [
         { offset: '0%', color: '#000' },
         { offset: '5%', color: '#707' },
-        { offset: '15%', color: '#F0F' },
-        { offset: '40%', color: '#0FF' },
+        { offset: '20%', color: '#F0F' },
         { offset: '60%', color: '#0FF' },
-        { offset: '74%', color: '#FFF' },
-        { offset: '78%', color: '#777' },
-        { offset: '85%', color: '#F0F' },
+        { offset: '64%', color: '#FFF' },
+        { offset: '68%', color: '#0FF' },
+        { offset: '78%', color: '#F0F' },
         { offset: '100%', color: '#F0F' }
     ];
 
@@ -586,6 +594,7 @@ function createLinearGradient() {
 function createSvgText(textContent) {
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+    svg.setAttribute('height', '7vh');
 
     // Create <defs> element
     const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
@@ -601,14 +610,15 @@ function createSvgText(textContent) {
     const svgText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     svgText.setAttribute('class', 'headerText');
     svgText.setAttribute('x', '50%');
-    svgText.setAttribute('y', '50%');
+    svgText.setAttribute('y', '75%');
     svgText.setAttribute('text-anchor', 'middle');
     svgText.textContent = textContent;
 
     // Apply additional styles directly to the <text> element
     svgText.style.fill = 'url(#fill-gradient)';
-    svgText.style.stroke = 'rgba(255, 255, 255, 0.8)';
+    svgText.style.stroke = 'rgba(255, 255, 255, 0.5)';
     svgText.style.strokeWidth = '0.5px';
+    svgText.style.filter = 'drop-shadow(4px 4px 4px black)';
 
     // Append text to svg
     svg.appendChild(svgText);
@@ -639,7 +649,7 @@ function getPayoutTable(slideout = false) {
         });
 
         const tableBody = payoutTable.createTBody();
-        const bodyRow = tableBody.insertRow();
+        let bodyRow = tableBody.insertRow();
 
         const wildCards = [0, 1];
         for (let i = SYMBOL_COUNT - 1; i >= 0; i--) {
@@ -658,14 +668,14 @@ function getPayoutTable(slideout = false) {
                 payoutCell.textContent = MATCH_PAYOUT[i];
 
                 // Insert a new row for the next set of symbols
-                if (j < 3) { bodyRow = tableBody.insertRow(); }
+                if (i > 0) { bodyRow = tableBody.insertRow(); }
             }
         }
 
         // Add button to hide the table
         const closeButton = document.createElement('div');
         closeButton.classList.add('closeButton');
-        closeButton.innerHTML = '<span class="material-symbols-outlined">arrow_back_ios</span>';
+        closeButton.innerHTML = '<span class="material-symbols-outlined" style="font-size: 5vh; filter: drop-shadow(4px 4px 8px black); transform: translateX(30%);">arrow_back_ios</span>';
         closeButton.addEventListener('click', () => {
             gsap.to('#payoutContainer', { x: '-100%', duration: 1, ease: 'power2.inOut' });
         });
@@ -709,4 +719,5 @@ function AutoSpin_Toggle() {
         AutoSpin_On();
     else
         AutoSpin_Off();
+}
 }

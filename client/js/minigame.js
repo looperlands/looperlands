@@ -3,6 +3,10 @@ const gameLookup = {
     //"Minigame Name": "Initial File to Load"
 };
 
+//NOTE: FOR ANY ON-CLICK EVENTS (OR OTHER ON EVENTS) FOLLOW THIS EXAMPLE:
+// $(`#minigame`).on('click', '#mgPayouts', () => getPayoutTable(true));
+// You want to tie all your on events to minigame, so they will be properly removed when unloaded.
+
 //////////////////////////////
 // MINIGAME LOADER FUNCTION //
 //////////////////////////////
@@ -39,7 +43,7 @@ function loadMinigame(minigame, app) {
         .catch(error => console.error('Error fetching CSS:', error));
 
     // Event listener to load MAIZfm
-    $('#mgMAIZfm').on('click', function () {
+    $(`#minigame`).on('click', '#mgMAIZfm', function () {
         var MAIZfmDiv = $('<div id="MAIZfm-container"></div>');
         if ($('#MAIZfm-container').length === 0) {
             $('body').prepend(MAIZfmDiv);
@@ -50,13 +54,14 @@ function loadMinigame(minigame, app) {
     });
 
     // Event listener to close minigame
-    $('#mgClose').on('click', function () {
+    $('#minigame').on('click', '#mgClose', function () {
         var minigameElement = $('#minigame');
         // Apply 'pauseClose' to temporarily prevent the ability to close the app
         // EXAMPLE: For LuckyFunkz, the close function is paused during the spin process to ensure users see the spin result before closing
         // Even though the spin and result is processed server side, it enhances the user experience by visually presenting the spin outcome
         if (minigameElement.length && !minigameElement.hasClass('pauseClose')) {
             minigameElement.fadeOut(500, function () {
+                $(this).off();
                 $(this).remove();
                 $('#mgMenuStyle').remove();
             });

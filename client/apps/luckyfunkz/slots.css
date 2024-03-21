@@ -18,19 +18,21 @@
 
 #payoutContainer {
     width: max-content;
-    padding: 6px 8px;
-    background: rgb(42 42 42 / 70%);
+    height: 100%;
+    padding: 2px 2px;
+    background: rgb(42 42 42 / 69%);
     position: absolute;
     z-index: 101;
     font-family: 'GraphicPixel', Arial, sans-serif;
-    color:#fff;
-    font-size: 3vh;
-    backdrop-filter: blur(0.25vh); 
+    color: cyan;
+    backdrop-filter: blur(0.741vh); 
     -webkit-user-select: none;
     user-select: none;
 }
 
 #payoutContainer table {
+    border-collapse: separate;
+    border-spacing: 5px;
     margin: auto;
 }
 
@@ -40,24 +42,23 @@
     font-size: 5vh;
 }
 
-#payoutContainer .headerText {
-    padding-top: 10px; /* Add top padding */
-    padding-bottom: 10px; /* Add bottom padding */
-}
-
 #payoutContainer td {
-    padding: 6px 20px;
+    filter: drop-shadow(2px 4px 4px black);
     text-align: center;
     vertical-align: middle;
+    font-size: 5vh;
+    font-family: "Orbitron", "Helvetica Neue", "Futura", "Trebuchet MS", Arial;
+    font-weight: 1000;
 }
 
 #payoutContainer td.symbolCell {
-    border: 10px solid #ff00ff;
+    border: 3px solid #ff00ff;
     border-radius: 20px;
 }
 
 #payoutContainer td.symbolCell img{
-    height: 6vh;
+    height: 7vh;
+    padding: 0 10px;
 }
 
 .closeButton {
