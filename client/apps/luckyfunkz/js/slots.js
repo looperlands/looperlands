@@ -11,162 +11,135 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 DEALINGS IN THE SOFTWARE.
 
 Sounds by Brandon Morris (CC-BY 3.0)
-Art by Clint Bellanger (CC-BY 3.0)
 */
 
-var FPS = 120;
+let slotsFPS = 120;
 setInterval(function () {
     logic();
     render();
-}, 1000 / FPS);
+}, 1000 / slotsFPS);
 
-// html elements
-var scale = 5;
-var can; // canvas
-var ctx; // context
-var credit_div; // credits paragraph
-var lines_div; // lines paragraph
-var bet_div; // bet paragraph
+// Flags for resource loading
+let FONTS_loaded = false;
+let SYMBOLS_loaded = false;
+let REELS_BG_loaded = false;
 
-var font_loaded = false;
-var symbols_loaded = false;
-var reels_bg_loaded = false;
+// Art
+let SYMBOLS = [];
+let SYMBOL_COUNT = 12;
+let loadedSymbolCount = 0;
 
-// art
-var symbols = [];
-var symbol_count = 12;
-var loadedSymbolCount = 0;
-
-for (var i = 0; i < symbol_count; i++) {
-    var symbol = new Image();
+for (let i = 0; i < SYMBOL_COUNT; i++) {
+    let symbol = new Image();
     symbol.onload = function () {
         loadedSymbolCount++;
-        if (loadedSymbolCount == symbol_count) {
-            symbols_loaded = true;
-                        if (font_loaded && symbols_loaded && reels_bg_loaded) render_reel();
+        if (loadedSymbolCount == SYMBOL_COUNT) {
+            SYMBOLS_loaded = true;
+            if (FONTS_loaded && SYMBOLS_loaded && REELS_BG_loaded) render_reel();
         }
     };
     symbol.src = `./apps/luckyfunkz/assets/images/symbols/${i.toString().padStart(2, "0")}.png`;
-    symbols.push(symbol);
+    SYMBOLS.push(symbol);
 }
 
-var reels_bg = new Image();
-reels_bg.src = "./apps/luckyfunkz/assets/images/ui/background/LuckyFUNKZ.png";
+let REELS_BG = new Image();
+REELS_BG.src = "./apps/luckyfunkz/assets/images/ui/background/LuckyFUNKZ.png";
 
-var credit_panel = new Image();
-credit_panel.src = "./apps/luckyfunkz/assets/images/ui/panels/credit_panel.png";
+let CREDIT_PANEL = new Image();
+CREDIT_PANEL.src = "./apps/luckyfunkz/assets/images/ui/panels/credit_panel.png";
 
-var snd_win;
-snd_win = new Audio("apps/luckyfunkz/assets/audio/win.wav");
+let SND_WIN = new Audio("apps/luckyfunkz/assets/audio/win.wav");
+let SND_REEL_STOP = Array.from({ length: 3 }, () => new Audio("apps/luckyfunkz/assets/audio/reel_stop.wav"));
 
-var snd_reel_stop = new Array();
-snd_reel_stop[0] = new Audio("apps/luckyfunkz/assets/audio/reel_stop.wav");
-snd_reel_stop[1] = new Audio("apps/luckyfunkz/assets/audio/reel_stop.wav");
-snd_reel_stop[2] = new Audio("apps/luckyfunkz/assets/audio/reel_stop.wav");
+// Enums
+let STATE_REST = 0;
+let STATE_SPINUP = 1;
+let STATE_SPINDOWN = 2;
+let STATE_REWARD = 3;
 
-// enums
-var STATE_REST = 0;
-var STATE_SPINUP = 1;
-var STATE_SPINDOWN = 2;
-var STATE_REWARD = 3;
+// Config
+let SCALE = 5;
+let SYMBOL_SIZE = 32 * SCALE;
+let REEL_COUNT = 3;
+let REEL_PADDING = 8;
+let ROW_COUNT = 3;
+let STOPPING_DISTANCE = 528 * SCALE;
+let MAX_REEL_SPEED = SYMBOL_SIZE;
+let SPINUP_ACCELERATION = 2;
+let SPINDOWN_ACCELERATION = 1;
+let REWARD_DELAY = 3;
+let REWARD_DELAY_GRAND = 1;
+let REWARD_GRAND_THRESHHOLD = 25;
+let MAXBET = 3;
+let MAXLINES = 3;
 
-// config
-var symbol_size = 32 * scale;
-var reel_count = 3;
-var reel_padding = 8;
+let MATCH_PAYOUT = [
+    1, // Wild
+    1, // Wild
+    1, // Standard
+    4, // Fish
+    7, // Clown
+    13, // General
+    42, // Choco
+    69, // tacOS
+    350, // Punk
+    1337, // Zombie
+    9001, // DocGuac
+    42069 // Bassmint
+];
 
-var row_count = 3;
-var stopping_distance = 528 * scale;
-var max_reel_speed = symbol_size;
-var spinup_acceleration = 2;
-var spindown_acceleration = 1;
-var reward_delay = 3; // how many frames between each credit tick
-var reward_delay_grand = 1; // delay for grand-prize winning
-var reward_grand_threshhold = 25; // count faster if the reward is over this size
-var bet = 1;
-var maxBet = 3;
-var maxLines = 3;
-var linesToHighlight = [];
+let REEL_AREA_WIDTH = SYMBOL_SIZE * REEL_COUNT + REEL_PADDING * (REEL_COUNT - 1);
+let REEL_AREA_HEIGHT = SYMBOL_SIZE * ROW_COUNT;
 
-var match_payout = new Array(symbol_count);
-//payouts for symbol 1 through 11 (index 0 through 10)
-/*
-0 King	//wild
-1 Queen	//wild
-2 Standard = 1
-3 Fish = 4
-4 Clown = 7
-5 General = 13
-6 Choco = 42
-7 tacOS = 69
-8 Punk = 350
-9 Zombie = 1337
-10 DocGuac = 9001
-11 Bassmint = 42069
+// Set up reels
+let reels = [
+    [2, 1, 7, 1, 2, 7, 6, 7, 3, 10, 1, 6, 1, 7, 3, 4, 11, 3, 2, 4, 5, 0, 6, 10, 5, 6, 5, 8, 3, 0, 9, 5, 4],
+    [6, 0, 10, 3, 6, 11, 7, 9, 2, 5, 2, 3, 1, 5, 2, 1, 10, 4, 5, 8, 4, 7, 6, 0, 1, 7, 6, 3, 1, 5, 9, 7, 4],
+    [1, 4, 2, 7, 5, 6, 4, 10, 7, 5, 2, 0, 6, 4, 10, 1, 7, 6, 3, 0, 5, 7, 2, 3, 11, 9, 3, 5, 6, 1, 8, 1, 3]
+];
 
-combinations
-11	1337 1
-10	741	 2
-9	420	 2
-8	69	 24 (trip wild included here)
-7	42	 36
-6	21	 36
-5	10	 48
-4	5	 64
-3	2	 64
-2	1	 128
-*/
+let reel_positions = Math.min(reels[0].length, reels[1].length, reels[2].length);
+let reel_pixel_length = reel_positions * SYMBOL_SIZE;
 
-var reel_area_width = symbol_size * reel_count + reel_padding * (reel_count - 1);
-var reel_area_height = symbol_size * row_count;
-var reel_area_left = 78 + symbol_size / 2;
-var reel_area_top = 0;
-
-// set up reels
-var reels = new Array(reel_count);
-reels[0] = new Array(2, 1, 7, 1, 2, 7, 6, 7, 3, 10, 1, 6, 1, 7, 3, 4, 11, 3, 2, 4, 5, 0, 6, 10, 5, 6, 5, 8, 3, 0, 9, 5, 4);
-reels[1] = new Array(6, 0, 10, 3, 6, 11, 7, 9, 2, 5, 2, 3, 1, 5, 2, 1, 10, 4, 5, 8, 4, 7, 6, 0, 1, 7, 6, 3, 1, 5, 9, 7, 4);
-reels[2] = new Array(1, 4, 2, 7, 5, 6, 4, 10, 7, 5, 2, 0, 6, 4, 10, 1, 7, 6, 3, 0, 5, 7, 2, 3, 11, 9, 3, 5, 6, 1, 8, 1, 3);
-var reel_positions = Math.min(reels[0].length, reels[1].length, reels[2].length);
-var reel_pixel_length = reel_positions * symbol_size;
-
-var reel_position = new Array(reel_count);
-for (var i = 0; i < reel_count; i++) {
-    reel_position[i] = Math.floor(Math.random() * reel_positions) * symbol_size;
+let reel_position = new Array(REEL_COUNT);
+for (let i = 0; i < REEL_COUNT; i++) {
+    reel_position[i] = Math.floor(Math.random() * reel_positions) * SYMBOL_SIZE;
 }
 
-var stopping_position = new Array(reel_count);
-var start_slowing = new Array(reel_count);
+let stopping_position = new Array(REEL_COUNT);
+let start_slowing = new Array(REEL_COUNT);
 
 // reel spin speed in pixels per frame
-var reel_speed = new Array(reel_count);
-for (var i = 0; i < reel_count; i++) {
+let reel_speed = new Array(REEL_COUNT);
+for (let i = 0; i < REEL_COUNT; i++) {
     reel_speed[i] = 0;
 }
 
-var result = new Array(reel_count);
-for (var i = 0; i < reel_count; i++) {
-    result[i] = new Array(row_count);
+let result = new Array(REEL_COUNT);
+for (let i = 0; i < REEL_COUNT; i++) {
+    result[i] = new Array(ROW_COUNT);
 }
 
-var game_state = STATE_REST;
-var credits = -1;
-var payout = 0;
-var reward_delay_counter = 0;
-var playing_lines = 1;
+let game_state = STATE_REST;
+let credits = -1;
+let payout = 0;
+let reward_delay_counter = 0;
+let playing_lines = 1;
+let bet = 1;
+let linesToHighlight = [];
 
 //---- Render Functions ---------------------------------------------
 function draw_symbol(symbol_index, x, y, reel) {
     ctx.fillStyle = reel === 0 ? "fuchsia" : reel === 1 ? "lime" : "cyan";
-    const fillX = x + reel * reel_padding;
+    const fillX = x + reel * REEL_PADDING;
     const fillY = y;
 
-    ctx.fillRect(fillX, fillY, symbol_size, symbol_size);
+    ctx.fillRect(fillX, fillY, SYMBOL_SIZE, SYMBOL_SIZE);
     ctx.imageSmoothingEnabled = false;
-    ctx.drawImage(symbols[symbol_index], fillX, fillY, symbol_size, symbol_size);
+    ctx.drawImage(SYMBOLS[symbol_index], fillX, fillY, SYMBOL_SIZE, SYMBOL_SIZE);
     ctx.strokeStyle = "black";
-    ctx.lineWidth = Math.trunc(scale / 2 + 1);
-    ctx.strokeRect(fillX, fillY, symbol_size, symbol_size);
+    ctx.lineWidth = Math.trunc(SCALE / 2 + 1);
+    ctx.strokeRect(fillX, fillY, SYMBOL_SIZE, SYMBOL_SIZE);
 
 }
 
@@ -177,36 +150,41 @@ function render_reel() {
     ctx.fillStyle = "black";
     ctx.fillRect(580, 280, 760, 510);
 
-    const aspectRatio = reels_bg.width / reels_bg.height;
+    const aspectRatio = REELS_BG.width / REELS_BG.height;
     ctx.imageSmoothingEnabled = false;
 
-    const centerX = (can.width - reel_area_width) / 2;
+    const centerX = (can.width - REEL_AREA_WIDTH) / 2;
     const centerY = 304;
 
-    for (var i = 0; i < reel_count; i++) {
-        for (var j = 0; j < row_count + 1; j++) {
-            var reel_index = (Math.floor(reel_position[i] / symbol_size) + j) % reel_positions;
-            var symbol_offset = reel_position[i] % symbol_size;
-            var symbol_index = reels[i][reel_index];
-            var x = centerX + i * symbol_size;
-            var y = centerY + j * symbol_size - symbol_offset;
+    for (let i = 0; i < REEL_COUNT; i++) {
+        for (let j = 0; j < ROW_COUNT + 1; j++) {
+            const reel_index = (Math.floor(reel_position[i] / SYMBOL_SIZE) + j) % reel_positions;
+            const symbol_offset = reel_position[i] % SYMBOL_SIZE;
+            const symbol_index = reels[i][reel_index];
+            const x = centerX + i * SYMBOL_SIZE;
+            const y = centerY + j * SYMBOL_SIZE - symbol_offset;
             draw_symbol(symbol_index, x, y, i);
         }
     }
-    ctx.drawImage(reels_bg, 0, 0, aspectRatio * can.height, can.height);
-    ctx.drawImage(credit_panel, can.width * 0.80, can.height * 0.05, credit_panel.width, credit_panel.height)
+    ctx.drawImage(REELS_BG, 0, 0, aspectRatio * can.height, can.height);
+    ctx.drawImage(CREDIT_PANEL, can.width * 0.80, can.height * 0.05, CREDIT_PANEL.width, CREDIT_PANEL.height)
     renderTextOnCanvas();
 }
 
 function highlight_line(line_num) {
-    const centerX = (can.width - reel_area_width) / 2;
+    try {
+        SND_WIN.currentTime = 0;
+        SND_WIN.play();
+    } catch (err) { }
+
+    const centerX = (can.width - REEL_AREA_WIDTH) / 2;
     const centerY = 304;
 
     ctx.strokeStyle = "orange";
-    var ss = symbol_size;
+    const ss = SYMBOL_SIZE;
 
     function drawRect(x, y, width, height) {
-        const padding = Math.trunc(x / ss) * reel_padding;
+        //const padding = Math.trunc(x / ss) * REEL_PADDING;
         const adjustedX = centerX + x;
         const adjustedY = centerY + y;
 
@@ -218,10 +196,10 @@ function highlight_line(line_num) {
         drawRect(0, 0, ss, ss); // top left
     }
     if (line_num == 2) {
-        drawRect(ss + reel_padding, 0, ss, ss); // top middle
+        drawRect(ss + REEL_PADDING, 0, ss, ss); // top middle
     }
     if (line_num == 2 || line_num == 5) {
-        drawRect(2 * (ss + reel_padding), 0, ss, ss); // top right
+        drawRect(2 * (ss + REEL_PADDING), 0, ss, ss); // top right
     }
 
     // middle row
@@ -229,10 +207,10 @@ function highlight_line(line_num) {
         drawRect(0, ss, ss, ss); // top left
     }
     if (line_num == 1 || line_num == 4 || line_num == 5) {
-        drawRect(ss + reel_padding, ss, ss, ss); // top middle
+        drawRect(ss + REEL_PADDING, ss, ss, ss); // top middle
     }
     if (line_num == 1) {
-        drawRect(2 * (ss + reel_padding), ss, ss, ss); // top right
+        drawRect(2 * (ss + REEL_PADDING), ss, ss, ss); // top right
     }
 
     // bottom row
@@ -240,36 +218,36 @@ function highlight_line(line_num) {
         drawRect(0, 2 * ss, ss, ss); // top left
     }
     if (line_num == 3) {
-        drawRect(ss + reel_padding, 2 * ss, ss, ss); // top middle
+        drawRect(ss + REEL_PADDING, 2 * ss, ss, ss); // top middle
     }
     if (line_num == 3 || line_num == 4) {
-        drawRect(2 * (ss + reel_padding), 2 * ss, ss, ss); // top right
+        drawRect(2 * (ss + REEL_PADDING), 2 * ss, ss, ss); // top right
     }
 }
 
 // render all art needed in the current frame
 function render() {
     if (game_state == STATE_SPINUP || game_state == STATE_SPINDOWN) {
-        if (font_loaded && symbols_loaded && reels_bg_loaded) render_reel();
+        if (FONTS_loaded && SYMBOLS_loaded && REELS_BG_loaded) render_reel();
     }
 }
 
 //---- Logic Functions ---------------------------------------------
 
 function set_stops() {
-    for (var i = 0; i < reel_count; i++) {
+    for (let i = 0; i < REEL_COUNT; i++) {
         start_slowing[i] = false;
 
-        //const { spin, payouts } = getSpin();  //get a spin and set the stops with that spin.
+        //let { spin, payouts } = getSpin();  //get a spin and set the stops with that spin.
 
         stop_index = Math.floor(Math.random() * reel_positions);
-        stopping_position[i] = stop_index * symbol_size;
+        stopping_position[i] = stop_index * SYMBOL_SIZE;
 
-        stopping_position[i] += stopping_distance;
+        stopping_position[i] += STOPPING_DISTANCE;
         if (stopping_position[i] >= reel_pixel_length) stopping_position[i] -= reel_pixel_length;
 
         // convenient here to remember the winning positions
-        for (var j = 0; j < row_count; j++) {
+        for (let j = 0; j < ROW_COUNT; j++) {
             result[i][j] = stop_index + j;
             if (result[i][j] >= reel_positions) result[i][j] -= reel_positions;
 
@@ -290,16 +268,16 @@ function move_reel(i) {
 
 // handle reels accelerating to full speed
 function logic_spinup() {
-    for (var i = 0; i < reel_count; i++) {
+    for (let i = 0; i < REEL_COUNT; i++) {
         // move reel at current speed
         move_reel(i);
 
         // accelerate speed
-        reel_speed[i] += spinup_acceleration;
+        reel_speed[i] += SPINUP_ACCELERATION;
     }
 
     // if reels at max speed, begin spindown
-    if (reel_speed[0] == max_reel_speed) {
+    if (reel_speed[0] == MAX_REEL_SPEED) {
         // calculate the final results now, so that spindown is ready
         set_stops();
 
@@ -310,22 +288,22 @@ function logic_spinup() {
 // handle reel movement as the reels are coming to rest
 function logic_spindown() {
     // if reels finished moving, begin rewards
-    if (reel_speed[reel_count - 1] == 0) {
+    if (reel_speed[REEL_COUNT - 1] == 0) {
         console.log("[SPIN]");
-        for(line in linesToHighlight){
+        for (line in linesToHighlight) {
             highlight_line(line);
         }
         game_state = STATE_REWARD;
     }
 
-    for (var i = 0; i < reel_count; i++) {
+    for (let i = 0; i < REEL_COUNT; i++) {
         // move reel at current speed
         move_reel(i);
 
         // start slowing this reel?
         if (start_slowing[i] == false) {
             // if the first reel, or the previous reel is already slowing
-            var check_position = false;
+            let check_position = false;
             if (i == 0) check_position = true;
             else if (start_slowing[i - 1]) check_position = true;
 
@@ -336,12 +314,12 @@ function logic_spindown() {
             }
         } else {
             if (reel_speed[i] > 0) {
-                reel_speed[i] -= spindown_acceleration;
+                reel_speed[i] -= SPINDOWN_ACCELERATION;
 
                 if (reel_speed[i] == 0) {
                     try {
-                        snd_reel_stop[i].currentTime = 0;
-                        snd_reel_stop[i].play();
+                        SND_REEL_STOP[i].currentTime = 0;
+                        SND_REEL_STOP[i].play();
                     } catch (err) { }
                 }
             }
@@ -363,16 +341,16 @@ function logic_reward() {
     }
 
     payout--;
-    var metrics = ctx.measureText(`CREDITS: ${credits}`);
+    let metrics = ctx.measureText(`CREDITS: ${credits}`);
     credits++;
     ctx.clearRect(can.width * 0.74, ((can.height * 0.05) - (can.width * .025)), metrics.width, can.width * .025);
     drawText(ctx, "CREDITS: " + credits, can.width * 0.74, can.height * 0.05);
 
-    if (payout < reward_grand_threshhold) {
-        reward_delay_counter = reward_delay;
+    if (payout < REWARD_GRAND_THRESHHOLD) {
+        reward_delay_counter = REWARD_DELAY;
     } else {
         // speed up big rewards
-        reward_delay_counter += reward_delay_grand;
+        reward_delay_counter += REWARD_DELAY_GRAND;
     }
 }
 
@@ -419,56 +397,66 @@ function renderTextOnCanvas() {
         ctx.font = can.width * 0.025 + "px GraphicPixel";
         ctx.textAlign = "left";
         let text = ctx.measureText(credits);
-        drawText(ctx, "white", "center", credits, can.width * 0.80 + credit_panel.width * 0.55, can.height * 0.05 + credit_panel.height * 0.67);
+        drawText(ctx, "white", "center", credits, can.width * 0.80 + CREDIT_PANEL.width * 0.55, can.height * 0.05 + CREDIT_PANEL.height * 0.67);
     }
     drawText(ctx, "aqua", "left", "LINES: " + playing_lines, can.width * 0.38, can.height * 0.78);
     drawText(ctx, "aqua", "left", "BET: " + bet, can.width * 0.55, can.height * 0.78);
 }
 
 async function spin() {
+    try {
+        const protocol = window.location.protocol;
+        const hostname = window.location.hostname;
+        const port = window.location.port;
+        const urlPrefix = `${protocol}//${hostname}${port ? `:${port}` : ''}`;
 
-    //ask server for spin
-    const urlParams = new URLSearchParams(window.location.search);
-    const sessionId = urlParams.get('sessionId');
-    let spinRequest = "/session/" + sessionId + "/getSpin/" + playing_lines + "/" + bet;
-    let {spinData, valueToPayout, winningLines} = await axios.get(spinRequest);
-    payout = valueToPayout;
-    linesToHighlight = winningLines;
+        //ask server for spin
+        const urlParams = new URLSearchParams(window.location.search);
+        const sessionId = urlParams.get('sessionId');
+        const spinRequest = `${urlPrefix}/session/${sessionId}/getSpin/${playing_lines}/${bet}`;
+        const response = await axios.get(spinRequest);
 
-    //This should only occur
-    if(spinData == "Low Funds"){
-        //Send message to player that they are broke !$$$
-        return;
+        if (response.status === 400 && response.data.error === "Not Enough Gold") {
+            // Handle "Not Enough Gold" logic here
+            console.log("Not Enough Gold. You are broke!");
+        }
+
+        const { spinData, valueToPayout, winningLines } = response.data;
+        payout = valueToPayout || 0;
+        console.log(`spinData: ${spinData}  PAYOUT: ${payout}  winningLines: ${winningLines}`);
+
+        linesToHighlight = winningLines;
+
+        if (game_state != STATE_REST) return;
+        if (credits < playing_lines * bet) return;
+
+        $('#minigame').addClass("pauseClose");
+
+        credits -= playing_lines * bet;
+
+        render_reel();
+        game_state = STATE_SPINUP;
+    } catch (error) {
+        console.error("Error with LuckyFUNKZ spin() function:", error.message);
     }
-
-    //Code below works but does not interact with server
-    // if (game_state != STATE_REST) return;
-    // if (credits < playing_lines * bet) return;
-
-    // $('#minigame').addClass("pauseClose");
-
-    // credits -= playing_lines * bet;
-
-    render_reel();
-    game_state = STATE_SPINUP;
 }
 
 function increaseLines() {
-    if (playing_lines == maxLines) playing_lines = 1;
+    if (playing_lines == MAXLINES) playing_lines = 1;
     else playing_lines++;
 
     render_reel();
 }
 
 function increaseBet() {
-    if (bet == maxBet) bet = 1;
+    if (bet == MAXBET) bet = 1;
     else bet++;
 
     render_reel();
 }
 
 function setBetMax() {
-    bet = maxBet;
+    bet = MAXBET;
     render_reel();
 }
 
@@ -481,46 +469,45 @@ function init() {
 
     // Update minigame menu
 
-    var addToMinigameMenu = $('<a href="#" id="mgPayouts">🎰 Payouts</a>');
+    let addToMinigameMenu = $('<a href="#" id="mgPayouts">🎰 Payouts</a>');
 
     $('#minigameMenu-content').prepend(addToMinigameMenu);
     $(document).on('click', '#mgPayouts', () => getPayoutTable(true));
 
-    can = document.getElementById("slotsArea");
-    ctx = can.getContext("2d");
+    // HTML elements
+    can = document.getElementById("slotsArea"); // canvas
+    ctx = can.getContext("2d"); // context
     ctx.imageSmoothingEnabled = false;
 
-
-    
     getGoldAmount().then(goldAmount => { credits = goldAmount; render_reel(); });
 
-// Define font faces
-const fonts = [
-    new FontFace('GraphicPixel', `url(./apps/luckyfunkz/assets/fonts/GraphicPixel-Regular.ttf)`),
-    new FontFace('256BYTES', `url(./apps/luckyfunkz/assets/fonts/256BYTES.ttf)`)
-];
+    // Define font faces
+    let FONTS = [
+        new FontFace('GraphicPixel', `url(./apps/luckyfunkz/assets/fonts/GraphicPixel-Regular.ttf)`),
+        new FontFace('256BYTES', `url(./apps/luckyfunkz/assets/fonts/256BYTES.ttf)`)
+    ];
 
-// Load each font
-fonts.forEach(font => {
-    font.load().then(function (loadedFont) {
-        document.fonts.add(loadedFont);
-        checkFontsLoaded();
-    }).catch(function (error) {
-        console.error('Font loading failed:', error);
+    // Load each font
+    FONTS.forEach(font => {
+        font.load().then(function (loadedFont) {
+            document.fonts.add(loadedFont);
+            checkFontsLoaded();
+        }).catch(function (error) {
+            console.error('Font loading failed:', error);
+        });
     });
-});
 
-    reels_bg.onload = function () {
-        can.width = reels_bg.naturalWidth;
-        can.height = reels_bg.naturalHeight;
-        var buttonPanel = document.getElementById("buttonPanel");
+    REELS_BG.onload = function () {
+        can.width = REELS_BG.naturalWidth;
+        can.height = REELS_BG.naturalHeight;
+        let buttonPanel = document.getElementById("buttonPanel");
         updateButtonPanelWidth(window.height, buttonPanel);
 
-        reels_bg_loaded = true;
-        if (font_loaded && symbols_loaded && reels_bg_loaded) render_reel();
+        REELS_BG_loaded = true;
+        if (FONTS_loaded && SYMBOLS_loaded && REELS_BG_loaded) render_reel();
     };
 
-    var devicePixelRatio = window.devicePixelRatio || 1;
+    let devicePixelRatio = window.devicePixelRatio || 1;
     can.width = can.clientWidth * devicePixelRatio;
     can.height = can.clientHeight * devicePixelRatio;
     ctx.scale(devicePixelRatio, devicePixelRatio);
@@ -554,8 +541,8 @@ function getGoldAmount() {
 function checkFontsLoaded() {
     const loadedFonts = Array.from(document.fonts.values()).map(font => font.family);
     if (loadedFonts.includes('GraphicPixel') && loadedFonts.includes('256BYTES')) {
-        font_loaded = true;
-        if (font_loaded && symbols_loaded && reels_bg_loaded) {
+        FONTS_loaded = true;
+        if (FONTS_loaded && SYMBOLS_loaded && REELS_BG_loaded) {
             render_reel();
         }
     }
@@ -654,7 +641,8 @@ function getPayoutTable(slideout = false) {
         const tableBody = payoutTable.createTBody();
         const bodyRow = tableBody.insertRow();
 
-        for (let i = symbol_count - 1; i >= 0; i--) {
+        const wildCards = [0, 1];
+        for (let i = SYMBOL_COUNT - 1; i >= 0; i--) {
             if (!wildCards.includes(i)) {
                 const symbolCell = bodyRow.insertCell();
                 symbolCell.classList.add('symbolCell');
@@ -662,15 +650,15 @@ function getPayoutTable(slideout = false) {
                 // Repeat symbol images 3 times horizontally
                 for (let j = 0; j < 3; j++) {
                     const symbolImage = document.createElement('img');
-                    symbolImage.src = symbols[i].src;
+                    symbolImage.src = SYMBOLS[i].src;
                     symbolCell.appendChild(symbolImage);
                 }
 
                 const payoutCell = bodyRow.insertCell();
-                payoutCell.textContent = match_payout[i];
+                payoutCell.textContent = MATCH_PAYOUT[i];
 
                 // Insert a new row for the next set of symbols
-                if(j<3){bodyRow = tableBody.insertRow();}
+                if (j < 3) { bodyRow = tableBody.insertRow(); }
             }
         }
 

@@ -487,7 +487,7 @@ const getResourceBalance = async function (nftId, itemId) {
 const updateResourceBalance = async function (nftId, itemId, quantity) {
   const options = { headers: { 'X-Api-Key': API_KEY, 'Content-Type': 'application/json' } };
   try {
-    const url = '${LOOPWORMS_LOOPERLANDS_BASE_URL}/saveConsumable2.php';
+    const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/saveConsumable2.php`;
     const update = { avatarId: nftId, itemId: itemId, quantity: quantity };
     const response = await axios.post(url, update, options);
     return response.data;
@@ -499,16 +499,15 @@ const updateResourceBalance = async function (nftId, itemId, quantity) {
 
 // Default resource to gold when not specified
 const transferResourceFromTo = async function (from, to, amount, resource = GOLD) {
-  if (amount <= 0) { return false; }
+  if (amount <= 0) return false;
+
   try {
     const fromBalanceStart = await getResourceBalance(from, resource);
     const toBalanceStart = await getResourceBalance(to, resource);
 
     if (fromBalanceStart >= amount) {
-      const updatedFromBalance = fromBalanceStart - amount;
-      await updateResourceBalance(from, resource, updatedFromBalance);
-      const updatedToBalance = toBalanceStart + amount;
-      await updateResourceBalance(to, resource, updatedToBalance);
+      await updateResourceBalance(from, resource, -amount);
+      await updateResourceBalance(to, resource, amount);
       return true;
     } else {
       return false;
@@ -516,8 +515,14 @@ const transferResourceFromTo = async function (from, to, amount, resource = GOLD
   } catch (error) {
     console.error(error);
     if (fromBalanceStart && toBalanceStart) {
-      await updateResourceBalance(from, resource, fromBalanceStart);
-      await updateResourceBalance(to, resource, toBalanceStart);
+      const fromBalanceCurrent = await getResourceBalance(from, resource);
+      const toBalanceCurrent = await getResourceBalance(to, resource);
+      if (fromBalanceStart > fromBalanceCurrent) {
+        await updateResourceBalance(from, resource, fromBalanceStart - fromBalanceCurrent);
+      }
+      if (toBalanceStart > toBalanceCurrent) {
+        await updateResourceBalance(to, resource, toBalanceStart - toBalanceCurrent);
+      }
     }
     return { "error": "Error transferring resource" };
   }

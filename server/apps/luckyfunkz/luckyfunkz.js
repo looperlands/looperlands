@@ -1,12 +1,11 @@
 const axios = require('axios');
-const spinSet = require('./data/spinSet');
+const { spinSet } = require('./data/spinSet');
 const dao = require('../../js/dao');
-const platform = require('../../js/looperlandsplatformclient');
 const CORNHOLE = 'CORNHOLE';
-const API_KEY = process.env.LOOPWORMS_API_KEY;
 const MAX_RETRY_COUNT = 5;
 
-async function getSpin(sessionData, linesPlayed, betPerLine) {
+async function getSpin(platformClient, sessionData, linesPlayed, betPerLine) {
+
     let retryCount = 0;
 
     //Get the players nftId
@@ -16,19 +15,21 @@ async function getSpin(sessionData, linesPlayed, betPerLine) {
     const spinCost = linesPlayed * betPerLine;
     const paid = await dao.transferResourceFromTo(nftId, CORNHOLE, spinCost);
 
+
     //if the bet cannot be paid, exit immediately and do not get a spin
     if (!paid) { return "Not Enough Gold"; }
 
     while (retryCount < MAX_RETRY_COUNT) {
         try {
-            const { randomSpin, payout, winningLines } = await getSpinFromServer(linesPlayed, betPerLine);
-            console.log(randomSpin, " paid out ", payout, " from line(s) ", winningLines);
+            const { chosenSpin, payout, winningLines } = await getSpinFromServer(platformClient, linesPlayed);
+
             if (payout > 0) {
                 // PROCESS PAYOUT
                 const amountToPayout = payout * betPerLine;
                 await dao.transferResourceFromTo(CORNHOLE, nftId, amountToPayout);
             }
-            return { randomSpin, payout, winningLines };
+
+            return { chosenSpin, payout, winningLines };
             break;
         } catch (error) {
             if (error.code === 'EADDRINUSE') {
@@ -45,14 +46,9 @@ async function getSpin(sessionData, linesPlayed, betPerLine) {
     }
 }
 
-function getSessionIdFromUrl() {
-    const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get('sessionId');
-}
-
-async function getSpinFromServer(linesPlayed, betPerLine) {
+async function getSpinFromServer(platformClient, linesPlayed) {
     try {
-        const spinIndex = await platform.getSpinIndex();
+        const spinIndex = Math.floor(Math.random() * 69420); //await platformClient.getSpinIndex(); until we get it working lets just use a randomizer
         const chosenSpin = spinSet[spinIndex];
 
         //Calculate the rewards associated with that spin
@@ -73,9 +69,9 @@ function calc_reward(result, played_lines) {
 
     // Define the lines to check
     const linesToCheck = [
-        { row: 1, cells: [result[0][1], result[1][1], result[2][1]] }, //middle row
-        { row: 2, cells: [result[0][0], result[1][0], result[2][0]] }, //top row
-        { row: 3, cells: [result[0][2], result[1][2], result[2][2]] }, //bottom row
+        { row: 1, cells: [result[1][0], result[1][1], result[1][2]] }, //middle row
+        { row: 2, cells: [result[0][0], result[0][1], result[0][2]] }, //top row
+        { row: 3, cells: [result[2][0], result[2][1], result[2][2]] }, //bottom row
         //{ row: 4, cells: [result[0][0], result[1][1], result[2][2]] }, //TL-BR diagonal
         //{ row: 5, cells: [result[0][2], result[1][1], result[2][0]] }, //BL-TR diagonal
     ];
@@ -89,7 +85,7 @@ function calc_reward(result, played_lines) {
         }
     }
 
-    return { payout, winningLines };
+    return { payout: parseInt(payout), winningLines };
 }
 
 
@@ -98,7 +94,7 @@ function calc_line(s1, s2, s3) {
     const match_payout = [0, 0, 1, 4, 7, 13, 42, 69, 350, 1337, 9001, 42069];
     const wildCards = [0, 1];
 
-    console.log(`${s1}:${s2}:${s3}`);
+    //console.log(`${s1}:${s2}:${s3}`);
     const isWild = (symbol) => wildCards.includes(symbol);
 
     // Perfect match

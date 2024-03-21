@@ -1,3 +1,2 @@
-//PLEASE LIMIT IMPORTS TO ONE PER APP
-const luckyfunkz = require('./luckyfunkz/luckyfunkz.js');
-
+//LUCKYFUNKZ
+module.exports.getSpin = require('./luckyfunkz/luckyfunkz').getSpin;

@@ -11,3 +11,4 @@ nft_template/sqlscript.sql
 ecosystem.config.js
 newrelic_agent.log
 .vscode
+.env
