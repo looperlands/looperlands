@@ -6,19 +6,20 @@ by = youLikeIt ? "bitcorn" : "anonymous";
 
 [THE BASICS]
     TO ADD A MINIGAME:
-        1. Add a Custom Property with name = "minigame" and value = "MINIGAME_NAME" to the tile in tiled you want to be the trigger
-        2. Add that "MINIGAME_NAME" and the "INITIAL_FILE_TO_LOAD" to MINIGAME_FILES below.
-        3. Voila
+        1. In Tiled: Add a Custom Property with name = "minigame" and value = "YOUR_MINIGAME_NAME" to an area trigger (layer = triggers)
+        2. Place your files under client/apps inside a folder named "YOUR_MINIGAME_NAME"
+        3. Add "YOUR_MINIGAME_NAME" with the "INITIAL_FILE_TO_LOAD" to MINIGAME_FILES below.
+        4. Voila
 */
 
 const MINIGAME_FILES = {
     "luckyfunkz": "slots.html",
-//  "MINIGAME_NAME": "INITIAL_FILE_TO_LOAD",
+//  "YOUR_MINIGAME_NAME": "INITIAL_FILE_TO_LOAD",
 };
 
 /*
 [MORE INFO]
-    EACH GAME IS DYNAMICALLY LOADED INTO IT'S OWN DIV ==> <div id="Minigame Name">
+    EACH GAME IS DYNAMICALLY LOADED INTO IT'S OWN DIV ==> <div id="YOUR_MINIGAME_NAME">
         EXAMPLE >   luckyfunkz gets put into <div id="luckyfunkz"></div> 
 
     TO KEEP THINGS CLEAN, TRY TO ASSIGN YOUR MINIGAME EVENTS TO YOUR SPECIFIC GAME DIV
