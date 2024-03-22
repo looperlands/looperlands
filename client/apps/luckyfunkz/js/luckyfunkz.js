@@ -9,16 +9,16 @@
 ║     \ \____/\ \____/\ \____\\ \_\ \_\/`____ \\ \_\   \ \_____\ \_\ \_\ \_\ \_\ /\_______\  ║
 ║      \/___/  \/___/  \/____/ \/_/\/_/`/___/> \\/_/    \/_____/\/_/\/_/\/_/\/_/ \/_______/  ║
 ║                                         /\___/                                             ║
-║                                         \/__/           created by bitcorn & grismore      ║
+║                                         \/__/                   by bitcorn & grismore      ║
 ║                                                                                  2024      ║
 ╚════════════════════════════════════════════════════════════════════════════════════════════╝
-WE DONE WENT AND MUCKED AROUND WITH THIS DINGDANG DILLYDAD TIL IT WAS UPSIDE-DOWN LIKE A HOG IN
-A TORNADO! Y'ALL MIGHT EVEN SAY WE TOOK IT ON A RIDE THROUGH THE SPAGHETTI JUNCTION OF CREATIVITY,
-SWERVIN' AND CURVIN' LIKE A SQUIRREL IN A UNITARD FIDDLIN' ON TOP OF A FUNHOUSE! WE WERE SLAPPIN'
-AND SLIDIN', GRIPPIN' AND GRINNIN', TILL IT WAS JUST ABOUT AS DIFFERENT AS A COW IN A FISHBOWL!
+WE DONE WENT AND FUNKED AROUND WITH THIS DINGDANG DILLYDAD TIL IT WAS ALL UPSIDE-DOWN LIKE A HOG IN A TORNADO! YA MIGHT EVEN SAY WE GOT FUNKY WITH
+IT, ALL SWERVIN' AND CURVIN' LIKE A SQUIRREL IN A UNITARD SCATTERIN' ABOUT IN YA MAMA'S BASEMENT! IT TOOK SOME SLAPPIN' AND SLIDIN', GRIPPIN' AND
+RIPPIN', TILL IT WAS JUST RIGHT! LIKE A TACO ON TUESDAY.
 
 
-ORIGINAL CODE: (C) 2012 Clint Bellanger [MIT License]
+[ORIGINAL CODE]
+(C) 2012 Clint Bellanger [MIT License]
 https://github.com/clintbellanger/Karma-Slots/tree/master
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
 to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -31,10 +31,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 DEALINGS IN THE SOFTWARE.
 
 Sounds by Brandon Morris (CC-BY 3.0)
-A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-̶B̶Y̶ ̶3̶.̶0̶) >> ORIGINAL ART REPLACED: Art by bitcorn, (C) is for corn
+A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-̶B̶Y̶ ̶3̶.̶0̶) [EDIT: ORIGINAL ART REPLACED. Art by bitcorn, (C-IZ 4 CORN)]
 */
 
-
+// [CORNSTANTS]
 const FPS = 30;
 const GOLD = "21300041";
 const MAX_BET = 3;
@@ -65,6 +65,8 @@ const REWARD_GRAND_THRESHHOLD = 25;
 const REWARD_DELAY = 3;
 const REWARD_DELAY_GRAND = 1;
 
+// [VEGITABLES]
+let payoutTableGenerated = false;
 let game_state = STATE_REST;
 let credits = -1;
 let playing_lines = 1;
@@ -80,8 +82,8 @@ let result = new Array(REEL_COUNT);
 let reel_speed = new Array(REEL_COUNT).fill(0);   // reel spin speed in pixels per frame
 let stopping_position = new Array(REEL_COUNT);
 let start_slowing = new Array(REEL_COUNT);
-let can; // Canvas
-let ctx; // Context
+let can;
+let ctx;
 
 reels = [
     [2, 1, 7, 1, 2, 7, 6, 7, 3, 10, 1, 6, 1, 7, 3, 4, 11, 3, 2, 4, 5, 0, 6, 10, 5, 6, 5, 8, 3, 0, 9, 5, 4],
@@ -96,9 +98,7 @@ for (let i = 0; i < REEL_COUNT; i++) {
 }
 
 
-
-
-// Initialization
+// [INITIALIZATION]
 function init() {
     setupLuckyFUNKZmenu(); 		// UPDATE MINIGAME MENU + EVENT LISTENER FOR "fadeIn"
     loadResources();
@@ -107,7 +107,9 @@ function init() {
 }
 
 
-// ADD PAYOUTS TO MINIGAME MENU
+
+
+// Add payouts to minigame menu
 function setupLuckyFUNKZmenu() {
     $('#minigameMenu-content').prepend('<a href="#" id="mgPayouts">🎰 Payouts</a>');
 }
@@ -156,7 +158,6 @@ function loadResources() {
 }
 
 
-
 // Set up Event Listeners
 function setupEventListeners() {
     $(`#minigameMenu`).on('click', '#mgPayouts', () => getPayoutTable(true));
@@ -167,7 +168,6 @@ function setupEventListeners() {
     $(`#luckyfunkz`).on('click', '#MAX_BETButton', () => setBetMax());
     $(`#luckyfunkz`).on('click', '#spinButton', () => spin());
 }
-
 
 
 // Initialize Canvas
@@ -266,18 +266,18 @@ function highlight_line(line_num) {
         ctx.strokeRect(adjustedX, adjustedY, width - 1, height - 1);
     }
 
-    // Define the positions for each row
+    // Define positions for each row
     const rowPositions = [
-        [{ x: 0, y: 0 }, { x: ss + REEL_PADDING, y: 0 }, { x: 2 * (ss + REEL_PADDING), y: 0 }], // Top row
-        [{ x: 0, y: ss }, { x: ss + REEL_PADDING, y: ss }, { x: 2 * (ss + REEL_PADDING), y: ss }], // Middle row
-        [{ x: 0, y: 2 * ss }, { x: ss + REEL_PADDING, y: 2 * ss }, { x: 2 * (ss + REEL_PADDING), y: 2 * ss }] // Bottom row
+        [{ x: 0, y: 0 }, { x: ss + REEL_PADDING, y: 0 }, { x: 2 * (ss + REEL_PADDING), y: 0 }],                 // Top row
+        [{ x: 0, y: ss }, { x: ss + REEL_PADDING, y: ss }, { x: 2 * (ss + REEL_PADDING), y: ss }],              // Middle row
+        [{ x: 0, y: 2 * ss }, { x: ss + REEL_PADDING, y: 2 * ss }, { x: 2 * (ss + REEL_PADDING), y: 2 * ss }]   // Bottom row
     ];
 
-    // Draw the rectangles based on the line number
+    // Draw rectangles based on line number
     const rowToDraw = [
-        [2, 4], // Top row
-        [1, 4, 5], // Middle row
-        [3, 4, 5] // Bottom row
+        [2, 4],     // Top row
+        [1, 4, 5],  // Middle row
+        [3, 4, 5]   // Bottom row
     ];
 
     rowToDraw.forEach((row, rowIndex) => {
@@ -309,14 +309,14 @@ function logic() {
     }
 }
 
-// handle reels accelerating to full speed
+// Handle reels accelerating to full speed
 function logic_spinup() {
     for (let i = 0; i < REEL_COUNT; i++) {
         move_reel(i);
         reel_speed[i] += SPINUP_ACCELERATION;
     }
 
-    // if reels at max speed, begin spindown
+    // If at max speed, begin spindown
     if (reel_speed[0] == MAX_REEL_SPEED) {
         set_stops();
         game_state = STATE_SPINDOWN;
@@ -341,7 +341,7 @@ function set_stops() {
     }
 }
 
-// handle reel movement as the reels are coming to rest
+// Handle movement as reels are coming to rest
 function logic_spindown() {
     if (reel_speed.every(speed => speed === 0)) {
         for (line of linesToHighlight) {
@@ -369,7 +369,7 @@ function logic_spindown() {
     }
 }
 
-// count up the reward credits, play sound effects, etc.
+// Process rewards, play sound effects, etc.
 function logic_reward() {
     if (payout == 0) {
         game_state = STATE_REST;
@@ -397,7 +397,7 @@ async function spin() {
     try {
         const urlPrefix = `${window.location.protocol}//${window.location.host}${window.location.port ? `:${window.location.port}` : ''}`;
 
-        //ask server for spin
+        //Request spin from server
         const sessionId = new URLSearchParams(window.location.search).get('sessionId');
         const spinRequest = `${urlPrefix}/session/${sessionId}/getSpin/${playing_lines}/${bet}`;
 
@@ -424,14 +424,14 @@ async function spin() {
         game_state = STATE_SPINUP;
 
     } catch (error) {
-        // Handle spin request failure, e.g., display error message to user
+        // Spin request failure
         console.error("Error with LuckyFUNKZ spin() function:", error.message);
 
         if (error.response) {
             // Server responded with an error status code
             console.error("Server Error:", error.response.data);
         } else if (error.request) {
-            // The request was made but no response was received
+            // Request was made but no response was received
             console.error("Network Error:", error.request);
         } else {
             // Something else went wrong
@@ -464,6 +464,7 @@ function updateButtonPanelWidth(windowHeight, buttonPanel) {
     buttonPanel.style.width = windowHeight * (2 / 3) + "px"; //set the width as a function of height using the aspect ratio since we use height as control
 }
 
+// Get Player's current Gold balance from server
 function getGoldAmount() {
     return new Promise((resolve, reject) => {
         const sessionId = new URLSearchParams(window.location.search).get('sessionId');
@@ -477,7 +478,7 @@ function getGoldAmount() {
 }
 
 
-// Create linear gradient
+// Create linear gradient for Payout Table Headers
 function createLinearGradient() {
     const linearGradient = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
     linearGradient.setAttribute('id', 'fill-gradient');
@@ -487,7 +488,6 @@ function createLinearGradient() {
     linearGradient.setAttribute('y2', '100%');
     linearGradient.setAttribute('spreadMethod', 'pad');
 
-    // Define gradient stops
     const stops = [
         { offset: '0%', color: '#000' },
         { offset: '5%', color: '#707' },
@@ -499,7 +499,6 @@ function createLinearGradient() {
         { offset: '100%', color: '#F0F' }
     ];
 
-    // Add stops to gradient
     stops.forEach(stop => {
         const stopElement = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
         stopElement.setAttribute('offset', stop.offset);
@@ -511,23 +510,15 @@ function createLinearGradient() {
     return linearGradient;
 }
 
-// Create SVG text element with gradient
+// Create SVG text element with gradient for Payout Table Headers
 function createSvgText(textContent) {
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
     svg.setAttribute('height', '7vh');
-
-    // Create <defs> element
     const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-
-    // Create linear gradient and append to defs
     const linearGradient = createLinearGradient();
     defs.appendChild(linearGradient);
-
-    // Append defs to svg
     svg.appendChild(defs);
-
-    // Create <text> element
     const svgText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     svgText.setAttribute('class', 'headerText');
     svgText.setAttribute('x', '50%');
@@ -540,17 +531,14 @@ function createSvgText(textContent) {
     svgText.style.stroke = 'rgba(255, 255, 255, 0.5)';
     svgText.style.strokeWidth = '0.5px';
     svgText.style.filter = 'drop-shadow(4px 4px 4px black)';
-
-    // Append text to svg
     svg.appendChild(svgText);
 
     return svg;
 }
 
 // Generate the payout table container
-let containerGenerated = false;
 function getPayoutTable(slideout = false) {
-    if (!containerGenerated) {
+    if (!payoutTableGenerated) {
         const container = document.createElement('div');
         container.id = 'payoutContainer';
         container.style.transform = 'translateX(-100%)';
@@ -591,7 +579,7 @@ function getPayoutTable(slideout = false) {
             }
         }
 
-        // Add button to hide the table
+        // Add button to hide table
         const closeButton = document.createElement('div');
         closeButton.id = 'closePayouts';
         closeButton.classList.add('closeButton');
@@ -611,7 +599,7 @@ function getPayoutTable(slideout = false) {
         });
 
         container.appendChild(closeButton);
-        containerGenerated = true;
+        payoutTableGenerated = true;
     }
 
     if (slideout) {
@@ -619,16 +607,14 @@ function getPayoutTable(slideout = false) {
             x: '0%', duration: 1,
             ease: 'power2.inOut',
             onStart: () => {
-                // Force a redraw of the container to make its content visible during animation
-                container.style.opacity = '0'; // Set opacity to 0 to hide the content initially
+                container.style.opacity = '0';      // Set opacity to 0 to hide the content initially
                 requestAnimationFrame(() => {
-                    container.style.opacity = '1'; // Set opacity back to 1 to show the content during animation
+                    container.style.opacity = '1';  // Set opacity back to 1 to show the content during animation
                 });
             }
         });
     }
 }
-
 
 
 // Game Loop
