@@ -1126,31 +1126,41 @@ let Properties = {
         level: 50,
         drops: {
             m88nmap: 5,
-            m88negg1: 1,
+            m88negg3: 1,
             burger: 5,
             GOLD3: 88
         },
     },
 
     sharkboss: {
-        level: 69,
+        level: 88,
         drops: {
             m88nmap: 15,
             m88negg1: 15,
             m88negg2: 15,
-            m88nfabergeegg: 25,
+            m88nfabergeegg: 10,
             burger: 10,
-            m88ngem: 10,
-            GOLD3: 10,
+            m88ngem: 15,
+            GOLD3: 20,
         },
         messages: ['Mmmmm, tasty!', 'Yum!', 'Eww, that was a little tough...', 'Stay on land or come back with friends!'],
         armorMod: 1,
         hpMod: 5,
         weaponMod: 0.8,
         respawnDelay: 30000,
-        xp: 100000
+        xp: 88000
+    },
 
-
+    m88ndirt: {
+        level: 1,
+        friendly: true, //not actually friendly, just AoE immune
+        hp: 1,
+        xp: 1000,
+        drops: {
+            m88nmap: 5,
+            m88ngem: 95,
+        },
+        respawnDelay: 10000
     },
 
     //Short Destroyers

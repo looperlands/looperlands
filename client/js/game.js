@@ -137,6 +137,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "balloonhotdogr",
                     "balloongiraffeo",
                     "sharkboss",
+                    "m88ndirt",
                     /////
                     "VILLAGESIGN11",
                     "VILLAGESIGN12",

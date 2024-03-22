@@ -2317,14 +2317,30 @@ define(['mob', 'timer'], function(Mob, Timer) {
         sharkboss: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.SHARKBOSS);
-                this.moveSpeed = 300;
+                this.moveSpeed = 100;
                 this.idleSpeed = 100;
-                this.setAttackRate(1000);
-                this.atkSpeed = 100;                
+                this.setAttackRate(500);
+                this.atkSpeed = 50;                
                 this.isAggressive = true;
-                this.aggroRange = 3;
+                this.aggroRange = 4;
                 this.deathAnimated = true;
                 this.title = "Shark!";
+            }
+        }),
+
+        m88ndirt: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NDIRT);
+                this.isAggressive = false;
+                this.nameless = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
             }
         }),
 
