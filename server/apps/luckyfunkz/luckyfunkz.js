@@ -5,18 +5,13 @@ const CORNHOLE = 'CORNHOLE';
 const MAX_RETRY_COUNT = 5;
 
 async function getSpin(platformClient, sessionData, linesPlayed, betPerLine) {
-
     let retryCount = 0;
-
-    //Get the players nftId
     const nftId = sessionData.nftId;
 
     //Transfer resources to pay the bet
     const spinCost = linesPlayed * betPerLine;
     const paid = await dao.transferResourceFromTo(nftId, CORNHOLE, spinCost);
 
-
-    //if the bet cannot be paid, exit immediately and do not get a spin
     if (!paid) { return "Not Enough Gold"; }
 
     while (retryCount < MAX_RETRY_COUNT) {
@@ -24,7 +19,6 @@ async function getSpin(platformClient, sessionData, linesPlayed, betPerLine) {
             const { chosenSpin, payout, winningLines } = await getSpinFromServer(platformClient, linesPlayed);
 
             if (payout > 0) {
-                // PROCESS PAYOUT
                 const amountToPayout = payout * betPerLine;
                 await dao.transferResourceFromTo(CORNHOLE, nftId, amountToPayout);
             }
@@ -48,7 +42,9 @@ async function getSpin(platformClient, sessionData, linesPlayed, betPerLine) {
 
 async function getSpinFromServer(platformClient, linesPlayed) {
     try {
-        const spinIndex = Math.floor(Math.random() * 69420); //await platformClient.getSpinIndex(); until we get it working lets just use a randomizer
+        console.log(`[SPIN INDEX]`);
+        const spinIndex = Math.floor(Math.random() * 69420); //await platformClient.getSpinIndex(); //Math.floor(Math.random() * 69420);
+        console.log(`SPIN INDEX: ${spinIndex}`);
         const chosenSpin = spinSet[spinIndex];
 
         //Calculate the rewards associated with that spin

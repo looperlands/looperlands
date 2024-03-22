@@ -20,7 +20,7 @@ const MINIGAME_FILES = {
 /*
 [MORE INFO]
     EACH GAME IS DYNAMICALLY LOADED INTO IT'S OWN DIV ==> <div id="YOUR_MINIGAME_NAME">
-        EXAMPLE >   luckyfunkz gets put into <div id="luckyfunkz"></div> 
+      EXAMPLE >     luckyfunkz gets put into <div id="luckyfunkz"></div> 
 
     TO KEEP THINGS CLEAN, TRY TO ASSIGN YOUR MINIGAME EVENTS TO YOUR SPECIFIC GAME DIV
         USAGE >     $('#luckyfunkz').on('click', '#ElementToAssignEventTo', function () { code to run on event });
@@ -46,6 +46,7 @@ const MINIGAME_FILES = {
                     }
 
 */
+
 
 // CONSTANTS
 const FADE_DURATION = 500;
@@ -119,7 +120,7 @@ async function loadMinigamePlatform() {
  LOAD NEW MINIGAME
 ******************/
 async function loadNewGame(minigame) {
-    $("#minigame").append(`<div id="${minigame}" style="display:none"></div>`);             // GAME SPECIFIC DIV CONTAINER
+    $("#minigame").append(`<div id="${minigame}" style="height:100%; width:100%; display:none"></div>`);  // GAME SPECIFIC DIV CONTAINER
     await loadMinigameContent(minigame);
     $(`#${minigame}`).fadeIn(FADE_DURATION);
     setUpCloseEventListener(minigame);
