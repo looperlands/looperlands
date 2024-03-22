@@ -1,4 +1,4 @@
-/*
+{/*
 ╔════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
 ║                                                                                                                                                ║
 ║                           __                      __               ____    __  __  __  __  __  __   ________                                   ║
@@ -68,6 +68,7 @@ const REWARD_DELAY_GRAND = 1;
 // [VEGITABLES]
 let payoutTableGenerated = false;
 let game_state = STATE_REST;
+let spinInProgress = false;
 let credits = -1;
 let playing_lines = 1;
 let bet = 1;
@@ -98,63 +99,112 @@ for (let i = 0; i < REEL_COUNT; i++) {
 }
 
 
+
+
 // [INITIALIZATION]
 function init() {
     setupLuckyFUNKZmenu(); 		// UPDATE MINIGAME MENU + EVENT LISTENER FOR "fadeIn"
     loadResources();
     setupEventListeners();
-    initializeCanvas();
 }
 
 
-
-
-// Add payouts to minigame menu
+// Add payouts to minigame menu if it doesn't exist
 function setupLuckyFUNKZmenu() {
-    $('#minigameMenu-content').prepend('<a href="#" id="mgPayouts">🎰 Payouts</a>');
+    if ($('#minigameMenu-content').find('#mgPayouts').length === 0) {
+        $('#minigameMenu-content').prepend('<a href="#" id="mgPayouts">🎰 Payouts</a>');
+    }
+}
+
+function toggleMinigameCloseButton() {;
+    $('#mgClose').text($('#minigame').hasClass("pauseClose") ? '⏳ Processing Spin' : '❌ Close Minigame');
 }
 
 
 // Load Resources
 function loadResources() {
+    // Define URLs for fonts, symbols, images, REELS_BG, and CREDIT_PANEL
     const fontUrls = [
-        './apps/luckyfunkz/assets/fonts/GraphicPixel-Regular.ttf',
-        './apps/luckyfunkz/assets/fonts/256BYTES.ttf'
+        { url: './apps/luckyfunkz/assets/fonts/GraphicPixel-Regular.ttf', family: 'GraphicPixel' },
+        { url: './apps/luckyfunkz/assets/fonts/256BYTES.ttf', family: '256BYTES' }
     ];
 
-    const symbolUrls = Array.from({ length: SYMBOL_COUNT }, (_, i) => `./apps/luckyfunkz/assets/images/symbols/${i.toString().padStart(2, "0")}.png`);
-    REELS_BG.src = "./apps/luckyfunkz/assets/images/ui/background/LuckyFUNKZ.png";
-    CREDIT_PANEL.src = "./apps/luckyfunkz/assets/images/ui/panels/credit_panel.png";
+    const symbolUrls = Array.from({ length: SYMBOL_COUNT },
+        (_, i) => `./apps/luckyfunkz/assets/images/symbols/${i.toString().padStart(2, "0")}.png`);
 
+    REELS_BG.src = './apps/luckyfunkz/assets/images/ui/background/LuckyFUNKZ.png';
+    CREDIT_PANEL.src = './apps/luckyfunkz/assets/images/ui/panels/credit_panel.png';
+
+    // Define promises for loading fonts, symbols, images, REELS_BG, and CREDIT_PANEL
+    const fontPromises = fontUrls.map(({ url, family }) => loadFont(url, family));
+
+    const symbolPromises = new Promise((resolve, reject) => {
+        const loadSymbols = symbolUrls.map(symbolUrl => loadImage(symbolUrl));
+        Promise.all(loadSymbols)
+            .then(symbolImages => {
+                // Push loaded symbol images into SYMBOLS array
+                SYMBOLS.push(...symbolImages);
+                resolve();
+            })
+            .catch(reject);
+    });
+
+    const reelsBGPromise = new Promise((resolve, reject) => {
+        REELS_BG.onload = function () { resolve(); };
+        REELS_BG.onerror = reject;
+    });
+
+    const creditPanelPromise = new Promise((resolve, reject) => {
+        CREDIT_PANEL.onload = function () { resolve(); };
+        CREDIT_PANEL.onerror = reject;
+    });
+
+    const goldAmountPromise = getGoldAmount().then(goldAmount => { credits = goldAmount; });
+
+    // Combine all promises
     const resources = [
-        ...fontUrls.map(fontUrl => new FontFace('font', `url(${fontUrl})`).load()),
-        ...symbolUrls.map(symbolUrl => loadImage(symbolUrl)),
-        new Promise((resolve, reject) => {
-            REELS_BG.onload = function () {
-                can.width = REELS_BG.naturalWidth;
-                can.height = REELS_BG.naturalHeight;
-                updateButtonPanelWidth(window.height, document.getElementById("buttonPanel"));
-                REELS_BG_loaded = true;
-                resolve();
-            };
-            REELS_BG.onerror = reject;
-        }),
-        new Promise((resolve, reject) => {
-            CREDIT_PANEL.onload = function () {
-                resolve();
-            };
-            CREDIT_PANEL.onerror = reject;
-        }),
-        getGoldAmount().then(goldAmount => {
-            credits = goldAmount;
-        })
+        ...fontPromises,
+        symbolPromises,
+        reelsBGPromise,
+        creditPanelPromise,
+        goldAmountPromise
     ];
 
+    // Once all resources are loaded, handle them
     Promise.all(resources)
         .then(() => {
+            // Initialize Canvas
+            initializeCanvas();
+
+            // Update button panel width
+            updateButtonPanelWidth();
+
+            // Proceed with rendering
             render_reel();
+
         })
         .catch(error => console.error('Resource loading failed:', error));
+}
+
+// Load font function
+function loadFont(fontUrl, fontFamily) {
+    return new Promise((resolve, reject) => {
+        const font = new FontFace(fontFamily, `url(${fontUrl})`);
+        font.load().then(loadedFont => {
+            document.fonts.add(loadedFont);
+            resolve();
+        }).catch(reject);
+    });
+}
+
+// Load image function
+function loadImage(url) {
+    return new Promise((resolve, reject) => {
+        const image = new Image();
+        image.onload = () => resolve(image);
+        image.onerror = reject;
+        image.src = url;
+    });
 }
 
 
@@ -165,8 +215,9 @@ function setupEventListeners() {
     $(`#luckyfunkz`).on('click', '#autoSpinButton', () => $("#autoSpinButton").toggleClass("on off"));
     $(`#luckyfunkz`).on('click', '#lineButton', () => increaseLines());
     $(`#luckyfunkz`).on('click', '#betButton', () => increaseBet());
-    $(`#luckyfunkz`).on('click', '#MAX_BETButton', () => setBetMax());
+    $(`#luckyfunkz`).on('click', '#maxBetButton', () => setBetMax());
     $(`#luckyfunkz`).on('click', '#spinButton', () => spin());
+    $(window).on('resize', () => updateButtonPanelWidth());
 }
 
 
@@ -174,10 +225,10 @@ function setupEventListeners() {
 function initializeCanvas() {
     can = document.getElementById("slotsArea"); // canvas
     ctx = can.getContext("2d"); // context
-    ctx.imageSmoothingEnabled = false;
+    can.width = REELS_BG.naturalWidth;
+    can.height = REELS_BG.naturalHeight;
+
     const devicePixelRatio = window.devicePixelRatio || 1;
-    can.width = can.clientWidth * devicePixelRatio;
-    can.height = can.clientHeight * devicePixelRatio;
     ctx.scale(devicePixelRatio, devicePixelRatio);
 }
 
@@ -193,7 +244,8 @@ function render() {
 
 function render_reel() {
     ctx.clearRect(0, 0, can.width, can.height);
-
+    
+    ctx.imageSmoothingEnabled = false;
     ctx.fillStyle = "black";
     ctx.fillRect(580, 280, 760, 510);
 
@@ -299,10 +351,9 @@ function logic() {
             break;
         case STATE_REWARD:
             logic_reward();
-            $('#minigame').removeClass("pauseClose");
             break;
         case STATE_REST:
-            if ($("#autoSpinButton").hasClass("on")) {
+            if ($("#autoSpinButton").hasClass("on") && !spinInProgress) {
                 spin();
             }
             break;
@@ -373,6 +424,9 @@ function logic_spindown() {
 function logic_reward() {
     if (payout == 0) {
         game_state = STATE_REST;
+        spinInProgress = false;
+        $('#minigame').removeClass("pauseClose");
+        toggleMinigameCloseButton();
         return;
     }
 
@@ -394,13 +448,15 @@ function logic_reward() {
 //---- Input Functions ---------------------------------------------
 
 async function spin() {
+    if(spinInProgress) return;
+    spinInProgress = true;
     try {
-        const urlPrefix = `${window.location.protocol}//${window.location.host}${window.location.port ? `:${window.location.port}` : ''}`;
+        const urlPrefix = `${window.location.protocol}//${window.location.host}`;
 
         //Request spin from server
         const sessionId = new URLSearchParams(window.location.search).get('sessionId');
         const spinRequest = `${urlPrefix}/session/${sessionId}/getSpin/${playing_lines}/${bet}`;
-
+        console.log("[REQUEST SPIN] ", spinRequest);
         const response = await axios.get(spinRequest);
 
         if (response.status === 400 && response.data.error === "Not Enough Gold") {
@@ -417,6 +473,7 @@ async function spin() {
         if (credits < playing_lines * bet || game_state !== STATE_REST) return;
 
         $('#minigame').addClass("pauseClose");
+        toggleMinigameCloseButton();
         credits -= playing_lines * bet;
 
         render_reel();
@@ -458,10 +515,11 @@ function setBetMax() {
 
 //---- Helper Functions -----------------------------------------------
 
-function updateButtonPanelWidth(windowHeight, buttonPanel) {
+function updateButtonPanelWidth() {
+    const buttonPanel = document.getElementById("buttonPanel");
     if (!buttonPanel) return;
     buttonPanel.style.height = "10%";
-    buttonPanel.style.width = windowHeight * (2 / 3) + "px"; //set the width as a function of height using the aspect ratio since we use height as control
+    buttonPanel.style.width = window.innerHeight * (2 / 3) + "px"; //set the width as a function of height using the aspect ratio since we use height as control
 }
 
 // Get Player's current Gold balance from server
@@ -622,3 +680,4 @@ setInterval(function () {
     logic();
     render();
 }, 1000 / FPS);
+}

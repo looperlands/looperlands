@@ -13,7 +13,7 @@ by = youLikeIt ? "bitcorn" : "anonymous";
 */
 
 const MINIGAME_FILES = {
-    "luckyfunkz": "slots.html",
+    "luckyfunkz": "LuckyFUNKZ.html",
 //  "YOUR_MINIGAME_NAME": "INITIAL_FILE_TO_LOAD",
 };
 
