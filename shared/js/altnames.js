@@ -121,6 +121,18 @@ const AltNames = {
     m88nballoondogv: "Violet Balloon Dog",
     m88nballoonhotdogr: "Red Balloon Hotdog",
     m88nballoongiraffeo: "Orange Balloon Giraffe",
+    m88nbabymonkey: "Baby Monkey",
+    m88nbabyape: "Baby Ape",
+    m88nbabychimp: "Baby Chimp",
+    m88nbabyturtle: "Baby Turtle",
+    m88nbabypenguin: "Baby Penguin",
+    m88ndaddyape: "Daddy Ape",
+    m88ndaddypenguin: "Daddy Penguin",
+    m88ndaddyturtle: "Daddy Turtle",
+    m88nparrot: "Parrot",
+    m88ntoucan: "Toucan",
+    m88nseal: "Seal",
+    m88nwalrus: "Walrus",
 
     //BITCORN PHISHIES
     bit_BoneFish: "a BoneFish",

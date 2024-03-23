@@ -1155,12 +1155,72 @@ let Properties = {
         level: 1,
         friendly: true, //not actually friendly, just AoE immune
         hp: 1,
-        xp: 1000,
+        xp: 100000,
         drops: {
             m88nmap: 5,
             m88ngem: 95,
         },
         respawnDelay: 10000
+    },
+
+    m88nbabymonkey: {
+        level: 1,
+        friendly: true
+    },
+
+    m88nbabychimp: {
+        level: 1,
+        friendly: true
+    },
+
+    m88nbabyape: {
+        level: 1,
+        friendly: true
+    },
+
+    m88nbabypenguin: {
+        level: 1,
+        friendly: true
+    },
+
+    m88nbabyturtle: {
+        level: 1,
+        friendly: true
+    },
+
+    m88ndaddyape: {
+        level: 1,
+        friendly: true
+    },
+
+    m88ndaddypenguin: {
+        level: 1,
+        friendly: true
+    },
+
+    m88ndaddyturtle: {
+        level: 1,
+        friendly: true
+    },
+
+    m88nparrot: {
+        level: 1,
+        friendly: true
+    },
+
+    m88ntoucan: {
+        level: 1,
+        friendly: true
+    },
+
+    m88nseal: {
+        level: 1,
+        friendly: true
+    },
+
+    m88nwalrus: {
+        level: 1,
+        friendly: true
     },
 
     //Short Destroyers
@@ -1436,7 +1496,8 @@ let Properties = {
         collectable: true,
         inventoryDescription: "m88n gems",
         collectItem: Types.Entities.M88NGEM,
-        collectAmount: 1
+        collectAmount: 1,
+        respawnDelay: 1000000
     },
 
     // Projectiles
