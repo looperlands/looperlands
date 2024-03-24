@@ -225,11 +225,10 @@ function setupEventListeners() {
 function initializeCanvas() {
     can = document.getElementById("slotsArea"); // canvas
     ctx = can.getContext("2d"); // context
-    can.width = REELS_BG.naturalWidth;
-    can.height = REELS_BG.naturalHeight;
-
     const devicePixelRatio = window.devicePixelRatio || 1;
     ctx.scale(devicePixelRatio, devicePixelRatio);
+    can.width = REELS_BG.naturalWidth;
+    can.height = REELS_BG.naturalHeight;
 }
 
 

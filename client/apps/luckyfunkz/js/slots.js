@@ -507,6 +507,7 @@ Sounds by Brandon Morris (CC-BY 3.0)
         REELS_BG.onload = function () {
             can.width = REELS_BG.naturalWidth;
             can.height = REELS_BG.naturalHeight;
+            console.log("canvas dimensions set by REELS_BG");
             var buttonPanel = document.getElementById("buttonPanel");
             updateButtonPanelWidth(window.height, buttonPanel);
 
@@ -517,6 +518,7 @@ Sounds by Brandon Morris (CC-BY 3.0)
         var devicePixelRatio = window.devicePixelRatio || 1;
         can.width = can.clientWidth * devicePixelRatio;
         can.height = can.clientHeight * devicePixelRatio;
+        console.log("canvas dimensions set by clientWidth");
         ctx.scale(devicePixelRatio, devicePixelRatio);
     }
 
