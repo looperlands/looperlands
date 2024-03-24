@@ -82,6 +82,7 @@ let reel_position = new Array(REEL_COUNT);
 let result = new Array(REEL_COUNT);
 let reel_speed = new Array(REEL_COUNT).fill(0);   // reel spin speed in pixels per frame
 let stopping_position = new Array(REEL_COUNT);
+let currentSpinData = [];
 let start_slowing = new Array(REEL_COUNT);
 let can;
 let ctx;
@@ -382,12 +383,15 @@ function set_stops() {
         start_slowing[i] = false;
 
         stop_index = Math.floor(Math.random() * reel_positions);
-        stopping_position[i] = (stop_index * SYMBOL_SIZE + STOPPING_DISTANCE) % reel_pixel_length;
 
-        for (let j = 0; j < ROW_COUNT; j++) {
-            result[i][j] = (stop_index + j) % reel_positions;
-            result[i][j] = reels[i][result[i][j]];
-        }
+        if(stop_index * SYMBOL_SIZE - STOPPING_DISTANCE < 0)
+            stopping_position[i] = (stop_index * SYMBOL_SIZE - STOPPING_DISTANCE + reel_pixel_length) % reel_pixel_length;
+        else
+            stopping_position[i] = (stop_index * SYMBOL_SIZE - STOPPING_DISTANCE) % reel_pixel_length;
+        
+        reels[i][(stop_index + 2) % reel_positions] = currentSpinData[0][i];
+        reels[i][(stop_index + 3) % reel_positions] = currentSpinData[1][i];
+        reels[i][(stop_index + 4) % reel_positions] = currentSpinData[2][i];
     }
 }
 
@@ -466,6 +470,7 @@ async function spin() {
         const { spinData, valueToPayout, winningLines } = response.data;
         payout = valueToPayout || 0;
         console.log(`spinData: ${spinData}  PAYOUT: ${payout}  winningLines: ${winningLines}`);
+        currentSpinData = spinData;
 
         linesToHighlight = winningLines;
 
