@@ -32,14 +32,19 @@
 
 #payoutContainer table {
     border-collapse: separate;
-    border-spacing: 5px;
+    border-spacing: 2px;
     margin: auto;
 }
 
 #payoutContainer thead {
     font-family: "256BYTES", "Orbitron", "Helvetica Neue", "Futura", "Trebuchet MS", Arial;
     font-weight: bold;
-    font-size: 5vh;
+    font-size: 5.5vh;
+    line-height: 1vh;
+}
+
+#payoutContainer tbody {
+    line-height: 1vh;
 }
 
 #payoutContainer td {
@@ -52,13 +57,30 @@
 }
 
 #payoutContainer td.symbolCell {
-    border: 3px solid #ff00ff;
-    border-radius: 20px;
+    height: 8vh;
+}
+
+.headerText{
+    font-family: "256BYTES", "Orbitron", "Helvetica Neue", "Futura", "Trebuchet MS", Arial;
+    font-weight: bold;
+}
+
+.payoutCell {
+    filter: drop-shadow(0 0 2px black) drop-shadow(0 0 2px black) drop-shadow(0 0 2px white) drop-shadow(0 0 4px magenta) drop-shadow(0 0 8px magenta) !important
 }
 
 #payoutContainer td.symbolCell img{
-    height: 7vh;
-    padding: 0 10px;
+    width: 57%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    filter: drop-shadow(0 0 2px black) drop-shadow(0 0 2px white) drop-shadow(0 0 2px magenta) drop-shadow(0 0 2px magenta) !important;
+}
+
+#payoutContainer td.wildCell img{
+    height: 10vh;
+    filter: drop-shadow(0 0 2px black) drop-shadow(0 0 2px white) drop-shadow(0 0 2px magenta) drop-shadow(0 0 2px magenta) !important;
 }
 
 .closeButton {

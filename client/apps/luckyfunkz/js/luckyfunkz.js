@@ -43,7 +43,7 @@ const ROW_COUNT = 3;
 const REEL_COUNT = 3;
 const REEL_PADDING = 8;
 const SYMBOL_COUNT = 12;
-const MATCH_PAYOUT = [1, 1, 1, 4, 7, 13, 42, 69, 350, 1337, 9001, 42069];
+const MATCH_PAYOUT = [0, 0, 1, 4, 7, 13, 42, 69, 350, 1337, 9001, 42069];
 const SCALE = 5;
 const SYMBOL_SIZE = 32 * SCALE;
 const SYMBOLS = [];
@@ -518,7 +518,13 @@ function updateButtonPanelWidth() {
     const buttonPanel = document.getElementById("buttonPanel");
     if (!buttonPanel) return;
     buttonPanel.style.height = "10%";
-    buttonPanel.style.width = window.innerHeight * (2 / 3) + "px"; //set the width as a function of height using the aspect ratio since we use height as control
+    if(window.innerWidth > window.innerHeight){
+        //LANDSCAPE
+        buttonPanel.style.width = window.innerHeight * (2 / 3) + "px"; //set the width as a function of height using the aspect ratio since we use height as control
+    } else{
+        //PORTRAIT
+        buttonPanel.style.width = window.innerWidth * 0.36 + "px";
+    }
 }
 
 // Get Player's current Gold balance from server
@@ -568,10 +574,13 @@ function createLinearGradient() {
 }
 
 // Create SVG text element with gradient for Payout Table Headers
-function createSvgText(textContent) {
+function createSvgText(textContent, setWidth) {
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
     svg.setAttribute('height', '7vh');
+    if(textContent == "x3") svg.setAttribute('width', '15vh');
+    if(textContent == "PAYOUT/BET") svg.setAttribute('width', '35vh');
+    if(textContent == " FEET ARE WILD ") svg.setAttribute('width', '30vh');
     const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
     const linearGradient = createLinearGradient();
     defs.appendChild(linearGradient);
@@ -587,7 +596,7 @@ function createSvgText(textContent) {
     svgText.style.fill = 'url(#fill-gradient)';
     svgText.style.stroke = 'rgba(255, 255, 255, 0.5)';
     svgText.style.strokeWidth = '0.5px';
-    svgText.style.filter = 'drop-shadow(4px 4px 4px black)';
+    svgText.style.filter = 'drop-shadow(0 0 0.1vh #FFF) drop-shadow(0 0 0.3vh #F0F)';
     svg.appendChild(svgText);
 
     return svg;
@@ -605,7 +614,7 @@ function getPayoutTable(slideout = false) {
         container.appendChild(payoutTable);
 
         const headerRow = payoutTable.createTHead().insertRow();
-        ['COMBINATION', 'PAYOUT/BET'].forEach(headerText => {
+        ['x3', 'PAYOUT/BET'].forEach(headerText => {
             const headerCell = document.createElement('th');
             const svgText = createSvgText(headerText);
             headerCell.appendChild(svgText);
@@ -621,18 +630,43 @@ function getPayoutTable(slideout = false) {
                 const symbolCell = bodyRow.insertCell();
                 symbolCell.classList.add('symbolCell');
 
-                // Repeat symbol images 3 times horizontally
-                for (let j = 0; j < 3; j++) {
-                    const symbolImage = document.createElement('img');
-                    symbolImage.src = SYMBOLS[i].src;
-                    symbolCell.appendChild(symbolImage);
-                }
+                const symbolImage = document.createElement('img');
+                symbolImage.src = SYMBOLS[i].src;
+                symbolCell.appendChild(symbolImage);
 
                 const payoutCell = bodyRow.insertCell();
                 payoutCell.textContent = MATCH_PAYOUT[i];
+                payoutCell.classList.add('payoutCell');
 
                 // Insert a new row for the next set of symbols
                 if (i > 0) { bodyRow = tableBody.insertRow(); }
+            }else{
+                if(i === 1){
+                    bodyRow = tableBody.insertRow();
+                    const wildCell = bodyRow.insertCell();
+                    wildCell.colSpan = 2;
+                    wildCell.classList.add('wildCell');
+
+                    // First image
+                    const symbolImage1 = document.createElement('img');
+                    symbolImage1.src = SYMBOLS[0].src;
+                    symbolImage1.style.cssFloat = 'left'; // Align to the left
+                    wildCell.appendChild(symbolImage1);
+
+                    // SVG element for the styled text
+                    const svgText = createSvgText(" FEET ARE WILD ");
+                    svgText.style.position = 'absolute';
+                    svgText.style.left = '50%';
+                    svgText.style.top = '50%';
+                    svgText.style.transform = 'translate(-50%,-50%)';
+                    wildCell.appendChild(svgText);
+
+                    // Second image
+                    const symbolImage2 = document.createElement('img');
+                    symbolImage2.src = SYMBOLS[1].src;
+                    symbolImage2.style.cssFloat = 'right'; // Align to the right
+                    wildCell.appendChild(symbolImage2);
+                }
             }
         }
 
@@ -648,12 +682,12 @@ function getPayoutTable(slideout = false) {
                 gsap.to('#payoutContainer', { x: '-100%', duration: 1, ease: 'power2.inOut' });
             }
         });
-        $(`#luckyfunkz`).on('click', (event) => {
-            const payoutContainer = $('#payoutContainer');
-            if (!payoutContainer.is(event.target) && !$.contains(payoutContainer[0], event.target)) {
-                gsap.to('#payoutContainer', { x: '-100%', duration: 1, ease: 'power2.inOut' });
-            }
-        });
+        //$(`#luckyfunkz`).on('click', (event) => {
+        //    const payoutContainer = $('#payoutContainer');
+        //    if (!payoutContainer.is(event.target) && !$.contains(payoutContainer[0], event.target)) {
+        //        gsap.to('#payoutContainer', { x: '-100%', duration: 1, ease: 'power2.inOut' });
+        //    }
+        //});
 
         container.appendChild(closeButton);
         payoutTableGenerated = true;
