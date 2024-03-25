@@ -2516,7 +2516,7 @@ var setupAudioContext = function () {
 };
 
 
-import SiriWave from './siriwave.js';
+import SiriWave from './siriwave.mjs';
 
 /**
  * Player class containing the state of our playlist and where we are in it.
