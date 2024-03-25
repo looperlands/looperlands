@@ -58,7 +58,6 @@ class LooperLandsPlatformClient {
         try {
             const url = "/api/maps/cornsino/spin";
             const response = await this.client.get(url);
-            console.log('response: ', response);
             return response.data.spin;
         } catch (error) {
             this.handleError(error);

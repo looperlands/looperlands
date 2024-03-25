@@ -42,9 +42,7 @@ async function getSpin(platformClient, sessionData, linesPlayed, betPerLine) {
 
 async function getSpinFromServer(platformClient, linesPlayed) {
     try {
-        //console.log(`[SPIN INDEX]`);
-        const spinIndex = Math.floor(Math.random() * 69420); //await platformClient.getSpinIndex(); //Math.floor(Math.random() * 69420);
-        //console.log(`SPIN INDEX: ${spinIndex}`);
+        const spinIndex = await platformClient.getSpinIndex();
         const chosenSpin = spinSet[spinIndex];
 
         //Calculate the rewards associated with that spin

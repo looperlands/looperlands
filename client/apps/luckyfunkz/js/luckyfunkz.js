@@ -62,6 +62,7 @@ const STATE_SPINUP = 1;
 const STATE_SPINDOWN = 2;
 const STATE_REWARD = 3;
 const REWARD_GRAND_THRESHHOLD = 25;
+const BLINK_DELAY = 5;
 const REWARD_DELAY = 3;
 const REWARD_DELAY_GRAND = 1;
 
@@ -74,6 +75,8 @@ let playing_lines = 1;
 let bet = 1;
 let payout = 0;
 let linesToHighlight = [];
+let blink_on = false;
+let blink_delay_counter = 0;
 let reward_delay_counter = 0;
 let reels = [];
 let reel_positions = 0;
@@ -309,12 +312,13 @@ function highlight_line(line_num) {
     const centerX = (can.width - REEL_AREA_WIDTH) / 2;
     const centerY = 304;
     const ss = SYMBOL_SIZE;
-    ctx.strokeStyle = "orange";
+    ctx.strokeStyle = "#ECFF00";
 
     function drawRect(x, y, width, height) {
         //const padding = Math.trunc(x / ss) * REEL_PADDING;
         const adjustedX = centerX + x;
         const adjustedY = centerY + y;
+        ctx.lineWidth = Math.trunc(SCALE / 2 + 3);
         ctx.strokeRect(adjustedX, adjustedY, width - 1, height - 1);
     }
 
@@ -401,6 +405,7 @@ function logic_spindown() {
         for (line of linesToHighlight) {
             highlight_line(line);
         }
+        blink_on = false;
         game_state = STATE_REWARD;
     }
 
@@ -440,11 +445,27 @@ function logic_reward() {
     }
 
     payout--;
-    const metrics = ctx.measureText(`CREDITS: ${credits}`);
     credits++;
-    ctx.clearRect(can.width * 0.74, ((can.height * 0.05) - (can.width * .025)), metrics.width, can.width * .025);
-    drawText(ctx, "CREDITS: " + credits, can.width * 0.74, can.height * 0.05);
+    render_reel();
 
+    if(payout >= REWARD_GRAND_THRESHHOLD){
+        blink_delay_counter++;
+        if(blink_delay_counter == 3){
+            blink_on = !blink_on;
+            blink_delay_counter = 0;
+        } 
+    }else if(payout < 4){
+        blink_on = false;
+    }else{
+        blink_on = !blink_on;
+    }
+
+    if(!blink_on){
+        for (line of linesToHighlight) {
+            highlight_line(line);
+        }
+    }
+    
     reward_delay_counter = payout < REWARD_GRAND_THRESHHOLD ? REWARD_DELAY : REWARD_DELAY_GRAND; //speed up big rewards
 }
 
@@ -459,7 +480,6 @@ async function spin() {
         //Request spin from server
         const sessionId = new URLSearchParams(window.location.search).get('sessionId');
         const spinRequest = `${urlPrefix}/session/${sessionId}/getSpin/${playing_lines}/${bet}`;
-        console.log("[REQUEST SPIN] ", spinRequest);
         const response = await axios.get(spinRequest);
 
         if (response.status === 400 && response.data.error === "Not Enough Gold") {
@@ -469,7 +489,7 @@ async function spin() {
 
         const { spinData, valueToPayout, winningLines } = response.data;
         payout = valueToPayout || 0;
-        console.log(`spinData: ${spinData}  PAYOUT: ${payout}  winningLines: ${winningLines}`);
+        //console.log(`spinData: ${spinData}  PAYOUT: ${payout}  winningLines: ${winningLines}`);
         currentSpinData = spinData;
 
         linesToHighlight = winningLines;
