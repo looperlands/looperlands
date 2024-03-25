@@ -2,7 +2,6 @@ const axios = require('axios');
 const NodeCache = require("node-cache");
 const Collectables = require('./collectables.js');
 const daoCache = new NodeCache();
-const GOLD = '21300041';
 
 const {
   LOOPWORMS_LOOPERLANDS_BASE_URL,
@@ -498,7 +497,7 @@ const updateResourceBalance = async function (nftId, itemId, quantity) {
 }
 
 // Default resource to gold when not specified
-const transferResourceFromTo = async function (from, to, amount, resource = GOLD) {
+const transferResourceFromTo = async function (from, to, amount, resource = Types.Entities.GOLD) {
   if (amount <= 0) return false;
 
   try {

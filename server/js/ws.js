@@ -40,8 +40,6 @@ const LOOPERLANDS_PLATFORM_API_KEY = process.env.LOOPERLANDS_PLATFORM_API_KEY;
 
 const platformClient = new platform.LooperLandsPlatformClient(LOOPERLANDS_PLATFORM_API_KEY, LOOPERLANDS_PLATFORM_BASE_URL);
 
-const GOLD = '21300041';
-
 function extractDetails(inputUrl) {
     const parsedUrl = new URL(inputUrl);
     let protocol = parsedUrl.protocol;
@@ -1106,7 +1104,7 @@ WS.socketIOServer = Server.extend({
             const spinCost = linesPlayed * betPerLine;
             const spinResult = payout - spinCost;
             const player = self.worldsMap[sessionData.mapId].getPlayerById(sessionData.entityId);
-            player.incrementResourceAmount(GOLD, spinResult);
+            player.incrementResourceAmount(Types.Entities.GOLD, spinResult);
 
             const response = {
                 spinData: chosenSpin,
