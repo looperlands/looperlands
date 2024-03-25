@@ -14,7 +14,7 @@ by = youLikeIt ? "bitcorn" : "anonymous";
 
 const MINIGAME_FILES = {
     "luckyfunkz": "LuckyFUNKZ.html",
-//  "YOUR_MINIGAME_NAME": "INITIAL_FILE_TO_LOAD",
+    //  "YOUR_MINIGAME_NAME": "INITIAL_FILE_TO_LOAD",
 };
 
 /*
@@ -51,7 +51,7 @@ const MINIGAME_FILES = {
 // CONSTANTS
 const FADE_DURATION = 500;
 const LOOPERLANDS_MUSIC_FADE_STEP = 0.05;
-const MINIGAME_MENU = 
+const MINIGAME_MENU =
     '<div id="menubtn">≡</div>' +
     '<div id="minigameMenu-content">' +
     `<a href="#" id="mgMAIZfm">🌽 MAIZ.fm</a>` +
@@ -64,7 +64,7 @@ const MINIGAME_MENU =
 ****************/
 async function loadMinigame(minigame, app) {
     console.log(`[LOADING MINIGAME: ${minigame}]`);
-    
+
     app.audioManager.fadeOutCurrentMusic(LOOPERLANDS_MUSIC_FADE_STEP);
     $("#minigameprompt").removeClass("active");
 
@@ -110,6 +110,15 @@ async function loadMinigamePlatform() {
     // MINIGAME MENU EVENT LISTENERS
     $(`#minigameMenu`).on('click', '#mgMAIZfm', () => loadMAIZFM());
     $('#minigameMenu').on('click', '#mgClose', () => closeMinigame());
+    $(document).on('keydown', minigameKeyDown);  //CLOSE ON KEYPRESS = 'ESC'
+
+    function minigameKeyDown(event) {
+        if (event.which === 27 && $("#minigame").css("display") !== "none") {
+            closeMinigame();
+        } else {
+            $(document).off('keydown', minigameKeyDown); // REMOVE LISTENER SINCE MINIGAME DISPLAY IS OFF
+        }
+    }
 
     $('#resources').fadeOut(FADE_DURATION * 0.6); // HIDE IN GAME RESOURCES BY DEFAULT >> ALLOWS FOR A CLEANER TRANSITION
     $("#minigame").fadeIn(FADE_DURATION);
@@ -176,28 +185,29 @@ async function showMinigamePlatform() {
 /************************
  CLOSE MINIGAME PLATFORM
 ************************/
-function closeMinigame(){
+function closeMinigame() {
     var minigameElement = $('#minigame');
-        if (minigameElement.length && !minigameElement.hasClass('pauseClose')) {
+    if (minigameElement.length && !minigameElement.hasClass('pauseClose')) {
+        $(document).off('keydown', minigameKeyDown);
 
-            minigameElement.removeClass("clickable active");
-            minigameElement.fadeOut(FADE_DURATION);
+        minigameElement.removeClass("clickable active");
+        minigameElement.fadeOut(FADE_DURATION);
 
-            if ($('#resources').children().length === 0) {
-                //IN GAME RESOURCE DISPLAY HIDDEN
-                $('#resources').fadeIn(FADE_DURATION * 0.6).addClass('hidden');
-            } else {
-                // NEED TO TRIGGER A RESOURCE REFRESH HERE
-                $('#resources').fadeIn(FADE_DURATION * 0.6);
-            }
+        if ($('#resources').children().length === 0) {
+            //IN GAME RESOURCE DISPLAY HIDDEN
+            $('#resources').fadeIn(FADE_DURATION * 0.6).addClass('hidden');
+        } else {
+            // NEED TO TRIGGER A RESOURCE REFRESH HERE
+            $('#resources').fadeIn(FADE_DURATION * 0.6);
         }
+    }
 }
 
 
 /*************
  LOAD MAIZ.FM
 *************/
-function loadMAIZFM(){
+function loadMAIZFM() {
     var MAIZfmDiv = $('<div id="MAIZfm-container"></div>');
     if ($('#MAIZfm-container').length === 0) {
         $(`#minigame`).prepend(MAIZfmDiv);
