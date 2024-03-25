@@ -44,7 +44,7 @@ async function getSpinFromServer(platformClient, linesPlayed) {
     try {
         const spinIndex = await platformClient.getSpinIndex();
         const chosenSpin = spinSet[spinIndex];
-
+        console.log(chosenSpin);
         //Calculate the rewards associated with that spin
         const { payout, winningLines } = calc_reward(chosenSpin, linesPlayed);
 

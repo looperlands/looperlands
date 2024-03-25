@@ -6,18 +6,17 @@ const LINE_COUNT = 3;
 const LINES_PLAYED = 3;
 const WILD_NUMBERS = [0, 1];
 const WILD_COUNTS_AS = 10;
-const WILD_PERCENT_LIMIT = 0.69;
 const WINNING_COMBO_LIMITS = [0, 0, 20000, 10000, 5000, 1000, 500, 100, 10, 5, 2, 1];
-const MAX_TRIPLE_WILD = Math.floor(WINNING_COMBO_LIMITS[WILD_COUNTS_AS]*0.5);
+const WILD_WIN_COMBO_LIMITS = [0, 0, 12000, 6000, 3000, 500, 250, 50, 5, 1, 0, 0];
+const MAX_TRIPLE_WILD = 0;
 const WINNING_COMBO_COUNT = WINNING_COMBO_LIMITS.reduce((sum, val) => sum + val, 0);
 const PAYOUTS_BASE = [0, 0, 1, 4, 7, 13, 42, 69, 350, 1337, 9001, 42069];
 const BET = 1;
-const MAX_BET = 5;
 
 const LINE_TWO = 0;
 const LINE_ONE = 1;
 const LINE_THREE = 2;
-const MAX_CALC_TIME = 1000;
+const MAX_CALC_TIME = 100000;
 
 let abortCurrentCalc = false;
 let winningComboTracker = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -32,6 +31,8 @@ let wildWins = [0, 0, 0];
 let totalPayin = [0, 0, 0, 0, 0];
 let totalPayout = [0, 0, 0, 0, 0];
 let totalProfit = [0, 0, 0, 0, 0];
+let dots = 0;
+let removeDots = false;
 
 let allInRange = false;
 let RTPstring = '';
@@ -54,7 +55,7 @@ while (options < 100) {
         totalProfit = [0, 0, 0, 0, 0];
 
         const spinData = await generateAllSpins();
-        if(!abortCurrentCalc){
+        if (!abortCurrentCalc) {
             checkInRange();
 
             if (allInRange) {
@@ -68,123 +69,104 @@ while (options < 100) {
 
 
 
-
-
-
 async function generateAllSpins() {
     abortCurrentCalc = false;
-    let now = Date.now();
-    let endBy = now + MAX_CALC_TIME;
     const spins = [];
-    let currentComboCount = 0;
     let spinDataGenerated = false;
+    process.stdout.write('Processing');
 
     while (!spinDataGenerated && !abortCurrentCalc) {
-        now = Date.now();
-        if (now > endBy) {
-            abortCurrentCalc = true;
-        } else {
+        const spin = await generateSpin();
 
-            const spin = [];
-            for (let j = 0; j < 3; j++) {
-                const row = [];
-                for (let k = 0; k < 3; k++) {
-                    row.push(Math.floor(Math.random() * SYMBOL_COUNT));
-                }
-                spin.push(row);
-            }
+        if (spin) {
+            spins.push(spin);
+            await updateTrackers();
 
-            //reset local trackers
-            lineWild = [0, 0, 0];
-            lineWin = [0, 0, 0];
-
-            checkLineOne(spin);
-            if (LINES_PLAYED > 1) { checkLineTwo(spin) };
-            if (LINES_PLAYED > 2) { checkLineThree(spin) };
-            let limitMet = isLimitMet();
-            if (!limitMet) {
-                spins.push(spin);
-                updateTrackers();
-                currentComboCount = winningComboTracker.reduce((sum, val) => sum + val, 0);
-                if (currentComboCount >= WINNING_COMBO_COUNT && spins.length >= TOTAL_SPINS) {
-                    spinDataGenerated = true;
-                }
-
+            const currentComboCount = winningComboTracker.reduce((sum, val) => sum + val, 0);
+            if (currentComboCount >= WINNING_COMBO_COUNT && spins.length >= TOTAL_SPINS) {
+                spinDataGenerated = true;
             }
         }
-
     }
+
     return spins;
 }
 
-function checkLineOne(spinData) {
-    const lineData = spinData[LINE_ONE];
-    isWinner(lineData, LINE_ONE);
-}
-
-function checkLineTwo(spinData) {
-    const lineData = spinData[LINE_TWO];
-    isWinner(lineData, LINE_TWO);
-}
-
-function checkLineThree(spinData) {
-    const lineData = spinData[LINE_THREE];
-    isWinner(lineData, LINE_THREE);
-}
-
-function isWinner(lineData, lineNum) {
-    const firstNumber = lineData[0];
-    const secondNumber = lineData[1];
-    const thirdNumber = lineData[2];
-
-    const wildCount = [firstNumber, secondNumber, thirdNumber].filter(num => WILD_NUMBERS.includes(num)).length;
-    // Check if all three numbers are equal
-    if (firstNumber === secondNumber && secondNumber === thirdNumber) {
-        lineWin[lineNum] = wildCount === 3 ? WILD_COUNTS_AS : firstNumber;
-        lineWild[wildCount - 1]++;
-    } else {
-        if (wildCount === 1 && (firstNumber === thirdNumber || firstNumber === secondNumber || secondNumber === thirdNumber)) {
-            // one wild and other two numbers match
-            lineWin[lineNum] = !WILD_NUMBERS.includes(firstNumber) ? firstNumber : (!WILD_NUMBERS.includes(secondNumber) ? secondNumber : thirdNumber);
-            lineWild[wildCount - 1]++;
+async function generateSpin() {
+    const spin = [];
+    for (let j = 0; j < 3; j++) {
+        const row = [];
+        for (let k = 0; k < 3; k++) {
+            row.push(Math.floor(Math.random() * SYMBOL_COUNT));
         }
-        if (wildCount === 2 && (firstNumber === thirdNumber || firstNumber === secondNumber || secondNumber === thirdNumber)) {
-            // two wilds and another number
-            lineWin[lineNum] = !WILD_NUMBERS.includes(firstNumber) ? firstNumber : (!WILD_NUMBERS.includes(secondNumber) ? secondNumber : thirdNumber);
-            lineWild[wildCount - 1]++;
+        spin.push(row);
+    }
+    if (!await processSpin(spin)) {
+        return spin;
+    } else {
+        return undefined;
+    };
+}
+
+async function processSpin(spin) {
+    lineWild = [0, 0, 0];
+    lineWin = [0, 0, 0];
+
+    for (let i = 0; i < LINES_PLAYED; i++) {
+        const lineData = spin[i];
+        const firstNumber = lineData[0];
+        const secondNumber = lineData[1];
+        const thirdNumber = lineData[2];
+
+        const wildCount = [firstNumber, secondNumber, thirdNumber].filter(num => WILD_NUMBERS.includes(num)).length;
+        if (wildCount === 3 && MAX_TRIPLE_WILD === 0) return true;
+
+        if (firstNumber === secondNumber && secondNumber === thirdNumber) {
+            lineWin[i] = wildCount === 3 ? WILD_COUNTS_AS : firstNumber;
+            lineWild[i] = wildCount;
+        } else {
+            // Check for winning combinations involving wild symbols
+            const nonWildNumbers = [firstNumber, secondNumber, thirdNumber].filter(num => !WILD_NUMBERS.includes(num)); // Exclude wild symbols
+            const uniqueNumbers = Array.from(new Set(nonWildNumbers));  // Get unique numbers after excluding wilds
+
+            // Check if there's only one unique number (excluding wild symbols)
+            if (uniqueNumbers.length === 1 && wildCount > 0) {
+                lineWin[i] = uniqueNumbers[0]; // Set the winning symbol
+                lineWild[i] = wildCount;
+            }
         }
     }
+
+    return await isLimitMet();
 }
 
-function isLimitMet() {
+
+async function isLimitMet() {
     let isLimitMet = false;
 
-    if (lineWin.reduce((sum, winner) => sum + winner, 0) > 0) {
-        //console.log(lineWin);
-        //console.log('line win total: ', lineWin.reduce((sum, winner) => sum + winner, 0));
-        let lineRef = [1, 0, 2];
-        let i = 0;
+    const hasWinningCombo = lineWin.some(line => line > 0);
 
-        //WINNER
-        for (const line of lineWin) {
+    if (hasWinningCombo) {
+        for (let i = 0; i < LINE_COUNT; i++) {
+            const line = lineWin[i];
+            const wildCount = lineWild[i];
+
             if (line > 0) {
-                //CHECK IF WINNING COMBOS USING A WILD IS MET FOR THIS SYMBOL
-                if (wildWins[lineRef[i]] > 0 && wildwinComboTracker[line] >= Math.floor(WILD_PERCENT_LIMIT * WINNING_COMBO_LIMITS[line])) {
+                // Check if winning combos using a wild are met for this symbol
+                if (wildCount > 0 && wildwinComboTracker[line] >= WILD_WIN_COMBO_LIMITS[line]) {
                     isLimitMet = true;
                 }
 
-                //IF THIS IS A TRIPLE WILD, CHECK IF THAT LIMIT IS MET
-                if(wildWins[lineRef[i]] > 2 && wildWins[2] == MAX_TRIPLE_WILD){
+                // If this is a triple wild, check if that limit is met
+                if (wildCount > 2 && wildWins[2] >= MAX_TRIPLE_WILD) {
                     isLimitMet = true;
                 }
 
-                //CHECK IF SYMBOL LIMIT IS MET
+                // Check if symbol limit is met
                 if (winningComboTracker[line] >= WINNING_COMBO_LIMITS[line]) {
                     isLimitMet = true;
                 }
             }
-            i++;
-            //console.log(line, " ", isLimitMet);
         }
 
         return isLimitMet;
@@ -205,7 +187,7 @@ function isLimitMet() {
     }
 }
 
-function updateTrackers() {
+async function updateTrackers() {
 
     for (let i = 0; i < LINE_COUNT; i++) {
         if (lineWin[i] > 0) {
@@ -215,7 +197,20 @@ function updateTrackers() {
             }
         };
     }
-    //console.log(winningComboTracker);
+
+
+
+    if (removeDots) {
+        process.stdout.write('\b');
+        dots--;
+    } else {
+        process.stdout.write('.');
+        dots++;
+    }
+
+    if (dots === 3 || dots === 0) {
+        removeDots = !removeDots;
+    }
 
     let lineOne = PAYOUTS_BASE[lineWin[LINE_ONE]];
     let lineTwo = PAYOUTS_BASE[lineWin[LINE_TWO]];
@@ -289,7 +284,7 @@ function checkInRange() {
     for (let i = 0; i < 3; i++) {
         let RTP = (totalPayout[i] / totalPayin[i] * 100).toFixed(1);
         RTParray.push(RTP);
-        if (!(RTP >= 85 && RTP <= 99.9)) {
+        if (!(RTP >= 83 && RTP <= 99.9)) {
             outOfRange = true;
         }
     }
@@ -297,7 +292,9 @@ function checkInRange() {
         allInRange = true;
     }
     RTPstring = RTParray.join("_");
-    console.log(RTParray.join(" : "));
+    process.stdout.clearLine(0);
+    process.stdout.cursorTo(0);
+    console.log(`${RTParray.join(" : ")}: ${!outOfRange ? "[OK]" : "[NG]"}`);
 }
 
 

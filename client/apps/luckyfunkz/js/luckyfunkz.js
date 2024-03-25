@@ -53,6 +53,8 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
     const CREDIT_PANEL = new Image();
     const SND_WIN = new Audio("apps/luckyfunkz/assets/audio/win.wav");
     const SND_REEL_STOP = Array.from({ length: 3 }, () => new Audio("apps/luckyfunkz/assets/audio/reel_stop.wav"));
+    const SND_PAYOUT = new Audio("apps/luckyfunkz/assets/audio/payout.wav");
+    const SND_PAYOUT_REPEAT = new Audio("apps/luckyfunkz/assets/audio/payout_repeat.wav");
     const SPINUP_ACCELERATION = 2;
     const SPINDOWN_ACCELERATION = 1;
     const MAX_REEL_SPEED = SYMBOL_SIZE;
@@ -62,9 +64,9 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
     const STATE_SPINDOWN = 2;
     const STATE_REWARD = 3;
     const REWARD_GRAND_THRESHHOLD = 25;
-    const BLINK_DELAY = 5;
     const REWARD_DELAY = 3;
     const REWARD_DELAY_GRAND = 1;
+    const PAYOUT_DISPLAY_DELAY = FPS;
 
     // [VEGITABLES]
     let payoutTableGenerated = false;
@@ -78,6 +80,10 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
     let blink_on = false;
     let blink_delay_counter = 0;
     let reward_delay_counter = 0;
+    let payout_display_delay_counter = 0;
+    let payout_repeater_on = false;
+    let payout_font_size = 0;
+    let show_payout_text = false;
     let reels = [];
     let reel_positions = 0;
     let reel_pixel_length = 0;
@@ -125,7 +131,6 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
         $('#mgClose').text($('#minigame').hasClass("pauseClose") ? '⏳ Processing Spin' : '❌ Close Minigame');
     }
 
-
     // Load Resources
     function loadResources() {
         // Define URLs for fonts, symbols, images, REELS_BGS, and CREDIT_PANEL
@@ -138,7 +143,7 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
             (_, i) => `./apps/luckyfunkz/assets/images/symbols/${i.toString().padStart(2, "0")}.png`);
 
         const reelBgUrls = Array.from({ length: MAX_LINES },
-                (_, i) => `./apps/luckyfunkz/assets/images/ui/background/LuckyFUNKZ_${(i+1).toString()}.png`);
+            (_, i) => `./apps/luckyfunkz/assets/images/ui/background/LuckyFUNKZ_${(i + 1).toString()}.png`);
 
         CREDIT_PANEL.src = './apps/luckyfunkz/assets/images/ui/panels/credit_panel.png';
 
@@ -277,6 +282,7 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
         ctx.drawImage(REELS_BGS[playing_lines - 1], 0, 0, aspectRatio * can.height, can.height);
         ctx.drawImage(CREDIT_PANEL, can.width * 0.80, can.height * 0.05, CREDIT_PANEL.width, CREDIT_PANEL.height);
         renderTextOnCanvas();
+        if (show_payout_text) showPayoutText();
     }
 
     function draw_symbol(symbol_index, x, y, reel) {
@@ -310,11 +316,35 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
         drawText(ctx, "aqua", "left", "BET: " + bet, can.width * 0.55, can.height * 0.78);
     }
 
+    function showPayoutText() {
+        if (!blink_on) {
+            for (line of linesToHighlight) {
+                highlight_line(line);
+            }
+        }
+        if (payout > 0) {
+            const PAYOUT_X = (can.width - REEL_AREA_WIDTH) / 2 + 1.5 * SYMBOL_SIZE + REEL_PADDING; //CENTER OF REEL 2
+            const PAYOUT_Y = can.height * 0.57;
+            ctx.font = `${payout_font_size}px GraphicPixel`;
+            ctx.textAlign = "center";
+            ctx.shadowColor = "black";
+            ctx.shadowBlur = 10;
+            ctx.fillText(payout, PAYOUT_X, PAYOUT_Y);
+            ctx.fillText(payout, PAYOUT_X, PAYOUT_Y);
+            ctx.fillText(payout, PAYOUT_X, PAYOUT_Y);
+            ctx.shadowBlur = 0;
+            ctx.fillStyle = "cyan";
+            ctx.fillText(payout, PAYOUT_X, PAYOUT_Y);
+            ctx.lineWidth = 8;
+            ctx.strokeStyle = "white";
+            ctx.strokeText(payout, PAYOUT_X, PAYOUT_Y);
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = "magenta";
+            ctx.strokeText(payout, PAYOUT_X, PAYOUT_Y);
+        }
+    }
+
     function highlight_line(line_num) {
-        try {
-            SND_WIN.currentTime = 0;
-            SND_WIN.play();
-        } catch (err) { }
 
         const centerX = (can.width - REEL_AREA_WIDTH) / 2;
         const centerY = 304;
@@ -338,9 +368,9 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
 
         // Draw rectangles based on line number
         const rowToDraw = [
-            [2, 4],     // Top row
-            [1, 4, 5],  // Middle row
-            [3, 4, 5]   // Bottom row
+            [2], // Top row
+            [1], // Middle row
+            [3]  // Bottom row
         ];
 
         rowToDraw.forEach((row, rowIndex) => {
@@ -399,10 +429,13 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
                 stopping_position[i] = (stop_index * SYMBOL_SIZE - STOPPING_DISTANCE + reel_pixel_length) % reel_pixel_length;
             else
                 stopping_position[i] = (stop_index * SYMBOL_SIZE - STOPPING_DISTANCE) % reel_pixel_length;
-
+                console.log("[CURRENT SPIN DATA]");
+                console.log(currentSpinData);
             reels[i][(stop_index + 2) % reel_positions] = currentSpinData[0][i];
             reels[i][(stop_index + 3) % reel_positions] = currentSpinData[1][i];
             reels[i][(stop_index + 4) % reel_positions] = currentSpinData[2][i];
+
+            console.log(`${currentSpinData[0][i]} : ${currentSpinData[1][i]} : ${currentSpinData[2][i]}`);
         }
     }
 
@@ -435,46 +468,89 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
         }
     }
 
-    // Process rewards, play sound effects, etc.
-    function logic_reward() {
-        if (payout == 0) {
-            game_state = STATE_REST;
-            spinInProgress = false;
-            $('#minigame').removeClass("pauseClose");
-            toggleMinigameCloseButton();
-            return;
+// Process rewards, play sound effects, etc.
+function logic_reward() {
+    if (payout == 0) {
+        if (show_payout_text) {
+            if (payout_repeater_on){
+                SND_PAYOUT_REPEAT.pause();              // Stop the repeater
+                payout_repeater_on = false;
+            } 
+            SND_PAYOUT.currentTime = 0;
+            SND_PAYOUT.play();
+            show_payout_text = false;
         }
-
-        // don't tick up rewards each frame, too fast
-        if (reward_delay_counter > 0) {
-            reward_delay_counter--;
-            return;
-        }
-
-        payout--;
-        credits++;
-        render_reel();
-
-        if (payout >= REWARD_GRAND_THRESHHOLD) {
-            blink_delay_counter++;
-            if (blink_delay_counter == 3) {
-                blink_on = !blink_on;
-                blink_delay_counter = 0;
-            }
-        } else if (payout < 4) {
-            blink_on = false;
-        } else {
-            blink_on = !blink_on;
-        }
-
-        if (!blink_on) {
-            for (line of linesToHighlight) {
-                highlight_line(line);
-            }
-        }
-
-        reward_delay_counter = payout < REWARD_GRAND_THRESHHOLD ? REWARD_DELAY : REWARD_DELAY_GRAND; //speed up big rewards
+        spinInProgress = false;
+        $('#minigame').removeClass("pauseClose");
+        toggleMinigameCloseButton();
+        game_state = STATE_REST;
+        return;
     }
+
+    if (!show_payout_text) { 
+        // first section of payout code processed (start looping reward sound, set varibles)
+        SND_WIN.currentTime = 0;
+        SND_WIN.play();  // PLAY INITIAL WIN SOUND
+        show_payout_text = true;
+        payout_display_delay_counter = PAYOUT_DISPLAY_DELAY;
+
+    } else {
+        
+        if(!payout_repeater_on && payout > 7){
+            SND_PAYOUT_REPEAT.currentTime = 0;      // Set play from location back to start
+            SND_PAYOUT_REPEAT.loop = true;
+            SND_PAYOUT_REPEAT.play();
+            payout_repeater_on = true;    
+        }
+
+        //second section of payout code processed (zoom payout font up from zero to correct size)
+        if (payout_display_delay_counter > 0) {
+            
+            // introduce a delay between each frame, each frame = too fast
+            if (reward_delay_counter > 0) {
+                reward_delay_counter--;
+                return;
+            }
+
+            if (payout_font_size == can.width * 0.1){
+                // after getting font to correct size, wait out display delay before processing (to make sure rewards are shown for at least a min amount of time)
+                payout_display_delay_counter--;
+            } else{
+                reward_delay_counter = payout < REWARD_GRAND_THRESHHOLD ? REWARD_DELAY : REWARD_DELAY_GRAND; //speed up big rewards
+                payout_font_size = Math.max(payout_font_size + ((can.width * 0.1) / FPS), can.width * 0.1);
+            }
+
+            render_reel();
+            return;
+
+        } else {
+            // After getting font to size and showing for min amount of time, process payout >> credit
+
+            if (reward_delay_counter > 0) {
+                reward_delay_counter--;
+                return;
+            }
+
+            payout--;
+            credits++;
+            render_reel();
+
+            if (payout >= REWARD_GRAND_THRESHHOLD) {
+                blink_delay_counter++;
+                if (blink_delay_counter == 3) {
+                    blink_on = !blink_on;
+                    blink_delay_counter = 0;
+                }
+            } else if (payout < 4) {
+                blink_on = false;
+            } else {
+                blink_on = !blink_on;
+            }
+
+            reward_delay_counter = payout < REWARD_GRAND_THRESHHOLD ? REWARD_DELAY : REWARD_DELAY_GRAND; //speed up big rewards
+        }
+    }
+}
 
     //---- Input Functions ---------------------------------------------
 
