@@ -65,12 +65,17 @@ function main(config) {
 
     server.worldsMap = {};
     _.each(config.maps, function(map) {
-        var world = new WorldServer('world_'+ map, config.nb_players_per_world, server);
-        server.worldsMap[map] = world;
-        world.run(config.map_directory+"world_server_"+ map + ".json");
-        worlds.push(world);
-        world.onPlayerAdded(world.updatePopulation);
-        world.onPlayerRemoved(world.updatePopulation);
+        try {
+            let world = new WorldServer('world_'+ map, config.nb_players_per_world, server);
+            server.worldsMap[map] = world;
+            world.run(config.map_directory+"world_server_"+ map + ".json");
+            worlds.push(world);
+            world.onPlayerAdded(world.updatePopulation);
+            world.onPlayerRemoved(world.updatePopulation);
+        } catch (e) {
+            console.error(e);
+        }
+
     });
     
     server.onRequestStatus(function() {

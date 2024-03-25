@@ -264,6 +264,17 @@ define(['item'], function(Item) {
             },
         }),
         flyer:Item.extend({init:function(id){this._super(id,Types.Entities.FLYER,"object");this.lootMessage="You collected a Flyer.";}}),
+        //m88n
+        m88nmap:Item.extend({init:function(id){this._super(id,Types.Entities.M88NMAP,"object");this.lootMessage="You found mysterious map!";}}),
+        m88negg1:Item.extend({init:function(id){this._super(id,Types.Entities.M88NEGG1,"object");this.lootMessage="You found an easter egg!";}}),
+        m88negg2:Item.extend({init:function(id){this._super(id,Types.Entities.M88NEGG2,"object");this.lootMessage="You found an easter egg!";}}),
+        m88negg3:Item.extend({init:function(id){this._super(id,Types.Entities.M88NEGG3,"object");this.lootMessage="You found an easter egg!";}}),
+        m88negg4:Item.extend({init:function(id){this._super(id,Types.Entities.M88NEGG4,"object");this.lootMessage="You found an easter egg!";}}),
+        m88negg5:Item.extend({init:function(id){this._super(id,Types.Entities.M88NEGG5,"object");this.lootMessage="You found an easter egg!";}}),
+        m88negg6:Item.extend({init:function(id){this._super(id,Types.Entities.M88NEGG6,"object");this.lootMessage="You found an easter egg!";}}),
+        m88negg7:Item.extend({init:function(id){this._super(id,Types.Entities.M88NEGG7,"object");this.lootMessage="You found an easter egg!";}}),
+        m88nfabergeegg:Item.extend({init:function(id){this._super(id,Types.Entities.M88NFABERGEEGG,"object");this.lootMessage="You found a golden faberge easter egg!";}}),
+        m88ngem:Item.extend({init:function(id){this._super(id,Types.Entities.M88NGEM,"resource");this.lootMessage="You picked up a m88n gem!";}}),
         //mycupbloody
         EYEBALL:Item.extend({
             init:function(id){

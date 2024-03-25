@@ -1062,16 +1062,16 @@ let Properties = {
     balloondogb: {
         level: 2,
         drops: {
-            burger: 90,
-            GOLD: 10
+            burger: 50,
+            GOLD: 2
         },
     },
 
     balloondogy: {
         level: 4,
         drops: {
-            burger: 75,
-            GOLD: 25
+            burger: 50,
+            GOLD: 5
         },
     },
 
@@ -1079,23 +1079,25 @@ let Properties = {
         level: 6,
         drops: {
             burger: 50,
-            GOLD: 50
+            GOLD: 20
         },
     },
 
     balloondoga: {
         level: 8,
         drops: {
+            m88nmap: 1,
             burger: 25,
-            GOLD: 75
+            GOLD: 49
         },
     },
 
     balloondogv: {
         level: 10,
         drops: {
-            burger: 40,
-            GOLD: 50,
+            m88nmap: 2,
+            burger: 25,
+            GOLD: 40,
             GOLD2: 10
         },
     },
@@ -1103,8 +1105,9 @@ let Properties = {
     balloondogp: {
         level: 12,
         drops: {
+            m88nmap: 2,
             burger: 25,
-            GOLD: 50,
+            GOLD: 30,
             GOLD2: 25
         },
     },
@@ -1112,18 +1115,112 @@ let Properties = {
     balloonhotdogr: {
         level: 20,
         drops: {
+            m88nmap: 3,
             burger: 5,
             GOLD2: 20,
-            GOLD3: 75
+            GOLD3: 72
         },
     },
 
     balloongiraffeo: {
-        level: 30,
+        level: 50,
         drops: {
+            m88nmap: 5,
+            m88negg3: 1,
             burger: 5,
-            GOLD3: 95
+            GOLD3: 88
         },
+    },
+
+    sharkboss: {
+        level: 88,
+        drops: {
+            m88nmap: 15,
+            m88negg1: 15,
+            m88negg2: 15,
+            m88nfabergeegg: 10,
+            burger: 10,
+            m88ngem: 15,
+            GOLD3: 20,
+        },
+        messages: ['Mmmmm, tasty!', 'Yum!', 'Eww, that was a little tough...', 'Stay on land or come back with friends!'],
+        armorMod: 1,
+        hpMod: 5,
+        weaponMod: 0.8,
+        respawnDelay: 30000,
+        xp: 88000
+    },
+
+    m88ndirt: {
+        level: 1,
+        friendly: true, //not actually friendly, just AoE immune
+        hp: 1,
+        xp: 100000,
+        drops: {
+            m88nmap: 5,
+            m88ngem: 95,
+        },
+        respawnDelay: 10000
+    },
+
+    m88nbabymonkey: {
+        level: 1,
+        friendly: true
+    },
+
+    m88nbabychimp: {
+        level: 1,
+        friendly: true
+    },
+
+    m88nbabyape: {
+        level: 1,
+        friendly: true
+    },
+
+    m88nbabypenguin: {
+        level: 1,
+        friendly: true
+    },
+
+    m88nbabyturtle: {
+        level: 1,
+        friendly: true
+    },
+
+    m88ndaddyape: {
+        level: 1,
+        friendly: true
+    },
+
+    m88ndaddypenguin: {
+        level: 1,
+        friendly: true
+    },
+
+    m88ndaddyturtle: {
+        level: 1,
+        friendly: true
+    },
+
+    m88nparrot: {
+        level: 1,
+        friendly: true
+    },
+
+    m88ntoucan: {
+        level: 1,
+        friendly: true
+    },
+
+    m88nseal: {
+        level: 1,
+        friendly: true
+    },
+
+    m88nwalrus: {
+        level: 1,
+        friendly: true
     },
 
     //Short Destroyers
@@ -1357,6 +1454,50 @@ let Properties = {
         collectable: true,
         inventoryDescription: "Crystal",
         respawnDelay: 150000
+    },
+    m88negg1: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "immunity",
+            duration: 180000
+        },
+        inventoryDescription: "Immunity Easter Egg",
+        onConsume: function(player){
+            player.startInvincibility();
+        }
+    },
+    m88negg2: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "hpPotions",
+            duration: 60000
+        },
+        inventoryDescription: "HP Easter Egg",
+        onConsume: function(player){
+            player.regenHealthBy(300);
+        }
+    },
+    m88nfabergeegg: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "caged",
+            duration: 60000
+        },
+        inventoryDescription: "Golden Faberge Egg",
+        respawnDelay: 1500000,
+        onConsume: function(player) {
+            player.releaseMob(Types.Entities.BALLOONGIRAFFEO);
+        }
+    },
+    m88ngem: {
+        collectable: true,
+        inventoryDescription: "m88n gems",
+        collectItem: Types.Entities.M88NGEM,
+        collectAmount: 1,
+        respawnDelay: 1000000
     },
 
     // Projectiles

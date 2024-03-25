@@ -150,9 +150,6 @@ const Lakes = {
         level: 1,
         fish: {
             m88ndreamduckyy: "common",
-            m88ndreamduckyg: "uncommon",
-            m88ndreamduckyb: "rare",
-            m88ndreamduckyp: "epic",
             m88ndreamduckyr: "legendary",
         }
     },
@@ -161,7 +158,6 @@ const Lakes = {
         level: 2,
         fish: {
             m88ndreamcandyy: "common",
-            m88ndreamcandyo: "common",
             m88ndreamcandyp: "common",
             m88ndreamcandyg: "uncommon",
             m88ndreamcandyb: "rare",
@@ -171,15 +167,34 @@ const Lakes = {
     },
 
     m88nDreamPond3: {
-        level: 3,
+        level: 5,
         fish: {
             m88ndreamgumbally: "common",
-            m88ndreamgumballo: "common",
             m88ndreamgumballp: "common",
             m88ndreamgumballg: "uncommon",
             m88ndreamgumballb: "rare",
             m88ndreamgumballa: "epic",
             m88ndreamgumballr: "legendary",
+        }
+    },
+
+    m88nDreamPond4: {
+        level: 5,
+        fish: {
+            m88ndreamduckyg: "common",
+            m88ndreamduckyb: "rare",
+            m88ndreamduckyp: "epic",
+        }
+    },
+
+    m88ndarkpool: {
+        level: 3,
+        fish: {
+            m88ngmeshare: "common",
+            m88nwhiskey: "uncommon",
+            m88ndiamondhand: "rare",
+            m88ngoldenbanana: "epic",
+            m88nshorts: "legendary",
         }
     },
 
@@ -209,7 +224,7 @@ const Lakes = {
 const ConsumableFish = {
     hp: ["cobparadisefish","oafish27","m88ndreamcandyr"],
     atk: ["cobbluegill","oafish31","oafish22","m88ndreamduckyp"],
-    exp: ["cobgreensunfish","oafish36", "lollipop","m88ndreamgumballa"]
+    exp: ["cobgreensunfish","oafish36", "lollipop","m88ndreamgumballa","m88ngoldenbanana"]
 };
 
 //---END CONFIG---

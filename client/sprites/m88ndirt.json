@@ -1,0 +1,17 @@
+{
+	"id": "m88ndirt",
+	"width": 32,
+	"height": 32,
+	"animations": {
+		"death": {
+			"length": 6,
+			"row": 0
+		},
+		"idle_down": {
+			"length": 6,
+			"row": 1
+		}
+	},
+	"offset_x": -10,
+	"offset_y": -16
+}
