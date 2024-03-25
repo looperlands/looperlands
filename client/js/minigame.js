@@ -111,15 +111,6 @@ async function loadMinigamePlatform() {
     $(`#minigameMenu`).on('click', '#mgMAIZfm', () => loadMAIZFM());
     $('#minigameMenu').on('click', '#mgClose', () => closeMinigame());
     $(document).on('keydown', minigameKeyDown);  //CLOSE ON KEYPRESS = 'ESC'
-
-    function minigameKeyDown(event) {
-        if (event.which === 27 && $("#minigame").css("display") !== "none") {
-            closeMinigame();
-        } else {
-            $(document).off('keydown', minigameKeyDown); // REMOVE LISTENER SINCE MINIGAME DISPLAY IS OFF
-        }
-    }
-
     $('#resources').fadeOut(FADE_DURATION * 0.6); // HIDE IN GAME RESOURCES BY DEFAULT >> ALLOWS FOR A CLEANER TRANSITION
     $("#minigame").fadeIn(FADE_DURATION);
 }
@@ -200,6 +191,14 @@ function closeMinigame() {
             // NEED TO TRIGGER A RESOURCE REFRESH HERE
             $('#resources').fadeIn(FADE_DURATION * 0.6);
         }
+    }
+}
+
+function minigameKeyDown(event) {
+    if (event.which === 27 && $("#minigame").css("display") !== "none") {
+        closeMinigame();
+    }else{
+        $(document).off('keydown', minigameKeyDown); // REMOVE LISTENER SINCE MINIGAME DISPLAY IS OFF
     }
 }
 

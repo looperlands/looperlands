@@ -429,13 +429,10 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
                 stopping_position[i] = (stop_index * SYMBOL_SIZE - STOPPING_DISTANCE + reel_pixel_length) % reel_pixel_length;
             else
                 stopping_position[i] = (stop_index * SYMBOL_SIZE - STOPPING_DISTANCE) % reel_pixel_length;
-                console.log("[CURRENT SPIN DATA]");
-                console.log(currentSpinData);
             reels[i][(stop_index + 2) % reel_positions] = currentSpinData[0][i];
             reels[i][(stop_index + 3) % reel_positions] = currentSpinData[1][i];
             reels[i][(stop_index + 4) % reel_positions] = currentSpinData[2][i];
 
-            console.log(`${currentSpinData[0][i]} : ${currentSpinData[1][i]} : ${currentSpinData[2][i]}`);
         }
     }
 
