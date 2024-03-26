@@ -324,11 +324,12 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
         }
         if (payout > 0) {
             const PAYOUT_X = (can.width - REEL_AREA_WIDTH) / 2 + 1.5 * SYMBOL_SIZE + REEL_PADDING; //CENTER OF REEL 2
-            const PAYOUT_Y = can.height * 0.57;
-            ctx.font = `${payout_font_size}px GraphicPixel`;
+            const PAYOUT_Y = can.height * 0.569 - ((can.width * 0.1 - payout_font_size)/2);
+            ctx.font = `${payout_font_size}px Orbitron`;
             ctx.textAlign = "center";
-            ctx.shadowColor = "black";
-            ctx.shadowBlur = 10;
+            ctx.shadowColor = "white";
+            ctx.shadowBlur = 20;
+            ctx.fillText(payout, PAYOUT_X, PAYOUT_Y);
             ctx.fillText(payout, PAYOUT_X, PAYOUT_Y);
             ctx.fillText(payout, PAYOUT_X, PAYOUT_Y);
             ctx.fillText(payout, PAYOUT_X, PAYOUT_Y);
@@ -475,6 +476,7 @@ function logic_reward() {
             } 
             SND_PAYOUT.currentTime = 0;
             SND_PAYOUT.play();
+            payout_font_size = 0;
             show_payout_text = false;
         }
         spinInProgress = false;
@@ -502,19 +504,11 @@ function logic_reward() {
 
         //second section of payout code processed (zoom payout font up from zero to correct size)
         if (payout_display_delay_counter > 0) {
-            
-            // introduce a delay between each frame, each frame = too fast
-            if (reward_delay_counter > 0) {
-                reward_delay_counter--;
-                return;
-            }
-
             if (payout_font_size == can.width * 0.1){
                 // after getting font to correct size, wait out display delay before processing (to make sure rewards are shown for at least a min amount of time)
                 payout_display_delay_counter--;
             } else{
-                reward_delay_counter = payout < REWARD_GRAND_THRESHHOLD ? REWARD_DELAY : REWARD_DELAY_GRAND; //speed up big rewards
-                payout_font_size = Math.max(payout_font_size + ((can.width * 0.1) / FPS), can.width * 0.1);
+                payout_font_size = Math.min(payout_font_size + ((can.width * 0.1) / (0.33*FPS)), can.width * 0.1);
             }
 
             render_reel();
@@ -530,6 +524,7 @@ function logic_reward() {
 
             payout--;
             credits++;
+
             render_reel();
 
             if (payout >= REWARD_GRAND_THRESHHOLD) {
@@ -679,7 +674,7 @@ function logic_reward() {
     }
 
     // Create SVG text element with gradient for Payout Table Headers
-    function createSvgText(textContent, setWidth) {
+    function createSvgText(textContent) {
         const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
         svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
         svg.setAttribute('height', '7vh');

@@ -189,18 +189,38 @@ function closeMinigame() {
             //IN GAME RESOURCE DISPLAY HIDDEN
             $('#resources').fadeIn(FADE_DURATION * 0.6).addClass('hidden');
         } else {
-            // NEED TO TRIGGER A RESOURCE REFRESH HERE
-            $('#resources').fadeIn(FADE_DURATION * 0.6);
+            // REFRESH GOLD AMOUNT
+            const GOLD = "21300041";
+            getGoldAmount(GOLD).then(goldAmount => { 
+                $('#resources').fadeIn(FADE_DURATION * 0.6);
+                $(`#resource-${GOLD} .amount`).text(goldAmount); 
+            });
+            
         }
     }
 }
 
+// HANDLE ESC PRESS
 function minigameKeyDown(event) {
     if (event.which === 27 && $("#minigame").css("display") !== "none") {
         closeMinigame();
     } else {
         $(document).off('keydown', minigameKeyDown); // REMOVE LISTENER SINCE MINIGAME DISPLAY IS OFF
     }
+}
+
+// GET PLAYER GOLD BALANCE FROM SERVER
+function getGoldAmount(GOLD) {
+    return new Promise((resolve, reject) => {
+        const sessionId = new URLSearchParams(window.location.search).get('sessionId');
+        const inventoryQuery = `/session/${sessionId}/inventory`;
+        axios.get(inventoryQuery).then(response => {
+            resolve(response.data.resources[GOLD] || 0);
+        }).catch(error => {
+            reject(error);
+        });
+    });
+    
 }
 
 
