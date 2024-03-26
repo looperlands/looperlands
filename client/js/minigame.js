@@ -63,9 +63,9 @@ const MINIGAME_MENU =
  MINIGAME LOADER
 ****************/
 async function loadMinigame(minigame, app) {
-    console.log(`[LOADING MINIGAME: ${minigame}]`);
 
-    app.audioManager.fadeOutCurrentMusic(LOOPERLANDS_MUSIC_FADE_STEP);
+    if (app.audioManager) { app.audioManager.fadeOutCurrentMusic(LOOPERLANDS_MUSIC_FADE_STEP); }
+
     $("#minigameprompt").removeClass("active");
 
     // MINIGAME PLATFORM INITIAL SETUP
@@ -120,6 +120,7 @@ async function loadMinigamePlatform() {
  LOAD NEW MINIGAME
 ******************/
 async function loadNewGame(minigame) {
+    console.log(`[LOADING MINIGAME: ${minigame}]`);
     $("#minigame").append(`<div id="${minigame}" style="height:100%; width:100%; display:none"></div>`);  // GAME SPECIFIC DIV CONTAINER
     await loadMinigameContent(minigame);
     $(`#${minigame}`).fadeIn(FADE_DURATION);
@@ -197,7 +198,7 @@ function closeMinigame() {
 function minigameKeyDown(event) {
     if (event.which === 27 && $("#minigame").css("display") !== "none") {
         closeMinigame();
-    }else{
+    } else {
         $(document).off('keydown', minigameKeyDown); // REMOVE LISTENER SINCE MINIGAME DISPLAY IS OFF
     }
 }
