@@ -8160,6 +8160,11 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                     entity.onLeave(trigger, function () {
                         entity.triggerArea = null;
+                        if (!self.client) {
+                            $("#minigameprompt").removeClass('active');
+                            $("#minigameprompt").off(); // also, remove any listeners if player leaves area without click
+                            return;
+                        }
                         self.client.sendTrigger(trigger.id, false);
                         if (entity.id === self.player.id && trigger.minigame){
                             $("#minigameprompt").removeClass('active');
