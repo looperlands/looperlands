@@ -2560,6 +2560,258 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
 
+        m88nbunnyblue: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NBUNNYBLUE);
+                this.idleSpeed = 420;
+                this.walkSpeed = 225;
+                this.moveSpeed = 250;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
+        m88nbunnypink: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NBUNNYPINK);
+                this.idleSpeed = 420;
+                this.walkSpeed = 225;
+                this.moveSpeed = 250;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
+        m88nbunnyyellow: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NBUNNYYELLOW);
+                this.idleSpeed = 420;
+                this.walkSpeed = 225;
+                this.moveSpeed = 250;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
+        m88nbunnywhite: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NBUNNYWHITE);
+                this.idleSpeed = 420;
+                this.walkSpeed = 225;
+                this.moveSpeed = 250;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
+        m88nkittentabby: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NKITTENTABBY);
+                this.idleSpeed = 420;
+                this.walkSpeed = 225;
+                this.moveSpeed = 250;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
+        m88npuppyyorkie: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NPUPPYYORKIE);
+                this.idleSpeed = 420;
+                this.walkSpeed = 225;
+                this.moveSpeed = 250;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
+        m88ntigercub: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NTIGERCUB);
+                this.idleSpeed = 420;
+                this.walkSpeed = 225;
+                this.moveSpeed = 250;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
+        m88nbabyduck: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NBABYDUCK);
+                this.idleSpeed = 420;
+                this.walkSpeed = 225;
+                this.moveSpeed = 250;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
+        m88nbabypig: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NBABYPIG);
+                this.idleSpeed = 420;
+                this.walkSpeed = 225;
+                this.moveSpeed = 250;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
+        m88nflamingo: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NFLAMINGO);
+                this.idleSpeed = 420;
+                this.walkSpeed = 225;
+                this.moveSpeed = 250;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
+        m88nfrog: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NFROG);
+                this.idleSpeed = 420;
+                this.walkSpeed = 225;
+                this.moveSpeed = 250;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
+        m88ngoat: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NGOAT);
+                this.idleSpeed = 420;
+                this.walkSpeed = 225;
+                this.moveSpeed = 250;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
+        m88nswan: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NSWAN);
+                this.idleSpeed = 420;
+                this.walkSpeed = 225;
+                this.moveSpeed = 250;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
+        m88nvulture: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NVULTURE);
+                this.idleSpeed = 420;
+                this.walkSpeed = 225;
+                this.moveSpeed = 250;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
         //Short Destroyers
         lateflea: Mob.extend({
             init: function(id) {

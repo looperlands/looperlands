@@ -275,6 +275,10 @@ define(['item'], function(Item) {
         m88negg7:Item.extend({init:function(id){this._super(id,Types.Entities.M88NEGG7,"object");this.lootMessage="You found an easter egg!";}}),
         m88nfabergeegg:Item.extend({init:function(id){this._super(id,Types.Entities.M88NFABERGEEGG,"object");this.lootMessage="You found a golden faberge easter egg!";}}),
         m88ngem:Item.extend({init:function(id){this._super(id,Types.Entities.M88NGEM,"resource");this.lootMessage="You picked up a m88n gem!";}}),
+        m88nmoneybags:Item.extend({init:function(id){this._super(id,Types.Entities.M88NMONEYBAGS,"object");this.lootMessage="You picked up a big bag of money!";}}),
+        m88ngoldenpoo:Item.extend({init:function(id){this._super(id,Types.Entities.M88NGOLDENPOO,"object");this.lootMessage="You picked up a shiny golden poo!";}}),
+        m88ngoldenchalis:Item.extend({init:function(id){this._super(id,Types.Entities.M88NGOLDENCHALIS,"object");this.lootMessage="You picked up a golden chalis!";}}),
+        m88ndrsgme:Item.extend({init:function(id){this._super(id,Types.Entities.M88NDRSGME,"object");this.lootMessage="You picked up a DRS'd share of GME!";}}),
         //mycupbloody
         EYEBALL:Item.extend({
             init:function(id){

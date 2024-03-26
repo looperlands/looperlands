@@ -1126,7 +1126,6 @@ let Properties = {
         level: 50,
         drops: {
             m88nmap: 5,
-            m88negg3: 1,
             burger: 5,
             GOLD3: 88
         },
@@ -1219,6 +1218,76 @@ let Properties = {
     },
 
     m88nwalrus: {
+        level: 1,
+        friendly: true
+    },
+
+    m88nbunnyblue: {
+        level: 1,
+        friendly: true
+    },
+
+    m88nbunnypink: {
+        level: 1,
+        friendly: true
+    },
+
+    m88nbunnyyellow: {
+        level: 1,
+        friendly: true
+    },
+
+    m88nbunnywhite: {
+        level: 1,
+        friendly: true
+    },
+
+    m88nkittentabby: {
+        level: 1,
+        friendly: true
+    },
+
+    m88npuppyyorkie: {
+        level: 1,
+        friendly: true
+    },
+
+    m88ntigercub: {
+        level: 1,
+        friendly: true
+    },
+
+    m88nbabyduck: {
+        level: 1,
+        friendly: true
+    },
+
+    m88nbabypig: {
+        level: 1,
+        friendly: true
+    },
+
+    m88nflamingo: {
+        level: 1,
+        friendly: true
+    },
+
+    m88nfrog: {
+        level: 1,
+        friendly: true
+    },
+
+    m88ngoat: {
+        level: 1,
+        friendly: true
+    },
+
+    m88nswan: {
+        level: 1,
+        friendly: true
+    },
+
+    m88nvulture: {
         level: 1,
         friendly: true
     },
@@ -1479,6 +1548,58 @@ let Properties = {
             player.regenHealthBy(300);
         }
     },
+    m88negg3: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "caged",
+            duration: 60000
+        },
+        inventoryDescription: "Special Easter Egg",
+        respawnDelay: 1500000,
+        onConsume: function(player) {
+            player.releaseMob(Types.Entities.M88NBUNNYBLUE);
+        }
+    },
+    m88negg4: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "caged",
+            duration: 60000
+        },
+        inventoryDescription: "Special Easter Egg",
+        respawnDelay: 1500000,
+        onConsume: function(player) {
+            player.releaseMob(Types.Entities.M88NBUNNYPINK);
+        }
+    },
+    m88negg5: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "caged",
+            duration: 60000
+        },
+        inventoryDescription: "Special Easter Egg",
+        respawnDelay: 1500000,
+        onConsume: function(player) {
+            player.releaseMob(Types.Entities.M88NBUNNYYELLOW);
+        }
+    },
+    m88negg6: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "caged",
+            duration: 60000
+        },
+        inventoryDescription: "Special Easter Egg",
+        respawnDelay: 1500000,
+        onConsume: function(player) {
+            player.releaseMob(Types.Entities.M88NBUNNYWHITE);
+        }
+    },
     m88nfabergeegg: {
         collectable: true,
         consumable: true,
@@ -1498,6 +1619,33 @@ let Properties = {
         collectItem: Types.Entities.M88NGEM,
         collectAmount: 1,
         respawnDelay: 1000000
+    },
+    m88nmoneybags: {
+        collectable: true,
+        inventoryDescription: "Money Bags",
+        respawnDelay: 150000
+    },
+    m88ngoldenpoo: {
+        collectable: true,
+        inventoryDescription: "Golden Poo",
+        respawnDelay: 150000
+    },
+    m88ngoldenchalis: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "immunity",
+            duration: 180000
+        },
+        inventoryDescription: "Golden Chalis",
+        onConsume: function(player){
+            player.startInvincibility();
+        }
+    },
+    m88ndrsgme: {
+        collectable: true,
+        inventoryDescription: "DRS'd GME",
+        respawnDelay: 150000
     },
 
     // Projectiles
