@@ -1,13 +1,14 @@
 import fs from 'fs';
 
+const GENERATIONS = 100;
 const TOTAL_SPINS = 69420;
 const SYMBOL_COUNT = 12;
 const LINE_COUNT = 3;
 const LINES_PLAYED = 3;
 const WILD_NUMBERS = [0, 1];
 const WILD_COUNTS_AS = 10;
-const WINNING_COMBO_LIMITS = [0, 0, 20000, 10000, 5000, 1000, 500, 100, 10, 5, 2, 1];
-const WILD_WIN_COMBO_LIMITS = [0, 0, 12000, 6000, 3000, 500, 250, 50, 5, 1, 0, 0];
+const WINNING_COMBO_LIMITS = [0, 0, 20000, 10000, 5000, 1000, 500, 200, 20, 4, 1, 1];
+const WILD_WIN_COMBO_LIMITS = [0, 0, 12000, 6000, 3000, 500, 250, 100, 10, 1, 0, 0];
 const MAX_TRIPLE_WILD = 0;
 const WINNING_COMBO_COUNT = WINNING_COMBO_LIMITS.reduce((sum, val) => sum + val, 0);
 const PAYOUTS_BASE = [0, 0, 1, 4, 7, 13, 42, 69, 350, 1337, 9001, 42069];
@@ -38,7 +39,8 @@ let allInRange = false;
 let RTPstring = '';
 
 let options = 0;
-while (options < 100) {
+console.log(WINNING_COMBO_LIMITS);
+while (options < GENERATIONS) {
     allInRange = false;
     while (!allInRange) {
         winningComboTracker = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -73,7 +75,7 @@ async function generateAllSpins() {
     abortCurrentCalc = false;
     const spins = [];
     let spinDataGenerated = false;
-    process.stdout.write('Processing');
+    process.stdout.write(`Processing (${options + 1}/${GENERATIONS})`);
 
     while (!spinDataGenerated && !abortCurrentCalc) {
         const spin = await generateSpin();
@@ -294,7 +296,7 @@ function checkInRange() {
     RTPstring = RTParray.join("_");
     process.stdout.clearLine(0);
     process.stdout.cursorTo(0);
-    console.log(`${RTParray.join(" : ")}: ${!outOfRange ? "[OK]" : "[NG]"}`);
+    console.log(`${!outOfRange ? "[OK]" : "[NG]"} ${RTParray.join(" : ")}`);
 }
 
 
@@ -311,9 +313,9 @@ function Summary(spinData) {
     summaryString += `\nNUMBER OF MULTIWINNERS: ${doublewinners + triplewinners}\n`;
     summaryString += `MULTIWINS WITH TWO WINNERS: ${doublewinners}\n`;
     summaryString += `MULTIWINS WITH THREE WINNERS: ${triplewinners}\n`;
-    summaryString += `NUMBER OF TRIPLE WILD WINS: ${wildWins[2]}\n`;
-    summaryString += `NUMBER OF DOUBLE WILD WINS: ${wildWins[1]}\n`;
-    summaryString += `NUMBER OF SINGLE WILD WINS: ${wildWins[0]}\n`;
+    //summaryString += `NUMBER OF TRIPLE WILD WINS: ${wildWins[2]}\n`;
+    //summaryString += `NUMBER OF DOUBLE WILD WINS: ${wildWins[1]}\n`;
+    //summaryString += `NUMBER OF SINGLE WILD WINS: ${wildWins[0]}\n`;
 
     summaryString += '\n[PAYOUT TABLE]\n';
     for (let i = (winningComboTracker.length - 1); i >= 0; i--) {
@@ -338,43 +340,6 @@ function Summary(spinData) {
     return summaryString;
 }
 
-function printSummary(spinData) {
-
-    console.log("\n=================");
-    console.log("SPIN DATA SUMMARY");
-    console.log("=================");
-
-    console.log(`\nNUMBER OF SPINS GENERATED: ${spinData.length}`);
-    console.log(`NUMBER OF WINNING SPINS: ${winningSpins}`);
-    console.log(`NUMBER OF NONWINNING SPINS: ${nonwinTracker}`);
-    console.log(`WINNING COMBOS ACROSS SPINS: ${winningComboTracker.reduce((sum, val) => sum + val, 0)}`);
-    console.log(`\nNUMBER OF MULTIWINNERS: ${doublewinners + triplewinners}`);
-    console.log(`MULTIWINS WITH TWO WINNERS: ${doublewinners}`);
-    console.log(`MULTIWINS WITH THREE WINNERS: ${triplewinners}`);
-    console.log(`NUMBER OF TRIPLE WILD WINS: ${wildWins[2]}`);
-    console.log(`NUMBER OF DOUBLE WILD WINS: ${wildWins[1]}`);
-    console.log(`NUMBER OF SINGLE WILD WINS: ${wildWins[0]}`);
-
-    console.log('\n[PAYOUT TABLE]');
-    for (let i = (winningComboTracker.length - 1); i >= 0; i--) {
-        if (!WILD_NUMBERS.includes(i)) {
-            console.log(`[${i}] WINNING COMBOS: ${winningComboTracker[i]}, BASE PAYOUT: ${PAYOUTS_BASE[i]}`);
-        } else {
-            console.log(`[${i}] IS SET TO WILD`);
-        }
-    }
-
-    let scenarioStrings = ['BET 1 LINE', 'BET 2 LINES', 'BET 3 LINES', 'MOST EFFICIENT', 'LEAST EFFICIENT'];
-
-    console.log(`\n[PLAY SCENARIOS]`);
-
-    for (let i = 0; i < scenarioStrings.length; i++) {
-        console.log(`${scenarioStrings[i]} >> IN = ${totalPayin[i]} : OUT = ${totalPayout[i]} : HOUSE PROFIT = ${totalProfit[i]} (${(totalPayout[i] / totalPayin[i] * 100).toFixed(1)}%)`);
-    }
-
-    console.log(`SUM OF SCENARIO PROFITS: ${totalProfit.reduce((sum, val) => sum + val, 0)}`);
-}
-
 function formatArray(array) {
     return array.map((row) => `            [${row.join("], \n            [")}],`).join("\n        ],\n        [\n");
 }
@@ -390,7 +355,7 @@ function shuffleArray(array) {
 function writeToFile(spinData, summaryString) {
     const formattedSpin = formatArray(shuffleArray(spinData));
     const filePath = `./${RTPstring}.txt`;
-    const fileContent = `const spins =\n[\n        [\n${formattedSpin}\n        ],\n    ];\n\nmodule.exports = spins; \n /*\n${summaryString}\n*/`;
+    const fileContent = `/*\n${summaryString}\n*/\n\nconst spinSet =\n[\n        [\n${formattedSpin}\n        ],\n    ];\n\nmodule.exports = \{spinSet\};`;
     fs.writeFileSync(filePath, fileContent);
     console.log(`File written to ${filePath}\n`);
 }
