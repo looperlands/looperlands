@@ -16,15 +16,14 @@ async function getSpin(platformClient, sessionData, linesPlayed, betPerLine) {
 
     while (retryCount < MAX_RETRY_COUNT) {
         try {
-            const { chosenSpin, payout, winningLines } = await getSpinFromServer(platformClient, linesPlayed);
+            let { chosenSpin, payout, winningLines } = await getSpinFromServer(platformClient, linesPlayed);
 
             if (payout > 0) {
-                const amountToPayout = payout * betPerLine;
-                await dao.transferResourceFromTo(CORNHOLE, nftId, amountToPayout);
+                payout = payout * betPerLine;
+                await dao.transferResourceFromTo(CORNHOLE, nftId, payout);
             }
 
             return { chosenSpin, payout, winningLines };
-            break;
         } catch (error) {
             if (error.code === 'EADDRINUSE') {
                 retryCount++;
