@@ -1105,6 +1105,7 @@ WS.socketIOServer = Server.extend({
             const spinResult = payout - spinCost;
             const player = self.worldsMap[sessionData.mapId].getPlayerById(sessionData.entityId);
             player.incrementResourceAmount(Types.Entities.GOLD, spinResult);
+            player.resetTimeout();
 
             const response = {
                 spinData: chosenSpin,

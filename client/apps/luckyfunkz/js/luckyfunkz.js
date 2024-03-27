@@ -48,10 +48,11 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
     const SYMBOL_SIZE = 32 * SCALE;
     const SYMBOLS = [];
     const REEL_AREA_WIDTH = SYMBOL_SIZE * REEL_COUNT + REEL_PADDING * (REEL_COUNT - 1);
-    const REEL_AREA_HEIGHT = SYMBOL_SIZE * ROW_COUNT;
     const REELS_BGS = [];
     const CREDIT_PANEL = new Image();
+    const SND_BUTTON = new Audio("apps/luckyfunkz/assets/audio/button.wav");
     const SND_WIN = new Audio("apps/luckyfunkz/assets/audio/win.wav");
+    const SND_REEL_SPIN = new Audio("apps/luckyfunkz/assets/audio/spin.wav");
     const SND_REEL_STOP = Array.from({ length: 3 }, () => new Audio("apps/luckyfunkz/assets/audio/reel_stop.wav"));
     const SND_PAYOUT = new Audio("apps/luckyfunkz/assets/audio/payout.wav");
     const SND_PAYOUT_REPEAT = new Audio("apps/luckyfunkz/assets/audio/payout_repeat.wav");
@@ -85,6 +86,7 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
     let payout_font_size = 0;
     let show_payout_text = false;
     let reels = [];
+    let reel_repeater_on = false;
     let reel_positions = 0;
     let reel_pixel_length = 0;
     let reel_position = new Array(REEL_COUNT);
@@ -228,11 +230,19 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
     function setupEventListeners() {
         $(`#minigameMenu`).on('click', '#mgPayouts', () => getPayoutTable(true));
         $(`#luckyfunkz`).on('fadeIn', () => setupLuckyFUNKZmenu());
-        $(`#luckyfunkz`).on('click', '#autoSpinButton', () => $("#autoSpinButton").toggleClass("on off"));
+        $(`#luckyfunkz`).on('click', '#autoSpinButton', () => {
+            SND_BUTTON.currentTime = 0;
+            SND_BUTTON.play();
+            $("#autoSpinButton").toggleClass("on off");
+        });
         $(`#luckyfunkz`).on('click', '#lineButton', () => increaseLines());
         $(`#luckyfunkz`).on('click', '#betButton', () => increaseBet());
         $(`#luckyfunkz`).on('click', '#maxBetButton', () => setBetMax());
-        $(`#luckyfunkz`).on('click', '#spinButton', () => spin());
+        $(`#luckyfunkz`).on('click', '#spinButton', () => {
+            SND_BUTTON.currentTime = 0;
+            SND_BUTTON.play();
+            spin();
+        });
         $(window).on('resize', () => updateButtonPanelWidth());
     }
 
@@ -324,7 +334,7 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
         }
         if (payout > 0) {
             const PAYOUT_X = (can.width - REEL_AREA_WIDTH) / 2 + 1.5 * SYMBOL_SIZE + REEL_PADDING; //CENTER OF REEL 2
-            const PAYOUT_Y = can.height * 0.569 - ((can.width * 0.1 - payout_font_size)/2);
+            const PAYOUT_Y = can.height * 0.569 - ((can.width * 0.1 - payout_font_size) / 2);
             ctx.font = `${payout_font_size}px Orbitron`;
             ctx.textAlign = "center";
             ctx.shadowColor = "white";
@@ -339,7 +349,7 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
             ctx.lineWidth = 8;
             ctx.strokeStyle = "white";
             ctx.strokeText(payout, PAYOUT_X, PAYOUT_Y);
-            ctx.lineWidth = 4;
+            ctx.lineWidth = 2;
             ctx.strokeStyle = "magenta";
             ctx.strokeText(payout, PAYOUT_X, PAYOUT_Y);
         }
@@ -404,6 +414,7 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
 
     // Handle reels accelerating to full speed
     function logic_spinup() {
+
         for (let i = 0; i < REEL_COUNT; i++) {
             move_reel(i);
             reel_speed[i] += SPINUP_ACCELERATION;
@@ -459,6 +470,9 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
                         try {
                             SND_REEL_STOP[i].currentTime = 0;
                             SND_REEL_STOP[i].play();
+                            if (i == (REEL_COUNT - 1)) {
+                                SND_REEL_SPIN.pause();
+                            }
                         } catch (err) { }
                     }
                 }
@@ -466,83 +480,83 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
         }
     }
 
-// Process rewards, play sound effects, etc.
-function logic_reward() {
-    if (payout == 0) {
-        if (show_payout_text) {
-            if (payout_repeater_on){
-                SND_PAYOUT_REPEAT.pause();              // Stop the repeater
-                payout_repeater_on = false;
-            } 
-            SND_PAYOUT.currentTime = 0;
-            SND_PAYOUT.play();
-            payout_font_size = 0;
-            show_payout_text = false;
-        }
-        spinInProgress = false;
-        $('#minigame').removeClass("pauseClose");
-        toggleMinigameCloseButton();
-        game_state = STATE_REST;
-        return;
-    }
-
-    if (!show_payout_text) { 
-        // first section of payout code processed (start looping reward sound, set varibles)
-        SND_WIN.currentTime = 0;
-        SND_WIN.play();  // PLAY INITIAL WIN SOUND
-        show_payout_text = true;
-        payout_display_delay_counter = PAYOUT_DISPLAY_DELAY;
-
-    } else {
-        
-        if(!payout_repeater_on && payout > 7){
-            SND_PAYOUT_REPEAT.currentTime = 0;      // Set play from location back to start
-            SND_PAYOUT_REPEAT.loop = true;
-            SND_PAYOUT_REPEAT.play();
-            payout_repeater_on = true;    
-        }
-
-        //second section of payout code processed (zoom payout font up from zero to correct size)
-        if (payout_display_delay_counter > 0) {
-            if (payout_font_size == can.width * 0.1){
-                // after getting font to correct size, wait out display delay before processing (to make sure rewards are shown for at least a min amount of time)
-                payout_display_delay_counter--;
-            } else{
-                payout_font_size = Math.min(payout_font_size + ((can.width * 0.1) / (0.33*FPS)), can.width * 0.1);
+    // Process rewards, play sound effects, etc.
+    function logic_reward() {
+        if (payout == 0) {
+            if (show_payout_text) {
+                if (payout_repeater_on) {
+                    SND_PAYOUT_REPEAT.pause();              // Stop the repeater
+                    payout_repeater_on = false;
+                }
+                SND_PAYOUT.currentTime = 0;
+                SND_PAYOUT.play();
+                payout_font_size = 0;
+                show_payout_text = false;
             }
-
-            render_reel();
+            spinInProgress = false;
+            $('#minigame').removeClass("pauseClose");
+            toggleMinigameCloseButton();
+            game_state = STATE_REST;
             return;
+        }
+
+        if (!show_payout_text) {
+            // first section of payout code processed (start looping reward sound, set varibles)
+            SND_WIN.currentTime = 0;
+            SND_WIN.play();  // PLAY INITIAL WIN SOUND
+            show_payout_text = true;
+            payout_display_delay_counter = PAYOUT_DISPLAY_DELAY;
 
         } else {
-            // After getting font to size and showing for min amount of time, process payout >> credit
 
-            if (reward_delay_counter > 0) {
-                reward_delay_counter--;
-                return;
+            if (!payout_repeater_on && payout > 7) {
+                SND_PAYOUT_REPEAT.currentTime = 0;      // Set play from location back to start
+                SND_PAYOUT_REPEAT.loop = true;
+                SND_PAYOUT_REPEAT.play();
+                payout_repeater_on = true;
             }
 
-            payout--;
-            credits++;
-
-            render_reel();
-
-            if (payout >= REWARD_GRAND_THRESHHOLD) {
-                blink_delay_counter++;
-                if (blink_delay_counter == 3) {
-                    blink_on = !blink_on;
-                    blink_delay_counter = 0;
+            //second section of payout code processed (zoom payout font up from zero to correct size)
+            if (payout_display_delay_counter > 0) {
+                if (payout_font_size == can.width * 0.1) {
+                    // after getting font to correct size, wait out display delay before processing (to make sure rewards are shown for at least a min amount of time)
+                    payout_display_delay_counter--;
+                } else {
+                    payout_font_size = Math.min(payout_font_size + ((can.width * 0.1) / (0.33 * FPS)), can.width * 0.1);
                 }
-            } else if (payout < 4) {
-                blink_on = false;
-            } else {
-                blink_on = !blink_on;
-            }
 
-            reward_delay_counter = payout < REWARD_GRAND_THRESHHOLD ? REWARD_DELAY : REWARD_DELAY_GRAND; //speed up big rewards
+                render_reel();
+                return;
+
+            } else {
+                // After getting font to size and showing for min amount of time, process payout >> credit
+
+                if (reward_delay_counter > 0) {
+                    reward_delay_counter--;
+                    return;
+                }
+
+                payout--;
+                credits++;
+
+                render_reel();
+
+                if (payout >= REWARD_GRAND_THRESHHOLD) {
+                    blink_delay_counter++;
+                    if (blink_delay_counter == 3) {
+                        blink_on = !blink_on;
+                        blink_delay_counter = 0;
+                    }
+                } else if (payout < 4) {
+                    blink_on = false;
+                } else {
+                    blink_on = !blink_on;
+                }
+
+                reward_delay_counter = payout < REWARD_GRAND_THRESHHOLD ? REWARD_DELAY : REWARD_DELAY_GRAND; //speed up big rewards
+            }
         }
     }
-}
 
     //---- Input Functions ---------------------------------------------
 
@@ -571,6 +585,9 @@ function logic_reward() {
 
             if (credits < playing_lines * bet || game_state !== STATE_REST) return;
 
+            SND_REEL_SPIN.currentTime = 0;
+            SND_REEL_SPIN.play();
+
             $('#minigame').addClass("pauseClose");
             toggleMinigameCloseButton();
             credits -= playing_lines * bet;
@@ -597,16 +614,22 @@ function logic_reward() {
     }
 
     function increaseLines() {
+        SND_BUTTON.currentTime = 0;
+        SND_BUTTON.play();
         playing_lines = playing_lines === MAX_LINES ? 1 : playing_lines + 1;
         render_reel();
     }
 
     function increaseBet() {
+        SND_BUTTON.currentTime = 0;
+        SND_BUTTON.play();
         bet = bet === MAX_BET ? 1 : bet + 1;
         render_reel();
     }
 
     function setBetMax() {
+        SND_BUTTON.currentTime = 0;
+        SND_BUTTON.play();
         bet = MAX_BET;
         render_reel();
     }
