@@ -25,10 +25,10 @@ const BASE_ATTACK_RATE = 800;
 const XP_BATCH_SIZE = 500;
 
 const mapflows = require("./flows/mapflow.js");
-const {getItemCount} = require("./dao");
+const { getItemCount } = require("./dao");
 
 module.exports = Player = Character.extend({
-    init: function(connection, worldServer) {
+    init: function (connection, worldServer) {
         var self = this;
 
         this.server = worldServer;
@@ -54,28 +54,28 @@ module.exports = Player = Character.extend({
 
         this.playerEventBroker = new PlayerEventBroker.PlayerEventBroker(this);
 
-        this.connection.listen(async function(message) {
+        this.connection.listen(async function (message) {
 
             var action = parseInt(message[0]);
 
             //console.debug("Received: " + message, "from " + self.connection.id);
-            if(!check(message)) {
-                self.connection.close("Invalid "+Types.getMessageTypeAsString(action)+" message format: "+message);
+            if (!check(message)) {
+                self.connection.close("Invalid " + Types.getMessageTypeAsString(action) + " message format: " + message);
                 return;
             }
 
-            if(!self.hasEnteredGame && action !== Types.Messages.HELLO) { // HELLO must be the first message
-                self.connection.close("Invalid handshake message: "+message);
+            if (!self.hasEnteredGame && action !== Types.Messages.HELLO) { // HELLO must be the first message
+                self.connection.close("Invalid handshake message: " + message);
                 return;
             }
-            if(self.hasEnteredGame && !self.isDead && action === Types.Messages.HELLO) { // HELLO can be sent only once
-                self.connection.close("Cannot initiate handshake twice: "+message);
+            if (self.hasEnteredGame && !self.isDead && action === Types.Messages.HELLO) { // HELLO can be sent only once
+                self.connection.close("Cannot initiate handshake twice: " + message);
                 return;
             }
 
             self.resetTimeout();
 
-            if(action === Types.Messages.HELLO) {
+            if (action === Types.Messages.HELLO) {
                 var name = Utils.sanitize(message[1]);
 
                 // If name was cleared by the sanitizer, give a default name.
@@ -148,35 +148,35 @@ module.exports = Player = Character.extend({
                 self.playerEventBroker.spawnEvent(self, playerCache.checkpointId);
 
             }
-            else if(action === Types.Messages.WHO) {
+            else if (action === Types.Messages.WHO) {
                 message.shift();
                 self.server.pushSpawnsToPlayer(self, message);
             }
-            else if(action === Types.Messages.ZONE) {
+            else if (action === Types.Messages.ZONE) {
                 self.zone_callback();
             }
-            else if(action === Types.Messages.CHAT) {
+            else if (action === Types.Messages.CHAT) {
                 var msg = Utils.sanitize(message[1]);
 
                 // Sanitized messages may become empty. No need to broadcast empty chat messages.
-                if(msg && msg !== "") {
+                if (msg && msg !== "") {
                     msg = msg.substr(0, 60); // Enforce maxlength of chat input
                     self.broadcastToZone(new Messages.Chat(self, msg), false);
                     chat.addMessage(self.name, msg);
                 }
             }
-            else if(action === Types.Messages.EMOTE) {
+            else if (action === Types.Messages.EMOTE) {
                 var emotion = Utils.sanitize(message[1]);
                 self.broadcastToZone(new Messages.Emote(self, emotion), false);
                 let emoticon = Types.emotions[emotion];
                 discord.sendMessage(`${self.name} ${emoticon}`);
             }
-            else if(action === Types.Messages.MOVE) {
-                if(self.move_callback) {
+            else if (action === Types.Messages.MOVE) {
+                if (self.move_callback) {
                     var x = message[1],
                         y = message[2];
 
-                    if(self.server.isValidPosition(x, y)) {
+                    if (self.server.isValidPosition(x, y)) {
                         self.setPosition(x, y);
                         self.clearTarget();
                         self.broadcast(new Messages.Move(self));
@@ -186,7 +186,7 @@ module.exports = Player = Character.extend({
                 }
             }
             else if (action === Types.Messages.SUMMON_FOLLOW) {
-                if(self.move_callback) {
+                if (self.move_callback) {
                     let x = message[1],
                         y = message[2];
 
@@ -204,12 +204,12 @@ module.exports = Player = Character.extend({
                     }
                 }
             }
-            else if(action === Types.Messages.LOOTMOVE) {
-                if(self.lootmove_callback) {
+            else if (action === Types.Messages.LOOTMOVE) {
+                if (self.lootmove_callback) {
                     self.setPosition(message[1], message[2]);
 
                     var item = self.server.getEntityById(message[3]);
-                    if(item) {
+                    if (item) {
                         self.clearTarget();
                         if (Types.isWeapon(item.kind) && self.getNFTWeapon() !== undefined) {
                             console.log("Todo: increment NFT item experience")
@@ -221,36 +221,36 @@ module.exports = Player = Character.extend({
                     }
                 }
             }
-            else if(action === Types.Messages.AGGRO) {
-                if(self.move_callback) {
+            else if (action === Types.Messages.AGGRO) {
+                if (self.move_callback) {
                     self.server.handleMobHate(message[1], self.id, 5);
 
                     // Handle special attack timeouts on encounter start
                     let mob = self.server.getEntityById(message[1]);
-                    if(mob) {
+                    if (mob) {
                         self.server.handleMobSpecial(mob);
                     }
                 }
             }
-            else if(action === Types.Messages.ATTACK) {
+            else if (action === Types.Messages.ATTACK) {
                 var mob = self.server.getEntityById(message[1]);
-                if(mob) {
+                if (mob) {
                     self.setTarget(mob);
                     self.server.broadcastAttacker(self);
                 }
             }
-            else if(action === Types.Messages.SELECTPROJECTILE) {
+            else if (action === Types.Messages.SELECTPROJECTILE) {
                 self.selectedProjectile = message[1];
             }
-            else if(action === Types.Messages.SHOOT) {
+            else if (action === Types.Messages.SHOOT) {
                 let nftWeapon = self.getNFTWeapon();
-                if (nftWeapon !== undefined && !(nftWeapon instanceof NFTWeapon.NFTWeapon)){
+                if (nftWeapon !== undefined && !(nftWeapon instanceof NFTWeapon.NFTWeapon)) {
                     return;
                 }
                 var mob = self.server.getEntityById(message[1]);
-                if(mob) {
+                if (mob) {
                     let usedProjectile = self.getProjectileToUse();
-                    if(usedProjectile === null) {
+                    if (usedProjectile === null) {
                         self.server.pushToPlayer(self, new Messages.OutOfAmmo());
                         return;
                     }
@@ -264,15 +264,15 @@ module.exports = Player = Character.extend({
                     }
                 }
             }
-            else if(action === Types.Messages.HIT) {
+            else if (action === Types.Messages.HIT) {
                 let nftWeapon = self.getNFTWeapon();
-                if (nftWeapon !== undefined && !(nftWeapon instanceof NFTWeapon.NFTWeapon)){
+                if (nftWeapon !== undefined && !(nftWeapon instanceof NFTWeapon.NFTWeapon)) {
                     return;
                 }
 
                 var mob = self.server.getEntityById(message[1]);
 
-                if(mob) {
+                if (mob) {
                     let newAttackRate = BASE_ATTACK_RATE;
 
                     if (mob instanceof Player) {
@@ -281,8 +281,8 @@ module.exports = Player = Character.extend({
                         let level = self.getLevel();
                         let totalLevel = (self.getWeaponLevel() + level);
                         let buff = self.getActiveBuff();
-                        if (buff && buff.stat === "atk"){
-                            totalLevel = totalLevel*(100 + buff.percent)/100;
+                        if (buff && buff.stat === "atk") {
+                            totalLevel = totalLevel * (100 + buff.percent) / 100;
                         }
 
                         let weaponTrait = self.getNFTWeaponActiveTrait();
@@ -294,7 +294,7 @@ module.exports = Player = Character.extend({
                             dmg *= multiplier;
                             dmg = Math.round(dmg);
 
-                            if(dmg > 0) {
+                            if (dmg > 0) {
                                 mob.receiveDamage(dmg, self.id);
                                 //console.log("Player "+self.id+" hit mob "+mob.id+" for "+dmg+" damage.", mob.type);
                                 self.server.handleMobHate(mob.id, self.id, dmg);
@@ -311,7 +311,7 @@ module.exports = Player = Character.extend({
                             } else {
                                 let entityIds = Object.keys(group.entities);
                                 let totalCleaveDmg = 0;
-                                entityIds.forEach(function(id) {
+                                entityIds.forEach(function (id) {
                                     let entity = group.entities[id];
                                     if (entity && entity.type !== undefined && entity.type === 'mob' && !Properties[Types.getKindAsString(entity.kind)].friendly) {
                                         let distance = Utils.distanceTo(self.x, self.y, entity.x, entity.y);
@@ -319,7 +319,7 @@ module.exports = Player = Character.extend({
                                             handleDamage(mob, totalLevel, 1);
                                         }
                                         else if (distance <= 1) {
-                                           totalCleaveDmg += handleDamage(entity, totalLevel, 0.8);
+                                            totalCleaveDmg += handleDamage(entity, totalLevel, 0.8);
                                         }
                                     }
                                 });
@@ -344,15 +344,15 @@ module.exports = Player = Character.extend({
                         }
                     }
 
-                    if (newAttackRate != self.getAttackRate()){
+                    if (newAttackRate != self.getAttackRate()) {
                         self.setAttackRate(newAttackRate);
                     }
                 }
             }
-            else if(action === Types.Messages.HURT) {
+            else if (action === Types.Messages.HURT) {
                 var mob = self.server.getEntityById(message[1]);
 
-                if (mob instanceof Mob){
+                if (mob instanceof Mob) {
                     let kindString = Types.getKindAsString(mob.kind);
                     let aoeProps = Properties[kindString].aoe;
 
@@ -365,25 +365,25 @@ module.exports = Player = Character.extend({
                     self.handleHurt(mob);
                 }
             }
-            else if(action === Types.Messages.LOOT) {
+            else if (action === Types.Messages.LOOT) {
                 var item = self.server.getEntityById(message[1]);
 
-                if(item) {
+                if (item) {
                     var kind = item.kind;
 
-                    if(Types.isItem(kind)) {
+                    if (Types.isItem(kind)) {
                         self.playerEventBroker.lootEvent(item, 1);
                         self.broadcast(item.despawn());
                         self.server.removeEntity(item);
 
-                        if(kind === Types.Entities.FIREPOTION || kind === Types.Entities.COBCORN || kind === Types.Entities.EYEBALL || kind === Types.Entities.ENERGYDRINK) {
+                        if (kind === Types.Entities.FIREPOTION || kind === Types.Entities.COBCORN || kind === Types.Entities.EYEBALL || kind === Types.Entities.ENERGYDRINK) {
                             self.startInvincibility();
                             self.updateHitPoints();
                             self.send(new Messages.HitPoints(self.maxHitPoints).serialize());
-                        } else if(Types.isHealingItem(kind)) {
+                        } else if (Types.isHealingItem(kind)) {
                             let amount;
 
-                            switch(kind) {
+                            switch (kind) {
                                 case Types.Entities.POTION:
                                 case Types.Entities.FLASK:
                                 case Types.Entities.COBAPPLE:
@@ -397,16 +397,16 @@ module.exports = Player = Character.extend({
                                     break;
                             }
 
-                            if(!self.hasFullHealth()) {
+                            if (!self.hasFullHealth()) {
                                 self.regenHealthBy(amount);
                                 self.server.pushToPlayer(self, self.health());
                             }
-                        } else if(Types.isWeapon(kind) && self.getNFTWeapon() === undefined) {
+                        } else if (Types.isWeapon(kind) && self.getNFTWeapon() === undefined) {
                             self.equipItem(item);
                             self.broadcast(self.equip(kind));
                         }
 
-                        if(Types.isResource(kind)) {
+                        if (Types.isResource(kind)) {
                             let resourceKind = Collectables.getCollectItem(kind);
                             let message = new Messages.Resource(resourceKind, self.getResourceAmount(resourceKind));
                             self.server.pushToPlayer(self, message);
@@ -417,20 +417,20 @@ module.exports = Player = Character.extend({
                 let playerCache = self.server.server.cache.get(self.sessionId);
                 let _self = self;
                 let nftId = message[2];
-                if(nftId.startsWith("0x")) {
+                if (nftId.startsWith("0x")) {
                     dao.walletHasNFT(playerCache.walletId, nftId).then(function (result) {
-                        item = {kind: message[1]};
+                        item = { kind: message[1] };
                         _self.equipItem(item);
                         _self.broadcast(_self.equip(item.kind));
                     }).catch(function (error) {
                         console.error("Asset validation error: " + error);
-                        item = {kind: Types.Entities.SWORD1};
+                        item = { kind: Types.Entities.SWORD1 };
                         _self.equipItem(item);
                         _self.broadcast(_self.equip(item.kind));
                     });
                 } else {
-                    item = {kind: message[1]};
-                    if(self.getResourceAmount(item.kind) > 0 || await dao.getItemCount(playerCache.nftId, item.kind ) > 0) {
+                    item = { kind: message[1] };
+                    if (self.getResourceAmount(item.kind) > 0 || await dao.getItemCount(playerCache.nftId, item.kind) > 0) {
                         _self.equipItem(item);
                         _self.broadcast(_self.equip(item.kind));
                     } else {
@@ -438,7 +438,7 @@ module.exports = Player = Character.extend({
                     }
                 }
             }
-            else if(action === Types.Messages.TELEPORT) {
+            else if (action === Types.Messages.TELEPORT) {
                 let _self = self;
                 var x = message[1],
                     y = message[2];
@@ -447,7 +447,7 @@ module.exports = Player = Character.extend({
                 let requiredTrigger = self.server.map.getDoorTrigger(x, y);
 
                 function teleport() {
-                    if(_self.server.isValidPosition(x, y)) {
+                    if (_self.server.isValidPosition(x, y)) {
                         _self.setPosition(x, y);
                         _self.clearTarget();
 
@@ -455,12 +455,12 @@ module.exports = Player = Character.extend({
                         _self.server.handlePlayerVanish(_self);
                         _self.server.pushRelevantEntityListTo(_self);
                     } else {
-                        console.error("Invalid teleport position : "+x+", "+y);
+                        console.error("Invalid teleport position : " + x + ", " + y);
                     }
                 }
 
                 let triggerActive = true;
-                if (requiredTrigger !== undefined){
+                if (requiredTrigger !== undefined) {
                     triggerActive = self.server.checkTriggerActive(requiredTrigger);
                 }
                 if (requiredNft !== undefined) {
@@ -475,46 +475,46 @@ module.exports = Player = Character.extend({
                             //console.error("Asset validation failed for player " + _self.name + " and nftId " + requiredNft, url);
                         }
                     })
-                    .catch(function (error) {
-                        console.error("Asset validation error: " + error, url);
-                    });
+                        .catch(function (error) {
+                            console.error("Asset validation error: " + error, url);
+                        });
                 } else {
                     if (triggerActive) {
                         teleport();
                     }
                 }
             }
-            else if(action === Types.Messages.OPEN) {
+            else if (action === Types.Messages.OPEN) {
                 var chest = self.server.getEntityById(message[1]);
-                if(chest && chest instanceof Chest) {
+                if (chest && chest instanceof Chest) {
                     self.server.handleOpenedChest(chest, self);
                 }
             }
-            else if(action === Types.Messages.CHECK) {
+            else if (action === Types.Messages.CHECK) {
                 var checkpoint = self.server.map.getCheckpoint(message[1]);
-                if(checkpoint) {
+                if (checkpoint) {
                     dao.saveAvatarMapAndCheckpoint(self.nftId, self.mapId, checkpoint.id);
                     self.lastCheckpoint = checkpoint;
                 }
-            } else if(action === Types.Messages.TRIGGER) {
+            } else if (action === Types.Messages.TRIGGER) {
                 var trigger = self.server.triggerAreas[message[1]];
-                if(trigger) {
-                    if(message[2] === true) {
-                        if(self.triggerDeactivationTimer) {
+                if (trigger) {
+                    if (message[2] === true) {
+                        if (self.triggerDeactivationTimer) {
                             clearTimeout(self.triggerDeactivationTimer);
                         }
 
-                        if(!self.area || self.area.id !== trigger.id) {
+                        if (!self.area || self.area.id !== trigger.id) {
                             trigger.addToArea(self);
                             self.playerEventBroker.enteredArea(trigger);
-                            if(trigger.trigger) {
+                            if (trigger.trigger) {
                                 self.server.activateTrigger(trigger.trigger);
                             }
                         }
                     } else {
                         trigger.removeFromArea(self);
                         self.playerEventBroker.leftArea(self, trigger);
-                        if(trigger.trigger) {
+                        if (trigger.trigger) {
                             if (trigger.delay) {
                                 self.triggerDeactivationTimer = setTimeout(() => {
                                     if (trigger.isEmpty()) {
@@ -529,32 +529,32 @@ module.exports = Player = Character.extend({
                         }
                     }
                 }
-            } else if(action === Types.Messages.FISHINGRESULT) {
+            } else if (action === Types.Messages.FISHINGRESULT) {
                 let success = message[1],
                     bullseye = message[2];
                 if (success && self.pendingFish !== null) {
                     let caughtAmount = self.pendingFish.double ? 2 : 1;
                     let expAward = bullseye ? Math.round(self.pendingFish.exp * 1.5) : self.pendingFish.exp;
-                    
+
                     self.incrementNFTSpecialItemExperience(expAward * caughtAmount);
-                    self.playerEventBroker.lootEvent({kind: self.pendingFish.name}, caughtAmount);
+                    self.playerEventBroker.lootEvent({ kind: self.pendingFish.name }, caughtAmount);
                 }
                 self.pendingFish = null;
                 self.server.announceDespawnFloat(self);
             }
             else {
-                if(self.message_callback) {
+                if (self.message_callback) {
                     self.message_callback(message);
                 }
             }
         });
 
-        this.connection.onClose(function() {
-            if(self.firepotionTimeout) {
+        this.connection.onClose(function () {
+            if (self.firepotionTimeout) {
                 clearTimeout(self.firepotionTimeout);
             }
             clearTimeout(self.disconnectTimeout);
-            if(self.exit_callback) {
+            if (self.exit_callback) {
                 self.exit_callback();
             }
         });
@@ -576,17 +576,17 @@ module.exports = Player = Character.extend({
         }
     },
 
-    handleHurt: function(mob, damage) {
-        if(mob && this.hitPoints > 0 && !this.invincible) {
+    handleHurt: function (mob, damage) {
+        if (mob && this.hitPoints > 0 && !this.invincible) {
             if (damage === undefined) {
                 let level = this.getLevel();
-                let totalLevel =  Math.round(level * 0.5); //this is armor
+                let totalLevel = Math.round(level * 0.5); //this is armor
                 let attackerLevel;
                 if (mob instanceof Player) {
                     attackerLevel = (mob.getWeaponLevel() + mob.getLevel());
                     let mobBuff = mob.getActiveBuff();
-                    if (mobBuff && mobBuff.stat === "atk"){
-                        attackerLevel = attackerLevel*(100 + mobBuff.percent)/100;
+                    if (mobBuff && mobBuff.stat === "atk") {
+                        attackerLevel = attackerLevel * (100 + mobBuff.percent) / 100;
                     }
                 } else {
                     attackerLevel = mob.getWeaponLevel();
@@ -601,11 +601,11 @@ module.exports = Player = Character.extend({
                 mob.incrementNFTWeaponExperience(damage);
             }
 
-            if(this.hitPoints <= 0) {
+            if (this.hitPoints <= 0) {
                 let kindString = Types.getKindAsString(mob.kind);
                 let killer = AltNames.getName(kindString);
 
-                if (mob instanceof Player)  {
+                if (mob instanceof Player) {
                     discord.sendMessage(`Player ${this.name} ganked by ${mob.name}.`);
                     this.updatePVPStats(mob);
                 } else {
@@ -613,14 +613,14 @@ module.exports = Player = Character.extend({
                 }
 
                 this.isDead = true;
-                if(this.firepotionTimeout) {
+                if (this.firepotionTimeout) {
                     clearTimeout(this.firepotionTimeout);
                 }
             }
         }
     },
 
-    handleExperience: async function(experience) {
+    handleExperience: async function (experience) {
 
         let session = this.server.server.cache.get(this.sessionId);
 
@@ -642,7 +642,7 @@ module.exports = Player = Character.extend({
         }
     },
 
-    syncExperience: async function(session) {
+    syncExperience: async function (session) {
         let updatedXp = await dao.updateExperience(this.walletId, this.nftId, this.accumulatedExperience);
         if (!Number.isNaN(updatedXp)) {
             if (session !== undefined) {
@@ -653,22 +653,22 @@ module.exports = Player = Character.extend({
         }
     },
 
-    syncAvatarAndWeaponExperience: async function() {
+    syncAvatarAndWeaponExperience: async function () {
         this.syncExperience();
         if (this.getNFTWeapon() !== undefined) {
             this.getNFTWeapon().syncExperience();
         }
     },
 
-    destroy: function() {
+    destroy: function () {
         var self = this;
 
-        this.forEachAttacker(function(mob) {
+        this.forEachAttacker(function (mob) {
             mob.clearTarget();
         });
         this.attackers = {};
 
-        this.forEachHater(function(mob) {
+        this.forEachHater(function (mob) {
             mob.forgetPlayer(self.id);
         });
         this.haters = {};
@@ -679,96 +679,96 @@ module.exports = Player = Character.extend({
         }
     },
 
-    getState: function() {
+    getState: function () {
         var basestate = this._getBaseState(),
             state = [this.name, this.orientation, this.armor, this.weapon, this.title, this.level];
 
-        if(this.target) {
+        if (this.target) {
             state.push(this.target);
         }
 
         return basestate.concat(state);
     },
 
-    send: function(message) {
+    send: function (message) {
         this.connection.send(message);
     },
 
-    broadcast: function(message, ignoreSelf) {
-        if(this.broadcast_callback) {
+    broadcast: function (message, ignoreSelf) {
+        if (this.broadcast_callback) {
             this.broadcast_callback(message, ignoreSelf === undefined ? true : ignoreSelf);
         }
     },
 
-    broadcastToZone: function(message, ignoreSelf) {
-        if(this.broadcastzone_callback) {
+    broadcastToZone: function (message, ignoreSelf) {
+        if (this.broadcastzone_callback) {
             this.broadcastzone_callback(message, ignoreSelf === undefined ? true : ignoreSelf);
         }
     },
 
 
-    onExit: function(callback) {
+    onExit: function (callback) {
         this.exit_callback = callback;
     },
 
-    onMove: function(callback) {
+    onMove: function (callback) {
         this.move_callback = callback;
     },
 
-    onLootMove: function(callback) {
+    onLootMove: function (callback) {
         this.lootmove_callback = callback;
     },
 
-    onZone: function(callback) {
+    onZone: function (callback) {
         this.zone_callback = callback;
     },
 
-    onOrient: function(callback) {
+    onOrient: function (callback) {
         this.orient_callback = callback;
     },
 
-    onMessage: function(callback) {
+    onMessage: function (callback) {
         this.message_callback = callback;
     },
 
-    onBroadcast: function(callback) {
+    onBroadcast: function (callback) {
         this.broadcast_callback = callback;
     },
 
-    onBroadcastToZone: function(callback) {
+    onBroadcastToZone: function (callback) {
         this.broadcastzone_callback = callback;
     },
 
-    equip: function(item) {
+    equip: function (item) {
         return new Messages.EquipItem(this, item);
     },
 
-    addHater: function(mob) {
-        if(mob) {
-            if(!(mob.id in this.haters)) {
+    addHater: function (mob) {
+        if (mob) {
+            if (!(mob.id in this.haters)) {
                 this.haters[mob.id] = mob;
             }
         }
     },
 
-    removeHater: function(mob) {
-        if(mob && mob.id in this.haters) {
+    removeHater: function (mob) {
+        if (mob && mob.id in this.haters) {
             delete this.haters[mob.id];
         }
     },
 
-    forEachHater: function(callback) {
-        _.each(this.haters, function(mob) {
+    forEachHater: function (callback) {
+        _.each(this.haters, function (mob) {
             callback(mob);
         });
     },
 
-    equipArmor: function(kind) {
+    equipArmor: function (kind) {
         this.armor = kind;
         this.armorLevel = Properties.getArmorLevel(kind);
     },
 
-    equipWeapon: function(kind) {
+    equipWeapon: function (kind) {
         this.weapon = kind;
         const kindString = Types.getKindAsString(kind);
         if (kindString.startsWith("NFT")) {
@@ -782,11 +782,11 @@ module.exports = Player = Character.extend({
         }
     },
 
-    getProjectileToUse: function() {
+    getProjectileToUse: function () {
         const projectiles = {
-            bow:  {short: Types.Entities.SHORT_ARROW, medium: Types.Entities.MEDIUM_ARROW, long: Types.Entities.LONG_ARROW},
-            gun:  {short: Types.Entities.SHORT_BULLET, medium: Types.Entities.MEDIUM_BULLET, long: Types.Entities.LONG_BULLET},
-            wand: {short: Types.Entities.SHORT_MANA, medium: Types.Entities.MEDIUM_MANA, long: Types.Entities.LONG_MANA},
+            bow: { short: Types.Entities.SHORT_ARROW, medium: Types.Entities.MEDIUM_ARROW, long: Types.Entities.LONG_ARROW },
+            gun: { short: Types.Entities.SHORT_BULLET, medium: Types.Entities.MEDIUM_BULLET, long: Types.Entities.LONG_BULLET },
+            wand: { short: Types.Entities.SHORT_MANA, medium: Types.Entities.MEDIUM_MANA, long: Types.Entities.LONG_MANA },
         }
 
         if (!this.getNFTWeapon()?.weaponClass) {
@@ -815,49 +815,49 @@ module.exports = Player = Character.extend({
     },
 
 
-    equipSpecialItem: function(kind) {
+    equipSpecialItem: function (kind) {
         this.weapon = kind;
         const kindString = Types.getKindAsString(kind);
         this.nftWeapon = new NFTSpecialItem.NFTSpecialItem(this.walletId, kindString);
         this.nftWeapon.loadItemData();
     },
 
-    equipItem: function(item) {
-        if(item) {
+    equipItem: function (item) {
+        if (item) {
             //console.debug(this.name + " equips " + Types.getKindAsString(item.kind));
             if (this.getNFTWeapon() !== undefined) {
                 this.getNFTWeapon().syncExperience();
             } // this applies to both Weapon and Special item. 
             // Technically it should be inside Else ifs below but we dont use armor items anyway
 
-            if(Types.isArmor(item.kind)) {
+            if (Types.isArmor(item.kind)) {
                 this.equipArmor(item.kind);
                 this.updateHitPoints();
-            } else if(Types.isWeapon(item.kind)) {
+            } else if (Types.isWeapon(item.kind)) {
                 this.equipWeapon(item.kind);
                 let playerCache = this.server.server.cache.get(this.sessionId);
-                dao.saveWeapon(playerCache.walletId, playerCache.nftId,Types.getKindAsString(item.kind));
+                dao.saveWeapon(playerCache.walletId, playerCache.nftId, Types.getKindAsString(item.kind));
             } else if (Types.isSpecialItem(item.kind)) {
                 this.equipSpecialItem(item.kind);
             }
         }
     },
 
-    updateHitPoints: function() {
+    updateHitPoints: function () {
         let level = this.getLevel();
         let hp = Formulas.hp(level);
         this.resetHitPoints(hp);
         this.send(new Messages.HitPoints(this.maxHitPoints).serialize());
     },
 
-    updatePosition: function() {
-        if(this.requestpos_callback) {
+    updatePosition: function () {
+        if (this.requestpos_callback) {
             var pos = this.requestpos_callback();
             this.setPosition(pos.x, pos.y);
         }
     },
 
-    getResourceAmount: function(kind) {
+    getResourceAmount: function (kind) {
         let cache = this.server.server.cache.get(this.sessionId);
         let gameData = cache.gameData;
 
@@ -869,49 +869,68 @@ module.exports = Player = Character.extend({
         return consumables[kind] || 0;
     },
 
-    onRequestPosition: function(callback) {
+    incrementResourceAmount: function (kind, amount) {
+        let cache = this.server.server.cache.get(this.sessionId);
+        let gameData = cache.gameData;
+
+        if (gameData.consumables === undefined) {
+            gameData.consumables = {};
+        }
+
+        let itemCount = gameData.consumables[kind];
+        if (itemCount) {
+            gameData.consumables[kind] = itemCount + amount;
+        } else {
+            gameData.consumables[kind] = amount;
+        }
+
+        cache.gameData = gameData;
+        this.server.server.cache.set(this.sessionId, cache);
+    },
+
+    onRequestPosition: function (callback) {
         this.requestpos_callback = callback;
     },
 
-    resetTimeout: function() {
+    resetTimeout: function () {
         clearTimeout(this.disconnectTimeout);
         this.disconnectTimeout = setTimeout(this.timeout.bind(this), 1000 * 60 * 60 * 4); // 4 hours min.
     },
 
-    receiveDamage: function(points, playerId) {
+    receiveDamage: function (points, playerId) {
         this.hitPoints -= points;
     },
 
-    timeout: function() {
+    timeout: function () {
         this.connection.sendUTF8("timeout");
         this.connection.close("Player was idle for too long");
     },
 
-    increaseHateFor: function(mobId, points) {
+    increaseHateFor: function (mobId, points) {
         return;
     },
 
-    getLevel: function(){
+    getLevel: function () {
         return this.level;
     },
 
-    getPowerUpActive: function() {
+    getPowerUpActive: function () {
         return this.firepotionTimeout !== null && this.firepotionTimeout !== undefined;
     },
 
-    getAttackRate: function() {
+    getAttackRate: function () {
         return this.attackRate;
     },
 
-    setAttackRate: function(rate) {
+    setAttackRate: function (rate) {
         return this.attackRate = rate;
     },
 
-    getMoveSpeed: function() {
+    getMoveSpeed: function () {
         return Math.round(Math.max(BASE_SPEED - (this.getLevel() - 1) * 0.33, 100));
     },
 
-    pushEntityList: function() {
+    pushEntityList: function () {
         let now = new Date().getTime();
         if (this.entityListPush !== undefined) {
             if (now - this.entityListPush > 1000) {
@@ -921,15 +940,15 @@ module.exports = Player = Character.extend({
         this.entityListPush = now;
     },
 
-    updatePVPStats: async function(playerKiller) {
+    updatePVPStats: async function (playerKiller) {
         await dao.updatePVPStats(this.walletId, this.nftId, 0, 1);
         dao.updatePVPStats(playerKiller.walletId, playerKiller.nftId, 1, 0);
     },
 
-    getWeaponLevel: function(kind) {
+    getWeaponLevel: function (kind) {
         const nftWeapon = this.getNFTWeapon();
         if (nftWeapon !== undefined) {
-            if(nftWeapon.isRanged()) {
+            if (nftWeapon.isRanged()) {
                 let projectile = this.getProjectileToUse();
                 if (projectile === null) {
                     return 0;
@@ -965,10 +984,10 @@ module.exports = Player = Character.extend({
 
     },
 
-    getWeaponRange: function() {
+    getWeaponRange: function () {
         const nftWeapon = this.getNFTWeapon();
         if (nftWeapon !== undefined) {
-            if(nftWeapon.isRanged()) {
+            if (nftWeapon.isRanged()) {
                 let projectile = this.getProjectileToUse();
                 if (projectile === null) {
                     return 1;
@@ -979,11 +998,11 @@ module.exports = Player = Character.extend({
         return 1;
     },
 
-    getNFTWeapon: function() {
+    getNFTWeapon: function () {
         return this.nftWeapon;
     },
 
-    getNFTWeaponActiveTrait: function() {
+    getNFTWeaponActiveTrait: function () {
         let nftWeapon = this.getNFTWeapon();
         if (nftWeapon !== undefined && nftWeapon.isTraitActive()) {
             return nftWeapon.getTrait();
@@ -992,11 +1011,11 @@ module.exports = Player = Character.extend({
         }
     },
 
-    getNFTSpecialItemActiveTrait: function() {
+    getNFTSpecialItemActiveTrait: function () {
         return this.getNFTWeaponActiveTrait();
     },
 
-    handleCompletedQuests: function(completedQuests) {
+    handleCompletedQuests: function (completedQuests) {
         if (this.completedQuestsIDs === undefined) {
             this.completedQuestsIDs = [];
         }
@@ -1013,27 +1032,27 @@ module.exports = Player = Character.extend({
         }
     },
 
-    addConsumable: function(consumable) {
+    addConsumable: function (consumable) {
         dao.saveConsumable(this.nftId, consumable, 1);
         let cache = this.server.server.cache.get(this.sessionId);
         let gameData = cache.gameData;
-    
+
         if (gameData.consumables === undefined) {
             gameData.consumables = {};
         }
-    
+
         let itemCount = gameData.consumables[consumable];
         if (itemCount) {
             gameData.consumables[consumable] = itemCount + 1;
         } else {
             gameData.consumables[consumable] = 1;
         }
-    
+
         cache.gameData = gameData;
         this.server.server.cache.set(this.sessionId, cache);
     },
 
-    consumeItem: function(item) {
+    consumeItem: function (item) {
         let cache = this.server.server.cache.get(this.sessionId);
         let gameData = cache.gameData;
         if (gameData.consumables === undefined) {
@@ -1055,7 +1074,7 @@ module.exports = Player = Character.extend({
             this.server.server.cache.set(this.sessionId, cache);
 
             let cooldownDuration = cooldownData.duration >= 0 ? cooldownData.duration : 0;
-            if (cooldownGroup && cooldownDuration){
+            if (cooldownGroup && cooldownDuration) {
                 this.applyCooldown(cooldownGroup, cooldownDuration);
             }
             return true;
@@ -1064,16 +1083,16 @@ module.exports = Player = Character.extend({
         }
     },
 
-    getFishBuff: function(fish) {
+    getFishBuff: function (fish) {
         let self = this;
         let buffData = Lakes.getBuffByFish(fish);
-        if (buffData){
+        if (buffData) {
             let buffDuration = 1000 * 60 * 10;
             let newBuff = true;
 
             if (self.consumableBuff) {
                 clearTimeout(self.consumableBuff.buffTimeout);
-                if(buffData.stat === self.consumableBuff.buff?.stat && buffData.percent === self.consumableBuff.buff?.percent) {
+                if (buffData.stat === self.consumableBuff.buff?.stat && buffData.percent === self.consumableBuff.buff?.percent) {
                     newBuff = false;
                     let oldDurationLeft = self.consumableBuff.expireTime - new Date().getTime();
                     if (oldDurationLeft > 0) {
@@ -1083,14 +1102,14 @@ module.exports = Player = Character.extend({
                     self.removeConsumableBuff();
                 }
             }
-            
+
             self.consumableBuff.expireTime = new Date().getTime() + buffDuration;
-            self.consumableBuff.buffTimeout = setTimeout(function(){
+            self.consumableBuff.buffTimeout = setTimeout(function () {
                 self.removeConsumableBuff();
                 self.consumableBuff = {};
             }.bind(self), buffDuration);
 
-            if(newBuff){
+            if (newBuff) {
                 self.consumableBuff.buff = buffData;
                 self.applyConsumableBuff();
             }
@@ -1099,19 +1118,19 @@ module.exports = Player = Character.extend({
         }
     },
 
-    applyConsumableBuff: function() {
+    applyConsumableBuff: function () {
         let buff = this.getActiveBuff(); // soon to be active ;)
-        if (buff) { 
+        if (buff) {
             let buffStat = buff.stat;
             if (buffStat === 'hp') {
-                this.maxHitPoints = Math.round(this.maxHitPoints * (100 + buff.percent)/100);
+                this.maxHitPoints = Math.round(this.maxHitPoints * (100 + buff.percent) / 100);
                 this.send(new Messages.HitPoints(this.maxHitPoints).serialize());
             }
             //atk and exp buff also exists but it's handled in different part of the code (it doesn't directly increase stats)
         }
     },
 
-    removeConsumableBuff: function() {
+    removeConsumableBuff: function () {
         let buff = this.getActiveBuff();
         if (buff) {
             let buffStat = buff.stat;
@@ -1129,11 +1148,11 @@ module.exports = Player = Character.extend({
         this.send(new Messages.Buffinfo(0, 0, 0).serialize()); //clears the buff data client side
     },
 
-    getActiveBuff: function() {
+    getActiveBuff: function () {
         return this.consumableBuff.buff; //can be undefined!
     },
 
-    isBot: function() {
+    isBot: function () {
         if (this._isBot === undefined) {
             let nftId = this.nftId.replace("0x", "NFT_");
             this._isBot = Types.isBot(Types.getKindFromString(nftId));
@@ -1141,22 +1160,22 @@ module.exports = Player = Character.extend({
         return this._isBot;
     },
 
-    onCheckCooldown: function(callback) {
+    onCheckCooldown: function (callback) {
         this.checkCooldown_callback = callback;
     },
 
-    onApplyCooldown: function(callback) {
+    onApplyCooldown: function (callback) {
         this.applyCooldown_callback = callback;
     },
 
-    checkCooldown: function(group) {
-        if(this.checkCooldown_callback) {
+    checkCooldown: function (group) {
+        if (this.checkCooldown_callback) {
             return this.checkCooldown_callback(group);
         }
     },
 
-    applyCooldown: function(group, duration) {
-        if(this.applyCooldown_callback) {
+    applyCooldown: function (group, duration) {
+        if (this.applyCooldown_callback) {
             this.applyCooldown_callback(group, duration);
         }
     },
@@ -1176,18 +1195,18 @@ module.exports = Player = Character.extend({
             self.invincible = true;
         }
 
-        self.firepotionTimeout = setTimeout(function() {
+        self.firepotionTimeout = setTimeout(function () {
             self.broadcast(self.equip(self.armor), false); // return to normal
             self.firepotionTimeout = null;
             self.invincible = false;
         }, Types.timeouts[Types.Entities.FIREFOX]);
     },
 
-    onReleaseMob: function(callback) {
+    onReleaseMob: function (callback) {
         this.releaseMob_callback = callback;
     },
 
-    releaseMob: function(kind) {
+    releaseMob: function (kind) {
         if (this.releaseMob_callback) {
             return this.releaseMob_callback(kind);
         }

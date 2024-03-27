@@ -95,7 +95,7 @@ class KeyBoardHandler {
     }
 
     handleMovement() {
-        if (this.game.player.path != null || $('#chatbox').hasClass("active")) {
+        if (this.game.player.path != null || $('#chatbox').hasClass("active")  || $(`#minigame`).hasClass("active")) {
             return;
         }
         var x = this.game.player.gridX;
@@ -156,7 +156,8 @@ class KeyBoardHandler {
         return $('body').hasClass('settings') ||
             $('body').hasClass('inventory') ||
             $('body').hasClass('credits') ||
-            $('#chatbox').hasClass("active");
+            $('#chatbox').hasClass("active") ||
+            $(`#minigame`).hasClass("active");
     }
 
     equipWeapon(weapon) {

@@ -873,7 +873,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             this.drawToggledLayers(this.context, false, false);
             this.drawToggledLayers(this.context, false, true);
 
-            if(this.game.started) {
+            if(this.game.started && !$("#minigame").hasClass("active")) {
                 this.drawSelectedCell();
                 this.drawTargetCell();
             }
@@ -914,8 +914,10 @@ function(Camera, Item, Character, Player, Timer, Mob) {
 
             this.context.restore();
             // Overlay UI elements
-            let cursorData = this.drawCursor();
-            renderData.push(cursorData);
+            if(!$("#minigame").hasClass("active")){
+                let cursorData = this.drawCursor();
+                renderData.push(cursorData);
+            }
             this.drawDebugInfo();
             this.worker.postMessage({"type": "render", "renderData": renderData});
         }

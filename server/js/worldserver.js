@@ -234,7 +234,7 @@ module.exports = World = cls.Class.extend({
                 var area = new Area(a.id, a.x, a.y, a.w, a.h, self);
                 area.trigger = a.trigger;
                 area.message = a.message;
-                area.css = a.css;
+                area.minigame = a.minigame;
                 area.delay = a.delay;
                 self.triggerAreas[a.id] = area;
             });
