@@ -27,7 +27,10 @@ class LooperLandsPlatformClient {
     }
 
     async createOrUpdateGameServer(hostname, port, name) {
-        if (!this.platformDefined) return;
+        if (!this.platformDefined || process.env.NODE_ENV !== "production") {
+            console.log("Not registering this gameserver");
+            return;
+        }
 
         try {
             const url = `/api/gameserver/${encodeURIComponent(hostname)}`;
@@ -42,7 +45,7 @@ class LooperLandsPlatformClient {
     }
 
     async takeGameServerOffline() {
-        if (!this.platformDefined) return;
+        if (!this.platformDefined || process.env.NODE_ENV !== "production") return;
 
         try {
             const url = `/api/gameserver/${encodeURIComponent(this.hostname)}/offline`;
