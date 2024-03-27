@@ -473,7 +473,9 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
                             if (i == (REEL_COUNT - 1)) {
                                 SND_REEL_SPIN.pause();
                             }
-                        } catch (err) { }
+                        } catch (err) { 
+                            spinInProgress = false;
+                        }
                     }
                 }
             }
@@ -597,18 +599,17 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
             game_state = STATE_SPINUP;
 
         } catch (error) {
-            // Spin request failure
-            console.error("Error with LuckyFUNKZ spin() function:", error.message);
+            spinInProgress = false;
 
             if (error.response) {
                 // Server responded with an error status code
-                console.error("Server Error:", error.response.data);
+                console.error("[LuckyFUNKZ Spin] Server Error:", error.response.data);
             } else if (error.request) {
                 // Request was made but no response was received
-                console.error("Network Error:", error.request);
+                console.error("[LuckyFUNKZ Spin] Network Error:", error.request);
             } else {
                 // Something else went wrong
-                console.error("Unexpected Error:", error.message);
+                console.error("[LuckyFUNKZ Spin] Unexpected Error:", error.message);
             }
         }
     }
