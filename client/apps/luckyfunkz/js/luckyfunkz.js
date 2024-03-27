@@ -679,7 +679,7 @@ function logic_reward() {
         svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
         svg.setAttribute('height', '7vh');
         if (textContent == "x3") svg.setAttribute('width', '15vh');
-        if (textContent == "PAYOUT/BET") svg.setAttribute('width', '35vh');
+        if (textContent == "PAYOUTxBET") svg.setAttribute('width', '35vh');
         if (textContent == " FEET ARE WILD ") svg.setAttribute('width', '30vh');
         const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
         const linearGradient = createLinearGradient();
