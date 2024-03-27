@@ -714,7 +714,7 @@ function logic_reward() {
             container.appendChild(payoutTable);
 
             const headerRow = payoutTable.createTHead().insertRow();
-            ['x3', 'PAYOUT/BET'].forEach(headerText => {
+            ['x3', 'PAYOUTxBET'].forEach(headerText => {
                 const headerCell = document.createElement('th');
                 const svgText = createSvgText(headerText);
                 headerCell.appendChild(svgText);
