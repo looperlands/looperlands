@@ -232,11 +232,11 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
     function setupEventListeners() {
         $(`#minigameMenu`).on('click', '#mgPayouts', () => getPayoutTable(true));
         $(`#luckyfunkz`).on('fadeIn', () => setupLuckyFUNKZmenu());
-        $(`#luckyfunkz`).on('click', '#autoSpinButton', () => {$("#autoSpinButton").toggleClass("on off");});
+        $(`#luckyfunkz`).on('click', '#autoSpinButton', () => { $("#autoSpinButton").toggleClass("on off"); });
         $(`#luckyfunkz`).on('click', '#lineButton', () => increaseLines());
         $(`#luckyfunkz`).on('click', '#betButton', () => increaseBet());
         $(`#luckyfunkz`).on('click', '#maxBetButton', () => setBetMax());
-        $(`#luckyfunkz`).on('click', '#spinButton', () => {spin();});
+        $(`#luckyfunkz`).on('click', '#spinButton', () => { spin(); });
         $(window).on('resize', () => updateButtonPanelWidth());
     }
 
@@ -414,7 +414,7 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
             reel_speed[i] += SPINUP_ACCELERATION;
         }
 
-        if(reel_repeater_on){
+        if (reel_repeater_on) {
             const maxPlaybackRate = 1.33;
             const normalizedSpeed = reel_speed[REEL_COUNT - 1] / MAX_REEL_SPEED;
             const exponentialFactor = 4;
@@ -422,7 +422,7 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
 
             SND_REEL_REPEAT.playbackRate = Math.min(playbackRate, maxPlaybackRate);
         }
-        
+
         // If at max speed, begin spindown
         if (reel_speed[0] == MAX_REEL_SPEED) {
             set_stops();
@@ -461,7 +461,7 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
             game_state = STATE_REWARD;
         }
 
-        if(reel_repeater_on){
+        if (reel_repeater_on) {
             const maxPlaybackRate = 1.33;
             const normalizedSpeed = reel_speed[REEL_COUNT - 1] / MAX_REEL_SPEED;
             const exponentialFactor = 2;
@@ -478,13 +478,13 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
             } else if (start_slowing[i]) {
                 if (reel_speed[i] > 0) {
                     reel_speed[i] -= SPINDOWN_ACCELERATION;
-                    
+
                     if (reel_speed[i] === 0) {
                         try {
                             SND_REEL_STOP[i].currentTime = 0;
                             SND_REEL_STOP[i].play();
                             if (reel_repeater_on) {
-                                SND_REEL_REPEAT.pause();
+                                fadeOut(SND_REEL_REPEAT, 500);
                                 reel_repeater_on = false;
                             }
                         } catch (err) {
@@ -667,6 +667,30 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
 
 
     //---- Helper Functions -----------------------------------------------
+
+    function fadeOut(audioElement, duration) {
+        const fadeSteps = 10; // Number of steps for the fade-out effect
+        const initialVolume = audioElement.volume;
+        const volumeStep = initialVolume / fadeSteps;
+        const timeStep = duration / fadeSteps;
+
+        let currentVolume = initialVolume;
+
+        const fadeInterval = setInterval(() => {
+            currentVolume -= volumeStep;
+            if (currentVolume < 0) {
+                currentVolume = 0;
+            }
+            audioElement.volume = currentVolume;
+
+            if (currentVolume === 0) {
+                clearInterval(fadeInterval);
+                if (!reel_repeater_on) audioElement.pause();
+                audioElement.volume = 1;
+            }
+        }, timeStep);
+    }
+
 
     function updateButtonPanelWidth() {
         const buttonPanel = document.getElementById("buttonPanel");
