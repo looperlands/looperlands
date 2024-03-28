@@ -232,11 +232,7 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
     function setupEventListeners() {
         $(`#minigameMenu`).on('click', '#mgPayouts', () => getPayoutTable(true));
         $(`#luckyfunkz`).on('fadeIn', () => setupLuckyFUNKZmenu());
-        $(`#luckyfunkz`).on('click', '#autoSpinButton', () => {
-            SND_BUTTON.currentTime = 0;
-            SND_BUTTON.play();
-            $("#autoSpinButton").toggleClass("on off");
-        });
+        $(`#luckyfunkz`).on('click', '#autoSpinButton', () => {$("#autoSpinButton").toggleClass("on off");});
         $(`#luckyfunkz`).on('click', '#lineButton', () => increaseLines());
         $(`#luckyfunkz`).on('click', '#betButton', () => increaseBet());
         $(`#luckyfunkz`).on('click', '#maxBetButton', () => setBetMax());
