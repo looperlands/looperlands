@@ -415,7 +415,7 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
         }
 
         if(reel_repeater_on){
-            const maxPlaybackRate = 1.5;
+            const maxPlaybackRate = 1.33;
             const normalizedSpeed = reel_speed[REEL_COUNT - 1] / MAX_REEL_SPEED;
             const exponentialFactor = 4;
             const playbackRate = 1 + (maxPlaybackRate - 1) * Math.pow(normalizedSpeed, exponentialFactor);
@@ -462,9 +462,9 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
         }
 
         if(reel_repeater_on){
-            const maxPlaybackRate = 1.5;
+            const maxPlaybackRate = 1.33;
             const normalizedSpeed = reel_speed[REEL_COUNT - 1] / MAX_REEL_SPEED;
-            const exponentialFactor = 4;
+            const exponentialFactor = 2;
             const playbackRate = 1 + (maxPlaybackRate - 1) * Math.pow(normalizedSpeed, exponentialFactor);
 
             SND_REEL_REPEAT.playbackRate = Math.min(playbackRate, maxPlaybackRate);
