@@ -30,7 +30,8 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTH
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
-Sounds by Brandon Morris (CC-BY 3.0)
+Sounds by Brandon Morris (CC-BY 3.0) 
+>> SND_REEL_SPIN & SND_REEL_REPEAT: laser ninjas loop by dpren -- https://freesound.org/s/320683/ -- License: Attribution 4.0
 A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-̶B̶Y̶ ̶3̶.̶0̶) [EDIT: ORIGINAL ART REPLACED. Art by bitcorn, (C-IZ 4 CORN)]
 */
 
@@ -53,6 +54,7 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
     const SND_BUTTON = new Audio("apps/luckyfunkz/assets/audio/button.wav");
     const SND_WIN = new Audio("apps/luckyfunkz/assets/audio/win.wav");
     const SND_REEL_SPIN = new Audio("apps/luckyfunkz/assets/audio/spin.wav");
+    const SND_REEL_REPEAT = new Audio("apps/luckyfunkz/assets/audio/spin_repeat.wav");
     const SND_REEL_STOP = Array.from({ length: 3 }, () => new Audio("apps/luckyfunkz/assets/audio/reel_stop.wav"));
     const SND_PAYOUT = new Audio("apps/luckyfunkz/assets/audio/payout.wav");
     const SND_PAYOUT_REPEAT = new Audio("apps/luckyfunkz/assets/audio/payout_repeat.wav");
@@ -238,11 +240,7 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
         $(`#luckyfunkz`).on('click', '#lineButton', () => increaseLines());
         $(`#luckyfunkz`).on('click', '#betButton', () => increaseBet());
         $(`#luckyfunkz`).on('click', '#maxBetButton', () => setBetMax());
-        $(`#luckyfunkz`).on('click', '#spinButton', () => {
-            SND_BUTTON.currentTime = 0;
-            SND_BUTTON.play();
-            spin();
-        });
+        $(`#luckyfunkz`).on('click', '#spinButton', () => {spin();});
         $(window).on('resize', () => updateButtonPanelWidth());
     }
 
@@ -420,6 +418,15 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
             reel_speed[i] += SPINUP_ACCELERATION;
         }
 
+        if(reel_repeater_on){
+            const maxPlaybackRate = 1.5;
+            const normalizedSpeed = reel_speed[REEL_COUNT - 1] / MAX_REEL_SPEED;
+            const exponentialFactor = 2;
+            const playbackRate = 1 + (maxPlaybackRate - 1) * Math.pow(normalizedSpeed, exponentialFactor);
+
+            SND_REEL_REPEAT.playbackRate = Math.min(playbackRate, maxPlaybackRate);
+        }
+        
         // If at max speed, begin spindown
         if (reel_speed[0] == MAX_REEL_SPEED) {
             set_stops();
@@ -458,6 +465,10 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
             game_state = STATE_REWARD;
         }
 
+        if(reel_repeater_on){
+            SND_REEL_REPEAT.playbackRate = 1 + Math.min(((reel_speed[0]*.5)/MAX_REEL_SPEED),0.5);
+        }
+
         for (let i = 0; i < REEL_COUNT; i++) {
             move_reel(i);
 
@@ -466,14 +477,20 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
             } else if (start_slowing[i]) {
                 if (reel_speed[i] > 0) {
                     reel_speed[i] -= SPINDOWN_ACCELERATION;
+                    
                     if (reel_speed[i] === 0) {
                         try {
                             SND_REEL_STOP[i].currentTime = 0;
                             SND_REEL_STOP[i].play();
-                            if (i == (REEL_COUNT - 1)) {
-                                SND_REEL_SPIN.pause();
+                            if (reel_repeater_on) {
+                                SND_REEL_REPEAT.pause();
+                                reel_repeater_on = false;
                             }
-                        } catch (err) { 
+                        } catch (err) {
+                            if (reel_repeater_on) {
+                                SND_REEL_REPEAT.pause();
+                                reel_repeater_on = false;
+                            }
                             spinInProgress = false;
                         }
                     }
@@ -589,6 +606,14 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
 
             SND_REEL_SPIN.currentTime = 0;
             SND_REEL_SPIN.play();
+            SND_REEL_SPIN.onended = function () {
+                SND_REEL_REPEAT.currentTime = 0;
+                SND_REEL_REPEAT.playbackRate = 1;
+                SND_REEL_REPEAT.loop = true;
+                SND_REEL_REPEAT.play();
+                reel_repeater_on = true;
+            };
+
 
             $('#minigame').addClass("pauseClose");
             toggleMinigameCloseButton();
@@ -600,6 +625,10 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
 
         } catch (error) {
             spinInProgress = false;
+            if (reel_repeater_on) {
+                SND_REEL_REPEAT.pause();
+                reel_repeater_on = false;
+            }
 
             if (error.response) {
                 // Server responded with an error status code
