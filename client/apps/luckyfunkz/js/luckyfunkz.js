@@ -202,6 +202,9 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
                 // Proceed with rendering
                 render_reel();
 
+                // Generate and slide out payout table
+                getPayoutTable(true);
+
             })
             .catch(error => console.error('Resource loading failed:', error));
     }
