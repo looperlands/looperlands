@@ -7501,6 +7501,17 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                 if(npc) {
                     this.checkForQuests(npc);
+                    this.checkForPartnerTask(npc);
+                }
+            },
+
+            checkForPartnerTask: function(npc) {
+                if (npc.kind === "taikoguard") {
+                    axios.get("/session/" + this.sessionId + "/completePartnerTask/GooseNPC").then(function(response){
+                        console.log("PartnerTask Response", response);
+                    }).catch(function(error) {
+                        console.error(error);
+                    });
                 }
             },
 

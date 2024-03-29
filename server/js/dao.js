@@ -527,6 +527,18 @@ const transferResourceFromTo = async function (from, to, amount, resource = Type
   }
 }
 
+const completePartnerTask = async function(walletId, taskId) {
+  const options = { headers: { 'X-Api-Key': API_KEY } };
+  try {
+    const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/partnerTasks.php?walletId=${walletId}&taskId=${taskId}`
+    const response = await axios.get(url, options);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    return { "error": "Error completing partner task" };
+  }
+}
+
 module.exports = {
   updateExperience,
   saveWeapon,
@@ -555,4 +567,5 @@ module.exports = {
   getResourceBalance,
   updateResourceBalance,
   transferResourceFromTo,
+  completePartnerTask
 };
