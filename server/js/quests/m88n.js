@@ -11,6 +11,7 @@ quests = [
         target: Types.Entities.BALLOONDOGB,
         amount: 100,
         level: 1,
+        xp: 1000,
         medal: Types.Medals.SKULL
     },
     {
@@ -25,6 +26,7 @@ quests = [
         amount: 100,
         requiredQuest: "KINGFROGGY_QUEST_1",
         level: 4,
+        xp: 1000,
         medal: Types.Medals.SKULL
     },
     {
@@ -39,6 +41,7 @@ quests = [
         amount: 100,
         requiredQuest: "KINGFROGGY_QUEST_2",
         level: 6,
+        xp: 1000,
         medal: Types.Medals.SKULL
     },
     {
@@ -53,6 +56,7 @@ quests = [
         amount: 100,
         requiredQuest: "KINGFROGGY_QUEST_3",
         level: 8,
+        xp: 10000,
         medal: Types.Medals.SKULL
     },
     {
@@ -67,6 +71,7 @@ quests = [
         amount: 100,
         requiredQuest: "KINGFROGGY_QUEST_4",
         level: 10,
+        xp: 10000,
         medal: Types.Medals.SKULL
     },
     {
@@ -81,6 +86,7 @@ quests = [
         amount: 100,
         requiredQuest: "KINGFROGGY_QUEST_5",
         level: 12,
+        xp: 10000,
         medal: Types.Medals.SKULL
     },
     {
@@ -95,6 +101,7 @@ quests = [
         amount: 5,
         requiredQuest: "KINGFROGGY_QUEST_6",
         level: 20,
+        xp: 50000,
         medal: Types.Medals.SKULL
     },
     {
@@ -109,6 +116,7 @@ quests = [
         amount: 1,
         requiredQuest: "KINGFROGGY_QUEST_7",
         level: 20,
+        xp: 50000,
         medal: Types.Medals.SKULL
     },
     {
@@ -123,6 +131,7 @@ quests = [
         amount: 741,
         requiredQuest: "KINGFROGGY_QUEST_8",
         level: 30,
+        xp: 100000,
         medal: Types.Medals.SKULL
     }
 ]
