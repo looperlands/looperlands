@@ -14,11 +14,11 @@ const NodeCache = require("node-cache");
 const cache = new NodeCache();
 
 getEnsAlchemy = async function (walletId) {
-    const ensContractAddress = "0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85";
-    const nfts = await alchemyLib.nft.getNftsForOwner(walletId, {
-        contractAddresses: [ensContractAddress],
-    });
     try {
+        const ensContractAddress = "0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85";
+        const nfts = await alchemyLib.nft.getNftsForOwner(walletId, {
+            contractAddresses: [ensContractAddress],
+        });
         //console.log(walletId, nfts);
         // use the first ENS
         let name = nfts["ownedNfts"][0]["title"];
