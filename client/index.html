@@ -42,12 +42,15 @@ LooperLands (https://looperlands.io), initially conceived by BalksHamster and bu
         <link rel="stylesheet" href="css/achievements.css" type="text/css">
         <script src="js/lib/modernizr.js" type="text/javascript"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.1/socket.io.js"></script>
-        <script src="js/lib/axios.min.js"></script>
+		<script src="https://unpkg.com/gsap@3.12.5/dist/gsap.min.js"></script> <!--GSAP Animation Tool-->
+		<script src="https://unpkg.com/pixi.js@7.x/dist/pixi.min.js"></script> <!--PIXI Animation Tool-->
+		<script src="js/lib/axios.min.js"></script>
 		<script src="js/keyboardhandler.js"></script>
 		<script src="js/settings.js"></script>
 		<script src="js/gamepad.js"></script>
 		<script src="js/touchListener.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/console-ban@5.0.0/dist/console-ban.min.js"></script>
+		<script src="js/minigame.js"></script>
 		<!--
 		<script>
 			let local = window.location.href.indexOf("127.0.0.1") > -1;
@@ -274,10 +277,7 @@ LooperLands (https://looperlands.io), initially conceived by BalksHamster and bu
 					</div>
 					<div id="bullseye">BULLSEYE</div>
 				</div>
-				<div id="slotsPrompt" class="clickable">
-				</div>
-				<div id="minigame" class="clickable">
-				</div>
+				<div id="minigameprompt" class="clickable"></div>
     			<div id="bar-container" class="pixel-corners-bottom">
 					<div id="healthbar">
 					</div>

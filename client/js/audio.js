@@ -11,7 +11,7 @@ define(['area'], function(Area) {
             this.game = game;
             this.currentMusic = null;
             this.areas = [];
-            this.musicNames = ["village","oaspooky","oafortressboss","oacastle","oasnowcon","oanightharrow","full","fluteguitar","guitar","oainsidecastle","pillowfight","dreamstroll","steeldrums","mib","exploration","beach", "forest", "cave", "desert", "lavaland","oacrystal", "boss", "oavillage","oaglacialord", "oaforest","oasnowthaven", "overworld","oaseacombat","oacave","oawind","oaforesttown","oatitle","oaporttown","oaplanes","oacave2","oaforestboss","oahome","oaspiderboss","oaforest2","cobsfarmmain","cobdungeon","cobspookyforest","cobactionadventure","cobsnuggles","cobbasicfishing","cobreggae","oamain","oacustoms","oafishing","oanorthern","oatower","oaarena","oachristmas","oachristmas2","oatavern","duckvilleaoe", "duckvillefly", "bitcorncornsino"];
+            this.musicNames = ["village","oaspooky","oafortressboss","oacastle","oasnowcon","oanightharrow","full","fluteguitar","guitar","oainsidecastle","pillowfight","dreamstroll","steeldrums","mib","exploration","beach", "forest", "cave", "desert", "lavaland","oacrystal", "boss", "oavillage","oaglacialord", "oaforest","oasnowthaven", "overworld","oaseacombat","oacave","oawind","oaforesttown","oatitle","oaporttown","oaplanes","oacave2","oaforestboss","oahome","oaspiderboss","oaforest2","cobsfarmmain","cobdungeon","cobspookyforest","cobactionadventure","cobsnuggles","cobbasicfishing","cobreggae","oamain","oacustoms","oafishing","oanorthern","oatower","oaarena","oachristmas","oachristmas2","oatavern","duckvilleaoe", "duckvillefly", "bitcorncornsino", "bit_sludgeriver", "bit_portal"];
             this.soundNames = ["loot", "hit1", "hit2", "hurt", "heal", "chat", "revive", "death", "firefox", "achievement", "kill1", "kill2", "noloot", "teleport", "chest", "npc", "npc-end", "watersplash", "fishingfail", "fishingsuccess"];
             
             var loadSoundFiles = function() {
@@ -226,12 +226,11 @@ define(['area'], function(Area) {
             }
         },
     
-        fadeOutMusic: function(music, ended_callback) {
+        fadeOutMusic: function(music, ended_callback, step) {
             var self = this;
             if(music && !music.sound.fadingOut) {
                 this.clearFadeIn(music);
                 music.sound.fadingOut = setInterval(function() {
-                    var step = 0.02;
                         volume = music.sound.volume - step;
                 
                     if(self.enabled && volume >= step) {
@@ -277,12 +276,12 @@ define(['area'], function(Area) {
             }
         },
     
-        fadeOutCurrentMusic : function() {
+        fadeOutCurrentMusic : function(step = 0.02) {
             var self = this;
             if(this.currentMusic) {
                 this.fadeOutMusic(this.currentMusic, function(music) {
                     self.resetMusic(music);
-                });
+                }, step);
                 this.currentMusic = null;
             }
         },

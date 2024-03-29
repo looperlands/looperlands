@@ -1,9 +1,9 @@
 
 var cls = require("./lib/class"),
     url = require('url'),
-   // wsserver = require("websocket-server"),
-   // miksagoConnection = require('websocket-server/lib/ws/connection'),
-   // worlizeRequest = require('websocket').request,
+    // wsserver = require("websocket-server"),
+    // miksagoConnection = require('websocket-server/lib/ws/connection'),
+    // worlizeRequest = require('websocket').request,
     http = require('http'),
     https = require('https'),
     Utils = require('./utils'),
@@ -11,13 +11,13 @@ var cls = require("./lib/class"),
     BISON = require('bison'),
     WS = {},
     useBison = false
-    cors = require('cors');
+cors = require('cors');
 
 module.exports = WS;
 
 const axios = require('axios');
 const crypto = require('crypto');
-const NodeCache = require( "node-cache" );
+const NodeCache = require("node-cache");
 const dao = require('./dao.js');
 const Formulas = require('./formulas.js');
 const ens = require("./ens.js");
@@ -28,6 +28,7 @@ const Collectables = require('./collectables.js');
 const Properties = require('./properties.js')
 const Types = require("../../shared/js/gametypes");
 const platform = require('./looperlandsplatformclient.js');
+const minigame = require('../apps/minigame.js');
 const cache = new NodeCache();
 
 const LOOPWORMS_LOOPERLANDS_BASE_URL = process.env.LOOPWORMS_LOOPERLANDS_BASE_URL;
@@ -38,7 +39,6 @@ const LOOPERLANDS_PLATFORM_API_KEY = process.env.LOOPERLANDS_PLATFORM_API_KEY;
 
 
 const platformClient = new platform.LooperLandsPlatformClient(LOOPERLANDS_PLATFORM_API_KEY, LOOPERLANDS_PLATFORM_BASE_URL);
-
 
 function extractDetails(inputUrl) {
     const parsedUrl = new URL(inputUrl);
@@ -67,74 +67,73 @@ var Server = cls.Class.extend({
     _connections: {},
     _counter: 0,
 
-    init: function(port) {
+    init: function (port) {
         this.port = port;
     },
-    
-    onConnect: function(callback) {
+
+    onConnect: function (callback) {
         this.connection_callback = callback;
     },
-    
-    onError: function(callback) {
+
+    onError: function (callback) {
         this.error_callback = callback;
     },
-    
-    broadcast: function(message) {
+
+    broadcast: function (message) {
         throw "Not implemented";
     },
-    
-    forEachConnection: function(callback) {
+
+    forEachConnection: function (callback) {
         _.each(this._connections, callback);
     },
-    
-    addConnection: function(connection) {
+
+    addConnection: function (connection) {
         this._connections[connection.id] = connection;
     },
-    
-    removeConnection: function(id) {
+
+    removeConnection: function (id) {
         delete this._connections[id];
     },
-    
-    getConnection: function(id) {
+
+    getConnection: function (id) {
         return this._connections[id];
     },
 
-    connectionsCount: function()
-    {
+    connectionsCount: function () {
         return Object.keys(this._connections).length
     }
 });
 
 
 var Connection = cls.Class.extend({
-    init: function(id, connection, server) {
+    init: function (id, connection, server) {
         this._connection = connection;
         this._server = server;
         this.id = id;
     },
-    
-    onClose: function(callback) {
+
+    onClose: function (callback) {
         this.close_callback = callback;
     },
-    
-    listen: function(callback) {
+
+    listen: function (callback) {
         this.listen_callback = callback;
     },
-    
-    broadcast: function(message) {
+
+    broadcast: function (message) {
         throw "Not implemented";
     },
-    
-    send: function(message) {
+
+    send: function (message) {
         throw "Not implemented";
     },
-    
-    sendUTF8: function(data) {
+
+    sendUTF8: function (data) {
         throw "Not implemented";
     },
-    
-    close: function(logError) {
-        console.log("Closing connection to "+this._connection.remoteAddress+". Error: "+logError);
+
+    close: function (logError) {
+        console.log("Closing connection to " + this._connection.remoteAddress + ". Error: " + logError);
         this._connection.close();
     }
 });
@@ -146,7 +145,7 @@ var Connection = cls.Class.extend({
             http://codevolution.com
  ***************/
 WS.socketIOServer = Server.extend({
-    init: function() {
+    init: function () {
         self = this;
         self.protocol = urlDetails.protocol;
         self.host = urlDetails.host;
@@ -161,12 +160,12 @@ WS.socketIOServer = Server.extend({
 
         let httpInclude = require('http');
         let http = new httpInclude.Server(app);
-        
+
 
         console.log("APP_URL", APP_URL);
         self.io = require('socket.io')(http, {
             allowEIO3: true,
-            cors: {origin: APP_URL, credentials: true}
+            cors: { origin: APP_URL, credentials: true }
         });
 
         app.use(express.json())
@@ -193,7 +192,7 @@ WS.socketIOServer = Server.extend({
 
             cache.set(id, body);
             let responseJson = {
-                "sessionId" : id
+                "sessionId": id
             }
             return responseJson;
         }
@@ -205,7 +204,7 @@ WS.socketIOServer = Server.extend({
             if (apiKey !== process.env.LOOPWORMS_API_KEY) {
                 res.status(401).json({
                     status: false,
-                    "error" : "invalid api key",
+                    "error": "invalid api key",
                     user: null
                 });
             }
@@ -229,7 +228,7 @@ WS.socketIOServer = Server.extend({
                     let key = cacheKeys[i];
                     let cachedBody = cache.get(key);
                     let sameWallet = cachedBody.walletId === body.walletId;
-                    if(sameWallet) {
+                    if (sameWallet) {
                         cache.del(key);
                         if (cachedBody.isDirty === true) {
                             let player = self.worldsMap[cachedBody.mapId]?.getPlayerById(cachedBody.entityId);
@@ -263,9 +262,9 @@ WS.socketIOServer = Server.extend({
             const body = req.body;
             if (body.x === undefined || body.y === undefined || body.map === undefined) {
                 res.status(400).json({
-                    status: false,  
+                    status: false,
                     error: "Invalid teleport request",
-                    user: null  
+                    user: null
                 });
                 return;
             }
@@ -341,7 +340,7 @@ WS.socketIOServer = Server.extend({
                         totalDmg: 0,
                         totalRevives: 0
                     }
-                };                
+                };
             }
             parsedSaveData.player.name = name;
             parsedSaveData.player.armor = nftId.replace("0x", "NFT_");
@@ -350,7 +349,7 @@ WS.socketIOServer = Server.extend({
             parsedSaveData.walletId = walletId;
             parsedSaveData.mapId = sessionData.mapId;
             parsedSaveData.f2p = sessionData.f2p;
-            
+
             res.status(200).json(parsedSaveData);
         });
 
@@ -361,7 +360,7 @@ WS.socketIOServer = Server.extend({
                 //console.error("Session data is undefined for session id, params: ", sessionId, req.params);
                 res.status(404).json({
                     status: false,
-                    "error" : "session not found",
+                    "error": "session not found",
                     user: null
                 });
                 return;
@@ -374,9 +373,9 @@ WS.socketIOServer = Server.extend({
             const nftId = sessionData.nftId;
 
             let rcvInventory = await axios.get(`${LOOPWORMS_LOOPERLANDS_BASE_URL}/looperInventoryDetails.php?walletID=${walletId}&nftId=${nftId}&APIKEY=${process.env.LOOPWORMS_API_KEY}`);
-            if (rcvInventory?.data){
-                inventory = rcvInventory.data[0].weapons ? rcvInventory.data[0].weapons.map(function(item) {
-                    if (item){
+            if (rcvInventory?.data) {
+                inventory = rcvInventory.data[0].weapons ? rcvInventory.data[0].weapons.map(function (item) {
+                    if (item) {
                         item.nftId = item.nftId.replace("0x", "NFT_");
                         item.level = Formulas.calculatePercentageToNextLevel(item.xp).currentLevel;
                         return item;
@@ -384,14 +383,14 @@ WS.socketIOServer = Server.extend({
                 }) : [];
                 if (inventory.length > 0) {
                     inventory = inventory.filter(item => {
-                        if (item && Types.isWeapon(Types.getKindFromString(item.nftId))){
+                        if (item && Types.isWeapon(Types.getKindFromString(item.nftId))) {
                             return item;
                         }
                     });
                 }
 
-                special = rcvInventory.data[0].specialitems ? rcvInventory.data[0].specialitems.map(function(item) {
-                    if (item){
+                special = rcvInventory.data[0].specialitems ? rcvInventory.data[0].specialitems.map(function (item) {
+                    if (item) {
                         item.nftId = item.nftId.replace("0x", "NFT_");
                         item.level = Formulas.calculateToolPercentageToNextLevel(item.xp).currentLevel;
                         return item;
@@ -399,14 +398,14 @@ WS.socketIOServer = Server.extend({
                 }) : [];
                 if (special.length > 0) {
                     special = special.filter(item => {
-                        if (item && Types.isSpecialItem(Types.getKindFromString(item.nftId))){
+                        if (item && Types.isSpecialItem(Types.getKindFromString(item.nftId))) {
                             return item;
                         }
                     });
                 }
 
-                bots = rcvInventory.data[0].bots ? rcvInventory.data[0].bots.map(function(item) {
-                    if (item){
+                bots = rcvInventory.data[0].bots ? rcvInventory.data[0].bots.map(function (item) {
+                    if (item) {
                         item.nftId = item.nftId.replace("0x", "NFT_");
                         return item;
                     }
@@ -414,7 +413,7 @@ WS.socketIOServer = Server.extend({
 
                 if (bots.length > 0) {
                     bots = bots.filter(item => {
-                        if (item && Types.isBot(Types.getKindFromString(item.nftId))){
+                        if (item && Types.isBot(Types.getKindFromString(item.nftId))) {
                             item.nftId = item.nftId.replace("0x", "NFT_");
                             item.level = Formulas.calculateToolPercentageToNextLevel(item.xp).currentLevel;
                             return item;
@@ -426,7 +425,7 @@ WS.socketIOServer = Server.extend({
             let consumables = sessionData.gameData?.consumables || {};
             let resources = {};
             Object.keys(consumables).forEach(item => {
-                if(Types.isResource(parseInt(item))) {
+                if (Types.isResource(parseInt(item))) {
                     resources[item] = consumables[item];
                     delete consumables[item];
                 }
@@ -454,7 +453,7 @@ WS.socketIOServer = Server.extend({
                     });
                 }
 
-                if (!item || !Collectables.isCollectable(item) || consumables[item] <= 0){
+                if (!item || !Collectables.isCollectable(item) || consumables[item] <= 0) {
                     delete consumables[item];
                 } else {
                     let remainingCooldown = 0;
@@ -464,18 +463,20 @@ WS.socketIOServer = Server.extend({
                         remainingCooldown = self.worldsMap[sessionData.mapId].getConsumeGroupCooldown(sessionData.nftId, cooldownGroup);
                     }
 
-                    consumables[item] = {qty: consumables[item],
-                                        consumable: Collectables.isConsumable(item), 
-                                        image: Collectables.getCollectableImageName(item),
-                                        description: Collectables.getInventoryDescription(item),
-                                        cooldown: remainingCooldown, //this is either a date or 0
-                                        maxCooldown: cooldownData.duration};
+                    consumables[item] = {
+                        qty: consumables[item],
+                        consumable: Collectables.isConsumable(item),
+                        image: Collectables.getCollectableImageName(item),
+                        description: Collectables.getInventoryDescription(item),
+                        cooldown: remainingCooldown, //this is either a date or 0
+                        maxCooldown: cooldownData.duration
+                    };
                 }
             });
 
             inventory = _(inventory).chain().sortBy("level").reverse().sortBy("Trait").value();
             special = _(special).chain().sortBy("level").reverse().sortBy("Trait").value();
-            res.status(200).json({inventory: inventory, special: special, consumables: consumables, bots: bots, resources: resources});
+            res.status(200).json({ inventory: inventory, special: special, consumables: consumables, bots: bots, resources: resources });
         });
 
         app.get("/session/:sessionId/quests", async (req, res) => {
@@ -485,7 +486,7 @@ WS.socketIOServer = Server.extend({
                 //console.error("Session data is undefined for session id, params: ", sessionId, req.params);
                 res.status(404).json({
                     status: false,
-                    "error" : "session not found",
+                    "error": "session not found",
                     user: null
                 });
                 return;
@@ -495,9 +496,9 @@ WS.socketIOServer = Server.extend({
             let availableQuests = [];
             let questStatus = sessionData?.gameData?.quests;
 
-            if(quests && questStatus) {
+            if (quests && questStatus) {
                 _.each(quests?.questsByID, function (quest) {
-                    if (_.findIndex(questStatus.COMPLETED, {questID: quest.id}) !== -1) {
+                    if (_.findIndex(questStatus.COMPLETED, { questID: quest.id }) !== -1) {
 
                         availableQuests.push({
                             id: quest.id,
@@ -514,10 +515,10 @@ WS.socketIOServer = Server.extend({
                     }
                 });
                 _.each(quests?.questsByID, function (quest) {
-                    if(_.findIndex(questStatus.COMPLETED, {questID: quest.id}) !== -1) {
+                    if (_.findIndex(questStatus.COMPLETED, { questID: quest.id }) !== -1) {
                         return;
                     }
-                    if (_.findIndex(questStatus.IN_PROGRESS, {questID: quest.id}) !== -1) {
+                    if (_.findIndex(questStatus.IN_PROGRESS, { questID: quest.id }) !== -1) {
 
                         let progressCount = 0;
                         if (quest.eventType === "LOOT_ITEM") {
@@ -564,7 +565,7 @@ WS.socketIOServer = Server.extend({
                 //console.error("Session data is undefined for session id, params: ", sessionId, req.params);
                 res.status(404).json({
                     status: false,
-                    "error" : "session not found",
+                    "error": "session not found",
                     user: null
                 });
 
@@ -587,7 +588,7 @@ WS.socketIOServer = Server.extend({
                 //console.error("Session data is undefined for session id, params: ", sessionId, req.params);
                 res.status(404).json({
                     status: false,
-                    "error" : "session not found",
+                    "error": "session not found",
                     user: null
                 });
 
@@ -607,16 +608,16 @@ WS.socketIOServer = Server.extend({
                 //console.error("Session data is undefined for session id, params: ", sessionId, req.params);
                 res.status(404).json({
                     status: false,
-                    "error" : "session not found",
+                    "error": "session not found",
                     user: null
                 });
             } else {
                 let questStatus = sessionData?.gameData?.quests;
-                if(questStatus === undefined || !questStatus) {
+                if (questStatus === undefined || !questStatus) {
                     res.status(200).json(false);
                 }
 
-                let completed = (_.findIndex(questStatus.COMPLETED, {questID: questId}) !== -1);
+                let completed = (_.findIndex(questStatus.COMPLETED, { questID: questId }) !== -1);
                 res.status(200).json(completed);
 
                 return;
@@ -631,7 +632,7 @@ WS.socketIOServer = Server.extend({
                 //console.error("Session data is undefined for session id, params: ", sessionId, req.params);
                 res.status(404).json({
                     status: false,
-                    "error" : "session not found",
+                    "error": "session not found",
                     user: null
                 });
             } else {
@@ -665,9 +666,9 @@ WS.socketIOServer = Server.extend({
                 return;
             }
 
-            res.status(200).json(result);            
+            res.status(200).json(result);
         });
-        
+
         app.get("/session/:sessionId/statistics", async (req, res) => {
             const sessionId = req.params.sessionId;
             const nftId = req.params.nftId;
@@ -676,7 +677,7 @@ WS.socketIOServer = Server.extend({
                 //console.error("Session data is undefined for session id, params: ", sessionId, req.params);
                 res.status(404).json({
                     status: false,
-                    "error" : "session not found",
+                    "error": "session not found",
                     user: null
                 });
             } else {
@@ -686,7 +687,7 @@ WS.socketIOServer = Server.extend({
                 if (weaponInfo !== undefined) {
                     if (weaponInfo.constructor === "NFTWeapon") {
                         weaponInfo['weaponLevelInfo'] = Formulas.calculatePercentageToNextLevel(weaponInfo.experience);
-                    } else if (weaponInfo.constructor === "NFTSpecialItem")  {
+                    } else if (weaponInfo.constructor === "NFTSpecialItem") {
                         weaponInfo['weaponLevelInfo'] = Formulas.calculateToolPercentageToNextLevel(weaponInfo.experience);
                     }
                 } else {
@@ -712,7 +713,7 @@ WS.socketIOServer = Server.extend({
             }
         });
 
-        app.get("/session/:sessionId/polling", async(req, res) => {
+        app.get("/session/:sessionId/polling", async (req, res) => {
             const sessionId = req.params.sessionId;
             const sessionData = cache.get(sessionId);
             if (sessionData === undefined) {
@@ -743,7 +744,7 @@ WS.socketIOServer = Server.extend({
             if (apiKey !== process.env.LOOPWORMS_API_KEY) {
                 res.status(401).json({
                     status: false,
-                    "error" : "invalid api key",
+                    "error": "invalid api key",
                     user: null
                 });
                 return;
@@ -768,7 +769,7 @@ WS.socketIOServer = Server.extend({
                 let key = cacheKeys[i];
                 let cachedBody = cache.get(key);
                 let player = self.worldsMap[cachedBody.mapId]?.getPlayerById(cachedBody.entityId);
-                if(cachedBody.isDirty === true && player !== undefined && !player.isBot()) {
+                if (cachedBody.isDirty === true && player !== undefined && !player.isBot()) {
                     let player = {
                         name: await ens.getEns(cachedBody.walletId),
                         wallet: cachedBody.walletId,
@@ -781,7 +782,7 @@ WS.socketIOServer = Server.extend({
             }
             res.status(200).json(players);
         });
-        
+
         app.get("/session/:sessionId/requestTeleport/:triggerId", async (req, res) => {
             const sessionId = req.params.sessionId;
             const triggerId = req.params.triggerId;
@@ -789,7 +790,7 @@ WS.socketIOServer = Server.extend({
             if (sessionData === undefined) {
                 res.status(404).json({
                     status: false,
-                    "error" : "session not found",
+                    "error": "session not found",
                     user: null
                 });
             } else {
@@ -813,7 +814,7 @@ WS.socketIOServer = Server.extend({
             if (sessionData === undefined) {
                 res.status(404).json({
                     status: false,
-                    "error" : "session not found",
+                    "error": "session not found",
                     user: null
                 });
             } else {
@@ -834,11 +835,11 @@ WS.socketIOServer = Server.extend({
             if (apiKey !== process.env.LOOPWORMS_API_KEY) {
                 res.status(401).json({
                     status: false,
-                    "error" : "invalid api key",
+                    "error": "invalid api key",
                     user: null
                 });
                 return;
-            } 
+            }
             if (body.mapId === undefined) {
                 body.mapId = "main";
             }
@@ -853,11 +854,11 @@ WS.socketIOServer = Server.extend({
             if (apiKey !== process.env.LOOPWORMS_API_KEY) {
                 res.status(401).json({
                     status: false,
-                    "error" : "invalid api key",
+                    "error": "invalid api key",
                     user: null
                 });
                 return;
-            } 
+            }
             if (body.mapId === undefined) {
                 body.mapId = "main";
             }
@@ -890,14 +891,14 @@ WS.socketIOServer = Server.extend({
             if (sessionData === undefined) {
                 res.status(404).json({
                     status: false,
-                    "error" : "session not found",
+                    "error": "session not found",
                     user: null
                 });
             } else {
                 let player = self.worldsMap[sessionData.mapId].getPlayerById(sessionData.entityId);
                 let lakeLvl = Lakes.getLakeLevel(lakeName);
                 if (player.getNFTWeapon().getLevel() < lakeLvl) {
-                    let response = {allowed: false, reqLevel: lakeLvl};
+                    let response = { allowed: false, reqLevel: lakeLvl };
                     res.status(200).send(response);
                     return;
                 } else {
@@ -912,11 +913,11 @@ WS.socketIOServer = Server.extend({
                         return;
                     }
                     let fishExp = Lakes.calculateFishExp(fish, lakeName);
-                    player.pendingFish = {name: fish, exp: fishExp, double: (activeTrait === "double_catch")};
+                    player.pendingFish = { name: fish, exp: fishExp, double: (activeTrait === "double_catch") };
                     let difficulty = Lakes.getDifficulty(player.getNFTWeapon().getLevel(), lakeName, (activeTrait === "upper_hand"));
                     let speed = Lakes.getFishSpeed(fish, lakeName);
 
-                    let response = {allowed: true, fish: fish, difficulty: difficulty?.difficulty, speed: speed, bullseyeSize: difficulty?.bullseye, trait: activeTrait};
+                    let response = { allowed: true, fish: fish, difficulty: difficulty?.difficulty, speed: speed, bullseyeSize: difficulty?.bullseye, trait: activeTrait };
                     self.worldsMap[sessionData.mapId].announceSpawnFloat(player, fx, fy);
                     res.status(200).send(response);
                 }
@@ -1045,7 +1046,7 @@ WS.socketIOServer = Server.extend({
             if (sessionData === undefined) {
                 res.status(404).json({
                     status: false,
-                    "error" : "session not found",
+                    "error": "session not found",
                     user: null
                 });
             } else {
@@ -1065,56 +1066,101 @@ WS.socketIOServer = Server.extend({
                     }
                 }
 
-                let response = {consumed: consumed, cooldown: cooldown, items: itemsOnCooldown};
+                let response = { consumed: consumed, cooldown: cooldown, items: itemsOnCooldown };
                 res.status(200).send(response);
             }
         });
 
-        self.io.on('connection', function(connection){
-          //console.log('a user connected');
+        app.get('/session/:sessionId/getSpin/:linesPlayed/:bet', async (req, res) => {
 
-          connection.remoteAddress = connection.handshake.address.address
-  
-          var c = new WS.socketIOConnection(self._createId(), connection, self);
+            const linesPlayed = parseInt(req.params.linesPlayed);
+            const betPerLine = parseInt(req.params.bet);
+            const sessionId = req.params.sessionId;
+            const sessionData = cache.get(sessionId);
+
+            if (sessionData === undefined) {
+                res.status(404).json({
+                    status: false,
+                    error: "No session with id " + sessionId + " found",
+                    user: null
+                });
+                return;
+            }
+
+            const spinResponse = await minigame.getSpin(platformClient, sessionData, linesPlayed, betPerLine);
+
+            if (spinResponse === "Not Enough Gold") {
+                res.status(400).json({
+                    status: false,
+                    error: "Not Enough Gold",
+                    user: null
+                });
+                return;
+            }
             
-          if(self.connection_callback) {
-                self.connection_callback(c);
-          }
-          self.addConnection(c);
+            const { chosenSpin, payout, winningLines } = spinResponse;
+
+            //update cached gold amount
+            const spinCost = linesPlayed * betPerLine;
+            const spinResult = payout - spinCost;
+            const player = self.worldsMap[sessionData.mapId].getPlayerById(sessionData.entityId);
+            player.incrementResourceAmount(Types.Entities.GOLD, spinResult);
+            player.resetTimeout();
+
+            const response = {
+                spinData: chosenSpin,
+                valueToPayout: payout,
+                winningLines: winningLines
+            };
+
+            res.status(200).send(response);
         });
 
-        
+        self.io.on('connection', function (connection) {
+            //console.log('a user connected');
 
-        self.io.on('error', function (err) { 
-            console.error(err.stack); 
+            connection.remoteAddress = connection.handshake.address.address
+
+            var c = new WS.socketIOConnection(self._createId(), connection, self);
+
+            if (self.connection_callback) {
+                self.connection_callback(c);
+            }
+            self.addConnection(c);
+        });
+
+
+
+        self.io.on('error', function (err) {
+            console.error(err.stack);
             self.error_callback()
 
-         })
+        })
 
-        http.listen(port, function(){
-          console.log('listening on *:' + port);
+        http.listen(port, function () {
+            console.log('listening on *:' + port);
         });
     },
 
-    _createId: function() {
+    _createId: function () {
         return '5' + Utils.random(99) + '' + (this._counter++);
     },
-    
-    
-    broadcast: function(message) {
+
+
+    broadcast: function (message) {
         self.io.emit("message", message)
     },
 
-    onRequestStatus: function(status_callback) {
+    onRequestStatus: function (status_callback) {
         this.status_callback = status_callback;
     }
-    
+
 
 
 });
 
 WS.socketIOConnection = Connection.extend({
-    init: function(id, connection, server) {
+    init: function (id, connection, server) {
 
         var self = this
 
@@ -1123,7 +1169,7 @@ WS.socketIOConnection = Connection.extend({
         // HANDLE DISPATCHER IN HERE
         connection.on("dispatch", function (message) {
             //console.log("Received dispatch request")
-            self._connection.emit("dispatched",  { "status" : "OK", host : server.host, port : server.port } )
+            self._connection.emit("dispatched", { "status": "OK", host: server.host, port: server.port })
         });
 
         connection.on("message", function (message) {
@@ -1132,27 +1178,27 @@ WS.socketIOConnection = Connection.extend({
         });
 
         connection.on("disconnect", function () {
-            if(self.close_callback) {
+            if (self.close_callback) {
                 self.close_callback();
             }
             delete self._server.removeConnection(self.id);
         });
 
     },
-    
-    broadcast: function(message) {
+
+    broadcast: function (message) {
         throw "Not implemented";
     },
-    
-    send: function(message) {
+
+    send: function (message) {
         this._connection.emit("message", message);
     },
-    
-    sendUTF8: function(data) {
+
+    sendUTF8: function (data) {
         this.send(data)
     },
 
-    close: function(logError) {
+    close: function (logError) {
         //console.log("Closing connection to socket"+". Error: " + logError);
         this._connection.disconnect();
     }

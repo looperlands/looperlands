@@ -1,0 +1,219 @@
+@import url('https://fonts.googleapis.com/css?family=Orbitron');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
+
+#wrapper {
+    margin: 0 auto;
+    background-size: auto 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    display: flex;
+    image-rendering: pixelated;
+    justify-content: center;
+    touch-action: none;
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+#payoutContainer {
+    width: max-content;
+    height: 100%;
+    padding: 2px 2px;
+    background: rgb(42 42 42 / 69%);
+    position: absolute;
+    z-index: 101;
+    font-family: 'GraphicPixel', Arial, sans-serif;
+    color: cyan;
+    backdrop-filter: blur(0.741vh); 
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+#payoutContainer table {
+    border-collapse: separate;
+    border-spacing: 2px;
+    margin: auto;
+}
+
+#payoutContainer thead {
+    font-family: "256BYTES", "Orbitron", "Helvetica Neue", "Futura", "Trebuchet MS", Arial;
+    font-weight: bold;
+    font-size: 5.5vh;
+    line-height: 1vh;
+}
+
+#payoutContainer tbody {
+    line-height: 1vh;
+}
+
+#payoutContainer td {
+    filter: drop-shadow(2px 4px 4px black);
+    text-align: center;
+    vertical-align: middle;
+    font-size: 5vh;
+    font-family: "Orbitron", "Helvetica Neue", "Futura", "Trebuchet MS", Arial;
+    font-weight: 1000;
+}
+
+#payoutContainer td.symbolCell {
+    height: 8vh;
+}
+
+.headerText{
+    font-family: "256BYTES", "Orbitron", "Helvetica Neue", "Futura", "Trebuchet MS", Arial;
+    font-weight: bold;
+}
+
+.payoutCell {
+    filter: drop-shadow(0 0 2px black) drop-shadow(0 0 2px black) drop-shadow(0 0 2px white) drop-shadow(0 0 4px magenta) drop-shadow(0 0 8px magenta) !important
+}
+
+#payoutContainer td.symbolCell img{
+    width: 57%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    filter: drop-shadow(0 0 2px black) drop-shadow(0 0 2px white) drop-shadow(0 0 2px magenta) drop-shadow(0 0 2px magenta) !important;
+}
+
+#payoutContainer td.wildCell img{
+    height: 10vh;
+    filter: drop-shadow(0 0 2px black) drop-shadow(0 0 2px white) drop-shadow(0 0 2px magenta) drop-shadow(0 0 2px magenta) !important;
+}
+
+.closeButton {
+    position: absolute;
+    top: 50%;
+    right: 1vh;
+    background-color: transparent;
+    border: none;
+    color: #fff;
+    font-size: 24px;
+    cursor: pointer;
+    opacity: 0.8;
+}
+
+.closeButton:hover {
+    opacity: 0.95;
+    text-shadow: 0 0 0.5vh #fff;
+}
+
+/* Optionally, add a transition effect */
+.closeButton {
+    transition: color 0.3s ease;
+}
+
+#slotsArea {
+    height: 100%;
+    width: auto;
+    position: absolute;
+}
+
+#buttonPanel{
+    display:flex;
+    margin: auto;
+    top: 81%;
+    position: absolute;
+}
+
+#autoSpinButton {
+    height:80%;
+    aspect-ratio:16/9;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+#autoSpinButton.off{
+    background: url('./assets/images/ui/buttons/auto_unpressed.png');
+    background-size: 100% 100%;
+}
+
+#autoSpinButton.on{
+    background: url('./assets/images/ui/buttons/auto_pressed.png');
+    background-size: 100% 100%;
+    box-shadow: 0 0 20px 5px rgba(0, 255, 0, 0.7);
+    border-radius: 100%;
+}
+
+#autoSpinButton:active{
+    background: url('./assets/images/ui/buttons/auto_press.png');
+    background-size: 100% 100%;
+}
+
+
+#lineButton{
+    background: url('./assets/images/ui/buttons/lines_unpressed.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    aspect-ratio:16/9;
+    height:50%;
+    position: absolute;
+    left: 27%;
+    box-shadow: 0 0 20px 5px rgba(255, 0, 255, 0.7);
+    border-radius: 100%;
+}
+
+#lineButton:active{
+    background: url('./assets/images/ui/buttons/lines_pressed.png');
+    background-size: 100% 100%;
+    box-shadow: 0 0 20px 5px rgba(255, 0, 255, 0.5);
+
+}
+
+#betButton{
+    background: url('./assets/images/ui/buttons/bet_one_unpressed.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    aspect-ratio:16/9;
+    height:50%;
+    position: absolute;
+    left: 44%;
+    top: 20%;
+    box-shadow: 0 0 20px 5px rgba(255, 0, 255, 0.7);
+    border-radius: 100%;
+}
+
+#betButton:active{
+    background: url('./assets/images/ui/buttons/bet_one_pressed.png');
+    background-size: 100% 100%;
+}
+
+#maxBetButton{
+    background: url('./assets/images/ui/buttons/bet_max_unpressed.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    aspect-ratio:16/9;
+    height:50%;
+    position: absolute;
+    left: 61%;
+    box-shadow: 0 0 20px 5px rgba(255, 0, 255, 0.7);
+    border-radius: 100%;
+}
+
+#maxBetButton:active{
+    background: url('./assets/images/ui/buttons/bet_max_pressed.png');
+    background-size: 100% 100%;
+}
+
+#spinButton{
+    background: url('./assets/images/ui/buttons/spin_unpressed.png');
+    background-size: 100% 100%;
+    position: absolute;
+    height:80%;
+    aspect-ratio:16/9;
+    left: 79%;
+    background-repeat: no-repeat;
+    background-position: center;
+    box-shadow: 0 0 20px 5px rgba(0, 225, 255, 0.7);
+    border-radius: 100%;
+}
+
+#spinButton:active{
+    background: url('./assets/images/ui/buttons/spin_pressed.png');
+    background-size: 100% 100%;
+}

@@ -112,7 +112,7 @@ body {
 }
 
 #achievements nav::selection {background:transparent;text-decoration:none;color:transparent;}
-#canvas, #bar-container, #bubbles, #chatbox, #canvasborder, #foreground, #background, #high-tiles, footer, #container, #achievement-notification {-moz-user-select:none;-webkit-user-select:none;-o-user-select:none;-ms-user-select:none;}
+#canvas, #bar-container, #bubbles, #chatbox, #canvasborder, #foreground, #background, #high-tiles, footer, #container, #achievement-notification {user-select:none;-moz-user-select:none;-webkit-user-select:none;-o-user-select:none;-ms-user-select:none;}
 
 .started #canvas {cursor:none;}
 
@@ -292,7 +292,7 @@ body.upscaled.game {background:#000;}
 #vignetting {height:100%;width:100%;position:absolute;top:0;left:0;pointer-events:none;}
 #logosparks {display:block;position:absolute;top:0;left:0;}
 #parchment, #parchment input {font-family:'GraphicPixel';}
-#parchment input {width:20%;background:rgba(0,0,0,0.05);text-align:center;-moz-animation:glow 0.5s linear infinite alternate;-webkit-animation:glow 0.5s linear infinite alternate;-o-animation:glow 0.5s linear infinite alternate;-ms-animation:glow 0.5s linear infinite alternate;color:#eee;}
+#parchment input {width:20%;background:rgba(0,0,0,0.05);text-align:center;-moz-animation:glow 0.5s linear infinite alternate;-webkit-animation:glow 0.5s linear infinite alternate;-o-animation:glow 0.5s linear infinite alternate;-ms-animation:glow 0.5s linear infinite alternate;color:#eee;animation:glow 0.5s linear infinite alternate;color:#eee;}
 #parchment input:focus {-moz-animation:none;-webkit-animation:none;-o-animation:none;-ms-animation:none;animation:none;color:#fff;background:rgba(0,0,0,0.1);border-color:rgba(0,0,0,0.3);}
 
 #character div {-moz-transition:0.4s opacity linear;-webkit-transition:0.4s opacity linear;-o-transition:0.4s opacity linear;-ms-transition:0.4s opacity linear;transition:0.4s opacity linear;}
@@ -317,7 +317,7 @@ body.upscaled.game {background:#000;}
 #healthbar {background:url('../img/1/barsheet.png');image-rendering:-moz-crisp-edges;position:absolute;}
 #hitpoints {background:#d83939;-moz-transition:.5s width ease;-webkit-transition:.5s width ease;-o-transition:.5s width ease;-ms-transition:.5s width ease;transition:.5s width ease;}
 #hitpoints.white {-moz-animation:flash 0.5s linear 1;-webkit-animation:flash 0.5s linear 1;-o-animation:flash 0.5s linear 1;-ms-animation:flash 0.5s linear 1;animation:flash 0.5s linear 1;}
-#hitpoints.invincible {-moz-animation:invincible 0.3s steps(3, end) alternate infinite;-webkit-animation:invincible 0.3s steps(3, end) alternate infinite;-o-animation:invincible 0.3s steps(3, end) alternate infinite;-ms-animation:invincible 0.3s steps(3, end) alternate infinite;}
+#hitpoints.invincible {animation:invincible 0.3s steps(3, end) alternate infinite;-moz-animation:invincible 0.3s steps(3, end) alternate infinite;-webkit-animation:invincible 0.3s steps(3, end) alternate infinite;-o-animation:invincible 0.3s steps(3, end) alternate infinite;-ms-animation:invincible 0.3s steps(3, end) alternate infinite;}
 
 #fishingbar {background:url('../img/1/fishing.png');image-rendering:-moz-crisp-edges;position:absolute;top:15%;left:33%;z-index:50;display:none;pointer-events:none;cursor:pointer;}
 #fishingbar.active {display:block;pointer-events:auto;}
@@ -330,14 +330,17 @@ body.upscaled.game {background:#000;}
 #fish-marker{background:url('../img/1/fishing.png');image-rendering:-moz-crisp-edges;position:absolute;z-index:58;}
 #fish {z-index:60;}
 
-#slotsprompt {background:url('../img/1/cornWinkyFish.png');image-rendering:-moz-crisp-edges;position:absolute;top:50%;left:50%;z-index:50;display:none;pointer-events:none;cursor:pointer;}
-#slotsprompt.active {display:block;pointer-events:auto;}
+#minigameprompt {overflow:hidden;position:absolute;top:35%;left:50%;display:none;cursor:none;background:url('../img/1/play.png') no-repeat center center / 100%;image-rendering: pixelated; animation: minigamebounce 2s infinite ease-in-out alternate;filter:saturate(5);}
+#minigameprompt.active {display:block;pointer-events:auto;}
+#minigameprompt:hover {filter:saturate(5);mask-image:url('../img/1/play.png');mask-size: cover;}
+#minigameprompt:before {content: "";position:absolute;height:200%;width:400%;top:-200%;left:-150%;background:radial-gradient(transparent 40%, rgba(255, 255, 255, 0.7) 60%, transparent 75%);transform-origin:bottom center;z-index:10;}
+#minigameprompt:hover:before {animation:minigameglow 1.5s infinite forwards ease-in-out;}
 
 #notifications {position:absolute;left:50%;text-align:center;font-family:'GraphicPixel';overflow:hidden;}
-#notifications div {position:absolute;-moz-transition:none;-webkit-transition:none;top:0;width:100%;}
+#notifications div {position:absolute;transition:none;-moz-transition:none;-webkit-transition:none;top:0;width:100%;}
 #notifications div.top {-moz-transition:0.5s top ease;-webkit-transition:0.5s top ease;-o-transition:0.5s top ease;-ms-transition:0.5s top ease;transition:0.5s top ease;}
 #notifications div.top #message1 {opacity:0;-moz-transition:0.2s opacity linear;-webkit-transition:0.2s opacity linear;-o-transition:0.2s opacity linear;-ms-transition:0.2s opacity linear;transition:0.2s opacity linear;}
-#notifications span {display:block;text-align:center;width:100%;opacity:1;-moz-user-select:none;-webkit-user-select:none;}
+#notifications span {display:block;text-align:center;width:100%;opacity:1;user-select:none;-moz-user-select:none;-webkit-user-select:none;}
 
 #playercount {font-family:'GraphicPixel';color:#e3e3e3;position:absolute;}
 #playercount:hover {cursor:pointer;color:#FCE045;}
@@ -432,8 +435,8 @@ body.upscaled.game {background:#000;}
 .barbutton {background:url('../img/1/barsheet.png');image-rendering:-moz-crispt-edges;position:absolute;}
 
 #chatbox {background:url('../img/1/barsheet.png');image-rendering:-moz-crisp-edges;position:absolute;left:50%;z-index:5;-moz-transition:0.2s bottom ease;-webkit-transition:0.2s bottom ease;-o-transition:0.2s bottom ease;-ms-transition:0.2s bottom ease;transition:0.2s bottom ease;}
-.bubble p {-moz-user-select:none;-webkit-user-select:none;}
-.bubbleglobal p {-moz-user-select:none;-webkit-user-select:none; text-align: left; flex: 0 0 100%;}
+.bubble p {user-select:none;-moz-user-select:none;-webkit-user-select:none;}
+.bubbleglobal p {user-select:none;-moz-user-select:none;-webkit-user-select:none; text-align: left; flex: 0 0 100%;}
 
 #emoteMenuToggle {
     width: 12px;
@@ -884,7 +887,7 @@ body.inventory .inventorySidebar {
 #achievements li.unlocked .coin {opacity:1;}
 #achievements .achievement-name {color:#fff;padding-top:8px}
 #achievements .achievement-description {width: calc(100% - 100px);height: 1.1em;overflow-y: hidden;float: left;text-overflow: ellipsis;white-space: nowrap;}
-#achievement-notification {position:absolute;z-index:8;bottom:0;left:50%;text-align:center;font-family:'GraphicPixel';pointer-events:none;-moz-transition:0.3s height ease;-webkit-transition:0.3s height ease;-o-transition:0.3s height ease;-ms-transition:0.3s height ease;}
+#achievement-notification {position:absolute;z-index:8;bottom:0;left:50%;text-align:center;font-family:'GraphicPixel';pointer-events:none;transition:0.3s height ease;-moz-transition:0.3s height ease;-webkit-transition:0.3s height ease;-o-transition:0.3s height ease;-ms-transition:0.3s height ease;}
 #achievement-notification .name, #achievement-notification .title {opacity:0;-moz-transition:0.3s opacity linear;-webkit-transition:0.3s opacity linear;-o-transition:0.3s opacity linear;-ms-transition:0.3s opacity linear;transition:0.3s opacity linear;}
 #achievement-notification.active .name, #achievement-notification.active .title {opacity:1;}
 #achievement-info {overflow:hidden;height:100%;}
@@ -1159,38 +1162,60 @@ footer div  {display:inline-block;}
 
 #logo, #parchment {-moz-transition:0.5s opacity linear;-webkit-transition:0.5s opacity linear;-o-transition:0.5s opacity linear;-ms-transition:0.5s opacity linear;transition:0.5s opacity linear;}
 
+/* Animations for minigame play button */
+@keyframes minigameglow { 0% { top: -210%; transform: scale(0); } 100% { top: -60%; transform: scale(1); } }
+@keyframes minigamebounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(10%); } }
+
+/* Other animations */
+@keyframes flash { 0% {background:#ffa2a2;} 100% {background:#e22525; }}
 @-moz-keyframes flash { 0% {background:#ffa2a2;} 100% {background:#e22525; }}
 @-webkit-keyframes flash { 0% {background:#ffa2a2;} 100% {background:#e22525; }}
 @-o-keyframes flash { 0% {background:#ffa2a2;} 100% {background:#e22525; }}
 @-ms-keyframes flash { 0% {background:#ffa2a2;} 100% {background:#e22525; }}
 
+@keyframes glow { from {color:#fcda5c;} to {color:#fff;} }
 @-moz-keyframes glow { from {color:#fcda5c;} to {color:#fff;} }
 @-webkit-keyframes glow { from {color:#fcda5c;} to {color:#fff;} }
 @-o-keyframes glow { from {color:#fcda5c;} to {color:#fff;} }
 @-ms-keyframes glow { from {color:#fcda5c;} to {color:#fff;} }
 
+@keyframes logo1 { from { background-position: 0 -42px; } to { background-position: 0 -294px; }}
 @-moz-keyframes logo1 { from { background-position: 0 -42px; } to { background-position: 0 -294px; }}
 @-webkit-keyframes logo1 { from { background-position: 0 -42px; } to { background-position: 0 -294px; }}
 @-o-keyframes logo1 { from { background-position: 0 -42px; } to { background-position: 0 -294px; }}
 @-ms-keyframes logo1 { from { background-position: 0 -42px; } to { background-position: 0 -294px; }}
+
+@keyframes logo2 { from { background-position: 0 -84px; } to { background-position: 0 -588px; }}
 @-moz-keyframes logo2 { from { background-position: 0 -84px; } to { background-position: 0 -588px; }}
 @-webkit-keyframes logo2 { from { background-position: 0 -84px; } to { background-position: 0 -588px; }}
 @-o-keyframes logo2 { from { background-position: 0 -84px; } to { background-position: 0 -588px; }}
 @-ms-keyframes logo2 { from { background-position: 0 -84px; } to { background-position: 0 -588px; }}
+
+@keyframes logo3 { from { background-position: 0 -126px; } to { background-position: 0 -882px; }}
 @-moz-keyframes logo3 { from { background-position: 0 -126px; } to { background-position: 0 -882px; }}
 @-webkit-keyframes logo3 { from { background-position: 0 -126px; } to { background-position: 0 -882px; }}
 @-o-keyframes logo3 { from { background-position: 0 -126px; } to { background-position: 0 -882px; }}
 @-ms-keyframes logo3 { from { background-position: 0 -126px; } to { background-position: 0 -882px; }}
 
+@keyframes parchleft { 0% { left:0%; } 45% { left:41%; } 55% { left:41%; } 100% { left:0%; }}
 @-moz-keyframes parchleft { 0% { left:0%; } 45% { left:41%; } 55% { left:41%; } 100% { left:0%; }}
 @-webkit-keyframes parchleft { 0% { left:0%; } 45% { left:41%; } 55% { left:41%; } 100% { left:0%; }}
 @-o-keyframes parchleft { 0% { left:0%; } 45% { left:41%; } 55% { left:41%; } 100% { left:0%; }}
 @-ms-keyframes parchleft { 0% { left:0%; } 45% { left:41%; } 55% { left:41%; } 100% { left:0%; }}
+
+@keyframes parchright { 0% {right:0%; } 45% { right:41%; } 55% { right:41%; } 100% { right:0%; }}
 @-moz-keyframes parchright { 0% {right:0%; } 45% { right:41%; } 55% { right:41%; } 100% { right:0%; }}
 @-webkit-keyframes parchright { 0% {right:0%; } 45% { right:41%; } 55% { right:41%; } 100% { right:0%; }}
 @-o-keyframes parchright { 0% {right:0%; } 45% { right:41%; } 55% { right:41%; } 100% { right:0%; }}
 @-ms-keyframes parchright { 0% {right:0%; } 45% { right:41%; } 55% { right:41%; } 100% { right:0%; }}
 
+
+@keyframes parchmiddle3 {
+    0% {width:1038px;margin-left:-519px;background-position:-114px -882px;}
+    45% {width:0px;margin-left:0px;background-position: -633px -882px;}
+    55% {width:0px;margin-left:0px;background-position: -633px -882px;}
+    100% {width:1038px;margin-left:-519px;background-position: -114px -882px;}
+}
 @-moz-keyframes parchmiddle3 {
     0% {width:1038px;margin-left:-519px;background-position:-114px -882px;}
     45% {width:0px;margin-left:0px;background-position: -633px -882px;}
@@ -1216,6 +1241,13 @@ footer div  {display:inline-block;}
     100% {width:1038px;margin-left:-519px;background-position: -114px -882px;}
 }
 
+
+@keyframes parchmiddle2 {
+    0% {width:692px;margin-left:-346px;background-position:-76px -588px;}
+    45% {width:0px;margin-left:0px;background-position: -422px -588px;}
+    55% {width:0px;margin-left:0px;background-position: -422px -588px;}
+    100% {width:692px;margin-left:-346px;background-position:-76px -588px;}
+}
 @-moz-keyframes parchmiddle2 {
     0% {width:692px;margin-left:-346px;background-position:-76px -588px;}
     45% {width:0px;margin-left:0px;background-position: -422px -588px;}
@@ -1241,6 +1273,13 @@ footer div  {display:inline-block;}
     100% {width:692px;margin-left:-346px;background-position:-76px -588px;}
 }
 
+
+@keyframes parchmiddle1 {
+    0% {width:346px;margin-left:-173px;background-position:-38px -294px;}
+    45% {width:0px;margin-left:0px;background-position: -211px -294px;}
+    55% {width:0px;margin-left:0px;background-position: -211px -294px;}
+    100% {width:346px;margin-left:-173px;background-position:-38px -294px;}
+}
 @-moz-keyframes parchmiddle1 {
     0% {width:346px;margin-left:-173px;background-position:-38px -294px;}
     45% {width:0px;margin-left:0px;background-position: -211px -294px;}
@@ -1266,20 +1305,25 @@ footer div  {display:inline-block;}
     100% {width:346px;margin-left:-173px;background-position:-38px -294px;}
 }
 
-
+@keyframes coinsparks1 { from { background-position: -216px -248px; } to { background-position: -360px -248px; }}
 @-moz-keyframes coinsparks1 { from { background-position: -216px -248px; } to { background-position: -360px -248px; }}
 @-webkit-keyframes coinsparks1 { from { background-position: -216px -248px; } to { background-position: -360px -248px; }}
 @-o-keyframes coinsparks1 { from { background-position: -216px -248px; } to { background-position: -360px -248px; }}
 @-ms-keyframes coinsparks1 { from { background-position: -216px -248px; } to { background-position: -360px -248px; }}
+
+@keyframes coinsparks2 { from { background-position: -432px -496px; } to { background-position: -720px -496px; }}
 @-moz-keyframes coinsparks2 { from { background-position: -432px -496px; } to { background-position: -720px -496px; }}
 @-webkit-keyframes coinsparks2 { from { background-position: -432px -496px; } to { background-position: -720px -496px; }}
 @-o-keyframes coinsparks2 { from { background-position: -432px -496px; } to { background-position: -720px -496px; }}
 @-ms-keyframes coinsparks2 { from { background-position: -432px -496px; } to { background-position: -720px -496px; }}
+
+@keyframes coinsparks3 { from { background-position: -648px -744px; } to { background-position: -1080px -744px; }}
 @-moz-keyframes coinsparks3 { from { background-position: -648px -744px; } to { background-position: -1080px -744px; }}
 @-webkit-keyframes coinsparks3 { from { background-position: -648px -744px; } to { background-position: -1080px -744px; }}
 @-o-keyframes coinsparks3 { from { background-position: -648px -744px; } to { background-position: -1080px -744px; }}
 @-ms-keyframes coinsparks3 { from { background-position: -648px -744px; } to { background-position: -1080px -744px; }}
 
+@keyframes invincible { from {background:#fa6a00;} to {background:#fabc00;} }
 @-moz-keyframes invincible { from {background:#fa6a00;} to {background:#fabc00;} }
 @-webkit-keyframes invincible { from {background:#fa6a00;} to {background:#fabc00;} }
 @-o-keyframes invincible { from {background:#fa6a00;} to {background:#fabc00;} }
@@ -1333,6 +1377,12 @@ footer div  {display:inline-block;}
     .upscaled #achievements, .upscaled #achievements li, .upscaled .coin, .upscaled #achievement-notification, .upscaled #coinsparks, .upscaled .achievement-sharing a, .upscaled #previous, .upscaled #next {background:url('../img/3/achievements.png');}
     .upscaled #fishingbar, #fishing-marker {background:url('../img/3/fishing.png');}
 
+    .upscaled #minigameprompt {overflow:hidden;position:absolute;top:35%;left:50%;display:none;cursor:none;background:url('../img/3/play.png') no-repeat center center / 100%;image-rendering: pixelated; animation: minigamebounce 2s infinite ease-in-out alternate;filter:saturate(5);}
+    .upscaled #minigameprompt.active {display:block;pointer-events:auto;}
+    .upscaled #minigameprompt:hover {filter:saturate(5);mask-image:url('../img/3/play.png');mask-size: cover;}
+    .upscaled #minigameprompt:before {content: "";position:absolute;height:200%;width:400%;top:-200%;left:-150%;background:radial-gradient(transparent 40%, rgba(255, 255, 255, 0.7) 60%, transparent 75%);transform-origin:bottom center;z-index:10;}
+    .upscaled #minigameprompt:hover:before {animation:minigameglow 1.5s infinite forwards ease-in-out;}
+
     .upscaled #avatarStats {
         left: 210px;
         bottom: 65px;
@@ -1365,7 +1415,7 @@ footer div  {display:inline-block;}
     body {background:-webkit-gradient(radial, center center, 360, center center, 1200, from(rgba(0,0,0,0)), to(rgba(0,0,0,1))),#000; background-size:auto, 15px auto, 15px auto, 60px auto, 384px;}
     #logo, #logosparks, .left-ornament, .right-ornament, #character, #character div, .button, .button div, #respawn, #scroll, #instructions, .icon, .avatar, .close, #note, .ribbon .top, .ribbon .bottom,  .ext-link {background-size:1266px auto;}
     #logo {height:126px;width:687px;position:absolute;top:10%;left:50%;margin-left:-344px;z-index:3;}
-    #logosparks {width:687px;height:126px;z-index:4;-moz-animation:logo3 .8s steps(6, end) infinite;-webkit-animation:logo3 .8s steps(6, end) infinite;-o-animation:logo3 .8s steps(6, end) infinite;-ms-animation:logo3 .8s steps(6, end) infinite;}
+    #logosparks {width:687px;height:126px;z-index:4;animation:logo3 .8s steps(6, end) infinite;-moz-animation:logo3 .8s steps(6, end) infinite;-webkit-animation:logo3 .8s steps(6, end) infinite;-o-animation:logo3 .8s steps(6, end) infinite;-ms-animation:logo3 .8s steps(6, end) infinite;}
     #parchment, #loadcharacter, #confirmation, #error {width:1266px;height:546px;position:absolute;top:55%;left:50%;margin-left:-633px;margin-top:-273px;font-size:30px;text-align:center;z-index:2;}
     #parchment h1 {margin-top:60px;font-weight:normal;}
     .left-ornament, .right-ornament {height:36px;width:93px;display:inline-block;margin:0 20px;position:relative;top:12px;}
@@ -1449,6 +1499,8 @@ footer div  {display:inline-block;}
     #fish-box {margin-top:0px;height:48px;width:48px;top:12px;left:12px; position:absolute;}
     #fish-marker{width:54px;height:9px;background-position:-72px 0;background-size:126px;left:-3px;top:21px;}
     #fish {height:48px;width:48px;position:absolute;}
+
+    #minigameprompt {width:48px;height:48px;}
 
     #armor, #weapon {width:48px;height:48px;position:absolute;background-size:288px;background-position:-96px;}
     #weapon {left:312px;top:3px;background-size:288px;}
@@ -1674,7 +1726,7 @@ footer div  {display:inline-block;}
     #close-credits {margin:45px auto 0 auto;text-align:center;clear:both;font-size:20px;color:#373737;}
     #sharing {width:240px;}
 
-    .animate .parchment-middle {-moz-animation:parchmiddle3 1s ease 1;-webkit-animation:parchmiddle3 1s ease 1;-o-animation:parchmiddle3 1s ease 1;-ms-animation:parchmiddle3 1s ease 1;}
+    .animate .parchment-middle {animation:parchmiddle3 1s ease 1;-moz-animation:parchmiddle3 1s ease 1;-webkit-animation:parchmiddle3 1s ease 1;-o-animation:parchmiddle3 1s ease 1;-ms-animation:parchmiddle3 1s ease 1;}
 
     .game .parchment-middle {background-position: -633px -882px;}
     .game.credits .parchment-middle, .game.death .parchment-middle {width:1038px;margin-left:-519px;background-position: -114px -882px;}
@@ -1694,6 +1746,11 @@ footer div  {display:inline-block;}
     .upscaled #bar-container, .upscaled #healthbar, .upscaled .barbutton, .upscaled #chatbox, .upscaled #population {background-image:url('../img/2/barsheet.png');}
     .upscaled #achievements, .upscaled #achievements li, .upscaled .coin, .upscaled #achievement-notification, .upscaled #coinsparks, .upscaled .achievement-sharing a, .upscaled #previous, .upscaled #next {background:url('../img/2/achievements.png');}
     .upscaled #fishingbar, #fish-marker {background:url('../img/2/fishing.png');}
+    .upscaled #minigameprompt {overflow:hidden;position:absolute;top:35%;left:50%;display:none;cursor:none;background:url('../img/2/play.png') no-repeat center center / 100%;image-rendering: pixelated; animation: minigamebounce 2s infinite ease-in-out alternate;filter:saturate(5);}
+    .upscaled #minigameprompt.active {display:block;pointer-events:auto;}
+    .upscaled #minigameprompt:hover {filter:saturate(5);mask-image:url('../img/2/play.png');mask-size: cover;}
+    .upscaled #minigameprompt:before {content: "";position:absolute;height:200%;width:400%;top:-200%;left:-150%;background:radial-gradient(transparent 40%, rgba(255, 255, 255, 0.7) 60%, transparent 75%);transform-origin:bottom center;z-index:10;}
+    .upscaled #minigameprompt:hover:before {animation:minigameglow 1.5s infinite forwards ease-in-out;}
 
     #emoteMenuToggle {
         width: 24px;
@@ -1764,7 +1821,7 @@ footer div  {display:inline-block;}
     body {background:-webkit-gradient(radial, center center, 240, center center, 800, from(rgba(0,0,0,0)), to(rgba(0,0,0,1))),#000; background-size:auto, 256px;}
     #logo, #logosparks, .left-ornament, .right-ornament, #character, #character div, .button, .button div, #respawn, #scroll, #instructions, .icon, .avatar, .close, #note, .ribbon .top, .ribbon .bottom, .ext-link {background-size:844px auto;}
     #logo {height:84px;width:458px;position:absolute;top:10%;left:50%;margin-left:-229px;z-index:3;}
-    #logosparks {width:458px;height:84px;z-index:4;-moz-animation:logo2 .8s steps(6, end) infinite;-webkit-animation:logo2 .8s steps(6, end) infinite;-o-animation:logo2 .8s steps(6, end) infinite;-ms-animation:logo2 .8s steps(6, end) infinite;}
+    #logosparks {width:458px;height:84px;z-index:4;animation:logo2 .8s steps(6, end) infinite;-moz-animation:logo2 .8s steps(6, end) infinite;-webkit-animation:logo2 .8s steps(6, end) infinite;-o-animation:logo2 .8s steps(6, end) infinite;-ms-animation:logo2 .8s steps(6, end) infinite;}
     #parchment, #loadcharacter, #confirmation, #error {width:844px;height:364px;position:absolute;top:55%;left:50%;margin-left:-422px;margin-top:-182px;font-size:20px;text-align:center; z-index:2;}
     #parchment h1 {margin-top:40px;font-weight:normal;}
     .left-ornament, .right-ornament {height:24px;width:62px;display:inline-block;margin:0 15px;position:relative;top:7px;}
@@ -1842,6 +1899,8 @@ footer div  {display:inline-block;}
     #fish-box {margin-top:0px;height:32px;width:32px;top:8px;left:8px; position:absolute;}
     #fish-marker{width:36px;height:6px;background-position:-48px 0;background-size:84px;left:-2px;top:14px;}
     #fish {height:32px;width:32px;position:absolute;}
+
+    #minigameprompt {width:32px;height:32px;}
 
     #armor, #weapon {width:32px;height:32px;position:absolute;background-size:192px;background-position:-64px;}
     #weapon {left:208px;top:2px;}
@@ -1921,7 +1980,7 @@ footer div  {display:inline-block;}
     #close-credits {margin:20px auto 0 auto;text-align:center;clear:both;font-size:14px;}
     #sharing {width:202px;}
 
-    .animate .parchment-middle {-moz-animation:parchmiddle2 1s ease 1;-webkit-animation:parchmiddle2 1s ease 1;-o-animation:parchmiddle2 1s ease 1;-ms-animation:parchmiddle2 1s ease 1;}
+    .animate .parchment-middle {animation:parchmiddle2 1s ease 1;-moz-animation:parchmiddle2 1s ease 1;-webkit-animation:parchmiddle2 1s ease 1;-o-animation:parchmiddle2 1s ease 1;-ms-animation:parchmiddle2 1s ease 1;}
 
     .game .parchment-middle {background-position: -422px -588px;}
     .game.credits .parchment-middle, .game.death .parchment-middle {width:692px;margin-left:-346px;background-position: -76px -588px;}
@@ -1936,12 +1995,17 @@ footer div  {display:inline-block;}
     .upscaled #bar-container, .upscaled #healthbar, .upscaled .barbutton, .upscaled #chatbox, .upscaled #population {background-image:url('../img/2/barsheet.png');}
     .upscaled #achievements, .upscaled #achievements li, .upscaled .coin, .upscaled #achievement-notification, .upscaled #coinsparks, .upscaled .achievement-sharing a, .upscaled #previous, .upscaled #next {background:url('../img/2/achievements.png');}
     .upscaled #fishingbar, #fish-marker {background:url('../img/2/fishing.png');}
+    .upscaled #minigameprompt {overflow:hidden;position:absolute;top:35%;left:50%;display:none;cursor:none;background:url('../img/2/play.png') no-repeat center center / 100%;image-rendering: pixelated; animation: minigamebounce 2s infinite ease-in-out alternate;filter:saturate(5);}
+    .upscaled #minigameprompt.active {display:block;pointer-events:auto;}
+    .upscaled #minigameprompt:hover {filter:saturate(5);mask-image:url('../img/2/play.png');mask-size: cover;}
+    .upscaled #minigameprompt:before {content: "";position:absolute;height:200%;width:400%;top:-200%;left:-150%;background:radial-gradient(transparent 40%, rgba(255, 255, 255, 0.7) 60%, transparent 75%);transform-origin:bottom center;z-index:10;}
+    .upscaled #minigameprompt:hover:before {animation:minigameglow 1.5s infinite forwards ease-in-out;}
 
     body {background:-moz-radial-gradient(rgba(0,0,0,0) 40%,rgba(0,0,0,1) 125%), #000; background-size:auto, 256px;}
     body {background:-webkit-gradient(radial, center center, 240, center center, 800, from(rgba(0,0,0,0)), to(rgba(0,0,0,1))),#000; background-size:auto, 256px;}
     #logo, #logosparks, .left-ornament, .right-ornament, #character, #character div, .button, .button div, #respawn, #scroll, #instructions, .icon, .avatar, .close, #note, .ribbon .top, .ribbon .bottom, .ext-link {background-size:844px auto;}
     #logo {height:84px;width:458px;position:absolute;top:10%;left:50%;margin-left:-229px;z-index:3;}
-    #logosparks {width:458px;height:84px;z-index:4;-moz-animation:logo2 .8s steps(6, end) infinite;-webkit-animation:logo2 .8s steps(6, end) infinite;-o-animation:logo2 .8s steps(6, end) infinite;-ms-animation:logo2 .8s steps(6, end) infinite;}
+    #logosparks {width:458px;height:84px;z-index:4;animation:logo2 .8s steps(6, end) infinite;-moz-animation:logo2 .8s steps(6, end) infinite;-webkit-animation:logo2 .8s steps(6, end) infinite;-o-animation:logo2 .8s steps(6, end) infinite;-ms-animation:logo2 .8s steps(6, end) infinite;}
     #parchment, #loadcharacter, #confirmation, #error {width:844px;height:364px;position:absolute;top:55%;left:50%;margin-left:-422px;margin-top:-182px;font-size:20px;text-align:center; z-index:2;}
     #parchment h1 {margin-top:40px;font-weight:normal;}
     .left-ornament, .right-ornament {height:24px;width:62px;display:inline-block;margin:0 15px;position:relative;top:7px;}
@@ -2091,6 +2155,8 @@ footer div  {display:inline-block;}
     #fish-marker{width:36px;height:6px;background-position:-48px 0;background-size:84px;left:-2px;top:14px;}
     #fish {height:32px;width:32px;position:absolute;}
 
+    #minigameprompt {width:32px;height:32px;}
+
     #armor, #weapon {width:32px;height:32px;position:absolute;background-size:192px;background-position:-64px;}
     #weapon {left:208px;top:2px;}
     #armor {left:242px;top:2px;}
@@ -2160,7 +2226,7 @@ footer div  {display:inline-block;}
     #close-credits {margin:20px auto 0 auto;text-align:center;clear:both;font-size:14px;}
     #sharing {width:202px;}
 
-    .animate .parchment-middle {-moz-animation:parchmiddle2 1s ease 1;-webkit-animation:parchmiddle2 1s ease 1;-o-animation:parchmiddle2 1s ease 1;-ms-animation:parchmiddle2 1s ease 1;}
+    .animate .parchment-middle {animation:parchmiddle2 1s ease 1;-moz-animation:parchmiddle2 1s ease 1;-webkit-animation:parchmiddle2 1s ease 1;-o-animation:parchmiddle2 1s ease 1;-ms-animation:parchmiddle2 1s ease 1;}
 
     .game .parchment-middle {background-position: -422px -588px;}
     .game.credits .parchment-middle, .game.death .parchment-middle {width:692px;margin-left:-346px;background-position: -76px -588px;}
@@ -2180,7 +2246,7 @@ footer div  {display:inline-block;}
     body {background:-webkit-gradient(radial, center center, 200, center center, 600, from(rgba(0,0,0,0)), to(rgba(0,0,0,1))), #000; background-size:auto, 128px;}
     #logo, #logosparks, .left-ornament, .right-ornament, #character, #character div, .button, .button div, #respawn, #scroll, #instructions, .icon, .avatar, .close, #note, .ribbon .top, .ribbon .bottom, .ext-link {background-size:422px auto;}
     #logo {height:42px;width:229px;position:absolute;top:10%;left:50%;margin-left:-114px;z-index:3;}
-    #logosparks {width:229px;height:42px;z-index:4;-moz-animation:logo1 .8s steps(6, end) infinite;-webkit-animation:logo1 .8s steps(6, end) infinite;-o-animation:logo1 .8s steps(6, end) infinite;-ms-animation:logo1 .8s steps(6, end) infinite;}
+    #logosparks {width:229px;height:42px;z-index:4;animation:logo1 .8s steps(6, end) infinite;-moz-animation:logo1 .8s steps(6, end) infinite;-webkit-animation:logo1 .8s steps(6, end) infinite;-o-animation:logo1 .8s steps(6, end) infinite;-ms-animation:logo1 .8s steps(6, end) infinite;}
     #parchment, #loadcharacter, #confirmation, #error {width:422px;height:182px;position:absolute;top:50%;left:50%;margin-left:-211px;margin-top:-91px;font-size:10px;text-align:center;z-index:2;}
     #parchment h1, #instructions h1 {margin-top:20px;font-weight:normal;}
     .left-ornament, .right-ornament {height:12px;width:31px;display:inline-block;margin:0 10px;position:relative;top:3px;}
@@ -2219,7 +2285,7 @@ footer div  {display:inline-block;}
     #instructions li:nth-child(3) span {height:21px;width:16px;background-position:-406px -12px; display:block;float:left;margin: 0 9px 0 20px;position: relative;top: -6px;}
     #instructions p {text-align:center;font-family:'GraphicPixel';font-size:10px;clear:left;margin:0;}
 
-    #foreground { cursor: default; }
+    #foreground { cursor: default;}
 
     #playerimage {height: 32px; width: 32px;}
 
@@ -2260,6 +2326,8 @@ footer div  {display:inline-block;}
     #fish-box {margin-top:0px;height:16px;width:16px;top:4px;left:4px; position:absolute;}
     #fish-marker{width:18px;height:3px;background-position:-24px 0;background-size:42px;left:-1px;top:7px;}
     #fish {height:16px;width:16px;position:absolute;}
+
+    #minigameprompt {width:16px;height:16px;}
 
     #armor, #weapon {width:16px;height:16px;position:absolute;background-size:96px;background-position:-32px;}
     #weapon {left:104px;top:1px;}
@@ -2319,7 +2387,7 @@ footer div  {display:inline-block;}
     #close-credits {margin:12px auto 0 auto;text-align:center;clear:both;font-size:10px;}
     #sharing {width:202px;}
 
-    .animate .parchment-middle {-moz-animation:parchmiddle1 1s ease 1;-webkit-animation:parchmiddle1 1s ease 1;-o-animation:parchmiddle1 1s ease 1;-ms-animation:parchmiddle1 1s ease 1;}
+    .animate .parchment-middle {animation:parchmiddle1 1s ease 1;-moz-animation:parchmiddle1 1s ease 1;-webkit-animation:parchmiddle1 1s ease 1;-o-animation:parchmiddle1 1s ease 1;-ms-animation:parchmiddle1 1s ease 1;}
 
     .game .parchment-middle {background-position: -211px -294px;}
     .game.credits .parchment-middle, .game.death .parchment-middle {width:346px;margin-left:-173px;background-position: -38px -294px;}
@@ -2396,7 +2464,7 @@ footer div  {display:inline-block;}
     body.intro {background:-moz-radial-gradient(rgba(0,0,0,0) 40%,rgba(0,0,0,1) 125%), #000; background-size:auto, 128px;}
     body.intro {background:-webkit-gradient(radial, center center, 120, center center, 400, from(rgba(0,0,0,0)), to(rgba(0,0,0,1))), #000; background-size:auto, 128px;}
     body {background:#000;}
-    #logosparks {-moz-animation:none;-webkit-animation:none;-o-animation:none;-ms-animation:none;display:none;}
+    #logosparks {animation:none;-moz-animation:none;-webkit-animation:none;-o-animation:none;-ms-animation:none;display:none;}
     #container {height:258px;width:480px;position:relative;left:50%;top:50%;margin:-128px auto 0 -240px;}
     #canvasborder {background:none;padding:0;}
 
@@ -2427,9 +2495,9 @@ footer div  {display:inline-block;}
     #instructions li:nth-child(3) span {height:21px;width:16px;background-position:-406px -12px; display:block;float:left;margin: 0 9px 0 20px;position: relative;top: -6px;}
     #instructions p {text-align:center;font-family:'GraphicPixel';font-size:10px;clear:left;margin:0;}
 
-    #foreground { cursor: default; }
+    #foreground { cursor: default;}
 
-    #parchment.animate {-moz-animation:none;-webkit-animation:none;-o-animation:none;-webkit-animation:none;}
+    #parchment.animate {animation:none;-moz-animation:none;-webkit-animation:none;-o-animation:none;-webkit-animation:none;}
 
     #loadcharacter, #confirmation, #createcharacter, #error {display:none;margin-top:0;margin-left:0;left:0;width:auto;}
     .loadcharacter #loadcharacter, .confirmation #confirmation, .createcharacter #createcharacter, .error #error {display:block;width:100%;}
@@ -2464,8 +2532,10 @@ footer div  {display:inline-block;}
     #fish-marker{width:36px;height:6px;background-position:-48px 0;background-size:84px;left:-2px;top:14px;}
     #fish {height:32px;width:32px;position:absolute;}
 
+    #minigameprompt {width:32px;;height:32px;}
+
     #armor, #weapon {width:32px;height:32px;position:absolute;background-size:192px;background-position:-64px;}
-    #weapon {left:208px;top:2px;}
+    #weapon {left:208px;top:2px;} 
     #armor {left:242px;top:2px;}
 
     #notifications {display:none;}
@@ -2588,13 +2658,13 @@ footer div  {display:inline-block;}
 
 /* Tablet mode */
 
-.tablet .animate .parchment-left, .tablet .animate .parchment-right, .tablet .animate .parchment-middle {-webkit-animation:none;-moz-animation:none;-o-animation:none;-ms-animation:none;}
+.tablet .animate .parchment-left, .tablet .animate .parchment-right, .tablet .animate .parchment-middle {animation:none;-webkit-animation:none;-moz-animation:none;-o-animation:none;-ms-animation:none;}
 .tablet #instructions, .tablet #achievements, .tablet #lists {-webkit-transition:none;-moz-transition:none;-o-transition:none;-ms-transition:none;transition:none;}
 .tablet #achievements li.unlocked .achievement-sharing {display:block;}
-.tablet #coinsparks {display:none; -moz-animation:none;}
+.tablet #coinsparks {display:none; animation:none; -moz-animation:none;}
 
-.tablet #logo, .tablet #parchment, .tablet #container {-moz-transition:none;}
-.tablet #achievement-notification .name, .tablet #achievement-notification .title, .tablet #achievement-notification .coin, .tablet #achievement-notification {-moz-transition:none;}
+.tablet #logo, .tablet #parchment, .tablet #container {transition:none; -moz-transition:none;}
+.tablet #achievement-notification .name, .tablet #achievement-notification .title, .tablet #achievement-notification .coin, .tablet #achievement-notification {transition:none; -moz-transition:none;}
 
 /* Workarounds for chrome windows bugs */
 

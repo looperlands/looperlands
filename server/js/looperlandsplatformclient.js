@@ -27,51 +27,60 @@ class LooperLandsPlatformClient {
     }
 
     async createOrUpdateGameServer(hostname, port, name) {
-
-        if (!this.platformDefined) {
+        if (!this.platformDefined || process.env.NODE_ENV !== "production") {
+            console.log("Not registering this gameserver");
             return;
         }
+
         try {
             const url = `/api/gameserver/${encodeURIComponent(hostname)}`;
-            const gameServerData = { name, port};
+            const gameServerData = { name, port };
             const response = await this.client.put(url, gameServerData);
             this.hostname = hostname;
             console.log("Registered gameserver hostname with platform:", hostname);
             return response.data;
         } catch (error) {
-            console.error(error);
-            if (error.response) {
-                // The request was made and the server responded with a status code
-                // that falls out of the range of 2xx
-                throw new Error(`HTTP error! status: ${error.response.status}`);
-            } else if (error.request) {
-                // The request was made but no response was received
-                throw new Error('No response received');
-            } else {
-                // Something happened in setting up the request that triggered an Error
-                throw error;
-            }
+            this.handleError(error);
         }
     }
 
     async takeGameServerOffline() {
-        if (!this.platformDefined) {
-            return;
-        }
+        if (!this.platformDefined || process.env.NODE_ENV !== "production") return;
+
         try {
             const url = `/api/gameserver/${encodeURIComponent(this.hostname)}/offline`;
             const response = await this.client.post(url);
             return response.data;
         } catch (error) {
-            if (error.response) {
-                throw new Error(`HTTP error! status: ${error.response.status}`);
-            } else if (error.request) {
-                throw new Error('No response received');
-            } else {
-                throw error;
-            }
+            this.handleError(error);
         }
     }
+
+    async getSpinIndex() {
+        if (!this.platformDefined) return;
+        try {
+            const url = "/api/maps/cornsino/spin";
+            const response = await this.client.get(url);
+            return response.data.spin;
+        } catch (error) {
+            this.handleError(error);
+        }
+    }
+
+    handleError(error) {
+        if (error.response) {
+            // The request was made and the server responded with a status code
+            // that falls out of the range of 2xx
+            throw new Error(`HTTP error! status: ${error.response.status}`);
+        } else if (error.request) {
+            // The request was made but no response was received
+            throw new Error('No response received');
+        } else {
+            // Something happened in setting up the request that triggered an Error
+            throw error;
+        }
+    }
+
 }
 
 exports.LooperLandsPlatformClient = LooperLandsPlatformClient;
