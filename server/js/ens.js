@@ -53,7 +53,7 @@ getEns = async function (walletId) {
         name = ensLookup.data.data;
         if (name === "") {
             // try alchemy next
-            name = await getEnsAlchemy(walletId);
+            //name = await getEnsAlchemy(walletId);
         }
 
         if (name === "") {
