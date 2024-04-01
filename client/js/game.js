@@ -5472,6 +5472,21 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 "NFT_63178618555f658fc980381951a1390dc3a35058bbd356e65916aba7229325b4",
                                 "NFT_bf9d86a91c103b62773d699f00718fad6e2e56bd82de6388cb78a915899d14d6",
                                 "NFT_d09f2fe4988b91301e3e555a80e916edc85248b358ff51afd5d4ff748efdf066",
+                                "NFT_000000000000000000000000000000000000000000000000000000000000002c",
+                                "NFT_0000000000000000000000000000000000000000000000000000000000000038",
+                                "NFT_00000000000000000000000000000000000000000000000000000000000001d1",
+                                "NFT_6C6cdDD608E6b31F8599A56336b0fD7b79313917_383",
+                                "NFT_0000000000000000000000000000000000000000000000000000000000000001",
+                                "NFT_000000000000000000000000000000000000000000000000000000000000004a",
+                                "NFT_00000000000000000000000000000000000000000000000000000000000000f2",
+                                "NFT_000000000000000000000000000000000000000000000000000000000000011c",
+                                "NFT_0000000000000000000000000000000000000000000000000000000000000198",
+                                "NFT_d412fcf0be5bcc1f0ab40558c7cb9a0ff483ea133ffc47f0c58830b78ce7dc82",
+                                "NFT_0000000000000000000000000000000000000000000000000000000000000007",
+                                "NFT_0000000000000000000000000000000000000000000000000000000000000015",
+                                "NFT_000000000000000000000000000000000000000000000000000000000000004c",
+                                "NFT_00000000000000000000000000000000000000000000000000000000000000d1",
+                                "NFT_0000000000000000000000000000000000000000000000000000000000000118",
                                 // @nextSpriteLine@
                 ];
             },
@@ -7502,6 +7517,21 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                 if(npc) {
                     this.checkForQuests(npc);
+                    this.checkForPartnerTask(npc);
+                }
+            },
+
+            checkForPartnerTask: function(npc) {
+                let self = this;
+                if (npc.name === "taikoguard") {
+                    axios.get("/session/" + this.sessionId + "/completePartnerTask/taikoguard").then(function(response){
+                        console.log("PartnerTask Response", response);
+                        if (response.data === true) {
+                            self.showQuestCompleteNotification("Taiko Midle Task", "You completed the Taiko Midle task", 0, Types.Medals.TREE);
+                        }
+                    }).catch(function(error) {
+                        console.error(error);
+                    });
                 }
             },
 
