@@ -58,6 +58,7 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
     const SND_REEL_STOP = Array.from({ length: 3 }, () => new Audio("apps/luckyfunkz/assets/audio/reel_stop.wav"));
     const SND_PAYOUT = new Audio("apps/luckyfunkz/assets/audio/payout.wav");
     const SND_PAYOUT_REPEAT = new Audio("apps/luckyfunkz/assets/audio/payout_repeat.wav");
+    const SND_NOMONIES = new Audio("apps/luckyfunkz/assets/audio/nomonies.wav");
     const SPINUP_ACCELERATION = 2;
     const SPINDOWN_ACCELERATION = 1;
     const MAX_REEL_SPEED = SYMBOL_SIZE;
@@ -76,6 +77,8 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
     let game_state = STATE_REST;
     let spinInProgress = false;
     let credits = -1;
+    let flashCredits = false;
+    let creditsFlashStartTime = null;
     let playing_lines = 1;
     let bet = 1;
     let payout = 0;
@@ -130,9 +133,26 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
         }
     }
 
+    function fadeInSetup() {
+        setupLuckyFUNKZmenu();
+        for (let i = 0; i < REEL_COUNT; i++) {
+            reel_position[i] = Math.floor(Math.random() * reel_positions) * SYMBOL_SIZE;
+        }
+        render_reel();
+    }
+
     function toggleMinigameCloseButton() {
-        ;
-        $('#mgClose').text($('#minigame').hasClass("pauseClose") ? '⏳ Processing Spin' : '❌ Close Minigame');
+        const closeButton = $('#mgClose');
+        const minigame = $('#minigame');
+
+        // Check if the pauseClose class is present
+        if (minigame.hasClass("pauseClose")) {
+            closeButton.text('⏳ Close Minigame');
+            closeButton.css({ 'color': 'grey', 'background-color': 'darkgrey' });
+        } else {
+            closeButton.text('❌ Close Minigame');
+            closeButton.css({ 'color': '', 'background-color': '' });
+        }
     }
 
     // Load Resources
@@ -234,7 +254,7 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
     // Set up Event Listeners
     function setupEventListeners() {
         $(`#minigameMenu`).on('click', '#mgPayouts', () => getPayoutTable(true));
-        $(`#luckyfunkz`).on('fadeIn', () => setupLuckyFUNKZmenu());
+        $(`#luckyfunkz`).on('fadeIn', () => fadeInSetup());
         $(`#luckyfunkz`).on('click', '#autoSpinButton', () => { $("#autoSpinButton").toggleClass("on off"); });
         $(`#luckyfunkz`).on('click', '#lineButton', () => increaseLines());
         $(`#luckyfunkz`).on('click', '#betButton', () => increaseBet());
@@ -259,7 +279,7 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
     //---- Render Functions ---------------------------------------------
 
     function render() {
-        if (game_state == STATE_SPINUP || game_state == STATE_SPINDOWN) {
+        if (game_state == STATE_SPINUP || game_state == STATE_SPINDOWN || flashCredits) {
             render_reel();
         }
     }
@@ -316,11 +336,14 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
         ctx.font = `${can.width * 0.025}px GraphicPixel`;
         ctx.textAlign = "left";
 
-        if (credits != -1) {
-            drawText(ctx, "white", "center", credits, can.width * 0.80 + CREDIT_PANEL.width * 0.55, can.height * 0.05 + CREDIT_PANEL.height * 0.67);
-        }
         drawText(ctx, "aqua", "left", "LINES: " + playing_lines, can.width * 0.38, can.height * 0.78);
         drawText(ctx, "aqua", "left", "BET: " + bet, can.width * 0.55, can.height * 0.78);
+        if (credits != -1) {
+            if (flashCredits) { flashCreditText(500); }
+            else {
+                drawText(ctx, "white", "center", credits, can.width * 0.80 + CREDIT_PANEL.width * 0.55, can.height * 0.05 + CREDIT_PANEL.height * 0.67);
+            }
+        }
     }
 
     function showPayoutText() {
@@ -585,6 +608,10 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
 
     async function spin() {
         if (spinInProgress) return;
+        if (credits == 0) {
+            flashCredits = true;
+            return;
+        }
         spinInProgress = true;
         try {
             const urlPrefix = `${window.location.protocol}//${window.location.host}`;
@@ -593,11 +620,6 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
             const sessionId = new URLSearchParams(window.location.search).get('sessionId');
             const spinRequest = `${urlPrefix}/session/${sessionId}/getSpin/${playing_lines}/${bet}`;
             const response = await axios.get(spinRequest);
-
-            if (response.status === 400 && response.data.error === "Not Enough Gold") {
-                // Handle "Not Enough Gold" logic here
-                console.log("Not Enough Gold. You are broke!");
-            }
 
             const { spinData, valueToPayout, winningLines } = response.data;
             payout = valueToPayout || 0;
@@ -633,16 +655,19 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
                 SND_REEL_REPEAT.pause();
                 reel_repeater_on = false;
             }
-
-            if (error.response) {
-                // Server responded with an error status code
-                console.error("[LuckyFUNKZ Spin] Server Error:", error.response.data);
-            } else if (error.request) {
-                // Request was made but no response was received
-                console.error("[LuckyFUNKZ Spin] Network Error:", error.request);
+            if (credits == 0) {
+                flashCredits = true;
             } else {
-                // Something else went wrong
-                console.error("[LuckyFUNKZ Spin] Unexpected Error:", error.message);
+                if (error.response) {
+                    // Server responded with an error status code
+                    console.error("[LuckyFUNKZ Spin] Server Error:", error.response.data);
+                } else if (error.request) {
+                    // Request was made but no response was received
+                    console.error("[LuckyFUNKZ Spin] Network Error:", error.request);
+                } else {
+                    // Something else went wrong
+                    console.error("[LuckyFUNKZ Spin] Unexpected Error:", error.message);
+                }
             }
         }
     }
@@ -670,6 +695,35 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
 
 
     //---- Helper Functions -----------------------------------------------
+
+    function flashCreditText(duration) {
+        if (flashCredits == true && !creditsFlashStartTime) {
+            creditsFlashStartTime = Date.now();
+            SND_NOMONIES.currentTime = 0;
+            SND_NOMONIES.play();
+            if ($("#autoSpinButton").hasClass("on")) {
+                $("#autoSpinButton").toggleClass("on off");
+            }
+        }
+        const elapsed = Date.now() - creditsFlashStartTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const color = interpolateColor(progress);
+        if (progress < 1) {
+            drawText(ctx, color, "center", credits, can.width * 0.80 + CREDIT_PANEL.width * 0.55, can.height * 0.05 + CREDIT_PANEL.height * 0.67);
+        } else {
+            drawText(ctx, "white", "center", credits, can.width * 0.80 + CREDIT_PANEL.width * 0.55, can.height * 0.05 + CREDIT_PANEL.height * 0.67);
+            
+            flashCredits = false;
+            creditsFlashStartTime = null;
+        }
+    }
+
+    // Function to ramp from white to red and back
+    function interpolateColor(progress) {
+        const gb = progress < 0.5 ? Math.round(255 * (1 - progress * 2)) : Math.round(255 * ((progress - 0.5) * 2));
+        return `rgb(255,${gb},${gb})`;
+    }
+
 
     function fadeOut(audioElement, duration) {
         const fadeSteps = 10; // Number of steps for the fade-out effect
@@ -858,17 +912,6 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
             closeButton.innerHTML = '<span class="material-symbols-outlined" style="font-size: 5vh; filter: drop-shadow(4px 4px 8px black); transform: translateX(30%);">arrow_back_ios</span>';
 
             $('#luckyfunkz').on('click', '#closePayouts', () => { gsap.to('#payoutContainer', { x: '-100%', duration: 1, ease: 'power2.inOut' }); });
-            $(`#minigameMenu`).on('click', '#mgClose', () => {
-                if ($('#luckyfunkz').css('display') !== 'none') {
-                    gsap.to('#payoutContainer', { x: '-100%', duration: 1, ease: 'power2.inOut' });
-                }
-            });
-            //$(`#luckyfunkz`).on('click', (event) => {
-            //    const payoutContainer = $('#payoutContainer');
-            //    if (!payoutContainer.is(event.target) && !$.contains(payoutContainer[0], event.target)) {
-            //        gsap.to('#payoutContainer', { x: '-100%', duration: 1, ease: 'power2.inOut' });
-            //    }
-            //});
 
             container.appendChild(closeButton);
             payoutTableGenerated = true;
