@@ -424,6 +424,8 @@ define(['text!../sprites/agent.json',
         'text!../sprites/GAUNTER.json',
         'text!../sprites/MASTROM.json',
         'text!../sprites/VALKYM.json',
+        //Robits Mobs
+        'text!../sprites/robitenemy1.json',
         //Short Destroyers
         'text!../sprites/lateflea.json',
         'text!../sprites/wolfboss.json',

@@ -292,6 +292,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "item-EYEBALL",
                     "item-REDPOTION",
                     "item-GREYPOTION",
+                    //Robits Mobs
+                    "robitenemy1",
                      //BITCORN PHISHIES
                     "bit_BoneFish", "bit_Corn", "bit_FEET", "bit_freshPrawnce", "bit_JEFF", "bit_Kickle", "bit_maCORNtosh", "bit_MrPunchy", "bit_SnaggletoothEel", "bit_NOPEmato", "cornBootFish", "cornCanFish", "cornWinkyFish",
                     // @nextObjectLine@

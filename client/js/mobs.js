@@ -2223,6 +2223,20 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
 
+        //Robits
+        robitenemy1: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.ROBITENEMY1);
+                this.moveSpeed = 300;
+                this.atkSpeed = 100;
+                this.idleSpeed = 750;
+                this.setAttackRate(1000);
+                this.deathAnimated = true;
+                this.isAggressive = true;
+                this.aggroRange = 3;
+            }
+        }),
+
         balloondogy: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.BALLOONDOGY);

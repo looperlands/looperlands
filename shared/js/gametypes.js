@@ -353,6 +353,8 @@ Types = {
         M88NGOLDENPOO: 78001200,
         M88NGOLDENCHALIS: 78001300,
         M88NDRSGME: 78001400,
+        //Robits Mobs
+        ROBITENEMY1: 79000001,
         //mycupbloody
         EYEBALL: 80000005,
         REDPOTION: 80000006,

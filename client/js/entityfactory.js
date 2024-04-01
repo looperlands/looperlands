@@ -484,9 +484,13 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.VALKYM]=function(id){
         return new Mobs.VALKYM(id);
     };
+    //Robits Mobs
+    EntityFactory.builders[Types.Entities.ROBITENEMY1] = function(id) {
+        return new Mobs.robitenemy1(id);
+    };
     //m88n Mobs
     EntityFactory.builders[Types.Entities.BALLOONDOGB] = function(id) {
-        return new Mobs.balloondogb(id);
+        return new Mobs.balloondogb(id);    
     };
     EntityFactory.builders[Types.Entities.BALLOONDOGY] = function(id) {
         return new Mobs.balloondogy(id);
