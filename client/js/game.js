@@ -7516,6 +7516,21 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                 if(npc) {
                     this.checkForQuests(npc);
+                    this.checkForPartnerTask(npc);
+                }
+            },
+
+            checkForPartnerTask: function(npc) {
+                let self = this;
+                if (npc.name === "taikoguard") {
+                    axios.get("/session/" + this.sessionId + "/completePartnerTask/taikoguard").then(function(response){
+                        console.log("PartnerTask Response", response);
+                        if (response.data === true) {
+                            self.showQuestCompleteNotification("Taiko Midle Task", "You completed the Taiko Midle task", 0, Types.Medals.TREE);
+                        }
+                    }).catch(function(error) {
+                        console.error(error);
+                    });
                 }
             },
 

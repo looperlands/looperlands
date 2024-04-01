@@ -1116,6 +1116,29 @@ WS.socketIOServer = Server.extend({
             res.status(200).send(response);
         });
 
+        app.get('/session/:sessionId/completePartnerTask/:taskId', async (req, res) => {
+            const sessionId = req.params.sessionId;
+            const taskId = req.params.taskId;
+            const sessionData = cache.get(sessionId);
+            if (sessionData === undefined) {
+                res.status(404).json({
+                    status: false,
+                    error: "No session with id " + sessionId + " found",
+                    user: null
+                });
+                return;
+            }
+
+            const walletId = sessionData.walletId;
+            let currentState = await dao.getPartnerTask(walletId, taskId);
+            let completedTask = false;
+            if (currentState.taskStatus !== "true") {
+                await dao.completePartnerTask(walletId, taskId);
+                completedTask = true;
+            }
+            res.status(200).send(completedTask);
+        });
+
         self.io.on('connection', function (connection) {
             //console.log('a user connected');
 
