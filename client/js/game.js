@@ -7506,8 +7506,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             },
 
             checkForPartnerTask: function(npc) {
-                if (npc.kind === "taikoguard") {
-                    axios.get("/session/" + this.sessionId + "/completePartnerTask/GooseNPC").then(function(response){
+                if (npc.name === "taikoguard") {
+                    axios.get("/session/" + this.sessionId + "/completePartnerTask/taikoguard").then(function(response){
                         console.log("PartnerTask Response", response);
                     }).catch(function(error) {
                         console.error(error);

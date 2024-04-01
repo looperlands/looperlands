@@ -1130,8 +1130,13 @@ WS.socketIOServer = Server.extend({
             }
 
             const walletId = sessionData.walletId;
-            let response = await dao.completePartnerTask(walletId, taskId);
-            res.status(200).send(response);
+            let currentState = await dao.getPartnerTask(walletId, taskId);
+            let completedTask = false;
+            if (currentState.taskStatus !== "true") {
+                await dao.completePartnerTask(walletId, taskId);
+                completedTask = true;
+            }
+            res.status(200).send(completedTask);
         });
 
         self.io.on('connection', function (connection) {
