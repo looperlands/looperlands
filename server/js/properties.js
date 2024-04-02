@@ -1156,8 +1156,8 @@ let Properties = {
         hp: 1,
         xp: 100000,
         drops: {
-            m88nmap: 5,
-            m88ngem: 95,
+            m88nmap: 95,
+            m88ngem: 5,
         },
         respawnDelay: 10000
     },
