@@ -5770,6 +5770,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     }
                     else if(this.currentTime > this.lastMousedown + clickThrottle){ 
                         this.minigameLoaded = false;
+                        this.lastMousedown = null;
                     }
                 }
                 else if(this.mousedown) {

@@ -109,9 +109,8 @@ async function loadMinigamePlatform() {
 
     // MINIGAME MENU EVENT LISTENERS
     $(`#minigameMenu`).on('click', '#mgMAIZfm', () => loadMAIZFM());
-    $('#minigameMenu').on('click', '#mgClose', () => closeMinigame());
-    $(document).on('keydown', minigameKeyDown);  //CLOSE ON KEYPRESS = 'ESC'
-    $('#resources').fadeOut(FADE_DURATION * 0.6); // HIDE IN GAME RESOURCES BY DEFAULT >> ALLOWS FOR A CLEANER TRANSITION
+    $(document).on('keydown', minigameKeyDown);     //CLOSE ON KEYPRESS = 'ESC'
+    $('#resources').fadeOut(FADE_DURATION * 0.6);   // HIDE IN GAME RESOURCES BY DEFAULT >> ALLOWS FOR A CLEANER TRANSITION
     $("#minigame").fadeIn(FADE_DURATION);
 }
 
@@ -157,6 +156,7 @@ function setUpCloseEventListener(minigame) {
         if (specificMinigame.length && specificMinigame.css('display') !== 'none' && minigameElement.length && !minigameElement.hasClass('pauseClose')) {
             // On unload, content is hidden instead of removed, if needed again, it's faded back in.
             // This helps avoid issues with embedded js files that is caused when loading/unloading the same content multiple times
+            closeMinigame();
             specificMinigame.fadeOut(FADE_DURATION);
         }
     });
@@ -169,8 +169,8 @@ function setUpCloseEventListener(minigame) {
 async function showMinigamePlatform() {
     $('#minigameMenu').empty().append(MINIGAME_MENU);   // CLEAR AND RESET MENU
     $('#resources').fadeOut(FADE_DURATION * 0.6);       // HIDE IN GAME RESOURCES BY DEFAULT >> ALLOWS FOR A CLEANER TRANSITION
-    $("#minigame").addClass("clickable active");
     $("#minigame").fadeIn(FADE_DURATION);
+    $("#minigame").addClass("clickable active");
 }
 
 
@@ -185,10 +185,7 @@ function closeMinigame() {
         minigameElement.removeClass("clickable active");
         minigameElement.fadeOut(FADE_DURATION);
 
-        if ($('#resources').children().length === 0) {
-            //IN GAME RESOURCE DISPLAY HIDDEN
-            $('#resources').fadeIn(FADE_DURATION * 0.6).addClass('hidden');
-        } else {
+        if ($('#resources').children().length > 0) {
             // REFRESH GOLD AMOUNT
             const GOLD = "21300041";
             getGoldAmount(GOLD).then(goldAmount => { 
@@ -203,9 +200,7 @@ function closeMinigame() {
 // HANDLE ESC PRESS
 function minigameKeyDown(event) {
     if (event.which === 27 && $("#minigame").css("display") !== "none") {
-        closeMinigame();
-    } else {
-        $(document).off('keydown', minigameKeyDown); // REMOVE LISTENER SINCE MINIGAME DISPLAY IS OFF
+        $('#mgClose').trigger('click');
     }
 }
 

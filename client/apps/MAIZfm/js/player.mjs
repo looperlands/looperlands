@@ -2550,7 +2550,7 @@ class Player {
           $('#waveform').fadeIn(300);
           $('#bar').css('display', 'none');
           $('#playBtn').css('display', 'none');
-          $('#pauseBtn').css('display','flex');
+          $('#pauseBtn').css('display', 'flex');
         },
         onload: () => {
           $('#waveform').fadeIn(300);
@@ -2559,7 +2559,7 @@ class Player {
         onend: () => {
           // Stop the wave animation.
           $('#waveform').fadeOut(300);
-          $('#bar').css('display','block');
+          $('#bar').css('display', 'block');
           self.skip('next');
         },
         onpause: () => {
@@ -2584,8 +2584,8 @@ class Player {
   pause() {
     const self = this;
     const sound = self.playlist[self.index].howl;
-    if(sound){sound.pause();}
-    $('#playBtn').css('display', 'flex'); 
+    if (sound) { sound.pause(); }
+    $('#playBtn').css('display', 'flex');
     $('#pauseBtn').css('display', 'none');
   }
 
@@ -2602,7 +2602,7 @@ class Player {
     if (currentHowl) {
       currentHowl.stop();
     }
-    $('#progress').css('width', '0%'); 
+    $('#progress').css('width', '0%');
     self.play(index);
   }
 
@@ -2621,7 +2621,7 @@ class Player {
     var posLeft = Math.min(Math.max(($('#MAIZfm').width() * barWidth), halfCorn), $('#barEmpty')[0].scrollWidth);
     $('#sliderBtn').css('left', posLeft + 'px');
   }
- 
+
   seek(per) {
     var self = this;
     var sound = self.playlist[self.index].howl;
@@ -2696,11 +2696,11 @@ const bindControls = () => {
   $(document).on('click', '#pauseBtn', () => player.pause());
   $(document).on('click', '#prevBtn', () => player.skip('prev'));
   $(document).on('click', '#nextBtn', () => player.skip('next'));
-  
+
   $(document).on('click', '#waveform', event => {
     player.seek((event.clientX - $('#MAIZfm').offset().left) / $('#MAIZfm').width());
   });
-  
+
   $(document).on('click', '#volumeBtn', () => player.toggleVolume());
   $(document).on('click', '#volume', () => player.toggleVolume());
 
@@ -2718,7 +2718,7 @@ const bindControls = () => {
   $(document).on('click', '#barEmpty', event => {
     player.volume((event.clientX - $('#MAIZfm').offset().left) / parseFloat($('#barEmpty').width()));
   });
-  
+
   $(document).on('mousemove', '#volume', handleVolumeDrag);
   $(document).on('touchmove', '#volume', handleVolumeDrag);
   $(document).on('mousedown', '#sliderBtn', () => window.sliderDown = true);
