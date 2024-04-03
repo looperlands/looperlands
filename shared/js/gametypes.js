@@ -353,6 +353,8 @@ Types = {
         M88NGOLDENPOO: 78001200,
         M88NGOLDENCHALIS: 78001300,
         M88NDRSGME: 78001400,
+        //MRMlabs NPCs
+        TYLERDURDEN: 79000000,
         //mycupbloody
         EYEBALL: 80000005,
         REDPOTION: 80000006,
@@ -5854,6 +5856,8 @@ var kinds = {
     //m88n NPCs
     wenmoon: [Types.Entities.WENMOON, "npc"],
     kingfroggy: [Types.Entities.KINGFROGGY, "npc"],
+    //MRMlabs NPCs
+    tylerdurden: [Types.Entities.TYLERDURDEN, "npc"],
     // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],

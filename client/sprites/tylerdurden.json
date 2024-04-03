@@ -1,0 +1,21 @@
+{
+	"id": "tylerdurden",
+	"width": 32,
+	"height": 32,
+	"animations": {
+		"walk_up": {
+			"length": 4,
+			"row": 0
+		},
+		"walk_down": {
+			"length": 4,
+			"row": 1
+		},
+		"idle_down": {
+			"length": 4,
+			"row": 2
+		}
+	},
+	"offset_x": 0,
+	"offset_y": 0
+}

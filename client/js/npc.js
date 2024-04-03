@@ -429,6 +429,17 @@ define(['character'], function (Character) {
             "Have fun!"
         ],
 
+        //MRMlabs NPCs
+        "tylerdurden": [
+            "It's only after we've lost everything that we're free to do anything.",
+            "The things you own end up owning you.",
+            "His name was Robert Paulson",
+            "You wanna make an omelet, you gotta break some eggs.",
+            "We are all part of the same compost heap.",
+            "I want you to hit me as hard as you can.",
+            "Sticking feathers up your butt does not make you a chicken!"
+        ],
+
         //Short Destroyers
         "derrick": [
             "Sup man. Heard you got stuck doing Misty's shelving duty. We've all been there.",
