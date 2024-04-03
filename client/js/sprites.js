@@ -525,6 +525,11 @@ define(['text!../sprites/agent.json',
         'text!../sprites/valleydew.json',
         //MRMlabs NPCs
         'text!../sprites/tylerdurden.json',
+        //MRMlabs Items
+        'text!../sprites/item-firstaidkit.json',
+        'text!../sprites/item-bandaid.json',
+        'text!../sprites/item-lighter.json',
+        'text!../sprites/item-cigarette.json',
         //mycupbloody npc
         'text!../sprites/GOFFREY.json',
         'text!../sprites/cobWalkingNpc1.json',
