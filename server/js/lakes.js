@@ -198,6 +198,27 @@ const Lakes = {
         }
     },
 
+    mrmsodamachine: {
+        level: 1,
+        fish: {
+            cherrycola: "common",
+            rootbeer: "uncommon",
+            valleydew: "rare",
+            gingerale: "epic",
+            berryblast: "legendary",
+        }
+    },
+
+    mrmchipmachine: {
+        level: 1,
+        fish: {
+            bbqchips: "common",
+            dillpicklechips: "uncommon",
+            blackpepperchips: "rare",
+            saltnvinegarchips: "epic",
+        }
+    },
+
     cornsinoSludgeRiver: {
         level: 1,
         fish: {
@@ -222,8 +243,8 @@ const Lakes = {
 };
 // only EPIC fish can be a consumable
 const ConsumableFish = {
-    hp: ["cobparadisefish","oafish27","m88ndreamcandyr"],
-    atk: ["cobbluegill","oafish31","oafish22","m88ndreamduckyp"],
+    hp: ["cobparadisefish","oafish27","m88ndreamcandyr","gingerale"],
+    atk: ["cobbluegill","oafish31","oafish22","m88ndreamduckyp","saltnvinegarchips"],
     exp: ["cobgreensunfish","oafish36", "lollipop","m88ndreamgumballa","m88ngoldenbanana"]
 };
 

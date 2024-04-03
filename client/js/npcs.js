@@ -354,6 +354,8 @@ define(['npc'], function(Npc) {
         //m88n NPCs
         wenmoon: Npc.extend({init: function(id) {this._super(id, Types.Entities.WENMOON, 1);}}),
         kingfroggy: Npc.extend({init: function(id) {this._super(id, Types.Entities.KINGFROGGY, 1);}}),
+        //MRMlabs NPCs
+        tylerdurden: Npc.extend({init: function(id) {this._super(id, Types.Entities.TYLERDURDEN, 1);}}),
         //ShortDestroyers
         derrick: Npc.extend({init: function(id) {this._super(id, Types.Entities.DERRICK, 1);}}),
         frog: Npc.extend({init: function(id) {this._super(id, Types.Entities.FROG, 1);}}),

@@ -513,6 +513,18 @@ define(['text!../sprites/agent.json',
         'text!../sprites/item-m88ngoldenpoo.json',
         'text!../sprites/item-m88ngoldenchalis.json',
         'text!../sprites/item-m88ndrsgme.json',
+        //MRMlabs fishing
+        'text!../sprites/bbqchips.json',
+        'text!../sprites/blackpepperchips.json',
+        'text!../sprites/dillpicklechips.json',
+        'text!../sprites/saltnvinegarchips.json',
+        'text!../sprites/berryblast.json',
+        'text!../sprites/cherrycola.json',
+        'text!../sprites/gingerale.json',
+        'text!../sprites/rootbeer.json',
+        'text!../sprites/valleydew.json',
+        //MRMlabs NPCs
+        'text!../sprites/tylerdurden.json',
         //mycupbloody npc
         'text!../sprites/GOFFREY.json',
         'text!../sprites/cobWalkingNpc1.json',
