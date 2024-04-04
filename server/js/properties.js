@@ -1647,6 +1647,35 @@ let Properties = {
         inventoryDescription: "DRS'd GME",
         respawnDelay: 150000
     },
+    bandaid: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "hpPotions",
+            duration: 60000
+        },
+        inventoryDescription: "For minor cuts and bruises",
+        respawnDelay: 500000,
+        onConsume: function(player){
+            player.regenHealthBy(75);
+        }
+    },
+    firstaidkit: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "hpPotions",
+            duration: 60000
+        },
+        inventoryDescription: "Full first aid kit",
+        respawnDelay: 1500000,
+        onConsume: function(player){
+            player.regenHealthBy(300);
+        }
+    },
+    cigarette: {
+        respawnDelay: 5500000,
+    },
 
     // Projectiles
     shortarrow: {

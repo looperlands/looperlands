@@ -809,6 +809,11 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.M88NGOLDENPOO]=function(id){return new Items.m88ngoldenpoo(id);};
     EntityFactory.builders[Types.Entities.M88NGOLDENCHALIS]=function(id){return new Items.m88ngoldenchalis(id);};
     EntityFactory.builders[Types.Entities.M88NDRSGME]=function(id){return new Items.m88ndrsgme(id);};
+    //MRMlabs
+    EntityFactory.builders[Types.Entities.FIRSTAIDKIT] = function(id) { return new Items.firstaidkit(id); };
+    EntityFactory.builders[Types.Entities.BANDAID] = function(id) { return new Items.bandaid(id); };
+    EntityFactory.builders[Types.Entities.LIGHTER] = function(id) { return new Items.lighter(id); };
+    EntityFactory.builders[Types.Entities.CIGARETTE] = function(id) { return new Items.cigarette(id); };
     //mycupbloody
     EntityFactory.builders[Types.Entities.EYEBALL]=function(id){
         return new Items.EYEBALL(id);

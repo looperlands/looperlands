@@ -177,7 +177,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "gingerale",
                     "rootbeer",
                     "valleydew",
-                    //m88n's NPCs
+                    //MRMlabs NPCs
                     "tylerdurden",
                     /////
                     "VILLAGESIGN11",
@@ -300,6 +300,11 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "item-m88ngoldenpoo",
                     "item-m88ngoldenchalis",
                     "item-m88ndrsgme",
+                    //MRMlabs
+                    "item-firstaidkit",
+                    "item-bandaid",
+                    "item-lighter",
+                    "item-cigarette",
                     //mycupbloody
                     "item-EYEBALL",
                     "item-REDPOTION",

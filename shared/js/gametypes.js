@@ -355,6 +355,11 @@ Types = {
         M88NDRSGME: 78001400,
         //MRMlabs NPCs
         TYLERDURDEN: 79000000,
+        //MRMlabs Items
+        FIRSTAIDKIT: 79000001,
+        BANDAID: 79000002,
+        LIGHTER: 79000003,
+        CIGARETTE: 79000004,
         //mycupbloody
         EYEBALL: 80000005,
         REDPOTION: 80000006,
@@ -5724,6 +5729,11 @@ var kinds = {
     m88ngoldenpoo: [Types.Entities.M88NGOLDENPOO, "object"],
     m88ngoldenchalis: [Types.Entities.M88NGOLDENCHALIS, "object"],
     m88ndrsgme: [Types.Entities.M88NDRSGME, "object"],
+    //MRMlabs Items
+    firstaidkit: [Types.Entities.FIRSTAIDKIT, "object"],
+    bandaid: [Types.Entities.BANDAID, "object"],
+    lighter: [Types.Entities.LIGHTER, "object"],
+    cigarette: [Types.Entities.CIGARETTE, "object"],
     //mycupbloody
     EYEBALL: [Types.Entities.EYEBALL, "object"],
     REDPOTION: [Types.Entities.REDPOTION, "object"],
