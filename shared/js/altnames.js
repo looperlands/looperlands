@@ -86,7 +86,7 @@ const AltNames = {
     horde5: ".65 Late Flea", 
     fleaboss: "Giant Late Flea",
 
-    //m88n Dreamland Fishing
+    //m88n Fishing
     m88ndreamduckyy: "the Yellow Rubber Ducky",  
     m88ndreamduckyg: "the Green Rubber Ducky",  
     m88ndreamduckyb: "the Blue Rubber Ducky",  
@@ -112,7 +112,18 @@ const AltNames = {
     m88ngoldenbanana: "a golden banana",  
     m88nshorts: "the shorts",
 
-    //m88n Dreamland Mobs
+    //MRMlabs Fishing
+    bbqchips: "BBQ chips",  
+    saltnvinegarchips: "salt and vinegar chips",
+    blackpepperchips: "black pepper chips",  
+    dillpicklechips: "dill pickle chips",
+    berryblast: "berry blast soda",
+    cherrycola: "cherry cola",
+    gingerale: "ginger ale",
+    rootbeer: "root beer",
+    valleydew: "valley dew soda",
+
+    //m88n Mobs
     m88nballoondogb: "Blue Balloon Dog",  
     m88nballoondogy: "Yellow Balloon Dog",  
     m88nballoondogg: "Green Balloon Dog",  

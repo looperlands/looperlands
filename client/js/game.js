@@ -167,6 +167,18 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "m88ngoat",
                     "m88nswan",
                     "m88nvulture",
+                    //MRMlabs Fishing
+                    "bbqchips",
+                    "blackpepperchips",
+                    "dillpicklechips",
+                    "saltnvinegarchips",
+                    "berryblast",
+                    "cherrycola",
+                    "gingerale",
+                    "rootbeer",
+                    "valleydew",
+                    //m88n's NPCs
+                    "tylerdurden",
                     /////
                     "VILLAGESIGN11",
                     "VILLAGESIGN12",
@@ -5487,6 +5499,17 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 "NFT_000000000000000000000000000000000000000000000000000000000000004c",
                                 "NFT_00000000000000000000000000000000000000000000000000000000000000d1",
                                 "NFT_0000000000000000000000000000000000000000000000000000000000000118",
+                                "NFT_0000000000000000000000000000000000000000000000000000000000000031",
+                                "NFT_00000000000000000000000000000000000000000000000000000000000000de",
+                                "NFT_00000000000000000000000000000000000000000000000000000000000000f3",
+                                "NFT_00000000000000000000000000000000000000000000000000000000000001ef",
+                                "NFT_a1b1966dfaec0994170f697a7be9a34a2948839114734ff64c72f09d64afa505",
+                                "NFT_00000000000000000000000000000000000000000000000000000000000000c9",
+                                "NFT_00000000000000000000000000000000000000000000000000000000000000ef",
+                                "NFT_0000000000000000000000000000000000000000000000000000000000000107",
+                                "NFT_000000000000000000000000000000000000000000000000000000000000011a",
+                                "NFT_00000000000000000000000000000000000000000000000000000000000001a4",
+                                "NFT_00000000000000000000000000000000000000000000000000000000000001af",
                                 // @nextSpriteLine@
                 ];
             },
@@ -5590,6 +5613,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                     /* m88n Fishing*/
                     ["m88ndreamduckyy", "m88ndreamduckyg", "m88ndreamduckyb", "m88ndreamduckyp", "m88ndreamduckyr", "m88ndreamcandyy", "m88ndreamcandyo", "m88ndreamcandya", "m88ndreamcandyg", "m88ndreamcandyb", "m88ndreamcandyp", "m88ndreamcandyr", "m88ndreamgumbally", "m88ndreamgumballo", "m88ndreamgumballa", "m88ndreamgumballg", "m88ndreamgumballb", "m88ndreamgumballp", "m88ndreamgumballr" , "m88ngmeshare", "m88nwhiskey", "m88ndiamondhand", "m88ngoldenbanana", "m88nshorts"],
+
+                    /* MRMlabs FISH*/
+                    ["bbqchips", "blackpepperchips", "dillpicklechips", "saltnvinegarchips", "berryblast", "cherrycola", "gingerale", "rootbeer", "valleydew"],
 
                     /*BITCORN PHISHIES*/
                     ["bit_BoneFish", "bit_Corn", "bit_FEET", "bit_freshPrawnce", "bit_JEFF", "bit_Kickle", "bit_maCORNtosh", "bit_MrPunchy", "bit_SnaggletoothEel", "bit_NOPEmato", "cornBootFish", "cornCanFish", "cornWinkyFish"],
