@@ -23,7 +23,9 @@ define(['area'], function (Area) {
                 // M88N MUSIC
                 "pillowfight", "dreamstroll", "steeldrums", "mib",
                 // BITCORN MUSIC
-                "bitcorncornsino", "bit_sludgeriver", "bit_portal"
+                "bitcorncornsino", "bit_sludgeriver", "bit_portal",
+                // ROBITS MUSIC
+                "ccmain", "cclobby", "ccgrid",
             ];
 
             this.soundNames = [
