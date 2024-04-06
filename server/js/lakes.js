@@ -150,7 +150,7 @@ const Lakes = {
         level: 1,
         fish: {
             m88ndreamduckyy: "common",
-            m88ndreamduckyr: "legendary",
+            m88ndreamduckyr: "uncommon",
         }
     },
 
