@@ -16,6 +16,7 @@ const events = {
     'player.died': require('./when/player.died.js'),
     'quest.completed': require('./when/quest.completed.js'),
     'trigger.activated': require('./when/trigger.activated.js'),
+    'trigger.deactivated': require('./when/trigger.deactivated.js'),
     'npc.talked': require('./when/npc.talked.js'),
     'area.entered': require('./when/area.entered.js'),
     'area.left': require('./when/area.left.js'),
