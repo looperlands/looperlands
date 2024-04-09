@@ -13,7 +13,7 @@ module.exports = Block = cls.Class.extend({
 
     handle(event) {
         let closestMob = this.worldserver.getClosestMobOfKind(this.mob, event.data.player.x, event.data.player.y);
-        this.worldserver.pushToGroup(closestMob.group, new Messages.Chat(closestMob, this.message), false);
+        this.worldserver.pushBroadcast(new Messages.Chat(closestMob, this.message), false);
 
         return 'then';
     }
