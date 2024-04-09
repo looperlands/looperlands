@@ -1397,7 +1397,12 @@ let Properties = {
        weapon: 1,
        friendly: true
    },
-
+   ROBITSBOT: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: false
+   },
     //Field effects
     magcrack: {
         aoe: {
