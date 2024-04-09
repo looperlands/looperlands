@@ -1058,6 +1058,14 @@ let Properties = {
         },
     },
 
+     //robits Mobs
+     ROBITSE3: {
+        level: 2,
+        drops: {
+            burger: 50,
+            GOLD: 2
+        },
+    },
     //m88n Mobs
     balloondogb: {
         level: 2,

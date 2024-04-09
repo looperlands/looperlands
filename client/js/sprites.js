@@ -601,6 +601,7 @@ define(['text!../sprites/agent.json',
         'text!../sprites/cornCanFish.json',
         'text!../sprites/cornWinkyFish.json',
 
+        'text!../sprites/ROBITSE3.json',
         // @nextCharacterImport@
         'text!../sprites/NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6.json',
         'text!../sprites/NFT_38278eacc7d1c86fdbc85d798dca146fbca59a2e5e567dc15898ce2edac21f5f.json',
