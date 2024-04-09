@@ -187,6 +187,127 @@ const Lakes = {
         }
     },
 
+    m88nocean1: {
+        level: 5,
+        fish: {
+            m88nbluetang: "common",
+            m88npompano: "uncommon",
+            m88nclam: "rare",
+            m88nanglerfish: "epic",
+        }
+    },
+
+    m88nocean2: {
+        level: 5,
+        fish: {
+            m88nbutterflyfish: "common",
+            m88ncoral: "uncommon",
+            m88nseaangel: "rare",
+            m88naxolotl: "epic",
+        }
+    },
+
+    m88nocean3: {
+        level: 5,
+        fish: {
+            m88nclownfish: "common",
+            m88noyster: "uncommon",
+            m88npearl: "rare",
+            m88nblobfish: "epic",
+        }
+    },
+
+    m88nocean4: {
+        level: 5,
+        fish: {
+            m88nwolffish: "common",
+            m88nnautilus: "uncommon",
+            m88nsquid: "rare",
+            m88nbettafish: "epic",
+        }
+    },
+
+    m88nocean5: {
+        level: 5,
+        fish: {
+            m88nparrotfish: "common",
+            m88nconch: "uncommon",
+            m88ndumbooctopus: "rare",
+            m88nbluelobster: "epic",
+        }
+    },
+
+    m88nocean6: {
+        level: 5,
+        fish: {
+            m88ncowfish: "common",
+            m88ncrab: "uncommon",
+            m88nlampreyeel: "rare",
+            m88ncharfish: "epic",
+        }
+    },
+
+    m88nocean7: {
+        level: 5,
+        fish: {
+            m88ntuna: "common",
+            m88nsundial: "uncommon",
+            m88nlionfish: "rare",
+            m88njellyfish: "epic",
+        }
+    },
+
+    m88nocean8: {
+        level: 5,
+        fish: {
+            m88nguppy: "common",
+            m88nsanddollar: "uncommon",
+            m88nturtle: "rare",
+            m88nkoifish: "epic",
+        }
+    },
+
+    m88nocean9: {
+        level: 5,
+        fish: {
+            m88ntigerfish: "common",
+            m88nseacucumber: "uncommon",
+            m88npufferfish: "rare",
+            m88noctopus: "epic",
+        }
+    },
+
+    m88nocean10: {
+        level: 5,
+        fish: {
+            m88npinkfantasia: "common",
+            m88nscallop: "uncommon",
+            m88nsaltwatersnail: "rare",
+            m88npiranha: "epic",
+            m88nseaspider: "legendary",
+        }
+    },
+
+    m88nocean11: {
+        level: 5,
+        fish: {
+            m88nseaweed: "common",
+            m88nspirula: "uncommon",
+            m88nsilvereel: "rare",
+            m88nshrimp: "epic",
+        }
+    },
+
+    m88nocean12: {
+        level: 5,
+        fish: {
+            m88nseafrog: "common",
+            m88nseaurchin: "uncommon",
+            m88nseahorse: "rare",
+            m88nstarfish: "epic",
+        }
+    },
+
     m88ndarkpool: {
         level: 3,
         fish: {
@@ -243,9 +364,9 @@ const Lakes = {
 };
 // only EPIC fish can be a consumable
 const ConsumableFish = {
-    hp: ["cobparadisefish","oafish27","m88ndreamcandyr","gingerale"],
-    atk: ["cobbluegill","oafish31","oafish22","m88ndreamduckyp","saltnvinegarchips"],
-    exp: ["cobgreensunfish","oafish36", "lollipop","m88ndreamgumballa","m88ngoldenbanana"]
+    hp: ["cobparadisefish","oafish27","m88ndreamcandyr","gingerale", "m88nanglerfish", "m88nbettafish", "m88njellyfish", "m88npiranha"],
+    atk: ["cobbluegill","oafish31","oafish22","m88ndreamduckyp","saltnvinegarchips", "m88naxolotl", "m88nbluelobster", "m88nkoifish", "m88nshrimp"],
+    exp: ["cobgreensunfish","oafish36", "lollipop","m88ndreamgumballa","m88ngoldenbanana", "m88nblobfish", "m88ncharfish", "m88noctopus", "m88nstarfish"]
 };
 
 //---END CONFIG---
