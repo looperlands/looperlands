@@ -55,5 +55,5 @@ function getTiledJSONmap(filename, callback) {
         return;
     };
 }
-process.setMaxListeners(0);
+
 main();
