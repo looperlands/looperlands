@@ -161,7 +161,14 @@ define(['area'], function (Area) {
             if (lowerMusicVolume === undefined) {
                 lowerMusicVolume = false;
             }
+
+
+            if(parseInt(name) > 0) {
+                name = this.soundNames[parseInt(name)];
+            }
+
             var sound = this.enabled && this.getSound(name);
+
             if (sound) {
 
                 if (lowerMusicVolume && this.currentMusic) {
@@ -221,7 +228,7 @@ define(['area'], function (Area) {
         },
 
         playMusicByName: function (name) {
-            let music = { sound: this.getSound(name), name: name };
+            let music = { sound: this.getSound(parseInt(name)), name: name };
             if (music) {
                 if (!this.isCurrentMusic(music)) {
                     if (this.currentMusic) {

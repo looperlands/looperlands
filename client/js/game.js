@@ -7225,9 +7225,11 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                     self.client.onChatMessage(function(entityId, message) {
                         var entity = self.getEntityById(entityId);
-                        self.createBubble(entityId, message);
-                        self.assignBubbleTo(entity);
-                        self.audioManager.playSound("chat");
+                        if(entity) {
+                            self.createBubble(entityId, message);
+                            self.assignBubbleTo(entity);
+                            self.audioManager.playSound("chat");
+                        }
                     });
 
                     self.client.onEmotion(function(entityId, emotion) {

@@ -12,8 +12,12 @@ module.exports = Block = cls.Class.extend({
     },
 
     handle(event) {
-        let coordinate = this.position.split(',');
-        event.data.spawned = this.worldserver.addNpc(this.npc, parseInt(coordinate[0]), parseInt(coordinate[1]));
+        try {
+            let coordinate = this.position.split(',');
+            event.data.spawned = this.worldserver.addNpc(this.npc, parseInt(coordinate[0]), parseInt(coordinate[1]));
+        } catch (e) {
+            console.log(e)
+        }
 
         return 'then';
     },

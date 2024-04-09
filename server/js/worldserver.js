@@ -508,7 +508,7 @@ module.exports = World = cls.Class.extend({
         for(var id in this.npcs) {
             if(this.npcs.hasOwnProperty(id)) {
                 npc = this.npcs[id];
-                if(npc.kind === kind) {
+                if(parseInt(npc.kind) === parseInt(kind)) {
                     dist = Utils.distanceTo(x, y, npc.x, npc.y);
                     if(dist < minDist) {
                         closest = npc;

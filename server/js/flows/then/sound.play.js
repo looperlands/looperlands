@@ -1,5 +1,6 @@
 var cls = require("../../lib/class")
 const Messages = require("../../message");
+var _ = require('underscore');
 
 module.exports = Block = cls.Class.extend({
     init: function(options, worldserver) {
@@ -11,8 +12,10 @@ module.exports = Block = cls.Class.extend({
     },
 
     handle(event) {
-        this.worldserver.pushToPlayer(event.data.player, new Messages.Sound(this.sound), false);
-
+        try {
+            this.worldserver.pushToPlayer(event.data.player, new Messages.Sound(this.sound), false);
+        } catch (e) {
+        }
         return 'then';
     }
 })

@@ -513,7 +513,7 @@ module.exports = Player = Character.extend({
                         }
                     } else {
                         trigger.removeFromArea(self);
-                        self.playerEventBroker.leftArea(self, trigger);
+                        self.playerEventBroker.leftArea(trigger);
                         if (trigger.trigger) {
                             if (trigger.delay) {
                                 self.triggerDeactivationTimer = setTimeout(() => {
