@@ -2999,7 +2999,6 @@ define(['mob', 'timer'], function(Mob, Timer) {
                }
             }
        }),
-        ROBITSBOT: Mob.extend({ init: function(id) { this._super(id, Types.Entities.ROBITSBOT); this.moveSpeed = 350; this.atkSpeed = 100; this.idleSpeed = 800; this.shadowOffsetY = 1; this.setAttackRate(1200);}}),
         // @nextMobLine@
     };
     return Mobs;
