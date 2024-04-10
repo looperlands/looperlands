@@ -273,6 +273,7 @@ let Properties = {
         armorMod: 1,
         hpMod: 5,
         weaponMod: 0.8,
+        redpacket: true,
         respawnDelay: 30000,
         xp: 3000
 
@@ -1137,6 +1138,7 @@ let Properties = {
             burger: 5,
             GOLD3: 88
         },
+        redpacket: true,
     },
 
     sharkboss: {
@@ -1318,6 +1320,7 @@ let Properties = {
         messages: ['Prepare for Death!'],
         armorMod: 1.1,
         weaponMod: 1.6,
+        redpacket: true,
         hpMod: 2.0,
         xp: 1200,  
         respawnDelay: 30000
