@@ -241,6 +241,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "cobWalkingNpc4",
                     "cobWalkingNpc5",
                                 "ROBITSE3",
+                                "COLOSSUS",
                                 // @nextCharacterLine@
                     "item-BOARHIDE",
                     "item-THUDKEY",

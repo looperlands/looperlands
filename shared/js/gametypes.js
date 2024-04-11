@@ -460,7 +460,8 @@ Types = {
         COBWALKINGNPC3: 34000066, 
         COBWALKINGNPC4: 34000067, 
         COBWALKINGNPC5: 34000068,
-        ROBITSE3: 34000069, // @lastidCharacter@
+        ROBITSE3: 34000069,
+        COLOSSUS: 34000070, // @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -5883,6 +5884,7 @@ var kinds = {
     //MRMlabs NPCs
     tylerdurden: [Types.Entities.TYLERDURDEN, "npc"],
     ROBITSE3: [Types.Entities.ROBITSE3, "mob"],
+    COLOSSUS: [Types.Entities.COLOSSUS, "mob"],
     // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],
