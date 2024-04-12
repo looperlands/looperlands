@@ -429,6 +429,12 @@ define(['character'], function (Character) {
             "Have fun!"
         ],
 
+        "nexan11": [
+            "Greetings, power to the players! I'm a fellow gamer and collector.",
+            'Join us in Discord! <a target="_blank" href="https://discord.gg/bjjNewZegM">Checkout PLANET M88NWALKER</a> for insider details.',
+            "Have fun!"
+        ],
+
         //MRMlabs NPCs
         "tylerdurden": [
             "We are all part of the same compost heap.",

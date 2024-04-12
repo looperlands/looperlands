@@ -133,6 +133,65 @@ quests = [
         level: 30,
         xp: 100000,
         medal: Types.Medals.SKULL
+    },
+    {
+        id: "GAMER_QUEST_1",
+        name: "The Gamer's Vintage Gameboy Request",
+        startText: ["I'm pretty sure I've seen some sweet vintage Gameboys around here...",
+        "Can you help me find as many as you can? There might be some cool old school games on them!"],
+        endText: "Wow, great job collecting all of those Gameboys! Looks like they don't have any batteries in them though...",
+        eventType: "LOOT_ITEM",
+        npc: Types.Entities.NEXAN11,
+        target: Types.Entities.GAMEBOY,
+        amount: 69,
+        level: 10,
+        xp: 69420,
+        medal: Types.Medals.SKULL
+    },
+    {
+        id: "GAMER_QUEST_2",
+        name: "The Gamer's Battery Request",
+        startText: ["I've seen some batteries around here somewhere...we're gonna need them if we wanna play these Gameboys...",
+        "Can you help me find as many as you can? Hopefully they're all charged up!"],
+        endText: "Wow, great job collecting all of those batteries! Power to the players and to the collectors ;)",
+        eventType: "LOOT_ITEM",
+        npc: Types.Entities.NEXAN11,
+        target: Types.Entities.BATTERY,
+        amount: 69,
+        requiredQuest: "GAMER_QUEST_1",
+        level: 20,
+        xp: 69420,
+        medal: Types.Medals.SKULL
+    },
+    {
+        id: "GAMER_QUEST_3",
+        name: "The Gamer's Hard Wallet Request",
+        startText: ["Did you know the safest place to store your crypto is on a hard wallet? I know I've seen some around here every once in a while...",
+        "Can you help me find as many as you can? Then we can make sure to keep our investments safe!"],
+        endText: "Wow, great job collecting all of those hard wallets! Power to the investors ;)",
+        eventType: "LOOT_ITEM",
+        npc: Types.Entities.NEXAN11,
+        target: Types.Entities.HARDWALLET,
+        amount: 69,
+        requiredQuest: "GAMER_QUEST_2",
+        level: 30,
+        xp: 69420,
+        medal: Types.Medals.SKULL
+    },
+    {
+        id: "GAMER_QUEST_4",
+        name: "The Gamer's 3D Movie Glasses Request",
+        startText: ["I heard if you have some special 3D movie glasses you can actually see which shares are synthetic...Sounds weird, but it's worth a try!",
+        "Can you help me find as many as you can? Then we can try them on and see if the rumor is true!"],
+        endText: "Wow, great job collecting all of those 3D movie glasses! Did you try them on yet?? Some of the shares have a little purple circle on them now!",
+        eventType: "LOOT_ITEM",
+        npc: Types.Entities.NEXAN11,
+        target: Types.Entities.MOVIEGLASSES,
+        amount: 69,
+        requiredQuest: "GAMER_QUEST_3",
+        level: 40,
+        xp: 69420,
+        medal: Types.Medals.SKULL
     }
 ]
 
