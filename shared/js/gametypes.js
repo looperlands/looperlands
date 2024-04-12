@@ -301,6 +301,7 @@ Types = {
         //m88n NPCs
         WENMOON: 78000000,
         KINGFROGGY: 78010000,
+        NEXAN11: 78020000,
         //m88n Mobs
         BALLOONDOGB: 78000001,
         BALLOONDOGY: 78000002,
@@ -338,6 +339,18 @@ Types = {
         M88NGOAT: 78000034,
         M88NSWAN: 78000035,
         M88NVULTURE: 78000036,
+        //m88n Mob Nexans
+        NEXAN1: 78000037,
+        NEXAN2: 78000038,
+        NEXAN3: 78000039,
+        NEXAN4: 78000040,
+        NEXAN5: 78000041,
+        NEXAN6: 78000042,
+        NEXAN7: 78000043,
+        NEXAN8: 78000044,
+        NEXAN9: 78000045,
+        NEXAN10: 78000046,
+        
         //m88n Items
         M88NMAP: 78000100,
         M88NEGG1: 78000200,
@@ -353,6 +366,10 @@ Types = {
         M88NGOLDENPOO: 78001200,
         M88NGOLDENCHALIS: 78001300,
         M88NDRSGME: 78001400,
+        MOVIEGLASSES: 78001500,
+        BATTERY: 78001600,
+        GAMEBOY: 78001700,
+        HARDWALLET: 78001800,
         //MRMlabs NPCs
         TYLERDURDEN: 79000000,
         //MRMlabs Items
@@ -5667,6 +5684,17 @@ var kinds = {
     m88ngoat: [Types.Entities.M88NGOAT, "mob"],
     m88nswan: [Types.Entities.M88NSWAN, "mob"],
     m88nvulture: [Types.Entities.M88NVULTURE, "mob"],
+    //m88ns Mob Nexans
+    nexan1: [Types.Entities.NEXAN1, "mob"],
+    nexan2: [Types.Entities.NEXAN2, "mob"],
+    nexan3: [Types.Entities.NEXAN3, "mob"],
+    nexan4: [Types.Entities.NEXAN4, "mob"],
+    nexan5: [Types.Entities.NEXAN5, "mob"],
+    nexan6: [Types.Entities.NEXAN6, "mob"],
+    nexan7: [Types.Entities.NEXAN7, "mob"],
+    nexan8: [Types.Entities.NEXAN8, "mob"],
+    nexan9: [Types.Entities.NEXAN9, "mob"],
+    nexan10: [Types.Entities.NEXAN10, "mob"],
 
     sword1: [Types.Entities.SWORD1, "weapon"],
     sword2: [Types.Entities.SWORD2, "weapon"],
@@ -5765,6 +5793,10 @@ var kinds = {
     m88ngoldenpoo: [Types.Entities.M88NGOLDENPOO, "object"],
     m88ngoldenchalis: [Types.Entities.M88NGOLDENCHALIS, "object"],
     m88ndrsgme: [Types.Entities.M88NDRSGME, "object"],
+    movieglasses: [Types.Entities.MOVIEGLASSES, "object"],
+    battery: [Types.Entities.BATTERY, "object"],
+    gameboy: [Types.Entities.GAMEBOY, "object"],
+    hardwallet: [Types.Entities.HARDWALLET, "object"],
     //MRMlabs Items
     firstaidkit: [Types.Entities.FIRSTAIDKIT, "object"],
     bandaid: [Types.Entities.BANDAID, "object"],
@@ -5902,6 +5934,7 @@ var kinds = {
     //m88n NPCs
     wenmoon: [Types.Entities.WENMOON, "npc"],
     kingfroggy: [Types.Entities.KINGFROGGY, "npc"],
+    nexan11: [Types.Entities.NEXAN11, "npc"],
     //MRMlabs NPCs
     tylerdurden: [Types.Entities.TYLERDURDEN, "npc"],
     ROBITSE3: [Types.Entities.ROBITSE3, "mob"],

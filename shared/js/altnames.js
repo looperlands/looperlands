@@ -194,6 +194,11 @@ const AltNames = {
     m88nseal: "Seal",
     m88nwalrus: "Walrus",
 
+    //m88n Mob Nexans
+    nexan8: "Mail Lady",
+    nexan9: "Ship Captain",
+    nexan11: "Gamer",
+
     //BITCORN PHISHIES
     bit_BoneFish: "a BoneFish",
     bit_Corn: "RIVER CORN!",

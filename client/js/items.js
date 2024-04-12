@@ -279,6 +279,10 @@ define(['item'], function(Item) {
         m88ngoldenpoo:Item.extend({init:function(id){this._super(id,Types.Entities.M88NGOLDENPOO,"object");this.lootMessage="You picked up a shiny golden poo!";}}),
         m88ngoldenchalis:Item.extend({init:function(id){this._super(id,Types.Entities.M88NGOLDENCHALIS,"object");this.lootMessage="You picked up a golden chalis!";}}),
         m88ndrsgme:Item.extend({init:function(id){this._super(id,Types.Entities.M88NDRSGME,"object");this.lootMessage="You picked up a DRS'd share of GME!";}}),
+        movieglasses:Item.extend({init:function(id){this._super(id,Types.Entities.MOVIEGLASSES,"object");this.lootMessage="You picked up some 3D movie glasses!";}}),
+        battery:Item.extend({init:function(id){this._super(id,Types.Entities.BATTERY,"object");this.lootMessage="You picked up a battery!";}}),
+        gameboy:Item.extend({init:function(id){this._super(id,Types.Entities.GAMEBOY,"object");this.lootMessage="You picked up a vintage Gameboy!";}}),
+        hardwallet:Item.extend({init:function(id){this._super(id,Types.Entities.HARDWALLET,"object");this.lootMessage="You picked up a hard wallet for your crypto!";}}),
         //MRMlabs
         firstaidkit:Item.extend({init:function(id){this._super(id,Types.Entities.FIRSTAIDKIT,"object");this.lootMessage="You found a first aid kit!";}}),
         bandaid:Item.extend({init:function(id){this._super(id,Types.Entities.BANDAID,"object");this.lootMessage="You found a bandaid!";}}),

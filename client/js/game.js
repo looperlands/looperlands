@@ -132,6 +132,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     //m88n's NPCs
                     "wenmoon",
                     "kingfroggy",
+                    "nexan11",
                     //m88n's Mobs
                     "balloondogb",
                     "balloondogy",
@@ -169,6 +170,17 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "m88ngoat",
                     "m88nswan",
                     "m88nvulture",
+                    //m88n's Mob Nexans
+                    "nexan1",
+                    "nexan2",
+                    "nexan3",
+                    "nexan4",
+                    "nexan5",
+                    "nexan6",
+                    "nexan7",
+                    "nexan8",
+                    "nexan9",
+                    "nexan10",
                     //MRMlabs Fishing
                     "bbqchips",
                     "blackpepperchips",
@@ -303,6 +315,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "item-m88ngoldenpoo",
                     "item-m88ngoldenchalis",
                     "item-m88ndrsgme",
+                    "item-movieglasses",
+                    "item-battery",
+                    "item-gameboy",
+                    "item-hardwallet",
                     //MRMlabs
                     "item-firstaidkit",
                     "item-bandaid",
