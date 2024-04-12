@@ -657,6 +657,7 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.COBWALKINGNPC4] = function(id) { return new Mobs.cobWalkingNpc4(id); };
     EntityFactory.builders[Types.Entities.COBWALKINGNPC5] = function(id) { return new Mobs.cobWalkingNpc5(id); };
     EntityFactory.builders[Types.Entities.ROBITSE3]=function(id){return new Mobs.ROBITSE3(id);};
+    EntityFactory.builders[Types.Entities.COLOSSUS]=function(id){return new Mobs.COLOSSUS(id);};
     // @nextMobLine@
     //===== items ======
  

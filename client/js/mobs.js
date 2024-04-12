@@ -3181,6 +3181,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
        }),
         ROBITSE3: Mob.extend({ init: function(id) { this._super(id, Types.Entities.ROBITSE3); this.moveSpeed = 350; this.atkSpeed = 100; this.idleSpeed = 800; this.shadowOffsetY = 1; this.setAttackRate(1200);}}),
+        COLOSSUS: Mob.extend({ init: function(id) { this._super(id, Types.Entities.COLOSSUS); this.moveSpeed = 350; this.atkSpeed = 100; this.idleSpeed = 800; this.shadowOffsetY = 1; this.setAttackRate(1200);}}),
         // @nextMobLine@
     };
     return Mobs;
