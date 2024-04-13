@@ -5,7 +5,7 @@ if [ -z "$1" ]
     exit 1
 fi
 
-if [ ! -f "$1" ]; then
+if [ ! -f "tools/maps/tmx/$1" ]; then
   echo "File $1 does not exist"
   exit 1
 fi
