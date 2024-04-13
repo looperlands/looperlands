@@ -1068,6 +1068,30 @@ let Properties = {
         },
     },
 
+    ROBITSE4: {
+        level: 5,
+        drops: {
+            burger: 50,
+            GOLD: 3
+        },
+    },
+
+    ROBITSE5: {
+        level: 10,
+        drops: {
+            burger: 10,
+            GOLD: 10
+        },
+    },
+
+    ROBITSE6: {
+        level: 15,
+        drops: {
+            burger: 50,
+            GOLD: 50
+        },
+    },
+
      COLOSSUS: {
         level: 30,
         drops: {
