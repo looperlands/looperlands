@@ -1152,7 +1152,26 @@ let Properties = {
             burger: 5,
             GOLD3: 88
         },
-        redpacket: true,
+    },
+
+    m88nbigchungus: {
+        level: 55,
+        drops: {
+            m88nmap: 15,
+            m88negg3: 5,
+            m88negg4: 5,
+            m88negg5: 5,
+            m88negg6: 5,
+            burger: 5,
+            GOLD3: 60
+        },
+        messages: ['Mmmmm, Easter Eggs!', 'O Doyle Rules!', 'Cant touch this...', 'Stay away or come back with friends!'],
+        armorMod: 1,
+        hpMod: 5,
+        weaponMod: 0.8,
+        respawnDelay: 1000000,
+        xp: 69420,
+        redpacket: true
     },
 
     sharkboss: {
@@ -1693,7 +1712,7 @@ let Properties = {
         inventoryDescription: "Special Easter Egg",
         respawnDelay: 1500000,
         onConsume: function(player) {
-            player.releaseMob(Types.Entities.M88NBUNNYWHITE);
+            player.releaseMob(Types.Entities.M88NBIGCHUNGUS);
         }
     },
     m88nfabergeegg: {
