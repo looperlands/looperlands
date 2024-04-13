@@ -2314,6 +2314,20 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
 
+        m88nbigchungus: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NBIGCHUNGUS);
+                this.moveSpeed = 300;
+                this.atkSpeed = 250;
+                this.idleSpeed = 750;
+                this.setAttackRate(500);
+                this.deathAnimated = true;
+                this.isAggressive = true;
+                this.aggroRange = 3;
+                this.title = "Happy Easter!";
+            }
+        }),
+
         sharkboss: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.SHARKBOSS);
