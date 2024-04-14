@@ -23,10 +23,12 @@ def export_map(tmx_file):
     else:
         DEST_FILE = '../../server/maps/world_server_' + map_id + '.json'
 
+    print("./tmx2json.py '+SRC_FILE+' '+TEMP_FILE")
     # Convert the Tiled TMX file to a temporary JSON file
     print commands.getoutput('./tmx2json.py '+SRC_FILE+' '+TEMP_FILE)
 
     # Map exporting
+    print('./exportmap.js '+TEMP_FILE+' '+DEST_FILE+' '+mode)
     print commands.getoutput('./exportmap.js '+TEMP_FILE+' '+DEST_FILE+' '+mode)
 
     # Remove temporary JSON file
