@@ -3023,13 +3023,13 @@ define(['mob', 'timer'], function(Mob, Timer) {
         wolfboss: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.WOLFBOSS);
-                this.moveSpeed = 300;
-                this.idleSpeed = 100;
+                this.moveSpeed = 200;
+                this.idleSpeed = 300;
                 this.atkSpeed = 50;  
                 this.shadowOffsetY = -3;              
                 this.isAggressive = true;
                 this.aggroRange = 3;
-                this.title = "Time To Test Your Might!";
+                this.title = "I don't want to grow up!";
             }
         }),
 

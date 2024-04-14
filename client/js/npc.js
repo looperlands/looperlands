@@ -474,7 +474,10 @@ define(['character'], function (Character) {
             "That guy's been staring at that video game wall for hours. Can you help him?"
         ],
         "oracle": [
-            "This is the best time to be alive, don't you think?"
+            "I think the system is glitching.",
+            "See that giraffe over there?",
+            "They keep sending people to kill it...",
+            "but it just keeps coming back...",
         ],
         "gill": [
             "I'm looking for this game. Do you have it? Rampage"
