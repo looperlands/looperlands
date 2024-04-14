@@ -3029,7 +3029,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.shadowOffsetY = -3;              
                 this.isAggressive = true;
                 this.aggroRange = 3;
-                this.title = "Time To Test Your Might!";
+                this.title = "I don't want to grow up!";
             }
         }),
 

@@ -1440,17 +1440,16 @@ let Properties = {
     },
 
     wolfboss: {
-        level: 10,
+        level: 25,
         drops: {
-            dvd: 50,
-            popcorn: 50,      
+            cagedrat: 100,     
         },
-        messages: ['Prepare for Death!'],
+        messages: ['I dont want to grow up!'],
         armorMod: 1.1,
         weaponMod: 1.6,
         redpacket: true,
         hpMod: 2.0,
-        xp: 1200,  
+        xp: 25000,  
         respawnDelay: 30000
     },
 

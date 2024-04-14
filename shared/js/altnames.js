@@ -78,7 +78,7 @@ const AltNames = {
 
     //Short Destroyers
     lateflea: ".65 Late Flea",  
-    wolfboss: "Victor Henry Stevenson",  
+    wolfboss: "Jeff",  
     horde1: ".65 Late Flea",  
     horde2: ".65 Late Flea",  
     horde3: ".65 Late Flea",  
