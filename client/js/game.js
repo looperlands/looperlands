@@ -194,6 +194,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "valleydew",
                     //MRMlabs NPCs
                     "tylerdurden",
+                    //Robits NPCs
+                    "ROBITSC1",
                     /////
                     "VILLAGESIGN11",
                     "VILLAGESIGN12",
@@ -258,6 +260,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 "ROBITSE4",
                                 "ROBITSE5",
                                 "ROBITSE6",
+                                "ONI",
+                                "ROBITSE7",
+                                "ROBITSE8",
                                 // @nextCharacterLine@
                     "item-BOARHIDE",
                     "item-THUDKEY",

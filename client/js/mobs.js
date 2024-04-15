@@ -3199,6 +3199,9 @@ define(['mob', 'timer'], function(Mob, Timer) {
         ROBITSE4: Mob.extend({ init: function(id) { this._super(id, Types.Entities.ROBITSE4); this.moveSpeed = 100; this.atkSpeed = 80; this.idleSpeed = 800; thisaggroRange = 4; this.shadowOffsetY = 1; this.setAttackRate(1200);}}),
         ROBITSE5: Mob.extend({ init: function(id) { this._super(id, Types.Entities.ROBITSE5); this.moveSpeed = 300; this.atkSpeed = 100; this.idleSpeed = 600; this.aggroRange = 5; this.shadowOffsetY = 1; this.setAttackRate(1200);}}),
         ROBITSE6: Mob.extend({ init: function(id) { this._super(id, Types.Entities.ROBITSE6); this.moveSpeed = 350; this.atkSpeed = 100; this.idleSpeed = 800; this.shadowOffsetY = 1; this.setAttackRate(1200);}}),
+        ONI: Mob.extend({ init: function(id) { this._super(id, Types.Entities.ONI); this.moveSpeed = 350; this.atkSpeed = 100; this.idleSpeed = 800; this.shadowOffsetY = 1; this.setAttackRate(1200);}}),
+        ROBITSE7: Mob.extend({ init: function(id) { this._super(id, Types.Entities.ROBITSE7); this.moveSpeed = 350; this.atkSpeed = 100; this.idleSpeed = 800; this.shadowOffsetY = 1; this.setAttackRate(1200);}}),
+        ROBITSE8: Mob.extend({ init: function(id) { this._super(id, Types.Entities.ROBITSE8); this.moveSpeed = 350; this.atkSpeed = 100; this.idleSpeed = 800; this.shadowOffsetY = 1; this.setAttackRate(1200);}}),
         // @nextMobLine@
     };
     return Mobs;

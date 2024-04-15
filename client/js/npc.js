@@ -446,6 +446,13 @@ define(['character'], function (Character) {
             "I want you to hit me as hard as you can."
         ],
 
+        //Robits NPCs
+        "ROBITSC1": [
+            "Welcome to Cyber City.",
+            "Have you visited Mase's Bar yet?.",
+            "Beep Boop.",
+        ],
+
         //Short Destroyers
         "derrick": [
             "Sup man. Heard you got stuck doing Misty's shelving duty. We've all been there.",

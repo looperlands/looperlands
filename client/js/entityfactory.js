@@ -665,6 +665,9 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.ROBITSE4]=function(id){return new Mobs.ROBITSE4(id);};
     EntityFactory.builders[Types.Entities.ROBITSE5]=function(id){return new Mobs.ROBITSE5(id);};
     EntityFactory.builders[Types.Entities.ROBITSE6]=function(id){return new Mobs.ROBITSE6(id);};
+    EntityFactory.builders[Types.Entities.ONI]=function(id){return new Mobs.ONI(id);};
+    EntityFactory.builders[Types.Entities.ROBITSE7]=function(id){return new Mobs.ROBITSE7(id);};
+    EntityFactory.builders[Types.Entities.ROBITSE8]=function(id){return new Mobs.ROBITSE8(id);};
     // @nextMobLine@
     //===== items ======
  
@@ -1120,6 +1123,9 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
 
     //MRMlabs NPCs
     EntityFactory.builders[Types.Entities.TYLERDURDEN]=function(id){return new NPCs.tylerdurden(id);};
+
+    //Robits NPCs
+    EntityFactory.builders[Types.Entities.ROBITSC1]=function(id){return new NPCs.ROBITSC1(id);};
 
     //ShortDestroyers
     EntityFactory.builders[Types.Entities.DERRICK]=function(id){return new NPCs.derrick(id);};

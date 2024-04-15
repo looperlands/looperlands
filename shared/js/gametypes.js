@@ -482,7 +482,11 @@ Types = {
         COLOSSUS: 34000070,
         ROBITSE4: 34000071,
         ROBITSE5: 34000072,
-        ROBITSE6: 34000073, // @lastidCharacter@
+        ROBITSE6: 34000073,
+        ROBITSC1: 34000074,
+        ONI: 34000075,
+        ROBITSE7: 34000076,
+        ROBITSE8: 34000077, // @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -5812,6 +5816,8 @@ var kinds = {
     bandaid: [Types.Entities.BANDAID, "object"],
     lighter: [Types.Entities.LIGHTER, "object"],
     cigarette: [Types.Entities.CIGARETTE, "object"],
+    //ROBITS NPCS
+    ROBITSC1: [Types.Entities.ROBITSC1, "npc"],
     //mycupbloody
     EYEBALL: [Types.Entities.EYEBALL, "object"],
     REDPOTION: [Types.Entities.REDPOTION, "object"],
@@ -5952,6 +5958,9 @@ var kinds = {
     ROBITSE4: [Types.Entities.ROBITSE4, "mob"],
     ROBITSE5: [Types.Entities.ROBITSE5, "mob"],
     ROBITSE6: [Types.Entities.ROBITSE6, "mob"],
+    ONI: [Types.Entities.ONI, "mob"],
+    ROBITSE7: [Types.Entities.ROBITSE7, "mob"],
+    ROBITSE8: [Types.Entities.ROBITSE8, "mob"],
     // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],

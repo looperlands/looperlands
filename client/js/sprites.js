@@ -623,6 +623,11 @@ define(['text!../sprites/agent.json',
         'text!../sprites/ROBITSE4.json',
         'text!../sprites/ROBITSE5.json',
         'text!../sprites/ROBITSE6.json',
+        'text!../sprites/ROBITSC1.json',
+          
+        'text!../sprites/ONI.json',
+        'text!../sprites/ROBITSE7.json',
+        'text!../sprites/ROBITSE8.json',
         // @nextCharacterImport@
         'text!../sprites/NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6.json',
         'text!../sprites/NFT_38278eacc7d1c86fdbc85d798dca146fbca59a2e5e567dc15898ce2edac21f5f.json',
