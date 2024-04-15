@@ -15,10 +15,11 @@ ENV PATH $NODE_PATH:$PATH
 ENV NODE_ENV development
 RUN apt-get update -yq \
     && apt-get install build-essential -yq
-COPY . /opt/app
 WORKDIR /opt/app
-COPY shared/js/gametypes.js client/js/gametypes.js
+COPY package*.json /opt/app
 RUN npm ci
+COPY . /opt/app
+COPY shared/js/gametypes.js client/js/gametypes.js
 WORKDIR /opt/app/bin
 RUN ./build.sh
 WORKDIR /opt/app
