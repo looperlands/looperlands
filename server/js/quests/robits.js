@@ -13,6 +13,7 @@ quests = [
         level: 1,
         xp: 1000,
         medal: Types.Medals.SKULL
-    },
+    }
+];
    
 exports.quests = quests;
