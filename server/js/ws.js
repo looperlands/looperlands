@@ -373,7 +373,7 @@ WS.socketIOServer = Server.extend({
             let bots = [];
             const nftId = sessionData.nftId;
 
-            let rcvInventory = dao.getInventory(walletId, nftId);
+            let rcvInventory = await dao.getInventory(walletId, nftId);
             if (rcvInventory?.data) {
                 inventory = rcvInventory.data[0].weapons ? rcvInventory.data[0].weapons.map(function (item) {
                     if (item) {
