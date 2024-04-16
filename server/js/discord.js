@@ -62,7 +62,12 @@ exports.sendToDevChannel = (message) => {
 }
 
 try {
-    client.login(process.env.DISCORD_TOKEN);
+    if (process.env.NODE_ENV === "production") {
+        client.login(process.env.DISCORD_TOKEN);
+    } else {
+        console.warn("Not production so not setting up discord");
+    }
+    
 } catch (e) {
     // console.log(e);
 }

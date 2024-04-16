@@ -1,0 +1,30 @@
+version: '3.8'
+services:
+  gameserver:
+    build: .
+    image: looperlands-gameserver
+    environment:
+      LOOPWORMS_API_KEY: ${LOOPWORMS_API_KEY:-placeholder}
+      LOOPWORMS_LOOPERLANDS_BASE_URL: ${LOOPWORMS_LOOPERLANDS_BASE_URL:-http://jsonserver}
+      DISCORD_TOKEN: ${DISCORD_TOKEN}
+      LOOPERLANDS_BACKEND_BASE_URL: ${LOOPERLANDS_BACKEND_BASE_URL:-http://jsonserver}
+      LOOPERLANDS_BACKEND_API_KEY: ${LOOPERLANDS_BACKEND_API_KEY:--http://jsonserver}
+      APP_URL: http://127.0.0.1:8000
+      LOOPERLANDS_PLATFORM_BASE_URL: ${LOOPERLANDS_PLATFORM_BASE_URL:-http://jsonserver}
+      LOOPERLANDS_PLATFORM_API_KEY: ${LOOPERLANDS_PLATFORM_API_KEY:-placeholder}
+      GAMESERVER_NAME: local
+    ports:
+      - "8000:8000"
+    stdin_open: true
+    tty: true
+    depends_on:
+      - jsonserver
+
+  jsonserver:
+    image: codfish/json-server:0.17.3
+    volumes:
+      - ./mock/db.js:/app/db.js:delegated
+      - ./mock/middleware.js:/app/middleware.js:delegated
+      - ./mock/routes.json:/app/routes.json:delegated
+    ports:
+      - 3000:80

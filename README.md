@@ -45,6 +45,7 @@ curl -X POST -H "Content-Type: application/json" -H "x-api-key: $LOOPWORMS_API_K
 Install some dependencies.
 ```bash
 sudo apt-get install unzip zip jq
+sudo apt-get install docker-compose
 ```
 
 Build a map
@@ -54,13 +55,13 @@ Build a map
 
 The following script will build the client and server and run them locally, so you do not have to run the above steps.
 ```bash
-LOOPWORMS_API_KEY=<api-key-here> ./run-local.sh
+./run-local.sh
 ```
 To kill it, press Ctrl+C.
 
 To get a new session run:
 ```bash
-LOOPWORMS_API_KEY=<api-key-here> ./local-session.sh
+./local-session.sh
 ```
 This will print out a URL and open up the URL in your browser
 

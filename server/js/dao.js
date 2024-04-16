@@ -11,10 +11,18 @@ const {
 const API_KEY = process.env.LOOPWORMS_API_KEY;
 const MAX_RETRY_COUNT = 5;
 
+const DEBUG = false;
+const printResponseJSON = function(url, response) {
+  if (DEBUG) {
+    console.log(url, JSON.stringify(response.data));
+  }
+}
+
 const updateExperience = async function (walletId, nftId, xp, retry) {
   const options = { headers: { 'X-Api-Key': API_KEY } };
   let url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/SaveExperience.php?WalletID=${walletId}&NFTID=${nftId}&Experience=${xp}`;
   const responseData = await axios.get(url, options);
+  printResponseJSON(url, responseData);
   const updatedXp = parseInt(responseData.data);
   if (Number.isNaN(updatedXp)) {
     if (retry === undefined) {
@@ -34,6 +42,7 @@ const loadExperience = async function (walletId, nftId) {
   const options = { headers: { 'X-Api-Key': API_KEY } };
   let url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/LoadExperience.php?WalletID=${walletId}&NFTID=${nftId}`;
   const responseData = await axios.get(url, options);
+  printResponseJSON(url, responseData);
   const xp = parseInt(responseData.data);
   return xp;
 }
@@ -42,6 +51,7 @@ const loadMapFlow = async function (mapId) {
   const options = { headers: { 'X-Api-Key': API_KEY } };
   let url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/Maps/selectLooperLands_Quest2.php?map=${mapId}`;
   const responseData = await axios.get(url, options);
+  printResponseJSON(url, responseData);
   try {
     return JSON.parse(responseData.data);
   } catch (error) {
@@ -54,6 +64,7 @@ const saveWeapon = async function (wallet, nft, weaponName) {
   try {
     const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/SaveWeapon.php?NFTID=${nft}&WalletID=${wallet}`
     const responseData = await axios.post(url, weaponName, options);
+    printResponseJSON(url, response);
     //console.log("ResponseData from Loopworms: ", responseData.status, responseData.text, responseData.data);
     return responseData.data;
   } catch (error) {
@@ -66,9 +77,11 @@ const saveWeapon = async function (wallet, nft, weaponName) {
 const loadWeapon = async function (wallet, nft) {
   const options = { method: 'POST', headers: { 'X-Api-Key': API_KEY } };
   try {
-    const responseData = await axios.get(`${LOOPWORMS_LOOPERLANDS_BASE_URL}/LoadWeapon.php?NFTID=${nft}&WalletID=${wallet}`, options);
+    const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/LoadWeapon.php?NFTID=${nft}&WalletID=${wallet}`;
+    const responseData = await axios.get(url, options);
     try {
       let weapon = JSON.parse(responseData.data[0]);
+      printResponseJSON(url, responseData);
       if (weapon.startsWith("NFT_")) {
         let weaponNFT = weapon.replace("NFT_", "0x");
         let ownsWeapon = await this.walletHasNFT(wallet, weaponNFT);
@@ -81,6 +94,7 @@ const loadWeapon = async function (wallet, nft) {
         return weapon;
       }
     } catch (e) {
+      console.error("Get weapon error", e);
       return 'sword1';
     }
 
@@ -98,6 +112,7 @@ const walletHasNFT = async function (wallet, nft, retry) {
   let url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/AssetValidation.php?WalletID=${wallet}&NFTID=${nft}`;
   try {
     const responseData = await axios.get(url);
+    printResponseJSON(url, responseData);
     // Cache ownership for 30 minutes because that is the L2 delay
     daoCache.set(`${wallet}_${nft}`, responseData.data, 60);
     return responseData.data;
@@ -120,6 +135,7 @@ const updatePVPStats = async function (wallet, nft, killIncrement, deathIncremen
   try {
     const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/SavePvP.php?NFTID=${nft}&WalletID=${wallet}&PvPKills=${killIncrement}&PvPDeaths=${deathIncrement}`
     const responseData = await axios.get(url, options);
+    printResponseJSON(url, responseData);
     return responseData.data;
   } catch (error) {
     console.error("updatePVPStats error", error);
@@ -132,6 +148,7 @@ const saveNFTWeaponTrait = async function (wallet, nft) {
   const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/SaveWeaponTrait.php?WalletID=${wallet}&NFTID=${nft}`;
   try {
     const response = await axios.get(url, options);
+    printResponseJSON(url, response);
     const updatedTrait = response.data;
     return updatedTrait;
   } catch (error) {
@@ -145,6 +162,7 @@ const saveNFTWeaponExperience = async function (wallet, nft, experience) {
   const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/SaveWeaponExperience.php?WalletID=${wallet}&NFTID=${nft}&Experience=${experience}`;
   try {
     const response = await axios.get(url, options);
+    printResponseJSON(url, response);
     //console.log("ResponseData from Loopworms: ", response.status, response.text, response.data);
     const updatedExperience = parseInt(response.data.experience);
     return updatedExperience;
@@ -159,6 +177,7 @@ const saveNFTSpecialItemTrait = async function (wallet, nft) {
   const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/SaveSpecialItemTrait.php?WalletID=${wallet}&NFTID=${nft}`;
   try {
     const response = await axios.get(url, options);
+    printResponseJSON(url, response);
     const updatedTrait = response.data;
     return updatedTrait;
   } catch (error) {
@@ -172,6 +191,7 @@ const saveNFTSpecialItemExperience = async function (wallet, nft, experience) {
   const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/SaveSpecialItemExperience.php?WalletID=${wallet}&NFTID=${nft}&Experience=${experience}`;
   try {
     const response = await axios.get(url, options);
+    printResponseJSON(url, response);
     const updatedExperience = parseInt(response.data.experience);
     return updatedExperience;
   } catch (error) {
@@ -185,6 +205,7 @@ const loadNFTWeapon = async function (wallet, nft) {
   const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/LoadNFTWeapon.php?WalletID=${wallet}&NFTID=${nft}`;
   try {
     const response = await axios.get(url, options);
+    printResponseJSON(url, response);
     return response.data;
   } catch (error) {
     console.error("loadNFTWeapon", error);
@@ -197,6 +218,7 @@ const getSpecialItems = async function (wallet) {
   const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/selectLooperLands_SpecialItem.php?WalletID=${wallet}`;
   try {
     const response = await axios.get(url, options);
+    printResponseJSON(url, response);
     return response.data;
   } catch (error) {
     console.error("getSpecialItems", error);
@@ -209,6 +231,7 @@ const saveAvatarMapAndCheckpoint = async function (nft, mapId, checkpointId) {
   const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/SaveMapCheckpoint.php?NFTID=${nft}&mapId=${mapId}&checkpointId=${checkpointId}`;
   try {
     const response = await axios.get(url, options);
+    printResponseJSON(url, response);
     return response.data;
   } catch (error) {
     console.error("saveAvatarMapAndCheckpoint", error);
@@ -224,6 +247,7 @@ const processLootEventQueue = async function (retry) {
   const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/saveItemJson.php`;
   try {
     let response = await axios.post(url, LOOT_EVENTS_QUEUE, options);
+    printResponseJSON(url, response);
     LOOT_EVENTS_QUEUE = [];
   } catch (error) {
     if (retry === undefined) {
@@ -251,6 +275,7 @@ const getItemCount = async function (avatarId, itemId, retry) {
   const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/loadItem.php?NFTID=${avatarId}&itemId=${itemId}`;
   try {
     const response = await axios.get(url, options);
+    printResponseJSON(url, response);
     return response.data;
   } catch (error) {
     if (retry === undefined) {
@@ -282,6 +307,7 @@ const processMobKillEventQueue = async function (retry) {
   const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/saveMobJson.php`;
   try {
     let response = await axios.post(url, MOB_KILL_QUEUE, options);
+    printResponseJSON(url, response);
     MOB_KILL_QUEUE = [];
   } catch (error) {
     if (retry === undefined) {
@@ -308,6 +334,7 @@ const loadAvatarGameData = async function (avatarId, retry) {
   const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/loadItemConsumableMobQuest.php?NFTID=${avatarId}`;
   try {
     const response = await axios.get(url, options);
+    printResponseJSON(url, response);
     let responseData = response.data[0];
     let mobKills, items = {}, quests = {}, consumables = {};
     if (responseData.mobJson) {
@@ -391,6 +418,7 @@ const setQuestStatus = async function (avatarId, questId, status, retry) {
   let url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/setQuestStatus.php?questId=${questId}&avatarID=${avatarId}&status=${status}`;
   try {
     const response = await axios.get(url, options);
+    printResponseJSON(url, response);
     return response;
   } catch (error) {
     console.error("setQuestStatus", error);
@@ -413,6 +441,7 @@ const saveConsumable = async function (nft, item, qty) {
   const sData = { avatarId: nft, itemId: item, quantity: qty };
   try {
     let response = await axios.post(url, sData, options);
+    printResponseJSON(url, response);
     return response.data;
   } catch (error) {
     console.error("saveConsumable", error);
@@ -421,7 +450,9 @@ const saveConsumable = async function (nft, item, qty) {
 }
 
 const getBots = async function (walletId) {
-  let botsResponse = await axios.get(`${LOOPWORMS_LOOPERLANDS_BASE_URL}/loadBot.php?walletID=${walletId}`);
+  let url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/loadBot.php?walletID=${walletId}`;
+  let botsResponse = await axios.get(url);
+  printResponseJSON(url, botsResponse);
   let bots = botsResponse.data;
   return bots;
 }
@@ -442,6 +473,7 @@ const newBot = async function (mapId, botNftId, xp, name, walletId, ownerEntityI
       "gameServerURL": gameServerURL
     }
     const response = await axios.post(url, sessionRequest, options);
+    printResponseJSON(url, response);
     return response.data;
   } catch (error) {
     if (error?.response?.status === 409) {
@@ -464,6 +496,7 @@ const getShopInventory = async function (shopId) {
   const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/shopInventory.php?shopName=${shopId}`;
   const shopResponse = await axios.get(url, options);
   try {
+    printResponseJSON(url, shopResponse);
     return shopResponse.data;
   } catch (error) {
     console.log("getShopInventory", error)
@@ -476,6 +509,7 @@ const getResourceBalance = async function (nftId, itemId) {
   try {
     const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/loadConsumableItem.php?nftId=${nftId}&itemId=${itemId}`
     const response = await axios.get(url, options);
+    printResponseJSON(url, response);
     return response.data;
   } catch (error) {
     console.error(error);
@@ -489,6 +523,7 @@ const updateResourceBalance = async function (nftId, itemId, quantity) {
     const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/saveConsumable2.php`;
     const update = { avatarId: nftId, itemId: itemId, quantity: quantity };
     const response = await axios.post(url, update, options);
+    printResponseJSON(url, response);
     return response.data;
   } catch (error) {
     console.error(error);
@@ -532,6 +567,7 @@ const completePartnerTask = async function(walletId, taskId) {
   try {
     const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/partnerTasks.php?walletID=${walletId}&task=${taskId}`
     const response = await axios.get(url, options);
+    printResponseJSON(url, response);
     return response.data;
   } catch (error) {
     console.error(error);
@@ -544,11 +580,19 @@ const getPartnerTask = async function(walletId, taskId) {
   try {
     const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/partnerTasksRpt.php?walletID=${walletId}&task=${taskId}`
     const response = await axios.get(url, options);
+    printResponseJSON(url, response);
     return response.data[0];
   } catch (error) {
     console.error(error);
     return { "error": "Error completing partner task" };
   }
+}
+
+const getInventory = async function(walletId, nftId) {
+  let url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/looperInventoryDetails.php?walletID=${walletId}&nftId=${nftId}&APIKEY=${API_KEY}`;
+  let rcvInventory = await axios.get(url);
+  printResponseJSON(url, rcvInventory);
+  return rcvInventory;
 }
 
 module.exports = {
@@ -580,5 +624,6 @@ module.exports = {
   updateResourceBalance,
   transferResourceFromTo,
   completePartnerTask,
-  getPartnerTask
+  getPartnerTask,
+  getInventory
 };

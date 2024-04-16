@@ -200,8 +200,9 @@ WS.socketIOServer = Server.extend({
         app.post('/session', async (req, res) => {
             const body = req.body;
             const apiKey = req.headers['x-api-key'];
-
+            
             if (apiKey !== process.env.LOOPWORMS_API_KEY) {
+                console.error("Invalid api key");
                 res.status(401).json({
                     status: false,
                     "error": "invalid api key",
@@ -372,7 +373,7 @@ WS.socketIOServer = Server.extend({
             let bots = [];
             const nftId = sessionData.nftId;
 
-            let rcvInventory = await axios.get(`${LOOPWORMS_LOOPERLANDS_BASE_URL}/looperInventoryDetails.php?walletID=${walletId}&nftId=${nftId}&APIKEY=${process.env.LOOPWORMS_API_KEY}`);
+            let rcvInventory = await dao.getInventory(walletId, nftId);
             if (rcvInventory?.data) {
                 inventory = rcvInventory.data[0].weapons ? rcvInventory.data[0].weapons.map(function (item) {
                     if (item) {
