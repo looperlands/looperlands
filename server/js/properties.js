@@ -1024,6 +1024,7 @@ let Properties = {
         hpMod: 8.25,
         weaponMod: 2.2,
         xp:10000,
+        redpacket: true,
         respawnDelay: 60000
     },
 
