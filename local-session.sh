@@ -17,4 +17,4 @@ sessionId=`curl -X POST -H "Content-Type: application/json" -H "x-api-key: $LOOP
 IP=${LOCAL_IP:-127.0.0.1}
 url=http://$IP:8000/?sessionId=$sessionId
 echo Navigate to the following URL to start playing: $url
-open $url || "/mnt/c/Program Files (x86)/Microsoft/Edge/Application/msedge.exe" $url
+#open $url || "/mnt/c/Program Files (x86)/Microsoft/Edge/Application/msedge.exe" $url
