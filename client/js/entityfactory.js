@@ -668,6 +668,9 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.ONI]=function(id){return new Mobs.ONI(id);};
     EntityFactory.builders[Types.Entities.ROBITSE7]=function(id){return new Mobs.ROBITSE7(id);};
     EntityFactory.builders[Types.Entities.ROBITSE8]=function(id){return new Mobs.ROBITSE8(id);};
+    EntityFactory.builders[Types.Entities.ROBITSE9]=function(id){return new Mobs.ROBITSE9(id);};
+    EntityFactory.builders[Types.Entities.ROBITSE10]=function(id){return new Mobs.ROBITSE10(id);};
+    EntityFactory.builders[Types.Entities.INFERNOID]=function(id){return new Mobs.INFERNOID(id);};
     // @nextMobLine@
     //===== items ======
  

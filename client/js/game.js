@@ -263,6 +263,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 "ONI",
                                 "ROBITSE7",
                                 "ROBITSE8",
+                                "ROBITSE9",
+                                "ROBITSE10",
+                                "INFERNOID",
                                 // @nextCharacterLine@
                     "item-BOARHIDE",
                     "item-THUDKEY",
