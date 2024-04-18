@@ -1109,6 +1109,36 @@ let Properties = {
         },
     },
 
+    ROBITSE9: {
+        level: 13,
+        drops: {
+            burger: 50,
+            GOLD: 50
+        },
+    },
+
+    ROBITSE10: {
+        level: 5,
+        drops: {
+            burger: 50,
+            GOLD: 50
+        },
+    },
+
+    INFERNOID: {
+        level: 3,
+        drops: {
+            burger: 50,
+            GOLD: 50,
+            GOLD2: 10,
+            GOLD3: 2,
+        },
+        messages: ['I will beepin destroy you!'],
+        armorMod: 2.2,
+        xp: 18000,
+        respawnDelay: 180000
+    },
+
      COLOSSUS: {
         level: 30,
         drops: {

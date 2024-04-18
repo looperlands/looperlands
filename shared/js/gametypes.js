@@ -486,7 +486,10 @@ Types = {
         ROBITSC1: 34000074,
         ONI: 34000075,
         ROBITSE7: 34000076,
-        ROBITSE8: 34000077, // @lastidCharacter@
+        ROBITSE8: 34000077,
+        ROBITSE9: 34000078,
+        ROBITSE10: 34000079,
+        INFERNOID: 34000080, // @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -5985,6 +5988,9 @@ var kinds = {
     ONI: [Types.Entities.ONI, "mob"],
     ROBITSE7: [Types.Entities.ROBITSE7, "mob"],
     ROBITSE8: [Types.Entities.ROBITSE8, "mob"],
+    ROBITSE9: [Types.Entities.ROBITSE9, "mob"],
+    ROBITSE10: [Types.Entities.ROBITSE10, "mob"],
+    INFERNOID: [Types.Entities.INFERNOID, "mob"],
     // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],
