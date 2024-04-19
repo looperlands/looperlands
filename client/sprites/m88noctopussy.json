@@ -1,0 +1,49 @@
+{
+	"id": "m88noctopussy",
+	"width": 112,
+	"height": 96,
+	"animations": {
+		"death": {
+			"length": 4,
+			"row": 0
+		},
+		"atk_right": {
+			"length": 4,
+			"row": 1
+		},
+		"walk_right": {
+			"length": 4,
+			"row": 1
+		},
+		"idle_right": {
+			"length": 4,
+			"row": 1
+		},
+		"atk_up": {
+			"length": 4,
+			"row": 2
+		},
+		"walk_up": {
+			"length": 4,
+			"row": 2
+		},
+		"idle_up": {
+			"length": 4,
+			"row": 2
+		},
+		"atk_down": {
+			"length": 4,
+			"row": 3
+		},
+		"walk_down": {
+			"length": 4,
+			"row": 3
+		},
+		"idle_down": {
+			"length": 8,
+			"row": 4
+		}
+	},
+	"offset_x": -24,
+	"offset_y": -40
+}
