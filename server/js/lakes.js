@@ -188,7 +188,7 @@ const Lakes = {
     },
 
     m88nocean1: {
-        level: 5,
+        level: 3,
         fish: {
             m88nbluetang: "common",
             m88npompano: "uncommon",
@@ -198,7 +198,7 @@ const Lakes = {
     },
 
     m88nocean2: {
-        level: 5,
+        level: 4,
         fish: {
             m88nbutterflyfish: "common",
             m88ncoral: "uncommon",
@@ -208,7 +208,7 @@ const Lakes = {
     },
 
     m88nocean3: {
-        level: 5,
+        level: 3,
         fish: {
             m88nclownfish: "common",
             m88noyster: "uncommon",
@@ -218,7 +218,7 @@ const Lakes = {
     },
 
     m88nocean4: {
-        level: 5,
+        level: 4,
         fish: {
             m88nwolffish: "common",
             m88nnautilus: "uncommon",
@@ -228,7 +228,7 @@ const Lakes = {
     },
 
     m88nocean5: {
-        level: 5,
+        level: 3,
         fish: {
             m88nparrotfish: "common",
             m88nconch: "uncommon",
@@ -238,7 +238,7 @@ const Lakes = {
     },
 
     m88nocean6: {
-        level: 5,
+        level: 4,
         fish: {
             m88ncowfish: "common",
             m88ncrab: "uncommon",
@@ -248,7 +248,7 @@ const Lakes = {
     },
 
     m88nocean7: {
-        level: 5,
+        level: 3,
         fish: {
             m88ntuna: "common",
             m88nsundial: "uncommon",
@@ -258,7 +258,7 @@ const Lakes = {
     },
 
     m88nocean8: {
-        level: 5,
+        level: 4,
         fish: {
             m88nguppy: "common",
             m88nsanddollar: "uncommon",
@@ -268,7 +268,7 @@ const Lakes = {
     },
 
     m88nocean9: {
-        level: 5,
+        level: 3,
         fish: {
             m88ntigerfish: "common",
             m88nseacucumber: "uncommon",
@@ -278,7 +278,7 @@ const Lakes = {
     },
 
     m88nocean10: {
-        level: 5,
+        level: 4,
         fish: {
             m88npinkfantasia: "common",
             m88nscallop: "uncommon",
@@ -289,7 +289,7 @@ const Lakes = {
     },
 
     m88nocean11: {
-        level: 5,
+        level: 3,
         fish: {
             m88nseaweed: "common",
             m88nspirula: "uncommon",
@@ -299,7 +299,7 @@ const Lakes = {
     },
 
     m88nocean12: {
-        level: 5,
+        level: 4,
         fish: {
             m88nseafrog: "common",
             m88nseaurchin: "uncommon",

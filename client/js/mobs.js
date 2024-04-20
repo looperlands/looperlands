@@ -2328,6 +2328,20 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
 
+        m88noctopussy: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NOCTOPUSSY);
+                this.moveSpeed = 300;
+                this.atkSpeed = 250;
+                this.idleSpeed = 750;
+                this.setAttackRate(500);
+                this.deathAnimated = true;
+                this.isAggressive = true;
+                this.aggroRange = 1;
+                this.title = "Leave me alone!";
+            }
+        }),
+
         sharkboss: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.SHARKBOSS);

@@ -1259,6 +1259,20 @@ let Properties = {
         redpacket: true
     },
 
+    m88noctopussy: {
+        level: 69,
+        drops: {
+            m88nmap: 90,
+            GOLD3: 10
+        },
+        messages: ['Hahaha, no chance!', 'You should stay out of the ocean...', 'Why are you wasting my time?', 'Stay away or come back with friends!'],
+        armorMod: 1,
+        hpMod: 5,
+        weaponMod: 0.8,
+        respawnDelay: 420000,
+        xp: 69420
+    },
+
     sharkboss: {
         level: 88,
         drops: {
