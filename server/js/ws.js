@@ -188,7 +188,11 @@ WS.socketIOServer = Server.extend({
                 }
             }
 
-            body.xp = parseInt(body.xp);
+            if (body.f2p === true && !teleport) {
+                body.xp = 0;
+            } else {
+                body.xp = parseInt(body.xp);
+            }
 
             cache.set(id, body);
             let responseJson = {
@@ -275,6 +279,7 @@ WS.socketIOServer = Server.extend({
             body.mapId = body.map;
             body.xp = sessionData.xp;
             body.title = sessionData.title;
+            body.f2p = sessionData.f2p;
             delete body.map;
 
             let responseJson = await newSession(body, true);
@@ -311,7 +316,16 @@ WS.socketIOServer = Server.extend({
                 return;
             } else {
                 weapon = await dao.loadWeapon(walletId, nftId);
-                avatarGameData = await dao.loadAvatarGameData(nftId);
+                if (sessionData.f2p === true) {
+                    avatarGameData = {
+                        mobKills: {},
+                        items: {},
+                        quests: {},
+                        consumables: {}
+                    }
+                } else {
+                    avatarGameData = await dao.loadAvatarGameData(nftId);
+                }
 
                 sessionData.isDirty = true;
                 sessionData.gameData = avatarGameData;
