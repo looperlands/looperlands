@@ -1186,7 +1186,8 @@ let Properties = {
     balloondogg: {
         level: 6,
         drops: {
-            burger: 50,
+            m88nmap: 3,
+            burger: 47,
             GOLD: 20
         },
     },
@@ -1194,18 +1195,18 @@ let Properties = {
     balloondoga: {
         level: 8,
         drops: {
-            m88nmap: 1,
+            m88nmap: 3,
             burger: 25,
-            GOLD: 49
+            GOLD: 47
         },
     },
 
     balloondogv: {
         level: 10,
         drops: {
-            m88nmap: 2,
+            m88nmap: 7,
             burger: 25,
-            GOLD: 40,
+            GOLD: 35,
             GOLD2: 10
         },
     },
@@ -1213,9 +1214,9 @@ let Properties = {
     balloondogp: {
         level: 12,
         drops: {
-            m88nmap: 2,
+            m88nmap: 7,
             burger: 25,
-            GOLD: 30,
+            GOLD: 25,
             GOLD2: 25
         },
     },
@@ -1223,32 +1224,32 @@ let Properties = {
     balloonhotdogr: {
         level: 20,
         drops: {
-            m88nmap: 3,
+            m88nmap: 8,
             burger: 5,
             GOLD2: 20,
-            GOLD3: 72
+            GOLD3: 67
         },
     },
 
     balloongiraffeo: {
         level: 50,
         drops: {
-            m88nmap: 5,
+            m88nmap: 15,
             burger: 5,
-            GOLD3: 88
+            GOLD3: 78
         },
     },
 
     m88nbigchungus: {
         level: 55,
         drops: {
-            m88nmap: 15,
+            m88nmap: 25,
             m88negg3: 5,
             m88negg4: 5,
             m88negg5: 5,
             m88negg6: 5,
             burger: 5,
-            GOLD3: 60
+            GOLD3: 50
         },
         messages: ['Mmmmm, Easter Eggs!', 'O Doyle Rules!', 'Cant touch this...', 'Stay away or come back with friends!'],
         armorMod: 1,
@@ -1262,7 +1263,11 @@ let Properties = {
     m88noctopussy: {
         level: 69,
         drops: {
-            m88nmap: 90,
+            m88nmap: 79,
+            gameboy: 5,
+            battery: 3,
+            hardwallet: 2,
+            movieglasses: 1,
             GOLD3: 10
         },
         messages: ['Hahaha, no chance!', 'You should stay out of the ocean...', 'Why are you wasting my time?', 'Stay away or come back with friends!'],

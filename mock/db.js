@@ -1,8 +1,8 @@
 module.exports = () => ({
     "AssetValidation.php": [
         {
-            "WalletID": "0x6fc60be0cce2730b78ad29d732d823866c07baa0",
-            "NFTID": "0xd1570dc356007d297c8ee63716d38d264a621516f44e3305839fc29ca36e2ce2",
+            "WalletID": "0x1e8ab2cc09be581530bb9f3ac94353f6f7412239",
+            "NFTID": "0x82cc76a59d06847148704f158b2ba51b5854c5ee3b2e9314fc36c093a919530a",
             "value": true
         },
         {
@@ -16,7 +16,7 @@ module.exports = () => ({
     "SaveNFTWeaponExperience.php": [],
     "loadItemConsumableMobQuest.php": [
         {
-            "NFTID": "0xd1570dc356007d297c8ee63716d38d264a621516f44e3305839fc29ca36e2ce2",
+            "NFTID": "0x82cc76a59d06847148704f158b2ba51b5854c5ee3b2e9314fc36c093a919530a",
             "value": [
                 {
                     "mobJson": [
