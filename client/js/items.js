@@ -288,6 +288,9 @@ define(['item'], function(Item) {
         bandaid:Item.extend({init:function(id){this._super(id,Types.Entities.BANDAID,"object");this.lootMessage="You found a bandaid!";}}),
         lighter:Item.extend({init:function(id){this._super(id,Types.Entities.LIGHTER,"object");this.lootMessage="You found a lighter!";}}),
         cigarette:Item.extend({init:function(id){this._super(id,Types.Entities.CIGARETTE,"object");this.lootMessage="You found a cigarette!";}}),
+        cigarettepack:Item.extend({init:function(id){this._super(id,Types.Entities.CIGARETTEPACK,"object");this.lootMessage="You found a cigarette pack!";}}),
+        soap:Item.extend({init:function(id){this._super(id,Types.Entities.SOAP,"object");this.lootMessage="You found a bar of soap!";}}),
+        strangeyellowliquid:Item.extend({init:function(id){this._super(id,Types.Entities.STRANGEYELLOWLIQUID,"object");this.lootMessage="You found a bottle filled with a strange yellow liquid!";}}),
         //mycupbloody
         EYEBALL:Item.extend({
             init:function(id){

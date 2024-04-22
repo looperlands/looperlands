@@ -379,6 +379,9 @@ Types = {
         BANDAID: 79000002,
         LIGHTER: 79000003,
         CIGARETTE: 79000004,
+        CIGARETTEPACK: 79000005,
+        SOAP: 79000006,
+        STRANGEYELLOWLIQUID: 79000007,
         //mycupbloody
         EYEBALL: 80000005,
         REDPOTION: 80000006,
@@ -5851,6 +5854,9 @@ var kinds = {
     bandaid: [Types.Entities.BANDAID, "object"],
     lighter: [Types.Entities.LIGHTER, "object"],
     cigarette: [Types.Entities.CIGARETTE, "object"],
+    cigarettepack: [Types.Entities.CIGARETTEPACK, "object"],
+    soap: [Types.Entities.SOAP, "object"],
+    strangeyellowliquid: [Types.Entities.STRANGEYELLOWLIQUID, "object"],
     //ROBITS NPCS
     ROBITSC1: [Types.Entities.ROBITSC1, "npc"],
     //mycupbloody
