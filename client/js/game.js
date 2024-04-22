@@ -338,6 +338,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "item-bandaid",
                     "item-lighter",
                     "item-cigarette",
+                    "item-cigarettepack",
+                    "item-soap",
+                    "item-strangeyellowliquid",
                     //mycupbloody
                     "item-EYEBALL",
                     "item-REDPOTION",

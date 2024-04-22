@@ -1301,12 +1301,12 @@ let Properties = {
         level: 1,
         friendly: true, //not actually friendly, just AoE immune
         hp: 1,
-        xp: 100000,
+        xp: 10000,
         drops: {
             m88nmap: 95,
             m88ngem: 5,
         },
-        respawnDelay: 10000
+        respawnDelay: 100000
     },
 
     m88nbabymonkey: {
@@ -1840,16 +1840,17 @@ let Properties = {
     m88nmoneybags: {
         collectable: true,
         inventoryDescription: "Money Bags",
-        respawnDelay: 150000
+        respawnDelay: 5500000
     },
     m88ngoldenpoo: {
         collectable: true,
         inventoryDescription: "Golden Poo",
-        respawnDelay: 150000
+        respawnDelay: 5500000
     },
     m88ngoldenchalis: {
         collectable: true,
         consumable: true,
+        respawnDelay: 5500000,
         cooldown: {
             group: "immunity",
             duration: 180000
@@ -1892,6 +1893,25 @@ let Properties = {
     },
     cigarette: {
         respawnDelay: 5500000,
+    },
+    cigarettepack: {
+        respawnDelay: 5500000,
+    },
+    soap: {
+        respawnDelay: 5500000,
+    },
+    strangeyellowliquid: {
+        collectable: true,
+        consumable: true,
+        respawnDelay: 5500000,
+        cooldown: {
+            group: "immunity",
+            duration: 180000
+        },
+        inventoryDescription: "Strange Yellow Liquid",
+        onConsume: function(player){
+            player.startInvincibility();
+        }
     },
 
     // Projectiles

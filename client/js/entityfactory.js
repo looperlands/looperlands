@@ -867,6 +867,9 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.BANDAID] = function(id) { return new Items.bandaid(id); };
     EntityFactory.builders[Types.Entities.LIGHTER] = function(id) { return new Items.lighter(id); };
     EntityFactory.builders[Types.Entities.CIGARETTE] = function(id) { return new Items.cigarette(id); };
+    EntityFactory.builders[Types.Entities.CIGARETTEPACK] = function(id) { return new Items.cigarettepack(id); };
+    EntityFactory.builders[Types.Entities.SOAP] = function(id) { return new Items.soap(id); };
+    EntityFactory.builders[Types.Entities.STRANGEYELLOWLIQUID] = function(id) { return new Items.strangeyellowliquid(id); };
     //mycupbloody
     EntityFactory.builders[Types.Entities.EYEBALL]=function(id){
         return new Items.EYEBALL(id);
