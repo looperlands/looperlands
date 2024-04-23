@@ -1528,7 +1528,7 @@ let Properties = {
         armorMod: 1.1,
         weaponMod: 1.6,
         hpMod: 2.0,
-        xp: 25000,  
+        xp: 15000,  
         respawnDelay: 30000
     },
 
