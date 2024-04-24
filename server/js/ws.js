@@ -29,6 +29,7 @@ const Properties = require('./properties.js')
 const Types = require("../../shared/js/gametypes");
 const platform = require('./looperlandsplatformclient.js');
 const minigame = require('../apps/minigame.js');
+const dynamicnft = require('./dynamicnftcontroller.js');
 const cache = new NodeCache();
 
 const LOOPWORMS_LOOPERLANDS_BASE_URL = process.env.LOOPWORMS_LOOPERLANDS_BASE_URL;
@@ -39,6 +40,7 @@ const LOOPERLANDS_PLATFORM_API_KEY = process.env.LOOPERLANDS_PLATFORM_API_KEY;
 
 
 const platformClient = new platform.LooperLandsPlatformClient(LOOPERLANDS_PLATFORM_API_KEY, LOOPERLANDS_PLATFORM_BASE_URL);
+const dynamicNFTcontroller = new dynamicnft.DynamicNFTController(cache, platformClient, Types);
 
 function extractDetails(inputUrl) {
     const parsedUrl = new URL(inputUrl);
@@ -1154,40 +1156,8 @@ WS.socketIOServer = Server.extend({
             res.status(200).send(completedTask);
         });
 
-        app.get("/session/:sessionId/dynamicnft/:nftId/nftid", async (req, res) => {
-            const sessionId = req.params.sessionId;
-            const sessionData = cache.get(sessionId);
-            if (sessionData === undefined) {
-                res.status(404).json({
-                    status: false,
-                    error: "No session with id " + sessionId + " found",
-                    user: null
-                });
-                return;
-            }
-            const nftId = req.params.nftId;
-            const nftData = await platformClient.getNFTDataForGame(nftId);
-            Types.addDynamicNFT(nftData);
-            res.status(200).send(nftData);
-        });
-
-        app.get("/session/:sessionId/dynamicnft/:entityId/entityid", async (req, res) => {
-            const sessionId = req.params.sessionId;
-            const sessionData = cache.get(sessionId);
-            if (sessionData === undefined) {
-                res.status(404).json({
-                    status: false,
-                    error: "No session with id " + sessionId + " found",
-                    user: null
-                });
-                return;
-            }
-            const entityid = req.params.entityId;
-            const kind = Types.getKindAsString(entityid);
-            const nftId = kind.replace("NFT_", "0x");
-            const nftData = await platformClient.getNFTDataForGame(nftId);
-            res.status(200).send(nftData);
-        });
+        app.get("/session/:sessionId/dynamicnft/:nftId/nftid", dynamicNFTcontroller.getNFTData);
+        app.get("/session/:sessionId/dynamicnft/:entityId/entityid", dynamicNFTcontroller.getNFTDataByEntity);
 
         self.io.on('connection', function (connection) {
             //console.log('a user connected');
