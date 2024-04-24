@@ -5708,6 +5708,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         Types.addDynamicNFT(res.data);
                         this.player.setSprite(sprite);
                         this.player.idle();
+                        this.player.dynamicArmorNFTData = res.data;
                         this.player.dyanmicNFTLoaded = true;
                     }).catch( (error) => {
                         console.error(error);
@@ -6956,12 +6957,12 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             try {
                                 if(entity.id !== self.playerId) {
 
-                                    if (entity.dynamicNFTArmor) {
+                                    if (entity.dynamicArmorNFTData) {
                                         const sprite = self.loadSprite(
                                             entity.spriteName,
-                                            entity.nftData.tokenHash,
-                                            entity.nftData.assetType,
-                                            entity.nftData.nftId
+                                            entity.dynamicArmorNFTData.tokenHash,
+                                            entity.dynamicArmorNFTData.assetType,
+                                            entity.dynamicArmorNFTData.nftId
                                         );
                                         entity.setSprite(sprite);
                                     } else {

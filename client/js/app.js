@@ -305,14 +305,21 @@ define(['jquery', 'storage'], function ($, Storage) {
         },
 
         initEquipmentIcons: function () {
-            var scale = this.game.renderer.getScaleFactor();
-            var getIconPath = function (spriteName) {
+            const scale = this.game.renderer.getScaleFactor();
+            const getIconPath = function (spriteName) {
                     return 'img/' + scale + '/item-' + spriteName + '.png';
                 },
                 weapon = this.game.player.getWeaponName(),
                 armor = this.game.player.getSpriteName(),
-                weaponPath = getIconPath(weapon),
+                weaponPath = getIconPath(weapon);
+
+            let armorPath;
+            if (this.game.player.dynamicArmorNFTData !== undefined) {
+                const { tokenHash } = this.game.player.dynamicArmorNFTData;
+                armorPath = `https://looperlands.sfo3.digitaloceanspaces.com/assets/looper/3/${tokenHash}.png`;
+            } else {
                 armorPath = 'img/3/' + armor + '.png';
+            }
 
             const imageUrl = weaponPath;
             const bgElement = document.querySelector("body");
@@ -335,8 +342,6 @@ define(['jquery', 'storage'], function ($, Storage) {
 
                 preloaderImg = null;
             });
-
-
 
             if (armor !== 'firefox') {
                 if (scale === 2) {
