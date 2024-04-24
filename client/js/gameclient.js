@@ -277,7 +277,20 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
                 }
             
                 if(this.spawn_character_callback) {
-                    this.spawn_character_callback(character, x, y, orientation, target);
+                    if (character instanceof Player && character.spriteName === undefined) {
+                        const url = `/session/${this.sessionId}/dynamicnft/${armor}/entityid`;
+                        axios.get(url).then((res) => {
+                            Types.addDynamicNFT(res.data);
+                            character.spriteName = res.data.nftId.replace("0x", "NFT_");
+                            character.dynamicNFTArmor = true;
+                            character.nftData = res.data;
+                            this.spawn_character_callback(character, x, y, orientation, target);
+                        }).catch((error) => {
+                            console.error(error);
+                        });
+                    } else {
+                        this.spawn_character_callback(character, x, y, orientation, target);
+                    }
                 }
             }
         },

@@ -1154,6 +1154,41 @@ WS.socketIOServer = Server.extend({
             res.status(200).send(completedTask);
         });
 
+        app.get("/session/:sessionId/dynamicnft/:nftId/nftid", async (req, res) => {
+            const sessionId = req.params.sessionId;
+            const sessionData = cache.get(sessionId);
+            if (sessionData === undefined) {
+                res.status(404).json({
+                    status: false,
+                    error: "No session with id " + sessionId + " found",
+                    user: null
+                });
+                return;
+            }
+            const nftId = req.params.nftId;
+            const nftData = await platformClient.getNFTDataForGame(nftId);
+            Types.addDynamicNFT(nftData);
+            res.status(200).send(nftData);
+        });
+
+        app.get("/session/:sessionId/dynamicnft/:entityId/entityid", async (req, res) => {
+            const sessionId = req.params.sessionId;
+            const sessionData = cache.get(sessionId);
+            if (sessionData === undefined) {
+                res.status(404).json({
+                    status: false,
+                    error: "No session with id " + sessionId + " found",
+                    user: null
+                });
+                return;
+            }
+            const entityid = req.params.entityId;
+            const kind = Types.getKindAsString(entityid);
+            const nftId = kind.replace("NFT_", "0x");
+            const nftData = await platformClient.getNFTDataForGame(nftId);
+            res.status(200).send(nftData);
+        });
+
         self.io.on('connection', function (connection) {
             //console.log('a user connected');
 

@@ -11269,6 +11269,33 @@ Types.getTypeFromString = function(kindString) {
     return kinds.getType(Types.getKindFromString(kindString))
 };
 
+Types.addDynamicNFT = function(nftData) {
+    const kind = nftData.nftId.replace("0x", "NFT_");
+
+    if (Types.Entities[kind] !== undefined) {
+        return;
+    }
+    function hashString(str) {
+        let hash = 104729;
+        for (let i = 0; i < str.length; i++) {
+            const char = str.charCodeAt(i);
+            // Multiply by 33, which is also traditionally used in djb2, can be considered another prime
+            hash = ((hash << 5) + hash) + char; // hash * 33 + char
+            hash = hash & hash; // Convert to 32bit integer
+        }
+        return (hash >>> 0) * 11; // Ensure the hash is a positive integer
+    }
+
+    const id = hashString(nftData.nftId);
+
+    if (nftData.assetType === "looper") {
+        nftData.assetType = "armor";
+    }
+
+    Types.Entities[kind] = id;
+    kinds[kind] = [id, nftData.assetType];
+}
+
 if(!(typeof exports === 'undefined')) {
     module.exports = Types;
 }
