@@ -3,7 +3,8 @@
     "version": "0.0.1",
     "private": false,
     "scripts" : {
-        "test" : "jest"
+        "test" : "jest",
+        "coverage" : "jest --coverage"
     },
     "dependencies": {
         "alchemy-sdk": "^2.8.3",
