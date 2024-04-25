@@ -5963,6 +5963,7 @@ define(['text!../sprites/agent.json',
         'text!../sprites/NFT_745221197d728beacc96caa0e65887d501239748c83e8bc2a6e30e8b5052f33a.json',
         'text!../sprites/NFT_8c1763e1d512e1bcb017780c1ab8c1f8de96df5c4b3f9f9788a287702fa296a8.json',
         'text!../sprites/NFT_9ab1ae406420339e7d35075fa9d84ed69135f45fc9df48a0a183bee04f80dd72.json',
+        'text!../sprites/NFT_a3b82973db1e6cf9480612d44178d746887efcfcede3289c4b743a2528889d8f.json',
         // @nextSpriteImport@
     ], function() {
     
