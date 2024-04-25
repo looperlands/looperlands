@@ -24,6 +24,8 @@ class LooperLandsPlatformClient {
         process.on('exit', takeOffLine);
         process.on('SIGTERM', takeOffLine);
         process.on('SIGINT', takeOffLine);
+
+        this.nftDataCache = {};
     }
 
     async createOrUpdateGameServer(hostname, port, name) {
@@ -67,6 +69,36 @@ class LooperLandsPlatformClient {
         }
     }
 
+    async getNFT(nftId) {
+        if (!this.platformDefined) return;
+        try {
+            const url = `/api/asset/nft/${nftId}`
+            const response = await this.client.get(url);
+            return response.data;
+        } catch (error) {
+            this.handleError(error);
+        }
+    }
+
+    async getNFTDataForGame(nftId) {
+        try {
+            const cached = this.nftDataCache[nftId];
+            if (cached !== undefined) {
+                return cached;
+            }
+            const nftData = await this.getNFT(nftId);
+            const extractedData = {
+                tokenHash: nftData.token.tokenHash,
+                assetType: nftData.assetType,
+                nftId: nftId
+            };
+            this.nftDataCache[nftId] = extractedData;
+            return extractedData;
+        } catch (error) {
+            this.handleError(error);
+        }
+    }
+
     handleError(error) {
         if (error.response) {
             // The request was made and the server responded with a status code
@@ -80,7 +112,6 @@ class LooperLandsPlatformClient {
             throw error;
         }
     }
-
 }
 
 exports.LooperLandsPlatformClient = LooperLandsPlatformClient;

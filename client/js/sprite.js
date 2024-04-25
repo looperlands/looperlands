@@ -2,7 +2,7 @@
 define(['jquery', 'animation', 'sprites'], function($, Animation, sprites) {
 
     var Sprite = Class.extend({
-        init: function(name, scale, renderWorker) {
+        init: function(name, scale, renderWorker, tokenHash, assetType, nftId) {
         	this.name = name;
         	this.scale = scale;
         	this.isLoaded = false;
@@ -10,18 +10,42 @@ define(['jquery', 'animation', 'sprites'], function($, Animation, sprites) {
         	this.offsetY = 0;
 			this.renderWorker = renderWorker;
 
-			if (window.location.href.indexOf("127.0.0.1") > -1) {
-				this.baseImageURL = 'img/';
+			if (tokenHash !== undefined && assetType !== undefined) {
+				if (assetType === "armor") {
+					assetType = "looper";
+				}
+				this.filepath = `https://looperlands.sfo3.digitaloceanspaces.com/assets/${assetType}/1/${tokenHash}.png`;
+				console.log("Loading dynamic nft", tokenHash, assetType, this.filepath);
+				let template;
+				switch(assetType) {
+					case "looper":
+						template = sprites["clotharmor"];
+						break;
+					default:
+						console.log("undefined json for" + assetType);
+				}
+				this.dynamicNFT = true;
+				this.loadJSON(template, nftId.replace("0x", "NFT_"));
 			} else {
-				this.baseImageURL = 'https://cdn.jsdelivr.net/gh/balkshamster/looperlands@main/client/img/';
+				if (window.location.href.indexOf("127.0.0.1") > -1) {
+					this.baseImageURL = 'img/';
+				}
+				else {
+					this.baseImageURL = 'https://cdn.jsdelivr.net/gh/balkshamster/looperlands@main/client/img/';
+				}
+				this.loadJSON(sprites[name]);
 			}
-			
-            this.loadJSON(sprites[name]);
         },
         
-        loadJSON: function(data) {
-    		this.id = data.id;
-			this.filepath = this.baseImageURL + this.scale + "/" + this.id + ".png";
+        loadJSON: function(data, id) {
+			if (id === undefined) {
+				this.id = data.id;
+			} else {
+				this.id = id;
+			}
+			if (this.filepath === undefined) {
+				this.filepath = this.baseImageURL + this.scale + "/" + this.id + ".png";
+			}
     		this.animationData = data.animations;
     		this.width = data.width;
     		this.height = data.height;
@@ -55,7 +79,7 @@ define(['jquery', 'animation', 'sprites'], function($, Animation, sprites) {
 		sendToWorker: function() {
 			let self = this;
 			let src;
-			if (window.location.href.indexOf("127.0.0.1") > -1) {
+			if (!this.dynamicNFT && window.location.href.indexOf("127.0.0.1") > -1) {
 				src = "http://127.0.0.1:8000/" + this.filepath;
 			} else {
 				src = this.filepath;

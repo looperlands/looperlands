@@ -29,6 +29,7 @@ const Properties = require('./properties.js')
 const Types = require("../../shared/js/gametypes");
 const platform = require('./looperlandsplatformclient.js');
 const minigame = require('../apps/minigame.js');
+const dynamicnft = require('./dynamicnftcontroller.js');
 const cache = new NodeCache();
 
 const LOOPWORMS_LOOPERLANDS_BASE_URL = process.env.LOOPWORMS_LOOPERLANDS_BASE_URL;
@@ -39,6 +40,7 @@ const LOOPERLANDS_PLATFORM_API_KEY = process.env.LOOPERLANDS_PLATFORM_API_KEY;
 
 
 const platformClient = new platform.LooperLandsPlatformClient(LOOPERLANDS_PLATFORM_API_KEY, LOOPERLANDS_PLATFORM_BASE_URL);
+const dynamicNFTcontroller = new dynamicnft.DynamicNFTController(cache, platformClient, Types);
 
 function extractDetails(inputUrl) {
     const parsedUrl = new URL(inputUrl);
@@ -1153,6 +1155,9 @@ WS.socketIOServer = Server.extend({
             }
             res.status(200).send(completedTask);
         });
+
+        app.get("/session/:sessionId/dynamicnft/:nftId/nftid", dynamicNFTcontroller.getNFTData);
+        app.get("/session/:sessionId/dynamicnft/:entityId/entityid", dynamicNFTcontroller.getNFTDataByEntity);
 
         self.io.on('connection', function (connection) {
             //console.log('a user connected');

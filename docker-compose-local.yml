@@ -19,6 +19,14 @@ services:
     tty: true
     depends_on:
       - jsonserver
+    develop:
+      watch:
+        - path: server/
+          action: rebuild
+        - path: client/
+          action: rebuild
+        - path: shared/
+          action: rebuild
 
   jsonserver:
     image: codfish/json-server:0.17.3

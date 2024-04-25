@@ -5724,14 +5724,34 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             },
 
             initPlayer: function() {
+    
                 this.player.setSpriteName(this.storage.data.player.armor);
                 if(this.storage.hasAlreadyPlayed()) {
                     this.player.setWeaponName(this.storage.data.player.weapon);
                 }
 
-                this.player.setSprite(this.sprites[this.player.getSpriteName()]);
-                this.player.idle();
+                const spriteName = this.player.getSpriteName();
+                const playerSprite = this.sprites[spriteName];
+                if (playerSprite === undefined) {
+                    const nftId = spriteName.replace("NFT_", "0x");
+                    const url = `/session/${this.sessionId}/dynamicnft/${nftId}/nftid`;
+                    this.player.dyanmicNFTLoaded = false;
 
+                    axios.get(url).then((res) => {
+                        const sprite = this.loadSprite(spriteName, res.data.tokenHash, res.data.assetType, nftId);
+                        Types.addDynamicNFT(res.data);
+                        this.player.setSprite(sprite);
+                        this.player.idle();
+                        this.player.dynamicArmorNFTData = res.data;
+                        this.player.dyanmicNFTLoaded = true;
+                    }).catch( (error) => {
+                        console.error(error);
+                    });
+                } else {
+                    this.player.dyanmicNFTLoaded = true;
+                    this.player.setSprite(playerSprite);
+                    this.player.idle();
+                }
                 console.debug("Finished initPlayer");
             },
 
@@ -5855,14 +5875,15 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 return found;
             },
 
-            loadSprite: function(name) {
+            loadSprite: function(name, tokenHash, assetType, nftId) {
                 if(this.renderer.upscaledRendering) {
-                    this.spritesets[0][name] = new Sprite(name, 1, this.renderer.worker);
+                    return this.spritesets[0][name] = new Sprite(name, 1, this.renderer.worker, tokenHash, assetType, nftId);
                 } else {
-                    this.spritesets[1][name] = new Sprite(name, 2, this.renderer.worker);
+                    let sprite = this.spritesets[1][name] = new Sprite(name, 2, this.renderer.worker, tokenHash, assetType, nftId);
                     if(!this.renderer.mobile && !this.renderer.tablet) {
-                        this.spritesets[2][name] = new Sprite(name, 3, this.renderer.worker);
+                        sprite = this.spritesets[2][name] = new Sprite(name, 3, this.renderer.worker, tokenHash, assetType, nftId);
                     }
+                    return sprite;
                 }
             },
 
@@ -5891,7 +5912,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.spritesets[0] = {};
                 this.spritesets[1] = {};
                 this.spritesets[2] = {};
-                _.map(this.spriteNames, this.loadSprite, this);
+                _.map(this.spriteNames, (name) => {
+                    this.loadSprite(name);
+                }, this);
             },
 
             spritesLoaded: function() {
@@ -6470,12 +6493,18 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.client.onConnected(function() {
                     console.log("Starting client/server handshake");
 
-                    self.player.name = self.username;
-                    self.player.setSpriteName(self.storage.data.player.armor);
-                    self.started = true;
-
-
-                    self.sendHello(self.player);
+                    function sendHello() {
+                        console.log("Dynamic nft loaded", self.player.dyanmicNFTLoaded);
+                        if (self.player.dyanmicNFTLoaded) {
+                            self.player.name = self.username;
+                            self.player.setSpriteName(self.storage.data.player.armor);
+                            self.started = true;
+                            self.sendHello(self.player);
+                        } else {
+                            setTimeout(sendHello.bind(self), 100);
+                        }
+                    }
+                    sendHello();
                 });
 
                 this.client.onEntityList(function(list) {
@@ -6949,7 +6978,6 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     });
 
                     self.client.onSpawnCharacter(function(entity, x, y, orientation, targetId) {
-
                         if (self.entityIdExists(entity.id) && entity instanceof Player) {
                             existingEntity = self.entities[entity.id];
                             if(!self.camera.isVisiblePosition(existingEntity.gridX, existingEntity.gridY)) {
@@ -6962,7 +6990,18 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         if(!self.entityIdExists(entity.id)) {
                             try {
                                 if(entity.id !== self.playerId) {
-                                    entity.setSprite(self.sprites[entity.getSpriteName()]);
+
+                                    if (entity.dynamicArmorNFTData) {
+                                        const sprite = self.loadSprite(
+                                            entity.spriteName,
+                                            entity.dynamicArmorNFTData.tokenHash,
+                                            entity.dynamicArmorNFTData.assetType,
+                                            entity.dynamicArmorNFTData.nftId
+                                        );
+                                        entity.setSprite(sprite);
+                                    } else {
+                                        entity.setSprite(self.sprites[entity.getSpriteName()]);
+                                    }
                                     entity.setGridPosition(x, y);
                                     entity.setOrientation(orientation);
                                     entity.idle();
@@ -7142,7 +7181,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 }
                             }
                             catch(e) {
-                                console.error(e);
+                                console.error(e, entity);
                             }
                         } else {
                             //console.log("Character "+entity.id+" already exists. Don't respawn.");

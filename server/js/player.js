@@ -58,7 +58,7 @@ module.exports = Player = Character.extend({
 
             var action = parseInt(message[0]);
 
-            //console.debug("Received: " + message, "from " + self.connection.id);
+            // console.debug("Received: " + message, "from " + self.connection.id);
             if (!check(message)) {
                 self.connection.close("Invalid " + Types.getMessageTypeAsString(action) + " message format: " + message);
                 return;
