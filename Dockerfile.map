@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM ubuntu:22.04
 ENV NEW_RELIC_NO_CONFIG_FILE=true
 ENV DEBIAN_FRONTEND noninteractive
 ARG MAP_FILE
@@ -13,7 +13,6 @@ ENV NODE_PATH $NVM_DIR/versions/node/$NODE_VERSION/bin
 ENV PATH $NODE_PATH:$PATH
 RUN apt-get update -yq \
     && apt-get install curl gnupg python2 zip unzip -yq \
-    && apt-get install python3 -yq \
     && curl https://bootstrap.pypa.io/pip/2.7/get-pip.py --output get-pip.py \
     && python2 get-pip.py \
     && python2 -m pip install lxml
