@@ -278,7 +278,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             
                 if(this.spawn_character_callback) {
                     if (character instanceof Player && character.spriteName === undefined) {
-                        const url = `/session/${this.sessionId}/dynamicnft/${armor}/entityid`;
+                        const url = `/session/${this.sessionId}/dynamicnft/${armor}/kindid`;
                         axios.get(url).then((res) => {
                             Types.addDynamicNFT(res.data);
                             character.spriteName = res.data.nftId.replace("0x", "NFT_");

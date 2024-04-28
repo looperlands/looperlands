@@ -24,7 +24,7 @@ class DynamicNFTController {
     }
 
     // Method to get NFT data based on session and entity ID
-    getNFTDataByEntity = async (req, res) => {
+    getNFTDataByKindId = async (req, res) => {
         const sessionId = req.params.sessionId;
         const sessionData = this.cache.get(sessionId);
         if (sessionData === undefined) {
@@ -35,8 +35,8 @@ class DynamicNFTController {
             });
             return;
         }
-        const entityId = req.params.entityId;
-        const kind = this.Types.getKindAsString(entityId);
+        const kindId = req.params.kindId;
+        const kind = this.Types.getKindAsString(kindId);
         const nftId = kind.replace("NFT_", "0x");
         const nftData = await this.platformClient.getNFTDataForGame(nftId);
         res.status(200).send(nftData);

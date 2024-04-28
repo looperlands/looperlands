@@ -8,27 +8,73 @@ module.exports = () => ({
         {
             "nft": "0xf191c9b7356efec0a4ed4995f0de39f976f8b7451949e3cbfe15753dac6d1c99",
             "wallet": "0x6fc60be0cce2730b78ad29d732d823866c07baa0",
-            "value" : true
+            "value": true
         },
         {
-            "nft" : "0x754cfeb2ea72a22093a5f4e95559c91d048eee340a69e085b7b89ee8fcded4b1",
-            "wallet" : "0x19d30dd0df484e7552bce1baeaf3d8c0e2f3efdc",
-            "value" : true
+            "nft": "0xe6eafa47271fa448d7103b0d00b81e43a6ecdd06baa980ac78fabd24efdbfa27",
+            "wallet": "0x19d30dd0df484e7552bce1baeaf3d8c0e2f3efdc",
+            "value": true
         },
         {
-            "nft" : "0xd1570dc356007d297c8ee63716d38d264a621516f44e3305839fc29ca36e2ce2",
-            "wallet" : "0x6fc60be0cce2730b78ad29d732d823866c07baa0",
-            "value" : true
+            "nft": "0xd1570dc356007d297c8ee63716d38d264a621516f44e3305839fc29ca36e2ce2",
+            "wallet": "0x6fc60be0cce2730b78ad29d732d823866c07baa0",
+            "value": true
         }
     ],
-    "collection_ownership" : [
+    "collection_ownership": [
         {
-            "collection" : "Cobs Farm",
-            "wallet" : "0x6fc60be0cce2730b78ad29d732d823866c07baa0",
-            "value" : true
+            "collection": "Cobs Farm",
+            "wallet": "0x6fc60be0cce2730b78ad29d732d823866c07baa0",
+            "value": true
         }
     ],
-    "SaveExperience.php" : [],
+    "nft_data": [
+        {
+            "nftId" : "0xe6eafa47271fa448d7103b0d00b81e43a6ecdd06baa980ac78fabd24efdbfa27",
+            "value" : {
+                "id": "495f8594-e5e6-4083-80ee-c7c86e9f17dd",
+                "token": {
+                    "chainId": 1,
+                    "contractAddress": "0x375e4f2e4340d37db0479008aa542f69f43d8c50",
+                    "tokenId": "0xe6eafa47271fa448d7103b0d00b81e43a6ecdd06baa980ac78fabd24efdbfa27",
+                    "type": "erc1155",
+                    "tokenHash": "0x17be35f08db8767d8ee95fa93558024d299db663b661060f2ff96a496e78677d",
+                    "l2": "loopring"
+                },
+                "creator": {
+                    "id": "288fe962-66e6-4bf7-97b5-3e008f708e68",
+                    "walletAddress": "0x6fc60Be0Cce2730b78AD29d732D823866c07BaA0",
+                    "ens": "hamster"
+                },
+                "name": "Dynamic NFT Looper",
+                "assetType": "looper",
+                "collection": "LooperLands",
+                "addedAt": "2024-04-28T21:56:45+00:00",
+                "listing": {
+                    "active": false,
+                    "price": null,
+                    "description": null
+                },
+                "holders": [
+                    {
+                        "wallet": {
+                            "id": "f7745f7d-ff4c-4594-9752-f1d55516a2b4",
+                            "walletAddress": "0x6fc60be0cce2730b78ad29d732d823866c07baa0",
+                            "chainId": 1,
+                            "l2": "loopring",
+                            "ens": null
+                        },
+                        "balance": 1,
+                        "holdingSince": "2024-04-28T21:56:45+00:00"
+                    }
+                ],
+                "rentals": [],
+                "freeToPlay": false,
+                "gameData": null
+            }
+        }
+    ],
+    "SaveExperience.php": [],
     "SaveMapCheckpoint.php": [],
     "SaveWeaponExperience.php": [],
     "loadItemConsumableMobQuest.php": [
@@ -961,7 +1007,7 @@ module.exports = () => ({
             ]
         },
         {
-            "NFTID": "0x754cfeb2ea72a22093a5f4e95559c91d048eee340a69e085b7b89ee8fcded4b1",
+            "NFTID": "0xe6eafa47271fa448d7103b0d00b81e43a6ecdd06baa980ac78fabd24efdbfa27",
             "value": [
                 {
                     "mobJson": [
@@ -1423,7 +1469,7 @@ module.exports = () => ({
                     "equipedWeapon": "\"sword1\""
                 }
             ]
-        }        
+        }
     ],
     "looperInventoryDetails.php": [
         {
@@ -1475,7 +1521,7 @@ module.exports = () => ({
         },
         {
             "walletID": "0x19d30dd0df484e7552bce1baeaf3d8c0e2f3efdc",
-            "nftId": "0x754cfeb2ea72a22093a5f4e95559c91d048eee340a69e085b7b89ee8fcded4b1",
+            "nftId": "0xe6eafa47271fa448d7103b0d00b81e43a6ecdd06baa980ac78fabd24efdbfa27",
             "APIKEY": "placeholder",
             "value": [
                 {
@@ -1519,31 +1565,31 @@ module.exports = () => ({
                         { "itemId": "50000012", "iCount": 1 }
                     ]
                 }]
-        }        
+        }
     ],
     "LoadWeapon.php": [
         {
             "NFTID": "0xd1570dc356007d297c8ee63716d38d264a621516f44e3305839fc29ca36e2ce2",
             "WalletID": "0x6fc60be0cce2730b78ad29d732d823866c07baa0",
-            "value" : ["\"NFT_f191c9b7356efec0a4ed4995f0de39f976f8b7451949e3cbfe15753dac6d1c99\""]
+            "value": ["\"NFT_f191c9b7356efec0a4ed4995f0de39f976f8b7451949e3cbfe15753dac6d1c99\""]
         },
         {
-            "NFTID": "0x754cfeb2ea72a22093a5f4e95559c91d048eee340a69e085b7b89ee8fcded4b1",
+            "NFTID": "0xe6eafa47271fa448d7103b0d00b81e43a6ecdd06baa980ac78fabd24efdbfa27",
             "WalletID": "0x19d30dd0df484e7552bce1baeaf3d8c0e2f3efdc",
-            "value" : ["\"sword1\""]
-        }        
+            "value": ["\"sword1\""]
+        }
     ],
-    "LoadNFTWeapon.php" : [ 
+    "LoadNFTWeapon.php": [
         {
             "NFTID": "0xf191c9b7356efec0a4ed4995f0de39f976f8b7451949e3cbfe15753dac6d1c99",
             "WalletID": "0x6fc60be0cce2730b78ad29d732d823866c07baa0",
-            "value" : {"trait":"speed","experience":805739,"weaponClass":"null"}
+            "value": { "trait": "speed", "experience": 805739, "weaponClass": "null" }
         }
     ],
     "mapFlowMain": [
         {
-            "map" : "main",
-            "value" :"{\"handlers\":[{\"idx\":\"28df2efa-d0ea-4264-be37-7996f073db19\",\"type\":\"player.killed_mob\",\"options\":{\"mob\":\"2\"},\"then\":[{\"idx\":\"027d2f33-5287-4ec4-9baa-e0994ca03a0b\",\"type\":\"in.area\",\"options\":{\"top_left\":\"26,197\",\"bottom_right\":\"34,203\"},\"true\":[{\"idx\":\"f8f719c5-5232-49aa-9e81-f8254dc952d9\",\"type\":\"talk.player\",\"options\":{\"message\":\"Portal rat!\"}}]}]}]}"
+            "map": "main",
+            "value": "{\"handlers\":[{\"idx\":\"28df2efa-d0ea-4264-be37-7996f073db19\",\"type\":\"player.killed_mob\",\"options\":{\"mob\":\"2\"},\"then\":[{\"idx\":\"027d2f33-5287-4ec4-9baa-e0994ca03a0b\",\"type\":\"in.area\",\"options\":{\"top_left\":\"26,197\",\"bottom_right\":\"34,203\"},\"true\":[{\"idx\":\"f8f719c5-5232-49aa-9e81-f8254dc952d9\",\"type\":\"talk.player\",\"options\":{\"message\":\"Portal rat!\"}}]}]}]}"
         }
     ]
 });
