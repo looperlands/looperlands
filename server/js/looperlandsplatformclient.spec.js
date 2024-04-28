@@ -134,4 +134,22 @@ describe('LooperLandsPlatformClient', () => {
       expect(() => client.handleError(error)).toThrow('HTTP error! status: 404');
     });
   });
+
+  describe('checkOwnership', () => {
+    it('should fetch ownership data if platform is defined', async () => {
+      const nft = 'nft123';
+      const wallet = 'walletABC';
+
+      process.env.NODE_ENV = 'production';
+      axios.create.mockReturnValue({
+        get: jest.fn().mockResolvedValue({ data: true })
+      });
+      client = new LooperLandsPlatformClient(apiKey, baseUrl);
+      const result = await client.checkOwnership(nft, wallet);
+
+      expect(client.client.get).toHaveBeenCalledWith(`/api/asset/nft/${nft}/owns?wallet=${wallet}`);
+      expect(result).toEqual(true);
+    });
+  });
 });
+

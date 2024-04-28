@@ -7,7 +7,8 @@ module.exports = (req, res, next) => {
             "looperInventoryDetails.php", 
             "LoadWeapon.php",
             "LoadNFTWeapon.php",
-            "Maps/selectLooperLands_Quest2.php", 
+            "Maps/selectLooperLands_Quest2.php",
+            "nft_ownership"
         ];
         let gets = paths.some(path => req.path.includes("/" + path));
         if (gets && req.method === "GET") {
