@@ -21,6 +21,13 @@ module.exports = () => ({
             "value" : true
         }
     ],
+    "collection_ownership" : [
+        {
+            "collection" : "Cobs Farm",
+            "wallet" : "0x6fc60be0cce2730b78ad29d732d823866c07baa0",
+            "value" : true
+        }
+    ],
     "SaveExperience.php" : [],
     "SaveMapCheckpoint.php": [],
     "SaveWeaponExperience.php": [],
