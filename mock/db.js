@@ -1,4 +1,26 @@
 module.exports = () => ({
+    "nft_ownership": [
+        {
+            "wallet": "0x1e8ab2cc09be581530bb9f3ac94353f6f7412239",
+            "nft": "0x82cc76a59d06847148704f158b2ba51b5854c5ee3b2e9314fc36c093a919530a",
+            "value": true
+        },
+        {
+            "nft": "0xf191c9b7356efec0a4ed4995f0de39f976f8b7451949e3cbfe15753dac6d1c99",
+            "wallet": "0x6fc60be0cce2730b78ad29d732d823866c07baa0",
+            "value" : true
+        },
+        {
+            "nft" : "0x754cfeb2ea72a22093a5f4e95559c91d048eee340a69e085b7b89ee8fcded4b1",
+            "wallet" : "0x19d30dd0df484e7552bce1baeaf3d8c0e2f3efdc",
+            "value" : true
+        },
+        {
+            "nft" : "0xd1570dc356007d297c8ee63716d38d264a621516f44e3305839fc29ca36e2ce2",
+            "wallet" : "0x6fc60be0cce2730b78ad29d732d823866c07baa0",
+            "value" : true
+        }
+    ],
     "SaveExperience.php" : [],
     "SaveMapCheckpoint.php": [],
     "SaveWeaponExperience.php": [],
