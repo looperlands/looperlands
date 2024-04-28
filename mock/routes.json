@@ -1,3 +1,4 @@
 {
-    "/Maps/selectLooperLands_Quest2.php?map=main" : "/mapFlowMain"
+    "/Maps/selectLooperLands_Quest2.php?map=:map" : "/mapFlowMain",
+    "/api/asset/nft/:nft/owns?wallet=:wallet": "/nft_ownership"
 }
