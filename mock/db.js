@@ -959,6 +959,470 @@ module.exports = () => ({
                     "equipedWeapon": "\"NFT_f191c9b7356efec0a4ed4995f0de39f976f8b7451949e3cbfe15753dac6d1c99\""
                 }
             ]
+        },
+        {
+            "NFTID": "0x754cfeb2ea72a22093a5f4e95559c91d048eee340a69e085b7b89ee8fcded4b1",
+            "value": [
+                {
+                    "mobJson": [
+                        {
+                            "mobId": "10",
+                            "iCount": 24
+                        },
+                        {
+                            "mobId": "11",
+                            "iCount": 109
+                        },
+                        {
+                            "mobId": "13",
+                            "iCount": 4
+                        },
+                        {
+                            "mobId": "14",
+                            "iCount": 62
+                        },
+                        {
+                            "mobId": "2",
+                            "iCount": 4348
+                        },
+                        {
+                            "mobId": "200006",
+                            "iCount": 3
+                        },
+                        {
+                            "mobId": "200007",
+                            "iCount": 6
+                        },
+                        {
+                            "mobId": "3",
+                            "iCount": 48
+                        },
+                        {
+                            "mobId": "300001",
+                            "iCount": 671
+                        },
+                        {
+                            "mobId": "300003",
+                            "iCount": 131
+                        },
+                        {
+                            "mobId": "300004",
+                            "iCount": 3
+                        },
+                        {
+                            "mobId": "300005",
+                            "iCount": 112
+                        },
+                        {
+                            "mobId": "300006",
+                            "iCount": 1
+                        },
+                        {
+                            "mobId": "300007",
+                            "iCount": 352
+                        },
+                        {
+                            "mobId": "300010",
+                            "iCount": 75
+                        },
+                        {
+                            "mobId": "300011",
+                            "iCount": 2
+                        },
+                        {
+                            "mobId": "300012",
+                            "iCount": 1
+                        },
+                        {
+                            "mobId": "300015",
+                            "iCount": 1
+                        },
+                        {
+                            "mobId": "300019",
+                            "iCount": 147
+                        },
+                        {
+                            "mobId": "300088",
+                            "iCount": 313
+                        },
+                        {
+                            "mobId": "300089",
+                            "iCount": 1
+                        },
+                        {
+                            "mobId": "300090",
+                            "iCount": 5
+                        },
+                        {
+                            "mobId": "34000054",
+                            "iCount": 27
+                        },
+                        {
+                            "mobId": "34000056",
+                            "iCount": 16
+                        },
+                        {
+                            "mobId": "34000059",
+                            "iCount": 26
+                        },
+                        {
+                            "mobId": "34000060",
+                            "iCount": 9
+                        },
+                        {
+                            "mobId": "34000061",
+                            "iCount": 4
+                        },
+                        {
+                            "mobId": "34000062",
+                            "iCount": 1
+                        },
+                        {
+                            "mobId": "4",
+                            "iCount": 391
+                        },
+                        {
+                            "mobId": "400005",
+                            "iCount": 50
+                        },
+                        {
+                            "mobId": "400006",
+                            "iCount": 12
+                        },
+                        {
+                            "mobId": "400008",
+                            "iCount": 112
+                        },
+                        {
+                            "mobId": "400014",
+                            "iCount": 5
+                        },
+                        {
+                            "mobId": "5",
+                            "iCount": 168
+                        },
+                        {
+                            "mobId": "6",
+                            "iCount": 16
+                        },
+                        {
+                            "mobId": "7",
+                            "iCount": 216
+                        },
+                        {
+                            "mobId": "770001",
+                            "iCount": 2
+                        },
+                        {
+                            "mobId": "770002",
+                            "iCount": 2
+                        },
+                        {
+                            "mobId": "770004",
+                            "iCount": 3
+                        },
+                        {
+                            "mobId": "8",
+                            "iCount": 283
+                        }
+                    ],
+                    "itemJson": [
+                        {
+                            "itemId": "21300008",
+                            "iCount": 14
+                        },
+                        {
+                            "itemId": "21300010",
+                            "iCount": 12
+                        },
+                        {
+                            "itemId": "21300011",
+                            "iCount": 66
+                        },
+                        {
+                            "itemId": "21300013",
+                            "iCount": 1
+                        },
+                        {
+                            "itemId": "21300014",
+                            "iCount": 188
+                        },
+                        {
+                            "itemId": "21300015",
+                            "iCount": 2
+                        },
+                        {
+                            "itemId": "21300016",
+                            "iCount": 64
+                        },
+                        {
+                            "itemId": "21300017",
+                            "iCount": 1
+                        },
+                        {
+                            "itemId": "21300018",
+                            "iCount": 226
+                        },
+                        {
+                            "itemId": "21300019",
+                            "iCount": 40
+                        },
+                        {
+                            "itemId": "21300020",
+                            "iCount": 4
+                        },
+                        {
+                            "itemId": "21300021",
+                            "iCount": 106
+                        },
+                        {
+                            "itemId": "21300022",
+                            "iCount": 39
+                        },
+                        {
+                            "itemId": "21300023",
+                            "iCount": 10
+                        },
+                        {
+                            "itemId": "21300024",
+                            "iCount": 2
+                        },
+                        {
+                            "itemId": "21300025",
+                            "iCount": 5
+                        },
+                        {
+                            "itemId": "21300039",
+                            "iCount": 3
+                        },
+                        {
+                            "itemId": "21300040",
+                            "iCount": 1
+                        },
+                        {
+                            "itemId": "21300041",
+                            "iCount": 5
+                        },
+                        {
+                            "itemId": "300008",
+                            "iCount": 673
+                        },
+                        {
+                            "itemId": "35",
+                            "iCount": 1927
+                        },
+                        {
+                            "itemId": "36",
+                            "iCount": 377
+                        },
+                        {
+                            "itemId": "38",
+                            "iCount": 229
+                        },
+                        {
+                            "itemId": "50000010",
+                            "iCount": 16
+                        },
+                        {
+                            "itemId": "50000011",
+                            "iCount": 5
+                        },
+                        {
+                            "itemId": "50000012",
+                            "iCount": 1
+                        },
+                        {
+                            "itemId": "61",
+                            "iCount": 2
+                        },
+                        {
+                            "itemId": "77000002",
+                            "iCount": 1
+                        },
+                        {
+                            "itemId": "77000004",
+                            "iCount": 3
+                        },
+                        {
+                            "itemId": "77000005",
+                            "iCount": 1
+                        },
+                        {
+                            "itemId": "77000006",
+                            "iCount": 16
+                        },
+                        {
+                            "itemId": "77000007",
+                            "iCount": 13
+                        },
+                        {
+                            "itemId": "77000017",
+                            "iCount": 6
+                        },
+                        {
+                            "itemId": "cobcatfish",
+                            "iCount": 5
+                        },
+                        {
+                            "itemId": "cobgoldfish",
+                            "iCount": 2
+                        },
+                        {
+                            "itemId": "cobguppy",
+                            "iCount": 114
+                        },
+                        {
+                            "itemId": "cobneon",
+                            "iCount": 44
+                        },
+                        {
+                            "itemId": "cobtrout",
+                            "iCount": 13
+                        },
+                        {
+                            "itemId": "oafish1",
+                            "iCount": 3
+                        },
+                        {
+                            "itemId": "oafish3",
+                            "iCount": 1
+                        }
+                    ],
+                    "itemConsumableJson": [
+                        {
+                            "itemConsumableId": "21300041",
+                            "iCount": 18
+                        },
+                        {
+                            "itemConsumableId": "333009",
+                            "iCount": 0
+                        },
+                        {
+                            "itemConsumableId": "50000001",
+                            "iCount": 0
+                        },
+                        {
+                            "itemConsumableId": "50000003",
+                            "iCount": 575
+                        },
+                        {
+                            "itemConsumableId": "50000010",
+                            "iCount": 8
+                        },
+                        {
+                            "itemConsumableId": "50000011",
+                            "iCount": 5
+                        },
+                        {
+                            "itemConsumableId": "50000012",
+                            "iCount": 1
+                        }
+                    ],
+                    "questJson": [
+                        {
+                            "questID": "COB_COLLECT_LOGS",
+                            "status": "IN_PROGRESS"
+                        },
+                        {
+                            "questID": "KING_QUEST_1",
+                            "status": "COMPLETED"
+                        },
+                        {
+                            "questID": "OA_QUEST_1",
+                            "status": "COMPLETED"
+                        },
+                        {
+                            "questID": "OA_QUEST_11",
+                            "status": "COMPLETED"
+                        },
+                        {
+                            "questID": "OA_QUEST_2",
+                            "status": "COMPLETED"
+                        },
+                        {
+                            "questID": "OA_QUEST_20",
+                            "status": "COMPLETED"
+                        },
+                        {
+                            "questID": "OA_QUEST_3",
+                            "status": "COMPLETED"
+                        },
+                        {
+                            "questID": "OA_QUEST_4",
+                            "status": "COMPLETED"
+                        },
+                        {
+                            "questID": "OA_QUEST_5",
+                            "status": "COMPLETED"
+                        },
+                        {
+                            "questID": "OA_QUEST_6",
+                            "status": "COMPLETED"
+                        },
+                        {
+                            "questID": "OA_QUEST_7",
+                            "status": "COMPLETED"
+                        },
+                        {
+                            "questID": "OA_QUEST_8",
+                            "status": "COMPLETED"
+                        },
+                        {
+                            "questID": "OA_QUEST_9",
+                            "status": "COMPLETED"
+                        },
+                        {
+                            "questID": "OA_SIDE_1",
+                            "status": "COMPLETED"
+                        },
+                        {
+                            "questID": "OA_SIDE_10",
+                            "status": "IN_PROGRESS"
+                        },
+                        {
+                            "questID": "OA_SIDE_12",
+                            "status": "IN_PROGRESS"
+                        },
+                        {
+                            "questID": "OA_SIDE_13",
+                            "status": "IN_PROGRESS"
+                        },
+                        {
+                            "questID": "OA_SIDE_2",
+                            "status": "IN_PROGRESS"
+                        },
+                        {
+                            "questID": "OA_SIDE_3",
+                            "status": "COMPLETED"
+                        },
+                        {
+                            "questID": "OA_SIDE_4",
+                            "status": "COMPLETED"
+                        },
+                        {
+                            "questID": "OA_SIDE_5",
+                            "status": "COMPLETED"
+                        },
+                        {
+                            "questID": "OA_SIDE_6",
+                            "status": "COMPLETED"
+                        },
+                        {
+                            "questID": "OA_SIDE_7",
+                            "status": "IN_PROGRESS"
+                        },
+                        {
+                            "questID": "OA_SIDE_8",
+                            "status": "COMPLETED"
+                        },
+                        {
+                            "questID": "SDU_QUEST_1",
+                            "status": "IN_PROGRESS"
+                        }
+                    ],
+                    "equipedWeapon": "\"sword1\""
+                }
+            ]
         }        
     ],
     "looperInventoryDetails.php": [

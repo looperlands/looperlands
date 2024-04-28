@@ -5756,19 +5756,19 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 const spriteName = this.player.getSpriteName();
                 const playerSprite = this.sprites[spriteName];
                 if (playerSprite === undefined) {
-                    const nftId = spriteName.replace("NFT_", "0x");
-                    const url = `/session/${this.sessionId}/dynamicnft/${nftId}/nftid`;
                     this.player.dyanmicNFTLoaded = false;
 
-                    axios.get(url).then((res) => {
-                        const sprite = this.loadSprite(spriteName, res.data.tokenHash, res.data.assetType, nftId);
-                        Types.addDynamicNFT(res.data);
+                    loadDynamicNFT(spriteName, this.sessionId, (spriteName, nftData) => {
+                        const sprite = this.loadSprite(
+                            spriteName,
+                            nftData.tokenHash,
+                            nftData.assetType,
+                            nftData.nftId
+                        );
                         this.player.setSprite(sprite);
                         this.player.idle();
-                        this.player.dynamicArmorNFTData = res.data;
+                        this.player.dynamicArmorNFTData = nftData;
                         this.player.dyanmicNFTLoaded = true;
-                    }).catch( (error) => {
-                        console.error(error);
                     });
                 } else {
                     this.player.dyanmicNFTLoaded = true;
