@@ -1157,7 +1157,7 @@ WS.socketIOServer = Server.extend({
         });
 
         app.get("/session/:sessionId/dynamicnft/:nftId/nftid", dynamicNFTcontroller.getNFTData);
-        app.get("/session/:sessionId/dynamicnft/:kindid/kindid", dynamicNFTcontroller.getNFTDataByKindId);
+        app.get("/session/:sessionId/dynamicnft/:kindId/kindid", dynamicNFTcontroller.getNFTDataByKindId);
 
         self.io.on('connection', function (connection) {
             //console.log('a user connected');

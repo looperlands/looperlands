@@ -278,14 +278,10 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             
                 if(this.spawn_character_callback) {
                     if (character instanceof Player && character.spriteName === undefined) {
-                        const url = `/session/${this.sessionId}/dynamicnft/${armor}/kindid`;
-                        axios.get(url).then((res) => {
-                            Types.addDynamicNFT(res.data);
-                            character.spriteName = res.data.nftId.replace("0x", "NFT_");
-                            character.dynamicArmorNFTData = res.data;
+                        loadDynamicNFTByKind(armor, this.sessionId, (nftData) => {
+                            character.spriteName = nftData.nftId.replace("0x", "NFT_");
+                            character.dynamicArmorNFTData = nftData;
                             this.spawn_character_callback(character, x, y, orientation, target);
-                        }).catch((error) => {
-                            console.error(error);
                         });
                     } else {
                         this.spawn_character_callback(character, x, y, orientation, target);
