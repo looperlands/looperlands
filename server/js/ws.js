@@ -214,10 +214,9 @@ WS.socketIOServer = Server.extend({
                     "error": "invalid api key",
                     user: null
                 });
-                return;
             }
 
-            const walletAllowed = await dao.walletHasNFT(body.walletId, body.nftId);
+            let walletAllowed = await dao.walletHasNFT(body.walletId, body.nftId);
             if (!walletAllowed) {
                 console.error("Wallet not allowed", body.walletId, body.nftId);
                 res.status(401).json({
@@ -589,8 +588,9 @@ WS.socketIOServer = Server.extend({
 
             } else {
                 const walletId = sessionData.walletId;
-                const isOwner = await dao.walletHasNFT(walletId, nftId);
-                res.status(200).json(isOwner);
+                let url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/AssetValidation.php?WalletID=${walletId}&NFTID=${nftId}`
+                const result = await axios.get(url);
+                res.status(200).json(result.data);
             }
 
         });
@@ -673,8 +673,8 @@ WS.socketIOServer = Server.extend({
                     user: null
                 });
             }
-            let result = await dao.walletHasNFT(player.walletId, nftId);
-            if (!result) {
+            let result = dao.walletHasNFT(player.walletId, nftId);
+            if (result === undefined) {
                 res.status(400).json({
                     status: false,
                     error: "Could not get player NFT info",
