@@ -19,4 +19,4 @@ jobs:
     - name: Run linter
       run: npx eslint client --ext .js,.jsx,.ts,.tsx --quiet && npx eslint server --ext .js,.jsx,.ts,.tsx --quiet && npx eslint shared --ext .js,.jsx,.ts,.tsx --quiet
     - name: Run unit tests
-      run: npm test
+      run: npm run coverage

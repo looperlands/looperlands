@@ -6865,10 +6865,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 _self.doorCheck = true;
                                 axios.get(url).then(function (response) {
                                     let walletHasCollection = false;
-                                    if (response.data[0] !== undefined) {
-                                        walletHasCollection = response.data[0].projectInWallet;
-                                    }
 
+                                    if (response.data !== undefined) {
+                                        walletHasCollection = response.data;
+                                    }
                                     if (walletHasCollection === true) {
                                         checkTrigger()
                                     } else {

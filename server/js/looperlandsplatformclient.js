@@ -59,7 +59,6 @@ class LooperLandsPlatformClient {
     }
 
     async getSpinIndex() {
-        if (!this.platformDefined) return;
         try {
             const url = "/api/maps/cornsino/spin";
             const response = await this.client.get(url);
@@ -70,7 +69,6 @@ class LooperLandsPlatformClient {
     }
 
     async getNFT(nftId) {
-        if (!this.platformDefined) return;
         try {
             const url = `/api/asset/nft/${nftId}`
             const response = await this.client.get(url);
@@ -94,6 +92,26 @@ class LooperLandsPlatformClient {
             };
             this.nftDataCache[nftId] = extractedData;
             return extractedData;
+        } catch (error) {
+            this.handleError(error);
+        }
+    }
+
+    async checkOwnership(nft, wallet) {
+        try {
+            const url = `/api/asset/nft/${nft}/owns?wallet=${wallet}`;
+            const response = await this.client.get(url);
+            return response.data;
+        } catch (error) {
+            this.handleError(error);
+        }
+    }
+
+    async checkOwnershipOfCollection(collection, wallet) {
+        try {
+            const url = `/api/collection/${collection}/owns?wallet=${wallet}`;
+            const response = await this.client.get(url);
+            return response.data;
         } catch (error) {
             this.handleError(error);
         }

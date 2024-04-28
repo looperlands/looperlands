@@ -4,7 +4,7 @@ jest.mock('axios');
 
 
 // Mock process events to avoid actual exit
-jest.spyOn(process, 'on').mockImplementation(() => {});
+jest.spyOn(process, 'on').mockImplementation(() => { });
 
 describe('LooperLandsPlatformClient', () => {
   let client;
@@ -13,11 +13,11 @@ describe('LooperLandsPlatformClient', () => {
 
   beforeEach(() => {
     axios.create.mockReturnValue({
-        get: jest.fn().mockResolvedValue({ data: {} }), // Mock implementation if needed
-        put: jest.fn().mockResolvedValue({ data: {} }), // Ensure `put` is mocked
-        post: jest.fn().mockResolvedValue({ data: {} }), // Ensure `post` is mocked
-      });
-    
+      get: jest.fn().mockResolvedValue({ data: {} }), // Mock implementation if needed
+      put: jest.fn().mockResolvedValue({ data: {} }), // Ensure `put` is mocked
+      post: jest.fn().mockResolvedValue({ data: {} }), // Ensure `post` is mocked
+    });
+
     client = new LooperLandsPlatformClient(apiKey, baseUrl);
   });
 
@@ -35,7 +35,20 @@ describe('LooperLandsPlatformClient', () => {
         }
       });
     });
+
+    it('platform not defined', () => {
+      client = new LooperLandsPlatformClient(undefined, undefined);
+      expect(axios.create).toHaveBeenCalledWith({
+        baseURL: baseUrl,
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey
+        }
+      });
+    });
   });
+
+
 
   describe('createOrUpdateGameServer', () => {
     it('should send a PUT request to update game server details', async () => {
@@ -74,7 +87,7 @@ describe('LooperLandsPlatformClient', () => {
   describe('getSpinIndex', () => {
     it('should fetch spin index from the API', async () => {
       const spin = 7;
- 
+
       jest.spyOn(client.client, 'get').mockResolvedValue({ data: { spin } });
 
       const result = await client.getSpinIndex();
@@ -106,8 +119,8 @@ describe('LooperLandsPlatformClient', () => {
       });
 
       jest.spyOn(client, 'getNFT').mockImplementation(() => ({
-        token : {
-            tokenHash: nftData.tokenHash
+        token: {
+          tokenHash: nftData.tokenHash
         },
         assetType: nftData.assetType
       }));
@@ -125,6 +138,18 @@ describe('LooperLandsPlatformClient', () => {
         nftId: nftId
       });
     });
+
+    it('should handle an exception', async () => {
+      const nft = 'nft123';
+      process.env.NODE_ENV = 'production';
+      axios.create.mockReturnValue({
+        get: jest.fn().mockImplementation(() => {
+          throw new Error("error");
+        })
+      });
+      client = new LooperLandsPlatformClient(apiKey, baseUrl);
+      await expect(client.getNFTDataForGame(nft)).rejects.toThrow("error");
+    });        
   });
 
   describe('handleError', () => {
@@ -132,6 +157,67 @@ describe('LooperLandsPlatformClient', () => {
       const error = { response: { status: 404 } };
 
       expect(() => client.handleError(error)).toThrow('HTTP error! status: 404');
+    });
+  });
+
+  describe('checkOwnership', () => {
+    it('should fetch ownership', async () => {
+      const nft = 'nft123';
+      const wallet = 'walletABC';
+
+      process.env.NODE_ENV = 'production';
+      axios.create.mockReturnValue({
+        get: jest.fn().mockResolvedValue({ data: true })
+      });
+      client = new LooperLandsPlatformClient(apiKey, baseUrl);
+      const result = await client.checkOwnership(nft, wallet);
+
+      expect(client.client.get).toHaveBeenCalledWith(`/api/asset/nft/${nft}/owns?wallet=${wallet}`);
+      expect(result).toEqual(true);
+    });
+
+    it('should handle an exception', async () => {
+      const nft = 'nft123';
+      const wallet = 'walletABC';
+      process.env.NODE_ENV = 'production';
+      axios.create.mockReturnValue({
+        get: jest.fn().mockImplementation(() => {
+          throw new Error("error");
+        })
+      });
+      client = new LooperLandsPlatformClient(apiKey, baseUrl);
+      await expect(client.checkOwnership(nft, wallet)).rejects.toThrow("error");
+    });    
+  });
+
+  describe('checkCollectionOwnership', () => {
+    it('should check for ownership', async () => {
+      const collection = 'a collection';
+      const wallet = 'walletABC';
+
+      process.env.NODE_ENV = 'production';
+      axios.create.mockReturnValue({
+        get: jest.fn().mockResolvedValue({ data: true })
+      });
+      client = new LooperLandsPlatformClient(apiKey, baseUrl);
+      const result = await client.checkOwnershipOfCollection(collection, wallet);
+
+      expect(client.client.get).toHaveBeenCalledWith(`/api/collection/${collection}/owns?wallet=${wallet}`);
+      expect(result).toEqual(true);
+    });
+
+
+    it('should handle an exception', async () => {
+      const collection = 'a collection';
+      const wallet = 'walletABC';
+      process.env.NODE_ENV = 'production';
+      axios.create.mockReturnValue({
+        get: jest.fn().mockImplementation(() => {
+          throw new Error("error");
+        })
+      });
+      client = new LooperLandsPlatformClient(apiKey, baseUrl);
+      await expect(client.checkOwnershipOfCollection(collection, wallet)).rejects.toThrow("error");
     });
   });
 });
