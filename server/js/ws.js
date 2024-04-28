@@ -588,9 +588,9 @@ WS.socketIOServer = Server.extend({
 
             } else {
                 const walletId = sessionData.walletId;
-                let url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/AssetValidation.php?WalletID=${walletId}&NFTID=${nftId}`
-                const result = await axios.get(url);
-                res.status(200).json(result.data);
+                const result = await platformClient.checkOwnership(nftId, walletId)
+
+                res.status(200).json(result);
             }
 
         });
@@ -654,9 +654,9 @@ WS.socketIOServer = Server.extend({
                 });
             } else {
                 const walletId = sessionData.walletId;
-                let url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/selectProject.php?WalletID=${walletId}&Project=${collectionName}`
-                const result = await axios.get(url);
-                res.status(200).json(result.data);
+                const result = await platformClient.checkOwnershipOfCollection(collectionName, walletId)
+
+                res.status(200).json(result);
             }
         });
 

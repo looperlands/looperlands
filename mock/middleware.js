@@ -3,7 +3,6 @@ module.exports = (req, res, next) => {
     let oldSend = res.send;
     res.send = function (data) {
         const paths = [
-            "AssetValidation.php", 
             "loadItemConsumableMobQuest.php", 
             "looperInventoryDetails.php", 
             "LoadWeapon.php",

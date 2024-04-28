@@ -111,6 +111,18 @@ class LooperLandsPlatformClient {
         }
     }
 
+    async checkOwnershipOfCollection(collection, wallet) {
+        if (!this.platformDefined) return;
+
+        try {
+            const url = `/api/collection/${collection}/owns?wallet=${wallet}`;
+            const response = await this.client.get(url);
+            return response.data;
+        } catch (error) {
+            this.handleError(error);
+        }
+    }
+
     handleError(error) {
         if (error.response) {
             // The request was made and the server responded with a status code

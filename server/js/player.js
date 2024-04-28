@@ -18,14 +18,20 @@ const NFTSpecialItem = require("./nftspecialitem.js");
 const PlayerEventBroker = require("./quests/playereventbroker.js");
 const Lakes = require("./lakes.js");
 const Collectables = require("./collectables.js");
+const platform = require('./looperlandsplatformclient.js');
 
 const LOOPWORMS_LOOPERLANDS_BASE_URL = process.env.LOOPWORMS_LOOPERLANDS_BASE_URL;
+const LOOPERLANDS_PLATFORM_BASE_URL = process.env.LOOPERLANDS_PLATFORM_BASE_URL;
+const LOOPERLANDS_PLATFORM_API_KEY = process.env.LOOPERLANDS_PLATFORM_API_KEY;
+
 const BASE_SPEED = 120;
 const BASE_ATTACK_RATE = 800;
 const XP_BATCH_SIZE = 500;
 
 const mapflows = require("./flows/mapflow.js");
 const { getItemCount } = require("./dao");
+
+const platformClient = new platform.LooperLandsPlatformClient(LOOPERLANDS_PLATFORM_API_KEY, LOOPERLANDS_PLATFORM_BASE_URL);
 
 module.exports = Player = Character.extend({
     init: function (connection, worldServer) {
@@ -465,18 +471,16 @@ module.exports = Player = Character.extend({
                 }
                 if (requiredNft !== undefined) {
                     let playerCache = self.server.server.cache.get(self.sessionId);
-                    let url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/AssetValidation.php?WalletID=${playerCache.walletId}&NFTID=${requiredNft}`;
-                    axios.get(url).then(function (response) {
-                        if (response.data === true) {
-                            if (triggerActive) {
-                                teleport();
+                    platformClient.checkOwnership(requiredNft, playerCache.walletId)
+                        .then(function (ownsNFT) {
+                            if (ownsNFT === true) {
+                                if (triggerActive) {
+                                    teleport();
+                                }
                             }
-                        } else {
-                            //console.error("Asset validation failed for player " + _self.name + " and nftId " + requiredNft, url);
-                        }
-                    })
+                        })
                         .catch(function (error) {
-                            console.error("Asset validation error: " + error, url);
+                            console.error("Asset validation error: " + error);
                         });
                 } else {
                     if (triggerActive) {
