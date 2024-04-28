@@ -465,8 +465,7 @@ module.exports = Player = Character.extend({
                 }
                 if (requiredNft !== undefined) {
                     let playerCache = self.server.server.cache.get(self.sessionId);
-                    let url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/AssetValidation.php?WalletID=${playerCache.walletId}&NFTID=${requiredNft}`;
-                    axios.get(url).then(function (response) {
+                    dao.walletHasNFT(playerCache.walletId, requiredNft).then(function (response) {
                         if (response.data === true) {
                             if (triggerActive) {
                                 teleport();
