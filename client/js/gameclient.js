@@ -277,12 +277,30 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
                 }
             
                 if(this.spawn_character_callback) {
-                    if (character instanceof Player && character.spriteName === undefined) {
-                        loadDynamicNFTByKind(armor, this.sessionId, (nftData) => {
-                            character.spriteName = nftData.nftId.replace("0x", "NFT_");
-                            character.dynamicArmorNFTData = nftData;
-                            this.spawn_character_callback(character, x, y, orientation, target);
-                        });
+                    const isDynamicNFT = character.spriteName === undefined || character.weaponName === undefined;
+                    if (character instanceof Player && isDynamicNFT) {
+                        const loadDynamicNFTWeapon = () => {
+                            loadDynamicNFTByKind(weapon, this.sessionId, (weaponNFTData) => {
+                                console.log("load dynamic weapon", weaponNFTData);
+                                character.weaponName = weaponNFTData.nftId.replace("0x", "NFT_");
+                                character.dynamicWeaponNFTData = weaponNFTData;
+                                this.spawn_character_callback(character, x, y, orientation, target);
+                            });
+                        };
+                        if (character.spriteName === undefined) {
+                            loadDynamicNFTByKind(armor, this.sessionId, (armorNFTData) => {
+                                character.spriteName = armorNFTData.nftId.replace("0x", "NFT_");
+                                character.dynamicArmorNFTData = armorNFTData;
+                                if (character.weaponName === undefined) {
+                                    loadDynamicNFTWeapon();
+                                } else {
+                                    this.spawn_character_callback(character, x, y, orientation, target);
+                                }
+                            });
+                        } else if (character.weaponName === undefined) {
+                            loadDynamicNFTWeapon();
+                        }
+
                     } else {
                         this.spawn_character_callback(character, x, y, orientation, target);
                     }

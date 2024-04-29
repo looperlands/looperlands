@@ -19,6 +19,16 @@ module.exports = () => ({
             "nft": "0xd1570dc356007d297c8ee63716d38d264a621516f44e3305839fc29ca36e2ce2",
             "wallet": "0x6fc60be0cce2730b78ad29d732d823866c07baa0",
             "value": true
+        },
+        {
+            "nft": "0xec0e2565a1be79afc3b7b07c912803cb44838006751282c5bf38495fb6ef5143",
+            "wallet": "0x6fc60be0cce2730b78ad29d732d823866c07baa0",
+            "value": true
+        },
+        {
+            "nft": "0xec0e2565a1be79afc3b7b07c912803cb44838006751282c5bf38495fb6ef5143",
+            "wallet": "0x19d30dd0df484e7552bce1baeaf3d8c0e2f3efdc",
+            "value": true
         }
     ],
     "collection_ownership": [
@@ -30,7 +40,7 @@ module.exports = () => ({
     ],
     "nft_data": [
         {
-            "nftId" : "0xe6eafa47271fa448d7103b0d00b81e43a6ecdd06baa980ac78fabd24efdbfa27",
+            "nft" : "0xe6eafa47271fa448d7103b0d00b81e43a6ecdd06baa980ac78fabd24efdbfa27",
             "value" : {
                 "id": "495f8594-e5e6-4083-80ee-c7c86e9f17dd",
                 "token": {
@@ -72,7 +82,51 @@ module.exports = () => ({
                 "freeToPlay": false,
                 "gameData": null
             }
-        }
+        },
+        {
+            "nft" : "0xec0e2565a1be79afc3b7b07c912803cb44838006751282c5bf38495fb6ef5143",
+            "value" : {
+                "id": "495f8594-e5e6-4083-80ee-c7c86e9f17dd",
+                "token": {
+                    "chainId": 1,
+                    "contractAddress": "0x48c4eca03b5fd0102fe808c29d5315aec38bd461",
+                    "tokenId": "0xec0e2565a1be79afc3b7b07c912803cb44838006751282c5bf38495fb6ef5143",
+                    "type": "erc1155",
+                    "tokenHash": "0x23d0446ecb0afa7f68bf61fe356519517851669e5c2ff44101a87da37999ba51",
+                    "l2": "loopring"
+                },
+                "creator": {
+                    "id": "288fe962-66e6-4bf7-97b5-3e008f708e68",
+                    "walletAddress": "0x6fc60Be0Cce2730b78AD29d732D823866c07BaA0",
+                    "ens": "hamster"
+                },
+                "name": "Dynamic NFT Looper",
+                "assetType": "weapon",
+                "collection": "LooperLands",
+                "addedAt": "2024-04-28T21:56:45+00:00",
+                "listing": {
+                    "active": false,
+                    "price": null,
+                    "description": null
+                },
+                "holders": [
+                    {
+                        "wallet": {
+                            "id": "f7745f7d-ff4c-4594-9752-f1d55516a2b4",
+                            "walletAddress": "0x6fc60be0cce2730b78ad29d732d823866c07baa0",
+                            "chainId": 1,
+                            "l2": "loopring",
+                            "ens": null
+                        },
+                        "balance": 1,
+                        "holdingSince": "2024-04-28T21:56:45+00:00"
+                    }
+                ],
+                "rentals": [],
+                "freeToPlay": false,
+                "gameData": null
+            }
+        }        
     ],
     "SaveExperience.php": [],
     "SaveMapCheckpoint.php": [],
@@ -1466,7 +1520,7 @@ module.exports = () => ({
                             "status": "IN_PROGRESS"
                         }
                     ],
-                    "equipedWeapon": "\"sword1\""
+                    "equipedWeapon": "\"NFT_ec0e2565a1be79afc3b7b07c912803cb44838006751282c5bf38495fb6ef5143\""
                 }
             ]
         }
@@ -1576,7 +1630,7 @@ module.exports = () => ({
         {
             "NFTID": "0xe6eafa47271fa448d7103b0d00b81e43a6ecdd06baa980ac78fabd24efdbfa27",
             "WalletID": "0x19d30dd0df484e7552bce1baeaf3d8c0e2f3efdc",
-            "value": ["\"sword1\""]
+            "value": ["\"NFT_ec0e2565a1be79afc3b7b07c912803cb44838006751282c5bf38495fb6ef5143\""]
         }
     ],
     "LoadNFTWeapon.php": [
@@ -1584,7 +1638,12 @@ module.exports = () => ({
             "NFTID": "0xf191c9b7356efec0a4ed4995f0de39f976f8b7451949e3cbfe15753dac6d1c99",
             "WalletID": "0x6fc60be0cce2730b78ad29d732d823866c07baa0",
             "value": { "trait": "speed", "experience": 805739, "weaponClass": "null" }
-        }
+        },
+        {
+            "NFTID": "0xec0e2565a1be79afc3b7b07c912803cb44838006751282c5bf38495fb6ef5143",
+            "WalletID": "0x19d30dd0df484e7552bce1baeaf3d8c0e2f3efdc",
+            "value": { "trait": "speed", "experience": 805739, "weaponClass": "null" }
+        }        
     ],
     "mapFlowMain": [
         {

@@ -21,6 +21,9 @@ define(['jquery', 'animation', 'sprites'], function($, Animation, sprites) {
 					case "looper":
 						template = sprites["clotharmor"];
 						break;
+					case "weapon":
+						template = sprites["redsword"];
+						break;
 					default:
 						console.log("undefined json for" + assetType);
 				}
