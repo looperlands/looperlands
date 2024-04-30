@@ -5770,19 +5770,19 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 const spriteName = this.player.getSpriteName();
                 const playerSprite = this.sprites[spriteName];
                 if (playerSprite === undefined) {
-                    const nftId = spriteName.replace("NFT_", "0x");
-                    const url = `/session/${this.sessionId}/dynamicnft/${nftId}/nftid`;
                     this.player.dyanmicNFTLoaded = false;
 
-                    axios.get(url).then((res) => {
-                        const sprite = this.loadSprite(spriteName, res.data.tokenHash, res.data.assetType, nftId);
-                        Types.addDynamicNFT(res.data);
+                    loadDynamicNFT(spriteName, this.sessionId, (spriteName, nftData) => {
+                        const sprite = this.loadSprite(
+                            spriteName,
+                            nftData.tokenHash,
+                            nftData.assetType,
+                            nftData.nftId
+                        );
                         this.player.setSprite(sprite);
                         this.player.idle();
-                        this.player.dynamicArmorNFTData = res.data;
+                        this.player.dynamicArmorNFTData = nftData;
                         this.player.dyanmicNFTLoaded = true;
-                    }).catch( (error) => {
-                        console.error(error);
                     });
                 } else {
                     this.player.dyanmicNFTLoaded = true;
@@ -6536,7 +6536,24 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             self.player.name = self.username;
                             self.player.setSpriteName(self.storage.data.player.armor);
                             self.started = true;
-                            self.sendHello(self.player);
+
+                            const weaponName = Types.getKindFromString(self.player.getWeaponName());
+                            if (weaponName === undefined) {
+                                loadDynamicNFT(self.player.getWeaponName(), self.sessionId, (spriteName, nftData) => {
+                                    console.log("load dynamic weapon", spriteName, nftData);
+                                    self.player.setWeaponName(spriteName);
+                                    const sprite = self.loadSprite(
+                                        spriteName,
+                                        nftData.tokenHash,
+                                        nftData.assetType,
+                                        nftData.nftId
+                                    );
+                                    self.sprites[spriteName] = sprite;
+                                    self.sendHello(self.player);
+                                });
+                            } else {
+                                self.sendHello(self.player);
+                            }
                         } else {
                             setTimeout(sendHello.bind(self), 100);
                         }
@@ -7038,6 +7055,17 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                         entity.setSprite(sprite);
                                     } else {
                                         entity.setSprite(self.sprites[entity.getSpriteName()]);
+                                    }
+
+                                    if (entity.dynamicWeaponNFTData) {
+                                        console.log("Weapon data", entity.dynamicWeaponNFTData);
+                                        const sprite = self.loadSprite(
+                                            entity.weaponName,
+                                            entity.dynamicWeaponNFTData.tokenHash,
+                                            entity.dynamicWeaponNFTData.assetType,
+                                            entity.dynamicWeaponNFTData.nftId
+                                        );
+                                        self.sprites[entity.weaponName] = sprite;
                                     }
                                     entity.setGridPosition(x, y);
                                     entity.setOrientation(orientation);

@@ -60,7 +60,7 @@ describe('DynamicNFTController', () => {
     });
   });
 
-  describe('getNFTDataByEntity', () => {
+  describe('getNFTDataByKind', () => {
     it('should return 404 if session not found', async () => {
       const controller = new DynamicNFTController(mockCache, mockPlatformClient, mockTypes);
       const req = mockReq('invalidSessionId', null, 'entity456');
@@ -68,7 +68,7 @@ describe('DynamicNFTController', () => {
 
       mockCache.get.mockReturnValueOnce(undefined);
 
-      await controller.getNFTDataByEntity(req, res);
+      await controller.getNFTDataByKindId(req, res);
 
       expect(res.status).toHaveBeenCalledWith(404);
       expect(res.json).toHaveBeenCalledWith({
@@ -88,7 +88,7 @@ describe('DynamicNFTController', () => {
       mockTypes.getKindAsString.mockReturnValueOnce('NFT_123');
       mockPlatformClient.getNFTDataForGame.mockResolvedValueOnce(nftData);
 
-      await controller.getNFTDataByEntity(req, res);
+      await controller.getNFTDataByKindId(req, res);
 
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.send).toHaveBeenCalledWith(nftData);

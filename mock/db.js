@@ -8,27 +8,127 @@ module.exports = () => ({
         {
             "nft": "0xf191c9b7356efec0a4ed4995f0de39f976f8b7451949e3cbfe15753dac6d1c99",
             "wallet": "0x6fc60be0cce2730b78ad29d732d823866c07baa0",
-            "value" : true
+            "value": true
         },
         {
-            "nft" : "0x754cfeb2ea72a22093a5f4e95559c91d048eee340a69e085b7b89ee8fcded4b1",
-            "wallet" : "0x19d30dd0df484e7552bce1baeaf3d8c0e2f3efdc",
-            "value" : true
+            "nft": "0xe6eafa47271fa448d7103b0d00b81e43a6ecdd06baa980ac78fabd24efdbfa27",
+            "wallet": "0x19d30dd0df484e7552bce1baeaf3d8c0e2f3efdc",
+            "value": true
         },
         {
-            "nft" : "0xd1570dc356007d297c8ee63716d38d264a621516f44e3305839fc29ca36e2ce2",
-            "wallet" : "0x6fc60be0cce2730b78ad29d732d823866c07baa0",
-            "value" : true
-        }
-    ],
-    "collection_ownership" : [
+            "nft": "0xd1570dc356007d297c8ee63716d38d264a621516f44e3305839fc29ca36e2ce2",
+            "wallet": "0x6fc60be0cce2730b78ad29d732d823866c07baa0",
+            "value": true
+        },
         {
-            "collection" : "Cobs Farm",
-            "wallet" : "0x6fc60be0cce2730b78ad29d732d823866c07baa0",
-            "value" : true
+            "nft": "0xec0e2565a1be79afc3b7b07c912803cb44838006751282c5bf38495fb6ef5143",
+            "wallet": "0x6fc60be0cce2730b78ad29d732d823866c07baa0",
+            "value": true
+        },
+        {
+            "nft": "0xec0e2565a1be79afc3b7b07c912803cb44838006751282c5bf38495fb6ef5143",
+            "wallet": "0x19d30dd0df484e7552bce1baeaf3d8c0e2f3efdc",
+            "value": true
         }
     ],
-    "SaveExperience.php" : [],
+    "collection_ownership": [
+        {
+            "collection": "Cobs Farm",
+            "wallet": "0x6fc60be0cce2730b78ad29d732d823866c07baa0",
+            "value": true
+        }
+    ],
+    "nft_data": [
+        {
+            "nft" : "0xe6eafa47271fa448d7103b0d00b81e43a6ecdd06baa980ac78fabd24efdbfa27",
+            "value" : {
+                "id": "495f8594-e5e6-4083-80ee-c7c86e9f17dd",
+                "token": {
+                    "chainId": 1,
+                    "contractAddress": "0x375e4f2e4340d37db0479008aa542f69f43d8c50",
+                    "tokenId": "0xe6eafa47271fa448d7103b0d00b81e43a6ecdd06baa980ac78fabd24efdbfa27",
+                    "type": "erc1155",
+                    "tokenHash": "0x17be35f08db8767d8ee95fa93558024d299db663b661060f2ff96a496e78677d",
+                    "l2": "loopring"
+                },
+                "creator": {
+                    "id": "288fe962-66e6-4bf7-97b5-3e008f708e68",
+                    "walletAddress": "0x6fc60Be0Cce2730b78AD29d732D823866c07BaA0",
+                    "ens": "hamster"
+                },
+                "name": "Dynamic NFT Looper",
+                "assetType": "looper",
+                "collection": "LooperLands",
+                "addedAt": "2024-04-28T21:56:45+00:00",
+                "listing": {
+                    "active": false,
+                    "price": null,
+                    "description": null
+                },
+                "holders": [
+                    {
+                        "wallet": {
+                            "id": "f7745f7d-ff4c-4594-9752-f1d55516a2b4",
+                            "walletAddress": "0x6fc60be0cce2730b78ad29d732d823866c07baa0",
+                            "chainId": 1,
+                            "l2": "loopring",
+                            "ens": null
+                        },
+                        "balance": 1,
+                        "holdingSince": "2024-04-28T21:56:45+00:00"
+                    }
+                ],
+                "rentals": [],
+                "freeToPlay": false,
+                "gameData": null
+            }
+        },
+        {
+            "nft" : "0xec0e2565a1be79afc3b7b07c912803cb44838006751282c5bf38495fb6ef5143",
+            "value" : {
+                "id": "495f8594-e5e6-4083-80ee-c7c86e9f17dd",
+                "token": {
+                    "chainId": 1,
+                    "contractAddress": "0x48c4eca03b5fd0102fe808c29d5315aec38bd461",
+                    "tokenId": "0xec0e2565a1be79afc3b7b07c912803cb44838006751282c5bf38495fb6ef5143",
+                    "type": "erc1155",
+                    "tokenHash": "0x23d0446ecb0afa7f68bf61fe356519517851669e5c2ff44101a87da37999ba51",
+                    "l2": "loopring"
+                },
+                "creator": {
+                    "id": "288fe962-66e6-4bf7-97b5-3e008f708e68",
+                    "walletAddress": "0x6fc60Be0Cce2730b78AD29d732D823866c07BaA0",
+                    "ens": "hamster"
+                },
+                "name": "Dynamic NFT Looper",
+                "assetType": "weapon",
+                "collection": "LooperLands",
+                "addedAt": "2024-04-28T21:56:45+00:00",
+                "listing": {
+                    "active": false,
+                    "price": null,
+                    "description": null
+                },
+                "holders": [
+                    {
+                        "wallet": {
+                            "id": "f7745f7d-ff4c-4594-9752-f1d55516a2b4",
+                            "walletAddress": "0x6fc60be0cce2730b78ad29d732d823866c07baa0",
+                            "chainId": 1,
+                            "l2": "loopring",
+                            "ens": null
+                        },
+                        "balance": 1,
+                        "holdingSince": "2024-04-28T21:56:45+00:00"
+                    }
+                ],
+                "rentals": [],
+                "freeToPlay": false,
+                "gameData": null
+            }
+        }        
+    ],
+    "SaveExperience.php": [],
     "SaveMapCheckpoint.php": [],
     "SaveWeaponExperience.php": [],
     "loadItemConsumableMobQuest.php": [
@@ -959,7 +1059,471 @@ module.exports = () => ({
                     "equipedWeapon": "\"NFT_f191c9b7356efec0a4ed4995f0de39f976f8b7451949e3cbfe15753dac6d1c99\""
                 }
             ]
-        }        
+        },
+        {
+            "NFTID": "0xe6eafa47271fa448d7103b0d00b81e43a6ecdd06baa980ac78fabd24efdbfa27",
+            "value": [
+                {
+                    "mobJson": [
+                        {
+                            "mobId": "10",
+                            "iCount": 24
+                        },
+                        {
+                            "mobId": "11",
+                            "iCount": 109
+                        },
+                        {
+                            "mobId": "13",
+                            "iCount": 4
+                        },
+                        {
+                            "mobId": "14",
+                            "iCount": 62
+                        },
+                        {
+                            "mobId": "2",
+                            "iCount": 4348
+                        },
+                        {
+                            "mobId": "200006",
+                            "iCount": 3
+                        },
+                        {
+                            "mobId": "200007",
+                            "iCount": 6
+                        },
+                        {
+                            "mobId": "3",
+                            "iCount": 48
+                        },
+                        {
+                            "mobId": "300001",
+                            "iCount": 671
+                        },
+                        {
+                            "mobId": "300003",
+                            "iCount": 131
+                        },
+                        {
+                            "mobId": "300004",
+                            "iCount": 3
+                        },
+                        {
+                            "mobId": "300005",
+                            "iCount": 112
+                        },
+                        {
+                            "mobId": "300006",
+                            "iCount": 1
+                        },
+                        {
+                            "mobId": "300007",
+                            "iCount": 352
+                        },
+                        {
+                            "mobId": "300010",
+                            "iCount": 75
+                        },
+                        {
+                            "mobId": "300011",
+                            "iCount": 2
+                        },
+                        {
+                            "mobId": "300012",
+                            "iCount": 1
+                        },
+                        {
+                            "mobId": "300015",
+                            "iCount": 1
+                        },
+                        {
+                            "mobId": "300019",
+                            "iCount": 147
+                        },
+                        {
+                            "mobId": "300088",
+                            "iCount": 313
+                        },
+                        {
+                            "mobId": "300089",
+                            "iCount": 1
+                        },
+                        {
+                            "mobId": "300090",
+                            "iCount": 5
+                        },
+                        {
+                            "mobId": "34000054",
+                            "iCount": 27
+                        },
+                        {
+                            "mobId": "34000056",
+                            "iCount": 16
+                        },
+                        {
+                            "mobId": "34000059",
+                            "iCount": 26
+                        },
+                        {
+                            "mobId": "34000060",
+                            "iCount": 9
+                        },
+                        {
+                            "mobId": "34000061",
+                            "iCount": 4
+                        },
+                        {
+                            "mobId": "34000062",
+                            "iCount": 1
+                        },
+                        {
+                            "mobId": "4",
+                            "iCount": 391
+                        },
+                        {
+                            "mobId": "400005",
+                            "iCount": 50
+                        },
+                        {
+                            "mobId": "400006",
+                            "iCount": 12
+                        },
+                        {
+                            "mobId": "400008",
+                            "iCount": 112
+                        },
+                        {
+                            "mobId": "400014",
+                            "iCount": 5
+                        },
+                        {
+                            "mobId": "5",
+                            "iCount": 168
+                        },
+                        {
+                            "mobId": "6",
+                            "iCount": 16
+                        },
+                        {
+                            "mobId": "7",
+                            "iCount": 216
+                        },
+                        {
+                            "mobId": "770001",
+                            "iCount": 2
+                        },
+                        {
+                            "mobId": "770002",
+                            "iCount": 2
+                        },
+                        {
+                            "mobId": "770004",
+                            "iCount": 3
+                        },
+                        {
+                            "mobId": "8",
+                            "iCount": 283
+                        }
+                    ],
+                    "itemJson": [
+                        {
+                            "itemId": "21300008",
+                            "iCount": 14
+                        },
+                        {
+                            "itemId": "21300010",
+                            "iCount": 12
+                        },
+                        {
+                            "itemId": "21300011",
+                            "iCount": 66
+                        },
+                        {
+                            "itemId": "21300013",
+                            "iCount": 1
+                        },
+                        {
+                            "itemId": "21300014",
+                            "iCount": 188
+                        },
+                        {
+                            "itemId": "21300015",
+                            "iCount": 2
+                        },
+                        {
+                            "itemId": "21300016",
+                            "iCount": 64
+                        },
+                        {
+                            "itemId": "21300017",
+                            "iCount": 1
+                        },
+                        {
+                            "itemId": "21300018",
+                            "iCount": 226
+                        },
+                        {
+                            "itemId": "21300019",
+                            "iCount": 40
+                        },
+                        {
+                            "itemId": "21300020",
+                            "iCount": 4
+                        },
+                        {
+                            "itemId": "21300021",
+                            "iCount": 106
+                        },
+                        {
+                            "itemId": "21300022",
+                            "iCount": 39
+                        },
+                        {
+                            "itemId": "21300023",
+                            "iCount": 10
+                        },
+                        {
+                            "itemId": "21300024",
+                            "iCount": 2
+                        },
+                        {
+                            "itemId": "21300025",
+                            "iCount": 5
+                        },
+                        {
+                            "itemId": "21300039",
+                            "iCount": 3
+                        },
+                        {
+                            "itemId": "21300040",
+                            "iCount": 1
+                        },
+                        {
+                            "itemId": "21300041",
+                            "iCount": 5
+                        },
+                        {
+                            "itemId": "300008",
+                            "iCount": 673
+                        },
+                        {
+                            "itemId": "35",
+                            "iCount": 1927
+                        },
+                        {
+                            "itemId": "36",
+                            "iCount": 377
+                        },
+                        {
+                            "itemId": "38",
+                            "iCount": 229
+                        },
+                        {
+                            "itemId": "50000010",
+                            "iCount": 16
+                        },
+                        {
+                            "itemId": "50000011",
+                            "iCount": 5
+                        },
+                        {
+                            "itemId": "50000012",
+                            "iCount": 1
+                        },
+                        {
+                            "itemId": "61",
+                            "iCount": 2
+                        },
+                        {
+                            "itemId": "77000002",
+                            "iCount": 1
+                        },
+                        {
+                            "itemId": "77000004",
+                            "iCount": 3
+                        },
+                        {
+                            "itemId": "77000005",
+                            "iCount": 1
+                        },
+                        {
+                            "itemId": "77000006",
+                            "iCount": 16
+                        },
+                        {
+                            "itemId": "77000007",
+                            "iCount": 13
+                        },
+                        {
+                            "itemId": "77000017",
+                            "iCount": 6
+                        },
+                        {
+                            "itemId": "cobcatfish",
+                            "iCount": 5
+                        },
+                        {
+                            "itemId": "cobgoldfish",
+                            "iCount": 2
+                        },
+                        {
+                            "itemId": "cobguppy",
+                            "iCount": 114
+                        },
+                        {
+                            "itemId": "cobneon",
+                            "iCount": 44
+                        },
+                        {
+                            "itemId": "cobtrout",
+                            "iCount": 13
+                        },
+                        {
+                            "itemId": "oafish1",
+                            "iCount": 3
+                        },
+                        {
+                            "itemId": "oafish3",
+                            "iCount": 1
+                        }
+                    ],
+                    "itemConsumableJson": [
+                        {
+                            "itemConsumableId": "21300041",
+                            "iCount": 18
+                        },
+                        {
+                            "itemConsumableId": "333009",
+                            "iCount": 0
+                        },
+                        {
+                            "itemConsumableId": "50000001",
+                            "iCount": 0
+                        },
+                        {
+                            "itemConsumableId": "50000003",
+                            "iCount": 575
+                        },
+                        {
+                            "itemConsumableId": "50000010",
+                            "iCount": 8
+                        },
+                        {
+                            "itemConsumableId": "50000011",
+                            "iCount": 5
+                        },
+                        {
+                            "itemConsumableId": "50000012",
+                            "iCount": 1
+                        }
+                    ],
+                    "questJson": [
+                        {
+                            "questID": "COB_COLLECT_LOGS",
+                            "status": "IN_PROGRESS"
+                        },
+                        {
+                            "questID": "KING_QUEST_1",
+                            "status": "COMPLETED"
+                        },
+                        {
+                            "questID": "OA_QUEST_1",
+                            "status": "COMPLETED"
+                        },
+                        {
+                            "questID": "OA_QUEST_11",
+                            "status": "COMPLETED"
+                        },
+                        {
+                            "questID": "OA_QUEST_2",
+                            "status": "COMPLETED"
+                        },
+                        {
+                            "questID": "OA_QUEST_20",
+                            "status": "COMPLETED"
+                        },
+                        {
+                            "questID": "OA_QUEST_3",
+                            "status": "COMPLETED"
+                        },
+                        {
+                            "questID": "OA_QUEST_4",
+                            "status": "COMPLETED"
+                        },
+                        {
+                            "questID": "OA_QUEST_5",
+                            "status": "COMPLETED"
+                        },
+                        {
+                            "questID": "OA_QUEST_6",
+                            "status": "COMPLETED"
+                        },
+                        {
+                            "questID": "OA_QUEST_7",
+                            "status": "COMPLETED"
+                        },
+                        {
+                            "questID": "OA_QUEST_8",
+                            "status": "COMPLETED"
+                        },
+                        {
+                            "questID": "OA_QUEST_9",
+                            "status": "COMPLETED"
+                        },
+                        {
+                            "questID": "OA_SIDE_1",
+                            "status": "COMPLETED"
+                        },
+                        {
+                            "questID": "OA_SIDE_10",
+                            "status": "IN_PROGRESS"
+                        },
+                        {
+                            "questID": "OA_SIDE_12",
+                            "status": "IN_PROGRESS"
+                        },
+                        {
+                            "questID": "OA_SIDE_13",
+                            "status": "IN_PROGRESS"
+                        },
+                        {
+                            "questID": "OA_SIDE_2",
+                            "status": "IN_PROGRESS"
+                        },
+                        {
+                            "questID": "OA_SIDE_3",
+                            "status": "COMPLETED"
+                        },
+                        {
+                            "questID": "OA_SIDE_4",
+                            "status": "COMPLETED"
+                        },
+                        {
+                            "questID": "OA_SIDE_5",
+                            "status": "COMPLETED"
+                        },
+                        {
+                            "questID": "OA_SIDE_6",
+                            "status": "COMPLETED"
+                        },
+                        {
+                            "questID": "OA_SIDE_7",
+                            "status": "IN_PROGRESS"
+                        },
+                        {
+                            "questID": "OA_SIDE_8",
+                            "status": "COMPLETED"
+                        },
+                        {
+                            "questID": "SDU_QUEST_1",
+                            "status": "IN_PROGRESS"
+                        }
+                    ],
+                    "equipedWeapon": "\"NFT_ec0e2565a1be79afc3b7b07c912803cb44838006751282c5bf38495fb6ef5143\""
+                }
+            ]
+        }
     ],
     "looperInventoryDetails.php": [
         {
@@ -1011,7 +1575,7 @@ module.exports = () => ({
         },
         {
             "walletID": "0x19d30dd0df484e7552bce1baeaf3d8c0e2f3efdc",
-            "nftId": "0x754cfeb2ea72a22093a5f4e95559c91d048eee340a69e085b7b89ee8fcded4b1",
+            "nftId": "0xe6eafa47271fa448d7103b0d00b81e43a6ecdd06baa980ac78fabd24efdbfa27",
             "APIKEY": "placeholder",
             "value": [
                 {
@@ -1055,31 +1619,36 @@ module.exports = () => ({
                         { "itemId": "50000012", "iCount": 1 }
                     ]
                 }]
-        }        
+        }
     ],
     "LoadWeapon.php": [
         {
             "NFTID": "0xd1570dc356007d297c8ee63716d38d264a621516f44e3305839fc29ca36e2ce2",
             "WalletID": "0x6fc60be0cce2730b78ad29d732d823866c07baa0",
-            "value" : ["\"NFT_f191c9b7356efec0a4ed4995f0de39f976f8b7451949e3cbfe15753dac6d1c99\""]
+            "value": ["\"NFT_f191c9b7356efec0a4ed4995f0de39f976f8b7451949e3cbfe15753dac6d1c99\""]
         },
         {
-            "NFTID": "0x754cfeb2ea72a22093a5f4e95559c91d048eee340a69e085b7b89ee8fcded4b1",
+            "NFTID": "0xe6eafa47271fa448d7103b0d00b81e43a6ecdd06baa980ac78fabd24efdbfa27",
             "WalletID": "0x19d30dd0df484e7552bce1baeaf3d8c0e2f3efdc",
-            "value" : ["\"sword1\""]
-        }        
+            "value": ["\"NFT_ec0e2565a1be79afc3b7b07c912803cb44838006751282c5bf38495fb6ef5143\""]
+        }
     ],
-    "LoadNFTWeapon.php" : [ 
+    "LoadNFTWeapon.php": [
         {
             "NFTID": "0xf191c9b7356efec0a4ed4995f0de39f976f8b7451949e3cbfe15753dac6d1c99",
             "WalletID": "0x6fc60be0cce2730b78ad29d732d823866c07baa0",
-            "value" : {"trait":"speed","experience":805739,"weaponClass":"null"}
-        }
+            "value": { "trait": "speed", "experience": 805739, "weaponClass": "null" }
+        },
+        {
+            "NFTID": "0xec0e2565a1be79afc3b7b07c912803cb44838006751282c5bf38495fb6ef5143",
+            "WalletID": "0x19d30dd0df484e7552bce1baeaf3d8c0e2f3efdc",
+            "value": { "trait": "speed", "experience": 805739, "weaponClass": "null" }
+        }        
     ],
     "mapFlowMain": [
         {
-            "map" : "main",
-            "value" :"{\"handlers\":[{\"idx\":\"28df2efa-d0ea-4264-be37-7996f073db19\",\"type\":\"player.killed_mob\",\"options\":{\"mob\":\"2\"},\"then\":[{\"idx\":\"027d2f33-5287-4ec4-9baa-e0994ca03a0b\",\"type\":\"in.area\",\"options\":{\"top_left\":\"26,197\",\"bottom_right\":\"34,203\"},\"true\":[{\"idx\":\"f8f719c5-5232-49aa-9e81-f8254dc952d9\",\"type\":\"talk.player\",\"options\":{\"message\":\"Portal rat!\"}}]}]}]}"
+            "map": "main",
+            "value": "{\"handlers\":[{\"idx\":\"28df2efa-d0ea-4264-be37-7996f073db19\",\"type\":\"player.killed_mob\",\"options\":{\"mob\":\"2\"},\"then\":[{\"idx\":\"027d2f33-5287-4ec4-9baa-e0994ca03a0b\",\"type\":\"in.area\",\"options\":{\"top_left\":\"26,197\",\"bottom_right\":\"34,203\"},\"true\":[{\"idx\":\"f8f719c5-5232-49aa-9e81-f8254dc952d9\",\"type\":\"talk.player\",\"options\":{\"message\":\"Portal rat!\"}}]}]}]}"
         }
     ]
 });
