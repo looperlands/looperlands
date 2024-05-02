@@ -41,7 +41,7 @@ module.exports = (req, res, next) => {
                     let parsedData = JSON.parse(data);
                     data = JSON.stringify(parsedData[0].value);
                 } catch (error) {
-                    console.error("Error parsing JSON:", error, req.path, data, parsedData);
+                    console.error("Error parsing JSON:", error, req.path, data, parsedData, req);
                     // Handle the error (optional)
                 }
             }
