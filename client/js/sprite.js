@@ -24,8 +24,11 @@ define(['jquery', 'animation', 'sprites'], function($, Animation, sprites) {
 					case "weapon":
 						template = sprites["redsword"];
 						break;
+					case "fishingrod":
+						template = sprites["NFT_344a35ef18eafc0708b2e42b14443db0990fa39977d9347fb256905cbd5ba819"];
+						break;
 					default:
-						console.log("undefined json for" + assetType);
+						console.log("undefined json for", assetType);
 				}
 				this.dynamicNFT = true;
 				this.loadJSON(template, nftId.replace("0x", "NFT_"));

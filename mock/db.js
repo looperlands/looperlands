@@ -126,7 +126,51 @@ module.exports = () => ({
                 "freeToPlay": false,
                 "gameData": null
             }
-        }        
+        },
+        {
+            "nft" : "0x05841f01825a279bf4d5b5deed958c3bb8f70c955560562e4c0917b55a1b4977",
+            "value" : {
+                "id": "965960b1-5812-4e3b-95bb-ee2cc22d6ee1",
+                "token": {
+                  "chainId": 1,
+                  "contractAddress": "0x375e4f2e4340d37db0479008aa542f69f43d8c50",
+                  "tokenId": "0x05841f01825a279bf4d5b5deed958c3bb8f70c955560562e4c0917b55a1b4977",
+                  "type": "erc1155",
+                  "tokenHash": "0x0c20a3a78de7852b6587b3200706db93deedda5d157892d054cfc61018912d04",
+                  "l2": "loopring"
+                },
+                "creator": {
+                  "id": "288fe962-66e6-4bf7-97b5-3e008f708e68",
+                  "walletAddress": "0x6fc60Be0Cce2730b78AD29d732D823866c07BaA0",
+                  "ens": "hamster"
+                },
+                "name": "Dynamic NFT Test",
+                "assetType": "fishingrod",
+                "collection": "LooperLands",
+                "addedAt": "2024-05-01T20:37:43+00:00",
+                "listing": {
+                  "active": false,
+                  "price": null,
+                  "description": null
+                },
+                "holders": [
+                  {
+                    "wallet": {
+                      "id": "f7745f7d-ff4c-4594-9752-f1d55516a2b4",
+                      "walletAddress": "0x6fc60be0cce2730b78ad29d732d823866c07baa0",
+                      "chainId": 1,
+                      "l2": "loopring",
+                      "ens": null
+                    },
+                    "balance": 1,
+                    "holdingSince": "2024-05-01T20:39:51+00:00"
+                  }
+                ],
+                "rentals": [],
+                "freeToPlay": false,
+                "gameData": null
+            }
+        }    
     ],
     "SaveExperience.php": [],
     "SaveMapCheckpoint.php": [],
@@ -1541,16 +1585,14 @@ module.exports = () => ({
                         { "nftId": "0x52e7cfbbb559453de7344835957efd130d35e3bbed45fba656994e010a2759cb", "weaponName": "PhantomAR", "xp": 0, "Trait": "speed" },
                         { "nftId": "0x6216713721e0a4845c7ad60539578f8576cbfd55cb569ff77b8b90260b2e6d69", "weaponName": "Serenity", "xp": 31888, "Trait": "speed" },
                         { "nftId": "0x6b9b77654aff57e906a58c6cc1e8dc4235c7f40312b8942e0ed92c523ba59c05", "weaponName": "Volcanic Vengeance", "xp": 3080, "Trait": "speed" },
-                        { "nftId": "0x76aac2e7605a8738b4a886f952f68029de01228da6709395bf88c80214a223ca", "weaponName": "Golden Fin 18", "xp": 0, "Trait": "" },
                         { "nftId": "0x887394d15316b881041b53e24fd1665082c37f723165359f950e0511b4a8c328", "weaponName": "Spectral Skull Rod", "xp": 54, "Trait": "crit" },
                         { "nftId": "0xcb92c95a1f001c98bd1ca52485ab641925b912869e801e5bf3f7f3e775a62f73", "weaponName": "Rosaline's situation...", "xp": 525, "Trait": "crit" },
                         { "nftId": "0xe0ef4cb70232553234d6be7f598ad1b2eb3a0403c0cd14e32fcddeba490656fd", "weaponName": "SLB Green Boxing Gloves 005", "xp": 1588708, "Trait": "speed" },
                         { "nftId": "0xf191c9b7356efec0a4ed4995f0de39f976f8b7451949e3cbfe15753dac6d1c99", "weaponName": "Nichirin Sword 1", "xp": 805218, "Trait": "speed" }
                     ], "specialitems": [
-                        { "nftId": "0x13f471cc2f442b8c256e1a25fd30edf91c748b647e91cadeb83067a706e72be3", "specialItemName": null, "xp": 10000, "Trait": "" },
                         { "nftId": "0x184a85876a96fd9076d9494314e4c2592e24a6ea5abecb11cf5f120a764fefeb", "specialItemName": "Emerald Bulwark Caster", "xp": 0, "Trait": "lucky" },
                         { "nftId": "0x7e19a5cb477b088bd3248b0adca7530a6a29ee4447e988010297d930812e3dce", "specialItemName": "Alpha Farms Fishing Pole 69", "xp": 6113, "Trait": "double_catch" },
-                        { "nftId": "0xe6f7284fd9f16a063bcfb1b0786d3773fc3f3156b4ee55c87bb08ceda32cb0f8", "specialItemName": null, "xp": 10000, "Trait": "" }
+                        { "nftId": "0x05841f01825a279bf4d5b5deed958c3bb8f70c955560562e4c0917b55a1b4977", "specialItemName": "Dynamic Rod", "xp": 10000, "Trait": "lucky"}
                     ],
                     "bots": [
                         { "nftId": "0xd42f123364d0dde8dd4bd7443b0d17c809a3a68ad5aa671ca3dbf939edc0b954", "looperName": "Adlents Onion", "xp": 672 },

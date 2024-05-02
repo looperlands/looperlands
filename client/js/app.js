@@ -606,7 +606,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                     specialInventory = response.data.special;
                     consumablesInventory = response.data.consumables;
                     botsInventory = response.data.bots;
-                }  
+                }
                 let inventoryHtml = "";
                 let columns = 0;
 
@@ -630,10 +630,28 @@ define(['jquery', 'storage'], function ($, Storage) {
                     inventoryHtml += "<div class='inventorySectionItems'>"
 
                     specialInventory.forEach(function(item) {
-                        imgTag = "<div class='item panelBorder'>" +
+                        const generateImgTag = (item) => {
+                            let url;
+                            if (item.dynamicNFTData !== undefined) {
+                                const spriteName = Types.addDynamicNFT(item.dynamicNFTData);
+                                const sprite = _this.game.loadSprite(
+                                    spriteName,
+                                    item.dynamicNFTData.tokenHash,
+                                    item.dynamicNFTData.assetType,
+                                    item.dynamicNFTData.nftId
+                                );
+                                _this.game[spriteName] = sprite;
+                                url = `https://looperlands.sfo3.digitaloceanspaces.com/assets/${item.dynamicNFTData.assetType}/3/${item.dynamicNFTData.tokenHash}_icon.png`;
+                            } else {
+                                url = "img/3/item-" + item.nftId + ".png";
+                            }
+                            return "<div class='item panelBorder'>" +
                             "<div class='tooltiptext pixel-corners-xs'><span class='tooltipHighlight'>Level " + item.level + "</span> " + item.specialItemName + " (" + item.Trait + ")</div>" +
-                            "<img id='" + item.nftId + "' style='width: 32px; height: 32px; object-fit: cover; cursor: pointer; object-position: 100% 0;' src='img/3/item-" + item.nftId + ".png' /></div>";
-                        inventoryHtml += imgTag;
+                            "<img id='" + item.nftId + "' style='width: 32px; height: 32px; object-fit: cover; cursor: pointer; object-position: 100% 0;' src='"+url+"' /></div>";
+                        };
+
+
+                        inventoryHtml += generateImgTag(item);
                     });
                     inventoryHtml += "</div></div>";
                 }

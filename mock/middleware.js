@@ -24,9 +24,14 @@ module.exports = (req, res, next) => {
             const match = req._parsedOriginalUrl.pathname.match(/\/api\/asset\/nft\/([^\/]+)/);
             let nft = match[1];
             if (nft) {
-                let parsedData = JSON.parse(data);
-                let filteredData = parsedData.find(item => item.nft === nft).value;
-                data = JSON.stringify(filteredData || {});  // Send an empty object if not found
+                try {
+                    let parsedData = JSON.parse(data);
+                    let filteredData = parsedData.find(item => item.nft === nft).value;
+                    data = JSON.stringify(filteredData || {});  // Send an empty object if not found
+                } catch (e) {
+                    console.error(e, nft, data);
+                }
+                
             }
         } else {
             let gets = paths.some(path => req.path.includes("/" + path));

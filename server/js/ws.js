@@ -391,13 +391,33 @@ WS.socketIOServer = Server.extend({
 
             let rcvInventory = await dao.getInventory(walletId, nftId);
             if (rcvInventory?.data) {
-                inventory = rcvInventory.data[0].weapons ? rcvInventory.data[0].weapons.map(function (item) {
+
+                const prepareItemList = async (item) => {
                     if (item) {
-                        item.nftId = item.nftId.replace("0x", "NFT_");
-                        item.level = Formulas.calculatePercentageToNextLevel(item.xp).currentLevel;
+                        const nftId = item.nftId.replace("0x", "NFT_");
+                        const kind = Types.Entities[nftId];
+                        const isDynamicNFT = Types.isDynamicNFT(kind);
+                        if (kind === undefined) {
+                            try {
+                                const nftData = await platformClient.getNFTDataForGame(item.nftId);
+                                Types.addDynamicNFT(nftData);
+                                item.dynamicNFTData = nftData;
+                            } catch (e) {
+                                console.error(e, item);
+                                return;
+                            }
+                        } else if (isDynamicNFT) {
+                            const nftData = await platformClient.getNFTDataForGame(item.nftId);
+                            item.dynamicNFTData = nftData;
+                        }
+                        item.nftId = nftId;
+                        item.level = Formulas.calculateToolPercentageToNextLevel(item.xp).currentLevel;
                         return item;
                     }
-                }) : [];
+                };
+
+                inventory = rcvInventory.data[0].weapons ? rcvInventory.data[0].weapons.map(prepareItemList) : [];
+                inventory = await Promise.all(inventory);
                 if (inventory.length > 0) {
                     inventory = inventory.filter(item => {
                         if (item && Types.isWeapon(Types.getKindFromString(item.nftId))) {
@@ -406,13 +426,8 @@ WS.socketIOServer = Server.extend({
                     });
                 }
 
-                special = rcvInventory.data[0].specialitems ? rcvInventory.data[0].specialitems.map(function (item) {
-                    if (item) {
-                        item.nftId = item.nftId.replace("0x", "NFT_");
-                        item.level = Formulas.calculateToolPercentageToNextLevel(item.xp).currentLevel;
-                        return item;
-                    }
-                }) : [];
+                special = rcvInventory.data[0].specialitems ? rcvInventory.data[0].specialitems.map(prepareItemList) : [];
+                special = await Promise.all(special);
                 if (special.length > 0) {
                     special = special.filter(item => {
                         if (item && Types.isSpecialItem(Types.getKindFromString(item.nftId))) {
@@ -466,7 +481,7 @@ WS.socketIOServer = Server.extend({
                         nftId: Types.getKindAsString(item),
                         weaponName: Properties.getWeaponName(item),
                         level: weaponLevel,
-                        Trait: "regular"
+                        Trait: "regular",
                     });
                 }
 
