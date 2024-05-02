@@ -24,7 +24,7 @@ quests = [
         requiredQuest: "KING_QUEST_1",
         level: 1,
         medal: Types.Medals.HEARTH
-    }
+    },
 
     {
         id: "JIMI_QUEST",
