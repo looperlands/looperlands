@@ -27,6 +27,10 @@ define(['jquery', 'animation', 'sprites'], function($, Animation, sprites) {
 					case "fishingrod":
 						template = sprites["NFT_344a35ef18eafc0708b2e42b14443db0990fa39977d9347fb256905cbd5ba819"];
 						break;
+					case "float":
+						template = sprites["item-NFT_344a35ef18eafc0708b2e42b14443db0990fa39977d9347fb256905cbd5ba819"];
+						this.filepath = `https://looperlands.sfo3.digitaloceanspaces.com/assets/fishingrod/1/${tokenHash}_icon.png`;
+						break;
 					default:
 						console.log("undefined json for", assetType);
 				}
