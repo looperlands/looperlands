@@ -24,6 +24,19 @@ quests = [
         requiredQuest: "KING_QUEST_1",
         level: 1,
         medal: Types.Medals.HEARTH
+    },
+
+    {
+        id: "JIMI_QUEST",
+        name: "DIMMILIZATION ON THE BRINK",
+        startText: "A mysterious being known to the Dimmie's as Bright Lord has conjured up a being so strong, it could be mean the end of Dimmie kind as we know it. Prepare yourself for Big Brimmie's arrival by collecting 10 ore which can be used to craft bullets! Visit Jimi Again when complete.",
+        endText: "This should help you on your journey, Looper! Should you find yourself a ranged weapon, this Iron can be used to craft ammo! Be sure to tell Jimi you're ready.",
+        eventType: "LOOT_ITEM",
+        npc: Types.Entities.BEACHNPC,
+        target: Types.Entities.ORE,
+        amount: 10,
+        level: 1,
+        medal: Types.Medals.HEARTH
     }
 ]
 

@@ -176,8 +176,8 @@ define(['character'], function (Character) {
         ],
 
         "forestnpc": [
-            "lorem ipsum dolor sit amet",
-            "consectetur adipisicing elit, sed do eiusmod tempor"
+            "Yahaha! You completed the quest!",
+            'Follow <a href="https://loopworms.io/DEV/LooperLands/QR/qr.php?NPC=beachnpc" target="blank">this link</a> and collect your prize!',
         ],
 
         "desertnpc": [
@@ -229,11 +229,12 @@ define(['character'], function (Character) {
         ],
 
         "beachnpc": [
-            "TurntManJimi needs no introduction, Looper.",
-            'You should check out my <a target="_blank" href="https://loopexchange.art/collection/interdemintionalsamurais">InterdeMINTional Samurais</a> collection',
-            'Visit <a target="_blank" href="https://twitter.com/theobewhoturnz">my twitter</a> and give me a follow!',
-            'Follow <a href="https://loopworms.io/DEV/LooperLands/QR/qr.php?NPC=beachnpc" target="blank">this link</a> - it might be a Red Packet!',
-            "Now go about your adventure, Looper!"
+            "We should all start preparing ourselves",
+            "The Bright Lord has conjured his first DIMMIE KILLER",
+            "BIG BRIMMIE is coming to enslave the Dimmies!",
+            "If he's not defeated...",
+            "it could mean the end of dimmilization as we know it...",
+            "We cannot let this happen!",
         ],
 
         "wildwill": [
