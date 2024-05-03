@@ -22,6 +22,7 @@ define(['jquery', 'storage'], function ($, Storage) {
             this.settings = new GameSettings(this);
             this.cooldownIntervals = [];
             this.cooldownMap = {};
+            this.dynamicNFTIconURL = {};
         },
 
         setGame: function (game) {
@@ -306,8 +307,13 @@ define(['jquery', 'storage'], function ($, Storage) {
 
         initEquipmentIcons: function () {
             const scale = this.game.renderer.getScaleFactor();
-            const getIconPath = function (spriteName) {
-                    return 'img/' + scale + '/item-' + spriteName + '.png';
+            const getIconPath = (spriteName) => {
+                    let url = this.dynamicNFTIconURL[spriteName];
+                    if (url !== undefined) {
+                        return url;
+                    } else {
+                        return 'img/' + scale + '/item-' + spriteName + '.png';
+                    }
                 },
                 weapon = this.game.player.getWeaponName(),
                 armor = this.game.player.getSpriteName(),
@@ -631,9 +637,11 @@ define(['jquery', 'storage'], function ($, Storage) {
                             _this.game[floatSpriteName] = floatSprite;
                         }
                         url = `https://looperlands.sfo3.digitaloceanspaces.com/assets/${item.dynamicNFTData.assetType}/3/${item.dynamicNFTData.tokenHash}_icon.png`;
+                        _this.dynamicNFTIconURL[spriteName] = url;
                     } else {
                         url = "img/3/item-" + item.nftId + ".png";
                     }
+                    item.imageURL = url;
                     return url;
                 }
 
