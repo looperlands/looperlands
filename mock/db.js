@@ -180,6 +180,12 @@ module.exports = () => ({
     "SaveExperience.php": [],
     "SaveMapCheckpoint.php": [],
     "SaveWeaponExperience.php": [],
+    "selectLooperLands_SpecialItem.php": [
+        {
+            "WalletID" : "0x6fc60be0cce2730b78ad29d732d823866c07baa0",
+            "value" : [{"NFTID":"0x184a85876a96fd9076d9494314e4c2592e24a6ea5abecb11cf5f120a764fefeb","experience":0,"trait":"lucky"},{"NFTID":"0x7e19a5cb477b088bd3248b0adca7530a6a29ee4447e988010297d930812e3dce","experience":6113,"trait":"double_catch"},{"NFTID":"0x13f471cc2f442b8c256e1a25fd30edf91c748b647e91cadeb83067a706e72be3","experience":10000,"trait":""},{"NFTID":"0xe6f7284fd9f16a063bcfb1b0786d3773fc3f3156b4ee55c87bb08ceda32cb0f8","experience":10000,"trait":""}]
+        }
+    ],
     "loadItemConsumableMobQuest.php": [
         {
             "NFTID": "0x82cc76a59d06847148704f158b2ba51b5854c5ee3b2e9314fc36c093a919530a",
