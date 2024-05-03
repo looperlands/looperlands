@@ -52,7 +52,7 @@ const MINIGAME_FILES = {
 const FADE_DURATION = 500;
 const LOOPERLANDS_MUSIC_FADE_STEP = 0.05;
 const MINIGAME_MENU =
-    '<div id="menubtn">≡</div>' +
+    '<div id="menubtn">MENU</div>' +
     '<div id="minigameMenu-content">' +
     `<a href="#" id="mgMAIZfm">🌽 MAIZ.fm</a>` +
     '<a href="#" id="mgClose">❌ Close Minigame</a>' +
