@@ -24,8 +24,16 @@ define(['jquery', 'animation', 'sprites'], function($, Animation, sprites) {
 					case "weapon":
 						template = sprites["redsword"];
 						break;
+					case "fishingrod":
+						template = sprites["NFT_344a35ef18eafc0708b2e42b14443db0990fa39977d9347fb256905cbd5ba819"];
+						break;
+					case "float":
+						template = sprites["item-NFT_344a35ef18eafc0708b2e42b14443db0990fa39977d9347fb256905cbd5ba819"];
+						this.filepath = `https://looperlands.sfo3.digitaloceanspaces.com/assets/fishingrod/1/${tokenHash}_icon.png`;
+						this.useWebworker = false;
+						break;
 					default:
-						console.log("undefined json for" + assetType);
+						console.log("undefined json for", assetType);
 				}
 				this.dynamicNFT = true;
 				this.loadJSON(template, nftId.replace("0x", "NFT_"));
@@ -65,7 +73,7 @@ define(['jquery', 'animation', 'sprites'], function($, Animation, sprites) {
         load: function() {
 			let self = this;
 
-			if (!self.id.startsWith("NFT_")) {
+			if (!self.id.startsWith("NFT_") || this.useWebworker === false) {
 				this.image = new Image();
 				this.image.src = this.filepath;
 				this.image.crossOrigin = "Anonymous";

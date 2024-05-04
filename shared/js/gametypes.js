@@ -11479,7 +11479,17 @@ Types.addDynamicNFT = function(nftData) {
     }
 
     Types.Entities[kind] = id;
-    kinds[kind] = [id, nftData.assetType];
+    kinds[kind] = [id, nftData.assetType, true];
+    return kind;
+}
+
+Types.isDynamicNFT = function(kindId) {
+    let kind = kinds[Types.getKindAsString(kindId)];
+
+    if (kind && kind.length > 2) {
+        return kind[2];
+    }
+    return false;
 }
 
 if(!(typeof exports === 'undefined')) {
