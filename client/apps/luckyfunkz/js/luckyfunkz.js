@@ -76,6 +76,7 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
     let payoutTableGenerated = false;
     let game_state = STATE_REST;
     let spinInProgress = false;
+    let closeRequest = false;
     let credits = -1;
     let flashCredits = false;
     let creditsFlashStartTime = null;
@@ -148,10 +149,10 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
         // Check if the pauseClose class is present
         if (minigame.hasClass("pauseClose")) {
             closeButton.text('⏳ Close Minigame');
-            closeButton.css({ 'color': 'grey', 'background-color': 'darkgrey' });
+            //closeButton.css({ 'color': 'grey', 'background-color': 'darkgrey' });
         } else {
             closeButton.text('❌ Close Minigame');
-            closeButton.css({ 'color': '', 'background-color': '' });
+            //closeButton.css({ 'color': '', 'background-color': '' });
         }
     }
 
@@ -253,6 +254,7 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
 
     // Set up Event Listeners
     function setupEventListeners() {
+        $(`#minigameMenu`).on('click', '#mgClose', () => registerClose());
         $(`#minigameMenu`).on('click', '#mgPayouts', () => getPayoutTable(true));
         $(`#luckyfunkz`).on('fadeIn', () => fadeInSetup());
         $(`#luckyfunkz`).on('click', '#autoSpinButton', () => { $("#autoSpinButton").toggleClass("on off"); });
@@ -425,8 +427,13 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
                 logic_reward();
                 break;
             case STATE_REST:
-                if ($("#autoSpinButton").hasClass("on") && !spinInProgress) {
-                    spin();
+                if (closeRequest) {
+                    $('#mgClose').trigger('click');
+                    closeRequest = false;
+                } else {
+                    if ($("#autoSpinButton").hasClass("on") && !spinInProgress) {
+                        spin();
+                    }
                 }
                 break;
         }
@@ -696,6 +703,13 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
 
     //---- Helper Functions -----------------------------------------------
 
+    function registerClose(){
+            if ($("#autoSpinButton").hasClass("on")) {
+                $("#autoSpinButton").toggleClass("on off");
+            }
+            closeRequest = true;
+    }
+
     function flashCreditText(duration) {
         if (flashCredits == true && !creditsFlashStartTime) {
             creditsFlashStartTime = Date.now();
@@ -712,7 +726,7 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
             drawText(ctx, color, "center", credits, can.width * 0.80 + CREDIT_PANEL.width * 0.55, can.height * 0.05 + CREDIT_PANEL.height * 0.67);
         } else {
             drawText(ctx, "white", "center", credits, can.width * 0.80 + CREDIT_PANEL.width * 0.55, can.height * 0.05 + CREDIT_PANEL.height * 0.67);
-            
+
             flashCredits = false;
             creditsFlashStartTime = null;
         }

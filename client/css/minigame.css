@@ -3,20 +3,36 @@
 #minigame.active {pointer-events:auto;}
 
 #menubtn {
-  width:  2.5vh;
-  height: 2.5vh;
+  width:  4vh;
+  height: 3vh;
+  line-height: 3vh;
   text-align: center;
   color: #222;
   position: relative;
   left: 100%;
   transform: translate(-100%, 0%);
-  font-size: 2.5vh;
+  font-size: 1vh;
+  font-family: "Orbitron", "Helvetica Neue", "Futura", "Trebuchet MS", Arial;
+  font-weight: bolder;
   border: 1px solid #424211;
   filter: brightness(115%);
   background: radial-gradient(ellipse farthest-corner at 5% 5%, #FEDB37 0%, #FDc931 15%, #9f7928 60%, transparent 69%),
     radial-gradient(ellipse at 69% 100%, #ffffff 0%, #F2B169 15%, #5d4a1f 100%);
   background-size: 150%;
   box-shadow: 2px 2px 5px 3px rgba(0, 0, 0, 0.9);
+  animation: sonar-pulse 1s 4;
+}
+
+@keyframes sonar-pulse {
+  0% { 
+      box-shadow: 0 0 0 0 rgba(255, 255, 255, 1); /* Start with no shadow */
+  }
+  50% {
+      box-shadow: 0 0 50px 30px rgba(255, 215, 0, 0); /* Expand the shadow */
+  }
+  100% {
+      box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); /* Contract the shadow */
+  }
 }
 
 #minigameMenu {
