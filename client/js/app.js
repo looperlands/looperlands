@@ -624,17 +624,17 @@ define(['jquery', 'storage'], function ($, Storage) {
                             item.dynamicNFTData.assetType,
                             item.dynamicNFTData.nftId
                         );
-                        _this.game[spriteName] = sprite;
+                        _this.game.sprites[spriteName] = sprite;
 
                         if (item.dynamicNFTData.assetType === "fishingrod") {
-                            const floatSpriteName = `item-${item.dynamicNFTData.nftId}`;
+                            const floatSpriteName = `item-${item.dynamicNFTData.nftId}`.replace("0x", "NFT_");
                             const floatSprite = _this.game.loadSprite(
                                 floatSpriteName,
                                 item.dynamicNFTData.tokenHash,
                                 "float",
                                 item.dynamicNFTData.nftId
                             );
-                            _this.game[floatSpriteName] = floatSprite;
+                            _this.game.sprites[floatSpriteName] = floatSprite;
                         }
                         url = `https://looperlands.sfo3.digitaloceanspaces.com/assets/${item.dynamicNFTData.assetType}/3/${item.dynamicNFTData.tokenHash}_icon.png`;
                         _this.dynamicNFTIconURL[spriteName] = url;

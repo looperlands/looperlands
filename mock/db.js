@@ -34,6 +34,11 @@ module.exports = () => ({
             "nft": "0x05841f01825a279bf4d5b5deed958c3bb8f70c955560562e4c0917b55a1b4977",
             "wallet": "0x6fc60be0cce2730b78ad29d732d823866c07baa0",
             "value": true
+        },
+        {
+            "nft" : "0x184a85876a96fd9076d9494314e4c2592e24a6ea5abecb11cf5f120a764fefeb",
+            "wallet" : "0x6fc60be0cce2730b78ad29d732d823866c07baa0",
+            "value": true
         }
     ],
     "collection_ownership": [
@@ -183,7 +188,13 @@ module.exports = () => ({
     "selectLooperLands_SpecialItem.php": [
         {
             "WalletID" : "0x6fc60be0cce2730b78ad29d732d823866c07baa0",
-            "value" : [{"NFTID":"0x184a85876a96fd9076d9494314e4c2592e24a6ea5abecb11cf5f120a764fefeb","experience":0,"trait":"lucky"},{"NFTID":"0x7e19a5cb477b088bd3248b0adca7530a6a29ee4447e988010297d930812e3dce","experience":6113,"trait":"double_catch"},{"NFTID":"0x13f471cc2f442b8c256e1a25fd30edf91c748b647e91cadeb83067a706e72be3","experience":10000,"trait":""},{"NFTID":"0xe6f7284fd9f16a063bcfb1b0786d3773fc3f3156b4ee55c87bb08ceda32cb0f8","experience":10000,"trait":""}]
+            "value" : [
+                {"NFTID":"0x184a85876a96fd9076d9494314e4c2592e24a6ea5abecb11cf5f120a764fefeb","experience":0,"trait":"lucky"},
+                {"NFTID":"0x7e19a5cb477b088bd3248b0adca7530a6a29ee4447e988010297d930812e3dce","experience":6113,"trait":"double_catch"},
+                {"NFTID":"0x13f471cc2f442b8c256e1a25fd30edf91c748b647e91cadeb83067a706e72be3","experience":10000,"trait":""},
+                {"NFTID":"0xe6f7284fd9f16a063bcfb1b0786d3773fc3f3156b4ee55c87bb08ceda32cb0f8","experience":10000,"trait":""},
+                {"NFTID": "0x05841f01825a279bf4d5b5deed958c3bb8f70c955560562e4c0917b55a1b4977", experience:10000,"trait":"lucky"}
+            ]
         }
     ],
     "loadItemConsumableMobQuest.php": [

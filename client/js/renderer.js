@@ -798,7 +798,6 @@ function(Camera, Item, Character, Player, Timer, Mob) {
         drawFishingFloat: function(inputFloat) {
             let float = this.game.sprites[inputFloat.spriteName],
                             anim = this.game.floatAnimation;
-
             if(anim && float) {
                 let s = this.scale,
                 os = this.upscaledRendering ? 1 : s,
