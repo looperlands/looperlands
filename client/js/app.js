@@ -730,7 +730,13 @@ define(['jquery', 'storage'], function ($, Storage) {
 
                     botsInventory.forEach(function(bot) {
                         if (bot) {
-                            imgTag = `<div class='item panelBorder'><div class='tooltiptext pixel-corners-xs'><span class='tooltipHighlight'>Level ${bot.level}</span> ${bot.looperName}</div><img id=${bot.nftId} style='width: 32px; height: 32px; object-fit: none; cursor: pointer; object-position: 100% 0;' src='img/1/` + bot.nftId + ".png' /></div>";
+                            let url;
+                            if (bot.dynamicNFTData !== undefined) {
+                                url = `https://looperlands.sfo3.digitaloceanspaces.com/assets/companion/1/${bot.dynamicNFTData.tokenHash}.png`;
+                            } else {
+                                url = `img/1/${bot.nftId}.png`;
+                            }
+                            imgTag = `<div class='item panelBorder'><div class='tooltiptext pixel-corners-xs'><span class='tooltipHighlight'>Level ${bot.level}</span> ${bot.looperName}</div><img id=${bot.nftId} style='width: 32px; height: 32px; object-fit: none; cursor: pointer; object-position: 100% 0;' src='` + url + "'/></div>";
                             inventoryHtml += imgTag;
                         }
                     });
@@ -865,8 +871,12 @@ define(['jquery', 'storage'], function ($, Storage) {
                 let newBot = function (item) {
                     if (item.nftId && document.getElementById(item.nftId) !== null) {
                         let spawnBot = function (e) {
-                            let botNftId = item.nftId.replace("NFT_", "0x");
-                            axios.post("/session/" + _this.storage.sessionId + "/newBot", {botNftId: botNftId}).then(function(response) {
+                            const botNftId = item.nftId.replace("NFT_", "0x");
+                            const postData = {
+                                botNftId: botNftId,
+                                dynamicNFTData : item.dynamicNFTData
+                            };
+                            axios.post("/session/" + _this.storage.sessionId + "/newBot", postData).then(function(response) {
                                 console.log("new bot", response);
                             }).catch(function(error) {
                                 console.log(error);
