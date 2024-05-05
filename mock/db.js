@@ -36,8 +36,13 @@ module.exports = () => ({
             "value": true
         },
         {
-            "nft" : "0x184a85876a96fd9076d9494314e4c2592e24a6ea5abecb11cf5f120a764fefeb",
-            "wallet" : "0x6fc60be0cce2730b78ad29d732d823866c07baa0",
+            "nft": "0x184a85876a96fd9076d9494314e4c2592e24a6ea5abecb11cf5f120a764fefeb",
+            "wallet": "0x6fc60be0cce2730b78ad29d732d823866c07baa0",
+            "value": true
+        },
+        {
+            "nft": "0x76bc6ba2be56660218c3b6bfe48c42cc75ef203be4f7b68f37797f3f0fbf48c1",
+            "wallet": "0x6fc60be0cce2730b78ad29d732d823866c07baa0",
             "value": true
         }
     ],
@@ -50,8 +55,8 @@ module.exports = () => ({
     ],
     "nft_data": [
         {
-            "nft" : "0xe6eafa47271fa448d7103b0d00b81e43a6ecdd06baa980ac78fabd24efdbfa27",
-            "value" : {
+            "nft": "0xe6eafa47271fa448d7103b0d00b81e43a6ecdd06baa980ac78fabd24efdbfa27",
+            "value": {
                 "id": "495f8594-e5e6-4083-80ee-c7c86e9f17dd",
                 "token": {
                     "chainId": 1,
@@ -94,8 +99,8 @@ module.exports = () => ({
             }
         },
         {
-            "nft" : "0xec0e2565a1be79afc3b7b07c912803cb44838006751282c5bf38495fb6ef5143",
-            "value" : {
+            "nft": "0xec0e2565a1be79afc3b7b07c912803cb44838006751282c5bf38495fb6ef5143",
+            "value": {
                 "id": "495f8594-e5e6-4083-80ee-c7c86e9f17dd",
                 "token": {
                     "chainId": 1,
@@ -138,62 +143,106 @@ module.exports = () => ({
             }
         },
         {
-            "nft" : "0x05841f01825a279bf4d5b5deed958c3bb8f70c955560562e4c0917b55a1b4977",
-            "value" : {
+            "nft": "0x05841f01825a279bf4d5b5deed958c3bb8f70c955560562e4c0917b55a1b4977",
+            "value": {
                 "id": "965960b1-5812-4e3b-95bb-ee2cc22d6ee1",
                 "token": {
-                  "chainId": 1,
-                  "contractAddress": "0x375e4f2e4340d37db0479008aa542f69f43d8c50",
-                  "tokenId": "0x05841f01825a279bf4d5b5deed958c3bb8f70c955560562e4c0917b55a1b4977",
-                  "type": "erc1155",
-                  "tokenHash": "0x0c20a3a78de7852b6587b3200706db93deedda5d157892d054cfc61018912d04",
-                  "l2": "loopring"
+                    "chainId": 1,
+                    "contractAddress": "0x375e4f2e4340d37db0479008aa542f69f43d8c50",
+                    "tokenId": "0x05841f01825a279bf4d5b5deed958c3bb8f70c955560562e4c0917b55a1b4977",
+                    "type": "erc1155",
+                    "tokenHash": "0x0c20a3a78de7852b6587b3200706db93deedda5d157892d054cfc61018912d04",
+                    "l2": "loopring"
                 },
                 "creator": {
-                  "id": "288fe962-66e6-4bf7-97b5-3e008f708e68",
-                  "walletAddress": "0x6fc60Be0Cce2730b78AD29d732D823866c07BaA0",
-                  "ens": "hamster"
+                    "id": "288fe962-66e6-4bf7-97b5-3e008f708e68",
+                    "walletAddress": "0x6fc60Be0Cce2730b78AD29d732D823866c07BaA0",
+                    "ens": "hamster"
                 },
                 "name": "Dynamic NFT Test",
                 "assetType": "fishingrod",
                 "collection": "LooperLands",
                 "addedAt": "2024-05-01T20:37:43+00:00",
                 "listing": {
-                  "active": false,
-                  "price": null,
-                  "description": null
+                    "active": false,
+                    "price": null,
+                    "description": null
                 },
                 "holders": [
-                  {
-                    "wallet": {
-                      "id": "f7745f7d-ff4c-4594-9752-f1d55516a2b4",
-                      "walletAddress": "0x6fc60be0cce2730b78ad29d732d823866c07baa0",
-                      "chainId": 1,
-                      "l2": "loopring",
-                      "ens": null
-                    },
-                    "balance": 1,
-                    "holdingSince": "2024-05-01T20:39:51+00:00"
-                  }
+                    {
+                        "wallet": {
+                            "id": "f7745f7d-ff4c-4594-9752-f1d55516a2b4",
+                            "walletAddress": "0x6fc60be0cce2730b78ad29d732d823866c07baa0",
+                            "chainId": 1,
+                            "l2": "loopring",
+                            "ens": null
+                        },
+                        "balance": 1,
+                        "holdingSince": "2024-05-01T20:39:51+00:00"
+                    }
                 ],
                 "rentals": [],
                 "freeToPlay": false,
                 "gameData": null
             }
-        }    
+        },
+        {
+            "nft": "0x76bc6ba2be56660218c3b6bfe48c42cc75ef203be4f7b68f37797f3f0fbf48c1",
+            "value": {
+                "id": "1e07d36f-8990-4d22-9dd0-87b911249e75",
+                "token": {
+                    "chainId": 1,
+                    "contractAddress": "0x375e4f2e4340d37db0479008aa542f69f43d8c50",
+                    "tokenId": "0x76bc6ba2be56660218c3b6bfe48c42cc75ef203be4f7b68f37797f3f0fbf48c1",
+                    "type": "erc1155",
+                    "tokenHash": "0x0fec3746fea037aed3729d28a892a6ac8ec8b3594dad586b5eb76ffc6fba972f",
+                    "l2": "loopring"
+                },
+                "creator": {
+                    "id": "288fe962-66e6-4bf7-97b5-3e008f708e68",
+                    "walletAddress": "0x6fc60Be0Cce2730b78AD29d732D823866c07BaA0",
+                    "ens": "hamster"
+                },
+                "name": "Dynamic Companion",
+                "assetType": "companion",
+                "collection": "Looperlands",
+                "addedAt": "2024-05-04T16:08:11+00:00",
+                "listing": {
+                    "active": false,
+                    "price": null,
+                    "description": null
+                },
+                "holders": [
+                    {
+                        "wallet": {
+                            "id": "f7745f7d-ff4c-4594-9752-f1d55516a2b4",
+                            "walletAddress": "0x6fc60be0cce2730b78ad29d732d823866c07baa0",
+                            "chainId": 1,
+                            "l2": "loopring",
+                            "ens": null
+                        },
+                        "balance": 1,
+                        "holdingSince": "2024-05-04T16:10:21+00:00"
+                    }
+                ],
+                "rentals": [],
+                "freeToPlay": false,
+                "gameData": null
+            }
+        }
     ],
     "SaveExperience.php": [],
     "SaveMapCheckpoint.php": [],
     "SaveWeaponExperience.php": [],
     "selectLooperLands_SpecialItem.php": [
         {
-            "WalletID" : "0x6fc60be0cce2730b78ad29d732d823866c07baa0",
-            "value" : [
-                {"NFTID":"0x184a85876a96fd9076d9494314e4c2592e24a6ea5abecb11cf5f120a764fefeb","experience":0,"trait":"lucky"},
-                {"NFTID":"0x7e19a5cb477b088bd3248b0adca7530a6a29ee4447e988010297d930812e3dce","experience":6113,"trait":"double_catch"},
-                {"NFTID":"0x13f471cc2f442b8c256e1a25fd30edf91c748b647e91cadeb83067a706e72be3","experience":10000,"trait":""},
-                {"NFTID":"0xe6f7284fd9f16a063bcfb1b0786d3773fc3f3156b4ee55c87bb08ceda32cb0f8","experience":10000,"trait":""},
-                {"NFTID": "0x05841f01825a279bf4d5b5deed958c3bb8f70c955560562e4c0917b55a1b4977", experience:10000,"trait":"lucky"}
+            "WalletID": "0x6fc60be0cce2730b78ad29d732d823866c07baa0",
+            "value": [
+                { "NFTID": "0x184a85876a96fd9076d9494314e4c2592e24a6ea5abecb11cf5f120a764fefeb", "experience": 0, "trait": "lucky" },
+                { "NFTID": "0x7e19a5cb477b088bd3248b0adca7530a6a29ee4447e988010297d930812e3dce", "experience": 6113, "trait": "double_catch" },
+                { "NFTID": "0x13f471cc2f442b8c256e1a25fd30edf91c748b647e91cadeb83067a706e72be3", "experience": 10000, "trait": "" },
+                { "NFTID": "0xe6f7284fd9f16a063bcfb1b0786d3773fc3f3156b4ee55c87bb08ceda32cb0f8", "experience": 10000, "trait": "" },
+                { "NFTID": "0x05841f01825a279bf4d5b5deed958c3bb8f70c955560562e4c0917b55a1b4977", "experience": 10000, "trait": "lucky" }
             ]
         }
     ],
@@ -1611,11 +1660,11 @@ module.exports = () => ({
                         { "nftId": "0xcb92c95a1f001c98bd1ca52485ab641925b912869e801e5bf3f7f3e775a62f73", "weaponName": "Rosaline's situation...", "xp": 525, "Trait": "crit" },
                         { "nftId": "0xe0ef4cb70232553234d6be7f598ad1b2eb3a0403c0cd14e32fcddeba490656fd", "weaponName": "SLB Green Boxing Gloves 005", "xp": 1588708, "Trait": "speed" },
                         { "nftId": "0xf191c9b7356efec0a4ed4995f0de39f976f8b7451949e3cbfe15753dac6d1c99", "weaponName": "Nichirin Sword 1", "xp": 805218, "Trait": "speed" },
-                        { "nftId" : "0xec0e2565a1be79afc3b7b07c912803cb44838006751282c5bf38495fb6ef5143", "weaponName" : "Dynamic Weapon", "xp" : 100, "Trait" : "speed"}
+                        { "nftId": "0xec0e2565a1be79afc3b7b07c912803cb44838006751282c5bf38495fb6ef5143", "weaponName": "Dynamic Weapon", "xp": 100, "Trait": "speed" }
                     ], "specialitems": [
                         { "nftId": "0x184a85876a96fd9076d9494314e4c2592e24a6ea5abecb11cf5f120a764fefeb", "specialItemName": "Emerald Bulwark Caster", "xp": 0, "Trait": "lucky" },
                         { "nftId": "0x7e19a5cb477b088bd3248b0adca7530a6a29ee4447e988010297d930812e3dce", "specialItemName": "Alpha Farms Fishing Pole 69", "xp": 6113, "Trait": "double_catch" },
-                        { "nftId": "0x05841f01825a279bf4d5b5deed958c3bb8f70c955560562e4c0917b55a1b4977", "specialItemName": "Dynamic Rod", "xp": 10000, "Trait": "lucky"}
+                        { "nftId": "0x05841f01825a279bf4d5b5deed958c3bb8f70c955560562e4c0917b55a1b4977", "specialItemName": "Dynamic Rod", "xp": 10000, "Trait": "lucky" }
                     ],
                     "bots": [
                         { "nftId": "0xd42f123364d0dde8dd4bd7443b0d17c809a3a68ad5aa671ca3dbf939edc0b954", "looperName": "Adlents Onion", "xp": 672 },
@@ -1624,7 +1673,8 @@ module.exports = () => ({
                         { "nftId": "0x31f7785476de522d52bdf566021c9cf0dfff9b66ff65013fc5a601c181cd0994", "looperName": "Roman", "xp": 144 },
                         { "nftId": "0xe96267ad87cb7c8b82bf01cbc5a3c4d3894541cb410fc4722acf9d5328b5e3ca", "looperName": "Owls7", "xp": 0 },
                         { "nftId": "0x6edea18aa7c726524aa1564d61c6c286ec52135ef66dc24de945459a3d4a19f5", "looperName": "Otto", "xp": 14 },
-                        { "nftId": "0x7e7f0d9d98a3e3462d1217b0073da88d1142fc5542c470fe7f3e30a433587210", "looperName": "BalksCompanion", "xp": 2 }
+                        { "nftId": "0x7e7f0d9d98a3e3462d1217b0073da88d1142fc5542c470fe7f3e30a433587210", "looperName": "BalksCompanion", "xp": 2 },
+                        { "nftId": "0x76bc6ba2be56660218c3b6bfe48c42cc75ef203be4f7b68f37797f3f0fbf48c1", "looperName": "Dynamic Companion", "xp": 10000 }
                     ],
                     "consumables": [
                         { "itemId": "21300041", "iCount": 18 },
@@ -1714,12 +1764,59 @@ module.exports = () => ({
             "NFTID": "0xec0e2565a1be79afc3b7b07c912803cb44838006751282c5bf38495fb6ef5143",
             "WalletID": "0x6fc60be0cce2730b78ad29d732d823866c07baa0",
             "value": { "trait": "speed", "experience": 805735, "weaponClass": "null" }
-        }             
+        }
     ],
     "mapFlowMain": [
         {
             "map": "main",
             "value": "{\"handlers\":[{\"idx\":\"28df2efa-d0ea-4264-be37-7996f073db19\",\"type\":\"player.killed_mob\",\"options\":{\"mob\":\"2\"},\"then\":[{\"idx\":\"027d2f33-5287-4ec4-9baa-e0994ca03a0b\",\"type\":\"in.area\",\"options\":{\"top_left\":\"26,197\",\"bottom_right\":\"34,203\"},\"true\":[{\"idx\":\"f8f719c5-5232-49aa-9e81-f8254dc952d9\",\"type\":\"talk.player\",\"options\":{\"message\":\"Portal rat!\"}}]}]}]}"
+        }
+    ],
+    "loadBot.php": [
+        {
+            "walletID": "0x6fc60be0cce2730b78ad29d732d823866c07baa0",
+            "value": [
+                {
+                    "botNftId": "0xd42f123364d0dde8dd4bd7443b0d17c809a3a68ad5aa671ca3dbf939edc0b954",
+                    "looperName": "Adlents Onion",
+                    "experience": 0
+                },
+                {
+                    "botNftId": "0xd5ed8f94116cb3a004ae1568fdd4ff1cc7b43e0de875ee2ce8d867993baf1380",
+                    "looperName": "Cascada",
+                    "experience": 50055
+                },
+                {
+                    "botNftId": "0x3126874850522c78e918aad1b2d853812b1f4b1f9f86a9917a0df9377f4584e9",
+                    "looperName": "Everguard - Icerend",
+                    "experience": 0
+                },
+                {
+                    "botNftId": "0x31f7785476de522d52bdf566021c9cf0dfff9b66ff65013fc5a601c181cd0994",
+                    "looperName": "Roman",
+                    "experience": 144
+                },
+                {
+                    "botNftId": "0xe96267ad87cb7c8b82bf01cbc5a3c4d3894541cb410fc4722acf9d5328b5e3ca",
+                    "looperName": "Owls7",
+                    "experience": 0
+                },
+                {
+                    "botNftId": "0x6edea18aa7c726524aa1564d61c6c286ec52135ef66dc24de945459a3d4a19f5",
+                    "looperName": "Otto",
+                    "experience": 14
+                },
+                {
+                    "botNftId": "0x7e7f0d9d98a3e3462d1217b0073da88d1142fc5542c470fe7f3e30a433587210",
+                    "looperName": "BalksCompanion",
+                    "experience": 2
+                },
+                {
+                    "botNftId" : "0x76bc6ba2be56660218c3b6bfe48c42cc75ef203be4f7b68f37797f3f0fbf48c1",
+                    "looperName" : "Dynamic Companion",
+                    "experience" : 1000
+                }
+            ]
         }
     ]
 });

@@ -463,7 +463,7 @@ const getBots = async function (walletId) {
   return bots;
 }
 
-const newBot = async function (mapId, botNftId, xp, name, walletId, ownerEntityId, x, y, gameServerURL, retry) {
+const newBot = async function (mapId, botNftId, xp, name, walletId, ownerEntityId, x, y, gameServerURL, dynamicNFTData, retry) {
   const options = { headers: { 'X-Api-Key': LOOPERLANDS_BACKEND_API_KEY } }
   const url = `${LOOPERLANDS_BACKEND_BASE_URL}/newBot`;
   try {
@@ -476,7 +476,8 @@ const newBot = async function (mapId, botNftId, xp, name, walletId, ownerEntityI
       "owner": ownerEntityId,
       "x": x,
       "y": y,
-      "gameServerURL": gameServerURL
+      "gameServerURL": gameServerURL,
+      "dynamicNFTData" : dynamicNFTData
     }
     const response = await axios.post(url, sessionRequest, options);
     printResponseJSON(url, response);

@@ -436,18 +436,11 @@ WS.socketIOServer = Server.extend({
                     });
                 }
 
-                bots = rcvInventory.data[0].bots ? rcvInventory.data[0].bots.map(function (item) {
-                    if (item) {
-                        item.nftId = item.nftId.replace("0x", "NFT_");
-                        return item;
-                    }
-                }) : [];
-
+                bots = rcvInventory.data[0].bots ? rcvInventory.data[0].bots.map(prepareItemList) : [];
+                bots = await Promise.all(bots);
                 if (bots.length > 0) {
                     bots = bots.filter(item => {
                         if (item && Types.isBot(Types.getKindFromString(item.nftId))) {
-                            item.nftId = item.nftId.replace("0x", "NFT_");
-                            item.level = Formulas.calculateToolPercentageToNextLevel(item.xp).currentLevel;
                             return item;
                         }
                     });
@@ -960,6 +953,7 @@ WS.socketIOServer = Server.extend({
             const sessionId = req.params.sessionId;
             const sessionData = cache.get(sessionId);
             let botNftId = req.body.botNftId;
+            const dynamicNFTData = req.body.dynamicNFTData;
 
             let ownedBots = await dao.getBots(sessionData.walletId);
             let botInfo = ownedBots.find(bot => bot.botNftId === botNftId);
@@ -974,7 +968,8 @@ WS.socketIOServer = Server.extend({
                     sessionData.entityId,
                     owner.x,
                     owner.y,
-                    APP_URL
+                    APP_URL,
+                    dynamicNFTData
                 );
                 if (newBot?.sessionId) {
                     sessionData.botSessionId = newBot.sessionId;

@@ -11488,6 +11488,8 @@ Types.addDynamicNFT = function(nftData) {
 
     if (nftData.assetType === "looper") {
         nftData.assetType = "armor";
+    } else if (nftData.assetType === "companion") {
+        nftData.assetType = "bot";
     }
 
     Types.Entities[kind] = id;

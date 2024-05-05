@@ -13,6 +13,8 @@ define(['jquery', 'animation', 'sprites'], function($, Animation, sprites) {
 			if (tokenHash !== undefined && assetType !== undefined) {
 				if (assetType === "armor") {
 					assetType = "looper";
+				} else if (assetType === "bot") {
+					assetType = "companion";
 				}
 				this.filepath = `https://looperlands.sfo3.digitaloceanspaces.com/assets/${assetType}/1/${tokenHash}.png`;
 				console.log("Loading dynamic nft", tokenHash, assetType, this.filepath);
@@ -31,6 +33,9 @@ define(['jquery', 'animation', 'sprites'], function($, Animation, sprites) {
 						template = sprites["item-NFT_344a35ef18eafc0708b2e42b14443db0990fa39977d9347fb256905cbd5ba819"];
 						this.filepath = `https://looperlands.sfo3.digitaloceanspaces.com/assets/fishingrod/1/${tokenHash}_icon.png`;
 						this.useWebworker = false;
+						break;
+					case "companion":
+						template = sprites["clotharmor"];
 						break;
 					default:
 						console.log("undefined json for", assetType);

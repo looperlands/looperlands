@@ -9,7 +9,8 @@ module.exports = (req, res, next) => {
             "LoadNFTWeapon.php",
             "Maps/selectLooperLands_Quest2.php",
             "collection_ownership",
-            "selectLooperLands_SpecialItem.php"
+            "selectLooperLands_SpecialItem.php",
+            "loadBot.php"
         ];
 
         if (req.path.includes("/nft_ownership") && req.method === "GET") {
