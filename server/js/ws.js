@@ -411,7 +411,11 @@ WS.socketIOServer = Server.extend({
                             item.dynamicNFTData = nftData;
                         }
                         item.nftId = nftId;
-                        item.level = Formulas.calculateToolPercentageToNextLevel(item.xp).currentLevel;
+                        if (Types.isFishingRod(kind)) {
+                            item.level = Formulas.calculateToolPercentageToNextLevel(item.xp).currentLevel;
+                        } else {
+                            item.level = Formulas.calculatePercentageToNextLevel(item.xp).currentLevel;
+                        }
                         return item;
                     }
                 };
