@@ -328,11 +328,23 @@ define(['jquery', 'storage'], function ($, Storage) {
             }
 
             const imageUrl = weaponPath;
-            const bgElement = document.querySelector("body");
             let preloaderImg = document.createElement("img");
-            preloaderImg.src = imageUrl;
-            preloaderImg.onerror = function () {
-                const spriteWeaponPath = 'img/1/' + weapon + '.png';
+
+            const weaponKind = Types.getKindFromString(weapon)
+            const dynamicRangedWeapon = Types.isDynamicNFT(weaponKind) && Types.isRangedWeapon(weaponKind);
+            if (!dynamicRangedWeapon) {
+                preloaderImg.src = imageUrl;
+            } else {
+                preloaderImg.src = "-1";
+            }
+
+            preloaderImg.onerror = () => {
+                let spriteWeaponPath;
+                if (dynamicRangedWeapon) {
+                    spriteWeaponPath = this.dynamicNFTIconURL[weapon].replace("/3/", "/1/");
+                } else {
+                    spriteWeaponPath = 'img/1/' + weapon + '.png';
+                }
                 $('#weapon').css({
                     'background-image': 'url("' + spriteWeaponPath + '")',
                     'background-size': 'initial',
