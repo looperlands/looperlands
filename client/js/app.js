@@ -636,7 +636,12 @@ define(['jquery', 'storage'], function ($, Storage) {
                             );
                             _this.game.sprites[floatSpriteName] = floatSprite;
                         }
-                        url = `https://looperlands.sfo3.digitaloceanspaces.com/assets/${item.dynamicNFTData.assetType}/3/${item.dynamicNFTData.tokenHash}_icon.png`;
+                        const baseURL = `https://looperlands.sfo3.digitaloceanspaces.com/assets/${item.dynamicNFTData.assetType}/3/${item.dynamicNFTData.tokenHash}`;
+                        if (item.dynamicNFTData.assetType !== "ranged_weapon") {
+                            url = baseURL + "_icon.png";
+                        } else {
+                            url = baseURL + ".png";
+                        }
                         _this.dynamicNFTIconURL[spriteName] = url;
                     } else {
                         url = "img/3/item-" + item.nftId + ".png";
@@ -654,9 +659,12 @@ define(['jquery', 'storage'], function ($, Storage) {
                     columns++;
                     weaponInventory.forEach(function(item) {
                         let url = getItemURL(item);
-                        const normalURL = url.replace("/3/", "/2/");
+                        let normalURL = url.replace("/3/", "/2/");
                         // error url is used to display ranged weapons
-                        const errorURL = url.replace("/3/", "/1/").replace("item-", "");
+                        let errorURL = url.replace("/3/", "/1/").replace("item-", "");
+                        if (item.dynamicNFTData?.assetType === "ranged_weapon") {
+                            normalURL = "-1"; //cause error;
+                        }
                         imgTag = "<div class='item panelBorder'>" +
                             "<div class='tooltiptext pixel-corners-xs'><span class='tooltipHighlight'>Level " + item.level + "</span> " + item.weaponName + " (" + item.Trait + ")</div>" +
                             "<img id='" + item.nftId + "' style='width: 32px; height: 32px; object-fit: none; object-position: 0 4px; cursor: pointer;' src='"+ normalURL +"' onerror='this.src=\""+ errorURL + "\"; $(this).css({objectPosition: \"0 -400px\"});' />" +

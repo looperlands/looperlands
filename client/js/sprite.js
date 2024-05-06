@@ -37,6 +37,9 @@ define(['jquery', 'animation', 'sprites'], function($, Animation, sprites) {
 					case "companion":
 						template = sprites["clotharmor"];
 						break;
+					case "ranged_weapon":
+						template = sprites["NFT_ee955c3f7980209b84143b0d67f6e6617d22d13cbc8965054305a2080296b273"];
+						break;
 					default:
 						console.log("undefined json for", assetType);
 				}
