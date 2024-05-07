@@ -70,3 +70,15 @@ function loadProjectileSprites(dynamicNFTData, game) {
         game.sprites[projectileSpriteName] = projectileSprite;
     }
 }
+
+function setDynamicNFTIconURL(dynamicNFTData, app, spriteName) {
+    // Base URL for the NFT assets
+    const baseURL = `https://looperlands.sfo3.digitaloceanspaces.com/assets/${dynamicNFTData.assetType}/3/${dynamicNFTData.tokenHash}`;
+
+    // Determine the file extension based on asset type
+    let url = (dynamicNFTData.assetType !== "ranged_weapon") ? baseURL + "_icon.png" : baseURL + ".png";
+
+    // Store the URL in the app's dynamicNFTIconURL object
+    app.dynamicNFTIconURL[spriteName] = url;
+    return url;
+}

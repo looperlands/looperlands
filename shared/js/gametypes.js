@@ -11475,7 +11475,7 @@ Types.addDynamicNFT = function(nftData) {
     const kind = nftData.nftId.replace("0x", "NFT_");
 
     if (Types.Entities[kind] !== undefined) {
-        return;
+        return kind;
     }
     function hashString(str) {
         let hash = 104729;

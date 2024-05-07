@@ -6572,13 +6572,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 loadDynamicNFT(self.player.getWeaponName(), self.sessionId, (spriteName, nftData) => {
                                     console.log("load dynamic weapon", spriteName, nftData);
                                     self.player.setWeaponName(spriteName);
-                                    const sprite = self.loadSprite(
-                                        spriteName,
-                                        nftData.tokenHash,
-                                        nftData.assetType,
-                                        nftData.nftId
-                                    );
-                                    self.sprites[spriteName] = sprite;
+                                    spriteName = loadAssetSprites(nftData, self);
+                                    setDynamicNFTIconURL(nftData, self.app, spriteName);
+                                    console.log("loaded sprite for ", spriteName);
                                     self.sendHello(self.player);
                                 });
                             } else {

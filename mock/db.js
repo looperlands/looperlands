@@ -1769,7 +1769,8 @@ module.exports = () => ({
                         { "nftId": "0x887394d15316b881041b53e24fd1665082c37f723165359f950e0511b4a8c328", "weaponName": "Spectral Skull Rod", "xp": 54, "Trait": "crit" },
                         { "nftId": "0xcb92c95a1f001c98bd1ca52485ab641925b912869e801e5bf3f7f3e775a62f73", "weaponName": "Rosaline's situation...", "xp": 525, "Trait": "crit" },
                         { "nftId": "0xe0ef4cb70232553234d6be7f598ad1b2eb3a0403c0cd14e32fcddeba490656fd", "weaponName": "SLB Green Boxing Gloves 005", "xp": 1588708, "Trait": "speed" },
-                        { "nftId": "0xf191c9b7356efec0a4ed4995f0de39f976f8b7451949e3cbfe15753dac6d1c99", "weaponName": "Nichirin Sword 1", "xp": 805218, "Trait": "speed" }
+                        { "nftId": "0xf191c9b7356efec0a4ed4995f0de39f976f8b7451949e3cbfe15753dac6d1c99", "weaponName": "Nichirin Sword 1", "xp": 805218, "Trait": "speed" },
+                        { "nftId": "0xec0e2565a1be79afc3b7b07c912803cb44838006751282c5bf38495fb6ef5143", "weaponName": "Dynamic Weapon", "xp": 100, "Trait": "speed" },
                     ], "specialitems": [
                         { "nftId": "0x13f471cc2f442b8c256e1a25fd30edf91c748b647e91cadeb83067a706e72be3", "specialItemName": null, "xp": 10000, "Trait": "" },
                         { "nftId": "0x184a85876a96fd9076d9494314e4c2592e24a6ea5abecb11cf5f120a764fefeb", "specialItemName": "Emerald Bulwark Caster", "xp": 0, "Trait": "lucky" },

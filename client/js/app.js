@@ -631,13 +631,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                     if (item.dynamicNFTData !== undefined) {
                         const spriteName = loadAssetSprites(item.dynamicNFTData, _this.game);
 
-                        const baseURL = `https://looperlands.sfo3.digitaloceanspaces.com/assets/${item.dynamicNFTData.assetType}/3/${item.dynamicNFTData.tokenHash}`;
-                        if (item.dynamicNFTData.assetType !== "ranged_weapon") {
-                            url = baseURL + "_icon.png";
-                        } else {
-                            url = baseURL + ".png";
-                        }
-                        _this.dynamicNFTIconURL[spriteName] = url;
+                        url = setDynamicNFTIconURL(item.dynamicNFTData, _this, spriteName);
                         _this.dynamicNFTData[spriteName] = item.dynamicNFTData;
                     } else {
                         url = "img/3/item-" + item.nftId + ".png";
