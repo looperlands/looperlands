@@ -1164,6 +1164,7 @@ let Properties = {
         messages: ['Shinu!'],
         armorMod: 2.2,
         xp: 18000,
+        redpacket: true,
         respawnDelay: 180000
     },
     //m88n Mobs
@@ -1524,12 +1525,12 @@ let Properties = {
         drops: {
             cagedrat: 100,     
         },
-        messages: ['I dont want to grwo up!'],
+        messages: ['I dont want to grow up!'],
         armorMod: 1.1,
         weaponMod: 1.6,
         hpMod: 2.0,
-        xp: 15000,  
-        respawnDelay: 30000
+        xp: 12000,  
+        respawnDelay: 100000
     },
 
     fleaboss: {

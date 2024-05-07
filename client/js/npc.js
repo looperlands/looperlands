@@ -235,6 +235,7 @@ define(['character'], function (Character) {
             "If he's not defeated...",
             "it could mean the end of dimmilization as we know it...",
             "We cannot let this happen!",
+            'Follow <a href="https://loopworms.io/DEV/LooperLands/QR/qr.php?NPC=beachnpc" target="blank">this link</a> and collect your prize!',
         ],
 
         "wildwill": [
