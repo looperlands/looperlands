@@ -49,12 +49,24 @@ module.exports = () => ({
             "nft": "0x821a9cc9e203207dfe94ad2d9552309cae3e1f5c67b972ac76c15be7b8132dbe",
             "wallet": "0x6fc60be0cce2730b78ad29d732d823866c07baa0",
             "value": true            
+        },
+        {
+            "nft": "0x2766c74ebb9f13604cb947be9ab6e2f8e39b82a23345b8bff7415e1adabe06f5",
+            "wallet": "0xE60fAE1702F7552a782de54014bb08c579b1a73A",
+            "value": true
         }
     ],
     "collection_ownership": [
         {
             "collection": "Cobs Farm",
             "wallet": "0x6fc60be0cce2730b78ad29d732d823866c07baa0",
+            "value": true
+        }
+    ],
+    "collection_ownership": [
+        {
+            "collection": "Cyber City",
+            "wallet": "0xE60fAE1702F7552a782de54014bb08c579b1a73A",
             "value": true
         }
     ],
