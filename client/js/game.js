@@ -7451,20 +7451,27 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     });
 
                     self.client.onPlayerEquipItem(function(playerId, itemKind) {
-                        var player = self.getEntityById(playerId),
+                        const player = self.getEntityById(playerId),
                             itemName = Types.getKindAsString(itemKind);
 
                         if (player) {
-                            if (Types.isArmor(itemKind)) {
-                                if (player.invincible && itemKind !== Types.Entities.FIREFOX) {
-                                    player.stopInvincibility();
+                            if (itemName === undefined) {
+                                loadDynamicNFTByKind(itemKind, self.sessionId, (nftData) => {
+                                    const itemName = loadAssetSprites(nftData, self);
+                                    player.setWeaponName(itemName);
+                                });
+                            } else {
+                                if (Types.isArmor(itemKind)) {
+                                    if (player.invincible && itemKind !== Types.Entities.FIREFOX) {
+                                        player.stopInvincibility();
+                                    }
+                                    player.setSprite(self.sprites[itemName]);
+                                } else if(Types.isWeapon(itemKind)) {
+                                    player.setWeaponName(itemName);
                                 }
-                                player.setSprite(self.sprites[itemName]);
-                            } else if(Types.isWeapon(itemKind)) {
-                                player.setWeaponName(itemName);
-                            }
-                            if (itemKind === Types.Entities.FIREFOX) {
-                                player.startInvincibility();
+                                if (itemKind === Types.Entities.FIREFOX) {
+                                    player.startInvincibility();
+                                }
                             }
                         }
                     });

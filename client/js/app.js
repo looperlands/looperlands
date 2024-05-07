@@ -629,29 +629,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                 const getItemURL = (item) => {
                     let url;
                     if (item.dynamicNFTData !== undefined) {
-                        const spriteName = Types.addDynamicNFT(item.dynamicNFTData);
-                        const sprite = _this.game.loadSprite(
-                            spriteName,
-                            item.dynamicNFTData.tokenHash,
-                            item.dynamicNFTData.assetType,
-                            item.dynamicNFTData.nftId
-                        );
-                        _this.game.sprites[spriteName] = sprite;
-
-                        if (item.dynamicNFTData.assetType === "fishingrod") {
-                            const floatSpriteName = `item-${item.dynamicNFTData.nftId}`.replace("0x", "NFT_");
-                            const floatSprite = _this.game.loadSprite(
-                                floatSpriteName,
-                                item.dynamicNFTData.tokenHash,
-                                "float",
-                                item.dynamicNFTData.nftId
-                            );
-                            _this.game.sprites[floatSpriteName] = floatSprite;
-                        }
-
-                        if (item.dynamicNFTData.assetType === "ranged_weapon") {
-                            loadProjectileSprites(item.dynamicNFTData, _this.game);
-                        }
+                        const spriteName = loadAssetSprites(item.dynamicNFTData, _this.game);
 
                         const baseURL = `https://looperlands.sfo3.digitaloceanspaces.com/assets/${item.dynamicNFTData.assetType}/3/${item.dynamicNFTData.tokenHash}`;
                         if (item.dynamicNFTData.assetType !== "ranged_weapon") {
