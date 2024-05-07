@@ -7088,7 +7088,6 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                     }
 
                                     if (entity.dynamicWeaponNFTData) {
-                                        console.log("Weapon data", entity.dynamicWeaponNFTData);
                                         const sprite = self.loadSprite(
                                             entity.weaponName,
                                             entity.dynamicWeaponNFTData.tokenHash,
@@ -7096,6 +7095,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                             entity.dynamicWeaponNFTData.nftId
                                         );
                                         self.sprites[entity.weaponName] = sprite;
+                                        const dynamicNFTData = entity.dynamicWeaponNFTData;
+                                        if (dynamicNFTData !== undefined && dynamicNFTData.assetType === "ranged_weapon") {
+                                            loadProjectileSprites(dynamicNFTData, self);
+                                        }
                                     }
                                     entity.setGridPosition(x, y);
                                     entity.setOrientation(orientation);

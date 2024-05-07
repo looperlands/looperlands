@@ -650,19 +650,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                         }
 
                         if (item.dynamicNFTData.assetType === "ranged_weapon") {
-                            const projectileRanges = ["short", "medium", "long"];
-                            for (const range of projectileRanges) {
-                                const projectile = `projectile_${range}`;
-                                const projectileSpriteName = item.dynamicNFTData.nftId.replace("0x", `NFT_${range}`);
-                                const projectileSprite = _this.game.loadSprite(
-                                    projectileSpriteName,
-                                    item.dynamicNFTData.tokenHash,
-                                    projectile,
-                                    item.dynamicNFTData.nftId
-                                );
-                                _this.game.sprites[projectileSpriteName] = projectileSprite;
-                            }
-
+                            loadProjectileSprites(item.dynamicNFTData, _this.game);
                         }
 
                         const baseURL = `https://looperlands.sfo3.digitaloceanspaces.com/assets/${item.dynamicNFTData.assetType}/3/${item.dynamicNFTData.tokenHash}`;

@@ -28,3 +28,18 @@ async function loadDynamicNFTByKind(kindId, sessionId, callback) {
         console.error(e);
     }
 }
+
+function loadProjectileSprites(dynamicNFTData, game) {
+    const projectileRanges = ["short", "medium", "long"];
+    for (const range of projectileRanges) {
+        const projectile = `projectile_${range}`;
+        const projectileSpriteName = dynamicNFTData.nftId.replace("0x", `NFT_${range}`);
+        const projectileSprite = game.loadSprite(
+            projectileSpriteName,
+            dynamicNFTData.tokenHash,
+            projectile,
+            dynamicNFTData.nftId
+        );
+        game.sprites[projectileSpriteName] = projectileSprite;
+    }
+}
