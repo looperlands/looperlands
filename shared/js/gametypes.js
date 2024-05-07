@@ -11510,6 +11510,11 @@ Types.isDynamicNFT = function(kindId) {
     return false;
 }
 
+Types.spriteIsDynamicRangedWeapon = function(spriteName) {
+    const spriteKind = Types.getKindFromString(spriteName);
+    return Types.isDynamicNFT(spriteKind) && Types.isRangedWeapon(spriteKind);
+}
+
 if(!(typeof exports === 'undefined')) {
     module.exports = Types;
 }

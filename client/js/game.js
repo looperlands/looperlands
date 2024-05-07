@@ -9112,10 +9112,18 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             let spriteInfo = self.sprites[self.player.weaponName];
                             if (spriteInfo.projectiles !== undefined) {
                                 for (let i = 0; i < Object.keys(spriteInfo.projectiles).length; i++) {
-                                    let projectileType = Object.keys(spriteInfo.projectiles)[i];
+                                    const projectileType = Object.keys(spriteInfo.projectiles)[i];
                                     let projectile = spriteInfo.projectiles[projectileType];
                                     let selected = projectileType === response.data.weaponInfo.selectedProjectile ? 'selected' : '';
-                                    let projectileHtml = "<div class='item panelBorder pixel-corners-xs " + selected + "'><img id='" + projectile + "' style='width: 32px; height: 32px; object-fit: none; object-position: 100% 0;' src='img/1/" + projectile + ".png' /></div>";
+                                    let dynamic = Types.spriteIsDynamicRangedWeapon(self.player.weaponName);
+                                    let url;
+                                    if (dynamic) {
+                                        const { tokenHash } = self.player.dynamicWeaponNFTData;
+                                        url = `https://looperlands.sfo3.digitaloceanspaces.com/assets/ranged_weapon/1/${tokenHash}_${projectileType}.png`;
+                                    } else {
+                                        url = `img/1/${projectile}.png`;
+                                    }
+                                    let projectileHtml = "<div class='item panelBorder pixel-corners-xs " + selected + "'><img id='" + projectile + "' style='width: 32px; height: 32px; object-fit: none; object-position: 100% 0;' src='" + url + "' /></div>";
                                     let projectileElement = $(projectileHtml);
                                     projectileElement.click(function (event) {
                                         self.player.currentProjectileType = projectileType;

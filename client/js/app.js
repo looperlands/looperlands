@@ -23,6 +23,7 @@ define(['jquery', 'storage'], function ($, Storage) {
             this.cooldownIntervals = [];
             this.cooldownMap = {};
             this.dynamicNFTIconURL = {};
+            this.dynamicNFTData = {};
         },
 
         setGame: function (game) {
@@ -330,8 +331,7 @@ define(['jquery', 'storage'], function ($, Storage) {
             const imageUrl = weaponPath;
             let preloaderImg = document.createElement("img");
 
-            const weaponKind = Types.getKindFromString(weapon)
-            const dynamicRangedWeapon = Types.isDynamicNFT(weaponKind) && Types.isRangedWeapon(weaponKind);
+            const dynamicRangedWeapon = Types.spriteIsDynamicRangedWeapon(weapon);
             if (!dynamicRangedWeapon) {
                 preloaderImg.src = imageUrl;
             } else {
@@ -648,6 +648,23 @@ define(['jquery', 'storage'], function ($, Storage) {
                             );
                             _this.game.sprites[floatSpriteName] = floatSprite;
                         }
+
+                        if (item.dynamicNFTData.assetType === "ranged_weapon") {
+                            const projectileRanges = ["short", "medium", "long"];
+                            for (const range of projectileRanges) {
+                                const projectile = `projectile_${range}`;
+                                const projectileSpriteName = item.dynamicNFTData.nftId.replace("0x", `NFT_${range}`);
+                                const projectileSprite = _this.game.loadSprite(
+                                    projectileSpriteName,
+                                    item.dynamicNFTData.tokenHash,
+                                    projectile,
+                                    item.dynamicNFTData.nftId
+                                );
+                                _this.game.sprites[projectileSpriteName] = projectileSprite;
+                            }
+
+                        }
+
                         const baseURL = `https://looperlands.sfo3.digitaloceanspaces.com/assets/${item.dynamicNFTData.assetType}/3/${item.dynamicNFTData.tokenHash}`;
                         if (item.dynamicNFTData.assetType !== "ranged_weapon") {
                             url = baseURL + "_icon.png";
@@ -655,6 +672,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                             url = baseURL + ".png";
                         }
                         _this.dynamicNFTIconURL[spriteName] = url;
+                        _this.dynamicNFTData[spriteName] = item.dynamicNFTData;
                     } else {
                         url = "img/3/item-" + item.nftId + ".png";
                     }
@@ -834,6 +852,10 @@ define(['jquery', 'storage'], function ($, Storage) {
                             _this.game.client.sendEquipInventory(itemId, nftId);
                             _this.game.player.switchWeapon(item);
                             _this.hideInventory();
+                            const nftData = _this.dynamicNFTData[item];
+                            if (nftData !== undefined) {
+                                _this.game.player.dynamicWeaponNFTData = nftData;
+                            }
                             e.preventDefault();
                             e.stopImmediatePropagation();
                         }
