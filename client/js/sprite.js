@@ -37,11 +37,37 @@ define(['jquery', 'animation', 'sprites'], function($, Animation, sprites) {
 					case "companion":
 						template = sprites["clotharmor"];
 						break;
+					case "ranged_weapon":
+						template = sprites["NFT_ee955c3f7980209b84143b0d67f6e6617d22d13cbc8965054305a2080296b273"];
+						template.projectiles = {
+							"short": nftId.replace("0x", "NFT_short"),
+							"medium": nftId.replace("0x", "NFT_medium"),
+							"long": nftId.replace("0x", "NFT_long")
+						}
+						break;
+					case "projectile_short":
+						template = sprites["NFT_shortee955c3f7980209b84143b0d67f6e6617d22d13cbc8965054305a2080296b273"];
+						nftId = nftId.replace("0x", "NFT_short");
+						this.filepath = `https://looperlands.sfo3.digitaloceanspaces.com/assets/ranged_weapon/1/${tokenHash}_short.png`;
+						break;						
+					case "projectile_medium":
+						template = sprites["NFT_mediumee955c3f7980209b84143b0d67f6e6617d22d13cbc8965054305a2080296b273"];
+						nftId = nftId.replace("0x", "NFT_medium");
+						this.filepath = `https://looperlands.sfo3.digitaloceanspaces.com/assets/ranged_weapon/1/${tokenHash}_medium.png`;
+						break;
+					case "projectile_long":
+						template = sprites["NFT_longee955c3f7980209b84143b0d67f6e6617d22d13cbc8965054305a2080296b273"];
+						nftId = nftId.replace("0x", "NFT_long");
+						this.filepath = `https://looperlands.sfo3.digitaloceanspaces.com/assets/ranged_weapon/1/${tokenHash}_long.png`;
+						break;
 					default:
 						console.log("undefined json for", assetType);
 				}
 				this.dynamicNFT = true;
-				this.loadJSON(template, nftId.replace("0x", "NFT_"));
+				if (!assetType.startsWith("projectile_")) {
+					nftId = nftId.replace("0x", "NFT_");
+				}
+				this.loadJSON(template, nftId);
 			} else {
 				if (window.location.href.indexOf("127.0.0.1") > -1) {
 					this.baseImageURL = 'img/';

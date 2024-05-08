@@ -23,6 +23,7 @@ define(['jquery', 'storage'], function ($, Storage) {
             this.cooldownIntervals = [];
             this.cooldownMap = {};
             this.dynamicNFTIconURL = {};
+            this.dynamicNFTData = {};
         },
 
         setGame: function (game) {
@@ -328,11 +329,22 @@ define(['jquery', 'storage'], function ($, Storage) {
             }
 
             const imageUrl = weaponPath;
-            const bgElement = document.querySelector("body");
             let preloaderImg = document.createElement("img");
-            preloaderImg.src = imageUrl;
-            preloaderImg.onerror = function () {
-                const spriteWeaponPath = 'img/1/' + weapon + '.png';
+
+            const dynamicRangedWeapon = Types.spriteIsDynamicRangedWeapon(weapon);
+            if (!dynamicRangedWeapon) {
+                preloaderImg.src = imageUrl;
+            } else {
+                preloaderImg.src = "-1";
+            }
+
+            preloaderImg.onerror = () => {
+                let spriteWeaponPath;
+                if (dynamicRangedWeapon) {
+                    spriteWeaponPath = this.dynamicNFTIconURL[weapon].replace("/3/", "/1/");
+                } else {
+                    spriteWeaponPath = 'img/1/' + weapon + '.png';
+                }
                 $('#weapon').css({
                     'background-image': 'url("' + spriteWeaponPath + '")',
                     'background-size': 'initial',
@@ -617,27 +629,10 @@ define(['jquery', 'storage'], function ($, Storage) {
                 const getItemURL = (item) => {
                     let url;
                     if (item.dynamicNFTData !== undefined) {
-                        const spriteName = Types.addDynamicNFT(item.dynamicNFTData);
-                        const sprite = _this.game.loadSprite(
-                            spriteName,
-                            item.dynamicNFTData.tokenHash,
-                            item.dynamicNFTData.assetType,
-                            item.dynamicNFTData.nftId
-                        );
-                        _this.game.sprites[spriteName] = sprite;
+                        const spriteName = loadAssetSprites(item.dynamicNFTData, _this.game);
 
-                        if (item.dynamicNFTData.assetType === "fishingrod") {
-                            const floatSpriteName = `item-${item.dynamicNFTData.nftId}`.replace("0x", "NFT_");
-                            const floatSprite = _this.game.loadSprite(
-                                floatSpriteName,
-                                item.dynamicNFTData.tokenHash,
-                                "float",
-                                item.dynamicNFTData.nftId
-                            );
-                            _this.game.sprites[floatSpriteName] = floatSprite;
-                        }
-                        url = `https://looperlands.sfo3.digitaloceanspaces.com/assets/${item.dynamicNFTData.assetType}/3/${item.dynamicNFTData.tokenHash}_icon.png`;
-                        _this.dynamicNFTIconURL[spriteName] = url;
+                        url = setDynamicNFTIconURL(item.dynamicNFTData, _this, spriteName);
+                        _this.dynamicNFTData[spriteName] = item.dynamicNFTData;
                     } else {
                         url = "img/3/item-" + item.nftId + ".png";
                     }
@@ -654,9 +649,12 @@ define(['jquery', 'storage'], function ($, Storage) {
                     columns++;
                     weaponInventory.forEach(function(item) {
                         let url = getItemURL(item);
-                        const normalURL = url.replace("/3/", "/2/");
+                        let normalURL = url.replace("/3/", "/2/");
                         // error url is used to display ranged weapons
-                        const errorURL = url.replace("/3/", "/1/").replace("item-", "");
+                        let errorURL = url.replace("/3/", "/1/").replace("item-", "");
+                        if (item.dynamicNFTData?.assetType === "ranged_weapon") {
+                            normalURL = "-1"; //cause error;
+                        }
                         imgTag = "<div class='item panelBorder'>" +
                             "<div class='tooltiptext pixel-corners-xs'><span class='tooltipHighlight'>Level " + item.level + "</span> " + item.weaponName + " (" + item.Trait + ")</div>" +
                             "<img id='" + item.nftId + "' style='width: 32px; height: 32px; object-fit: none; object-position: 0 4px; cursor: pointer;' src='"+ normalURL +"' onerror='this.src=\""+ errorURL + "\"; $(this).css({objectPosition: \"0 -400px\"});' />" +
@@ -814,6 +812,10 @@ define(['jquery', 'storage'], function ($, Storage) {
                             _this.game.client.sendEquipInventory(itemId, nftId);
                             _this.game.player.switchWeapon(item);
                             _this.hideInventory();
+                            const nftData = _this.dynamicNFTData[item];
+                            if (nftData !== undefined) {
+                                _this.game.player.dynamicWeaponNFTData = nftData;
+                            }
                             e.preventDefault();
                             e.stopImmediatePropagation();
                         }

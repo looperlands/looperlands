@@ -28,3 +28,57 @@ async function loadDynamicNFTByKind(kindId, sessionId, callback) {
         console.error(e);
     }
 }
+
+function loadAssetSprites(dynamicNFTData, game) {
+    // Load the main asset sprite
+    const spriteName = Types.addDynamicNFT(dynamicNFTData);
+    const sprite = game.loadSprite(
+        spriteName,
+        dynamicNFTData.tokenHash,
+        dynamicNFTData.assetType,
+        dynamicNFTData.nftId
+    );
+    game.sprites[spriteName] = sprite;
+
+    // Conditional loading based on asset type
+    if (dynamicNFTData.assetType === "fishingrod") {
+        const floatSpriteName = `item-${dynamicNFTData.nftId}`.replace("0x", "NFT_");
+        const floatSprite = game.loadSprite(
+            floatSpriteName,
+            dynamicNFTData.tokenHash,
+            "float",
+            dynamicNFTData.nftId
+        );
+        game.sprites[floatSpriteName] = floatSprite;
+    } else if (dynamicNFTData.assetType === "ranged_weapon") {
+        loadProjectileSprites(dynamicNFTData, game);
+    }
+    return spriteName;
+}
+
+function loadProjectileSprites(dynamicNFTData, game) {
+    const projectileRanges = ["short", "medium", "long"];
+    for (const range of projectileRanges) {
+        const projectile = `projectile_${range}`;
+        const projectileSpriteName = dynamicNFTData.nftId.replace("0x", `NFT_${range}`);
+        const projectileSprite = game.loadSprite(
+            projectileSpriteName,
+            dynamicNFTData.tokenHash,
+            projectile,
+            dynamicNFTData.nftId
+        );
+        game.sprites[projectileSpriteName] = projectileSprite;
+    }
+}
+
+function setDynamicNFTIconURL(dynamicNFTData, app, spriteName) {
+    // Base URL for the NFT assets
+    const baseURL = `https://looperlands.sfo3.digitaloceanspaces.com/assets/${dynamicNFTData.assetType}/3/${dynamicNFTData.tokenHash}`;
+
+    // Determine the file extension based on asset type
+    let url = (dynamicNFTData.assetType !== "ranged_weapon") ? baseURL + "_icon.png" : baseURL + ".png";
+
+    // Store the URL in the app's dynamicNFTIconURL object
+    app.dynamicNFTIconURL[spriteName] = url;
+    return url;
+}

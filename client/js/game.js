@@ -6572,13 +6572,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 loadDynamicNFT(self.player.getWeaponName(), self.sessionId, (spriteName, nftData) => {
                                     console.log("load dynamic weapon", spriteName, nftData);
                                     self.player.setWeaponName(spriteName);
-                                    const sprite = self.loadSprite(
-                                        spriteName,
-                                        nftData.tokenHash,
-                                        nftData.assetType,
-                                        nftData.nftId
-                                    );
-                                    self.sprites[spriteName] = sprite;
+                                    spriteName = loadAssetSprites(nftData, self);
+                                    setDynamicNFTIconURL(nftData, self.app, spriteName);
+                                    console.log("loaded sprite for ", spriteName);
                                     self.sendHello(self.player);
                                 });
                             } else {
@@ -7088,7 +7084,6 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                     }
 
                                     if (entity.dynamicWeaponNFTData) {
-                                        console.log("Weapon data", entity.dynamicWeaponNFTData);
                                         const sprite = self.loadSprite(
                                             entity.weaponName,
                                             entity.dynamicWeaponNFTData.tokenHash,
@@ -7096,6 +7091,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                             entity.dynamicWeaponNFTData.nftId
                                         );
                                         self.sprites[entity.weaponName] = sprite;
+                                        const dynamicNFTData = entity.dynamicWeaponNFTData;
+                                        if (dynamicNFTData !== undefined && dynamicNFTData.assetType === "ranged_weapon") {
+                                            loadProjectileSprites(dynamicNFTData, self);
+                                        }
                                     }
                                     entity.setGridPosition(x, y);
                                     entity.setOrientation(orientation);
@@ -7448,20 +7447,27 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     });
 
                     self.client.onPlayerEquipItem(function(playerId, itemKind) {
-                        var player = self.getEntityById(playerId),
+                        const player = self.getEntityById(playerId),
                             itemName = Types.getKindAsString(itemKind);
 
                         if (player) {
-                            if (Types.isArmor(itemKind)) {
-                                if (player.invincible && itemKind !== Types.Entities.FIREFOX) {
-                                    player.stopInvincibility();
+                            if (itemName === undefined) {
+                                loadDynamicNFTByKind(itemKind, self.sessionId, (nftData) => {
+                                    const itemName = loadAssetSprites(nftData, self);
+                                    player.setWeaponName(itemName);
+                                });
+                            } else {
+                                if (Types.isArmor(itemKind)) {
+                                    if (player.invincible && itemKind !== Types.Entities.FIREFOX) {
+                                        player.stopInvincibility();
+                                    }
+                                    player.setSprite(self.sprites[itemName]);
+                                } else if(Types.isWeapon(itemKind)) {
+                                    player.setWeaponName(itemName);
                                 }
-                                player.setSprite(self.sprites[itemName]);
-                            } else if(Types.isWeapon(itemKind)) {
-                                player.setWeaponName(itemName);
-                            }
-                            if (itemKind === Types.Entities.FIREFOX) {
-                                player.startInvincibility();
+                                if (itemKind === Types.Entities.FIREFOX) {
+                                    player.startInvincibility();
+                                }
                             }
                         }
                     });
@@ -9112,10 +9118,18 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             let spriteInfo = self.sprites[self.player.weaponName];
                             if (spriteInfo.projectiles !== undefined) {
                                 for (let i = 0; i < Object.keys(spriteInfo.projectiles).length; i++) {
-                                    let projectileType = Object.keys(spriteInfo.projectiles)[i];
+                                    const projectileType = Object.keys(spriteInfo.projectiles)[i];
                                     let projectile = spriteInfo.projectiles[projectileType];
                                     let selected = projectileType === response.data.weaponInfo.selectedProjectile ? 'selected' : '';
-                                    let projectileHtml = "<div class='item panelBorder pixel-corners-xs " + selected + "'><img id='" + projectile + "' style='width: 32px; height: 32px; object-fit: none; object-position: 100% 0;' src='img/1/" + projectile + ".png' /></div>";
+                                    let dynamic = Types.spriteIsDynamicRangedWeapon(self.player.weaponName);
+                                    let url;
+                                    if (dynamic) {
+                                        const { tokenHash } = self.player.dynamicWeaponNFTData;
+                                        url = `https://looperlands.sfo3.digitaloceanspaces.com/assets/ranged_weapon/1/${tokenHash}_${projectileType}.png`;
+                                    } else {
+                                        url = `img/1/${projectile}.png`;
+                                    }
+                                    let projectileHtml = "<div class='item panelBorder pixel-corners-xs " + selected + "'><img id='" + projectile + "' style='width: 32px; height: 32px; object-fit: none; object-position: 100% 0;' src='" + url + "' /></div>";
                                     let projectileElement = $(projectileHtml);
                                     projectileElement.click(function (event) {
                                         self.player.currentProjectileType = projectileType;

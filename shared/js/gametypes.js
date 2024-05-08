@@ -11475,7 +11475,7 @@ Types.addDynamicNFT = function(nftData) {
     const kind = nftData.nftId.replace("0x", "NFT_");
 
     if (Types.Entities[kind] !== undefined) {
-        return;
+        return kind;
     }
     function hashString(str) {
         let hash = 104729;
@@ -11508,6 +11508,11 @@ Types.isDynamicNFT = function(kindId) {
         return kind[2];
     }
     return false;
+}
+
+Types.spriteIsDynamicRangedWeapon = function(spriteName) {
+    const spriteKind = Types.getKindFromString(spriteName);
+    return Types.isDynamicNFT(spriteKind) && Types.isRangedWeapon(spriteKind);
 }
 
 if(!(typeof exports === 'undefined')) {

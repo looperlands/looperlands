@@ -46,6 +46,11 @@ module.exports = () => ({
             "value": true
         },
         {
+            "nft": "0x821a9cc9e203207dfe94ad2d9552309cae3e1f5c67b972ac76c15be7b8132dbe",
+            "wallet": "0x6fc60be0cce2730b78ad29d732d823866c07baa0",
+            "value": true            
+        },
+        {
             "nft": "0x2766c74ebb9f13604cb947be9ab6e2f8e39b82a23345b8bff7415e1adabe06f5",
             "wallet": "0xE60fAE1702F7552a782de54014bb08c579b1a73A",
             "value": true
@@ -235,6 +240,50 @@ module.exports = () => ({
                         },
                         "balance": 1,
                         "holdingSince": "2024-05-04T16:10:21+00:00"
+                    }
+                ],
+                "rentals": [],
+                "freeToPlay": false,
+                "gameData": null
+            }
+        },
+        {
+            "nft": "0x821a9cc9e203207dfe94ad2d9552309cae3e1f5c67b972ac76c15be7b8132dbe",
+            "value": {
+                "id": "39ec7825-c6f9-459b-8504-92e24c657894",
+                "token": {
+                    "chainId": 1,
+                    "contractAddress": "0x375e4f2e4340d37db0479008aa542f69f43d8c50",
+                    "tokenId": "0x821a9cc9e203207dfe94ad2d9552309cae3e1f5c67b972ac76c15be7b8132dbe",
+                    "type": "erc1155",
+                    "tokenHash": "0x232e29b9df6b34b6e260c6c384c9625aac5134727c8b18537459538846718e80",
+                    "l2": "loopring"
+                },
+                "creator": {
+                    "id": "288fe962-66e6-4bf7-97b5-3e008f708e68",
+                    "walletAddress": "0x6fc60Be0Cce2730b78AD29d732D823866c07BaA0",
+                    "ens": "hamster"
+                },
+                "name": "Dynamic NFT Ranged Weapon",
+                "assetType": "ranged_weapon",
+                "collection": "LooperLands",
+                "addedAt": "2024-05-05T13:00:57+00:00",
+                "listing": {
+                    "active": false,
+                    "price": null,
+                    "description": null
+                },
+                "holders": [
+                    {
+                        "wallet": {
+                            "id": "f7745f7d-ff4c-4594-9752-f1d55516a2b4",
+                            "walletAddress": "0x6fc60be0cce2730b78ad29d732d823866c07baa0",
+                            "chainId": 1,
+                            "l2": "loopring",
+                            "ens": null
+                        },
+                        "balance": 1,
+                        "holdingSince": "2024-05-05T13:00:57+00:00"
                     }
                 ],
                 "rentals": [],
@@ -1672,7 +1721,8 @@ module.exports = () => ({
                         { "nftId": "0xcb92c95a1f001c98bd1ca52485ab641925b912869e801e5bf3f7f3e775a62f73", "weaponName": "Rosaline's situation...", "xp": 525, "Trait": "crit" },
                         { "nftId": "0xe0ef4cb70232553234d6be7f598ad1b2eb3a0403c0cd14e32fcddeba490656fd", "weaponName": "SLB Green Boxing Gloves 005", "xp": 1588708, "Trait": "speed" },
                         { "nftId": "0xf191c9b7356efec0a4ed4995f0de39f976f8b7451949e3cbfe15753dac6d1c99", "weaponName": "Nichirin Sword 1", "xp": 805218, "Trait": "speed" },
-                        { "nftId": "0xec0e2565a1be79afc3b7b07c912803cb44838006751282c5bf38495fb6ef5143", "weaponName": "Dynamic Weapon", "xp": 100, "Trait": "speed" }
+                        { "nftId": "0xec0e2565a1be79afc3b7b07c912803cb44838006751282c5bf38495fb6ef5143", "weaponName": "Dynamic Weapon", "xp": 100, "Trait": "speed" },
+                        { "nftId": "0x821a9cc9e203207dfe94ad2d9552309cae3e1f5c67b972ac76c15be7b8132dbe", "weaponName": "Dynamic NFT Ranged", "xp": 54, "Trait": "crit"}
                     ], "specialitems": [
                         { "nftId": "0x184a85876a96fd9076d9494314e4c2592e24a6ea5abecb11cf5f120a764fefeb", "specialItemName": "Emerald Bulwark Caster", "xp": 0, "Trait": "lucky" },
                         { "nftId": "0x7e19a5cb477b088bd3248b0adca7530a6a29ee4447e988010297d930812e3dce", "specialItemName": "Alpha Farms Fishing Pole 69", "xp": 6113, "Trait": "double_catch" },
@@ -1719,7 +1769,8 @@ module.exports = () => ({
                         { "nftId": "0x887394d15316b881041b53e24fd1665082c37f723165359f950e0511b4a8c328", "weaponName": "Spectral Skull Rod", "xp": 54, "Trait": "crit" },
                         { "nftId": "0xcb92c95a1f001c98bd1ca52485ab641925b912869e801e5bf3f7f3e775a62f73", "weaponName": "Rosaline's situation...", "xp": 525, "Trait": "crit" },
                         { "nftId": "0xe0ef4cb70232553234d6be7f598ad1b2eb3a0403c0cd14e32fcddeba490656fd", "weaponName": "SLB Green Boxing Gloves 005", "xp": 1588708, "Trait": "speed" },
-                        { "nftId": "0xf191c9b7356efec0a4ed4995f0de39f976f8b7451949e3cbfe15753dac6d1c99", "weaponName": "Nichirin Sword 1", "xp": 805218, "Trait": "speed" }
+                        { "nftId": "0xf191c9b7356efec0a4ed4995f0de39f976f8b7451949e3cbfe15753dac6d1c99", "weaponName": "Nichirin Sword 1", "xp": 805218, "Trait": "speed" },
+                        { "nftId": "0xec0e2565a1be79afc3b7b07c912803cb44838006751282c5bf38495fb6ef5143", "weaponName": "Dynamic Weapon", "xp": 100, "Trait": "speed" },
                     ], "specialitems": [
                         { "nftId": "0x13f471cc2f442b8c256e1a25fd30edf91c748b647e91cadeb83067a706e72be3", "specialItemName": null, "xp": 10000, "Trait": "" },
                         { "nftId": "0x184a85876a96fd9076d9494314e4c2592e24a6ea5abecb11cf5f120a764fefeb", "specialItemName": "Emerald Bulwark Caster", "xp": 0, "Trait": "lucky" },
@@ -1771,11 +1822,15 @@ module.exports = () => ({
             "WalletID": "0x19d30dd0df484e7552bce1baeaf3d8c0e2f3efdc",
             "value": { "trait": "speed", "experience": 805735, "weaponClass": "null" }
         },
-
         {
             "NFTID": "0xec0e2565a1be79afc3b7b07c912803cb44838006751282c5bf38495fb6ef5143",
             "WalletID": "0x6fc60be0cce2730b78ad29d732d823866c07baa0",
             "value": { "trait": "speed", "experience": 805735, "weaponClass": "null" }
+        },
+        {
+            "NFTID": "0x821a9cc9e203207dfe94ad2d9552309cae3e1f5c67b972ac76c15be7b8132dbe",
+            "WalletID": "0x6fc60be0cce2730b78ad29d732d823866c07baa0",
+            "value": { "trait": "crit", "experience": 805735, "weaponClass": "bow" }
         }
     ],
     "mapFlowMain": [
@@ -1824,9 +1879,9 @@ module.exports = () => ({
                     "experience": 2
                 },
                 {
-                    "botNftId" : "0x76bc6ba2be56660218c3b6bfe48c42cc75ef203be4f7b68f37797f3f0fbf48c1",
-                    "looperName" : "Dynamic Companion",
-                    "experience" : 1000
+                    "botNftId": "0x76bc6ba2be56660218c3b6bfe48c42cc75ef203be4f7b68f37797f3f0fbf48c1",
+                    "looperName": "Dynamic Companion",
+                    "experience": 1000
                 }
             ]
         }
