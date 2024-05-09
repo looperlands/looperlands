@@ -1135,6 +1135,11 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
 
     //Robits NPCs
     EntityFactory.builders[Types.Entities.ROBITSC1]=function(id){return new NPCs.ROBITSC1(id);};
+    EntityFactory.builders[Types.Entities.KAWAIIPRINCESS]=function(id){return new NPCs.KAWAIIPRINCESS(id);};
+    EntityFactory.builders[Types.Entities.KAWAIIPRINCESS2]=function(id){return new NPCs.KAWAIIPRINCESS2(id);};
+    EntityFactory.builders[Types.Entities.LIZARD]=function(id){return new NPCs.LIZARD(id);};
+
+
 
     //ShortDestroyers
     EntityFactory.builders[Types.Entities.DERRICK]=function(id){return new NPCs.derrick(id);};

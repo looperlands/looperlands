@@ -455,6 +455,21 @@ define(['character'], function (Character) {
             "Have you visited Mase's Bar yet?.",
             "Beep Boop.",
         ],
+        "KAWAIIPRINCESS": [
+            "Hi! Im Kawaii Princess!",
+            "Can you help save Cyber City?.",
+            "Come visit us at Mox-E's Karaoke Bar!",
+        ],
+        "KAWAIIPRINCESS2": [
+            "Woo! Its the end of the month and the weekend!",
+            "What a Perfect Night.",
+            "Let's kill this love!",
+        ],
+        "LIZARD": [
+            "BOOMBAYAH",
+            "DO YOU WANT TO BUILD A SNOWMAN?.",
+            "AHHHH",
+        ],
 
         //Short Destroyers
         "derrick": [

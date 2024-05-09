@@ -359,6 +359,11 @@ define(['npc'], function(Npc) {
         tylerdurden: Npc.extend({init: function(id) {this._super(id, Types.Entities.TYLERDURDEN, 1);}}),
         //Robits NPCs
         ROBITSC1: Npc.extend({init: function(id) {this._super(id, Types.Entities.ROBITSC1, 1);}}),
+        KAWAIIPRINCESS: Npc.extend({init: function(id) {this._super(id, Types.Entities.KAWAIIPRINCESS, 1);}}),
+        KAWAIIPRINCESS2: Npc.extend({init: function(id) {this._super(id, Types.Entities.KAWAIIPRINCESS2, 1);}}),
+        LIZARD: Npc.extend({init: function(id) {this._super(id, Types.Entities.LIZARD, 1);}}),
+
+
         //ShortDestroyers
         derrick: Npc.extend({init: function(id) {this._super(id, Types.Entities.DERRICK, 1);}}),
         frog: Npc.extend({init: function(id) {this._super(id, Types.Entities.FROG, 1);}}),

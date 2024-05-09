@@ -621,6 +621,7 @@ define(['text!../sprites/agent.json',
         'text!../sprites/cornBootFish.json',
         'text!../sprites/cornCanFish.json',
         'text!../sprites/cornWinkyFish.json',
+        //ROBITS MOBS
 
         'text!../sprites/ROBITSE3.json',
         'text!../sprites/COLOSSUS.json',
@@ -628,7 +629,9 @@ define(['text!../sprites/agent.json',
         'text!../sprites/ROBITSE5.json',
         'text!../sprites/ROBITSE6.json',
         'text!../sprites/ROBITSC1.json',
-          
+        'text!../sprites/KAWAIIPRINCESS.json',
+        'text!../sprites/KAWAIIPRINCESS2.json',
+        'text!../sprites/LIZARD.json',
         'text!../sprites/ONI.json',
         'text!../sprites/ROBITSE7.json',
         'text!../sprites/ROBITSE8.json',
