@@ -189,16 +189,14 @@ const loadNFTWeapon = async function (wallet, nft) {
   }
 }
 
-const getSpecialItems = async function (wallet) {
-  const options = { headers: { 'X-Api-Key': API_KEY } };
-  const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/selectLooperLands_SpecialItem.php?WalletID=${wallet}`;
+const getSpecialItem = async function (wallet, nft) {
   try {
-    const response = await axios.get(url, options);
-    printResponseJSON(url, response);
-    return response.data;
+    const response = await platformClient.getAssetInfo(nft);
+    printResponseJSON('getAssetInfo', response);
+    return response;
   } catch (error) {
-    console.error("getSpecialItems", error);
-    return { "error": "Error getting special items" };
+    console.error("getSpecialItem", error);
+    return { "error": "Error getting special item" };
   }
 }
 
@@ -584,7 +582,7 @@ module.exports = {
   saveNFTSpecialItemTrait,
   saveNFTSpecialItemExperience,
   loadNFTWeapon,
-  getSpecialItems,
+  getSpecialItem,
   saveAvatarMapAndCheckpoint,
   saveLootEvent,
   getItemCount,
