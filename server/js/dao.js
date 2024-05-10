@@ -201,12 +201,10 @@ const getSpecialItem = async function (wallet, nft) {
 }
 
 const saveAvatarMapAndCheckpoint = async function (nft, mapId, checkpointId) {
-  const options = { headers: { 'X-Api-Key': API_KEY } };
-  const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/SaveMapCheckpoint.php?NFTID=${nft}&mapId=${mapId}&checkpointId=${checkpointId}`;
   try {
-    const response = await axios.get(url, options);
-    printResponseJSON(url, response);
-    return response.data;
+    const response = await platformClient.updateAssetPosition(nft, mapId, checkpointId);
+    printResponseJSON('updateAssetPosition', response);
+    return response;
   } catch (error) {
     console.error("saveAvatarMapAndCheckpoint", error);
     return { "error": "Error saving avatar map and checkpoint id" };

@@ -182,6 +182,17 @@ class LooperLandsPlatformClient {
         }
     }
 
+    async updateAssetPosition(nftId, map, checkpoint) {
+        try {
+            const url = `/api/game/asset/position`;
+            const data = { nftId, map, checkpoint: parseInt(checkpoint ?? 1) };
+            const response = await this.client.post(url, data);
+            return response.data;
+        } catch (error) {
+            this.handleError(error);
+        }
+    }
+
     handleError(error) {
         if (error.response) {
             // The request was made and the server responded with a status code
@@ -200,7 +211,6 @@ class LooperLandsPlatformClient {
 exports.LooperLandsPlatformClient = LooperLandsPlatformClient;
 
 /*
-    saveAvatarMapAndCheckpoint,     // Done -> POST game/asset/position
     saveLootEvent,                  // Done -> POST game/inventory/transactions (batched)
     getItemCount,                   // Done -> GET game/asset/inventory/[nft-id]/[item-id]
     avatarHasItem,                  // Moved -> Uses getItemCount()
