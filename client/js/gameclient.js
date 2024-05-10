@@ -785,9 +785,12 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             this.sendMessage([Types.Messages.SHOOT, mob.id]);
         },
 
-        sendHurt: function(mob) {
+        sendHurt: function(mob, botId) {
+            if (botId === undefined) {
+                botId = 0;
+            }
             this.sendMessage([Types.Messages.HURT,
-                              mob.id]);
+                              mob.id, botId]);
         },
     
         sendChat: function(text) {
