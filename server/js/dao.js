@@ -162,13 +162,10 @@ const saveNFTWeaponExperience = async function (wallet, nft, experience) {
 }
 
 const saveNFTSpecialItemTrait = async function (wallet, nft) {
-  const options = { headers: { 'X-Api-Key': API_KEY } };
-  const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/SaveSpecialItemTrait.php?WalletID=${wallet}&NFTID=${nft}`;
   try {
-    const response = await axios.get(url, options);
-    printResponseJSON(url, response);
-    const updatedTrait = response.data;
-    return updatedTrait;
+    const response = await platformClient.rollTrait(nft)
+    printResponseJSON('rollTrait', response);
+    return response.trait;
   } catch (error) {
     console.error("saveNFTSpecialItemTrait error", error);
     return { "error": "Error saving weapon trait" };
