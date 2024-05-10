@@ -169,13 +169,10 @@ const saveNFTSpecialItemTrait = async function (wallet, nft) {
 }
 
 const saveNFTSpecialItemExperience = async function (wallet, nft, experience) {
-  const options = { headers: { 'X-Api-Key': API_KEY } };
-  const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/SaveSpecialItemExperience.php?WalletID=${wallet}&NFTID=${nft}&Experience=${experience}`;
   try {
-    const response = await axios.get(url, options);
-    printResponseJSON(url, response);
-    const updatedExperience = parseInt(response.data.experience);
-    return updatedExperience;
+    const responseData = await platformClient.increaseExperience(nft, experience);
+    printResponseJSON('increaseExperience', responseData);
+    return parseInt(responseData.xp);
   } catch (error) {
     console.error("saveNFTSpecialItemExperience Error", error);
     return { "error": "Error saving special item experience" };
