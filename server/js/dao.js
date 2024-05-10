@@ -242,12 +242,10 @@ const saveLootEvent = async function (nftId, itemId, amount) {
 }
 
 const getItemCount = async function (avatarId, itemId, retry) {
-  const options = { headers: { 'X-Api-Key': API_KEY } }
-  const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/loadItem.php?NFTID=${avatarId}&itemId=${itemId}`;
   try {
-    const response = await axios.get(url, options);
-    printResponseJSON(url, response);
-    return response.data;
+    const response = platformClient.getInventoryItem(avatarId, String(itemId));
+    printResponseJSON('getInventoryItem', response);
+    return response.amount;
   } catch (error) {
     if (retry === undefined) {
       retry = MAX_RETRY_COUNT;
