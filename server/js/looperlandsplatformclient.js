@@ -129,6 +129,17 @@ class LooperLandsPlatformClient {
         }
     }
 
+    async equip(wallet, nftId, equipped) {
+        try {
+            const url = `/api/game/asset/equip`;
+            const data = { wallet, nftId, equipped };
+            const response = await this.client.post(url, data);
+            return response.data;
+        } catch (error) {
+            this.handleError(error);
+        }
+    }
+
     handleError(error) {
         if (error.response) {
             // The request was made and the server responded with a status code
@@ -147,8 +158,6 @@ class LooperLandsPlatformClient {
 exports.LooperLandsPlatformClient = LooperLandsPlatformClient;
 
 /*
-    updateExperience,               // Done -> POST game/asset/xp
-    saveWeapon,                     // Done -> POST game/asset/equip
     loadWeapon,                     // Done -> GET game/asset/equipped/[nft-id]
     loadExperience,                 // Done -> GET game/asset/xp/[nft-id]
     loadMapFlow,                        // Skipped, can be done later

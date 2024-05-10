@@ -65,12 +65,12 @@ const loadMapFlow = async function (mapId) {
 }
 
 const saveWeapon = async function (wallet, nft, weaponName) {
-  const options = { headers: { 'X-Api-Key': API_KEY, 'Content-Type': 'application/json' } };
   try {
-    const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/SaveWeapon.php?NFTID=${nft}&WalletID=${wallet}`
-    const responseData = await axios.post(url, weaponName, options);
-    printResponseJSON(url, response);
-    //console.log("ResponseData from Loopworms: ", responseData.status, responseData.text, responseData.data);
+
+    const responseData = await platformClient.equip(wallet, nft, weaponName.replace("NFT_", "0x"));
+    console.log(responseData);
+    printResponseJSON('equip', responseData);
+
     return responseData.data;
   } catch (error) {
     console.error(error);
