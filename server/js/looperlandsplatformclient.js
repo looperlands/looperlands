@@ -172,6 +172,16 @@ class LooperLandsPlatformClient {
         }
     }
 
+    async getAssetInfo(nftId) {
+        try {
+            const url = `/api/game/asset/info/${nftId}`;
+            const response = await this.client.get(url);
+            return response.data;
+        } catch (error) {
+            this.handleError(error);
+        }
+    }
+
     handleError(error) {
         if (error.response) {
             // The request was made and the server responded with a status code
@@ -190,7 +200,6 @@ class LooperLandsPlatformClient {
 exports.LooperLandsPlatformClient = LooperLandsPlatformClient;
 
 /*
-    loadNFTWeapon,                  // Done -> GET game/asset/info/[nft-id]
     getSpecialItems,                // Done -> GET game/asset/info/[nft-id]  (won't return all special items anymore)
     saveAvatarMapAndCheckpoint,     // Done -> POST game/asset/position
     saveLootEvent,                  // Done -> POST game/inventory/transactions (batched)

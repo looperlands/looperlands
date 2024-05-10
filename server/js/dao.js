@@ -59,10 +59,9 @@ const saveWeapon = async function (wallet, nft, weaponName) {
   try {
 
     const responseData = await platformClient.equip(wallet, nft, weaponName.replace("NFT_", "0x"));
-    console.log(responseData);
     printResponseJSON('equip', responseData);
 
-    return responseData.data;
+    return responseData;
   } catch (error) {
     console.error(error);
     return { "error": "Error saving weapon data" };
@@ -128,7 +127,7 @@ const updatePVPStats = async function (wallet, nft, killIncrement, deathIncremen
   try {
     const responseData = await platformClient.increasePvPStats(nft, killIncrement, deathIncrement);
     printResponseJSON('increasePvpStats', responseData);
-    return responseData.data;
+    return responseData;
   } catch (error) {
     console.error("updatePVPStats error", error);
     return { "error": "Error saving PVP stats" };
@@ -180,12 +179,10 @@ const saveNFTSpecialItemExperience = async function (wallet, nft, experience) {
 }
 
 const loadNFTWeapon = async function (wallet, nft) {
-  const options = { headers: { 'X-Api-Key': API_KEY } };
-  const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/LoadNFTWeapon.php?WalletID=${wallet}&NFTID=${nft}`;
   try {
-    const response = await axios.get(url, options);
-    printResponseJSON(url, response);
-    return response.data;
+    const response = await platformClient.getAssetInfo(nft);
+    printResponseJSON('getAssetInfo', response);
+    return response;
   } catch (error) {
     console.error("loadNFTWeapon", error);
     return { "error": "Error loading weapon" };

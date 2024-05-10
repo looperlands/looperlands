@@ -18,7 +18,7 @@ class NFTWeapon {
     async loadWeaponData() {
         const response = await dao.loadNFTWeapon(this.walletId, this.nftId);
 
-        this.experience = response.experience;
+        this.experience = response.xp;
         this.trait = response.trait;
         if (!this.trait) {
             await this.#setTraitInServer();
@@ -30,7 +30,7 @@ class NFTWeapon {
         }
         
         if (response.weaponClass) {
-            this.weaponClass = response.weaponClass;
+            this.weaponClass = response.class;
         } else if (this.isRanged()) {
             this.weaponClass = "bow";
         }
