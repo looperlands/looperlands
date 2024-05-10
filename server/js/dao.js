@@ -80,18 +80,16 @@ const saveWeapon = async function (wallet, nft, weaponName) {
 
 
 const loadWeapon = async function (wallet, nft) {
-  const options = { method: 'POST', headers: { 'X-Api-Key': API_KEY } };
   try {
-    const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/LoadWeapon.php?NFTID=${nft}&WalletID=${wallet}`;
-    const responseData = await axios.get(url, options);
+    const responseData = await platformClient.getEquipped(nft);
     try {
-      let weapon = JSON.parse(responseData.data[0]);
-      printResponseJSON(url, responseData);
-      if (weapon.startsWith("NFT_")) {
-        let weaponNFT = weapon.replace("NFT_", "0x");
-        let ownsWeapon = await this.walletHasNFT(wallet, weaponNFT);
+      let weapon = responseData.weapon;
+      printResponseJSON('getEquipped', responseData);
+      if (weapon.startsWith("0x")) {
+        // Check if wallet still owns the equipped weapon
+        let ownsWeapon = await this.walletHasNFT(wallet, weapon);
         if (ownsWeapon === true) {
-          return weapon;
+          return weapon.replace("0x", "NFT_");
         } else {
           return 'sword1';
         }
