@@ -215,11 +215,10 @@ LOOT_EVENTS_QUEUE = []
 
 const processLootEventQueue = async function (retry) {
   if (!LOOT_EVENTS_QUEUE?.length) { return; }
-  const options = { headers: { 'X-Api-Key': API_KEY, 'Content-Type': 'application/json' } }
-  const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/saveItemJson.php`;
+
   try {
-    let response = await axios.post(url, LOOT_EVENTS_QUEUE, options);
-    printResponseJSON(url, response);
+    let response = await platformClient.storeInventoryTransaction(LOOT_EVENTS_QUEUE)
+    printResponseJSON('storeInventoryTransactions', response);
     LOOT_EVENTS_QUEUE = [];
   } catch (error) {
     if (retry === undefined) {
@@ -234,12 +233,12 @@ const processLootEventQueue = async function (retry) {
 
 let LOOT_QUEUE_INTERVAL = undefined;
 
-const saveLootEvent = async function (avatarId, itemId, amount) {
+const saveLootEvent = async function (nftId, itemId, amount) {
   if (amount === undefined) { amount = 1; }
   if (LOOT_QUEUE_INTERVAL === undefined) {
     LOOT_QUEUE_INTERVAL = setInterval(processLootEventQueue, 1000 * 30);     // save the loot event queue every 30 seconds
   }
-  LOOT_EVENTS_QUEUE.push({ avatarId: avatarId, itemId: itemId, amount })
+  LOOT_EVENTS_QUEUE.push({ nftId: nftId, item: String(itemId), amount })
 }
 
 const getItemCount = async function (avatarId, itemId, retry) {
