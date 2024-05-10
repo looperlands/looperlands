@@ -101,6 +101,7 @@ class LooperLandsPlatformClient {
         try {
             const url = `/api/asset/nft/${nft}/owns?wallet=${wallet}`;
             const response = await this.client.get(url);
+
             return response.data;
         } catch (error) {
             this.handleError(error);
@@ -111,6 +112,17 @@ class LooperLandsPlatformClient {
         try {
             const url = `/api/collection/${collection}/owns?wallet=${wallet}`;
             const response = await this.client.get(url);
+            return response.data;
+        } catch (error) {
+            this.handleError(error);
+        }
+    }
+
+    async increaseExperience(nftId, xp) {
+        try {
+            const url = `/api/game/asset/xp`;
+            const data = { nftId, xp };
+            const response = await this.client.post(url, data);
             return response.data;
         } catch (error) {
             this.handleError(error);
@@ -133,3 +145,36 @@ class LooperLandsPlatformClient {
 }
 
 exports.LooperLandsPlatformClient = LooperLandsPlatformClient;
+
+/*
+    updateExperience,               // Done -> POST game/asset/xp
+    saveWeapon,                     // Done -> POST game/asset/equip
+    loadWeapon,                     // Done -> GET game/asset/equipped/[nft-id]
+    loadExperience,                 // Done -> GET game/asset/xp/[nft-id]
+    loadMapFlow,                        // Skipped, can be done later
+    walletHasNFT,                   // Done -> GET asset/nft/[nft-id]/owns?wallet=[wallet-address]
+    updatePVPStats,                 // Done -> POST game/asset/pvp
+    saveNFTWeaponTrait,             // Done -> POST game/asset/rollTrait
+    saveNFTSpecialItemTrait,        // Done -> POST game/asset/rollTrait
+    saveNFTWeaponExperience,        // Done -> POST game/asset/xp
+    saveNFTSpecialItemExperience,   // Done -> POST game/asset/xp
+    loadNFTWeapon,                  // Done -> GET game/asset/info/[nft-id]
+    getSpecialItems,                // Done -> GET game/asset/info/[nft-id]  (won't return all special items anymore)
+    saveAvatarMapAndCheckpoint,     // Done -> POST game/asset/position
+    saveLootEvent,                  // Done -> POST game/inventory/transactions (batched)
+    getItemCount,                   // Done -> GET game/asset/inventory/[nft-id]/[item-id]
+    avatarHasItem,                  // Moved -> Uses getItemCount()
+    saveMobKillEvent,               // Done -> POST game/asset/kill (batched)
+    loadAvatarGameData,             // Done -> GET game/asset/data/[nft-id]
+    setQuestStatus,                 // Done -> POST game/asset/quest
+    saveConsumable,                 // Moved -> Use saveLootEvent
+    getBots,                        // Done -> GET game/wallet/[wallet-address]/companions
+    newBot,                            // No need for change
+    getShopInventory,                  // Skipped, can be done later
+    getResourceBalance,             // Moved -> Uses getItemCount
+    updateResourceBalance,          // Moved -> Uses saveLootEvent
+    transferResourceFromTo,         // no need to change
+    completePartnerTask,               // Skipped, can be done later
+    getPartnerTask,                    // Skipped, can be done later
+    getInventory                    // Done -> GET game/wallet/inventory/[wallet-address]]/[nft-id]
+*/

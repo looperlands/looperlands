@@ -25,11 +25,10 @@ const printResponseJSON = function(url, response) {
 }
 
 const updateExperience = async function (walletId, nftId, xp, retry) {
-  const options = { headers: { 'X-Api-Key': API_KEY } };
-  let url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/SaveExperience.php?WalletID=${walletId}&NFTID=${nftId}&Experience=${xp}`;
-  const responseData = await axios.get(url, options);
-  printResponseJSON(url, responseData);
-  const updatedXp = parseInt(responseData.data);
+  const responseData = await platformClient.increaseExperience(nftId, xp);
+
+  printResponseJSON('increaseExperience', responseData);
+  const updatedXp = parseInt(responseData.xp);
   if (Number.isNaN(updatedXp)) {
     if (retry === undefined) {
       retry = MAX_RETRY_COUNT;
