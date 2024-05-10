@@ -214,6 +214,16 @@ class LooperLandsPlatformClient {
 
     }
 
+    async storeKills(kills) {
+        try {
+            const url = `/api/game/asset/kill`;
+            const response = await this.client.post(url, kills);
+            return response.data;
+        } catch (error) {
+            this.handleError(error);
+        }
+    }
+
     handleError(error) {
         if (error.response) {
             // The request was made and the server responded with a status code
@@ -232,8 +242,6 @@ class LooperLandsPlatformClient {
 exports.LooperLandsPlatformClient = LooperLandsPlatformClient;
 
 /*
-    avatarHasItem,                  // Moved -> Uses getItemCount()
-    saveMobKillEvent,               // Done -> POST game/asset/kill (batched)
     loadAvatarGameData,             // Done -> GET game/asset/data/[nft-id]
     setQuestStatus,                 // Done -> POST game/asset/quest
     saveConsumable,                 // Moved -> Use saveLootEvent

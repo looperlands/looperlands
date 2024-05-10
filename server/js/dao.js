@@ -272,11 +272,9 @@ const avatarHasItem = async function (avatarId, itemId) {
 MOB_KILL_QUEUE = []
 const processMobKillEventQueue = async function (retry) {
   if (!MOB_KILL_QUEUE?.length) { return; }
-  const options = { headers: { 'X-Api-Key': API_KEY, 'Content-Type': 'application/json' } }
-  const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/saveMobJson.php`;
   try {
-    let response = await axios.post(url, MOB_KILL_QUEUE, options);
-    printResponseJSON(url, response);
+    let response = await platformClient.storeKills(MOB_KILL_QUEUE);
+    printResponseJSON('storeKills', response);
     MOB_KILL_QUEUE = [];
   } catch (error) {
     if (retry === undefined) {
@@ -295,7 +293,7 @@ const saveMobKillEvent = async function (avatarId, mobId) {
   if (MOB_KILL_QUEUE_INTERVAL === undefined) {
     MOB_KILL_QUEUE_INTERVAL = setInterval(processMobKillEventQueue, 1000 * 30); // save the loot event queue every 30 seconds
   }
-  MOB_KILL_QUEUE.push({ avatarId: avatarId, mobId: mobId });
+  MOB_KILL_QUEUE.push({ nftId: avatarId, mob: mobId, amount: 1});
 }
 
 const loadAvatarGameData = async function (avatarId, retry) {
