@@ -76,7 +76,7 @@ const loadWeapon = async function (wallet, nft) {
     try {
       let weapon = responseData.weapon;
       printResponseJSON('getEquipped', responseData);
-      if (weapon.startsWith("0x")) {
+      if (weapon?.startsWith("0x")) {
         // Check if wallet still owns the equipped weapon
         let ownsWeapon = await this.walletHasNFT(wallet, weapon);
         if (ownsWeapon === true) {
@@ -125,11 +125,9 @@ const walletHasNFT = async function (wallet, nft, retry) {
 };
 
 const updatePVPStats = async function (wallet, nft, killIncrement, deathIncrement) {
-  const options = { headers: { 'X-Api-Key': API_KEY } };
   try {
-    const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/SavePvP.php?NFTID=${nft}&WalletID=${wallet}&PvPKills=${killIncrement}&PvPDeaths=${deathIncrement}`
-    const responseData = await axios.get(url, options);
-    printResponseJSON(url, responseData);
+    const responseData = await platformClient.increasePvPStats(nft, killIncrement, deathIncrement);
+    printResponseJSON('increasePvpStats', responseData);
     return responseData.data;
   } catch (error) {
     console.error("updatePVPStats error", error);

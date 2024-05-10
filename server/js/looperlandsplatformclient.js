@@ -150,6 +150,17 @@ class LooperLandsPlatformClient {
         }
     }
 
+    async increasePvPStats(nftId, kills, deaths) {
+        try {
+            const url = `/api/game/asset/pvp`;
+            const data = { nftId, kills, deaths };
+            const response = await this.client.post(url, data);
+            return response.data;
+        } catch (error) {
+            this.handleError(error);
+        }
+    }
+
     handleError(error) {
         if (error.response) {
             // The request was made and the server responded with a status code
@@ -168,9 +179,6 @@ class LooperLandsPlatformClient {
 exports.LooperLandsPlatformClient = LooperLandsPlatformClient;
 
 /*
-    loadMapFlow,                        // Skipped, can be done later
-    walletHasNFT,                   // Done -> GET asset/nft/[nft-id]/owns?wallet=[wallet-address]
-    updatePVPStats,                 // Done -> POST game/asset/pvp
     saveNFTWeaponTrait,             // Done -> POST game/asset/rollTrait
     saveNFTSpecialItemTrait,        // Done -> POST game/asset/rollTrait
     saveNFTWeaponExperience,        // Done -> POST game/asset/xp
@@ -186,12 +194,7 @@ exports.LooperLandsPlatformClient = LooperLandsPlatformClient;
     setQuestStatus,                 // Done -> POST game/asset/quest
     saveConsumable,                 // Moved -> Use saveLootEvent
     getBots,                        // Done -> GET game/wallet/[wallet-address]/companions
-    newBot,                            // No need for change
-    getShopInventory,                  // Skipped, can be done later
     getResourceBalance,             // Moved -> Uses getItemCount
     updateResourceBalance,          // Moved -> Uses saveLootEvent
-    transferResourceFromTo,         // no need to change
-    completePartnerTask,               // Skipped, can be done later
-    getPartnerTask,                    // Skipped, can be done later
     getInventory                    // Done -> GET game/wallet/inventory/[wallet-address]]/[nft-id]
 */
