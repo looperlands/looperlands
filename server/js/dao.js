@@ -43,15 +43,6 @@ const updateExperience = async function (walletId, nftId, xp, retry) {
   return updatedXp;
 }
 
-const loadExperience = async function (walletId, nftId) {
-  const options = { headers: { 'X-Api-Key': API_KEY } };
-  let url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/LoadExperience.php?WalletID=${walletId}&NFTID=${nftId}`;
-  const responseData = await axios.get(url, options);
-  printResponseJSON(url, responseData);
-  const xp = parseInt(responseData.data);
-  return xp;
-}
-
 const loadMapFlow = async function (mapId) {
   const options = { headers: { 'X-Api-Key': API_KEY } };
   let url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/Maps/selectLooperLands_Quest2.php?map=${mapId}`;
@@ -603,7 +594,6 @@ module.exports = {
   updateExperience,
   saveWeapon,
   loadWeapon,
-  loadExperience,
   loadMapFlow,
   walletHasNFT,
   updatePVPStats,

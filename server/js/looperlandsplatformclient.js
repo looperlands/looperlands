@@ -168,8 +168,6 @@ class LooperLandsPlatformClient {
 exports.LooperLandsPlatformClient = LooperLandsPlatformClient;
 
 /*
-    loadWeapon,                     // Done -> GET game/asset/equipped/[nft-id]
-    loadExperience,                 // Done -> GET game/asset/xp/[nft-id]
     loadMapFlow,                        // Skipped, can be done later
     walletHasNFT,                   // Done -> GET asset/nft/[nft-id]/owns?wallet=[wallet-address]
     updatePVPStats,                 // Done -> POST game/asset/pvp
