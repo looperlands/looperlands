@@ -146,15 +146,11 @@ const saveNFTWeaponTrait = async function (wallet, nft) {
   }
 }
 
-const saveNFTWeaponExperience = async function (wallet, nft, experience) {
-  const options = { headers: { 'X-Api-Key': API_KEY } };
-  const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/SaveWeaponExperience.php?WalletID=${wallet}&NFTID=${nft}&Experience=${experience}`;
+const saveNFTWeaponExperience = async function (wallet, nft, xp) {
   try {
-    const response = await axios.get(url, options);
-    printResponseJSON(url, response);
-    //console.log("ResponseData from Loopworms: ", response.status, response.text, response.data);
-    const updatedExperience = parseInt(response.data.experience);
-    return updatedExperience;
+    const responseData = await platformClient.increaseExperience(nft, xp);
+    printResponseJSON('increaseExperience', responseData);
+    return parseInt(responseData.xp);
   } catch (error) {
     console.error("SaveNFTWeaponExperience Error", error);
     return { "error": "Error saving weapon experience" };

@@ -190,7 +190,6 @@ class LooperLandsPlatformClient {
 exports.LooperLandsPlatformClient = LooperLandsPlatformClient;
 
 /*
-    saveNFTWeaponExperience,        // Done -> POST game/asset/xp
     saveNFTSpecialItemExperience,   // Done -> POST game/asset/xp
     loadNFTWeapon,                  // Done -> GET game/asset/info/[nft-id]
     getSpecialItems,                // Done -> GET game/asset/info/[nft-id]  (won't return all special items anymore)
