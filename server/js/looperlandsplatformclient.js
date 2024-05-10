@@ -161,6 +161,17 @@ class LooperLandsPlatformClient {
         }
     }
 
+    async rollTrait(nftId) {
+        try {
+            const url = `/api/game/asset/trait`;
+            const data = { nftId };
+            const response = await this.client.post(url, data);
+            return response.data;
+        } catch (error) {
+            this.handleError(error);
+        }
+    }
+
     handleError(error) {
         if (error.response) {
             // The request was made and the server responded with a status code
@@ -179,7 +190,6 @@ class LooperLandsPlatformClient {
 exports.LooperLandsPlatformClient = LooperLandsPlatformClient;
 
 /*
-    saveNFTWeaponTrait,             // Done -> POST game/asset/rollTrait
     saveNFTSpecialItemTrait,        // Done -> POST game/asset/rollTrait
     saveNFTWeaponExperience,        // Done -> POST game/asset/xp
     saveNFTSpecialItemExperience,   // Done -> POST game/asset/xp
