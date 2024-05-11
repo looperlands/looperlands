@@ -243,7 +243,7 @@ const saveLootEvent = async function (nftId, itemId, amount) {
 
 const getItemCount = async function (avatarId, itemId, retry) {
   try {
-    const response = platformClient.getInventoryItem(avatarId, String(itemId));
+    const response = await platformClient.getInventoryItem(avatarId, String(itemId));
     printResponseJSON('getInventoryItem', response);
     return response.amount;
   } catch (error) {
