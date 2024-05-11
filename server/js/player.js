@@ -356,9 +356,12 @@ module.exports = Player = Character.extend({
                 }
             }
             else if (action === Types.Messages.HURT) {
-                var mob = self.server.getEntityById(message[1]);
-
-                if (mob instanceof Mob) {
+                let mob = self.server.getEntityById(message[1]);
+                let botId = message[2];
+                if (botId !== 0) {
+                    let bot = self.server.getEntityById(botId);
+                    bot.handleHurt(mob);
+                } else if (mob instanceof Mob) {
                     let kindString = Types.getKindAsString(mob.kind);
                     let aoeProps = Properties[kindString].aoe;
 

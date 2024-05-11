@@ -8656,8 +8656,14 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                     this.audioManager.playSound("hit" + Math.floor(Math.random() * 2 + 1));
                                 }
 
-                                if (character.hasTarget() && character.target.id === this.playerId && this.player && !(character instanceof Player)) {
+                                if (character.hasTarget() && (character.target.id === this.playerId) && this.player && !(character instanceof Player)) {
                                     this.client.sendHurt(character);
+                                }
+
+                                const targetKind = Types.getKindFromString(character.target.spriteName);
+                                const targetIsBot = Types.isBot(targetKind);
+                                if (targetIsBot && !(character instanceof Player)) {
+                                    this.client.sendHurt(character, character.target.id);
                                 }
                             }
                         } else {
