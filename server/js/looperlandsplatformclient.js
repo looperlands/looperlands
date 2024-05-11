@@ -1,4 +1,5 @@
 const axios = require('axios');
+
 class LooperLandsPlatformClient {
     constructor(apiKey, baseUrl) {
         this.platformDefined = apiKey && baseUrl;
@@ -36,7 +37,7 @@ class LooperLandsPlatformClient {
 
         try {
             const url = `/api/gameserver/${encodeURIComponent(hostname)}`;
-            const gameServerData = { name, port };
+            const gameServerData = {name, port};
             const response = await this.client.put(url, gameServerData);
             this.hostname = hostname;
             console.log("Registered gameserver hostname with platform:", hostname);
@@ -121,7 +122,7 @@ class LooperLandsPlatformClient {
     async increaseExperience(nftId, xp) {
         try {
             const url = `/api/game/asset/xp`;
-            const data = { nftId, xp };
+            const data = {nftId, xp};
             const response = await this.client.post(url, data);
             return response.data;
         } catch (error) {
@@ -131,11 +132,11 @@ class LooperLandsPlatformClient {
 
     async equip(wallet, nftId, equipped) {
         try {
-            if(!equipped.startsWith("0x")) {
+            if (!equipped.startsWith("0x")) {
                 return;
             }
             const url = `/api/game/asset/equip`;
-            const data = { wallet, nftId, equipped };
+            const data = {wallet, nftId, equipped};
             const response = await this.client.post(url, data);
             return response.data;
         } catch (error) {
@@ -156,7 +157,7 @@ class LooperLandsPlatformClient {
     async increasePvPStats(nftId, kills, deaths) {
         try {
             const url = `/api/game/asset/pvp`;
-            const data = { nftId, kills, deaths };
+            const data = {nftId, kills, deaths};
             const response = await this.client.post(url, data);
             return response.data;
         } catch (error) {
@@ -167,7 +168,7 @@ class LooperLandsPlatformClient {
     async rollTrait(nftId) {
         try {
             const url = `/api/game/asset/trait`;
-            const data = { nftId };
+            const data = {nftId};
             const response = await this.client.post(url, data);
             return response.data;
         } catch (error) {
@@ -188,7 +189,7 @@ class LooperLandsPlatformClient {
     async updateAssetPosition(nftId, map, checkpoint) {
         try {
             const url = `/api/game/asset/position`;
-            const data = { nftId, map, checkpoint: parseInt(checkpoint ?? 1) };
+            const data = {nftId, map, checkpoint: parseInt(checkpoint ?? 1)};
             const response = await this.client.post(url, data);
             return response.data;
         } catch (error) {
@@ -214,7 +215,6 @@ class LooperLandsPlatformClient {
         } catch (error) {
             this.handleError(error);
         }
-
     }
 
     async storeKills(kills) {
@@ -240,8 +240,18 @@ class LooperLandsPlatformClient {
     async setQuestsStatus(nftId, questKey, status) {
         try {
             const url = `/api/game/asset/quest`;
-            const data = { nftId, questKey, status };
+            const data = {nftId, questKey, status};
             const response = await this.client.post(url, data);
+            return response.data;
+        } catch (error) {
+            this.handleError(error);
+        }
+    }
+
+    async getCompanions(wallet) {
+        try {
+            const url = `/api/game/wallet/${wallet}/companions`;
+            const response = await this.client.get(url);
             return response.data;
         } catch (error) {
             this.handleError(error);
@@ -266,9 +276,6 @@ class LooperLandsPlatformClient {
 exports.LooperLandsPlatformClient = LooperLandsPlatformClient;
 
 /*
-    saveConsumable,                 // Moved -> Use saveLootEvent
-    getBots,                        // Done -> GET game/wallet/[wallet-address]/companions
-    getResourceBalance,             // Moved -> Uses getItemCount
     updateResourceBalance,          // Moved -> Uses saveLootEvent
     getInventory                    // Done -> GET game/wallet/inventory/[wallet-address]]/[nft-id]
 */

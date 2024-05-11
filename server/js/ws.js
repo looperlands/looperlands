@@ -960,14 +960,14 @@ WS.socketIOServer = Server.extend({
             const dynamicNFTData = req.body.dynamicNFTData;
 
             let ownedBots = await dao.getBots(sessionData.walletId);
-            let botInfo = ownedBots.find(bot => bot.botNftId === botNftId);
+            let botInfo = ownedBots.find(bot => bot.nftId === botNftId);
             if (botInfo) {
                 let owner = self.worldsMap[sessionData.mapId].getPlayerById(sessionData.entityId);
                 let newBot = await dao.newBot(
                     sessionData.mapId,
                     botNftId,
-                    botInfo.experience,
-                    botInfo.looperName,
+                    botInfo.gameData.xp,
+                    botInfo.name,
                     sessionData.walletId,
                     sessionData.entityId,
                     owner.x,

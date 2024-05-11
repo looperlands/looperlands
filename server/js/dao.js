@@ -363,26 +363,14 @@ const setQuestStatus = async function (avatarId, questId, status, retry) {
 }
 
 const saveConsumable = async function (nft, item, qty) {
-  if (qty === undefined) { qty = 1; }
-  const options = { headers: { 'X-Api-Key': API_KEY, 'Content-Type': 'application/json' } }
-  const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/saveConsumable2.php`;
-  const sData = { avatarId: nft, itemId: item, quantity: qty };
-  try {
-    let response = await axios.post(url, sData, options);
-    printResponseJSON(url, response);
-    return response.data;
-  } catch (error) {
-    console.error("saveConsumable", error);
-    return { "error": "Error saving consumable" };
-  }
+  this.saveLootEvent(nft, item, qty);
+  processLootEventQueue();
 }
 
 const getBots = async function (walletId) {
-  let url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/loadBot.php?walletID=${walletId}`;
-  let botsResponse = await axios.get(url);
-  printResponseJSON(url, botsResponse);
-  let bots = botsResponse.data;
-  return bots;
+  let botsResponse = await platformClient.getCompanions(walletId);
+  printResponseJSON('getCompanions', botsResponse);
+  return botsResponse;
 }
 
 const newBot = async function (mapId, botNftId, xp, name, walletId, ownerEntityId, x, y, gameServerURL, dynamicNFTData, retry) {
@@ -434,16 +422,7 @@ const getShopInventory = async function (shopId) {
 }
 
 const getResourceBalance = async function (nftId, itemId) {
-  const options = { headers: { 'X-Api-Key': API_KEY } };
-  try {
-    const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/loadConsumableItem.php?nftId=${nftId}&itemId=${itemId}`
-    const response = await axios.get(url, options);
-    printResponseJSON(url, response);
-    return response.data;
-  } catch (error) {
-    console.error(error);
-    return { "error": "Error getting resource balance" };
-  }
+  return await getItemCount(nftId, itemId);
 }
 
 const updateResourceBalance = async function (nftId, itemId, quantity) {
