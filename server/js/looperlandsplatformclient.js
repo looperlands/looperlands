@@ -237,6 +237,16 @@ class LooperLandsPlatformClient {
         }
     }
 
+    async getInventory(walletAddress, nftId) {
+        try {
+            const url = `/api/game/wallet/inventory/${walletAddress}/${nftId}`;
+            const response = await this.client.get(url);
+            return response.data;
+        } catch (error) {
+            this.handleError(error);
+        }
+    }
+
     async setQuestsStatus(nftId, questKey, status) {
         try {
             const url = `/api/game/asset/quest`;
@@ -274,8 +284,3 @@ class LooperLandsPlatformClient {
 }
 
 exports.LooperLandsPlatformClient = LooperLandsPlatformClient;
-
-/*
-    updateResourceBalance,          // Moved -> Uses saveLootEvent
-    getInventory                    // Done -> GET game/wallet/inventory/[wallet-address]]/[nft-id]
-*/

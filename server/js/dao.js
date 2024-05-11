@@ -426,17 +426,8 @@ const getResourceBalance = async function (nftId, itemId) {
 }
 
 const updateResourceBalance = async function (nftId, itemId, quantity) {
-  const options = { headers: { 'X-Api-Key': API_KEY, 'Content-Type': 'application/json' } };
-  try {
-    const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/saveConsumable2.php`;
-    const update = { avatarId: nftId, itemId: itemId, quantity: quantity };
-    const response = await axios.post(url, update, options);
-    printResponseJSON(url, response);
-    return response.data;
-  } catch (error) {
-    console.error(error);
-    return { "error": "Error updating resource balance" };
-  }
+  saveLootEvent(nftId, itemId, quantity)
+  processLootEventQueue();
 }
 
 // Default resource to gold when not specified
@@ -497,9 +488,8 @@ const getPartnerTask = async function(walletId, taskId) {
 }
 
 const getInventory = async function(walletId, nftId) {
-  let url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/looperInventoryDetails.php?walletID=${walletId}&nftId=${nftId}&APIKEY=${API_KEY}`;
-  let rcvInventory = await axios.get(url);
-  printResponseJSON(url, rcvInventory);
+  let rcvInventory = await platformClient.getInventory(walletId, nftId)
+  printResponseJSON('getInventory', rcvInventory);
   return rcvInventory;
 }
 

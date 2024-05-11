@@ -390,7 +390,7 @@ WS.socketIOServer = Server.extend({
             const nftId = sessionData.nftId;
 
             let rcvInventory = await dao.getInventory(walletId, nftId);
-            if (rcvInventory?.data) {
+            if (rcvInventory) {
 
                 const prepareItemList = async (item) => {
                     if (item) {
@@ -416,11 +416,12 @@ WS.socketIOServer = Server.extend({
                         } else {
                             item.level = Formulas.calculatePercentageToNextLevel(item.xp).currentLevel;
                         }
+
                         return item;
                     }
                 };
 
-                inventory = rcvInventory.data[0].weapons ? rcvInventory.data[0].weapons.map(prepareItemList) : [];
+                inventory = rcvInventory.weapons ? rcvInventory.weapons.map(prepareItemList) : [];
                 inventory = await Promise.all(inventory);
                 if (inventory.length > 0) {
                     inventory = inventory.filter(item => {
@@ -430,7 +431,7 @@ WS.socketIOServer = Server.extend({
                     });
                 }
 
-                special = rcvInventory.data[0].specialitems ? rcvInventory.data[0].specialitems.map(prepareItemList) : [];
+                special = rcvInventory.tools ? rcvInventory.tools.map(prepareItemList) : [];
                 special = await Promise.all(special);
                 if (special.length > 0) {
                     special = special.filter(item => {
@@ -440,7 +441,7 @@ WS.socketIOServer = Server.extend({
                     });
                 }
 
-                bots = rcvInventory.data[0].bots ? rcvInventory.data[0].bots.map(prepareItemList) : [];
+                bots = rcvInventory.companions ? rcvInventory.companions.map(prepareItemList) : [];
                 bots = await Promise.all(bots);
                 if (bots.length > 0) {
                     bots = bots.filter(item => {
@@ -478,7 +479,7 @@ WS.socketIOServer = Server.extend({
                         nftId: Types.getKindAsString(item),
                         weaponName: Properties.getWeaponName(item),
                         level: weaponLevel,
-                        Trait: "regular",
+                        trait: "regular",
                     });
                 }
 
@@ -503,8 +504,8 @@ WS.socketIOServer = Server.extend({
                 }
             });
 
-            inventory = _(inventory).chain().sortBy("level").reverse().sortBy("Trait").value();
-            special = _(special).chain().sortBy("level").reverse().sortBy("Trait").value();
+            inventory = _(inventory).chain().sortBy("level").reverse().sortBy("trait").value();
+            special = _(special).chain().sortBy("level").reverse().sortBy("trait").value();
             res.status(200).json({ inventory: inventory, special: special, items: items, bots: bots, resources: resources });
         });
 
