@@ -267,6 +267,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 "ROBITSE9",
                                 "ROBITSE10",
                                 "INFERNOID",
+                                "KAWAIIPRINCESS",
                                 // @nextCharacterLine@
                     "item-BOARHIDE",
                     "item-THUDKEY",

@@ -508,6 +508,7 @@ define(['character'], function (Character) {
             'Or you can grab an <a target="_blank" href="https://loopexchange.art/collection/riseofthezombiestockweapons">SDU weapon here</a>!'
         ],
         
+        "KAWAIIPRINCESS": ["Change me"],
         // @nextNPCLine@
     };
 
