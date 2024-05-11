@@ -616,13 +616,14 @@ define(['jquery', 'storage'], function ($, Storage) {
             let inventoryQuery = "/session/" + _this.storage.sessionId + "/inventory";
             let weaponInventory = [],
                 specialInventory = [],
-                consumablesInventory = {};
+                consumablesInventory = {},
+                botsInventory = [];
 
             axios.get(inventoryQuery).then(function(response) {
                 if (response.data){
                     weaponInventory = response.data.inventory;
                     specialInventory = response.data.special;
-                    consumablesInventory = response.data.consumables;
+                    consumablesInventory = response.data.items;
                     botsInventory = response.data.bots;
                 }
 

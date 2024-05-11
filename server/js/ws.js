@@ -451,22 +451,22 @@ WS.socketIOServer = Server.extend({
                 }
             }
 
-            let consumables = sessionData.gameData?.consumables || {};
+            let items = sessionData.gameData?.items || {};
             let resources = {};
-            Object.keys(consumables).forEach(item => {
+            Object.keys(items).forEach(item => {
                 if (Types.isResource(parseInt(item))) {
-                    resources[item] = consumables[item];
-                    delete consumables[item];
+                    resources[item] = items[item];
+                    delete items[item];
                 }
 
-                if (Types.isWeapon(parseInt(item)) && consumables[item] > 0) {
+                if (Types.isWeapon(parseInt(item)) && items[item] > 0) {
                     let levelInfo = Properties.getWeaponLevel(item);
                     let weaponLevel = 0;
                     if (typeof levelInfo === "object") {
                         let sortedLevelInfo = _(levelInfo).chain().sortBy("level").reverse().value()
                         for (let i = 0; i < sortedLevelInfo.length; i++) {
                             let level = sortedLevelInfo[i];
-                            if (consumables[Types.getKindFromString(level.consumable)] > 0) {
+                            if (items[Types.getKindFromString(level.consumable)] > 0) {
                                 weaponLevel = level.level;
                                 break;
                             }
@@ -482,8 +482,8 @@ WS.socketIOServer = Server.extend({
                     });
                 }
 
-                if (!item || !Collectables.isCollectable(item) || consumables[item] <= 0) {
-                    delete consumables[item];
+                if (!item || !Collectables.isCollectable(item) || items[item] <= 0) {
+                    delete items[item];
                 } else {
                     let remainingCooldown = 0;
                     const cooldownData = Collectables.getCooldownData(item);
@@ -492,8 +492,8 @@ WS.socketIOServer = Server.extend({
                         remainingCooldown = self.worldsMap[sessionData.mapId].getConsumeGroupCooldown(sessionData.nftId, cooldownGroup);
                     }
 
-                    consumables[item] = {
-                        qty: consumables[item],
+                    items[item] = {
+                        qty: items[item],
                         consumable: Collectables.isConsumable(item),
                         image: Collectables.getCollectableImageName(item),
                         description: Collectables.getInventoryDescription(item),
@@ -505,7 +505,7 @@ WS.socketIOServer = Server.extend({
 
             inventory = _(inventory).chain().sortBy("level").reverse().sortBy("Trait").value();
             special = _(special).chain().sortBy("level").reverse().sortBy("Trait").value();
-            res.status(200).json({ inventory: inventory, special: special, consumables: consumables, bots: bots, resources: resources });
+            res.status(200).json({ inventory: inventory, special: special, items: items, bots: bots, resources: resources });
         });
 
         app.get("/session/:sessionId/quests", async (req, res) => {
@@ -527,7 +527,7 @@ WS.socketIOServer = Server.extend({
 
             if (quests && questStatus) {
                 _.each(quests?.questsByID, function (quest) {
-                    if (_.findIndex(questStatus.COMPLETED, { questID: quest.id }) !== -1) {
+                    if (_.findIndex(questStatus.COMPLETED, { questKey: quest.id }) !== -1) {
 
                         availableQuests.push({
                             id: quest.id,
@@ -544,10 +544,10 @@ WS.socketIOServer = Server.extend({
                     }
                 });
                 _.each(quests?.questsByID, function (quest) {
-                    if (_.findIndex(questStatus.COMPLETED, { questID: quest.id }) !== -1) {
+                    if (_.findIndex(questStatus.COMPLETED, { questKey: quest.id }) !== -1) {
                         return;
                     }
-                    if (_.findIndex(questStatus.IN_PROGRESS, { questID: quest.id }) !== -1) {
+                    if (_.findIndex(questStatus.IN_PROGRESS, { questKey: quest.id }) !== -1) {
 
                         let progressCount = 0;
                         if (quest.eventType === "LOOT_ITEM") {
@@ -646,7 +646,7 @@ WS.socketIOServer = Server.extend({
                     res.status(200).json(false);
                 }
 
-                let completed = (_.findIndex(questStatus.COMPLETED, { questID: questId }) !== -1);
+                let completed = (_.findIndex(questStatus.COMPLETED, { questKey: questId }) !== -1);
                 res.status(200).json(completed);
 
                 return;
@@ -1012,8 +1012,8 @@ WS.socketIOServer = Server.extend({
             const shopInventory = await dao.getShopInventory(req.params.shopId);
             const item = shopInventory.find(item => item.id === req.params.itemId);
 
-            if (gameData.consumables === undefined) {
-                gameData.consumables = {};
+            if (gameData.items === undefined) {
+                gameData.items = {};
             }
 
             // Check player min level
@@ -1032,7 +1032,7 @@ WS.socketIOServer = Server.extend({
             for (const [key, value] of Object.entries(item.price)) {
                 let resourceId = Types.getKindFromString(key);
                 let cost = parseInt(value);
-                let resource = parseInt(gameData.consumables[resourceId]);
+                let resource = parseInt(gameData.items[resourceId]);
                 if (_.isNaN(resource) || !_.isNumber(resource) || (resource < cost)) {
                     res.status(400).json({
                         status: false,
@@ -1049,17 +1049,17 @@ WS.socketIOServer = Server.extend({
                 let resourceId = Types.getKindFromString(key);
                 let cost = parseInt(value);
                 dao.saveConsumable(nftId, resourceId, -1 * cost);
-                gameData.consumables[resourceId] = gameData.consumables[resourceId] - cost;
+                gameData.items[resourceId] = gameData.items[resourceId] - cost;
             }
 
             // Add item to player inventory
             dao.saveConsumable(nftId, item.item, item.amount ?? 1);
 
-            let itemCount = gameData.consumables[item.item];
+            let itemCount = gameData.items[item.item];
             if (itemCount) {
-                gameData.consumables[item.item] = itemCount + (item.amount ?? 1);
+                gameData.items[item.item] = itemCount + (item.amount ?? 1);
             } else {
-                gameData.consumables[item.item] = (item.amount ?? 1);
+                gameData.itemsventory[item.item] = (item.amount ?? 1);
             }
 
             // Store changes in session data

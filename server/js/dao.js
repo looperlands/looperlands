@@ -297,45 +297,21 @@ const saveMobKillEvent = async function (avatarId, mobId) {
 }
 
 const loadAvatarGameData = async function (avatarId, retry) {
-  const options = { headers: { 'X-Api-Key': API_KEY } }
-  const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/loadItemConsumableMobQuest.php?NFTID=${avatarId}`;
   try {
-    const response = await axios.get(url, options);
-    printResponseJSON(url, response);
-    let responseData = response.data[0];
-    let mobKills, items = {}, quests = {}, consumables = {};
-    if (responseData.mobJson) {
-      mobKills = responseData.mobJson.reduce((avatarMobKills, mobKills) => {
-        const mobId = mobKills.mobId;
-        if (mobId) {
-          avatarMobKills[mobId] = mobKills.iCount;
-        }
-        return avatarMobKills;
-      }, {});
-    }
+    const response = await platformClient.getGameData(avatarId);
+    printResponseJSON('getGameData', response);
+    let responseData = response;
 
-    if (responseData.itemJson) {
-      items = responseData.itemJson.reduce((avatarItems, itemCount) => {
-        const itemId = itemCount.itemId;
-        if (itemId) {
-          avatarItems[itemId] = itemCount.iCount;
-        }
-        return avatarItems;
-      }, {});
-    }
+    let mobKills = responseData.kills;
+    let items = responseData.items.reduce((avatarItems, itemCount) => {
+      const itemId = itemCount.item;
+      if (itemId) {
+        avatarItems[itemId] = itemCount.quantity;
+      }
+      return avatarItems;
+    }, {});
 
-    if (responseData.itemConsumableJson) {
-      items = responseData.itemConsumableJson.reduce((avatarItems, itemCount) => {
-        const itemId = itemCount.itemConsumableId;
-        if (itemId && parseInt(itemCount.iCount) > 0) {
-          avatarItems[itemId] = itemCount.iCount;
-        }
-        return avatarItems;
-      }, items);
-    }
-
-    if (responseData.questJson) {
-      quests = responseData.questJson.reduce((avatarQuests, quest) => {
+    let quests = responseData.quests.reduce((avatarQuests, quest) => {
         const status = quest.status;
         if (status) {
           let questsByStatus = avatarQuests[status];
@@ -347,25 +323,12 @@ const loadAvatarGameData = async function (avatarId, retry) {
         }
         return avatarQuests;
       }, {});
-    }
 
-    if (responseData.itemConsumableJson) {
-      consumables = responseData.itemConsumableJson.reduce((avatarConsumes, item) => {
-        const itemId = item.itemConsumableId;
-        if (itemId) {
-          avatarConsumes[itemId] = item.iCount;
-        }
-        return avatarConsumes;
-      }, {});
-    }
-
-    const data = {
+    return {
       mobKills: mobKills,
-      items: items,
       quests: quests,
-      consumables: consumables
-    }
-    return data;
+      items: items,
+    };
   } catch (error) {
     if (retry === undefined) {
       retry = MAX_RETRY_COUNT;
@@ -381,11 +344,9 @@ const loadAvatarGameData = async function (avatarId, retry) {
 }
 
 const setQuestStatus = async function (avatarId, questId, status, retry) {
-  const options = { headers: { 'X-Api-Key': API_KEY } }
-  let url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/setQuestStatus.php?questId=${questId}&avatarID=${avatarId}&status=${status}`;
   try {
-    const response = await axios.get(url, options);
-    printResponseJSON(url, response);
+    const response = await platformClient.setQuestsStatus(avatarId, questId, status);
+    printResponseJSON('setQuestStatus', response);
     return response;
   } catch (error) {
     console.error("setQuestStatus", error);

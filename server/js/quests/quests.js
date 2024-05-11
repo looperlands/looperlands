@@ -163,7 +163,7 @@ function avatarHasQuest(questId, avatarQuests) {
 
   for (const [status, quests] of Object.entries(avatarQuests)) {
     for (const quest of quests) {
-      if(quest.questID === questId) {
+      if(quest.questKey === questId) {
         return true;
       }
     }
@@ -176,7 +176,7 @@ function avatarHasCompletedQuest(questId, avatarQuests) {
   let completed = avatarQuests[STATES.COMPLETED];
   if (completed !== undefined) {
     for (const quest of completed) {
-      if(quest.questID === questId) {
+      if(quest.questKey === questId) {
         return true;
       }
     }
@@ -188,7 +188,7 @@ function avatarHasCompletedQuest(questId, avatarQuests) {
 function startQuest(sessionData, questID) {
   dao.setQuestStatus(sessionData.nftId, questID, STATES.IN_PROGRESS);
   let inProgressQuests = sessionData.gameData.quests[STATES.IN_PROGRESS];
-  let questInCacheFormat = {questID: questID, status: STATES.IN_PROGRESS};
+  let questInCacheFormat = {questKey: questID, status: STATES.IN_PROGRESS};
   if (!inProgressQuests) {
     sessionData.gameData.quests[STATES.IN_PROGRESS] = [questInCacheFormat];
   } else {
@@ -207,7 +207,7 @@ function completeQuest(questID, sessionData) {
 
   dao.setQuestStatus(sessionData.nftId, questID, STATES.COMPLETED);
   let completedQuests = sessionData.gameData.quests[STATES.COMPLETED];
-  let questInCacheFormat = {questID: questID, status: STATES.COMPLETED};
+  let questInCacheFormat = {questKey: questID, status: STATES.COMPLETED};
   if (!completedQuests) {
     sessionData.gameData.quests[STATES.COMPLETED] = [questInCacheFormat];
   } else {
