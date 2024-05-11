@@ -455,6 +455,11 @@ define(['character'], function (Character) {
             "Have you visited Mase's Bar yet?.",
             "Beep Boop.",
         ],
+        "KAWAIIPRINCESS": [
+            "Hi! Im Kawaii Princess!",
+            "Can you help save Cyber City?",
+            "Come visit us at Mox-E's Karaoke Bar!",
+        ],
 
         //Short Destroyers
         "derrick": [
@@ -508,7 +513,7 @@ define(['character'], function (Character) {
             'Or you can grab an <a target="_blank" href="https://loopexchange.art/collection/riseofthezombiestockweapons">SDU weapon here</a>!'
         ],
         
-        "KAWAIIPRINCESS": ["Change me"],
+      
         // @nextNPCLine@
     };
 
