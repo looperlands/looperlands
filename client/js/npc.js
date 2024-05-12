@@ -519,6 +519,11 @@ define(['character'], function (Character) {
         ],
         
       
+        "ZILEEL": [
+            "Thank you for joining us friend!",
+            "Do you want to build a snowman?",
+            "BOOMBAYAH"
+        ],
         // @nextNPCLine@
     };
 

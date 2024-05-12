@@ -19,7 +19,7 @@ services:
     tty: true
     depends_on:
       - jsonserver
-  develop:
+    develop:
       watch:
         - path: server/
           action: rebuild

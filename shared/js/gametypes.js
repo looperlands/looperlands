@@ -495,7 +495,8 @@ Types = {
         ROBITSE10: 34000079,
         INFERNOID: 34000080,
         KAWAIIPRINCESS: 34000081,
-        KAWAIIPRINCESS2: 34000082, // @lastidCharacter@
+        KAWAIIPRINCESS2: 34000082,
+        ZILEEL: 34000083, // @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -6132,6 +6133,7 @@ var kinds = {
     INFERNOID: [Types.Entities.INFERNOID, "mob"],
     KAWAIIPRINCESS: [Types.Entities.KAWAIIPRINCESS, "npc"],
     KAWAIIPRINCESS2: [Types.Entities.KAWAIIPRINCESS2, "npc"],
+    ZILEEL: [Types.Entities.ZILEEL, "npc"],
     // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],
