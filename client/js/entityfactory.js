@@ -1148,6 +1148,10 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.CUSTOMER1]=function(id){return new NPCs.customer1(id);};
     EntityFactory.builders[Types.Entities.CUSTOMER2]=function(id){return new NPCs.customer2(id);};
     EntityFactory.builders[Types.Entities.PORTALGILL]=function(id){return new NPCs.portalgill(id);};
+    EntityFactory.builders[Types.Entities.KAWAIIPRINCESS]=function(id){return new NPCs.KAWAIIPRINCESS(id);};
+    EntityFactory.builders[Types.Entities.KAWAIIPRINCESS2]=function(id){return new NPCs.KAWAIIPRINCESS2(id);};
+
+    EntityFactory.builders[Types.Entities.ZILEEL]=function(id){return new NPCs.ZILEEL(id);};
     // @nextNPCLine@
 
      //====== FieldEffectss ======
