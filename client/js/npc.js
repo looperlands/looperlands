@@ -524,6 +524,42 @@ define(['character'], function (Character) {
             "Do you want to build a snowman?",
             "BOOMBAYAH"
         ],
+        "CORTEZ": [
+            "Watch your back out there, kid. This city's got more glitches than lines of code.",
+            "Legends say there's a hidden sector in the city, full of treasures and dangers alike. Care to find out?",
+            "I've seen players come and go, but the ones who make it in Cyber City always have a trick or two up their sleeve."
+        ],
+        "APEBRAINBIT1":  [
+            "Help save the Apebrains from Cyber Kong!",
+            "Apebrains are counting on us!",
+            "Join the Apebrains army!"
+        ],
+        "KARAOKEBIT":  [
+            "Beep Boop!",
+            "Thanks for coming tonight!",
+            "Here take this Red Packet!",
+
+        ],
+        "GAVIN":  [
+            "Cause sometimes, I look in her eyes!",
+            "I love Cyber City!",
+            "I'm Gavin!"
+        ],
+        "JUSTIN":  [
+            "Would you like a drink?",
+            "I came here froom LooperLands!",
+            "I like to swim, collect coral, and I am a mountaineer!"
+        ],
+        "GENETICCODE": [
+            "Want to play some darts?",
+            "I came here from LooperLands!",
+            "Don't forget to hydrate!"
+        ],
+        "HDUCKLEE": [
+            "I'm H Ducklee!",
+            "Oh no! My ducks are missing!",
+            "Can you help me find them?"
+        ],
         // @nextNPCLine@
     };
 

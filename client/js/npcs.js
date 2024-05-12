@@ -374,6 +374,13 @@ define(['npc'], function(Npc) {
         KAWAIIPRINCESS: Npc.extend({init: function(id) {this._super(id, Types.Entities.KAWAIIPRINCESS, 1);}}),
         KAWAIIPRINCESS2: Npc.extend({init: function(id) {this._super(id, Types.Entities.KAWAIIPRINCESS2, 1);}}),
         ZILEEL: Npc.extend({init: function(id) {this._super(id, Types.Entities.ZILEEL, 1);}}),
+        CORTEZ: Npc.extend({init: function(id) {this._super(id, Types.Entities.CORTEZ, 1);}}),
+        APEBRAINBIT1: Npc.extend({init: function(id) {this._super(id, Types.Entities.APEBRAINBIT1, 1);}}),
+        KARAOKEBIT: Npc.extend({init: function(id) {this._super(id, Types.Entities.KARAOKEBIT, 1);}}),
+        GAVIN: Npc.extend({init: function(id) {this._super(id, Types.Entities.GAVIN, 1);}}),
+        JUSTIN: Npc.extend({init: function(id) {this._super(id, Types.Entities.JUSTIN, 1);}}),
+        GENETICCODE: Npc.extend({init: function(id) {this._super(id, Types.Entities.GENETICCODE, 1);}}),
+        HDUCKLEE: Npc.extend({init: function(id) {this._super(id, Types.Entities.HDUCKLEE, 1);}}),
         // @nextNPCLine@
     };
     

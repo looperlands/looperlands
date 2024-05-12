@@ -1152,6 +1152,13 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.KAWAIIPRINCESS2]=function(id){return new NPCs.KAWAIIPRINCESS2(id);};
 
     EntityFactory.builders[Types.Entities.ZILEEL]=function(id){return new NPCs.ZILEEL(id);};
+    EntityFactory.builders[Types.Entities.CORTEZ]=function(id){return new NPCs.CORTEZ(id);};
+    EntityFactory.builders[Types.Entities.APEBRAINBIT1]=function(id){return new NPCs.APEBRAINBIT1(id);};
+    EntityFactory.builders[Types.Entities.KARAOKEBIT]=function(id){return new NPCs.KARAOKEBIT(id);};
+    EntityFactory.builders[Types.Entities.GAVIN]=function(id){return new NPCs.GAVIN(id);};
+    EntityFactory.builders[Types.Entities.JUSTIN]=function(id){return new NPCs.JUSTIN(id);};
+    EntityFactory.builders[Types.Entities.GENETICCODE]=function(id){return new NPCs.GENETICCODE(id);};
+    EntityFactory.builders[Types.Entities.HDUCKLEE]=function(id){return new NPCs.HDUCKLEE(id);};
     // @nextNPCLine@
 
      //====== FieldEffectss ======

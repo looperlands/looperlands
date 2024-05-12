@@ -496,7 +496,14 @@ Types = {
         INFERNOID: 34000080,
         KAWAIIPRINCESS: 34000081,
         KAWAIIPRINCESS2: 34000082,
-        ZILEEL: 34000083, // @lastidCharacter@
+        ZILEEL: 34000083,
+        CORTEZ: 34000084,
+        APEBRAINBIT1: 34000085,
+        KARAOKEBIT: 34000086,
+        GAVIN: 34000087,
+        JUSTIN: 34000089,
+        GENETICCODE: 34000090,
+        HDUCKLEE: 34000091, // @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -6134,6 +6141,13 @@ var kinds = {
     KAWAIIPRINCESS: [Types.Entities.KAWAIIPRINCESS, "npc"],
     KAWAIIPRINCESS2: [Types.Entities.KAWAIIPRINCESS2, "npc"],
     ZILEEL: [Types.Entities.ZILEEL, "npc"],
+    CORTEZ: [Types.Entities.CORTEZ, "npc"],
+    APEBRAINBIT1: [Types.Entities.APEBRAINBIT1, "npc"],
+    KARAOKEBIT: [Types.Entities.KARAOKEBIT, "npc"],
+    GAVIN: [Types.Entities.GAVIN, "npc"],
+    JUSTIN: [Types.Entities.JUSTIN, "npc"],
+    GENETICCODE: [Types.Entities.GENETICCODE, "npc"],
+    HDUCKLEE: [Types.Entities.HDUCKLEE, "npc"],
     // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],

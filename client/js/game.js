@@ -270,6 +270,13 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 "KAWAIIPRINCESS",
                                 "KAWAIIPRINCESS2",
                                 "ZILEEL",
+                                "CORTEZ",
+                                "APEBRAINBIT1",
+                                "KARAOKEBIT",
+                                "GAVIN",
+                                "JUSTIN",
+                                "GENETICCODE",
+                                "HDUCKLEE",
                                 // @nextCharacterLine@
                     "item-BOARHIDE",
                     "item-THUDKEY",
