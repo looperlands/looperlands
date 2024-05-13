@@ -602,7 +602,7 @@ define(['character'], function (Character) {
             "Check out Layerloot <a target='_blank' href='https://www.layerloot.io/'>here</a>!"
         ],
         "JIMBIT": [
-            "Welcome to the Rumble Legacy PvP Arena!",
+            "Come battle in our PvP Rumble Legacy arena!",
             "Are you brave enough to face the best?",
             "Show your skills and earn your place in the Hall of Fame!"
         ],
