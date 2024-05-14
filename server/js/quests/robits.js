@@ -1,19 +1,33 @@
 Types = require("../../../shared/js/gametypes");
 quests = [
     {
-        id: "ROBITS_QUEST_1",
-        name: "Overide Protocol 1",
-        startText: [" Welcome to Cyber City! Robits have been hacked! Help us defeat the Sentinels to purify the robits.",
-        "Please help us defeat the Sentinels created by Bitadel."],
-        endText: "Thank you for helping our hacked ronbits. Keep on fighting and we'll take down Bitadel together!",
-        eventType: "KILL_MOB",
-        npc: Types.Entities.ROBITSC1,
-        target: Types.Entities.ROBITSE3,
-        amount: 100,
+        id: "Save the Hamsters Part 1",
+        name: "Save the Hamsters Part 1",
+        startText: ["Someone stole my hamsters!",
+        "Please help me save them by defeating the Red Senitels!"],
+        endText: "Thank you for saving my hamsters!",
+        eventType: "LOOT_ITEM",
+        npc: Types.Entities.BALKSBIT,
+        target: Types.Entities.HAMSTER1,
+        amount: 2,
         level: 1,
         xp: 1000,
         medal: Types.Medals.SKULL
-    }
+    },
+    { 
+        id: "Save the Ducklings Part 1",
+        name: "Save the Ducklings Part 1",
+        startText: ["My little ducklings are missing!",
+        "Please find them for me!"],
+        endText: "Hooray! You found my ducklings!",
+        eventType: "LOOT_ITEM",
+        npc: Types.Entities.HDUCKLEE,
+        target: Types.Entities.DUCKBIT,
+        amount: 20,
+        level: 1,
+        medal: Types.Medals.RAT
+    },
 ];
+
    
 exports.quests = quests;

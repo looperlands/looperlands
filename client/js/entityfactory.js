@@ -880,6 +880,8 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.GREYPOTION]=function(id){
         return new Items.GREYPOTION(id);
     };
+    EntityFactory.builders[Types.Entities.HAMSTER1]=function(id){return new Items.HAMSTER1(id);};
+    EntityFactory.builders[Types.Entities.DUCKBIT]=function(id){return new Items.DUCKBIT(id);};
     // @nextObjectLine@
 
     //====== NPCs ======

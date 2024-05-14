@@ -385,7 +385,9 @@ Types = {
         //mycupbloody
         EYEBALL: 80000005,
         REDPOTION: 80000006,
-        GREYPOTION: 80000007, // @lastidObject@
+        GREYPOTION: 80000007,
+        HAMSTER1: 80000008,
+        DUCKBIT: 80000009, // @lastidObject@
         //@nextIdLineObject@
 
         // NPCs
@@ -6012,6 +6014,8 @@ var kinds = {
     EYEBALL: [Types.Entities.EYEBALL, "object"],
     REDPOTION: [Types.Entities.REDPOTION, "object"],
     GREYPOTION: [Types.Entities.GREYPOTION, "object"],
+    HAMSTER1: [Types.Entities.HAMSTER1, "object"],
+    DUCKBIT: [Types.Entities.DUCKBIT, "object"],
     // @nextObjectLine@
 
     guard: [Types.Entities.GUARD, "npc"],

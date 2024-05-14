@@ -526,8 +526,8 @@ define(['character'], function (Character) {
         ],
         "HDUCKLEE": [
             "I'm HDuckLee!",
-            "Oh no! My ducks are missing!",
-            "Can you help me find them?"
+            "Objection, your Honor!",
+            "Have you heard of Implied Warranty of Habitability?"
         ],
 
         "APEBRAIN1":  [

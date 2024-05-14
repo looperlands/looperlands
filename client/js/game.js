@@ -371,7 +371,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "item-GREYPOTION",
                      //BITCORN PHISHIES
                     "bit_BoneFish", "bit_Corn", "bit_FEET", "bit_freshPrawnce", "bit_JEFF", "bit_Kickle", "bit_maCORNtosh", "bit_MrPunchy", "bit_SnaggletoothEel", "bit_NOPEmato", "cornBootFish", "cornCanFish", "cornWinkyFish",
-                    // @nextObjectLine@
+                                "item-HAMSTER1",
+                                "item-DUCKBIT",
+                                // @nextObjectLine@
                     "NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6",
                     "NFT_38278eacc7d1c86fdbc85d798dca146fbca59a2e5e567dc15898ce2edac21f5f",
                     "NFT_d2fb1ad9308803ea4df2ba6b1fe0930ad4d6443b3ac6468eaedbc9e2c214e57a",
