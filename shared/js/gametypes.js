@@ -385,7 +385,9 @@ Types = {
         //mycupbloody
         EYEBALL: 80000005,
         REDPOTION: 80000006,
-        GREYPOTION: 80000007, // @lastidObject@
+        GREYPOTION: 80000007,
+        HAMSTER1: 80000008,
+        DUCKBIT: 80000009, // @lastidObject@
         //@nextIdLineObject@
 
         // NPCs
@@ -496,7 +498,28 @@ Types = {
         INFERNOID: 34000080,
         KAWAIIPRINCESS: 34000081,
         KAWAIIPRINCESS2: 34000082,
-        ZILEEL: 34000083, // @lastidCharacter@
+        ZILEEL: 34000083,
+        HDUCKLEE: 34000084,
+        APEBRAIN1: 34000085,
+        CORTEZ: 34000086,
+        NICO1: 34000087,
+        JUSTIN: 34000088,
+        GAVIN: 34000089,
+        KARAOKEBIT: 34000090,
+        BALKSBIT: 34000091,
+        BIRDSBIT: 34000092,
+        CRISPYBIT: 34000093,
+        DARIUS: 34000094,
+        SEB: 34000095,
+        NAH: 34000096,
+        FUZZYBIT: 34000097,
+        JIMBIT: 34000098,
+        DSOUZBIT: 34000099,
+        OBSERVER: 34000101,
+        PIZZABIT: 34000102,
+        JACKBIT: 34000103,
+        GENTLEBIT: 34000104,
+        MAGMABIT: 34000105, // @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -5991,6 +6014,8 @@ var kinds = {
     EYEBALL: [Types.Entities.EYEBALL, "object"],
     REDPOTION: [Types.Entities.REDPOTION, "object"],
     GREYPOTION: [Types.Entities.GREYPOTION, "object"],
+    HAMSTER1: [Types.Entities.HAMSTER1, "object"],
+    DUCKBIT: [Types.Entities.DUCKBIT, "object"],
     // @nextObjectLine@
 
     guard: [Types.Entities.GUARD, "npc"],
@@ -6136,6 +6161,27 @@ var kinds = {
     KAWAIIPRINCESS: [Types.Entities.KAWAIIPRINCESS, "npc"],
     KAWAIIPRINCESS2: [Types.Entities.KAWAIIPRINCESS2, "npc"],
     ZILEEL: [Types.Entities.ZILEEL, "npc"],
+    HDUCKLEE: [Types.Entities.HDUCKLEE, "npc"],
+    APEBRAIN1: [Types.Entities.APEBRAIN1, "npc"],
+    CORTEZ: [Types.Entities.CORTEZ, "npc"],
+    NICO1: [Types.Entities.NICO1, "npc"],
+    JUSTIN: [Types.Entities.JUSTIN, "npc"],
+    GAVIN: [Types.Entities.GAVIN, "npc"],
+    KARAOKEBIT: [Types.Entities.KARAOKEBIT, "npc"],
+    BALKSBIT: [Types.Entities.BALKSBIT, "npc"],
+    BIRDSBIT: [Types.Entities.BIRDSBIT, "npc"],
+    CRISPYBIT: [Types.Entities.CRISPYBIT, "npc"],
+    DARIUS: [Types.Entities.DARIUS, "npc"],
+    SEB: [Types.Entities.SEB, "npc"],
+    NAH: [Types.Entities.NAH, "npc"],
+    FUZZYBIT: [Types.Entities.FUZZYBIT, "npc"],
+    JIMBIT: [Types.Entities.JIMBIT, "npc"],
+    DSOUZBIT: [Types.Entities.DSOUZBIT, "npc"],
+    OBSERVER: [Types.Entities.OBSERVER, "npc"],
+    PIZZABIT: [Types.Entities.PIZZABIT, "npc"],
+    JACKBIT: [Types.Entities.JACKBIT, "npc"],
+    GENTLEBIT: [Types.Entities.GENTLEBIT, "npc"],
+    MAGMABIT: [Types.Entities.MAGMABIT, "npc"],
     // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],

@@ -309,6 +309,8 @@ define(['item'], function(Item) {
             this.lootMessage="CACHOW! STAY ALIVE LOOPER!";
         }
     }),
+        HAMSTER1:Item.extend({init:function(id){this._super(id,Types.Entities.HAMSTER1,"object");this.lootMessage="Thank you for saving me!";}}),
+        DUCKBIT:Item.extend({init:function(id){this._super(id,Types.Entities.DUCKBIT,"object");this.lootMessage="Quack Quack";}}),
         // @nextItemLine@
     };
 

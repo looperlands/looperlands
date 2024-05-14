@@ -1064,8 +1064,7 @@ let Properties = {
      ROBITSE3: {
         level: 2,
         drops: {
-            burger: 50,
-            GOLD: 2
+            HAMSTER1: 100
         },
     },
 
@@ -1113,7 +1112,7 @@ let Properties = {
         level: 13,
         drops: {
             burger: 50,
-            GOLD: 50
+            GOLD: 50,
         },
     },
 

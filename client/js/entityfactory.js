@@ -880,6 +880,8 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.GREYPOTION]=function(id){
         return new Items.GREYPOTION(id);
     };
+    EntityFactory.builders[Types.Entities.HAMSTER1]=function(id){return new Items.HAMSTER1(id);};
+    EntityFactory.builders[Types.Entities.DUCKBIT]=function(id){return new Items.DUCKBIT(id);};
     // @nextObjectLine@
 
     //====== NPCs ======
@@ -1152,6 +1154,27 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.KAWAIIPRINCESS2]=function(id){return new NPCs.KAWAIIPRINCESS2(id);};
 
     EntityFactory.builders[Types.Entities.ZILEEL]=function(id){return new NPCs.ZILEEL(id);};
+    EntityFactory.builders[Types.Entities.HDUCKLEE]=function(id){return new NPCs.HDUCKLEE(id);};
+    EntityFactory.builders[Types.Entities.APEBRAIN1]=function(id){return new NPCs.APEBRAIN1(id);};
+    EntityFactory.builders[Types.Entities.CORTEZ]=function(id){return new NPCs.CORTEZ(id);};
+    EntityFactory.builders[Types.Entities.NICO1]=function(id){return new NPCs.NICO1(id);};
+    EntityFactory.builders[Types.Entities.JUSTIN]=function(id){return new NPCs.JUSTIN(id);};
+    EntityFactory.builders[Types.Entities.GAVIN]=function(id){return new NPCs.GAVIN(id);};
+    EntityFactory.builders[Types.Entities.KARAOKEBIT]=function(id){return new NPCs.KARAOKEBIT(id);};
+    EntityFactory.builders[Types.Entities.BALKSBIT]=function(id){return new NPCs.BALKSBIT(id);};
+    EntityFactory.builders[Types.Entities.BIRDSBIT]=function(id){return new NPCs.BIRDSBIT(id);};
+    EntityFactory.builders[Types.Entities.CRISPYBIT]=function(id){return new NPCs.CRISPYBIT(id);};
+    EntityFactory.builders[Types.Entities.DARIUS]=function(id){return new NPCs.DARIUS(id);};
+    EntityFactory.builders[Types.Entities.SEB]=function(id){return new NPCs.SEB(id);};
+    EntityFactory.builders[Types.Entities.NAH]=function(id){return new NPCs.NAH(id);};
+    EntityFactory.builders[Types.Entities.FUZZYBIT]=function(id){return new NPCs.FUZZYBIT(id);};
+    EntityFactory.builders[Types.Entities.JIMBIT]=function(id){return new NPCs.JIMBIT(id);};
+    EntityFactory.builders[Types.Entities.DSOUZBIT]=function(id){return new NPCs.DSOUZBIT(id);};
+    EntityFactory.builders[Types.Entities.OBSERVER]=function(id){return new NPCs.OBSERVER(id);};
+    EntityFactory.builders[Types.Entities.PIZZABIT]=function(id){return new NPCs.PIZZABIT(id);};
+    EntityFactory.builders[Types.Entities.JACKBIT]=function(id){return new NPCs.JACKBIT(id);};
+    EntityFactory.builders[Types.Entities.GENTLEBIT]=function(id){return new NPCs.GENTLEBIT(id);};
+    EntityFactory.builders[Types.Entities.MAGMABIT]=function(id){return new NPCs.MAGMABIT(id);};
     // @nextNPCLine@
 
      //====== FieldEffectss ======
