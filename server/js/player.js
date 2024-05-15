@@ -11,7 +11,6 @@ var cls = require("./lib/class"),
     AltNames = require("../../shared/js/altnames");
 
 const discord = require('./discord.js');
-const axios = require('axios');
 const chat = require("./chat.js");
 const NFTWeapon = require("./nftweapon.js");
 const NFTSpecialItem = require("./nftspecialitem.js");
@@ -20,7 +19,6 @@ const Lakes = require("./lakes.js");
 const Collectables = require("./collectables.js");
 const platform = require('./looperlandsplatformclient.js');
 
-const LOOPWORMS_LOOPERLANDS_BASE_URL = process.env.LOOPWORMS_LOOPERLANDS_BASE_URL;
 const LOOPERLANDS_PLATFORM_BASE_URL = process.env.LOOPERLANDS_PLATFORM_BASE_URL;
 const LOOPERLANDS_PLATFORM_API_KEY = process.env.LOOPERLANDS_PLATFORM_API_KEY;
 
