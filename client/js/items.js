@@ -311,6 +311,8 @@ define(['item'], function(Item) {
     }),
         HAMSTER1:Item.extend({init:function(id){this._super(id,Types.Entities.HAMSTER1,"object");this.lootMessage="Thank you for saving me!";}}),
         DUCKBIT:Item.extend({init:function(id){this._super(id,Types.Entities.DUCKBIT,"object");this.lootMessage="Quack Quack";}}),
+        MILK2:Item.extend({init:function(id){this._super(id,Types.Entities.MILK2,"object");this.lootMessage="";}}),
+        MILK1:Item.extend({init:function(id){this._super(id,Types.Entities.MILK1,"object");this.lootMessage="Yum milk!";}}),
         // @nextItemLine@
     };
 

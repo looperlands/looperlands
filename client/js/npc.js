@@ -638,6 +638,11 @@ define(['character'], function (Character) {
             "Infernoid lies ahead, are you ready to face him?",
             "May the fire of the Magma Chamber guide you."
         ],
+        "ROBITSMAIN": [
+            "Come visit us in Cyber City! :)",
+            "Grab a Cyberbit <a target='_blank' href='https://loopexchange.art/collection/cybercity'>here</a>!",
+            "Beep Boop"
+        ],
         // @nextNPCLine@
     };
 

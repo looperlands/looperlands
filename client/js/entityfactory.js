@@ -882,6 +882,8 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     };
     EntityFactory.builders[Types.Entities.HAMSTER1]=function(id){return new Items.HAMSTER1(id);};
     EntityFactory.builders[Types.Entities.DUCKBIT]=function(id){return new Items.DUCKBIT(id);};
+    EntityFactory.builders[Types.Entities.MILK2]=function(id){return new Items.MILK2(id);};
+    EntityFactory.builders[Types.Entities.MILK1]=function(id){return new Items.MILK1(id);};
     // @nextObjectLine@
 
     //====== NPCs ======
@@ -1175,6 +1177,7 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.JACKBIT]=function(id){return new NPCs.JACKBIT(id);};
     EntityFactory.builders[Types.Entities.GENTLEBIT]=function(id){return new NPCs.GENTLEBIT(id);};
     EntityFactory.builders[Types.Entities.MAGMABIT]=function(id){return new NPCs.MAGMABIT(id);};
+    EntityFactory.builders[Types.Entities.ROBITSMAIN]=function(id){return new NPCs.ROBITSMAIN(id);};
     // @nextNPCLine@
 
      //====== FieldEffectss ======

@@ -27,6 +27,19 @@ quests = [
         level: 1,
         medal: Types.Medals.RAT
     },
+    { 
+        id: "My Milk!",
+        name: "Gather 10 milk cartons please!",
+        startText: ["Have you tried the out the vending machines?",
+        "Gather 10 milk cartons for me please!"],
+        endText: "I love milk!",
+        eventType: "LOOT_ITEM",
+        npc: Types.Entities.KAWAIIPRINCESS,
+        target: Types.Entities.MILK1,
+        amount: 10,
+        level: 1,
+        medal: Types.Medals.RAT
+    },
 ];
 
    

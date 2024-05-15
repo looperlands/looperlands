@@ -1,0 +1,13 @@
+{
+  "id": "ROBITSMAIN",
+  "width": 16,
+  "height": 16,
+  "animations": {
+    "idle_down": {
+      "length": 2,
+      "row": 0
+    }
+  },
+  "offset_x": -4,
+  "offset_y": -8
+}
