@@ -387,7 +387,9 @@ Types = {
         REDPOTION: 80000006,
         GREYPOTION: 80000007,
         HAMSTER1: 80000008,
-        DUCKBIT: 80000009, // @lastidObject@
+        DUCKBIT: 80000009,
+        MILK2: 80000010,
+        MILK1: 80000011, // @lastidObject@
         //@nextIdLineObject@
 
         // NPCs
@@ -519,7 +521,8 @@ Types = {
         PIZZABIT: 34000102,
         JACKBIT: 34000103,
         GENTLEBIT: 34000104,
-        MAGMABIT: 34000105, // @lastidCharacter@
+        MAGMABIT: 34000105,
+        ROBITSMAIN: 34000106, // @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -6017,6 +6020,8 @@ var kinds = {
     GREYPOTION: [Types.Entities.GREYPOTION, "object"],
     HAMSTER1: [Types.Entities.HAMSTER1, "object"],
     DUCKBIT: [Types.Entities.DUCKBIT, "object"],
+    MILK2: [Types.Entities.MILK2, "object"],
+    MILK1: [Types.Entities.MILK1, "object"],
     // @nextObjectLine@
 
     guard: [Types.Entities.GUARD, "npc"],
@@ -6183,6 +6188,7 @@ var kinds = {
     JACKBIT: [Types.Entities.JACKBIT, "npc"],
     GENTLEBIT: [Types.Entities.GENTLEBIT, "npc"],
     MAGMABIT: [Types.Entities.MAGMABIT, "npc"],
+    ROBITSMAIN: [Types.Entities.ROBITSMAIN, "npc"],
     // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],
