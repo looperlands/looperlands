@@ -658,7 +658,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                         }
                         imgTag = "<div class='item panelBorder'>" +
                             "<div class='tooltiptext pixel-corners-xs'><span class='tooltipHighlight'>Level " + item.level + "</span> " + item.name + " (" + item.trait + ")</div>" +
-                            "<img id='" + item.nftId + "' style='width: 32px; height: 32px; object-fit: none; object-position: 0 4px; cursor: pointer;' src='"+ normalURL +"' onerror='this.src=\""+ errorURL + "\"; $(this).css({objectPosition: \"0 -400px\"});' />" +
+                            "<img id='" + item.nftId + "' style='width: 32px; height: 32px; object-fit: none; object-position: 0 4px; cursor: pointer;' src='"+ normalURL +"' onerror='this.onerror=null;this.src=\""+ errorURL + "\"; $(this).css({objectPosition: \"0 -400px\"});' />" +
                             "</div>";
                         inventoryHtml += imgTag;
                     });
