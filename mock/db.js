@@ -6,6 +6,11 @@ module.exports = () => ({
             "value": true
         },
         {
+            "wallet": "0x1e8ab2cc09be581530bb9f3ac94353f6f7412239",
+            "nft": "0x4ede3a2b9bb3f72d5e863220dfeb42c9c3c0edeca93a5ea154fe968c269fa097",
+            "value": true
+        },
+        {
             "nft": "0xf191c9b7356efec0a4ed4995f0de39f976f8b7451949e3cbfe15753dac6d1c99",
             "wallet": "0x6fc60be0cce2730b78ad29d732d823866c07baa0",
             "value": true
@@ -67,6 +72,20 @@ module.exports = () => ({
         {
             "collection": "Cyber City",
             "wallet": "0xE60fAE1702F7552a782de54014bb08c579b1a73A",
+            "value": true
+        }
+    ],
+    "collection_ownership": [
+        {
+            "collection": "itsaonesieparty",
+            "wallet": "0x1e8ab2cc09be581530bb9f3ac94353f6f7412239",
+            "value": true
+        }
+    ],
+    "collection_ownership": [
+        {
+            "collection": "LoopChucks",
+            "wallet": "0x3ce2acf605a0e5f7643518acaf9f99ce649e2c3f",
             "value": true
         }
     ],
