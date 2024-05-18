@@ -360,7 +360,9 @@ module.exports = Player = Character.extend({
                 let botId = message[2];
                 if (botId !== 0) {
                     let bot = self.server.getEntityById(botId);
-                    bot.handleHurt(mob);
+                    if (bot !== undefined) {
+                        bot.handleHurt(mob);
+                    }
                 } else if (mob instanceof Mob) {
                     let kindString = Types.getKindAsString(mob.kind);
                     let aoeProps = Properties[kindString].aoe;
