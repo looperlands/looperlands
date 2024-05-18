@@ -153,9 +153,10 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
                     this.continueTo(x, y);
                 }
                 else {
-                    var path = this.requestPathfindingTo(x, y);
-                
-                    this.followPath(path);
+                    let self = this;
+                    this.requestPathfindingTo(x, y).then(function(path){
+                        self.followPath(path);
+                    })
                 }
             }
         },
@@ -258,15 +259,16 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
         			if(this.hasChangedItsPath()) {
         				x = this.newDestination.x;
         				y = this.newDestination.y;
-        				path = this.requestPathfindingTo(x, y);
-                
-                        this.newDestination = null;
-        				if(path.length < 2) {
-                            stop = true;
-                        }
-                        else {
-                            this.followPath(path);
-                        }
+                        let self = this;
+                        this.requestPathfindingTo(x, y).then(function(path){
+                            self.newDestination = null;
+                            if(path.length < 2) {
+                                stop = true;
+                            }
+                            else {
+                                self.followPath(path);
+                            }
+                        })
         			}
         			else if(this.hasNextStep()) {
         				this.step += 1;

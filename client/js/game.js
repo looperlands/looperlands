@@ -7003,12 +7003,21 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     });
 
                     self.player.onRequestPath(function(x, y) {
-                        var ignored = [self.player]; // Always ignore self
-
-                        if(self.player.hasTarget()) {
-                            ignored.push(self.player.target);
-                        }
-                        return self.findPath(self.player, x, y, ignored);
+                        return new Promise((resolve, reject) => {
+                            try {
+                                var ignored = [self.player]; // Always ignore self
+                    
+                                if (self.player.hasTarget()) {
+                                    ignored.push(self.player.target);
+                                }
+                    
+                                self.findPath(self.player, x, y, ignored)
+                                    .then(path => resolve(path))
+                                    .catch(error => reject(error));
+                            } catch (error) {
+                                reject(error);
+                            }
+                        });
                     });
 
                     self.player.onDeath(function() {
@@ -7235,25 +7244,34 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                         });
 
                                         entity.onRequestPath(function(x, y) {
-                                            var ignored = [entity], // Always ignore self
-                                                ignoreTarget = function(target) {
-                                                    ignored.push(target);
-
-                                                    // also ignore other attackers of the target entity
-                                                    target.forEachAttacker(function(attacker) {
-                                                        ignored.push(attacker);
-                                                    });
-                                                };
-
-                                            if(entity.hasTarget()) {
-                                                ignoreTarget(entity.target);
-                                            } else if(entity.previousTarget) {
-                                                // If repositioning before attacking again, ignore previous target
-                                                // See: tryMovingToADifferentTile()
-                                                ignoreTarget(entity.previousTarget);
-                                            }
-
-                                            return self.findPath(entity, x, y, ignored);
+                                            return new Promise((resolve, reject) => {
+                                                try {
+                                                    var ignored = [entity]; // Always ignore self
+                                        
+                                                    var ignoreTarget = function(target) {
+                                                        ignored.push(target);
+                                        
+                                                        // also ignore other attackers of the target entity
+                                                        target.forEachAttacker(function(attacker) {
+                                                            ignored.push(attacker);
+                                                        });
+                                                    };
+                                        
+                                                    if (entity.hasTarget()) {
+                                                        ignoreTarget(entity.target);
+                                                    } else if (entity.previousTarget) {
+                                                        // If repositioning before attacking again, ignore previous target
+                                                        // See: tryMovingToADifferentTile()
+                                                        ignoreTarget(entity.previousTarget);
+                                                    }
+                                        
+                                                    self.findPath(entity, x, y, ignored)
+                                                        .then(path => resolve(path))
+                                                        .catch(error => reject(error));
+                                                } catch (error) {
+                                                    reject(error);
+                                                }
+                                            });
                                         });
 
                                         entity.onDeath(function() {
@@ -8231,32 +8249,42 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
              * The path will pass through any entity present in the ignore list.
              */
             findPath: function(character, x, y, ignoreList) {
-                var self = this,
-                    grid = this.finalPathingGrid,
-                    path = [],
-                    isPlayer = (character === this.player);
-
-
-                if(this.map.isColliding(x, y)) {
-                    return path;
-                }
-
-                if(this.pathfinder && character) {
-                    if(ignoreList) {
-                        _.each(ignoreList, function(entity) {
-                            self.pathfinder.ignoreEntity(entity);
-                        });
+                let self = this;
+                let grid = this.finalPathingGrid;
+                return new Promise((resolve, reject) => {
+                    let path = [];
+            
+                    if (self.map.isColliding(x, y)) {
+                        resolve(path);
+                        return;
                     }
-
-                    path = this.pathfinder.findPath(grid, character, x, y, false);
-
-                    if(ignoreList) {
-                        this.pathfinder.clearIgnoreList();
+            
+                    if (self.pathfinder && character) {
+                        if (ignoreList) {
+                            _.each(ignoreList, function(entity) {
+                                self.pathfinder.ignoreEntity(entity);
+                            });
+                        }
+            
+                        self.pathfinder.findPath(grid, character, x, y, false)
+                            .then(foundPath => {
+                                path = foundPath;
+                                if (ignoreList) {
+                                    self.pathfinder.clearIgnoreList();
+                                }
+                                resolve(path);
+                            })
+                            .catch(error => {
+                                if (ignoreList) {
+                                    self.pathfinder.clearIgnoreList();
+                                }
+                                reject(error);
+                            });
+                    } else {
+                        console.error("Error while finding the path to " + x + ", " + y + " for " + character.id);
+                        resolve(path); // resolve with empty path on error
                     }
-                } else {
-                    console.error("Error while finding the path to "+x+", "+y+" for "+character.id);
-                }
-                return path;
+                });
             },
 
             /**

@@ -21,21 +21,27 @@ define(['lib/astar'], function(AStar) {
         },
     
         findPath: function(grid, entity, x, y, findIncomplete) {
-            var start = [entity.gridX, entity.gridY],
-        		end = [x, y],
-        		path;
-
-            this.grid = grid;
-        	this.applyIgnoreList_(true);
-            path = AStar(this.grid, start, end);
+            return new Promise((resolve, reject) => {
+                try {
+                    var start = [entity.gridX, entity.gridY],
+                        end = [x, y],
+                        path;
         
-            if(path.length === 0 && findIncomplete === true) {
-                // If no path was found, try and find an incomplete one
-                // to at least get closer to destination.
-                path = this.findIncompletePath_(start, end);
-            }
+                    this.grid = grid;
+                    this.applyIgnoreList_(true);
+                    path = AStar(this.grid, start, end);
         
-            return path;
+                    if(path.length === 0 && findIncomplete === true) {
+                        // If no path was found, try and find an incomplete one
+                        // to at least get closer to destination.
+                        path = this.findIncompletePath_(start, end);
+                    }
+        
+                    resolve(path);
+                } catch (error) {
+                    reject(error);
+                }
+            });
         },
     
         /**
