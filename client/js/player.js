@@ -91,7 +91,9 @@ define(['character', 'exceptions', '../../shared/js/gametypes'], function(Charac
         },
     
         setWeaponName: function(name) {
-            this.weaponName = name;
+            if(name !== null) {
+                this.weaponName = name;
+            }
         },
     
         hasWeapon: function() {
