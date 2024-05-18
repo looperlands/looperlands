@@ -68,7 +68,9 @@ define(['character', 'exceptions', '../../shared/js/gametypes'], function(Charac
         },
     
         setSpriteName: function(name) {
-            this.spriteName = name;
+            if(name !== null) {
+                this.spriteName = name;
+            }
         },
         
         getArmorName: function() {
