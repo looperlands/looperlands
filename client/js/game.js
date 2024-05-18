@@ -1,9 +1,9 @@
 define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile',
-        'warrior', 'gameclient', 'audio', 'updater', 'transition', 'pathfinder',
+        'warrior', 'gameclient', 'audio', 'updater', 'transition',
         'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'fieldeffect', 'config', 'float', 'projectile', '../../shared/js/gametypes', '../../shared/js/altnames'],
 
     function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, AnimatedTile,
-             Warrior, GameClient, AudioManager, Updater, Transition, Pathfinder,
+             Warrior, GameClient, AudioManager, Updater, Transition,
              Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, Fieldeffect, Config, Float, Projectile) {
         var Game = Class.extend({
             init: function (app) {
