@@ -112,7 +112,6 @@ class LooperLandsPlatformClient {
     async checkOwnershipOfCollection(collection, wallet) {
         try {
             const url = `/api/collection/${collection}/owns?wallet=${wallet}`;
-            console.log(url);
             const response = await this.client.get(url);
             return response.data;
         } catch (error) {
