@@ -1,9 +1,9 @@
 define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile',
-        'warrior', 'gameclient', 'audio', 'updater', 'transition', 'pathfinder',
+        'warrior', 'gameclient', 'audio', 'updater', 'transition',
         'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'fieldeffect', 'config', 'float', 'projectile', '../../shared/js/gametypes', '../../shared/js/altnames'],
 
     function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, AnimatedTile,
-             Warrior, GameClient, AudioManager, Updater, Transition, Pathfinder,
+             Warrior, GameClient, AudioManager, Updater, Transition,
              Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, Fieldeffect, Config, Float, Projectile) {
         var Game = Class.extend({
             init: function (app) {
@@ -267,6 +267,31 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 "ROBITSE9",
                                 "ROBITSE10",
                                 "INFERNOID",
+                                "KAWAIIPRINCESS",
+                                "KAWAIIPRINCESS2",
+                                "ZILEEL",
+                                "HDUCKLEE",
+                                "APEBRAIN1",
+                                "CORTEZ",
+                                "NICO1",
+                                "JUSTIN",
+                                "GAVIN",
+                                "KARAOKEBIT",
+                                "BALKSBIT",
+                                "BIRDSBIT",
+                                "CRISPYBIT",
+                                "DARIUS",
+                                "SEB",
+                                "NAH",
+                                "FUZZYBIT",
+                                "JIMBIT",
+                                "DSOUZBIT",
+                                "OBSERVER",
+                                "PIZZABIT",
+                                "JACKBIT",
+                                "GENTLEBIT",
+                                "MAGMABIT",
+                                "ROBITSMAIN",
                                 // @nextCharacterLine@
                     "item-BOARHIDE",
                     "item-THUDKEY",
@@ -347,7 +372,11 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "item-GREYPOTION",
                      //BITCORN PHISHIES
                     "bit_BoneFish", "bit_Corn", "bit_FEET", "bit_freshPrawnce", "bit_JEFF", "bit_Kickle", "bit_maCORNtosh", "bit_MrPunchy", "bit_SnaggletoothEel", "bit_NOPEmato", "cornBootFish", "cornCanFish", "cornWinkyFish",
-                    // @nextObjectLine@
+                                "item-HAMSTER1",
+                                "item-DUCKBIT",
+                                "item-MILK2",
+                                "item-MILK1",
+                                // @nextObjectLine@
                     "NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6",
                     "NFT_38278eacc7d1c86fdbc85d798dca146fbca59a2e5e567dc15898ce2edac21f5f",
                     "NFT_d2fb1ad9308803ea4df2ba6b1fe0930ad4d6443b3ac6468eaedbc9e2c214e57a",
@@ -5742,6 +5771,17 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 "NFT_b4c4d281d2378196e905c8c9ec70a1f4044d3025dd49edc809a995a0a407a442",
                                 "NFT_b9629a043d80605af5e41d110847420b3ceed3154fabc05c9e420f28bb46cbd7",
                                 "NFT_772c4642d34252ab021a20121895a5e4752ae017fda708b1981bd27c85db7676",
+                                "NFT_c02f304ef174ed2f94c6e4d665f2430e198a2fc55050f2609c06801dcab7c674",
+                                "NFT_c13b39f7fa53a0d6f324e9e739dcc6ee02af0ddead0534d8c5bbfa12cfbd39da",
+                                "NFT_a3e52461aef546dccc1e8a286dc3b43c2436023eb3d3ada908651c0dc8988f9d",
+                                "NFT_0000000000000000000000000000000000000000000000000000000000000022",
+                                "NFT_0000000000000000000000000000000000000000000000000000000000000114",
+                                "NFT_63fa62d1d9de3de834689fb8f6bb02f5f1e53d6e7ecfaa26e5ee088f17ae50c6",
+                                "NFT_72c2eb4f152369973da708309fa5863e7988fd42d5ef28d9430e986c6080a048",
+                                "NFT_699da03ed44db02ad5c24279f3522e27e0370ed14da89af684667e38ea5c6ba2",
+                                "NFT_short699da03ed44db02ad5c24279f3522e27e0370ed14da89af684667e38ea5c6ba2",
+                                "NFT_medium699da03ed44db02ad5c24279f3522e27e0370ed14da89af684667e38ea5c6ba2",
+                                "NFT_long699da03ed44db02ad5c24279f3522e27e0370ed14da89af684667e38ea5c6ba2",
                                 // @nextSpriteLine@
                 ];
             },
@@ -6963,12 +7003,21 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     });
 
                     self.player.onRequestPath(function(x, y) {
-                        var ignored = [self.player]; // Always ignore self
-
-                        if(self.player.hasTarget()) {
-                            ignored.push(self.player.target);
-                        }
-                        return self.findPath(self.player, x, y, ignored);
+                        return new Promise((resolve, reject) => {
+                            try {
+                                var ignored = [self.player]; // Always ignore self
+                    
+                                if (self.player.hasTarget()) {
+                                    ignored.push(self.player.target);
+                                }
+                    
+                                self.findPath(self.player, x, y, ignored)
+                                    .then(path => resolve(path))
+                                    .catch(error => reject(error));
+                            } catch (error) {
+                                reject(error);
+                            }
+                        });
                     });
 
                     self.player.onDeath(function() {
@@ -7195,25 +7244,34 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                         });
 
                                         entity.onRequestPath(function(x, y) {
-                                            var ignored = [entity], // Always ignore self
-                                                ignoreTarget = function(target) {
-                                                    ignored.push(target);
-
-                                                    // also ignore other attackers of the target entity
-                                                    target.forEachAttacker(function(attacker) {
-                                                        ignored.push(attacker);
-                                                    });
-                                                };
-
-                                            if(entity.hasTarget()) {
-                                                ignoreTarget(entity.target);
-                                            } else if(entity.previousTarget) {
-                                                // If repositioning before attacking again, ignore previous target
-                                                // See: tryMovingToADifferentTile()
-                                                ignoreTarget(entity.previousTarget);
-                                            }
-
-                                            return self.findPath(entity, x, y, ignored);
+                                            return new Promise((resolve, reject) => {
+                                                try {
+                                                    var ignored = [entity]; // Always ignore self
+                                        
+                                                    var ignoreTarget = function(target) {
+                                                        ignored.push(target);
+                                        
+                                                        // also ignore other attackers of the target entity
+                                                        target.forEachAttacker(function(attacker) {
+                                                            ignored.push(attacker);
+                                                        });
+                                                    };
+                                        
+                                                    if (entity.hasTarget()) {
+                                                        ignoreTarget(entity.target);
+                                                    } else if (entity.previousTarget) {
+                                                        // If repositioning before attacking again, ignore previous target
+                                                        // See: tryMovingToADifferentTile()
+                                                        ignoreTarget(entity.previousTarget);
+                                                    }
+                                        
+                                                    self.findPath(entity, x, y, ignored)
+                                                        .then(path => resolve(path))
+                                                        .catch(error => reject(error));
+                                                } catch (error) {
+                                                    reject(error);
+                                                }
+                                            });
                                         });
 
                                         entity.onDeath(function() {
@@ -8191,32 +8249,42 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
              * The path will pass through any entity present in the ignore list.
              */
             findPath: function(character, x, y, ignoreList) {
-                var self = this,
-                    grid = this.finalPathingGrid,
-                    path = [],
-                    isPlayer = (character === this.player);
-
-
-                if(this.map.isColliding(x, y)) {
-                    return path;
-                }
-
-                if(this.pathfinder && character) {
-                    if(ignoreList) {
-                        _.each(ignoreList, function(entity) {
-                            self.pathfinder.ignoreEntity(entity);
-                        });
+                let self = this;
+                let grid = this.finalPathingGrid;
+                return new Promise((resolve, reject) => {
+                    let path = [];
+            
+                    if (self.map.isColliding(x, y)) {
+                        resolve(path);
+                        return;
                     }
-
-                    path = this.pathfinder.findPath(grid, character, x, y, false);
-
-                    if(ignoreList) {
-                        this.pathfinder.clearIgnoreList();
+            
+                    if (self.pathfinder && character) {
+                        if (ignoreList) {
+                            _.each(ignoreList, function(entity) {
+                                self.pathfinder.ignoreEntity(entity);
+                            });
+                        }
+            
+                        self.pathfinder.findPath(grid, character, x, y, false)
+                            .then(foundPath => {
+                                path = foundPath;
+                                if (ignoreList) {
+                                    self.pathfinder.clearIgnoreList();
+                                }
+                                resolve(path);
+                            })
+                            .catch(error => {
+                                if (ignoreList) {
+                                    self.pathfinder.clearIgnoreList();
+                                }
+                                reject(error);
+                            });
+                    } else {
+                        console.error("Error while finding the path to " + x + ", " + y + " for " + character.id);
+                        resolve(path); // resolve with empty path on error
                     }
-                } else {
-                    console.error("Error while finding the path to "+x+", "+y+" for "+character.id);
-                }
-                return path;
+                });
             },
 
             /**

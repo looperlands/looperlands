@@ -455,6 +455,16 @@ define(['character'], function (Character) {
             "Have you visited Mase's Bar yet?.",
             "Beep Boop.",
         ],
+        "KAWAIIPRINCESS": [
+            "Hi! Im Kawaii Princess!",
+            "Can you help save Cyber City?",
+            "Come visit us at Mox-E's Karaoke Bar!",
+        ],
+        "KAWAIIPRINCESS2": [
+            "What a perfect night for Karaoke!",
+            "Its the end of the month and the weekend!",
+            "Let's kill this love!",
+        ],
 
         //Short Destroyers
         "derrick": [
@@ -508,6 +518,131 @@ define(['character'], function (Character) {
             'Or you can grab an <a target="_blank" href="https://loopexchange.art/collection/riseofthezombiestockweapons">SDU weapon here</a>!'
         ],
         
+      
+        "ZILEEL": [
+            "Thank you for joining us friend!",
+            "Do you want to build a snowman?",
+            "BOOMBAYAH"
+        ],
+        "HDUCKLEE": [
+            "I'm HDuckLee!",
+            "Objection, your Honor!",
+            "Have you heard of Implied Warranty of Habitability?"
+        ],
+
+        "APEBRAIN1":  [
+            "Join the Apebrains army.",
+            "Cyber Kong is controlling our Apebrain friends!",
+            "Team up and let's raid against him.?"
+        ],
+
+        "CORTEZ":  [
+            "Watch your back, kid. This city's glitchier than code.",
+            "Legends speak of a hidden sector, full of treasures and dangers.",
+            "Keep sharp weapons and sharper wits. In Cyber City, they're your lifelines."
+        ],
+
+        "NICO1":  [
+            "Hi! I'm Nico!",
+            "Want to play darts?",
+            "Soju is water."
+        ],
+
+        "JUSTIN":  [
+            "Would you like a drink?",
+            "You ever try diving or mountaineering traveler?",
+            "Enjoy your stay in Cyber City"
+        ],
+
+        "GAVIN":  [
+            "She'd take the world off my shoudlers...",
+            "Cyber City may be a glitchy mess, but it's home.",
+            "ZILEEL is my favorite!"
+        ],
+
+        "KARAOKEBIT":  [
+            "Thank you for visitng Mox-E!",
+            "Here take this Red Envelope!",
+            "Enjoy your time in Cyber City!"
+        ],
+
+        "BALKSBIT": [
+            "Hi im Balks!",
+            "My hamsters have escaped!",
+            "Will you help me find them?"
+        ],
+        "BIRDSBIT": [
+            "Hi friends, Birds here!",
+            "Thank you for visiting Cyber City!",
+            "Birds Boss Raid coming soon!"
+        ],
+        "CRISPYBIT": [
+            "Whats uppp?",
+            "Hi im Crispy",
+            "Are you enjoying Cyber City?"
+        ],
+        "DARIUS": [
+            "Oh, hello there.",
+            "Omae wa mou shindeiru",
+            "Shinra Tensei"
+        ],
+        "SEB": [
+            "Heh, you're new here, aren't you?",
+            "Don't worry, you'll get the hang of it.",
+            "Come back if you need anything."
+        ],
+        "NAH": [
+            "Are you visiting Cyber City?",
+            "I'm Nah, the owner of Mox-E's Karaoke Bar.",
+            "Enjoy your stay!"
+        ],
+        "FUZZYBIT": [
+            "Fuzzy here!",
+            "Have you seen the new NFTs?",
+            "Check out Layerloot <a target='_blank' href='https://www.layerloot.io/'>here</a>!"
+        ],
+        "JIMBIT": [
+            "Come battle in our PvP Rumble Legacy arena!",
+            "Are you brave enough to face the best?",
+            "Show your skills and earn your place in the Hall of Fame!"
+        ],
+        "DSOUZBIT": [
+            "Hi Ds0uz here!",
+            "Check out the Gamer's Galaxie podcast <a target='_blank' href='https://rss.com/podcasts/gamersgalaxie/'>here</a>!",
+            "BEEP BOOP MO$*!"
+        ],
+        "OBSERVER": [
+            "Observer here.",
+            "74K makes the best music.",
+            "Raves coming soon to Cyber City!"
+        ],
+        "PIZZABIT": [
+            "Get your pizza here!",
+            "Ahh, the smell of fresh pizza!",
+            "I'm walking here!"
+        ],
+        "JACKBIT": [
+            "I come from the past to warn you of the future.",
+            "Evil lies within the shadows of Cyber City",
+            "Quickly, you must find the hidden sector and defeat the evil within."
+        ],
+        "GENTLEBIT": [
+            "Welcome to the Cyber Dragon Suites!",
+            "You must own A Cyber Dragon Suite Key to enter your room!",
+            "Buy a piece of Cyber City history <a target='_blank' href='https://loopexchange.art/collection/cybercity'>here</a>!",
+            "How may I be of service?"
+            
+        ],
+        "MAGMABIT": [
+            "Welcome to the Magma Chamber!",
+            "Infernoid lies ahead, are you ready to face him?",
+            "May the fire of the Magma Chamber guide you."
+        ],
+        "ROBITSMAIN": [
+            "Come visit us in Cyber City! :)",
+            "Grab a Cyberbit <a target='_blank' href='https://loopexchange.art/collection/cybercity'>here</a>!",
+            "Beep Boop"
+        ],
         // @nextNPCLine@
     };
 
