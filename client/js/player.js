@@ -1,10 +1,9 @@
+
 define(['character', 'exceptions', '../../shared/js/gametypes'], function(Character, Exceptions) {
 
     var Player = Character.extend({
         MAX_LEVEL: 10,
-        DEFAULT_WEAPON: 'sword1',
-        DEFUALT_ARMOR: 'clotharmor',
-
+    
         init: function(id, name, kind) {
             this._super(id, kind);
         
@@ -14,8 +13,8 @@ define(['character', 'exceptions', '../../shared/js/gametypes'], function(Charac
      		this.nameOffsetY = -10;
         
             // sprites
-            this.spriteName = this.DEFUALT_ARMOR;
-            this.weaponName = this.DEFAULT_WEAPON;
+            this.spriteName = "clotharmor";
+            this.weaponName = "sword1";
         
             // modes
             this.isLootMoving = false;
@@ -88,7 +87,7 @@ define(['character', 'exceptions', '../../shared/js/gametypes'], function(Charac
         },
     
         getWeaponName: function() {
-            return this.weaponName ?? this.DEFAULT_WEAPON;
+            return this.weaponName;
         },
     
         setWeaponName: function(name) {
