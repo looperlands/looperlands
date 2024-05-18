@@ -15,9 +15,8 @@ class NFTSpecialItem{
 
     async loadItemData() {
         let self = this;
-        const response = await dao.getSpecialItems(this.walletId);
-        let item = response.find((item) => item.NFTID === self.nftId);
-        this.experience = item.experience;
+        let item = await dao.getSpecialItem(this.walletId, self.nftId);
+        this.experience = item.xp;
         this.level = Formulas.toolLevel(this.experience);
         this.trait = item.trait;
         if (!this.trait) {

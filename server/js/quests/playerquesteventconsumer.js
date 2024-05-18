@@ -20,7 +20,7 @@ class PlayerQuestEventConsumer extends PlayerEventConsumer {
         "LOOT_ITEM": function(quest, playerCache) {
             if (quest === undefined) { 
                 return false;
-            }            
+            }
             let count = playerCache.gameData.items[quest.target] || 0;
             return count >= quest.amount;
         }
@@ -41,12 +41,12 @@ class PlayerQuestEventConsumer extends PlayerEventConsumer {
         let changedQuests = []
 
         for (let quest of inProgressQuests) {
-            let questID = quest.id || quest.questID;
-            quest = quests.questsByID[questID];
+            let questKey = quest.id || quest.questKey;
+            quest = quests.questsByID[questKey];
             if (completionCheckerFN(quest, event.playerCache)) {
-                dao.setQuestStatus(event.playerCache.nftId, questID, quests.STATES.COMPLETED);
+                dao.setQuestStatus(event.playerCache.nftId, questKey, quests.STATES.COMPLETED);
                 let completedQuests = event.playerCache.gameData.quests[quests.STATES.COMPLETED];
-                let questInCacheFormat = {questID: questID, status: quests.STATES.COMPLETED};
+                let questInCacheFormat = {questKey: questKey, status: quests.STATES.COMPLETED};
                 if (!completedQuests) {
                     event.playerCache.gameData.quests[quests.STATES.COMPLETED] = [questInCacheFormat];
                 }
@@ -54,7 +54,7 @@ class PlayerQuestEventConsumer extends PlayerEventConsumer {
                     event.playerCache.gameData.quests[quests.STATES.COMPLETED].push(questInCacheFormat);
                 }
                 //console.log("inprogress quest: ", event.playerCache.gameData.quests[quests.STATES.IN_PROGRESS]);
-                event.playerCache.gameData.quests[quests.STATES.IN_PROGRESS] = event.playerCache.gameData.quests[quests.STATES.IN_PROGRESS].filter(q => q.id !== questID);
+                event.playerCache.gameData.quests[quests.STATES.IN_PROGRESS] = event.playerCache.gameData.quests[quests.STATES.IN_PROGRESS].filter(q => q.id !== questKey);
                 changedQuests.push(quest);
             }
         }

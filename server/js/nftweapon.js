@@ -18,19 +18,19 @@ class NFTWeapon {
     async loadWeaponData() {
         const response = await dao.loadNFTWeapon(this.walletId, this.nftId);
 
-        this.experience = response.experience;
+        this.experience = response.xp;
         this.trait = response.trait;
         if (!this.trait) {
             await this.#setTraitInServer();
         }
         this.level = Formulas.level(this.experience);
 
-        if(response.weaponClass === 'null') {
-            response.weaponClass = null;
+        if(response.class === 'null') {
+            response.class = null;
         }
         
-        if (response.weaponClass) {
-            this.weaponClass = response.weaponClass;
+        if (response.class) {
+            this.weaponClass = response.class;
         } else if (this.isRanged()) {
             this.weaponClass = "bow";
         }

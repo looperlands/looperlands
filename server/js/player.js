@@ -11,7 +11,6 @@ var cls = require("./lib/class"),
     AltNames = require("../../shared/js/altnames");
 
 const discord = require('./discord.js');
-const axios = require('axios');
 const chat = require("./chat.js");
 const NFTWeapon = require("./nftweapon.js");
 const NFTSpecialItem = require("./nftspecialitem.js");
@@ -20,7 +19,6 @@ const Lakes = require("./lakes.js");
 const Collectables = require("./collectables.js");
 const platform = require('./looperlandsplatformclient.js');
 
-const LOOPWORMS_LOOPERLANDS_BASE_URL = process.env.LOOPWORMS_LOOPERLANDS_BASE_URL;
 const LOOPERLANDS_PLATFORM_BASE_URL = process.env.LOOPERLANDS_PLATFORM_BASE_URL;
 const LOOPERLANDS_PLATFORM_API_KEY = process.env.LOOPERLANDS_PLATFORM_API_KEY;
 
@@ -868,27 +866,27 @@ module.exports = Player = Character.extend({
         let cache = this.server.server.cache.get(this.sessionId);
         let gameData = cache.gameData;
 
-        let consumables = gameData.consumables;
-        if (consumables === undefined) {
+        let items = gameData.items;
+        if (items === undefined) {
             return 0;
         }
 
-        return consumables[kind] || 0;
+        return items[kind] || 0;
     },
 
     incrementResourceAmount: function (kind, amount) {
         let cache = this.server.server.cache.get(this.sessionId);
         let gameData = cache.gameData;
 
-        if (gameData.consumables === undefined) {
-            gameData.consumables = {};
+        if (gameData.items === undefined) {
+            gameData.items = {};
         }
 
-        let itemCount = gameData.consumables[kind];
+        let itemCount = gameData.items[kind];
         if (itemCount) {
-            gameData.consumables[kind] = itemCount + amount;
+            gameData.items[kind] = itemCount + amount;
         } else {
-            gameData.consumables[kind] = amount;
+            gameData.items[kind] = amount;
         }
 
         cache.gameData = gameData;
@@ -1044,15 +1042,15 @@ module.exports = Player = Character.extend({
         let cache = this.server.server.cache.get(this.sessionId);
         let gameData = cache.gameData;
 
-        if (gameData.consumables === undefined) {
-            gameData.consumables = {};
+        if (gameData.items === undefined) {
+            gameData.items = {};
         }
 
-        let itemCount = gameData.consumables[consumable];
+        let itemCount = gameData.items[consumable];
         if (itemCount) {
-            gameData.consumables[consumable] = itemCount + 1;
+            gameData.items[consumable] = itemCount + 1;
         } else {
-            gameData.consumables[consumable] = 1;
+            gameData.items[consumable] = 1;
         }
 
         cache.gameData = gameData;
@@ -1062,10 +1060,10 @@ module.exports = Player = Character.extend({
     consumeItem: function (item) {
         let cache = this.server.server.cache.get(this.sessionId);
         let gameData = cache.gameData;
-        if (gameData.consumables === undefined) {
-            gameData.consumables = {};
+        if (gameData.items === undefined) {
+            gameData.items = {};
         }
-        let itemCount = gameData.consumables[item];
+        let itemCount = gameData.items[item];
 
         let cooldownData = Collectables.getCooldownData(item);
         let cooldownGroup = cooldownData.group !== undefined ? cooldownData.group : "";
@@ -1076,7 +1074,7 @@ module.exports = Player = Character.extend({
             Collectables.consume(item, this);
             dao.saveConsumable(this.nftId, item, -1);
 
-            gameData.consumables[item] = itemCount - 1;
+            gameData.items[item] = itemCount - 1;
             cache.gameData = gameData;
             this.server.server.cache.set(this.sessionId, cache);
 

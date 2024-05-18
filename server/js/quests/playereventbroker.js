@@ -91,15 +91,15 @@ class PlayerEventBroker {
             amount = amount * Collectables.getCollectAmount(item.kind);
             dao.saveConsumable(this.player.nftId, kind, amount);
 
-            if (gameData.consumables === undefined) {
-                gameData.consumables = {};
+            if (gameData.items === undefined) {
+                gameData.items = {};
             }
         
-            let itemCount = gameData.consumables[kind];
+            let itemCount = gameData.items[kind];
             if (itemCount) {
-                gameData.consumables[kind] = itemCount + amount;
+                gameData.items[kind] = itemCount + amount;
             } else {
-                gameData.consumables[kind] = amount;
+                gameData.items[kind] = amount;
             }
         
             playerCache.gameData = gameData;
