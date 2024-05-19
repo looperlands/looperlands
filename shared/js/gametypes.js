@@ -531,7 +531,8 @@ Types = {
         OCARINABIT: 34000112,
         WENMOONBIT: 34000113,
         FEDORABIT: 34000114,
-        APEBRAINOG: 34000115, // @lastidCharacter@
+        APEBRAINOG: 34000115,
+        SIREN: 34000116, // @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -6221,6 +6222,7 @@ var kinds = {
     WENMOONBIT: [Types.Entities.WENMOONBIT, "npc"],
     FEDORABIT: [Types.Entities.FEDORABIT, "npc"],
     APEBRAINOG: [Types.Entities.APEBRAINOG, "npc"],
+    SIREN: [Types.Entities.SIREN, "npc"],
     // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],

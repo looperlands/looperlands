@@ -405,6 +405,7 @@ define(['npc'], function(Npc) {
         WENMOONBIT: Npc.extend({init: function(id) {this._super(id, Types.Entities.WENMOONBIT, 1);}}),
         FEDORABIT: Npc.extend({init: function(id) {this._super(id, Types.Entities.FEDORABIT, 1);}}),
         APEBRAINOG: Npc.extend({init: function(id) {this._super(id, Types.Entities.APEBRAINOG, 1);}}),
+        SIREN: Npc.extend({init: function(id) {this._super(id, Types.Entities.SIREN, 1);}}),
         // @nextNPCLine@
     };
     

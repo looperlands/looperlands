@@ -301,6 +301,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 "WENMOONBIT",
                                 "FEDORABIT",
                                 "APEBRAINOG",
+                                "SIREN",
                                 // @nextCharacterLine@
                     "item-BOARHIDE",
                     "item-THUDKEY",

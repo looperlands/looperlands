@@ -684,6 +684,11 @@ define(['character'], function (Character) {
             "Hi my name is Jinzo!",
             "Check out my Apebrain Collection <a target='_blank' href='https://loopexchange.art/collection/apebrain'>here</a>!"
         ],
+        "SIREN": [
+            "Legends say that Sirens have held the Arden Depths captive since the beginning of time.",
+            "Check out my Apebrain Collection <a target='_blank' href='https://loopexchange.art/collection/sirensoftheardendepths'>here</a>!",
+            "Embrace the Siren's song!"
+        ],
         // @nextNPCLine@
     };
 
