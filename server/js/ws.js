@@ -1060,7 +1060,7 @@ WS.socketIOServer = Server.extend({
             if (itemCount) {
                 gameData.items[item.item] = itemCount + (item.amount ?? 1);
             } else {
-                gameData.itemsventory[item.item] = (item.amount ?? 1);
+                gameData.items[item.item] = (item.amount ?? 1);
             }
 
             // Store changes in session data
