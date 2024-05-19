@@ -396,7 +396,11 @@ define(['npc'], function(Npc) {
         GENTLEBIT: Npc.extend({init: function(id) {this._super(id, Types.Entities.GENTLEBIT, 1);}}),
         MAGMABIT: Npc.extend({init: function(id) {this._super(id, Types.Entities.MAGMABIT, 1);}}),
         ROBITSMAIN: Npc.extend({init: function(id) {this._super(id, Types.Entities.ROBITSMAIN, 1);}}),
-        // @nextNPCLine@
+        APEBRAINOG: Npc.extend({init: function(id) {this._super(id, Types.Entities.APEBRAINOG, 1);}}),
+        ARTWHITE: Npc.extend({init: function(id) {this._super(id, Types.Entities.ARTWHITE, 1);}}),
+        ARTWHITEBIT: Npc.extend({init: function(id) {this._super(id, Types.Entities.ARTWHITEBIT, 1);}}),
+        BIDENBIT: Npc.extend({init: function(id) {this._super(id, Types.Entities.BIDENBIT, 1);}}),
+
     };
     
     return NPCs;

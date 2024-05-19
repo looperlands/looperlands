@@ -1166,6 +1166,21 @@ let Properties = {
         redpacket: true,
         respawnDelay: 180000
     },
+
+    CYBERKONG: {
+        level: 25,
+        drops: {
+            burger: 50,
+            GOLD: 50,
+            GOLD2: 10,
+            GOLD3: 2,
+        },
+        messages: ['Shinu!'],
+        armorMod: 2.2,
+        xp: 18000,
+        redpacket: true,
+        respawnDelay: 180000
+    },
     //m88n Mobs
     balloondogb: {
         level: 2,

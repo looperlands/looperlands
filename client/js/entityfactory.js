@@ -674,6 +674,7 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.ROBITSE9]=function(id){return new Mobs.ROBITSE9(id);};
     EntityFactory.builders[Types.Entities.ROBITSE10]=function(id){return new Mobs.ROBITSE10(id);};
     EntityFactory.builders[Types.Entities.INFERNOID]=function(id){return new Mobs.INFERNOID(id);};
+    EntityFactory.builders[Types.Entities.CYBERKONG]=function(id){return new Mobs.CYBERKONG(id);};
     // @nextMobLine@
     //===== items ======
  
@@ -1178,7 +1179,11 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.GENTLEBIT]=function(id){return new NPCs.GENTLEBIT(id);};
     EntityFactory.builders[Types.Entities.MAGMABIT]=function(id){return new NPCs.MAGMABIT(id);};
     EntityFactory.builders[Types.Entities.ROBITSMAIN]=function(id){return new NPCs.ROBITSMAIN(id);};
-    // @nextNPCLine@
+    EntityFactory.builders[Types.Entities.APEBRAINOG]=function(id){return new NPCs.APEBRAINOG(id);};
+    EntityFactory.builders[Types.Entities.ARTWHITE]=function(id){return new NPCs.ARTWHITE(id);};
+    EntityFactory.builders[Types.Entities.ARTWHITEBIT]=function(id){return new NPCs.ARTWHITEBIT(id);};
+    EntityFactory.builders[Types.Entities.BIDENBIT]=function(id){return new NPCs.BIDENBIT(id);};
+
 
      //====== FieldEffectss ======
 

@@ -57,7 +57,7 @@ module.exports = () => ({
         },
         {
             "nft": "0x2766c74ebb9f13604cb947be9ab6e2f8e39b82a23345b8bff7415e1adabe06f5",
-            "wallet": "0xE60fAE1702F7552a782de54014bb08c579b1a73A",
+            "wallet": "0xbb88a83d6fe4594e8c7b65da3ef69d8defd56679",
             "value": true
         }
     ],

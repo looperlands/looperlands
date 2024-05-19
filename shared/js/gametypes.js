@@ -522,7 +522,17 @@ Types = {
         JACKBIT: 34000103,
         GENTLEBIT: 34000104,
         MAGMABIT: 34000105,
-        ROBITSMAIN: 34000106, // @lastidCharacter@
+        ROBITSMAIN: 34000106,
+        CYBERKONG: 34000107,
+        APEBRAINOG: 34000108,
+        ARTWHITE: 34000109,
+        ARTWHITEBIT: 34000110,
+        BIDENBIT: 34000111,
+        DFVBIT: 34000112,
+        FEDORABIT: 34000113,
+        OCARINABIT: 34000114,
+        PRINCEBIT: 34000115,
+        WENMOONBIT: 34000116, // @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -6197,6 +6207,16 @@ var kinds = {
     GENTLEBIT: [Types.Entities.GENTLEBIT, "npc"],
     MAGMABIT: [Types.Entities.MAGMABIT, "npc"],
     ROBITSMAIN: [Types.Entities.ROBITSMAIN, "npc"],
+    CYBERKONG: [Types.Entities.CYBERKONG, "mob"],
+    APEBRAINOG: [Types.Entities.APEBRAINOG, "npc"],
+    ARTWHITE: [Types.Entities.ARTWHITE, "npc"],
+    ARTWHITEBIT: [Types.Entities.ARTWHITEBIT, "npc"],
+    BIDENBIT: [Types.Entities.BIDENBIT, "npc"],
+    DFVBIT: [Types.Entities.DFVBIT, "npc"],
+    FEDORABIT: [Types.Entities.FEDORABIT, "npc"],
+    OCARINABIT: [Types.Entities.OCARINABIT, "npc"],
+    PRINCEBIT: [Types.Entities.PRINCEBIT, "npc"],
+    WENMOONBIT: [Types.Entities.WENMOONBIT, "npc"],
     // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],

@@ -643,6 +643,48 @@ define(['character'], function (Character) {
             "Grab a Cyberbit <a target='_blank' href='https://loopexchange.art/collection/cybercity'>here</a>!",
             "Beep Boop"
         ],
+        "APEBRAINOG": [
+            "Hi my name is Jinzo!",
+            "Check out my Apebrain Collection <a target='_blank' href='https://loopexchange.art/collection/apebrain'>here</a>!"
+        ],
+        "ARTWHITE": [
+            "Hi friend ArtWhite here! :)",
+            "Come eat some Burgers at Burgercats!",
+            "Thank you for visiting!"
+        ],
+        "ARTWHITEBIT": [
+            "Hi friend! I was created by both ArtWhite and Robits!",
+            "You might be able to grab me as an Avatar <a target='_blank' href='https://loopexchange.art/collection/cybercity'>here</a>!",
+            "I love burgercats!"
+        ],
+        "BIDENBIT": [
+            "zZz",
+        ],
+        "DFVBIT": [
+            "A few things I am not. I am not a cat.",
+            "Ya got a meme buddy?",
+            "Hang in there!"
+        ],
+       
+        "FEDORABIT": [
+            "Hi im Fedora!",
+            "Check out FedoraVerse <a target='_blank' href='https://loopexchange.art/collection/fedoraverse3'>here</a>!",
+            "Beep Boop"
+        ],
+        "OCARINABIT": [
+            "Hi I'm Ocarina!",
+            "Welcome to the Tea room!",
+        ],
+        "PRINCEBIT": [
+            "Have you seen Joe?",
+            "I hear MRM Labs has a map coming soon.",
+            "Inkheads are the best!"
+        ],
+        "WENMOONBIT": [
+            "Hey there I was sent by m88nwalker!",
+            "Have you signed up for Collection Wars yet?",
+            "Check out Collection Wars <a target='_blank' href='https://l2-nfts.com/'>here</a>!"
+        ],
         // @nextNPCLine@
     };
 
