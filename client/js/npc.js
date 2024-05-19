@@ -649,6 +649,41 @@ define(['character'], function (Character) {
             "Hang in there!"
         ],
 
+        "PRINCEBIT": [
+            "Have you seen Joe?",
+            "I hear MRM Labs has a map coming soon.",
+            "Inkheads are the best!"
+        ],
+        "BIDENBIT": [
+            "zZz",
+        ],
+        "ARTWHITE": [
+            "Hi friend ArtWhite here! :)",
+            "Come eat some Burgers at Burgercats!",
+            "Thank you for visiting!"
+        ],
+        "ARTWHITEROBIT": [
+            "Hi friend! I was created by both ArtWhite and Robits!",
+            "You might be able to grab me as an Avatar <a target='_blank' href='https://loopexchange.art/collection/cybercity'>here</a>!",
+            "I love burgercats!"
+        ],
+        "OCARINABIT": [
+            "Hi I'm Ocarina!",
+            "Welcome to the Tea room!",
+        ],
+        "WENMOONBIT":  [
+            "Hey there I was sent by m88nwalker!",
+            "Have you signed up for Collection Wars yet?",
+            "Check out Collection Wars <a target='_blank' href='https://l2-nfts.com/'>here</a>!"
+        ],
+        "FEDORABIT":  [
+            "Hi im Fedora!",
+            "Check out FedoraVerse <a target='_blank' href='https://loopexchange.art/collection/fedoraverse3'>here</a>!",
+        ],
+        "APEBRAINOG": [
+            "Hi my name is Jinzo!",
+            "Check out my Apebrain Collection <a target='_blank' href='https://loopexchange.art/collection/apebrain'>here</a>!"
+        ],
         // @nextNPCLine@
     };
 

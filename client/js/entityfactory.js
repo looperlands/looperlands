@@ -1179,6 +1179,14 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.MAGMABIT]=function(id){return new NPCs.MAGMABIT(id);};
     EntityFactory.builders[Types.Entities.ROBITSMAIN]=function(id){return new NPCs.ROBITSMAIN(id);};
     EntityFactory.builders[Types.Entities.DFVBIT]=function(id){return new NPCs.DFVBIT(id);};
+    EntityFactory.builders[Types.Entities.PRINCEBIT]=function(id){return new NPCs.PRINCEBIT(id);};
+    EntityFactory.builders[Types.Entities.BIDENBIT]=function(id){return new NPCs.BIDENBIT(id);};
+    EntityFactory.builders[Types.Entities.ARTWHITE]=function(id){return new NPCs.ARTWHITE(id);};
+    EntityFactory.builders[Types.Entities.ARTWHITEROBIT]=function(id){return new NPCs.ARTWHITEROBIT(id);};
+    EntityFactory.builders[Types.Entities.OCARINABIT]=function(id){return new NPCs.OCARINABIT(id);};
+    EntityFactory.builders[Types.Entities.WENMOONBIT]=function(id){return new NPCs.WENMOONBIT(id);};
+    EntityFactory.builders[Types.Entities.FEDORABIT]=function(id){return new NPCs.FEDORABIT(id);};
+    EntityFactory.builders[Types.Entities.APEBRAINOG]=function(id){return new NPCs.APEBRAINOG(id);};
     // @nextNPCLine@
 
      //====== FieldEffectss ======
