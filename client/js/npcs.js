@@ -396,6 +396,7 @@ define(['npc'], function(Npc) {
         GENTLEBIT: Npc.extend({init: function(id) {this._super(id, Types.Entities.GENTLEBIT, 1);}}),
         MAGMABIT: Npc.extend({init: function(id) {this._super(id, Types.Entities.MAGMABIT, 1);}}),
         ROBITSMAIN: Npc.extend({init: function(id) {this._super(id, Types.Entities.ROBITSMAIN, 1);}}),
+        DFVBIT: Npc.extend({init: function(id) {this._super(id, Types.Entities.DFVBIT, 1);}}),
         // @nextNPCLine@
     };
     

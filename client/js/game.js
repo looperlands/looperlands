@@ -292,6 +292,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 "GENTLEBIT",
                                 "MAGMABIT",
                                 "ROBITSMAIN",
+                                "DFVBIT",
                                 // @nextCharacterLine@
                     "item-BOARHIDE",
                     "item-THUDKEY",

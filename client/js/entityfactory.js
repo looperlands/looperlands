@@ -1178,6 +1178,7 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.GENTLEBIT]=function(id){return new NPCs.GENTLEBIT(id);};
     EntityFactory.builders[Types.Entities.MAGMABIT]=function(id){return new NPCs.MAGMABIT(id);};
     EntityFactory.builders[Types.Entities.ROBITSMAIN]=function(id){return new NPCs.ROBITSMAIN(id);};
+    EntityFactory.builders[Types.Entities.DFVBIT]=function(id){return new NPCs.DFVBIT(id);};
     // @nextNPCLine@
 
      //====== FieldEffectss ======

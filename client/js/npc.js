@@ -643,6 +643,12 @@ define(['character'], function (Character) {
             "Grab a Cyberbit <a target='_blank' href='https://loopexchange.art/collection/cybercity'>here</a>!",
             "Beep Boop"
         ],
+        "DFVBIT": [
+            "A few things I am not. I am not a cat.",
+            "Ya got a meme buddy?",
+            "Hang in there!"
+        ],
+
         // @nextNPCLine@
     };
 

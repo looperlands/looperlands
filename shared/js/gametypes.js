@@ -522,7 +522,8 @@ Types = {
         JACKBIT: 34000103,
         GENTLEBIT: 34000104,
         MAGMABIT: 34000105,
-        ROBITSMAIN: 34000106, // @lastidCharacter@
+        ROBITSMAIN: 34000106,
+        DFVBIT: 34000107, // @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -6203,6 +6204,7 @@ var kinds = {
     GENTLEBIT: [Types.Entities.GENTLEBIT, "npc"],
     MAGMABIT: [Types.Entities.MAGMABIT, "npc"],
     ROBITSMAIN: [Types.Entities.ROBITSMAIN, "npc"],
+    DFVBIT: [Types.Entities.DFVBIT, "npc"],
     // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],
