@@ -154,9 +154,13 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
                 }
                 else {
                     let self = this;
-                    this.requestPathfindingTo(x, y).then(function(path){
-                        self.followPath(path);
-                    })
+                    try {
+                        this.requestPathfindingTo(x, y).then(function(path){
+                            self.followPath(path);
+                        })
+                    } catch (e) {
+                        console.error(e);
+                    }
                 }
             }
         },
