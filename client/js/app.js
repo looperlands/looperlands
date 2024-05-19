@@ -339,6 +339,7 @@ define(['jquery', 'storage'], function ($, Storage) {
             }
 
             preloaderImg.onerror = () => {
+                preloaderImg.onerror = undefined;
                 let spriteWeaponPath;
                 if (dynamicRangedWeapon) {
                     spriteWeaponPath = this.dynamicNFTIconURL[weapon].replace("/3/", "/1/");
