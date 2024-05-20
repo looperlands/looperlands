@@ -1,7 +1,6 @@
 if [ -z "$LOOPWORMS_API_KEY" ]
   then
-    echo "Missing LOOPWORMS_API_KEY environment variable"
-    exit 1
+    export LOOPWORMS_API_KEY=placeholder
 fi
 if [ $# -ne 5 ]; then
     echo "Usage: $0 <walletId> <nftId> <mapId> <checkpointId> <xp>"
