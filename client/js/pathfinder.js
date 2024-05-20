@@ -1,49 +1,54 @@
 class Pathfinder {
-    constructor(width, height) {
+    constructor(width, height, workerCount = 2) {
         this.width = width;
         this.height = height;
         this.grid = null;
         this.blankGrid = [];
-        this.initBlankGrid_();
         this.ignored = [];
         this.pendingRequests = {};
-        this.worker = new Worker('js/pathfinder-webworker.js');
+        this.workers = [];
+        this.currentWorkerIndex = 0;
 
-        this.worker.onmessage = (e) => {
-            const { requestId, path } = e.data;
-            const resolve = this.pendingRequests[requestId];
-            if (resolve) {
-                resolve(path);
-                delete this.pendingRequests[requestId];
-            }
-        };
+        // Create a pool of workers
+        for (let i = 0; i < workerCount; i++) {
+            const worker = new Worker('js/pathfinder-webworker.js');
+            worker.onmessage = this.handleWorkerMessage.bind(this);
+            this.workers.push(worker);
+        }
     }
 
-    initBlankGrid_() {
-        for (let i = 0; i < this.height; i += 1) {
-            this.blankGrid[i] = [];
-            for (let j = 0; j < this.width; j += 1) {
-                this.blankGrid[i][j] = 0;
-            }
+    handleWorkerMessage(e) {
+        const { requestId, path } = e.data;
+        const resolve = this.pendingRequests[requestId];
+        if (resolve) {
+            resolve(path);
+            delete this.pendingRequests[requestId];
         }
     }
 
     generateUniqueId() {
-        return '_' + Math.random().toString(36).substr(2, 9);
+        return '_' + Math.random().toString(36).substring(2, 9);
     }
 
-    findPath(grid, entity, x, y, findIncomplete) {
+    getNextWorker() {
+        const worker = this.workers[this.currentWorkerIndex];
+        this.currentWorkerIndex = (this.currentWorkerIndex + 1) % this.workers.length;
+        return worker;
+    }
+
+    findPath(grid, entity, x, y) {
         return new Promise((resolve, reject) => {
             try {
                 const start = [entity.gridX, entity.gridY],
                       end = [x, y];
-    
+
                 this.grid = grid;
                 this.applyIgnoreList_(true);
 
                 const requestId = this.generateUniqueId();
                 this.pendingRequests[requestId] = resolve;
-                this.worker.postMessage({
+                const worker = this.getNextWorker();
+                worker.postMessage({
                     requestId: requestId,
                     grid: this.grid,
                     start: start,
