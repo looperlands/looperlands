@@ -6416,6 +6416,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     }
                     if(entity instanceof Item) {
                         this.itemGrid[y][x][entity.id] = entity;
+                        this.pathingGrid[y][x] = 0;
                     }
 
                     this.addToRenderingGrid(entity, x, y);
