@@ -232,7 +232,7 @@ module.exports = Player = Character.extend({
                 if (self.move_callback) {
                     const baseHateAggroHate = 5;
                     const hate = this.playerClassModifiers.hate * baseHateAggroHate; 
-                    self.server.handleMobHate(message[1], self.id, baseHateAggroHate);
+                    self.server.handleMobHate(message[1], self.id, hate);
 
                     // Handle special attack timeouts on encounter start
                     let mob = self.server.getEntityById(message[1]);
@@ -947,6 +947,10 @@ module.exports = Player = Character.extend({
     getMoveSpeed: function () {
         const adjustedLevel = this.getLevel() * this.playerClassModifiers.moveSpeed;
         return Math.round(BASE_SPEED - (adjustedLevel - 1) * 0.33);
+    },
+
+    getStealth: function() {
+        return this.playerClassModifiers.stealth;
     },
 
     pushEntityList: function () {

@@ -9,6 +9,7 @@ class PlayerClassModifiers {
         this._maxHp = 1;
         this._hate = 1;
         this._attackRate = 1;
+        this._stealth = 1;
     }
 
     get playerClass() {
@@ -45,6 +46,10 @@ class PlayerClassModifiers {
 
     get attackRate() {
         return this._attackRate;
+    }
+
+    get stealth() {
+        return this._stealth;
     }
 }
 

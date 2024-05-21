@@ -650,7 +650,8 @@ module.exports = World = cls.Class.extend({
 
     handleMobHate: function (mobId, playerId, hatePoints) {
         var mob = this.getEntityById(mobId),
-            player = this.getEntityById(playerId);
+            player = this.getEntityById(playerId),
+            mostHated;
 
         if (player && mob) {
             mob.increaseHateFor(playerId, hatePoints);
@@ -1153,7 +1154,8 @@ module.exports = World = cls.Class.extend({
                     attackRate: entity.getAttackRate(),
                     inCombat: entity.isInCombat(),
                     x: entity.x,
-                    y: entity.y
+                    y: entity.y,
+                    stealth: entity.getStealth()
                 }
             }
         }
