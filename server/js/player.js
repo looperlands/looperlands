@@ -18,6 +18,7 @@ const PlayerEventBroker = require("./quests/playereventbroker.js");
 const Lakes = require("./lakes.js");
 const Collectables = require("./collectables.js");
 const platform = require('./looperlandsplatformclient.js');
+const PlayerClassModifiers = require('./playerclassmodifiers.js').PlayerClassModifiers;
 
 const LOOPERLANDS_PLATFORM_BASE_URL = process.env.LOOPERLANDS_PLATFORM_BASE_URL;
 const LOOPERLANDS_PLATFORM_API_KEY = process.env.LOOPERLANDS_PLATFORM_API_KEY;
@@ -57,6 +58,8 @@ module.exports = Player = Character.extend({
         this.selectedProjectile = null;
 
         this.playerEventBroker = new PlayerEventBroker.PlayerEventBroker(this);
+
+        this.playerClassModifiers = new PlayerClassModifiers();
 
         this.connection.listen(async function (message) {
 
@@ -227,7 +230,9 @@ module.exports = Player = Character.extend({
             }
             else if (action === Types.Messages.AGGRO) {
                 if (self.move_callback) {
-                    self.server.handleMobHate(message[1], self.id, 5);
+                    const baseHateAggroHate = 5;
+                    const hate = this.playerClassModifiers.hate * baseHateAggroHate; 
+                    self.server.handleMobHate(message[1], self.id, baseHateAggroHate);
 
                     // Handle special attack timeouts on encounter start
                     let mob = self.server.getEntityById(message[1]);
@@ -301,7 +306,8 @@ module.exports = Player = Character.extend({
                             if (dmg > 0) {
                                 mob.receiveDamage(dmg, self.id);
                                 //console.log("Player "+self.id+" hit mob "+mob.id+" for "+dmg+" damage.", mob.type);
-                                self.server.handleMobHate(mob.id, self.id, dmg);
+                                const hate = dmg * self.playerClassModifiers.hate;
+                                self.server.handleMobHate(mob.id, self.id, hate);
                                 self.server.handleHurtEntity(mob, self, dmg);
                             }
                             self.incrementNFTWeaponExperience(dmg);
@@ -587,10 +593,15 @@ module.exports = Player = Character.extend({
         if (mob && this.hitPoints > 0 && !this.invincible) {
             if (damage === undefined) {
                 let level = this.getLevel();
-                let totalLevel = Math.round(level * 0.5); //this is armor
+                let totalLevel = Math.round(level * 0.5) * this.playerClassModifiers.meleeDamageTaken; //this is armor
                 let attackerLevel;
                 if (mob instanceof Player) {
                     attackerLevel = (mob.getWeaponLevel() + mob.getLevel());
+                    if (mob.getNFTWeapon()?.isRanged()) {
+                        attackerLevel *= mob.playerClassModifiers.rangedDamageDealt;
+                    } else {
+                        attackerLevel *= mob.playerClassModifiers.meleeDamageDealt;
+                    }
                     let mobBuff = mob.getActiveBuff();
                     if (mobBuff && mobBuff.stat === "atk") {
                         attackerLevel = attackerLevel * (100 + mobBuff.percent) / 100;
@@ -852,7 +863,7 @@ module.exports = Player = Character.extend({
 
     updateHitPoints: function () {
         let level = this.getLevel();
-        let hp = Formulas.hp(level);
+        let hp = Formulas.hp(level) * this.playerClassModifiers.maxHp;
         this.resetHitPoints(hp);
         this.send(new Messages.HitPoints(this.maxHitPoints).serialize());
     },
@@ -926,7 +937,7 @@ module.exports = Player = Character.extend({
     },
 
     getAttackRate: function () {
-        return this.attackRate;
+        return Math.round(this.attackRate/this.playerClassModifiers.attackRate);
     },
 
     setAttackRate: function (rate) {
@@ -934,7 +945,8 @@ module.exports = Player = Character.extend({
     },
 
     getMoveSpeed: function () {
-        return Math.round(Math.max(BASE_SPEED - (this.getLevel() - 1) * 0.33, 100));
+        const adjustedLevel = this.getLevel() * this.playerClassModifiers.moveSpeed;
+        return Math.round(BASE_SPEED - (adjustedLevel - 1) * 0.33);
     },
 
     pushEntityList: function () {
