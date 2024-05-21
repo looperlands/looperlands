@@ -17,10 +17,10 @@ RUN apt-get update -yq \
     && python2 get-pip.py \
     && python2 -m pip install lxml
 
-COPY . /opt/app
 WORKDIR /opt/app
-COPY shared/js/gametypes.js client/js/gametypes.js
+COPY package*.json /opt/app
 RUN npm ci
+COPY . /opt/app
 WORKDIR /opt/app/tools/maps
 RUN echo Map file ${MAP_FILE}
 RUN python2 ./export.py server ${MAP_FILE} && python2 ./export.py client ${MAP_FILE}
