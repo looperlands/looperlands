@@ -231,7 +231,7 @@ module.exports = Player = Character.extend({
             else if (action === Types.Messages.AGGRO) {
                 if (self.move_callback) {
                     const baseHateAggroHate = 5;
-                    const hate = this.playerClassModifiers.hate * baseHateAggroHate; 
+                    const hate = self.playerClassModifiers.hate * baseHateAggroHate; 
                     self.server.handleMobHate(message[1], self.id, hate);
 
                     // Handle special attack timeouts on encounter start

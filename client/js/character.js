@@ -329,7 +329,6 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
             if(dx <= distance && dy <= distance) {
                 near = true;
             }
-            console.log("distance, ", dx, dy, distance, near);
             return near;
         },
 

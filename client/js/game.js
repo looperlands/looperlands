@@ -6727,8 +6727,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                     self.player.onCheckAggro(function() {
                         self.forEachMob(function(mob) {
-                            let aggroRange = Math.floor(mob.aggroRange * self.player.stealth);
-                            console.log("Aggro Range", aggroRange, self.player.stealth);
+                            let aggroRange = Math.floor(mob.aggroRange/self.player.stealth);
                             if(mob.isAggressive
                                 && (!mob.isFriendly || mob.breakFriendly(self.player))
                                 && !mob.inCombat
