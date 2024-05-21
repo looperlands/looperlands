@@ -532,7 +532,8 @@ Types = {
         WENMOONBIT: 34000113,
         FEDORABIT: 34000114,
         APEBRAINOG: 34000115,
-        SIREN: 34000116, // @lastidCharacter@
+        SIREN: 34000116, 
+        CLOWNCAPONEBIT: 34000117, // @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -6038,6 +6039,7 @@ var kinds = {
     strangeyellowliquid: [Types.Entities.STRANGEYELLOWLIQUID, "object"],
     //ROBITS NPCS
     ROBITSC1: [Types.Entities.ROBITSC1, "npc"],
+    CLOWNCAPONEBIT: [Types.Entities.CLOWNCAPONEBIT, "npc"],
     //mycupbloody
     EYEBALL: [Types.Entities.EYEBALL, "object"],
     REDPOTION: [Types.Entities.REDPOTION, "object"],

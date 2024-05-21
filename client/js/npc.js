@@ -465,6 +465,11 @@ define(['character'], function (Character) {
             "Its the end of the month and the weekend!",
             "Let's kill this love!",
         ],
+        "CLOWNCAPONEBIT": [
+            "Hey ya big Clown! It's your favorite Web 3 Clown here Clown Capone.",
+            "The Circus is coming to Town!",
+            'Wanna <a target="_blank" href="https://marketplace.lifesajoke.xyz/lifesajokenft">join the Circus</a>?!',
+        ],
 
         //Short Destroyers
         "derrick": [
@@ -672,9 +677,12 @@ define(['character'], function (Character) {
             "Welcome to the Tea room!",
         ],
         "WENMOONBIT":  [
-            "Hey there I was sent by m88nwalker!",
-            "Have you signed up for Collection Wars yet?",
-            "Check out Collection Wars <a target='_blank' href='https://l2-nfts.com/'>here</a>!"
+            "Hey there I was sent here by m88nwalker, welcome to the m88n lab!",
+            "We're still working on updating the interior, check back in soon to see our progress!",
+            'On X? <a target="_blank" href="https://twitter.com/moonwalker_nfts">Give him a follow</a> to stay updated.',
+            'How about Discord? <a target="_blank" href="https://discord.gg/bjjNewZegM">Checkout PLANET M88NWALKER</a> for lots more!',
+            "Check out his collections <a target='_blank' href='https://loopexchange.art/profile/0x1e8ab2cc09be581530bb9f3ac94353f6f7412239'>here</a>!",
+            "Have fun exploring Cyber City!"
         ],
         "FEDORABIT":  [
             "Hi im Fedora!",

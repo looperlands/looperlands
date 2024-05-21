@@ -1185,6 +1185,7 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.ARTWHITEROBIT]=function(id){return new NPCs.ARTWHITEROBIT(id);};
     EntityFactory.builders[Types.Entities.OCARINABIT]=function(id){return new NPCs.OCARINABIT(id);};
     EntityFactory.builders[Types.Entities.WENMOONBIT]=function(id){return new NPCs.WENMOONBIT(id);};
+    EntityFactory.builders[Types.Entities.CLOWNCAPONEBIT]=function(id){return new NPCs.CLOWNCAPONEBIT(id);};
     EntityFactory.builders[Types.Entities.FEDORABIT]=function(id){return new NPCs.FEDORABIT(id);};
     EntityFactory.builders[Types.Entities.APEBRAINOG]=function(id){return new NPCs.APEBRAINOG(id);};
     EntityFactory.builders[Types.Entities.SIREN]=function(id){return new NPCs.SIREN(id);};

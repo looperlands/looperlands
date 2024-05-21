@@ -197,6 +197,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "tylerdurden",
                     //Robits NPCs
                     "ROBITSC1",
+                    "CLOWNCAPONEBIT",
                     /////
                     "VILLAGESIGN11",
                     "VILLAGESIGN12",
