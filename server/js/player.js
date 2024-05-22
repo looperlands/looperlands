@@ -304,6 +304,13 @@ module.exports = Player = Character.extend({
                             dmg = Math.round(dmg);
 
                             if (dmg > 0) {
+                                let damageDealtModifier = 1;
+                                if (self.getNFTWeapon()?.isRanged()) {
+                                    damageDealtModifier = self.playerClassModifiers.rangedDamageDealt;
+                                } else {
+                                    damageDealtModifier = self.playerClassModifiers.meleeDamageDealt;
+                                }
+                                dmg = Math.round(damageDealtModifier * dmg);          
                                 mob.receiveDamage(dmg, self.id);
                                 //console.log("Player "+self.id+" hit mob "+mob.id+" for "+dmg+" damage.", mob.type);
                                 const hate = dmg * self.playerClassModifiers.hate;
@@ -593,14 +600,15 @@ module.exports = Player = Character.extend({
         if (mob && this.hitPoints > 0 && !this.invincible) {
             if (damage === undefined) {
                 let level = this.getLevel();
-                let totalLevel = Math.round(level * 0.5) * this.playerClassModifiers.meleeDamageTaken; //this is armor
+                let totalLevel = Math.round(level * 0.5);
                 let attackerLevel;
+                let damageDealtModifier = 1;
                 if (mob instanceof Player) {
                     attackerLevel = (mob.getWeaponLevel() + mob.getLevel());
                     if (mob.getNFTWeapon()?.isRanged()) {
-                        attackerLevel *= mob.playerClassModifiers.rangedDamageDealt;
+                        damageDealtModifier = mob.playerClassModifiers.rangedDamageDealt;
                     } else {
-                        attackerLevel *= mob.playerClassModifiers.meleeDamageDealt;
+                        damageDealtModifier = mob.playerClassModifiers.meleeDamageDealt;
                     }
                     let mobBuff = mob.getActiveBuff();
                     if (mobBuff && mobBuff.stat === "atk") {
@@ -610,6 +618,8 @@ module.exports = Player = Character.extend({
                     attackerLevel = mob.getWeaponLevel();
                 }
                 damage = Formulas.dmg(attackerLevel, totalLevel);
+                damage = damage * this.playerClassModifiers.meleeDamageTaken * damageDealtModifier;
+                damage = Math.round(damage);
             }
             this.hitPoints -= damage;
             this.server.handleHurtEntity(this, mob, damage);
