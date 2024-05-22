@@ -16,38 +16,47 @@ class PlayerClassModifiers {
         return this._playerClass;
     }
 
+    // positive multiplier
     get meleeDamageDealt() {
         return this._meleeDamageDealt;
     }
 
+    // positive multiplier
     get meleeDamageTaken() {
         return this._meleeDamageTaken;
     }
 
+    // positive multiplier
     get moveSpeed() {
         return this._moveSpeed;
     }
 
+    // positive multiplier
     get rangedDamageDealt() {
         return this._rangedDamageDealt;
     }
 
+    // positive multiplier
     get hpRegen() {
         return this._hpRegen;
     }
 
+    // positive multiplier
     get maxHp() {
         return this._maxHp;
     }
 
+    // positive multiplier
     get hate() {
         return this._hate;
     }
 
+    // postive multiplier
     get attackRate() {
         return this._attackRate;
     }
 
+    // positive multiplier
     get stealth() {
         return this._stealth;
     }
