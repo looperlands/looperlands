@@ -6728,10 +6728,11 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                     self.player.onCheckAggro(function() {
                         self.forEachMob(function(mob) {
+                            let aggroRange = Math.floor(mob.aggroRange/self.player.stealth);
                             if(mob.isAggressive
                                 && (!mob.isFriendly || mob.breakFriendly(self.player))
                                 && !mob.inCombat
-                                && self.player.isNear(mob, mob.aggroRange))
+                                && self.player.isNear(mob, aggroRange))
                             {
                                 self.player.aggro(mob);
                             }
@@ -9273,9 +9274,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             if (self.entities[id] !== undefined) {
                                 self.entities[id].hitPoints = toUpdateEntity.hitPoints;
                                 self.entities[id].maxHitPoints = toUpdateEntity.maxHitPoints;
-                                if (toUpdateEntity.moveSpeed !== undefined && toUpdateEntity.attackRate !== undefined) {
+                                if (toUpdateEntity.moveSpeed !== undefined && toUpdateEntity.attackRate !== undefined && toUpdateEntity.stealth !== undefined) {
                                     self.entities[id].moveSpeed = toUpdateEntity.moveSpeed;
                                     self.entities[id].setAttackRate(toUpdateEntity.attackRate);
+                                    self.entities[id].stealth = toUpdateEntity.stealth;
                                 }
                                 if (toUpdateEntity.inCombat !== undefined) {
                                     if (!self.entities[id].inCombat && toUpdateEntity.inCombat){
@@ -9283,12 +9285,6 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                     } else if (self.entities[id].inCombat && !toUpdateEntity.inCombat) {
                                         self.entities[id].exitCombat();
                                     }
-                                }
-                                let differentPos = self.entities[id].x !== toUpdateEntity.x || self.entities[id].y !== toUpdateEntity.y;
-                                let notMoving = !self.entities[id].path;
-                                let notPlayer = Number(id) !== Number(self.player.id);
-                                if (notPlayer && differentPos && notMoving && !self.entities[id].isAttacking()) {
-                                    self.makeCharacterGoTo(self.entities[id], toUpdateEntity.x, toUpdateEntity.y);
                                 }
                             } else {
                                 console.debug("Unknown entity " + id);
