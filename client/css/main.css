@@ -891,6 +891,10 @@ body.inventory .inventorySidebar {
 }
 #instructions.active, #achievements.active {opacity:1;pointer-events:auto;}
 
+#instructions p {
+    color: white !important;
+}
+
 #weapon, #armor {image-rendering:-moz-crisp-edges;}
 
 #achievements, #achievements li, .coin, #achievement-notification, #coinsparks, .achievement-sharing a, #previous, #next {background:url('../img/1/achievements.png');image-rendering:-moz-crisp-edges;}
