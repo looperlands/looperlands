@@ -150,19 +150,19 @@ LooperLands (https://looperlands.io), initially conceived by BalksHamster and bu
 	    </div>
 		<div id="container" class="pixel-corners">
 		    <div id="canvasborder">
-		        <article id="instructions" class="clickable">
-		            <div class="close"></div>
-		            <h1>
-     	               <span class="left-ornament"></span>
-     	               How to play
-     	               <span class="right-ornament"></span>
-	                </h1>
-	                <ul>
-	                   <li><span class="icon"></span>Left click or tap to move, attack and pick up items. WASD works too.</li>
-	                   <li><span class="icon"></span>Press ENTER to chat.</li>
-	                   <li><span class="icon"></span>Your character is automatically saved as you play.</li>
-	                </ul>
-	                    <p>- click anywhere to close -</p>
+		        <article id="instructions" class="panel">
+					<div class="panelTitle pixel-corners-xs">Instructions</div>
+					<div class="panelContent">
+						<br>
+						<div>
+							<p>Left click or tap to move, attack and pick up items.</p>
+							<p>WASD and game controllers work too.</p>
+							<p>Press ENTER to chat.</p>
+							<p>Your character is automatically saved as you play.</p>
+							<p>Free to player characters don't save. Please Visit <a href="https://looperlands.io/shop" target="_blank">https://looperlands.io/shop</a> to purchase a premium avatar.</p>
+						</div>
+						<span id="close-instructions" class="close" onclick="(e) => { e.stopImmediatePropagation(); e.preventDefault(); return false}"></span>
+					</div>
 		        </article>
 				<article id="inventory" class="panel">
 					<div class="panelTitle pixel-corners-xs">Inventory</div>

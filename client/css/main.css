@@ -874,7 +874,21 @@ body.inventory .inventorySidebar {
     font-size: 10px;
 }
 
-#instructions {position:absolute;top:50%;left:50%;z-index:1000;font-family:'GraphicPixel';pointer-events:none;opacity:0;-moz-transition:0.25s opacity linear;-webkit-transition:0.4s top ease, 0.4s opacity linear;-o-transition:0.4s top ease, 0.4s opacity linear;-ms-transition:0.4s top ease, 0.4s opacity linear;transition:0.4s top ease, 0.4s opacity linear;}
+#instructions {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 1000;
+    font-family: 'GraphicPixel';
+    pointer-events: none;
+    opacity: 0;
+    -moz-transition: 0.25s opacity linear;
+    -webkit-transition: 0.4s top ease, 0.4s opacity linear;
+    -o-transition: 0.4s top ease, 0.4s opacity linear;
+    -ms-transition: 0.4s top ease, 0.4s opacity linear;
+    transition: 0.4s top ease, 0.4s opacity linear;
+    color: #d2ba2f !important
+}
 #instructions.active, #achievements.active {opacity:1;pointer-events:auto;}
 
 #weapon, #armor {image-rendering:-moz-crisp-edges;}
@@ -1452,7 +1466,7 @@ footer div  {display:inline-block;}
     #instructions li:nth-child(1) span {height:87px;width:45px;background-position:-1134px -36px; display:block;float:left;margin: 0 30px 9px 60px;position: relative;top: -39px;}
     #instructions li:nth-child(2) span {height:48px;width:39px;background-position:-1179px -36px; display:block;float:left;margin: 0 36px 42px 60px;position: relative;top: -9px;}
     #instructions li:nth-child(3) span {height:63px;width:48px;background-position:-1218px -36px; display:block;float:left;margin: 0 27px 0 60px;position: relative;top: -18px;}
-    #instructions p {text-align:center;font-family:'GraphicPixel';font-size:20px;clear:left;margin-top:50px;}
+    #instructions p {text-align:center;font-family:'GraphicPixel';font-size:20px;clear:left;margin-top:20px}
 
     #playerimage {height: 96px; width: 96px;}
 
