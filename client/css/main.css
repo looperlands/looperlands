@@ -887,7 +887,7 @@ body.inventory .inventorySidebar {
     -o-transition: 0.4s top ease, 0.4s opacity linear;
     -ms-transition: 0.4s top ease, 0.4s opacity linear;
     transition: 0.4s top ease, 0.4s opacity linear;
-    color: #d2ba2f !important
+    color: #d2ba2f !important;
 }
 #instructions.active, #achievements.active {opacity:1;pointer-events:auto;}
 
