@@ -366,6 +366,7 @@ define(['jquery', 'app'], function($, App) {
                 	app.hideWindows();
                 });
             } else {
+                app.hideWindows();
                 $('#foreground').click(function(event) {
                     app.center();
                     app.setMouseCoordinates(event);
@@ -514,6 +515,12 @@ define(['jquery', 'app'], function($, App) {
 
             $('#mutebutton').click(function() {
                 game.app.toggleSettings();
+            });
+
+            $('#keyboardCommandsButton').click(function(){
+                setTimeout(function() {
+                    $("#keyboardCommands").show();
+                }, 250);
             });
             
             $(document).bind("keydown", function(e) {

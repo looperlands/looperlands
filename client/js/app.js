@@ -393,6 +393,7 @@ define(['jquery', 'storage'], function ($, Storage) {
             $('#new-achievement-popup').addClass('hidden')
             $('#shop-popup').addClass('hidden')
             $('#shop-confirmation').removeClass('visible').addClass('hidden');
+            $("#keyboardCommands").hide();
         },
 
         showAchievementNotification: function (questName, endText, xpReward, medal) {

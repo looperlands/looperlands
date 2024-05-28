@@ -156,6 +156,7 @@ LooperLands (https://looperlands.io), initially conceived by BalksHamster and bu
 						<br>
 						<div>
 							<p>Left click or tap to move, attack and pick up items.</p>
+							<button id="keyboardCommandsButton">Keyboard Commands</button>
 							<p>WASD and game controllers work too.</p>
 							<p>Press ENTER to chat.</p>
 							<p>Your character is automatically saved as you play.</p>
@@ -174,6 +175,47 @@ LooperLands (https://looperlands.io), initially conceived by BalksHamster and bu
 						<span id="close-inventory" class="close" onclick="(e) => { e.stopImmediatePropagation(); e.preventDefault(); return false}"></span>
 					</div>
 				</article>
+				<article id="keyboardCommands" class="panel">
+					<div class="panelContent">
+						<h2>Movement</h2>
+						<ul>
+							<li><span>W</span>: Move Up</li>
+							<li><span>A</span>: Move Left</li>
+							<li><span>S</span>: Move Down</li>
+							<li><span>D</span>: Move Right</li>
+						</ul>
+					
+						<h2>Weapon Control</h2>
+						<ul>
+							<li><span>Comma (',')</span>: Switch to the Previous Weapon</li>
+							<li><span>Period ('.')</span>: Switch to the Next Weapon</li>
+						</ul>
+					
+						<h2>Targeting and Combat</h2>
+						<ul>
+							<li><span>Tab</span>: Highlight the Next Target</li>
+							<li><span>Space</span>: Engage or Attack the Highlighted Target</li>
+							<li><span>T</span>: Highlight the Closest Target</li>
+						</ul>
+					
+						<h2>Game Functions</h2>
+						<ul>
+							<li><span>Z</span>: Toggle Inventory</li>
+							<li><span>X</span>: Toggle Achievements</li>
+							<li><span>C</span>: Toggle Settings</li>
+							<li><span>V</span>: Toggle Weapon Information</li>
+							<li><span>B</span>: Toggle Avatar Information</li>
+						</ul>
+					
+						<h2>Quick Actions</h2>
+						<ul>
+							<li><span>1</span>: Use Item in Slot 1</li>
+							<li><span>2</span>: Use Item in Slot 2</li>
+							<li><span>3</span>: Use Item in Slot 3</li>
+							<li><span>4</span>: Use Item in Slot 4</li>
+						</ul>
+					</div>
+				</article>				
 				<article id="settings" class="panel">
 					<div class="panelTitle pixel-corners-xs" style="margin: 0 auto; width:250px;">Game Settings</div>
 					<small>Disable centered camera and/or animated tiles for performance.</small>
