@@ -15,7 +15,7 @@ const {
 const platformClient = new platform.LooperLandsPlatformClient(LOOPERLANDS_PLATFORM_API_KEY, LOOPERLANDS_PLATFORM_BASE_URL);
 
 const API_KEY = process.env.LOOPWORMS_API_KEY;
-const MAX_RETRY_COUNT = 5;
+const MAX_RETRY_COUNT = 1;
 
 const DEBUG = false;
 const printResponseJSON = function(url, response) {
