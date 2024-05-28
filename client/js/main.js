@@ -61,6 +61,11 @@ define(['jquery', 'app'], function($, App) {
                     }
                     $(this).removeClass('blink');
                 });
+
+                $("#toggleInstructionsButton").click(function() {
+                    app.hideWindows();
+                    app.toggleInstructions();
+                });
         
                 $('#instructions').click(function() {
                     app.hideWindows();
