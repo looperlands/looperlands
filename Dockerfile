@@ -23,4 +23,4 @@ COPY shared/js/gametypes.js client/js/gametypes.js
 WORKDIR /opt/app/bin
 RUN ./build.sh
 WORKDIR /opt/app
-CMD node server/js/main.js
+CMD node --prof server/js/main.js
