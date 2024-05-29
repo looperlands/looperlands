@@ -154,15 +154,17 @@ LooperLands (https://looperlands.io), initially conceived by BalksHamster and bu
 					<div class="panelTitle pixel-corners-xs">Instructions</div>
 					<div class="panelContent">
 						<br>
-						<div>
-							<p>Left click or tap to move, attack and pick up items.</p>
-							<button id="keyboardCommandsButton">Keyboard Commands</button>
-							<p>WASD and game controllers work too.</p>
-							<p>Press ENTER to chat.</p>
-							<p>Your character is automatically saved as you play.</p>
-							<p>Free-To-Play assets don't retain progress, but can enjoy the full game experience.</p>
-							<p>Please Visit <a href="https://looperlands.io/shop" target="_blank">https://looperlands.io/shop</a> to purchase a premium avatar.</p>
-						</div>
+						<button id="keyboardCommandsButton" class="panelBorder">Keyboard Commands</button>
+						<button id="gamepadCommandsButton" class="panelBorder">Gamepad Commands</button>
+						<ul>
+							<li>Left click or tap to move, attack and pick up items.</li>
+							<li>WASD and game controllers work too.</li>
+							<li>Your character is automatically saved as you play.</li>
+							<li>Progress on premium avatars is transferable with the NFT.</li>
+							<li>Free-To-Play assets don't retain progress, but can enjoy the full game experience.</li>
+							<li>Please Visit <a href="https://looperlands.io/shop" target="_blank">https://looperlands.io/shop</a> to purchase a premium avatar.</li>
+							<li>Click button at the bottom right and then "Instructions" to view this information again.</li>
+						</ul>
 						<span id="close-instructions" class="close" onclick="(e) => { e.stopImmediatePropagation(); e.preventDefault(); return false}"></span>
 					</div>
 		        </article>
@@ -176,51 +178,95 @@ LooperLands (https://looperlands.io), initially conceived by BalksHamster and bu
 					</div>
 				</article>
 				<article id="keyboardCommands" class="panel">
+					<div class="panelTitle pixel-corners-xs">Keyboard Commands</div>
 					<div class="panelContent">
-						<h2>Movement</h2>
-						<ul>
-							<li><span>W</span>: Move Up</li>
-							<li><span>A</span>: Move Left</li>
-							<li><span>S</span>: Move Down</li>
-							<li><span>D</span>: Move Right</li>
-						</ul>
+						<div class="section">
+							<h2>Movement</h2>
+							<ul>
+								<li><span>W</span>: Move Up</li>
+								<li><span>A</span>: Move Left</li>
+								<li><span>S</span>: Move Down</li>
+								<li><span>D</span>: Move Right</li>
+							</ul>
+						</div>
 					
-						<h2>Weapon Control</h2>
-						<ul>
-							<li><span>Comma (',')</span>: Switch to the Previous Weapon</li>
-							<li><span>Period ('.')</span>: Switch to the Next Weapon</li>
-						</ul>
+						<div class="section">
+							<h2>Weapon Control</h2>
+							<ul>
+								<li><span>Comma (',')</span>: Switch to the Previous Weapon</li>
+								<li><span>Period ('.')</span>: Switch to the Next Weapon</li>
+							</ul>
+						</div>
 					
-						<h2>Targeting and Combat</h2>
-						<ul>
-							<li><span>Tab</span>: Highlight the Next Target</li>
-							<li><span>Space</span>: Engage or Attack the Highlighted Target</li>
-							<li><span>T</span>: Highlight the Closest Target</li>
-						</ul>
+						<div class="section">
+							<h2>Targeting and Combat</h2>
+							<ul>
+								<li><span>Tab</span>: Highlight the Next Target</li>
+								<li><span>Space</span>: Engage or Attack the Highlighted Target</li>
+								<li><span>T</span>: Highlight the Closest Target</li>
+							</ul>
+						</div>
 					
-						<h2>Game Functions</h2>
-						<ul>
-							<li><span>Z</span>: Toggle Inventory</li>
-							<li><span>X</span>: Toggle Achievements</li>
-							<li><span>C</span>: Toggle Settings</li>
-							<li><span>V</span>: Toggle Weapon Information</li>
-							<li><span>B</span>: Toggle Avatar Information</li>
-						</ul>
+						<div class="section">
+							<h2>Game Functions</h2>
+							<ul>
+								<li><span>Z</span>: Toggle Inventory</li>
+								<li><span>X</span>: Toggle Achievements</li>
+								<li><span>C</span>: Toggle Settings</li>
+								<li><span>V</span>: Toggle Weapon Information</li>
+								<li><span>B</span>: Toggle Avatar Information</li>
+								<li><span>ENTER</span>: Chat</li>
+							</ul>
+						</div>
 					
-						<h2>Quick Actions</h2>
-						<ul>
-							<li><span>1</span>: Use Item in Slot 1</li>
-							<li><span>2</span>: Use Item in Slot 2</li>
-							<li><span>3</span>: Use Item in Slot 3</li>
-							<li><span>4</span>: Use Item in Slot 4</li>
-						</ul>
+						<div class="section">
+							<h2>Quick Actions</h2>
+							<ul>
+								<li><span>1</span>: Use Item in Slot 1</li>
+								<li><span>2</span>: Use Item in Slot 2</li>
+								<li><span>3</span>: Use Item in Slot 3</li>
+								<li><span>4</span>: Use Item in Slot 4</li>
+							</ul>
+						</div>
+						<span id="close-instructions" class="close" onclick="(e) => { e.stopImmediatePropagation(); e.preventDefault(); return false}"></span>
 					</div>
-				</article>				
+				</article>
+				<article id="gamepadCommands" class="panel">
+					<div class="panelTitle pixel-corners-xs">Gamepad Commands</div>
+					<div class="panelContent">
+						<div class="section">
+							<h2>Movement</h2>
+							<ul>
+								<li><span>Left Stick Up</span>: Move Up</li>
+								<li><span>Left Stick Down</span>: Move Down</li>
+								<li><span>Left Stick Left</span>: Move Left</li>
+								<li><span>Left Stick Right</span>: Move Right</li>
+							</ul>
+						</div>
+						
+						<div class="section">
+							<h2>Button Controls</h2>
+							<ul>
+								<li><span>A</span>: Engage/Attack</li>
+								<li><span>B</span>: Toggle Weapon Info</li>
+								<li><span>X</span>: Toggle Avatar Info</li>
+								<li><span>Y</span>: Toggle Inventory</li>
+								<li><span>LB</span>: Next Weapon</li>
+								<li><span>RB</span>: Previous Weapon</li>
+								<li><span>LT</span>: Highlight Closest Target</li>
+								<li><span>RT</span>: Cycle Target</li>
+								<li><span>Back</span>: Toggle Quests</li>
+								<li><span>Start</span>: Toggle Settings</li>
+							</ul>
+						</div>
+						<span id="close-instructions" class="close" onclick="(e) => { e.stopImmediatePropagation(); e.preventDefault(); return false}"></span>
+					</div>
+				</article>					
 				<article id="settings" class="panel">
 					<div class="panelTitle pixel-corners-xs" style="margin: 0 auto; width:250px;">Game Settings</div>
+					<button id="toggleInstructionsButton" type="submit" class="panelBorder">Instructions</button>
 					<small>Disable centered camera and/or animated tiles for performance.</small>
 					<br>
-					<button id="toggleInstructionsButton" type="submit" class="panelBorder">Instructions</button>
 					<form id="settingsForm">
 						<ul style="text-align: left;">
 							<li>

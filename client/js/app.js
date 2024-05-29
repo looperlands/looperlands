@@ -394,6 +394,7 @@ define(['jquery', 'storage'], function ($, Storage) {
             $('#shop-popup').addClass('hidden')
             $('#shop-confirmation').removeClass('visible').addClass('hidden');
             $("#keyboardCommands").hide();
+            $("#gamepadCommands").hide();
         },
 
         showAchievementNotification: function (questName, endText, xpReward, medal) {

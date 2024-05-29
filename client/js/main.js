@@ -522,6 +522,13 @@ define(['jquery', 'app'], function($, App) {
                     $("#keyboardCommands").show();
                 }, 250);
             });
+
+            $('#gamepadCommandsButton').click(function(){
+                console.log("sup");
+                setTimeout(function() {
+                    $("#gamepadCommands").show();
+                }, 250);
+            });            
             
             $(document).bind("keydown", function(e) {
             	var key = e.which,
