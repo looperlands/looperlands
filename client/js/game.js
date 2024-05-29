@@ -6649,6 +6649,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 });
 
                 this.client.onEntityList(function(list) {
+                    list = list.filter(item => item !== null);
                     var entityIds = _.pluck(self.entities, 'id'),
                         knownIds = _.intersection(entityIds, list),
                         newIds = _.difference(list, knownIds);
