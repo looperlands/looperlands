@@ -4,7 +4,11 @@ class KeyBoardHandler {
             w: 0,
             a: 0,
             s: 0,
-            d: 0
+            d: 0,
+            arrowup: 0,
+            arrowleft: 0,
+            arrowdown: 0,
+            arrowright: 0            
         };
 
         this.app = app;
@@ -100,8 +104,8 @@ class KeyBoardHandler {
         }
         var x = this.game.player.gridX;
         var y = this.game.player.gridY;
-        this.game.click({ x: x + this.keys.d - this.keys.a, 
-                          y: y + this.keys.s - this.keys.w, 
+        this.game.click({x: x + this.keys.d + this.keys.arrowright - this.keys.a - this.keys.arrowleft,
+                         y: y + this.keys.s + this.keys.arrowdown - this.keys.w - this.keys.arrowup,
                           keyboard: true});
     }
 
