@@ -874,8 +874,26 @@ body.inventory .inventorySidebar {
     font-size: 10px;
 }
 
-#instructions {position:absolute;top:50%;left:50%;z-index:1000;font-family:'GraphicPixel';pointer-events:none;opacity:0;-moz-transition:0.25s opacity linear;-webkit-transition:0.4s top ease, 0.4s opacity linear;-o-transition:0.4s top ease, 0.4s opacity linear;-ms-transition:0.4s top ease, 0.4s opacity linear;transition:0.4s top ease, 0.4s opacity linear;}
+#instructions {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 1000;
+    font-family: 'GraphicPixel';
+    pointer-events: none;
+    opacity: 0;
+    -moz-transition: 0.25s opacity linear;
+    -webkit-transition: 0.4s top ease, 0.4s opacity linear;
+    -o-transition: 0.4s top ease, 0.4s opacity linear;
+    -ms-transition: 0.4s top ease, 0.4s opacity linear;
+    transition: 0.4s top ease, 0.4s opacity linear;
+    color: #d2ba2f !important;
+}
 #instructions.active, #achievements.active {opacity:1;pointer-events:auto;}
+
+#instructions p {
+    color: white !important;
+}
 
 #weapon, #armor {image-rendering:-moz-crisp-edges;}
 
@@ -951,13 +969,13 @@ body.inventory .inventorySidebar {
 #create-new span span:hover {color:#b2af9b;}
 #playername {color:#fff;}
 
-#credits, #loadcharacter, #confirmation, #death, #error, #settings {position:absolute;left:50%;text-align:center;font-family:'GraphicPixel', sans-serif;z-index:1000;}
+#credits, #loadcharacter, #confirmation, #death, #error, #settings, #keyboardCommands, #instructions, #gamepadCommands {position:absolute;left:50%;text-align:center;font-family:'GraphicPixel', sans-serif;z-index:1000;}
 
 #playerimage {image-rendering: -moz-crisp-edges; image-rendering: -webkit-optimize-contrast;}
 
 #parchment p {font-family:'GraphicPixel';}
 
-#credits, #death, #settings {top:50%;}
+#credits, #death, #settings, #keyboardCommands, #instructions, #gamepadCommands {top:50%;}
 .intro #credits {top:55%;}
 #credits h1 a {color:#fcda5c;text-decoration:none;}
 #authors div a {display:block;color:#fff;text-decoration:none;}
@@ -1096,7 +1114,7 @@ footer div  {display:inline-block;}
     opacity: 1;
     transition: ease-in all 0.3s;
 }
-#settings {
+#settings, #keyboardCommands, #instructions, #gamepadCommands {
     color: #b9b9b9;
     padding:0 25px;
     width:770px;
@@ -1111,14 +1129,14 @@ footer div  {display:inline-block;}
     padding-top:20px;
 }
 
-#settings button {
+#settings button, #instructions button {
     border-image-width: 4px;
     background: #533642 !important;
     padding: 6px 20px;
     color: #b9b9b9;
     cursor: pointer;
 }
-#settings button:hover {
+#settings button:hover, #instructions button {
     color: white;
     background: #967784 !important;
 }
@@ -1126,6 +1144,93 @@ footer div  {display:inline-block;}
 #settings ul {
     line-height:27px;
 }
+
+#keyboardCommands .panelContent {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    padding-top: 40px; /* Adjust this value as needed */
+}
+
+#keyboardCommands .panelContent h2 {
+    grid-column: 1 / -1;
+}
+
+#keyboardCommands ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#keyboardCommands ul li {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #ccc;
+    padding: 5px 0;
+}
+
+#keyboardCommands ul li span {
+    font-weight: bold;
+}
+
+#gamepadCommands .panelContent {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    position: relative;
+}
+
+#gamepadCommands .panelContent h2 {
+    grid-column: 1 / -1;
+    text-align: center;
+}
+
+#gamepadCommands ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#gamepadCommands ul li {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #ccc;
+    padding: 5px 0;
+}
+
+#gamepadCommands ul li span {
+    font-weight: bold;
+}
+
+#instructions .panelContent {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 20px;
+    color: #ffffff;
+    position: relative;
+}
+
+#instructions .panelContent ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#instructions .panelContent ul li {
+    margin: 10px 0;
+}
+
+#instructions .panelContent ul li a {
+    color: #ffd700;
+    text-decoration: none;
+}
+
+#instructions .panelContent ul li a:hover {
+    text-decoration: underline;
+}
+
 
 /* Magic Parchment */
 
@@ -1413,7 +1518,7 @@ footer div  {display:inline-block;}
 
     body {background:-moz-radial-gradient(rgba(0,0,0,0) 40%,rgba(0,0,0,1) 125%), #000; background-size:auto, 15px auto, 15px auto, 60px auto, 384px;}
     body {background:-webkit-gradient(radial, center center, 360, center center, 1200, from(rgba(0,0,0,0)), to(rgba(0,0,0,1))),#000; background-size:auto, 15px auto, 15px auto, 60px auto, 384px;}
-    #logo, #logosparks, .left-ornament, .right-ornament, #character, #character div, .button, .button div, #respawn, #scroll, #instructions, .icon, .avatar, .close, #note, .ribbon .top, .ribbon .bottom,  .ext-link {background-size:1266px auto;}
+    #logo, #logosparks, .left-ornament, .right-ornament, #character, #character div, .button, .button div, #respawn, #scroll, .icon, .avatar, .close, #note, .ribbon .top, .ribbon .bottom,  .ext-link {background-size:1266px auto;}
     #logo {height:126px;width:687px;position:absolute;top:10%;left:50%;margin-left:-344px;z-index:3;}
     #logosparks {width:687px;height:126px;z-index:4;animation:logo3 .8s steps(6, end) infinite;-moz-animation:logo3 .8s steps(6, end) infinite;-webkit-animation:logo3 .8s steps(6, end) infinite;-o-animation:logo3 .8s steps(6, end) infinite;-ms-animation:logo3 .8s steps(6, end) infinite;}
     #parchment, #loadcharacter, #confirmation, #error {width:1266px;height:546px;position:absolute;top:55%;left:50%;margin-left:-633px;margin-top:-273px;font-size:30px;text-align:center;z-index:2;}
@@ -1444,15 +1549,6 @@ footer div  {display:inline-block;}
     #canvasborder {padding:15px;background:url('../img/3/border.png') no-repeat;}
     #canvas {width:100%;height:672px;user-select: none;}
     #fade {width:1440px;height:672px;top:15px;left:15px;}
-
-    #instructions {height:516px;width:1251px;background-position:0 -1581px;margin-left:-624px;margin-top:-279px;color:#373737;}
-    #instructions h1 {font-size:40px;text-align:center;margin:50px 0;}
-    #instructions ul {font-size:30px;margin-top:30px;}
-    #instructions ul li {margin:20px 0; clear:left;}
-    #instructions li:nth-child(1) span {height:87px;width:45px;background-position:-1134px -36px; display:block;float:left;margin: 0 30px 9px 60px;position: relative;top: -39px;}
-    #instructions li:nth-child(2) span {height:48px;width:39px;background-position:-1179px -36px; display:block;float:left;margin: 0 36px 42px 60px;position: relative;top: -9px;}
-    #instructions li:nth-child(3) span {height:63px;width:48px;background-position:-1218px -36px; display:block;float:left;margin: 0 27px 0 60px;position: relative;top: -18px;}
-    #instructions p {text-align:center;font-family:'GraphicPixel';font-size:20px;clear:left;margin-top:50px;}
 
     #playerimage {height: 96px; width: 96px;}
 
@@ -1742,7 +1838,7 @@ footer div  {display:inline-block;}
 
 @media screen and (max-width: 1500px) {
 
-    .upscaled #logo, .upscaled #logosparks, .upscaled .left-ornament, .upscaled .right-ornament, .upscaled #character, .upscaled #character div, .upscaled .button, .upscaled .button div, .upscaled #respawn, .upscaled #scroll, .upscaled #instructions, .upscaled .icon, .upscaled #tilt, .upscaled .parchment-left, .upscaled .parchment-middle, .upscaled .parchment-right, .upscaled .avatar, .upscaled .facebook, .upscaled .twitter, .upscaled .close, .upscaled .ribbon .top, .upscaled .ribbon .bottom, .upscaled .ext-link {background-image:url('../img/2/spritesheet.png');}
+    .upscaled #logo, .upscaled #logosparks, .upscaled .left-ornament, .upscaled .right-ornament, .upscaled #character, .upscaled #character div, .upscaled .button, .upscaled .button div, .upscaled #respawn, .upscaled #scroll, .upscaled .icon, .upscaled #tilt, .upscaled .parchment-left, .upscaled .parchment-middle, .upscaled .parchment-right, .upscaled .avatar, .upscaled .facebook, .upscaled .twitter, .upscaled .close, .upscaled .ribbon .top, .upscaled .ribbon .bottom, .upscaled .ext-link {background-image:url('../img/2/spritesheet.png');}
     .upscaled #bar-container, .upscaled #healthbar, .upscaled .barbutton, .upscaled #chatbox, .upscaled #population {background-image:url('../img/2/barsheet.png');}
     .upscaled #achievements, .upscaled #achievements li, .upscaled .coin, .upscaled #achievement-notification, .upscaled #coinsparks, .upscaled .achievement-sharing a, .upscaled #previous, .upscaled #next {background:url('../img/2/achievements.png');}
     .upscaled #fishingbar, #fish-marker {background:url('../img/2/fishing.png');}
@@ -1819,7 +1915,7 @@ footer div  {display:inline-block;}
 
     body {background:-moz-radial-gradient(rgba(0,0,0,0) 40%,rgba(0,0,0,1) 125%), #000; background-size:auto, 256px;}
     body {background:-webkit-gradient(radial, center center, 240, center center, 800, from(rgba(0,0,0,0)), to(rgba(0,0,0,1))),#000; background-size:auto, 256px;}
-    #logo, #logosparks, .left-ornament, .right-ornament, #character, #character div, .button, .button div, #respawn, #scroll, #instructions, .icon, .avatar, .close, #note, .ribbon .top, .ribbon .bottom, .ext-link {background-size:844px auto;}
+    #logo, #logosparks, .left-ornament, .right-ornament, #character, #character div, .button, .button div, #respawn, #scroll, .icon, .avatar, .close, #note, .ribbon .top, .ribbon .bottom, .ext-link {background-size:844px auto;}
     #logo {height:84px;width:458px;position:absolute;top:10%;left:50%;margin-left:-229px;z-index:3;}
     #logosparks {width:458px;height:84px;z-index:4;animation:logo2 .8s steps(6, end) infinite;-moz-animation:logo2 .8s steps(6, end) infinite;-webkit-animation:logo2 .8s steps(6, end) infinite;-o-animation:logo2 .8s steps(6, end) infinite;-ms-animation:logo2 .8s steps(6, end) infinite;}
     #parchment, #loadcharacter, #confirmation, #error {width:844px;height:364px;position:absolute;top:55%;left:50%;margin-left:-422px;margin-top:-182px;font-size:20px;text-align:center; z-index:2;}
@@ -1850,15 +1946,6 @@ footer div  {display:inline-block;}
     #canvasborder {padding:10px;background:url('../img/2/border.png') no-repeat;}
     #canvas {width:100%;height:448px;}
     #fade {width:960px;height:448px;top:10px;left:10px;}
-
-    #instructions {height:344px;width:834px;background-position:0 -1054px;margin-left:-416px;margin-top:-186px;color:#373737;}
-    #instructions h1 {font-size:30px;text-align:center;margin:40px 0;}
-    #instructions ul {font-size:20px;margin-top:40px;}
-    #instructions ul li {margin:20px 0; clear:left;}
-    #instructions li:nth-child(1) span {height:58px;width:30px;background-position:-756px -24px; display:block;float:left;margin: 0 20px 6px 40px;position: relative;top: -26px;}
-    #instructions li:nth-child(2) span {height:32px;width:26px;background-position:-786px -24px; display:block;float:left;margin: 0 24px 28px 40px;position: relative;top: -6px;}
-    #instructions li:nth-child(3) span {height:42px;width:32px;background-position:-812px -24px; display:block;float:left;margin: 0 18px 0 40px;position: relative;top: -12px;}
-    #instructions p {text-align:center;font-family:'GraphicPixel';font-size:20px;clear:left;margin-top:20px;}
 
     #playerimage {height: 64px; width: 64px;}
 
@@ -1991,7 +2078,7 @@ footer div  {display:inline-block;}
 
 @media screen and (max-height: 870px) {
 
-    .upscaled #logo, .upscaled #logosparks, .upscaled .left-ornament, .upscaled .right-ornament, .upscaled #character, .upscaled #character div, .upscaled .button, .upscaled .button div, .upscaled #respawn, .upscaled #scroll, .upscaled #instructions, .upscaled .icon, .upscaled #tilt, .upscaled .avatar, .upscaled .facebook, .upscaled .twitter, .upscaled .close, .upscaled .ribbon .top, .upscaled .ribbon .bottom, .upscaled .ext-link {background-image:url('../img/2/spritesheet.png');}
+    .upscaled #logo, .upscaled #logosparks, .upscaled .left-ornament, .upscaled .right-ornament, .upscaled #character, .upscaled #character div, .upscaled .button, .upscaled .button div, .upscaled #respawn, .upscaled #scroll, .upscaled .icon, .upscaled #tilt, .upscaled .avatar, .upscaled .facebook, .upscaled .twitter, .upscaled .close, .upscaled .ribbon .top, .upscaled .ribbon .bottom, .upscaled .ext-link {background-image:url('../img/2/spritesheet.png');}
     .upscaled #bar-container, .upscaled #healthbar, .upscaled .barbutton, .upscaled #chatbox, .upscaled #population {background-image:url('../img/2/barsheet.png');}
     .upscaled #achievements, .upscaled #achievements li, .upscaled .coin, .upscaled #achievement-notification, .upscaled #coinsparks, .upscaled .achievement-sharing a, .upscaled #previous, .upscaled #next {background:url('../img/2/achievements.png');}
     .upscaled #fishingbar, #fish-marker {background:url('../img/2/fishing.png');}
@@ -2003,7 +2090,7 @@ footer div  {display:inline-block;}
 
     body {background:-moz-radial-gradient(rgba(0,0,0,0) 40%,rgba(0,0,0,1) 125%), #000; background-size:auto, 256px;}
     body {background:-webkit-gradient(radial, center center, 240, center center, 800, from(rgba(0,0,0,0)), to(rgba(0,0,0,1))),#000; background-size:auto, 256px;}
-    #logo, #logosparks, .left-ornament, .right-ornament, #character, #character div, .button, .button div, #respawn, #scroll, #instructions, .icon, .avatar, .close, #note, .ribbon .top, .ribbon .bottom, .ext-link {background-size:844px auto;}
+    #logo, #logosparks, .left-ornament, .right-ornament, #character, #character div, .button, .button div, #respawn, #scroll, .icon, .avatar, .close, #note, .ribbon .top, .ribbon .bottom, .ext-link {background-size:844px auto;}
     #logo {height:84px;width:458px;position:absolute;top:10%;left:50%;margin-left:-229px;z-index:3;}
     #logosparks {width:458px;height:84px;z-index:4;animation:logo2 .8s steps(6, end) infinite;-moz-animation:logo2 .8s steps(6, end) infinite;-webkit-animation:logo2 .8s steps(6, end) infinite;-o-animation:logo2 .8s steps(6, end) infinite;-ms-animation:logo2 .8s steps(6, end) infinite;}
     #parchment, #loadcharacter, #confirmation, #error {width:844px;height:364px;position:absolute;top:55%;left:50%;margin-left:-422px;margin-top:-182px;font-size:20px;text-align:center; z-index:2;}
@@ -2034,15 +2121,6 @@ footer div  {display:inline-block;}
     #canvasborder {padding:10px;background:url('../img/2/border.png') no-repeat;}
     #canvas {width:100%;height:448px;}
     #fade {width:960px;height:448px;top:10px;left:10px;}
-
-    #instructions {height:344px;width:834px;background-position:0 -1054px;margin-left:-416px;margin-top:-186px;color:#373737;}
-    #instructions h1 {font-size:30px;text-align:center;margin:40px 0;}
-    #instructions ul {font-size:20px;margin-top:40px;}
-    #instructions ul li {margin:20px 0; clear:left;}
-    #instructions li:nth-child(1) span {height:58px;width:30px;background-position:-756px -24px; display:block;float:left;margin: 0 20px 6px 40px;position: relative;top: -26px;}
-    #instructions li:nth-child(2) span {height:32px;width:26px;background-position:-786px -24px; display:block;float:left;margin: 0 24px 28px 40px;position: relative;top: -6px;}
-    #instructions li:nth-child(3) span {height:42px;width:32px;background-position:-812px -24px; display:block;float:left;margin: 0 18px 0 40px;position: relative;top: -12px;}
-    #instructions p {text-align:center;font-family:'GraphicPixel';font-size:20px;clear:left;margin-top:20px;}
 
     .upscaled #avatarStats {
         position: absolute;
@@ -2244,11 +2322,11 @@ footer div  {display:inline-block;}
     canvas {image-rendering:optimizeSpeed;}
     body {background:-moz-radial-gradient(rgba(0,0,0,0) 40%,rgba(0,0,0,1) 125%), #000; background-size:auto, 128px;}
     body {background:-webkit-gradient(radial, center center, 200, center center, 600, from(rgba(0,0,0,0)), to(rgba(0,0,0,1))), #000; background-size:auto, 128px;}
-    #logo, #logosparks, .left-ornament, .right-ornament, #character, #character div, .button, .button div, #respawn, #scroll, #instructions, .icon, .avatar, .close, #note, .ribbon .top, .ribbon .bottom, .ext-link {background-size:422px auto;}
+    #logo, #logosparks, .left-ornament, .right-ornament, #character, #character div, .button, .button div, #respawn, #scroll, .icon, .avatar, .close, #note, .ribbon .top, .ribbon .bottom, .ext-link {background-size:422px auto;}
     #logo {height:42px;width:229px;position:absolute;top:10%;left:50%;margin-left:-114px;z-index:3;}
     #logosparks {width:229px;height:42px;z-index:4;animation:logo1 .8s steps(6, end) infinite;-moz-animation:logo1 .8s steps(6, end) infinite;-webkit-animation:logo1 .8s steps(6, end) infinite;-o-animation:logo1 .8s steps(6, end) infinite;-ms-animation:logo1 .8s steps(6, end) infinite;}
     #parchment, #loadcharacter, #confirmation, #error {width:422px;height:182px;position:absolute;top:50%;left:50%;margin-left:-211px;margin-top:-91px;font-size:10px;text-align:center;z-index:2;}
-    #parchment h1, #instructions h1 {margin-top:20px;font-weight:normal;}
+    #parchment h1 {margin-top:20px;font-weight:normal;}
     .left-ornament, .right-ornament {height:12px;width:31px;display:inline-block;margin:0 10px;position:relative;top:3px;}
     .left-ornament {background-position:-354px 0;}
     .right-ornament {background-position:-385px 0;}
@@ -2275,15 +2353,6 @@ footer div  {display:inline-block;}
     #canvasborder {padding:5px;background:url('../img/1/border.png') no-repeat;}
     #canvas {width:100%;height:224px;}
     #fade {width:480px;height:224px;top:5px;left:5px;}
-
-    #instructions {height:172px;width:417px;background-position:0 -527px;margin-left:-208px;margin-top:-93px;color:#373737;}
-    #instructions h1 {font-size:20px;text-align:center;margin-bottom:0;}
-    #instructions ul {font-size:10px;margin-top:10px;}
-    #instructions ul li {margin:10px 0; clear:left;}
-    #instructions li:nth-child(1) span {height:29px;width:15px;background-position:-378px -12px; display:block;float:left;margin: 0 10px 3px 20px;position: relative;top: -13px;}
-    #instructions li:nth-child(2) span {height:16px;width:13px;background-position:-393px -12px; display:block;float:left;margin: 0 12px 14px 20px;position: relative;top: -3px;}
-    #instructions li:nth-child(3) span {height:21px;width:16px;background-position:-406px -12px; display:block;float:left;margin: 0 9px 0 20px;position: relative;top: -6px;}
-    #instructions p {text-align:center;font-family:'GraphicPixel';font-size:10px;clear:left;margin:0;}
 
     #foreground { cursor: default;}
 
@@ -2468,12 +2537,11 @@ footer div  {display:inline-block;}
     #container {height:258px;width:480px;position:relative;left:50%;top:50%;margin:-128px auto 0 -240px;}
     #canvasborder {background:none;padding:0;}
 
-    #parchment, #logosparks, .left-ornament, .right-ornament, #character, #character div, .button, .button div, #respawn, #scroll, #instructions, .icon {background-size:422px auto;}
+    #parchment, #logosparks, .left-ornament, .right-ornament, #character, #character div, .button, .button div, #respawn, #scroll, .icon {background-size:422px auto;}
     #parchment {background:none;}
     #logo {height:84px;width:458px;position:absolute;top:10%;left:50%;margin-left:-229px;z-index:3;background-size:844px;}
     #parchment {width:100%;height:auto;position:absolute;left:0;top:125px;margin-left:0;margin-top:0;font-size:10px;text-align:center;z-index:2;color:#eee;}
     #parchment h1 {margin-top:0px;font-weight:normal;}
-    #instructions h1 {margin-top:15px;font-size:14px;}
     .left-ornament, .right-ornament {height:12px;width:31px;display:inline-block;margin:0 10px;position:relative;top:3px;}
     .left-ornament {background-position:-354px 0;}
     .right-ornament {background-position:-385px 0;}
@@ -2485,15 +2553,6 @@ footer div  {display:inline-block;}
     .play div {height:54px;width:204px;background-position:-458px -512px; background-size:844px;}
     .play div:active {background-position:0px -1398px;}
     .stroke {text-shadow:1px 1px 0 #373737, 1px -1px 0 #373737, 0 1px 0 #373737, 1px 0 0 #373737, -1px 1px 0 #373737, -1px -1px 0 #373737, 0 -1px 0 #373737, 0 1px 0 #373737, -1px 0 0 #373737;}
-
-    #instructions {height:172px;width:417px;background-position:0 -527px;margin-left:-208px;margin-top:-93px;color:#373737;}
-    #instructions h1 {font-size:20px;text-align:center;margin-bottom:0;}
-    #instructions ul {font-size:13px;margin-top:15px;}
-    #instructions ul li {margin:10px 0; clear:left;}
-    #instructions li:nth-child(1) span {height:29px;width:15px;background-position:-378px -12px; display:block;float:left;margin: 0 10px 3px 20px;position: relative;top: -13px;}
-    #instructions li:nth-child(2) span {height:16px;width:13px;background-position:-393px -12px; display:block;float:left;margin: 0 12px 14px 20px;position: relative;top: -3px;}
-    #instructions li:nth-child(3) span {height:21px;width:16px;background-position:-406px -12px; display:block;float:left;margin: 0 9px 0 20px;position: relative;top: -6px;}
-    #instructions p {text-align:center;font-family:'GraphicPixel';font-size:10px;clear:left;margin:0;}
 
     #foreground { cursor: default;}
 
@@ -2576,7 +2635,7 @@ footer div  {display:inline-block;}
     .game.death #death p {padding-top:30px;color:#373737;font-size:20px;margin-top:0;width:80%;margin:0 auto;}
     .game.death #death p em {display:block;margin-top:15px;font-style:normal;}
 
-    #instructions, #achievements, #lists {-webkit-transition:none;-moz-transition:none;-o-transition:none;-ms-transition:none;transition:none;}
+    #achievements, #lists {-webkit-transition:none;-moz-transition:none;-o-transition:none;-ms-transition:none;transition:none;}
 
     .game.death #death {height:172px;width:417px;margin-left:-208px;margin-top:-93px;color:#373737;background:url('../img/1/spritesheet.png') 0 -527px;margin:-10px 0 0 0;}
     #respawn { background-position: -204px -1398px; background-size: 844px auto; width: 204px; height: 54px;}
@@ -2659,7 +2718,7 @@ footer div  {display:inline-block;}
 /* Tablet mode */
 
 .tablet .animate .parchment-left, .tablet .animate .parchment-right, .tablet .animate .parchment-middle {animation:none;-webkit-animation:none;-moz-animation:none;-o-animation:none;-ms-animation:none;}
-.tablet #instructions, .tablet #achievements, .tablet #lists {-webkit-transition:none;-moz-transition:none;-o-transition:none;-ms-transition:none;transition:none;}
+.tablet .tablet #achievements, .tablet #lists {-webkit-transition:none;-moz-transition:none;-o-transition:none;-ms-transition:none;transition:none;}
 .tablet #achievements li.unlocked .achievement-sharing {display:block;}
 .tablet #coinsparks {display:none; animation:none; -moz-animation:none;}
 

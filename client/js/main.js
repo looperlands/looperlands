@@ -61,6 +61,11 @@ define(['jquery', 'app'], function($, App) {
                     }
                     $(this).removeClass('blink');
                 });
+
+                $("#toggleInstructionsButton").click(function() {
+                    app.hideWindows();
+                    app.toggleInstructions();
+                });
         
                 $('#instructions').click(function() {
                     app.hideWindows();
@@ -361,6 +366,7 @@ define(['jquery', 'app'], function($, App) {
                 	app.hideWindows();
                 });
             } else {
+                app.hideWindows();
                 $('#foreground').click(function(event) {
                     app.center();
                     app.setMouseCoordinates(event);
@@ -510,6 +516,19 @@ define(['jquery', 'app'], function($, App) {
             $('#mutebutton').click(function() {
                 game.app.toggleSettings();
             });
+
+            $('#keyboardCommandsButton').click(function(){
+                setTimeout(function() {
+                    $("#keyboardCommands").show();
+                }, 250);
+            });
+
+            $('#gamepadCommandsButton').click(function(){
+                console.log("sup");
+                setTimeout(function() {
+                    $("#gamepadCommands").show();
+                }, 250);
+            });            
             
             $(document).bind("keydown", function(e) {
             	var key = e.which,
