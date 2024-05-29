@@ -11,6 +11,9 @@ class GameSettings {
       if (!localStorage.getItem('musicEnabled')) {
         localStorage.setItem('musicEnabled', 'true');
       }
+      if (!localStorage.getItem('streamMusicEnabled')) {
+        localStorage.setItem('streamMusicEnabled', 'true');
+      }      
       if (!localStorage.getItem('centeredCamera')) {
         localStorage.setItem('centeredCamera', 'true');
       }
@@ -33,6 +36,7 @@ class GameSettings {
 
       // Initialize checkbox states based on localStorage
       document.getElementById('musicEnabled').checked = this.getMusicEnabled();
+      document.getElementById('streamMusicEnabled').checked = this.getStreamMusicEnabled();
       document.getElementById('centeredCamera').checked = this.getCenteredCamera();
       document.getElementById('animatedTiles').checked = this.getAnimatedTiles();
       document.getElementById('highlightTargetTiles').checked = this.getHighlightTargetTiles();
@@ -51,6 +55,11 @@ class GameSettings {
     // Methods to get and set each setting
     getMusicEnabled() {
       return localStorage.getItem('musicEnabled') === 'true';
+    }
+
+    // Methods to get and set each setting
+    getStreamMusicEnabled() {
+      return localStorage.getItem('streamMusicEnabled') === 'true';
     }
 
     setMusicEnabled(enabled) {
@@ -86,6 +95,10 @@ class GameSettings {
       localStorage.setItem('highlightTargetTiles', enabled ? 'true' : 'false');
     }
 
+    setStreamMusicEnabled(enabled) {
+      localStorage.setItem('streamMusicEnabled', enabled ? 'true' : 'false');
+    }
+
     getFullscreen() {
       return localStorage.getItem('fullscreen') === 'true';
     }
@@ -116,6 +129,7 @@ class GameSettings {
 
     setSettings() {
       this.setMusicEnabled(document.getElementById('musicEnabled').checked);
+      this.setStreamMusicEnabled(document.getElementById('streamMusicEnabled').checked);
       this.setCenteredCamera(document.getElementById('centeredCamera').checked);
       this.setAnimatedTiles(document.getElementById('animatedTiles').checked);
       this.setHighlightTargetTiles(document.getElementById('highlightTargetTiles').checked);
