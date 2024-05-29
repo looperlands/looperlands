@@ -29,13 +29,9 @@ Formulas.hp = function (level) {
 };
 
 Formulas.xp = function (mob) {
-    if (Properties[Types.getKindAsString(mob.kind)].xp != undefined) {
-        return Properties[Types.getKindAsString(mob.kind)].xp * XP_MULTIPLIER;
-    } else {
-        let baseXp = mob.level * 7;
-        let xp = baseXp * XP_MULTIPLIER;
-        return xp;
-    }
+    let baseXp = mob.level * 7;
+    let xp = baseXp * XP_MULTIPLIER;
+    return xp;
 }
 
 Formulas.setXPMultiplier = function (multiplier, timeout) {
