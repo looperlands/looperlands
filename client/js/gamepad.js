@@ -1,6 +1,6 @@
 class GamePadListener {
 
-    static gamepad= undefined
+    static gamepad = undefined;
 
     constructor(game) {
         this.game = game;
@@ -25,9 +25,9 @@ class GamePadListener {
         if (!this.gamepad) {
             const gamepad = navigator.getGamepads ? navigator.getGamepads()[0] : null;
             if (gamepad) {
-              console.log("Gamepad found:", gamepad);
-              this.gamepad = gamepad;
-            }            
+                console.log("Gamepad found:", gamepad);
+                this.gamepad = gamepad;
+            }
             return;
         }
 
@@ -37,79 +37,26 @@ class GamePadListener {
         // Threshold for considering an input as a directional movement
         const threshold = 0.5;
 
-        let keys = {
-            a: 0,
-            d: 0,
-            w: 0,
-            s: 0
-        };
-
-        let change = false;
-        //let debounceTime = 100; // Time in milliseconds
-        //let lastMoveTime = this.lastMoveTime || 0; // Track the last movement time
-
         // Left stick horizontal movement (axis 0)
         if (this.gamepad.axes[0] < -threshold) {
-            //console.log('Left stick moved left (A)');
-            keys.a = 1;
-            change = true;
+            this.simulateKeyPress('a', 'KeyA');
         } else if (this.gamepad.axes[0] > threshold) {
-            //console.log('Left stick moved right (D)');
-            keys.d = 1;
-            change = true;
+            this.simulateKeyPress('d', 'KeyD');
+        } else {
+            this.simulateKeyRelease('a', 'KeyA');
+            this.simulateKeyRelease('d', 'KeyD');
         }
 
         // Left stick vertical movement (axis 1)
         if (this.gamepad.axes[1] < -threshold) {
-            //console.log('Left stick moved up (W)');
-            keys.w = 1;
-            change = true;
+            this.simulateKeyPress('w', 'KeyW');
         } else if (this.gamepad.axes[1] > threshold) {
-            //console.log('Left stick moved down (S)');
-            keys.s = 1;
-            change = true;
+            this.simulateKeyPress('s', 'KeyS');
+        } else {
+            this.simulateKeyRelease('w', 'KeyW');
+            this.simulateKeyRelease('s', 'KeyS');
         }
 
-        /*
-        // D-pad movement
-        if (this.gamepad.buttons[12].pressed) {
-            keys.w = 1;
-            change = true;
-        }
-        if (this.gamepad.buttons[13].pressed) {
-            keys.s = 1;
-            change = true;
-        }
-        if (this.gamepad.buttons[14].pressed) {
-            keys.a = 1;
-            change = true;
-        }
-        if (this.gamepad.buttons[15].pressed) {
-            keys.d = 1;
-            change = true;
-        }
-        
-        let currentTime = Date.now();
-        */
-
-        if (change) { //&& (currentTime - lastMoveTime > debounceTime)
-            let x = this.game.player.gridX;
-            let y = this.game.player.gridY;
-            this.game.click({ x: x + keys.d - keys.a, 
-                              y: y + keys.s - keys.w, 
-                              keyboard: true});  
-            //lastMoveTime = currentTime;
-            change = false;
-        }
-        /*
-        // Process the gamepad buttons here (if needed)
-        for (let i = 0; i < this.gamepad.buttons.length; i++) {
-            if (this.gamepad.buttons[i].pressed) {
-                console.log(`Button ${i} is pressed`);
-            }
-        }
-        */
-        
         for (let i = 0; i < this.gamepad.buttons.length; i++) {
             if (this.gamepad.buttons[i].pressed) {
                 if (!this.buttonStates[i]) {
@@ -159,7 +106,7 @@ class GamePadListener {
                 break;
         }
     }
-    
+
     simulateKeyPress(key, code) {
         const event = new KeyboardEvent('keydown', {
             bubbles: true,
@@ -179,5 +126,4 @@ class GamePadListener {
         });
         document.dispatchEvent(event);
     }    
-    
 }
