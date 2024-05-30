@@ -1899,6 +1899,63 @@ let Properties = {
     soap: {
         respawnDelay: 5500000,
     },
+    gameboy: {
+        respawnDelay: 5500000,
+    },
+    battery: {
+        respawnDelay: 5500000,
+    },
+    hardwallet: {
+        respawnDelay: 5500000,
+    },
+    movieglasses: {
+        respawnDelay: 5500000,
+    },
+    m88ncompass: {
+        respawnDelay: 5500000,
+    },
+    m88nbinoculars: {
+        respawnDelay: 5500000,
+    },
+    m88npeel: {
+        respawnDelay: 5500000,
+    },
+    m88nfly: {
+        respawnDelay: 5500000,
+    },
+    m88njunebug: {
+        respawnDelay: 5500000,
+    },
+    m88ndungbeetle: {
+        respawnDelay: 5500000,
+    },
+    m88nbutterfly: {
+        respawnDelay: 5500000,
+    },
+    m88nstickbug: {
+        respawnDelay: 5500000,
+    },
+    m88ndiamondnecklace: {
+        respawnDelay: 5500000,
+    },
+    m88ndiamondring: {
+        respawnDelay: 5500000,
+    },
+    m88ngoldearrings: {
+        respawnDelay: 5500000,
+    },
+    m88nclover: {
+        respawnDelay: 5500000,
+    },
+    m88nluckyclover: {
+        respawnDelay: 5500000,
+    },
+    m88nmail: {
+        respawnDelay: 5500000,
+    },
+    m88npackage: {
+        respawnDelay: 5500000,
+    },
     strangeyellowliquid: {
         collectable: true,
         consumable: true,

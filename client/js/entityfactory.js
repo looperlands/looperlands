@@ -862,6 +862,21 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.BATTERY]=function(id){return new Items.battery(id);};
     EntityFactory.builders[Types.Entities.GAMEBOY]=function(id){return new Items.gameboy(id);};
     EntityFactory.builders[Types.Entities.HARDWALLET]=function(id){return new Items.hardwallet(id);};
+    EntityFactory.builders[Types.Entities.M88NCOMPASS] = function(id) { return new Items.m88ncompass(id); };
+    EntityFactory.builders[Types.Entities.M88NBINOCULARS] = function(id) { return new Items.m88nbinoculars(id); };
+    EntityFactory.builders[Types.Entities.M88NPEEL] = function(id) { return new Items.m88npeel(id); };
+    EntityFactory.builders[Types.Entities.M88NDUNGBEETLE] = function(id) { return new Items.m88ndungbeetle(id); };
+    EntityFactory.builders[Types.Entities.M88NFLY] = function(id) { return new Items.m88nfly(id); };
+    EntityFactory.builders[Types.Entities.M88NJUNEBUG] = function(id) { return new Items.m88njunebug(id); };
+    EntityFactory.builders[Types.Entities.M88NBUTTERFLY] = function(id) { return new Items.m88nbutterfly(id); };
+    EntityFactory.builders[Types.Entities.M88NSTICKBUG] = function(id) { return new Items.m88nstickbug(id); };
+    EntityFactory.builders[Types.Entities.M88NDIAMONDNECKLACE] = function(id) { return new Items.m88ndiamondnecklace(id); };
+    EntityFactory.builders[Types.Entities.M88NDIAMONDRING] = function(id) { return new Items.m88ndiamondring(id); };
+    EntityFactory.builders[Types.Entities.M88NGOLDEARRINGS] = function(id) { return new Items.m88ngoldearrings(id); };
+    EntityFactory.builders[Types.Entities.M88NCLOVER] = function(id) { return new Items.m88nclover(id); };
+    EntityFactory.builders[Types.Entities.M88NLUCKYCLOVER] = function(id) { return new Items.m88nluckyclover(id); };
+    EntityFactory.builders[Types.Entities.M88NMAIL] = function(id) { return new Items.m88nmail(id); };
+    EntityFactory.builders[Types.Entities.M88NPACKAGE] = function(id) { return new Items.m88npackage(id); };
     //MRMlabs
     EntityFactory.builders[Types.Entities.FIRSTAIDKIT] = function(id) { return new Items.firstaidkit(id); };
     EntityFactory.builders[Types.Entities.BANDAID] = function(id) { return new Items.bandaid(id); };
