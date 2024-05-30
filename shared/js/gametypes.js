@@ -49,7 +49,8 @@ Types = {
         SHOOT: 47,
         SPAWNPROJECTILE: 48,
         OUTOFAMMO: 49,
-        SELECTPROJECTILE: 50
+        SELECTPROJECTILE: 50,
+        ANNOUNCEMENT: 51
     },
 
     Entities: {

@@ -7795,6 +7795,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         self.updateResource(resource, amount);
                     });
 
+                    self.client.onAnnouncement(function(message, timeToShow ) {
+                        self.app.showAnnouncement(message, timeToShow);
+                    });
+
                     self.gamestart_callback();
 
                     if(self.hasNeverStarted) {

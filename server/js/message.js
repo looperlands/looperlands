@@ -401,3 +401,14 @@ Messages.Buffinfo = Message.extend({
                 this.duration];
     },
 });
+
+
+Messages.Announcement = Message.extend({
+    init: function(message, timeToShow) {
+        this.message = message;
+        this.timeToShow = timeToShow;
+    },
+    serialize: function() {
+        return [Types.Messages.ANNOUNCEMENT, this.message, this.timeToShow];
+    },
+});

@@ -1245,7 +1245,7 @@ module.exports = Player = Character.extend({
         }
     },
 
-    sendAnnoucement: function(annoucement) {
-        console.log(annoucement)
+    sendAnnoucement: function(message, timeToShow) {
+        this.send(new Messages.Announcement(message, timeToShow).serialize());
     }
 });

@@ -65,6 +65,12 @@ The following example will activate the doors with triggerId = Fight Night:
 curl -X POST -H "Content-Type: application/json" -H "x-api-key: $LOOPWORMS_API_KEY" -d "{\"triggerId\": \"Fight Night\"}" http://127.0.0.1:8000/activateTrigger
 ```
 
+# Announcement
+The gameserver accepts announcements per map. Not including `maps` will send to all maps. Not including `timeToShow` seconds will display the announcement until the user clicks exit. 
+```
+ curl -X POST http://localhost:8000/announce      -H "Content-Type: application/json"      -d '{"message": "Server maintenance will start at 8 PM.", "maps" : ["taikotown"], "timeToShow": 5}' -H "x-api-key: placeholder"
+```
+
 # Add a mob
 
 * Add each scale image to client/img/n

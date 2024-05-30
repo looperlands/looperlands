@@ -969,13 +969,13 @@ body.inventory .inventorySidebar {
 #create-new span span:hover {color:#b2af9b;}
 #playername {color:#fff;}
 
-#credits, #loadcharacter, #confirmation, #death, #error, #settings, #keyboardCommands, #instructions, #gamepadCommands, #annoucement {position:absolute;left:50%;text-align:center;font-family:'GraphicPixel', sans-serif;z-index:1000;}
+#credits, #loadcharacter, #confirmation, #death, #error, #settings, #keyboardCommands, #instructions, #gamepadCommands, #announcement {position:absolute;left:50%;text-align:center;font-family:'GraphicPixel', sans-serif;z-index:1000;}
 
 #playerimage {image-rendering: -moz-crisp-edges; image-rendering: -webkit-optimize-contrast;}
 
 #parchment p {font-family:'GraphicPixel';}
 
-#credits, #death, #settings, #keyboardCommands, #instructions, #gamepadCommands, #annoucement {top:50%;}
+#credits, #death, #settings, #keyboardCommands, #instructions, #gamepadCommands, #announcement {top:50%;}
 .intro #credits {top:55%;}
 #credits h1 a {color:#fcda5c;text-decoration:none;}
 #authors div a {display:block;color:#fff;text-decoration:none;}
@@ -1114,7 +1114,7 @@ footer div  {display:inline-block;}
     opacity: 1;
     transition: ease-in all 0.3s;
 }
-#settings, #keyboardCommands, #instructions, #gamepadCommands, #annoucement {
+#settings, #keyboardCommands, #instructions, #gamepadCommands, #announcement {
     color: #b9b9b9;
     padding:0 25px;
     width:770px;
@@ -1231,7 +1231,7 @@ footer div  {display:inline-block;}
     text-decoration: underline;
 }
 
-#annoucementContent {
+#announcementContent {
     margin-top: 30px;
     width: 100%; /* Adjust as needed */
     word-wrap: break-word; /* Break words to fit the container */

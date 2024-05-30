@@ -54,6 +54,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             this.handlers[Types.Messages.RESOURCE] = this.receiveResource;
             this.handlers[Types.Messages.SPAWNPROJECTILE] = this.receiveSpawnProjectile;
             this.handlers[Types.Messages.OUTOFAMMO] = this.receiveOutOfAmmo;
+            this.handlers[Types.Messages.ANNOUNCEMENT] = this.receiveAnnouncement;
 
             this.useBison = false;
             this.enable();
@@ -582,6 +583,12 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             }
         },
 
+        receiveAnnouncement: function(data) {
+            if (this.on_announcement_callback) {
+                this.on_announcement_callback(data[1], data[2]);
+            }
+        },
+
         onDispatched: function(callback) {
             this.dispatched_callback = callback;
         },
@@ -744,6 +751,10 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
 
         onResourceUpdated: function(callback) {
             this.resource_updated_callback = callback;
+        },
+
+        onAnnouncement: function(callback) {
+            this.on_announcement_callback = callback;
         },
 
         sendHello: function(player) {
