@@ -395,6 +395,7 @@ define(['jquery', 'storage'], function ($, Storage) {
             $('#shop-confirmation').removeClass('visible').addClass('hidden');
             $("#keyboardCommands").hide();
             $("#gamepadCommands").hide();
+            $("#annoucement").hide();
         },
 
         showAchievementNotification: function (questName, endText, xpReward, medal) {
@@ -1264,6 +1265,11 @@ define(['jquery', 'storage'], function ($, Storage) {
             this.messageTimer = setTimeout(function () {
                 $wrapper.addClass('top');
             }, 5000);
+        },
+
+        showAnnoucement: function(message) {
+            $("#annoucementContent").html(message);
+            $("#annoucement").show();
         },
 
         resetMessageTimer: function () {
