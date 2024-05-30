@@ -59,23 +59,43 @@ function getX(id, w) {
     return (id % w == 0) ? w - 1 : (id % w) - 1;
 };
 
-function drawScaledImage(ctx, image, x, y, w, h, dx, dy, scale) {
+// Cache object to store scaled images
+const imageCache = {};
 
-    //console.log(arguments);
-    ctx.drawImage(image,
-        x,
-        y,
-        w,
-        h,
-        dx * scale,
-        dy * scale,
-        w * scale,
-        h * scale);
+// Function to generate a unique cache key
+function getCacheKey(image, x, y, w, h, scale) {
+    return `${image.src}-${x}-${y}-${w}-${h}-${scale}`;
+}
+
+function drawScaledImage(ctx, image, x, y, w, h, dx, dy, scale) {
+    const cacheKey = getCacheKey(image, x, y, w, h, scale);
+
+    // Check if the scaled image is in the cache
+    if (imageCache[cacheKey]) {
+        // Draw the cached image
+        ctx.drawImage(imageCache[cacheKey], dx * scale, dy * scale);
+    } else {
+        // Create an offscreen canvas
+        const offCanvas = new OffscreenCanvas(w * scale, h * scale);
+        const offCtx = offCanvas.getContext('2d');
+
+        // Disable image smoothing
+        offCtx.imageSmoothingEnabled = false;
+
+        // Draw the scaled image to the offscreen canvas
+        offCtx.drawImage(image, x, y, w, h, 0, 0, w * scale, h * scale);
+
+        // Store the scaled image in the cache
+        imageCache[cacheKey] = offCanvas;
+
+        // Draw the scaled image from the offscreen canvas to the main canvas
+        ctx.drawImage(offCanvas, dx * scale, dy * scale);
+    }
 }
 
 function drawTile(ctx, tileid, tileset, setW, gridW, cellid, scale) {
     if (tileid !== -1) { // -1 when tile is empty in Tiled. Don't attempt to draw it.
-        this.drawScaledImage(ctx,
+        drawScaledImage(ctx,
             tileset,
             getX(tileid + 1, setW) * tilesize,
             Math.floor(tileid / setW) * tilesize,
@@ -85,7 +105,8 @@ function drawTile(ctx, tileid, tileset, setW, gridW, cellid, scale) {
             Math.floor(cellid / gridW) * tilesize,
             scale);
     }
-};
+}
+
 
 function render(id, tiles, cameraX, cameraY, scale, clear) {
     let ctx = contexes[id];
