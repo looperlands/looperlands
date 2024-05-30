@@ -359,6 +359,7 @@ define(['npc'], function(Npc) {
         tylerdurden: Npc.extend({init: function(id) {this._super(id, Types.Entities.TYLERDURDEN, 1);}}),
         //Robits NPCs
         ROBITSC1: Npc.extend({init: function(id) {this._super(id, Types.Entities.ROBITSC1, 1);}}),
+        CLOWNCAPONEBIT: Npc.extend({init: function(id) {this._super(id, Types.Entities.CLOWNCAPONEBIT, 1);}}),
         //ShortDestroyers
         derrick: Npc.extend({init: function(id) {this._super(id, Types.Entities.DERRICK, 1);}}),
         frog: Npc.extend({init: function(id) {this._super(id, Types.Entities.FROG, 1);}}),
@@ -396,6 +397,16 @@ define(['npc'], function(Npc) {
         GENTLEBIT: Npc.extend({init: function(id) {this._super(id, Types.Entities.GENTLEBIT, 1);}}),
         MAGMABIT: Npc.extend({init: function(id) {this._super(id, Types.Entities.MAGMABIT, 1);}}),
         ROBITSMAIN: Npc.extend({init: function(id) {this._super(id, Types.Entities.ROBITSMAIN, 1);}}),
+        DFVBIT: Npc.extend({init: function(id) {this._super(id, Types.Entities.DFVBIT, 1);}}),
+        PRINCEBIT: Npc.extend({init: function(id) {this._super(id, Types.Entities.PRINCEBIT, 1);}}),
+        BIDENBIT: Npc.extend({init: function(id) {this._super(id, Types.Entities.BIDENBIT, 1);}}),
+        ARTWHITE: Npc.extend({init: function(id) {this._super(id, Types.Entities.ARTWHITE, 1);}}),
+        ARTWHITEROBIT: Npc.extend({init: function(id) {this._super(id, Types.Entities.ARTWHITEROBIT, 1);}}),
+        OCARINABIT: Npc.extend({init: function(id) {this._super(id, Types.Entities.OCARINABIT, 1);}}),
+        WENMOONBIT: Npc.extend({init: function(id) {this._super(id, Types.Entities.WENMOONBIT, 1);}}),
+        FEDORABIT: Npc.extend({init: function(id) {this._super(id, Types.Entities.FEDORABIT, 1);}}),
+        APEBRAINOG: Npc.extend({init: function(id) {this._super(id, Types.Entities.APEBRAINOG, 1);}}),
+        SIREN: Npc.extend({init: function(id) {this._super(id, Types.Entities.SIREN, 1);}}),
         // @nextNPCLine@
     };
     

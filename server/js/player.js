@@ -11,7 +11,6 @@ var cls = require("./lib/class"),
     AltNames = require("../../shared/js/altnames");
 
 const discord = require('./discord.js');
-const axios = require('axios');
 const chat = require("./chat.js");
 const NFTWeapon = require("./nftweapon.js");
 const NFTSpecialItem = require("./nftspecialitem.js");
@@ -19,8 +18,8 @@ const PlayerEventBroker = require("./quests/playereventbroker.js");
 const Lakes = require("./lakes.js");
 const Collectables = require("./collectables.js");
 const platform = require('./looperlandsplatformclient.js');
+const PlayerClassModifiers = require('./playerclassmodifiers.js').PlayerClassModifiers;
 
-const LOOPWORMS_LOOPERLANDS_BASE_URL = process.env.LOOPWORMS_LOOPERLANDS_BASE_URL;
 const LOOPERLANDS_PLATFORM_BASE_URL = process.env.LOOPERLANDS_PLATFORM_BASE_URL;
 const LOOPERLANDS_PLATFORM_API_KEY = process.env.LOOPERLANDS_PLATFORM_API_KEY;
 
@@ -59,6 +58,8 @@ module.exports = Player = Character.extend({
         this.selectedProjectile = null;
 
         this.playerEventBroker = new PlayerEventBroker.PlayerEventBroker(this);
+
+        this.playerClassModifiers = new PlayerClassModifiers();
 
         this.connection.listen(async function (message) {
 
@@ -229,7 +230,9 @@ module.exports = Player = Character.extend({
             }
             else if (action === Types.Messages.AGGRO) {
                 if (self.move_callback) {
-                    self.server.handleMobHate(message[1], self.id, 5);
+                    const baseHateAggroHate = 5;
+                    const hate = self.playerClassModifiers.hate * baseHateAggroHate; 
+                    self.server.handleMobHate(message[1], self.id, hate);
 
                     // Handle special attack timeouts on encounter start
                     let mob = self.server.getEntityById(message[1]);
@@ -301,9 +304,17 @@ module.exports = Player = Character.extend({
                             dmg = Math.round(dmg);
 
                             if (dmg > 0) {
+                                let damageDealtModifier = 1;
+                                if (self.getNFTWeapon()?.isRanged()) {
+                                    damageDealtModifier = self.playerClassModifiers.rangedDamageDealt;
+                                } else {
+                                    damageDealtModifier = self.playerClassModifiers.meleeDamageDealt;
+                                }
+                                dmg = Math.round(damageDealtModifier * dmg);          
                                 mob.receiveDamage(dmg, self.id);
                                 //console.log("Player "+self.id+" hit mob "+mob.id+" for "+dmg+" damage.", mob.type);
-                                self.server.handleMobHate(mob.id, self.id, dmg);
+                                const hate = dmg * self.playerClassModifiers.hate;
+                                self.server.handleMobHate(mob.id, self.id, hate);
                                 self.server.handleHurtEntity(mob, self, dmg);
                             }
                             self.incrementNFTWeaponExperience(dmg);
@@ -360,7 +371,9 @@ module.exports = Player = Character.extend({
                 let botId = message[2];
                 if (botId !== 0) {
                     let bot = self.server.getEntityById(botId);
-                    bot.handleHurt(mob);
+                    if (bot !== undefined) {
+                        bot.handleHurt(mob);
+                    }
                 } else if (mob instanceof Mob) {
                     let kindString = Types.getKindAsString(mob.kind);
                     let aoeProps = Properties[kindString].aoe;
@@ -587,10 +600,16 @@ module.exports = Player = Character.extend({
         if (mob && this.hitPoints > 0 && !this.invincible) {
             if (damage === undefined) {
                 let level = this.getLevel();
-                let totalLevel = Math.round(level * 0.5); //this is armor
+                let totalLevel = Math.round(level * 0.5);
                 let attackerLevel;
+                let damageDealtModifier = 1;
                 if (mob instanceof Player) {
                     attackerLevel = (mob.getWeaponLevel() + mob.getLevel());
+                    if (mob.getNFTWeapon()?.isRanged()) {
+                        damageDealtModifier = mob.playerClassModifiers.rangedDamageDealt;
+                    } else {
+                        damageDealtModifier = mob.playerClassModifiers.meleeDamageDealt;
+                    }
                     let mobBuff = mob.getActiveBuff();
                     if (mobBuff && mobBuff.stat === "atk") {
                         attackerLevel = attackerLevel * (100 + mobBuff.percent) / 100;
@@ -599,6 +618,8 @@ module.exports = Player = Character.extend({
                     attackerLevel = mob.getWeaponLevel();
                 }
                 damage = Formulas.dmg(attackerLevel, totalLevel);
+                damage = damage * this.playerClassModifiers.meleeDamageTaken * damageDealtModifier;
+                damage = Math.round(damage);
             }
             this.hitPoints -= damage;
             this.server.handleHurtEntity(this, mob, damage);
@@ -852,7 +873,7 @@ module.exports = Player = Character.extend({
 
     updateHitPoints: function () {
         let level = this.getLevel();
-        let hp = Formulas.hp(level);
+        let hp = Formulas.hp(level) * this.playerClassModifiers.maxHp;
         this.resetHitPoints(hp);
         this.send(new Messages.HitPoints(this.maxHitPoints).serialize());
     },
@@ -868,27 +889,27 @@ module.exports = Player = Character.extend({
         let cache = this.server.server.cache.get(this.sessionId);
         let gameData = cache.gameData;
 
-        let consumables = gameData.consumables;
-        if (consumables === undefined) {
+        let items = gameData.items;
+        if (items === undefined) {
             return 0;
         }
 
-        return consumables[kind] || 0;
+        return items[kind] || 0;
     },
 
     incrementResourceAmount: function (kind, amount) {
         let cache = this.server.server.cache.get(this.sessionId);
         let gameData = cache.gameData;
 
-        if (gameData.consumables === undefined) {
-            gameData.consumables = {};
+        if (gameData.items === undefined) {
+            gameData.items = {};
         }
 
-        let itemCount = gameData.consumables[kind];
+        let itemCount = gameData.items[kind];
         if (itemCount) {
-            gameData.consumables[kind] = itemCount + amount;
+            gameData.items[kind] = itemCount + amount;
         } else {
-            gameData.consumables[kind] = amount;
+            gameData.items[kind] = amount;
         }
 
         cache.gameData = gameData;
@@ -926,7 +947,7 @@ module.exports = Player = Character.extend({
     },
 
     getAttackRate: function () {
-        return this.attackRate;
+        return Math.round(this.attackRate/this.playerClassModifiers.attackRate);
     },
 
     setAttackRate: function (rate) {
@@ -934,7 +955,12 @@ module.exports = Player = Character.extend({
     },
 
     getMoveSpeed: function () {
-        return Math.round(Math.max(BASE_SPEED - (this.getLevel() - 1) * 0.33, 100));
+        const adjustedLevel = this.getLevel() * this.playerClassModifiers.moveSpeed;
+        return Math.round(BASE_SPEED - (adjustedLevel - 1) * 0.33);
+    },
+
+    getStealth: function() {
+        return this.playerClassModifiers.stealth;
     },
 
     pushEntityList: function () {
@@ -1044,15 +1070,15 @@ module.exports = Player = Character.extend({
         let cache = this.server.server.cache.get(this.sessionId);
         let gameData = cache.gameData;
 
-        if (gameData.consumables === undefined) {
-            gameData.consumables = {};
+        if (gameData.items === undefined) {
+            gameData.items = {};
         }
 
-        let itemCount = gameData.consumables[consumable];
+        let itemCount = gameData.items[consumable];
         if (itemCount) {
-            gameData.consumables[consumable] = itemCount + 1;
+            gameData.items[consumable] = itemCount + 1;
         } else {
-            gameData.consumables[consumable] = 1;
+            gameData.items[consumable] = 1;
         }
 
         cache.gameData = gameData;
@@ -1062,10 +1088,10 @@ module.exports = Player = Character.extend({
     consumeItem: function (item) {
         let cache = this.server.server.cache.get(this.sessionId);
         let gameData = cache.gameData;
-        if (gameData.consumables === undefined) {
-            gameData.consumables = {};
+        if (gameData.items === undefined) {
+            gameData.items = {};
         }
-        let itemCount = gameData.consumables[item];
+        let itemCount = gameData.items[item];
 
         let cooldownData = Collectables.getCooldownData(item);
         let cooldownGroup = cooldownData.group !== undefined ? cooldownData.group : "";
@@ -1076,7 +1102,7 @@ module.exports = Player = Character.extend({
             Collectables.consume(item, this);
             dao.saveConsumable(this.nftId, item, -1);
 
-            gameData.consumables[item] = itemCount - 1;
+            gameData.items[item] = itemCount - 1;
             cache.gameData = gameData;
             this.server.server.cache.set(this.sessionId, cache);
 
@@ -1217,5 +1243,9 @@ module.exports = Player = Character.extend({
         if (this.releaseMob_callback) {
             return this.releaseMob_callback(kind);
         }
+    },
+
+    sendAnnoucement: function(message, timeToShow) {
+        this.send(new Messages.Announcement(message, timeToShow).serialize());
     }
 });

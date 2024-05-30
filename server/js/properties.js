@@ -1243,12 +1243,12 @@ let Properties = {
     m88nbigchungus: {
         level: 55,
         drops: {
-            m88nmap: 25,
-            m88negg3: 5,
-            m88negg4: 5,
-            m88negg5: 5,
-            m88negg6: 5,
-            burger: 5,
+            m88nmap: 30,
+            m88negg3: 1,
+            m88negg4: 1,
+            m88negg5: 1,
+            m88negg6: 1,
+            burger: 15,
             GOLD3: 50
         },
         messages: ['Mmmmm, Easter Eggs!', 'O Doyle Rules!', 'Cant touch this...', 'Stay away or come back with friends!'],
@@ -1281,13 +1281,12 @@ let Properties = {
     sharkboss: {
         level: 88,
         drops: {
-            m88nmap: 15,
-            m88negg1: 15,
-            m88negg2: 15,
-            m88nfabergeegg: 10,
+            m88nmap: 30,
+            m88negg1: 1,
+            m88negg2: 1,
             burger: 10,
-            m88ngem: 15,
-            GOLD3: 20,
+            m88ngem: 1,
+            GOLD3: 40,
         },
         messages: ['Mmmmm, tasty!', 'Yum!', 'Eww, that was a little tough...', 'Stay on land or come back with friends!'],
         armorMod: 1,
@@ -1898,6 +1897,63 @@ let Properties = {
         respawnDelay: 5500000,
     },
     soap: {
+        respawnDelay: 5500000,
+    },
+    gameboy: {
+        respawnDelay: 5500000,
+    },
+    battery: {
+        respawnDelay: 5500000,
+    },
+    hardwallet: {
+        respawnDelay: 5500000,
+    },
+    movieglasses: {
+        respawnDelay: 5500000,
+    },
+    m88ncompass: {
+        respawnDelay: 5500000,
+    },
+    m88nbinoculars: {
+        respawnDelay: 5500000,
+    },
+    m88npeel: {
+        respawnDelay: 5500000,
+    },
+    m88nfly: {
+        respawnDelay: 5500000,
+    },
+    m88njunebug: {
+        respawnDelay: 5500000,
+    },
+    m88ndungbeetle: {
+        respawnDelay: 5500000,
+    },
+    m88nbutterfly: {
+        respawnDelay: 5500000,
+    },
+    m88nstickbug: {
+        respawnDelay: 5500000,
+    },
+    m88ndiamondnecklace: {
+        respawnDelay: 5500000,
+    },
+    m88ndiamondring: {
+        respawnDelay: 5500000,
+    },
+    m88ngoldearrings: {
+        respawnDelay: 5500000,
+    },
+    m88nclover: {
+        respawnDelay: 5500000,
+    },
+    m88nluckyclover: {
+        respawnDelay: 5500000,
+    },
+    m88nmail: {
+        respawnDelay: 5500000,
+    },
+    m88npackage: {
         respawnDelay: 5500000,
     },
     strangeyellowliquid: {

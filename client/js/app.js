@@ -339,6 +339,7 @@ define(['jquery', 'storage'], function ($, Storage) {
             }
 
             preloaderImg.onerror = () => {
+                preloaderImg.onerror = undefined;
                 let spriteWeaponPath;
                 if (dynamicRangedWeapon) {
                     spriteWeaponPath = this.dynamicNFTIconURL[weapon].replace("/3/", "/1/");
@@ -392,6 +393,9 @@ define(['jquery', 'storage'], function ($, Storage) {
             $('#new-achievement-popup').addClass('hidden')
             $('#shop-popup').addClass('hidden')
             $('#shop-confirmation').removeClass('visible').addClass('hidden');
+            $("#keyboardCommands").hide();
+            $("#gamepadCommands").hide();
+            $("#announcement").hide();
         },
 
         showAchievementNotification: function (questName, endText, xpReward, medal) {
@@ -616,13 +620,14 @@ define(['jquery', 'storage'], function ($, Storage) {
             let inventoryQuery = "/session/" + _this.storage.sessionId + "/inventory";
             let weaponInventory = [],
                 specialInventory = [],
-                consumablesInventory = {};
+                consumablesInventory = {},
+                botsInventory = [];
 
             axios.get(inventoryQuery).then(function(response) {
                 if (response.data){
                     weaponInventory = response.data.inventory;
                     specialInventory = response.data.special;
-                    consumablesInventory = response.data.consumables;
+                    consumablesInventory = response.data.items;
                     botsInventory = response.data.bots;
                 }
 
@@ -656,8 +661,8 @@ define(['jquery', 'storage'], function ($, Storage) {
                             normalURL = "-1"; //cause error;
                         }
                         imgTag = "<div class='item panelBorder'>" +
-                            "<div class='tooltiptext pixel-corners-xs'><span class='tooltipHighlight'>Level " + item.level + "</span> " + item.weaponName + " (" + item.Trait + ")</div>" +
-                            "<img id='" + item.nftId + "' style='width: 32px; height: 32px; object-fit: none; object-position: 0 4px; cursor: pointer;' src='"+ normalURL +"' onerror='this.src=\""+ errorURL + "\"; $(this).css({objectPosition: \"0 -400px\"});' />" +
+                            "<div class='tooltiptext pixel-corners-xs'><span class='tooltipHighlight'>Level " + item.level + "</span> " + item.name + " (" + item.trait + ")</div>" +
+                            "<img id='" + item.nftId + "' style='width: 32px; height: 32px; object-fit: none; object-position: 0 4px; cursor: pointer;' src='"+ normalURL +"' onerror='this.onerror=null;this.src=\""+ errorURL + "\"; $(this).css({objectPosition: \"0 -400px\"});' />" +
                             "</div>";
                         inventoryHtml += imgTag;
                     });
@@ -673,7 +678,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                         const itemURL = getItemURL(item);
 
                         inventoryHtml += "<div class='item panelBorder'>" +
-                        "<div class='tooltiptext pixel-corners-xs'><span class='tooltipHighlight'>Level " + item.level + "</span> " + item.specialItemName + " (" + item.Trait + ")</div>" +
+                        "<div class='tooltiptext pixel-corners-xs'><span class='tooltipHighlight'>Level " + item.level + "</span> " + item.name + " (" + item.trait + ")</div>" +
                         "<img id='" + item.nftId + "' style='width: 32px; height: 32px; object-fit: cover; cursor: pointer; object-position: 100% 0;' src='"+itemURL+"' /></div>";
                     });
                     inventoryHtml += "</div></div>";
@@ -734,7 +739,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                             } else {
                                 url = `img/1/${bot.nftId}.png`;
                             }
-                            imgTag = `<div class='item panelBorder'><div class='tooltiptext pixel-corners-xs'><span class='tooltipHighlight'>Level ${bot.level}</span> ${bot.looperName}</div><img id=${bot.nftId} style='width: 32px; height: 32px; object-fit: none; cursor: pointer; object-position: 100% 0;' src='` + url + "'/></div>";
+                            imgTag = `<div class='item panelBorder'><div class='tooltiptext pixel-corners-xs'><span class='tooltipHighlight'>Level ${bot.level}</span> ${bot.name}</div><img id=${bot.nftId} style='width: 32px; height: 32px; object-fit: none; cursor: pointer; object-position: 100% 0;' src='` + url + "'/></div>";
                             inventoryHtml += imgTag;
                         }
                     });
@@ -1260,6 +1265,16 @@ define(['jquery', 'storage'], function ($, Storage) {
             this.messageTimer = setTimeout(function () {
                 $wrapper.addClass('top');
             }, 5000);
+        },
+
+        showAnnouncement: function(message, timeToShow) {
+            $("#announcementContent").html(message);
+            $("#announcement").show();
+            if (Number.isInteger(timeToShow)) {
+                setTimeout(()=> {
+                    $("#announcement").hide();
+                }, timeToShow * 1000)
+            }
         },
 
         resetMessageTimer: function () {

@@ -465,6 +465,11 @@ define(['character'], function (Character) {
             "Its the end of the month and the weekend!",
             "Let's kill this love!",
         ],
+        "CLOWNCAPONEBIT": [
+            "Hey ya big Clown! It's your favorite Web 3 Clown here Clown Capone.",
+            "The Circus is coming to Town!",
+            'Wanna <a target="_blank" href="https://marketplace.lifesajoke.xyz/lifesajokenft">join the Circus</a>?!',
+        ],
 
         //Short Destroyers
         "derrick": [
@@ -642,6 +647,55 @@ define(['character'], function (Character) {
             "Come visit us in Cyber City! :)",
             "Grab a Cyberbit <a target='_blank' href='https://loopexchange.art/collection/cybercity'>here</a>!",
             "Beep Boop"
+        ],
+        "DFVBIT": [
+            "A few things I am not. I am not a cat.",
+            "Ya got a meme buddy?",
+            "Hang in there!"
+        ],
+
+        "PRINCEBIT": [
+            "Have you seen Joe?",
+            "I hear MRM Labs has a map coming soon.",
+            "Inkheads are the best!"
+        ],
+        "BIDENBIT": [
+            "zZz",
+        ],
+        "ARTWHITE": [
+            "Hi friend ArtWhite here! :)",
+            "Come eat some Burgers at Burgercats!",
+            "Thank you for visiting!"
+        ],
+        "ARTWHITEROBIT": [
+            "Hi friend! I was created by both ArtWhite and Robits!",
+            "You might be able to grab me as an Avatar <a target='_blank' href='https://loopexchange.art/collection/cybercity'>here</a>!",
+            "I love burgercats!"
+        ],
+        "OCARINABIT": [
+            "Hi I'm Ocarina!",
+            "Welcome to the Tea room!",
+        ],
+        "WENMOONBIT":  [
+            "Hey there I was sent here by m88nwalker, welcome to the m88n lab!",
+            "We're still working on updating the interior, check back in soon to see our progress!",
+            'On X? <a target="_blank" href="https://twitter.com/moonwalker_nfts">Give him a follow</a> to stay updated.',
+            'How about Discord? <a target="_blank" href="https://discord.gg/bjjNewZegM">Checkout PLANET M88NWALKER</a> for lots more!',
+            "Check out his collections <a target='_blank' href='https://loopexchange.art/profile/0x1e8ab2cc09be581530bb9f3ac94353f6f7412239'>here</a>!",
+            "Have fun exploring Cyber City!"
+        ],
+        "FEDORABIT":  [
+            "Hi im Fedora!",
+            "Check out FedoraVerse <a target='_blank' href='https://loopexchange.art/collection/fedoraverse3'>here</a>!",
+        ],
+        "APEBRAINOG": [
+            "Hi my name is Jinzo!",
+            "Check out my Apebrain Collection <a target='_blank' href='https://loopexchange.art/collection/apebrain'>here</a>!"
+        ],
+        "SIREN": [
+            "Legends say that Sirens have held the Arden Depths captive since the beginning of time.",
+            "Check out my Apebrain Collection <a target='_blank' href='https://loopexchange.art/collection/sirensoftheardendepths'>here</a>!",
+            "Embrace the Siren's song!"
         ],
         // @nextNPCLine@
     };

@@ -188,7 +188,11 @@ module.exports = World = cls.Class.extend({
         this.onRegenTick(function() {
             self.forEachCharacter(function(character) {
                 if(!character.hasFullHealth()) {
-                    character.regenHealthBy(Math.floor(character.maxHitPoints / 25));
+                    let regenHealthBy = character.maxHitPoints / 25
+                    if (character.type === 'player') {
+                        regenHealthBy *= character.playerClassModifiers.hpRegen;
+                    }
+                    character.regenHealthBy(Math.floor(regenHealthBy));
 
                     if(character.type === 'player') {
                         self.pushToPlayer(character, character.regen());
@@ -323,6 +327,7 @@ module.exports = World = cls.Class.extend({
             entities = _.map(entities, function (id) {
                 return parseInt(id);
             });
+            entities = entities.filter(id=> id != null);
             if (entities) {
                 this.pushToPlayer(player, new Messages.List(entities));
             }
@@ -646,8 +651,7 @@ module.exports = World = cls.Class.extend({
 
     handleMobHate: function (mobId, playerId, hatePoints) {
         var mob = this.getEntityById(mobId),
-            player = this.getEntityById(playerId),
-            mostHated;
+            player = this.getEntityById(playerId);
 
         if (player && mob) {
             mob.increaseHateFor(playerId, hatePoints);
@@ -1150,7 +1154,8 @@ module.exports = World = cls.Class.extend({
                     attackRate: entity.getAttackRate(),
                     inCombat: entity.isInCombat(),
                     x: entity.x,
-                    y: entity.y
+                    y: entity.y,
+                    stealth: entity.getStealth()
                 }
             }
         }

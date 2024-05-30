@@ -1,7 +1,7 @@
 {
   "id": "ROBITSMAIN",
-  "width": 16,
-  "height": 16,
+  "width": 32,
+  "height": 32,
   "animations": {
     "idle_down": {
       "length": 2,

@@ -39,15 +39,18 @@ define(['jquery', 'area'], function ($, Area) {
                     if (response.data === undefined || response.data.length === 0) {
                         return;
                     }
+
                     let mp3URL = response.data[0]['mp3URL'];
 
-                    if (mp3URL === 'null') {
+                    if (mp3URL === 'null' || self.game.app.settings.getStreamMusicEnabled() === false) {
                         if (audio !== undefined) {
                             audio.pause();
                             delete audio;
+                            song = "";
                         }
                         return;
                     }
+
 
                     if (song !== mp3URL) {
 

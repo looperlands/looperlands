@@ -1,9 +1,9 @@
 define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile',
-        'warrior', 'gameclient', 'audio', 'updater', 'transition', 'pathfinder',
+        'warrior', 'gameclient', 'audio', 'updater', 'transition',
         'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'fieldeffect', 'config', 'float', 'projectile', '../../shared/js/gametypes', '../../shared/js/altnames'],
 
     function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, AnimatedTile,
-             Warrior, GameClient, AudioManager, Updater, Transition, Pathfinder,
+             Warrior, GameClient, AudioManager, Updater, Transition,
              Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, Fieldeffect, Config, Float, Projectile) {
         var Game = Class.extend({
             init: function (app) {
@@ -197,6 +197,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "tylerdurden",
                     //Robits NPCs
                     "ROBITSC1",
+                    "CLOWNCAPONEBIT",
                     /////
                     "VILLAGESIGN11",
                     "VILLAGESIGN12",
@@ -292,6 +293,16 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 "GENTLEBIT",
                                 "MAGMABIT",
                                 "ROBITSMAIN",
+                                "DFVBIT",
+                                "PRINCEBIT",
+                                "BIDENBIT",
+                                "ARTWHITE",
+                                "ARTWHITEROBIT",
+                                "OCARINABIT",
+                                "WENMOONBIT",
+                                "FEDORABIT",
+                                "APEBRAINOG",
+                                "SIREN",
                                 // @nextCharacterLine@
                     "item-BOARHIDE",
                     "item-THUDKEY",
@@ -358,6 +369,21 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "item-battery",
                     "item-gameboy",
                     "item-hardwallet",
+                    "item-m88ncompass",
+                    "item-m88nbinoculars",
+                    "item-m88npeel",
+                    "item-m88ndungbeetle",
+                    "item-m88nfly",
+                    "item-m88njunebug",
+                    "item-m88nbutterfly",
+                    "item-m88nstickbug",
+                    "item-m88ndiamondnecklace",
+                    "item-m88ngoldearrings",
+                    "item-m88ndiamondring",
+                    "item-m88nclover",
+                    "item-m88nluckyclover",
+                    "item-m88nmail",
+                    "item-m88npackage",
                     //MRMlabs
                     "item-firstaidkit",
                     "item-bandaid",
@@ -5778,6 +5804,16 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 "NFT_0000000000000000000000000000000000000000000000000000000000000114",
                                 "NFT_63fa62d1d9de3de834689fb8f6bb02f5f1e53d6e7ecfaa26e5ee088f17ae50c6",
                                 "NFT_72c2eb4f152369973da708309fa5863e7988fd42d5ef28d9430e986c6080a048",
+                                "NFT_699da03ed44db02ad5c24279f3522e27e0370ed14da89af684667e38ea5c6ba2",
+                                "NFT_short699da03ed44db02ad5c24279f3522e27e0370ed14da89af684667e38ea5c6ba2",
+                                "NFT_medium699da03ed44db02ad5c24279f3522e27e0370ed14da89af684667e38ea5c6ba2",
+                                "NFT_long699da03ed44db02ad5c24279f3522e27e0370ed14da89af684667e38ea5c6ba2",
+                                "NFT_10efdb5fe416d5c7483da57c52b24e5dfb9e8e7686052db7aa900f52e2f001e4",
+                                "NFT_short10efdb5fe416d5c7483da57c52b24e5dfb9e8e7686052db7aa900f52e2f001e4",
+                                "NFT_medium10efdb5fe416d5c7483da57c52b24e5dfb9e8e7686052db7aa900f52e2f001e4",
+                                "NFT_long10efdb5fe416d5c7483da57c52b24e5dfb9e8e7686052db7aa900f52e2f001e4",
+                                "NFT_2e3ea84c3e2f9bf91868689579b7743a7d37fc461540593f9c7d937a4bed03c4",
+                                "NFT_75f8bec880bcaf46ba059dd0022d588ef93a2f01333a0d54f5d4291bdc9b74fa",
                                 // @nextSpriteLine@
                 ];
             },
@@ -6396,6 +6432,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     }
                     if(entity instanceof Item) {
                         this.itemGrid[y][x][entity.id] = entity;
+                        this.pathingGrid[y][x] = 0;
                     }
 
                     this.addToRenderingGrid(entity, x, y);
@@ -6627,6 +6664,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 });
 
                 this.client.onEntityList(function(list) {
+                    list = list.filter(item => item !== null);
                     var entityIds = _.pluck(self.entities, 'id'),
                         knownIds = _.intersection(entityIds, list),
                         newIds = _.difference(list, knownIds);
@@ -6706,10 +6744,11 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                     self.player.onCheckAggro(function() {
                         self.forEachMob(function(mob) {
+                            let aggroRange = Math.floor(mob.aggroRange/self.player.stealth);
                             if(mob.isAggressive
                                 && (!mob.isFriendly || mob.breakFriendly(self.player))
                                 && !mob.inCombat
-                                && self.player.isNear(mob, mob.aggroRange))
+                                && self.player.isNear(mob, aggroRange))
                             {
                                 self.player.aggro(mob);
                             }
@@ -6999,12 +7038,21 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     });
 
                     self.player.onRequestPath(function(x, y) {
-                        var ignored = [self.player]; // Always ignore self
-
-                        if(self.player.hasTarget()) {
-                            ignored.push(self.player.target);
-                        }
-                        return self.findPath(self.player, x, y, ignored);
+                        return new Promise((resolve, reject) => {
+                            try {
+                                var ignored = [self.player]; // Always ignore self
+                    
+                                if (self.player.hasTarget()) {
+                                    ignored.push(self.player.target);
+                                }
+                    
+                                self.findPath(self.player, x, y, ignored)
+                                    .then(path => resolve(path))
+                                    .catch(error => reject(error));
+                            } catch (error) {
+                                reject(error);
+                            }
+                        });
                     });
 
                     self.player.onDeath(function() {
@@ -7231,25 +7279,34 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                         });
 
                                         entity.onRequestPath(function(x, y) {
-                                            var ignored = [entity], // Always ignore self
-                                                ignoreTarget = function(target) {
-                                                    ignored.push(target);
-
-                                                    // also ignore other attackers of the target entity
-                                                    target.forEachAttacker(function(attacker) {
-                                                        ignored.push(attacker);
-                                                    });
-                                                };
-
-                                            if(entity.hasTarget()) {
-                                                ignoreTarget(entity.target);
-                                            } else if(entity.previousTarget) {
-                                                // If repositioning before attacking again, ignore previous target
-                                                // See: tryMovingToADifferentTile()
-                                                ignoreTarget(entity.previousTarget);
-                                            }
-
-                                            return self.findPath(entity, x, y, ignored);
+                                            return new Promise((resolve, reject) => {
+                                                try {
+                                                    var ignored = [entity]; // Always ignore self
+                                        
+                                                    var ignoreTarget = function(target) {
+                                                        ignored.push(target);
+                                        
+                                                        // also ignore other attackers of the target entity
+                                                        target.forEachAttacker(function(attacker) {
+                                                            ignored.push(attacker);
+                                                        });
+                                                    };
+                                        
+                                                    if (entity.hasTarget()) {
+                                                        ignoreTarget(entity.target);
+                                                    } else if (entity.previousTarget) {
+                                                        // If repositioning before attacking again, ignore previous target
+                                                        // See: tryMovingToADifferentTile()
+                                                        ignoreTarget(entity.previousTarget);
+                                                    }
+                                        
+                                                    self.findPath(entity, x, y, ignored)
+                                                        .then(path => resolve(path))
+                                                        .catch(error => reject(error));
+                                                } catch (error) {
+                                                    reject(error);
+                                                }
+                                            });
                                         });
 
                                         entity.onDeath(function() {
@@ -7736,6 +7793,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                     self.client.onResourceUpdated(function(resource, amount) {
                         self.updateResource(resource, amount);
+                    });
+
+                    self.client.onAnnouncement(function(message, timeToShow ) {
+                        self.app.showAnnouncement(message, timeToShow);
                     });
 
                     self.gamestart_callback();
@@ -8227,32 +8288,42 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
              * The path will pass through any entity present in the ignore list.
              */
             findPath: function(character, x, y, ignoreList) {
-                var self = this,
-                    grid = this.finalPathingGrid,
-                    path = [],
-                    isPlayer = (character === this.player);
-
-
-                if(this.map.isColliding(x, y)) {
-                    return path;
-                }
-
-                if(this.pathfinder && character) {
-                    if(ignoreList) {
-                        _.each(ignoreList, function(entity) {
-                            self.pathfinder.ignoreEntity(entity);
-                        });
+                let self = this;
+                let grid = this.finalPathingGrid;
+                return new Promise((resolve, reject) => {
+                    let path = [];
+            
+                    if (self.map.isColliding(x, y)) {
+                        resolve(path);
+                        return;
                     }
-
-                    path = this.pathfinder.findPath(grid, character, x, y, false);
-
-                    if(ignoreList) {
-                        this.pathfinder.clearIgnoreList();
+            
+                    if (self.pathfinder && character) {
+                        if (ignoreList) {
+                            _.each(ignoreList, function(entity) {
+                                self.pathfinder.ignoreEntity(entity);
+                            });
+                        }
+            
+                        self.pathfinder.findPath(grid, character, x, y, false)
+                            .then(foundPath => {
+                                path = foundPath;
+                                if (ignoreList) {
+                                    self.pathfinder.clearIgnoreList();
+                                }
+                                resolve(path);
+                            })
+                            .catch(error => {
+                                if (ignoreList) {
+                                    self.pathfinder.clearIgnoreList();
+                                }
+                                reject(error);
+                            });
+                    } else {
+                        console.error("Error while finding the path to " + x + ", " + y + " for " + character.id);
+                        resolve(path); // resolve with empty path on error
                     }
-                } else {
-                    console.error("Error while finding the path to "+x+", "+y+" for "+character.id);
-                }
-                return path;
+                });
             },
 
             /**
@@ -9223,9 +9294,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             if (self.entities[id] !== undefined) {
                                 self.entities[id].hitPoints = toUpdateEntity.hitPoints;
                                 self.entities[id].maxHitPoints = toUpdateEntity.maxHitPoints;
-                                if (toUpdateEntity.moveSpeed !== undefined && toUpdateEntity.attackRate !== undefined) {
+                                if (toUpdateEntity.moveSpeed !== undefined && toUpdateEntity.attackRate !== undefined && toUpdateEntity.stealth !== undefined) {
                                     self.entities[id].moveSpeed = toUpdateEntity.moveSpeed;
                                     self.entities[id].setAttackRate(toUpdateEntity.attackRate);
+                                    self.entities[id].stealth = toUpdateEntity.stealth;
                                 }
                                 if (toUpdateEntity.inCombat !== undefined) {
                                     if (!self.entities[id].inCombat && toUpdateEntity.inCombat){
@@ -9233,12 +9305,6 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                     } else if (self.entities[id].inCombat && !toUpdateEntity.inCombat) {
                                         self.entities[id].exitCombat();
                                     }
-                                }
-                                let differentPos = self.entities[id].x !== toUpdateEntity.x || self.entities[id].y !== toUpdateEntity.y;
-                                let notMoving = !self.entities[id].path;
-                                let notPlayer = Number(id) !== Number(self.player.id);
-                                if (notPlayer && differentPos && notMoving && !self.entities[id].isAttacking()) {
-                                    self.makeCharacterGoTo(self.entities[id], toUpdateEntity.x, toUpdateEntity.y);
                                 }
                             } else {
                                 console.debug("Unknown entity " + id);

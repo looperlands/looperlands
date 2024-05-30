@@ -111,5 +111,9 @@ module.exports = Character = Entity.extend({
 
     getActiveBuff: function() {
         return;
+    },
+
+    getStealth: function() {
+        return 1;
     }
 });

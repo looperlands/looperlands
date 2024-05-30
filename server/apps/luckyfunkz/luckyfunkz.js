@@ -1,7 +1,7 @@
 const axios = require('axios');
 const { spinSet } = require('./data/spinSet');
 const dao = require('../../js/dao');
-const CORNHOLE = 'CORNHOLE';
+const CORNHOLE = '0xc00631db8eba1ab88589a599b67df7727ae39348f961c62c11dcd7992f62a2ad';
 const MAX_RETRY_COUNT = 5;
 
 async function getSpin(platformClient, sessionData, linesPlayed, betPerLine) {
