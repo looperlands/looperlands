@@ -327,6 +327,7 @@ module.exports = World = cls.Class.extend({
             entities = _.map(entities, function (id) {
                 return parseInt(id);
             });
+            entities = entities.filter(id=> id != null);
             if (entities) {
                 this.pushToPlayer(player, new Messages.List(entities));
             }
