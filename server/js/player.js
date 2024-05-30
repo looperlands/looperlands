@@ -1243,5 +1243,9 @@ module.exports = Player = Character.extend({
         if (this.releaseMob_callback) {
             return this.releaseMob_callback(kind);
         }
+    },
+
+    sendAnnoucement: function(message, timeToShow) {
+        this.send(new Messages.Announcement(message, timeToShow).serialize());
     }
 });
