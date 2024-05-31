@@ -877,6 +877,17 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.M88NLUCKYCLOVER] = function(id) { return new Items.m88nluckyclover(id); };
     EntityFactory.builders[Types.Entities.M88NMAIL] = function(id) { return new Items.m88nmail(id); };
     EntityFactory.builders[Types.Entities.M88NPACKAGE] = function(id) { return new Items.m88npackage(id); };
+    EntityFactory.builders[Types.Entities.M88NSTEAK] = function(id) { return new Items.m88nsteak(id); };
+    EntityFactory.builders[Types.Entities.M88NPOTATO] = function(id) { return new Items.m88npotato(id); };
+    EntityFactory.builders[Types.Entities.M88NSALAD] = function(id) { return new Items.m88nsalad(id); };
+    EntityFactory.builders[Types.Entities.M88NBREWSKI] = function(id) { return new Items.m88nbrewski(id); };
+    EntityFactory.builders[Types.Entities.M88NPIE] = function(id) { return new Items.m88npie(id); };
+    EntityFactory.builders[Types.Entities.M88NSEEDS] = function(id) { return new Items.m88nseeds(id); };
+    EntityFactory.builders[Types.Entities.M88NSACK] = function(id) { return new Items.m88nsack(id); };
+    EntityFactory.builders[Types.Entities.M88NSHOVEL] = function(id) { return new Items.m88nshovel(id); };
+    EntityFactory.builders[Types.Entities.M88NWATERCAN] = function(id) { return new Items.m88nwatercan(id); };
+    EntityFactory.builders[Types.Entities.M88NTICKET] = function(id) { return new Items.m88nticket(id); };
+    EntityFactory.builders[Types.Entities.M88NGOLDENTICKET] = function(id) { return new Items.m88ngoldenticket(id); };
     //MRMlabs
     EntityFactory.builders[Types.Entities.FIRSTAIDKIT] = function(id) { return new Items.firstaidkit(id); };
     EntityFactory.builders[Types.Entities.BANDAID] = function(id) { return new Items.bandaid(id); };
@@ -1148,6 +1159,10 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.WENMOON]=function(id){return new NPCs.wenmoon(id);};
     EntityFactory.builders[Types.Entities.KINGFROGGY]=function(id){return new NPCs.kingfroggy(id);};
     EntityFactory.builders[Types.Entities.NEXAN11]=function(id){return new NPCs.nexan11(id);};
+    EntityFactory.builders[Types.Entities.NEXAN12]=function(id){return new NPCs.nexan12(id);};
+    EntityFactory.builders[Types.Entities.NEXAN13]=function(id){return new NPCs.nexan13(id);};
+    EntityFactory.builders[Types.Entities.NEXAN14]=function(id){return new NPCs.nexan14(id);};
+    EntityFactory.builders[Types.Entities.NEXAN15]=function(id){return new NPCs.nexan15(id);};
 
     //MRMlabs NPCs
     EntityFactory.builders[Types.Entities.TYLERDURDEN]=function(id){return new NPCs.tylerdurden(id);};

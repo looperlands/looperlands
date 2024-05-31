@@ -437,6 +437,26 @@ define(['character'], function (Character) {
             "Have fun!"
         ],
 
+        "nexan12": [
+            "Pleased to meet you, I'm the head chef here in The Nexus!",
+            "If you're ever looking for a little snack, let me know!"
+        ],
+
+        "nexan13": [
+            "Whew, it's a warm one out today. Great weather to help the crops grow fast!",
+            "We have some special crops in our garden ;) If you ever need a uh...tomato hook up, we got you covered!"
+        ],
+
+        "nexan14": [
+            "Dig dig dig, all day long, dig dig dig, while I sing this song...",
+            "Wanna play in the dirt with me?"
+        ],
+
+        "nexan15": [
+            "Well hello there, I'm the local mail man here in The Nexus.",
+            "Are you enjoying Paradise Point?"
+        ],
+
         //MRMlabs NPCs
         "tylerdurden": [
             //"We are all part of the same compost heap.",
