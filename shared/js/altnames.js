@@ -198,6 +198,10 @@ const AltNames = {
     nexan8: "Mail Lady",
     nexan9: "Ship Captain",
     nexan11: "Gamer",
+    nexan12: "Chef",
+    nexan13: "Farmer Joe",
+    nexan14: "Farmer Jon",
+    nexan15: "Mail Man",
 
     //BITCORN PHISHIES
     bit_BoneFish: "a BoneFish",

@@ -355,6 +355,10 @@ define(['npc'], function(Npc) {
         wenmoon: Npc.extend({init: function(id) {this._super(id, Types.Entities.WENMOON, 1);}}),
         kingfroggy: Npc.extend({init: function(id) {this._super(id, Types.Entities.KINGFROGGY, 1);}}),
         nexan11: Npc.extend({init: function(id) {this._super(id, Types.Entities.NEXAN11, 1);}}),
+        nexan12: Npc.extend({init: function(id) {this._super(id, Types.Entities.NEXAN12, 1);}}),
+        nexan13: Npc.extend({init: function(id) {this._super(id, Types.Entities.NEXAN13, 1);}}),
+        nexan14: Npc.extend({init: function(id) {this._super(id, Types.Entities.NEXAN14, 1);}}),
+        nexan15: Npc.extend({init: function(id) {this._super(id, Types.Entities.NEXAN15, 1);}}),
         //MRMlabs NPCs
         tylerdurden: Npc.extend({init: function(id) {this._super(id, Types.Entities.TYLERDURDEN, 1);}}),
         //Robits NPCs

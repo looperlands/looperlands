@@ -1155,10 +1155,13 @@ let Properties = {
     ONI: {
         level: 30,
         drops: {
-            burger: 50,
-            GOLD: 50,
+            burger: 40,
+            GOLD: 40,
             GOLD2: 10,
             GOLD3: 2,
+            m88nsteak: 1,
+            m88nmail: 1,
+            m88nshovel: 1
         },
         messages: ['Shinu!'],
         armorMod: 2.2,
@@ -1205,8 +1208,11 @@ let Properties = {
         level: 10,
         drops: {
             m88nmap: 7,
+            m88nsteak: 1,
+            m88nmail: 1,
+            m88nshovel: 1,
             burger: 25,
-            GOLD: 35,
+            GOLD: 32,
             GOLD2: 10
         },
     },
@@ -1215,8 +1221,11 @@ let Properties = {
         level: 12,
         drops: {
             m88nmap: 7,
+            m88nsteak: 1,
+            m88nmail: 1,
+            m88nshovel: 1,
             burger: 25,
-            GOLD: 25,
+            GOLD: 22,
             GOLD2: 25
         },
     },
@@ -1225,9 +1234,12 @@ let Properties = {
         level: 20,
         drops: {
             m88nmap: 8,
+            m88nsteak: 1,
+            m88nmail: 1,
+            m88nshovel: 1,
             burger: 5,
             GOLD2: 20,
-            GOLD3: 67
+            GOLD3: 64
         },
     },
 
@@ -1235,8 +1247,11 @@ let Properties = {
         level: 50,
         drops: {
             m88nmap: 15,
+            m88nsteak: 1,
+            m88nmail: 1,
+            m88nshovel: 1,
             burger: 5,
-            GOLD3: 78
+            GOLD3: 75
         },
     },
 
@@ -1244,12 +1259,15 @@ let Properties = {
         level: 55,
         drops: {
             m88nmap: 30,
+            m88nsteak: 1,
+            m88nmail: 1,
+            m88nshovel: 1,
             m88negg3: 1,
             m88negg4: 1,
             m88negg5: 1,
             m88negg6: 1,
             burger: 15,
-            GOLD3: 50
+            GOLD3: 45
         },
         messages: ['Mmmmm, Easter Eggs!', 'O Doyle Rules!', 'Cant touch this...', 'Stay away or come back with friends!'],
         armorMod: 1,
@@ -1263,7 +1281,10 @@ let Properties = {
     m88noctopussy: {
         level: 69,
         drops: {
-            m88nmap: 79,
+            m88nmap: 75,
+            m88nsteak: 1,
+            m88nmail: 1,
+            m88nshovel: 1,
             gameboy: 5,
             battery: 3,
             hardwallet: 2,
@@ -1282,6 +1303,9 @@ let Properties = {
         level: 88,
         drops: {
             m88nmap: 30,
+            m88nsteak: 1,
+            m88nmail: 1,
+            m88nshovel: 1,
             m88negg1: 1,
             m88negg2: 1,
             burger: 10,
@@ -1954,6 +1978,39 @@ let Properties = {
         respawnDelay: 5500000,
     },
     m88npackage: {
+        respawnDelay: 5500000,
+    },
+    m88nsteak: {
+        respawnDelay: 5500000,
+    },
+    m88npotato: {
+        respawnDelay: 5500000,
+    },
+    m88nsalad: {
+        respawnDelay: 5500000,
+    },
+    m88nbrewski: {
+        respawnDelay: 5500000,
+    },
+    m88npie: {
+        respawnDelay: 5500000,
+    },
+    m88nseeds: {
+        respawnDelay: 5500000,
+    },
+    m88nsack: {
+        respawnDelay: 5500000,
+    },
+    m88nshovel: {
+        respawnDelay: 5500000,
+    },
+    m88nwatercan: {
+        respawnDelay: 5500000,
+    },
+    m88nticket: {
+        respawnDelay: 5500000,
+    },
+    m88ngoldenticket: {
         respawnDelay: 5500000,
     },
     strangeyellowliquid: {
