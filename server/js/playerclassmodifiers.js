@@ -1,16 +1,18 @@
 const playerClassModifiersData = {
     tank: {
-      meleeDamageDealt: 1.2,
+      description: "The Tank class is a frontline warrior designed to absorb damage and protect allies, with high defense and health regeneration. They excel at drawing enemy attacks away from teammates, ensuring the safety and stability of the party.",
+      meleeDamageDealt: 0.8,
       meleeDamageTaken: 0.8,
-      moveSpeed: 0.9,
+      moveSpeed: 0.8,
       rangedDamageDealt: 0.8,
-      hpRegen: 1.1,
+      hpRegen: 1.3,
       maxHp: 1.5,
-      hate: 1.3,
+      hate: 1.5,
       attackRate: 0.8,
       stealth: 1
     },
     rogue: {
+      description: "Rogues deal high melee damage and move quickly, but are more fragile and generate less aggro. They have high stealth.",
       meleeDamageDealt: 1.5,
       meleeDamageTaken: 1.2,
       moveSpeed: 1.4,
@@ -22,6 +24,7 @@ const playerClassModifiersData = {
       stealth: 2
     },
     ranger: {
+      description: "Rangers excel in ranged combat and have balanced attributes. They are slightly faster and generate moderate aggro.",
       meleeDamageDealt: 0.9,
       meleeDamageTaken: 1.0,
       moveSpeed: 1.2,
@@ -32,7 +35,8 @@ const playerClassModifiersData = {
       attackRate: 1.1,
       stealth: 1
     },
-    normal: {
+    fighter: {
+      description: "Fighter class has balanced attributes across all stats with no significant strengths or weaknesses.",
       meleeDamageDealt: 1.0,
       meleeDamageTaken: 1.0,
       moveSpeed: 1.0,
@@ -43,12 +47,12 @@ const playerClassModifiersData = {
       attackRate: 1.0,
       stealth: 1.0
     }
-  };
+};
 
 class PlayerClassModifiers {
     constructor(playerClass) {
         // Default to 'normal' if the class is not found
-        const modifiers = playerClassModifiersData[playerClass] || playerClassModifiersData['normal'];
+        const modifiers = playerClassModifiersData[playerClass] || playerClassModifiersData['standard'];
 
         this._playerClass = playerClass;
         this._meleeDamageDealt = modifiers.meleeDamageDealt;
@@ -113,3 +117,4 @@ class PlayerClassModifiers {
 }
 
 module.exports.PlayerClassModifiers = PlayerClassModifiers;
+module.exports.classes = playerClassModifiersData;

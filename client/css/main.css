@@ -969,13 +969,13 @@ body.inventory .inventorySidebar {
 #create-new span span:hover {color:#b2af9b;}
 #playername {color:#fff;}
 
-#credits, #loadcharacter, #confirmation, #death, #error, #settings, #keyboardCommands, #instructions, #gamepadCommands, #announcement {position:absolute;left:50%;text-align:center;font-family:'GraphicPixel', sans-serif;z-index:1000;}
+#credits, #loadcharacter, #confirmation, #death, #error, #settings, #keyboardCommands, #instructions, #gamepadCommands, #announcement, #playerClassSelection {position:absolute;left:50%;text-align:center;font-family:'GraphicPixel', sans-serif;z-index:1000;}
 
 #playerimage {image-rendering: -moz-crisp-edges; image-rendering: -webkit-optimize-contrast;}
 
 #parchment p {font-family:'GraphicPixel';}
 
-#credits, #death, #settings, #keyboardCommands, #instructions, #gamepadCommands, #announcement {top:50%;}
+#credits, #death, #settings, #keyboardCommands, #instructions, #gamepadCommands, #announcement, #playerClassSelection {top:50%;}
 .intro #credits {top:55%;}
 #credits h1 a {color:#fcda5c;text-decoration:none;}
 #authors div a {display:block;color:#fff;text-decoration:none;}
@@ -1114,7 +1114,7 @@ footer div  {display:inline-block;}
     opacity: 1;
     transition: ease-in all 0.3s;
 }
-#settings, #keyboardCommands, #instructions, #gamepadCommands, #announcement {
+#settings, #keyboardCommands, #instructions, #gamepadCommands, #announcement, #playerClassSelection {
     color: #b9b9b9;
     padding:0 25px;
     width:770px;
@@ -1129,14 +1129,14 @@ footer div  {display:inline-block;}
     padding-top:20px;
 }
 
-#settings button, #instructions button {
+#settings button, #instructions button, #playerClassSelection button {
     border-image-width: 4px;
     background: #533642 !important;
     padding: 6px 20px;
     color: #b9b9b9;
     cursor: pointer;
 }
-#settings button:hover, #instructions button {
+#settings button:hover, #instructions button, #playerClassSelection button {
     color: white;
     background: #967784 !important;
 }
@@ -1241,6 +1241,61 @@ footer div  {display:inline-block;}
     text-overflow: ellipsis; /* Add ellipsis for overflow text */    
 }
 
+
+#playerClassSelection .class-container {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    padding: 10px;
+    text-align: left;
+    margin: 10px;
+    width: 100%;
+}
+
+#playerClassSelection .class-container .left {
+    flex: 1;
+    margin-left: 10px;
+    margin-right: 10px;
+    max-width: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#playerClassSelection .class-container .right {
+    flex: 1;
+    max-width: 45%;
+    overflow-x: auto;
+}
+
+#playerClassSelection .class-container table {
+    width: 100%;
+    margin-top: 10px;
+    border-collapse: collapse;
+}
+
+#playerClassSelection .class-container table, 
+#playerClassSelection .class-container th, 
+#playerClassSelection .class-container td {
+    border: 1px solid #ccc;
+    padding: 5px; /* Reduced padding to make the table smaller */
+    text-align: center;
+}
+
+#playerClassSelection .class-container img {
+    width: 100%;
+    max-width: 150px;
+    height: auto;
+    margin-bottom: 10px;
+}
+
+#playerClassSelection .panelContent {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
 
 /* Magic Parchment */
 

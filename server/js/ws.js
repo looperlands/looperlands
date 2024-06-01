@@ -31,6 +31,7 @@ const platform = require('./looperlandsplatformclient.js');
 const minigame = require('../apps/minigame.js');
 const dynamicnft = require('./dynamicnftcontroller.js');
 const announcement = require('./announcementcontroller.js');
+const PlayerClassController = require('./playerclasscontroller.js').PlayerClassController;
 const cache = new NodeCache();
 
 const LOOPWORMS_LOOPERLANDS_BASE_URL = process.env.LOOPWORMS_LOOPERLANDS_BASE_URL;
@@ -1182,6 +1183,10 @@ WS.socketIOServer = Server.extend({
             }
             announcementController.sendAnnouncement(req, res);
         });
+
+        let playerClassController = new PlayerClassController();
+
+        app.get("/playerclasses", playerClassController.getPlayerClasses);
 
         self.io.on('connection', function (connection) {
             //console.log('a user connected');

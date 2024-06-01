@@ -1,4 +1,3 @@
-
 define(['jquery', 'storage'], function ($, Storage) {
 
     var App = Class.extend({
@@ -24,6 +23,7 @@ define(['jquery', 'storage'], function ($, Storage) {
             this.cooldownMap = {};
             this.dynamicNFTIconURL = {};
             this.dynamicNFTData = {};
+            this.hideWindows();
         },
 
         setGame: function (game) {
@@ -396,6 +396,7 @@ define(['jquery', 'storage'], function ($, Storage) {
             $("#keyboardCommands").hide();
             $("#gamepadCommands").hide();
             $("#announcement").hide();
+            $("#playerClassSelection").hide();
         },
 
         showAchievementNotification: function (questName, endText, xpReward, medal) {
@@ -1275,6 +1276,62 @@ define(['jquery', 'storage'], function ($, Storage) {
                     $("#announcement").hide();
                 }, timeToShow * 1000)
             }
+        },
+
+        showPlayerClassSelection: function() {
+            let currentIndex = 0;
+            let classKeys = [];
+            let classes = {};
+
+            function showClass(index) {
+                const key = classKeys[index];
+                const value = classes[key];
+                const classDiv = `
+                    <div class="class-container" id="${key}">
+                        <div class="left">
+                            <img src="img/classes/${key}.png" alt="${key.charAt(0).toUpperCase() + key.slice(1)} Class">
+                            <p>${value.description}</p>
+                        </div>
+                        <div class="right">
+                            <table>
+                                <tr><th>Attribute</th><th>Modifier</th></tr>
+                                <tr><td>Melee Damage Dealt</td><td>${value.meleeDamageDealt}</td></tr>
+                                <tr><td>Melee Damage Taken</td><td>${value.meleeDamageTaken}</td></tr>
+                                <tr><td>Move Speed</td><td>${value.moveSpeed}</td></tr>
+                                <tr><td>Ranged Damage Dealt</td><td>${value.rangedDamageDealt}</td></tr>
+                                <tr><td>HP Regen</td><td>${value.hpRegen}</td></tr>
+                                <tr><td>Max HP</td><td>${value.maxHp}</td></tr>
+                                <tr><td>Hate</td><td>${value.hate}</td></tr>
+                                <tr><td>Attack Rate</td><td>${value.attackRate}</td></tr>
+                                <tr><td>Stealth</td><td>${value.stealth}</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                `;
+                $('#class-containers').html(classDiv);
+            }   
+
+            axios.get("/playerclasses")
+                .then((res) => {
+                    classes = res.data;
+                    classKeys = Object.keys(classes);
+                    showClass(currentIndex);
+
+                    $('#nextClass').click(() => {
+                        currentIndex = (currentIndex + 1) % classKeys.length;
+                        showClass(currentIndex);
+                    });
+
+                    $('#prevClass').click(() => {
+                        currentIndex = (currentIndex - 1 + classKeys.length) % classKeys.length;
+                        showClass(currentIndex);
+                    });
+
+                    $("#playerClassSelection").show();
+                })
+                .catch((error) => {
+                    console.error('Error fetching player classes:', error);
+                });
         },
 
         resetMessageTimer: function () {
