@@ -1326,7 +1326,7 @@ let Properties = {
         hp: 1,
         xp: 10000,
         drops: {
-            m88nmap: 99,
+            m88ndirt: 99,
             m88ngem: 1,
         },
         respawnDelay: 100000
@@ -1907,7 +1907,12 @@ let Properties = {
         inventoryDescription: "m88n gems",
         collectItem: Types.Entities.M88NGEM,
         collectAmount: 1,
-        respawnDelay: 1000000
+        respawnDelay: 5500000
+    },
+    m88ndirt: {
+        collectable: true,
+        inventoryDescription: "m88n dirt",
+        respawnDelay: 5500000
     },
     m88nmoneybags: {
         collectable: true,

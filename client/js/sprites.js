@@ -630,6 +630,7 @@ define(['text!../sprites/agent.json',
         'text!../sprites/item-m88ndrsbook.json',
         'text!../sprites/item-m88ngoldtiara.json',
         'text!../sprites/item-m88nteddy.json',
+        'text!../sprites/item-m88ndirt.json',
         //MRMlabs fishing
         'text!../sprites/bbqchips.json',
         'text!../sprites/blackpepperchips.json',

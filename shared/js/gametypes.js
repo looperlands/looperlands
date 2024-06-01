@@ -419,6 +419,7 @@ Types = {
         M88NDRSBOOK: 78004500,
         M88NGOLDTIARA: 78004600,
         M88NTEDDY: 78004700,
+        M88NDIRT: 78004800,
         //MRMlabs NPCs
         TYLERDURDEN: 79000000,
         //MRMlabs Items
@@ -6112,6 +6113,7 @@ var kinds = {
     m88ndrsbook: [Types.Entities.M88NDRSBOOK, "object"],
     m88ngoldtiara: [Types.Entities.M88NGOLDTIARA, "object"],
     m88nteddy: [Types.Entities.M88NTEDDY, "object"],
+    m88ndirt: [Types.Entities.M88NDIRT, "object"],
     //MRMlabs Items
     firstaidkit: [Types.Entities.FIRSTAIDKIT, "object"],
     bandaid: [Types.Entities.BANDAID, "object"],
