@@ -1286,11 +1286,13 @@ define(['jquery', 'storage'], function ($, Storage) {
             function showClass(index) {
                 const key = classKeys[index];
                 const value = classes[key];
+                const displayKey = key.charAt(0).toUpperCase() + key.slice(1);
                 const classDiv = `
                     <div class="class-container" id="${key}">
                         <div class="left">
-                            <img src="img/classes/${key}.png" alt="${key.charAt(0).toUpperCase() + key.slice(1)} Class">
+                            <img src="img/classes/${key}.png" alt="${displayKey} Class">
                             <p>${value.description}</p>
+                            <button id="selectClass" value="${key}" class="panelBorder">Select ${displayKey}</button>
                         </div>
                         <div class="right">
                             <table>
