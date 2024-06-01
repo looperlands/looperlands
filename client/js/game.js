@@ -367,7 +367,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "item-popcorn",
                     "item-energydrink",
                     "item-flyer",
-                    //m88n
+                    //m88n Items
                     "item-m88nmap",
                     "item-m88negg1",
                     "item-m88negg2",

@@ -2840,7 +2840,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
 
-        //m88n Mob Nexans
+        //m88n's Mob Nexans
         nexan1: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.NEXAN1);

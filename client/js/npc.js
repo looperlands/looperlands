@@ -414,7 +414,7 @@ define(['character'], function (Character) {
                     "Please help save Duckville!"
         ],
 
-        //m88n NPCs
+        //m88n's NPCs
         "wenmoon": [
             "Yo! I'm wenmoon, M88nwalker sent me down here to be your lunar envoy.",
             "Where Worlds Collide, Secrets Reside: Welcome to the Nexus!",

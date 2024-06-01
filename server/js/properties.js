@@ -1462,7 +1462,7 @@ let Properties = {
         friendly: true
     },
 
-    //m88n Mob Nexans
+    //m88n's Mob Nexans
     nexan1: {
         hp: 10,
         armor: 1,
