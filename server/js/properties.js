@@ -1320,14 +1320,14 @@ let Properties = {
         xp: 88000
     },
 
-    m88ndirt: {
+    m88nmine: {
         level: 1,
         friendly: true, //not actually friendly, just AoE immune
         hp: 1,
         xp: 10000,
         drops: {
-            m88nmap: 95,
-            m88ngem: 5,
+            m88ndirt: 99,
+            m88ngem: 1,
         },
         respawnDelay: 100000
     },
@@ -1527,6 +1527,55 @@ let Properties = {
     },
 
     nexan10: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+
+    nexan21: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+
+    nexan22: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+
+    nexan23: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+
+    nexan24: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+
+    nexan25: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+
+    nexan26: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+
+    nexan27: {
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -1858,7 +1907,12 @@ let Properties = {
         inventoryDescription: "m88n gems",
         collectItem: Types.Entities.M88NGEM,
         collectAmount: 1,
-        respawnDelay: 1000000
+        respawnDelay: 5500000
+    },
+    m88ndirt: {
+        collectable: true,
+        inventoryDescription: "m88n dirt",
+        respawnDelay: 5500000
     },
     m88nmoneybags: {
         collectable: true,
@@ -1915,103 +1969,103 @@ let Properties = {
         }
     },
     cigarette: {
-        respawnDelay: 5500000,
+        respawnDelay: 9900000,
     },
     cigarettepack: {
-        respawnDelay: 5500000,
+        respawnDelay: 9900000,
     },
     soap: {
-        respawnDelay: 5500000,
+        respawnDelay: 9900000,
     },
     gameboy: {
-        respawnDelay: 5500000,
+        respawnDelay: 9900000,
     },
     battery: {
-        respawnDelay: 5500000,
+        respawnDelay: 9900000,
     },
     hardwallet: {
-        respawnDelay: 5500000,
+        respawnDelay: 9900000,
     },
     movieglasses: {
-        respawnDelay: 5500000,
+        respawnDelay: 9900000,
     },
     m88ncompass: {
-        respawnDelay: 5500000,
+        respawnDelay: 9900000,
     },
     m88nbinoculars: {
-        respawnDelay: 5500000,
+        respawnDelay: 9900000,
     },
     m88npeel: {
-        respawnDelay: 5500000,
+        respawnDelay: 9900000,
     },
     m88nfly: {
-        respawnDelay: 5500000,
+        respawnDelay: 9900000,
     },
     m88njunebug: {
-        respawnDelay: 5500000,
+        respawnDelay: 9900000,
     },
     m88ndungbeetle: {
-        respawnDelay: 5500000,
+        respawnDelay: 9900000,
     },
     m88nbutterfly: {
-        respawnDelay: 5500000,
+        respawnDelay: 9900000,
     },
     m88nstickbug: {
-        respawnDelay: 5500000,
+        respawnDelay: 9900000,
     },
     m88ndiamondnecklace: {
-        respawnDelay: 5500000,
+        respawnDelay: 9900000,
     },
     m88ndiamondring: {
-        respawnDelay: 5500000,
+        respawnDelay: 9900000,
     },
     m88ngoldearrings: {
-        respawnDelay: 5500000,
+        respawnDelay: 9900000,
     },
     m88nclover: {
-        respawnDelay: 5500000,
+        respawnDelay: 9900000,
     },
     m88nluckyclover: {
-        respawnDelay: 5500000,
+        respawnDelay: 9900000,
     },
     m88nmail: {
-        respawnDelay: 5500000,
+        respawnDelay: 9900000,
     },
     m88npackage: {
-        respawnDelay: 5500000,
+        respawnDelay: 9900000,
     },
     m88nsteak: {
-        respawnDelay: 5500000,
+        respawnDelay: 9900000,
     },
     m88npotato: {
-        respawnDelay: 5500000,
+        respawnDelay: 9900000,
     },
     m88nsalad: {
-        respawnDelay: 5500000,
+        respawnDelay: 9900000,
     },
     m88nbrewski: {
-        respawnDelay: 5500000,
+        respawnDelay: 9900000,
     },
     m88npie: {
-        respawnDelay: 5500000,
+        respawnDelay: 9900000,
     },
     m88nseeds: {
-        respawnDelay: 5500000,
+        respawnDelay: 9900000,
     },
     m88nsack: {
-        respawnDelay: 5500000,
+        respawnDelay: 9900000,
     },
     m88nshovel: {
-        respawnDelay: 5500000,
+        respawnDelay: 9900000,
     },
     m88nwatercan: {
-        respawnDelay: 5500000,
+        respawnDelay: 9900000,
     },
     m88nticket: {
-        respawnDelay: 5500000,
+        respawnDelay: 9900000,
     },
     m88ngoldenticket: {
-        respawnDelay: 5500000,
+        respawnDelay: 9900000,
     },
     strangeyellowliquid: {
         collectable: true,
