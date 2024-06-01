@@ -15,6 +15,9 @@ class KeyBoardHandler {
 
         this.weapons = null;
 
+        this.wasRenderingText = this.app.settings.getRenderText();
+        this.ctrlIsDown = false;
+
         this.keyCallbacks = {
             'Comma': () => this.previousWeapon(),
             'Period': () => this.nextWeapon(),
@@ -85,6 +88,12 @@ class KeyBoardHandler {
                     break;
             }
         }
+
+        if (event.ctrlKey && !this.ctrlIsDown) {
+            this.ctrlIsDown = true;
+            this.wasRenderingText = this.app.settings.getRenderText();
+            this.app.settings.setRenderText(true);
+        }
     }
 
     handleKeyUp(event) {
@@ -95,6 +104,11 @@ class KeyBoardHandler {
                 clearInterval(this.interval);
                 this.interval = false;
             }
+        }
+
+        if(!event.ctrlKey && this.ctrlIsDown) {
+            this.app.settings.setRenderText(this.wasRenderingText);
+            this.ctrlIsDown = false;
         }
     }
 
