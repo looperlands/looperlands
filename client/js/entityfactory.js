@@ -512,8 +512,8 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.SHARKBOSS] = function(id) {
         return new Mobs.sharkboss(id);
     };
-    EntityFactory.builders[Types.Entities.M88NMINE] = function(id) {
-        return new Mobs.m88nmine(id);
+    EntityFactory.builders[Types.Entities.M88NDIRT] = function(id) {
+        return new Mobs.m88ndirt(id);
     };
     EntityFactory.builders[Types.Entities.M88NBABYMONKEY] = function(id) {
         return new Mobs.m88nbabymonkey(id);
@@ -631,28 +631,6 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.NEXAN10] = function(id) {
         return new Mobs.nexan10(id);
     };
-    EntityFactory.builders[Types.Entities.NEXAN21] = function(id) {
-        return new Mobs.nexan21(id);
-    };
-    EntityFactory.builders[Types.Entities.NEXAN22] = function(id) {
-        return new Mobs.nexan22(id);
-    };
-    EntityFactory.builders[Types.Entities.NEXAN23] = function(id) {
-        return new Mobs.nexan23(id);
-    };
-    EntityFactory.builders[Types.Entities.NEXAN24] = function(id) {
-        return new Mobs.nexan24(id);
-    };
-    EntityFactory.builders[Types.Entities.NEXAN25] = function(id) {
-        return new Mobs.nexan25(id);
-    };
-    EntityFactory.builders[Types.Entities.NEXAN26] = function(id) {
-        return new Mobs.nexan26(id);
-    };
-    EntityFactory.builders[Types.Entities.NEXAN27] = function(id) {
-        return new Mobs.nexan27(id);
-    };
-    
     
     //Short Destroyers
     EntityFactory.builders[Types.Entities.LATEFLEA] = function(id) {
@@ -910,10 +888,6 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.M88NWATERCAN] = function(id) { return new Items.m88nwatercan(id); };
     EntityFactory.builders[Types.Entities.M88NTICKET] = function(id) { return new Items.m88nticket(id); };
     EntityFactory.builders[Types.Entities.M88NGOLDENTICKET] = function(id) { return new Items.m88ngoldenticket(id); };
-    EntityFactory.builders[Types.Entities.M88NDRSBOOK] = function(id) { return new Items.m88ndrsbook(id); };
-    EntityFactory.builders[Types.Entities.M88NGOLDTIARA] = function(id) { return new Items.m88ngoldtiara(id); };
-    EntityFactory.builders[Types.Entities.M88NTEDDY] = function(id) { return new Items.m88nteddy(id); };
-    EntityFactory.builders[Types.Entities.M88NDIRT] = function(id) { return new Items.m88ndirt(id); };
     //MRMlabs
     EntityFactory.builders[Types.Entities.FIRSTAIDKIT] = function(id) { return new Items.firstaidkit(id); };
     EntityFactory.builders[Types.Entities.BANDAID] = function(id) { return new Items.bandaid(id); };
@@ -1189,12 +1163,6 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.NEXAN13]=function(id){return new NPCs.nexan13(id);};
     EntityFactory.builders[Types.Entities.NEXAN14]=function(id){return new NPCs.nexan14(id);};
     EntityFactory.builders[Types.Entities.NEXAN15]=function(id){return new NPCs.nexan15(id);};
-    EntityFactory.builders[Types.Entities.NEXAN16]=function(id){return new NPCs.nexan16(id);};
-    EntityFactory.builders[Types.Entities.NEXAN17]=function(id){return new NPCs.nexan17(id);};
-    EntityFactory.builders[Types.Entities.NEXAN18]=function(id){return new NPCs.nexan18(id);};
-    EntityFactory.builders[Types.Entities.NEXAN19]=function(id){return new NPCs.nexan19(id);};
-    EntityFactory.builders[Types.Entities.NEXAN20]=function(id){return new NPCs.nexan20(id);};
-    EntityFactory.builders[Types.Entities.NEXAN28]=function(id){return new NPCs.nexan28(id);};
 
     //MRMlabs NPCs
     EntityFactory.builders[Types.Entities.TYLERDURDEN]=function(id){return new NPCs.tylerdurden(id);};

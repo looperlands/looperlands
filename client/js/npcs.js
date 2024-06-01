@@ -359,12 +359,6 @@ define(['npc'], function(Npc) {
         nexan13: Npc.extend({init: function(id) {this._super(id, Types.Entities.NEXAN13, 1);}}),
         nexan14: Npc.extend({init: function(id) {this._super(id, Types.Entities.NEXAN14, 1);}}),
         nexan15: Npc.extend({init: function(id) {this._super(id, Types.Entities.NEXAN15, 1);}}),
-        nexan16: Npc.extend({init: function(id) {this._super(id, Types.Entities.NEXAN16, 1);}}),
-        nexan17: Npc.extend({init: function(id) {this._super(id, Types.Entities.NEXAN17, 1);}}),
-        nexan18: Npc.extend({init: function(id) {this._super(id, Types.Entities.NEXAN18, 1);}}),
-        nexan19: Npc.extend({init: function(id) {this._super(id, Types.Entities.NEXAN19, 1);}}),
-        nexan20: Npc.extend({init: function(id) {this._super(id, Types.Entities.NEXAN20, 1);}}),
-        nexan28: Npc.extend({init: function(id) {this._super(id, Types.Entities.NEXAN28, 1);}}),
         //MRMlabs NPCs
         tylerdurden: Npc.extend({init: function(id) {this._super(id, Types.Entities.TYLERDURDEN, 1);}}),
         //Robits NPCs
