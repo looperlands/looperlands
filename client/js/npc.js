@@ -414,7 +414,7 @@ define(['character'], function (Character) {
                     "Please help save Duckville!"
         ],
 
-        //m88n NPCs
+        //m88n's NPCs
         "wenmoon": [
             "Yo! I'm wenmoon, M88nwalker sent me down here to be your lunar envoy.",
             "Where Worlds Collide, Secrets Reside: Welcome to the Nexus!",
@@ -457,12 +457,40 @@ define(['character'], function (Character) {
             "Are you enjoying Paradise Point?"
         ],
 
+        "nexan16": [
+            "The fish are biting today!",
+            'Grab a <a target="_blank" href="https://loopexchange.art/collection/assets-for-looperlands">fishing pole</a> and see if you can catch something epic...'
+        ],
+
+        "nexan17": [
+            "Go stare at the water, creep."
+        ],
+
+        "nexan18": [
+            "It's always sunny in Paradise Point!",
+            "This is my favorite place to catch a tan."
+        ],
+
+        "nexan19": [
+            "It's a beatiful day for lounging at the beach!"
+        ],
+
+        "nexan20": [
+            "Enjoy the weather while we wait to moon!",
+            "I wanna check out that yacht but you need a special ticket to board..."
+        ],
+
+        "nexan28": [
+            "The water is amazing, come swim!",
+            "Don't go out too far though, watch out for sharks..."
+        ],
+
         //MRMlabs NPCs
         "tylerdurden": [
-            //"We are all part of the same compost heap.",
+            "We are all part of the same compost heap.",
             //"The things you own end up owning you.",
             //"It's only after we've lost everything that we're free to do anything.",
-            "Sticking feathers up your butt does not make you a chicken!",
+            //"Sticking feathers up your butt does not make you a chicken!",
             //"You decide your own level of involvement.",
             //"You wanna make an omelet, you gotta break some eggs.",
             //"His name was Robert Paulson",
