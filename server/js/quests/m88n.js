@@ -354,7 +354,7 @@ quests = [
         startText: ["You have a great eye and you're saving me lots of time, would you mind helping me find some packages too?",
         "There are 20 packages around here somewhere that I need to get back to the post office. After you help me I have a cool surpise for you!"],
         endText: ["Thank you so much! If you ever want to work for the post office here in The Nexus I'll put in a good word for you!",
-        "There is a secret door somewhere in Paradise Point that I unlocked for you. Find it and there is a yacht boarding ticket just for you!"],
+        "There is a secret door somewhere in Paradise Point that I unlocked for you... Find it and there is a yacht boarding ticket just for you!"],
         eventType: "LOOT_ITEM",
         npc: Types.Entities.NEXAN15,
         target: Types.Entities.M88NPACKAGE,
