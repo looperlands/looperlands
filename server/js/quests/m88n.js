@@ -363,6 +363,20 @@ quests = [
         level: 10,
         xp: 50000,
         medal: Types.Medals.SKULL
+    },
+    {
+        id: "FISHERMAN_QUEST_1",
+        name: "The Fisherman's Worm Request",
+        startText: ["If I had some nice plump worms I'd probably be able to catch some bigger fish...",
+        "Do you think you could find me like 20 worms?"],
+        endText: ["Thanks for the new bait! It's working like a charm! Happy fishing friend!!"],
+        eventType: "LOOT_ITEM",
+        npc: Types.Entities.NEXAN16,
+        target: Types.Entities.M88NWORM,
+        amount: 20,
+        level: 10,
+        xp: 50000,
+        medal: Types.Medals.SKULL
     }
 ]
 

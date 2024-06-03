@@ -242,6 +242,8 @@ define(['item'], function(Item) {
         GOLD1:Item.extend({init:function(id){this._super(id,Types.Entities.GOLD1,"resource");this.lootMessage="Picked up gold!";}}),
         GOLD2:Item.extend({init:function(id){this._super(id,Types.Entities.GOLD2,"resource");this.lootMessage="Picked up gold!";}}),
         GOLD3:Item.extend({init:function(id){this._super(id,Types.Entities.GOLD3,"resource");this.lootMessage="Picked up gold!";}}),
+        GOLD4:Item.extend({init:function(id){this._super(id,Types.Entities.GOLD4,"resource");this.lootMessage="Picked up gold!";}}),
+        GOLD5:Item.extend({init:function(id){this._super(id,Types.Entities.GOLD5,"resource");this.lootMessage="Picked up gold!";}}),
         EVERPEAKMAP1:Item.extend({init:function(id){this._super(id,Types.Entities.EVERPEAKMAP1,"object");this.lootMessage="Discovered Fishing isle!";}}),
         EVERPEAKMAP2:Item.extend({init:function(id){this._super(id,Types.Entities.EVERPEAKMAP2,"object");this.lootMessage="Discovered Gilded Gryphon";}}),
         EVERPEAKMAP3:Item.extend({init:function(id){this._super(id,Types.Entities.EVERPEAKMAP3,"object");this.lootMessage="Discovered Enchanted Isle";}}),
@@ -313,6 +315,8 @@ define(['item'], function(Item) {
         m88ngoldtiara:Item.extend({init:function(id){this._super(id,Types.Entities.M88NGOLDTIARA,"object");this.lootMessage="You found a golden tiara!";}}),
         m88nteddy:Item.extend({init:function(id){this._super(id,Types.Entities.M88NTEDDY,"object");this.lootMessage="You found Teddy!";}}),
         m88ndirt:Item.extend({init:function(id){this._super(id,Types.Entities.M88NDIRT,"object");this.lootMessage="You found some m88n dirt!";}}),
+        m88nworm:Item.extend({init:function(id){this._super(id,Types.Entities.M88NWORM,"object");this.lootMessage="You found a worm!";}}),
+        m88nsnail:Item.extend({init:function(id){this._super(id,Types.Entities.M88NSNAIL,"object");this.lootMessage="You found a snail!";}}),
         //MRMlabs
         firstaidkit:Item.extend({init:function(id){this._super(id,Types.Entities.FIRSTAIDKIT,"object");this.lootMessage="You found a first aid kit!";}}),
         bandaid:Item.extend({init:function(id){this._super(id,Types.Entities.BANDAID,"object");this.lootMessage="You found a bandaid!";}}),

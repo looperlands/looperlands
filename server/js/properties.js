@@ -1281,10 +1281,14 @@ let Properties = {
     m88noctopussy: {
         level: 69,
         drops: {
-            m88nmap: 75,
+            m88nmap: 70,
             m88nsteak: 1,
             m88nmail: 1,
             m88nshovel: 1,
+            m88nseeds: 1,
+            m88npotato: 1,
+            m88nmail: 1,
+            m88nworm: 1,
             gameboy: 5,
             battery: 3,
             hardwallet: 2,
@@ -1306,11 +1310,17 @@ let Properties = {
             m88nsteak: 1,
             m88nmail: 1,
             m88nshovel: 1,
+            m88nseeds: 1,
+            m88npotato: 1,
+            m88nmail: 1,
+            m88nworm: 1,
             m88negg1: 1,
             m88negg2: 1,
             burger: 10,
             m88ngem: 1,
-            GOLD3: 40,
+            GOLD3: 35,
+            GOLD4: 1,
+            GOLD5: 1,
         },
         messages: ['Mmmmm, tasty!', 'Yum!', 'Eww, that was a little tough...', 'Stay on land or come back with friends!'],
         armorMod: 1,
@@ -1329,7 +1339,7 @@ let Properties = {
             m88ndirt: 99,
             m88ngem: 1,
         },
-        respawnDelay: 100000
+        respawnDelay: 4000000 //one hour
     },
 
     m88nbabymonkey: {
@@ -1738,6 +1748,18 @@ let Properties = {
         collectItem: Types.Entities.GOLD,
         collectAmount: 50
     },
+    GOLD4: {
+        collectable: true,
+        inventoryDescription: "Gold",
+        collectItem: Types.Entities.GOLD,
+        collectAmount: 100
+    },
+    GOLD5: {
+        collectable: true,
+        inventoryDescription: "Gold",
+        collectItem: Types.Entities.GOLD,
+        collectAmount: 300
+    },
     cpotion_s: {
         collectable: true,
         consumable: true,
@@ -1907,27 +1929,27 @@ let Properties = {
         inventoryDescription: "m88n gems",
         collectItem: Types.Entities.M88NGEM,
         collectAmount: 1,
-        respawnDelay: 5500000
+        respawnDelay: 8800000
     },
     m88ndirt: {
         collectable: true,
         inventoryDescription: "m88n dirt",
-        respawnDelay: 5500000
+        respawnDelay: 4000000
     },
     m88nmoneybags: {
         collectable: true,
         inventoryDescription: "Money Bags",
-        respawnDelay: 5500000
+        respawnDelay: 8800000
     },
     m88ngoldenpoo: {
         collectable: true,
         inventoryDescription: "Golden Poo",
-        respawnDelay: 5500000
+        respawnDelay: 8800000
     },
     m88ngoldenchalis: {
         collectable: true,
         consumable: true,
-        respawnDelay: 5500000,
+        respawnDelay: 8800000,
         cooldown: {
             group: "immunity",
             duration: 180000
@@ -1940,7 +1962,7 @@ let Properties = {
     m88ndrsgme: {
         collectable: true,
         inventoryDescription: "DRS'd GME",
-        respawnDelay: 150000
+        respawnDelay: 8800000
     },
     bandaid: {
         collectable: true,
@@ -2065,6 +2087,12 @@ let Properties = {
         respawnDelay: 9900000,
     },
     m88ngoldenticket: {
+        respawnDelay: 9900000,
+    },
+    m88nworm: {
+        respawnDelay: 9900000,
+    },
+    m88nsnail: {
         respawnDelay: 9900000,
     },
     strangeyellowliquid: {
