@@ -27,7 +27,7 @@ class PlayerModifiersTable extends HTMLElement {
                     text-align: center;
                 }
             </style>
-            <h3>${title}</h3>
+            <h3>Class: ${title}</h3>
             <table>
                 <tr><th>Attribute</th><th>Modifier</th></tr>
                 <tr><td>Melee Damage Dealt</td><td>${value.meleeDamageDealt}</td></tr>
