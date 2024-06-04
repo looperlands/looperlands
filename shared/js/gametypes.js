@@ -280,7 +280,9 @@ Types = {
         CRYSTAL: 21300048,
         TRINKET: 21300049,
         WILDFLOWERS: 21300050,
-        LUMINOUSSTONES: 21300051, 
+        LUMINOUSSTONES: 21300051,
+        GOLD4: 21300052,
+        GOLD5: 21300053, 
         //Short Destroyers
         VHS: 77000001,
         DVD: 77000002,
@@ -420,6 +422,8 @@ Types = {
         M88NGOLDTIARA: 78004600,
         M88NTEDDY: 78004700,
         M88NDIRT: 78004800,
+        M88NWORM: 78004900,
+        M88NSNAIL: 78005000,
         //MRMlabs NPCs
         TYLERDURDEN: 79000000,
         //MRMlabs Items
@@ -6048,6 +6052,8 @@ var kinds = {
     GOLD1: [Types.Entities.GOLD1, "resource"],
     GOLD2: [Types.Entities.GOLD2, "resource"],
     GOLD3: [Types.Entities.GOLD3, "resource"],
+    GOLD4: [Types.Entities.GOLD4, "resource"],
+    GOLD5: [Types.Entities.GOLD5, "resource"],
     EVERPEAKMAP1: [Types.Entities.EVERPEAKMAP1, "object"],
     EVERPEAKMAP2: [Types.Entities.EVERPEAKMAP2, "object"],
     EVERPEAKMAP3: [Types.Entities.EVERPEAKMAP3, "object"],
@@ -6114,6 +6120,8 @@ var kinds = {
     m88ngoldtiara: [Types.Entities.M88NGOLDTIARA, "object"],
     m88nteddy: [Types.Entities.M88NTEDDY, "object"],
     m88ndirt: [Types.Entities.M88NDIRT, "object"],
+    m88nworm: [Types.Entities.M88NWORM, "object"],
+    m88nsnail: [Types.Entities.M88NSNAIL, "object"],
     //MRMlabs Items
     firstaidkit: [Types.Entities.FIRSTAIDKIT, "object"],
     bandaid: [Types.Entities.BANDAID, "object"],

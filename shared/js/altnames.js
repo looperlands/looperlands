@@ -193,6 +193,7 @@ const AltNames = {
     m88ntoucan: "Toucan",
     m88nseal: "Seal",
     m88nwalrus: "Walrus",
+    m88noctopussy: "Octopussy",
 
     //m88n's Mob Nexans
     nexan8: "Mail Lady",

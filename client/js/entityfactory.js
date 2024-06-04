@@ -847,6 +847,8 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.GOLD1]=function(id){return new Items.GOLD1(id);};
     EntityFactory.builders[Types.Entities.GOLD2]=function(id){return new Items.GOLD2(id);};
     EntityFactory.builders[Types.Entities.GOLD3]=function(id){return new Items.GOLD3(id);};
+    EntityFactory.builders[Types.Entities.GOLD4]=function(id){return new Items.GOLD4(id);};
+    EntityFactory.builders[Types.Entities.GOLD5]=function(id){return new Items.GOLD5(id);};
     EntityFactory.builders[Types.Entities.GOLD]=function(id){return new Items.GOLD(id);};
     EntityFactory.builders[Types.Entities.EVERPEAKMAP1]=function(id){return new Items.EVERPEAKMAP1(id);};
     EntityFactory.builders[Types.Entities.EVERPEAKMAP2]=function(id){return new Items.EVERPEAKMAP2(id);};
@@ -914,6 +916,8 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.M88NGOLDTIARA] = function(id) { return new Items.m88ngoldtiara(id); };
     EntityFactory.builders[Types.Entities.M88NTEDDY] = function(id) { return new Items.m88nteddy(id); };
     EntityFactory.builders[Types.Entities.M88NDIRT] = function(id) { return new Items.m88ndirt(id); };
+    EntityFactory.builders[Types.Entities.M88NWORM] = function(id) { return new Items.m88nworm(id); };
+    EntityFactory.builders[Types.Entities.M88NSNAIL] = function(id) { return new Items.m88nsnail(id); };
     //MRMlabs
     EntityFactory.builders[Types.Entities.FIRSTAIDKIT] = function(id) { return new Items.firstaidkit(id); };
     EntityFactory.builders[Types.Entities.BANDAID] = function(id) { return new Items.bandaid(id); };
