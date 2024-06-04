@@ -433,16 +433,20 @@ LooperLands (https://looperlands.io), initially conceived by BalksHamster and bu
                     </div>
                 </div>
 
-				<div id="avatarStats" class="pixel-corners-top">
-					<span>Level: </span><span id="avatarLevel" style="color:#FCE045; padding-right: 10px;"></span>(<span id="avatarProgress"></span>%)
-					<span id="buffInfo"></span>
-					<br>
-					<span id="companionInfo">
-						<span>Companion: </span><span id="companionLevel" style="color:#FCE045; padding-right: 10px;"></span>(<span id="companionProgress"></span>%)
-					</span>
-					<br>
-					<span id="playerModifiersTable"></span>
-				</div>
+				<article id="avatarStats" class="panel">
+					<div class="panelTitle pixel-corners-xs" style="margin: 0 auto; width:250px;">Looper Info</div>
+					<div class="panelContent">
+						<span>Level: </span><span id="avatarLevel" style="color:#FCE045; padding-right: 10px;"></span>(<span id="avatarProgress"></span>%)
+						<span id="buffInfo"></span>
+						<br>
+						<span id="companionInfo">
+							<span>Companion: </span><span id="companionLevel" style="color:#FCE045; padding-right: 10px;"></span>(<span id="companionProgress"></span>%)
+						</span>
+						<br>
+						<span id="playerModifiersTable"></span>
+						<span id="close-instructions" class="close" onclick="(e) => { e.stopImmediatePropagation(); e.preventDefault(); return false}"></span>
+					</div>
+				</article>
 
 				<div id="weaponStats" class="panel">
 					<div><span>Level: </span><span id="weaponLevel" style="color:#FCE045; padding-right: 10px;"></span><span id="weaponProgressContainer">(<span id="weaponProgress"></span>%)</span></div>

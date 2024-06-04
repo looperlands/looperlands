@@ -397,6 +397,7 @@ define(['jquery', 'storage'], function ($, Storage) {
             $("#gamepadCommands").hide();
             $("#announcement").hide();
             $("#playerClassSelection").hide();
+            $("#avatarStats").hide();
         },
 
         showAchievementNotification: function (questName, endText, xpReward, medal) {
@@ -1027,19 +1028,17 @@ define(['jquery', 'storage'], function ($, Storage) {
         },
 
         toggleAvatarInfo: function (event) {
-            const url = `/session/${this.sessionId}/playerclassmodifiers`;
-            axios.get(url).then((res) => {
-                const value = res.data;
-                $("#playerModifiersTable").html(`<modifiers-table value='${JSON.stringify(value)}'></modifiers-table>`)
-                $('#avatarStats').toggleClass('visible');
-                if ($('#avatarStats').hasClass('visible')) {
-                   $('#weaponStats').removeClass('visible');
-                   $('#population').removeClass('visible');
-                }
 
-                console.log(data);
-            });
-
+            if($("#avatarStats").is(":visible")) {
+                $("#avatarStats").hide();
+            } else {
+                const url = `/session/${this.sessionId}/playerclassmodifiers`;
+                axios.get(url).then((res) => {
+                    const value = res.data;
+                    $("#playerModifiersTable").html(`<modifiers-table value='${JSON.stringify(value)}'></modifiers-table>`)
+                    $("#avatarStats").show();
+                });
+            }
 
             event.stopImmediatePropagation();
             event.preventDefault();

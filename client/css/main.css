@@ -352,34 +352,6 @@ body.upscaled.game {background:#000;}
     cursor: pointer;
 }
 
-#avatarStats {
-    position: absolute;
-    left: 70px;
-    background: url(../img/1/barsheet.png);
-    background-position: -240px -48px;
-    width: 91px;
-    color: #FFF;
-    font-family: 'GraphicPixel';
-    font-size: 9px;
-    text-align: center;
-    height: 0;
-    opacity: 0;
-    padding: 20px;
-    padding-top: 0;
-    padding-bottom: 0;
-    transition: 0.2s ease-in-out all;
-    bottom: 18px;
-}
-
-#avatarStats.visible {
-    height: 20px;
-    padding-top: 5px;
-    padding-bottom: 10px;
-    opacity: 100;
-    transition: 0.2s ease-in-out all;
-    line-height: 9px;
-}
-
 #weaponStats {
     position: absolute;
     left: 70px;
@@ -969,13 +941,13 @@ body.inventory .inventorySidebar {
 #create-new span span:hover {color:#b2af9b;}
 #playername {color:#fff;}
 
-#credits, #loadcharacter, #confirmation, #death, #error, #settings, #keyboardCommands, #instructions, #gamepadCommands, #announcement, #playerClassSelection {position:absolute;left:50%;text-align:center;font-family:'GraphicPixel', sans-serif;z-index:1000;}
+#credits, #loadcharacter, #confirmation, #death, #error, #settings, #keyboardCommands, #instructions, #gamepadCommands, #announcement, #playerClassSelection, #avatarStats {position:absolute;left:50%;text-align:center;font-family:'GraphicPixel', sans-serif;z-index:1000;}
 
 #playerimage {image-rendering: -moz-crisp-edges; image-rendering: -webkit-optimize-contrast;}
 
 #parchment p {font-family:'GraphicPixel';}
 
-#credits, #death, #settings, #keyboardCommands, #instructions, #gamepadCommands, #announcement, #playerClassSelection {top:50%;}
+#credits, #death, #settings, #keyboardCommands, #instructions, #gamepadCommands, #announcement, #playerClassSelection, #avatarStats {top:50%;}
 .intro #credits {top:55%;}
 #credits h1 a {color:#fcda5c;text-decoration:none;}
 #authors div a {display:block;color:#fff;text-decoration:none;}
@@ -1114,7 +1086,7 @@ footer div  {display:inline-block;}
     opacity: 1;
     transition: ease-in all 0.3s;
 }
-#settings, #keyboardCommands, #instructions, #gamepadCommands, #announcement, #playerClassSelection {
+#settings, #keyboardCommands, #instructions, #gamepadCommands, #announcement, #playerClassSelection, #avatarStats {
     color: #b9b9b9;
     padding:0 25px;
     width:770px;
@@ -1541,21 +1513,6 @@ footer div  {display:inline-block;}
     .upscaled #minigameprompt:before {content: "";position:absolute;height:200%;width:400%;top:-200%;left:-150%;background:radial-gradient(transparent 40%, rgba(255, 255, 255, 0.7) 60%, transparent 75%);transform-origin:bottom center;z-index:10;}
     .upscaled #minigameprompt:hover:before {animation:minigameglow 1.5s infinite forwards ease-in-out;}
 
-    .upscaled #avatarStats {
-        left: 210px;
-        bottom: 65px;
-        background: url('../img/3/barsheet.png');
-        background-position: -720px -144px;
-        width: 353px;
-        font-size: 16px;
-        line-height: 24px;
-    }
-    .upscaled #avatarStats.visible {
-        height: 43px;
-        padding-top: 28px;
-        padding-bottom: 20px;
-    }
-
     .upscaled #weaponStats {
         left: 161px;
         bottom: 65px;
@@ -1912,35 +1869,6 @@ footer div  {display:inline-block;}
         cursor: pointer;
     }
 
-    #avatarStats {
-        position: absolute;
-        left: 132px;
-        bottom: 43px;
-        background: url(../img/2/barsheet.png);
-        background-position: -480px -96px;
-        width: 222px;
-        color: #FFF;
-        font-family: 'GraphicPixel';
-        font-size: 12px;
-        text-align: center;
-        height:0;
-        opacity: 0;
-        padding: 20px;
-        padding-top: 0;
-        padding-bottom: 0;
-        transition: 0.2s ease-in-out all;
-        border-radius: 10px 0 0 0;
-    }
-
-    #avatarStats.visible {
-        height: 27px;
-        padding-top: 18px;
-        padding-bottom: 20px;
-        opacity: 100;
-        transition: 0.2s ease-in-out all;
-        line-height:18px;
-    }
-
     #weaponStats {
         position: absolute;
         left: 106px;
@@ -2174,34 +2102,6 @@ footer div  {display:inline-block;}
     #canvasborder {padding:10px;background:url('../img/2/border.png') no-repeat;}
     #canvas {width:100%;height:448px;}
     #fade {width:960px;height:448px;top:10px;left:10px;}
-
-    .upscaled #avatarStats {
-        position: absolute;
-        left: 132px;
-        bottom: 43px;
-        background: url(../img/2/barsheet.png);
-        background-position: -480px -96px;
-        width: 222px;
-        color: #FFF;
-        font-family: 'GraphicPixel';
-        font-size: 12px;
-        text-align: center;
-        height:0;
-        opacity: 0;
-        padding: 20px;
-        padding-top: 0;
-        padding-bottom: 0;
-        transition: 0.2s ease-in-out all;
-    }
-
-    .upscaled #avatarStats.visible {
-        height: 27px;
-        padding-top: 18px;
-        padding-bottom: 20px;
-        opacity: 100;
-        transition: 0.2s ease-in-out all;
-        line-height:18px;
-    }
 
     .upscaled #weaponStats {
         position: absolute;
@@ -2516,34 +2416,6 @@ footer div  {display:inline-block;}
 
     #resize-check {height:1px;}
 
-    #avatarStats {
-        position: absolute;
-        left: 70px;
-        background: url(../img/1/barsheet.png);
-        background-position: -240px -48px;
-        width: 91px;
-        color: #FFF;
-        font-family: 'GraphicPixel';
-        font-size: 9px;
-        text-align: center;
-        height: 0;
-        opacity: 0;
-        padding: 20px;
-        padding-top: 0;
-        padding-bottom: 0;
-        transition: 0.2s ease-in-out all;
-        bottom: 18px;
-    }
-
-    #avatarStats.visible {
-        height: 20px;
-        padding-top: 5px;
-        padding-bottom: 10px;
-        opacity: 100;
-        transition: 0.2s ease-in-out all;
-        line-height: 9px;
-    }
-
     #weaponStats {
         position: absolute;
         left: 70px;
@@ -2696,34 +2568,6 @@ footer div  {display:inline-block;}
 
     footer {display:none;}
     #bubbles {overflow:hidden;}
-
-    #avatarStats {
-        position: absolute;
-        left: 70px;
-        background: url(../img/1/barsheet.png);
-        background-position: -240px -48px;
-        width: 91px;
-        color: #FFF;
-        font-family: 'GraphicPixel';
-        font-size: 9px;
-        text-align: center;
-        height: 0;
-        opacity: 0;
-        padding: 20px;
-        padding-top: 0;
-        padding-bottom: 0;
-        transition: 0.2s ease-in-out all;
-        bottom: 18px;
-    }
-
-    #avatarStats.visible {
-        height: 20px;
-        padding-top: 5px;
-        padding-bottom: 10px;
-        opacity: 100;
-        transition: 0.2s ease-in-out all;
-        line-height: 9px;
-    }
 
     #weaponStats {
         position: absolute;
