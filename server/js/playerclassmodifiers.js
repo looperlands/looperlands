@@ -1,6 +1,6 @@
 const playerClassModifiersData = {
     tank: {
-      description: "The Tank class is a frontline warrior designed to absorb damage and protect allies, with high defense and health regeneration. They excel at drawing enemy attacks away from teammates, ensuring the safety and stability of the party.",
+      description: "The Tank class is a frontline warrior designed to absorb damage and protect allies, with high defense, aggro and health regeneration.",
       meleeDamageDealt: 0.8,
       meleeDamageTaken: 0.8,
       moveSpeed: 0.8,

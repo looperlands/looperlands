@@ -1300,6 +1300,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                         <div class="left">
                             <img src="img/classes/${key}.png" alt="${displayKey} Class">
                             <p>${value.description}</p>
+                            <strong style="color : red">Please select carefully. Changing an avatar's class has a cost.</strong>
                             <button id="selectClass" value="${key}" class="panelBorder">Select ${displayKey}</button>
                         </div>
                         <div class="right">
