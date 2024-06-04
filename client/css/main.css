@@ -1119,7 +1119,7 @@ footer div  {display:inline-block;}
     padding:0 25px;
     width:770px;
     position: absolute;
-    top: 10%;
+    top: 5%;
     left: calc(50% - 400px);
     padding-bottom: 40px;
     transition: ease-in all 0.3s;
@@ -1268,21 +1268,9 @@ footer div  {display:inline-block;}
     flex: 1;
     max-width: 45%;
     overflow-x: auto;
-}
-
-#playerClassSelection .class-container table {
-    width: 100%;
-    margin-top: 10px;
-    border-collapse: collapse;
-}
-
-#playerClassSelection .class-container table, 
-#playerClassSelection .class-container th, 
-#playerClassSelection .class-container td {
-    border: 1px solid #ccc;
-    padding: 5px; /* Reduced padding to make the table smaller */
     text-align: center;
 }
+
 
 #playerClassSelection .class-container img {
     width: 100%;

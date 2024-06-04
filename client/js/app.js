@@ -1027,11 +1027,19 @@ define(['jquery', 'storage'], function ($, Storage) {
         },
 
         toggleAvatarInfo: function (event) {
-            $('#avatarStats').toggleClass('visible');
-            if ($('#avatarStats').hasClass('visible')) {
-               $('#weaponStats').removeClass('visible');
-               $('#population').removeClass('visible');
-            }
+            const url = `/session/${this.sessionId}/playerclassmodifiers`;
+            axios.get(url).then((res) => {
+                const value = res.data;
+                $("#playerModifiersTable").html(`<modifiers-table value='${JSON.stringify(value)}'></modifiers-table>`)
+                $('#avatarStats').toggleClass('visible');
+                if ($('#avatarStats').hasClass('visible')) {
+                   $('#weaponStats').removeClass('visible');
+                   $('#population').removeClass('visible');
+                }
+
+                console.log(data);
+            });
+
 
             event.stopImmediatePropagation();
             event.preventDefault();
@@ -1286,6 +1294,7 @@ define(['jquery', 'storage'], function ($, Storage) {
             function showClass(index) {
                 const key = classKeys[index];
                 const value = classes[key];
+                value['playerClass'] = key;
                 const displayKey = key.charAt(0).toUpperCase() + key.slice(1);
                 const classDiv = `
                     <div class="class-container" id="${key}">
@@ -1295,18 +1304,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                             <button id="selectClass" value="${key}" class="panelBorder">Select ${displayKey}</button>
                         </div>
                         <div class="right">
-                            <table>
-                                <tr><th>Attribute</th><th>Modifier</th></tr>
-                                <tr><td>Melee Damage Dealt</td><td>${value.meleeDamageDealt}</td></tr>
-                                <tr><td>Melee Damage Taken</td><td>${value.meleeDamageTaken}</td></tr>
-                                <tr><td>Move Speed</td><td>${value.moveSpeed}</td></tr>
-                                <tr><td>Ranged Damage Dealt</td><td>${value.rangedDamageDealt}</td></tr>
-                                <tr><td>HP Regen</td><td>${value.hpRegen}</td></tr>
-                                <tr><td>Max HP</td><td>${value.maxHp}</td></tr>
-                                <tr><td>Hate</td><td>${value.hate}</td></tr>
-                                <tr><td>Attack Rate</td><td>${value.attackRate}</td></tr>
-                                <tr><td>Stealth</td><td>${value.stealth}</td></tr>
-                            </table>
+                            <modifiers-table value='${JSON.stringify(value)}'></modifiers-table>
                         </div>
                     </div>
                 `;

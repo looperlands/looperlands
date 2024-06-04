@@ -1184,9 +1184,16 @@ WS.socketIOServer = Server.extend({
             announcementController.sendAnnouncement(req, res);
         });
 
-        let playerClassController = new PlayerClassController();
 
-        app.get("/playerclasses", playerClassController.getPlayerClasses);
+        app.get("/playerclasses", async (req, res) => {
+            const playerClassController = new PlayerClassController(cache, this.worldsMap);
+            return playerClassController.getPlayerClasses(req, res);
+        });
+
+        app.get("/session/:sessionId/playerclassmodifiers", async (req, res) => {
+            playerClassController = new PlayerClassController(cache, this.worldsMap);
+            return playerClassController.getPlayerModifiers(req, res);
+        });
 
         self.io.on('connection', function (connection) {
             //console.log('a user connected');
@@ -1226,9 +1233,6 @@ WS.socketIOServer = Server.extend({
     onRequestStatus: function (status_callback) {
         this.status_callback = status_callback;
     }
-
-
-
 });
 
 WS.socketIOConnection = Connection.extend({
