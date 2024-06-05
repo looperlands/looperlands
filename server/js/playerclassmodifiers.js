@@ -50,11 +50,27 @@ const playerClassModifiersData = {
 };
 
 class PlayerClassModifiers {
-    constructor(playerClass) {
-        // Default to 'normal' if the class is not found
-        const modifiers = playerClassModifiersData[playerClass] || playerClassModifiersData['standard'];
-
+    constructor(platformClient, nftId, playerClass) {
+        this.platformClient = platformClient;
+        this.nftId = nftId;
         this._playerClass = playerClass;
+
+        // set default modifiers
+        this._meleeDamageDealt = 1
+        this._meleeDamageTaken = 1
+        this._moveSpeed = 1
+        this._rangedDamageDealt = 1
+        this._hpRegen = 1
+        this._maxHp = 1
+        this._hate = 1
+        this._attackRate = 1
+        this._stealth = 1;
+
+        this.loadModifierData();
+    }
+
+    async loadModifierData() {
+        const modifiers = await this.platformClient.getLooperModifierData(this.nftId);
         this._meleeDamageDealt = modifiers.meleeDamageDealt;
         this._meleeDamageTaken = modifiers.meleeDamageTaken;
         this._moveSpeed = modifiers.moveSpeed;

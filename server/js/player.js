@@ -95,7 +95,7 @@ module.exports = Player = Character.extend({
                 }
                 self.walletId = playerCache.walletId;
                 self.nftId = playerCache.nftId;
-                self.playerClassModifiers = new PlayerClassModifiers(playerCache.trait);
+                self.playerClassModifiers = new PlayerClassModifiers(platformClient, self.nftId, playerCache.trait);
 
                 self.kind = Types.Entities.WARRIOR;
                 self.equipArmor(message[2]);
