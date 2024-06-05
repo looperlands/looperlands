@@ -1157,7 +1157,8 @@ module.exports = World = cls.Class.extend({
                     inCombat: entity.isInCombat(),
                     x: entity.x,
                     y: entity.y,
-                    stealth: entity.getStealth()
+                    stealth: entity.getStealth(),
+                    classEmoji: entity.playerClassModifiers?.emoji
                 }
             }
         }

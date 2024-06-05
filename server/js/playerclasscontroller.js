@@ -24,7 +24,7 @@ class PlayerClassController {
         
         const player = this.worldsMap[sessionData.mapId]?.getPlayerById(sessionData.entityId);
         if (player) {
-            const playerModifiers = player.playerClassModifiers.getAllModifiers();
+            const playerModifiers = await player.playerClassModifiers.getAllModifiers();
             res.json(playerModifiers);
         } else {
             res.status(404).json({

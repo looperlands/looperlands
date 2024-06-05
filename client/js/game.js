@@ -9327,6 +9327,12 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                         self.entities[id].exitCombat();
                                     }
                                 }
+
+                                if (self.entities[id].classEmoji !== toUpdateEntity.classEmoji) {
+                                    self.entities[id].classEmoji = toUpdateEntity.classEmoji;
+                                    const name = self.entities[id].name + `${toUpdateEntity.classEmoji.trim()}`;
+                                    self.entities[id].setName(name);
+                                }
                             } else {
                                 console.debug("Unknown entity " + id);
                             }
