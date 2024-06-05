@@ -1,14 +1,13 @@
-
-const classes = require('./playerclassmodifiers.js').classes;
-
 class PlayerClassController {
 
-    constructor(cache, worldsMap) {
+    constructor(platformClient, cache, worldsMap) {
+        this.platformClient = platformClient;
         this.cache = cache;
         this.worldsMap = worldsMap;
     }
 
     async getPlayerClasses(req, res) {
+        const classes = await this.platformClient.getAllLooperClasses();
         res.json(classes);
     }
 

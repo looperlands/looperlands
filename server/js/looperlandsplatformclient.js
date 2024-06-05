@@ -1,6 +1,7 @@
 const axios = require('axios');
 
 class LooperLandsPlatformClient {
+    static playerClasses;
     constructor(apiKey, baseUrl) {
         this.platformDefined = apiKey && baseUrl;
         if (!this.platformDefined) {
@@ -263,6 +264,24 @@ class LooperLandsPlatformClient {
             const url = `/api/game/wallet/${wallet}/companions`;
             const response = await this.client.get(url);
             return response.data;
+        } catch (error) {
+            this.handleError(error);
+        }
+    }
+
+    async getAllLooperClasses() {
+        try {
+            if (LooperLandsPlatformClient.playerClasses === undefined) {
+                const url = `/api/game/modifiers/traits`;
+                const response = await this.client.get(url);
+                const playerClassModifiersData = {};
+                Object.keys(response.data).forEach(key => {
+                  const { description, modifiers } = response.data[key];
+                  playerClassModifiersData[key] = { description, ...modifiers };
+                });
+                LooperLandsPlatformClient.playerClasses = playerClassModifiersData;
+            }
+            return LooperLandsPlatformClient.playerClasses;
         } catch (error) {
             this.handleError(error);
         }

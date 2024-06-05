@@ -1186,12 +1186,12 @@ WS.socketIOServer = Server.extend({
 
 
         app.get("/playerclasses", async (req, res) => {
-            const playerClassController = new PlayerClassController(cache, this.worldsMap);
+            const playerClassController = new PlayerClassController(platformClient, cache, this.worldsMap);
             return playerClassController.getPlayerClasses(req, res);
         });
 
         app.get("/session/:sessionId/playerclassmodifiers", async (req, res) => {
-            playerClassController = new PlayerClassController(cache, this.worldsMap);
+            playerClassController = new PlayerClassController(platformClient, cache, this.worldsMap);
             return playerClassController.getPlayerModifiers(req, res);
         });
 
