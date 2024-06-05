@@ -297,6 +297,20 @@ class LooperLandsPlatformClient {
         }
     }
 
+    async setLooperClass(nftId, playerClass) {
+        try {
+            const url = `/api/game/asset/trait`;
+            const postData = {
+                "nftId" : nftId,
+                "trait" : playerClass
+            }
+            const response = await this.client.post(url, postData);
+            return response.data;
+        } catch (error) {
+            this.handleError(error);
+        }
+    }
+
     handleError(error) {
         if (error.response) {
             // The request was made and the server responded with a status code

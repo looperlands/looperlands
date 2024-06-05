@@ -26,6 +26,9 @@ class PlayerModifiersTable extends HTMLElement {
                     padding: 0 0 10px 0;
                     text-align: center;
                 }
+                th {
+                    background-color: black
+                }
             </style>
             <h3>Class: ${title}</h3>
             <table>

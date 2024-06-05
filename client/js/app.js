@@ -1037,7 +1037,9 @@ define(['jquery', 'storage'], function ($, Storage) {
                     const value = res.data;
                     $("#playerModifiersTable").html(`<modifiers-table value='${JSON.stringify(value)}'></modifiers-table>`)
                     $("#avatarStats").show();
-                });
+                }).catch(error => {
+                    console.error("Error while getting avatar stats", error);
+                })
             }
 
             event.stopImmediatePropagation();
@@ -1290,7 +1292,7 @@ define(['jquery', 'storage'], function ($, Storage) {
             let classKeys = [];
             let classes = {};
 
-            function showClass(index) {
+            showClass = (index) => {
                 const key = classKeys[index];
                 const value = classes[key];
                 value['playerClass'] = key;
@@ -1301,7 +1303,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                             <img src="img/classes/${key}.png" alt="${displayKey} Class">
                             <p>${value.description}</p>
                             <strong style="color : red">Please select carefully. Changing an avatar's class has a cost.</strong>
-                            <button id="selectClass" value="${key}" class="panelBorder">Select ${displayKey}</button>
+                            <button id="selectPlayerClass" value="${key}" class="panelBorder">Select ${displayKey}</button>
                         </div>
                         <div class="right">
                             <modifiers-table value='${JSON.stringify(value)}'></modifiers-table>
@@ -1309,6 +1311,21 @@ define(['jquery', 'storage'], function ($, Storage) {
                     </div>
                 `;
                 $('#class-containers').html(classDiv);
+                $('#selectPlayerClass').click((e) => {
+                    const url = `/session/${this.sessionId}/setclass`;
+                    const playerClass = $("#selectPlayerClass").val();
+                    const postData = {
+                        "playerClass" : playerClass
+                    }
+                    axios.post(url, postData).then((response) => {
+                        console.log("Player class set response", response);
+                        this.hideWindows();
+                        $('#armor').click();
+                    }).catch(error => {
+                        console.error("Player class set error", error);
+                        alert("Error while setting player class. Please reload game and try again");
+                    })
+                });
             }   
 
             axios.get("/playerclasses")

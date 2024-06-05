@@ -1127,7 +1127,9 @@ module.exports = World = cls.Class.extend({
 
         let playerInfo = {
             armor: Types.getKindAsString(player.armor),
-            powerUpActive: player.getPowerUpActive()
+            powerUpActive: player.getPowerUpActive(),
+            playerClass: player.playerClassModifiers?.playerClass,
+            level: player.getLevel()
         }
 
         let characterInfo = this.getCharactersInfoInPlayerGroup(player);
