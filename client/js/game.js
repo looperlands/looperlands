@@ -349,6 +349,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "item-GOLD1",
                     "item-GOLD2",
                     "item-GOLD3",
+                    "item-GOLD4",
+                    "item-GOLD5",
                     "item-GOLD",
                     "item-EVERPEAKMAP1",
                     "item-EVERPEAKMAP2",
@@ -416,6 +418,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "item-m88ngoldtiara",
                     "item-m88nteddy",
                     "item-m88ndirt",
+                    "item-m88nworm",
+                    "item-m88nsnail",
                     //MRMlabs
                     "item-firstaidkit",
                     "item-bandaid",
