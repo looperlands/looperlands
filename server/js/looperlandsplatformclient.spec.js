@@ -652,4 +652,92 @@ describe('LooperLandsPlatformClient', () => {
       expect(client.handleError).toHaveBeenCalledWith(error);
     });
   });
+
+  describe('getAllLooperClasses', () => {
+    it('should fetch and cache player classes if not already cached', async () => {
+      const playerClassesData = {
+        class1: { description: 'Class 1 description', modifiers: {meleeDamageDealt: 1, meleeDamageTaken: 1 }},
+        class2: { description: 'Class 2 description', modifiers: {moveSpeed: 1.2, rangedDamageDealt: 1.5 }}
+      };
+
+      client.client.get.mockResolvedValue({ data: playerClassesData });
+
+      const result = await client.getAllLooperClasses();
+
+      expect(client.client.get).toHaveBeenCalledWith('/api/game/modifiers/traits');
+      expect(result['class1'].description).toEqual(playerClassesData['class1'].description);
+      expect(result['class1'].meleeDamageDealt).toEqual(playerClassesData['class1'].modifiers.meleeDamageDealt);
+    });
+
+    it('should return cached player classes if already cached', async () => {
+      LooperLandsPlatformClient.playerClasses = {
+        class1: { description: 'Class 1 description', meleeDamageDealt: 1, meleeDamageTaken: 1 }
+      };
+
+      const result = await client.getAllLooperClasses();
+
+      expect(client.client.get).not.toHaveBeenCalled();
+      expect(result).toEqual(LooperLandsPlatformClient.playerClasses);
+    });
+  });
+
+  describe('getLooperModifierData', () => {
+    it('should fetch modifier data for an NFT', async () => {
+      const nftId = 'nft123';
+      const modifierData = { meleeDamageDealt: 2, moveSpeed: 1.2 };
+
+      client.client.get.mockResolvedValue({ data: modifierData });
+
+      const result = await client.getLooperModifierData(nftId);
+
+      expect(client.client.get).toHaveBeenCalledWith(`/api/game/asset/modifiers/${nftId}`);
+      expect(result).toEqual(modifierData);
+    });
+
+    it('should handle an error thrown by the GET request', async () => {
+      const nftId = 'nft123';
+      const error = new Error('Network Error');
+
+      client.client.get.mockRejectedValue(error);
+
+      jest.spyOn(client, 'handleError').mockImplementation(() => {});
+
+      await client.getLooperModifierData(nftId);
+
+      expect(client.client.get).toHaveBeenCalledWith(`/api/game/asset/modifiers/${nftId}`);
+      expect(client.handleError).toHaveBeenCalledWith(error);
+    });
+  });
+
+  describe('setLooperClass', () => {
+    it('should send a POST request to set the looper class and return response data', async () => {
+      const nftId = 'nft123';
+      const playerClass = 'warrior';
+      const responseData = { success: true };
+
+      client.client.post.mockResolvedValue({ data: responseData });
+
+      const result = await client.setLooperClass(nftId, playerClass);
+
+      expect(client.client.post).toHaveBeenCalledWith('/api/game/asset/trait', { nftId, trait: playerClass });
+      expect(result).toEqual(responseData);
+    });
+
+    it('should handle an error thrown by the POST request', async () => {
+      const nftId = 'nft123';
+      const playerClass = 'warrior';
+      const error = new Error('Network Error');
+
+      client.client.post.mockRejectedValue(error);
+
+      jest.spyOn(client, 'handleError').mockImplementation(() => {});
+
+      await client.setLooperClass(nftId, playerClass);
+
+      expect(client.client.post).toHaveBeenCalledWith('/api/game/asset/trait', { nftId, trait: playerClass });
+      expect(client.handleError).toHaveBeenCalledWith(error);
+    });
+  });  
+
+  
 });

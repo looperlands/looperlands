@@ -31,6 +31,7 @@ const platform = require('./looperlandsplatformclient.js');
 const minigame = require('../apps/minigame.js');
 const dynamicnft = require('./dynamicnftcontroller.js');
 const announcement = require('./announcementcontroller.js');
+const PlayerClassController = require('./playerclasscontroller.js').PlayerClassController;
 const cache = new NodeCache();
 
 const LOOPWORMS_LOOPERLANDS_BASE_URL = process.env.LOOPWORMS_LOOPERLANDS_BASE_URL;
@@ -283,6 +284,7 @@ WS.socketIOServer = Server.extend({
             body.xp = sessionData.xp;
             body.title = sessionData.title;
             body.f2p = sessionData.f2p;
+            body.trait = sessionData.trait;
             delete body.map;
 
             let responseJson = await newSession(body, true);
@@ -1183,6 +1185,22 @@ WS.socketIOServer = Server.extend({
             announcementController.sendAnnouncement(req, res);
         });
 
+
+        app.get("/playerclasses", async (req, res) => {
+            const playerClassController = new PlayerClassController(platformClient, cache, this.worldsMap);
+            return await playerClassController.getPlayerClasses(req, res);
+        });
+
+        app.get("/session/:sessionId/playerclassmodifiers", async (req, res) => {
+            const playerClassController = new PlayerClassController(platformClient, cache, this.worldsMap);
+            return await playerClassController.getPlayerModifiers(req, res);
+        });
+
+        app.post("/session/:sessionId/setclass", async (req, res) => {
+            const playerClassController = new PlayerClassController(platformClient, cache, this.worldsMap);
+            return playerClassController.setLooperClass(req, res);
+        });
+
         self.io.on('connection', function (connection) {
             //console.log('a user connected');
 
@@ -1221,9 +1239,6 @@ WS.socketIOServer = Server.extend({
     onRequestStatus: function (status_callback) {
         this.status_callback = status_callback;
     }
-
-
-
 });
 
 WS.socketIOConnection = Connection.extend({
