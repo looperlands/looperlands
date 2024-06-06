@@ -284,6 +284,7 @@ WS.socketIOServer = Server.extend({
             body.xp = sessionData.xp;
             body.title = sessionData.title;
             body.f2p = sessionData.f2p;
+            body.trait = sessionData.trait;
             delete body.map;
 
             let responseJson = await newSession(body, true);
