@@ -36,7 +36,7 @@ class PlayerClassModifiers {
     }
 
     set playerClass(playerClass) {
-        if (this._playerClass === null) {
+        if (!this._playerClass) {
             this._playerClass = playerClass;
         }
     }

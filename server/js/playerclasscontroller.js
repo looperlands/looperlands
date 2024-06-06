@@ -53,6 +53,8 @@ class PlayerClassController {
         const player = this.worldsMap[sessionData.mapId]?.getPlayerById(sessionData.entityId);
         if (player) {
             player.playerClassModifiers.playerClass = playerClass;
+            sessionData.trait = playerClass;
+            this.cache.set(sessionId, sessionData);
         }
         res.status(200).json({
             "success" : true

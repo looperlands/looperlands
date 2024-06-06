@@ -10,7 +10,8 @@ describe('PlayerClassController', () => {
             setLooperClass: jest.fn()
         };
         cacheMock = {
-            get: jest.fn()
+            get: jest.fn(),
+            set: jest.fn()
         };
         worldsMapMock = {};
         reqMock = {
