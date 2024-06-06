@@ -226,6 +226,7 @@ define(['jquery', 'area'], function ($, Area) {
                 area.message = trigger.message;
                 area.player_message = trigger.player_message;
                 area.minigame = trigger.minigame;
+                area.offset = trigger.offset; // used to control location of minigame prompt
                 triggers[self.GridPositionToTileIndex(trigger.x, trigger.y)] = area;
             });
             return triggers;

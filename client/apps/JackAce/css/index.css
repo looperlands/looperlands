@@ -1,0 +1,220 @@
+body {
+  backdrop-filter: brightness(0.5);
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  color: white;
+}
+
+#wrapper {
+  width: fit-content;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/*Button Boxes*/
+#uiWindow {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  image-rendering: pixelated;
+  position: relative;
+  width: 720px;
+  background: url('../img/ui.png') no-repeat;
+  background-size: 720px 1000px;
+}
+
+.processing{
+  filter: brightness(0.5);
+}
+
+#bet-window, #hit-stand-window, #splitDouble, #insurance{
+  width: 100%;
+  display: contents;
+}
+
+/*Button Positioning*/
+#bet_amount{
+  image-rendering: pixelated;
+  margin: 10px;
+  width: 300px;
+  height: 130px;
+  background: url('../img/buttons.png') no-repeat;
+  background-size: 920px 1250px;
+}
+
+#deal{
+  image-rendering: pixelated;
+  margin: 10px;
+  width: 300px;
+  height: 130px;
+  background: url('../img/buttons.png') no-repeat -310px 0px;
+  background-size: 920px 1250px;
+}
+
+#bet_increase{
+  image-rendering: pixelated;
+  margin: 10px;
+  width: 300px;
+  height: 130px;
+  background: url('../img/buttons.png') no-repeat -310px -140px;
+  background-size: 920px 1250px;
+} 
+
+#bet_decrease{
+  image-rendering: pixelated;
+  margin: 10px;
+  width: 300px;
+  height: 130px;
+  background: url('../img/buttons.png') no-repeat -310px -280px;
+  background-size: 920px 1250px;
+} 
+
+#hit{
+  image-rendering: pixelated;
+  margin: 10px;
+  width: 300px;
+  height: 130px;
+  background: url('../img/buttons.png') no-repeat;
+  background-size: 920px 1250px;
+}
+
+#stand{
+  image-rendering: pixelated;
+  margin: 10px;
+  width: 300px;
+  height: 130px;
+  background: url('../img/buttons.png') no-repeat;
+  background-size: 920px 1250px;
+}
+
+#ins-yes{
+  image-rendering: pixelated;
+  margin: 10px 10px 50px 10px;
+  width: 300px;
+  height: 130px;
+  background: url('../img/buttons.png') no-repeat;
+  background-size: 920px 1250px;
+}
+
+#ins-no{
+  image-rendering: pixelated;
+  margin: 10px 10px 50px 10px;
+  width: 300px;
+  height: 130px;
+  background: url('../img/buttons.png') no-repeat;
+  background-size: 920px 1250px;
+}
+
+#split{
+  image-rendering: pixelated;
+  margin: 10px;
+  width: 300px;
+  height: 130px;
+  background: url('../img/buttons.png') no-repeat;
+  background-size: 920px 1250px;
+}
+
+#double{
+  image-rendering: pixelated;
+  margin: 10px;
+  width: 300px;
+  height: 130px;
+  background: url('../img/buttons.png') no-repeat;
+  background-size: 920px 1250px;
+}
+
+#dealerHand {
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  transform: translateX(calc(-170px/2)); /*transform half the width of the arrow graphic*/
+}
+
+#playerHand {
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transform: translateX(calc(-170px/2)); /*transform half the width of the arrow graphic*/
+}
+
+.playerHands {
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.splitHand{
+  display: block;
+}
+
+#handResult {
+  font-family: 'arial';
+  font-size: 5vh;
+  letter-spacing: 3px;
+  color: red;
+  font-weight: 900;
+}
+
+/*Sprite Positioning*/
+.no-arrow {
+  display: inline-block;
+  width: 170px;
+  height: 130px;
+  background: url('../img/score.png') no-repeat 0 0;
+  margin: 5px;
+  image-rendering: pixelated;
+  background-size: 1790px 410px;
+}
+
+.arrow {
+  display: inline-block;
+  width: 170px;
+  height: 130px;
+  background: url('../img/score.png') no-repeat -180px 0;
+  margin: 5px;
+  image-rendering: pixelated;
+  background-size: 1790px 410px;
+}
+
+.hand-total, .dealerScore{
+  width: 170px;
+  height: 130px;
+  background: url('../img/score.png') no-repeat;
+  margin: 5px;
+  display: inline-block;
+  image-rendering: pixelated;
+  background-size: 1790px 410px;
+}
+
+.card-back {
+  width: 110px;
+  height: 90px;
+  background: url('../img/cards.png') no-repeat -1560px 0;
+  margin: 5px;
+  display: inline-block;
+  image-rendering: pixelated;
+  background-size: 1670px 390px;
+}
+
+.playingCard {
+  width: 110px;
+  height: 90px;
+  background: url('../img/cards.png') no-repeat;
+  margin: 5px;
+  display: inline-block; 
+  image-rendering: pixelated;
+  background-size: 1670px 390px;
+}
+
+.hidden {
+  display: none !important;
+}

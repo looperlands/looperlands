@@ -53,6 +53,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                 // minigame
                 this.minigameLoaded = false;
+                this.lastMinigameTrigger = null;
 
                 // combat
                 this.infoManager = new InfoManager(this);
@@ -8695,21 +8696,34 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         self.showNotification(trigger.message);
                     }
 
-                    if (entity.id === self.player.id && trigger.minigame && !this.minigameLoaded){
-                        let minigamePromptClickHandler = function() {loadMinigame(trigger.minigame, self);};
-                        $("#minigameprompt").addClass('active');
-                        $("#minigameprompt").one("click", minigamePromptClickHandler); //limit the use of this to a single fire
+                    if (entity.id === self.player.id && trigger.minigame && !this.minigameLoaded) {
+                        if($("#minigameprompt").hasClass(`active`)){$("#minigameprompt").removeAttr('style').off();} // if walking from one trigger to the next, clear data.                        
+                        let containerScale = Math.min(($(window).width() / $("#container").width() * 0.95), ($(window).height() / $("#container").height() * 0.95));
+                        let [offsetX, offsetY] = (trigger.offset || "0,0").split(',').map(Number);
+
+                        const toPercent = (value, offset, dimension) => {
+                            if (value.includes("px")) {
+                                value = `${(parseFloat(value) / dimension) * 100}%`; 
+                            }
+                            return (parseFloat(value) + ((offset * this.renderer.tilesize * this.renderer.scale) / (dimension * containerScale)) * 100) + '%';
+                        };
+                        
+                        lastMinigameTrigger = trigger.id;
+                        $("#minigameprompt").css({
+                            'left': toPercent($("#minigameprompt").css('left'), offsetX, $("#container").width()),
+                            'top': toPercent($("#minigameprompt").css('top'), offsetY, $("#container").height())
+                        }).addClass('active').one("click", () => loadMinigame(trigger.minigame, self)); // Limit the use of this to a single fire
                     }
 
                     entity.onLeave(trigger, function () {
                         entity.triggerArea = null;
-                        if (!self.client) {
-                            $("#minigameprompt").removeClass('active').off();
+                        if (!self.client && lastMinigameTrigger === trigger.id) {
+                            $("#minigameprompt").removeClass('active').removeAttr('style').off();
                             return;
                         }
                         self.client.sendTrigger(trigger.id, false);
-                        if (entity.id === self.player.id && trigger.minigame){
-                            $("#minigameprompt").removeClass('active').off();
+                        if (entity.id === self.player.id && trigger.minigame && lastMinigameTrigger === trigger.id){
+                            $("#minigameprompt").removeClass('active').removeAttr('style').off();
                         }
                     })
                 }

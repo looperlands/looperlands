@@ -1,23 +1,21 @@
-/*
+const MINIGAME_FILES = {
+    "luckyfunkz": "LuckyFUNKZ.html",
+    "JackAce": "jackace.html",
+    //  "YOUR_MINIGAME_NAME": "INITIAL_FILE_TO_LOAD",
+};
+
+/*  
 ^ v ^ v ^ ^ ^ ^ ^
 MINIGAME PLATFORM
 ^ v ^ v ^ ^ ^ ^ ^
 by = youLikeIt ? "bitcorn" : "anonymous";
 
-[THE BASICS]
-    TO ADD A MINIGAME:
-        1. In Tiled: Add a Custom Property with name = "minigame" and value = "YOUR_MINIGAME_NAME" to an area trigger (layer = triggers)
-        2. Place your files under client/apps inside a folder named "YOUR_MINIGAME_NAME"
-        3. Add "YOUR_MINIGAME_NAME" with the "INITIAL_FILE_TO_LOAD" to MINIGAME_FILES below.
-        4. Voila
-*/
+[TO ADD A MINIGAME]
+    1. In Tiled: Add custom property name = "minigame" with value = "YOUR_MINIGAME_NAME" to an area trigger (layer = triggers)
+    2. Place game files under client/apps inside a folder named "YOUR_MINIGAME_NAME"
+    3. Add "YOUR_MINIGAME_NAME" with the "INITIAL_FILE_TO_LOAD" to MINIGAME_FILES above.
+    4. Voila 
 
-const MINIGAME_FILES = {
-    "luckyfunkz": "LuckyFUNKZ.html",
-    //  "YOUR_MINIGAME_NAME": "INITIAL_FILE_TO_LOAD",
-};
-
-/*
 [MORE INFO]
     EACH GAME IS DYNAMICALLY LOADED INTO IT'S OWN DIV ==> <div id="YOUR_MINIGAME_NAME">
       EXAMPLE >     luckyfunkz gets put into <div id="luckyfunkz"></div> 
@@ -44,7 +42,6 @@ const MINIGAME_FILES = {
                         const addToMinigameMenu = $('<a href="#" id="mgPayouts">🎰 Payouts</a>');
                         $('#minigameMenu-content').prepend(addToMinigameMenu);
                     }
-
 */
 
 
@@ -66,7 +63,7 @@ async function loadMinigame(minigame, app) {
 
     if (app.audioManager) { app.audioManager.fadeOutCurrentMusic(LOOPERLANDS_MUSIC_FADE_STEP); }
 
-    $("#minigameprompt").removeClass("active");
+    $("#minigameprompt").removeClass("active").css('transform', 'none').off();
 
     // MINIGAME PLATFORM INITIAL SETUP
     if ($('#minigame').length === 0) { await loadMinigamePlatform() }

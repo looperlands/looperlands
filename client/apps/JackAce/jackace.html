@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="./apps/JackAce/css/index.css" type="text/css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script type="module" src="./apps/JackAce/js/jackace.js"></script>
+  </head>
+  <body>
+    <div id="wrapper">
+      <div id="dealerHand"></div>
+      <div id="playerHand"></div>
+      <div id="uiWindow"></div>
+      <div id="playerMoney"></div>
+      <div id="currentBet"></div>
+      <div id="totalHandBet"></div>
+      <div id="handResult"></div>
+    </div>
+    <script type="module">
+      const { startGame } = await import('./apps/JackAce/js/jackace.js');
+      startGame();
+    </script>
+  </body>
+</html>
