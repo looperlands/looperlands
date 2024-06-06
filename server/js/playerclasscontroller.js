@@ -20,6 +20,7 @@ class PlayerClassController {
                 "error": "session not found",
                 user: null
             });
+            return;
         }
         
         const player = this.worldsMap[sessionData.mapId]?.getPlayerById(sessionData.entityId);
@@ -44,6 +45,7 @@ class PlayerClassController {
                 "error": "session not found",
                 user: null
             });
+            return;
         }
         const { playerClass } = req.body;
         const nftId = sessionData["nftId"];

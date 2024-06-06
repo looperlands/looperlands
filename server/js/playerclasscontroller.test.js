@@ -1,4 +1,4 @@
-const PlayerClassController = require('./playerclasscontroller.js').PlayerClassController;
+const PlayerClassController = require('./playerclasscontroller.js').PlayerClassController
 
 describe('PlayerClassController', () => {
     let platformClientMock, cacheMock, worldsMapMock, reqMock, resMock;
