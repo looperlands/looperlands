@@ -6737,6 +6737,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                     self.addEntity(self.player);
                     self.player.dirtyRect = self.renderer.getEntityBoundingRect(self.player);
+                    self.player.playerClassSelectionShown = false;
 
                     if(!self.storage.hasAlreadyPlayed()) {
                         self.storage.initPlayer(self.player.name);
@@ -9334,6 +9335,11 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 axios.get("/session/" + self.sessionId + "/polling").then(function (response) {
                     if (response.data !== null && response.data !== undefined) {
                         if (response.data.playerInfo !== undefined) {
+                            const { playerClass, level } = response.data.playerInfo;
+                            if (!playerClass && level >= 5 && !self.player.playerClassSelectionShown) {
+                                self.app.showPlayerClassSelection();
+                                self.player.playerClassSelectionShown = true;
+                            }
                             if (response.data.playerInfo.powerUpActive === false && self.player.spriteName !== response.data.playerInfo.armor) {
                                 self.player.switchArmor(self.sprites[response.data.playerInfo.armor]);
                             }
@@ -9355,6 +9361,12 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                     } else if (self.entities[id].inCombat && !toUpdateEntity.inCombat) {
                                         self.entities[id].exitCombat();
                                     }
+                                }
+
+                                if (self.entities[id].classEmoji !== toUpdateEntity.classEmoji) {
+                                    self.entities[id].classEmoji = toUpdateEntity.classEmoji;
+                                    const name = self.entities[id].name + `${toUpdateEntity.classEmoji.trim()}`;
+                                    self.entities[id].setName(name);
                                 }
                             } else {
                                 console.debug("Unknown entity " + id);

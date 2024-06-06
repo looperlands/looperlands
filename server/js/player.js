@@ -59,8 +59,6 @@ module.exports = Player = Character.extend({
 
         this.playerEventBroker = new PlayerEventBroker.PlayerEventBroker(this);
 
-        this.playerClassModifiers = new PlayerClassModifiers();
-
         this.connection.listen(async function (message) {
 
             var action = parseInt(message[0]);
@@ -97,6 +95,7 @@ module.exports = Player = Character.extend({
                 }
                 self.walletId = playerCache.walletId;
                 self.nftId = playerCache.nftId;
+                self.playerClassModifiers = new PlayerClassModifiers(platformClient, self.nftId, playerCache.trait);
 
                 self.kind = Types.Entities.WARRIOR;
                 self.equipArmor(message[2]);

@@ -1,4 +1,3 @@
-
 define(['jquery', 'storage'], function ($, Storage) {
 
     var App = Class.extend({
@@ -24,6 +23,7 @@ define(['jquery', 'storage'], function ($, Storage) {
             this.cooldownMap = {};
             this.dynamicNFTIconURL = {};
             this.dynamicNFTData = {};
+            this.hideWindows();
         },
 
         setGame: function (game) {
@@ -396,6 +396,8 @@ define(['jquery', 'storage'], function ($, Storage) {
             $("#keyboardCommands").hide();
             $("#gamepadCommands").hide();
             $("#announcement").hide();
+            $("#playerClassSelection").hide();
+            $("#avatarStats").hide();
         },
 
         showAchievementNotification: function (questName, endText, xpReward, medal) {
@@ -1026,10 +1028,18 @@ define(['jquery', 'storage'], function ($, Storage) {
         },
 
         toggleAvatarInfo: function (event) {
-            $('#avatarStats').toggleClass('visible');
-            if ($('#avatarStats').hasClass('visible')) {
-               $('#weaponStats').removeClass('visible');
-               $('#population').removeClass('visible');
+
+            if($("#avatarStats").is(":visible")) {
+                $("#avatarStats").hide();
+            } else {
+                const url = `/session/${this.sessionId}/playerclassmodifiers`;
+                axios.get(url).then((res) => {
+                    const value = res.data;
+                    $("#playerModifiersTable").html(`<modifiers-table value='${JSON.stringify(value)}'></modifiers-table>`)
+                    $("#avatarStats").show();
+                }).catch(error => {
+                    console.error("Error while getting avatar stats", error);
+                })
             }
 
             event.stopImmediatePropagation();
@@ -1275,6 +1285,70 @@ define(['jquery', 'storage'], function ($, Storage) {
                     $("#announcement").hide();
                 }, timeToShow * 1000)
             }
+        },
+
+        showPlayerClassSelection: function() {
+            let currentIndex = 0;
+            let classKeys = [];
+            let classes = {};
+
+            showClass = (index) => {
+                const key = classKeys[index];
+                const value = classes[key];
+                value['playerClass'] = key;
+                const displayKey = key.charAt(0).toUpperCase() + key.slice(1);
+                const classDiv = `
+                    <div class="class-container" id="${key}">
+                        <div class="left">
+                            <img src="img/classes/${key}.png" alt="${displayKey} Class">
+                            <p>${value.description}</p>
+                            <strong style="color : red">Please select carefully. Changing an avatar's class has a cost.</strong>
+                            <button id="selectPlayerClass" value="${key}" class="panelBorder">Select ${displayKey}</button>
+                        </div>
+                        <div class="right">
+                            <modifiers-table value='${JSON.stringify(value)}'></modifiers-table>
+                        </div>
+                    </div>
+                `;
+                $('#class-containers').html(classDiv);
+                $('#selectPlayerClass').click((e) => {
+                    const url = `/session/${this.sessionId}/setclass`;
+                    const playerClass = $("#selectPlayerClass").val();
+                    const postData = {
+                        "playerClass" : playerClass
+                    }
+                    axios.post(url, postData).then((response) => {
+                        console.log("Player class set response", response);
+                        this.hideWindows();
+                        $('#armor').click();
+                    }).catch(error => {
+                        console.error("Player class set error", error);
+                        alert("Error while setting player class. Please reload game and try again");
+                    })
+                });
+            }   
+
+            axios.get("/playerclasses")
+                .then((res) => {
+                    classes = res.data;
+                    classKeys = Object.keys(classes);
+                    showClass(currentIndex);
+
+                    $('#nextClass').click(() => {
+                        currentIndex = (currentIndex + 1) % classKeys.length;
+                        showClass(currentIndex);
+                    });
+
+                    $('#prevClass').click(() => {
+                        currentIndex = (currentIndex - 1 + classKeys.length) % classKeys.length;
+                        showClass(currentIndex);
+                    });
+
+                    $("#playerClassSelection").show();
+                })
+                .catch((error) => {
+                    console.error('Error fetching player classes:', error);
+                });
         },
 
         resetMessageTimer: function () {
