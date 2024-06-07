@@ -1,0 +1,243 @@
+@import url('https://fonts.googleapis.com/css?family=Orbitron');
+
+:root {
+  --uiWindowWidth: 720px;
+  --uiWindowHeight: 1000px;
+  --uiWindowSprite: url('./img/ui.png') no-repeat;
+  --buttonWidth: 300px;
+  --buttonHeight: 130px;
+  --buttonSprite: url('./img/buttons.png') no-repeat;
+  --buttonSpriteSize: 920px 1250px;
+  --scoreWidth: 170px;
+  --scoreSprite: url('./img/score.png') no-repeat;
+  --scoreSpriteSize: 1790px 410px;
+  --cardWidth: 110px;
+  --cardHeight: 90px;
+  --cardsSprite: url('./img/cards.png') no-repeat;
+  --cardsSpriteSize: 1670px 390px;
+}
+
+body {
+  backdrop-filter: brightness(0.5);
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  color: white;
+}
+
+#wrapper {
+  width: fit-content;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  left: 32%;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+/*Button Boxes*/
+#uiWindow {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  image-rendering: pixelated;
+  position: relative;
+  width: var(--uiWindowWidth);
+  background: var(--uiWindowSprite);
+  background-size: var(--uiWindowWidth) var(--uiWindowHeight);
+}
+
+.processing{
+  filter: brightness(0.5);
+}
+
+#bet-window, #hit-stand-window, #splitDouble, #insurance{
+  width: 100%;
+  display: contents;
+}
+
+/*Button Positioning*/
+#bet_amount{
+  image-rendering: pixelated;
+  margin: 10px;
+  width: var(--buttonWidth);
+  height: var(--buttonHeight);
+  background: var(--buttonSprite);
+  background-size: var(--buttonSpriteSize);
+}
+
+#deal{
+  image-rendering: pixelated;
+  margin: 10px;
+  width: var(--buttonWidth);
+  height: var(--buttonHeight);
+  background: var(--buttonSprite) -310px 0px;
+  background-size: var(--buttonSpriteSize);
+}
+
+#bet_increase{
+  image-rendering: pixelated;
+  margin: 10px;
+  width: var(--buttonWidth);
+  height: var(--buttonHeight);
+  background: var(--buttonSprite) -310px -140px;
+  background-size: var(--buttonSpriteSize);
+} 
+
+#bet_decrease{
+  image-rendering: pixelated;
+  margin: 10px;
+  width: var(--buttonWidth);
+  height: var(--buttonHeight);
+  background: var(--buttonSprite) -310px -280px;
+  background-size: var(--buttonSpriteSize);
+} 
+
+#hit{
+  image-rendering: pixelated;
+  margin: 10px;
+  width: var(--buttonWidth);
+  height: var(--buttonHeight);
+  background: var(--buttonSprite);
+  background-size: var(--buttonSpriteSize);
+}
+
+#stand{
+  image-rendering: pixelated;
+  margin: 10px;
+  width: var(--buttonWidth);
+  height: var(--buttonHeight);
+  background: var(--buttonSprite);
+  background-size: var(--buttonSpriteSize);
+}
+
+#ins-yes{
+  image-rendering: pixelated;
+  margin: 10px 10px 50px 10px;
+  width: var(--buttonWidth);
+  height: var(--buttonHeight);
+  background: var(--buttonSprite);
+  background-size: var(--buttonSpriteSize);
+}
+
+#ins-no{
+  image-rendering: pixelated;
+  margin: 10px 10px 50px 10px;
+  width: var(--buttonWidth);
+  height: var(--buttonHeight);
+  background: var(--buttonSprite);
+  background-size: var(--buttonSpriteSize);
+}
+
+#split{
+  image-rendering: pixelated;
+  margin: 10px;
+  width: var(--buttonWidth);
+  height: var(--buttonHeight);
+  background: var(--buttonSprite);
+  background-size: var(--buttonSpriteSize);
+}
+
+#double{
+  image-rendering: pixelated;
+  margin: 10px;
+  width: var(--buttonWidth);
+  height: var(--buttonHeight);
+  background: var(--buttonSprite);
+  background-size: var(--buttonSpriteSize);
+}
+
+#dealerHand {
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  transform: translateX(calc(-1*var(--scoreWidth)/2)); /*transform half the width of the arrow graphic*/
+}
+
+#playerHand {
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transform: translateX(calc(-1*var(--scoreWidth)/2)); /*transform half the width of the arrow graphic*/
+}
+
+.playerHands {
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.splitHand{
+  display: block;
+}
+
+#handResult {
+  font-family: "Orbitron", "Helvetica Neue", "Futura", "Trebuchet MS", Arial;
+  font-size: 5vh;
+  letter-spacing: 3px;
+  color: red;
+  font-weight: 900;
+}
+
+/*Sprite Positioning*/
+.no-arrow {
+  display: inline-block;
+  width: var(--scoreWidth);
+  height: var(--buttonHeight);
+  background: var(--scoreSprite) 0 0;
+  margin: 5px;
+  image-rendering: pixelated;
+  background-size: var(--scoreSpriteSize);
+}
+
+.arrow {
+  display: inline-block;
+  width: var(--scoreWidth);
+  height: var(--buttonHeight);
+  background: var(--scoreSprite) -180px 0;
+  margin: 5px;
+  image-rendering: pixelated;
+  background-size: var(--scoreSpriteSize);
+}
+
+.hand-total, .dealerScore{
+  width: var(--scoreWidth);
+  height: var(--buttonHeight);
+  background: var(--scoreSprite);
+  margin: 5px;
+  display: inline-block;
+  image-rendering: pixelated;
+  background-size: var(--scoreSpriteSize);
+}
+
+.card-back {
+  width: var(--cardWidth);
+  height: var(--cardHeight);
+  background: var(--cardsSprite) -1560px 0;
+  margin: 5px;
+  display: inline-block;
+  image-rendering: pixelated;
+  background-size: var(--cardsSpriteSize);
+}
+
+.playingCard {
+  width: var(--cardWidth);
+  height: var(--cardHeight);
+  background: var(--cardsSprite);
+  margin: 5px;
+  display: inline-block; 
+  image-rendering: pixelated;
+  background-size: var(--cardsSpriteSize);
+}
+
+.hidden {
+  display: none !important;
+}

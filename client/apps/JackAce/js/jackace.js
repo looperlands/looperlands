@@ -37,7 +37,7 @@ export async function init() {
   `);
 
   // SET UIWINDOW
-  setGameWindow('bet');
+  await setGameWindow('bet');
 
   // POPULATE INITIAL HAND CONTENT
   $('#dealerHand').empty();
@@ -114,7 +114,7 @@ export async function init() {
     if (!$("#uiWindow").hasClass('processing')) {
       $("#uiWindow").addClass('processing');
       $('#splitDouble').addClass('hidden');
-      setGameWindow('hit');
+      await setGameWindow('hit');
       await drawCard(player, true);
       if (player.hands[currentHandIndex].total > 21) {
         if (player.hands.length > 1 && currentHandIndex < player.hands.length - 1) {
@@ -134,10 +134,10 @@ export async function init() {
   )
 
   // STAND BUTTON
-  $('#stand').on('click', function () {
+  $('#stand').on('click', async function () {
     if (!$("#uiWindow").hasClass('processing')) {
       $('#splitDouble').addClass('hidden');
-      setGameWindow('hit');
+      await setGameWindow('hit');
       $("#uiWindow").addClass('processing');
       if (player.hands.length > 1 && currentHandIndex < player.hands.length - 1) {
         setCurrentHandIndex(currentHandIndex + 1);
@@ -287,8 +287,8 @@ export function logic() {
 }
 
 // Betting logic
-function logicBetting() {
-  setGameWindow('bet');
+async function logicBetting() {
+  await setGameWindow('bet');
 }
 
 // Start a new hand
@@ -304,7 +304,7 @@ async function logicNewHand() {
   await displayStartingHands();
 
   if (player.hands[currentHandIndex].total === 21 || (dealerHasPlayed && dealer.total === 21)) {
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    await new Promise(resolve => setTimeout(resolve, 420))
     if (!dealerHasPlayed) {
       setGameState(STATE_DEALERTURN);
     } else {
@@ -344,11 +344,11 @@ async function logicPlayerTurn() {
   }
 
   if (splitActive || doubleActive) {
-    setGameWindow('splitDouble');
+    await setGameWindow('splitDouble');
     splitActive ? $('#split').css('background-position', await getButtonBackgroundPosition(`split`)) : $('#split').css('background-position', await getButtonBackgroundPosition(`splitInactive`));
     doubleActive ? $('#double').css('background-position', await getButtonBackgroundPosition(`double`)) : $('#double').css('background-position', await getButtonBackgroundPosition(`doubleInactive`));
   } else {
-    setGameWindow('hit');
+    await setGameWindow('hit');
   }
 }
 
@@ -363,7 +363,7 @@ async function logicDealerTurn() {
 }
 
 export async function logicInsurance() {
-  setGameWindow('insurance');
+  await setGameWindow('insurance');
 }
 
 export async function logicReward() {
