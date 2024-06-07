@@ -337,7 +337,8 @@ async function logicPlayerTurn() {
   if (
     player.hands[currentHandIndex].hand.length === 2  // if the current hand has two cards
     && player.hands[currentHandIndex].hand[0].charAt(0) === player.hands[currentHandIndex].hand[1].charAt(0) // and both cards match value
-    && playerMoney >= BET_AMOUNTS[playerBet]) { // and the player can afford it
+    && playerMoney >= BET_AMOUNTS[playerBet] // the player can afford it
+    && player.hands.length < 4) { // and the player doesn't already have four hands
     splitActive = true; // then split is applicable
     $('#split').addClass('active');
   }
