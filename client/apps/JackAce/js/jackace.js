@@ -191,9 +191,8 @@ export async function init() {
         $('#double').removeClass('active');
         setTotalHandBet(totalHandBet + BET_AMOUNTS[playerBet]); // Increase total hand bet
         setPlayerMoney(playerMoney - BET_AMOUNTS[playerBet]);
-        splitHand(doubleAce);
-        updateScores();
-        displaySplitHands();
+        await splitHand(doubleAce);
+        await displaySplitHands();
       } else { $("#handResult").append("Cannot split this hand."); }
     }
   });

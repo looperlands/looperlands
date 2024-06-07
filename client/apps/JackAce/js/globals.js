@@ -102,7 +102,10 @@ export function setGameState(value) {
 }
 
 export async function setGameWindow(value) {
-  if (gameWindow === value) return; // If the same window is requested, do nothing
+  if (gameWindow === value) {
+    $("#uiWindow").removeClass('processing');
+    return; // If the same window is requested, remove any processing class, but nothing else
+  }
 
   switch (value) {
     case 'bet':
@@ -227,7 +230,6 @@ export async function splitHand(doubleAce) {
     $(`#hand${currentHandIndex + 1}`).append($card);
   }
 
-  await updateScores();
   currentHandIndex = splitHandIndex; // Reset the hand index
   tempHand = []; //clear temp variable
 }
