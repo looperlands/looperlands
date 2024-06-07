@@ -6,12 +6,16 @@ body {
   color: white;
 }
 
-#wrapper {
+#wrapper_jackace {
   width: fit-content;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  left: 32%;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
 }
 
 /*Button Boxes*/
