@@ -4,6 +4,12 @@ const MINIGAME_FILES = {
     //  "YOUR_MINIGAME_NAME": "INITIAL_FILE_TO_LOAD",
 };
 
+// if module javascript, add js file with init() function
+const MODULE_INIT = {
+    "JackAce": "js/jackace.js"
+    //  "YOUR_MINIGAME_NAME": "module js file",
+};
+
 /*  
 ^ v ^ v ^ ^ ^ ^ ^
 MINIGAME PLATFORM
@@ -14,7 +20,8 @@ by = youLikeIt ? "bitcorn" : "anonymous";
     1. In Tiled: Add custom property name = "minigame" with value = "YOUR_MINIGAME_NAME" to an area trigger (layer = triggers)
     2. Place game files under client/apps inside a folder named "YOUR_MINIGAME_NAME"
     3. Add "YOUR_MINIGAME_NAME" with the "INITIAL_FILE_TO_LOAD" to MINIGAME_FILES above.
-    4. Voila 
+    4. If your game is module js (uses import), add the name of your main js file with an init() function in MODULE_INIT.
+    5. Voila 
 
 [MORE INFO]
     EACH GAME IS DYNAMICALLY LOADED INTO IT'S OWN DIV ==> <div id="YOUR_MINIGAME_NAME">
@@ -136,6 +143,18 @@ async function loadMinigameContent(minigame) {
                 else { resolve(); }
             });
         });
+
+        // Check if the minigame has a module JavaScript file to load
+        if (MODULE_INIT[minigame]) {
+            try {
+                const minigameModule = await import(`../apps/${minigame}/${MODULE_INIT[minigame]}`);
+                if (typeof minigameModule.init === 'function') {
+                    minigameModule.init();
+                }
+            } catch (error) {
+                console.error(`Error loading minigame module for ${minigame}: ${error}`);
+            }
+        }
     } catch (error) {
         console.error(`Error loading minigame content for ${minigame}: ${error}`);
         // ADD MESSAGE HERE TO NOTIFY PLAYER

@@ -10,7 +10,7 @@ import { displayStartingHands, displayDealerCards, displayNewDealerCard, display
 import { getButtonBackgroundPosition } from './utils.js';
 
 // Setup div structure and sprites
-export async function startGame() {
+export async function init() {
   getDeck(); // INITIALIZE DECK
 
   // SETUP UIWINDOW CONTENTS
