@@ -254,7 +254,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "mayoroswald",
                     "newcomersilas",
                     "guardianfintan",
-                    //mycupbloody
+                    //Duckville Mobs
                     "BORAC",
                     "INFERNOTH",
                     "WINGELLA",
@@ -267,7 +267,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "derrick", "frog", "angrymom", "devon", "misty", "managertim", "oracle", "gill", "customer1", "customer2", "portalgill",
                     //SDU Fish
                     "clownfish", "swedishfish", "rainbowfish", "lollipop",
-                    //mycupbloody npc
+                    //Duckville NPCs
                     "GOFFREY",
                     "cobWalkingNpc1",
                     "cobWalkingNpc2",
@@ -428,10 +428,15 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "item-cigarettepack",
                     "item-soap",
                     "item-strangeyellowliquid",
-                    //mycupbloody
+                    //Duckville Items
                     "item-EYEBALL",
                     "item-REDPOTION",
                     "item-GREYPOTION",
+                    //Duckville Fishing
+                    "dragonegg",
+                    "dragonbreath",
+                    "dragonclaw",
+                    "luckybabydragon",
                      //BITCORN PHISHIES
                     "bit_BoneFish", "bit_Corn", "bit_FEET", "bit_freshPrawnce", "bit_JEFF", "bit_Kickle", "bit_maCORNtosh", "bit_MrPunchy", "bit_SnaggletoothEel", "bit_NOPEmato", "cornBootFish", "cornCanFish", "cornWinkyFish",
                                 "item-HAMSTER1",
@@ -5978,6 +5983,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                     /* MRMlabs FISH*/
                     ["bbqchips", "blackpepperchips", "dillpicklechips", "saltnvinegarchips", "berryblast", "cherrycola", "gingerale", "rootbeer", "valleydew"],
+
+                    /* Duckville Fishing*/
+                    ["dragonegg", "dragonbreath", "dragonclaw", "luckybabydragon"],
 
                     /*BITCORN PHISHIES*/
                     ["bit_BoneFish", "bit_Corn", "bit_FEET", "bit_freshPrawnce", "bit_JEFF", "bit_Kickle", "bit_maCORNtosh", "bit_MrPunchy", "bit_SnaggletoothEel", "bit_NOPEmato", "cornBootFish", "cornCanFish", "cornWinkyFish"],
