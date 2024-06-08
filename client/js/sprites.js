@@ -138,7 +138,7 @@ define(['text!../sprites/agent.json',
         'text!../sprites/swedishfish.json',
         'text!../sprites/rainbowfish.json',
         'text!../sprites/lollipop.json',
-        //mycupbloody
+        //Duckville
         'text!../sprites/item-EYEBALL.json',
         'text!../sprites/item-REDPOTION.json',
         'text!../sprites/item-GREYPOTION.json',
@@ -146,6 +146,11 @@ define(['text!../sprites/agent.json',
         'text!../sprites/item-DUCKBIT.json',
         'text!../sprites/item-MILK2.json',
         'text!../sprites/item-MILK1.json',
+        //Duckville Fishing
+        'text!../sprites/dragonegg.json',
+        'text!../sprites/dragonbreath.json',
+        'text!../sprites/dragonclaw.json',
+        'text!../sprites/luckybabydragon.json',
         // @nextObjectImport@
         'text!../sprites/king.json',
         'text!../sprites/king2.json',

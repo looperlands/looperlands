@@ -340,6 +340,16 @@ const Lakes = {
         }
     },
 
+    lavalake: {
+        level: 1,
+        fish: {
+            dragonegg: "common",
+            dragonbreath: "uncommon",
+            dragonclaw: "rare",
+            luckybabydragon: "epic",
+        }
+    },
+
     cornsinoSludgeRiver: {
         level: 1,
         fish: {
@@ -366,7 +376,7 @@ const Lakes = {
 const ConsumableFish = {
     hp: ["cobparadisefish","oafish27","m88ndreamcandyr","gingerale", "m88nanglerfish", "m88nbettafish", "m88njellyfish", "m88npiranha"],
     atk: ["cobbluegill","oafish31","oafish22","m88ndreamduckyp","saltnvinegarchips", "m88naxolotl", "m88nbluelobster", "m88nkoifish", "m88nshrimp"],
-    exp: ["cobgreensunfish","oafish36", "lollipop","m88ndreamgumballa","m88ngoldenbanana", "m88nblobfish", "m88ncharfish", "m88noctopus", "m88nstarfish"]
+    exp: ["cobgreensunfish","oafish36", "lollipop","m88ndreamgumballa","m88ngoldenbanana", "m88nblobfish", "m88ncharfish", "m88noctopus", "m88nstarfish", "luckybabydragon"]
 };
 
 //---END CONFIG---
