@@ -365,6 +365,22 @@ quests = [
         medal: Types.Medals.SKULL
     },
     {
+        id: "MAILMAN_QUEST_3",
+        name: "The Mail Man's Mysterious Ticket Request",
+        startText: ["You know that cool yacht over there? You need a special ticket to board...",
+        "Find a secret hidden door somewhere in Paradise Point and there's a boarding ticket waiting for you!"],
+        endText: ["Have fun on the Sun Chaser! I hear there is some special fishing on it for the apes!",
+        "And if you're able to find the golden ticket there is a cool champaign lounge on the yacht too..."],
+        eventType: "LOOT_ITEM",
+        npc: Types.Entities.NEXAN15,
+        target: Types.Entities.M88NTICKET,
+        amount: 1,
+        requiredQuest: "MAILMAN_QUEST_2",
+        level: 10,
+        xp: 100000,
+        medal: Types.Medals.SKULL
+    },
+    {
         id: "FISHERMAN_QUEST_1",
         name: "The Fisherman's Worm Request",
         startText: ["If I had some nice plump worms I'd probably be able to catch some bigger fish...",

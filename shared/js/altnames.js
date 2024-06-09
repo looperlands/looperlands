@@ -204,6 +204,9 @@ const AltNames = {
     nexan14: "Farmer Jon",
     nexan15: "Mail Man",
 
+    //m88n Items
+    m88nmail: "mail",
+
     //Duckville Fishing
     dragonegg: "a dragon egg",
     dragonbreath: "some dragon breath",
