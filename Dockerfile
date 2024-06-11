@@ -16,7 +16,7 @@ ENV NODE_ENV development
 RUN apt-get update -yq \
     && apt-get install build-essential -yq
 WORKDIR /opt/app
-COPY ./package*.json /opt/app
+COPY ./package.json ./package-lock.json /opt/app/
 RUN npm ci
 COPY . /opt/app
 RUN mkdir -p /opt/app/client/js
