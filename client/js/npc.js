@@ -459,7 +459,9 @@ define(['character'], function (Character) {
 
         "nexan16": [
             "The fish are biting today!",
-            'Grab a <a target="_blank" href="https://loopexchange.art/collection/assets-for-looperlands">fishing pole</a> and see if you can catch something epic...'
+            'Grab a <a target="_blank" href="https://loopexchange.art/collection/assets-for-looperlands">fishing pole</a> and see if you can catch something epic...',
+            "There is some easier fishing over on that dock for level 1 fishing rods.",
+            "Once you get to level 3 you can start fishing off the shore with me."
         ],
 
         "nexan17": [

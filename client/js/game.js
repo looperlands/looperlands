@@ -125,11 +125,12 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "oafish11", "oafish12", "oafish13", "oafish14", "oafish15", "oafish16", "oafish17", "oafish18", "oafish19", "oafish20",
                     "oafish21", "oafish22", "oafish23", "oafish24", "oafish25", "oafish26", "oafish27", "oafish28", "oafish29", "oafish30",
                     "oafish31", "oafish32", "oafish33", "oafish34", "oafish35", "oafish36",
-                    //m88n Dream Fishing
+                    //m88n Fishing
                     "m88ndreamduckyy", "m88ndreamduckyg", "m88ndreamduckyb", "m88ndreamduckyp", "m88ndreamduckyr","m88ndreamcandyy", "m88ndreamcandyg", "m88ndreamcandyb", "m88ndreamcandyp", "m88ndreamcandyr","m88ndreamgumbally", "m88ndreamgumballg", "m88ndreamgumballb", "m88ndreamgumballp", "m88ndreamgumballr", "m88ngmeshare", "m88nwhiskey", "m88ndiamondhand", "m88ngoldenbanana", "m88nshorts",
                     "m88nseafrog", "m88nseahorse", "m88nseaurchin", "m88nstarfish", "m88nseaweed", "m88nspirula", "m88nshrimp", "m88nsilvereel", "m88npinkfantasia", "m88npiranha", "m88nscallop", "m88nsaltwatersnail", "m88nseaspider", "m88noctopus", "m88npufferfish", "m88nseacucumber", "m88ntigerfish", "m88nguppy", "m88nkoifish", "m88nturtle", "m88nsanddollar", "m88njellyfish", "m88nlionfish",
-                    "m88nsundial", "m88ntuna", "m88ncharfish", "m88ncrab", "m88ncowfish", "m88nlampreyeel", "m88nbluelobster", "m88nparrotfish", "m88nconch", "m88ndumbooctopus", "m88nbettafish", "m88nsquid", "m88nnautilus", "m88nwolffish", "m88nblobfish", "m88nclownfish", "m88noyster", "m88npearl", "m88naxolotl", "m88nbutterflyfish", "m88ncoral", "m88nseaangel", "m88nanglerfish", "m88nbluetang", "m88nclam", "m88npompano", 
-                    //m88n's NPCs
+                    "m88nsundial", "m88ntuna", "m88ncharfish", "m88ncrab", "m88ncowfish", "m88nlampreyeel", "m88nbluelobster", "m88nparrotfish", "m88nconch", "m88ndumbooctopus", "m88nbettafish", "m88nsquid", "m88nnautilus", "m88nwolffish", "m88nblobfish", "m88nclownfish", "m88noyster", "m88npearl", "m88naxolotl", "m88nbutterflyfish", "m88ncoral", "m88nseaangel", "m88nanglerfish", "m88nbluetang", 
+                    "m88nclam", "m88npompano", "m88nmackerel", "m88noceanbass",
+                    //m88n NPCs
                     "wenmoon",
                     "kingfroggy",
                     "nexan11",
@@ -143,7 +144,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "nexan19",
                     "nexan20",
                     "nexan28",
-                    //m88n's Mobs
+                    //m88n Mobs
                     "balloondogb",
                     "balloondogy",
                     "balloondoga",
@@ -182,7 +183,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "m88nvulture",
                     "m88nbigchungus",
                     "m88noctopussy",
-                    //m88n's Mob Nexans
+                    //m88n Mob Nexans
                     "nexan1",
                     "nexan2",
                     "nexan3",
@@ -5984,7 +5985,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     /* m88n Fishing*/
                     ["m88ndreamduckyy", "m88ndreamduckyg", "m88ndreamduckyb", "m88ndreamduckyp", "m88ndreamduckyr", "m88ndreamcandyy", "m88ndreamcandyo", "m88ndreamcandya", "m88ndreamcandyg", "m88ndreamcandyb", "m88ndreamcandyp", "m88ndreamcandyr", "m88ndreamgumbally", "m88ndreamgumballo", "m88ndreamgumballa", "m88ndreamgumballg", "m88ndreamgumballb", "m88ndreamgumballp", "m88ndreamgumballr" , "m88ngmeshare", "m88nwhiskey", 
                     "m88ndiamondhand", "m88ngoldenbanana", "m88nshorts", "m88nseafrog", "m88nseahorse", "m88nseaurchin", "m88nstarfish", "m88nseaweed", "m88nspirula", "m88nshrimp", "m88nsilvereel", "m88npinkfantasia", "m88npiranha", "m88nscallop", "m88nsaltwatersnail", "m88nseaspider", "m88noctopus", "m88npufferfish", "m88nseacucumber", "m88ntigerfish", "m88nguppy", "m88nkoifish", "m88nturtle", "m88nsanddollar", "m88njellyfish", "m88nlionfish",
-                    "m88nsundial", "m88ntuna", "m88ncharfish", "m88ncrab", "m88ncowfish", "m88nlampreyeel", "m88nbluelobster", "m88nparrotfish", "m88nconch", "m88ndumbooctopus", "m88nbettafish", "m88nsquid", "m88nnautilus", "m88nwolffish", "m88nblobfish", "m88nclownfish", "m88noyster", "m88npearl", "m88naxolotl", "m88nbutterflyfish", "m88ncoral", "m88nseaangel", "m88nanglerfish", "m88nbluetang", "m88nclam", "m88npompano"],
+                    "m88nsundial", "m88ntuna", "m88ncharfish", "m88ncrab", "m88ncowfish", "m88nlampreyeel", "m88nbluelobster", "m88nparrotfish", "m88nconch", "m88ndumbooctopus", "m88nbettafish", "m88nsquid", "m88nnautilus", "m88nwolffish", "m88nblobfish", "m88nclownfish", "m88noyster", "m88npearl", "m88naxolotl", "m88nbutterflyfish", "m88ncoral", "m88nseaangel", "m88nanglerfish", "m88nbluetang", "m88nclam", "m88npompano", "m88nmackerel", "m88noceanbass"],
 
                     /* MRMlabs FISH*/
                     ["bbqchips", "blackpepperchips", "dillpicklechips", "saltnvinegarchips", "berryblast", "cherrycola", "gingerale", "rootbeer", "valleydew"],

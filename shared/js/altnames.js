@@ -160,6 +160,8 @@ const AltNames = {
     m88nbluetang: "a blue tang",
     m88nclam: "a clam",
     m88npompano: "a pompano",
+    m88nmackerel: "a mackerel",
+    m88noceanbass: "an ocean bass",
 
     //MRMlabs Fishing
     bbqchips: "BBQ chips",  

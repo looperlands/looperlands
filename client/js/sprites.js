@@ -518,6 +518,8 @@ define(['text!../sprites/agent.json',
         'text!../sprites/m88ndiamondhand.json',
         'text!../sprites/m88ngoldenbanana.json',
         'text!../sprites/m88nshorts.json',
+        'text!../sprites/m88nmackerel.json',
+        'text!../sprites/m88noceanbass.json',
         //m88n's NPCs
         'text!../sprites/wenmoon.json',
         'text!../sprites/kingfroggy.json',
