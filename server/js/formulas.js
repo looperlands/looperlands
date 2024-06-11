@@ -4,6 +4,8 @@ let discord = require("./discord");
 let moment = require("moment");
 let Properties = require("./properties");
 
+const cron = require('node-cron');
+
 var Formulas = {};
 
 let XP_MULTIPLIER = 1;
@@ -192,3 +194,14 @@ Formulas.gaussianRangeRandom = function(start, end) {
 if (!(typeof exports === 'undefined')) {
     module.exports = Formulas;
 }
+
+const doubleXP = () => {
+    const multiplier = 2;
+    const seconds = 3600;
+    Formulas.setXPMultiplier(multiplier, seconds);
+}
+
+cron.schedule("0 1 * * *", doubleXP);
+cron.schedule("0 7 * * *", doubleXP);
+cron.schedule("0 13 * * *", doubleXP);
+cron.schedule("0 19 * * * ", doubleXP);
