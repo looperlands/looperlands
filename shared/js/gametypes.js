@@ -424,6 +424,11 @@ Types = {
         M88NDIRT: 78004800,
         M88NWORM: 78004900,
         M88NSNAIL: 78005000,
+        M88NTENTACLE: 78005100,
+        M88NFASTSHOES: 78005200,
+        M88NSLOWSHOES: 78005300,
+        M88NWIZARDSHAT: 78005400,
+        M88NBRASSKNUCKLES: 78005500,
         //MRMlabs NPCs
         TYLERDURDEN: 79000000,
         //MRMlabs Items
@@ -6122,6 +6127,11 @@ var kinds = {
     m88ndirt: [Types.Entities.M88NDIRT, "object"],
     m88nworm: [Types.Entities.M88NWORM, "object"],
     m88nsnail: [Types.Entities.M88NSNAIL, "object"],
+    m88ntentacle: [Types.Entities.M88NTENTACLE, "object"],
+    m88nfastshoes: [Types.Entities.M88NFASTSHOES, "object"],
+    m88nslowshoes: [Types.Entities.M88NSLOWSHOES, "object"],
+    m88nwizardshat: [Types.Entities.M88NWIZARDSHAT, "object"],
+    m88nbrassknuckles: [Types.Entities.M88NBRASSKNUCKLES, "object"],
     //MRMlabs Items
     firstaidkit: [Types.Entities.FIRSTAIDKIT, "object"],
     bandaid: [Types.Entities.BANDAID, "object"],

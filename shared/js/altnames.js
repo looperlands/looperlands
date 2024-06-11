@@ -206,6 +206,10 @@ const AltNames = {
 
     //m88n Items
     m88nmail: "mail",
+    m88nfastshoes: "a pair of fast shoes",
+    m88nslowshoes: "a pair of slow shoes",
+    m88nwizardshat: "a Wizard's hat",
+    m88nbrassknuckles: "brass knuckles",
 
     //Duckville Fishing
     dragonegg: "a dragon egg",

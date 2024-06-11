@@ -420,6 +420,11 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "item-m88ndirt",
                     "item-m88nworm",
                     "item-m88nsnail",
+                    "item-m88ntentacle",
+                    "item-m88nfastshoes",
+                    "item-m88nslowshoes",
+                    "item-m88nwizardshat",
+                    "item-m88nbrassknuckles",
                     //MRMlabs
                     "item-firstaidkit",
                     "item-bandaid",

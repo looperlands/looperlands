@@ -1174,7 +1174,7 @@ let Properties = {
         level: 2,
         drops: {
             burger: 50,
-            GOLD: 2
+            GOLD: 20
         },
     },
 
@@ -1182,7 +1182,7 @@ let Properties = {
         level: 4,
         drops: {
             burger: 50,
-            GOLD: 5
+            GOLD: 25
         },
     },
 
@@ -1191,7 +1191,7 @@ let Properties = {
         drops: {
             m88nmap: 3,
             burger: 47,
-            GOLD: 20
+            GOLD: 30
         },
     },
 
@@ -1281,7 +1281,7 @@ let Properties = {
     m88noctopussy: {
         level: 69,
         drops: {
-            m88nmap: 70,
+            m88nmap: 69,
             m88nsteak: 1,
             m88nmail: 1,
             m88nshovel: 1,
@@ -1293,6 +1293,7 @@ let Properties = {
             battery: 3,
             hardwallet: 2,
             movieglasses: 1,
+            m88ntentacle: 1,
             GOLD3: 10
         },
         messages: ['Hahaha, no chance!', 'You should stay out of the ocean...', 'Why are you wasting my time?', 'Stay away or come back with friends!'],
@@ -1924,6 +1925,54 @@ let Properties = {
             player.releaseMob(Types.Entities.BALLOONGIRAFFEO);
         }
     },
+    m88nfastshoes: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "immunity",
+            duration: 180000
+        },
+        inventoryDescription: "Fast Shoes",
+        onConsume: function(player){
+            player.startInvincibility();
+        }
+    },
+    m88nslowshoes: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "immunity",
+            duration: 180000
+        },
+        inventoryDescription: "Slow Shoes",
+        onConsume: function(player){
+            player.startInvincibility();
+        }
+    },
+    m88nwizardshat: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "immunity",
+            duration: 180000
+        },
+        inventoryDescription: "Wizard's Hat",
+        onConsume: function(player){
+            player.startInvincibility();
+        }
+    },
+    m88nbrassknuckles: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "immunity",
+            duration: 180000
+        },
+        inventoryDescription: "Brass Knuckles",
+        onConsume: function(player){
+            player.startInvincibility();
+        }
+    },
     m88ngem: {
         collectable: true,
         inventoryDescription: "m88n gems",
@@ -1992,108 +2041,147 @@ let Properties = {
     },
     cigarette: {
         respawnDelay: 9900000,
+        collectable: true,
     },
     cigarettepack: {
         respawnDelay: 9900000,
+        collectable: true,
     },
     soap: {
         respawnDelay: 9900000,
+        collectable: true,
     },
     gameboy: {
         respawnDelay: 9900000,
+        collectable: true,
     },
     battery: {
         respawnDelay: 9900000,
+        collectable: true,
     },
     hardwallet: {
         respawnDelay: 9900000,
+        collectable: true,
     },
     movieglasses: {
         respawnDelay: 9900000,
+        collectable: true,
     },
     m88ncompass: {
         respawnDelay: 9900000,
+        collectable: true,
     },
     m88nbinoculars: {
         respawnDelay: 9900000,
+        collectable: true,
     },
     m88npeel: {
         respawnDelay: 9900000,
+        collectable: true,
     },
     m88nfly: {
         respawnDelay: 9900000,
+        collectable: true,
     },
     m88njunebug: {
         respawnDelay: 9900000,
+        collectable: true,
     },
     m88ndungbeetle: {
         respawnDelay: 9900000,
+        collectable: true,
     },
     m88nbutterfly: {
         respawnDelay: 9900000,
+        collectable: true,
     },
     m88nstickbug: {
         respawnDelay: 9900000,
+        collectable: true,
     },
     m88ndiamondnecklace: {
         respawnDelay: 9900000,
+        collectable: true,
     },
     m88ndiamondring: {
         respawnDelay: 9900000,
+        collectable: true,
     },
     m88ngoldearrings: {
         respawnDelay: 9900000,
+        collectable: true,
     },
     m88nclover: {
         respawnDelay: 9900000,
+        collectable: true,
     },
     m88nluckyclover: {
         respawnDelay: 9900000,
+        collectable: true,
     },
     m88nmail: {
         respawnDelay: 9900000,
+        collectable: true,
     },
     m88npackage: {
         respawnDelay: 9900000,
+        collectable: true,
     },
     m88nsteak: {
         respawnDelay: 9900000,
+        collectable: true,
     },
     m88npotato: {
         respawnDelay: 9900000,
+        collectable: true,
     },
     m88nsalad: {
         respawnDelay: 9900000,
+        collectable: true,
     },
     m88nbrewski: {
         respawnDelay: 9900000,
+        collectable: true,
     },
     m88npie: {
         respawnDelay: 9900000,
+        collectable: true,
     },
     m88nseeds: {
         respawnDelay: 9900000,
+        collectable: true,
     },
     m88nsack: {
         respawnDelay: 9900000,
+        collectable: true,
     },
     m88nshovel: {
         respawnDelay: 9900000,
+        collectable: true,
     },
     m88nwatercan: {
         respawnDelay: 9900000,
+        collectable: true,
     },
     m88nticket: {
         respawnDelay: 9900000,
+        collectable: true,
     },
     m88ngoldenticket: {
         respawnDelay: 9900000,
+        collectable: true,
     },
     m88nworm: {
         respawnDelay: 9900000,
+        collectable: true,
     },
     m88nsnail: {
         respawnDelay: 9900000,
+        collectable: true,
+    },
+    m88ntentacle: {
+        respawnDelay: 9900000,
+        collectable: true,
     },
     strangeyellowliquid: {
         collectable: true,
