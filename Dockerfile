@@ -19,7 +19,8 @@ WORKDIR /opt/app
 COPY ./package*.json /opt/app
 RUN npm ci
 COPY . /opt/app
-COPY shared/js/gametypes.js client/js/gametypes.js
+RUN mkdir -p /opt/app/client/js
+COPY shared/js/gametypes.js /opt/app/client/js/gametypes.js
 WORKDIR /opt/app/bin
 RUN ./build.sh
 WORKDIR /opt/app
