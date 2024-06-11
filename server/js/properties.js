@@ -2040,148 +2040,112 @@ let Properties = {
         }
     },
     cigarette: {
-        respawnDelay: 9900000,
-        collectable: true,
+        respawnDelay: 9900000
     },
     cigarettepack: {
         respawnDelay: 9900000,
-        collectable: true,
     },
     soap: {
         respawnDelay: 9900000,
-        collectable: true,
     },
     gameboy: {
         respawnDelay: 9900000,
-        collectable: true,
     },
     battery: {
         respawnDelay: 9900000,
-        collectable: true,
     },
     hardwallet: {
         respawnDelay: 9900000,
-        collectable: true,
     },
     movieglasses: {
         respawnDelay: 9900000,
-        collectable: true,
     },
     m88ncompass: {
-        respawnDelay: 9900000,
-        collectable: true,
+        respawnDelay: 9900000
     },
     m88nbinoculars: {
-        respawnDelay: 9900000,
-        collectable: true,
+        respawnDelay: 9900000
     },
     m88npeel: {
-        respawnDelay: 9900000,
-        collectable: true,
+        respawnDelay: 9900000
     },
     m88nfly: {
-        respawnDelay: 9900000,
-        collectable: true,
+        respawnDelay: 9900000
     },
     m88njunebug: {
-        respawnDelay: 9900000,
-        collectable: true,
+        respawnDelay: 9900000
     },
     m88ndungbeetle: {
-        respawnDelay: 9900000,
-        collectable: true,
+        respawnDelay: 9900000
     },
     m88nbutterfly: {
-        respawnDelay: 9900000,
-        collectable: true,
+        respawnDelay: 9900000
     },
     m88nstickbug: {
-        respawnDelay: 9900000,
-        collectable: true,
+        respawnDelay: 9900000
     },
     m88ndiamondnecklace: {
-        respawnDelay: 9900000,
-        collectable: true,
+        respawnDelay: 9900000
     },
     m88ndiamondring: {
-        respawnDelay: 9900000,
-        collectable: true,
+        respawnDelay: 9900000
     },
     m88ngoldearrings: {
-        respawnDelay: 9900000,
-        collectable: true,
+        respawnDelay: 9900000
     },
     m88nclover: {
-        respawnDelay: 9900000,
-        collectable: true,
+        respawnDelay: 9900000
     },
     m88nluckyclover: {
-        respawnDelay: 9900000,
-        collectable: true,
+        respawnDelay: 9900000
     },
     m88nmail: {
-        respawnDelay: 9900000,
-        collectable: true,
+        respawnDelay: 9900000
     },
     m88npackage: {
-        respawnDelay: 9900000,
-        collectable: true,
+        respawnDelay: 9900000
     },
     m88nsteak: {
-        respawnDelay: 9900000,
-        collectable: true,
+        respawnDelay: 9900000
     },
     m88npotato: {
-        respawnDelay: 9900000,
-        collectable: true,
+        respawnDelay: 9900000
     },
     m88nsalad: {
-        respawnDelay: 9900000,
-        collectable: true,
+        respawnDelay: 9900000
     },
     m88nbrewski: {
-        respawnDelay: 9900000,
-        collectable: true,
+        respawnDelay: 9900000
     },
     m88npie: {
-        respawnDelay: 9900000,
-        collectable: true,
+        respawnDelay: 9900000
     },
     m88nseeds: {
-        respawnDelay: 9900000,
-        collectable: true,
+        respawnDelay: 9900000
     },
     m88nsack: {
-        respawnDelay: 9900000,
-        collectable: true,
+        respawnDelay: 9900000
     },
     m88nshovel: {
-        respawnDelay: 9900000,
-        collectable: true,
+        respawnDelay: 9900000
     },
     m88nwatercan: {
-        respawnDelay: 9900000,
-        collectable: true,
+        respawnDelay: 9900000
     },
     m88nticket: {
-        respawnDelay: 9900000,
-        collectable: true,
+        respawnDelay: 9900000
     },
     m88ngoldenticket: {
-        respawnDelay: 9900000,
-        collectable: true,
+        respawnDelay: 9900000
     },
     m88nworm: {
-        respawnDelay: 9900000,
-        collectable: true,
+        respawnDelay: 9900000
     },
     m88nsnail: {
-        respawnDelay: 9900000,
-        collectable: true,
+        respawnDelay: 9900000
     },
     m88ntentacle: {
-        respawnDelay: 9900000,
-        collectable: true,
+        respawnDelay: 9900000
     },
     strangeyellowliquid: {
         collectable: true,
