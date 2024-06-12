@@ -308,6 +308,14 @@ const Lakes = {
         }
     },
 
+    m88nocean13: {
+        level: 1,
+        fish: {
+            m88nmackerel: "common",
+            m88noceanbass: "uncommon",
+        }
+    },
+
     m88ndarkpool: {
         level: 3,
         fish: {
