@@ -144,6 +144,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "nexan19",
                     "nexan20",
                     "nexan28",
+                    "nexan29",
                     //m88n Mobs
                     "balloondogb",
                     "balloondogy",
@@ -183,7 +184,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "m88nvulture",
                     "m88nbigchungus",
                     "m88noctopussy",
-                    //m88n Mob Nexans
+                    "m88nmagiccarpet",
+                    //m88n's Mob Nexans
                     "nexan1",
                     "nexan2",
                     "nexan3",
@@ -201,6 +203,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "nexan25",
                     "nexan26",
                     "nexan27",
+                    "nexan30",
                     //MRMlabs Fishing
                     "bbqchips",
                     "blackpepperchips",

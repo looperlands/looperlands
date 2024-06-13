@@ -487,6 +487,12 @@ define(['character'], function (Character) {
             "Don't go out too far though, watch out for sharks..."
         ],
 
+        "nexan29": [
+            "Welcome to the Sun Chaser Champagne Lounge, special guest!",
+            "Here we have a luxurious place to relax and portals to the private Helio Islands.",
+            "On the far left is a portal to a secret hidden island. You'll need a compass to navigate to that one..."
+        ],
+
         //MRMlabs NPCs
         "tylerdurden": [
             "We are all part of the same compost heap.",

@@ -1169,7 +1169,7 @@ let Properties = {
         redpacket: true,
         respawnDelay: 180000
     },
-    //m88n Mobs
+    //m88n's Mobs
     balloondogb: {
         level: 2,
         drops: {
@@ -1473,7 +1473,12 @@ let Properties = {
         friendly: true
     },
 
-    //m88n's Mob Nexans
+    m88nmagiccarpet: {
+        level: 1,
+        friendly: true
+    },
+
+    //m88n Mob Nexans
     nexan1: {
         hp: 10,
         armor: 1,
@@ -1587,6 +1592,13 @@ let Properties = {
     },
 
     nexan27: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+
+    nexan30: {
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -1927,7 +1939,7 @@ let Properties = {
     },
     m88nfastshoes: {
         collectable: true,
-        consumable: true,
+        //consumable: true,
         cooldown: {
             group: "immunity",
             duration: 180000
@@ -1939,7 +1951,7 @@ let Properties = {
     },
     m88nslowshoes: {
         collectable: true,
-        consumable: true,
+        //consumable: true,
         cooldown: {
             group: "immunity",
             duration: 180000
@@ -1951,7 +1963,7 @@ let Properties = {
     },
     m88nwizardshat: {
         collectable: true,
-        consumable: true,
+        //consumable: true,
         cooldown: {
             group: "immunity",
             duration: 180000
@@ -1963,7 +1975,7 @@ let Properties = {
     },
     m88nbrassknuckles: {
         collectable: true,
-        consumable: true,
+        //consumable: true,
         cooldown: {
             group: "immunity",
             duration: 180000

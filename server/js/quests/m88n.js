@@ -393,6 +393,20 @@ quests = [
         level: 10,
         xp: 50000,
         medal: Types.Medals.SKULL
+    },
+    {
+        id: "BUTLERS_QUEST_1",
+        name: "The Butler's Compass Request",
+        startText: ["That portal on the far left will bring you to a hidden island!",
+        "But you're going to need a special compass to navigate yourself there..."],
+        endText: ["Heyyyy, you found the compass! Now you can go ahead and checkout the island. Have fun!"],
+        eventType: "LOOT_ITEM",
+        npc: Types.Entities.NEXAN29,
+        target: Types.Entities.M88NCOMPASS,
+        amount: 1,
+        level: 10,
+        xp: 100000,
+        medal: Types.Medals.SKULL
     }
 ]
 
