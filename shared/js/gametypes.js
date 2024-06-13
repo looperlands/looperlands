@@ -374,7 +374,7 @@ Types = {
         NEXAN8: 78000044,
         NEXAN9: 78000045,
         NEXAN10: 78000046,
-        NEXAN30: 78000047,
+        NEXAN30: 78000050,
         
         //m88n Items
         M88NMAP: 78000100,
