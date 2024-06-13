@@ -196,15 +196,20 @@ const AltNames = {
     m88nseal: "Seal",
     m88nwalrus: "Walrus",
     m88noctopussy: "Octopussy",
+    m88nmagiccarpet: "Magic Carpet",
 
-    //m88n's Mob Nexans
-    nexan8: "Mail Lady",
-    nexan9: "Ship Captain",
-    nexan11: "Gamer",
-    nexan12: "Chef",
+    //m88n Mob Nexans
+    nexan8: "The Mail Lady",
+    nexan9: "The Ship Captain",
+    nexan11: "The Gamer",
+    nexan12: "The Chef",
     nexan13: "Farmer Joe",
     nexan14: "Farmer Jon",
-    nexan15: "Mail Man",
+    nexan15: "The Mail Man",
+    nexan30: "The Bartender",
+
+    //m88n NPCs
+    nexan29: "The Butler",
 
     //m88n Items
     m88nmail: "mail",

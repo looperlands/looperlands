@@ -322,6 +322,7 @@ Types = {
         NEXAN26: 78170000,
         NEXAN27: 78180000,
         NEXAN28: 78190000,
+        NEXAN29: 78200000,
         //m88n Mobs
         BALLOONDOGB: 78000001,
         BALLOONDOGY: 78000002,
@@ -361,6 +362,7 @@ Types = {
         M88NVULTURE: 78000036,
         M88NBIGCHUNGUS: 78000047,
         M88NOCTOPUSSY: 78000048,
+        M88NMAGICCARPET: 78000049,
         //m88n Mob Nexans
         NEXAN1: 78000037,
         NEXAN2: 78000038,
@@ -372,8 +374,9 @@ Types = {
         NEXAN8: 78000044,
         NEXAN9: 78000045,
         NEXAN10: 78000046,
+        NEXAN30: 78000047,
         
-        //m88n's Items
+        //m88n Items
         M88NMAP: 78000100,
         M88NEGG1: 78000200,
         M88NEGG2: 78000300,
@@ -5972,8 +5975,9 @@ var kinds = {
     m88nvulture: [Types.Entities.M88NVULTURE, "mob"],
     m88nbigchungus: [Types.Entities.M88NBIGCHUNGUS, "mob"],
     m88noctopussy: [Types.Entities.M88NOCTOPUSSY, "mob"],
+    m88nmagiccarpet: [Types.Entities.M88NMAGICCARPET, "mob"],
 
-    //m88ns Mob Nexans
+    //m88n Mob Nexans
     nexan1: [Types.Entities.NEXAN1, "mob"],
     nexan2: [Types.Entities.NEXAN2, "mob"],
     nexan3: [Types.Entities.NEXAN3, "mob"],
@@ -5991,6 +5995,7 @@ var kinds = {
     nexan25: [Types.Entities.NEXAN25, "mob"],
     nexan26: [Types.Entities.NEXAN26, "mob"],
     nexan27: [Types.Entities.NEXAN27, "mob"],
+    nexan30: [Types.Entities.NEXAN30, "mob"],
 
     sword1: [Types.Entities.SWORD1, "weapon"],
     sword2: [Types.Entities.SWORD2, "weapon"],
@@ -6290,6 +6295,7 @@ var kinds = {
     nexan19: [Types.Entities.NEXAN19, "npc"],
     nexan20: [Types.Entities.NEXAN20, "npc"],
     nexan28: [Types.Entities.NEXAN28, "npc"],
+    nexan29: [Types.Entities.NEXAN29, "npc"],
     //MRMlabs NPCs
     tylerdurden: [Types.Entities.TYLERDURDEN, "npc"],
     ROBITSE3: [Types.Entities.ROBITSE3, "mob"],

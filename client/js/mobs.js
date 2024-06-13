@@ -2840,7 +2840,25 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
 
-        //m88n's Mob Nexans
+        m88nmagiccarpet: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NMAGICCARPET);
+                this.idleSpeed = 420;
+                this.walkSpeed = 225;
+                this.moveSpeed = 250;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
+        //m88n Mob Nexans
         nexan1: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.NEXAN1);
@@ -3132,6 +3150,24 @@ define(['mob', 'timer'], function(Mob, Timer) {
         nexan27: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.NEXAN27);
+                this.idleSpeed = 420;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
+        nexan30: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.NEXAN30);
                 this.idleSpeed = 420;
                 this.walkSpeed = 250;
                 this.moveSpeed = 333;
