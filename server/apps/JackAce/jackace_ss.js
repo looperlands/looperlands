@@ -1,7 +1,7 @@
 const express = require('express');
 const axios = require('axios');
 const dao = require('../../js/dao');
-const { currentHandIndex } = require('../../../client/apps/JackAce/js/globals');
+const { currentHandIndex, player } = require('../../../client/apps/JackAce/js/globals');
 
 // GLOBALS
 const GOLD = "21300041";
@@ -58,11 +58,12 @@ class JackAce {
             try {
                 const response = await axios.get(`http://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=6`);
                 const deckId = response.data.deck_id;
-                playerState = this.initializeGame(player, betAmount, deckId);
+                playerState = await this.initializeGame(player, betAmount, deckId);
                 this.playerGameStates[player] = playerState;
             } catch (error) {
                 console.error("Error initializing deck:", error);
                 res.status(500).json({ message: "Internal server error" });
+                return;
             }
 
         }
@@ -71,7 +72,7 @@ class JackAce {
         if (action === 'DEAL' && playerState.inProgress) {
             // DEAL only available when a hand is not currently in progress
             return res.status(400).json({ message: `[DEAL] Invalid action >> hand in progress.` });
-        } else if (!playerState.inProgress) {
+        } else if (!playerState.inProgress && action !== 'DEAL') {
             // Other actions only available when a hand is in progress
             return res.status(400).json({ message: `[${action}] Invalid action >> no hand in progress.` });
         }
@@ -79,7 +80,7 @@ class JackAce {
         try {
             switch (action) {
                 case 'DEAL':
-                    if (await payToCORNHOLE(playerState)) {
+                    if (await this.payToCORNHOLE(playerState)) {
                         await this.deal(playerState);
                         res.json(this.sanitizePlayerState(playerState));
                     } else {
@@ -88,23 +89,39 @@ class JackAce {
                     break;
                 case 'HIT':
                     if (playerState.playerHands[playerState.currentHandIndex].canHit) {
-                        this.hit(playerState);
+                        await this.hit(playerState);
+                        res.json(this.sanitizePlayerState(playerState));
+                    } else {
+                        return res.status(400).json({ message: "Cannot hit." });
                     }
                     break;
                 case 'STAND':
-                    // Handle stand
+                    await this.stand(playerState);
+                    res.json(this.sanitizePlayerState(playerState));
                     break;
                 case 'SPLIT':
-                    // Handle split
+                    if (playerState.playerHands[playerState.currentHandIndex].canSplit) {
+                        await this.split(playerState);
+                        res.json(this.sanitizePlayerState(playerState));
+                    } else {
+                        return res.status(400).json({ message: "Cannot split." });
+                    }
                     break;
                 case 'DOUBLE':
-                    // Handle double
+                    if (playerState.canDouble) {
+                        await this.double(playerState);
+                        res.json(this.sanitizePlayerState(playerState));
+                    } else {
+                        return res.status(400).json({ message: "Cannot double." });
+                    }
                     break;
                 case 'INSURANCE':
-                    // Handle insurance
+                    await this.insurance(playerState, req.body.insuranceBet);
+                    res.json(this.sanitizePlayerState(playerState));
                     break;
                 case 'REWARD':
-                    // Handle reward
+                    await this.evaluateWinner(playerState);
+                    res.json(this.sanitizePlayerState(playerState));
                     break;
                 default:
                     return res.status(400).json({ error: "Invalid action" });
@@ -135,7 +152,7 @@ class JackAce {
 
         // Set initial game state
         player.gameState = STATE_PLAYERTURN;
-        player.gameWindow = 'hit'
+        player.gameWindow = 'hit';
 
         // Check for insurance condition
         if (dealerCard2.cardValue === "ACE") {
@@ -172,7 +189,84 @@ class JackAce {
 
     }
 
+    async split(playerState) { //need to review 
+        if (this.payToCORNHOLE(playerState)) {
+            const handCount = playerState.playerHands.length;
+            const hand = playerState.playerHands[playerState.currentHandIndex];
+            const card = hand.hand.pop();
+            const handTotal = card.charAt(0) === "A" ? 11 : hand.total / 2;
+            const aceIs11 = card.charAt(0) === "A" ? 1 : 0;
 
+            // Create new split hand
+            playerState.playerHands.push({
+                hand: [card],
+                total: handTotal,
+                aceIs11: aceIs11,
+                canHit: true,
+                canSplit: false,
+                bet: validBetAmount
+            });
+
+            // Draw card for original hand
+            await this.drawCard(playerState, hand);
+
+            // Check for split condition for original hand
+            if (hand.hand[0].charAt(0) === hand.hand[1].charAt(0) && handCount < 4) {
+                hand.canSplit = true;
+                player.gameWindow = 'splitDouble';
+            }
+
+            // Draw card for the new split hand
+            const splitHand = playerState.playerHands[playerState.playerHands.length - 1];
+            await this.drawCard(playerState, splitHand);
+
+            // Check for split condition for the new split hand
+            if (splitHand.hand[0].charAt(0) === splitHand.hand[1].charAt(0) && handCount < 4) {
+                splitHand.canSplit = true;
+                player.gameWindow = 'splitDouble';
+            }
+        } else {
+            // add logic for when player can't afford split
+        }
+    }
+
+    async double(playerState) {
+        if (this.payToCORNHOLE(playerState)) {
+            const hand = playerState.playerHands[playerState.currentHandIndex];
+            await this.drawCard(playerState, hand);
+
+            hand.canHit = false;
+            if (playerState.currentHandIndex === playerState.playerHands.length - 1) {
+                playerState.gameState = STATE_DEALERTURN;
+                await this.playDealerTurn(playerState);
+                await this.evaluateWinner(playerState);
+            } else {
+                playerState.currentHandIndex++;
+            }
+        } else {
+            // add logic for when player can't afford double
+        }
+    }
+
+    async insurance(playerState) {
+        if (this.payToCORNHOLE(playerState, playerState.playerBet / 2)) {
+            if (playerState.playerMoney >= insuranceBet && playerState.dealerHand.hand[1] === "ACE") {
+                playerState.playerMoney -= insuranceBet;
+                playerState.insuranceBet = insuranceBet;
+                playerState.boughtInsurance = true;
+                await this.playDealerTurn(playerState);
+                if (playerState.dealerHand.total === 21) {
+                    playerState.playerMoney += insuranceBet * 2;
+                    playerState.reward = 0;
+                }
+                playerState.gameState = STATE_PLAYERTURN;
+            } else {
+                throw new Error("Cannot buy insurance");
+            }
+        } else {
+            // add logic for when player can't afford insurance
+        }
+    }
 
     //////////////////////
     // HELPER FUNCTIONS //
@@ -190,7 +284,6 @@ class JackAce {
             gameState: STATE_BETTING,
             gameWindow: "bet",
             playerBet: validBetAmount,
-            totalHandBet: validBetAmount,
             reward: 0,
             currentHandIndex: 0,
             playerHands: [{
@@ -198,7 +291,8 @@ class JackAce {
                 total: 0,
                 aceIs11: 0,
                 canHit: true,
-                canSplit: false
+                canSplit: false,
+                bet: validBetAmount
             }],
             dealerHand: {
                 hand: [],
@@ -207,6 +301,7 @@ class JackAce {
                 hasPlayed: false
             },
             canDouble: false,
+            boughtInsurance: false,
             inProgress: true,
             lastActionTime: new Date()
         };
@@ -216,7 +311,6 @@ class JackAce {
     async resetHand(player) {
         const validBetAmount = this.getValidBetAmount(player.playerBet);
         player.playerBet = validBetAmount;
-        player.totalHandBet = validBetAmount;
         player.reward = 0;
         player.currentHandIndex = 0;
         player.playerHands = [{
@@ -224,7 +318,8 @@ class JackAce {
             total: 0,
             aceIs11: 0,
             canHit: true,
-            canSplit: false
+            canSplit: false,
+            bet: validBetAmount
         }];
         player.dealerHand = {
             hand: [],
@@ -233,6 +328,7 @@ class JackAce {
             hasPlayed: false
         };
         player.canDouble = false;
+        player.boughtInsurance = false;
         player.inProgress = true;
         player.lastActionTime = new Date();
     }
@@ -256,24 +352,35 @@ class JackAce {
     }
 
     async evaluateWinner(playerState) {
-        //fix this function to go through all hands under playerhands and compute the total reward
-        const playerTotal = playerState.playerHands[0].total;
+        // Evaluate all player hands against the dealer's hand
+        let totalReward = 0;
         const dealerTotal = playerState.dealerHand.total;
 
-        if (playerTotal > 21) {
-            playerState.reward = 0;
-        } else if (dealerTotal > 21 || playerTotal > dealerTotal) {
-            playerState.reward = playerState.totalHandBet * 2;
-        } else if (playerTotal === dealerTotal) {
-            playerState.reward = playerState.totalHandBet;
-        } else {
-            playerState.reward = 0;
-        }
+        playerState.playerHands.forEach(hand => {
+            const playerTotal = hand.total;
 
-        // once full reward is determined, if it's greater than zero payToPlayer
-        this.payToPlayer(playerState);
+            if (playerTotal > 21) {
+                // Player busts
+                totalReward += 0;
+            } else if (dealerTotal > 21 || playerTotal > dealerTotal) {
+                // Dealer busts or player wins
+                totalReward += hand.bet * 2;
+            } else if (playerTotal === dealerTotal) {
+                // Push
+                totalReward += hand.bet;
+            } else {
+                // Dealer wins
+                totalReward += 0;
+            }
+        });
+
+        if (totalReward > 0) {
+            playerState.reward = totalReward;
+            await this.payToPlayer(playerState);
+        }
         playerState.inProgress = false;
     }
+
 
     // Look up player's gold balance
     async getGoldAmount() {
@@ -321,7 +428,7 @@ class JackAce {
     }
 
     async drawCard(playerState, currentHand) {
-        const data = await axios.get(`http://deckofcardsapi.com/api/deck/${player.deckId}/draw/?count=1`);
+        const { data } = await axios.get(`http://deckofcardsapi.com/api/deck/${playerState.deckId}/draw/?count=1`);
         const card = data.cards[0];
         currentHand.hand.push(card.code);
         playerState.cardsLeft = data.remaining;
@@ -341,13 +448,13 @@ class JackAce {
         }
     }
 
-    async shuffle(player) {
+    async shuffle(playerState) {
         try {
-            const data = await $.getJSON(`http://deckofcardsapi.com/api/deck/${player.deckId}/shuffle/`);
+            const { data } = await $.getJSON(`http://deckofcardsapi.com/api/deck/${playerState.deckId}/shuffle/`);
             if (!data.shuffled) {
-                this.shuffle();
+                await this.shuffle(playerState);
             } else {
-                player.cardsLeft = data.remaining;
+                playerState.cardsLeft = data.remaining;
             }
         } catch (error) {
             console.error("Error shuffling deck:", error);
