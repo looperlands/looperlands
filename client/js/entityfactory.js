@@ -929,7 +929,7 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.M88NSLOWSHOES] = function(id) { return new Items.m88nslowshoes(id); };
     EntityFactory.builders[Types.Entities.M88NWIZARDSHAT] = function(id) { return new Items.m88nwizardshat(id); };
     EntityFactory.builders[Types.Entities.M88NBRASSKNUCKLES] = function(id) { return new Items.m88nbrassknuckles(id); };
-    //MRMlabs
+    //MRMlabs Items
     EntityFactory.builders[Types.Entities.FIRSTAIDKIT] = function(id) { return new Items.firstaidkit(id); };
     EntityFactory.builders[Types.Entities.BANDAID] = function(id) { return new Items.bandaid(id); };
     EntityFactory.builders[Types.Entities.LIGHTER] = function(id) { return new Items.lighter(id); };
@@ -937,6 +937,44 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.CIGARETTEPACK] = function(id) { return new Items.cigarettepack(id); };
     EntityFactory.builders[Types.Entities.SOAP] = function(id) { return new Items.soap(id); };
     EntityFactory.builders[Types.Entities.STRANGEYELLOWLIQUID] = function(id) { return new Items.strangeyellowliquid(id); };
+    //m88n TT Items
+    EntityFactory.builders[Types.Entities.M88NAMMOCAN] = function(id) { return new Items.m88nammocan(id); };
+    EntityFactory.builders[Types.Entities.M88NBANANA] = function(id) { return new Items.m88nbanana(id); };
+    EntityFactory.builders[Types.Entities.M88NBASKETBALL] = function(id) { return new Items.m88nbasketball(id); };
+    EntityFactory.builders[Types.Entities.M88NBLUEPRINT] = function(id) { return new Items.m88nblueprint(id); };
+    EntityFactory.builders[Types.Entities.M88NBNOTE] = function(id) { return new Items.m88nbnote(id); };
+    EntityFactory.builders[Types.Entities.M88NBONE] = function(id) { return new Items.m88nbone(id); };
+    EntityFactory.builders[Types.Entities.M88NCARROT] = function(id) { return new Items.m88ncarrot(id); };
+    EntityFactory.builders[Types.Entities.M88NCHEESE] = function(id) { return new Items.m88ncheese(id); };
+    EntityFactory.builders[Types.Entities.M88NCHOCOLATE] = function(id) { return new Items.m88nchocolate(id); };
+    EntityFactory.builders[Types.Entities.M88NCLEANUNDIES] = function(id) { return new Items.m88ncleanundies(id); };
+    EntityFactory.builders[Types.Entities.M88NDOGCOLLAR] = function(id) { return new Items.m88ndogcollar(id); };
+    EntityFactory.builders[Types.Entities.M88NDUCKY] = function(id) { return new Items.m88nducky(id); };
+    EntityFactory.builders[Types.Entities.M88NENOTE] = function(id) { return new Items.m88nenote(id); };
+    EntityFactory.builders[Types.Entities.M88NFANCYHAT] = function(id) { return new Items.m88nfancyhat(id); };
+    EntityFactory.builders[Types.Entities.M88NGLOWSTICK] = function(id) { return new Items.m88nglowstick(id); };
+    EntityFactory.builders[Types.Entities.M88NGUITAR] = function(id) { return new Items.m88nguitar(id); };
+    EntityFactory.builders[Types.Entities.M88NHARDHAT] = function(id) { return new Items.m88nhardhat(id); };
+    EntityFactory.builders[Types.Entities.M88NHOCKEYSTICK] = function(id) { return new Items.m88nhockeystick(id); };
+    EntityFactory.builders[Types.Entities.M88NIPOD] = function(id) { return new Items.m88nipod(id); };
+    EntityFactory.builders[Types.Entities.M88NJOYSTICK] = function(id) { return new Items.m88njoystick(id); };
+    EntityFactory.builders[Types.Entities.M88NLETTERMANJACKET] = function(id) { return new Items.m88nlettermanjacket(id); };
+    EntityFactory.builders[Types.Entities.M88NLUGGAGE] = function(id) { return new Items.m88nluggage(id); };
+    EntityFactory.builders[Types.Entities.M88NPOLICEBADGE] = function(id) { return new Items.m88npolicebadge(id); };
+    EntityFactory.builders[Types.Entities.M88NPOLICEHAT] = function(id) { return new Items.m88npolicehat(id); };
+    EntityFactory.builders[Types.Entities.M88NQNOTE] = function(id) { return new Items.m88nqnote(id); };
+    EntityFactory.builders[Types.Entities.M88NRAINBOW] = function(id) { return new Items.m88nrainbow(id); };
+    EntityFactory.builders[Types.Entities.M88NROLEX] = function(id) { return new Items.m88nrolex(id); };
+    EntityFactory.builders[Types.Entities.M88NROLLINGPIN] = function(id) { return new Items.m88nrollingpin(id); };
+    EntityFactory.builders[Types.Entities.M88NROSE] = function(id) { return new Items.m88nrose(id); };
+    EntityFactory.builders[Types.Entities.M88NRUBYRING] = function(id) { return new Items.m88nrubyring(id); };
+    EntityFactory.builders[Types.Entities.M88NSHADES] = function(id) { return new Items.m88nshades(id); };
+    EntityFactory.builders[Types.Entities.M88NSNOTE] = function(id) { return new Items.m88nsnote(id); };
+    EntityFactory.builders[Types.Entities.M88NSNOWFLAKE] = function(id) { return new Items.m88nsnowflake(id); };
+    EntityFactory.builders[Types.Entities.M88NTP] = function(id) { return new Items.m88ntp(id); };
+    EntityFactory.builders[Types.Entities.M88NWORKGLOVES] = function(id) { return new Items.m88nworkgloves(id); };
+    EntityFactory.builders[Types.Entities.M88NCHEESEPIZZA] = function(id) { return new Items.m88ncheesepizza(id); };
+    EntityFactory.builders[Types.Entities.M88NPIZZA] = function(id) { return new Items.m88npizza(id); };
     //Duckville
     EntityFactory.builders[Types.Entities.EYEBALL]=function(id){
         return new Items.EYEBALL(id);
@@ -1214,6 +1252,9 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
 
     //MRMlabs NPCs
     EntityFactory.builders[Types.Entities.TYLERDURDEN]=function(id){return new NPCs.tylerdurden(id);};
+
+    //Taiko Town NPCs
+    EntityFactory.builders[Types.Entities.TAIKOTOWNNPC1]=function(id){return new NPCs.taikotownnpc1(id);};
 
     //Robits NPCs
     EntityFactory.builders[Types.Entities.ROBITSC1]=function(id){return new NPCs.ROBITSC1(id);};

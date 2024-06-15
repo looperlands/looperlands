@@ -266,7 +266,7 @@ define(['item'], function(Item) {
             },
         }),
         flyer:Item.extend({init:function(id){this._super(id,Types.Entities.FLYER,"object");this.lootMessage="You collected a Flyer.";}}),
-        //m88n's Items
+        //m88n Items
         m88nmap:Item.extend({init:function(id){this._super(id,Types.Entities.M88NMAP,"object");this.lootMessage="You found a mysterious map!";}}),
         m88negg1:Item.extend({init:function(id){this._super(id,Types.Entities.M88NEGG1,"object");this.lootMessage="You found an easter egg!";}}),
         m88negg2:Item.extend({init:function(id){this._super(id,Types.Entities.M88NEGG2,"object");this.lootMessage="You found an easter egg!";}}),
@@ -322,7 +322,7 @@ define(['item'], function(Item) {
         m88nslowshoes:Item.extend({init:function(id){this._super(id,Types.Entities.M88NSLOWSHOES,"object");this.lootMessage="You found some slow shoes!";}}),
         m88nwizardshat:Item.extend({init:function(id){this._super(id,Types.Entities.M88NWIZARDSHAT,"object");this.lootMessage="You found a wizard's hat!";}}),
         m88nbrassknuckles:Item.extend({init:function(id){this._super(id,Types.Entities.M88NBRASSKNUCKLES,"object");this.lootMessage="You found some brass knuckles!";}}),
-        //MRMlabs
+        //MRMlabs Items
         firstaidkit:Item.extend({init:function(id){this._super(id,Types.Entities.FIRSTAIDKIT,"object");this.lootMessage="You found a first aid kit!";}}),
         bandaid:Item.extend({init:function(id){this._super(id,Types.Entities.BANDAID,"object");this.lootMessage="You found a bandaid!";}}),
         lighter:Item.extend({init:function(id){this._super(id,Types.Entities.LIGHTER,"object");this.lootMessage="You found a lighter!";}}),
@@ -330,7 +330,45 @@ define(['item'], function(Item) {
         cigarettepack:Item.extend({init:function(id){this._super(id,Types.Entities.CIGARETTEPACK,"object");this.lootMessage="You found a cigarette pack!";}}),
         soap:Item.extend({init:function(id){this._super(id,Types.Entities.SOAP,"object");this.lootMessage="You found a bar of soap!";}}),
         strangeyellowliquid:Item.extend({init:function(id){this._super(id,Types.Entities.STRANGEYELLOWLIQUID,"object");this.lootMessage="You found a bottle filled with a strange yellow liquid!";}}),
-        //mycupbloody
+        //m88n TT Items
+        m88nammocan:Item.extend({init:function(id){this._super(id,Types.Entities.M88NAMMOCAN,"object");this.lootMessage="You found an ammo can!";}}),
+        m88nbanana:Item.extend({init:function(id){this._super(id,Types.Entities.M88NBANANA,"object");this.lootMessage="You found a banana!";}}),
+        m88nbasketball:Item.extend({init:function(id){this._super(id,Types.Entities.M88NBASKETBALL,"object");this.lootMessage="You found a basketball!";}}),
+        m88nblueprint:Item.extend({init:function(id){this._super(id,Types.Entities.M88NBLUEPRINT,"object");this.lootMessage="You found some blueprints!";}}),
+        m88nbnote:Item.extend({init:function(id){this._super(id,Types.Entities.M88NBNOTE,"object");this.lootMessage="You found a beamed note!";}}),
+        m88nbone:Item.extend({init:function(id){this._super(id,Types.Entities.M88NBONE,"object");this.lootMessage="You found a bone!";}}),
+        m88ncarrot:Item.extend({init:function(id){this._super(id,Types.Entities.M88NCARROT,"object");this.lootMessage="You found a carrot!";}}),
+        m88ncheese:Item.extend({init:function(id){this._super(id,Types.Entities.M88NCHEESE,"object");this.lootMessage="You found some cheese!";}}),
+        m88nchocolate:Item.extend({init:function(id){this._super(id,Types.Entities.M88NCHOCOLATE,"object");this.lootMessage="You found some chocolate!";}}),
+        m88ncleanundies:Item.extend({init:function(id){this._super(id,Types.Entities.M88NCLEANUNDIES,"object");this.lootMessage="You found some clean undies!";}}),
+        m88ndogcollar:Item.extend({init:function(id){this._super(id,Types.Entities.M88NDOGCOLLAR,"object");this.lootMessage="You found a dog collar!";}}),
+        m88nducky:Item.extend({init:function(id){this._super(id,Types.Entities.M88NDUCKY,"object");this.lootMessage="You found a rubber ducky!";}}),
+        m88nenote:Item.extend({init:function(id){this._super(id,Types.Entities.M88NENOTE,"object");this.lootMessage="You found an eighth note!";}}),
+        m88nfancyhat:Item.extend({init:function(id){this._super(id,Types.Entities.M88NFANCYHAT,"object");this.lootMessage="You found a fancy hat!";}}),
+        m88nglowstick:Item.extend({init:function(id){this._super(id,Types.Entities.M88NGLOWSTICK,"object");this.lootMessage="You found a glow stick!";}}),
+        m88nguitar:Item.extend({init:function(id){this._super(id,Types.Entities.M88NGUITAR,"object");this.lootMessage="You found a guitar!";}}),
+        m88nhardhat:Item.extend({init:function(id){this._super(id,Types.Entities.M88NHARDHAT,"object");this.lootMessage="You found a hard hat!";}}),
+        m88nhockeystick:Item.extend({init:function(id){this._super(id,Types.Entities.M88NHOCKEYSTICK,"object");this.lootMessage="You found a hockey stick!";}}),
+        m88nipod:Item.extend({init:function(id){this._super(id,Types.Entities.M88NIPOD,"object");this.lootMessage="You found an iPod!";}}),
+        m88njoystick:Item.extend({init:function(id){this._super(id,Types.Entities.M88NJOYSTICK,"object");this.lootMessage="You found a retro joystick!";}}),
+        m88nlettermanjacket:Item.extend({init:function(id){this._super(id,Types.Entities.M88NLETTERMANJACKET,"object");this.lootMessage="You found a letterman jacket!";}}),
+        m88nluggage:Item.extend({init:function(id){this._super(id,Types.Entities.M88NLUGGAGE,"object");this.lootMessage="You found some luggage!";}}),
+        m88npolicebadge:Item.extend({init:function(id){this._super(id,Types.Entities.M88NPOLICEBADGE,"object");this.lootMessage="You found a police badge!";}}),
+        m88npolicehat:Item.extend({init:function(id){this._super(id,Types.Entities.M88NPOLICEHAT,"object");this.lootMessage="You found a police hat!";}}),
+        m88nqnote:Item.extend({init:function(id){this._super(id,Types.Entities.M88NQNOTE,"object");this.lootMessage="You found a quarter note!";}}),
+        m88nrainbow:Item.extend({init:function(id){this._super(id,Types.Entities.M88NRAINBOW,"object");this.lootMessage="You found a rainbow!";}}),
+        m88nrolex:Item.extend({init:function(id){this._super(id,Types.Entities.M88NROLEX,"object");this.lootMessage="You found a Rolex!";}}),
+        m88nrollingpin:Item.extend({init:function(id){this._super(id,Types.Entities.M88NROLLINGPIN,"object");this.lootMessage="You found a rolling pin!";}}),
+        m88nrose:Item.extend({init:function(id){this._super(id,Types.Entities.M88NROSE,"object");this.lootMessage="You found a red rose!";}}),
+        m88nrubyring:Item.extend({init:function(id){this._super(id,Types.Entities.M88NRUBYRING,"object");this.lootMessage="You found a ruby ring!";}}),
+        m88nshades:Item.extend({init:function(id){this._super(id,Types.Entities.M88NSHADES,"object");this.lootMessage="You found a pair of shades!";}}),
+        m88nsnote:Item.extend({init:function(id){this._super(id,Types.Entities.M88NSNOTE,"object");this.lootMessage="You found a sixteenth note!";}}),
+        m88nsnowflake:Item.extend({init:function(id){this._super(id,Types.Entities.M88NSNOWFLAKE,"object");this.lootMessage="You found a snowflake!";}}),
+        m88ntp:Item.extend({init:function(id){this._super(id,Types.Entities.M88NTP,"object");this.lootMessage="You found some tp!";}}),
+        m88nworkgloves:Item.extend({init:function(id){this._super(id,Types.Entities.M88NWORKGLOVES,"object");this.lootMessage="You found a work glove!";}}),
+        m88ncheesepizza:Item.extend({init:function(id){this._super(id,Types.Entities.M88NCHEESEPIZZA,"object");this.lootMessage="You found a slice of cheese pizza!";}}),
+        m88npizza:Item.extend({init:function(id){this._super(id,Types.Entities.M88NPIZZA,"object");this.lootMessage="You found a slice of pizza!";}}),
+        //Duckville
         EYEBALL:Item.extend({
             init:function(id){
                 this._super(id,Types.Entities.EYEBALL,"object");
