@@ -10,4 +10,5 @@ module.exports = {
         statements: 90,
       }
     },
+    coveragePathIgnorePatterns: ['./shared/js/*']
   };

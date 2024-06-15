@@ -1939,14 +1939,14 @@ let Properties = {
     },
     m88nfastshoes: {
         collectable: true,
-        //consumable: true,
+        consumable: true,
         cooldown: {
-            group: "immunity",
+            group: "moveSpeed",
             duration: 180000
         },
         inventoryDescription: "Fast Shoes",
         onConsume: function(player){
-            player.startInvincibility();
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('moveSpeed', 2, 20000);
         }
     },
     m88nslowshoes: {
@@ -1963,26 +1963,26 @@ let Properties = {
     },
     m88nwizardshat: {
         collectable: true,
-        //consumable: true,
+        consumable: true,
         cooldown: {
-            group: "immunity",
+            group: "stealth",
             duration: 180000
         },
         inventoryDescription: "Wizard's Hat",
         onConsume: function(player){
-            player.startInvincibility();
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('stealth', 5, 20000);
         }
     },
     m88nbrassknuckles: {
         collectable: true,
-        //consumable: true,
+        consumable: true,
         cooldown: {
-            group: "immunity",
+            group: "meleeDamageDealt",
             duration: 180000
         },
         inventoryDescription: "Brass Knuckles",
         onConsume: function(player){
-            player.startInvincibility();
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('meleeDamageDealt', 2, 20000);
         }
     },
     m88ngem: {

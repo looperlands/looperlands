@@ -5,16 +5,17 @@ class PlayerClassModifiers {
         this._playerClass = playerClass;
 
         // set default modifiers
-        this._meleeDamageDealt = 1
-        this._meleeDamageTaken = 1
-        this._moveSpeed = 1
-        this._rangedDamageDealt = 1
-        this._hpRegen = 1
-        this._maxHp = 1
-        this._hate = 1
-        this._attackRate = 1
+        this._meleeDamageDealt = 1;
+        this._meleeDamageTaken = 1;
+        this._moveSpeed = 1;
+        this._rangedDamageDealt = 1;
+        this._hpRegen = 1;
+        this._maxHp = 1;
+        this._hate = 1;
+        this._attackRate = 1;
         this._stealth = 1;
 
+        this._temporaryModifiers = {};
         this.loadModifierData();
     }
 
@@ -41,49 +42,40 @@ class PlayerClassModifiers {
         }
     }
 
-    // positive multiplier
     get meleeDamageDealt() {
-        return this._meleeDamageDealt;
+        return this._applyTemporaryModifier(this._meleeDamageDealt, 'meleeDamageDealt');
     }
 
-    // positive multiplier
     get meleeDamageTaken() {
-        return this._meleeDamageTaken;
+        return this._applyTemporaryModifier(this._meleeDamageTaken, 'meleeDamageTaken');
     }
 
-    // positive multiplier
     get moveSpeed() {
-        return this._moveSpeed;
+        return this._applyTemporaryModifier(this._moveSpeed, 'moveSpeed');
     }
 
-    // positive multiplier
     get rangedDamageDealt() {
-        return this._rangedDamageDealt;
+        return this._applyTemporaryModifier(this._rangedDamageDealt, 'rangedDamageDealt');
     }
 
-    // positive multiplier
     get hpRegen() {
-        return this._hpRegen;
+        return this._applyTemporaryModifier(this._hpRegen, 'hpRegen');
     }
 
-    // positive multiplier
     get maxHp() {
-        return this._maxHp;
+        return this._applyTemporaryModifier(this._maxHp, 'maxHp');
     }
 
-    // positive multiplier
     get hate() {
-        return this._hate;
+        return this._applyTemporaryModifier(this._hate, 'hate');
     }
 
-    // postive multiplier
     get attackRate() {
-        return this._attackRate;
+        return this._applyTemporaryModifier(this._attackRate, 'attackRate');
     }
 
-    // positive multiplier
     get stealth() {
-        return this._stealth;
+        return this._applyTemporaryModifier(this._stealth, 'stealth');
     }
 
     get emoji() {
@@ -101,22 +93,35 @@ class PlayerClassModifiers {
         }
     }
 
-    // Method to return all modifiers in an object
+    _applyTemporaryModifier(baseValue, modifierName) {
+        if (this._temporaryModifiers[modifierName]) {
+            return baseValue * this._temporaryModifiers[modifierName];
+        }
+        return baseValue;
+    }
+
     async getAllModifiers() {
         await this.loadModifierData();
         return {
             playerClass: this._playerClass,
-            meleeDamageDealt: this._meleeDamageDealt,
-            meleeDamageTaken: this._meleeDamageTaken,
-            moveSpeed: this._moveSpeed,
-            rangedDamageDealt: this._rangedDamageDealt,
-            hpRegen: this._hpRegen,
-            maxHp: this._maxHp,
-            hate: this._hate,
-            attackRate: this._attackRate,
-            stealth: this._stealth,
+            meleeDamageDealt: this.meleeDamageDealt,
+            meleeDamageTaken: this.meleeDamageTaken,
+            moveSpeed: this.moveSpeed,
+            rangedDamageDealt: this.rangedDamageDealt,
+            hpRegen: this.hpRegen,
+            maxHp: this.maxHp,
+            hate: this.hate,
+            attackRate: this.attackRate,
+            stealth: this.stealth,
             emoji: this.emoji
         };
+    }
+
+    applyTemporaryModifierWithTimeout(modifierName, value, duration) {
+        this._temporaryModifiers[modifierName] = value;
+        setTimeout(() => {
+            delete this._temporaryModifiers[modifierName];
+        }, duration);
     }
 }
 
