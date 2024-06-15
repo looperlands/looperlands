@@ -505,6 +505,13 @@ define(['character'], function (Character) {
             //"I want you to hit me as hard as you can."
         ],
 
+        //Taiko Town NPCs
+        "taikotownnpc1": [
+            "Hello World.",
+            "I am the first NPC in Taiko Town, it feels good to be alive!",
+            "Pretty soon my friends and I are going to have a bunch of quests we'll need your help with..."
+        ],
+
         //Robits NPCs
         "ROBITSC1": [
             "Welcome to Cyber City.",
