@@ -210,6 +210,7 @@ const AltNames = {
 
     //m88n NPCs
     nexan29: "The Butler",
+    thehookup: "The Hookup",
 
     //m88n Items
     m88nmail: "mail",

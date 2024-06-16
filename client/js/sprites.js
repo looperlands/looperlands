@@ -535,6 +535,7 @@ define(['text!../sprites/agent.json',
         'text!../sprites/nexan20.json',
         'text!../sprites/nexan28.json',
         'text!../sprites/nexan29.json',
+        'text!../sprites/thehookup.json',
         //m88n Mobs
         'text!../sprites/balloondogb.json',
         'text!../sprites/balloondogy.json',

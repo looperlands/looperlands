@@ -1325,8 +1325,8 @@ let Properties = {
         },
         messages: ['Mmmmm, tasty!', 'Yum!', 'Eww, that was a little tough...', 'Stay on land or come back with friends!'],
         armorMod: 1,
-        hpMod: 5,
-        weaponMod: 0.8,
+        hpMod: 8,
+        weaponMod: 2,
         respawnDelay: 30000,
         xp: 88000
     },
@@ -1982,7 +1982,7 @@ let Properties = {
         },
         inventoryDescription: "Brass Knuckles",
         onConsume: function(player){
-            player.playerClassModifiers.applyTemporaryModifierWithTimeout('meleeDamageDealt', 2, 20000);
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('meleeDamageDealt', 5, 20000);
         }
     },
     m88ngem: {
@@ -2032,7 +2032,7 @@ let Properties = {
             group: "hpPotions",
             duration: 60000
         },
-        inventoryDescription: "For minor cuts and bruises",
+        inventoryDescription: "For minor cuts and scrapes",
         respawnDelay: 500000,
         onConsume: function(player){
             player.regenHealthBy(75);

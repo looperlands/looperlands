@@ -145,6 +145,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "nexan20",
                     "nexan28",
                     "nexan29",
+                    "thehookup",
                     //m88n Mobs
                     "balloondogb",
                     "balloondogy",

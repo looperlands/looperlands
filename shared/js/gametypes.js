@@ -323,6 +323,7 @@ Types = {
         NEXAN27: 78180000,
         NEXAN28: 78190000,
         NEXAN29: 78200000,
+        THEHOOKUP: 78210000,
         //m88n Mobs
         BALLOONDOGB: 78000001,
         BALLOONDOGY: 78000002,
@@ -6374,6 +6375,7 @@ var kinds = {
     nexan20: [Types.Entities.NEXAN20, "npc"],
     nexan28: [Types.Entities.NEXAN28, "npc"],
     nexan29: [Types.Entities.NEXAN29, "npc"],
+    thehookup: [Types.Entities.THEHOOKUP, "npc"],
     //MRMlabs NPCs
     tylerdurden: [Types.Entities.TYLERDURDEN, "npc"],
     ROBITSE3: [Types.Entities.ROBITSE3, "mob"],
