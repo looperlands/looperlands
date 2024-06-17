@@ -364,6 +364,8 @@ Types = {
         M88NBIGCHUNGUS: 78000047,
         M88NOCTOPUSSY: 78000048,
         M88NMAGICCARPET: 78000049,
+        M88NHERMIE: 78000051,
+        M88NMRCRAB: 78000052,
         //m88n Mob Nexans
         NEXAN1: 78000037,
         NEXAN2: 78000038,
@@ -433,6 +435,8 @@ Types = {
         M88NSLOWSHOES: 78005300,
         M88NWIZARDSHAT: 78005400,
         M88NBRASSKNUCKLES: 78005500,
+        M88NKEVLARARMOR: 78005600,
+        M88NGRENADE: 78005700,
         //MRMlabs NPCs
         TYLERDURDEN: 79000000,
         //MRMlabs Items
@@ -6017,6 +6021,8 @@ var kinds = {
     m88nbigchungus: [Types.Entities.M88NBIGCHUNGUS, "mob"],
     m88noctopussy: [Types.Entities.M88NOCTOPUSSY, "mob"],
     m88nmagiccarpet: [Types.Entities.M88NMAGICCARPET, "mob"],
+    m88nhermie: [Types.Entities.M88NHERMIE, "mob"],
+    m88nmrcrab: [Types.Entities.M88NMRCRAB, "mob"],
 
     //m88n Mob Nexans
     nexan1: [Types.Entities.NEXAN1, "mob"],
@@ -6178,6 +6184,8 @@ var kinds = {
     m88nslowshoes: [Types.Entities.M88NSLOWSHOES, "object"],
     m88nwizardshat: [Types.Entities.M88NWIZARDSHAT, "object"],
     m88nbrassknuckles: [Types.Entities.M88NBRASSKNUCKLES, "object"],
+    m88nkevlararmor: [Types.Entities.M88NKEVLARARMOR, "object"],
+    m88ngrenade: [Types.Entities.M88NGRENADE, "object"],
     //MRMlabs Items
     firstaidkit: [Types.Entities.FIRSTAIDKIT, "object"],
     bandaid: [Types.Entities.BANDAID, "object"],

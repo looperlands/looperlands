@@ -175,14 +175,14 @@ const AltNames = {
     valleydew: "valley dew soda",
 
     //m88n Mobs
-    m88nballoondogb: "Blue Balloon Dog",  
-    m88nballoondogy: "Yellow Balloon Dog",  
-    m88nballoondogg: "Green Balloon Dog",  
-    m88nballoondoga: "Aqua Balloon Dog",  
-    m88nballoondogp: "Pink Balloon Dog",
-    m88nballoondogv: "Violet Balloon Dog",
-    m88nballoonhotdogr: "Red Balloon Hotdog",
-    m88nballoongiraffeo: "Orange Balloon Giraffe",
+    balloondogb: "Blue Balloon Dog",  
+    balloondogy: "Yellow Balloon Dog",  
+    balloondogg: "Green Balloon Dog",  
+    balloondoga: "Aqua Balloon Dog",  
+    balloondogp: "Pink Balloon Dog",
+    balloondogv: "Violet Balloon Dog",
+    balloonhotdogr: "Red Balloon Hotdog",
+    balloongiraffeo: "Orange Balloon Giraffe",
     m88nbabymonkey: "Baby Monkey",
     m88nbabyape: "Baby Ape",
     m88nbabychimp: "Baby Chimp",
@@ -197,6 +197,8 @@ const AltNames = {
     m88nwalrus: "Walrus",
     m88noctopussy: "Octopussy",
     m88nmagiccarpet: "Magic Carpet",
+    m88nhermie: "Hermie",
+    m88nmrcrab: "Mr. Crab",
 
     //m88n Mob Nexans
     nexan8: "The Mail Lady",
@@ -218,6 +220,8 @@ const AltNames = {
     m88nslowshoes: "a pair of slow shoes",
     m88nwizardshat: "a Wizard's hat",
     m88nbrassknuckles: "brass knuckles",
+    m88nkevlararmor: "kevlar armor",
+    m88ngrenade: "a grenade",
 
     //m88n Items
     m88nammocan: "ammo can",

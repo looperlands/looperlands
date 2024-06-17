@@ -1331,6 +1331,25 @@ let Properties = {
         xp: 88000
     },
 
+    m88nhermie: {
+        level: 1,
+        drops: {
+            flask: 40,
+            burger: 10,
+            firepotion: 5
+        },
+        respawnDelay: 10000,
+    },
+
+    m88nmrcrab: {
+        level: 2,
+        drops: {
+            flask: 50,
+            axe: 20,
+            firepotion: 5
+        }
+    },
+
     m88nmine: {
         level: 1,
         friendly: true, //not actually friendly, just AoE immune
@@ -1946,7 +1965,7 @@ let Properties = {
         },
         inventoryDescription: "Fast Shoes",
         onConsume: function(player){
-            player.playerClassModifiers.applyTemporaryModifierWithTimeout('moveSpeed', 2, 20000);
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('moveSpeed', 5, 20000);
         }
     },
     m88nslowshoes: {
@@ -1970,7 +1989,7 @@ let Properties = {
         },
         inventoryDescription: "Wizard's Hat",
         onConsume: function(player){
-            player.playerClassModifiers.applyTemporaryModifierWithTimeout('stealth', 5, 20000);
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('stealth', 2, 20000);
         }
     },
     m88nbrassknuckles: {
@@ -1983,6 +2002,30 @@ let Properties = {
         inventoryDescription: "Brass Knuckles",
         onConsume: function(player){
             player.playerClassModifiers.applyTemporaryModifierWithTimeout('meleeDamageDealt', 5, 20000);
+        }
+    },
+    m88nkevlararmor: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "meleeDamageTaken",
+            duration: 180000
+        },
+        inventoryDescription: "Kevlar Armor",
+        onConsume: function(player){
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('meleeDamageTaken', 0.5, 20000);
+        }
+    },
+    m88ngrenade: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "rangedDamageDealt",
+            duration: 180000
+        },
+        inventoryDescription: "Grenade",
+        onConsume: function(player){
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('rangedDamageDealt', 5, 20000);
         }
     },
     m88ngem: {
