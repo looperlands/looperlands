@@ -493,6 +493,11 @@ define(['character'], function (Character) {
             "On the far left is a portal to a secret hidden island. You'll need a compass to navigate to that one..."
         ],
 
+        "thehookup": [
+            "Yo! I'm the hookup here in The Nexus...",
+            "Whatcha need?"
+        ],
+
         //MRMlabs NPCs
         "tylerdurden": [
             "We are all part of the same compost heap.",

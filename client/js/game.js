@@ -145,6 +145,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "nexan20",
                     "nexan28",
                     "nexan29",
+                    "thehookup",
                     //m88n Mobs
                     "balloondogb",
                     "balloondogy",
@@ -185,6 +186,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "m88nbigchungus",
                     "m88noctopussy",
                     "m88nmagiccarpet",
+                    "m88nhermie",
+                    "m88nmrcrab",
                     //m88n's Mob Nexans
                     "nexan1",
                     "nexan2",
@@ -431,6 +434,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "item-m88nslowshoes",
                     "item-m88nwizardshat",
                     "item-m88nbrassknuckles",
+                    "item-m88nkevlararmor",
+                    "item-m88ngrenade",
                     //MRMlabs
                     "item-firstaidkit",
                     "item-bandaid",

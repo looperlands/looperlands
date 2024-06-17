@@ -602,6 +602,12 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.M88NMAGICCARPET] = function(id) {
         return new Mobs.m88nmagiccarpet(id);
     };
+    EntityFactory.builders[Types.Entities.M88NHERMIE] = function(id) {
+        return new Mobs.m88nhermie(id);
+    };
+    EntityFactory.builders[Types.Entities.M88NMRCRAB] = function(id) {
+        return new Mobs.m88nmrcrab(id);
+    };
     
     //m88n Mob Nexans
     EntityFactory.builders[Types.Entities.NEXAN1] = function(id) {
@@ -929,6 +935,8 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.M88NSLOWSHOES] = function(id) { return new Items.m88nslowshoes(id); };
     EntityFactory.builders[Types.Entities.M88NWIZARDSHAT] = function(id) { return new Items.m88nwizardshat(id); };
     EntityFactory.builders[Types.Entities.M88NBRASSKNUCKLES] = function(id) { return new Items.m88nbrassknuckles(id); };
+    EntityFactory.builders[Types.Entities.M88NKEVLARARMOR] = function(id) { return new Items.m88nkevlararmor(id); };
+    EntityFactory.builders[Types.Entities.M88NGRENADE] = function(id) { return new Items.m88ngrenade(id); };
     //MRMlabs Items
     EntityFactory.builders[Types.Entities.FIRSTAIDKIT] = function(id) { return new Items.firstaidkit(id); };
     EntityFactory.builders[Types.Entities.BANDAID] = function(id) { return new Items.bandaid(id); };
@@ -1249,6 +1257,7 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.NEXAN20]=function(id){return new NPCs.nexan20(id);};
     EntityFactory.builders[Types.Entities.NEXAN28]=function(id){return new NPCs.nexan28(id);};
     EntityFactory.builders[Types.Entities.NEXAN29]=function(id){return new NPCs.nexan29(id);};
+    EntityFactory.builders[Types.Entities.THEHOOKUP]=function(id){return new NPCs.thehookup(id);};
 
     //MRMlabs NPCs
     EntityFactory.builders[Types.Entities.TYLERDURDEN]=function(id){return new NPCs.tylerdurden(id);};

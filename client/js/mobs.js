@@ -2356,6 +2356,27 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
 
+        m88nhermie: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NHERMIE);
+                this.moveSpeed = 350;
+                this.idleSpeed = 700;
+                this.shadowOffsetY = -2;
+                this.isAggressive = false;
+                this.aggroRange = 1;
+                this.deathAnimated = true;
+            }
+        }),
+
+        m88nmrcrab: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NMRCRAB);
+                this.moveSpeed = 200;
+                this.atkSpeed = 40;
+                this.idleSpeed = 500;
+            }
+        }),
+
         m88nmine: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.M88NMINE);
