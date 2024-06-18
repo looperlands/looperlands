@@ -431,6 +431,16 @@ define(['character'], function (Character) {
             "Have fun!"
         ],
 
+        "nexan4": [
+            "This is such a cute little beach town!",
+            "Have you been on the yacht yet?"
+        ],
+
+        "nexan5": [
+            "Hey friend! Are you looking for a quick snack?",
+            "What can I get ya?"
+        ],
+
         "nexan11": [
             "Greetings, power to the players! I'm a fellow gamer and collector.",
             'Join us in Discord! <a target="_blank" href="https://discord.gg/bjjNewZegM">Checkout PLANET M88NWALKER</a> for insider details.',
@@ -496,6 +506,41 @@ define(['character'], function (Character) {
         "thehookup": [
             "Yo! I'm the hookup here in The Nexus...",
             "Whatcha need?"
+        ],
+
+        "nexan31": [
+            "Hey there! How's it going?",
+            "I'm working with the city planner to expand Paradise Point...",
+            "I have a new quest on the way for you..."
+        ],
+
+        "nexan32": [
+            "Yo, daddy-o!",
+            "Nice sideburns. I have a new quest on the way for you..."
+        ],
+
+        "nexan33": [
+            "Hey, what's up buddy?",
+            "Nice day out huh? I have a new quest on the way for you..."
+        ],
+
+        "nexan34": [
+            "Hey there!",
+            "What's shakin? I have a new quest on the way for you..."
+        ],
+
+        "m88nbushguy": [
+            "Pssst..."
+        ],
+
+        "m88nsignguy": [
+            "wen?",
+            "Tomorrow!"
+        ],
+
+        "m88nmysteryhood": [
+            "You wanna know what's in the box don't you?",
+            "You'll see..."
         ],
 
         //MRMlabs NPCs

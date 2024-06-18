@@ -2934,42 +2934,6 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
 
-        nexan4: Mob.extend({
-            init: function(id) {
-                this._super(id, Types.Entities.NEXAN4);
-                this.idleSpeed = 420;
-                this.walkSpeed = 250;
-                this.moveSpeed = 333;
-                this.isFriendly = true;
-            },
-
-            idle: function(orientation) {
-                if(!this.hasTarget()) {
-                    this._super(Types.Orientations.DOWN);
-                } else {
-                    this._super(orientation);
-                }
-            }
-        }),
-
-        nexan5: Mob.extend({
-            init: function(id) {
-                this._super(id, Types.Entities.NEXAN5);
-                this.idleSpeed = 420;
-                this.walkSpeed = 250;
-                this.moveSpeed = 333;
-                this.isFriendly = true;
-            },
-
-            idle: function(orientation) {
-                if(!this.hasTarget()) {
-                    this._super(Types.Orientations.DOWN);
-                } else {
-                    this._super(orientation);
-                }
-            }
-        }),
-
         nexan6: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.NEXAN6);
