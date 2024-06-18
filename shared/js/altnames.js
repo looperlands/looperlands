@@ -213,6 +213,9 @@ const AltNames = {
     //m88n NPCs
     nexan29: "The Butler",
     thehookup: "The Hookup",
+    m88nbushguy: "Bush Guy",
+    m88nsignguy: "Sign Guy",
+    m88nmysteryhood: "Mystery Hooded Guy",
 
     //m88n Items
     m88nmail: "mail",
@@ -222,6 +225,9 @@ const AltNames = {
     m88nbrassknuckles: "brass knuckles",
     m88nkevlararmor: "kevlar armor",
     m88ngrenade: "a grenade",
+    m88ndinnerbell: "a dinner bell",
+    m88npants: "pants",
+    m88ntshirt: "a t-shirt",
 
     //m88n Items
     m88nammocan: "ammo can",

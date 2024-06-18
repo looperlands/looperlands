@@ -324,6 +324,9 @@ define(['item'], function(Item) {
         m88nbrassknuckles:Item.extend({init:function(id){this._super(id,Types.Entities.M88NBRASSKNUCKLES,"object");this.lootMessage="You found some brass knuckles!";}}),
         m88nkevlararmor:Item.extend({init:function(id){this._super(id,Types.Entities.M88NKEVLARARMOR,"object");this.lootMessage="You found some kevlar armor!";}}),
         m88ngrenade:Item.extend({init:function(id){this._super(id,Types.Entities.M88NGRENADE,"object");this.lootMessage="You found a grenade!";}}),
+        m88ndinnerbell:Item.extend({init:function(id){this._super(id,Types.Entities.M88NDINNERBELL,"object");this.lootMessage="You found a dinner bell!";}}),
+        m88npants:Item.extend({init:function(id){this._super(id,Types.Entities.M88NPANTS,"object");this.lootMessage="You found a pair of pants!";}}),
+        m88ntshirt:Item.extend({init:function(id){this._super(id,Types.Entities.M88NTSHIRT,"object");this.lootMessage="You found a t-shirt!";}}),
         //MRMlabs Items
         firstaidkit:Item.extend({init:function(id){this._super(id,Types.Entities.FIRSTAIDKIT,"object");this.lootMessage="You found a first aid kit!";}}),
         bandaid:Item.extend({init:function(id){this._super(id,Types.Entities.BANDAID,"object");this.lootMessage="You found a bandaid!";}}),

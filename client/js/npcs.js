@@ -354,6 +354,8 @@ define(['npc'], function(Npc) {
         //m88n NPCs
         wenmoon: Npc.extend({init: function(id) {this._super(id, Types.Entities.WENMOON, 1);}}),
         kingfroggy: Npc.extend({init: function(id) {this._super(id, Types.Entities.KINGFROGGY, 1);}}),
+        nexan4: Npc.extend({init: function(id) {this._super(id, Types.Entities.NEXAN4, 1);}}),
+        nexan5: Npc.extend({init: function(id) {this._super(id, Types.Entities.NEXAN5, 1);}}),
         nexan11: Npc.extend({init: function(id) {this._super(id, Types.Entities.NEXAN11, 1);}}),
         nexan12: Npc.extend({init: function(id) {this._super(id, Types.Entities.NEXAN12, 1);}}),
         nexan13: Npc.extend({init: function(id) {this._super(id, Types.Entities.NEXAN13, 1);}}),
@@ -367,6 +369,13 @@ define(['npc'], function(Npc) {
         nexan28: Npc.extend({init: function(id) {this._super(id, Types.Entities.NEXAN28, 1);}}),
         nexan29: Npc.extend({init: function(id) {this._super(id, Types.Entities.NEXAN29, 1);}}),
         thehookup: Npc.extend({init: function(id) {this._super(id, Types.Entities.THEHOOKUP, 1);}}),
+        nexan31: Npc.extend({init: function(id) {this._super(id, Types.Entities.NEXAN31, 1);}}),
+        nexan32: Npc.extend({init: function(id) {this._super(id, Types.Entities.NEXAN32, 1);}}),
+        nexan33: Npc.extend({init: function(id) {this._super(id, Types.Entities.NEXAN33, 1);}}),
+        nexan34: Npc.extend({init: function(id) {this._super(id, Types.Entities.NEXAN34, 1);}}),
+        m88nbushguy: Npc.extend({init: function(id) {this._super(id, Types.Entities.M88NBUSHGUY, 1);}}),
+        m88nsignguy: Npc.extend({init: function(id) {this._super(id, Types.Entities.M88NSIGNGUY, 1);}}),
+        m88nmysteryhood: Npc.extend({init: function(id) {this._super(id, Types.Entities.M88NMYSTERYHOOD, 1);}}),
         //MRMlabs NPCs
         tylerdurden: Npc.extend({init: function(id) {this._super(id, Types.Entities.TYLERDURDEN, 1);}}),
         //Taiko Town NPCs

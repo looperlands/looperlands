@@ -1519,20 +1519,6 @@ let Properties = {
         friendly: true
     },
 
-    nexan4: {
-        hp: 10,
-        armor: 1,
-        weapon: 1,
-        friendly: true
-    },
-
-    nexan5: {
-        hp: 10,
-        armor: 1,
-        weapon: 1,
-        friendly: true
-    },
-
     nexan6: {
         hp: 10,
         armor: 1,
