@@ -447,6 +447,9 @@ Types = {
         M88NDINNERBELL: 78005800,
         M88NPANTS: 78005900,
         M88NTSHIRT: 78006000,
+        M88NGOLDMEDAL: 78006100,
+        M88NSILVERMEDAL: 78006200,
+        M88NBRONZEMEDAL: 78006300,
         //MRMlabs NPCs
         TYLERDURDEN: 79000000,
         //MRMlabs Items
@@ -466,7 +469,13 @@ Types = {
         MILK2: 80000010,
         MILK1: 80000011, 
         //Taiko Town
-        TAIKOTOWNNPC1: 81000000, 
+        TAIKOTOWNNPC1: 81000000,
+        TAIKOTOWNNPC2: 81000001,
+        TAIKOTOWNNPC3: 81000002,
+        TAIKOTOWNNPC4: 81000003,
+        TAIKOTOWNNPC5: 81000004,
+        TAIKOTOWNNPC6: 81000005,
+        TAIKOTOWNNPC7: 81000006, 
         //m88n TT Items
         M88NAMMOCAN: 81000100, 
         M88NBANANA: 81000200,
@@ -6197,6 +6206,9 @@ var kinds = {
     m88ndinnerbell: [Types.Entities.M88NDINNERBELL, "object"],
     m88npants: [Types.Entities.M88NPANTS, "object"],
     m88ntshirt: [Types.Entities.M88NTSHIRT, "object"],
+    m88ngoldmedal: [Types.Entities.M88NGOLDMEDAL, "object"],
+    m88nsilvermedal: [Types.Entities.M88NSILVERMEDAL, "object"],
+    m88nbronzemedal: [Types.Entities.M88NBRONZEMEDAL, "object"],
     //MRMlabs Items
     firstaidkit: [Types.Entities.FIRSTAIDKIT, "object"],
     bandaid: [Types.Entities.BANDAID, "object"],
@@ -6454,6 +6466,12 @@ var kinds = {
     SIREN: [Types.Entities.SIREN, "npc"],
     //Taiko Town NPCs
     taikotownnpc1: [Types.Entities.TAIKOTOWNNPC1, "npc"],
+    taikotownnpc2: [Types.Entities.TAIKOTOWNNPC2, "npc"],
+    taikotownnpc3: [Types.Entities.TAIKOTOWNNPC3, "npc"],
+    taikotownnpc4: [Types.Entities.TAIKOTOWNNPC4, "npc"],
+    taikotownnpc5: [Types.Entities.TAIKOTOWNNPC5, "npc"],
+    taikotownnpc6: [Types.Entities.TAIKOTOWNNPC6, "npc"],
+    taikotownnpc7: [Types.Entities.TAIKOTOWNNPC7, "npc"],
     // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],

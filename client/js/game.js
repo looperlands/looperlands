@@ -228,6 +228,12 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "tylerdurden",
                     //Taiko Town NPCs
                     "taikotownnpc1",
+                    "taikotownnpc2",
+                    "taikotownnpc3",
+                    "taikotownnpc4",
+                    "taikotownnpc5",
+                    "taikotownnpc6",
+                    "taikotownnpc7",
                     //Robits NPCs
                     "ROBITSC1",
                     "CLOWNCAPONEBIT",
@@ -446,6 +452,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "item-m88ndinnerbell",
                     "item-m88npants",
                     "item-m88ntshirt",
+                    "item-m88ngoldmedal",
+                    "item-m88nsilvermedal",
+                    "item-m88nbronzemedal",
                     //MRMlabs
                     "item-firstaidkit",
                     "item-bandaid",

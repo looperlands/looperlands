@@ -228,6 +228,9 @@ const AltNames = {
     m88ndinnerbell: "a dinner bell",
     m88npants: "pants",
     m88ntshirt: "a t-shirt",
+    m88ngoldmedal: "gold medal",
+    m88nsilvermedal: "silver medal",
+    m88nbronzemedal: "bronze medal",
 
     //m88n Items
     m88nammocan: "ammo can",

@@ -934,6 +934,9 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.M88NDINNERBELL] = function(id) { return new Items.m88ndinnerbell(id); };
     EntityFactory.builders[Types.Entities.M88NPANTS] = function(id) { return new Items.m88npants(id); };
     EntityFactory.builders[Types.Entities.M88NTSHIRT] = function(id) { return new Items.m88ntshirt(id); };
+    EntityFactory.builders[Types.Entities.M88NGOLDMEDAL] = function(id) { return new Items.m88ngoldmedal(id); };
+    EntityFactory.builders[Types.Entities.M88NSILVERMEDAL] = function(id) { return new Items.m88nsilvermedal(id); };
+    EntityFactory.builders[Types.Entities.M88NBRONZEMEDAL] = function(id) { return new Items.m88nbronzemedal(id); };
     //MRMlabs Items
     EntityFactory.builders[Types.Entities.FIRSTAIDKIT] = function(id) { return new Items.firstaidkit(id); };
     EntityFactory.builders[Types.Entities.BANDAID] = function(id) { return new Items.bandaid(id); };
@@ -1270,6 +1273,12 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
 
     //Taiko Town NPCs
     EntityFactory.builders[Types.Entities.TAIKOTOWNNPC1]=function(id){return new NPCs.taikotownnpc1(id);};
+    EntityFactory.builders[Types.Entities.TAIKOTOWNNPC2]=function(id){return new NPCs.taikotownnpc2(id);};
+    EntityFactory.builders[Types.Entities.TAIKOTOWNNPC3]=function(id){return new NPCs.taikotownnpc3(id);};
+    EntityFactory.builders[Types.Entities.TAIKOTOWNNPC4]=function(id){return new NPCs.taikotownnpc4(id);};
+    EntityFactory.builders[Types.Entities.TAIKOTOWNNPC5]=function(id){return new NPCs.taikotownnpc5(id);};
+    EntityFactory.builders[Types.Entities.TAIKOTOWNNPC6]=function(id){return new NPCs.taikotownnpc6(id);};
+    EntityFactory.builders[Types.Entities.TAIKOTOWNNPC7]=function(id){return new NPCs.taikotownnpc7(id);};
 
     //Robits NPCs
     EntityFactory.builders[Types.Entities.ROBITSC1]=function(id){return new NPCs.ROBITSC1(id);};
