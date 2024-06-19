@@ -31,7 +31,7 @@ sendMessage = (message) => {
             try {
                 if (cache.get(message + channelId) === undefined) {
                     cache.set(message + channelId, true, 60*5);
-                    channel.send(message);
+                    channel.send(`${GAMESERVER_NAME}: ${message}`);
                 }
             } catch (e) {
                 //console.log(message, e);
