@@ -44,7 +44,9 @@ class LooperLandsPlatformClient {
             console.log("Registered gameserver hostname with platform:", hostname);
             return response.data;
         } catch (error) {
-            this.handleError(error);
+            console.log(error);
+            this.createOrUpdateGameServer(hostname, port, name);
+            //this.handleError(error);
         }
     }
 
