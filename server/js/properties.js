@@ -1289,6 +1289,7 @@ let Properties = {
             m88npotato: 1,
             m88nmail: 1,
             m88nworm: 1,
+            m88ngem: 1,
             gameboy: 5,
             battery: 3,
             hardwallet: 2,
@@ -1325,7 +1326,7 @@ let Properties = {
         },
         messages: ['Mmmmm, tasty!', 'Yum!', 'Eww, that was a little tough...', 'Stay on land or come back with friends!'],
         armorMod: 1,
-        hpMod: 8,
+        hpMod: 6,
         weaponMod: 2,
         respawnDelay: 30000,
         xp: 88000
@@ -1354,7 +1355,7 @@ let Properties = {
         level: 1,
         friendly: true, //not actually friendly, just AoE immune
         hp: 1,
-        xp: 10000,
+        xp: 8888,
         drops: {
             m88ndirt: 99,
             m88ngem: 1,
@@ -1939,7 +1940,7 @@ let Properties = {
         inventoryDescription: "Golden Faberge Egg",
         respawnDelay: 1500000,
         onConsume: function(player) {
-            player.releaseMob(Types.Entities.BALLOONGIRAFFEO);
+            player.releaseMob(Types.Entities.M88NOCTOPUSSY);
         }
     },
     m88nfastshoes: {
@@ -1951,7 +1952,7 @@ let Properties = {
         },
         inventoryDescription: "Fast Shoes",
         onConsume: function(player){
-            player.playerClassModifiers.applyTemporaryModifierWithTimeout('moveSpeed', 5, 20000);
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('moveSpeed', 2, 20000);
         }
     },
     m88nslowshoes: {

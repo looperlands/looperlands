@@ -327,6 +327,9 @@ define(['item'], function(Item) {
         m88ndinnerbell:Item.extend({init:function(id){this._super(id,Types.Entities.M88NDINNERBELL,"object");this.lootMessage="You found a dinner bell!";}}),
         m88npants:Item.extend({init:function(id){this._super(id,Types.Entities.M88NPANTS,"object");this.lootMessage="You found a pair of pants!";}}),
         m88ntshirt:Item.extend({init:function(id){this._super(id,Types.Entities.M88NTSHIRT,"object");this.lootMessage="You found a t-shirt!";}}),
+        m88ngoldmedal:Item.extend({init:function(id){this._super(id,Types.Entities.M88NGOLDMEDAL,"object");this.lootMessage="You found a gold medal!";}}),
+        m88nsilvermedal:Item.extend({init:function(id){this._super(id,Types.Entities.M88NSILVERMEDAL,"object");this.lootMessage="You found a silver medal!";}}),
+        m88nbronzemedal:Item.extend({init:function(id){this._super(id,Types.Entities.M88NBRONZEMEDAL,"object");this.lootMessage="You found a bronze medal!";}}),
         //MRMlabs Items
         firstaidkit:Item.extend({init:function(id){this._super(id,Types.Entities.FIRSTAIDKIT,"object");this.lootMessage="You found a first aid kit!";}}),
         bandaid:Item.extend({init:function(id){this._super(id,Types.Entities.BANDAID,"object");this.lootMessage="You found a bandaid!";}}),

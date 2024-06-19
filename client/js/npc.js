@@ -505,7 +505,8 @@ define(['character'], function (Character) {
 
         "thehookup": [
             "Yo! I'm the hookup here in The Nexus...",
-            "Whatcha need?"
+            "Whatcha need?",
+            "/openShop trenchcoat Trench Coat"
         ],
 
         "nexan31": [
@@ -559,7 +560,40 @@ define(['character'], function (Character) {
         "taikotownnpc1": [
             "Hello World.",
             "I am the first NPC in Taiko Town, it feels good to be alive!",
+            //"Well hello there!",
+            //"You must be here to learn about LooperLands.",
+            //"To get started, head down to the bottom of this map and locate the Taiko HQ.",
+            //"My friend is down there and he's expecting you!",
+            //"Look for the double pink arrows pointing toward him.",
+            //"He'll have instructions for your first quest..."
             "Pretty soon my friends and I are going to have a bunch of quests we'll need your help with..."
+        ],
+
+        "taikotownnpc2": [
+            "Well hello!"
+        ],
+
+        "taikotownnpc3": [
+            "Power to the players!"
+        ],
+
+        "taikotownnpc4": [
+            "Greetings!"
+        ],
+
+        "taikotownnpc5": [
+            "Howdy!"
+        ],
+
+        "taikotownnpc6": [
+            "Hey there."
+        ],
+
+        "taikotownnpc7": [
+            "Hey friend!",
+            "Feel free to stick around and explore Taiko Town more or check out the many other worlds",
+            "that are a part of LooperLands by hopping on the train across from each billboard!",
+            'Come <a target="_blank" href="https://discord.gg/zWFKjfS2PA">join us in Discord</a> if you are not in there already...cheers!'
         ],
 
         //Robits NPCs

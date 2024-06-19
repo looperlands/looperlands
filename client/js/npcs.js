@@ -380,6 +380,12 @@ define(['npc'], function(Npc) {
         tylerdurden: Npc.extend({init: function(id) {this._super(id, Types.Entities.TYLERDURDEN, 1);}}),
         //Taiko Town NPCs
         taikotownnpc1: Npc.extend({init: function(id) {this._super(id, Types.Entities.TAIKOTOWNNPC1, 1);}}),
+        taikotownnpc2: Npc.extend({init: function(id) {this._super(id, Types.Entities.TAIKOTOWNNPC2, 1);}}),
+        taikotownnpc3: Npc.extend({init: function(id) {this._super(id, Types.Entities.TAIKOTOWNNPC3, 1);}}),
+        taikotownnpc4: Npc.extend({init: function(id) {this._super(id, Types.Entities.TAIKOTOWNNPC4, 1);}}),
+        taikotownnpc5: Npc.extend({init: function(id) {this._super(id, Types.Entities.TAIKOTOWNNPC5, 1);}}),
+        taikotownnpc6: Npc.extend({init: function(id) {this._super(id, Types.Entities.TAIKOTOWNNPC6, 1);}}),
+        taikotownnpc7: Npc.extend({init: function(id) {this._super(id, Types.Entities.TAIKOTOWNNPC7, 1);}}),
         //Robits NPCs
         ROBITSC1: Npc.extend({init: function(id) {this._super(id, Types.Entities.ROBITSC1, 1);}}),
         CLOWNCAPONEBIT: Npc.extend({init: function(id) {this._super(id, Types.Entities.CLOWNCAPONEBIT, 1);}}),
