@@ -155,6 +155,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "m88nbushguy",
                     "m88nsignguy",
                     "m88nmysteryhood",
+                    "m88ntaikotwin1",
+                    "m88ntaikotwin2",
                     //m88n Mobs
                     "balloondogb",
                     "balloondogy",

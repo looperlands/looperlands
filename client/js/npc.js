@@ -544,6 +544,22 @@ define(['character'], function (Character) {
             "You'll see..."
         ],
 
+        "m88ntaikotwin1": [
+            "Yo yo! We're the Taiko Twins!",
+            "Head north to visit Taiko Town, and head south to explore Paradise Point...",
+            "Like our house and Lambo down there?",
+            'They are for sale! Checkout <a target="_blank" href="https://discord.gg/bjjNewZegM">PLANET M88NWALKER in Discord</a> and DM m88nwalker to inquire.',
+            "We have a new quests on the way for you..."
+        ],
+
+        "m88ntaikotwin2": [
+            "Yo yo! We're the Taiko Twins!",
+            "Head south to explore Paradise Point, and head north to visit Taiko Town...",
+            "Like our house and Lambo down there?",
+            'They are for sale! Checkout <a target="_blank" href="https://discord.gg/bjjNewZegM">PLANET M88NWALKER in Discord</a> and DM m88nwalker to inquire.',
+            "We have a new quests on the way for you..."
+        ],
+
         //MRMlabs NPCs
         "tylerdurden": [
             "We are all part of the same compost heap.",

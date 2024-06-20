@@ -331,6 +331,8 @@ Types = {
         M88NBUSHGUY: 78260000,
         M88NSIGNGUY: 78270000,
         M88NMYSTERYHOOD: 78280000,
+        M88NTAIKOTWIN1: 78290000,
+        M88NTAIKOTWIN2: 78300000,
         //m88n Mobs
         BALLOONDOGB: 78000001,
         BALLOONDOGY: 78000002,
@@ -6416,6 +6418,8 @@ var kinds = {
     m88nbushguy: [Types.Entities.M88NBUSHGUY, "npc"],
     m88nsignguy: [Types.Entities.M88NSIGNGUY, "npc"],
     m88nmysteryhood: [Types.Entities.M88NMYSTERYHOOD, "npc"],
+    m88ntaikotwin1: [Types.Entities.M88NTAIKOTWIN1, "npc"],
+    m88ntaikotwin2: [Types.Entities.M88NTAIKOTWIN2, "npc"],
     //MRMlabs NPCs
     tylerdurden: [Types.Entities.TYLERDURDEN, "npc"],
     ROBITSE3: [Types.Entities.ROBITSE3, "mob"],
