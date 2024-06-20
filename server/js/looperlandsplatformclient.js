@@ -44,7 +44,9 @@ class LooperLandsPlatformClient {
             console.log("Registered gameserver hostname with platform:", hostname);
             return response.data;
         } catch (error) {
-            this.handleError(error);
+            console.log(error);
+            this.createOrUpdateGameServer(hostname, port, name);
+            //this.handleError(error);
         }
     }
 
@@ -318,6 +320,7 @@ class LooperLandsPlatformClient {
             throw new Error(`HTTP error! status: ${error.response.status}`);
         } else if (error.request) {
             // The request was made but no response was received
+            console.error(error);
             throw new Error('No response received');
         } else {
             // Something happened in setting up the request that triggered an Error

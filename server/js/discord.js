@@ -1,6 +1,7 @@
 const { Client, GatewayIntentBits} = require('discord.js')
 const NodeCache = require( "node-cache" );
 const cache = new NodeCache();
+const GAMESERVER_NAME = process.env.GAMESERVER_NAME;
 
 let ready = false;
 const client = new Client({
@@ -30,7 +31,7 @@ sendMessage = (message) => {
             try {
                 if (cache.get(message + channelId) === undefined) {
                     cache.set(message + channelId, true, 60*5);
-                    channel.send(message);
+                    channel.send(`${GAMESERVER_NAME}: ${message}`);
                 }
             } catch (e) {
                 //console.log(message, e);
@@ -51,7 +52,7 @@ exports.sendToDevChannel = (message) => {
         for (let channelId of channels) {
             let channel = client.channels.cache.get(channelId);
             try {
-                channel.send(message);
+                channel.send(`${GAMESERVER_NAME}: ${message}`);
             } catch (e) {
                 //console.log(message, e);
             }
