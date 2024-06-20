@@ -216,6 +216,8 @@ const AltNames = {
     m88nbushguy: "Bush Guy",
     m88nsignguy: "Sign Guy",
     m88nmysteryhood: "Mystery Hooded Guy",
+    m88ntaikotwin1: "Taiko Twin 1",
+    m88ntaikotwin2: "Taiko Twin 2",
 
     //m88n Items
     m88nmail: "mail",

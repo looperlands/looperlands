@@ -376,6 +376,8 @@ define(['npc'], function(Npc) {
         m88nbushguy: Npc.extend({init: function(id) {this._super(id, Types.Entities.M88NBUSHGUY, 1);}}),
         m88nsignguy: Npc.extend({init: function(id) {this._super(id, Types.Entities.M88NSIGNGUY, 1);}}),
         m88nmysteryhood: Npc.extend({init: function(id) {this._super(id, Types.Entities.M88NMYSTERYHOOD, 1);}}),
+        m88ntaikotwin1: Npc.extend({init: function(id) {this._super(id, Types.Entities.M88NTAIKOTWIN1, 1);}}),
+        m88ntaikotwin2: Npc.extend({init: function(id) {this._super(id, Types.Entities.M88NTAIKOTWIN2, 1);}}),
         //MRMlabs NPCs
         tylerdurden: Npc.extend({init: function(id) {this._super(id, Types.Entities.TYLERDURDEN, 1);}}),
         //Taiko Town NPCs
