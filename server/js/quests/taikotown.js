@@ -42,7 +42,7 @@ quests = [
         "Slaying enemies is one way to earn xp and level your assets up here in LooperLands.",
         "Another way is by completing loot quests for bonus xp.",
         "If you head over to the Pet Store you should see some retro joysticks along the way.",
-        "Collect 3 of them and then meet the owner of the Pet Store to learn more and get a new quest..."],
+        "Collect 3 to earn 2,000 bonus xp, then meet the Pet Store owner to learn more and get a new quest..."],
         endText: ["Some items are consumables that have extra utility like temporary bonuses or even unlocking doors!"],
         eventType: "LOOT_ITEM",
         npc: Types.Entities.TAIKOTOWNNPC3,
