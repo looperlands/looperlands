@@ -7,7 +7,7 @@ import {
   gameWindow
 } from './globals.js';
 import { displayStartingHands, displayDealerCards, displayNewDealerCard, displaySplitHands, updateScores } from './ui.js';
-import { getButtonBackgroundPosition } from './utils.js';
+import { getButtonBackgroundPosition } from '../utils.js';
 
 // Setup div structure and sprites
 export async function init() {

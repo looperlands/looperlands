@@ -1,6 +1,9 @@
 @import url('https://fonts.googleapis.com/css?family=Orbitron');
 
 :root {
+  --uiCreditWidth: 262px;
+  --uiCreditHeight: 88px;
+  --uiCreditSprite: url('./img/credit_panel.png') no-repeat;
   --uiWindowWidth: 720px;
   --uiWindowHeight: 1000px;
   --uiWindowSprite: url('./img/ui.png') no-repeat;
@@ -25,7 +28,7 @@ body {
   color: white;
 }
 
-#wrapper {
+#jackaceWrapper {
   width: fit-content;
   display: flex;
   flex-direction: column;
@@ -35,6 +38,17 @@ body {
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.3);
+}
+
+#creditPanel {
+  left: 80%;
+  top: 5%;
+  color: "white";
+  font: "GraphicPixel";
+  font-size: 2.5vw;
+  width: var(--uiCreditWidth);
+  background: var(--uiCreditSprite);
+  background-size: var(--uiCreditWidth) var(--uiCreditHeight);
 }
 
 /*Button Boxes*/

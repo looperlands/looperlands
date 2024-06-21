@@ -4,7 +4,7 @@ import {
   dealerHasPlayed
 } from './globals.js';
 
-import { getCardBackgroundPosition, getScoreBackgroundPosition } from './utils.js';
+import { getCardBackgroundPosition, getScoreBackgroundPosition } from '../utils.js';
 import { logic } from './jackace.js';
 
 // Display the starting hands of the player and dealer

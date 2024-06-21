@@ -4,7 +4,7 @@ import { CARD_POSITIONS, CARD_WIDTH, CARD_HEIGHT, CARD_GAP, SPRITE_COLUMNS, card
   BUTTON_SPRITE_POSITIONS, BUTTON_SPRITE_WIDTH, BUTTON_SPRITE_HEIGHT, BUTTON_SPRITE_GAP, BUTTON_SPRITE_COLUMNS, BUTTON_CARD_SCALE,
   player, currentHandIndex,
   dealerHasPlayed
-} from './globals.js';
+} from './!old/globals.js';
 
 export async function updateTotal(person, cardValue) {
   if (person == player) {

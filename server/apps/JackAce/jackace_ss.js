@@ -2,9 +2,7 @@ const axios = require('axios');
 const dao = require('../../js/dao');
 
 class JackAce {
-    constructor(platformClient, cache) {
-        this.platformClient = platformClient;
-        this.cache = cache;
+    constructor() {
         this.playerGameStates = {};
 
         // GLOBALS
@@ -123,7 +121,7 @@ class JackAce {
     // Function to deal for a player
     async deal(playerState) {
         // Reset player's hands to the initial state
-        await this.resetHand(playerState);
+        this.resetHand(playerState);
 
         // Shuffle the deck if there are fewer than 60 cards left
         if (playerState.cardsLeft < 60) { await this.shuffle(playerState); }
