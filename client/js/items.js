@@ -376,6 +376,7 @@ define(['item'], function(Item) {
         m88nworkgloves:Item.extend({init:function(id){this._super(id,Types.Entities.M88NWORKGLOVES,"object");this.lootMessage="You found a work glove!";}}),
         m88ncheesepizza:Item.extend({init:function(id){this._super(id,Types.Entities.M88NCHEESEPIZZA,"object");this.lootMessage="You found a slice of cheese pizza!";}}),
         m88npizza:Item.extend({init:function(id){this._super(id,Types.Entities.M88NPIZZA,"object");this.lootMessage="You found a slice of pizza!";}}),
+        m88nsword:Item.extend({init:function(id){this._super(id,Types.Entities.M88NSWORD,"object");this.lootMessage="You found a sword!";}}),
         //Duckville
         EYEBALL:Item.extend({
             init:function(id){

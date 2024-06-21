@@ -333,6 +333,8 @@ Types = {
         M88NMYSTERYHOOD: 78280000,
         M88NTAIKOTWIN1: 78290000,
         M88NTAIKOTWIN2: 78300000,
+        M88NSTIMYTIMY: 78310000,
+        M88NREALTYAGENT: 78320000,
         //m88n Mobs
         BALLOONDOGB: 78000001,
         BALLOONDOGY: 78000002,
@@ -515,7 +517,8 @@ Types = {
         M88NTP: 81003400,
         M88NWORKGLOVES: 81003500,
         M88NCHEESEPIZZA: 81003600,
-        M88NPIZZA: 81003700, // @lastidObject@
+        M88NPIZZA: 81003700,
+        M88NSWORD: 81003800, // @lastidObject@
         //@nextIdLineObject@
 
         // NPCs
@@ -6257,6 +6260,7 @@ var kinds = {
     m88nworkgloves: [Types.Entities.M88NWORKGLOVES, "object"],
     m88ncheesepizza: [Types.Entities.M88NCHEESEPIZZA, "object"],
     m88npizza: [Types.Entities.M88NPIZZA, "object"],
+    m88nsword: [Types.Entities.M88NSWORD, "object"],
     //ROBITS NPCS
     ROBITSC1: [Types.Entities.ROBITSC1, "npc"],
     CLOWNCAPONEBIT: [Types.Entities.CLOWNCAPONEBIT, "npc"],
@@ -6420,6 +6424,8 @@ var kinds = {
     m88nmysteryhood: [Types.Entities.M88NMYSTERYHOOD, "npc"],
     m88ntaikotwin1: [Types.Entities.M88NTAIKOTWIN1, "npc"],
     m88ntaikotwin2: [Types.Entities.M88NTAIKOTWIN2, "npc"],
+    m88nstimytimy: [Types.Entities.M88NSTIMYTIMY, "npc"],
+    m88nrealtyagent: [Types.Entities.M88NREALTYAGENT, "npc"],
     //MRMlabs NPCs
     tylerdurden: [Types.Entities.TYLERDURDEN, "npc"],
     ROBITSE3: [Types.Entities.ROBITSE3, "mob"],

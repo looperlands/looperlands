@@ -218,6 +218,8 @@ const AltNames = {
     m88nmysteryhood: "Mystery Hooded Guy",
     m88ntaikotwin1: "Taiko Twin 1",
     m88ntaikotwin2: "Taiko Twin 2",
+    m88nstimytimy: "Stimy Timy",
+    m88nrealtyagent: "Real Estate Agent",
 
     //m88n Items
     m88nmail: "mail",
@@ -234,7 +236,7 @@ const AltNames = {
     m88nsilvermedal: "silver medal",
     m88nbronzemedal: "bronze medal",
 
-    //m88n Items
+    //m88n TT Items
     m88nammocan: "ammo can",
     m88nbanana: "banana",
     m88nbasketball: "basketball",
@@ -272,6 +274,7 @@ const AltNames = {
     m88nworkgloves: "work glove",
     m88ncheesepizza: "cheese pizza",
     m88npizza: "pizza",
+    m88nsword: "sword",
 
     //Taiko Town NPCs
     taikotownnpc1: "Family with Dog",
