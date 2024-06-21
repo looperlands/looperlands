@@ -29,6 +29,7 @@ const Properties = require('./properties.js')
 const Types = require("../../shared/js/gametypes");
 const platform = require('./looperlandsplatformclient.js');
 const minigame = require('../apps/minigame.js');
+const MinigameController = require('./minigamecontroller.js');
 const dynamicnft = require('./dynamicnftcontroller.js');
 const announcement = require('./announcementcontroller.js');
 const PlayerClassController = require('./playerclasscontroller.js').PlayerClassController;
@@ -43,6 +44,7 @@ const LOOPERLANDS_PLATFORM_API_KEY = process.env.LOOPERLANDS_PLATFORM_API_KEY;
 
 const platformClient = new platform.LooperLandsPlatformClient(LOOPERLANDS_PLATFORM_API_KEY, LOOPERLANDS_PLATFORM_BASE_URL);
 const dynamicNFTcontroller = new dynamicnft.DynamicNFTController(cache, platformClient, Types);
+const minigameController = new MinigameController();
 
 function extractDetails(inputUrl) {
     const parsedUrl = new URL(inputUrl);
@@ -1106,6 +1108,10 @@ WS.socketIOServer = Server.extend({
             }
         });
 
+        // MINIGAME CONTROLLER
+        app.post('/minigame', (req, res) => {minigameController.handleRequest(req, res);});
+
+        // LUCKYFUNKZ 
         app.get('/session/:sessionId/getSpin/:linesPlayed/:bet', async (req, res) => {
 
             const linesPlayed = parseInt(req.params.linesPlayed);

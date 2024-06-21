@@ -6,7 +6,7 @@ const MINIGAME_FILES = {
 
 // if module javascript, add js file with init() function
 const MODULE_INIT = {
-    "JackAce": "js/jackace.js"
+    //"JackAce": "js/jackace.js"
     //  "YOUR_MINIGAME_NAME": "module js file",
 };
 

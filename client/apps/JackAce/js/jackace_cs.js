@@ -1,5 +1,3 @@
-import gsap from 'gsap';
-
 // Global Variables
 let gameWindow = ""; // Current UI window shown
 let playerBet = 1;
@@ -18,11 +16,11 @@ const CARD_HEIGHT = 9; // Height of each card in the sprite sheet
 const CARD_GAP = 1; // Gap between cards in the sprite sheet
 const SPRITE_COLUMNS = 13; // Number of columns in the sprite sheet
 const CARD_POSITIONS = {
-  'AC': 0, '2C': 1, '3C': 2, '4C': 3, '5C': 4, '6C': 5, '7C': 6, '8C': 7, '9C': 8, '0C': 9, 'JC': 10, 'QC': 11, 'KC': 12,
-  'AS': 13, '2S': 14, '3S': 15, '4S': 16, '5S': 17, '6S': 18, '7S': 19, '8S': 20, '9S': 21, '0S': 22, 'JS': 23, 'QS': 24, 'KS': 25,
-  'AH': 26, '2H': 27, '3H': 28, '4H': 29, '5H': 30, '6H': 31, '7H': 32, '8H': 33, '9H': 34, '0H': 35, 'JH': 36, 'QH': 37, 'KH': 38,
-  'AD': 39, '2D': 40, '3D': 41, '4D': 42, '5D': 43, '6D': 44, '7D': 45, '8D': 46, '9D': 47, '0D': 48, 'JD': 49, 'QD': 50, 'KD': 51,
-  'BACK': 52
+    'AC': 0, '2C': 1, '3C': 2, '4C': 3, '5C': 4, '6C': 5, '7C': 6, '8C': 7, '9C': 8, '0C': 9, 'JC': 10, 'QC': 11, 'KC': 12,
+    'AS': 13, '2S': 14, '3S': 15, '4S': 16, '5S': 17, '6S': 18, '7S': 19, '8S': 20, '9S': 21, '0S': 22, 'JS': 23, 'QS': 24, 'KS': 25,
+    'AH': 26, '2H': 27, '3H': 28, '4H': 29, '5H': 30, '6H': 31, '7H': 32, '8H': 33, '9H': 34, '0H': 35, 'JH': 36, 'QH': 37, 'KH': 38,
+    'AD': 39, '2D': 40, '3D': 41, '4D': 42, '5D': 43, '6D': 44, '7D': 45, '8D': 46, '9D': 47, '0D': 48, 'JD': 49, 'QD': 50, 'KD': 51,
+    'BACK': 52
 };
 
 // UI SPRITE SHEET
@@ -30,9 +28,9 @@ const UI_SPRITE_HEIGHTS = [23, 38, 37]; // Heights for each row
 const UI_SPRITE_GAP = 1; // Gap between rows
 const UI_CARD_SCALE = 10; // Scale for UI elements
 const UI_SPRITE_POSITIONS = {
-  'twoButton': 0,
-  'fourButton': 1,
-  'insurance': 2
+    'twoButton': 0,
+    'fourButton': 1,
+    'insurance': 2
 };
 
 // SCORE SPRITE SHEET
@@ -42,9 +40,9 @@ const SCORE_SPRITE_GAP = 1; // Gap between score sprites
 const SCORE_SPRITE_COLUMNS = 10; // Number of columns in the score sprite sheet
 const SCORE_CARD_SCALE = 10; // Scale for score elements
 const SCORE_SPRITE_POSITIONS = {
-  'blank': 0, 'arrow': 1, 'questionMark': 2, '4': 3, '5': 4, '6': 5, '7': 6, '8': 7, '9': 8, '10': 9,
-  '11': 10, '12': 11, '13': 12, '14': 13, '15': 14, '16': 15, '17': 16, '18': 17, '19': 18, '20': 19, '21': 20,
-  '22': 21, '23': 22, '24': 23, '25': 24, '26': 25, '27': 26, '28': 27, '29': 28, '30': 29
+    'blank': 0, 'arrow': 1, 'questionMark': 2, '4': 3, '5': 4, '6': 5, '7': 6, '8': 7, '9': 8, '10': 9,
+    '11': 10, '12': 11, '13': 12, '14': 13, '15': 14, '16': 15, '17': 16, '18': 17, '19': 18, '20': 19, '21': 20,
+    '22': 21, '23': 22, '24': 23, '25': 24, '26': 25, '27': 26, '28': 27, '29': 28, '30': 29
 };
 
 // BUTTON SPRITE SHEET
@@ -54,15 +52,15 @@ const BUTTON_SPRITE_GAP = 1; // Gap between button sprites
 const BUTTON_SPRITE_COLUMNS = 3; // Number of columns in the button sprite sheet
 const BUTTON_CARD_SCALE = 10; // Scale for button elements
 const BUTTON_SPRITE_POSITIONS = {
-  'dealHover': 0, 'deal': 1, 'bet1': 2,
-  'betIncreaseHover': 3, 'betIncrease': 4, 'bet2': 5,
-  'betDecreaseHover': 6, 'betDecrease': 7, 'bet3': 8,
-  'hitHover': 9, 'hit': 10, 'bet4': 11,
-  'standHover': 12, 'stand': 13, 'bet5': 14,
-  'yesHover': 15, 'yes': 16, 'bet6': 17,
-  'noHover': 18, 'no': 19, 'bet7': 20,
-  'splitHover': 21, 'split': 22, 'splitInactive': 23,
-  'doubleHover': 24, 'double': 25, 'doubleInactive': 26
+    'dealHover': 0, 'deal': 1, 'bet1': 2,
+    'betIncreaseHover': 3, 'betIncrease': 4, 'bet2': 5,
+    'betDecreaseHover': 6, 'betDecrease': 7, 'bet3': 8,
+    'hitHover': 9, 'hit': 10, 'bet4': 11,
+    'standHover': 12, 'stand': 13, 'bet5': 14,
+    'yesHover': 15, 'yes': 16, 'bet6': 17,
+    'noHover': 18, 'no': 19, 'bet7': 20,
+    'splitHover': 21, 'split': 22, 'splitInactive': 23,
+    'doubleHover': 24, 'double': 25, 'doubleInactive': 26
 };
 
 /////////////////////////
@@ -78,7 +76,7 @@ async function init() {
     $('#uiWindow').append(`
         <div id="bet-window">
             <div id="bet_increase"></div>
-            <div id="bet_amount">${playerBet}</div>
+            <div id="bet_amount"></div>
             <div id="bet_decrease"></div>
             <div id="deal"></div>
         </div>
@@ -96,7 +94,8 @@ async function init() {
         </div>
     `);
 
-    await setGameWindow('bet');
+    await showGameWindow();
+    $('#bet_amount').css('background-position', await getButtonBackgroundPosition(`bet1`));
     setUpButtonEvents();
 }
 
@@ -104,13 +103,13 @@ function setUpButtonEvents() {
     const buttons = [
         { id: '#bet_increase', hoverState: 'betIncreaseHover', defaultState: 'betIncrease', clickFunction: () => betAdjustClick('increase') },
         { id: '#bet_decrease', hoverState: 'betDecreaseHover', defaultState: 'betDecrease', clickFunction: () => betAdjustClick('decrease') },
-        { id: '#deal', hoverState: 'dealHover', defaultState: 'deal', clickFunction: dealClick },
-        { id: '#hit', hoverState: 'hitHover', defaultState: 'hit', clickFunction: hitClick },
-        { id: '#stand', hoverState: 'standHover', defaultState: 'stand', clickFunction: standClick },
-        { id: '#double', hoverState: 'doubleHover', defaultState: 'double', clickFunction: doubleClick },
-        { id: '#split', hoverState: 'splitHover', defaultState: 'split', clickFunction: splitClick },
-        { id: '#ins-yes', hoverState: 'yesHover', defaultState: 'yes', clickFunction: () => insuranceClick('yes') },
-        { id: '#ins-no', hoverState: 'noHover', defaultState: 'no', clickFunction: () => insuranceClick('no') }
+        { id: '#deal', hoverState: 'dealHover', defaultState: 'deal', clickFunction: () => handleAction(() => actionHandlers['DEAL']()) },
+        { id: '#hit', hoverState: 'hitHover', defaultState: 'hit', clickFunction: () => handleAction(() => actionHandlers['HIT']()) },
+        { id: '#stand', hoverState: 'standHover', defaultState: 'stand', clickFunction: () => handleAction(() => actionHandlers['STAND']()) },
+        { id: '#double', hoverState: 'doubleHover', defaultState: 'double', clickFunction: () => handleAction(() => actionHandlers['DOUBLE']()) },
+        { id: '#split', hoverState: 'splitHover', defaultState: 'split', clickFunction: () => handleAction(() => actionHandlers['SPLIT']()) },
+        { id: '#ins-yes', hoverState: 'yesHover', defaultState: 'yes', clickFunction: () => handleAction(() => actionHandlers['INSURANCE']('yes')) },
+        { id: '#ins-no', hoverState: 'noHover', defaultState: 'no', clickFunction: () => handleAction(() => actionHandlers['INSURANCE']('no')) }
     ];
 
     buttons.forEach(({ id, hoverState, defaultState, clickFunction }) => {
@@ -132,11 +131,23 @@ function setUpButtonEvents() {
     });
 }
 
-///////////////////////////////
+/////////////////////////////
 // MAIN GAMEPLAY FUNCTIONS //
-///////////////////////////////
+/////////////////////////////
+
+const actionHandlers = {
+    'DEAL': handleDeal,
+    'HIT': async () => processAction('HIT', {}, animateCard),
+    'STAND': async () => processAction('STAND', {}, animateDealersTurn),
+    'DOUBLE': handleDouble,
+    'SPLIT': async () => processAction('SPLIT', {}, async (data) => { await animateSplit(data); }),
+    'INSURANCE': async (choice) => processAction('INSURANCE', { boughtInsurance: choice === 'yes' }, async (data) => {
+        await processInsurance(data, choice);
+    })
+};
 
 async function handleAction(action) {
+    console.log(`processing action: ${action}`);
     if (!$("#uiWindow").hasClass('processing')) {
         $("#uiWindow").addClass('processing');
         await action();
@@ -144,19 +155,28 @@ async function handleAction(action) {
     }
 }
 
-function dealClick() {
+async function makeRequest(action, additionalData = {}) {
+    console.log(`making request: ${action}`);
+    const response = await fetch('/minigame', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ minigame: 'jackace', player: playerId, action, ...additionalData })
+    });
+    return response.json();
+}
+
+async function processAction(action, additionalData = {}, animationFunction) {
+    handleAction(async () => {
+        const data = await makeRequest(action, additionalData);
+        await animationFunction(data);
+    });
+}
+
+function handleDeal() {
     handleAction(async () => {
         $("#handResult").empty();
         if (playerBet > 0) {
-            const response = await fetch('/deal', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    player: playerId,
-                    betAmount: playerBet,
-                })
-            });
-            const data = await response.json();
+            const data = await makeRequest('DEAL', { betAmount: playerBet });
             await animateDeal(data);
         } else {
             $("#handResult").append("Place a bet to start the game.");
@@ -164,97 +184,31 @@ function dealClick() {
     });
 }
 
-function hitClick() {
-    handleAction(async () => {
-        $('#splitDouble').addClass('hidden');
-        const response = await fetch('/hit', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ player: playerId })
-        });
-        const data = await response.json();
-        await animateCard(data);
-    });
-}
-
-function standClick() {
-    handleAction(async () => {
-        $('#splitDouble').addClass('hidden');
-        const response = await fetch('/stand', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ player: playerId })
-        });
-        const data = await response.json();
-        await animateDealersTurn(data);
-    });
-}
-
-function doubleClick() {
-    handleAction(async () => {
-        if (playerMoney >= playerBet * 2) {
-            $('#double').addClass('inactive');
-            const response = await fetch('/double', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ player: playerId })
-            });
-            const data = await response.json();
-            await animateCard(data);
-            await animateDealersTurn(data);
-        } else {
-            $("#handResult").append("Not enough money to double down.");
-        }
-    });
-}
-
-function splitClick() {
-    handleAction(async () => {
+async function handleDouble() {
+    if (playerMoney >= playerBet * 2) {
         $('#double').addClass('inactive');
-        const response = await fetch('/split', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ player: playerId })
-        });
-        const data = await response.json();
-        await animateSplit(data);
-        showGameWindow(data);
-    });
-}
-
-async function insuranceClick(choice) {
-    handleAction(async () => {
-        const response = await fetch('/insurance', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ player: playerId, boughtInsurance: choice === 'yes' })
-        });
-        const data = await response.json();
-        await processInsurance(data, choice);
-    });
+        const data = await makeRequest('DOUBLE');
+        await animateCard(data);
+        await animateDealersTurn(data);
+    } else {
+        $("#handResult").append("Not enough money to double down.");
+    }
 }
 
 async function betAdjustClick(direction) {
     if (!$("#uiWindow").hasClass('processing')) {
-        if (direction === 'increase') {
-            if (playerMoney >= BET_AMOUNTS[playerBet + 1] && playerBet < 7) {
-                await setPlayerBet(playerBet + 1);
-            } else {
-                await setPlayerBet(1);
-            }
-        } else if (direction === 'decrease') {
-            if (playerBet > 1) {
-                await setPlayerBet(playerBet - 1);
-            } else {
-                await setPlayerBet(7);
-            }
-        }
+        const betAmount = direction === 'increase'
+            ? (playerMoney >= BET_AMOUNTS[playerBet + 1] && playerBet < 7 ? playerBet + 1 : 1)
+            : (playerBet > 1 ? playerBet - 1 : 7);
+
+        playerBet = betAmount;
+        $('#bet_amount').css('background-position', await getButtonBackgroundPosition(`bet${playerBet}`));
     }
 }
 
-//////////////////////////
+/////////////////////////
 // ANIMATION FUNCTIONS //
-//////////////////////////
+/////////////////////////
 
 async function animateDeal(data) {
     // Adjust player money
@@ -313,8 +267,8 @@ async function animateSplit(data) {
     let $secondCardElement = $(`#hand${splitHandIndex + 1} .playingCard:last-child`);
 
     gsap.to($secondCardElement, {
-        y: 150, 
-        duration: 0.5, 
+        y: 150,
+        duration: 0.5,
         onComplete: async () => {
             $secondCardElement.css('transform', '').css('y', '0'); // Reset transformations
             $(`#hand${newHandIndex + 1}`).append($secondCardElement);
@@ -322,6 +276,8 @@ async function animateSplit(data) {
             await drawNewCard(data, newHandIndex);
         }
     });
+
+    showGameWindow(data);
 }
 
 async function drawNewCard(data, handIndex) {
@@ -333,9 +289,9 @@ async function drawNewCard(data, handIndex) {
     updateScores(data);
 }
 
-////////////////////////////
+/////////////////////////////////
 // DISPLAY & UTILITY FUNCTIONS //
-////////////////////////////
+/////////////////////////////////
 
 async function displayStartingHands(data) {
     $("#playerHand").empty();
@@ -406,11 +362,6 @@ async function displaySplitHands() {
     await updateScores();
 }
 
-async function setPlayerBet(value) {
-    playerBet = value;
-    $("#bet_amount").text(value);
-}
-
 async function updateScores(dealerOnly = false) {
     if (!dealerOnly) {
         for (const [index, hand] of player.hands.entries()) {
@@ -437,13 +388,15 @@ async function showRewards(data) {
     }, 2000);
 }
 
-async function setGameWindow(data) {
-    if (gameWindow === data.gameWindow) {
+async function showGameWindow(data = {}) {
+    const loadWindow = data.gameWindow || 'bet';
+
+    if (gameWindow === loadWindow) {
         $("#uiWindow").removeClass('processing');
         return;
     }
 
-    switch (data.gameWindow) {
+    switch (loadWindow) {
         case 'bet':
             $('#dealerHand').empty();
             $('#dealerHand').append('<div class="no-arrow"></div><div class="dealerScore" style="background-position: -360px 0px;"></div><div class="card-back"></div><div class="card-back"></div>');
@@ -487,13 +440,13 @@ async function setGameWindow(data) {
             $('#hit-stand-window').addClass('hidden');
             break;
     }
-    gameWindow = data.gameWindow;
+    gameWindow = loadWindow;
     $("#uiWindow").removeClass('processing');
 }
 
-////////////////////////////
+//////////////////////////////
 // HELPER UTILITY FUNCTIONS //
-////////////////////////////
+//////////////////////////////
 
 async function getBackgroundPosition(code, positions, width, height, gap, columns, scale) {
     let position = positions[code];

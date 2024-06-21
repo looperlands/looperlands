@@ -1,5 +1,5 @@
 const axios = require('axios');
-const dao = require('../../js/dao');
+//const dao = require('../../js/dao');
 
 class JackAce {
     constructor() {
@@ -411,12 +411,14 @@ class JackAce {
 
     // Transfer gold from CORNHOLE to Player
     async payToPlayer(playerState) {
-        return await dao.transferResourceFromTo(this.CORNHOLE, playerState.player, playerState.reward);
+        console.log(`transfer from this.CORNHOLE to ${playerState.player}: ${playerState.reward}`);
+        //return await dao.transferResourceFromTo(this.CORNHOLE, playerState.player, playerState.reward);
     }
 
     // Transfer gold from Player to CORNHOLE
     async payToCORNHOLE(playerState, amount = playerState.playerBet) {  // default to playerBet, but allow override for insurance bet
-        return await dao.transferResourceFromTo(playerState.player, this.CORNHOLE, amount);
+        console.log(`transfer from ${playerState.player} to this.CORNHOLE: ${playerState.reward}`);
+        //return await dao.transferResourceFromTo(playerState.player, this.CORNHOLE, amount);
     }
 
     // Check betAmount against valid bets
