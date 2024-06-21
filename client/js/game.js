@@ -157,6 +157,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "m88nmysteryhood",
                     "m88ntaikotwin1",
                     "m88ntaikotwin2",
+                    "m88nstimytimy",
+                    "m88nrealtyagent",
                     //m88n Mobs
                     "balloondogb",
                     "balloondogy",
@@ -503,6 +505,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "item-m88nworkgloves",
                     "item-m88ncheesepizza",
                     "item-m88npizza",
+                    "item-m88nsword",
                     //Duckville Items
                     "item-EYEBALL",
                     "item-REDPOTION",

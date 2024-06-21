@@ -560,6 +560,27 @@ define(['character'], function (Character) {
             "We have a new quests on the way for you..."
         ],
 
+        "m88nstimytimy": [
+            "GM, I'm Stimy Timy!",
+            "I spent my stimulus on crypto, nfts, and stonks. I'm gonna be rich soon, living the island life!",
+            "You should check out my new collection!",
+            "You can integrate any of the NFT's from that collection as a LooperLands avatar or a companion!",
+            'Checkout <a target="_blank" href="https://loopexchange.art/collection/stimy-timy">my new collection here</a>...',
+            "If you want to buy a private island now checkout Nexus Real Estate, they have some for sale."
+        ],
+
+        "m88nrealtyagent": [
+            "Howdy! I'm Gary, the real estate agent for Nexus Realty.",
+            "If you're looking to buy some property in The Nexus, you've come to the right place.",
+            "Right now we have several properties available and when you buy from us you get a FREE Lambo!",
+            "If you're in the market for a beach house check out 147 Ocean Drive in West Paradise Point.",
+            "If you're looking for something a little more exclusive we have 4 private islands available in the Helio Islands.",
+            "That yacht over there, The Sun Chaser, has a private Captain's Quarters on it that is available to purchse.",
+            "And if you really want to get out of town, we have 2 m88n pods available in Lunaria",
+            'Checkout <a target="_blank" href="https://discord.gg/bjjNewZegM">PLANET M88NWALKER in Discord</a> and DM m88nwalker to inquire.',
+            "Have fun exploring The Nexus. There are lots of hidden treasures around here!"
+        ],
+
         //MRMlabs NPCs
         "tylerdurden": [
             "We are all part of the same compost heap.",
@@ -606,7 +627,6 @@ define(['character'], function (Character) {
         ],
 
         "taikotownnpc7": [
-            "Hey friend!",
             "Feel free to stick around and explore Taiko Town more or check out the many other worlds",
             "that are a part of LooperLands by hopping on the train across from each billboard!",
             'Come <a target="_blank" href="https://discord.gg/zWFKjfS2PA">join us in Discord</a> if you are not in there already...cheers!'
