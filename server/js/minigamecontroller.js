@@ -3,7 +3,7 @@ class MinigameController {
         this.minigames = {};
 
         this.minigamesConfig = [
-            { name: 'jackace', module: './jackace_ss.js' },
+            { name: 'jackace', module: '../apps/JackAce/jackace_ss.js' },
             // Add new minigames here
         ];
 
