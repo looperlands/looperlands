@@ -67,7 +67,8 @@ quests = [
         amount: 1,
         requiredQuest: "TRAILBLAZER_QUEST_2",
         level: 4,
-        medal: Types.Medals.HEARTH
+        medal: Types.Medals.HEARTH,
+        rental: "0x139b4906d04d012fd7b296bb06182b67d9f88734cf89a1de9b87e97508a82500"
     },
     {
         id: "TRAILBLAZER_QUEST_4",
@@ -101,7 +102,8 @@ quests = [
         amount: 3,
         requiredQuest: "TRAILBLAZER_QUEST_4",
         level: 6,
-        medal: Types.Medals.HEARTH
+        medal: Types.Medals.HEARTH,
+        rental: "0x344ec7868b6f0fc509e79ddf53b1320ce875673150cae151dd9cbd2764d96273"
     },
     {
         id: "TRAILBLAZER_QUEST_6",
