@@ -103,11 +103,11 @@ function setUpButtonEvents() {
     const buttons = [
         { id: '#bet_increase', hoverState: 'betIncreaseHover', defaultState: 'betIncrease', clickFunction: () => betAdjustClick('increase') },
         { id: '#bet_decrease', hoverState: 'betDecreaseHover', defaultState: 'betDecrease', clickFunction: () => betAdjustClick('decrease') },
-        { id: '#deal', hoverState: 'dealHover', defaultState: 'deal', clickFunction: () => handleAction(() => actionHandlers['DEAL']()) },
-        { id: '#hit', hoverState: 'hitHover', defaultState: 'hit', clickFunction: () => handleAction(() => actionHandlers['HIT']()) },
-        { id: '#stand', hoverState: 'standHover', defaultState: 'stand', clickFunction: () => handleAction(() => actionHandlers['STAND']()) },
-        { id: '#double', hoverState: 'doubleHover', defaultState: 'double', clickFunction: () => handleAction(() => actionHandlers['DOUBLE']()) },
-        { id: '#split', hoverState: 'splitHover', defaultState: 'split', clickFunction: () => handleAction(() => actionHandlers['SPLIT']()) },
+        { id: '#deal', hoverState: 'dealHover', defaultState: 'deal', clickFunction: () => handleDeal() },
+        { id: '#hit', hoverState: 'hitHover', defaultState: 'hit', clickFunction: () => handleAction(processAction('HIT', {}, animateCard)) },
+        { id: '#stand', hoverState: 'standHover', defaultState: 'stand', clickFunction: () => handleAction(processAction('STAND', {}, animateDealersTurn)) },
+        { id: '#double', hoverState: 'doubleHover', defaultState: 'double', clickFunction: () => handleDouble() },
+        { id: '#split', hoverState: 'splitHover', defaultState: 'split', clickFunction: () => handleAction(processAction('SPLIT', {}, async (data) => { await animateSplit(data); })) },
         { id: '#ins-yes', hoverState: 'yesHover', defaultState: 'yes', clickFunction: () => handleAction(() => actionHandlers['INSURANCE']('yes')) },
         { id: '#ins-no', hoverState: 'noHover', defaultState: 'no', clickFunction: () => handleAction(() => actionHandlers['INSURANCE']('no')) }
     ];
@@ -136,18 +136,13 @@ function setUpButtonEvents() {
 /////////////////////////////
 
 const actionHandlers = {
-    'DEAL': handleDeal,
-    'HIT': async () => processAction('HIT', {}, animateCard),
-    'STAND': async () => processAction('STAND', {}, animateDealersTurn),
-    'DOUBLE': handleDouble,
-    'SPLIT': async () => processAction('SPLIT', {}, async (data) => { await animateSplit(data); }),
     'INSURANCE': async (choice) => processAction('INSURANCE', { boughtInsurance: choice === 'yes' }, async (data) => {
         await processInsurance(data, choice);
     })
 };
 
 async function handleAction(action) {
-    console.log(`processing action: ${action}`);
+    console.log('handle: ', action);
     if (!$("#uiWindow").hasClass('processing')) {
         $("#uiWindow").addClass('processing');
         await action();
@@ -156,7 +151,7 @@ async function handleAction(action) {
 }
 
 async function makeRequest(action, additionalData = {}) {
-    console.log(`making request: ${action}`);
+    console.log('making request: ', action);
     const response = await fetch('/minigame', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -166,22 +161,18 @@ async function makeRequest(action, additionalData = {}) {
 }
 
 async function processAction(action, additionalData = {}, animationFunction) {
-    handleAction(async () => {
-        const data = await makeRequest(action, additionalData);
-        await animationFunction(data);
-    });
+    const data = await makeRequest(action, additionalData);
+    await animationFunction(data);
 }
 
-function handleDeal() {
-    handleAction(async () => {
-        $("#handResult").empty();
-        if (playerBet > 0) {
-            const data = await makeRequest('DEAL', { betAmount: playerBet });
-            await animateDeal(data);
-        } else {
-            $("#handResult").append("Place a bet to start the game.");
-        }
-    });
+async function handleDeal() {
+    $("#handResult").empty();
+    if (playerBet > 0) {
+        const data = await makeRequest('DEAL', { betAmount: playerBet });
+        await animateDeal(data);
+    } else {
+        $("#handResult").append("Place a bet to start the game.");
+    }
 }
 
 async function handleDouble() {

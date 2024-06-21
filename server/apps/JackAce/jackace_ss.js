@@ -279,7 +279,7 @@ class JackAce {
     // Initialize a player's game state
     async initializeGame(player, betAmount, deckId) {
         const validBetAmount = this.getValidBetAmount(betAmount);
-        const playerMoney = await this.getGoldAmount();
+        const playerMoney = 1000; // need to fix this to pull actual gold
         return {
             player: player,
             playerMoney: playerMoney,
