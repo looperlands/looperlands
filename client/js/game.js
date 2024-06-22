@@ -5980,7 +5980,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     console.log("Map loaded.");
                     var tilesetIndex = self.renderer.upscaledRendering ? 0 : self.renderer.scale - 1;
                     self.renderer.setTileset(self.map.tilesets[tilesetIndex]);
-                    self.map._initStreamCheck();
+                    self.map._initStreamCheck();                       
                 });
             },
 
@@ -8686,6 +8686,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     }
                     else {
                         this.makePlayerGoTo(pos.x, pos.y);
+                        if ($('#miniMap').is(':visible')) {
+                            this.app.toggleMiniMap(true);
+                        }
                     }
                 }
             },

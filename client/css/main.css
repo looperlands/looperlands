@@ -941,13 +941,13 @@ body.inventory .inventorySidebar {
 #create-new span span:hover {color:#b2af9b;}
 #playername {color:#fff;}
 
-#credits, #loadcharacter, #confirmation, #death, #error, #settings, #keyboardCommands, #instructions, #gamepadCommands, #announcement, #playerClassSelection, #avatarStats {position:absolute;left:50%;text-align:center;font-family:'GraphicPixel', sans-serif;z-index:1000;}
+#credits, #loadcharacter, #confirmation, #death, #error, #settings, #keyboardCommands, #instructions, #gamepadCommands, #announcement, #playerClassSelection, #avatarStats, #miniMap {position:absolute;left:50%;text-align:center;font-family:'GraphicPixel', sans-serif;z-index:1000;}
 
 #playerimage {image-rendering: -moz-crisp-edges; image-rendering: -webkit-optimize-contrast;}
 
 #parchment p {font-family:'GraphicPixel';}
 
-#credits, #death, #settings, #keyboardCommands, #instructions, #gamepadCommands, #announcement, #playerClassSelection, #avatarStats {top:50%;}
+#credits, #death, #settings, #keyboardCommands, #instructions, #gamepadCommands, #announcement, #playerClassSelection, #avatarStats, #miniMap {top:50%;}
 .intro #credits {top:55%;}
 #credits h1 a {color:#fcda5c;text-decoration:none;}
 #authors div a {display:block;color:#fff;text-decoration:none;}
@@ -1086,7 +1086,7 @@ footer div  {display:inline-block;}
     opacity: 1;
     transition: ease-in all 0.3s;
 }
-#settings, #keyboardCommands, #instructions, #gamepadCommands, #announcement, #playerClassSelection, #avatarStats {
+#settings, #keyboardCommands, #instructions, #gamepadCommands, #announcement, #playerClassSelection, #avatarStats, #miniMap {
     color: #b9b9b9;
     padding:0 25px;
     width:770px;
@@ -1095,6 +1095,10 @@ footer div  {display:inline-block;}
     left: calc(50% - 400px);
     padding-bottom: 40px;
     transition: ease-in all 0.3s;
+}
+
+#miniMap {
+    background: transparent !important; 
 }
 
 #settings small {
@@ -1257,6 +1261,56 @@ footer div  {display:inline-block;}
     justify-content: space-around;
 }
 
+
+/* Parent container with transparent background */
+#miniMap .panelContent {
+    width: 100%;
+    height: 400px;  /* Set a fixed height */
+    overflow-y: auto;  /* Allow vertical scrolling */
+    overflow-x: hidden;  /* Hide horizontal scrolling */
+    position: relative;  /* Ensure the playerDot can be absolutely positioned */
+    background: transparent;  /* Fully transparent background */
+    opacity: 1; /* Ensures the container itself is fully transparent */
+}
+
+/* Hide scrollbar for Chrome, Safari, and Opera */
+#miniMap .panelContent::-webkit-scrollbar {
+    display: none;
+}
+
+/* Image inside the panelContent with 50% opacity */
+#miniMap .panelContent img {
+    display: block;  /* Ensure the image is treated as a block-level element */
+    width: 100%;  /* Scale the image to fit the width of the container */
+    height: auto;  /* Maintain the aspect ratio */
+    opacity: 0.75;  /* Set the image opacity to 50% */
+}
+
+/* Red dot representing the player */
+.playerDot {
+    width: 10px;  /* Set the size of the dot */
+    height: 10px;  /* Set the size of the dot */
+    background-color: red;  /* Red color for the dot */
+    border-radius: 50%;  /* Make it a circle */
+    position: absolute;  /* Position it absolutely within the container */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Label above the red dot */
+.playerLabel {
+    position: absolute;
+    top: -20px;  /* Adjust as needed to position the label above the dot */
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;  /* Color of the text */
+    font-size: 12px;  /* Adjust font size as needed */
+    font-weight: bold;
+    background: rgba(0, 0, 0, 0.5);  /* Optional: Background color for better visibility */
+    padding: 2px 4px;  /* Optional: Padding for the label */
+    border-radius: 3px;  /* Optional: Rounded corners for the label */
+}
 /* Magic Parchment */
 
 .parchment-left {position:absolute;top:0;left:0%;}
