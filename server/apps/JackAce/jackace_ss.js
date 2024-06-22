@@ -1,9 +1,10 @@
 const axios = require('axios');
-//const dao = require('../../js/dao');
+const dao = require('../../js/dao');
 
 class JackAce {
     constructor() {
         this.playerGameStates = {};
+        this.playerId = null;
 
         // GLOBALS
         this.GOLD = "21300041";
@@ -28,48 +29,30 @@ class JackAce {
     }
 
     // Handle various requested actions
-    async handleAction(req, res) {
-        const { player, action, betAmount } = req.body;
+    async handleAction(req, res, playerId, action) {
+        if (!this.playerId) { this.playerId = playerId; }
+        console.log(`processing action: ${action} for ${this.playerId}`);
 
-        // Validate player and action
-        if (!player || !action) {
-            return res.status(400).json({ message: "Player or action not recognized." });
+        const validationError = await this.validateAction(req, action);
+        
+        if (validationError) {
+            console.log(`validation error: `, validationError);
+            return res.status(validationError.status).json({ message: validationError.message });
         }
 
-        // Check if this player is in playerGameState, if not >> initialize their game
-        let playerState = this.playerGameStates[player];
-        if (!playerState) {
-            if (!betAmount) {
-                return res.status(400).json({ message: "Invalid bet." });
-            }
-            try {
-                const response = await axios.get(`http://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=${this.DECK_COUNT}`);
-                const deckId = response.data.deck_id;
-                playerState = await this.initializeGame(player, betAmount, deckId);
-                this.playerGameStates[player] = playerState;
-            } catch (error) {
-                console.error("Error initializing deck:", error);
-                res.status(500).json({ message: "Internal server error" });
-                return;
-            }
-        }
-
-        // Check if player has a hand in progress
-        if (action === 'DEAL' && playerState.inProgress) {
-            // DEAL only available when a hand is not currently in progress
-            return res.status(400).json({ message: `[DEAL] Invalid action >> hand in progress.` });
-        } else if (!playerState.inProgress && action !== 'DEAL') {
-            // Other actions only available when a hand is in progress
-            return res.status(400).json({ message: `[${action}] Invalid action >> no hand in progress.` });
-        }
+        const playerState = this.playerGameStates[this.playerId];
+        console.log(playerState);
 
         try {
             switch (action) {
                 case 'DEAL':
+                    console.log('processing DEAL');
                     if (await this.payToCORNHOLE(playerState)) {
                         await this.deal(playerState);
+                        console.log('returning response');
                         res.json(this.sanitizePlayerState(playerState));
                     } else {
+                        console.log('not enough gold');
                         return res.status(400).json({ message: "Not Enough Gold." });
                     }
                     break;
@@ -120,6 +103,7 @@ class JackAce {
 
     // Function to deal for a player
     async deal(playerState) {
+        console.log('dealing...');
         // Reset player's hands to the initial state
         this.resetHand(playerState);
 
@@ -277,11 +261,40 @@ class JackAce {
     //////////////////////
 
     // Initialize a player's game state
-    async initializeGame(player, betAmount, deckId) {
+    async initializePlayerState(req) {
+        const betAmount = req.body.betAmount;
+
+        if (!betAmount) {
+            throw new Error("Invalid bet.");
+        }
+
+        try {
+            const deckId = await this.getNewDeckId();
+            console.log('deck id: ', deckId);
+            return await this.createPlayerState(betAmount, deckId);
+        } catch (error) {
+            console.error("Error initializing deck:", error);
+            throw error;
+        }
+    }
+
+    async getNewDeckId() {
+        try {
+            const response = await axios.get(`http://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=${this.DECK_COUNT}`);
+            return response.data.deck_id;
+        } catch (error) {
+            console.error("Error fetching new deck ID:", error);
+            throw error;
+        }
+    }
+
+    async createPlayerState(betAmount, deckId) {
         const validBetAmount = this.getValidBetAmount(betAmount);
-        const playerMoney = 1000; // need to fix this to pull actual gold
+        console.log('valid bet: ', validBetAmount);
+        const playerMoney = await dao.getResourceBalance(this.playerId, this.GOLD); // need to fix this to pull actual gold
+        console.log('playerMoney: ', playerMoney);
         return {
-            player: player,
+            player: this.playerId,
             playerMoney: playerMoney,
             deckId: deckId,
             cardsLeft: this.DECK_COUNT * 52,
@@ -305,7 +318,7 @@ class JackAce {
             },
             canDouble: false,
             boughtInsurance: false,
-            inProgress: true,
+            inProgress: false,
             lastActionTime: new Date()
         };
     }
@@ -396,41 +409,27 @@ class JackAce {
         playerState.gameWindow = 'bet';
     }
 
-    // Look up player's gold balance
-    async getGoldAmount() {
-        return new Promise((resolve, reject) => {
-            const sessionId = new URLSearchParams(window.location.search).get('sessionId');
-            const inventoryQuery = `/session/${sessionId}/inventory`;
-            axios.get(inventoryQuery).then(response => {
-                resolve(response.data.resources[this.GOLD] || 0);
-            }).catch(error => {
-                reject(error);
-            });
-        });
-    }
-
     // Transfer gold from CORNHOLE to Player
     async payToPlayer(playerState) {
         console.log(`transfer from this.CORNHOLE to ${playerState.player}: ${playerState.reward}`);
+        return true;
         //return await dao.transferResourceFromTo(this.CORNHOLE, playerState.player, playerState.reward);
     }
 
     // Transfer gold from Player to CORNHOLE
     async payToCORNHOLE(playerState, amount = playerState.playerBet) {  // default to playerBet, but allow override for insurance bet
-        console.log(`transfer from ${playerState.player} to this.CORNHOLE: ${playerState.reward}`);
+        console.log(`transfer from ${playerState.player} to this.CORNHOLE: ${playerState.playerBet}`);
+        const goldBalance = await dao.getResourceBalance(playerState.player, this.GOLD);
+        const cornholeBALANCE = await dao.getResourceBalance(this.CORNHOLE, this.GOLD);
+        console.log('player balance: ', goldBalance);
+        console.log('cornhole balance: ', cornholeBALANCE);
+        return true;
         //return await dao.transferResourceFromTo(playerState.player, this.CORNHOLE, amount);
-    }
-
-    // Check betAmount against valid bets
-    // if invalid, set bet amount to the nearest valid amount less than the provided amount
-    getValidBetAmount(betAmount) {
-        return this.BET_AMOUNTS.reduce((prev, curr) => {
-            return curr <= betAmount ? curr : prev;
-        }, this.BET_AMOUNTS[0]);
     }
 
     // Need to initially hide values in the dealers hand to prevent cheating
     sanitizePlayerState(playerState) {
+        console.log('sanitizing playerstate');
         const sanitizedState = { ...playerState };
         if (!playerState.dealerHand.hasPlayed) {
             sanitizedState.dealerHand = {
@@ -439,6 +438,7 @@ class JackAce {
                 aceIs11: "hidden"
             };
         }
+        console.log(sanitizedState);
         return sanitizedState;
     }
 
@@ -498,6 +498,49 @@ class JackAce {
         });
 
         return possibleSums.includes(9) || possibleSums.includes(10) || possibleSums.includes(11);
+    }
+
+    //////////////////////////
+    // VALIDATION FUNCTIONS //
+    //////////////////////////
+
+    async validateAction(req, action) {
+        console.log('validating action');
+
+        // Validate player and action
+        if (!this.playerId || !action) {
+            return { status: 400, message: "Player or action not recognized." };
+        }
+
+        console.log('initializing state');
+
+        // Initialize player state if it doesn't exist
+        if (!this.playerGameStates[this.playerId]) {
+            try {
+                this.playerGameStates[this.playerId] = await this.initializePlayerState(req);
+                
+            } catch (error) {
+                console.error("Error initializing player state:", error);
+                return { status: 500, message: "Internal server error" };
+            }
+        }
+
+        // Validate action based on game state
+        if (action === 'DEAL' && this.playerGameStates[this.playerId].inProgress) {
+            return { status: 400, message: `[DEAL] Invalid action >> hand in progress.` };
+        } else if (!this.playerGameStates[this.playerId].inProgress && action !== 'DEAL') {
+            return { status: 400, message: `[${action}] Invalid action >> no hand in progress.` };
+        }
+
+        return null;
+    }
+
+    // Check betAmount against valid bets
+    // if invalid, set bet amount to the nearest valid amount less than the provided amount
+    getValidBetAmount(betAmount) {
+        return this.BET_AMOUNTS.reduce((prev, curr) => {
+            return curr <= betAmount ? curr : prev;
+        }, this.BET_AMOUNTS[0]);
     }
 }
 

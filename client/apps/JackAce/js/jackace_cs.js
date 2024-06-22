@@ -1,8 +1,8 @@
 // Global Variables
 let gameWindow = ""; // Current UI window shown
 let playerBet = 1;
-let playerMoney = 1000; // Example player money, update accordingly
-let playerId = 'player1'; // Example player ID, update accordingly
+let playerMoney = 0;
+let playerId = "";
 const BET_AMOUNTS = { 1: 1, 2: 2, 3: 5, 4: 10, 5: 25, 6: 50, 7: 100 };
 const cardScale = 10; // Scale of the cards
 
@@ -72,6 +72,8 @@ $(document).ready(function () {
 });
 
 async function init() {
+    playerMoney = await getGoldAmount();
+    console.log(playerMoney);
     $('#uiWindow').empty();
     $('#uiWindow').append(`
         <div id="bet-window">
@@ -151,13 +153,25 @@ async function handleAction(action) {
 }
 
 async function makeRequest(action, additionalData = {}) {
-    console.log('making request: ', action);
-    const response = await fetch('/minigame', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ minigame: 'jackace', player: playerId, action, ...additionalData })
+    return new Promise((resolve, reject) => {
+        console.log('making request: ', action);
+        const sessionId = new URLSearchParams(window.location.search).get('sessionId');
+        const minigameQuery = `/session/${sessionId}/minigame`;
+        console.log('post: ', minigameQuery);
+
+        axios.post(minigameQuery, {
+            minigame: 'jackace',
+            player: playerId,
+            action,
+            ...additionalData
+        })
+        .then(response => {
+            resolve(response.data);
+        })
+        .catch(error => {
+            reject(error);
+        });
     });
-    return response.json();
 }
 
 async function processAction(action, additionalData = {}, animationFunction) {
@@ -169,6 +183,8 @@ async function handleDeal() {
     $("#handResult").empty();
     if (playerBet > 0) {
         const data = await makeRequest('DEAL', { betAmount: playerBet });
+        console.log('deal response');
+        console.log(data);
         await animateDeal(data);
     } else {
         $("#handResult").append("Place a bet to start the game.");
@@ -438,6 +454,21 @@ async function showGameWindow(data = {}) {
 //////////////////////////////
 // HELPER UTILITY FUNCTIONS //
 //////////////////////////////
+
+// Look up player's gold balance
+async function getGoldAmount() {
+    return new Promise((resolve, reject) => {
+        const sessionId = new URLSearchParams(window.location.search).get('sessionId');
+        const inventoryQuery = `/session/${sessionId}/inventory`;
+        console.log(inventoryQuery);
+
+        axios.get(inventoryQuery).then(response => {
+            resolve(response.data.resources[this.GOLD] || 0);
+        }).catch(error => {
+            reject(error);
+        });
+    });
+}
 
 async function getBackgroundPosition(code, positions, width, height, gap, columns, scale) {
     let position = positions[code];

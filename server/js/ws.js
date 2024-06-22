@@ -44,7 +44,7 @@ const LOOPERLANDS_PLATFORM_API_KEY = process.env.LOOPERLANDS_PLATFORM_API_KEY;
 
 const platformClient = new platform.LooperLandsPlatformClient(LOOPERLANDS_PLATFORM_API_KEY, LOOPERLANDS_PLATFORM_BASE_URL);
 const dynamicNFTcontroller = new dynamicnft.DynamicNFTController(cache, platformClient, Types);
-const minigameController = new MinigameController();
+const minigameController = new MinigameController(cache);
 
 function extractDetails(inputUrl) {
     const parsedUrl = new URL(inputUrl);
@@ -1109,7 +1109,7 @@ WS.socketIOServer = Server.extend({
         });
 
         // MINIGAME CONTROLLER
-        app.post('/minigame', (req, res) => {minigameController.handleRequest(req, res);});
+        app.post('/session/:sessionId/minigame', (req, res) => {minigameController.handleRequest(req, res);});
 
         // LUCKYFUNKZ 
         app.get('/session/:sessionId/getSpin/:linesPlayed/:bet', async (req, res) => {
