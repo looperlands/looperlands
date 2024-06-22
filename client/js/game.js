@@ -8686,6 +8686,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     }
                     else {
                         this.makePlayerGoTo(pos.x, pos.y);
+                        if ($('#miniMap').is(':visible')) {
+                            this.app.toggleMiniMap(true);
+                        }
                     }
                 }
             },

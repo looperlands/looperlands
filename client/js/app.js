@@ -968,7 +968,7 @@ define(['jquery', 'storage'], function ($, Storage) {
 
         },
 
-        toggleMiniMap: function() {
+        toggleMiniMap: function(justUpdateDot) {
             // Get the player dot element and the image element
             const playerDot = document.getElementById('playerDot');
             const mapImage = document.querySelector('#miniMap .panelContent img');
@@ -997,6 +997,11 @@ define(['jquery', 'storage'], function ($, Storage) {
         
                 // Scroll the panel to the player's Y position
                 panelContent.scrollTop = scaledPlayerY - panelContent.clientHeight / 2 + playerDot.clientHeight / 2;
+            }
+
+            if (justUpdateDot) {
+                applyCoordinates();
+                return;
             }
         
             // Function to handle image loading error

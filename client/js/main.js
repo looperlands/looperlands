@@ -66,7 +66,12 @@ define(['jquery', 'app'], function($, App) {
                     app.hideWindows();
                     app.toggleInstructions();
                 });
-        
+
+                $("#toggleMiniMapButton").click(function() {
+                    app.hideWindows();
+                    app.toggleMiniMap();
+                });
+
                 $('#instructions').click(function() {
                     app.hideWindows();
                 });
