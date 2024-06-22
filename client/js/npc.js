@@ -547,16 +547,16 @@ define(['character'], function (Character) {
         "m88ntaikotwin1": [
             "Yo yo! We're the Taiko Twins!",
             "Head north to visit Taiko Town, and head south to explore Paradise Point...",
-            "Like our house and Lambo down there?",
-            'They are for sale! Checkout <a target="_blank" href="https://discord.gg/bjjNewZegM">PLANET M88NWALKER in Discord</a> and DM m88nwalker to inquire.',
+            //"Like our house and Lambo down there?",
+            //'They are for sale! Checkout <a target="_blank" href="https://discord.gg/bjjNewZegM">PLANET M88NWALKER in Discord</a> and DM m88nwalker to inquire.',
             "We have a new quests on the way for you..."
         ],
 
         "m88ntaikotwin2": [
             "Yo yo! We're the Taiko Twins!",
             "Head south to explore Paradise Point, and head north to visit Taiko Town...",
-            "Like our house and Lambo down there?",
-            'They are for sale! Checkout <a target="_blank" href="https://discord.gg/bjjNewZegM">PLANET M88NWALKER in Discord</a> and DM m88nwalker to inquire.',
+            //"Like our house and Lambo down there?",
+            //'They are for sale! Checkout <a target="_blank" href="https://discord.gg/bjjNewZegM">PLANET M88NWALKER in Discord</a> and DM m88nwalker to inquire.',
             "We have a new quests on the way for you..."
         ],
 
@@ -564,9 +564,10 @@ define(['character'], function (Character) {
             "GM, I'm Stimy Timy!",
             "I spent my stimulus on crypto, nfts, and stonks. I'm gonna be rich soon, living the island life!",
             "You should check out my new collection!",
-            "You can integrate any of the NFT's from that collection as a LooperLands avatar or a companion!",
+            "You can integrate any of the NFT's from my collection as a LooperLands avatar or a companion!",
             'Checkout <a target="_blank" href="https://loopexchange.art/collection/stimy-timy">my new collection here</a>...',
-            "If you want to buy a private island now checkout Nexus Real Estate, they have some for sale."
+            'Click this link to <a target="_blank" href="https://x.com/stimytimy">follow me on X here</a>...',
+            "If you want to buy a private island here in The Nexus checkout Nexus Real Estate, they have some for sale."
         ],
 
         "m88nrealtyagent": [
@@ -575,9 +576,10 @@ define(['character'], function (Character) {
             "Right now we have several properties available and when you buy from us you get a FREE Lambo!",
             "If you're in the market for a beach house check out 147 Ocean Drive in West Paradise Point.",
             "If you're looking for something a little more exclusive we have 4 private islands available in the Helio Islands.",
-            "That yacht over there, The Sun Chaser, has a private Captain's Quarters on it that is available to purchse.",
-            "And if you really want to get out of town, we have 2 m88n pods available in Lunaria",
+            //"That yacht over there, The Sun Chaser, has a private Captain's Quarters on it that is available to purchse.",
+            //"And if you really want to get out of town, we have 2 m88n pods available in Lunaria",
             'Checkout <a target="_blank" href="https://discord.gg/bjjNewZegM">PLANET M88NWALKER in Discord</a> and DM m88nwalker to inquire.',
+            'On X? <a target="_blank" href="https://twitter.com/moonwalker_nfts">Give him a follow</a> to stay updated.',
             "Have fun exploring The Nexus. There are lots of hidden treasures around here!"
         ],
 
@@ -595,19 +597,19 @@ define(['character'], function (Character) {
 
         //Taiko Town NPCs
         "taikotownnpc1": [
-            "Hello World.",
-            "I am the first NPC in Taiko Town, it feels good to be alive!",
-            //"Well hello there!",
-            //"You must be here to learn about LooperLands.",
-            //"To get started, head down to the bottom of this map and locate the Taiko HQ.",
-            //"My friend is down there and he's expecting you!",
-            //"Look for the double pink arrows pointing toward him.",
-            //"He'll have instructions for your first quest..."
-            "Pretty soon my friends and I are going to have a bunch of quests we'll need your help with..."
+            //"Hello World.",
+            //"I am the first NPC in Taiko Town, it feels good to be alive!",
+            "Well hello there!",
+            "You must be here to learn about LooperLands.",
+            "To get started, head down to the bottom of this map and locate the Taiko HQ.",
+            "My friend is down there and he's expecting you!",
+            "Look for the double pink arrows pointing toward him.",
+            "He'll have instructions for your first quest..."
+            //"Pretty soon my friends and I are going to have a bunch of quests we'll need your help with..."
         ],
 
         "taikotownnpc2": [
-            "Well hello!"
+            "Hello!"
         ],
 
         "taikotownnpc3": [
