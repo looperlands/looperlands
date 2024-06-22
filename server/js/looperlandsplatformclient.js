@@ -313,6 +313,16 @@ class LooperLandsPlatformClient {
         }
     }
 
+    async getFreeRental(nftId, walletAddress) {
+        try {
+            const url = `/api/game/rental/free/${nftId}/${walletAddress}`
+            const response = await this.client.get(url);
+            return response.data;
+        } catch (error) {
+            this.handleError(error);
+        }
+    }
+
     handleError(error) {
         if (error.response) {
             // The request was made and the server responded with a status code

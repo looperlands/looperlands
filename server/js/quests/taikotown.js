@@ -1,37 +1,18 @@
 Types = require("../../../shared/js/gametypes");
 quests = [
     {
-        id: "WELCOME_QUEST_1",
-        name: "Trailblazer's Sword Request",
-        startText: ["Well hello there!",
-        "You must be here to learn about LooperLands.",
-        "To get started, head down to the bottom of this map and locate the Taiko HQ.",
-        "Make sure to pick up a sword on your way there.",
-        "My friend is down there and he's expecting you!",
-        "Look for the double pink arrows pointing toward him.",
-        "He'll have instructions for your first quest..."],
-        endText: ["Looking for a quest? Look for the double pink arrows pointing toward an NPC."],
-        eventType: "LOOT_ITEM",
-        npc: Types.Entities.TAIKOTOWNNPC1,
-        target: Types.Entities.M88NSWORD,
-        amount: 1,
-        level: 1,
-        medal: Types.Medals.HEARTH
-    },
-    {
         id: "TRAILBLAZER_QUEST_1",
         name: "Trailblazer's Rat Bashing Request",
         startText: ["Welcome to Taiko Town!",
         "This is one of many worlds in LooperLands, a free online multiplayer role playing game.",
-        "Grab a sword out of your inventory and go bash 5 rats over behind the 11-7 to earn 1,000 bonus xp!",
+        "Grab a sword out of your inventory and go bash a rat over behind the 11-7 to earn 1,000 bonus xp!",
         "Then head up to the Video Game store and meet the Gamer Pirate to learn more and get a new quest..."],
         endText: ["Earn bonus xp by completing certain quests!"],
         eventType: "KILL_MOB",
         npc: Types.Entities.TAIKOTOWNNPC2,
         target: Types.Entities.RAT,
-        amount: 5,
-        level: 2,
-        requiredQuest: "WELCOME_QUEST_1",
+        amount: 1,
+        level: 1,
         xp: 1000,
         medal: Types.Medals.HEARTH
     },
@@ -42,14 +23,14 @@ quests = [
         "Slaying enemies is one way to earn xp and level your assets up here in LooperLands.",
         "Another way is by completing loot quests for bonus xp.",
         "If you head over to the Pet Store you should see some retro joysticks along the way.",
-        "Collect 3 of them and then meet the owner of the Pet Store to learn more and get a new quest..."],
+        "Collect 3 to earn 2,000 bonus xp, then meet the Pet Store owner to learn more and get a new quest..."],
         endText: ["Some items are consumables that have extra utility like temporary bonuses or even unlocking doors!"],
         eventType: "LOOT_ITEM",
         npc: Types.Entities.TAIKOTOWNNPC3,
         target: Types.Entities.M88NJOYSTICK,
         amount: 3,
         requiredQuest: "TRAILBLAZER_QUEST_1",
-        level: 3,
+        level: 2,
         xp: 2000,
         medal: Types.Medals.HEARTH
     },
@@ -66,8 +47,9 @@ quests = [
         target: Types.Entities.BALLOONDOGP,
         amount: 1,
         requiredQuest: "TRAILBLAZER_QUEST_2",
-        level: 4,
-        medal: Types.Medals.HEARTH
+        level: 3,
+        medal: Types.Medals.HEARTH,
+        rental: "0x139b4906d04d012fd7b296bb06182b67d9f88734cf89a1de9b87e97508a82500"
     },
     {
         id: "TRAILBLAZER_QUEST_4",
@@ -83,7 +65,7 @@ quests = [
         target: Types.Entities.BALLOONDOGP,
         amount: 1,
         requiredQuest: "TRAILBLAZER_QUEST_3",
-        level: 5,
+        level: 4,
         xp: 3000,
         medal: Types.Medals.HEARTH
     },
@@ -100,8 +82,9 @@ quests = [
         target: Types.Entities.M88NDUCKY,
         amount: 3,
         requiredQuest: "TRAILBLAZER_QUEST_4",
-        level: 6,
-        medal: Types.Medals.HEARTH
+        level: 5,
+        medal: Types.Medals.HEARTH,
+        rental: "0x344ec7868b6f0fc509e79ddf53b1320ce875673150cae151dd9cbd2764d96273"
     },
     {
         id: "TRAILBLAZER_QUEST_6",
@@ -115,7 +98,7 @@ quests = [
         target: Types.Entities.M88NLUGGAGE,
         amount: 3,
         requiredQuest: "TRAILBLAZER_QUEST_5",
-        level: 7,
+        level: 6,
         xp: 4000,
         medal: Types.Medals.HEARTH
     },
@@ -131,7 +114,7 @@ quests = [
         target: Types.Entities.M88NBRONZEMEDAL,
         amount: 1,
         requiredQuest: "TRAILBLAZER_QUEST_6",
-        level: 8,
+        level: 7,
         xp: 10000,
         medal: Types.Medals.HEARTH
     }
