@@ -1006,7 +1006,7 @@ define(['jquery', 'storage'], function ($, Storage) {
         
             // Function to handle image loading error
             function handleImageError() {
-                panelContent.innerHTML = "<p>There is no mini map for this map.</p>";
+                panelContent.innerHTML = "";
             }
         
             // Set the error handler for the image
