@@ -992,13 +992,9 @@ define(['jquery', 'storage'], function ($, Storage) {
                 const scaleX = clientWidth / naturalWidth;
                 const scaleY = clientHeight / naturalHeight;
         
-                console.log('Scale factors:', scaleX, scaleY);
-        
                 // Calculate the scaled player position
                 const scaledPlayerX = playerX * scaleX;
                 const scaledPlayerY = playerY * scaleY;
-        
-                console.log('Scaled player coordinates:', scaledPlayerX, scaledPlayerY);
         
                 // Set the player's position on the map
                 playerDot.style.left = scaledPlayerX + 'px';
