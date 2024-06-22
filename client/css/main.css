@@ -1097,6 +1097,10 @@ footer div  {display:inline-block;}
     transition: ease-in all 0.3s;
 }
 
+#miniMap {
+    background: transparent !important; 
+}
+
 #settings small {
     padding-top:20px;
 }
@@ -1258,20 +1262,15 @@ footer div  {display:inline-block;}
 }
 
 
-/* Parent container */
+/* Parent container with transparent background */
 #miniMap .panelContent {
     width: 100%;
-    height: 400px; /* Set a fixed height */
-    overflow-y: auto; /* Allow vertical scrolling */
-    overflow-x: hidden; /* Hide horizontal scrolling */
-    position: relative; /* Ensure the playerDot can be absolutely positioned */
-}
-
-/* Image inside the panelContent */
-#miniMap .panelContent img {
-    display: block; /* Ensure the image is treated as a block-level element */
-    width: 100%; /* Scale the image to fit the width of the container */
-    height: auto; /* Maintain the aspect ratio */
+    height: 400px;  /* Set a fixed height */
+    overflow-y: auto;  /* Allow vertical scrolling */
+    overflow-x: hidden;  /* Hide horizontal scrolling */
+    position: relative;  /* Ensure the playerDot can be absolutely positioned */
+    background: transparent;  /* Fully transparent background */
+    opacity: 1; /* Ensures the container itself is fully transparent */
 }
 
 /* Hide scrollbar for Chrome, Safari, and Opera */
@@ -1279,19 +1278,21 @@ footer div  {display:inline-block;}
     display: none;
 }
 
-/* Hide scrollbar for IE, Edge, and Firefox */
-#miniMap .panelContent {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+/* Image inside the panelContent with 50% opacity */
+#miniMap .panelContent img {
+    display: block;  /* Ensure the image is treated as a block-level element */
+    width: 100%;  /* Scale the image to fit the width of the container */
+    height: auto;  /* Maintain the aspect ratio */
+    opacity: 0.75;  /* Set the image opacity to 50% */
 }
 
 /* Red dot representing the player */
 .playerDot {
-    width: 10px; /* Set the size of the dot */
-    height: 10px; /* Set the size of the dot */
-    background-color: red; /* Red color for the dot */
-    border-radius: 50%; /* Make it a circle */
-    position: absolute; /* Position it absolutely within the container */
+    width: 10px;  /* Set the size of the dot */
+    height: 10px;  /* Set the size of the dot */
+    background-color: red;  /* Red color for the dot */
+    border-radius: 50%;  /* Make it a circle */
+    position: absolute;  /* Position it absolutely within the container */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1300,17 +1301,16 @@ footer div  {display:inline-block;}
 /* Label above the red dot */
 .playerLabel {
     position: absolute;
-    top: -20px; /* Adjust as needed to position the label above the dot */
+    top: -20px;  /* Adjust as needed to position the label above the dot */
     left: 50%;
     transform: translateX(-50%);
-    color: white; /* Color of the text */
-    font-size: 12px; /* Adjust font size as needed */
+    color: white;  /* Color of the text */
+    font-size: 12px;  /* Adjust font size as needed */
     font-weight: bold;
-    background: rgba(0, 0, 0, 0.5); /* Optional: Background color for better visibility */
-    padding: 2px 4px; /* Optional: Padding for the label */
-    border-radius: 3px; /* Optional: Rounded corners for the label */
+    background: rgba(0, 0, 0, 0.5);  /* Optional: Background color for better visibility */
+    padding: 2px 4px;  /* Optional: Padding for the label */
+    border-radius: 3px;  /* Optional: Rounded corners for the label */
 }
-
 /* Magic Parchment */
 
 .parchment-left {position:absolute;top:0;left:0%;}
