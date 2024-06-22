@@ -1218,7 +1218,7 @@ let Properties = {
     },
 
     balloondogp: {
-        level: 12,
+        level: 2,
         drops: {
             m88nmap: 7,
             m88nsteak: 1,

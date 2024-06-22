@@ -609,23 +609,40 @@ define(['character'], function (Character) {
         ],
 
         "taikotownnpc2": [
-            "Hello!"
+            "Welcome to Taiko Town!",
+            "This is one of many worlds in LooperLands, a free online multiplayer role playing game.",
+            "Explore that bar at the bottom of your screen. You'll see things like your chat, quest log, and inventory.",
+            "Talk to NPC's around here for information and quests.",
+            "Look for the double pink arrows pointing toward them.",
+            'Need help? <a target="_blank" href="https://discord.gg/zWFKjfS2PA">Join us in Discord</a> and ask away!'
         ],
 
         "taikotownnpc3": [
-            "Power to the players!"
+            "Power to the players!",
+            "Completing loot quests is another way to earn bonus xp and level up your assets.",
+            "Check your quest log if you're trying to figure out where to go.",
+            'Need help? <a target="_blank" href="https://discord.gg/zWFKjfS2PA">Join us in Discord</a> and ask away!'
         ],
 
         "taikotownnpc4": [
-            "Greetings!"
+            "Greetings!",
+            "LooperLands is free to play, but F2P assets will not retain their progress or level.",
+            'Browse <a target="_blank" href="https://looperlands.io/shop">our shop</a> to purchase assets that can level up.',
+            "Check your quest log if you're trying to figure out where to go.",
+            'Need help? <a target="_blank" href="https://discord.gg/zWFKjfS2PA">Join us in Discord</a> and ask away!'
         ],
 
         "taikotownnpc5": [
-            "Howdy!"
+            "Howdy!",
+            "Did you know you can also go fishing in LooperLands?!",
+            "Check your quest log if you're trying to figure out where to go.",
+            'Need help? <a target="_blank" href="https://discord.gg/zWFKjfS2PA">Join us in Discord</a> and ask away!'
         ],
 
         "taikotownnpc6": [
-            "Hey there."
+            "Hey there.",
+            "Check your quest log if you're trying to figure out where to go.",
+            'Need help? <a target="_blank" href="https://discord.gg/zWFKjfS2PA">Join us in Discord</a> and ask away!'
         ],
 
         "taikotownnpc7": [
