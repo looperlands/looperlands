@@ -73,7 +73,6 @@ $(document).ready(function () {
 
 async function init() {
     playerMoney = await getGoldAmount();
-    console.log(playerMoney);
     $('#uiWindow').empty();
     $('#uiWindow').append(`
         <div id="bet-window">
@@ -98,10 +97,10 @@ async function init() {
 
     await showGameWindow();
     $('#bet_amount').css('background-position', await getButtonBackgroundPosition(`bet1`));
-    setUpButtonEvents();
+    await setUpButtonEvents();
 }
 
-function setUpButtonEvents() {
+async function setUpButtonEvents() {
     const buttons = [
         { id: '#bet_increase', hoverState: 'betIncreaseHover', defaultState: 'betIncrease', clickFunction: () => betAdjustClick('increase') },
         { id: '#bet_decrease', hoverState: 'betDecreaseHover', defaultState: 'betDecrease', clickFunction: () => betAdjustClick('decrease') },
@@ -114,7 +113,7 @@ function setUpButtonEvents() {
         { id: '#ins-no', hoverState: 'noHover', defaultState: 'no', clickFunction: () => handleAction(() => actionHandlers['INSURANCE']('no')) }
     ];
 
-    buttons.forEach(({ id, hoverState, defaultState, clickFunction }) => {
+    for (const { id, hoverState, defaultState, clickFunction } of buttons) {
         $(id).on('click', clickFunction);
         $(id).hover(
             async function () {
@@ -130,7 +129,11 @@ function setUpButtonEvents() {
                 }
             }
         );
-    });
+
+        // Initialize button background position
+        const position = await getButtonBackgroundPosition(defaultState);
+        $(id).css('background-position', position);
+    }
 }
 
 /////////////////////////////
@@ -165,12 +168,12 @@ async function makeRequest(action, additionalData = {}) {
             action,
             ...additionalData
         })
-        .then(response => {
-            resolve(response.data);
-        })
-        .catch(error => {
-            reject(error);
-        });
+            .then(response => {
+                resolve(response.data);
+            })
+            .catch(error => {
+                reject(error);
+            });
     });
 }
 
@@ -183,8 +186,8 @@ async function handleDeal() {
     $("#handResult").empty();
     if (playerBet > 0) {
         const data = await makeRequest('DEAL', { betAmount: playerBet });
-        console.log('deal response');
-        console.log(data);
+        console.log('playerHand: ', data.playerHands[0].hand);
+        console.log('dealerHand: ', data.dealerHand.hand);
         await animateDeal(data);
     } else {
         $("#handResult").append("Place a bet to start the game.");
@@ -220,16 +223,40 @@ async function betAdjustClick(direction) {
 async function animateDeal(data) {
     // Adjust player money
     await displayStartingHands(data);
-    gsap.fromTo('#playerHand .playingCard', { opacity: 0, y: -50 }, { opacity: 1, y: 0, stagger: 0.2 });
-    gsap.fromTo('#dealerHand .playingCard', { opacity: 0, y: -50 }, { opacity: 1, y: 0, stagger: 0.2 });
 
-    setTimeout(() => {
-        showGameWindow(data);
-    }, 1000);
+    // Ensure that the cards are in the DOM
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    const tl = gsap.timeline({ onComplete: () => showGameWindow(data) });
+
+    // Animate player's first card
+    tl.fromTo('#playerHand .playingCard:first-child',
+        { opacity: 0, y: -50 },
+        { opacity: 1, y: 0, duration: 0.2 }
+    );
+
+    // Animate dealer's first card
+    tl.fromTo('#dealerHand .playingCard:first-child',
+        { opacity: 0, y: -50 },
+        { opacity: 1, y: 0, duration: 0.2 }
+    );
+
+    // Animate player's second card
+    tl.fromTo('#playerHand .playingCard:nth-child(2)',
+        { opacity: 0, y: -50 },
+        { opacity: 1, y: 0, duration: 0.2 }
+    );
+
+    // Animate dealer's second card (face down)
+    tl.fromTo('#dealerHand .playingCard:nth-child(2)',
+        { opacity: 0, y: -50 },
+        { opacity: 1, y: 0, duration: 0.2 }
+    );
 }
 
 async function animateCard(data) {
-    displayNewPlayerCard(data);
+    await displayNewPlayerCard(data);
+    await new Promise(resolve => setTimeout(resolve, 0));
     gsap.fromTo(`#hand${data.currentHandIndex + 1} .playingCard:last-child`, { opacity: 0, y: -50 }, { opacity: 1, y: 0 });
 
     setTimeout(() => {
@@ -238,8 +265,9 @@ async function animateCard(data) {
 }
 
 async function animateDealersTurn(data) {
-    displayDealerCards(data);
+    await displayDealerCards(data);
     gsap.fromTo('#dealerHand .playingCard', { opacity: 0, y: -50 }, { opacity: 1, y: 0, stagger: 0.2 });
+    await updateScores(data);
 
     for (let i = 2; i < data.dealerHand.length; i++) {
         await new Promise((resolve) => {
@@ -248,7 +276,7 @@ async function animateDealersTurn(data) {
                 const dealerBackgroundPosition = await getCardBackgroundPosition(card);
                 $("#dealerHand").append(`<div class="playingCard" style="background-position: ${dealerBackgroundPosition};"></div>`);
                 gsap.fromTo(`#dealerHand .playingCard:last-child`, { opacity: 0, y: -50 }, { opacity: 1, y: 0, duration: 0.5 });
-                updateScores(data);
+                await updateScores(data);
                 resolve();
             }, 500); // Adjust the delay as needed
         });
@@ -293,7 +321,7 @@ async function drawNewCard(data, handIndex) {
     let $card = $('<div class="playingCard"></div>').css('background-position', backgroundPosition);
     $(`#hand${handIndex + 1}`).append($card);
     gsap.fromTo($card, { opacity: 0, y: -50 }, { opacity: 1, y: 0, duration: 0.5 });
-    updateScores(data);
+    await updateScores(data);
 }
 
 /////////////////////////////////
@@ -315,11 +343,11 @@ async function displayStartingHands(data) {
     let $dealerScore = $('<div class="dealerScore"></div>').css('background-position', dealerScorePosition);
     $('#dealerHand').append($dealerScore);
 
+    let dealerBackgroundPosition = await getCardBackgroundPosition(data.dealerHand.hand[0]);
+    $('#dealerHand').append(`<div class="playingCard" style="background-position: ${dealerBackgroundPosition};"></div>`);
+
     // Area for dealer's hand
     $('#dealerHand').append('<div class="card-back"></div>');
-
-    let dealerBackgroundPosition = await getCardBackgroundPosition(data.dealerHand.hand[1]);
-    $('#dealerHand').append(`<div class="playingCard" style="background-position: ${dealerBackgroundPosition};"></div>`);
 
     ///////////////////////////////////
     // SET UP AREA FOR PLAYER'S HAND //
@@ -337,24 +365,25 @@ async function displayStartingHands(data) {
         $(`#hand1`).append($card);
     }
     $("#uiWindow").removeClass('processing');
-    await updateScores();
+    await updateScores(data);
 }
 
 async function displayNewPlayerCard(data) {
     const handIndex = data.currentHandIndex;
     const card = data.playerHands[handIndex].hand.slice(-1)[0]; // Get the last card
     $(`#hand${handIndex + 1}`).append(`<div class="playingCard" style="background-position: ${await getCardBackgroundPosition(card)};"></div>`);
+    await updateScores(data);
 }
 
 async function displayDealerCards(data) {
     // Get the background position for the hidden card
-    let dealerBackgroundPosition = await getCardBackgroundPosition(data.dealerHand.hand[0]);
+    let dealerBackgroundPosition = await getCardBackgroundPosition(data.dealerHand.hand[1]);
 
-    // Replace the first card (face-down) with the actual card
+    // Replace the face-down card (second card) with the actual card
     $('#dealerHand .card-back').first().replaceWith(`<div class="playingCard" style="background-position: ${dealerBackgroundPosition};"></div>`);
 }
 
-async function displaySplitHands() {
+async function displaySplitHands(data) {
     player.hands.forEach((hand, index) => {
         const handId = `hand${index + 1}`;
         const handDiv = $(`#${handId}`);
@@ -366,22 +395,18 @@ async function displaySplitHands() {
             handDiv.find('.arrow').removeClass('arrow').addClass('no-arrow');
         }
     });
-    await updateScores();
+    await updateScores(data);
 }
 
-async function updateScores(dealerOnly = false) {
-    if (!dealerOnly) {
-        for (const [index, hand] of player.hands.entries()) {
-            let backgroundPosition = await getScoreBackgroundPosition(hand.total);
-            $(`#hand${index + 1}`).find(`.hand-total`).css('background-position', backgroundPosition);
-        }
-        let playerScores = player.hands.map((hand, index) => `HAND ${index + 1}: ${hand.total}`).join("<br>");
-        $('#playerTotal').html(playerScores);
+async function updateScores(data) {
+    //update players hands
+    for (const [index, hand] of data.playerHands.entries()) {
+        let backgroundPosition = await getScoreBackgroundPosition(hand.total);
+        $(`#hand${index + 1}`).find(`.hand-total`).css('background-position', backgroundPosition);
     }
-    if (dealerHasPlayed) {
-        $('.dealerScore').css('background-position', await getScoreBackgroundPosition(`${gameState === STATE_DEALERTURN || gameState === STATE_REWARD || dealer.total === 21 ? dealer.total : 'questionMark'}`));
-        $('#dealerTotal').text(`Dealer Total: ${gameState === STATE_DEALERTURN || gameState === STATE_REWARD ? dealer.total : '?'}`);
-    }
+
+    //update dealers hand
+    $('.dealerScore').css('background-position', await getScoreBackgroundPosition(`${data.dealerHand.total === 'hidden' ? 'questionMark' : data.dealerHand.total}`));
 }
 
 async function showRewards(data) {
@@ -403,6 +428,7 @@ async function showGameWindow(data = {}) {
         return;
     }
 
+    console.log('loading new window: ', loadWindow);
     switch (loadWindow) {
         case 'bet':
             $('#dealerHand').empty();
@@ -426,6 +452,7 @@ async function showGameWindow(data = {}) {
             $('#bet-window').addClass('hidden');
             $('#splitDouble').addClass('hidden');
             $('#insurance').addClass('hidden');
+
             break;
         case 'splitDouble':
             if (gameWindow !== 'bet') {
@@ -460,8 +487,6 @@ async function getGoldAmount() {
     return new Promise((resolve, reject) => {
         const sessionId = new URLSearchParams(window.location.search).get('sessionId');
         const inventoryQuery = `/session/${sessionId}/inventory`;
-        console.log(inventoryQuery);
-
         axios.get(inventoryQuery).then(response => {
             resolve(response.data.resources[this.GOLD] || 0);
         }).catch(error => {

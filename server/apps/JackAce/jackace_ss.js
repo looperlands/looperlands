@@ -31,17 +31,15 @@ class JackAce {
     // Handle various requested actions
     async handleAction(req, res, playerId, action) {
         if (!this.playerId) { this.playerId = playerId; }
-        console.log(`processing action: ${action} for ${this.playerId}`);
 
         const validationError = await this.validateAction(req, action);
-        
+
         if (validationError) {
             console.log(`validation error: `, validationError);
             return res.status(validationError.status).json({ message: validationError.message });
         }
 
         const playerState = this.playerGameStates[this.playerId];
-        console.log(playerState);
 
         try {
             switch (action) {
@@ -117,21 +115,27 @@ class JackAce {
 
             // Update hands with drawn cards
             playerState.playerHands[playerState.currentHandIndex].hand.push(playerCard1.code, playerCard2.code);
+            this.updateHandWithCard(playerState.playerHands[playerState.currentHandIndex], playerCard1.value);
+            this.updateHandWithCard(playerState.playerHands[playerState.currentHandIndex], playerCard2.value);
+
             playerState.dealerHand.hand.push(dealerCard1.code, dealerCard2.code);
+            this.updateHandWithCard(playerState.dealerHand, dealerCard1.value);
+            this.updateHandWithCard(playerState.dealerHand, dealerCard2.value);
+
             playerState.cardsLeft = data.remaining;
 
             // Set initial game state
             playerState.gameWindow = 'hit';
 
             // Check for insurance condition
-            if (dealerCard2.cardValue === "ACE") {
+            if (dealerCard2.value === "ACE") {
                 playerState.gameWindow = 'insurance';
             } else {
                 // Check for split condition
-                playerState.playerHands[playerState.currentHandIndex].canSplit = playerCard1.cardValue === playerCard2.cardValue;
+                playerState.playerHands[playerState.currentHandIndex].canSplit = playerCard1.value === playerCard2.value;
 
                 // Check for double condition
-                playerState.canDouble = this.canDouble([playerCard1.cardValue, playerCard2.cardValue]);
+                playerState.canDouble = this.canDouble([playerCard1.value, playerCard2.value]);
 
                 if (playerState.playerHands[playerState.currentHandIndex].canSplit || playerState.canDouble) {
                     playerState.gameWindow = 'splitDouble';
@@ -449,22 +453,25 @@ class JackAce {
             currentHand.hand.push(card.code);
             playerState.cardsLeft = data.remaining;
 
-            let cardValue = card.cardValue;
-            if (['KING', 'QUEEN', 'JACK'].includes(cardValue)) {
-                currentHand.total += 10;
-            } else if (cardValue === 'ACE') {
-                currentHand.total += 11;
-                currentHand.aceIs11 += 1;
-            } else {
-                currentHand.total += parseInt(cardValue);
-            }
-            if (currentHand.total > 21 && currentHand.aceIs11 > 0) {
-                currentHand.total -= 10;
-                currentHand.aceIs11 -= 1;
-            }
+            this.updateHandWithCard(currentHand, card.value);
         } catch (error) {
             console.error("Error drawing card:", error);
             throw new Error("Internal server error");
+        }
+    }
+
+    updateHandWithCard(hand, value) {
+        if (['KING', 'QUEEN', 'JACK'].includes(value)) {
+            hand.total += 10;
+        } else if (value === 'ACE') {
+            hand.total += 11;
+            hand.aceIs11 += 1;
+        } else {
+            hand.total += parseInt(value);
+        }
+        if (hand.total > 21 && hand.aceIs11 > 0) {
+            hand.total -= 10;
+            hand.aceIs11 -= 1;
         }
     }
 
@@ -483,20 +490,20 @@ class JackAce {
 
     canDouble(cardValues) {
         let possibleSums = [0];
-
+    
         cardValues.forEach(cardValue => {
-            let numericValues = this.CARD_VALUE_MAP[cardValue] || [0];
+            let numericValues = Array.isArray(this.CARD_VALUE_MAP[cardValue]) ? this.CARD_VALUE_MAP[cardValue] : [this.CARD_VALUE_MAP[cardValue]];
             let newPossibleSums = [];
-
+    
             numericValues.forEach(value => {
                 possibleSums.forEach(sum => {
                     newPossibleSums.push(sum + value);
                 });
             });
-
+    
             possibleSums = newPossibleSums;
         });
-
+    
         return possibleSums.includes(9) || possibleSums.includes(10) || possibleSums.includes(11);
     }
 
@@ -505,20 +512,17 @@ class JackAce {
     //////////////////////////
 
     async validateAction(req, action) {
-        console.log('validating action');
 
         // Validate player and action
         if (!this.playerId || !action) {
             return { status: 400, message: "Player or action not recognized." };
         }
 
-        console.log('initializing state');
-
         // Initialize player state if it doesn't exist
         if (!this.playerGameStates[this.playerId]) {
             try {
                 this.playerGameStates[this.playerId] = await this.initializePlayerState(req);
-                
+
             } catch (error) {
                 console.error("Error initializing player state:", error);
                 return { status: 500, message: "Internal server error" };

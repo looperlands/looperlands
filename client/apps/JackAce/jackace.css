@@ -40,6 +40,10 @@ body {
   background-color: rgba(0, 0, 0, 0.3);
 }
 
+#jackaceGame{
+  transform: scale(0.5);
+}
+
 /*Button Boxes*/
 #uiWindow {
   display: flex;
