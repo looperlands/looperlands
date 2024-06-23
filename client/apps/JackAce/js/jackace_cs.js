@@ -85,8 +85,8 @@ async function init() {
             <div id="hit"></div>
             <div id="stand"></div>
             <div id="splitDouble" class="hidden">
-                <div id="split"></div>
-                <div id="double"></div>
+                <div id="split" class="inactive"></div>
+                <div id="double" class="inactive"></div>
             </div>
         </div>
         <div id="insurance" class="hidden">
@@ -107,8 +107,8 @@ async function setUpButtonEvents() {
         { id: '#deal', hoverState: 'dealHover', defaultState: 'deal', clickFunction: () => handleDeal() },
         { id: '#hit', hoverState: 'hitHover', defaultState: 'hit', clickFunction: () => handleAction(processAction('HIT', {}, animateCard)) },
         { id: '#stand', hoverState: 'standHover', defaultState: 'stand', clickFunction: () => handleAction(processAction('STAND', {}, animateDealersTurn)) },
-        { id: '#double', hoverState: 'doubleHover', defaultState: 'double', clickFunction: () => handleDouble() },
-        { id: '#split', hoverState: 'splitHover', defaultState: 'split', clickFunction: () => handleAction(processAction('SPLIT', {}, async (data) => { await animateSplit(data); })) },
+        { id: '#double', hoverState: 'doubleHover', defaultState: 'doubleInactive', clickFunction: () => handleDouble() },
+        { id: '#split', hoverState: 'splitHover', defaultState: 'splitInactive', clickFunction: () => handleAction(processAction('SPLIT', {}, async (data) => { await animateSplit(data); })) },
         { id: '#ins-yes', hoverState: 'yesHover', defaultState: 'yes', clickFunction: () => handleAction(() => actionHandlers['INSURANCE']('yes')) },
         { id: '#ins-no', hoverState: 'noHover', defaultState: 'no', clickFunction: () => handleAction(() => actionHandlers['INSURANCE']('no')) }
     ];
@@ -462,6 +462,7 @@ async function showGameWindow(data = {}) {
             }
             $('#hit-stand-window').removeClass('hidden');
             $('#splitDouble').removeClass('hidden');
+            await updateButtonStates(data);
             $('#bet-window').addClass('hidden');
             $('#insurance').addClass('hidden');
             break;
@@ -481,6 +482,18 @@ async function showGameWindow(data = {}) {
 //////////////////////////////
 // HELPER UTILITY FUNCTIONS //
 //////////////////////////////
+
+async function updateButtonStates(playerState) {
+    const { canDouble, playerHands } = playerState;
+    const currentHand = playerHands[playerState.currentHandIndex];
+    const canSplit = currentHand.canSplit;
+
+    const doubleButtonPosition = await getButtonBackgroundPosition(canDouble ? 'double' : 'doubleInactive');
+    const splitButtonPosition = await getButtonBackgroundPosition(canSplit ? 'split' : 'splitInactive');
+
+    $('#double').css('background-position', doubleButtonPosition).toggleClass('inactive', !canDouble);
+    $('#split').css('background-position', splitButtonPosition).toggleClass('inactive', !canSplit);
+}
 
 // Look up player's gold balance
 async function getGoldAmount() {
