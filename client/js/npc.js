@@ -547,16 +547,12 @@ define(['character'], function (Character) {
         "m88ntaikotwin1": [
             "Yo yo! We're the Taiko Twins!",
             "Head north to visit Taiko Town, and head south to explore Paradise Point...",
-            //"Like our house and Lambo down there?",
-            //'They are for sale! Checkout <a target="_blank" href="https://discord.gg/bjjNewZegM">PLANET M88NWALKER in Discord</a> and DM m88nwalker to inquire.',
             "We have a new quests on the way for you..."
         ],
 
         "m88ntaikotwin2": [
             "Yo yo! We're the Taiko Twins!",
             "Head south to explore Paradise Point, and head north to visit Taiko Town...",
-            //"Like our house and Lambo down there?",
-            //'They are for sale! Checkout <a target="_blank" href="https://discord.gg/bjjNewZegM">PLANET M88NWALKER in Discord</a> and DM m88nwalker to inquire.',
             "We have a new quests on the way for you..."
         ],
 
@@ -574,8 +570,7 @@ define(['character'], function (Character) {
             "Howdy! I'm Gary, the real estate agent for Nexus Realty.",
             "If you're looking to buy some property in The Nexus, you've come to the right place.",
             "Right now we have several properties available and when you buy from us you get a FREE Lambo!",
-            "If you're in the market for a beach house check out 147 Ocean Drive in West Paradise Point.",
-            "If you're looking for something a little more exclusive we have 4 private islands available in the Helio Islands.",
+            "If you're looking for something exclusive we have 3 private islands available in the Helio Islands.",
             //"That yacht over there, The Sun Chaser, has a private Captain's Quarters on it that is available to purchse.",
             //"And if you really want to get out of town, we have 2 m88n pods available in Lunaria",
             'Checkout <a target="_blank" href="https://discord.gg/bjjNewZegM">PLANET M88NWALKER in Discord</a> and DM m88nwalker to inquire.',
@@ -613,6 +608,7 @@ define(['character'], function (Character) {
             "This is one of many worlds in LooperLands, a free online multiplayer role playing game.",
             "Explore that bar at the bottom of your screen. You'll see things like your chat, quest log, and inventory.",
             "Talk to NPC's around here for information and quests.",
+            "If you think you're lost you can pull up a map overview by pressing (M) on your keyboard.",
             "Look for the double pink arrows pointing toward them.",
             'Need help? <a target="_blank" href="https://discord.gg/zWFKjfS2PA">Join us in Discord</a> and ask away!'
         ],
@@ -621,6 +617,7 @@ define(['character'], function (Character) {
             "Power to the players!",
             "Completing loot quests is another way to earn bonus xp and level up your assets.",
             "Check your quest log if you're trying to figure out where to go.",
+            "If you think you're lost you can pull up a map overview by pressing (M) on your keyboard.",
             'Need help? <a target="_blank" href="https://discord.gg/zWFKjfS2PA">Join us in Discord</a> and ask away!'
         ],
 
