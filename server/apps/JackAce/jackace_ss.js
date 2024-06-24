@@ -40,11 +40,13 @@ class JackAce {
         }
 
         const playerState = this.playerGameStates[this.playerId];
+        playerState.lastActionTime = new Date();
 
         try {
             switch (action) {
                 case 'DEAL':
                     console.log('processing DEAL');
+                    playerState.betAmount = this.getValidBetAmount(req.body.betAmount);
                     if (await this.payToCORNHOLE(playerState)) {
                         await this.deal(playerState);
                         console.log('returning response');
@@ -83,6 +85,7 @@ class JackAce {
                     }
                     break;
                 case 'INSURANCE':
+                    console.log('processing insurance');
                     await this.insurance(playerState, req.body.boughtInsurance);
                     res.json(this.sanitizePlayerState(playerState));
                     break;
@@ -195,18 +198,13 @@ class JackAce {
 
             // Check for split condition for original hand
             await this.checkHand(hand);
-            if (hand.canSplit) {
-                playerState.gameWindow = 'splitDouble';
-            } else {
-                playerState.gameWindow = 'hit';
-            }
 
             // Draw card for the new split hand
             const splitHand = playerState.playerHands[playerState.playerHands.length - 1];
             await this.drawCard(playerState, splitHand);
 
             // Check for split condition for the new split hand
-            await this.checkHand(hand);
+            await this.checkHand(hand, false);
 
         } else {
             throw new Error("Cannot afford split");
@@ -353,17 +351,31 @@ class JackAce {
         player.lastActionTime = new Date();
     }
 
-    async checkHand(playerState) {
+    async checkHand(playerState, setGameWindow = true) {
         const hand = playerState.playerHands[playerState.currentHandIndex];
+
+        if (playerState.canDouble) {
+            console.log('check if candouble');
+            console.log(hand.hand);
+            playerState.canDouble = playerState.playerHands.length > 1 ? false : this.canDouble(hand.hand);
+        }
+
+        if(setGameWindow){
+            playerState.gameWindow = (hand.canSplit || hand.canDouble) ? 'splitDouble' : 'hit';
+        }
+
         if (hand.total >= 21) {
             hand.canHit = false;
             if (playerState.currentHandIndex === playerState.playerHands.length - 1) {
                 await this.evaluateWinner(playerState);
             }
         }
+
         if (hand.hand.length === 2 && hand.hand[0].charAt(0) === hand.hand[1].charAt(0) && playerState.playerHands.length < 4) {
             hand.canSplit = true;
         }
+
+
     }
 
     async playDealerTurn(playerState) {
@@ -433,11 +445,14 @@ class JackAce {
 
     // Need to initially hide values in the dealers hand to prevent cheating
     sanitizePlayerState(playerState) {
-        console.log('sanitizing playerstate');
+        console.log('Sanitizing playerState');
         const sanitizedState = { ...playerState };
-        if (!playerState.dealerHand.hasPlayed) {
+
+        const allPlayerHandsDone = playerState.playerHands.every(hand => hand.total >= 21);
+
+        if (!allPlayerHandsDone && !playerState.dealerHand.hasPlayed) {
             sanitizedState.dealerHand = {
-                hand: [playerState.dealerHand.hand[0], "hidden"],
+                hand: ["hidden", playerState.dealerHand.hand[1]],
                 total: "hidden",
                 aceIs11: "hidden"
             };
@@ -490,20 +505,20 @@ class JackAce {
 
     canDouble(cardValues) {
         let possibleSums = [0];
-    
+
         cardValues.forEach(cardValue => {
             let numericValues = Array.isArray(this.CARD_VALUE_MAP[cardValue]) ? this.CARD_VALUE_MAP[cardValue] : [this.CARD_VALUE_MAP[cardValue]];
             let newPossibleSums = [];
-    
+
             numericValues.forEach(value => {
                 possibleSums.forEach(sum => {
                     newPossibleSums.push(sum + value);
                 });
             });
-    
+
             possibleSums = newPossibleSums;
         });
-    
+
         return possibleSums.includes(9) || possibleSums.includes(10) || possibleSums.includes(11);
     }
 

@@ -705,7 +705,7 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
 
     function registerClose(){
             if ($("#autoSpinButton").hasClass("on")) {
-                $("#autoSpinButton").toggleClass("on off");
+                $("#autoSpinButton").removeClass("on").addClass("off");
             }
             closeRequest = true;
     }
