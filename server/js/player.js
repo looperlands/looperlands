@@ -1244,6 +1244,26 @@ module.exports = Player = Character.extend({
         }
     },
 
+    onReleaseNpc: function (callback) {
+        this.releaseNpc_callback = callback;
+    },
+
+    releaseNpc: function (kind, timeToLive) {
+        if (this.releaseNpc_callback) {
+            return this.releaseMob_callback(kind, timeToLive);
+        }
+    },
+
+    onReleaseItem: function (callback) {
+        this.releaseItem_callback = callback;
+    },
+
+    releaseItem: function (kind) {
+        if (this.releaseItem_callback) {
+            return this.releaseItem_callback(kind);
+        }
+    },
+
     sendAnnoucement: function(message, timeToShow) {
         this.send(new Messages.Announcement(message, timeToShow).serialize());
     }

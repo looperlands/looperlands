@@ -168,6 +168,19 @@ module.exports = World = cls.Class.extend({
                 }
             });
 
+            player.onReleaseNpc(function (kind, timeToLive) {
+                const npc = self.addNpc(kind, player.x, player.y);
+
+                setTimeout(()=> {
+                    npc.despawn();
+                }, timeToLive)
+            });
+
+            player.onReleaseItem(function (kind) {
+                const item = self.createItem(kind, player.x, player.y);
+                self.addItem(item);
+            });
+
             if (self.added_callback) {
                 self.added_callback();
             }
