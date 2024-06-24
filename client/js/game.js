@@ -201,6 +201,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "m88nmagiccarpet",
                     "m88nhermie",
                     "m88nmrcrab",
+                    "m88npinataballoons",
                     //m88n's Mob Nexans
                     "nexan1",
                     "nexan2",
@@ -459,6 +460,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "item-m88ngoldmedal",
                     "item-m88nsilvermedal",
                     "item-m88nbronzemedal",
+                    "item-m88nfishingpole",
+                    "item-m88nprizes",
                     //MRMlabs
                     "item-firstaidkit",
                     "item-bandaid",

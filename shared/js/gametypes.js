@@ -377,6 +377,7 @@ Types = {
         M88NMAGICCARPET: 78000049,
         M88NHERMIE: 78000051,
         M88NMRCRAB: 78000052,
+        M88NPINATABALLOONS: 78000053,
         //m88n Mob Nexans
         NEXAN1: 78000037,
         NEXAN2: 78000038,
@@ -454,6 +455,8 @@ Types = {
         M88NGOLDMEDAL: 78006100,
         M88NSILVERMEDAL: 78006200,
         M88NBRONZEMEDAL: 78006300,
+        M88NFISHINGPOLE: 78006400,
+        M88NPRIZES: 78006500,
         //MRMlabs NPCs
         TYLERDURDEN: 79000000,
         //MRMlabs Items
@@ -6047,6 +6050,7 @@ var kinds = {
     m88nmagiccarpet: [Types.Entities.M88NMAGICCARPET, "mob"],
     m88nhermie: [Types.Entities.M88NHERMIE, "mob"],
     m88nmrcrab: [Types.Entities.M88NMRCRAB, "mob"],
+    m88npinataballoons: [Types.Entities.M88NPINATABALLOONS, "mob"],
 
     //m88n Mob Nexans
     nexan1: [Types.Entities.NEXAN1, "mob"],
@@ -6214,6 +6218,8 @@ var kinds = {
     m88ngoldmedal: [Types.Entities.M88NGOLDMEDAL, "object"],
     m88nsilvermedal: [Types.Entities.M88NSILVERMEDAL, "object"],
     m88nbronzemedal: [Types.Entities.M88NBRONZEMEDAL, "object"],
+    m88nfishingpole: [Types.Entities.M88NFISHINGPOLE, "object"],
+    m88nprizes: [Types.Entities.M88NPRIZES, "object"],
     //MRMlabs Items
     firstaidkit: [Types.Entities.FIRSTAIDKIT, "object"],
     bandaid: [Types.Entities.BANDAID, "object"],

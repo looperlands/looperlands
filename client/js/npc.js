@@ -626,6 +626,7 @@ define(['character'], function (Character) {
             "LooperLands is free to play, but F2P assets will not retain their progress or level.",
             'Browse <a target="_blank" href="https://looperlands.io/shop">our shop</a> to purchase assets that can level up.',
             "Check your quest log if you're trying to figure out where to go.",
+            "If you think you're lost you can pull up a map overview by pressing (M) on your keyboard.",
             'Need help? <a target="_blank" href="https://discord.gg/zWFKjfS2PA">Join us in Discord</a> and ask away!'
         ],
 
@@ -633,6 +634,7 @@ define(['character'], function (Character) {
             "Howdy!",
             "Did you know you can also go fishing in LooperLands?!",
             "Check your quest log if you're trying to figure out where to go.",
+            "If you think you're lost you can pull up a map overview by pressing (M) on your keyboard.",
             'Need help? <a target="_blank" href="https://discord.gg/zWFKjfS2PA">Join us in Discord</a> and ask away!'
         ],
 

@@ -199,6 +199,8 @@ const AltNames = {
     m88nmagiccarpet: "Magic Carpet",
     m88nhermie: "Hermie",
     m88nmrcrab: "Mr. Crab",
+    m88nmine: "m88n mine",
+    m88npinataballoons: "prize balloons!",
 
     //m88n Mob Nexans
     nexan8: "The Mail Lady",
@@ -235,6 +237,8 @@ const AltNames = {
     m88ngoldmedal: "gold medal",
     m88nsilvermedal: "silver medal",
     m88nbronzemedal: "bronze medal",
+    m88nfishingpole: "fishing pole",
+    m88nprizes: "mysterious prizes",
 
     //m88n TT Items
     m88nammocan: "ammo can",

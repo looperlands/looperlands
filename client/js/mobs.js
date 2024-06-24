@@ -2393,6 +2393,22 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
 
+        m88npinataballoons: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NPINATABALLOONS);
+                this.isAggressive = false;
+                this.nameless = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
         m88nbabymonkey: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.M88NBABYMONKEY);

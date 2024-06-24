@@ -1363,6 +1363,53 @@ let Properties = {
         respawnDelay: 4000000 //one hour
     },
 
+    m88npinataballoons: {
+        level: 1,
+        friendly: true, //not actually friendly, just AoE immune
+        hp: 1,
+        xp: 8888,
+        drops: {
+            m88nmap: 5,
+            movieglasses: 1,
+            battery: 1,
+            gameboy: 1,
+            hardwallet: 1,
+            m88npeel: 1,
+            m88ndungbeetle: 1,
+            m88nfly: 1,
+            m88njunebug: 1,
+            m88nstickbug: 1,
+            m88ndiamondnecklace: 1,
+            m88ndiamondring: 1,
+            m88ngoldearrings: 1,
+            m88nsteak: 1,
+            m88nclover: 1,
+            m88nmail: 1,
+            m88nshovel: 1,
+            m88nwatercan: 1,
+            m88nseeds: 1,
+            m88npotato: 1,
+            m88npackage: 1,
+            m88nsalad: 1,
+            m88nsnail: 1,
+            m88nblueprint: 1,
+            m88nhardhat: 1,
+            m88nrose: 1,
+            m88nworkgloves: 1,
+            m88nbrewski: 1,
+            m88npie: 1,
+            m88nsack: 1,
+            m88nworm: 1,
+            burger: 1,
+            m88ndirt: 10,
+            m88ngem: 10,
+            GOLD3: 1,
+            GOLD4: 10,
+            GOLD5: 10,
+        },
+        respawnDelay: 4000000 //one hour
+    },
+
     m88nbabymonkey: {
         level: 1,
         friendly: true
@@ -1941,6 +1988,19 @@ let Properties = {
         respawnDelay: 1500000,
         onConsume: function(player) {
             player.releaseMob(Types.Entities.M88NOCTOPUSSY);
+        }
+    },
+    m88nprizes: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "caged",
+            duration: 60000
+        },
+        inventoryDescription: "Mysterious Prizes",
+        respawnDelay: 1500000,
+        onConsume: function(player) {
+            player.releaseMob(Types.Entities.M88NPINATABALLOONS);
         }
     },
     m88nfastshoes: {
