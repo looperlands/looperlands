@@ -194,12 +194,16 @@ async function handleStand() {
     if (!$("#uiWindow").hasClass('processing')) {
         $("#uiWindow").addClass('processing');
         const data = await makeRequest('STAND');
-        await animateDealersTurn(data);
+        if (data.dealerHand.total !== 'hidden'){
+            await animateDealersTurn(data);
+        }else {
+            await showGameWindow(data);
+        }
         $("#uiWindow").removeClass('processing');
     }
 }
 
-async function handleSplit(){
+async function handleSplit() {
     if (!$("#uiWindow").hasClass('processing')) {
         $("#uiWindow").addClass('processing');
         const data = await makeRequest('SPLIT');
@@ -319,26 +323,47 @@ async function animateDealersTurn(data) {
 
 async function animateSplit(data) {
     const splitHandIndex = data.currentHandIndex;
-    const originalHand = data.playerHands[splitHandIndex];
-    const newHandIndex = data.playerHands.length - 1; // Reference the new hand
+    const originalHand = data.playerHands[splitHandIndex]; // Original hand with matching cards that will be split (Card1, Card2)
+    const newHandIndex = data.playerHands.length - 1; // Index for new hand (if we start with one hand, the next hand added will be playerHands[1])
 
-    // Create a new hand div for the split hand
-    $('#playerHand').append(`<div id="hand${newHandIndex + 1}" class="playerHands"><div class="no-arrow"></div><div class="hand-total" style="background-position: -360px 0px;"></div>`);
-    $(`#hand${newHandIndex + 1}`).css({ 'width': 'fit-content', 'padding-top': '4px' });
+    // Grab the second card in the hand that's being split
+    const divToMove = $(`#hand${splitHandIndex + 1} .playingCard:last-child`);
+    const cardToMove = originalHand.hand[0]; // Card value of card being moved to new hand
+
+    // Create a new div for the new hand
+    $('#playerHand').append(`<div id="hand${newHandIndex + 1}" class="playerHands"><div class="no-arrow"></div><div class="hand-total"></div>`);
 
     // Animate the second card moving to the new hand
-    const secondCard = originalHand.hand[1];
-    const secondCardPosition = await getCardBackgroundPosition(secondCard);
-    let $secondCardElement = $(`#hand${splitHandIndex + 1} .playingCard:last-child`);
+    const newHandDiv = $(`#hand${newHandIndex + 1}`);
+    const newCardPosition = await getCardBackgroundPosition(cardToMove);
 
-    gsap.to($secondCardElement, {
-        y: 150,
+    gsap.to(divToMove, {
         duration: 0.5,
+        x: newHandDiv.offset().left - divToMove.offset().left,
+        y: newHandDiv.offset().top - divToMove.offset().top,
         onComplete: async () => {
-            $secondCardElement.css('transform', '').css('y', '0'); // Reset transformations
-            $(`#hand${newHandIndex + 1}`).append($secondCardElement);
-            await drawNewCard(data, splitHandIndex);
-            await drawNewCard(data, newHandIndex);
+            divToMove.css('transform', ''); // Reset transformations
+            divToMove.css('background-position', newCardPosition);
+            newHandDiv.append(divToMove); // Move the card to the new hand div
+
+            $(`#hand${splitHandIndex + 1} .no-arrow`).removeClass('no-arrow').addClass('arrow');
+
+            // Draw a new card for the original hand
+            const originalNewCard = data.playerHands[splitHandIndex].hand.slice(-1)[0];
+            const originalNewCardPosition = await getCardBackgroundPosition(originalNewCard);
+            const $originalNewCardElement = $('<div class="playingCard"></div>').css('background-position', originalNewCardPosition);
+            $(`#hand${splitHandIndex + 1}`).append($originalNewCardElement);
+
+            gsap.fromTo($originalNewCardElement, { opacity: 0, y: -50 }, { opacity: 1, y: 0, duration: 0.5 });
+
+            // Draw a new card for the new hand
+            const newHandNewCard = data.playerHands[newHandIndex].hand.slice(-1)[0];
+            const newHandNewCardPosition = await getCardBackgroundPosition(newHandNewCard);
+            const $newHandNewCardElement = $('<div class="playingCard"></div>').css('background-position', newHandNewCardPosition);
+            $(`#hand${newHandIndex + 1}`).append($newHandNewCardElement);
+
+            gsap.fromTo($newHandNewCardElement, { opacity: 0, y: -50 }, { opacity: 1, y: 0, duration: 0.5 });
+            await updateScores(data); // Update the scores after the split animation is complete
         }
     });
 

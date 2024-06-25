@@ -70,9 +70,13 @@ class JackAce {
                     break;
                 case 'SPLIT':
                     if (playerState.playerHands[playerState.currentHandIndex].canSplit) {
+                        console.log('splitting hand...');
                         await this.split(playerState);
+                        console.log('responding to split request');
+                        console.log(playerState);
                         res.json(this.sanitizePlayerState(playerState));
                     } else {
+                        console.log('cannot split');
                         return res.status(400).json({ message: "Cannot split." });
                     }
                     break;
@@ -131,7 +135,7 @@ class JackAce {
             playerState.gameWindow = 'hit';
 
             // Check for insurance condition
-            if (dealerCard2.value === "ACE") {
+            if (dealerCard2.value === "ACE" && playerState.playerHands[playerState.currentHandIndex].total !== 21) {
                 playerState.gameWindow = 'insurance';
             } else {
                 // Check for split condition
@@ -178,35 +182,45 @@ class JackAce {
 
     async split(playerState) {
         if (await this.payToCORNHOLE(playerState)) {
+            console.log('processing split.');
             const hand = playerState.playerHands[playerState.currentHandIndex];
             const card = hand.hand.pop();
-            const handTotal = card.charAt(0) === "A" ? 11 : hand.total / 2;
-            const aceIs11 = card.charAt(0) === "A" ? 1 : 0;
+            console.log('card popped ', card);
+            hand.total = card.charAt(0) === "A" ? 11 : hand.total / 2;
+            hand.aceIs11 = card.charAt(0) === "A" ? 1 : 0;
+            hand.canSplit = false; // default updated hand to false, validate in check hand
+            console.log('hand: ', hand);
 
             // Create new split hand
             playerState.playerHands.push({
                 hand: [card],
-                total: handTotal,
-                aceIs11: aceIs11,
+                total: hand.total,
+                aceIs11: hand.aceIs11,
                 canHit: true,
                 canSplit: false,
                 bet: playerState.playerBet
             });
 
+            console.log(playerState);
+
             // Draw card for original hand
             await this.drawCard(playerState, hand);
+            console.log('hand: ', hand);
 
             // Check for split condition for original hand
-            await this.checkHand(hand);
+            await this.checkHand(playerState);
 
             // Draw card for the new split hand
             const splitHand = playerState.playerHands[playerState.playerHands.length - 1];
+            console.log('splitHand: ', splitHand);
             await this.drawCard(playerState, splitHand);
 
+            console.log('checking splitHand')
             // Check for split condition for the new split hand
-            await this.checkHand(hand, false);
+            await this.checkHand(playerState, playerState.playerHands.length - 1, false);
 
         } else {
+            console.log('cannot afford split');
             throw new Error("Cannot afford split");
         }
     }
@@ -351,8 +365,8 @@ class JackAce {
         player.lastActionTime = new Date();
     }
 
-    async checkHand(playerState, setGameWindow = true) {
-        const hand = playerState.playerHands[playerState.currentHandIndex];
+    async checkHand(playerState, handToCheck = playerState.currentHandIndex, setGameWindow = true) {
+        const hand = playerState.playerHands[handToCheck];
 
         if (playerState.canDouble) {
             console.log('check if candouble');
