@@ -265,6 +265,7 @@ class JackAce {
         } else {
             if (playerState.dealerHand.total === 21) {
                 playerState.reward = 0;
+                playerState.dealerHand.hasPlayed = true;
                 await this.evaluateWinner(playerState);
             } else {
                 await this.checkHand(playerState);
