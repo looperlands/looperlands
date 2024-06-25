@@ -398,6 +398,22 @@ quests = [
     },
     {
         id: "FISHERMAN_QUEST_1",
+        name: "The Fisherman's Fishing Request",
+        startText: ["Did you know you there are TONS of different fish that you can catch in this ocean?",
+        "You'll need a fishing pole first though. Wanna borrow one of mine to try it out before you buy your own?",
+        "Grab that fishing pole right there and I'll drop a 24 hour rental pole into your inventory!"],
+        endText: ["Happy fishing friend!!"],
+        eventType: "LOOT_ITEM",
+        npc: Types.Entities.NEXAN16,
+        target: Types.Entities.M88NFISHINGPOLE,
+        amount: 1,
+        level: 10,
+        xp: 1000,
+        medal: Types.Medals.SKULL,
+        rental: "0xd3894a9a6f325cd660916340ba5e040ca17b53504a7c7860d61329ac013e5d84"
+    },
+    {
+        id: "FISHERMAN_QUEST_2",
         name: "The Fisherman's Worm Request",
         startText: ["If I had some nice plump worms I'd probably be able to catch some bigger fish...",
         "Do you think you could find me like 20 worms?"],
@@ -406,6 +422,7 @@ quests = [
         npc: Types.Entities.NEXAN16,
         target: Types.Entities.M88NWORM,
         amount: 20,
+        requiredQuest: "FISHERMAN_QUEST_1",
         level: 10,
         xp: 50000,
         medal: Types.Medals.SKULL

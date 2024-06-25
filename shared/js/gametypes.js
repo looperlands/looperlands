@@ -335,6 +335,7 @@ Types = {
         M88NTAIKOTWIN2: 78300000,
         M88NSTIMYTIMY: 78310000,
         M88NREALTYAGENT: 78320000,
+        M88NGENIE: 78330000,
         //m88n Mobs
         BALLOONDOGB: 78000001,
         BALLOONDOGY: 78000002,
@@ -377,6 +378,7 @@ Types = {
         M88NMAGICCARPET: 78000049,
         M88NHERMIE: 78000051,
         M88NMRCRAB: 78000052,
+        M88NPINATABALLOONS: 78000053,
         //m88n Mob Nexans
         NEXAN1: 78000037,
         NEXAN2: 78000038,
@@ -389,6 +391,7 @@ Types = {
         NEXAN9: 78000045,
         NEXAN10: 78000046,
         NEXAN30: 78000050,
+        M88NJEEVES: 78000054,
         
         //m88n Items
         M88NMAP: 78000100,
@@ -454,6 +457,9 @@ Types = {
         M88NGOLDMEDAL: 78006100,
         M88NSILVERMEDAL: 78006200,
         M88NBRONZEMEDAL: 78006300,
+        M88NFISHINGPOLE: 78006400,
+        M88NPRIZES: 78006500,
+        M88NLAMP: 78006600,
         //MRMlabs NPCs
         TYLERDURDEN: 79000000,
         //MRMlabs Items
@@ -6047,6 +6053,7 @@ var kinds = {
     m88nmagiccarpet: [Types.Entities.M88NMAGICCARPET, "mob"],
     m88nhermie: [Types.Entities.M88NHERMIE, "mob"],
     m88nmrcrab: [Types.Entities.M88NMRCRAB, "mob"],
+    m88npinataballoons: [Types.Entities.M88NPINATABALLOONS, "mob"],
 
     //m88n Mob Nexans
     nexan1: [Types.Entities.NEXAN1, "mob"],
@@ -6065,6 +6072,7 @@ var kinds = {
     nexan26: [Types.Entities.NEXAN26, "mob"],
     nexan27: [Types.Entities.NEXAN27, "mob"],
     nexan30: [Types.Entities.NEXAN30, "mob"],
+    m88njeeves: [Types.Entities.M88NJEEVES, "mob"],
 
     sword1: [Types.Entities.SWORD1, "weapon"],
     sword2: [Types.Entities.SWORD2, "weapon"],
@@ -6214,6 +6222,9 @@ var kinds = {
     m88ngoldmedal: [Types.Entities.M88NGOLDMEDAL, "object"],
     m88nsilvermedal: [Types.Entities.M88NSILVERMEDAL, "object"],
     m88nbronzemedal: [Types.Entities.M88NBRONZEMEDAL, "object"],
+    m88nfishingpole: [Types.Entities.M88NFISHINGPOLE, "object"],
+    m88nprizes: [Types.Entities.M88NPRIZES, "object"],
+    m88nlamp: [Types.Entities.M88NLAMP, "object"],
     //MRMlabs Items
     firstaidkit: [Types.Entities.FIRSTAIDKIT, "object"],
     bandaid: [Types.Entities.BANDAID, "object"],
@@ -6426,6 +6437,7 @@ var kinds = {
     m88ntaikotwin2: [Types.Entities.M88NTAIKOTWIN2, "npc"],
     m88nstimytimy: [Types.Entities.M88NSTIMYTIMY, "npc"],
     m88nrealtyagent: [Types.Entities.M88NREALTYAGENT, "npc"],
+    m88ngenie: [Types.Entities.M88NGENIE, "npc"],
     //MRMlabs NPCs
     tylerdurden: [Types.Entities.TYLERDURDEN, "npc"],
     ROBITSE3: [Types.Entities.ROBITSE3, "mob"],
