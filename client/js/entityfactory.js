@@ -608,6 +608,9 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.M88NMRCRAB] = function(id) {
         return new Mobs.m88nmrcrab(id);
     };
+    EntityFactory.builders[Types.Entities.M88NPINATABALLOONS] = function(id) {
+        return new Mobs.m88npinataballoons(id);
+    };
     
     //m88n Mob Nexans
     EntityFactory.builders[Types.Entities.NEXAN1] = function(id) {
@@ -657,6 +660,9 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     };
     EntityFactory.builders[Types.Entities.NEXAN30] = function(id) {
         return new Mobs.nexan30(id);
+    };
+    EntityFactory.builders[Types.Entities.M88NJEEVES] = function(id) {
+        return new Mobs.m88njeeves(id);
     };
     
     
@@ -937,6 +943,9 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.M88NGOLDMEDAL] = function(id) { return new Items.m88ngoldmedal(id); };
     EntityFactory.builders[Types.Entities.M88NSILVERMEDAL] = function(id) { return new Items.m88nsilvermedal(id); };
     EntityFactory.builders[Types.Entities.M88NBRONZEMEDAL] = function(id) { return new Items.m88nbronzemedal(id); };
+    EntityFactory.builders[Types.Entities.M88NFISHINGPOLE] = function(id) { return new Items.m88nfishingpole(id); };
+    EntityFactory.builders[Types.Entities.M88NPRIZES] = function(id) { return new Items.m88nprizes(id); };
+    EntityFactory.builders[Types.Entities.M88NLAMP] = function(id) { return new Items.m88nlamp(id); };
     //MRMlabs Items
     EntityFactory.builders[Types.Entities.FIRSTAIDKIT] = function(id) { return new Items.firstaidkit(id); };
     EntityFactory.builders[Types.Entities.BANDAID] = function(id) { return new Items.bandaid(id); };
@@ -1272,6 +1281,7 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.M88NTAIKOTWIN2]=function(id){return new NPCs.m88ntaikotwin2(id);};
     EntityFactory.builders[Types.Entities.M88NSTIMYTIMY]=function(id){return new NPCs.m88nstimytimy(id);};
     EntityFactory.builders[Types.Entities.M88NREALTYAGENT]=function(id){return new NPCs.m88nrealtyagent(id);};
+    EntityFactory.builders[Types.Entities.M88NGENIE]=function(id){return new NPCs.m88ngenie(id);};
 
     //MRMlabs NPCs
     EntityFactory.builders[Types.Entities.TYLERDURDEN]=function(id){return new NPCs.tylerdurden(id);};
