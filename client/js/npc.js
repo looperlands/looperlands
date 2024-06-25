@@ -578,6 +578,12 @@ define(['character'], function (Character) {
             "Have fun exploring The Nexus. There are lots of hidden treasures around here!"
         ],
 
+        "m88ngenie": [
+            "What's up pal! I'm the all powerful magic genie!",
+            "Congratulations on finding my magic lamp...you gave it a rub and now I'm here to grant your wish!",
+            "You have 10 seconds to pick as many wishes as you can, then I will disappear until you find my lamp again..."
+        ],
+
         //MRMlabs NPCs
         "tylerdurden": [
             "We are all part of the same compost heap.",

@@ -1658,6 +1658,13 @@ let Properties = {
         friendly: true
     },
 
+    m88njeeves: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+
     //Short Destroyers
     lateflea: {
         level: 5,
@@ -1985,6 +1992,19 @@ let Properties = {
             duration: 60000
         },
         inventoryDescription: "Golden Faberge Egg",
+        respawnDelay: 1500000,
+        onConsume: function(player) {
+            player.releaseMob(Types.Entities.M88NOCTOPUSSY);
+        }
+    },
+    m88nlamp: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "caged",
+            duration: 60000
+        },
+        inventoryDescription: "Mysterious Lamp",
         respawnDelay: 1500000,
         onConsume: function(player) {
             player.releaseMob(Types.Entities.M88NOCTOPUSSY);

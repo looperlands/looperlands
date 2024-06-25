@@ -211,6 +211,7 @@ const AltNames = {
     nexan14: "Farmer Jon",
     nexan15: "The Mail Man",
     nexan30: "The Bartender",
+    m88njeeves: "Jeeves",
 
     //m88n NPCs
     nexan29: "The Butler",
@@ -222,6 +223,7 @@ const AltNames = {
     m88ntaikotwin2: "Taiko Twin 2",
     m88nstimytimy: "Stimy Timy",
     m88nrealtyagent: "Real Estate Agent",
+    m88ngenie: "Magic Genie!",
 
     //m88n Items
     m88nmail: "mail",
@@ -239,6 +241,7 @@ const AltNames = {
     m88nbronzemedal: "bronze medal",
     m88nfishingpole: "fishing pole",
     m88nprizes: "mysterious prizes",
+    m88nlamp: "a mysterious lamp",
 
     //m88n TT Items
     m88nammocan: "ammo can",
