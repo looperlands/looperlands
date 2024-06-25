@@ -4,7 +4,7 @@
 	"height": 64,
 	"animations": {
 		"death": {
-			"length": 4,
+			"length": 8,
 			"row": 0
 		},
 		"idle_down": {
@@ -12,6 +12,6 @@
 			"row": 1
 		}
 	},
-	"offset_x": -10,
+	"offset_x": -20,
 	"offset_y": -10
 }
