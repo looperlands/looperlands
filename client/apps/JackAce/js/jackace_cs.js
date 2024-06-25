@@ -475,6 +475,12 @@ async function showRewards(data) {
 
 async function showGameWindow(data = {}) {
     const loadWindow = data.gameWindow || 'bet';
+    const currentHandIndex = data.currentHandIndex || 0;
+
+    if(currentHandIndex > 0){
+        $('.playerHands .arrow').removeClass('arrow').addClass('no-arrow'); // Remove arrow from all hands
+        $(`#hand${currentHandIndex + 1} .no-arrow`).removeClass('no-arrow').addClass('arrow'); // Add arrow to the current hand
+    }
 
     console.log('loading window: ', loadWindow);
     switch (loadWindow) {
