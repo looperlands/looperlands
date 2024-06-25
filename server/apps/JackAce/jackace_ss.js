@@ -168,9 +168,9 @@ class JackAce {
     async stand(playerState) {
         try {
             if (playerState.currentHandIndex === playerState.playerHands.length - 1) {
-                await this.playDealerTurn(playerState);
                 await this.evaluateWinner(playerState);
             } else {
+                playerState.playerHands[currentHandIndex].canHit = false;
                 playerState.currentHandIndex++;
                 await this.checkHand(playerState);
             }
@@ -232,7 +232,6 @@ class JackAce {
 
             hand.canHit = false;
             if (playerState.currentHandIndex === playerState.playerHands.length - 1) {
-                await this.playDealerTurn(playerState);
                 await this.evaluateWinner(playerState);
             } else {
                 playerState.currentHandIndex++;
@@ -252,6 +251,7 @@ class JackAce {
                     playerState.boughtInsurance = true;
                     if (playerState.dealerHand.total === 21) {
                         playerState.reward = insuranceBet * 2;
+                        playerState.dealerHand.hasPlayed = true;
                         await this.evaluateWinner(playerState);
                     } else {
                         await this.checkHand(playerState);
@@ -375,7 +375,7 @@ class JackAce {
             playerState.canDouble = playerState.playerHands.length > 1 ? false : this.canDouble(hand.hand);
         }
 
-        if(setGameWindow){
+        if (setGameWindow) {
             playerState.gameWindow = (hand.canSplit || hand.canDouble) ? 'splitDouble' : 'hit';
         }
 
@@ -396,10 +396,7 @@ class JackAce {
     async playDealerTurn(playerState) {
         const allHandsBust = playerState.playerHands.every(hand => hand.total > 21);
 
-        if (allHandsBust) {
-            await this.evaluateWinner(playerState);
-            return;
-        }
+        if (allHandsBust) {return;}
 
         const dealerHand = playerState.dealerHand;
         while (dealerHand.total < 17) {
@@ -409,6 +406,11 @@ class JackAce {
     }
 
     async evaluateWinner(playerState) {
+
+        if (!playerState.dealerHand.hasPlayed) {
+            await this.playDealerTurn(playerState)
+        }
+
         // Evaluate all player hands against the dealer's hand
         let totalReward = 0;
         const dealerTotal = playerState.dealerHand.total;
@@ -463,7 +465,7 @@ class JackAce {
         console.log('Sanitizing playerState');
         const sanitizedState = { ...playerState };
 
-        const allPlayerHandsDone = playerState.playerHands.every(hand => hand.total >= 21);
+        const allPlayerHandsDone = playerState.playerHands.every(hand => hand.canHit == false);
 
         if (!allPlayerHandsDone && !playerState.dealerHand.hasPlayed) {
             sanitizedState.dealerHand = {
