@@ -1250,7 +1250,7 @@ module.exports = Player = Character.extend({
 
     releaseNpc: function (kind, timeToLive) {
         if (this.releaseNpc_callback) {
-            return this.releaseMob_callback(kind, timeToLive);
+            return this.releaseNpc_callback(kind, timeToLive);
         }
     },
 
