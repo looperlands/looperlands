@@ -18,7 +18,7 @@ const API_KEY = process.env.LOOPWORMS_API_KEY;
 const MAX_RETRY_COUNT = 1;
 
 const DEBUG = false;
-const printResponseJSON = function(url, response) {
+const printResponseJSON = function (url, response) {
   if (DEBUG) {
     console.log(url, JSON.stringify(response.data));
   }
@@ -233,13 +233,30 @@ const processLootEventQueue = async function (retry) {
 
 let LOOT_QUEUE_INTERVAL = undefined;
 
-const saveLootEvent = async function (nftId, itemId, amount) {
-  if (amount === undefined) { amount = 1; }
-  if (LOOT_QUEUE_INTERVAL === undefined) {
-    LOOT_QUEUE_INTERVAL = setInterval(processLootEventQueue, 1000 * 30);     // save the loot event queue every 30 seconds
-  }
+// Process a single transaction
+const saveLootEvent = async function (nftId, itemId, amount = 1) {          // Default amount to 1 if undefined
   LOOT_EVENTS_QUEUE.push({ nftId: nftId, item: String(itemId), amount })
+
+  if (LOOT_QUEUE_INTERVAL === undefined) {
+    LOOT_QUEUE_INTERVAL = setInterval(processLootEventQueue, 1000 * 30);    // Set LootEventQueue to process every 30 seconds
+  }
+
 }
+
+// Process multiple transactions at once
+const saveMultiLootEvent = function (transactions) {
+  const newEvents = transactions.map(transaction => {
+    const { nftId, itemId, quantity = 1 } = transaction;
+    return { nftId, item: String(itemId), amount: quantity };
+  });
+
+  LOOT_EVENTS_QUEUE.push(...newEvents);
+
+  if (LOOT_QUEUE_INTERVAL === undefined) {
+    LOOT_QUEUE_INTERVAL = setInterval(processLootEventQueue, 1000 * 30);  // Set LootEventQueue to process every 30 seconds
+  }
+}
+
 
 const getItemCount = async function (avatarId, itemId, retry) {
   try {
@@ -293,7 +310,7 @@ const saveMobKillEvent = async function (avatarId, mobId) {
   if (MOB_KILL_QUEUE_INTERVAL === undefined) {
     MOB_KILL_QUEUE_INTERVAL = setInterval(processMobKillEventQueue, 1000 * 30); // save the loot event queue every 30 seconds
   }
-  MOB_KILL_QUEUE.push({ nftId: avatarId, mob: mobId, amount: 1});
+  MOB_KILL_QUEUE.push({ nftId: avatarId, mob: mobId, amount: 1 });
 }
 
 const loadAvatarGameData = async function (avatarId, retry) {
@@ -312,17 +329,17 @@ const loadAvatarGameData = async function (avatarId, retry) {
     }, {});
 
     let quests = responseData.quests.reduce((avatarQuests, quest) => {
-        const status = quest.status;
-        if (status) {
-          let questsByStatus = avatarQuests[status];
-          if (questsByStatus) {
-            questsByStatus.push(quest);
-          } else {
-            avatarQuests[status] = [quest];
-          }
+      const status = quest.status;
+      if (status) {
+        let questsByStatus = avatarQuests[status];
+        if (questsByStatus) {
+          questsByStatus.push(quest);
+        } else {
+          avatarQuests[status] = [quest];
         }
-        return avatarQuests;
-      }, {});
+      }
+      return avatarQuests;
+    }, {});
 
     return {
       mobKills: mobKills,
@@ -364,7 +381,7 @@ const setQuestStatus = async function (avatarId, questId, status, retry) {
 
 const saveConsumable = async function (nft, item, qty) {
   this.saveLootEvent(nft, item, qty);
-  processLootEventQueue();
+  await processLootEventQueue();
 }
 
 const getBots = async function (walletId) {
@@ -387,7 +404,7 @@ const newBot = async function (mapId, botNftId, xp, name, walletId, ownerEntityI
       "x": x,
       "y": y,
       "gameServerURL": gameServerURL,
-      "dynamicNFTData" : dynamicNFTData
+      "dynamicNFTData": dynamicNFTData
     }
     const response = await axios.post(url, sessionRequest, options);
     printResponseJSON(url, response);
@@ -425,43 +442,40 @@ const getResourceBalance = async function (nftId, itemId) {
   return await getItemCount(nftId, itemId);
 }
 
-const updateResourceBalance = async function (nftId, itemId, quantity) {
-  saveLootEvent(nftId, itemId, quantity)
-  processLootEventQueue();
+// Process a Group of Transactions or a Single Transaction
+const updateResourceBalance = async function (nftId_or_transactionData, itemId = Types.Entities.GOLD, quantity = 1) {
+  if (Array.isArray(nftId_or_transactionData)) {
+    // Group >> updateResourceBalance(transactionData) >> pass an array where each index contains {nftId, itemId, quantity}
+    const transactionData = nftId_or_transactionData;
+    saveMultiLootEvent(transactionData);
+  } else {
+    // Single >> updateResourceBalance(nftId, itemId, quantity) >> pass nftId, itemId (defaults to GOLD), quantity (defaults to 1)
+    const nftId = nftId_or_transactionData;
+    saveLootEvent(nftId, itemId, quantity);
+  }
+  await processLootEventQueue();
 }
 
-// Default resource to gold when not specified
-const transferResourceFromTo = async function (from, to, amount, resource = Types.Entities.GOLD) {
+// Transfer a Resource from one account to another (default: SEND 1 GOLD)
+const transferResourceFromTo = async function (from, to, amount = 1, resource = Types.Entities.GOLD) {
   if (amount <= 0) return false;
 
-  try {
-    const fromBalanceStart = await getResourceBalance(from, resource);
-    const toBalanceStart = await getResourceBalance(to, resource);
-
-    if (fromBalanceStart >= amount) {
-      await updateResourceBalance(from, resource, -amount);
-      await updateResourceBalance(to, resource, amount);
-      return true;
-    } else {
-      return false;
-    }
-  } catch (error) {
-    console.error(error);
-    if (fromBalanceStart && toBalanceStart) {
-      const fromBalanceCurrent = await getResourceBalance(from, resource);
-      const toBalanceCurrent = await getResourceBalance(to, resource);
-      if (fromBalanceStart > fromBalanceCurrent) {
-        await updateResourceBalance(from, resource, fromBalanceStart - fromBalanceCurrent);
-      }
-      if (toBalanceStart > toBalanceCurrent) {
-        await updateResourceBalance(to, resource, toBalanceStart - toBalanceCurrent);
-      }
-    }
-    return { "error": "Error transferring resource" };
+  const fromBalance = await getResourceBalance(from, resource); // CHECK BALANCE OF ACCOUNT SENDING 
+  if (fromBalance >= amount) {
+    const transactionData = [
+      { nftId: from, itemId: resource, quantity: -amount },     // ACCOUNT SENDING
+      { nftId: to, itemId: resource, quantity: amount },        // ACCOUNT RECEIVING
+    ];
+    saveMultiLootEvent(transactionData);
+    await processLootEventQueue();
+    return true; // TRANSFER SUCCESSFUL
+  } else {
+    console.log(`[TRANSFER FAIL] ${from} ${resource} balance [${fromBalance}] is less than transfer requested [${amount}] to ${to}`);
+    return false; // TRANSFER FAIL
   }
 }
 
-const completePartnerTask = async function(walletId, taskId) {
+const completePartnerTask = async function (walletId, taskId) {
   const options = { headers: { 'X-Api-Key': API_KEY } };
   try {
     const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/partnerTasks.php?walletID=${walletId}&task=${taskId}`
@@ -474,7 +488,7 @@ const completePartnerTask = async function(walletId, taskId) {
   }
 }
 
-const getPartnerTask = async function(walletId, taskId) {
+const getPartnerTask = async function (walletId, taskId) {
   const options = { headers: { 'X-Api-Key': API_KEY } };
   try {
     const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/partnerTasksRpt.php?walletID=${walletId}&task=${taskId}`
@@ -487,7 +501,7 @@ const getPartnerTask = async function(walletId, taskId) {
   }
 }
 
-const getInventory = async function(walletId, nftId) {
+const getInventory = async function (walletId, nftId) {
   let rcvInventory = await platformClient.getInventory(walletId, nftId)
   printResponseJSON('getInventory', rcvInventory);
   return rcvInventory;
@@ -508,6 +522,7 @@ module.exports = {
   getSpecialItem,
   saveAvatarMapAndCheckpoint,
   saveLootEvent,
+  saveMultiLootEvent,
   getItemCount,
   avatarHasItem,
   saveMobKillEvent,

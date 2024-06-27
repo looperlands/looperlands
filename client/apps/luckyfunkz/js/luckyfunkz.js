@@ -615,11 +615,11 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
 
     async function spin() {
         if (spinInProgress) return;
-        if (credits == 0) {
-            flashCredits = true;
-            return;
-        }
+        if (game_state !== STATE_REST) return;
+        if (credits == 0 || credits < playing_lines * bet) { flashCredits = true; return; }
+
         spinInProgress = true;
+
         try {
             const urlPrefix = `${window.location.protocol}//${window.location.host}`;
 
@@ -630,12 +630,9 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
 
             const { spinData, valueToPayout, winningLines } = response.data;
             payout = valueToPayout || 0;
-            //console.log(`spinData: ${spinData}  PAYOUT: ${payout}  winningLines: ${winningLines}`);
+
             currentSpinData = spinData;
-
             linesToHighlight = winningLines;
-
-            if (credits < playing_lines * bet || game_state !== STATE_REST) return;
 
             SND_REEL_SPIN.currentTime = 0;
             SND_REEL_SPIN.play();
@@ -647,10 +644,11 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
                 reel_repeater_on = true;
             };
 
-
             $('#minigame').addClass("pauseClose");
             toggleMinigameCloseButton();
+            //console.log(`CREDITS, ${credits}, PRIOR TO SPIN`);
             credits -= playing_lines * bet;
+            //console.log(`CREDITS, ${credits + payout}, AFTER SPIN [- ${playing_lines * bet}, + ${payout}, = ${payout - (playing_lines * bet)}] `);
 
             render_reel();
 
@@ -662,7 +660,7 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
                 SND_REEL_REPEAT.pause();
                 reel_repeater_on = false;
             }
-            if (credits == 0) {
+            if (credits == 0 || credits < playing_lines * bet) {
                 flashCredits = true;
             } else {
                 if (error.response) {
@@ -703,11 +701,11 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
 
     //---- Helper Functions -----------------------------------------------
 
-    function registerClose(){
-            if ($("#autoSpinButton").hasClass("on")) {
-                $("#autoSpinButton").removeClass("on").addClass("off");
-            }
-            closeRequest = true;
+    function registerClose() {
+        if ($("#autoSpinButton").hasClass("on")) {
+            $("#autoSpinButton").removeClass("on").addClass("off");
+        }
+        closeRequest = true;
     }
 
     function flashCreditText(duration) {
@@ -716,7 +714,7 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
             SND_NOMONIES.currentTime = 0;
             SND_NOMONIES.play();
             if ($("#autoSpinButton").hasClass("on")) {
-                $("#autoSpinButton").toggleClass("on off");
+                $("#autoSpinButton").removeClass("on").addClass("off");
             }
         }
         const elapsed = Date.now() - creditsFlashStartTime;

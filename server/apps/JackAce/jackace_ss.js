@@ -46,6 +46,8 @@ class JackAce {
             switch (action) {
                 case 'DEAL':
                     console.log('processing DEAL');
+                    // const paid = await dao.updateResourceBalance(playerState.player, this.GOLD, 5000);
+                    // console.log('sent 5000: ', paid);
                     playerState.betAmount = this.getValidBetAmount(req.body.betAmount);
                     if (await this.payToCORNHOLE(playerState)) {
                         await this.deal(playerState);
