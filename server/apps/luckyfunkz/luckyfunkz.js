@@ -1,62 +1,31 @@
-const axios = require('axios');
 const { spinSet } = require('./data/spinSet');
-const dao = require('../../js/dao');
-const CORNHOLE = '0xc00631db8eba1ab88589a599b67df7727ae39348f961c62c11dcd7992f62a2ad';
 const MAX_RETRY_COUNT = 5;
 
-async function getSpin(platformClient, sessionData, linesPlayed, betPerLine) {
-    let retryCount = 0;
-    const nftId = sessionData.nftId;
+async function getSpin(platformClient, linesPlayed, betPerLine) {
+    let spinIndex;
 
-    //Transfer resources to pay the bet
-    const spinCost = linesPlayed * betPerLine;
-    const paid = await dao.transferResourceFromTo(nftId, CORNHOLE, spinCost);
-
-    if (!paid) { return "Not Enough Gold"; }
-
-    while (retryCount < MAX_RETRY_COUNT) {
+    for (let retryCount = 0; retryCount < MAX_RETRY_COUNT; retryCount++) {
         try {
-            let { chosenSpin, payout, winningLines } = await getSpinFromServer(platformClient, linesPlayed);
-
-            if (payout > 0) {
-                payout = payout * betPerLine;
-                await dao.transferResourceFromTo(CORNHOLE, nftId, payout);
+            if (spinIndex === undefined) {
+                spinIndex = await platformClient.getSpinIndex();
             }
-
+            const chosenSpin = spinSet[spinIndex];
+            const { payout, winningLines } = calc_reward(chosenSpin, linesPlayed, betPerLine);
             return { chosenSpin, payout, winningLines };
+
         } catch (error) {
-            if (error.code === 'EADDRINUSE') {
-                retryCount++;
-                await new Promise(resolve => setTimeout(resolve, 1000)); // Wait for 1 second before retrying
-            } else {
+            if (error.code !== 'EADDRINUSE') {
                 console.error('Failed to get spin:', error.message);
                 break;
             }
+            await new Promise(resolve => setTimeout(resolve, 1000));
         }
     }
-    if (retryCount === MAX_RETRY_COUNT) {
-        console.error('Exceeded maximum retry attempts. Exiting.');
-    }
-}
-
-async function getSpinFromServer(platformClient, linesPlayed) {
-    try {
-        const spinIndex = await platformClient.getSpinIndex();
-        const chosenSpin = spinSet[spinIndex];
-        
-        //Calculate the rewards associated with that spin
-        const { payout, winningLines } = calc_reward(chosenSpin, linesPlayed);
-
-        return { chosenSpin, payout, winningLines };
-
-    } catch (error) {
-        console.error('Error getting spin:', error.message);
-        throw error;
-    }
+    console.error('Exceeded maximum retry attempts. Exiting.');
 }
 
 // calculate the reward
-function calc_reward(result, played_lines) {
+function calc_reward(result, played_lines, betPerLine) {
     payout = 0;
     let winningLines = [];
 
@@ -77,8 +46,8 @@ function calc_reward(result, played_lines) {
             winningLines.push(line.row);
         }
     }
-
-    return { payout: parseInt(payout), winningLines };
+    const totalPayout = parseInt(payout) * betPerLine;
+    return { payout: totalPayout, winningLines };
 }
 
 
