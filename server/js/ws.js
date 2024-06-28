@@ -1150,11 +1150,16 @@ WS.socketIOServer = Server.extend({
                 const spinResult = payout - spinCost;
                 if (spinResult !== 0){
                     // UPDATE BALANCES
+                    let transferSuccess = false;
                     await player.incrementResourceAmount(Types.Entities.GOLD, spinResult);                      // UPDATE SESSIONDATA BALANCE
                     if(spinResult > 0){
-                        await dao.transferResourceFromTo(CORNHOLE, sessionData.nftId, spinResult);              // UPDATE DAO BALANCE (PLAYER WIN)
+                        transferSuccess = await dao.transferResourceFromTo(CORNHOLE, sessionData.nftId, spinResult);              // UPDATE DAO BALANCE (PLAYER WIN)
                     } else{
-                        await dao.transferResourceFromTo(sessionData.nftId, CORNHOLE, Math.abs(spinResult));    // UPDATE DAO BALANCE (PLAYER LOSE)
+                        transferSuccess = await dao.transferResourceFromTo(sessionData.nftId, CORNHOLE, Math.abs(spinResult));    // UPDATE DAO BALANCE (PLAYER LOSE)
+                    }
+                    if(!transferSuccess){
+                        res.status(400).json({message: "DAO transfer failed"});
+                        return;
                     }
                 }
                 
