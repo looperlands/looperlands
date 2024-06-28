@@ -42,7 +42,6 @@ const LOOPERLANDS_PLATFORM_BASE_URL = process.env.LOOPERLANDS_PLATFORM_BASE_URL;
 const LOOPERLANDS_PLATFORM_API_KEY = process.env.LOOPERLANDS_PLATFORM_API_KEY;
 const CORNHOLE = '0xc00631db8eba1ab88589a599b67df7727ae39348f961c62c11dcd7992f62a2ad';
 
-
 const platformClient = new platform.LooperLandsPlatformClient(LOOPERLANDS_PLATFORM_API_KEY, LOOPERLANDS_PLATFORM_BASE_URL);
 const dynamicNFTcontroller = new dynamicnft.DynamicNFTController(cache, platformClient, Types);
 const minigameController = new MinigameController(cache);
@@ -1149,15 +1148,23 @@ WS.socketIOServer = Server.extend({
                 const spinResponse = await minigame.getSpin(platformClient, linesPlayed, betPerLine);           
                 const { chosenSpin, payout, winningLines } = spinResponse;
 
-                
                 const spinResult = payout - spinCost;
                 if (spinResult !== 0){
-                    // UPDATE BALANCES
-                    await player.incrementResourceAmount(Types.Entities.GOLD, spinResult);                      // UPDATE SESSIONDATA BALANCE
+                    // UPDATE SESSIONDATA BALANCE
+                    await player.incrementResourceAmount(Types.Entities.GOLD, spinResult); 
+                    
+                    let transferSuccess = false;
                     if(spinResult > 0){
-                        await dao.transferResourceFromTo(CORNHOLE, sessionData.nftId, spinResult);              // UPDATE DAO BALANCE (PLAYER WIN)
+                        // UPDATE DAO BALANCE (PLAYER WIN)
+                        transferSuccess = await dao.transferResourceFromTo(CORNHOLE, sessionData.nftId, spinResult);
                     } else{
-                        await dao.transferResourceFromTo(sessionData.nftId, CORNHOLE, Math.abs(spinResult));    // UPDATE DAO BALANCE (PLAYER LOSE)
+                        // UPDATE DAO BALANCE (PLAYER LOSE)
+                        transferSuccess = await dao.transferResourceFromTo(sessionData.nftId, CORNHOLE, Math.abs(spinResult)); 
+                    }
+                    
+                    if(!transferSuccess){
+                        res.status(400).json({message: "DAO transfer failed"});
+                        return;
                     }
                 }
                 
@@ -1171,7 +1178,6 @@ WS.socketIOServer = Server.extend({
                     valueToPayout: payout,
                     winningLines: winningLines
                 };
-
                 res.status(200).send(response);
             } catch (error) {
                 console.error('Error during getSpin:', error);

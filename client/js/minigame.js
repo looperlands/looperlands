@@ -197,7 +197,7 @@ function closeMinigame() {
     var minigameElement = $('#minigame');
     if (minigameElement.length && !minigameElement.hasClass('pauseClose')) {
         $(document).off('keydown', minigameKeyDown);
-
+        $('#resources-minigame').addClass("hidden");
         minigameElement.removeClass("clickable active");
         minigameElement.fadeOut(FADE_DURATION);
 

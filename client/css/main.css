@@ -447,6 +447,32 @@ body.upscaled.game {background:#000;}
     transition: ease-in-out all 0.2s;
 }
 
+#resources-minigame {
+    position: absolute;
+    top: 5px;
+    right: 24px;
+    width: 262px;
+    height: 88px;
+    background: url(../img/common/minigameResourcePanel.png);
+    background-repeat: no-repeat;
+    image-rendering: pixelated;
+    color: #e4d0b6;
+    font-family: 'GraphicPixel';
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+}
+
+#resource-text {
+    width: 80%;
+    margin-left: 30%;
+    margin-bottom: 3%;
+}
+
+#resources-minigame.hidden{
+    display: none;
+}
+
 #resources {
     position: absolute;
     top: 5px;
@@ -1793,6 +1819,8 @@ footer div  {display:inline-block;}
     }
 
     #resources { right: 40px; }
+    #resources-minigame { right: 40px;}
+
     #shop-popup {
         max-height: 570px;
     }

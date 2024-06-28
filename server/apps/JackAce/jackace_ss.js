@@ -2,12 +2,14 @@ const axios = require('axios');
 const dao = require('../../js/dao');
 
 class JackAce {
-    constructor() {
+    constructor(cache) {
+        this.cache = cache;
         this.playerGameStates = {};
         this.playerId = null;
+        this.sessionId = null;
 
-        // GLOBALS
         this.GOLD = "21300041";
+        this.currency = this.GOLD;
         this.CORNHOLE = '0xc00631db8eba1ab88589a599b67df7727ae39348f961c62c11dcd7992f62a2ad';
         this.DECK_COUNT = 6;
         this.BET_AMOUNTS = [1, 2, 5, 10, 25, 50, 100];
@@ -29,13 +31,16 @@ class JackAce {
     }
 
     // Handle various requested actions
-    async handleAction(req, res, playerId, action) {
-        if (!this.playerId) { this.playerId = playerId; }
+    async handleAction(req, res, action) {
+        const sessionId = req.params.sessionId;
+        if(!this.sessionId || this.sessionId !== sessionId){
+            this.sessionId = sessionId;
+        }
 
         const validationError = await this.validateAction(req, action);
 
         if (validationError) {
-            console.log(`validation error: `, validationError);
+            console.log(`[VALIDATION ERROR]: `, validationError);
             return res.status(validationError.status).json({ message: validationError.message });
         }
 
@@ -46,12 +51,11 @@ class JackAce {
             switch (action) {
                 case 'DEAL':
                     console.log('processing DEAL');
-                    // const paid = await dao.updateResourceBalance(playerState.player, this.GOLD, 5000);
+                    // const paid = await dao.updateResourceBalance(playerState.player, this.currency, 5000);
                     // console.log('sent 5000: ', paid);
                     playerState.betAmount = this.getValidBetAmount(req.body.betAmount);
                     if (await this.payToCORNHOLE(playerState)) {
                         await this.deal(playerState);
-                        console.log('returning response');
                         res.json(this.sanitizePlayerState(playerState));
                     } else {
                         console.log('not enough gold');
@@ -104,7 +108,8 @@ class JackAce {
             }
         } catch (error) {
             console.error(`Error handling action ${action}:`, error);
-            res.status(500).json({ message: "Internal server error" });
+            playerState.gameMessage = error;
+            res.status(500).json(this.sanitizePlayerState(playerState));
         }
     }
 
@@ -136,23 +141,27 @@ class JackAce {
             // Set initial game state
             playerState.gameWindow = 'hit';
 
+            // Check for split condition
+            playerState.playerHands[playerState.currentHandIndex].canSplit = playerCard1.value === playerCard2.value;
+
+            // Check for double condition (don't allow cases where A + 10)
+            if(playerState.playerHands[playerState.currentHandIndex].total !== 21){
+                playerState.canDouble = this.canDouble([playerCard1.value, playerCard2.value]);
+            }
+
             // Check for insurance condition
             if (dealerCard2.value === "ACE" && playerState.playerHands[playerState.currentHandIndex].total !== 21) {
                 playerState.gameWindow = 'insurance';
             } else {
-                // Check for split condition
-                playerState.playerHands[playerState.currentHandIndex].canSplit = playerCard1.value === playerCard2.value;
-
-                // Check for double condition
-                playerState.canDouble = this.canDouble([playerCard1.value, playerCard2.value]);
-
                 if (playerState.playerHands[playerState.currentHandIndex].canSplit || playerState.canDouble) {
                     playerState.gameWindow = 'splitDouble';
                 }
             }
         } catch (error) {
+            playerState.inProgress = false;
+            playerState.gameWindow = 'bet';
             console.error("Error drawing cards:", error);
-            throw new Error("Internal server error");
+            throw new Error("[SERVER ERROR] Internal server error while processing deal");
         }
     }
 
@@ -162,8 +171,10 @@ class JackAce {
             await this.drawCard(playerState, hand);
             await this.checkHand(playerState);
         } catch (error) {
+            playerState.inProgress = false;
+            playerState.gameWindow = 'bet';
             console.error("Error hitting:", error);
-            throw new Error("Internal server error");
+            throw new Error("[SERVER ERROR] Internal server error while processing hit");
         }
     }
 
@@ -172,13 +183,15 @@ class JackAce {
             if (playerState.currentHandIndex === playerState.playerHands.length - 1) {
                 await this.evaluateWinner(playerState);
             } else {
-                playerState.playerHands[currentHandIndex].canHit = false;
+                playerState.playerHands[playerState.currentHandIndex].canHit = false;
                 playerState.currentHandIndex++;
                 await this.checkHand(playerState);
             }
         } catch (error) {
+            playerState.inProgress = false;
+            playerState.gameWindow = 'bet';
             console.error("Error standing:", error);
-            throw new Error("Internal server error");
+            throw new Error("[SERVER ERROR] Internal server error while processing stand");
         }
     }
 
@@ -222,14 +235,15 @@ class JackAce {
             await this.checkHand(playerState, playerState.playerHands.length - 1, false);
 
         } else {
-            console.log('cannot afford split');
-            throw new Error("Cannot afford split");
+            playerState.playerHands[playerState.currentHandIndex].canSplit = false;
+            console.log('Player cannot afford split');
         }
     }
 
     async double(playerState) {
         if (await this.payToCORNHOLE(playerState)) {
             const hand = playerState.playerHands[playerState.currentHandIndex];
+            hand.bet = hand.bet * 2;
             await this.drawCard(playerState, hand);
 
             hand.canHit = false;
@@ -239,14 +253,15 @@ class JackAce {
                 playerState.currentHandIndex++;
             }
         } else {
-            throw new Error("Cannot afford double");
+            playerState.playerHands[playerState.currentHandIndex].canDouble = false;
+            console.log("Player cannot afford double");
         }
     }
 
     async insurance(playerState, boughtInsurance) {
         if (boughtInsurance) {
             const insuranceBet = playerState.playerBet / 2;
-            if (playerState.playerMoney >= insuranceBet && playerState.dealerHand.hand[1] === "ACE") {
+            if (playerState.playerMoney >= insuranceBet && playerState.dealerHand.hand[1].charAt(0) === "A") {
                 if (await this.payToCORNHOLE(playerState, insuranceBet)) {
                     playerState.playerMoney -= insuranceBet;
                     playerState.insuranceBet = insuranceBet;
@@ -259,10 +274,14 @@ class JackAce {
                         await this.checkHand(playerState);
                     }
                 } else {
-                    throw new Error("Cannot afford insurance");
+                    console.log("Player cannot afford insurance");
+                    await this.insurance(playerState, false);
                 }
             } else {
-                throw new Error("Player cannot afford insurance or hand doesn't qualify for it");
+                console.log(`playerMoney: ${playerMoney}, insuranceBet: ${insuranceBet}, dealer's card: ${playerState.dealerHand.hand[1].charAt(0)}`);
+                console.log("Player cannot afford insurance or hand doesn't qualify for it");
+                playerState.gameMessage = "Player cannot afford insurance or hand doesn't qualify for it";
+                await this.insurance(playerState, false);
             }
         } else {
             if (playerState.dealerHand.total === 21) {
@@ -284,7 +303,8 @@ class JackAce {
         const betAmount = req.body.betAmount;
 
         if (!betAmount) {
-            throw new Error("Invalid bet.");
+            betAmount = this.BET_AMOUNTS[0];
+            console.log(`Invalid bet: ${betAmount}, setting to lowest valid bet.`);
         }
 
         try {
@@ -310,7 +330,7 @@ class JackAce {
     async createPlayerState(betAmount, deckId) {
         const validBetAmount = this.getValidBetAmount(betAmount);
         console.log('valid bet: ', validBetAmount);
-        const playerMoney = await dao.getResourceBalance(this.playerId, this.GOLD); // need to fix this to pull actual gold
+        const playerMoney = await dao.getResourceBalance(this.playerId, this.currency);
         console.log('playerMoney: ', playerMoney);
         return {
             player: this.playerId,
@@ -318,8 +338,10 @@ class JackAce {
             deckId: deckId,
             cardsLeft: this.DECK_COUNT * 52,
             gameWindow: "bet",
+            gameMessage: "",
             playerBet: validBetAmount,
             reward: 0,
+            rewardPaid: true,
             currentHandIndex: 0,
             playerHands: [{
                 hand: [],
@@ -345,8 +367,10 @@ class JackAce {
     // Reset player's hands to the initial state
     resetHand(player) {
         const validBetAmount = this.getValidBetAmount(player.playerBet);
+        player.gameMessage = "";
         player.playerBet = validBetAmount;
         player.reward = 0;
+        player.rewardPaid = true;
         player.currentHandIndex = 0;
         player.playerHands = [{
             hand: [],
@@ -372,9 +396,11 @@ class JackAce {
         const hand = playerState.playerHands[handToCheck];
 
         if (playerState.canDouble) {
-            console.log('check if candouble');
-            console.log(hand.hand);
             playerState.canDouble = playerState.playerHands.length > 1 ? false : this.canDouble(hand.hand);
+        }
+
+        if (hand.hand.length === 2 && hand.hand[0].charAt(0) === hand.hand[1].charAt(0) && playerState.playerHands.length < 4) {
+            hand.canSplit = true;
         }
 
         if (setGameWindow) {
@@ -387,18 +413,12 @@ class JackAce {
                 await this.evaluateWinner(playerState);
             }
         }
-
-        if (hand.hand.length === 2 && hand.hand[0].charAt(0) === hand.hand[1].charAt(0) && playerState.playerHands.length < 4) {
-            hand.canSplit = true;
-        }
-
-
     }
 
     async playDealerTurn(playerState) {
         const allHandsBust = playerState.playerHands.every(hand => hand.total > 21);
 
-        if (allHandsBust) {return;}
+        if (allHandsBust) { return; }
 
         const dealerHand = playerState.dealerHand;
         while (dealerHand.total < 17) {
@@ -435,9 +455,13 @@ class JackAce {
             }
         });
 
+        console.log('payout: ', totalReward);
         if (totalReward > 0) {
-            if (await this.payToPlayer(playerState)) {
-                playerState.reward = totalReward;
+            playerState.reward = totalReward;
+            playerState.rewardPaid = await this.payToPlayer(playerState);
+            if (!playerState.rewardPaid) {
+                playerState.gameMessage = `[ERROR] ${totalReward} REWARD COULD NOT BE AWARDED`;
+                console.error(`[PAYMENT ERROR] player ${this.playerId} should have been rewarded ${totalReward}`);
             }
         }
         playerState.inProgress = false;
@@ -446,20 +470,46 @@ class JackAce {
 
     // Transfer gold from CORNHOLE to Player
     async payToPlayer(playerState) {
-        console.log(`transfer from this.CORNHOLE to ${playerState.player}: ${playerState.reward}`);
-        return true;
-        //return await dao.transferResourceFromTo(this.CORNHOLE, playerState.player, playerState.reward);
+        await this.updateSessionData(playerState, playerState.reward);
+        //console.log(`transfer from this.CORNHOLE to ${playerState.player}: ${playerState.reward}`);
+        return await dao.transferResourceFromTo(this.CORNHOLE, playerState.player, playerState.reward, this.currency);
     }
 
     // Transfer gold from Player to CORNHOLE
     async payToCORNHOLE(playerState, amount = playerState.playerBet) {  // default to playerBet, but allow override for insurance bet
+        await this.updateSessionData(playerState, -amount);
         console.log(`transfer from ${playerState.player} to this.CORNHOLE: ${playerState.playerBet}`);
-        const goldBalance = await dao.getResourceBalance(playerState.player, this.GOLD);
-        const cornholeBALANCE = await dao.getResourceBalance(this.CORNHOLE, this.GOLD);
-        console.log('player balance: ', goldBalance);
-        console.log('cornhole balance: ', cornholeBALANCE);
-        return true;
-        //return await dao.transferResourceFromTo(playerState.player, this.CORNHOLE, amount);
+        return await dao.transferResourceFromTo(playerState.player, this.CORNHOLE, amount, this.currency);
+    }
+
+    async updateSessionData(playerState, amount) {
+        let sessionData = this.cache.get(this.sessionId);
+        let gameData = sessionData.gameData;
+
+        // Check DAO and Session prior to adding change
+        const playerDAO = await dao.getResourceBalance(this.playerId, this.currency);
+        if (parseInt(playerDAO) !== parseInt(gameData.items[this.currency])) {
+            console.log(`[DAO/SESSIONDATA DISCREPENCY] DAO ${playerDAO}, SESSIONDATA ${gameData.items[this.currency]}`)
+            gameData.items[this.currency] = Math.min(parseInt(playerDAO), parseInt(gameData.items[this.currency]));
+            console.log(`[updateSessionData] sessionData set to: ${gameData.items[this.currency]}`);
+        } else {
+            gameData.items[this.currency] = parseInt(playerDAO);
+        }
+
+        if (gameData.items === undefined) { gameData.items = {}; }
+
+        if (gameData.items[this.currency]) {
+            console.log(`[updateSessionData] ${gameData.items[this.currency]} (${amount})`)
+            gameData.items[this.currency] = Math.max(0, parseInt(gameData.items[this.currency]) + parseInt(amount));
+        } else {
+            gameData.items[this.currency] = Math.max(0, parseInt(amount));
+        }
+
+        playerState.playerMoney = gameData.items[this.currency];
+        // Update the cache with the new game data
+        sessionData.gameData = gameData;
+        this.cache.set(this.sessionId, sessionData);
+        console.log(`[updateSessionData] playerMoney updated to: ${playerState.playerMoney}`);
     }
 
     // Need to initially hide values in the dealers hand to prevent cheating
@@ -489,8 +539,10 @@ class JackAce {
 
             this.updateHandWithCard(currentHand, card.value);
         } catch (error) {
+            playerState.inProgress = false;
+            playerState.gameWindow = 'bet';
             console.error("Error drawing card:", error);
-            throw new Error("Internal server error");
+            playerState.gameMessage = "Error drawing card.";
         }
     }
 
@@ -519,6 +571,7 @@ class JackAce {
             }
         } catch (error) {
             console.error("Error shuffling deck:", error);
+            playerState.gameMessage = "Error shuffling deck.";
         }
     }
 
@@ -547,9 +600,18 @@ class JackAce {
 
     async validateAction(req, action) {
 
-        // Validate player and action
-        if (!this.playerId || !action) {
-            return { status: 400, message: "Player or action not recognized." };
+
+
+        // Validate player
+        try{
+            await this.ensurePlayerId(req);
+        } catch (error){
+            console.error("Error validating player:", error);
+            return { status: 500, message: error };
+        }
+        // Validate action
+        if (!action) {
+            return { status: 400, message: "Action not recognized" };
         }
 
         // Initialize player state if it doesn't exist
@@ -559,18 +621,47 @@ class JackAce {
 
             } catch (error) {
                 console.error("Error initializing player state:", error);
-                return { status: 500, message: "Internal server error" };
+                return { status: 500, message: "[SERVER ERROR] Error initializing player state" };
             }
         }
 
         // Validate action based on game state
         if (action === 'DEAL' && this.playerGameStates[this.playerId].inProgress) {
-            return { status: 400, message: `[DEAL] Invalid action >> hand in progress.` };
+            const lastActionTime = new Date(this.playerGameStates[this.playerId].lastActionTime);
+            const currentTime = new Date();
+            const twoMinutes = 2 * 60 * 1000; // 2 minutes in milliseconds
+
+            if ((currentTime - lastActionTime) > twoMinutes) {
+                // If the last action was more than 2 minutes ago, reset the hand to not in progress
+                this.playerGameStates[this.playerId].inProgress = false;
+                this.playerGameStates[this.playerId].gameWindow = 'bet';
+            } else {
+                return { status: 400, message: `[DEAL] Invalid action >> hand in progress.` };
+            }
         } else if (!this.playerGameStates[this.playerId].inProgress && action !== 'DEAL') {
             return { status: 400, message: `[${action}] Invalid action >> no hand in progress.` };
         }
 
         return null;
+    }
+
+    async ensurePlayerId(req) {
+        if (!this.playerId || !this.sessionId) {
+            await this.setPlayerId(req);
+            if (!this.playerId) {
+                throw new Error("Player ID not found");
+            }
+        }
+    }
+
+    async setPlayerId(req) {
+        const sessionId = req.params.sessionId;
+        this.sessionId = sessionId;
+        const sessionData = this.cache.get(sessionId);
+        if (!sessionData) {
+            throw new Error(`No session with id ${sessionId} found`);
+        }
+        this.playerId = sessionData.nftId;
     }
 
     // Check betAmount against valid bets
