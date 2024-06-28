@@ -2007,7 +2007,7 @@ let Properties = {
         inventoryDescription: "Mysterious Lamp",
         respawnDelay: 1500000,
         onConsume: function(player) {
-            player.releaseMob(Types.Entities.M88NOCTOPUSSY);
+            player.releaseNpc(Types.Entities.M88NGENIE, 1);
         }
     },
     m88nprizes: {
