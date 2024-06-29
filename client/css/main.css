@@ -458,15 +458,17 @@ body.upscaled.game {background:#000;}
     image-rendering: pixelated;
     color: #e4d0b6;
     font-family: 'GraphicPixel';
-    font-size: 24px;
+    font-size: 42px;
     display: flex;
     align-items: center;
+    z-index: 2;
 }
 
 #resource-text {
     width: 80%;
-    margin-left: 30%;
-    margin-bottom: 3%;
+    margin-left: 37%;
+    margin-bottom: 2%;
+    z-index: 3;
 }
 
 #resources-minigame.hidden{

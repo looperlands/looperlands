@@ -676,33 +676,46 @@ async function forceHoverStateCheck() {
     });
 }
 
-async function updatePlayerMoney(data) { //rewards issue when double/split
+async function updatePlayerMoney(data) {
     const targetMoney = parseInt(data.playerMoney);
     let currentMoney = parseInt(playerMoney);
     console.log(`[updatingPlayerMoney] current: ${currentMoney}, target: ${targetMoney}`);
-
 
     // if data.reward > 0, show reward
     let rewardCountdown = data.reward || 0;
     const rewardTextElementId = 'reward-text';
     if (rewardCountdown > 0) {
-        const rewardTextElement = createSvgText(`${rewardCountdown}`, rewardTextElementId);
-        $('#jackaceGame').append(rewardTextElement);
+        const rewardTextElement = createSvgText(`+${rewardCountdown}`, rewardTextElementId);
+        
+        $('#resources-minigame').after(rewardTextElement);
 
         $(`#${rewardTextElementId}`).css({
             position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%) scale(0)',
-            'font-size': '21vh'
+            width: `fit-content`,
+            top: '0px',
+            right: '10px',
+            zIndex: '1',
+            'font-size': '42px',
+            'font-family': '"Orbitron", "Helvetica Neue", "Futura", "Trebuchet MS", Arial'
         });
 
-        await gsap.to(`#${rewardTextElementId}`, 
-            { scale: 1, duration: 0.5 }
-        ).then(() => new Promise(resolve => setTimeout(resolve, 500)));
+        await gsap.to(`#${rewardTextElementId}`, {
+            top: '60px',
+            duration: 0.5
+        }).then(() => new Promise(resolve => setTimeout(resolve, 500)));
     }
 
-    // animate player money change
+    // Calculate total steps and delay time per step
+    const totalSteps = Math.abs(targetMoney - currentMoney);
+    const defaultStepDelay = 30; // Default step delay in milliseconds
+    const maxDuration = 1000; // Maximum duration in milliseconds
+    let stepDelay = defaultStepDelay;
+
+    // Adjust stepDelay if total duration exceeds maxDuration
+    if (totalSteps * defaultStepDelay > maxDuration) {
+        stepDelay = maxDuration / totalSteps;
+    }
+
     while (currentMoney !== targetMoney) {
         if (currentMoney < targetMoney) {
             currentMoney++;
@@ -719,22 +732,25 @@ async function updatePlayerMoney(data) { //rewards issue when double/split
             $(`#${rewardTextElementId} text`).text(`+${rewardCountdown}`);
         }
 
-        await new Promise(resolve => setTimeout(resolve, 50));
+        await new Promise(resolve => setTimeout(resolve, stepDelay));
     }
 
-    // Remove the reward text element after the countdown is complete
     if (rewardCountdown <= 0) {
-        $(`#${rewardTextElementId}`).remove();
+        await gsap.to(`#${rewardTextElementId}`, {
+            opacity: 0,
+            duration: defaultStepDelay,
+            onComplete: () => $(`#${rewardTextElementId}`).remove()
+        });
     }
 }
+
+
 
 // Function to create SVG text element with gradient
 function createSvgText(textContent, id) {
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
     svg.setAttribute('id', id); // Assign id to the svg element
-    svg.setAttribute('height', '75%');
-    svg.setAttribute('width', '100%');
 
     const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
     const linearGradient = createLinearGradient();
