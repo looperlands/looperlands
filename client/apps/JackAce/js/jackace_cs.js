@@ -676,7 +676,7 @@ async function forceHoverStateCheck() {
     });
 }
 
-async function updatePlayerMoney(data) {
+async function updatePlayerMoney(data) { //rewards issue when double/split
     const targetMoney = parseInt(data.playerMoney);
     let currentMoney = parseInt(playerMoney);
     console.log(`[updatingPlayerMoney] current: ${currentMoney}, target: ${targetMoney}`);
@@ -686,7 +686,7 @@ async function updatePlayerMoney(data) {
     let rewardCountdown = data.reward || 0;
     const rewardTextElementId = 'reward-text';
     if (rewardCountdown > 0) {
-        const rewardTextElement = createSvgText(`+${rewardCountdown}`, rewardTextElementId);
+        const rewardTextElement = createSvgText(`${rewardCountdown}`, rewardTextElementId);
         $('#jackaceGame').append(rewardTextElement);
 
         $(`#${rewardTextElementId}`).css({
