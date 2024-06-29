@@ -5,6 +5,8 @@ let gameWindow = ""; // Current UI window shown
 let playerBet = 1;
 let playerMoney = 0;
 let playerId = "";
+let processingBypass = false; // used to forceResetHoverState
+
 const GOLD = "21300041";
 const BET_AMOUNTS = { 1: 1, 2: 2, 3: 5, 4: 10, 5: 25, 6: 50, 7: 100 };
 const cardScale = 10; // Scale of the cards
@@ -122,13 +124,13 @@ async function setUpButtonEvents() {
         $(id).on('click', clickFunction);
         $(id).hover(
             async function () {
-                if (!$("#uiWindow").hasClass('processing') && !$(this).hasClass('inactive')) {
+                if (processingBypass || (!$("#uiWindow").hasClass('processing') && !$(this).hasClass('inactive'))) {
                     const position = await getButtonBackgroundPosition(hoverState);
                     $(this).css('background-position', position);
                 }
             },
             async function () {
-                if (!$("#uiWindow").hasClass('processing') && !$(this).hasClass('inactive')) {
+                if (processingBypass || (!$("#uiWindow").hasClass('processing') && !$(this).hasClass('inactive'))) {
                     const position = await getButtonBackgroundPosition(defaultState);
                     $(this).css('background-position', position);
                 }
@@ -171,7 +173,7 @@ async function handleDeal() {
         $("#uiWindow").addClass('processing');
         $("#handResult").empty();
         if (playerBet > 0) {
-            const data = await makeRequest('DEAL', { betAmount: BET_AMOUNTS[playerBet] });
+            const data = await makeRequest('DEAL', { playerBet: BET_AMOUNTS[playerBet] });
             await updatePlayerMoney(data);
             console.log('playerHand: ', data.playerHands[0].hand);
             console.log('dealerHand: ', data.dealerHand.hand);
@@ -188,6 +190,7 @@ async function handleHit() {
         $("#uiWindow").addClass('processing');
         const data = await makeRequest('HIT');
         await animateCard(data);
+        if(data.dealerHand.hasPlayed) await animateDealersTurn(data);
         $("#uiWindow").removeClass('processing');
     }
 }
@@ -232,14 +235,18 @@ async function handleInsurance(boughtInsurance) {
 }
 
 async function handleDouble() {
-    if (playerMoney >= BET_AMOUNTS[playerBet] * 2) {
-        $('#double').addClass('inactive');
-        const data = await makeRequest('DOUBLE');
-        await updatePlayerMoney(data);
-        await animateCard(data);
-        await animateDealersTurn(data);
-    } else {
-        $("#handResult").append("Not enough money to double down.");
+    if (!$("#uiWindow").hasClass('processing')) {
+        $("#uiWindow").addClass('processing');
+        if (playerMoney >= BET_AMOUNTS[playerBet] * 2) {
+            $('#double').addClass('inactive');
+            const data = await makeRequest('DOUBLE');
+            await updatePlayerMoney(data);
+            await animateCard(data);
+            await animateDealersTurn(data);
+        } else {
+            $("#handResult").append("Not enough money to double down.");
+        }
+        $("#uiWindow").removeClass('processing');
     }
 }
 
@@ -309,7 +316,6 @@ async function animateDeal(data) {
         { opacity: 1, y: 0, duration: 0.2 }
     );
     await updateScores(data);
-    $("#uiWindow").removeClass('processing');
 }
 
 async function animateCard(data) {
@@ -323,6 +329,7 @@ async function animateCard(data) {
         await showGameWindow(data);
     }
 }
+
 function calculateCardValue(currentTotal, aceCount, newCard) {
     let cardValue = newCard.slice(0, -1);
 
@@ -383,18 +390,16 @@ async function animateDealersTurn(data) {
                 data.dealerHand.total = partialDealerHand;
                 await updateScores(data);
                 resolve();
-            }, 1000); // Adjust the delay as needed
+            }, 200); // Adjust the delay as needed
         });
     }
-    
-    if(data.dealerHand.total !== dealerTotal) {
+
+    if (data.dealerHand.total !== dealerTotal) {
         data.dealerHand.total = dealerTotal;
         await updateScores(data);
     }
 
-    setTimeout(() => {
-        showRewards(data);
-    }, 1000);
+        await showRewards(data);
 }
 
 async function animateSplit(data) {
@@ -409,8 +414,8 @@ async function animateSplit(data) {
 
     // Create a new div for the new hand
     $('#playerHand').append(`<div id="hand${newHandIndex + 1}" class="playerHands"><div class="no-arrow"></div><div class="hand-total"></div>`);
-	
-	// Animate the second card moving to the new hand
+
+    // Animate the second card moving to the new hand
     const originalFirstCardLeft = $(`#hand${splitHandIndex + 1}`).find(`.playingCard`).eq(0).offset().left;
     const newHandDiv = $(`#hand${newHandIndex + 1}`);
     const newHandLeft = newHandDiv.offset().left;
@@ -490,26 +495,26 @@ async function displayStartingHands(data) {
 
     // Area for dealer's total hand value
     let questionScorePosition = await getScoreBackgroundPosition(`questionMark`);
-    let $dealerScore = $('<div class="dealerScore"></div>').css('background-position', questionScorePosition);
+    let $dealerScore = $('<div class="dealerScore"></div>').css('opacity', 0).css('background-position', questionScorePosition);
     $('#dealerHand').append($dealerScore);
 
     // Area for dealer's hand
     $('#dealerHand').append('<div class="card-back"></div>');
     let dealerBackgroundPosition = await getCardBackgroundPosition(data.dealerHand.hand[1]);
-    $('#dealerHand').append(`<div class="playingCard" style="background-position: ${dealerBackgroundPosition};"></div>`);
+    $('#dealerHand').append(`<div class="playingCard" style="opacity: 0; background-position: ${dealerBackgroundPosition};"></div>`);
 
     ///////////////////////////////////
     // SET UP AREA FOR PLAYER'S HAND //
     ///////////////////////////////////
 
     // Area for player's hand value
-    let $playerScore = $('<div class="hand-total"></div>').css('background-position', questionScorePosition);
+    let $playerScore = $('<div class="hand-total"></div>').css('opacity', 0).css('background-position', questionScorePosition);
     $(`#hand1`).append($playerScore);
 
     // Area for player's hand
     for (const card of data.playerHands[0].hand) {
         let backgroundPosition = await getCardBackgroundPosition(card);
-        let $card = $('<div class="playingCard"></div>').css('background-position', backgroundPosition);
+        let $card = $('<div class="playingCard"></div>').css('opacity', 0).css('background-position', backgroundPosition);
         $(`#hand1`).append($card);
     }
 }
@@ -548,20 +553,14 @@ async function updateScores(data) {
     for (const [index, hand] of data.playerHands.entries()) {
         let backgroundPosition = await getScoreBackgroundPosition(hand.total);
         $(`#hand${index + 1}`).find(`.hand-total`).css('background-position', backgroundPosition);
+        if(hand.total >= 21) hand.canHit = false;
     }
-
     //update dealers hand
     $('.dealerScore').css('background-position', await getScoreBackgroundPosition(`${data.dealerHand.total === 'hidden' ? 'questionMark' : data.dealerHand.total}`));
 }
 
 async function showRewards(data) {
     await updatePlayerMoney(data);
-    if (data.rewards > 0) {
-        // Adjust player money
-        $("#handResult").append(`You won ${data.rewards} gold!`);
-        gsap.fromTo('#handResult', { scale: 0 }, { scale: 1, duration: 1 });
-    }
-
     await showGameWindow(data);
 }
 
@@ -570,8 +569,7 @@ async function showGameWindow(data = {}) {
     const currentHandIndex = data.currentHandIndex || 0;
 
     if (currentHandIndex > 0) {
-        $('.playerHands .arrow').removeClass('arrow').addClass('no-arrow'); // Remove arrow from all hands
-        $(`#hand${currentHandIndex + 1} .no-arrow`).removeClass('no-arrow').addClass('arrow'); // Add arrow to the current hand
+        await updateArrows(currentHandIndex); // update hand arrows if more than one hand
     }
 
     console.log('loading window: ', loadWindow);
@@ -604,7 +602,6 @@ async function showGameWindow(data = {}) {
             }
             $('#hit-stand-window').removeClass('hidden');
             $('#splitDouble').removeClass('hidden');
-            await updateButtonStates(data);
             $('#bet-window').addClass('hidden');
             $('#insurance').addClass('hidden');
             break;
@@ -617,6 +614,7 @@ async function showGameWindow(data = {}) {
             $('#hit-stand-window').addClass('hidden');
             break;
     }
+    if(data.gameWindow) await updateButtonStates(data);
     gameWindow = loadWindow;
 }
 
@@ -624,7 +622,37 @@ async function showGameWindow(data = {}) {
 // HELPER UTILITY FUNCTIONS //
 //////////////////////////////
 
+async function updateArrows(currentHandIndex) {
+    const previousArrow = $('.playerHands .arrow');
+    const newArrow = $(`#hand${currentHandIndex + 1} .no-arrow`);
+
+    // Fade out the previous arrow
+    if (previousArrow.length > 0) {
+        await new Promise((resolve) => {
+            gsap.to(previousArrow, {
+                opacity: 0,
+                duration: 0.2,
+                onComplete: function () {
+                    previousArrow.removeClass('arrow').addClass('no-arrow');
+                    resolve();
+                }
+            });
+        });
+    }
+
+    // Fade in the new arrow
+    if (newArrow.length > 0) {
+        newArrow.removeClass('no-arrow').addClass('arrow').css('opacity', 0);
+        gsap.to(newArrow, {
+            opacity: 1,
+            duration: 0.2
+        });
+    }
+}
+
 async function updateButtonStates(playerState) {
+    await forceHoverStateCheck();
+
     const { canDouble, playerHands } = playerState;
     const currentHand = playerHands[playerState.currentHandIndex];
     const canSplit = currentHand.canSplit;
@@ -636,12 +664,45 @@ async function updateButtonStates(playerState) {
     $('#split').css('background-position', splitButtonPosition).toggleClass('inactive', !canSplit);
 }
 
+async function forceHoverStateCheck() {
+    const buttons = [
+        '#bet_increase', '#bet_decrease', '#deal', '#hit', '#stand', '#double', '#split', '#ins-yes', '#ins-no'
+    ];
+
+    buttons.forEach(id => {
+        processingBypass = true;
+        $(id).trigger('mouseenter').trigger('mouseleave');
+        processingBypass = false;
+    });
+}
+
 async function updatePlayerMoney(data) {
-    
     const targetMoney = parseInt(data.playerMoney);
     let currentMoney = parseInt(playerMoney);
     console.log(`[updatingPlayerMoney] current: ${currentMoney}, target: ${targetMoney}`);
-    
+
+
+    // if data.reward > 0, show reward
+    let rewardCountdown = data.reward || 0;
+    const rewardTextElementId = 'reward-text';
+    if (rewardCountdown > 0) {
+        const rewardTextElement = createSvgText(`+${rewardCountdown}`, rewardTextElementId);
+        $('#jackaceGame').append(rewardTextElement);
+
+        $(`#${rewardTextElementId}`).css({
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%) scale(0)',
+            'font-size': '21vh'
+        });
+
+        await gsap.to(`#${rewardTextElementId}`, 
+            { scale: 1, duration: 0.5 }
+        ).then(() => new Promise(resolve => setTimeout(resolve, 500)));
+    }
+
+    // animate player money change
     while (currentMoney !== targetMoney) {
         if (currentMoney < targetMoney) {
             currentMoney++;
@@ -652,8 +713,82 @@ async function updatePlayerMoney(data) {
         playerMoney = currentMoney;
         $('#resources-minigame #resource-text').text(playerMoney);
 
+        if (rewardCountdown > 0) {
+            rewardCountdown--;
+            // animate reward if applicable
+            $(`#${rewardTextElementId} text`).text(`+${rewardCountdown}`);
+        }
+
         await new Promise(resolve => setTimeout(resolve, 50));
     }
+
+    // Remove the reward text element after the countdown is complete
+    if (rewardCountdown <= 0) {
+        $(`#${rewardTextElementId}`).remove();
+    }
+}
+
+// Function to create SVG text element with gradient
+function createSvgText(textContent, id) {
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+    svg.setAttribute('id', id); // Assign id to the svg element
+    svg.setAttribute('height', '75%');
+    svg.setAttribute('width', '100%');
+
+    const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+    const linearGradient = createLinearGradient();
+    defs.appendChild(linearGradient);
+    svg.appendChild(defs);
+
+    const svgText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    svgText.setAttribute('class', 'rewardText');
+    svgText.setAttribute('x', '50%');
+    svgText.setAttribute('y', '50%');
+    svgText.setAttribute('text-anchor', 'middle');
+    svgText.textContent = textContent;
+
+    // Apply additional styles directly to the <text> element
+    svgText.style.fill = 'url(#fill-gradient)';
+    svgText.style.stroke = 'rgba(255, 255, 255, 0.5)';
+    svgText.style.strokeWidth = '0.5px';
+    svgText.style.filter = 'drop-shadow(0 0 0.1vh #FFF) drop-shadow(0 0 0.3vh #F0F)';
+
+    svg.appendChild(svgText);
+
+    return svg;
+}
+
+// Create linear gradient for Payout Table Headers
+function createLinearGradient() {
+    const linearGradient = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
+    linearGradient.setAttribute('id', 'fill-gradient');
+    linearGradient.setAttribute('x1', '0%');
+    linearGradient.setAttribute('y1', '0%');
+    linearGradient.setAttribute('x2', '0%');
+    linearGradient.setAttribute('y2', '100%');
+    linearGradient.setAttribute('spreadMethod', 'pad');
+
+    const stops = [
+        { offset: '0%', color: '#000' },
+        { offset: '5%', color: '#707' },
+        { offset: '20%', color: '#F0F' },
+        { offset: '60%', color: '#0FF' },
+        { offset: '64%', color: '#FFF' },
+        { offset: '68%', color: '#0FF' },
+        { offset: '78%', color: '#F0F' },
+        { offset: '100%', color: '#F0F' }
+    ];
+
+    stops.forEach(stop => {
+        const stopElement = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+        stopElement.setAttribute('offset', stop.offset);
+        stopElement.setAttribute('stop-color', stop.color);
+        stopElement.setAttribute('stop-opacity', '1');
+        linearGradient.appendChild(stopElement);
+    });
+
+    return linearGradient;
 }
 
 // Look up player's gold balance

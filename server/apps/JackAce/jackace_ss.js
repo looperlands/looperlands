@@ -53,7 +53,7 @@ class JackAce {
                     console.log('processing DEAL');
                     // const paid = await dao.updateResourceBalance(playerState.player, this.currency, 5000);
                     // console.log('sent 5000: ', paid);
-                    playerState.betAmount = this.getValidBetAmount(req.body.betAmount);
+                    playerState.playerBet = this.getValidBetAmount(req.body.playerBet);
                     if (await this.payToCORNHOLE(playerState)) {
                         await this.deal(playerState);
                         res.json(this.sanitizePlayerState(playerState));
@@ -300,17 +300,17 @@ class JackAce {
 
     // Initialize a player's game state
     async initializePlayerState(req) {
-        const betAmount = req.body.betAmount;
+        let playerBet = req.body.playerBet;
 
-        if (!betAmount) {
-            betAmount = this.BET_AMOUNTS[0];
-            console.log(`Invalid bet: ${betAmount}, setting to lowest valid bet.`);
+        if (!playerBet) {
+            playerBet = this.BET_AMOUNTS[0];
+            console.log(`Invalid bet: ${playerBet}, setting to lowest valid bet.`);
         }
 
         try {
             const deckId = await this.getNewDeckId();
             console.log('deck id: ', deckId);
-            return await this.createPlayerState(betAmount, deckId);
+            return await this.createPlayerState(playerBet, deckId);
         } catch (error) {
             console.error("Error initializing deck:", error);
             throw error;
@@ -327,8 +327,8 @@ class JackAce {
         }
     }
 
-    async createPlayerState(betAmount, deckId) {
-        const validBetAmount = this.getValidBetAmount(betAmount);
+    async createPlayerState(playerBet, deckId) {
+        const validBetAmount = this.getValidBetAmount(playerBet);
         console.log('valid bet: ', validBetAmount);
         const playerMoney = await dao.getResourceBalance(this.playerId, this.currency);
         console.log('playerMoney: ', playerMoney);
