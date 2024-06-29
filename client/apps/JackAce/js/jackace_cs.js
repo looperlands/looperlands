@@ -683,8 +683,11 @@ async function updatePlayerMoney(data) {
 
     // if data.reward > 0, show reward
     let rewardCountdown = data.reward || 0;
+    let processingReward = false;
+
     const rewardTextElementId = 'reward-text';
     if (rewardCountdown > 0) {
+        processingReward = true;
         const rewardTextElement = createSvgText(`+${rewardCountdown}`, rewardTextElementId);
         
         $('#resources-minigame').after(rewardTextElement);
@@ -735,7 +738,7 @@ async function updatePlayerMoney(data) {
         await new Promise(resolve => setTimeout(resolve, stepDelay));
     }
 
-    if (rewardCountdown <= 0) {
+    if (processingReward) {
         await gsap.to(`#${rewardTextElementId}`, {
             opacity: 0,
             duration: defaultStepDelay,
