@@ -739,9 +739,9 @@ async function updatePlayerMoney(data) {
     }
 
     if (processingReward) {
-        await gsap.to(`#${rewardTextElementId}`, {
+        gsap.to(`#${rewardTextElementId}`, {
             opacity: 0,
-            duration: defaultStepDelay,
+            duration: defaultStepDelay/1000,
             onComplete: () => $(`#${rewardTextElementId}`).remove()
         });
     }
