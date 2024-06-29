@@ -616,10 +616,6 @@ async function showGameWindow(data = {}) {
     }
 
     console.log('loading window: ', loadWindow);
-
-    const fadeOutElements = [];
-    const fadeInElements = [];
-
     switch (loadWindow) {
         case 'bet':
             if (gameWindow !== 'splitDouble') {
@@ -627,15 +623,19 @@ async function showGameWindow(data = {}) {
                 $('#uiWindow').css('height', '380px');
                 $('#uiWindow').css('align-content', 'center');
             }
-            fadeOutElements.push('#hit-stand-window', '#insurance');
-            fadeInElements.push('#bet-window');
+            $('#bet-window').removeClass('hidden');
+            $('#hit-stand-window').addClass('hidden');
+            $('#insurance').addClass('hidden');
             break;
         case 'hit':
             $('#uiWindow').css('background-position', await getUiBackgroundPosition('twoButton'));
             $('#uiWindow').css('height', '230px');
             $('#uiWindow').css('align-content', 'center');
-            fadeOutElements.push('#bet-window', '#splitDouble', '#insurance');
-            fadeInElements.push('#hit-stand-window');
+            $('#hit-stand-window').removeClass('hidden');
+            $('#bet-window').addClass('hidden');
+            $('#splitDouble').addClass('hidden');
+            $('#insurance').addClass('hidden');
+
             break;
         case 'splitDouble':
             if (gameWindow !== 'bet') {
@@ -643,35 +643,23 @@ async function showGameWindow(data = {}) {
                 $('#uiWindow').css('height', '380px');
                 $('#uiWindow').css('align-content', 'center');
             }
-            fadeOutElements.push('#bet-window', '#insurance');
-            fadeInElements.push('#hit-stand-window', '#splitDouble');
+            $('#hit-stand-window').removeClass('hidden');
+            $('#splitDouble').removeClass('hidden');
+            $('#bet-window').addClass('hidden');
+            $('#insurance').addClass('hidden');
             break;
         case 'insurance':
             $('#uiWindow').css('background-position', await getUiBackgroundPosition('insurance'));
             $('#uiWindow').css('height', '370px');
             $('#uiWindow').css('align-content', 'end');
-            fadeOutElements.push('#bet-window', '#hit-stand-window');
-            fadeInElements.push('#insurance');
+            $('#insurance').removeClass('hidden');
+            $('#bet-window').addClass('hidden');
+            $('#hit-stand-window').addClass('hidden');
             break;
     }
-
-    // Create a GSAP timeline
-    const tl = gsap.timeline();
-
-    // Fade out the elements that should be hidden
-    tl.to(fadeOutElements, { opacity: 0, duration: 0.5, onComplete: () => $(fadeOutElements.join(',')).addClass('hidden') }, 0);
-
-    // Fade in the elements that should be visible
-    $(fadeInElements.join(',')).removeClass('hidden');
-    tl.fromTo(fadeInElements, { opacity: 0 }, { opacity: 1, duration: 0.5 }, 0);
-
-    // Wait for the timeline to complete
-    await tl;
-
     if (data.gameWindow) await updateButtonStates(data);
     gameWindow = loadWindow;
 }
-
 
 //////////////////////////////
 // HELPER UTILITY FUNCTIONS //
