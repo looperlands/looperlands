@@ -465,6 +465,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "item-m88nfishingpole",
                     "item-m88nprizes",
                     "item-m88nlamp",
+                    "item-m88ngemticket",
                     //MRMlabs
                     "item-firstaidkit",
                     "item-bandaid",

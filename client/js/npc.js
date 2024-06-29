@@ -416,7 +416,7 @@ define(['character'], function (Character) {
 
         //m88n's NPCs
         "wenmoon": [
-            "Yo! I'm wenmoon, M88nwalker sent me down here to be your lunar envoy.",
+            "Yo! I'm wenmoon, m88nwalker sent me down here to be your lunar envoy.",
             "Where Worlds Collide, Secrets Reside: Welcome to the Nexus!",
             'First stop: Dreamland! Own a piece from the <a target="_blank" href="https://loopexchange.art/collection/onesie-party">Its a Onesie Party! collection</a> for access to the VIP Lounge!',
             'On X? <a target="_blank" href="https://twitter.com/moonwalker_nfts">Give him a follow</a> to stay updated.',
@@ -426,7 +426,8 @@ define(['character'], function (Character) {
 
         "kingfroggy": [
             "Greetings! I'm Froggy, the King of DreamLand.",
-            'Wanna be King of the next pillow fight? Own a piece from the <a target="_blank" href="https://loopexchange.art/collection/onesie-party">Its a Onesie Party! collection</a> for access to the VIP Lounge!',
+            "Wanna be King of the next pillow fight?",
+            'Own a piece from the <a target="_blank" href="https://loopexchange.art/collection/onesie-party">Its a Onesie Party! collection</a> for access to the VIP Lounge!',
             'Join us in Discord! <a target="_blank" href="https://discord.gg/bjjNewZegM">Checkout PLANET M88NWALKER</a> for insider details.',
             "Have fun!"
         ],
@@ -439,6 +440,11 @@ define(['character'], function (Character) {
         "nexan5": [
             "Hey friend! Are you looking for a quick snack?",
             "What can I get ya?"
+        ],
+
+        "nexan10": [
+            "Ahoy! I'm Darwin, an explorer of the metaverse...I've noticed some cool new bugs around The Nexus.",
+            "Keep your eyes peeled and see if you can find any too!"
         ],
 
         "nexan11": [
@@ -510,14 +516,13 @@ define(['character'], function (Character) {
         ],
 
         "nexan31": [
-            "Hey there! How's it going?",
-            "I'm working with the city planner to expand Paradise Point...",
-            "I have a new quest on the way for you..."
+            "Hey there! How's it going? I'm Fred the Foreman.",
+            "I'm working with the city planner to expand Paradise Point..."
         ],
 
         "nexan32": [
             "Yo, daddy-o!",
-            "Nice sideburns. I have a new quest on the way for you..."
+            "Nice sideburns..."
         ],
 
         "nexan33": [
