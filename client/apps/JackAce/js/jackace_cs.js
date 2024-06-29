@@ -162,11 +162,53 @@ async function makeRequest(action, additionalData = {}) {
             .then(response => {
                 resolve(response.data);
             })
-            .catch(error => {
+            .catch(async error => {
+                const errorResponse = error.response && error.response.data ? error.response.data : null;
+                if (errorResponse && errorResponse.message) {
+                    // Handling specific error messages from the server
+                    switch (errorResponse.message) {
+                        case '[DEAL] Invalid action >> hand in progress.':
+                        case '[HIT] Invalid action >> no hand in progress.':
+                        case '[SPLIT] Invalid action >> Cannot split.':
+                        case '[DOUBLE] Invalid action >> Cannot double.':
+                        case '[INSURANCE] Invalid action >> Cannot buy insurance.':
+                            alert(`Invalid action: ${errorResponse.message}`);
+                            await resetGame();
+                            break;
+                        case 'Not Enough Gold.':
+                            alert('You do not have enough gold to place this bet.');
+                            $("#uiWindow").removeClass('processing');
+                            break;
+                        default:
+                            alert(`Error: ${errorResponse.message}`);
+                            break;
+                    }
+                } else {
+                    alert('An unexpected error occurred. Please try again later.');
+                }
                 reject(error);
             });
     });
 }
+
+async function resetGame() {
+    const sessionId = new URLSearchParams(window.location.search).get('sessionId');
+    const minigameQuery = `/session/${sessionId}/minigame`;
+
+    try {
+        const response = await axios.post(minigameQuery, {
+            minigame: 'jackace',
+            player: playerId,
+            action: 'RESET'
+        });
+        console.log('Game reset');
+        await showGameWindow(response.data);
+    } catch (error) {
+        console.error('Error resetting the game:', error);
+        alert('An error occurred while resetting the game. Please try again.');
+    }
+}
+
 
 async function handleDeal() {
     if (!$("#uiWindow").hasClass('processing')) {
@@ -190,7 +232,6 @@ async function handleHit() {
         $("#uiWindow").addClass('processing');
         const data = await makeRequest('HIT');
         await animateCard(data);
-        if(data.dealerHand.hasPlayed) await animateDealersTurn(data);
         $("#uiWindow").removeClass('processing');
     }
 }
@@ -324,6 +365,7 @@ async function animateCard(data) {
     gsap.fromTo(`#hand${data.currentHandIndex + 1} .playingCard:last-child`, { opacity: 0, y: -50 }, { opacity: 1, y: 0 });
     await updateScores(data);
     if (data.dealerHand.total !== 'hidden') {
+        await new Promise(resolve => setTimeout(resolve, 200));
         await animateDealersTurn(data)
     } else {
         await showGameWindow(data);
@@ -357,7 +399,7 @@ function calculateCardValue(currentTotal, aceCount, newCard) {
 
 async function animateDealersTurn(data) {
     await displayDealerCards(data);
-    gsap.fromTo('#dealerHand .playingCard', { opacity: 0, y: -50 }, { opacity: 1, y: 0, stagger: 0.2 });
+    await gsap.fromTo('#dealerHand .playingCard', { opacity: 0, y: -50 }, { opacity: 1, y: 0, stagger: 0.2 });
 
     const dealerTotal = data.dealerHand.total;
     const currentDealerCardIndex = 1;
@@ -384,7 +426,7 @@ async function animateDealersTurn(data) {
 
                 const dealerBackgroundPosition = await getCardBackgroundPosition(card);
                 $("#dealerHand").append(`<div class="playingCard" style="background-position: ${dealerBackgroundPosition};"></div>`);
-                gsap.fromTo(`#dealerHand .playingCard:last-child`, { opacity: 0, y: -50 }, { opacity: 1, y: 0, duration: 0.2 });
+                await gsap.fromTo(`#dealerHand .playingCard:last-child`, { opacity: 0, y: -50 }, { opacity: 1, y: 0, duration: 0.2 });
 
                 // Update scores with the updated partialDealerHand
                 data.dealerHand.total = partialDealerHand;
@@ -398,8 +440,9 @@ async function animateDealersTurn(data) {
         data.dealerHand.total = dealerTotal;
         await updateScores(data);
     }
-
-        await showRewards(data);
+    
+    await new Promise(resolve => setTimeout(resolve, 0));
+    await showRewards(data);
 }
 
 async function animateSplit(data) {
@@ -437,7 +480,7 @@ async function animateSplit(data) {
             const $originalNewCardElement = $('<div class="playingCard"></div>').css('background-position', originalNewCardPosition);
             $(`#hand${splitHandIndex + 1}`).append($originalNewCardElement);
 
-            gsap.fromTo($originalNewCardElement, { opacity: 0, y: -50 }, { opacity: 1, y: 0, duration: 0.2 });
+            await gsap.fromTo($originalNewCardElement, { opacity: 0, y: -50 }, { opacity: 1, y: 0, duration: 0.2 });
 
             // Draw a new card for the new hand
             const newHandNewCard = data.playerHands[newHandIndex].hand.slice(-1)[0];
@@ -445,7 +488,7 @@ async function animateSplit(data) {
             const $newHandNewCardElement = $('<div class="playingCard"></div>').css('background-position', newHandNewCardPosition);
             $(`#hand${newHandIndex + 1}`).append($newHandNewCardElement);
 
-            gsap.fromTo($newHandNewCardElement, { opacity: 0, y: -50 }, { opacity: 1, y: 0, duration: 0.2 });
+            await gsap.fromTo($newHandNewCardElement, { opacity: 0, y: -50 }, { opacity: 1, y: 0, duration: 0.2 });
             await updateScores(data); // Update the scores after the split animation is complete
         }
     });
@@ -458,7 +501,7 @@ async function drawNewCard(data, handIndex) {
     const backgroundPosition = await getCardBackgroundPosition(card);
     let $card = $('<div class="playingCard"></div>').css('background-position', backgroundPosition);
     $(`#hand${handIndex + 1}`).append($card);
-    gsap.fromTo($card, { opacity: 0, y: -50 }, { opacity: 1, y: 0, duration: 0.2 });
+    await gsap.fromTo($card, { opacity: 0, y: -50 }, { opacity: 1, y: 0, duration: 0.2 });
     await updateScores(data);
 }
 
@@ -553,7 +596,7 @@ async function updateScores(data) {
     for (const [index, hand] of data.playerHands.entries()) {
         let backgroundPosition = await getScoreBackgroundPosition(hand.total);
         $(`#hand${index + 1}`).find(`.hand-total`).css('background-position', backgroundPosition);
-        if(hand.total >= 21) hand.canHit = false;
+        if (hand.total >= 21) hand.canHit = false;
     }
     //update dealers hand
     $('.dealerScore').css('background-position', await getScoreBackgroundPosition(`${data.dealerHand.total === 'hidden' ? 'questionMark' : data.dealerHand.total}`));
@@ -573,6 +616,10 @@ async function showGameWindow(data = {}) {
     }
 
     console.log('loading window: ', loadWindow);
+
+    const fadeOutElements = [];
+    const fadeInElements = [];
+
     switch (loadWindow) {
         case 'bet':
             if (gameWindow !== 'splitDouble') {
@@ -580,19 +627,15 @@ async function showGameWindow(data = {}) {
                 $('#uiWindow').css('height', '380px');
                 $('#uiWindow').css('align-content', 'center');
             }
-            $('#bet-window').removeClass('hidden');
-            $('#hit-stand-window').addClass('hidden');
-            $('#insurance').addClass('hidden');
+            fadeOutElements.push('#hit-stand-window', '#insurance');
+            fadeInElements.push('#bet-window');
             break;
         case 'hit':
             $('#uiWindow').css('background-position', await getUiBackgroundPosition('twoButton'));
             $('#uiWindow').css('height', '230px');
             $('#uiWindow').css('align-content', 'center');
-            $('#hit-stand-window').removeClass('hidden');
-            $('#bet-window').addClass('hidden');
-            $('#splitDouble').addClass('hidden');
-            $('#insurance').addClass('hidden');
-
+            fadeOutElements.push('#bet-window', '#splitDouble', '#insurance');
+            fadeInElements.push('#hit-stand-window');
             break;
         case 'splitDouble':
             if (gameWindow !== 'bet') {
@@ -600,23 +643,35 @@ async function showGameWindow(data = {}) {
                 $('#uiWindow').css('height', '380px');
                 $('#uiWindow').css('align-content', 'center');
             }
-            $('#hit-stand-window').removeClass('hidden');
-            $('#splitDouble').removeClass('hidden');
-            $('#bet-window').addClass('hidden');
-            $('#insurance').addClass('hidden');
+            fadeOutElements.push('#bet-window', '#insurance');
+            fadeInElements.push('#hit-stand-window', '#splitDouble');
             break;
         case 'insurance':
             $('#uiWindow').css('background-position', await getUiBackgroundPosition('insurance'));
             $('#uiWindow').css('height', '370px');
             $('#uiWindow').css('align-content', 'end');
-            $('#insurance').removeClass('hidden');
-            $('#bet-window').addClass('hidden');
-            $('#hit-stand-window').addClass('hidden');
+            fadeOutElements.push('#bet-window', '#hit-stand-window');
+            fadeInElements.push('#insurance');
             break;
     }
-    if(data.gameWindow) await updateButtonStates(data);
+
+    // Create a GSAP timeline
+    const tl = gsap.timeline();
+
+    // Fade out the elements that should be hidden
+    tl.to(fadeOutElements, { opacity: 0, duration: 0.5, onComplete: () => $(fadeOutElements.join(',')).addClass('hidden') }, 0);
+
+    // Fade in the elements that should be visible
+    $(fadeInElements.join(',')).removeClass('hidden');
+    tl.fromTo(fadeInElements, { opacity: 0 }, { opacity: 1, duration: 0.5 }, 0);
+
+    // Wait for the timeline to complete
+    await tl;
+
+    if (data.gameWindow) await updateButtonStates(data);
     gameWindow = loadWindow;
 }
+
 
 //////////////////////////////
 // HELPER UTILITY FUNCTIONS //
@@ -689,7 +744,7 @@ async function updatePlayerMoney(data) {
     if (rewardCountdown > 0) {
         processingReward = true;
         const rewardTextElement = createSvgText(`+${rewardCountdown}`, rewardTextElementId);
-        
+
         $('#resources-minigame').after(rewardTextElement);
 
         $(`#${rewardTextElementId}`).css({

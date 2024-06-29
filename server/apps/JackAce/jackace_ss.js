@@ -58,7 +58,6 @@ class JackAce {
                         await this.deal(playerState);
                         res.json(this.sanitizePlayerState(playerState));
                     } else {
-                        console.log('not enough gold');
                         return res.status(400).json({ message: "Not Enough Gold." });
                     }
                     break;
@@ -82,7 +81,6 @@ class JackAce {
                         console.log(playerState);
                         res.json(this.sanitizePlayerState(playerState));
                     } else {
-                        console.log('cannot split');
                         return res.status(400).json({ message: "Cannot split." });
                     }
                     break;
@@ -101,6 +99,11 @@ class JackAce {
                     break;
                 case 'REWARD':
                     await this.evaluateWinner(playerState);
+                    res.json(this.sanitizePlayerState(playerState));
+                    break;
+                case 'RESET':
+                    playerState.inProgress = false;
+                    playerState.gameWindow = 'bet';
                     res.json(this.sanitizePlayerState(playerState));
                     break;
                 default:
@@ -144,19 +147,23 @@ class JackAce {
             // Check for split condition
             playerState.playerHands[playerState.currentHandIndex].canSplit = playerCard1.value === playerCard2.value;
 
-            // Check for double condition (don't allow cases where A + 10)
+            // Check for conditions when player does not have 21)
             if(playerState.playerHands[playerState.currentHandIndex].total !== 21){
                 playerState.canDouble = this.canDouble([playerCard1.value, playerCard2.value]);
+
+                // Check for insurance condition
+                if (dealerCard2.value === "ACE" && playerState.playerHands[playerState.currentHandIndex].total !== 21) {
+                    playerState.gameWindow = 'insurance';
+                } else {
+                    if (playerState.playerHands[playerState.currentHandIndex].canSplit || playerState.canDouble) {
+                        playerState.gameWindow = 'splitDouble';
+                    }
+                }
+            }else{
+                await this.evaluateWinner(playerState);
             }
 
-            // Check for insurance condition
-            if (dealerCard2.value === "ACE" && playerState.playerHands[playerState.currentHandIndex].total !== 21) {
-                playerState.gameWindow = 'insurance';
-            } else {
-                if (playerState.playerHands[playerState.currentHandIndex].canSplit || playerState.canDouble) {
-                    playerState.gameWindow = 'splitDouble';
-                }
-            }
+
         } catch (error) {
             playerState.inProgress = false;
             playerState.gameWindow = 'bet';
@@ -260,7 +267,7 @@ class JackAce {
 
     async insurance(playerState, boughtInsurance) {
         if (boughtInsurance) {
-            const insuranceBet = playerState.playerBet / 2;
+            const insuranceBet = parseInt(playerState.playerBet / 2);
             if (playerState.playerMoney >= insuranceBet && playerState.dealerHand.hand[1].charAt(0) === "A") {
                 if (await this.payToCORNHOLE(playerState, insuranceBet)) {
                     playerState.playerMoney -= insuranceBet;
@@ -411,6 +418,8 @@ class JackAce {
             hand.canHit = false;
             if (playerState.currentHandIndex === playerState.playerHands.length - 1) {
                 await this.evaluateWinner(playerState);
+            } else{
+                await this.stand(playerState);
             }
         }
     }
