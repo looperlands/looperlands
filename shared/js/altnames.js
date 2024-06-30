@@ -224,6 +224,8 @@ const AltNames = {
     m88nstimytimy: "Stimy Timy",
     m88nrealtyagent: "Real Estate Agent",
     m88ngenie: "Magic Genie!",
+    nexan32: "The Greaser",
+    nexan10: "Darwin",
 
     //m88n Items
     m88nmail: "mail",
@@ -242,6 +244,7 @@ const AltNames = {
     m88nfishingpole: "fishing pole",
     m88nprizes: "mysterious prizes",
     m88nlamp: "a mysterious lamp",
+    m88ngemticket: "a m88n mine ticket",
 
     //m88n TT Items
     m88nammocan: "ammo can",

@@ -460,6 +460,7 @@ Types = {
         M88NFISHINGPOLE: 78006400,
         M88NPRIZES: 78006500,
         M88NLAMP: 78006600,
+        M88NGEMTICKET: 78006700,
         //MRMlabs NPCs
         TYLERDURDEN: 79000000,
         //MRMlabs Items
@@ -6063,7 +6064,6 @@ var kinds = {
     nexan7: [Types.Entities.NEXAN7, "mob"],
     nexan8: [Types.Entities.NEXAN8, "mob"],
     nexan9: [Types.Entities.NEXAN9, "mob"],
-    nexan10: [Types.Entities.NEXAN10, "mob"],
     nexan21: [Types.Entities.NEXAN21, "mob"],
     nexan22: [Types.Entities.NEXAN22, "mob"],
     nexan23: [Types.Entities.NEXAN23, "mob"],
@@ -6225,6 +6225,7 @@ var kinds = {
     m88nfishingpole: [Types.Entities.M88NFISHINGPOLE, "object"],
     m88nprizes: [Types.Entities.M88NPRIZES, "object"],
     m88nlamp: [Types.Entities.M88NLAMP, "object"],
+    m88ngemticket: [Types.Entities.M88NGEMTICKET, "object"],
     //MRMlabs Items
     firstaidkit: [Types.Entities.FIRSTAIDKIT, "object"],
     bandaid: [Types.Entities.BANDAID, "object"],
@@ -6413,6 +6414,7 @@ var kinds = {
     kingfroggy: [Types.Entities.KINGFROGGY, "npc"],
     nexan4: [Types.Entities.NEXAN4, "npc"],
     nexan5: [Types.Entities.NEXAN5, "npc"],
+    nexan10: [Types.Entities.NEXAN10, "npc"],
     nexan11: [Types.Entities.NEXAN11, "npc"],
     nexan12: [Types.Entities.NEXAN12, "npc"],
     nexan13: [Types.Entities.NEXAN13, "npc"],

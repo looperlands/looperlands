@@ -356,6 +356,7 @@ define(['npc'], function(Npc) {
         kingfroggy: Npc.extend({init: function(id) {this._super(id, Types.Entities.KINGFROGGY, 1);}}),
         nexan4: Npc.extend({init: function(id) {this._super(id, Types.Entities.NEXAN4, 1);}}),
         nexan5: Npc.extend({init: function(id) {this._super(id, Types.Entities.NEXAN5, 1);}}),
+        nexan10: Npc.extend({init: function(id) {this._super(id, Types.Entities.NEXAN10, 1);}}),
         nexan11: Npc.extend({init: function(id) {this._super(id, Types.Entities.NEXAN11, 1);}}),
         nexan12: Npc.extend({init: function(id) {this._super(id, Types.Entities.NEXAN12, 1);}}),
         nexan13: Npc.extend({init: function(id) {this._super(id, Types.Entities.NEXAN13, 1);}}),
