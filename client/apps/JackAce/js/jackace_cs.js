@@ -1,5 +1,3 @@
-
-
 // Global Variables
 let gameWindow = ""; // Current UI window shown
 let playerBet = 1;
@@ -73,6 +71,8 @@ const BUTTON_SPRITE_POSITIONS = {
 /////////////////////////
 
 async function init() {
+    setupJackAceMenu();
+    setupHelpPanel();
     console.log('Starting JackAce | Getting player balance');
     playerMoney = await getGoldAmount();
     $('#resources-minigame').removeClass('hidden');
@@ -102,9 +102,8 @@ async function init() {
 
     $('#dealerHand').append('<div class="no-arrow"></div><div class="dealerScore" style="background-position: -360px 0px;"></div><div class="card-back"></div><div class="card-back"></div>');
     $('#playerHand').append('<div id="hand1" class="playerHands"><div class="no-arrow"></div><div class="hand-total" style="background-position: -360px 0px;"></div><div class="card-back"></div><div class="card-back"></div></div>');
-    await showGameWindow();
-    $('#bet_amount').css('background-position', await getButtonBackgroundPosition(`bet1`));
     await setUpButtonEvents();
+    await showGameWindow();
 }
 
 async function setUpButtonEvents() {
@@ -119,6 +118,9 @@ async function setUpButtonEvents() {
         { id: '#ins-yes', hoverState: 'yesHover', defaultState: 'yes', clickFunction: () => handleInsurance(true) },
         { id: '#ins-no', hoverState: 'noHover', defaultState: 'no', clickFunction: () => handleInsurance(false) }
     ];
+
+    // Initialize betAmount background position
+    $('#bet_amount').css('background-position', await getButtonBackgroundPosition(`bet1`));
 
     for (const { id, hoverState, defaultState, clickFunction } of buttons) {
         $(id).on('click', clickFunction);
@@ -141,6 +143,70 @@ async function setUpButtonEvents() {
         const position = await getButtonBackgroundPosition(defaultState);
         $(id).css('background-position', position);
     }
+
+    // Register additional events
+    $(`#JackAce`).on('fadeIn', async () => await fadeInSetup());
+    $(`#minigameMenu`).on('click', '#mgJackAceHelp', () => showHelpPanel());
+    $(`#minigameMenu`).on('click', '#mgClose', () => resetGame(true));
+}
+
+async function fadeInSetup() {
+    setupJackAceMenu();
+    $('#resources-minigame').removeClass('hidden');
+    playerMoney = await getGoldAmount();
+    $('#resources-minigame #resource-text').text(playerMoney);
+    showGameWindow();
+}
+
+// Add help to minigame menu if it doesn't exist
+function setupJackAceMenu() {
+    if ($('#minigameMenu-content').find('#mgJackAceHelp').length === 0) {
+        $('#minigameMenu-content').prepend('<a href="#" id="mgJackAceHelp">🃏 How To Play</a>');
+    }
+}
+
+function setupHelpPanel() {
+    if (!$('#jackaceHelp').length) {
+        $('#JackAce').append(`
+            <div id="jackaceHelp">
+                <div id="jackaceHelpClose" class="material-icons" >close</div>
+                <div id="jackaceHelpContent">
+                    <h2>How to Play JackAce</h2>
+                    <p>JackAce is a blackjack card game where players aim to get as close to 21 as possible without exceeding it. This game uses six decks of cards, reshuffled when fewer than 60 cards remain. Each card has a point value: number cards are worth their face value, face cards (King, Queen, Jack) are worth 10, and Aces can be worth either 1 or 11. The goal is to beat the dealer by having a hand value closer to 21 without going over.</p>
+                    <h3>BASIC RULES</h3>
+                    <ul>
+                        <li>Each player receives two cards face up.</li>
+                        <li>The dealer gets two cards: one face up and one face down.</li>
+                        <li>Players can "hit" (take another card) or "stand" (keep their current hand).</li>
+                        <li>If a player's hand exceeds 21, they "bust" and lose the game.</li>
+                        <li>After the player has finished their turn, the dealer reveals their face-down card and must hit until reaching 17 or higher.</li>
+                        <li>The dealer must hit on a soft 17 (a hand containing an Ace valued as 11).</li>
+                        <li>If the dealer busts, the player wins.</li>
+                        <li>If the dealer does not bust, the closest hand to 21 wins.</li>
+                        <li>A blackjack (an Ace and a 10-point card) pays 3:2.</li>
+                        <li>A winning hand that is not a blackjack pays 1:1.</li>
+                    </ul>
+                    <h3>DOUBLE</h3>
+                    <p>After being dealt the initial two cards, players have the option to "double down". This means doubling the bet and receiving only one additional card. Doubling is offered when the player's initial hand value is 9, 10, or 11. However, if the hand is an Ace and a 10 (which can be counted as 11), doubling is not allowed since it is already a blackjack.</p>
+                    <h3>SPLIT</h3>
+                    <p>If a player is dealt two cards of the same rank, they can choose to "split" them into two separate hands. Each hand gets an additional card, and the player plays each hand independently. A player can split up to a total of four hands if the cards allow. The cost to split is equal to the player's initial bet for each new hand created.</p>
+                    <h3>INSURANCE</h3>
+                    <p>If the dealer's face-up card is an Ace, players are offered "insurance" before the dealer checks the face-down card. Insurance is a side bet that the dealer has a blackjack and costs half of the player's initial bet. If the dealer has blackjack, the insurance bet pays 2:1 and the hand is over. If the dealer does not have blackjack, the player loses the insurance bet and the hand continues.</p>
+                </div>
+            </div>
+        `);
+
+        $('#jackaceHelpClose').on('click', function () {
+            gsap.to('#jackaceHelp', { opacity: 0, duration: 0.5, onComplete: () => $('#jackaceHelp').hide() });
+        });
+    }
+}
+
+// Function to show the help panel
+function showHelpPanel() {
+    setupHelpPanel(); // run setup just to make sure it's there (if it is, it'll skip the run.)
+    $('#jackaceHelp').show();
+    gsap.to('#jackaceHelp', { opacity: 1, duration: 0.5 });
 }
 
 /////////////////////////////
@@ -174,6 +240,7 @@ async function makeRequest(action, additionalData = {}) {
                         case '[INSURANCE] Invalid action >> Cannot buy insurance.':
                             alert(`Invalid action: ${errorResponse.message}`);
                             await resetGame();
+                            await showGameWindow();
                             break;
                         case 'Not Enough Gold.':
                             alert('You do not have enough gold to place this bet.');
@@ -191,7 +258,7 @@ async function makeRequest(action, additionalData = {}) {
     });
 }
 
-async function resetGame() {
+async function resetGame(hideUIWindow = false) {
     const sessionId = new URLSearchParams(window.location.search).get('sessionId');
     const minigameQuery = `/session/${sessionId}/minigame`;
 
@@ -202,10 +269,13 @@ async function resetGame() {
             action: 'RESET'
         });
         console.log('Game reset');
-        await showGameWindow(response.data);
     } catch (error) {
         console.error('Error resetting the game:', error);
         alert('An error occurred while resetting the game. Please try again.');
+    }
+
+    if(hideUIWindow){
+        await gsap.to(`#uiWindow`, { opacity: 0, duration: 0.5 });
     }
 }
 
@@ -216,10 +286,17 @@ async function handleDeal() {
         $("#handResult").empty();
         if (playerBet > 0) {
             const data = await makeRequest('DEAL', { playerBet: BET_AMOUNTS[playerBet] });
-            await updatePlayerMoney(data);
+            await updatePlayerMoney(data, -data.playerBet);
             console.log('playerHand: ', data.playerHands[0].hand);
             console.log('dealerHand: ', data.dealerHand.hand);
             await animateDeal(data);
+            if (data.dealerHand.total !== 'hidden') {
+                await new Promise(resolve => setTimeout(resolve, 200));
+                await animateDealersTurn(data);
+                await showRewards(data);
+            } else {
+                await showGameWindow(data);
+            }
         } else {
             $("#handResult").append("Place a bet to start the game.");
         }
@@ -242,6 +319,7 @@ async function handleStand() {
         const data = await makeRequest('STAND');
         if (data.dealerHand.total !== 'hidden') {
             await animateDealersTurn(data);
+            await showRewards(data);
         } else {
             await showGameWindow(data);
         }
@@ -253,7 +331,7 @@ async function handleSplit() {
     if (!$("#uiWindow").hasClass('processing')) {
         $("#uiWindow").addClass('processing');
         const data = await makeRequest('SPLIT');
-        await updatePlayerMoney(data);
+        await updatePlayerMoney(data, -data.playerBet);
         await animateSplit(data);
         $("#uiWindow").removeClass('processing');
     }
@@ -263,11 +341,12 @@ async function handleInsurance(boughtInsurance) {
     if (!$("#uiWindow").hasClass('processing')) {
         $("#uiWindow").addClass('processing');
         const data = await makeRequest('INSURANCE', { boughtInsurance: boughtInsurance });
-        if (boughtInsurance) await updatePlayerMoney(data);
+        if (boughtInsurance) await updatePlayerMoney(data, parseInt(-data.playerBet/2));
         console.log(data);
         if (data.dealerHand.total === 21) {
             console.log('Dealer had blackjack!');
             await animateDealersTurn(data);
+            await showRewards(data);
         } else {
             await showGameWindow(data);
         }
@@ -281,9 +360,8 @@ async function handleDouble() {
         if (playerMoney >= BET_AMOUNTS[playerBet] * 2) {
             $('#double').addClass('inactive');
             const data = await makeRequest('DOUBLE');
-            await updatePlayerMoney(data);
+            await updatePlayerMoney(data, -data.playerBet);
             await animateCard(data);
-            await animateDealersTurn(data);
         } else {
             $("#handResult").append("Not enough money to double down.");
         }
@@ -309,7 +387,6 @@ async function betAdjustClick(direction) {
 async function animateDeal(data) {
     // Adjust player money
     await displayStartingHands(data);
-    await showGameWindow(data);
 
     // Ensure that the cards are in the DOM
     await new Promise(resolve => setTimeout(resolve, 0));
@@ -362,11 +439,13 @@ async function animateDeal(data) {
 async function animateCard(data) {
     await displayNewPlayerCard(data);
     await new Promise(resolve => setTimeout(resolve, 0));
-    gsap.fromTo(`#hand${data.currentHandIndex + 1} .playingCard:last-child`, { opacity: 0, y: -50 }, { opacity: 1, y: 0 });
+    const handToProcess = data.processPriorHand ? data.currentHandIndex : data.currentHandIndex + 1;
+    gsap.fromTo(`#hand${handToProcess} .playingCard:last-child`, { opacity: 0, y: -50 }, { opacity: 1, y: 0 });
     await updateScores(data);
     if (data.dealerHand.total !== 'hidden') {
         await new Promise(resolve => setTimeout(resolve, 200));
-        await animateDealersTurn(data)
+        await animateDealersTurn(data);
+        await showRewards(data);
     } else {
         await showGameWindow(data);
     }
@@ -416,34 +495,31 @@ async function animateDealersTurn(data) {
 
     // Update scores with the initial partialDealerHand
     data.dealerHand.total = partialDealerHand;
-    await updateScores(data);
+    await updateScores(data, false);
 
     for (let i = 2; i < data.dealerHand.hand.length; i++) {
-        await new Promise((resolve) => {
-            setTimeout(async () => {
-                const card = data.dealerHand.hand[i];
-                ({ currentTotal: partialDealerHand, aceCount } = calculateCardValue(partialDealerHand, aceCount, card));
+        const card = data.dealerHand.hand[i];
+        ({ currentTotal: partialDealerHand, aceCount } = calculateCardValue(partialDealerHand, aceCount, card));
 
-                const dealerBackgroundPosition = await getCardBackgroundPosition(card);
-                $("#dealerHand").append(`<div class="playingCard" style="background-position: ${dealerBackgroundPosition};"></div>`);
-                await gsap.fromTo(`#dealerHand .playingCard:last-child`, { opacity: 0, y: -50 }, { opacity: 1, y: 0, duration: 0.2 });
+        const dealerBackgroundPosition = await getCardBackgroundPosition(card);
+        $("#dealerHand").append(`<div class="playingCard" style="background-position: ${dealerBackgroundPosition};"></div>`);
+        await gsap.fromTo(`#dealerHand .playingCard:last-child`, { opacity: 0, y: -50 }, { opacity: 1, y: 0, duration: 0.2 });
 
-                // Update scores with the updated partialDealerHand
-                data.dealerHand.total = partialDealerHand;
-                await updateScores(data);
-                resolve();
-            }, 200); // Adjust the delay as needed
-        });
+        // Update scores with the updated partialDealerHand
+        data.dealerHand.total = partialDealerHand;
+        await updateScores(data, false);
+
+        // Delay between card animations
+        await new Promise(resolve => setTimeout(resolve, 200)); // Adjust the delay as needed
     }
 
     if (data.dealerHand.total !== dealerTotal) {
         data.dealerHand.total = dealerTotal;
-        await updateScores(data);
+        await updateScores(data, false);
     }
-    
-    await new Promise(resolve => setTimeout(resolve, 0));
-    await showRewards(data);
+
 }
+
 
 async function animateSplit(data) {
     const splitHandIndex = data.currentHandIndex;
@@ -494,15 +570,6 @@ async function animateSplit(data) {
     });
 
     await showGameWindow(data);
-}
-
-async function drawNewCard(data, handIndex) {
-    const card = data.playerHands[handIndex].hand.slice(-1)[0]; // Get the last card
-    const backgroundPosition = await getCardBackgroundPosition(card);
-    let $card = $('<div class="playingCard"></div>').css('background-position', backgroundPosition);
-    $(`#hand${handIndex + 1}`).append($card);
-    await gsap.fromTo($card, { opacity: 0, y: -50 }, { opacity: 1, y: 0, duration: 0.2 });
-    await updateScores(data);
 }
 
 /////////////////////////////////
@@ -591,24 +658,29 @@ async function displaySplitHands(data) {
     await updateScores(data);
 }
 
-async function updateScores(data) {
+async function updateScores(data, updatePlayer = true) {
     //update players hands
-    for (const [index, hand] of data.playerHands.entries()) {
-        let backgroundPosition = await getScoreBackgroundPosition(hand.total);
-        $(`#hand${index + 1}`).find(`.hand-total`).css('background-position', backgroundPosition);
-        if (hand.total >= 21) hand.canHit = false;
+    if(updatePlayer){
+        for (const [index, hand] of data.playerHands.entries()) {
+            let backgroundPosition = await getScoreBackgroundPosition(hand.total);
+            $(`#hand${index + 1}`).find(`.hand-total`).css('background-position', backgroundPosition);
+            if (hand.total >= 21) hand.canHit = false;
+        }
     }
+    
     //update dealers hand
-    $('.dealerScore').css('background-position', await getScoreBackgroundPosition(`${data.dealerHand.total === 'hidden' ? 'questionMark' : data.dealerHand.total}`));
+    if(!updatePlayer){
+        $('.dealerScore').css('background-position', await getScoreBackgroundPosition(`${data.dealerHand.total === 'hidden' ? 'questionMark' : data.dealerHand.total}`));
+    }
 }
 
 async function showRewards(data) {
-    await updatePlayerMoney(data);
+    await updatePlayerMoney(data, null, true);
     await showGameWindow(data);
 }
 
 async function showGameWindow(data = {}) {
-    const loadWindow = data.gameWindow || 'bet';
+    const loadWindow = data.gameWindow || 'splashScreen';
     const currentHandIndex = data.currentHandIndex || 0;
 
     if (currentHandIndex > 0) {
@@ -616,8 +688,15 @@ async function showGameWindow(data = {}) {
     }
 
     console.log('loading window: ', loadWindow);
+    if (data.gameWindow) await updateButtonStates(data);
+
     switch (loadWindow) {
         case 'bet':
+        case 'splashScreen':
+            if (loadWindow == 'splashScreen') {
+                $('#splashScreen').css('display', 'block');
+                await gsap.to(['#splashScreen'], { opacity: 1, duration: 0.5 });
+            }
             if (gameWindow !== 'splitDouble') {
                 $('#uiWindow').css('background-position', await getUiBackgroundPosition('fourButton'));
                 $('#uiWindow').css('height', '380px');
@@ -657,8 +736,19 @@ async function showGameWindow(data = {}) {
             $('#hit-stand-window').addClass('hidden');
             break;
     }
-    if (data.gameWindow) await updateButtonStates(data);
-    gameWindow = loadWindow;
+
+    if (loadWindow == 'splashScreen') {
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        const tl = gsap.timeline();
+        tl.to('#splashScreen', { opacity: 0, duration: 1, onComplete: () => $('#splashScreen').css('display', 'none') })
+          .to('#uiWindow', { opacity: 1, duration: 1 }, "-=1");
+        await tl.play();
+
+        gameWindow = 'bet';
+    } else {
+        gameWindow = loadWindow;
+    }
 }
 
 //////////////////////////////
@@ -719,8 +809,8 @@ async function forceHoverStateCheck() {
     });
 }
 
-async function updatePlayerMoney(data) {
-    const targetMoney = parseInt(data.playerMoney);
+async function updatePlayerMoney(data, adjustBy = null, showRewards = false) {
+    const targetMoney = adjustBy ? playerMoney + adjustBy : parseInt(data.playerMoney);
     let currentMoney = parseInt(playerMoney);
     console.log(`[updatingPlayerMoney] current: ${currentMoney}, target: ${targetMoney}`);
 
@@ -729,7 +819,7 @@ async function updatePlayerMoney(data) {
     let processingReward = false;
 
     const rewardTextElementId = 'reward-text';
-    if (rewardCountdown > 0) {
+    if (rewardCountdown > 0 && showRewards) {
         processingReward = true;
         const rewardTextElement = createSvgText(`+${rewardCountdown}`, rewardTextElementId);
 
@@ -741,12 +831,12 @@ async function updatePlayerMoney(data) {
             top: '0px',
             right: '10px',
             zIndex: '1',
-            'font-size': '42px',
+            'font-size': '50px',
             'font-family': '"Orbitron", "Helvetica Neue", "Futura", "Trebuchet MS", Arial'
         });
 
         await gsap.to(`#${rewardTextElementId}`, {
-            top: '60px',
+            top: '65px',
             duration: 0.5
         }).then(() => new Promise(resolve => setTimeout(resolve, 500)));
     }

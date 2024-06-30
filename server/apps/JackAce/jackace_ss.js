@@ -33,7 +33,7 @@ class JackAce {
     // Handle various requested actions
     async handleAction(req, res, action) {
         const sessionId = req.params.sessionId;
-        if(!this.sessionId || this.sessionId !== sessionId){
+        if (!this.sessionId || this.sessionId !== sessionId) {
             this.sessionId = sessionId;
         }
 
@@ -46,6 +46,7 @@ class JackAce {
 
         const playerState = this.playerGameStates[this.playerId];
         playerState.lastActionTime = new Date();
+        playerState.processPriorHand = false;
 
         try {
             switch (action) {
@@ -148,7 +149,7 @@ class JackAce {
             playerState.playerHands[playerState.currentHandIndex].canSplit = playerCard1.value === playerCard2.value;
 
             // Check for conditions when player does not have 21)
-            if(playerState.playerHands[playerState.currentHandIndex].total !== 21){
+            if (playerState.playerHands[playerState.currentHandIndex].total !== 21) {
                 playerState.canDouble = this.canDouble([playerCard1.value, playerCard2.value]);
 
                 // Check for insurance condition
@@ -159,7 +160,7 @@ class JackAce {
                         playerState.gameWindow = 'splitDouble';
                     }
                 }
-            }else{
+            } else {
                 await this.evaluateWinner(playerState);
             }
 
@@ -191,6 +192,7 @@ class JackAce {
                 await this.evaluateWinner(playerState);
             } else {
                 playerState.playerHands[playerState.currentHandIndex].canHit = false;
+                
                 playerState.currentHandIndex++;
                 await this.checkHand(playerState);
             }
@@ -366,6 +368,7 @@ class JackAce {
             },
             canDouble: false,
             boughtInsurance: false,
+            processPriorHand: false,
             inProgress: false,
             lastActionTime: new Date()
         };
@@ -395,6 +398,7 @@ class JackAce {
         };
         player.canDouble = false;
         player.boughtInsurance = false;
+        player.processPriorHand = false;
         player.inProgress = true;
         player.lastActionTime = new Date();
     }
@@ -418,7 +422,8 @@ class JackAce {
             hand.canHit = false;
             if (playerState.currentHandIndex === playerState.playerHands.length - 1) {
                 await this.evaluateWinner(playerState);
-            } else{
+            } else {
+                playerState.processPriorHand = true;
                 await this.stand(playerState);
             }
         }
@@ -426,11 +431,16 @@ class JackAce {
 
     async playDealerTurn(playerState) {
         const allHandsBust = playerState.playerHands.every(hand => hand.total > 21);
-
+    
         if (allHandsBust) { return; }
-
+    
         const dealerHand = playerState.dealerHand;
-        while (dealerHand.total < 17) {
+    
+        // Function to determine if the hand is a soft 17
+        const isSoft17 = hand => hand.total === 17 && hand.aceIs11 > 0;
+    
+        // Dealer draws cards while the total is less than 17 or it is a soft 17
+        while (dealerHand.total < 17 || isSoft17(dealerHand)) {
             await this.drawCard(playerState, dealerHand);
         }
         dealerHand.hasPlayed = true;
@@ -451,10 +461,15 @@ class JackAce {
 
             if (playerTotal > 21) {
                 // Player busts
+
                 totalReward += 0;
             } else if (dealerTotal > 21 || playerTotal > dealerTotal) {
                 // Dealer busts or player wins
-                totalReward += hand.bet * 2;
+                if (hand.hand.length === 2 && playerTotal === 21) {
+                    totalReward += Math.round(hand.bet * (3 / 2));  // blackjack
+                } else {
+                    totalReward += hand.bet * 2;        // hand win
+                }
             } else if (playerTotal === dealerTotal) {
                 // Push
                 totalReward += hand.bet;
@@ -609,12 +624,10 @@ class JackAce {
 
     async validateAction(req, action) {
 
-
-
         // Validate player
-        try{
+        try {
             await this.ensurePlayerId(req);
-        } catch (error){
+        } catch (error) {
             console.error("Error validating player:", error);
             return { status: 500, message: error };
         }
@@ -633,6 +646,8 @@ class JackAce {
                 return { status: 500, message: "[SERVER ERROR] Error initializing player state" };
             }
         }
+
+        if (action === 'RESET') { return null; }
 
         // Validate action based on game state
         if (action === 'DEAL' && this.playerGameStates[this.playerId].inProgress) {

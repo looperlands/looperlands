@@ -20,7 +20,7 @@
     radial-gradient(ellipse at 69% 100%, #ffffff 0%, #F2B169 15%, #5d4a1f 100%);
   background-size: 150%;
   box-shadow: 2px 2px 5px 3px rgba(0, 0, 0, 0.9);
-  animation: sonar-pulse 1s 4;
+  animation: sonar-pulse 1s 3;
 }
 
 @keyframes sonar-pulse {
