@@ -371,9 +371,20 @@ async function handleDouble() {
 
 async function betAdjustClick(direction) {
     if (!$("#uiWindow").hasClass('processing')) {
-        const betAmount = direction === 'increase'
-            ? (playerMoney >= BET_AMOUNTS[playerBet + 1] && playerBet < 7 ? playerBet + 1 : 1)
-            : (playerBet > 1 ? playerBet - 1 : 7);
+        let betAmount;
+        if (direction === 'increase') {
+            betAmount = playerMoney >= BET_AMOUNTS[playerBet + 1] && playerBet < 7 ? playerBet + 1 : 1;
+        } else {
+            if (playerBet > 1) {
+                betAmount = playerBet - 1;
+            } else {
+                // Find the highest bet amount that satisfies playerMoney >= BET_AMOUNTS[adjusted playerBet]
+                betAmount = 7; // Start from the highest possible bet
+                while (betAmount > 1 && playerMoney < BET_AMOUNTS[betAmount]) {
+                    betAmount--;
+                }
+            }
+        }
 
         playerBet = betAmount;
         $('#bet_amount').css('background-position', await getButtonBackgroundPosition(`bet${playerBet}`));
