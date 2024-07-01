@@ -913,7 +913,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
 
             this.context.restore();
             // Overlay UI elements
-            if(!$("#minigame").hasClass("active")){
+            if(!$("#minigame").hasClass("active") && this.game.app.settings.getCursor()){
                 let cursorData = this.drawCursor();
                 renderData.push(cursorData);
             }

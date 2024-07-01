@@ -172,6 +172,7 @@ module.exports = World = cls.Class.extend({
                 const npc = self.addNpc(kind, player.x, player.y);
 
                 setTimeout(()=> {
+                    delete self.npcs[npc.id];
                     player.broadcast(npc.despawn(), false);
                 }, timeToLive)
             });
