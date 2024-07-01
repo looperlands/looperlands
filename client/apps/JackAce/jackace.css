@@ -49,16 +49,16 @@
 
 #jackaceGame{
   transform: scale(0.5);
+  opacity: 0%;
 }
 
-/*Button Boxes*/
+
 #uiWindow {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   image-rendering: pixelated;
   position: relative;
-  opacity: 0%;
   width: var(--uiWindowWidth);
   background: var(--uiWindowSprite);
   background-size: var(--uiWindowWidth) var(--uiWindowHeight);

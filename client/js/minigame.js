@@ -43,7 +43,7 @@ by = youLikeIt ? "bitcorn" : "anonymous";
     You can dynamically customize the content in this menu from your application, but note that it gets reset on each load.
     To ensure your customized menu is setup if someone loads/closes/loads your app, add an event listener in your code like this:
 
-      EXAMPLE >     $(`#luckyfunkz`).on('fadeIn', () => setupLuckyFUNKZmenu());
+      EXAMPLE >     $(`#luckyfunkz`).on('fadeIn_luckyfunkz', () => setupLuckyFUNKZmenu());
 
                     function setupLuckyFUNKZmenu(){
                         const addToMinigameMenu = $('<a href="#" id="mgPayouts">🎰 Payouts</a>');
@@ -76,13 +76,13 @@ async function loadMinigame(minigame, app) {
     if ($('#minigame').length === 0) { await loadMinigamePlatform() }
 
     // RESETS MENU TO DEFAULT AND FADES IN MINIGAME DIV
-    else { await showMinigamePlatform() }
+    else { await showMinigamePlatform(minigame) }
 
     // LOADING INDIVIDUAL MINIGAMES 
     if ($(`#${minigame}`).length === 0) { await loadNewGame(minigame) }
 
     // RETRIEVING PREVIOUSLY LOADED MINIGAMES
-    else { $(`#${minigame}`).fadeIn(FADE_DURATION, function () { $(`#${minigame}`).trigger('fadeIn'); }) }
+    else { $(`#${minigame}`).fadeIn(FADE_DURATION, function () { $(`#${minigame}`).trigger(`fadeIn`); }) }
 }
 
 
@@ -176,14 +176,17 @@ function setUpCloseEventListener(minigame) {
             specificMinigame.fadeOut(FADE_DURATION);
         }
     });
+
+    $(document).on('keydown', minigameKeyDown);     //CLOSE ON KEYPRESS = 'ESC'
 }
 
 
 /*********************************************
  RESET MINIGAME PLATFORM TO DEFAULTS AND SHOW
 *********************************************/
-async function showMinigamePlatform() {
+async function showMinigamePlatform(minigame) {
     $('#minigameMenu').empty().append(MINIGAME_MENU);   // CLEAR AND RESET MENU
+    setUpCloseEventListener(minigame);
     $('#resources').fadeOut(FADE_DURATION * 0.6);       // HIDE IN GAME RESOURCES BY DEFAULT >> ALLOWS FOR A CLEANER TRANSITION
     $("#minigame").fadeIn(FADE_DURATION);
     $("#minigame").addClass("clickable active");

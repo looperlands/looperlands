@@ -73,11 +73,9 @@ const BUTTON_SPRITE_POSITIONS = {
 async function init() {
     setupJackAceMenu();
     setupHelpPanel();
-    console.log('Starting JackAce | Getting player balance');
     playerMoney = await getGoldAmount();
     $('#resources-minigame').removeClass('hidden');
     $('#resources-minigame #resource-text').text(playerMoney);
-    console.log(`balance: ${playerMoney}`);
     $('#uiWindow').empty();
     $('#uiWindow').append(`
         <div id="bet-window">
@@ -145,17 +143,9 @@ async function setUpButtonEvents() {
     }
 
     // Register additional events
-    $(`#JackAce`).on('fadeIn', async () => await fadeInSetup());
+    $(`#JackAce`).on('fadeIn', () => showGameWindow());
     $(`#minigameMenu`).on('click', '#mgJackAceHelp', () => showHelpPanel());
     $(`#minigameMenu`).on('click', '#mgClose', () => resetGame(true));
-}
-
-async function fadeInSetup() {
-    setupJackAceMenu();
-    $('#resources-minigame').removeClass('hidden');
-    playerMoney = await getGoldAmount();
-    $('#resources-minigame #resource-text').text(playerMoney);
-    showGameWindow();
 }
 
 // Add help to minigame menu if it doesn't exist
@@ -215,7 +205,7 @@ function showHelpPanel() {
 
 async function makeRequest(action, additionalData = {}) {
     return new Promise((resolve, reject) => {
-        console.log('making request: ', action);
+        console.log(`[REQUEST: ${action}]`);
         const sessionId = new URLSearchParams(window.location.search).get('sessionId');
         const minigameQuery = `/session/${sessionId}/minigame`;
 
@@ -269,14 +259,16 @@ async function resetGame(hideUIWindow = false) {
             player: playerId,
             action: 'RESET'
         });
-        console.log('Game reset');
+        console.log('[GAME RESET]');
     } catch (error) {
         console.error('Error resetting the game:', error);
         alert('An error occurred while resetting the game. Please try again.');
     }
+    
+    $("#uiWindow").removeClass('processing');
 
     if(hideUIWindow){
-        await gsap.to(`#uiWindow`, { opacity: 0, duration: 0.5 });
+        await gsap.to(`#jackaceGame`, { opacity: 0, duration: 0.5 });
     }
 }
 
@@ -288,8 +280,6 @@ async function handleDeal() {
         if (playerBet > 0) {
             const data = await makeRequest('DEAL', { playerBet: BET_AMOUNTS[playerBet] });
             await updatePlayerMoney(data, -data.playerBet);
-            console.log('playerHand: ', data.playerHands[0].hand);
-            console.log('dealerHand: ', data.dealerHand.hand);
             await animateDeal(data);
             if (data.dealerHand.total !== 'hidden') {
                 await new Promise(resolve => setTimeout(resolve, 200));
@@ -343,9 +333,7 @@ async function handleInsurance(boughtInsurance) {
         $("#uiWindow").addClass('processing');
         const data = await makeRequest('INSURANCE', { boughtInsurance: boughtInsurance });
         if (boughtInsurance) await updatePlayerMoney(data, parseInt(-data.playerBet/2));
-        console.log(data);
         if (data.dealerHand.total === 21) {
-            console.log('Dealer had blackjack!');
             await animateDealersTurn(data);
             await showRewards(data);
         } else {
@@ -491,8 +479,6 @@ async function animateDealersTurn(data) {
         const card = data.dealerHand.hand[i];
         ({ currentTotal: partialDealerHand, aceCount } = calculateCardValue(partialDealerHand, aceCount, card));
     }
-
-    console.log('Initial Partial Dealer Hand:', partialDealerHand);
 
     // Update scores with the initial partialDealerHand
     data.dealerHand.total = partialDealerHand;
@@ -688,13 +674,17 @@ async function showGameWindow(data = {}) {
         await updateArrows(currentHandIndex); // update hand arrows if more than one hand
     }
 
-    console.log('loading window: ', loadWindow);
+    console.log(`[LOADING WINDOW: ${loadWindow}`);
     if (data.gameWindow) await updateButtonStates(data);
 
     switch (loadWindow) {
         case 'bet':
         case 'splashScreen':
             if (loadWindow == 'splashScreen') {
+                setupJackAceMenu()
+                playerMoney = await getGoldAmount();
+                $('#resources-minigame').removeClass('hidden');
+                $('#resources-minigame #resource-text').text(playerMoney);
                 $('#splashScreen').css('display', 'block');
                 await gsap.to(['#splashScreen'], { opacity: 1, duration: 0.5 });
             }
@@ -743,7 +733,7 @@ async function showGameWindow(data = {}) {
         
         const tl = gsap.timeline();
         tl.to('#splashScreen', { opacity: 0, duration: 1, onComplete: () => $('#splashScreen').css('display', 'none') })
-          .to('#uiWindow', { opacity: 1, duration: 1 }, "-=1");
+          .to('#jackaceGame', { opacity: 1, duration: 1 }, "-=1");
         await tl.play();
 
         gameWindow = 'bet';
@@ -813,7 +803,7 @@ async function forceHoverStateCheck() {
 async function updatePlayerMoney(data, adjustBy = null, showRewards = false) {
     const targetMoney = adjustBy ? playerMoney + adjustBy : parseInt(data.playerMoney);
     let currentMoney = parseInt(playerMoney);
-    console.log(`[updatingPlayerMoney] current: ${currentMoney}, target: ${targetMoney}`);
+    //console.log(`[updatingPlayerMoney] current: ${currentMoney}, target: ${targetMoney}`);
 
     // if data.reward > 0, show reward
     let rewardCountdown = data.reward || 0;
