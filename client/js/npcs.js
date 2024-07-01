@@ -392,6 +392,7 @@ define(['npc'], function(Npc) {
         taikotownnpc5: Npc.extend({init: function(id) {this._super(id, Types.Entities.TAIKOTOWNNPC5, 1);}}),
         taikotownnpc6: Npc.extend({init: function(id) {this._super(id, Types.Entities.TAIKOTOWNNPC6, 1);}}),
         taikotownnpc7: Npc.extend({init: function(id) {this._super(id, Types.Entities.TAIKOTOWNNPC7, 1);}}),
+        stupidmonkey: Npc.extend({init: function(id) {this._super(id, Types.Entities.STUPIDMONKEY, 1);}}),
         //Robits NPCs
         ROBITSC1: Npc.extend({init: function(id) {this._super(id, Types.Entities.ROBITSC1, 1);}}),
         CLOWNCAPONEBIT: Npc.extend({init: function(id) {this._super(id, Types.Entities.CLOWNCAPONEBIT, 1);}}),

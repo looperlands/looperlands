@@ -287,7 +287,7 @@ const AltNames = {
     m88nsword: "sword",
 
     //Taiko Town NPCs
-    taikotownnpc1: "Family with Dog",
+    taikotownnpc1: "I am NPC",
 
     //Duckville Fishing
     dragonegg: "a dragon egg",

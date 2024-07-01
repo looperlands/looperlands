@@ -707,6 +707,7 @@ define(['text!../sprites/agent.json',
         'text!../sprites/taikotownnpc5.json',
         'text!../sprites/taikotownnpc6.json',
         'text!../sprites/taikotownnpc7.json',
+        'text!../sprites/stupidmonkey.json',
         //m88n TT Items
         'text!../sprites/item-m88nammocan.json',
         'text!../sprites/item-m88nbanana.json',

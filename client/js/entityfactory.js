@@ -1293,6 +1293,7 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.TAIKOTOWNNPC5]=function(id){return new NPCs.taikotownnpc5(id);};
     EntityFactory.builders[Types.Entities.TAIKOTOWNNPC6]=function(id){return new NPCs.taikotownnpc6(id);};
     EntityFactory.builders[Types.Entities.TAIKOTOWNNPC7]=function(id){return new NPCs.taikotownnpc7(id);};
+    EntityFactory.builders[Types.Entities.STUPIDMONKEY]=function(id){return new NPCs.stupidmonkey(id);};
 
     //Robits NPCs
     EntityFactory.builders[Types.Entities.ROBITSC1]=function(id){return new NPCs.ROBITSC1(id);};

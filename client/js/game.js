@@ -241,6 +241,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "taikotownnpc5",
                     "taikotownnpc6",
                     "taikotownnpc7",
+                    "stupidmonkey",
                     //Robits NPCs
                     "ROBITSC1",
                     "CLOWNCAPONEBIT",

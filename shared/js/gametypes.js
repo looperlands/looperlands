@@ -486,7 +486,8 @@ Types = {
         TAIKOTOWNNPC4: 81000003,
         TAIKOTOWNNPC5: 81000004,
         TAIKOTOWNNPC6: 81000005,
-        TAIKOTOWNNPC7: 81000006, 
+        TAIKOTOWNNPC7: 81000006,
+        STUPIDMONKEY: 81000007, 
         //m88n TT Items
         M88NAMMOCAN: 81000100, 
         M88NBANANA: 81000200,
@@ -6496,6 +6497,7 @@ var kinds = {
     taikotownnpc5: [Types.Entities.TAIKOTOWNNPC5, "npc"],
     taikotownnpc6: [Types.Entities.TAIKOTOWNNPC6, "npc"],
     taikotownnpc7: [Types.Entities.TAIKOTOWNNPC7, "npc"],
+    stupidmonkey: [Types.Entities.STUPIDMONKEY, "npc"],
     // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],
