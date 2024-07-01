@@ -190,6 +190,10 @@
   justify-content: center;
 }
 
+.notCurrentHand{
+  filter: brightness(0.5);
+}
+
 .splitHand{
   display: block;
 }
@@ -203,16 +207,6 @@
 }
 
 /*Sprite Positioning*/
-.no-arrow {
-  display: inline-block;
-  width: var(--scoreWidth);
-  height: var(--buttonHeight);
-  background: var(--scoreSprite) 0 0;
-  margin: 5px;
-  image-rendering: pixelated;
-  background-size: var(--scoreSpriteSize);
-}
-
 .arrow {
   display: inline-block;
   width: var(--scoreWidth);
@@ -221,6 +215,7 @@
   margin: 5px;
   image-rendering: pixelated;
   background-size: var(--scoreSpriteSize);
+  opacity: 0;
 }
 
 .hand-total, .dealerScore{

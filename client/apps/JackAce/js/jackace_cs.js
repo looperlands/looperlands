@@ -4,6 +4,7 @@ let playerBet = 1;
 let playerMoney = 0;
 let playerId = "";
 let processingBypass = false; // used to forceResetHoverState
+let hideArrowsNoDim = false;
 
 const GOLD = "21300041";
 const BET_AMOUNTS = { 1: 1, 2: 2, 3: 5, 4: 10, 5: 25, 6: 50, 7: 100 };
@@ -98,8 +99,8 @@ async function init() {
         </div>
     `);
 
-    $('#dealerHand').append('<div class="no-arrow"></div><div class="dealerScore" style="background-position: -360px 0px;"></div><div class="card-back"></div><div class="card-back"></div>');
-    $('#playerHand').append('<div id="hand1" class="playerHands"><div class="no-arrow"></div><div class="hand-total" style="background-position: -360px 0px;"></div><div class="card-back"></div><div class="card-back"></div></div>');
+    $('#dealerHand').append('<div class="arrow"></div><div class="dealerScore" style="background-position: -360px 0px;"></div><div class="card-back"></div><div class="card-back"></div>');
+    $('#playerHand').append('<div id="hand1" class="playerHands"><div class="arrow"></div><div class="hand-total" style="background-position: -360px 0px;"></div><div class="card-back"></div><div class="card-back"></div></div>');
     await setUpButtonEvents();
     await showGameWindow();
 }
@@ -488,6 +489,10 @@ function calculateCardValue(currentTotal, aceCount, newCard) {
 }
 
 async function animateDealersTurn(data) {
+    if(data.playerHands.length > 1){
+        hideArrowsNoDim = true;
+        await updateCurrentHand(null);
+    }
     await displayDealerCards(data);
     await gsap.fromTo('#dealerHand .playingCard', { opacity: 0, y: -50 }, { opacity: 1, y: 0, stagger: 0.2 });
 
@@ -529,30 +534,39 @@ async function animateDealersTurn(data) {
 
 }
 
-
 async function animateSplit(data) {
-    const splitHandIndex = data.currentHandIndex;
-    const originalHand = data.playerHands[splitHandIndex]; // Original hand with matching cards that will be split (Card1, Card2)
+    const originalHandIndex = data.currentHandIndex;
+    const originalHand = data.playerHands[originalHandIndex]; // Original hand with matching cards that will be split (Card1, Card2)
     const newHandIndex = data.playerHands.length - 1; // Index for new hand (if we start with one hand, the next hand added will be playerHands[1])
 
     // Grab the second card in the hand that's being split
-    const divToMove = $(`#hand${splitHandIndex + 1} .playingCard:last-child`);
-    $(`#hand${splitHandIndex + 1} .no-arrow`).removeClass('no-arrow').addClass('arrow');
+    const divToMove = $(`#hand${originalHandIndex + 1} .playingCard:last-child`);
     const cardToMove = originalHand.hand[0]; // Card value of card being moved to new hand
 
-    // Create a new div for the new hand
-    $('#playerHand').append(`<div id="hand${newHandIndex + 1}" class="playerHands"><div class="no-arrow"></div><div class="hand-total"></div>`);
-
-    // Animate the second card moving to the new hand
-    const originalFirstCardLeft = $(`#hand${splitHandIndex + 1}`).find(`.playingCard`).eq(0).offset().left;
+    // Create a new div for the new hand with initial opacity 0
+    const newHandDivHtml = `<div id="hand${newHandIndex + 1}" class="playerHands" style="opacity: 0;"><div class="arrow"></div><div class="hand-total"></div></div>`;
+    $('#playerHand').append(newHandDivHtml);
     const newHandDiv = $(`#hand${newHandIndex + 1}`);
-    const newHandLeft = newHandDiv.offset().left;
-    const xOffset = newHandLeft - originalFirstCardLeft;
+
+    // Find the arrow element of originalHand and set its initial opacity to 0
+    const arrowElement = $(`#hand${originalHandIndex + 1} .arrow`);
+    arrowElement.css('opacity', 0);
+
+    // Create a GSAP timeline
+    const tl = gsap.timeline();
+
+    // Add fade-in animations for newHandDiv and arrowElement to the timeline
+    tl.to(newHandDiv, { duration: 0.2, opacity: 1 }, 0)
+        .to(arrowElement, { duration: 0.2, opacity: 1 }, 0); // Fade in the arrow element
+
+    await tl.play(); // Play the timeline
+
+    // Animate the second card moving to the new hand and new cards being added to both hands
+    
     const newCardPosition = await getCardBackgroundPosition(cardToMove);
 
-    gsap.to(divToMove, {
+    await gsap.to(divToMove, {
         duration: 0.2,
-        x: xOffset,
         y: newHandDiv.offset().top - divToMove.offset().top,
         onComplete: async () => {
             divToMove.css('transform', ''); // Reset transformations
@@ -560,10 +574,10 @@ async function animateSplit(data) {
             newHandDiv.append(divToMove); // Move the card to the new hand div
 
             // Draw a new card for the original hand
-            const originalNewCard = data.playerHands[splitHandIndex].hand.slice(-1)[0];
+            const originalNewCard = data.playerHands[originalHandIndex].hand.slice(-1)[0];
             const originalNewCardPosition = await getCardBackgroundPosition(originalNewCard);
             const $originalNewCardElement = $('<div class="playingCard"></div>').css('background-position', originalNewCardPosition);
-            $(`#hand${splitHandIndex + 1}`).append($originalNewCardElement);
+            $(`#hand${originalHandIndex + 1}`).append($originalNewCardElement);
 
             await gsap.fromTo($originalNewCardElement, { opacity: 0, y: -50 }, { opacity: 1, y: 0, duration: 0.2 });
 
@@ -574,11 +588,21 @@ async function animateSplit(data) {
             $(`#hand${newHandIndex + 1}`).append($newHandNewCardElement);
 
             await gsap.fromTo($newHandNewCardElement, { opacity: 0, y: -50 }, { opacity: 1, y: 0, duration: 0.2 });
-            await updateScores(data); // Update the scores after the split animation is complete
+
+            // Update the scores after the split animation is complete
+            await updateScores(data);
+
+            // Dim the new hand
+            await gsap.to(`#hand${newHandIndex + 1}`, {
+                duration: 0.5,
+                filter: 'brightness(0.5)',
+                onComplete: () => $(`#hand${newHandIndex + 1}`).addClass('notCurrentHand')
+            });
+
+            // Show the game window
+            await showGameWindow(data);
         }
     });
-
-    await showGameWindow(data);
 }
 
 /////////////////////////////////
@@ -605,8 +629,8 @@ async function clearHands() {
 
 async function displayStartingHands(data) {
     await clearHands();
-    $('#playerHand').append('<div id="hand1" class="playerHands"><div class="no-arrow"></div></div>');
-    $('#dealerHand').append('<div class="no-arrow"></div>');
+    $('#playerHand').append('<div id="hand1" class="playerHands"><div class="arrow"></div></div>');
+    $('#dealerHand').append('<div class="arrow"></div>');
 
     ///////////////////////////////////
     // SET UP AREA FOR DEALER'S HAND //
@@ -653,17 +677,27 @@ async function displayDealerCards(data) {
 }
 
 async function displaySplitHands(data) {
+    const timeline = gsap.timeline();
+
     player.hands.forEach((hand, index) => {
         const handId = `hand${index + 1}`;
         const handDiv = $(`#${handId}`);
+        const arrowElement = handDiv.find('.arrow');
 
-        // Update the arrow or no-arrow class
-        if (index === currentHandIndex) {
-            handDiv.find('.no-arrow').removeClass('no-arrow').addClass('arrow');
-        } else {
-            handDiv.find('.arrow').removeClass('arrow').addClass('no-arrow');
+        if (arrowElement.length > 0) {
+            const currentOpacity = parseFloat(arrowElement.css('opacity'));
+
+            if (index === currentHandIndex && currentOpacity !== 1) {
+                // Fade in the arrow element if it's not already visible
+                timeline.to(arrowElement, { opacity: 1, duration: 0.2 }, 0);
+            } else if (index !== currentHandIndex && currentOpacity !== 0) {
+                // Fade out the arrow element if it's not already hidden
+                timeline.to(arrowElement, { opacity: 0, duration: 0.2 }, 0);
+            }
         }
     });
+
+    await timeline.play();
     await updateScores(data);
 }
 
@@ -693,7 +727,7 @@ async function showGameWindow(data = {}) {
     const currentHandIndex = data.currentHandIndex || 0;
 
     if (currentHandIndex > 0) {
-        await updateArrows(currentHandIndex); // update hand arrows if more than one hand
+        await updateCurrentHand(currentHandIndex); // update hand arrows if more than one hand
     }
 
     console.log(`[LOADING WINDOW: ${loadWindow}`);
@@ -721,6 +755,7 @@ async function showGameWindow(data = {}) {
                 $('#uiWindow').css('height', '380px');
                 $('#uiWindow').css('align-content', 'center');
             }
+            hideArrowsNoDim = false;
             $('#bet-window').removeClass('hidden');
             $('#hit-stand-window').addClass('hidden');
             $('#insurance').addClass('hidden');
@@ -774,33 +809,69 @@ async function showGameWindow(data = {}) {
 // HELPER UTILITY FUNCTIONS //
 //////////////////////////////
 
-async function updateArrows(currentHandIndex) {
-    const previousArrow = $('.playerHands .arrow');
-    const newArrow = $(`#hand${currentHandIndex + 1} .no-arrow`);
+async function updateCurrentHand(currentHandIndex = null) {
+    const allArrows = $('.playerHands .arrow');
+    const allHands = $('.playerHands');
 
-    // Fade out the previous arrow
-    if (previousArrow.length > 0) {
-        await new Promise((resolve) => {
-            gsap.to(previousArrow, {
-                opacity: 0,
-                duration: 0.2,
-                onComplete: function () {
-                    previousArrow.removeClass('arrow').addClass('no-arrow');
-                    resolve();
+    // Create a GSAP timeline
+    const tl = gsap.timeline();
+
+    if (hideArrowsNoDim) {
+        // Fade out all arrows
+        if (allArrows.length > 0) {
+            tl.to(allArrows, { opacity: 0, duration: 0.2 }, 0);
+        }
+
+        // Return all hands to normal brightness
+        allHands.each(function() {
+            if ($(this).hasClass('notCurrentHand')) {
+                tl.to(this, { filter: 'brightness(1)', duration: 0.5 }, 0)
+                  .call(() => $(this).removeClass('notCurrentHand'));
+            }
+        });
+    } else if (currentHandIndex !== null) {
+        const newArrow = $(`#hand${currentHandIndex + 1} .arrow`);
+
+        // Fade out all arrows except the new one
+        allArrows.each(function() {
+            if (this !== newArrow[0]) {
+                tl.to(this, { opacity: 0, duration: 0.2 }, 0);
+            }
+        });
+
+        // Fade in the new arrow
+        if (newArrow.length > 0) {
+            tl.to(newArrow, { opacity: 1, duration: 0.2 }, 0);
+        }
+
+        // Dim non-current hands and remove dim from the current hand
+        allHands.each(function(index) {
+            if (index === currentHandIndex) {
+                // Remove dim from the current hand if it's not already bright
+                if ($(this).hasClass('notCurrentHand')) {
+                    tl.to(this, { filter: 'brightness(1)', duration: 0.5 }, 0)
+                      .call(() => $(this).removeClass('notCurrentHand'));
                 }
-            });
+            } else {
+                // Dim the non-current hands if they are not already dimmed
+                if (!$(this).hasClass('notCurrentHand')) {
+                    tl.to(this, { filter: 'brightness(0.5)', duration: 0.5 }, 0)
+                      .call(() => $(this).addClass('notCurrentHand'));
+                }
+            }
         });
+    } else {
+        // No specific hand to highlight and not dealer's turn
+        console.error('currentHandIndex is not provided and dealersTurn is false.');
+        return;
     }
 
-    // Fade in the new arrow
-    if (newArrow.length > 0) {
-        newArrow.removeClass('no-arrow').addClass('arrow').css('opacity', 0);
-        gsap.to(newArrow, {
-            opacity: 1,
-            duration: 0.2
-        });
-    }
+    // Play the timeline and wait for it to complete
+    await tl.play();
 }
+
+
+
 
 async function updateButtonStates(playerState) {
     await forceHoverStateCheck();
@@ -835,7 +906,7 @@ async function flashCredits() {
     // Play sound
     const audio = new Audio('./audio/nomonies.mp3');
     audio.play();
-    
+
     await new Promise(resolve => setTimeout(resolve, 500));
     resourceText.removeClass('flash-red');
 }
