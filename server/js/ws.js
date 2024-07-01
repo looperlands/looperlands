@@ -44,7 +44,7 @@ const CORNHOLE = '0xc00631db8eba1ab88589a599b67df7727ae39348f961c62c11dcd7992f62
 
 const platformClient = new platform.LooperLandsPlatformClient(LOOPERLANDS_PLATFORM_API_KEY, LOOPERLANDS_PLATFORM_BASE_URL);
 const dynamicNFTcontroller = new dynamicnft.DynamicNFTController(cache, platformClient, Types);
-const minigameController = new MinigameController(cache);
+const minigameController = new MinigameController(cache, platformClient);
 
 function extractDetails(inputUrl) {
     const parsedUrl = new URL(inputUrl);

@@ -247,7 +247,8 @@ async function makeRequest(action, additionalData = {}) {
                             $("#uiWindow").removeClass('processing');
                             break;
                         default:
-                            alert(`Error: ${errorResponse.message}`);
+                            alert(`${errorResponse.message}`);
+                            $('#mgClose').trigger('click');
                             break;
                     }
                 } else {

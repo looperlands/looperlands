@@ -1,6 +1,7 @@
 class MinigameController {
-    constructor(cache) {
+    constructor(cache, platformClient) {
         this.cache = cache;
+        this.platformClient = platformClient;
         this.minigames = {};
 
         this.minigamesConfig = [
@@ -21,7 +22,7 @@ class MinigameController {
                 ? (await import(config.module)).default
                 : require(config.module);
 
-            const minigameInstance = new MinigameClass(this.cache);
+            const minigameInstance = new MinigameClass(this.cache, this.platformClient);
             this.minigames[config.name] = minigameInstance;
         }
     }

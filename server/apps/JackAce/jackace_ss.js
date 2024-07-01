@@ -2,8 +2,9 @@ const axios = require('axios');
 const dao = require('../../js/dao');
 
 class JackAce {
-    constructor(cache) {
+    constructor(cache, platformClient) {
         this.cache = cache;
+        this.platformClient = platformClient;
         this.playerGameStates = {};
         this.playerId = null;
         this.sessionId = null;
@@ -648,6 +649,14 @@ class JackAce {
         }
 
         if (action === 'RESET') { return null; }
+
+        const sessionData = this.cache.get(this.sessionId);
+        const allowAccess = await this.platformClient.checkOwnershipOfCollection("bits x bit",sessionData.walletId);
+
+        if(allowAccess){
+            console.log('[JackAce Early Access Denied]');
+            return { status: 400, message: "Sorry, only bits x bit collection holders qualify for Early Access." };
+        }
 
         // Validate action based on game state
         if (action === 'DEAL' && this.playerGameStates[this.playerId].inProgress) {
