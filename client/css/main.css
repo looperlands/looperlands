@@ -471,6 +471,12 @@ body.upscaled.game {background:#000;}
     z-index: 3;
 }
 
+#resource-text.flash-red {
+    color: red;
+    transition: color 0.5s;
+}
+
+
 #resources-minigame.hidden{
     display: none;
 }

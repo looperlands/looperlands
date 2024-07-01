@@ -264,10 +264,10 @@ async function resetGame(hideUIWindow = false) {
         console.error('Error resetting the game:', error);
         alert('An error occurred while resetting the game. Please try again.');
     }
-    
+
     $("#uiWindow").removeClass('processing');
 
-    if(hideUIWindow){
+    if (hideUIWindow) {
         await gsap.to(`#jackaceGame`, { opacity: 0, duration: 0.5 });
     }
 }
@@ -275,9 +275,9 @@ async function resetGame(hideUIWindow = false) {
 
 async function handleDeal() {
     if (!$("#uiWindow").hasClass('processing')) {
-        $("#uiWindow").addClass('processing');
-        $("#handResult").empty();
-        if (playerBet > 0) {
+
+        if (playerBet > 0 && playerMoney >= BET_AMOUNTS[playerBet]) {
+            $("#uiWindow").addClass('processing');
             const data = await makeRequest('DEAL', { playerBet: BET_AMOUNTS[playerBet] });
             await updatePlayerMoney(data, -data.playerBet);
             await animateDeal(data);
@@ -288,10 +288,11 @@ async function handleDeal() {
             } else {
                 await showGameWindow(data);
             }
+            $("#uiWindow").removeClass('processing');
         } else {
-            $("#handResult").append("Place a bet to start the game.");
+            await flashCredits();
         }
-        $("#uiWindow").removeClass('processing');
+
     }
 }
 
@@ -320,41 +321,51 @@ async function handleStand() {
 
 async function handleSplit() {
     if (!$("#uiWindow").hasClass('processing')) {
-        $("#uiWindow").addClass('processing');
-        const data = await makeRequest('SPLIT');
-        await updatePlayerMoney(data, -data.playerBet);
-        await animateSplit(data);
-        $("#uiWindow").removeClass('processing');
+        if (playerBet > 0 && playerMoney >= BET_AMOUNTS[playerBet]) {
+            $("#uiWindow").addClass('processing');
+            const data = await makeRequest('SPLIT');
+            await updatePlayerMoney(data, -data.playerBet);
+            await animateSplit(data);
+            $("#uiWindow").removeClass('processing');
+        } else {
+            await flashCredits();
+        }
     }
 }
 
 async function handleInsurance(boughtInsurance) {
     if (!$("#uiWindow").hasClass('processing')) {
-        $("#uiWindow").addClass('processing');
-        const data = await makeRequest('INSURANCE', { boughtInsurance: boughtInsurance });
-        if (boughtInsurance) await updatePlayerMoney(data, parseInt(-data.playerBet/2));
-        if (data.dealerHand.total === 21) {
-            await animateDealersTurn(data);
-            await showRewards(data);
+        if (playerBet > 0 && playerMoney >= parseInt(BET_AMOUNTS[playerBet] / 2)) {
+            $("#uiWindow").addClass('processing');
+            const data = await makeRequest('INSURANCE', { boughtInsurance: boughtInsurance });
+            if (boughtInsurance) await updatePlayerMoney(data, parseInt(-data.playerBet / 2));
+            if (data.dealerHand.total === 21) {
+                await animateDealersTurn(data);
+                await showRewards(data);
+            } else {
+                await showGameWindow(data);
+            }
+            $("#uiWindow").removeClass('processing');
         } else {
-            await showGameWindow(data);
+            await flashCredits();
+            await handleInsurance(false);
         }
-        $("#uiWindow").removeClass('processing');
     }
 }
 
 async function handleDouble() {
     if (!$("#uiWindow").hasClass('processing')) {
-        $("#uiWindow").addClass('processing');
-        if (playerMoney >= BET_AMOUNTS[playerBet] * 2) {
+        if (playerMoney >= BET_AMOUNTS[playerBet]) {
+            $("#uiWindow").addClass('processing');
             $('#double').addClass('inactive');
             const data = await makeRequest('DOUBLE');
             await updatePlayerMoney(data, -data.playerBet);
             await animateCard(data);
+            $("#uiWindow").removeClass('processing');
         } else {
-            $("#handResult").append("Not enough money to double down.");
+            await flashCredits();
         }
-        $("#uiWindow").removeClass('processing');
+
     }
 }
 
@@ -647,16 +658,16 @@ async function displaySplitHands(data) {
 
 async function updateScores(data, updatePlayer = true) {
     //update players hands
-    if(updatePlayer){
+    if (updatePlayer) {
         for (const [index, hand] of data.playerHands.entries()) {
             let backgroundPosition = await getScoreBackgroundPosition(hand.total);
             $(`#hand${index + 1}`).find(`.hand-total`).css('background-position', backgroundPosition);
             if (hand.total >= 21) hand.canHit = false;
         }
     }
-    
+
     //update dealers hand
-    if(!updatePlayer){
+    if (!updatePlayer) {
         $('.dealerScore').css('background-position', await getScoreBackgroundPosition(`${data.dealerHand.total === 'hidden' ? 'questionMark' : data.dealerHand.total}`));
     }
 }
@@ -676,6 +687,12 @@ async function showGameWindow(data = {}) {
 
     console.log(`[LOADING WINDOW: ${loadWindow}`);
     if (data.gameWindow) await updateButtonStates(data);
+
+    if (loadWindow === 'splitDouble') {
+        if (playerMoney < BET_AMOUNTS[playerBet]) {
+            loadWindow = 'hit';
+        }
+    }
 
     switch (loadWindow) {
         case 'bet':
@@ -730,10 +747,10 @@ async function showGameWindow(data = {}) {
 
     if (loadWindow == 'splashScreen') {
         await new Promise(resolve => setTimeout(resolve, 1500));
-        
+
         const tl = gsap.timeline();
         tl.to('#splashScreen', { opacity: 0, duration: 1, onComplete: () => $('#splashScreen').css('display', 'none') })
-          .to('#jackaceGame', { opacity: 1, duration: 1 }, "-=1");
+            .to('#jackaceGame', { opacity: 1, duration: 1 }, "-=1");
         await tl.play();
 
         gameWindow = 'bet';
@@ -798,6 +815,18 @@ async function forceHoverStateCheck() {
         $(id).trigger('mouseenter').trigger('mouseleave');
         processingBypass = false;
     });
+}
+
+async function flashCredits() {
+    const resourceText = $('#resources-minigame #resource-text');
+    resourceText.addClass('flash-red');
+
+    // Play sound
+    const audio = new Audio('./audio/nomonies.mp3');
+    audio.play();
+    
+    await new Promise(resolve => setTimeout(resolve, 500));
+    resourceText.removeClass('flash-red');
 }
 
 async function updatePlayerMoney(data, adjustBy = null, showRewards = false) {
