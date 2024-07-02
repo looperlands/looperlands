@@ -8,16 +8,29 @@ let hideArrowsNoDim = false;
 
 const GOLD = "21300041";
 const BET_AMOUNTS = { 1: 1, 2: 2, 3: 5, 4: 10, 5: 25, 6: 50, 7: 100 };
-const cardScale = 10; // Scale of the cards
+
 
 ////////////////////////
 // SPRITE SHEET SETUP //
 ////////////////////////
+// RESULT SPRITE SHEET
+const RESULT_WIDTH = 48; // Width of each card in the sprite sheet
+const RESULT_HEIGHT = 13; // Height of each card in the sprite sheet
+const RESULT_GAP = 1; // Gap between cards in the sprite sheet
+const RESULT_SCALE = 10; // Scale of the cards
+const RESULT_POSITIONS = {
+    'busted': 0,
+    'youlost': 1,
+    'push': 2,
+    'winner': 3,
+    'jackace': 4
+};
 
 // CARD SPRITE SHEET
 const CARD_WIDTH = 11; // Width of each card in the sprite sheet
 const CARD_HEIGHT = 9; // Height of each card in the sprite sheet
 const CARD_GAP = 1; // Gap between cards in the sprite sheet
+const CARD_SCALE = 10; // Scale of the cards
 const SPRITE_COLUMNS = 13; // Number of columns in the sprite sheet
 const CARD_POSITIONS = {
     'AC': 0, '2C': 1, '3C': 2, '4C': 3, '5C': 4, '6C': 5, '7C': 6, '8C': 7, '9C': 8, '0C': 9, 'JC': 10, 'QC': 11, 'KC': 12,
@@ -452,7 +465,7 @@ async function animateCard(data) {
     await displayNewPlayerCard(data);
     await new Promise(resolve => setTimeout(resolve, 0));
     const handToProcess = data.processPriorHand ? data.currentHandIndex : data.currentHandIndex + 1;
-    gsap.fromTo(`#hand${handToProcess} .playingCard:last-child`, { opacity: 0, y: -50 }, { opacity: 1, y: 0 });
+    await gsap.fromTo(`#hand${handToProcess} .playingCard:last-child`, { opacity: 0, y: -50 }, { opacity: 1, y: 0 });
     await updateScores(data);
     if (data.dealerHand.total !== 'hidden') {
         await new Promise(resolve => setTimeout(resolve, 200));
@@ -489,7 +502,7 @@ function calculateCardValue(currentTotal, aceCount, newCard) {
 }
 
 async function animateDealersTurn(data) {
-    if(data.playerHands.length > 1){
+    if (data.playerHands.length > 1) {
         hideArrowsNoDim = true;
         await updateCurrentHand(null);
     }
@@ -562,7 +575,7 @@ async function animateSplit(data) {
     await tl.play(); // Play the timeline
 
     // Animate the second card moving to the new hand and new cards being added to both hands
-    
+
     const newCardPosition = await getCardBackgroundPosition(cardToMove);
 
     await gsap.to(divToMove, {
@@ -663,8 +676,8 @@ async function displayStartingHands(data) {
 }
 
 async function displayNewPlayerCard(data) {
-    const handIndex = data.currentHandIndex;
-    const card = data.playerHands[handIndex].hand.slice(-1)[0]; // Get the last card
+    const handIndex = data.processPriorHand ? data.currentHandIndex - 1 : data.currentHandIndex;
+    const card = data.playerHands[Math.max(0,handIndex-1)].hand.slice(-1)[0]; // Get the last card
     $(`#hand${handIndex + 1}`).append(`<div class="playingCard" style="background-position: ${await getCardBackgroundPosition(card)};"></div>`);
 }
 
@@ -706,8 +719,14 @@ async function updateScores(data, updatePlayer = true) {
     if (updatePlayer) {
         for (const [index, hand] of data.playerHands.entries()) {
             let backgroundPosition = await getScoreBackgroundPosition(hand.total);
+
             $(`#hand${index + 1}`).find(`.hand-total`).css('background-position', backgroundPosition);
-            if (hand.total >= 21) hand.canHit = false;
+            if (hand.total >= 21) {
+                hand.canHit = false;
+                if (hand.total > 21) {
+                    await animateResult(index, 'busted');
+                }
+            }
         }
     }
 
@@ -718,6 +737,7 @@ async function updateScores(data, updatePlayer = true) {
 }
 
 async function showRewards(data) {
+    await determineResults(data);
     await updatePlayerMoney(data, null, true);
     await showGameWindow(data);
 }
@@ -823,17 +843,17 @@ async function updateCurrentHand(currentHandIndex = null) {
         }
 
         // Return all hands to normal brightness
-        allHands.each(function() {
+        allHands.each(function () {
             if ($(this).hasClass('notCurrentHand')) {
                 tl.to(this, { filter: 'brightness(1)', duration: 0.5 }, 0)
-                  .call(() => $(this).removeClass('notCurrentHand'));
+                    .call(() => $(this).removeClass('notCurrentHand'));
             }
         });
     } else if (currentHandIndex !== null) {
         const newArrow = $(`#hand${currentHandIndex + 1} .arrow`);
 
         // Fade out all arrows except the new one
-        allArrows.each(function() {
+        allArrows.each(function () {
             if (this !== newArrow[0]) {
                 tl.to(this, { opacity: 0, duration: 0.2 }, 0);
             }
@@ -845,18 +865,18 @@ async function updateCurrentHand(currentHandIndex = null) {
         }
 
         // Dim non-current hands and remove dim from the current hand
-        allHands.each(function(index) {
+        allHands.each(function (index) {
             if (index === currentHandIndex) {
                 // Remove dim from the current hand if it's not already bright
                 if ($(this).hasClass('notCurrentHand')) {
                     tl.to(this, { filter: 'brightness(1)', duration: 0.5 }, 0)
-                      .call(() => $(this).removeClass('notCurrentHand'));
+                        .call(() => $(this).removeClass('notCurrentHand'));
                 }
             } else {
                 // Dim the non-current hands if they are not already dimmed
                 if (!$(this).hasClass('notCurrentHand')) {
                     tl.to(this, { filter: 'brightness(0.5)', duration: 0.5 }, 0)
-                      .call(() => $(this).addClass('notCurrentHand'));
+                        .call(() => $(this).addClass('notCurrentHand'));
                 }
             }
         });
@@ -982,8 +1002,6 @@ async function updatePlayerMoney(data, adjustBy = null, showRewards = false) {
     }
 }
 
-
-
 // Function to create SVG text element with gradient
 function createSvgText(textContent, id) {
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -1069,7 +1087,7 @@ async function getBackgroundPosition(code, positions, width, height, gap, column
 
 // Specific functions for each sprite sheet
 async function getCardBackgroundPosition(cardCode) {
-    return await getBackgroundPosition(cardCode, CARD_POSITIONS, CARD_WIDTH, CARD_HEIGHT, CARD_GAP, SPRITE_COLUMNS, cardScale);
+    return await getBackgroundPosition(cardCode, CARD_POSITIONS, CARD_WIDTH, CARD_HEIGHT, CARD_GAP, SPRITE_COLUMNS, CARD_SCALE);
 }
 
 async function getUiBackgroundPosition(uiCode) {
@@ -1089,3 +1107,139 @@ async function getScoreBackgroundPosition(scoreCode) {
 async function getButtonBackgroundPosition(buttonCode) {
     return await getBackgroundPosition(buttonCode, BUTTON_SPRITE_POSITIONS, BUTTON_SPRITE_WIDTH, BUTTON_SPRITE_HEIGHT, BUTTON_SPRITE_GAP, BUTTON_SPRITE_COLUMNS, BUTTON_CARD_SCALE);
 }
+
+async function getResultPosition(resultCode) {
+    let position = RESULT_POSITIONS[resultCode];
+    let y = 0;
+    for (let i = 0; i < position; i++) {
+        y += (RESULT_HEIGHT + RESULT_GAP) * RESULT_SCALE;
+    }
+    let x = 0; // Since it's a single column, x will always be 0
+    return `-${x}px -${y}px`;
+}
+
+async function animateResult(handIndex, result) {
+    const validResults = ['busted', 'youlost', 'push', 'winner', 'jackace'];
+
+    // Check if the result is one of the expected cases
+    if (!validResults.includes(result)) {
+        console.error(`Invalid result: ${result}`);
+        return;
+    }
+
+    const currentHandDiv = $(`#hand${handIndex + 1}`);
+
+    // Check if the result image has already been added to this hand
+    if (currentHandDiv.find('.result-image').length > 0) {
+        return;
+    }
+
+    const firstCard = currentHandDiv.find('.playingCard').first();
+    const resultImgPosition = await getResultPosition(result); // Get the sprite position for the result
+
+    const resultImage = $('<div class="result-image"></div>').css({
+        background: `url('./apps/JackAce/img/result.png') ${resultImgPosition}`,
+        position: 'absolute',
+        margin: "5px",
+        width: `${RESULT_WIDTH * RESULT_SCALE}px`,
+        height: `${RESULT_HEIGHT * RESULT_SCALE}px`,
+        "background-size": `${RESULT_WIDTH * RESULT_SCALE}px ${69 * RESULT_SCALE}px`,
+        zIndex: 2
+    });
+
+    // Ensure currentHandDiv is positioned relative or absolute
+    if (currentHandDiv.css('position') === 'static') {
+        currentHandDiv.css('position', 'relative');
+    }
+
+    currentHandDiv.append(resultImage);
+
+    // Get the scale value from the transform property
+    const transformMatrix = currentHandDiv.css('transform');
+    let scale = 1;
+
+    if (transformMatrix !== 'none') {
+        const matrixValues = transformMatrix.match(/matrix.*\((.+)\)/)[1].split(', ');
+        scale = parseFloat(matrixValues[0]);
+    }
+
+    // Calculate the corrected position
+    const firstCardPosition = firstCard.position();
+    const firstCardWidth = firstCard.outerWidth();
+    const correctedLeft = (firstCardPosition.left + firstCardWidth / 2) / scale;
+
+    const finalPosition = {
+        left: correctedLeft
+    };
+
+    // Adjust the position of the result image
+    resultImage.css({
+        left: `${finalPosition.left}px`
+    });
+
+    const animationTimeline = gsap.timeline();
+
+    switch (result) {
+        case 'busted':
+        case 'youlost':
+            animationTimeline.fromTo(resultImage,
+                { top: -400, left: finalPosition.left, scale: 1.5 },
+                { top: 0, scale: 1, duration: 1, ease: "bounce.out" }
+            );
+            break;
+        case 'push':
+            animationTimeline.fromTo(resultImage,
+                { left: finalPosition.left - 200, scaleX: 0 },
+                { left: finalPosition.left, scaleX: 1, duration: 0.5, ease: "elastic.out(1, 0.3)" }
+            );
+            break;
+        case 'winner':
+            animationTimeline.fromTo(resultImage,
+                { left: finalPosition.left + 600, skewX: "-20deg" },
+                { left: finalPosition.left, skewX: "0deg", duration: 1, ease: "power4.out" }
+            );
+            break;
+        case 'jackace':
+            animationTimeline.fromTo(resultImage,
+                { scale: 0, rotation: 720 },
+                { scale: 1, rotation: 0, duration: 1, ease: "back.out(1.7)" }
+            );
+            break;
+        default:
+            // If the result type is not recognized, hide the image
+            resultImage.hide();
+            return;
+    }
+
+    // Fade out the result image after the animation completes
+    await animationTimeline.to(resultImage, { opacity: 0, duration: 1, delay: 0.5 });
+}
+
+
+async function determineResults(data) {
+    const dealerHandTotal = data.dealerHand.total;
+
+    for (let i = 0; i < data.playerHands.length; i++) {
+        const playerHand = data.playerHands[i];
+        const playerHandTotal = data.playerHands[i].total;
+        let result;
+
+        if (playerHandTotal === 21 && playerHand.hand.length === 2) {
+            result = 'jackace';
+        } else if (playerHandTotal > 21) {
+            result = 'busted';
+        } else if (dealerHandTotal > 21 || playerHandTotal > dealerHandTotal) {
+            result = 'winner';
+        } else if (playerHandTotal < dealerHandTotal) {
+            result = 'youlost';
+        } else {
+            result = 'push';
+        }
+
+        await animateResult(i, result);
+    }
+
+}
+
+
+

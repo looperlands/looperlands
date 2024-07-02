@@ -35,7 +35,7 @@
   width: var(--splashScreenWidth);
   background: var(--splashScreenSprite);
   background-size: var(--splashScreenWidth) var(--splashScreenHeight);
-  z-index: 2;
+  z-index: 3;
 }
 
 #jackaceWrapper {
