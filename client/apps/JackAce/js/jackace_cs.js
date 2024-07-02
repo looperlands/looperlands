@@ -677,7 +677,7 @@ async function displayStartingHands(data) {
 
 async function displayNewPlayerCard(data) {
     const handIndex = data.processPriorHand ? data.currentHandIndex - 1 : data.currentHandIndex;
-    const card = data.playerHands[Math.max(0,handIndex-1)].hand.slice(-1)[0]; // Get the last card
+    const card = data.playerHands[Math.max(0,handIndex)].hand.slice(-1)[0]; // Get the last card
     $(`#hand${handIndex + 1}`).append(`<div class="playingCard" style="background-position: ${await getCardBackgroundPosition(card)};"></div>`);
 }
 

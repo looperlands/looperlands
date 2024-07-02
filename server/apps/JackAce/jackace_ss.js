@@ -15,7 +15,7 @@ class JackAce {
         this.DECK_COUNT = 6;
         this.BET_AMOUNTS = [1, 2, 5, 10, 25, 50, 100];
         this.CARD_VALUE_MAP = {
-            'ACE': [1, 11],
+            'A': [1, 11],
             '2': 2,
             '3': 3,
             '4': 4,
@@ -24,10 +24,10 @@ class JackAce {
             '7': 7,
             '8': 8,
             '9': 9,
-            '10': 10,
-            'JACK': 10,
-            'QUEEN': 10,
-            'KING': 10
+            '0': 10,
+            'J': 10,
+            'Q': 10,
+            'K': 10
         };
     }
 
@@ -126,12 +126,12 @@ class JackAce {
 
             // Update hands with drawn cards
             playerState.playerHands[playerState.currentHandIndex].hand.push(playerCard1.code, playerCard2.code);
-            this.updateHandWithCard(playerState.playerHands[playerState.currentHandIndex], playerCard1.value);
-            this.updateHandWithCard(playerState.playerHands[playerState.currentHandIndex], playerCard2.value);
+            this.updateHandWithCard(playerState.playerHands[playerState.currentHandIndex], playerCard1.code);
+            this.updateHandWithCard(playerState.playerHands[playerState.currentHandIndex], playerCard2.code);
 
             playerState.dealerHand.hand.push(dealerCard1.code, dealerCard2.code);
-            this.updateHandWithCard(playerState.dealerHand, dealerCard1.value);
-            this.updateHandWithCard(playerState.dealerHand, dealerCard2.value);
+            this.updateHandWithCard(playerState.dealerHand, dealerCard1.code);
+            this.updateHandWithCard(playerState.dealerHand, dealerCard2.code);
 
             playerState.cardsLeft = data.remaining;
 
@@ -139,14 +139,14 @@ class JackAce {
             playerState.gameWindow = 'hit';
 
             // Check for split condition
-            playerState.playerHands[playerState.currentHandIndex].canSplit = playerCard1.value === playerCard2.value;
+            playerState.playerHands[playerState.currentHandIndex].canSplit = playerCard1.code.charAt(0) === playerCard2.code.charAt(0);
 
             // Check for conditions when player does not have 21)
             if (playerState.playerHands[playerState.currentHandIndex].total !== 21) {
-                playerState.canDouble = this.canDouble([playerCard1.value, playerCard2.value]);
+                playerState.canDouble = this.canDouble([playerCard1.code, playerCard2.code]);
 
                 // Check for insurance condition
-                if (dealerCard2.value === "ACE" && playerState.playerHands[playerState.currentHandIndex].total !== 21) {
+                if (dealerCard2.code.charAt(0) === "A" && playerState.playerHands[playerState.currentHandIndex].total !== 21) {
                     playerState.gameWindow = 'insurance';
                 } else {
                     if (playerState.playerHands[playerState.currentHandIndex].canSplit || playerState.canDouble) {
@@ -201,15 +201,17 @@ class JackAce {
         if (await this.payToCORNHOLE(playerState)) {
             const hand = playerState.playerHands[playerState.currentHandIndex];
             const card = hand.hand.pop();
-            hand.total = card.charAt(0) === "A" ? 11 : hand.total / 2;
-            hand.aceIs11 = card.charAt(0) === "A" ? 1 : 0;
+            const newTotal = card.charAt(0) === "A" ? 11 : hand.total / 2;
+            const newAceIs11 = card.charAt(0) === "A" ? 1 : 0;
+            hand.total = newTotal;
+            hand.aceIs11 = newAceIs11;
             hand.canSplit = false; // default updated hand to false, validate in check hand
 
             // Create new split hand
             playerState.playerHands.push({
                 hand: [card],
-                total: hand.total,
-                aceIs11: hand.aceIs11,
+                total: newTotal,
+                aceIs11: newAceIs11,
                 canHit: true,
                 canSplit: false,
                 bet: playerState.playerBet
@@ -526,7 +528,7 @@ class JackAce {
                 aceIs11: "hidden"
             };
         }
-        console.log(sanitizedState);
+        console.log(JSON.stringify(sanitizedState));
         return sanitizedState;
     }
 
@@ -537,7 +539,7 @@ class JackAce {
             currentHand.hand.push(card.code);
             playerState.cardsLeft = data.remaining;
 
-            this.updateHandWithCard(currentHand, card.value);
+            this.updateHandWithCard(currentHand, card.code);
         } catch (error) {
             playerState.inProgress = false;
             playerState.gameWindow = 'bet';
@@ -546,10 +548,11 @@ class JackAce {
         }
     }
 
-    updateHandWithCard(hand, value) {
-        if (['KING', 'QUEEN', 'JACK'].includes(value)) {
+    updateHandWithCard(hand, code) {
+        const value = code.charAt(0);
+        if (['K', 'Q', 'J', '0'].includes(value)) {
             hand.total += 10;
-        } else if (value === 'ACE') {
+        } else if (value === 'A') {
             hand.total += 11;
             hand.aceIs11 += 1;
         } else {
@@ -579,7 +582,7 @@ class JackAce {
         let possibleSums = [0];
 
         cardValues.forEach(cardValue => {
-            let numericValues = Array.isArray(this.CARD_VALUE_MAP[cardValue]) ? this.CARD_VALUE_MAP[cardValue] : [this.CARD_VALUE_MAP[cardValue]];
+            let numericValues = Array.isArray(this.CARD_VALUE_MAP[cardValue.charAt(0)]) ? this.CARD_VALUE_MAP[cardValue.charAt(0)] : [this.CARD_VALUE_MAP[cardValue.charAt(0)]];
             let newPossibleSums = [];
 
             numericValues.forEach(value => {
