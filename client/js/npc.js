@@ -661,6 +661,12 @@ define(['character'], function (Character) {
             'Come <a target="_blank" href="https://discord.gg/zWFKjfS2PA">join us in Discord</a> if you are not in there already...cheers!'
         ],
 
+        "stupidmonkey": [
+            "Welcome to StupidMonkeys Realm Hero, where dynamic NFTs bring your monkeys to life!",
+            "Level up, evolve, and conquer in thrilling PvP battles to claim your title as the Hero of the MonkeyRealm!",
+            'Come <a target="_blank" href="https://www.stupidmonkeys.co/">check out our website</a> to learn more!'
+        ],
+
         //Robits NPCs
         "ROBITSC1": [
             "Welcome to Cyber City.",
