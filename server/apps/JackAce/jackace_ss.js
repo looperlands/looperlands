@@ -41,7 +41,7 @@ class JackAce {
         const validationError = await this.validateAction(req, action);
 
         if (validationError) {
-            console.log(`[VALIDATION ERROR]: `, validationError);
+            console.log(`[JACKACE VALIDATION ERROR]: `, validationError);
             return res.status(validationError.status).json({ message: validationError.message });
         }
 
@@ -492,9 +492,9 @@ class JackAce {
         // Check DAO and Session prior to adding change
         const playerDAO = await dao.getResourceBalance(this.playerId, this.currency);
         if (parseInt(playerDAO) !== parseInt(gameData.items[this.currency])) {
-            console.log(`[DAO/SESSIONDATA DISCREPENCY] DAO ${playerDAO}, SESSIONDATA ${gameData.items[this.currency]}`)
+            console.log(`[JACKACE: DAO/SESSIONDATA DISCREPENCY] DAO ${playerDAO}, SESSIONDATA ${gameData.items[this.currency]}`)
             gameData.items[this.currency] = Math.min(parseInt(playerDAO), parseInt(gameData.items[this.currency]));
-            console.log(`[updateSessionData] sessionData set to: ${gameData.items[this.currency]}`);
+            console.log(`[JACKACE: updateSessionData] sessionData set to: ${gameData.items[this.currency]}`);
         } else {
             gameData.items[this.currency] = parseInt(playerDAO);
         }
@@ -528,7 +528,7 @@ class JackAce {
                 aceIs11: "hidden"
             };
         }
-        console.log(JSON.stringify(sanitizedState));
+        //console.log(JSON.stringify(sanitizedState));
         return sanitizedState;
     }
 
@@ -632,7 +632,7 @@ class JackAce {
         const allowAccess = await this.platformClient.checkOwnershipOfCollection("bits x bit",sessionData.walletId);
 
         if(!allowAccess){
-            console.log('[JackAce Early Access Denied]');
+            // console.log('[JackAce Early Access Denied]');
             return { status: 400, message: "Sorry, only bits x bit collection holders qualify for Early Access." };
         }
 

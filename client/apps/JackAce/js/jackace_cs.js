@@ -89,6 +89,7 @@ async function init() {
     setupHelpPanel();
     playerMoney = await getGoldAmount();
     $('#resources-minigame').removeClass('hidden');
+    $('#resources-minigame').addClass('JackAce');
     $('#resources-minigame #resource-text').text(playerMoney);
     $('#uiWindow').empty();
     $('#uiWindow').append(`
@@ -115,7 +116,7 @@ async function init() {
     $('#dealerHand').append('<div class="arrow"></div><div class="dealerScore" style="background-position: -360px 0px;"></div><div class="card-back"></div><div class="card-back"></div>');
     $('#playerHand').append('<div id="hand1" class="playerHands"><div class="arrow"></div><div class="hand-total" style="background-position: -360px 0px;"></div><div class="card-back"></div><div class="card-back"></div></div>');
     await setUpButtonEvents();
-    await showGameWindow();
+    await showGameWindow(null, 'splashScreen');
 }
 
 async function setUpButtonEvents() {
@@ -157,17 +158,26 @@ async function setUpButtonEvents() {
     }
 
     // Register additional events
-    $(`#JackAce`).on('fadeIn', () => showGameWindow());
+    //$(document).on('fadeIn_JackAce', () => fadeInSetupJackAce());
     $(`#minigameMenu`).on('click', '#mgJackAceHelp', () => showHelpPanel());
-    $(`#minigameMenu`).on('click', '#mgClose', () => resetGame(true));
+    $(`#minigameMenu`).on('click', '#mgClose', () => resetGame());
 }
 
 // Add help to minigame menu if it doesn't exist
 function setupJackAceMenu() {
-    if ($('#minigameMenu-content').find('#mgJackAceHelp').length === 0) {
-        $('#minigameMenu-content').prepend('<a href="#" id="mgJackAceHelp">🃏 How To Play</a>');
+    if ($('#minigameMenu-content').find('#mgJackAceHelp.JackAce').length === 0) {
+        $('#minigameMenu-content').prepend('<a href="#" id="mgJackAceHelp" class="JackAce">🃏 How To Play</a>');
+    } else {
+        $('#minigameMenu-content').find('.JackAce').show();
     }
 }
+
+/* function fadeInSetupJackAce() {
+    console.log("Running fadeInSetupJackAce");
+    gsap.to(`#jackaceGame`, { opacity: 1, duration: 0.5 });
+    setupJackAceMenu();
+    showGameWindow();
+} */
 
 function setupHelpPanel() {
     if (!$('#jackaceHelp').length) {
@@ -244,7 +254,6 @@ async function makeRequest(action, additionalData = {}) {
                         case '[INSURANCE] Invalid action >> Cannot buy insurance.':
                             alert(`Invalid action: ${errorResponse.message}`);
                             await resetGame();
-                            await showGameWindow();
                             break;
                         case 'Not Enough Gold.':
                             alert('You do not have enough gold to place this bet.');
@@ -278,12 +287,15 @@ async function resetGame(hideUIWindow = false) {
         console.error('Error resetting the game:', error);
         alert('An error occurred while resetting the game. Please try again.');
     }
-
+    await showGameWindow(null, 'bet');
+    $('#resources-minigame').addClass('hidden');
     $("#uiWindow").removeClass('processing');
 
     if (hideUIWindow) {
         await gsap.to(`#jackaceGame`, { opacity: 0, duration: 0.5 });
     }
+
+
 }
 
 
@@ -677,7 +689,7 @@ async function displayStartingHands(data) {
 
 async function displayNewPlayerCard(data) {
     const handIndex = data.processPriorHand ? data.currentHandIndex - 1 : data.currentHandIndex;
-    const card = data.playerHands[Math.max(0,handIndex)].hand.slice(-1)[0]; // Get the last card
+    const card = data.playerHands[Math.max(0, handIndex)].hand.slice(-1)[0]; // Get the last card
     $(`#hand${handIndex + 1}`).append(`<div class="playingCard" style="background-position: ${await getCardBackgroundPosition(card)};"></div>`);
 }
 
@@ -742,16 +754,22 @@ async function showRewards(data) {
     await showGameWindow(data);
 }
 
-async function showGameWindow(data = {}) {
-    const loadWindow = data.gameWindow || 'splashScreen';
-    const currentHandIndex = data.currentHandIndex || 0;
+async function showGameWindow(data = {}, callWindow = null) {
+    if ($('#resources-minigame').hasClass('hidden')) {
+        playerMoney = await getGoldAmount();
+        $('#resources-minigame').removeClass('hidden');
+        $('#resources-minigame #resource-text').text(playerMoney);
+    }
+
+    const loadWindow = callWindow ?? data?.gameWindow ?? 'bet';
+    const currentHandIndex = data?.currentHandIndex ?? 0; 
 
     if (currentHandIndex > 0) {
         await updateCurrentHand(currentHandIndex); // update hand arrows if more than one hand
     }
 
-    console.log(`[LOADING WINDOW: ${loadWindow}`);
-    if (data.gameWindow) await updateButtonStates(data);
+    console.log(`[LOADING WINDOW: ${loadWindow}]`);
+    if (data?.gameWindow) await updateButtonStates(data);
 
     if (loadWindow === 'splitDouble') {
         if (playerMoney < BET_AMOUNTS[playerBet]) {
@@ -763,10 +781,6 @@ async function showGameWindow(data = {}) {
         case 'bet':
         case 'splashScreen':
             if (loadWindow == 'splashScreen') {
-                setupJackAceMenu()
-                playerMoney = await getGoldAmount();
-                $('#resources-minigame').removeClass('hidden');
-                $('#resources-minigame #resource-text').text(playerMoney);
                 $('#splashScreen').css('display', 'block');
                 await gsap.to(['#splashScreen'], { opacity: 1, duration: 0.5 });
             }

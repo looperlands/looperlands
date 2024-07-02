@@ -24,7 +24,7 @@ by = youLikeIt ? "bitcorn" : "anonymous";
     5. Voila 
 
 [MORE INFO]
-    EACH GAME IS DYNAMICALLY LOADED INTO IT'S OWN DIV ==> <div id="YOUR_MINIGAME_NAME">
+    EACH GAME IS DYNAMICALLY LOADED INTO ITS OWN DIV ==> <div id="YOUR_MINIGAME_NAME">
       EXAMPLE >     luckyfunkz gets put into <div id="luckyfunkz"></div> 
 
     TO KEEP THINGS CLEAN, TRY TO ASSIGN YOUR MINIGAME EVENTS TO YOUR SPECIFIC GAME DIV
@@ -40,26 +40,18 @@ by = youLikeIt ? "bitcorn" : "anonymous";
                     making sure the outcome of a spin is visually presented
 
 [MINIGAME MENU]
-    You can dynamically customize the content in this menu from your application, but note that it gets reset on each load.
-    To ensure your customized menu is setup if someone loads/closes/loads your app, add an event listener in your code like this:
-
-      EXAMPLE >     $(`#luckyfunkz`).on('fadeIn_luckyfunkz', () => setupLuckyFUNKZmenu());
-
-                    function setupLuckyFUNKZmenu(){
-                        const addToMinigameMenu = $('<a href="#" id="mgPayouts">🎰 Payouts</a>');
-                        $('#minigameMenu-content').prepend(addToMinigameMenu);
-                    }
+    You can dynamically customize the content in the menu from your application, give your custom items a class equal to your minigame name.
 */
-
 
 // CONSTANTS
 const FADE_DURATION = 500;
+const KEYDOWN_REGISTER_DELAY = 1000;
 const LOOPERLANDS_MUSIC_FADE_STEP = 0.05;
 const MINIGAME_MENU =
-    '<div id="menubtn">MENU</div>' +
-    '<div id="minigameMenu-content">' +
-    `<a href="#" id="mgMAIZfm">🌽 MAIZ.fm</a>` +
-    '<a href="#" id="mgClose">❌ Close Minigame</a>' +
+    '<div id="menubtn" class="original-menu">MENU</div>' +
+    '<div id="minigameMenu-content" class="original-menu">' +
+    '<a href="#" id="mgMAIZfm" class="original-menu">🌽 MAIZ.fm</a>' +
+    '<a href="#" id="mgClose" class="original-menu">❌ Close Minigame</a>' +
     '</div>';
 
 
@@ -67,74 +59,78 @@ const MINIGAME_MENU =
  MINIGAME LOADER
 ****************/
 async function loadMinigame(minigame, app) {
-
     if (app.audioManager) { app.audioManager.fadeOutCurrentMusic(LOOPERLANDS_MUSIC_FADE_STEP); }
-
     $("#minigameprompt").removeClass("active").css('transform', 'none').off();
+    await setupMinigamePlatform();
+    await loadSpecificMinigame(minigame);
+    $(`.${minigame}`).show(); //show specific minigame menu elements
 
-    // MINIGAME PLATFORM INITIAL SETUP
-    if ($('#minigame').length === 0) { await loadMinigamePlatform() }
-
-    // RESETS MENU TO DEFAULT AND FADES IN MINIGAME DIV
-    else { await showMinigamePlatform(minigame) }
-
-    // LOADING INDIVIDUAL MINIGAMES 
-    if ($(`#${minigame}`).length === 0) { await loadNewGame(minigame) }
-
-    // RETRIEVING PREVIOUSLY LOADED MINIGAMES
-    else { $(`#${minigame}`).fadeIn(FADE_DURATION, function () { $(`#${minigame}`).trigger(`fadeIn`); }) }
+    setTimeout(() => {
+        $(document).on('keydown', minigameKeyDown);
+    }, KEYDOWN_REGISTER_DELAY); // Adding delay to ensure the event is registered
 }
 
 
-/*******************************
-MINIGAME PLATFORM INITIAL SETUP 
-*******************************/
-async function loadMinigamePlatform() {
-
-    // ADD MAIN MINIGAME CONTAINER
-    var minigameDiv = $('<div id="minigame" class="clickable active" style="display:none"></div>');
+/******************
+ MINIGAME PLATFORM 
+*******************/
+async function setupMinigamePlatform() {
     if ($('#minigame').length === 0) {
-        $('body').prepend(minigameDiv);
+        // ADD MAIN MINIGAME CONTAINER
+        var minigameDiv = $('<div id="minigame" class="clickable active" style="display:none"></div>');
+        if ($('#minigame').length === 0) {
+            $('body').prepend(minigameDiv);
+        }
+
+        // ADD MINIGAME MENU
+        $("#minigame").append(`<div id="minigameMenu"></div>`);
+        $("#minigameMenu").append(MINIGAME_MENU);
+
+        // LOAD MINIGAME.CSS
+        fetch('css/minigame.css')
+            .then(response => response.text())
+            .then(cssContent => {
+                if ($('#mgMenuStyle').length === 0) {
+                    $('head').append($('<style></style>').html(cssContent).attr('id', 'mgMenuStyle'));
+                }
+            })
+            .catch(error => console.error('Error fetching CSS:', error));
+        $(`#minigameMenu`).on('click', '#mgMAIZfm', () => loadMAIZFM());
+    } else {
+        $('#minigameMenu').find('*').not('.original-menu').hide();
+        $("#minigame").addClass("clickable active");
     }
 
-    // ADD MINIGAME MENU
-    $("#minigame").append(`<div id="minigameMenu"></div>`);
-    $("#minigameMenu").append(MINIGAME_MENU);
-
-    // LOAD MINIGAME.CSS
-    fetch('css/minigame.css')
-        .then(response => response.text())
-        .then(cssContent => {
-            if ($('#mgMenuStyle').length === 0) {
-                $('head').append($('<style></style>').html(cssContent).attr('id', 'mgMenuStyle'));
-            }
-        })
-        .catch(error => console.error('Error fetching CSS:', error));
-
     // MINIGAME MENU EVENT LISTENERS
-    $(`#minigameMenu`).on('click', '#mgMAIZfm', () => loadMAIZFM());
-    $(document).on('keydown', minigameKeyDown);     //CLOSE ON KEYPRESS = 'ESC'
     $('#resources').fadeOut(FADE_DURATION * 0.6);   // HIDE IN GAME RESOURCES BY DEFAULT >> ALLOWS FOR A CLEANER TRANSITION
     $("#minigame").fadeIn(FADE_DURATION);
 }
 
 
-/******************
- LOAD NEW MINIGAME
-******************/
-async function loadNewGame(minigame) {
+/***********************
+ LOAD SPECIFIC MINIGAME
+***********************/
+async function loadSpecificMinigame(minigame) {
     console.log(`[LOADING MINIGAME: ${minigame}]`);
-    $("#minigame").append(`<div id="${minigame}" style="height:100%; width:100%; display:none"></div>`);  // GAME SPECIFIC DIV CONTAINER
-    await loadMinigameContent(minigame);
-    $(`#${minigame}`).fadeIn(FADE_DURATION);
-    setUpCloseEventListener(minigame);
+    if ($(`#${minigame}`).length === 0) {
+        $("#minigame").append(`<div id="${minigame}" style="height:100%; width:100%; display:none"></div>`);  // GAME SPECIFIC DIV CONTAINER
+        await injectMinigameContent(minigame);
+        $(`#${minigame}`).fadeIn(FADE_DURATION);
+    }else{
+        $(`#${minigame}`).fadeIn(FADE_DURATION);
+        $(document).trigger(`fadeIn_${minigame}`);
+    }    
+
+    $('#minigame').off('click', '#mgClose').on('click', '#mgClose', function () {
+        closeSpecificMinigame(minigame);
+    });
 }
 
 
-/*************************************
- LOAD MINIGAME INTO GAME SPECIFIC DIV 
-*************************************/
-async function loadMinigameContent(minigame) {
+/***************************************
+ INJECT MINIGAME INTO GAME SPECIFIC DIV 
+***************************************/
+async function injectMinigameContent(minigame) {
     const contentUrl = `apps/${minigame}/${MINIGAME_FILES[minigame]}`;
     try {
         await new Promise((resolve, reject) => {
@@ -162,64 +158,38 @@ async function loadMinigameContent(minigame) {
 }
 
 
-/*********************************************
- EVENT LISTENER FOR CLOSING SPECIFIC MINIGAME
-*********************************************/
-function setUpCloseEventListener(minigame) {
-    $('#minigame').on('click', '#mgClose', function () {
-        const minigameElement = $('#minigame');
-        const specificMinigame = $(`#${minigame}`);
-        if (specificMinigame.length && specificMinigame.css('display') !== 'none' && minigameElement.length && !minigameElement.hasClass('pauseClose')) {
-            // On unload, content is hidden instead of removed, if needed again, it's faded back in.
-            // This helps avoid issues with embedded js files that is caused when loading/unloading the same content multiple times
-            closeMinigame();
-            specificMinigame.fadeOut(FADE_DURATION);
-        }
-    });
-
-    $(document).on('keydown', minigameKeyDown);     //CLOSE ON KEYPRESS = 'ESC'
-}
-
-
-/*********************************************
- RESET MINIGAME PLATFORM TO DEFAULTS AND SHOW
-*********************************************/
-async function showMinigamePlatform(minigame) {
-    $('#minigameMenu').empty().append(MINIGAME_MENU);   // CLEAR AND RESET MENU
-    setUpCloseEventListener(minigame);
-    $('#resources').fadeOut(FADE_DURATION * 0.6);       // HIDE IN GAME RESOURCES BY DEFAULT >> ALLOWS FOR A CLEANER TRANSITION
-    $("#minigame").fadeIn(FADE_DURATION);
-    $("#minigame").addClass("clickable active");
-}
-
-
 /************************
  CLOSE MINIGAME PLATFORM
 ************************/
-function closeMinigame() {
+function closeSpecificMinigame(minigame) {
     var minigameElement = $('#minigame');
     if (minigameElement.length && !minigameElement.hasClass('pauseClose')) {
-        $(document).off('keydown', minigameKeyDown);
         $('#resources-minigame').addClass("hidden");
         minigameElement.removeClass("clickable active");
         minigameElement.fadeOut(FADE_DURATION);
-
+ 
         if ($('#resources').children().length > 0) {
             // REFRESH GOLD AMOUNT
             const GOLD = "21300041";
-            getGoldAmount(GOLD).then(goldAmount => { 
+            getGoldAmount(GOLD).then(goldAmount => {
                 $('#resources').fadeIn(FADE_DURATION * 0.6);
-                $(`#resource-${GOLD} .amount`).text(goldAmount); 
+                $(`#resource-${GOLD} .amount`).text(goldAmount);
             });
-            
+
         }
+
+        // Hide the specific minigame
+        $(`#${minigame}`).fadeOut(FADE_DURATION);
+
+        // Hide the specific minigame menu elements
+        $(`.${minigame}`).hide();
     }
 }
 
 // HANDLE ESC PRESS
 function minigameKeyDown(event) {
     if (event.which === 27 && $("#minigame").css("display") !== "none") {
-        $('#mgClose').trigger('click');
+        $('#mgClose')[0].click();   //note: trigger('click') doesn't always work, had to use this version
     }
 }
 
@@ -234,7 +204,7 @@ function getGoldAmount(GOLD) {
             reject(error);
         });
     });
-    
+
 }
 
 

@@ -52,6 +52,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.toggledLayers = {};
 
                 // minigame
+                this.hoveringMinigamePrompt = false;
                 this.minigameLoaded = false;
                 this.lastMinigameTrigger = null;
 
@@ -6145,6 +6146,14 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     this.hoveringTarget = false;
                     this.targetCellVisible = true;
                 }
+                else if(this.hoveringMinigamePrompt){
+                    this.hoveringMinigamePrompt = $("#minigameprompt").hasClass(`active`) && $(`#minigameprompt:hover`).length;
+                }
+                else if($("#minigameprompt").hasClass(`active`) && $(`#minigameprompt:hover`).length){
+                    this.hoveringMinigamePrompt = true;
+                    this.hoveringTarget = false;
+                    this.targetCellVisible = false;
+                }
                 else if($(`#minigame`).length && $(`#minigame`).hasClass("clickable active")){
                     this.minigameLoaded = true;
                     this.hoveringTarget = false;
@@ -8501,10 +8510,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
              */
             click: function(pos) {
 
-
                 if($('body').hasClass('inventory') 
                     || $('body').hasClass('settings') 
-                    || this.minigameLoaded) {
+                    || this.minigameLoaded
+                    || this.hoveringMinigamePrompt) {
                     return;
                 }
 
