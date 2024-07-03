@@ -35,7 +35,7 @@ class MinigameController {
                 return res.status(400).json({ error: "Minigame not found" });
             }
 
-            console.log(`[${minigame}] processing action: ${action}`);
+            //console.log(`[${minigame}] processing action: ${action}`);
             this.minigames[minigame].handleAction(req, res, action);
         } catch (error) {
             console.log('Error with Minigame: ', error);

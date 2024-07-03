@@ -49,11 +49,13 @@
 
 #jackaceGame{
   transform: scale(0.5);
+  width: var(--uiWindowWidth);
   opacity: 0%;
 }
 
 
 #uiWindow {
+  z-index:-1;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -165,20 +167,14 @@
 }
 
 #dealerHand {
-  display: flex;
-  flex-wrap: nowrap;
-  flex-direction: row;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
   transform: translateX(calc(-1*var(--scoreWidth)/2)); /*transform half the width of the arrow graphic*/
 }
 
 #playerHand {
-  display: flex;
-  flex-wrap: nowrap;
-  flex-direction: column;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
   transform: translateX(calc(-1*var(--scoreWidth)/2)); /*transform half the width of the arrow graphic*/
 }
 
@@ -187,7 +183,7 @@
   flex-wrap: nowrap;
   flex-direction: row;
   align-items: center;
-  justify-content: center;
+  justify-content: left;
 }
 
 .notCurrentHand{
