@@ -1346,7 +1346,16 @@ let Properties = {
         level: 2,
         drops: {
             flask: 50,
-            axe: 20,
+            GOLD: 20,
+            firepotion: 5
+        }
+    },
+
+    roachclip: {
+        level: 3,
+        drops: {
+            flask: 50,
+            GOLD: 20,
             firepotion: 5
         }
     },
@@ -1355,7 +1364,7 @@ let Properties = {
         level: 1,
         friendly: true, //not actually friendly, just AoE immune
         hp: 1,
-        xp: 8888,
+        xp: 4444,
         drops: {
             m88ndirt: 99,
             m88ngem: 1,
@@ -1400,9 +1409,14 @@ let Properties = {
             m88npie: 1,
             m88nsack: 1,
             m88nworm: 1,
+            m88nfastshoes: 1,
+            m88nbrassknuckles: 1,
+            m88ngrenade: 1,
+            m88nkevlararmor: 1,
+            m88nwizardshat: 1,
             burger: 1,
             m88ndirt: 10,
-            m88ngem: 10,
+            m88ngem: 20,
             GOLD3: 1,
             GOLD4: 10,
             GOLD5: 10,
@@ -1541,6 +1555,26 @@ let Properties = {
     },
 
     m88nmagiccarpet: {
+        level: 1,
+        friendly: true
+    },
+
+    m88ndinor: {
+        level: 1,
+        friendly: true
+    },
+    
+    m88ndinow: {
+        level: 1,
+        friendly: true
+    },
+
+    m88ndinob: {
+        level: 1,
+        friendly: true
+    },
+
+    m88ndinog: {
         level: 1,
         friendly: true
     },

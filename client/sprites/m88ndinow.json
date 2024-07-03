@@ -1,0 +1,25 @@
+{
+	"id": "m88ndinow",
+	"width": 48,
+	"height": 48,
+	"animations": {
+		"walk_right": {
+			"length": 4,
+			"row": 0
+		},
+		"walk_up": {
+			"length": 4,
+			"row": 1
+		},
+		"walk_down": {
+			"length": 4,
+			"row": 2
+		},
+		"idle_down": {
+			"length": 2,
+			"row": 3
+		}
+	},
+	"offset_x": 0,
+	"offset_y": 0
+}

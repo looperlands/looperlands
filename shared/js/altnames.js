@@ -201,6 +201,11 @@ const AltNames = {
     m88nmrcrab: "Mr. Crab",
     m88nmine: "m88n mine",
     m88npinataballoons: "prize balloons!",
+    m88ndinor: "Red Dino",
+    m88ndinow: "White Dino",
+    m88ndinob: "Blue Dino",
+    m88ndinog: "Green Dino",
+    roachclip: "Roach Clip",
 
     //m88n Mob Nexans
     nexan8: "The Mail Lady",
