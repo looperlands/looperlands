@@ -442,21 +442,20 @@ class JackAce {
             const playerTotal = hand.total;
 
             if (playerTotal > 21) {
-                // Player busts
-
+                // Player busts, no reward
                 totalReward += 0;
             } else if (dealerTotal > 21 || playerTotal > dealerTotal) {
                 // Dealer busts or player wins
                 if (hand.hand.length === 2 && playerTotal === 21) {
-                    totalReward += Math.round(hand.bet * (3 / 2));  // blackjack
+                    totalReward += hand.bet * 2.5; // Blackjack pays 3:2 (1 + 1.5 = 2.5)
                 } else {
-                    totalReward += hand.bet * 2;        // hand win
+                    totalReward += hand.bet * 2; // Regular win pays 1:1 (1 + 1 = 2)
                 }
             } else if (playerTotal === dealerTotal) {
                 // Push
-                totalReward += hand.bet;
+                totalReward += hand.bet; // Return the bet
             } else {
-                // Dealer wins
+                // Dealer wins, no reward
                 totalReward += 0;
             }
         });

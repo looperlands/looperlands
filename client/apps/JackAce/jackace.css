@@ -2,7 +2,7 @@
 
 @font-face {
   font-family: '256BYTES';
-  src: url('./apps/luckyfunkz/assets/fonts/256BYTES.ttf') format('truetype');
+  src: url('../luckyfunkz/assets/fonts/256BYTES.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
@@ -33,9 +33,11 @@
   opacity: 0%;
   height: var(--splashScreenHeight);
   width: var(--splashScreenWidth);
+  aspect-ratio: calc(var(--splashScreenWidth)/var(--splashScreenHeight));
   background: var(--splashScreenSprite);
   background-size: var(--splashScreenWidth) var(--splashScreenHeight);
   z-index: 3;
+  filter: drop-shadow(0px 0px 3px rgba(0, 255, 0, 0.69));
 }
 
 #jackaceWrapper {
@@ -51,8 +53,10 @@
   transform: scale(0.5);
   width: var(--uiWindowWidth);
   opacity: 0%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
-
 
 #uiWindow {
   z-index:-1;
@@ -167,21 +171,22 @@
 }
 
 #dealerHand {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   transform: translateX(calc(-1*var(--scoreWidth)/2)); /*transform half the width of the arrow graphic*/
 }
 
 #playerHand {
-  display: inline-flex;
-  align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   transform: translateX(calc(-1*var(--scoreWidth)/2)); /*transform half the width of the arrow graphic*/
 }
 
 .playerHands {
   display: flex;
+  align-items: center;
   flex-wrap: nowrap;
-  flex-direction: row;
   align-items: center;
   justify-content: left;
 }
@@ -274,40 +279,40 @@
 }
 
 #jackaceHelp h2 {
-  font-family: "Orbitron", "Helvetica Neue", "Futura", "Trebuchet MS", Arial;
-  font-size: 36px;
-  margin-bottom: 12px;
-  color: lime;
-}
-
-#jackaceHelp h3,
-#jackaceHelp ul,
-#jackaceHelp li,
-#jackaceHelp p {
   font-family: "256BYTES", "Orbitron", "Helvetica Neue", "Futura", "Trebuchet MS", Arial;
-  font-size: 24px;
+  font-size: 6vh;
+  margin-bottom: 1vh;
+  color: lime;
 }
 
 #jackaceHelp h3 {
-  margin-top: 64px;
-  margin-bottom: 18px;
+  font-family:  "256BYTES", "Orbitron", "Helvetica Neue", "Futura", "Trebuchet MS", Arial;
+  font-size: 4vh;
+  margin-top: 4vh;
+  margin-bottom: 1.5vh;
   color: lime;
 }
 
+#jackaceHelp li,
+#jackaceHelp p {
+  font-family: "Orbitron", "Helvetica Neue", "Futura", "Trebuchet MS", Arial;
+  font-size: 2.5vh;
+}
 
-#jackaceHelp ul {
+#jackaceHelp li {
+  
   list-style-type: disc;
-  margin-left: 20px;
-  margin-bottom: 24px;
+  margin-left: 1.5vh;
+  margin-bottom: 2vh;
   padding-left: 0;
 }
 
 #jackaceHelpClose {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 1vh;
+  right: 1vh;
   cursor: pointer;
-  font-size: 24px;
+  font-size: 3vh;
   color: lime;
   z-index: 1002;
 }

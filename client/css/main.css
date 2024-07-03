@@ -449,19 +449,20 @@ body.upscaled.game {background:#000;}
 
 #resources-minigame {
     position: absolute;
-    top: 5px;
-    right: 24px;
-    width: 262px;
-    height: 88px;
+    top: 2%;
+    right: 2%;
+    aspect-ratio: 2.97;
+    width: 17%;
     background: url(../img/common/minigameResourcePanel.png);
+    background-size: 100%;
     background-repeat: no-repeat;
     image-rendering: pixelated;
     color: #e4d0b6;
     font-family: 'GraphicPixel';
-    font-size: 42px;
     display: flex;
     align-items: center;
     z-index: 2;
+    transform: scale(1);
 }
 
 #resource-text {
@@ -1699,6 +1700,7 @@ footer div  {display:inline-block;}
     #fish {height:48px;width:48px;position:absolute;}
 
     #minigameprompt {width:48px;height:48px;}
+    #resources-minigame {font-size: 42px;}
 
     #armor, #weapon {width:48px;height:48px;position:absolute;background-size:288px;background-position:-96px;}
     #weapon {left:312px;top:3px;background-size:288px;}
@@ -1885,7 +1887,6 @@ footer div  {display:inline-block;}
     }
 
     #resources { right: 40px; }
-    #resources-minigame { right: 40px;}
 
     #shop-popup {
         max-height: 570px;
@@ -2063,6 +2064,7 @@ footer div  {display:inline-block;}
     #fish {height:32px;width:32px;position:absolute;}
 
     #minigameprompt {width:32px;height:32px;}
+    #resources-minigame {font-size: 30px;}
 
     #armor, #weapon {width:32px;height:32px;position:absolute;background-size:192px;background-position:-64px;}
     #weapon {left:208px;top:2px;}
@@ -2281,6 +2283,7 @@ footer div  {display:inline-block;}
     #fish {height:32px;width:32px;position:absolute;}
 
     #minigameprompt {width:32px;height:32px;}
+    #resources-minigame {font-size: 30px;}
 
     #armor, #weapon {width:32px;height:32px;position:absolute;background-size:192px;background-position:-64px;}
     #weapon {left:208px;top:2px;}
@@ -2444,6 +2447,7 @@ footer div  {display:inline-block;}
     #fish {height:16px;width:16px;position:absolute;}
 
     #minigameprompt {width:16px;height:16px;}
+    #resources-minigame {font-size: 16px;}
 
     #armor, #weapon {width:16px;height:16px;position:absolute;background-size:96px;background-position:-32px;}
     #weapon {left:104px;top:1px;}
@@ -2611,6 +2615,7 @@ footer div  {display:inline-block;}
     #fish {height:32px;width:32px;position:absolute;}
 
     #minigameprompt {width:32px;;height:32px;}
+    #resources-minigame {font-size: 30px;}
 
     #armor, #weapon {width:32px;height:32px;position:absolute;background-size:192px;background-position:-64px;}
     #weapon {left:208px;top:2px;} 

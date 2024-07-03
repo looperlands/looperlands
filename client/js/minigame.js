@@ -119,7 +119,7 @@ async function loadSpecificMinigame(minigame) {
         gsap.to(`#${minigame}`, { opacity: 1, duration: FADE_DURATION });
     } else {
         $(`#${minigame}`).css('opacity', 0).removeClass('hidden');
-        gsap.to(`#${minigame}`, { opacity: 1, duration: FADE_DURATION });
+        gsap.to([`#${minigame}`, `.${minigame}`], { opacity: 1, duration: FADE_DURATION });
         $(document).trigger(`fadeIn_${minigame}`);
     }
 

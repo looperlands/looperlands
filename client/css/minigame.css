@@ -3,15 +3,15 @@
 #minigame.active {pointer-events:auto;}
 
 #menubtn {
-  width:  4vh;
-  height: 3vh;
-  line-height: 3vh;
+  width: max(4vh, 3vw);
+  height: max(3vh, 2.25vw);
+  line-height: max(3vh,2.25vw);
   text-align: center;
   color: #222;
   position: relative;
   left: 100%;
   transform: translate(-100%, 0%);
-  font-size: 1vh;
+  font-size: max(1vh,0.75vw);
   font-family: "Orbitron", "Helvetica Neue", "Futura", "Trebuchet MS", Arial;
   font-weight: bolder;
   border: 1px solid #424211;
@@ -48,7 +48,8 @@
   position: relative;
   white-space: nowrap;
   font-family: v-sans, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-  font-size: clamp(1vh, 1.5vh, 2.5vh);
+  font-size: max(1.5vh,1.125vw);    
+  line-height: max(2.5vh,1.875vw);
   background-color: #FAFAFA;
   box-shadow: 0.25vh 0.25vh 0.75vh 0.42vh rgba(0, 0, 0, 0.9);
   transform: scale(0);
@@ -58,7 +59,7 @@
 }
 
 #minigameMenu-content a {
-  padding: 0.75vh 1vh;
+  padding: max(0.5vh, 0.375vw) max(1vh, 0.75vw);
   color: #4f3f19;
   text-decoration: none;
   display: flex;
@@ -110,7 +111,8 @@
     position: relative;
     white-space: nowrap;
     font-family: v-sans, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-    font-size: clamp(1vh, 1.5vh, 2.5vh);
+    font-size: max(1.5vh,1.125vw);    
+    line-height: max(2.5vh,1.875vw);
     background-color: #FAFAFA;
     box-shadow: 0.25vh 0.25vh 0.75vh 0.42vh rgba(0, 0, 0, 0.9);
   }

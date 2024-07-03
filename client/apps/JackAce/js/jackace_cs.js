@@ -5,6 +5,7 @@ let playerMoney = 0;
 let playerId = "";
 let processingBypass = false; // used to forceResetHoverState
 let hideArrowsNoDim = false;
+let isUpdatingPlayerMoney = false; // Flag to track if the function is running
 
 const GOLD = "21300041";
 const BET_AMOUNTS = { 1: 1, 2: 2, 3: 5, 4: 10, 5: 25, 6: 50, 7: 100 };
@@ -85,10 +86,12 @@ const BUTTON_SPRITE_POSITIONS = {
 /////////////////////////
 
 async function init() {
+    try {
     setupJackAceMenu();
     setupHelpPanel();
     playerMoney = await getGoldAmount();
     $('#resources-minigame').removeClass('hidden');
+    gsap.to('#resources-minigame', { opacity: 1, duration: 0.5 });
     $('#resources-minigame').addClass('JackAce');
     $('#resources-minigame #resource-text').text(playerMoney);
     $('#uiWindow').empty();
@@ -117,6 +120,9 @@ async function init() {
     $('#playerHand').append('<div id="hand1" class="playerHands"><div class="arrow"></div><div class="hand-total" style="background-position: -360px 0px;"></div><div class="card-back"></div><div class="card-back"></div></div>');
     await setUpButtonEvents();
     await showGameWindow(null, 'splashScreen');
+    } catch (error) {
+        console.error('Error starting JackAce:', error);
+    }
 }
 
 async function setUpButtonEvents() {
@@ -305,7 +311,7 @@ async function handleDeal() {
         if (playerBet > 0 && playerMoney >= BET_AMOUNTS[playerBet]) {
             $("#uiWindow").addClass('processing');
             const data = await makeRequest('DEAL', { playerBet: BET_AMOUNTS[playerBet] });
-            await updatePlayerMoney(data, -data.playerBet);
+            isUpdatingPlayerMoney ? await updatePlayerMoney(data, -data.playerBet) : updatePlayerMoney(data, -data.playerBet);
             await animateDeal(data);
             if (data.dealerHand.total !== 'hidden') {
                 await new Promise(resolve => setTimeout(resolve, 200));
@@ -350,7 +356,7 @@ async function handleSplit() {
         if (playerBet > 0 && playerMoney >= BET_AMOUNTS[playerBet]) {
             $("#uiWindow").addClass('processing');
             const data = await makeRequest('SPLIT');
-            await updatePlayerMoney(data, -data.playerBet);
+            isUpdatingPlayerMoney ? await updatePlayerMoney(data, -data.playerBet) : updatePlayerMoney(data, -data.playerBet);
             await animateSplit(data);
             $("#uiWindow").removeClass('processing');
         } else {
@@ -364,7 +370,9 @@ async function handleInsurance(boughtInsurance) {
         if (playerBet > 0 && playerMoney >= parseInt(BET_AMOUNTS[playerBet] / 2)) {
             $("#uiWindow").addClass('processing');
             const data = await makeRequest('INSURANCE', { boughtInsurance: boughtInsurance });
-            if (boughtInsurance) await updatePlayerMoney(data, parseInt(-data.playerBet / 2));
+            if (boughtInsurance) {
+                isUpdatingPlayerMoney ? await updatePlayerMoney(data, parseInt(-data.playerBet / 2)) : updatePlayerMoney(data, parseInt(-data.playerBet / 2));
+            }
             if (data.dealerHand.total === 21) {
                 await animateDealersTurn(data);
                 await showRewards(data);
@@ -385,7 +393,7 @@ async function handleDouble() {
             $("#uiWindow").addClass('processing');
             $('#double').addClass('inactive');
             const data = await makeRequest('DOUBLE');
-            await updatePlayerMoney(data, -data.playerBet);
+            isUpdatingPlayerMoney ? await updatePlayerMoney(data, -data.playerBet) : updatePlayerMoney(data, -data.playerBet);
             await animateCard(data);
             $("#uiWindow").removeClass('processing');
         } else {
@@ -727,8 +735,10 @@ async function displaySplitHands(data) {
 }
 
 async function updateScores(data, updatePlayer = true) {
+
     //update players hands
     if (updatePlayer) {
+        let results = [];
         for (const [index, hand] of data.playerHands.entries()) {
             let backgroundPosition = await getScoreBackgroundPosition(hand.total);
 
@@ -736,9 +746,17 @@ async function updateScores(data, updatePlayer = true) {
             if (hand.total >= 21) {
                 hand.canHit = false;
                 if (hand.total > 21) {
-                    await animateResult(index, 'busted');
+                    results[index] = 'busted';
+                } else {
+                    results[index] = '';
                 }
+            } else {
+                results[index] = '';
             }
+        }
+        // Check if there are any non-empty results before calling animateResult
+        if (results.some(result => result !== '')) {
+            await animateResult(results);
         }
     }
 
@@ -750,7 +768,7 @@ async function updateScores(data, updatePlayer = true) {
 
 async function showRewards(data) {
     await determineResults(data);
-    await updatePlayerMoney(data, null, true);
+    await updatePlayerMoney(data, null, true); //use await here to make sure everything catches up at end of hand
     await showGameWindow(data);
 }
 
@@ -762,7 +780,7 @@ async function showGameWindow(data = {}, callWindow = null) {
     }
 
     const loadWindow = callWindow ?? data?.gameWindow ?? 'bet';
-    const currentHandIndex = data?.currentHandIndex ?? 0; 
+    const currentHandIndex = data?.currentHandIndex ?? 0;
 
     if (currentHandIndex > 0) {
         await updateCurrentHand(currentHandIndex); // update hand arrows if more than one hand
@@ -946,73 +964,89 @@ async function flashCredits() {
 }
 
 async function updatePlayerMoney(data, adjustBy = null, showRewards = false) {
-    const targetMoney = adjustBy ? playerMoney + adjustBy : parseInt(data.playerMoney);
-    let currentMoney = parseInt(playerMoney);
-    //console.log(`[updatingPlayerMoney] current: ${currentMoney}, target: ${targetMoney}`);
-
-    // if data.reward > 0, show reward
-    let rewardCountdown = data.reward || 0;
-    let processingReward = false;
-
-    const rewardTextElementId = 'reward-text';
-    if (rewardCountdown > 0 && showRewards) {
-        processingReward = true;
-        const rewardTextElement = createSvgText(`+${rewardCountdown}`, rewardTextElementId);
-
-        $('#resources-minigame').after(rewardTextElement);
-
-        $(`#${rewardTextElementId}`).css({
-            position: 'absolute',
-            width: `fit-content`,
-            top: '0px',
-            right: '10px',
-            zIndex: '1',
-            'font-size': '50px',
-            'font-family': '"Orbitron", "Helvetica Neue", "Futura", "Trebuchet MS", Arial'
-        });
-
-        await gsap.to(`#${rewardTextElementId}`, {
-            top: '65px',
-            duration: 0.5
-        }).then(() => new Promise(resolve => setTimeout(resolve, 500)));
+    // Wait for the current update to finish if it's already running
+    while (isUpdatingPlayerMoney) {
+        await new Promise(resolve => setTimeout(resolve, 50)); // Wait 50ms before checking again
     }
 
-    // Calculate total steps and delay time per step
-    const totalSteps = Math.abs(targetMoney - currentMoney);
-    const defaultStepDelay = 30; // Default step delay in milliseconds
-    const maxDuration = 1000; // Maximum duration in milliseconds
-    let stepDelay = defaultStepDelay;
+    isUpdatingPlayerMoney = true; // Set the flag to true at the start
 
-    // Adjust stepDelay if total duration exceeds maxDuration
-    if (totalSteps * defaultStepDelay > maxDuration) {
-        stepDelay = maxDuration / totalSteps;
-    }
+    try {
+        const targetMoney = adjustBy ? playerMoney + adjustBy : parseInt(data.playerMoney);
+        let currentMoney = parseInt(playerMoney);
+        //console.log(`[updatingPlayerMoney] current: ${currentMoney}, target: ${targetMoney}`);
 
-    while (currentMoney !== targetMoney) {
-        if (currentMoney < targetMoney) {
-            currentMoney++;
-        } else if (currentMoney > targetMoney) {
-            currentMoney--;
+        // if data.reward > 0, show reward
+        let rewardCountdown = data?.reward ?? 0;
+        let processingReward = false;
+
+        const rewardTextElementId = 'reward-text';
+        const minDisplayTime = 800; // Minimum display time for reward in milliseconds
+        
+        if (rewardCountdown > 0 && showRewards) {
+            processingReward = true;
+            const rewardTextElement = createSvgText(`+${rewardCountdown}`, rewardTextElementId);
+
+            $('#resources-minigame').after(rewardTextElement);
+
+            $(`#${rewardTextElementId}`).css({
+                position: 'absolute',
+                width: `fit-content`,
+                top: '0px',
+                right: '10px',
+                zIndex: '1',
+                'font-size': '50px',
+                'font-family': '"Orbitron", "Helvetica Neue", "Futura", "Trebuchet MS", Arial'
+            });
+
+            await gsap.to(`#${rewardTextElementId}`, {
+                top: '65px',
+                duration: 0.5
+            }).then(() => new Promise(resolve => setTimeout(resolve, minDisplayTime)));
         }
 
-        playerMoney = currentMoney;
-        $('#resources-minigame #resource-text').text(playerMoney);
+        // Calculate total steps and delay time per step
+        const totalSteps = Math.abs(targetMoney - currentMoney);
+        const defaultStepDelay = 20; // Default step delay in milliseconds
+        const maxDuration = 800; // Maximum duration in milliseconds
+        let stepDelay = defaultStepDelay;
 
-        if (rewardCountdown > 0) {
-            rewardCountdown--;
-            // animate reward if applicable
-            $(`#${rewardTextElementId} text`).text(`+${rewardCountdown}`);
+        // Adjust stepDelay if total duration exceeds maxDuration
+        if (totalSteps * defaultStepDelay > maxDuration) {
+            stepDelay = maxDuration / totalSteps;
         }
 
-        await new Promise(resolve => setTimeout(resolve, stepDelay));
-    }
+        while (currentMoney !== targetMoney) {
+            if (currentMoney < targetMoney) {
+                currentMoney++;
+            } else if (currentMoney > targetMoney) {
+                currentMoney--;
+            }
 
-    if (processingReward) {
-        gsap.to(`#${rewardTextElementId}`, {
-            opacity: 0,
-            duration: 0.5,
-            onComplete: () => $(`#${rewardTextElementId}`).remove()
-        });
+            playerMoney = currentMoney;
+            $('#resources-minigame #resource-text').text(playerMoney);
+
+            if (rewardCountdown > 0) {
+                rewardCountdown--;
+                // animate reward if applicable
+                const rewardTextElement = $(`#${rewardTextElementId} text`);
+                if (rewardTextElement.length > 0) {
+                    rewardTextElement.text(`+${rewardCountdown}`);
+                }
+            }
+
+            await new Promise(resolve => setTimeout(resolve, stepDelay));
+        }
+
+        if (processingReward) {
+            gsap.to(`#${rewardTextElementId}`, {
+                opacity: 0,
+                duration: 0.5,
+                onComplete: () => $(`#${rewardTextElementId}`).remove()
+            });
+        }
+    } finally {
+        isUpdatingPlayerMoney = false; // Reset the flag
     }
 }
 
@@ -1045,7 +1079,6 @@ function createSvgText(textContent, id) {
     return svg;
 }
 
-// Create linear gradient for Payout Table Headers
 function createLinearGradient() {
     const linearGradient = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
     linearGradient.setAttribute('id', 'fill-gradient');
@@ -1132,127 +1165,189 @@ async function getResultPosition(resultCode) {
     return `-${x}px -${y}px`;
 }
 
-async function animateResult(handIndex, result) {
+async function animateResult(results) {
     const validResults = ['busted', 'youlost', 'push', 'winner', 'jackace'];
-
-    // Check if the result is one of the expected cases
-    if (!validResults.includes(result)) {
-        console.error(`Invalid result: ${result}`);
-        return;
-    }
-
-    const currentHandDiv = $(`#hand${handIndex + 1}`);
-
-    // Check if the result image has already been added to this hand
-    if (currentHandDiv.find('.result-image').length > 0) {
-        return;
-    }
-
-    const firstCard = currentHandDiv.find('.playingCard').first();
-    const resultImgPosition = await getResultPosition(result); // Get the sprite position for the result
-
-    const resultImage = $('<div class="result-image"></div>').css({
-        background: `url('./apps/JackAce/img/result.png') ${resultImgPosition}`,
-        position: 'absolute',
-        margin: "5px",
-        width: `${RESULT_WIDTH * RESULT_SCALE}px`,
-        height: `${RESULT_HEIGHT * RESULT_SCALE}px`,
-        "background-size": `${RESULT_WIDTH * RESULT_SCALE}px ${69 * RESULT_SCALE}px`,
-        zIndex: 2
-    });
-
-    // Ensure currentHandDiv is positioned relative or absolute
-    if (currentHandDiv.css('position') === 'static') {
-        currentHandDiv.css('position', 'relative');
-    }
-
-    currentHandDiv.append(resultImage);
-
-    // Get the scale value from the transform property
-    const transformMatrix = currentHandDiv.css('transform');
-    let scale = 1;
-
-    if (transformMatrix !== 'none') {
-        const matrixValues = transformMatrix.match(/matrix.*\((.+)\)/)[1].split(', ');
-        scale = parseFloat(matrixValues[0]);
-    }
-
-    // Calculate the corrected position
-    const firstCardPosition = firstCard.position();
-    const firstCardWidth = firstCard.outerWidth();
-    const correctedLeft = (firstCardPosition.left + firstCardWidth / 2) / scale;
-
-    const finalPosition = {
-        left: correctedLeft
-    };
-
-    // Adjust the position of the result image
-    resultImage.css({
-        left: `${finalPosition.left}px`
-    });
-
     const animationTimeline = gsap.timeline();
 
-    switch (result) {
-        case 'busted':
-        case 'youlost':
-            animationTimeline.fromTo(resultImage,
-                { top: -400, left: finalPosition.left, scale: 1.5 },
-                { top: 0, scale: 1, duration: 1, ease: "bounce.out" }
-            );
-            break;
-        case 'push':
-            animationTimeline.fromTo(resultImage,
-                { left: finalPosition.left - 200, scaleX: 0 },
-                { left: finalPosition.left, scaleX: 1, duration: 0.5, ease: "elastic.out(1, 0.3)" }
-            );
-            break;
-        case 'winner':
-            animationTimeline.fromTo(resultImage,
-                { left: finalPosition.left + 600, skewX: "-20deg" },
-                { left: finalPosition.left, skewX: "0deg", duration: 1, ease: "power4.out" }
-            );
-            break;
-        case 'jackace':
-            animationTimeline.fromTo(resultImage,
-                { scale: 0, rotation: 720 },
-                { scale: 1, rotation: 0, duration: 1, ease: "back.out(1.7)" }
-            );
-            break;
-        default:
-            // If the result type is not recognized, hide the image
-            resultImage.hide();
+    for (let handIndex = 0; handIndex < results.length; handIndex++) {
+        const result = results[handIndex];
+
+        // Skip hands without a result
+        if (result === '') {
+            continue;
+        }
+
+        // Check if the result is one of the expected cases
+        if (!validResults.includes(result)) {
+            console.error(`Invalid result: ${result}`);
             return;
+        }
+
+        const currentHandDiv = $(`#hand${handIndex + 1}`);
+
+        // Check if the result image has already been added to this hand
+        if (currentHandDiv.find('.result-image').length > 0) {
+            continue;
+        }
+
+        const firstCard = currentHandDiv.find('.playingCard').first();
+        const resultImgPosition = await getResultPosition(result); // Get the sprite position for the result
+
+        const resultImage = $('<div class="result-image"></div>').css({
+            background: `url('./apps/JackAce/img/result.png') ${resultImgPosition}`,
+            position: 'absolute',
+            margin: "5px",
+            width: `${RESULT_WIDTH * RESULT_SCALE}px`,
+            height: `${RESULT_HEIGHT * RESULT_SCALE}px`,
+            "background-size": `${RESULT_WIDTH * RESULT_SCALE}px ${69 * RESULT_SCALE}px`,
+            zIndex: 2
+        });
+
+        // Ensure currentHandDiv is positioned relative or absolute
+        if (currentHandDiv.css('position') === 'static') {
+            currentHandDiv.css('position', 'relative');
+        }
+
+        currentHandDiv.append(resultImage);
+
+        // Get the scale value from the transform property
+        const transformMatrix = currentHandDiv.css('transform');
+        let scale = 1;
+
+        if (transformMatrix !== 'none') {
+            const matrixValues = transformMatrix.match(/matrix.*\((.+)\)/)[1].split(', ');
+            scale = parseFloat(matrixValues[0]);
+        }
+
+        // Calculate the corrected position
+        const firstCardPosition = firstCard.position();
+        const firstCardWidth = firstCard.outerWidth();
+        const correctedLeft = (firstCardPosition.left + firstCardWidth / 2) / scale;
+
+        const finalPosition = {
+            left: correctedLeft
+        };
+
+        // Adjust the position of the result image
+        resultImage.css({
+            left: `${finalPosition.left}px`
+        });
+
+        switch (result) {
+            case 'busted':
+            case 'youlost':
+                animationTimeline.fromTo(resultImage,
+                    { top: -400, left: finalPosition.left, scale: 1.5 },
+                    { top: 0, scale: 1, duration: 0.8, ease: "bounce.out" },
+                    0 // Start all animations at the same time
+                );
+                break;
+            case 'push':
+                animationTimeline.fromTo(resultImage,
+                    { left: finalPosition.left - 200, scaleX: 0 },
+                    { left: finalPosition.left, scaleX: 1, duration: 0.5, ease: "elastic.out(1, 0.3)" },
+                    0 // Start all animations at the same time
+                );
+                break;
+            case 'winner':
+                function calculateSkewAdjustment(height, skewX) {
+                    const skewAngle = parseFloat(skewX) * (Math.PI / 180); // Convert skewX to radians
+                    const displacement = Math.tan(skewAngle) * height;
+                    return displacement;
+                }
+
+                const resultImageHeight = resultImage.height();
+
+                // Animate left with power4.out and handle skewX for braking effect
+                animationTimeline.fromTo(resultImage, 
+                    { left: finalPosition.left + 600 },
+                    {
+                        left: finalPosition.left - calculateSkewAdjustment(resultImageHeight, "-25deg"),
+                        duration: 0.25, ease: "linear"
+                    },
+                    0 // Start all animations at the same time
+                );
+                
+                // Slow down exponentially for the last 0.2 seconds
+                animationTimeline.to(resultImage,
+                    {
+                        left: finalPosition.left,
+                        duration: 0.5, ease: "power4.out"
+                    },
+                    0.25 // Continue the left position animation
+                );
+
+                // Maintain skewX at -25deg during the initial deceleration phase
+                animationTimeline.to(resultImage,
+                    { skewX: "-25deg", duration: 0.3 },
+                    0 // Start all animations at the same time
+                );
+
+                // Adjust skewX to create the braking effect
+                animationTimeline.to(resultImage,
+                    {
+                        skewX: "10deg", duration: 0.25, ease: "back.out(2)",
+                        onUpdate: function () {
+                            const displacement = calculateSkewAdjustment(resultImageHeight, resultImage.skewX);
+                            resultImage.css('left', `${finalPosition.left + displacement}px`);
+                        }
+                    },
+                    0.35 // Continue the skew animation
+                ).to(resultImage,
+                    {
+                        skewX: "0deg", duration: 0.15, ease: "power3.out",
+                        onUpdate: function () {
+                            const displacement = calculateSkewAdjustment(resultImageHeight, resultImage.skewX);
+                            resultImage.css('left', `${finalPosition.left + displacement}px`);
+                        }
+                    },
+                    0.6 // Continue the skew animation
+                );
+
+                break;
+            case 'jackace':
+                animationTimeline.fromTo(resultImage,
+                    { scale: 0, rotation: 720 },
+                    { scale: 1, rotation: 0, duration: 1, ease: "back.out(1.7)" },
+                    0 // Start all animations at the same time
+                );
+                break;
+            default:
+                // If the result type is not recognized, hide the image
+                resultImage.hide();
+                return;
+        }
     }
 
-    // Fade out the result image after the animation completes
-    await animationTimeline.to(resultImage, { opacity: 0, duration: 1, delay: 0.5 });
+    // Check if there are any result images to fade out
+    if ($('.result-image').length > 0) {
+        await animationTimeline.to(`.result-image`, { opacity: 0, duration: 1, delay: 0.5 });
+    }
+
 }
 
 
 async function determineResults(data) {
     const dealerHandTotal = data.dealerHand.total;
+    let results = [];
 
     for (let i = 0; i < data.playerHands.length; i++) {
         const playerHand = data.playerHands[i];
         const playerHandTotal = data.playerHands[i].total;
-        let result;
 
         if (playerHandTotal === 21 && playerHand.hand.length === 2) {
-            result = 'jackace';
+            results[i] = 'jackace';
         } else if (playerHandTotal > 21) {
-            result = 'busted';
+            results[i] = 'busted';
         } else if (dealerHandTotal > 21 || playerHandTotal > dealerHandTotal) {
-            result = 'winner';
+            results[i] = 'winner';
         } else if (playerHandTotal < dealerHandTotal) {
-            result = 'youlost';
+            results[i] = 'youlost';
         } else {
-            result = 'push';
+            results[i] = 'push';
         }
-
-        await animateResult(i, result);
     }
-
+    await animateResult(results);
 }
 
 
