@@ -575,7 +575,7 @@ define(['character'], function (Character) {
             "Howdy! I'm Gary, the real estate agent for Nexus Realty.",
             "If you're looking to buy some property in The Nexus, you've come to the right place.",
             "Right now we have several properties available and when you buy from us you get a FREE Lambo!",
-            "If you're looking for something exclusive we have 3 private islands available in the Helio Islands.",
+            "If you're looking for something exclusive we have private islands available in the Helio Islands.",
             //"That yacht over there, The Sun Chaser, has a private Captain's Quarters on it that is available to purchse.",
             //"And if you really want to get out of town, we have 2 m88n pods available in Lunaria",
             'Checkout <a target="_blank" href="https://discord.gg/bjjNewZegM">PLANET M88NWALKER in Discord</a> and DM m88nwalker to inquire.',
@@ -670,7 +670,7 @@ define(['character'], function (Character) {
         //Robits NPCs
         "ROBITSC1": [
             "Welcome to Cyber City.",
-            "Have you visited Mase's Bar yet?.",
+            "Have you visited Mase's Bar yet?",
             "Beep Boop.",
         ],
         "KAWAIIPRINCESS": [

@@ -205,6 +205,11 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "m88nhermie",
                     "m88nmrcrab",
                     "m88npinataballoons",
+                    "m88ndinor",
+                    "m88ndinow",
+                    "m88ndinob",
+                    "m88ndinog",
+                    "roachclip",
                     //m88n's Mob Nexans
                     "nexan1",
                     "nexan2",

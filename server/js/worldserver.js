@@ -172,8 +172,8 @@ module.exports = World = cls.Class.extend({
                 const npc = self.addNpc(kind, player.x, player.y);
 
                 setTimeout(()=> {
-                    delete self.npcs[npc.id];
                     player.broadcast(npc.despawn(), false);
+                    self.removeEntity(npc);
                 }, timeToLive)
             });
 
@@ -476,6 +476,9 @@ module.exports = World = cls.Class.extend({
         if (entity.id in this.items) {
             delete this.items[entity.id];
         }
+        if (entity.id in this.npcs) {
+            delete this.npcs[entity.id];
+        }        
 
         if (entity.type === "mob") {
             this.clearMobAggroLink(entity);
