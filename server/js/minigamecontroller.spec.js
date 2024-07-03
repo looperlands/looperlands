@@ -1,150 +1,104 @@
-const axios = require('axios');
-const { MinigameController } = require('./minigamecontroller.js');
-jest.mock('axios');
-
-// Mock process events to avoid actual exit
-jest.spyOn(process, 'on').mockImplementation(() => { });
+const MinigameController = require('./minigamecontroller.js');
+const mockCache = {};
+const mockPlatformClient = {};
 
 describe('MinigameController', () => {
-  let controller;
-  const apiKey = 'fake-api-key';
-  const baseUrl = 'http://fake-url.com';
+    let minigameController;
 
-  beforeEach(() => {
-    axios.create.mockReturnValue({
-      get: jest.fn().mockResolvedValue({ data: {} }),
-      put: jest.fn().mockResolvedValue({ data: {} }),
-      post: jest.fn().mockResolvedValue({ data: {} }),
+    beforeEach(() => {
+        jest.resetModules();
+        minigameController = new MinigameController(mockCache, mockPlatformClient);
     });
 
-    controller = new MinigameController(apiKey, baseUrl);
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  describe('constructor', () => {
-    it('should initialize axios client with headers', () => {
-      expect(axios.create).toHaveBeenCalledWith({
-        baseURL: baseUrl,
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': apiKey
-        }
-      });
+    test('should initialize with empty minigames', () => {
+        expect(minigameController.minigames).toEqual({});
     });
 
-    it('should handle undefined platform', () => {
-      controller = new MinigameController(undefined, undefined);
-      expect(axios.create).toHaveBeenCalledWith({
-        baseURL: baseUrl,
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': apiKey
-        }
-      });
-    });
-  });
+    test('should register minigames', async () => {
+        jest.mock('../apps/JackAce/jackace_ss', () => {
+            return jest.fn().mockImplementation(() => {
+                return { handleAction: jest.fn() };
+            });
+        });
 
-  describe('startMinigame', () => {
-    it('should send a POST request to start a minigame', async () => {
-      const minigameId = 'minigame123';
-      const responseData = { success: true };
+        await minigameController.registerMinigames();
 
-      axios.create.mockReturnValue({
-        post: jest.fn().mockResolvedValue({ data: responseData })
-      });
-
-      const result = await controller.startMinigame(minigameId);
-
-      expect(controller.client.post).toHaveBeenCalledWith(`/api/minigame/start`, { minigameId });
-      expect(result).toEqual(responseData);
+        expect(minigameController.minigames['jackace']).toBeDefined();
     });
 
-    it('should handle an error thrown by the POST request', async () => {
-      const minigameId = 'minigame123';
-      const error = new Error('Network Error');
+    test('should handle request for existing minigame', async () => {
+        const req = {
+            body: {
+                minigame: 'jackace',
+                action: 'testAction'
+            }
+        };
+        const res = {
+            status: jest.fn(() => res),
+            json: jest.fn()
+        };
 
-      axios.create.mockReturnValue({
-        post: jest.fn().mockRejectedValue(error)
-      });
+        jest.mock('../apps/JackAce/jackace_ss', () => {
+            return jest.fn().mockImplementation(() => {
+                return {
+                    handleAction: jest.fn((req, res, action) => {
+                        res.status(200).json({ success: true });
+                    })
+                };
+            });
+        });
 
-      await expect(controller.startMinigame(minigameId)).rejects.toThrow(error);
-    });
-  });
+        await minigameController.registerMinigames();
+        await minigameController.handleRequest(req, res);
 
-  describe('endMinigame', () => {
-    it('should send a POST request to end a minigame', async () => {
-      const minigameId = 'minigame123';
-      const responseData = { success: true };
-
-      axios.create.mockReturnValue({
-        post: jest.fn().mockResolvedValue({ data: responseData })
-      });
-
-      const result = await controller.endMinigame(minigameId);
-
-      expect(controller.client.post).toHaveBeenCalledWith(`/api/minigame/end`, { minigameId });
-      expect(result).toEqual(responseData);
-    });
-
-    it('should handle an error thrown by the POST request', async () => {
-      const minigameId = 'minigame123';
-      const error = new Error('Network Error');
-
-      axios.create.mockReturnValue({
-        post: jest.fn().mockRejectedValue(error)
-      });
-
-      await expect(controller.endMinigame(minigameId)).rejects.toThrow(error);
-    });
-  });
-
-  describe('getMinigameStatus', () => {
-    it('should send a GET request to retrieve minigame status and return response data', async () => {
-      const minigameId = 'minigame123';
-      const responseData = { status: 'running' };
-
-      axios.create.mockReturnValue({
-        get: jest.fn().mockResolvedValue({ data: responseData })
-      });
-
-      const result = await controller.getMinigameStatus(minigameId);
-
-      expect(controller.client.get).toHaveBeenCalledWith(`/api/minigame/status/${minigameId}`);
-      expect(result).toEqual(responseData);
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.json).toHaveBeenCalledWith({ success: true });
     });
 
-    it('should handle an error thrown by the GET request', async () => {
-      const minigameId = 'minigame123';
-      const error = new Error('Network Error');
+    test('should return error for non-existing minigame', async () => {
+        const req = {
+            body: {
+                minigame: 'nonexistent',
+                action: 'testAction'
+            }
+        };
+        const res = {
+            status: jest.fn(() => res),
+            json: jest.fn()
+        };
 
-      axios.create.mockReturnValue({
-        get: jest.fn().mockRejectedValue(error)
-      });
+        await minigameController.handleRequest(req, res);
 
-      await expect(controller.getMinigameStatus(minigameId)).rejects.toThrow(error);
-    });
-  });
-
-  describe('handleError', () => {
-    it('should throw an error with a custom message', () => {
-      const error = { response: { status: 404 } };
-
-      expect(() => controller.handleError(error)).toThrow('HTTP error! status: 404');
-    });
-
-    it('should throw an error for no response received', () => {
-      const error = { request: {} };
-
-      expect(() => controller.handleError(error)).toThrow('No response received');
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.json).toHaveBeenCalledWith({ error: "Minigame not found" });
     });
 
-    it('should throw an error for general errors', () => {
-      const error = new Error('General error');
+    test('should handle errors gracefully', async () => {
+        const req = {
+            body: {
+                minigame: 'jackace',
+                action: 'testAction'
+            }
+        };
+        const res = {
+            status: jest.fn(() => res),
+            json: jest.fn()
+        };
 
-      expect(() => controller.handleError(error)).toThrow('General error');
+        jest.mock('../apps/JackAce/jackace_ss', () => {
+            return jest.fn().mockImplementation(() => {
+                return {
+                    handleAction: jest.fn(() => {
+                        throw new Error('Test error');
+                    })
+                };
+            });
+        });
+
+        await minigameController.registerMinigames();
+        await minigameController.handleRequest(req, res);
+
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(res.json).toHaveBeenCalledWith({ message: "Internal server error" });
     });
-  });
 });
