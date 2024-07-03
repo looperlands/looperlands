@@ -1,104 +1,85 @@
 const MinigameController = require('./minigamecontroller.js');
-const mockCache = {};
-const mockPlatformClient = {};
 
 describe('MinigameController', () => {
-    let minigameController;
+    let cacheMock, platformClientMock, reqMock, resMock;
+    let controller;
 
     beforeEach(() => {
-        jest.resetModules();
-        minigameController = new MinigameController(mockCache, mockPlatformClient);
+        cacheMock = {};
+        platformClientMock = {};
+        reqMock = {
+            body: {}
+        };
+        resMock = {
+            json: jest.fn(),
+            status: jest.fn().mockReturnThis()
+        };
+        controller = new MinigameController(cacheMock, platformClientMock);
     });
 
-    test('should initialize with empty minigames', () => {
-        expect(minigameController.minigames).toEqual({});
+    describe('constructor', () => {
+        it('should initialize with cache and platformClient', () => {
+            expect(controller.cache).toBe(cacheMock);
+            expect(controller.platformClient).toBe(platformClientMock);
+            expect(controller.minigames).toEqual({});
+        });
     });
 
-    test('should register minigames', async () => {
-        jest.mock('../apps/JackAce/jackace_ss', () => {
-            return jest.fn().mockImplementation(() => {
-                return { handleAction: jest.fn() };
-            });
+    describe('registerMinigame', () => {
+        it('should register a minigame', () => {
+            const minigameMock = {};
+            controller.registerMinigame('testGame', minigameMock);
+            expect(controller.minigames['testGame']).toBe(minigameMock);
+        });
+    });
+
+    describe('registerMinigames', () => {
+        it('should register all minigames from the config', async () => {
+            jest.mock('../apps/JackAce/jackace_ss', () => {
+                return jest.fn().mockImplementation(() => {
+                    return {
+                        handleAction: jest.fn()
+                    };
+                });
+            }, { virtual: true });
+            
+            await controller.registerMinigames();
+
+            expect(controller.minigames['jackace']).toBeDefined();
+        });
+    });
+
+    describe('handleRequest', () => {
+        it('should return 400 if minigame not found', async () => {
+            reqMock.body = { minigame: 'unknownGame', action: 'someAction' };
+
+            await controller.handleRequest(reqMock, resMock);
+
+            expect(resMock.status).toHaveBeenCalledWith(400);
+            expect(resMock.json).toHaveBeenCalledWith({ error: "Minigame not found" });
         });
 
-        await minigameController.registerMinigames();
+        it('should handle action for registered minigame', async () => {
+            const handleActionMock = jest.fn();
+            controller.registerMinigame('testGame', { handleAction: handleActionMock });
+            reqMock.body = { minigame: 'testGame', action: 'someAction' };
 
-        expect(minigameController.minigames['jackace']).toBeDefined();
-    });
+            await controller.handleRequest(reqMock, resMock);
 
-    test('should handle request for existing minigame', async () => {
-        const req = {
-            body: {
-                minigame: 'jackace',
-                action: 'testAction'
-            }
-        };
-        const res = {
-            status: jest.fn(() => res),
-            json: jest.fn()
-        };
-
-        jest.mock('../apps/JackAce/jackace_ss', () => {
-            return jest.fn().mockImplementation(() => {
-                return {
-                    handleAction: jest.fn((req, res, action) => {
-                        res.status(200).json({ success: true });
-                    })
-                };
-            });
+            expect(handleActionMock).toHaveBeenCalledWith(reqMock, resMock, 'someAction');
         });
 
-        await minigameController.registerMinigames();
-        await minigameController.handleRequest(req, res);
-
-        expect(res.status).toHaveBeenCalledWith(200);
-        expect(res.json).toHaveBeenCalledWith({ success: true });
-    });
-
-    test('should return error for non-existing minigame', async () => {
-        const req = {
-            body: {
-                minigame: 'nonexistent',
-                action: 'testAction'
-            }
-        };
-        const res = {
-            status: jest.fn(() => res),
-            json: jest.fn()
-        };
-
-        await minigameController.handleRequest(req, res);
-
-        expect(res.status).toHaveBeenCalledWith(400);
-        expect(res.json).toHaveBeenCalledWith({ error: "Minigame not found" });
-    });
-
-    test('should handle errors gracefully', async () => {
-        const req = {
-            body: {
-                minigame: 'jackace',
-                action: 'testAction'
-            }
-        };
-        const res = {
-            status: jest.fn(() => res),
-            json: jest.fn()
-        };
-
-        jest.mock('../apps/JackAce/jackace_ss', () => {
-            return jest.fn().mockImplementation(() => {
-                return {
-                    handleAction: jest.fn(() => {
-                        throw new Error('Test error');
-                    })
-                };
+        it('should return 500 if an error occurs', async () => {
+            reqMock.body = { minigame: 'testGame', action: 'someAction' };
+            const handleActionMock = jest.fn().mockImplementation(() => {
+                throw new Error('Test error');
             });
+            controller.registerMinigame('testGame', { handleAction: handleActionMock });
+
+            await controller.handleRequest(reqMock, resMock);
+
+            expect(resMock.status).toHaveBeenCalledWith(500);
+            expect(resMock.json).toHaveBeenCalledWith({ message: "Internal server error" });
         });
-
-        await minigameController.registerMinigames();
-        await minigameController.handleRequest(req, res);
-
-        expect(res.status).toHaveBeenCalledWith(500);
-        expect(res.json).toHaveBeenCalledWith({ message: "Internal server error" });
     });
 });
