@@ -478,7 +478,11 @@ body.upscaled.game {background:#000;}
 
 
 #resources-minigame.hidden{
-    display: none;
+    display: none !important;
+}
+
+#minigame.hidden{
+    display: none !important;
 }
 
 #resources {

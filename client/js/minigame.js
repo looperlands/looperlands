@@ -44,7 +44,7 @@ by = youLikeIt ? "bitcorn" : "anonymous";
 */
 
 // CONSTANTS
-const FADE_DURATION = 500;
+const FADE_DURATION = 0.5; // in seconds for GSAP
 const KEYDOWN_REGISTER_DELAY = 1000;
 const LOOPERLANDS_MUSIC_FADE_STEP = 0.05;
 const MINIGAME_MENU =
@@ -63,7 +63,7 @@ async function loadMinigame(minigame, app) {
     $("#minigameprompt").removeClass("active").css('transform', 'none').off();
     await setupMinigamePlatform();
     await loadSpecificMinigame(minigame);
-    $(`.${minigame}`).show(); //show specific minigame menu elements
+    $(`.${minigame}`).removeClass('hidden'); //show specific minigame menu elements
 
     setTimeout(() => {
         $(document).on('keydown', minigameKeyDown);
@@ -77,7 +77,7 @@ async function loadMinigame(minigame, app) {
 async function setupMinigamePlatform() {
     if ($('#minigame').length === 0) {
         // ADD MAIN MINIGAME CONTAINER
-        var minigameDiv = $('<div id="minigame" class="clickable active" style="display:none"></div>');
+        var minigameDiv = $('<div id="minigame" class="clickable active hidden"></div>');
         if ($('#minigame').length === 0) {
             $('body').prepend(minigameDiv);
         }
@@ -97,13 +97,14 @@ async function setupMinigamePlatform() {
             .catch(error => console.error('Error fetching CSS:', error));
         $(`#minigameMenu`).on('click', '#mgMAIZfm', () => loadMAIZFM());
     } else {
-        $('#minigameMenu').find('*').not('.original-menu').hide();
+        $('#minigameMenu').find('*').not('.original-menu').addClass('hidden');
         $("#minigame").addClass("clickable active");
     }
 
     // MINIGAME MENU EVENT LISTENERS
-    $('#resources').fadeOut(FADE_DURATION * 0.6);   // HIDE IN GAME RESOURCES BY DEFAULT >> ALLOWS FOR A CLEANER TRANSITION
-    $("#minigame").fadeIn(FADE_DURATION);
+    $('#resources').fadeOut(FADE_DURATION * 1000 * 0.6);   // HIDE IN GAME RESOURCES BY DEFAULT >> ALLOWS FOR A CLEANER TRANSITION
+    $("#minigame").css('opacity', 0).removeClass('hidden');
+    gsap.to("#minigame", { opacity: 1, duration: FADE_DURATION });
 }
 
 
@@ -113,13 +114,14 @@ async function setupMinigamePlatform() {
 async function loadSpecificMinigame(minigame) {
     console.log(`[LOADING MINIGAME: ${minigame}]`);
     if ($(`#${minigame}`).length === 0) {
-        $("#minigame").append(`<div id="${minigame}" style="height:100%; width:100%; display:none"></div>`);  // GAME SPECIFIC DIV CONTAINER
+        $("#minigame").append(`<div id="${minigame}" style="height:100%; width:100%; opacity:0;"></div>`);  // GAME SPECIFIC DIV CONTAINER
         await injectMinigameContent(minigame);
-        $(`#${minigame}`).fadeIn(FADE_DURATION);
-    }else{
-        $(`#${minigame}`).fadeIn(FADE_DURATION);
+        gsap.to(`#${minigame}`, { opacity: 1, duration: FADE_DURATION });
+    } else {
+        $(`#${minigame}`).css('opacity', 0).removeClass('hidden');
+        gsap.to(`#${minigame}`, { opacity: 1, duration: FADE_DURATION });
         $(document).trigger(`fadeIn_${minigame}`);
-    }    
+    }
 
     $('#minigame').off('click', '#mgClose').on('click', '#mgClose', function () {
         closeSpecificMinigame(minigame);
@@ -163,28 +165,37 @@ async function injectMinigameContent(minigame) {
 ************************/
 function closeSpecificMinigame(minigame) {
     var minigameElement = $('#minigame');
+    var specificMinigameElement = $(`#${minigame}`);
     if (minigameElement.length && !minigameElement.hasClass('pauseClose')) {
-        $('#resources-minigame').addClass("hidden");
         minigameElement.removeClass("clickable active");
-        minigameElement.fadeOut(FADE_DURATION);
- 
+
+        // Create a GSAP timeline for simultaneous animations
+        const tl = gsap.timeline();
+
+        // Fade out minigameElement, #resources-minigame, and specific minigame simultaneously
+        tl.to([minigameElement, '#resources-minigame', specificMinigameElement], { opacity: 0, duration: FADE_DURATION }).then(() => {
+            minigameElement.addClass('hidden');
+            $('#resources-minigame').addClass('hidden');
+            specificMinigameElement.addClass('hidden');
+        });
+
         if ($('#resources').children().length > 0) {
             // REFRESH GOLD AMOUNT
             const GOLD = "21300041";
             getGoldAmount(GOLD).then(goldAmount => {
-                $('#resources').fadeIn(FADE_DURATION * 0.6);
-                $(`#resource-${GOLD} .amount`).text(goldAmount);
+                gsap.to('#resources', { opacity: 1, duration: FADE_DURATION * 0.6 }).then(() => {
+                    $('#resources').fadeIn();
+                    $(`#resource-${GOLD} .amount`).text(goldAmount);
+                });
             });
-
         }
 
-        // Hide the specific minigame
-        $(`#${minigame}`).fadeOut(FADE_DURATION);
-
         // Hide the specific minigame menu elements
-        $(`.${minigame}`).hide();
+        $(`.${minigame}`).addClass('hidden');
     }
 }
+
+
 
 // HANDLE ESC PRESS
 function minigameKeyDown(event) {
@@ -215,8 +226,11 @@ function loadMAIZFM() {
     var MAIZfmDiv = $('<div id="MAIZfm-container"></div>');
     if ($('#MAIZfm-container').length === 0) {
         $(`#minigame`).prepend(MAIZfmDiv);
-        $('#MAIZfm-container').load(`apps/MAIZfm/MAIZfm.html`).fadeIn(FADE_DURATION);
+        gsap.to('#MAIZfm-container', { opacity: 0 }).then(() => {
+            $('#MAIZfm-container').load(`apps/MAIZfm/MAIZfm.html`);
+            gsap.to('#MAIZfm-container', { opacity: 1, duration: FADE_DURATION });
+        });
     } else {
-        $('#MAIZfm-container').fadeIn(FADE_DURATION);
+        gsap.to('#MAIZfm-container', { opacity: 1, duration: FADE_DURATION });
     }
 }
