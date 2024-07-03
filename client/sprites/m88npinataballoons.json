@@ -1,0 +1,17 @@
+{
+	"id": "m88npinataballoons",
+	"width": 64,
+	"height": 64,
+	"animations": {
+		"death": {
+			"length": 8,
+			"row": 0
+		},
+		"idle_down": {
+			"length": 4,
+			"row": 1
+		}
+	},
+	"offset_x": -20,
+	"offset_y": -10
+}

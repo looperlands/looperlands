@@ -1169,12 +1169,12 @@ let Properties = {
         redpacket: true,
         respawnDelay: 180000
     },
-    //m88n Mobs
+    //m88n's Mobs
     balloondogb: {
         level: 2,
         drops: {
             burger: 50,
-            GOLD: 2
+            GOLD: 20
         },
     },
 
@@ -1182,7 +1182,7 @@ let Properties = {
         level: 4,
         drops: {
             burger: 50,
-            GOLD: 5
+            GOLD: 25
         },
     },
 
@@ -1191,7 +1191,7 @@ let Properties = {
         drops: {
             m88nmap: 3,
             burger: 47,
-            GOLD: 20
+            GOLD: 30
         },
     },
 
@@ -1218,7 +1218,7 @@ let Properties = {
     },
 
     balloondogp: {
-        level: 12,
+        level: 2,
         drops: {
             m88nmap: 7,
             m88nsteak: 1,
@@ -1281,7 +1281,7 @@ let Properties = {
     m88noctopussy: {
         level: 69,
         drops: {
-            m88nmap: 70,
+            m88nmap: 69,
             m88nsteak: 1,
             m88nmail: 1,
             m88nshovel: 1,
@@ -1289,10 +1289,12 @@ let Properties = {
             m88npotato: 1,
             m88nmail: 1,
             m88nworm: 1,
+            m88ngem: 1,
             gameboy: 5,
             battery: 3,
             hardwallet: 2,
             movieglasses: 1,
+            m88ntentacle: 1,
             GOLD3: 10
         },
         messages: ['Hahaha, no chance!', 'You should stay out of the ocean...', 'Why are you wasting my time?', 'Stay away or come back with friends!'],
@@ -1324,20 +1326,86 @@ let Properties = {
         },
         messages: ['Mmmmm, tasty!', 'Yum!', 'Eww, that was a little tough...', 'Stay on land or come back with friends!'],
         armorMod: 1,
-        hpMod: 5,
-        weaponMod: 0.8,
+        hpMod: 6,
+        weaponMod: 2,
         respawnDelay: 30000,
         xp: 88000
+    },
+
+    m88nhermie: {
+        level: 1,
+        drops: {
+            flask: 40,
+            burger: 10,
+            firepotion: 5
+        },
+        respawnDelay: 10000,
+    },
+
+    m88nmrcrab: {
+        level: 2,
+        drops: {
+            flask: 50,
+            axe: 20,
+            firepotion: 5
+        }
     },
 
     m88nmine: {
         level: 1,
         friendly: true, //not actually friendly, just AoE immune
         hp: 1,
-        xp: 10000,
+        xp: 8888,
         drops: {
             m88ndirt: 99,
             m88ngem: 1,
+        },
+        respawnDelay: 4000000 //one hour
+    },
+
+    m88npinataballoons: {
+        level: 1,
+        friendly: true, //not actually friendly, just AoE immune
+        hp: 1,
+        xp: 8888,
+        drops: {
+            m88nmap: 5,
+            movieglasses: 1,
+            battery: 1,
+            gameboy: 1,
+            hardwallet: 1,
+            m88npeel: 1,
+            m88ndungbeetle: 1,
+            m88nfly: 1,
+            m88njunebug: 1,
+            m88nstickbug: 1,
+            m88ndiamondnecklace: 1,
+            m88ndiamondring: 1,
+            m88ngoldearrings: 1,
+            m88nsteak: 1,
+            m88nclover: 1,
+            m88nmail: 1,
+            m88nshovel: 1,
+            m88nwatercan: 1,
+            m88nseeds: 1,
+            m88npotato: 1,
+            m88npackage: 1,
+            m88nsalad: 1,
+            m88nsnail: 1,
+            m88nblueprint: 1,
+            m88nhardhat: 1,
+            m88nrose: 1,
+            m88nworkgloves: 1,
+            m88nbrewski: 1,
+            m88npie: 1,
+            m88nsack: 1,
+            m88nworm: 1,
+            burger: 1,
+            m88ndirt: 10,
+            m88ngem: 10,
+            GOLD3: 1,
+            GOLD4: 10,
+            GOLD5: 10,
         },
         respawnDelay: 4000000 //one hour
     },
@@ -1472,7 +1540,12 @@ let Properties = {
         friendly: true
     },
 
-    //m88n's Mob Nexans
+    m88nmagiccarpet: {
+        level: 1,
+        friendly: true
+    },
+
+    //m88n Mob Nexans
     nexan1: {
         hp: 10,
         armor: 1,
@@ -1488,20 +1561,6 @@ let Properties = {
     },
 
     nexan3: {
-        hp: 10,
-        armor: 1,
-        weapon: 1,
-        friendly: true
-    },
-
-    nexan4: {
-        hp: 10,
-        armor: 1,
-        weapon: 1,
-        friendly: true
-    },
-
-    nexan5: {
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -1586,6 +1645,20 @@ let Properties = {
     },
 
     nexan27: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+
+    nexan30: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+
+    m88njeeves: {
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -1921,7 +1994,105 @@ let Properties = {
         inventoryDescription: "Golden Faberge Egg",
         respawnDelay: 1500000,
         onConsume: function(player) {
-            player.releaseMob(Types.Entities.BALLOONGIRAFFEO);
+            player.releaseMob(Types.Entities.M88NOCTOPUSSY);
+        }
+    },
+    m88nlamp: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "caged",
+            duration: 60000
+        },
+        inventoryDescription: "Mysterious Lamp",
+        respawnDelay: 1500000,
+        onConsume: function(player) {
+            player.releaseNpc(Types.Entities.M88NGENIE, 10000);
+        }
+    },
+    m88nprizes: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "caged",
+            duration: 60000
+        },
+        inventoryDescription: "Mysterious Prizes",
+        respawnDelay: 1500000,
+        onConsume: function(player) {
+            player.releaseMob(Types.Entities.M88NPINATABALLOONS);
+        }
+    },
+    m88nfastshoes: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "moveSpeed",
+            duration: 180000
+        },
+        inventoryDescription: "Fast Shoes",
+        onConsume: function(player){
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('moveSpeed', 2, 20000);
+        }
+    },
+    m88nslowshoes: {
+        collectable: true,
+        //consumable: true,
+        cooldown: {
+            group: "immunity",
+            duration: 180000
+        },
+        inventoryDescription: "Slow Shoes",
+        onConsume: function(player){
+            player.startInvincibility();
+        }
+    },
+    m88nwizardshat: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "stealth",
+            duration: 180000
+        },
+        inventoryDescription: "Wizard's Hat",
+        onConsume: function(player){
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('stealth', 2, 20000);
+        }
+    },
+    m88nbrassknuckles: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "meleeDamageDealt",
+            duration: 180000
+        },
+        inventoryDescription: "Brass Knuckles",
+        onConsume: function(player){
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('meleeDamageDealt', 5, 20000);
+        }
+    },
+    m88nkevlararmor: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "meleeDamageTaken",
+            duration: 180000
+        },
+        inventoryDescription: "Kevlar Armor",
+        onConsume: function(player){
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('meleeDamageTaken', 0.5, 20000);
+        }
+    },
+    m88ngrenade: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "rangedDamageDealt",
+            duration: 180000
+        },
+        inventoryDescription: "Grenade",
+        onConsume: function(player){
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('rangedDamageDealt', 5, 20000);
         }
     },
     m88ngem: {
@@ -1971,7 +2142,7 @@ let Properties = {
             group: "hpPotions",
             duration: 60000
         },
-        inventoryDescription: "For minor cuts and bruises",
+        inventoryDescription: "For minor cuts and scrapes",
         respawnDelay: 500000,
         onConsume: function(player){
             player.regenHealthBy(75);
@@ -1991,7 +2162,7 @@ let Properties = {
         }
     },
     cigarette: {
-        respawnDelay: 9900000,
+        respawnDelay: 9900000
     },
     cigarettepack: {
         respawnDelay: 9900000,
@@ -2012,88 +2183,91 @@ let Properties = {
         respawnDelay: 9900000,
     },
     m88ncompass: {
-        respawnDelay: 9900000,
+        respawnDelay: 9900000
     },
     m88nbinoculars: {
-        respawnDelay: 9900000,
+        respawnDelay: 9900000
     },
     m88npeel: {
-        respawnDelay: 9900000,
+        respawnDelay: 9900000
     },
     m88nfly: {
-        respawnDelay: 9900000,
+        respawnDelay: 9900000
     },
     m88njunebug: {
-        respawnDelay: 9900000,
+        respawnDelay: 9900000
     },
     m88ndungbeetle: {
-        respawnDelay: 9900000,
+        respawnDelay: 9900000
     },
     m88nbutterfly: {
-        respawnDelay: 9900000,
+        respawnDelay: 9900000
     },
     m88nstickbug: {
-        respawnDelay: 9900000,
+        respawnDelay: 9900000
     },
     m88ndiamondnecklace: {
-        respawnDelay: 9900000,
+        respawnDelay: 9900000
     },
     m88ndiamondring: {
-        respawnDelay: 9900000,
+        respawnDelay: 9900000
     },
     m88ngoldearrings: {
-        respawnDelay: 9900000,
+        respawnDelay: 9900000
     },
     m88nclover: {
-        respawnDelay: 9900000,
+        respawnDelay: 9900000
     },
     m88nluckyclover: {
-        respawnDelay: 9900000,
+        respawnDelay: 9900000
     },
     m88nmail: {
-        respawnDelay: 9900000,
+        respawnDelay: 9900000
     },
     m88npackage: {
-        respawnDelay: 9900000,
+        respawnDelay: 9900000
     },
     m88nsteak: {
-        respawnDelay: 9900000,
+        respawnDelay: 9900000
     },
     m88npotato: {
-        respawnDelay: 9900000,
+        respawnDelay: 9900000
     },
     m88nsalad: {
-        respawnDelay: 9900000,
+        respawnDelay: 9900000
     },
     m88nbrewski: {
-        respawnDelay: 9900000,
+        respawnDelay: 9900000
     },
     m88npie: {
-        respawnDelay: 9900000,
+        respawnDelay: 9900000
     },
     m88nseeds: {
-        respawnDelay: 9900000,
+        respawnDelay: 9900000
     },
     m88nsack: {
-        respawnDelay: 9900000,
+        respawnDelay: 9900000
     },
     m88nshovel: {
-        respawnDelay: 9900000,
+        respawnDelay: 9900000
     },
     m88nwatercan: {
-        respawnDelay: 9900000,
+        respawnDelay: 9900000
     },
     m88nticket: {
-        respawnDelay: 9900000,
+        respawnDelay: 9900000
     },
     m88ngoldenticket: {
-        respawnDelay: 9900000,
+        respawnDelay: 9900000
     },
     m88nworm: {
-        respawnDelay: 9900000,
+        respawnDelay: 9900000
     },
     m88nsnail: {
-        respawnDelay: 9900000,
+        respawnDelay: 9900000
+    },
+    m88ntentacle: {
+        respawnDelay: 9900000
     },
     strangeyellowliquid: {
         collectable: true,

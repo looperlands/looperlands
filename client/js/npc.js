@@ -416,7 +416,7 @@ define(['character'], function (Character) {
 
         //m88n's NPCs
         "wenmoon": [
-            "Yo! I'm wenmoon, M88nwalker sent me down here to be your lunar envoy.",
+            "Yo! I'm wenmoon, m88nwalker sent me down here to be your lunar envoy.",
             "Where Worlds Collide, Secrets Reside: Welcome to the Nexus!",
             'First stop: Dreamland! Own a piece from the <a target="_blank" href="https://loopexchange.art/collection/onesie-party">Its a Onesie Party! collection</a> for access to the VIP Lounge!',
             'On X? <a target="_blank" href="https://twitter.com/moonwalker_nfts">Give him a follow</a> to stay updated.',
@@ -426,9 +426,25 @@ define(['character'], function (Character) {
 
         "kingfroggy": [
             "Greetings! I'm Froggy, the King of DreamLand.",
-            'Wanna be King of the next pillow fight? Own a piece from the <a target="_blank" href="https://loopexchange.art/collection/onesie-party">Its a Onesie Party! collection</a> for access to the VIP Lounge!',
+            "Wanna be King of the next pillow fight?",
+            'Own a piece from the <a target="_blank" href="https://loopexchange.art/collection/onesie-party">Its a Onesie Party! collection</a> for access to the VIP Lounge!',
             'Join us in Discord! <a target="_blank" href="https://discord.gg/bjjNewZegM">Checkout PLANET M88NWALKER</a> for insider details.',
             "Have fun!"
+        ],
+
+        "nexan4": [
+            "This is such a cute little beach town!",
+            "Have you been on the yacht yet?"
+        ],
+
+        "nexan5": [
+            "Hey friend! Are you looking for a quick snack?",
+            "What can I get ya?"
+        ],
+
+        "nexan10": [
+            "Ahoy! I'm Darwin, an explorer of the metaverse...I've noticed some cool new bugs around The Nexus.",
+            "Keep your eyes peeled and see if you can find any too!"
         ],
 
         "nexan11": [
@@ -459,7 +475,9 @@ define(['character'], function (Character) {
 
         "nexan16": [
             "The fish are biting today!",
-            'Grab a <a target="_blank" href="https://loopexchange.art/collection/assets-for-looperlands">fishing pole</a> and see if you can catch something epic...'
+            'Grab a <a target="_blank" href="https://loopexchange.art/collection/assets-for-looperlands">fishing pole</a> and see if you can catch something epic...',
+            "There is some easier fishing over on that dock for level 1 fishing rods.",
+            "Once you get to level 3 you can start fishing off the shore with me."
         ],
 
         "nexan17": [
@@ -485,6 +503,92 @@ define(['character'], function (Character) {
             "Don't go out too far though, watch out for sharks..."
         ],
 
+        "nexan29": [
+            "Welcome to the Sun Chaser Champagne Lounge, special guest!",
+            "Here we have a luxurious place to relax and portals to the private Helio Islands.",
+            "On the far left is a portal to a secret hidden island. You'll need a compass to navigate to that one..."
+        ],
+
+        "thehookup": [
+            "Yo! I'm the hookup here in The Nexus...",
+            "Whatcha need?",
+            "/openShop trenchcoat Trench Coat"
+        ],
+
+        "nexan31": [
+            "Hey there! How's it going? I'm Fred the Foreman.",
+            "I'm working with the city planner to expand Paradise Point..."
+        ],
+
+        "nexan32": [
+            "Yo, daddy-o!",
+            "Nice sideburns..."
+        ],
+
+        "nexan33": [
+            "Hey, what's up buddy?",
+            "Nice day out huh? I have a new quest on the way for you..."
+        ],
+
+        "nexan34": [
+            "Hey there!",
+            "What's shakin? I have a new quest on the way for you..."
+        ],
+
+        "m88nbushguy": [
+            "Pssst..."
+        ],
+
+        "m88nsignguy": [
+            "wen?",
+            "Tomorrow!"
+        ],
+
+        "m88nmysteryhood": [
+            "You wanna know what's in the box don't you?",
+            "You'll see..."
+        ],
+
+        "m88ntaikotwin1": [
+            "Yo yo! We're the Taiko Twins!",
+            "Head north to visit Taiko Town, and head south to explore Paradise Point...",
+            "We have a new quests on the way for you..."
+        ],
+
+        "m88ntaikotwin2": [
+            "Yo yo! We're the Taiko Twins!",
+            "Head south to explore Paradise Point, and head north to visit Taiko Town...",
+            "We have a new quests on the way for you..."
+        ],
+
+        "m88nstimytimy": [
+            "GM, I'm Stimy Timy!",
+            "I spent my stimulus on crypto, nfts, and stonks. I'm gonna be rich soon, living the island life!",
+            "You should check out my new collection!",
+            "You can integrate any of the NFT's from my collection as a LooperLands avatar or a companion!",
+            'Checkout <a target="_blank" href="https://loopexchange.art/collection/stimy-timy">my new collection here</a>...',
+            'Click this link to <a target="_blank" href="https://x.com/stimytimy">follow me on X here</a>...',
+            "If you want to buy a private island here in The Nexus checkout Nexus Real Estate, they have some for sale."
+        ],
+
+        "m88nrealtyagent": [
+            "Howdy! I'm Gary, the real estate agent for Nexus Realty.",
+            "If you're looking to buy some property in The Nexus, you've come to the right place.",
+            "Right now we have several properties available and when you buy from us you get a FREE Lambo!",
+            "If you're looking for something exclusive we have 3 private islands available in the Helio Islands.",
+            //"That yacht over there, The Sun Chaser, has a private Captain's Quarters on it that is available to purchse.",
+            //"And if you really want to get out of town, we have 2 m88n pods available in Lunaria",
+            'Checkout <a target="_blank" href="https://discord.gg/bjjNewZegM">PLANET M88NWALKER in Discord</a> and DM m88nwalker to inquire.',
+            'On X? <a target="_blank" href="https://twitter.com/moonwalker_nfts">Give him a follow</a> to stay updated.',
+            "Have fun exploring The Nexus. There are lots of hidden treasures around here!"
+        ],
+
+        "m88ngenie": [
+            "What's up pal! I'm the all powerful magic genie!",
+            "Congratulations on finding my magic lamp...you gave it a rub and now I'm here to grant your wish!",
+            "You have 10 seconds to pick as many wishes as you can, then I will disappear until you find my lamp again..."
+        ],
+
         //MRMlabs NPCs
         "tylerdurden": [
             "We are all part of the same compost heap.",
@@ -495,6 +599,72 @@ define(['character'], function (Character) {
             //"You wanna make an omelet, you gotta break some eggs.",
             //"His name was Robert Paulson",
             //"I want you to hit me as hard as you can."
+        ],
+
+        //Taiko Town NPCs
+        "taikotownnpc1": [
+            //"Hello World.",
+            //"I am the first NPC in Taiko Town, it feels good to be alive!",
+            "Well hello there!",
+            "You must be here to learn about LooperLands.",
+            "To get started, head down to the bottom of this map and locate the Taiko HQ.",
+            "My friend is down there and he's expecting you!",
+            "Look for the double pink arrows pointing toward him.",
+            "He'll have instructions for your first quest..."
+            //"Pretty soon my friends and I are going to have a bunch of quests we'll need your help with..."
+        ],
+
+        "taikotownnpc2": [
+            "Welcome to Taiko Town!",
+            "This is one of many worlds in LooperLands, a free online multiplayer role playing game.",
+            "Explore that bar at the bottom of your screen. You'll see things like your chat, quest log, and inventory.",
+            "Talk to NPC's around here for information and quests.",
+            "If you think you're lost you can pull up a map overview by pressing (M) on your keyboard.",
+            "Look for the double pink arrows pointing toward them.",
+            'Need help? <a target="_blank" href="https://discord.gg/zWFKjfS2PA">Join us in Discord</a> and ask away!'
+        ],
+
+        "taikotownnpc3": [
+            "Power to the players!",
+            "Completing loot quests is another way to earn bonus xp and level up your assets.",
+            "Check your quest log if you're trying to figure out where to go.",
+            "If you think you're lost you can pull up a map overview by pressing (M) on your keyboard.",
+            'Need help? <a target="_blank" href="https://discord.gg/zWFKjfS2PA">Join us in Discord</a> and ask away!'
+        ],
+
+        "taikotownnpc4": [
+            "Greetings!",
+            "LooperLands is free to play, but F2P assets will not retain their progress or level.",
+            'Browse <a target="_blank" href="https://looperlands.io/shop">our shop</a> to purchase assets that can level up.',
+            "Check your quest log if you're trying to figure out where to go.",
+            "If you think you're lost you can pull up a map overview by pressing (M) on your keyboard.",
+            'Need help? <a target="_blank" href="https://discord.gg/zWFKjfS2PA">Join us in Discord</a> and ask away!'
+        ],
+
+        "taikotownnpc5": [
+            "Howdy!",
+            "Did you know you can also go fishing in LooperLands?!",
+            "Check your quest log if you're trying to figure out where to go.",
+            "If you think you're lost you can pull up a map overview by pressing (M) on your keyboard.",
+            'Need help? <a target="_blank" href="https://discord.gg/zWFKjfS2PA">Join us in Discord</a> and ask away!'
+        ],
+
+        "taikotownnpc6": [
+            "Hey there.",
+            "Check your quest log if you're trying to figure out where to go.",
+            'Need help? <a target="_blank" href="https://discord.gg/zWFKjfS2PA">Join us in Discord</a> and ask away!'
+        ],
+
+        "taikotownnpc7": [
+            "Feel free to stick around and explore Taiko Town more or check out the many other worlds",
+            "that are a part of LooperLands by hopping on the train across from each billboard!",
+            'Come <a target="_blank" href="https://discord.gg/zWFKjfS2PA">join us in Discord</a> if you are not in there already...cheers!'
+        ],
+
+        "stupidmonkey": [
+            "Welcome to StupidMonkeys Realm Hero, where dynamic NFTs bring your monkeys to life!",
+            "Level up, evolve, and conquer in thrilling PvP battles to claim your title as the Hero of the MonkeyRealm!",
+            'Come <a target="_blank" href="https://www.stupidmonkeys.co/">check out our website</a> to learn more!'
         ],
 
         //Robits NPCs

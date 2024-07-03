@@ -68,28 +68,30 @@ class PlayerEventBroker {
         let sessionId = this.player.sessionId;
         let playerCache = this.cache.get(sessionId);
         let gameData = playerCache.gameData;
-        
+        let kind;
+
         if (Collectables.isCollectable(item.kind)){
-            let kind = Collectables.getCollectItem(item.kind);
+            kind = Collectables.getCollectItem(item.kind);
             amount = amount * Collectables.getCollectAmount(item.kind);
             dao.saveLootEvent(this.player.nftId, kind, amount);
-
-            if (gameData.items === undefined) {
-                gameData.items = {};
-            }
-        
-            let itemCount = gameData.items[kind];
-            if (itemCount) {
-                gameData.items[kind] = itemCount + amount;
-            } else {
-                gameData.items[kind] = amount;
-            }
-        
-            playerCache.gameData = gameData;
-            this.cache.set(sessionId, playerCache);
         } else {
+            kind = item.kind;
             dao.saveLootEvent(this.player.nftId, item.kind, amount);
         }
+
+        if (gameData.items === undefined) {
+            gameData.items = {};
+        }
+
+        let itemCount = gameData.items[kind];
+        if (itemCount) {
+            gameData.items[kind] = itemCount + amount;
+        } else {
+            gameData.items[kind] = amount;
+        }
+
+        playerCache.gameData = gameData;
+        this.cache.set(sessionId, playerCache);
 
         PlayerEventBroker.dispatchEvent(PlayerEventBroker.Events.LOOT_ITEM, sessionId, this.player, playerCache, { item: item });
     }

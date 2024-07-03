@@ -1,4 +1,3 @@
-
 var cls = require("./lib/class"),
     url = require('url'),
     // wsserver = require("websocket-server"),
@@ -1148,20 +1147,17 @@ WS.socketIOServer = Server.extend({
                 const spinResponse = await minigame.getSpin(platformClient, linesPlayed, betPerLine);           
                 const { chosenSpin, payout, winningLines } = spinResponse;
 
+                
                 const spinResult = payout - spinCost;
                 if (spinResult !== 0){
-                    // UPDATE SESSIONDATA BALANCE
-                    await player.incrementResourceAmount(Types.Entities.GOLD, spinResult); 
-                    
+                    // UPDATE BALANCES
                     let transferSuccess = false;
+                    await player.incrementResourceAmount(Types.Entities.GOLD, spinResult);                      // UPDATE SESSIONDATA BALANCE
                     if(spinResult > 0){
-                        // UPDATE DAO BALANCE (PLAYER WIN)
-                        transferSuccess = await dao.transferResourceFromTo(CORNHOLE, sessionData.nftId, spinResult);
+                        transferSuccess = await dao.transferResourceFromTo(CORNHOLE, sessionData.nftId, spinResult);              // UPDATE DAO BALANCE (PLAYER WIN)
                     } else{
-                        // UPDATE DAO BALANCE (PLAYER LOSE)
-                        transferSuccess = await dao.transferResourceFromTo(sessionData.nftId, CORNHOLE, Math.abs(spinResult)); 
+                        transferSuccess = await dao.transferResourceFromTo(sessionData.nftId, CORNHOLE, Math.abs(spinResult));    // UPDATE DAO BALANCE (PLAYER LOSE)
                     }
-                    
                     if(!transferSuccess){
                         res.status(400).json({message: "DAO transfer failed"});
                         return;

@@ -2356,9 +2356,46 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
 
+        m88nhermie: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NHERMIE);
+                this.moveSpeed = 350;
+                this.idleSpeed = 700;
+                this.shadowOffsetY = -2;
+                this.isAggressive = false;
+                this.aggroRange = 1;
+                this.deathAnimated = true;
+            }
+        }),
+
+        m88nmrcrab: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NMRCRAB);
+                this.moveSpeed = 200;
+                this.atkSpeed = 40;
+                this.idleSpeed = 500;
+            }
+        }),
+
         m88nmine: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.M88NMINE);
+                this.isAggressive = false;
+                this.nameless = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
+        m88npinataballoons: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NPINATABALLOONS);
                 this.isAggressive = false;
                 this.nameless = true;
             },
@@ -2840,7 +2877,25 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
 
-        //m88n's Mob Nexans
+        m88nmagiccarpet: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NMAGICCARPET);
+                this.idleSpeed = 420;
+                this.walkSpeed = 225;
+                this.moveSpeed = 250;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
+        //m88n Mob Nexans
         nexan1: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.NEXAN1);
@@ -2880,42 +2935,6 @@ define(['mob', 'timer'], function(Mob, Timer) {
         nexan3: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.NEXAN3);
-                this.idleSpeed = 420;
-                this.walkSpeed = 250;
-                this.moveSpeed = 333;
-                this.isFriendly = true;
-            },
-
-            idle: function(orientation) {
-                if(!this.hasTarget()) {
-                    this._super(Types.Orientations.DOWN);
-                } else {
-                    this._super(orientation);
-                }
-            }
-        }),
-
-        nexan4: Mob.extend({
-            init: function(id) {
-                this._super(id, Types.Entities.NEXAN4);
-                this.idleSpeed = 420;
-                this.walkSpeed = 250;
-                this.moveSpeed = 333;
-                this.isFriendly = true;
-            },
-
-            idle: function(orientation) {
-                if(!this.hasTarget()) {
-                    this._super(Types.Orientations.DOWN);
-                } else {
-                    this._super(orientation);
-                }
-            }
-        }),
-
-        nexan5: Mob.extend({
-            init: function(id) {
-                this._super(id, Types.Entities.NEXAN5);
                 this.idleSpeed = 420;
                 this.walkSpeed = 250;
                 this.moveSpeed = 333;
@@ -2988,24 +3007,6 @@ define(['mob', 'timer'], function(Mob, Timer) {
         nexan9: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.NEXAN9);
-                this.idleSpeed = 420;
-                this.walkSpeed = 250;
-                this.moveSpeed = 333;
-                this.isFriendly = true;
-            },
-
-            idle: function(orientation) {
-                if(!this.hasTarget()) {
-                    this._super(Types.Orientations.DOWN);
-                } else {
-                    this._super(orientation);
-                }
-            }
-        }),
-
-        nexan10: Mob.extend({
-            init: function(id) {
-                this._super(id, Types.Entities.NEXAN10);
                 this.idleSpeed = 420;
                 this.walkSpeed = 250;
                 this.moveSpeed = 333;
@@ -3132,6 +3133,42 @@ define(['mob', 'timer'], function(Mob, Timer) {
         nexan27: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.NEXAN27);
+                this.idleSpeed = 420;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
+        nexan30: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.NEXAN30);
+                this.idleSpeed = 420;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
+        m88njeeves: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NJEEVES);
                 this.idleSpeed = 420;
                 this.walkSpeed = 250;
                 this.moveSpeed = 333;

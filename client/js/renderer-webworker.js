@@ -61,14 +61,16 @@ function getX(id, w) {
 
 // Cache object to store scaled images
 const imageCache = {};
+const cacheKeys = [];
+const MAX_CACHE_SIZE = 4096; // Adjust as needed
 
 // Function to generate a unique cache key
-function getCacheKey(image, x, y, w, h, scale) {
-    return `${image.src}-${x}-${y}-${w}-${h}-${scale}`;
+function getCacheKey(x, y, w, h, scale) {
+    return `${x}-${y}-${w}-${h}-${scale}`;
 }
 
 function drawScaledImage(ctx, image, x, y, w, h, dx, dy, scale) {
-    const cacheKey = getCacheKey(image, x, y, w, h, scale);
+    const cacheKey = getCacheKey(x, y, w, h, scale);
 
     // Check if the scaled image is in the cache
     if (imageCache[cacheKey]) {
@@ -87,6 +89,13 @@ function drawScaledImage(ctx, image, x, y, w, h, dx, dy, scale) {
 
         // Store the scaled image in the cache
         imageCache[cacheKey] = offCanvas;
+
+        cacheKeys.push(cacheKey);
+
+        if (cacheKeys.length > MAX_CACHE_SIZE) {
+            const oldestKey = cacheKeys.shift();
+            delete imageCache[oldestKey];
+        }
 
         // Draw the scaled image from the offscreen canvas to the main canvas
         ctx.drawImage(offCanvas, dx * scale, dy * scale);

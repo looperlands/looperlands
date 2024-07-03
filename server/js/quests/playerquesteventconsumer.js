@@ -2,6 +2,12 @@ const quests = require('./quests.js');
 const dao = require('../dao.js');
 
 const PlayerEventConsumer = require('./playereventconsumer.js').PlayerEventConsumer;
+const platform = require('../looperlandsplatformclient.js');
+
+const LOOPERLANDS_PLATFORM_BASE_URL = process.env.LOOPERLANDS_PLATFORM_BASE_URL;
+const LOOPERLANDS_PLATFORM_API_KEY = process.env.LOOPERLANDS_PLATFORM_API_KEY;
+
+const platformClient = new platform.LooperLandsPlatformClient(LOOPERLANDS_PLATFORM_API_KEY, LOOPERLANDS_PLATFORM_BASE_URL);
 
 class PlayerQuestEventConsumer extends PlayerEventConsumer {
 
@@ -56,6 +62,10 @@ class PlayerQuestEventConsumer extends PlayerEventConsumer {
                 //console.log("inprogress quest: ", event.playerCache.gameData.quests[quests.STATES.IN_PROGRESS]);
                 event.playerCache.gameData.quests[quests.STATES.IN_PROGRESS] = event.playerCache.gameData.quests[quests.STATES.IN_PROGRESS].filter(q => q.id !== questKey);
                 changedQuests.push(quest);
+
+                if (quest.rental) {
+                    platformClient.getFreeRental(quest.rental, event.playerCache.walletId);
+                }
             }
         }
         return {changedQuests: changedQuests, quests : event.playerCache.gameData.quests};

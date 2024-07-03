@@ -178,6 +178,15 @@ LooperLands (https://looperlands.io), initially conceived by BalksHamster and bu
 						<span id="close-inventory" class="close" onclick="(e) => { e.stopImmediatePropagation(); e.preventDefault(); return false}"></span>
 					</div>
 				</article>
+				<article id="miniMap">
+					<div class="panelContent">
+						<img src="" alt="Mini Map">
+						<div class="playerDot" id="playerDot">
+							<span class="playerLabel">You</span>
+						</div>
+					</div>
+				</article>
+				</article>
 				<article id="keyboardCommands" class="panel">
 					<div class="panelTitle pixel-corners-xs">Keyboard Commands</div>
 					<div class="panelContent">
@@ -218,6 +227,7 @@ LooperLands (https://looperlands.io), initially conceived by BalksHamster and bu
 								<li><span>B</span>: Toggle Avatar Information</li>
 								<li><span>CTRL</span>: Temporary Show Names</li>
 								<li><span>ENTER</span>: Chat</li>
+								<li><span>M</span>Mini map</li>
 							</ul>
 						</div>
 					
@@ -259,6 +269,7 @@ LooperLands (https://looperlands.io), initially conceived by BalksHamster and bu
 								<li><span>RT</span>: Cycle Target</li>
 								<li><span>Back</span>: Toggle Quests</li>
 								<li><span>Start</span>: Toggle Settings</li>
+								<li><span>D-Pad Down</span>: Toggle Mini Map</li>			
 							</ul>
 						</div>
 						<span id="close-instructions" class="close" onclick="(e) => { e.stopImmediatePropagation(); e.preventDefault(); return false}"></span>
@@ -285,6 +296,7 @@ LooperLands (https://looperlands.io), initially conceived by BalksHamster and bu
 				<article id="settings" class="panel">
 					<div class="panelTitle pixel-corners-xs" style="margin: 0 auto; width:250px;">Game Settings</div>
 					<button id="toggleInstructionsButton" type="submit" class="panelBorder">Instructions</button>
+					<button id="toggleMiniMapButton" type="submit" class="panelBorder">Map</button>
 					<small>Disable centered camera and/or animated tiles for performance.</small>
 					<br>
 					<form id="settingsForm">
@@ -309,6 +321,10 @@ LooperLands (https://looperlands.io), initially conceived by BalksHamster and bu
 								<input type="checkbox" id="highlightTargetTiles" name="highlightTargetTiles" value="true">
 								<label for="highlightTargetTiles">Highlight Target Tiles</label>
 							</li>
+							<li>
+								<input type="checkbox" id="cursor" name="cursor" value="true">
+								<label for="cursor">Draw Cursor</label>
+							</li>							
 							<li>
 								<input type="checkbox" id="fullscreen" name="fullscreen" value="true">
 								<label for="fullscreen">Fullscreen</label>

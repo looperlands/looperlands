@@ -398,6 +398,7 @@ define(['jquery', 'storage'], function ($, Storage) {
             $("#announcement").hide();
             $("#playerClassSelection").hide();
             $("#avatarStats").hide();
+            $("#miniMap").hide();
         },
 
         showAchievementNotification: function (questName, endText, xpReward, medal) {
@@ -965,6 +966,63 @@ define(['jquery', 'storage'], function ($, Storage) {
                 $('body').toggleClass('death');
             }
 
+        },
+
+        toggleMiniMap: function(justUpdateDot) {
+            // Get the player dot element and the image element
+            const playerDot = document.getElementById('playerDot');
+            const mapImage = document.querySelector('#miniMap .panelContent img');
+            const panelContent = document.querySelector('#miniMap .panelContent');
+        
+            // Function to apply coordinates
+            const applyCoordinates = () => {
+                const playerX = this.game.player.x;
+                const playerY = this.game.player.y;
+                const naturalWidth = mapImage.naturalWidth;
+                const naturalHeight = mapImage.naturalHeight;
+                const clientWidth = mapImage.clientWidth;
+                const clientHeight = mapImage.clientHeight;
+        
+                // Calculate the scale factor
+                const scaleX = clientWidth / naturalWidth;
+                const scaleY = clientHeight / naturalHeight;
+        
+                // Calculate the scaled player position
+                const scaledPlayerX = playerX * scaleX;
+                const scaledPlayerY = playerY * scaleY;
+        
+                // Set the player's position on the map
+                playerDot.style.left = scaledPlayerX + 'px';
+                playerDot.style.top = scaledPlayerY + 'px';
+        
+                // Scroll the panel to the player's Y position
+                panelContent.scrollTop = scaledPlayerY - panelContent.clientHeight / 2 + playerDot.clientHeight / 2;
+            }
+
+            if (justUpdateDot) {
+                applyCoordinates();
+                return;
+            }
+        
+            // Function to handle image loading error
+            function handleImageError() {
+                panelContent.innerHTML = "";
+            }
+        
+            // Set the error handler for the image
+            mapImage.onerror = handleImageError;
+        
+            // Set the image source and load the coordinates
+            mapImage.src = `img/common/miniMap_${this.game.mapId}.png`;
+        
+            // Toggle the mini map visibility and use a callback
+            $("#miniMap").toggle().promise().done(function() {
+                if (mapImage.complete) {
+                    applyCoordinates();
+                } else {
+                    mapImage.onload = applyCoordinates;
+                }
+            });
         },
 
         initResourcesDisplay: function () {
