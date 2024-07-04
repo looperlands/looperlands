@@ -256,13 +256,13 @@ class JackAce {
 
     async insurance(playerState, boughtInsurance) {
         if (boughtInsurance) {
-            const insuranceBet = parseInt(playerState.playerBet / 2);
+            const insuranceBet = Math.round(playerState.playerBet / 2);
             if (playerState.playerMoney >= insuranceBet && playerState.dealerHand.hand[1].charAt(0) === "A") {
                 if (await this.payToCORNHOLE(playerState, insuranceBet)) {
                     playerState.playerMoney -= insuranceBet;
                     playerState.insuranceBet = insuranceBet;
                     playerState.boughtInsurance = true;
-                    if (playerState.dealerHand.total === 21) {
+                    if (playerState.dealerHand.total === 21 && playerState.dealerHand.hand.length === 2) {
                         playerState.reward = insuranceBet * 2;
                         playerState.dealerHand.hasPlayed = true;
                         await this.evaluateWinner(playerState);
@@ -394,6 +394,8 @@ class JackAce {
 
         if (hand.hand.length === 2 && hand.hand[0].charAt(0) === hand.hand[1].charAt(0) && playerState.playerHands.length < 4) {
             hand.canSplit = true;
+        }else{
+            hand.canSplit = false;
         }
 
         if (setGameWindow) {
@@ -430,9 +432,11 @@ class JackAce {
 
     async evaluateWinner(playerState) {
 
-        if (!playerState.dealerHand.hasPlayed) {
+        if (!playerState.dealerHand.hasPlayed && !(playerState.playerHands.length === 1 && playerState.playerHands[0].hand.length === 2 &&  playerState.playerHands[0].total === 21)) {
             await this.playDealerTurn(playerState)
         }
+
+        playerState.dealerHand.hasPlayed = true;
 
         // Evaluate all player hands against the dealer's hand
         let totalReward = 0;
@@ -446,10 +450,10 @@ class JackAce {
                 totalReward += 0;
             } else if (dealerTotal > 21 || playerTotal > dealerTotal) {
                 // Dealer busts or player wins
-                if (hand.hand.length === 2 && playerTotal === 21) {
-                    totalReward += hand.bet * 2.5; // Blackjack pays 3:2 (1 + 1.5 = 2.5)
+                if (playerState.playerHands.length === 1 && hand.hand.length === 2 && playerTotal === 21) {
+                    totalReward += Math.round(hand.bet * 2.5); // Blackjack pays 3:2 (1 + 1.5 = 2.5)
                 } else {
-                    totalReward += hand.bet * 2; // Regular win pays 1:1 (1 + 1 = 2)
+                    totalReward += hand.bet * 2; // Regular win pays 1:1 (1 + 1 = 2) includes jackacs on a split hand
                 }
             } else if (playerTotal === dealerTotal) {
                 // Push
@@ -632,7 +636,7 @@ class JackAce {
 
         if(!allowAccess){
             // console.log('[JackAce Early Access Denied]');
-            return { status: 400, message: "Sorry, only bits x bit collection holders qualify for Early Access." };
+            return { status: 400, message: "Early Access Limited to bits x bit holders." };
         }
 
         // Validate action based on game state

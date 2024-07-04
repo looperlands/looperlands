@@ -51,6 +51,7 @@
 
 #jackaceGame{
   transform: scale(0.5);
+  filter: drop-shadow(1vh 1vh 0.5vh rgba(0, 0, 0, 0.75));
   width: var(--uiWindowWidth);
   opacity: 0%;
   display: flex;
@@ -68,6 +69,20 @@
   width: var(--uiWindowWidth);
   background: var(--uiWindowSprite);
   background-size: var(--uiWindowWidth) var(--uiWindowHeight);
+}
+
+#insurance-text{
+  filter: drop-shadow(0.5vh 0.5vh 0.5vh black) drop-shadow(0.5vh 0.5vh 0.5vh black);
+  position: absolute;
+  overflow: visible;
+  width: 100%;
+  top: 102%;
+  left: 50%;
+  transform: translate(-50%, 0%);
+  z-index: 2;
+  font-size: 9vh;
+  font-family: "256BYTES", "Helvetica Neue", Futura, "Trebuchet MS", Arial;
+  opacity: 1;
 }
 
 .processing{

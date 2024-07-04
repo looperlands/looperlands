@@ -87,15 +87,15 @@ const BUTTON_SPRITE_POSITIONS = {
 
 async function init() {
     try {
-    setupJackAceMenu();
-    setupHelpPanel();
-    playerMoney = await getGoldAmount();
-    $('#resources-minigame').removeClass('hidden');
-    gsap.to('#resources-minigame', { opacity: 1, duration: 0.5 });
-    $('#resources-minigame').addClass('JackAce');
-    $('#resources-minigame #resource-text').text(playerMoney);
-    $('#uiWindow').empty();
-    $('#uiWindow').append(`
+        setupJackAceMenu();
+        setupHelpPanel();
+        playerMoney = await getGoldAmount();
+        $('#resources-minigame').removeClass('hidden');
+        gsap.to('#resources-minigame', { opacity: 1, duration: 0.5 });
+        $('#resources-minigame').addClass('JackAce');
+        $('#resources-minigame #resource-text').text(playerMoney);
+        $('#uiWindow').empty();
+        $('#uiWindow').append(`
         <div id="bet-window">
             <div id="bet_increase"></div>
             <div id="bet_amount"></div>
@@ -116,10 +116,10 @@ async function init() {
         </div>
     `);
 
-    $('#dealerHand').append('<div class="arrow"></div><div class="dealerScore" style="background-position: -360px 0px;"></div><div class="card-back"></div><div class="card-back"></div>');
-    $('#playerHand').append('<div id="hand1" class="playerHands"><div class="arrow"></div><div class="hand-total" style="background-position: -360px 0px;"></div><div class="card-back"></div><div class="card-back"></div></div>');
-    await setUpButtonEvents();
-    await showGameWindow(null, 'splashScreen');
+        $('#dealerHand').append('<div class="arrow"></div><div class="dealerScore" style="background-position: -360px 0px;"></div><div class="card-back"></div><div class="card-back"></div>');
+        $('#playerHand').append('<div id="hand1" class="playerHands"><div class="arrow"></div><div class="hand-total" style="background-position: -360px 0px;"></div><div class="card-back"></div><div class="card-back"></div></div>');
+        await setUpButtonEvents();
+        await showGameWindow(null, 'splashScreen');
     } catch (error) {
         console.error('Error starting JackAce:', error);
     }
@@ -203,7 +203,7 @@ function setupHelpPanel() {
                         <li>The dealer must hit on a soft 17 (a hand containing an Ace valued as 11).</li>
                         <li>If the dealer busts, the player wins.</li>
                         <li>If the dealer does not bust, the closest hand to 21 wins.</li>
-                        <li>A blackjack (an Ace and a 10-point card) pays 3:2.</li>
+                        <li>JackAce (an Ace and a 10-point card) pays 3:2 unless it's a split hand which pays 1:1.</li>
                         <li>A winning hand that is not a blackjack pays 1:1.</li>
                     </ul>
                     <h3>DOUBLE</h3>
@@ -258,20 +258,27 @@ async function makeRequest(action, additionalData = {}) {
                         case '[SPLIT] Invalid action >> Cannot split.':
                         case '[DOUBLE] Invalid action >> Cannot double.':
                         case '[INSURANCE] Invalid action >> Cannot buy insurance.':
-                            alert(`Invalid action: ${errorResponse.message}`);
+                            console.log(`Invalid action: ${errorResponse.message}`);
+                            await animateText(errorResponse.message);
                             await resetGame();
                             break;
                         case 'Not Enough Gold.':
-                            alert('You do not have enough gold to place this bet.');
+                            console.log('You do not have enough gold to place this bet.');
+                            await flashCredits();
                             $("#uiWindow").removeClass('processing');
+                            break;
+                        case `Early Access Limited to bits x bit holders.`:
+                            await animateText(errorResponse.message);
+                            $('#mgClose')[0].click();
                             break;
                         default:
                             alert(`${errorResponse.message}`);
-                            $('#mgClose').trigger('click');
+                            $('#mgClose')[0].click();
                             break;
                     }
                 } else {
                     alert('An unexpected error occurred. Please try again later.');
+                    $('#mgClose')[0].click();
                 }
                 reject(error);
             });
@@ -974,35 +981,33 @@ async function updatePlayerMoney(data, adjustBy = null, showRewards = false) {
     try {
         const targetMoney = adjustBy ? playerMoney + adjustBy : parseInt(data.playerMoney);
         let currentMoney = parseInt(playerMoney);
-        //console.log(`[updatingPlayerMoney] current: ${currentMoney}, target: ${targetMoney}`);
-
-        // if data.reward > 0, show reward
         let rewardCountdown = data?.reward ?? 0;
         let processingReward = false;
-
-        const rewardTextElementId = 'reward-text';
         const minDisplayTime = 800; // Minimum display time for reward in milliseconds
-        
+
+
+
         if (rewardCountdown > 0 && showRewards) {
+            const timeline = gsap.timeline();
+
             processingReward = true;
-            const rewardTextElement = createSvgText(`+${rewardCountdown}`, rewardTextElementId);
+            const rewardTextElementId = await createRewardTextElement(rewardCountdown);
 
-            $('#resources-minigame').after(rewardTextElement);
-
-            $(`#${rewardTextElementId}`).css({
-                position: 'absolute',
-                width: `fit-content`,
-                top: '0px',
-                right: '10px',
-                zIndex: '1',
-                'font-size': '50px',
-                'font-family': '"Orbitron", "Helvetica Neue", "Futura", "Trebuchet MS", Arial'
-            });
-
-            await gsap.to(`#${rewardTextElementId}`, {
+            timeline.to(`#${rewardTextElementId}`, {
                 top: '65px',
                 duration: 0.5
-            }).then(() => new Promise(resolve => setTimeout(resolve, minDisplayTime)));
+            }, 0);
+
+            if (data.boughtInsurance && data.dealerHandTotal === 21 && data.dealerHand.length === 2) {
+                const insuranceTextElementId = await createInsuranceTextElement();
+
+                timeline.to(`#${insuranceTextElementId}`, {
+                    opacity: 1,
+                    duration: 0.5
+                }, 0);
+            }
+
+            await timeline.then(() => new Promise(resolve => setTimeout(resolve, minDisplayTime)));;
         }
 
         // Calculate total steps and delay time per step
@@ -1027,9 +1032,9 @@ async function updatePlayerMoney(data, adjustBy = null, showRewards = false) {
             $('#resources-minigame #resource-text').text(playerMoney);
 
             if (rewardCountdown > 0) {
-                rewardCountdown--;
                 // animate reward if applicable
-                const rewardTextElement = $(`#${rewardTextElementId} text`);
+                rewardCountdown--;
+                const rewardTextElement = $(`#reward-text text`);
                 if (rewardTextElement.length > 0) {
                     rewardTextElement.text(`+${rewardCountdown}`);
                 }
@@ -1039,15 +1044,108 @@ async function updatePlayerMoney(data, adjustBy = null, showRewards = false) {
         }
 
         if (processingReward) {
-            gsap.to(`#${rewardTextElementId}`, {
+            const tl = gsap.timeline();
+
+            tl.to(`#reward-text`, {
                 opacity: 0,
                 duration: 0.5,
-                onComplete: () => $(`#${rewardTextElementId}`).remove()
+                onComplete: () => $(`#reward-text`).remove()
             });
+
+            if (data.boughtInsurance && data.dealerHandTotal === 21 && data.dealerHand.length === 2) {
+                const insuranceTextElementId = 'insurance-text';
+                tl.to(`#${insuranceTextElementId}`, {
+                    opacity: 0,
+                    duration: 0.5,
+                    onComplete: () => $(`#${insuranceTextElementId}`).remove()
+                }, "-=0.5");
+            }
+
+            await tl;
         }
+
     } finally {
         isUpdatingPlayerMoney = false; // Reset the flag
     }
+}
+
+// Helper function to create the reward text element
+async function createRewardTextElement(rewardCountdown) {
+    const rewardTextElementId = 'reward-text';
+    const rewardTextElement = createSvgText(`+${rewardCountdown}`, rewardTextElementId);
+
+    $('#resources-minigame').after(rewardTextElement);
+
+    $(`#${rewardTextElementId}`).css({
+        position: 'absolute',
+        width: `fit-content`,
+        top: '0px',
+        right: '1vh',
+        zIndex: '1',
+        'font-size': '4vh',
+        'font-family': '"Orbitron", "Helvetica Neue", "Futura", "Trebuchet MS", Arial'
+    });
+
+    return rewardTextElementId;
+}
+
+// Helper function to create the insurance text element
+async function createInsuranceTextElement() {
+    const insuranceTextElementId = 'insurance-text';
+    const insuranceTextElement = createSvgText('INSURANCE BETS PAY 2:1', insuranceTextElementId);
+
+    $('#playerHand').after(insuranceTextElement);
+
+    $(`#${insuranceTextElementId}`).css({
+
+        filter: "drop-shadow(0.5vh 0.5vh 0.5vh black) drop-shadow(0.5vh 0.5vh 0.5vh black)",
+        position: 'absolute',
+        overflow: 'visible',
+        top: `102%`,
+        left: '50%',
+        transform: 'translateX(-50%)',
+        zIndex: '2',
+        'font-size': '9vh',
+        'font-family': '"256BYTES", "Helvetica Neue", "Futura", "Trebuchet MS", Arial'
+    });
+
+    return insuranceTextElementId;
+}
+
+// New function to animate custom text
+async function animateText(customText) {
+    const customTextElementId = 'custom-text';
+    const uiWindowElement = $('#uiWindow');
+    const customTextElement = createSvgText(customText, customTextElementId);
+
+    $('#uiWindow').append(customTextElement);
+
+    const customTextElementHeight = parseFloat($(`#${customTextElementId}`).css('font-size'));
+
+    $(`#${customTextElementId}`).css({
+        position: 'absolute',
+        width: `fit-content`,
+        top: `${uiWindowElement.offset().top + uiWindowElement.height() + 0.5 * customTextElementHeight}px`,
+        left: '50%',
+        transform: 'translateX(-50%)',
+        zIndex: '2',
+        'font-size': '50px',
+        'font-family': '"Orbitron", "Helvetica Neue", "Futura", "Trebuchet MS", Arial'
+    });
+
+    const timeline = gsap.timeline();
+
+    timeline.to(`#${customTextElementId}`, {
+        opacity: 1,
+        duration: 0.5
+    }, 0).to(`#${customTextElementId}`, {
+        opacity: 0,
+        duration: 0.5,
+        delay: 2, // Adjust this delay as needed
+        onComplete: () => $(`#${customTextElementId}`).remove()
+    });
+
+    await timeline;
 }
 
 // Function to create SVG text element with gradient
@@ -1259,7 +1357,7 @@ async function animateResult(results) {
                 const resultImageHeight = resultImage.height();
 
                 // Animate left with power4.out and handle skewX for braking effect
-                animationTimeline.fromTo(resultImage, 
+                animationTimeline.fromTo(resultImage,
                     { left: finalPosition.left + 600 },
                     {
                         left: finalPosition.left - calculateSkewAdjustment(resultImageHeight, "-25deg"),
@@ -1267,7 +1365,7 @@ async function animateResult(results) {
                     },
                     0 // Start all animations at the same time
                 );
-                
+
                 // Slow down exponentially for the last 0.2 seconds
                 animationTimeline.to(resultImage,
                     {
@@ -1331,11 +1429,15 @@ async function determineResults(data) {
     const dealerHandTotal = data.dealerHand.total;
     let results = [];
 
+    if (data.boughtInsurance && dealerHandTotal === 21 && data.dealerHand.hand.length === 2) {
+        return;
+    }
+
     for (let i = 0; i < data.playerHands.length; i++) {
         const playerHand = data.playerHands[i];
         const playerHandTotal = data.playerHands[i].total;
 
-        if (playerHandTotal === 21 && playerHand.hand.length === 2) {
+        if (data.playerHands.length === 1 && playerHandTotal === 21 && playerHand.hand.length === 2 && dealerHandTotal !== 21) {
             results[i] = 'jackace';
         } else if (playerHandTotal > 21) {
             results[i] = 'busted';
@@ -1349,6 +1451,3 @@ async function determineResults(data) {
     }
     await animateResult(results);
 }
-
-
-
