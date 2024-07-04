@@ -1327,7 +1327,7 @@ let Properties = {
         messages: ['Mmmmm, tasty!', 'Yum!', 'Eww, that was a little tough...', 'Stay on land or come back with friends!'],
         armorMod: 1,
         hpMod: 6,
-        weaponMod: 2,
+        weaponMod: 1,
         respawnDelay: 30000,
         xp: 88000
     },
@@ -1364,7 +1364,7 @@ let Properties = {
         level: 1,
         friendly: true, //not actually friendly, just AoE immune
         hp: 1,
-        xp: 4444,
+        xp: 8888,
         drops: {
             m88ndirt: 99,
             m88ngem: 1,
@@ -2049,12 +2049,64 @@ let Properties = {
         consumable: true,
         cooldown: {
             group: "caged",
-            duration: 60000
+            duration: 10000
         },
         inventoryDescription: "Mysterious Prizes",
-        respawnDelay: 1500000,
+        respawnDelay: 60000,
         onConsume: function(player) {
             player.releaseMob(Types.Entities.M88NPINATABALLOONS);
+        }
+    },
+    m88nbag: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "caged",
+            duration: 10000
+        },
+        inventoryDescription: "Brown Bag",
+        respawnDelay: 60000,
+        onConsume: function(player) {
+            player.releaseItem(Types.Entities.M88NBRASSKNUCKLES);
+        }
+    },
+    m88nvipbag: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "caged",
+            duration: 10000
+        },
+        inventoryDescription: "Black Bag",
+        respawnDelay: 60000,
+        onConsume: function(player) {
+            player.releaseItem(Types.Entities.M88NTICKET);
+        }
+    },
+    m88ngoldbag: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "caged",
+            duration: 10000
+        },
+        inventoryDescription: "Golden Bag",
+        respawnDelay: 60000,
+        onConsume: function(player) {
+            player.releaseItem(Types.Entities.M88NGOLDENTICKET);
+        }
+    },
+    m88ngembag: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "caged",
+            duration: 10000
+        },
+        inventoryDescription: "Gem Bag",
+        respawnDelay: 60000,
+        onConsume: function(player) {
+            player.releaseItem(Types.Entities.M88NGEM);
         }
     },
     m88nfastshoes: {
