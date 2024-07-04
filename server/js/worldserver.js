@@ -253,6 +253,7 @@ module.exports = World = cls.Class.extend({
                 area.trigger = a.trigger;
                 area.message = a.message;
                 area.minigame = a.minigame;
+                area.offset = a.offset;
                 area.delay = a.delay;
                 self.triggerAreas[a.id] = area;
             });

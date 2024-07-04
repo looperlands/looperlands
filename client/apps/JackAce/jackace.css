@@ -1,0 +1,388 @@
+@import url('https://fonts.googleapis.com/css?family=Orbitron');
+
+@font-face {
+  font-family: '256BYTES';
+  src: url('../luckyfunkz/assets/fonts/256BYTES.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+:root {
+  --splashScreenSprite: url('./img/jackace.png') no-repeat;
+  --splashScreenWidth: 680px;
+  --splashScreenHeight: 530px;
+  --uiWindowWidth: 720px;
+  --uiWindowHeight: 1000px;
+  --uiWindowSprite: url('./img/ui.png') no-repeat;
+  --buttonWidth: 300px;
+  --buttonHeight: 130px;
+  --buttonSprite: url('./img/buttons.png') no-repeat;
+  --buttonSpriteSize: 920px 1250px;
+  --scoreWidth: 170px;
+  --scoreSprite: url('./img/score.png') no-repeat;
+  --scoreSpriteSize: 1790px 410px;
+  --cardWidth: 110px;
+  --cardHeight: 90px;
+  --cardsSprite: url('./img/cards.png') no-repeat;
+  --cardsSpriteSize: 1670px 390px;
+}
+
+#splashScreen {
+  position: fixed;
+  left: 32%;
+  opacity: 0%;
+  height: var(--splashScreenHeight);
+  width: var(--splashScreenWidth);
+  aspect-ratio: calc(var(--splashScreenWidth)/var(--splashScreenHeight));
+  background: var(--splashScreenSprite);
+  background-size: var(--splashScreenWidth) var(--splashScreenHeight);
+  z-index: 3;
+  filter: drop-shadow(0px 0px 3px rgba(0, 255, 0, 0.69));
+}
+
+#jackaceWrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  left: 32%;
+  height: 100%;
+}
+
+#jackaceGame{
+  transform: scale(0.5);
+  filter: drop-shadow(1vh 1vh 0.5vh rgba(0, 0, 0, 0.75));
+  width: var(--uiWindowWidth);
+  opacity: 0%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+#uiWindow {
+  z-index:-1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  image-rendering: pixelated;
+  position: relative;
+  width: var(--uiWindowWidth);
+  background: var(--uiWindowSprite);
+  background-size: var(--uiWindowWidth) var(--uiWindowHeight);
+}
+
+#insurance-text{
+  filter: drop-shadow(0.5vh 0.5vh 0.5vh black) drop-shadow(0.5vh 0.5vh 0.5vh black);
+  position: absolute;
+  overflow: visible;
+  width: 100%;
+  top: 102%;
+  left: 50%;
+  transform: translate(-50%, 0%);
+  z-index: 2;
+  font-size: 9vh;
+  font-family: "256BYTES", "Helvetica Neue", Futura, "Trebuchet MS", Arial;
+  opacity: 1;
+}
+
+.processing{
+  filter: brightness(0.5);
+}
+
+#bet-window, #hit-stand-window, #splitDouble, #insurance{
+  width: 100%;
+  display: contents;
+}
+
+/*Button Positioning*/
+#bet_amount{
+  image-rendering: pixelated;
+  margin: 10px;
+  width: var(--buttonWidth);
+  height: var(--buttonHeight);
+  background: var(--buttonSprite);
+  background-size: var(--buttonSpriteSize);
+}
+
+#deal{
+  image-rendering: pixelated;
+  margin: 10px;
+  width: var(--buttonWidth);
+  height: var(--buttonHeight);
+  background: var(--buttonSprite) -310px 0px;
+  background-size: var(--buttonSpriteSize);
+}
+
+#bet_increase{
+  image-rendering: pixelated;
+  margin: 10px;
+  width: var(--buttonWidth);
+  height: var(--buttonHeight);
+  background: var(--buttonSprite) -310px -140px;
+  background-size: var(--buttonSpriteSize);
+} 
+
+#bet_decrease{
+  image-rendering: pixelated;
+  margin: 10px;
+  width: var(--buttonWidth);
+  height: var(--buttonHeight);
+  background: var(--buttonSprite) -310px -280px;
+  background-size: var(--buttonSpriteSize);
+} 
+
+#hit{
+  image-rendering: pixelated;
+  margin: 10px;
+  width: var(--buttonWidth);
+  height: var(--buttonHeight);
+  background: var(--buttonSprite);
+  background-size: var(--buttonSpriteSize);
+}
+
+#stand{
+  image-rendering: pixelated;
+  margin: 10px;
+  width: var(--buttonWidth);
+  height: var(--buttonHeight);
+  background: var(--buttonSprite);
+  background-size: var(--buttonSpriteSize);
+}
+
+#ins-yes{
+  image-rendering: pixelated;
+  margin: 10px 10px 50px 10px;
+  width: var(--buttonWidth);
+  height: var(--buttonHeight);
+  background: var(--buttonSprite);
+  background-size: var(--buttonSpriteSize);
+}
+
+#ins-no{
+  image-rendering: pixelated;
+  margin: 10px 10px 50px 10px;
+  width: var(--buttonWidth);
+  height: var(--buttonHeight);
+  background: var(--buttonSprite);
+  background-size: var(--buttonSpriteSize);
+}
+
+#split{
+  image-rendering: pixelated;
+  margin: 10px;
+  width: var(--buttonWidth);
+  height: var(--buttonHeight);
+  background: var(--buttonSprite);
+  background-size: var(--buttonSpriteSize);
+}
+
+#double{
+  image-rendering: pixelated;
+  margin: 10px;
+  width: var(--buttonWidth);
+  height: var(--buttonHeight);
+  background: var(--buttonSprite);
+  background-size: var(--buttonSpriteSize);
+}
+
+#dealerHand {
+  display: flex;
+  align-items: center;
+  transform: translateX(calc(-1*var(--scoreWidth)/2)); /*transform half the width of the arrow graphic*/
+}
+
+#playerHand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  transform: translateX(calc(-1*var(--scoreWidth)/2)); /*transform half the width of the arrow graphic*/
+}
+
+.playerHands {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: left;
+}
+
+.notCurrentHand{
+  filter: brightness(0.5);
+}
+
+.splitHand{
+  display: block;
+}
+
+#handResult {
+  font-family: "Orbitron", "Helvetica Neue", "Futura", "Trebuchet MS", Arial;
+  font-size: 5vh;
+  letter-spacing: 3px;
+  color: red;
+  font-weight: 900;
+}
+
+/*Sprite Positioning*/
+.arrow {
+  display: inline-block;
+  width: var(--scoreWidth);
+  height: var(--buttonHeight);
+  background: var(--scoreSprite) -180px 0;
+  margin: 5px;
+  image-rendering: pixelated;
+  background-size: var(--scoreSpriteSize);
+  opacity: 0;
+}
+
+.hand-total, .dealerScore{
+  width: var(--scoreWidth);
+  height: var(--buttonHeight);
+  background: var(--scoreSprite);
+  margin: 5px;
+  display: inline-block;
+  image-rendering: pixelated;
+  background-size: var(--scoreSpriteSize);
+}
+
+.card-back {
+  width: var(--cardWidth);
+  height: var(--cardHeight);
+  background: var(--cardsSprite) -1560px 0;
+  margin: 5px;
+  display: inline-block;
+  image-rendering: pixelated;
+  background-size: var(--cardsSpriteSize);
+}
+
+.playingCard {
+  width: var(--cardWidth);
+  height: var(--cardHeight);
+  background: var(--cardsSprite);
+  margin: 5px;
+  display: inline-block; 
+  image-rendering: pixelated;
+  background-size: var(--cardsSpriteSize);
+}
+
+.hidden {
+  display: none !important;
+}
+
+#jackaceHelp {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 65%;
+  height: 50%;
+  background-color: rgba(0, 0, 0, 0.85);
+  color: white;
+  overflow-y: auto;
+  padding: 3% 1% 1% 2%;
+  z-index: 1001;
+  display: none;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.75);
+  font-family: "Orbitron", Arial, Helvetica, sans-serif;
+  letter-spacing: 2px;
+  overflow: hidden;
+}
+
+#jackaceHelpContent {
+  max-height: 100%;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+#jackaceHelp h2 {
+  font-family: "256BYTES", "Orbitron", "Helvetica Neue", "Futura", "Trebuchet MS", Arial;
+  font-size: 6vh;
+  margin-bottom: 1vh;
+  color: lime;
+}
+
+#jackaceHelp h3 {
+  font-family:  "256BYTES", "Orbitron", "Helvetica Neue", "Futura", "Trebuchet MS", Arial;
+  font-size: 4vh;
+  margin-top: 4vh;
+  margin-bottom: 1.5vh;
+  color: lime;
+}
+
+#jackaceHelp li,
+#jackaceHelp p {
+  font-family: "Orbitron", "Helvetica Neue", "Futura", "Trebuchet MS", Arial;
+  font-size: 2.5vh;
+}
+
+#jackaceHelp li {
+  
+  list-style-type: disc;
+  margin-left: 1.5vh;
+  margin-bottom: 2vh;
+  padding-left: 0;
+}
+
+#jackaceHelpClose {
+  position: absolute;
+  top: 1vh;
+  right: 1vh;
+  cursor: pointer;
+  font-size: 3vh;
+  color: lime;
+  z-index: 1002;
+}
+
+#jackaceHelpClose:hover {
+  color: #dbffdb;
+  font-weight: bolder;
+  text-shadow: 0 0 5px rgba(0, 255, 0, 0.8), 0 0 10px rgba(0, 255, 0, 0.8), 0 0 15px rgba(0, 255, 0, 0.8), 0 0 20px rgba(0, 255, 0, 0.8);
+}
+
+/* Custom Scrollbar for Webkit Browsers */
+#jackaceHelpContent::-webkit-scrollbar {
+  width: 12px; /* Width of the scrollbar */
+}
+
+#jackaceHelpContent::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0); /* Track color */
+  border-radius: 10px; /* Rounded corners for the track */
+}
+
+#jackaceHelpContent::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 0, 0.7); /* Thumb color */
+  border-radius: 10px; /* Rounded corners for the thumb */
+  border: 3px solid rgba(0, 0, 0, 0.3); /* Border around the thumb */
+}
+
+#jackaceHelpContent::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 255, 0, 1); /* Thumb color on hover */
+}
+
+/* Custom Scrollbar for Firefox */
+#jackaceHelpContent {
+  scrollbar-width: thin; /* Firefox property to make the scrollbar thin */
+  scrollbar-color: rgba(0, 255, 0, 1) rgba(0, 0, 0, 0); /* Thumb and track color */
+}
+
+/* Custom Scrollbar for IE and Edge */
+#jackaceHelpContent {
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+
+#jackaceHelpContent::-ms-scrollbar {
+  width: 12px;
+}
+
+#jackaceHelpContent::-ms-scrollbar-track {
+  background: rgba(0, 0, 0, 0);
+  border-radius: 10px;
+}
+
+#jackaceHelpContent::-ms-scrollbar-thumb {
+  background: rgba(0, 255, 0, 0.7);
+  border-radius: 10px;
+}
+
+#jackaceHelpContent::-ms-scrollbar-thumb:hover {
+  background: rgba(0, 255, 0, 1);
+}

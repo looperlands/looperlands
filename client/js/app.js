@@ -366,7 +366,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                 if (scale === 2) {
                     $('#armor').css('background-image', 'url("' + armorPath + '")').css('object-fit', 'cover').css('background-position', '-4px -311px');
                 } else if (scale === 3) {
-                    $("#armor").css('background-image', 'url("' + armorPath + '")').css('background-position', '-4px -408px');
+                    $("#armor").css('background-image', 'url("' + armorPath + '")').css('background-position', '-8px -468px'); //was -4px -408px, but new edit uses the idle frame 1 instead of walk frame 1
                 }
             }
         },

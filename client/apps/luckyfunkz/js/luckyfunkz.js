@@ -129,12 +129,18 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
 
     // Add payouts to minigame menu if it doesn't exist
     function setupLuckyFUNKZmenu() {
-        if ($('#minigameMenu-content').find('#mgPayouts').length === 0) {
-            $('#minigameMenu-content').prepend('<a href="#" id="mgPayouts">🎰 Payouts</a>');
+        console.log("Running setupLuckyFUNKZmenu");
+        if ($('#minigameMenu-content').find('#mgPayouts.luckyfunkz').length === 0) {
+            $('#minigameMenu-content').prepend('<a href="#" id="mgPayouts" class="luckyfunkz">🎰 Payouts</a>');
+            console.log("Added #mgPayouts to #minigameMenu-content");
+        } else {
+            $('#minigameMenu-content').find('.luckyfunkz').show();
+            console.log("#mgPayouts already exists in #minigameMenu-content");
         }
     }
 
     function fadeInSetup() {
+        console.log("Running fadeInSetup");
         setupLuckyFUNKZmenu();
         for (let i = 0; i < REEL_COUNT; i++) {
             reel_position[i] = Math.floor(Math.random() * reel_positions) * SYMBOL_SIZE;
@@ -256,7 +262,7 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
     function setupEventListeners() {
         $(`#minigameMenu`).on('click', '#mgClose', () => registerClose());
         $(`#minigameMenu`).on('click', '#mgPayouts', () => getPayoutTable(true));
-        $(`#luckyfunkz`).on('fadeIn', () => fadeInSetup());
+        //$(document).on('fadeIn_luckyfunkz', () => { fadeInSetup(); });
         $(`#luckyfunkz`).on('click', '#autoSpinButton', () => { $("#autoSpinButton").toggleClass("on off"); });
         $(`#luckyfunkz`).on('click', '#lineButton', () => increaseLines());
         $(`#luckyfunkz`).on('click', '#betButton', () => increaseBet());
@@ -287,31 +293,33 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
     }
 
     function render_reel() {
-        ctx.clearRect(0, 0, can.width, can.height);
+        try {
+            ctx.clearRect(0, 0, can.width, can.height);
 
-        ctx.imageSmoothingEnabled = false;
-        ctx.fillStyle = "black";
-        ctx.fillRect(580, 280, 760, 510);
+            ctx.imageSmoothingEnabled = false;
+            ctx.fillStyle = "black";
+            ctx.fillRect(580, 280, 760, 510);
 
-        const aspectRatio = REELS_BGS[0].width / REELS_BGS[0].height;
-        const centerX = (can.width - REEL_AREA_WIDTH) / 2;
-        const centerY = 304;
+            const aspectRatio = REELS_BGS[0].width / REELS_BGS[0].height;
+            const centerX = (can.width - REEL_AREA_WIDTH) / 2;
+            const centerY = 304;
 
-        for (let i = 0; i < REEL_COUNT; i++) {
-            for (let j = 0; j < ROW_COUNT + 1; j++) {
-                const reel_index = (Math.floor(reel_position[i] / SYMBOL_SIZE) + j) % reel_positions;
-                const symbol_offset = reel_position[i] % SYMBOL_SIZE;
-                const symbol_index = reels[i][reel_index];
-                const x = centerX + i * SYMBOL_SIZE;
-                const y = centerY + j * SYMBOL_SIZE - symbol_offset;
-                draw_symbol(symbol_index, x, y, i);
+            for (let i = 0; i < REEL_COUNT; i++) {
+                for (let j = 0; j < ROW_COUNT + 1; j++) {
+                    const reel_index = (Math.floor(reel_position[i] / SYMBOL_SIZE) + j) % reel_positions;
+                    const symbol_offset = reel_position[i] % SYMBOL_SIZE;
+                    const symbol_index = reels[i][reel_index];
+                    const x = centerX + i * SYMBOL_SIZE;
+                    const y = centerY + j * SYMBOL_SIZE - symbol_offset;
+                    draw_symbol(symbol_index, x, y, i);
+                }
             }
-        }
 
-        ctx.drawImage(REELS_BGS[playing_lines - 1], 0, 0, aspectRatio * can.height, can.height);
-        ctx.drawImage(CREDIT_PANEL, can.width * 0.80, can.height * 0.05, CREDIT_PANEL.width, CREDIT_PANEL.height);
-        renderTextOnCanvas();
-        if (show_payout_text) showPayoutText();
+            ctx.drawImage(REELS_BGS[playing_lines - 1], 0, 0, aspectRatio * can.height, can.height);
+            ctx.drawImage(CREDIT_PANEL, can.width * 0.80, can.height * 0.05, CREDIT_PANEL.width, CREDIT_PANEL.height);
+            renderTextOnCanvas();
+            if (show_payout_text) showPayoutText();
+        } catch (error) { }
     }
 
     function draw_symbol(symbol_index, x, y, reel) {
