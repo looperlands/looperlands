@@ -259,6 +259,7 @@ async function makeRequest(action, additionalData = {}) {
                         case '[DOUBLE] Invalid action >> Cannot double.':
                         case '[INSURANCE] Invalid action >> Cannot buy insurance.':
                             console.log(`Invalid action: ${errorResponse.message}`);
+                            $("#uiWindow").removeClass('processing');
                             await animateText(errorResponse.message);
                             await resetGame();
                             break;
@@ -268,10 +269,13 @@ async function makeRequest(action, additionalData = {}) {
                             $("#uiWindow").removeClass('processing');
                             break;
                         case `Early Access Limited to bits x bit holders.`:
+                            $("#uiWindow").removeClass('processing');
+                            console.log(errorResponse.message);
                             await animateText(errorResponse.message);
                             $('#mgClose')[0].click();
                             break;
                         default:
+                            console.log(errorResponse.message);
                             alert(`${errorResponse.message}`);
                             $('#mgClose')[0].click();
                             break;
