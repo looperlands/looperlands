@@ -71,5 +71,5 @@ module.exports = Entity = cls.Class.extend({
                this.detachFromParent_callback(this.parentId, this);
             }
         }
-    },
+    }
 });
