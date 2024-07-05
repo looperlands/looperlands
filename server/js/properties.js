@@ -2070,6 +2070,19 @@ let Properties = {
             player.releaseItem(Types.Entities.M88NBRASSKNUCKLES);
         }
     },
+    m88nluckybag: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "caged",
+            duration: 10000
+        },
+        inventoryDescription: "Lucky Bag",
+        respawnDelay: 60000,
+        onConsume: function(player) {
+            player.releaseItem(Types.Entities.M88NKEVLARARMOR);
+        }
+    },
     m88nvipbag: {
         collectable: true,
         consumable: true,

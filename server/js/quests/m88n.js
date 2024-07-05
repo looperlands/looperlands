@@ -26,7 +26,7 @@ quests = [
         amount: 100,
         requiredQuest: "KINGFROGGY_QUEST_1",
         level: 4,
-        xp: 10000,
+        xp: 20000,
         medal: Types.Medals.SKULL
     },
     {
@@ -41,7 +41,7 @@ quests = [
         amount: 100,
         requiredQuest: "KINGFROGGY_QUEST_2",
         level: 6,
-        xp: 10000,
+        xp: 30000,
         medal: Types.Medals.SKULL
     },
     {
@@ -56,7 +56,7 @@ quests = [
         amount: 100,
         requiredQuest: "KINGFROGGY_QUEST_3",
         level: 8,
-        xp: 30000,
+        xp: 40000,
         medal: Types.Medals.SKULL
     },
     {
@@ -577,7 +577,8 @@ quests = [
         "Please look all over to help me find this! If you are able to find it I have a really special reward for you..."],
         endText: ["Yay! I feel complete again and now I can go to that dinner party!",
         "There is a secret door somewhere in The Nexus that I have unlocked for you!",
-        "Find it and there is a golden compass waiting beyond it. It will come in handy soon, trust me!"],
+        //"Find it and there is a golden compass waiting beyond it. It will come in handy soon, trust me!"],
+        "Find it and there is a golden ticket to the Champagne Lounge beyond it!"],
         eventType: "LOOT_ITEM",
         npc: Types.Entities.NEXAN4,
         target: Types.Entities.M88NGOLDTIARA,
