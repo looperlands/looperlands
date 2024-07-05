@@ -338,6 +338,7 @@ define(['item'], function(Item) {
         m88nvipbag:Item.extend({init:function(id){this._super(id,Types.Entities.M88NVIPBAG,"object");this.lootMessage="You found a mysterious bag!";}}),
         m88ngoldbag:Item.extend({init:function(id){this._super(id,Types.Entities.M88NGOLDBAG,"object");this.lootMessage="You found a mysterious bag!";}}),
         m88ngembag:Item.extend({init:function(id){this._super(id,Types.Entities.M88NGEMBAG,"object");this.lootMessage="You found a mysterious bag!";}}),
+        m88nluckybag:Item.extend({init:function(id){this._super(id,Types.Entities.M88NLUCKYBAG,"object");this.lootMessage="You found a mysterious bag!";}}),
         //MRMlabs Items
         firstaidkit:Item.extend({init:function(id){this._super(id,Types.Entities.FIRSTAIDKIT,"object");this.lootMessage="You found a first aid kit!";}}),
         bandaid:Item.extend({init:function(id){this._super(id,Types.Entities.BANDAID,"object");this.lootMessage="You found a bandaid!";}}),
