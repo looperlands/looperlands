@@ -62,6 +62,22 @@ exports.sendToDevChannel = (message) => {
     }
 }
 
+exports.sendToDebugChannel = (message) => {
+    const channels = ['1259006864981758043'];
+    try {
+        for (let channelId of channels) {
+            let channel = client.channels.cache.get(channelId);
+            try {
+                channel.send(`${GAMESERVER_NAME}: ${message}`);
+            } catch (e) {
+                //console.log(message, e);
+            }
+        }
+    } catch (e) {
+        //console.log(e);
+    }
+}
+
 try {
     if (process.env.NODE_ENV === "production") {
         client.login(process.env.DISCORD_TOKEN);
