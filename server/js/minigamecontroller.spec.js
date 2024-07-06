@@ -89,25 +89,32 @@ describe('MinigameController', () => {
     });
   });
 
-    describe('errorEncountered', () => {
-      it('should send error message to debug channel when DEBUG is true', () => {
-        const message = 'Test error message';
-        controller.errorEncountered(message);
-        expect(discord.sendToDebugChannel).toHaveBeenCalledWith(message);
-        expect(discord.sendToDevChannel).not.toHaveBeenCalled();
+  describe('errorEncountered', () => {
+    it('should send error message to debug channel when DEBUG is true', () => {
+      const message = 'Test error message';
+      controller.errorEncountered(message);
+      expect(discord.sendToDebugChannel).toHaveBeenCalledWith(message);
+      expect(discord.sendToDevChannel).not.toHaveBeenCalled();
+    });
+
+    it('should send error message to dev channel when DEBUG is false', () => {
+      // Mock the DEBUG variable to be false
+      jest.resetModules(); // Clear previous imports
+      jest.mock('./minigamecontroller', () => {
+        const originalModule = jest.requireActual('./minigamecontroller');
+        return {
+          ...originalModule,
+          __esModule: true,
+          DEBUG: false,
+        };
       });
 
-      it('should send error message to dev channel when DEBUG is false', () => {
-        const message = 'Test error message';
-        const originalDebug = global.DEBUG;
-        global.DEBUG = false;
-
-        controller.errorEncountered(message);
-
-        expect(discord.sendToDevChannel).toHaveBeenCalledWith(message);
-        expect(discord.sendToDebugChannel).not.toHaveBeenCalled();
-
-        global.DEBUG = originalDebug; // Restore original DEBUG value
-      });
+      const MinigameController = require('./minigamecontroller');
+      const newController = new MinigameController(cacheMock, platformClientMock);
+      const message = 'Test error message';
+      newController.errorEncountered(message);
+      expect(discord.sendToDevChannel).toHaveBeenCalledWith(message);
+      expect(discord.sendToDebugChannel).not.toHaveBeenCalled();
     });
   });
+});
