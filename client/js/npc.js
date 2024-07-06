@@ -506,7 +506,7 @@ define(['character'], function (Character) {
         "nexan29": [
             "Welcome to the Sun Chaser Champagne Lounge, special guest!",
             "Here we have a luxurious place to relax and portals to the private Helio Islands.",
-            "On the far left is a portal to a secret hidden island. You'll need a compass to navigate to that one..."
+            "On the far right is a portal to a secret hidden island. You'll need a compass to navigate to that one..."
         ],
 
         "thehookup": [
