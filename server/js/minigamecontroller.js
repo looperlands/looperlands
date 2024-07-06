@@ -1,3 +1,6 @@
+const discord = require("../js/discord");
+const DEBUG = true;
+
 class MinigameController {
     constructor(cache, platformClient) {
         this.cache = cache;
@@ -17,13 +20,17 @@ class MinigameController {
     }
 
     async registerMinigames() {
-        for (const config of this.minigamesConfig) {
-            const MinigameClass = config.module.endsWith('.mjs')
-                ? (await import(config.module)).default
-                : require(config.module);
+        try {
+            for (const config of this.minigamesConfig) {
+                const MinigameClass = config.module.endsWith('.mjs')
+                    ? (await import(config.module)).default
+                    : require(config.module);
 
-            const minigameInstance = new MinigameClass(this.cache, this.platformClient);
-            this.minigames[config.name] = minigameInstance;
+                const minigameInstance = new MinigameClass(this.cache, this.platformClient);
+                this.minigames[config.name] = minigameInstance;
+            }
+        } catch (error) {
+            errorEncountered(`[MINIGAMECONTROLLER] Error Registering Minigame: ${error}`);
         }
     }
 
@@ -38,9 +45,18 @@ class MinigameController {
             //console.log(`[${minigame}] processing action: ${action}`);
             this.minigames[minigame].handleAction(req, res, action);
         } catch (error) {
-            console.log('Error with Minigame: ', error);
+            errorEncountered(`[MINIGAMECONTROLLER] Error with Minigame: ${error}`);
             res.status(500).json({ message: "Internal server error" });
         }
+    }
+
+    errorEncountered(message) {
+        if (DEBUG) {
+            discord.sendToDebugChannel(message);
+        } else {
+            discord.sendToDevChannel(message);
+        }
+        console.log(message);
     }
 }
 

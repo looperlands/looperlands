@@ -790,7 +790,7 @@ async function showGameWindow(data = {}, callWindow = null) {
         $('#resources-minigame #resource-text').text(playerMoney);
     }
 
-    const loadWindow = callWindow ?? data?.gameWindow ?? 'bet';
+    let loadWindow = callWindow ?? data?.gameWindow ?? 'bet';
     const currentHandIndex = data?.currentHandIndex ?? 0;
 
     if (currentHandIndex > 0) {
@@ -967,7 +967,7 @@ async function flashCredits() {
     resourceText.addClass('flash-red');
 
     // Play sound
-    const audio = new Audio('./audio/nomonies.mp3');
+    const audio = new Audio('./apps/JackAce/audio/nomonies.mp3');
     audio.play();
 
     await new Promise(resolve => setTimeout(resolve, 500));
@@ -1364,48 +1364,38 @@ async function animateResult(results) {
                 animationTimeline.fromTo(resultImage,
                     { left: finalPosition.left + 600 },
                     {
-                        left: finalPosition.left - calculateSkewAdjustment(resultImageHeight, "-25deg"),
-                        duration: 0.25, ease: "linear"
+                        left: finalPosition.left - calculateSkewAdjustment(resultImageHeight, "-15deg"),
+                        duration: 0.3, ease: "linear"
                     },
                     0 // Start all animations at the same time
                 );
 
-                // Slow down exponentially for the last 0.2 seconds
+                // Slow down exponentially for the last bit
                 animationTimeline.to(resultImage,
                     {
                         left: finalPosition.left,
-                        duration: 0.5, ease: "power4.out"
+                        duration: 0.4, ease: "back.out(2)"
                     },
-                    0.25 // Continue the left position animation
+                    0.3 // Continue the left position animation
                 );
 
                 // Maintain skewX at -25deg during the initial deceleration phase
                 animationTimeline.to(resultImage,
-                    { skewX: "-25deg", duration: 0.3 },
+                    { skewX: "-15deg", duration: 0.3 },
                     0 // Start all animations at the same time
                 );
 
                 // Adjust skewX to create the braking effect
                 animationTimeline.to(resultImage,
                     {
-                        skewX: "10deg", duration: 0.25, ease: "back.out(2)",
+                        skewX: "0deg", duration: 0.4, ease: "back.out(2)",
                         onUpdate: function () {
                             const displacement = calculateSkewAdjustment(resultImageHeight, resultImage.skewX);
                             resultImage.css('left', `${finalPosition.left + displacement}px`);
                         }
                     },
-                    0.35 // Continue the skew animation
-                ).to(resultImage,
-                    {
-                        skewX: "0deg", duration: 0.15, ease: "power3.out",
-                        onUpdate: function () {
-                            const displacement = calculateSkewAdjustment(resultImageHeight, resultImage.skewX);
-                            resultImage.css('left', `${finalPosition.left + displacement}px`);
-                        }
-                    },
-                    0.6 // Continue the skew animation
+                    0.3 // Continue the skew animation
                 );
-
                 break;
             case 'jackace':
                 animationTimeline.fromTo(resultImage,
