@@ -1,5 +1,4 @@
 const discord = require("../js/discord");
-const DEBUG = true;
 
 class MinigameController {
     constructor(cache, platformClient) {
@@ -51,11 +50,7 @@ class MinigameController {
     }
 
     errorEncountered(message) {
-        if (DEBUG) {
-            discord.sendToDebugChannel(message);
-        } else {
-            discord.sendToDevChannel(message);
-        }
+        discord.sendToDevChannel(message);
         console.log(message);
     }
 }
