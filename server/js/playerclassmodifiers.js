@@ -123,39 +123,6 @@ class PlayerClassModifiers {
             delete this._temporaryModifiers[modifierName];
         }, duration);
     }
-
-    get emoji() {
-        switch(this.playerClass) {
-            case 'fighter':
-                return '🗡️';
-            case 'ranger':
-                return '🏹';
-            case 'tank':
-                return '🛡️';
-            case 'rogue':
-                return '🥷';
-            default:
-                return undefined;
-        }
-    }
-
-    // Method to return all modifiers in an object
-    async getAllModifiers() {
-        await this.loadModifierData();
-        return {
-            playerClass: this._playerClass,
-            meleeDamageDealt: this._meleeDamageDealt,
-            meleeDamageTaken: this._meleeDamageTaken,
-            moveSpeed: this._moveSpeed,
-            rangedDamageDealt: this._rangedDamageDealt,
-            hpRegen: this._hpRegen,
-            maxHp: this._maxHp,
-            hate: this._hate,
-            attackRate: this._attackRate,
-            stealth: this._stealth,
-            emoji: this.emoji
-        };
-    }
 }
 
 module.exports.PlayerClassModifiers = PlayerClassModifiers;
