@@ -1,7 +1,6 @@
 
 var cls = require("./lib/class"),
     _ = require("underscore"),
-    Messages = require("./message"),
     Properties = require("./properties"),
     Formulas = require("./formulas"),
     Types = require("../../shared/js/gametypes");
@@ -123,12 +122,6 @@ module.exports = Mob = Character.extend({
         this.dmgTakenArray = [];
         this.returnToSpawningPosition(1);
         this.clearSpecialInterval();
-    },
-    
-    drop: function(item) {
-        if(item) {
-            return new Messages.Drop(this, item);
-        }
     },
     
     handleRespawn: function() {

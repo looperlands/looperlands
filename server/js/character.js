@@ -115,5 +115,11 @@ module.exports = Character = Entity.extend({
 
     getStealth: function() {
         return 1;
-    }
+    },
+
+    drop: function(item) {
+        if(item) {
+            return new Messages.Drop(this, item);
+        }
+    },
 });
