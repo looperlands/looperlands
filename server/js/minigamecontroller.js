@@ -30,7 +30,7 @@ class MinigameController {
                 this.minigames[config.name] = minigameInstance;
             }
         } catch (error) {
-            errorEncountered(`[MINIGAMECONTROLLER] Error Registering Minigame: ${error}`);
+            this.errorEncountered(`[MINIGAMECONTROLLER] Error Registering Minigame: ${error}`);
         }
     }
 
@@ -45,7 +45,7 @@ class MinigameController {
             //console.log(`[${minigame}] processing action: ${action}`);
             this.minigames[minigame].handleAction(req, res, action);
         } catch (error) {
-            errorEncountered(`[MINIGAMECONTROLLER] Error with Minigame: ${error}`);
+            this.errorEncountered(`[MINIGAMECONTROLLER] Error with Minigame: ${error}`);
             res.status(500).json({ message: "Internal server error" });
         }
     }
