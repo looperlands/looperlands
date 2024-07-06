@@ -180,6 +180,9 @@ module.exports = World = cls.Class.extend({
             player.onReleaseItem(function (kind) {
                 const item = self.createItem(kind, player.x, player.y);
                 self.addItem(item);
+                if (item) {
+                    player.broadcast(player.drop(item), false);
+                }
             });
 
             if (self.added_callback) {
