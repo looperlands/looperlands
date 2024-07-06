@@ -1,3 +1,5 @@
+const isLIVE = true;
+
 // Global Variables
 let gameWindow = ""; // Current UI window shown
 let playerBet = 1;
@@ -120,6 +122,10 @@ async function init() {
         $('#playerHand').append('<div id="hand1" class="playerHands"><div class="arrow"></div><div class="hand-total" style="background-position: -360px 0px;"></div><div class="card-back"></div><div class="card-back"></div></div>');
         await setUpButtonEvents();
         await showGameWindow(null, 'splashScreen');
+        if(!isLIVE){
+            alert('JackAce is currently being worked on. Please try again.');
+            $('#mgClose')[0].click();
+        }
     } catch (error) {
         console.error('Error starting JackAce:', error);
     }
@@ -290,21 +296,23 @@ async function makeRequest(action, additionalData = {}) {
 }
 
 async function resetGame(hideUIWindow = false) {
-    const sessionId = new URLSearchParams(window.location.search).get('sessionId');
-    const minigameQuery = `/session/${sessionId}/minigame`;
+    if (isLIVE) {
+        const sessionId = new URLSearchParams(window.location.search).get('sessionId');
+        const minigameQuery = `/session/${sessionId}/minigame`;
 
-    try {
-        const response = await axios.post(minigameQuery, {
-            minigame: 'jackace',
-            player: playerId,
-            action: 'RESET'
-        });
-        console.log('[GAME RESET]');
-    } catch (error) {
-        console.error('Error resetting the game:', error);
-        alert('An error occurred while resetting the game. Please try again.');
+        try {
+            const response = await axios.post(minigameQuery, {
+                minigame: 'jackace',
+                player: playerId,
+                action: 'RESET'
+            });
+            console.log('[GAME RESET]');
+        } catch (error) {
+            console.error('Error resetting the game:', error);
+            alert('An error occurred while resetting the game. Please try again.');
+        }
+        await showGameWindow(null, 'bet');
     }
-    await showGameWindow(null, 'bet');
     $('#resources-minigame').addClass('hidden');
     $("#uiWindow").removeClass('processing');
 
@@ -317,8 +325,7 @@ async function resetGame(hideUIWindow = false) {
 
 
 async function handleDeal() {
-    if (!$("#uiWindow").hasClass('processing')) {
-
+    if (!$("#uiWindow").hasClass('processing') && isLIVE) {
         if (playerBet > 0 && playerMoney >= BET_AMOUNTS[playerBet]) {
             $("#uiWindow").addClass('processing');
             const data = await makeRequest('DEAL', { playerBet: BET_AMOUNTS[playerBet] });
@@ -340,7 +347,7 @@ async function handleDeal() {
 }
 
 async function handleHit() {
-    if (!$("#uiWindow").hasClass('processing')) {
+    if (!$("#uiWindow").hasClass('processing') && isLIVE) {
         $("#uiWindow").addClass('processing');
         const data = await makeRequest('HIT');
         await animateCard(data);
@@ -349,7 +356,7 @@ async function handleHit() {
 }
 
 async function handleStand() {
-    if (!$("#uiWindow").hasClass('processing')) {
+    if (!$("#uiWindow").hasClass('processing') && isLIVE) {
         $("#uiWindow").addClass('processing');
         const data = await makeRequest('STAND');
         if (data.dealerHand.total !== 'hidden') {
@@ -363,7 +370,7 @@ async function handleStand() {
 }
 
 async function handleSplit() {
-    if (!$("#uiWindow").hasClass('processing')) {
+    if (!$("#uiWindow").hasClass('processing') && isLIVE) {
         if (playerBet > 0 && playerMoney >= BET_AMOUNTS[playerBet]) {
             $("#uiWindow").addClass('processing');
             const data = await makeRequest('SPLIT');
@@ -377,7 +384,7 @@ async function handleSplit() {
 }
 
 async function handleInsurance(boughtInsurance) {
-    if (!$("#uiWindow").hasClass('processing')) {
+    if (!$("#uiWindow").hasClass('processing') && isLIVE) {
         if (playerBet > 0 && playerMoney >= parseInt(BET_AMOUNTS[playerBet] / 2)) {
             $("#uiWindow").addClass('processing');
             const data = await makeRequest('INSURANCE', { boughtInsurance: boughtInsurance });
@@ -399,7 +406,7 @@ async function handleInsurance(boughtInsurance) {
 }
 
 async function handleDouble() {
-    if (!$("#uiWindow").hasClass('processing')) {
+    if (!$("#uiWindow").hasClass('processing') && isLIVE) {
         if (playerMoney >= BET_AMOUNTS[playerBet]) {
             $("#uiWindow").addClass('processing');
             $('#double').addClass('inactive');

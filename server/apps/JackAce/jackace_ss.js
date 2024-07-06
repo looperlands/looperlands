@@ -1,5 +1,4 @@
 const discord = require("../../js/discord");
-const axios = require('axios');
 const dao = require('../../js/dao');
 
 const DEBUG = true;
@@ -9,11 +8,8 @@ class JackAce {
         this.cache = cache;
         this.platformClient = platformClient;
         this.playerGameStates = {};
-        this.playerId = null;
-        this.sessionId = null;
 
         this.GOLD = "21300041";
-        this.currency = this.GOLD;
         this.CORNHOLE = '0xc00631db8eba1ab88589a599b67df7727ae39348f961c62c11dcd7992f62a2ad';
         this.DECK_COUNT = 6;
         this.BET_AMOUNTS = [1, 2, 5, 10, 25, 50, 100];
@@ -36,35 +32,28 @@ class JackAce {
 
     // Handle various requested actions
     async handleAction(req, res, action) {
-        this.log(`[HANDLE ACTION] Start - Action: ${action}`);
-        const sessionId = req.params.sessionId;
-        this.log(`[HANDLE ACTION] Session ID: ${sessionId}`);
 
-        if (!this.sessionId || this.sessionId !== sessionId) {
-            this.sessionId = sessionId;
-        }
-
-        const validationError = await this.validateAction(req, action);
+        const [player, validationError] = await this.validateAction(req, action);
 
         if (validationError) {
-            this.errorEncountered(`[JACKACE VALIDATION ERROR]: ${validationError}`);
+            this.errorEncountered(`JACKACE ERROR`, `handleAction`, `validateAction returned an error`, `${JSON.stringify(validationError)}`, player);
             return res.status(validationError.status).json({ message: validationError.message });
         }
 
-        const playerState = this.playerGameStates[this.playerId];
+        const playerState = this.playerGameStates[player];
         playerState.lastActionTime = new Date();
         playerState.processPriorHand = false;
-        this.log(`[HANDLE ACTION] Player State: ${this.logPlayerState(playerState)}`);
+        this.log(`[HANDLE ACTION] Player State: ${this.logPlayerState(playerState)}`, player);
 
         try {
             switch (action) {
                 case 'DEAL':
-                    this.log(`[HANDLE ACTION] Dealing cards`);
+                    this.log(`[HANDLE ACTION] Dealing cards`, player);
                     playerState.playerBet = this.getValidBetAmount(req.body.playerBet);
                     if (playerState.playerMoney === 0) {
-                        const paid = await dao.updateResourceBalance(playerState.player, this.currency, 147);
+                        const paid = await dao.updateResourceBalance(playerState.player, playerState.currency, 147);
                         if (!paid) {
-                            this.errorEncountered(`[JACKACE DEAL DAO ERROR] PAYMENT NOT PROCESSED: 147 to ${playerState.playerId}`);
+                            this.errorEncountered(`JACKACE ERROR`, `handleAction: DEAL`, `dao.updateResourceBalance returned false`, `PAYMENT NOT PROCESSED: 147 to ${playerState.player}`, player);
                         }
                     } else if (playerState.playerMoney >= playerState.playerBet && await this.payToCORNHOLE(playerState)) {
                         await this.deal(playerState);
@@ -74,7 +63,7 @@ class JackAce {
                     }
                     break;
                 case 'HIT':
-                    this.log(`[HANDLE ACTION] Hit`);
+                    this.log(`[HANDLE ACTION] Hit`, player);
                     if (playerState.playerHands[playerState.currentHandIndex].canHit) {
                         await this.hit(playerState);
                         res.json(this.sanitizePlayerState(playerState));
@@ -83,12 +72,12 @@ class JackAce {
                     }
                     break;
                 case 'STAND':
-                    this.log(`[HANDLE ACTION] Stand`);
+                    this.log(`[HANDLE ACTION] Stand`, player);
                     await this.stand(playerState);
                     res.json(this.sanitizePlayerState(playerState));
                     break;
                 case 'SPLIT':
-                    this.log(`[HANDLE ACTION] Split`);
+                    this.log(`[HANDLE ACTION] Split`, player);
                     if (playerState.playerMoney >= playerState.playerBet && playerState.playerHands[playerState.currentHandIndex].canSplit) {
                         await this.split(playerState);
                         res.json(this.sanitizePlayerState(playerState));
@@ -97,7 +86,7 @@ class JackAce {
                     }
                     break;
                 case 'DOUBLE':
-                    this.log(`[HANDLE ACTION] Double`);
+                    this.log(`[HANDLE ACTION] Double`, player);
                     if (playerState.playerMoney >= playerState.playerBet && playerState.canDouble) {
                         await this.double(playerState);
                         res.json(this.sanitizePlayerState(playerState));
@@ -106,7 +95,7 @@ class JackAce {
                     }
                     break;
                 case 'INSURANCE':
-                    this.log(`[HANDLE ACTION] Insurance`);
+                    this.log(`[HANDLE ACTION] Insurance`, player);
                     if (playerState.playerMoney >= Math.round(playerState.playerBet / 2 && playerState.eligibleForInsurance)) {
                         await this.insurance(playerState, req.body.boughtInsurance);
                         res.json(this.sanitizePlayerState(playerState));
@@ -115,35 +104,32 @@ class JackAce {
                     }
                     break;
                 case 'REWARD':
-                    this.log(`[HANDLE ACTION] Reward`);
+                    this.log(`[HANDLE ACTION] Reward`, player);
                     await this.evaluateWinner(playerState);
                     res.json(this.sanitizePlayerState(playerState));
                     break;
                 case 'RESET':
-                    this.log(`[HANDLE ACTION] Reset`);
+                    this.log(`[HANDLE ACTION] Reset`, player);
                     this.resetHand(playerState);
                     playerState.inProgress = false;
                     playerState.gameWindow = 'bet';
                     res.json(this.sanitizePlayerState(playerState));
                     break;
                 default:
-                    this.log(`[HANDLE ACTION] Invalid action: ${action}`);
+                    this.log(`[HANDLE ACTION] Invalid action: ${action}`, player);
                     return res.status(400).json({ error: "Invalid action" });
             }
         } catch (error) {
-            this.errorEncountered(`[JACKACE] Error handling action ${action}: ${error}`);
+            this.errorEncountered(`JACKACE ERROR`, `handleAction`, `Error handling action ${action}`, `${error}`, player);
             playerState.gameMessage = error;
             res.status(500).json(this.sanitizePlayerState(playerState));
         }
-        this.log(`[HANDLE ACTION] End - Action: ${action}`);
+        this.log(`[HANDLE ACTION] End - Action: ${action}`, player);
     }
 
     // Function to deal for a player
     async deal(playerState) {
-        this.log(`//////////`);
-        this.log(` NEW HAND `);
-        this.log(`//////////`);
-        this.log(`[DEAL] Start - Player State: ${this.logPlayerState(playerState)}`);
+        this.log(`[DEAL] Start - Player State: ${this.logPlayerState(playerState)}`, playerState.player);
         // Reset player's hands to the initial state
         this.resetHand(playerState);
 
@@ -155,21 +141,20 @@ class JackAce {
 
         try {
             // Draw 4 cards (2 for the player, 2 for the dealer)
-            //const { data } = await axios.get(`http://deckofcardsapi.com/api/deck/${playerState.deckId}/draw/?count=4`);
             const cards = playerState.deck.splice(0, 4);
             playerState.cardsLeft = playerState.deck.length;
             const [playerCard1, dealerCard1, playerCard2, dealerCard2] = cards;
 
-            this.log(`[DEAL] Drawn Cards: ${JSON.stringify(cards)}`);
+            this.log(`[DEAL] Drawn Cards: ${JSON.stringify(cards)}`, playerState.player);
 
             // Update hands with drawn cards
             playerState.playerHands[playerState.currentHandIndex].hand.push(playerCard1, playerCard2);
-            this.updateHandWithCard(playerState.playerHands[playerState.currentHandIndex], playerCard1);
-            this.updateHandWithCard(playerState.playerHands[playerState.currentHandIndex], playerCard2);
+            this.updateHandWithCard(playerState.playerHands[playerState.currentHandIndex], playerCard1, playerState.player);
+            this.updateHandWithCard(playerState.playerHands[playerState.currentHandIndex], playerCard2, playerState.player);
 
             playerState.dealerHand.hand.push(dealerCard1, dealerCard2);
-            this.updateHandWithCard(playerState.dealerHand, dealerCard1);
-            this.updateHandWithCard(playerState.dealerHand, dealerCard2);
+            this.updateHandWithCard(playerState.dealerHand, dealerCard1, playerState.player);
+            this.updateHandWithCard(playerState.dealerHand, dealerCard2, playerState.player);
 
 
 
@@ -181,7 +166,7 @@ class JackAce {
 
             // Check for conditions when player does not have 21)
             if (playerState.playerHands[playerState.currentHandIndex].total !== 21) {
-                playerState.canDouble = this.canDouble([playerCard1, playerCard2]);
+                playerState.canDouble = this.canDouble([playerCard1, playerCard2], playerState.player);
 
                 // Check for insurance condition
                 if (dealerCard2.charAt(0) === "A" && playerState.playerHands[playerState.currentHandIndex].total !== 21) {
@@ -198,28 +183,28 @@ class JackAce {
         } catch (error) {
             playerState.inProgress = false;
             playerState.gameWindow = 'bet';
-            this.errorEncountered(`[JACKACE] Error drawing cards: ${error}`);
+            this.errorEncountered(`JACKACE ERROR`, `deal`, `Error processing deal`, `${error}`, playerState.player);
             throw new Error("[SERVER ERROR] Internal server error while processing deal");
         }
-        this.log(`[DEAL] End - Player State: ${this.logPlayerState(playerState)}`);
+        this.log(`[DEAL] End - Player State: ${this.logPlayerState(playerState)}`, playerState.player);
     }
 
     async hit(playerState) {
-        this.log(`[HIT] Start - Player State: ${this.logPlayerState(playerState)}`);
+        this.log(`[HIT] Start - Player State: ${this.logPlayerState(playerState)}`, playerState.player);
         try {
             await this.drawCard(playerState);
             await this.checkHand(playerState);
         } catch (error) {
             playerState.inProgress = false;
             playerState.gameWindow = 'bet';
-            this.errorEncountered(`[JACKACE] Error hitting: ${error}`);
+            this.errorEncountered(`JACKACE ERROR`, `hit`, `Error hitting`, `${error}`, playerState.player);
             throw new Error("[SERVER ERROR] Internal server error while processing hit");
         }
-        this.log(`[HIT] End - Player State: ${this.logPlayerState(playerState)}`);
+        this.log(`[HIT] End - Player State: ${this.logPlayerState(playerState)}`, playerState.player);
     }
 
     async stand(playerState) {
-        this.log(`[STAND] Start - Player State: ${this.logPlayerState(playerState)}`);
+        this.log(`[STAND] Start - Player State: ${this.logPlayerState(playerState)}`, playerState.player);
         try {
             if (playerState.currentHandIndex === playerState.playerHands.length - 1) {
                 await this.evaluateWinner(playerState);
@@ -232,14 +217,14 @@ class JackAce {
         } catch (error) {
             playerState.inProgress = false;
             playerState.gameWindow = 'bet';
-            this.errorEncountered(`[JACKACE] Error standing: ${error}`);
+            this.errorEncountered(`JACKACE ERROR`, `stand`, `Error standing`, `${error}`, playerState.player);
             throw new Error("[SERVER ERROR] Internal server error while processing stand");
         }
-        this.log(`[STAND] End - Player State: ${this.logPlayerState(playerState)}`);
+        this.log(`[STAND] End - Player State: ${this.logPlayerState(playerState)}`, playerState.player);
     }
 
     async split(playerState) {
-        this.log(`[SPLIT] Start - Player State: ${this.logPlayerState(playerState)}`);
+        this.log(`[SPLIT] Start - Player State: ${this.logPlayerState(playerState)}`, playerState.player);
         if (playerState.playerMoney >= playerState.playerBet && await this.payToCORNHOLE(playerState)) {
             const card = playerState.playerHands[playerState.currentHandIndex].hand.pop();
             const newTotal = card.charAt(0) === "A" ? 11 : playerState.playerHands[playerState.currentHandIndex].total / 2;
@@ -276,11 +261,11 @@ class JackAce {
             // Player cannot afford split
             playerState.playerHands[playerState.currentHandIndex].canSplit = false;
         }
-        this.log(`[SPLIT] End - Player State: ${this.logPlayerState(playerState)}`);
+        this.log(`[SPLIT] End - Player State: ${this.logPlayerState(playerState)}`, playerState.player);
     }
 
     async double(playerState) {
-        this.log(`[DOUBLE] Start - Player State: ${this.logPlayerState(playerState)}`);
+        this.log(`[DOUBLE] Start - Player State: ${this.logPlayerState(playerState)}`, playerState.player);
         if (playerState.playerMoney >= playerState.playerBet && await this.payToCORNHOLE(playerState)) {
             const doubledBet = playerState.playerHands[playerState.currentHandIndex].bet * 2;
             playerState.playerHands[playerState.currentHandIndex].bet = doubledBet; //set bet for hand to 2*initial 
@@ -296,11 +281,11 @@ class JackAce {
             playerState.playerHands[playerState.currentHandIndex].canDouble = false;
 
         }
-        this.log(`[DOUBLE] End - Player State: ${this.logPlayerState(playerState)}`);
+        this.log(`[DOUBLE] End - Player State: ${this.logPlayerState(playerState)}`, playerState.player);
     }
 
     async insurance(playerState, boughtInsurance) {
-        this.log(`[INSURANCE] Start - Player State: ${this.logPlayerState(playerState)}`);
+        this.log(`[INSURANCE] Start - Player State: ${this.logPlayerState(playerState)}`, playerState.player);
         if (boughtInsurance) {
             const insuranceBet = Math.round(playerState.playerBet / 2);
             if (playerState.playerMoney >= insuranceBet && playerState.dealerHand.hand[1].charAt(0) === "A") {
@@ -332,7 +317,7 @@ class JackAce {
                 await this.checkHand(playerState);
             }
         }
-        this.log(`[INSURANCE] End - Player State: ${this.logPlayerState(playerState)}`);
+        this.log(`[INSURANCE] End - Player State: ${this.logPlayerState(playerState)}`, playerState.player);
     }
 
     //////////////////////
@@ -340,7 +325,7 @@ class JackAce {
     //////////////////////
 
     // Initialize a player's game state
-    async initializePlayerState(req) {
+    async initializePlayerState(player, sessionId, walletId, req) {
         let playerBet = req.body.playerBet;
 
         if (!playerBet) {
@@ -350,9 +335,9 @@ class JackAce {
 
         try {
             const deck = this.initializeDeck(this.DECK_COUNT);
-            return await this.createPlayerState(playerBet, deck);
+            return await this.createPlayerState(player, sessionId, walletId, playerBet, deck);
         } catch (error) {
-            this.errorEncountered(`[JACKACE] Error initializing deck: ${error}`);
+            this.errorEncountered(`JACKACE ERROR`, `initializePlayerState`, `Error initializing deck and creating playerState`, `${error}`, player);
             throw error;
         }
     }
@@ -372,21 +357,14 @@ class JackAce {
         return deck;
     }
 
-    /*     async getNewDeckId() {
-            try {
-                const response = await axios.get(`http://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=${this.DECK_COUNT}`);
-                return response.data.deck_id;
-            } catch (error) {
-                this.errorEncountered(`[JACKACE] Error fetching new deck ID: ${error}`);
-                throw error;
-            }
-        } */
-
-    async createPlayerState(playerBet, deck) {
+    async createPlayerState(player, sessionId, walletId, playerBet, deck) {
         const validBetAmount = this.getValidBetAmount(playerBet);
-        const playerMoney = await dao.getResourceBalance(this.playerId, this.currency);
+        const playerMoney = await dao.getResourceBalance(player, this.GOLD);
         return {
-            player: this.playerId,
+            player: player,
+            sessionId: sessionId,
+            walletId: walletId,
+            currency: this.GOLD,
             playerMoney: playerMoney,
             deck: deck,
             cardsLeft: deck.length,
@@ -450,11 +428,11 @@ class JackAce {
     }
 
     async checkHand(playerState, handToCheck = playerState.currentHandIndex, setGameWindow = true) {
-        this.log(`[CHECK HAND] (Index to check: ${handToCheck}) Start - ${this.logPlayerState(playerState)}`);
+        this.log(`[CHECK HAND] (Index to check: ${handToCheck}) Start - ${this.logPlayerState(playerState)}`, playerState.player);
         const hand = playerState.playerHands[handToCheck];
 
         if (playerState.canDouble) {
-            playerState.canDouble = playerState.playerHands.length > 1 ? false : this.canDouble(hand.hand);
+            playerState.canDouble = playerState.playerHands.length > 1 ? false : this.canDouble(hand.hand, playerState.player);
         }
 
         if (hand.hand.length === 2 && hand.hand[0].charAt(0) === hand.hand[1].charAt(0) && playerState.playerHands.length < 4) {
@@ -470,10 +448,10 @@ class JackAce {
         if (hand.total >= 21) {
             hand.canHit = false;
             if (playerState.currentHandIndex === playerState.playerHands.length - 1) {
-                this.log(`[CHECK HAND] >= 21, evaluatingWinner`);
+                this.log(`[CHECK HAND] >= 21, evaluatingWinner`, playerState.player);
                 await this.evaluateWinner(playerState);
             } else {
-                this.log(`[CHECK HAND] >= 21, advance to next hand (split hands)`);
+                this.log(`[CHECK HAND] >= 21, advance to next hand (split hands)`, playerState.player);
                 playerState.processPriorHand = true;
                 await this.stand(playerState);
             }
@@ -481,7 +459,7 @@ class JackAce {
     }
 
     async playDealerTurn(playerState) {
-        this.log(`[playDealerTurn] Start - ${this.logPlayerState(playerState)}`);
+        this.log(`[playDealerTurn] Start - ${this.logPlayerState(playerState)}`, playerState.player);
         const allHandsBust = playerState.playerHands.every(hand => hand.total > 21);
 
         if (allHandsBust) { return; }
@@ -496,13 +474,13 @@ class JackAce {
             await this.drawCard(playerState, null, true);
         }
         dealerHand.hasPlayed = true;
-        this.log(`[playDealerTurn] End - ${this.logPlayerState(playerState)}`);
+        this.log(`[playDealerTurn] End - ${this.logPlayerState(playerState)}`, playerState.player);
     }
 
     async evaluateWinner(playerState) {
-        this.log(`[EVALUATE WINNER] Start - ${this.logPlayerState(playerState)}`);
+        this.log(`[EVALUATE WINNER] Start - ${this.logPlayerState(playerState)}`, playerState.player);
         if (!playerState.dealerHand.hasPlayed && !(playerState.playerHands.length === 1 && playerState.playerHands[0].hand.length === 2 && playerState.playerHands[0].total === 21)) {
-            this.log(`[EVALUATE WINNER] playDealerTurn`);
+            this.log(`[EVALUATE WINNER] playDealerTurn`, playerState.player);
             await this.playDealerTurn(playerState);
         }
 
@@ -538,10 +516,8 @@ class JackAce {
             playerState.reward = totalReward;
             playerState.rewardPaid = await this.payToPlayer(playerState);
             if (!playerState.rewardPaid) {
-
-
                 playerState.gameMessage = `[ERROR] ${totalReward} REWARD COULD NOT BE AWARDED`;
-                this.errorEncountered(`[JACKACE PAYMENT ERROR] player ${this.playerId} should have been rewarded ${totalReward}`);
+                this.errorEncountered(`JACKACE ERROR`, `evaluateWinner`, `REWARD COULD NOT BE AWARDED`, `Player ${playerState.player} should have been rewarded ${totalReward}`, playerState.player);
             }
         }
         playerState.inProgress = false;
@@ -550,59 +526,69 @@ class JackAce {
 
     // Transfer gold from CORNHOLE to Player
     async payToPlayer(playerState) {
-        if (playerState.reward > 0 && this.isValidAmount(playerState, playerState.reward, 'payout')) {
-            this.log(`[JACKACE PAYOUT] ${playerState.reward} TO ${playerState.player}`)
-            await this.updateSessionData(playerState, playerState.reward);
-            return await dao.transferResourceFromTo(this.CORNHOLE, playerState.player, playerState.reward, this.currency);
-        } else {
-            this.errorEncountered(`[JACKACE PAYOUT ERROR] payToPlayer initiated when playerState.reward = ${playerState.reward}`)
+        try {
+            if (playerState.reward > 0 && this.isValidAmount(playerState, playerState.reward, 'payout')) {
+                this.log(`[JACKACE PAYOUT] ${playerState.reward} TO ${playerState.player}`, playerState.player)
+                await this.updateSessionData(playerState, playerState.reward);
+                return await dao.transferResourceFromTo(this.CORNHOLE, playerState.player, playerState.reward, playerState.currency);
+            } else {
+                this.errorEncountered(`JACKACE ERROR`, `payToPlayer`, `Function triggered when it shouldn't have`, `payToPlayer initiated when playerState.reward = ${playerState.reward}`, playerState.player)
+            }
+        } catch (error) {
+            this.errorEncountered(`JACKACE ERROR`, `payToPlayer`, `Unexpected Error`, `${error}`, playerState.player);
+            return false;
         }
     }
 
     // Transfer gold from Player to CORNHOLE
     async payToCORNHOLE(playerState, amount = playerState.playerBet) {  // default to playerBet, but allow override for insurance bet
-        if (amount > 0 && this.isValidAmount(playerState, amount, 'payment')) {
-            this.log(`[JACKACE PAYMENT] ${amount} TO CORNHOLE`)
-            await this.updateSessionData(playerState, -amount);
-            return await dao.transferResourceFromTo(playerState.player, this.CORNHOLE, amount, this.currency);
-        } else {
-            this.errorEncountered(`[JACKACE PAYMENT ERROR] payToCORNHOLE initiated when amount = ${amount}`);
+        try {
+            if (amount > 0 && this.isValidAmount(playerState, amount, 'payment')) {
+                this.log(`[JACKACE PAYMENT] ${amount} TO CORNHOLE`, playerState.player)
+                await this.updateSessionData(playerState, -amount);
+                return await dao.transferResourceFromTo(playerState.player, this.CORNHOLE, amount, playerState.currency);
+            } else {
+                this.errorEncountered(`JACKACE ERROR`, `payToCORNHOLE`, `Function triggered when it shouldn't have`, `payToCORNHOLE initiated when amount = ${amount}`, playerState.player);
+            }
+        } catch (error) {
+            this.errorEncountered(`JACKACE ERROR`, `payToCORNHOLE`, `Unexpected Error`, `${error}`, playerState.player);
+            return false;
         }
     }
 
     async updateSessionData(playerState, amount) {
-        let sessionData = this.cache.get(this.sessionId);
-        this.log(`[updateSessionData] adjust amount: ${amount} & balance before: ${sessionData.gameData.items[this.currency]}`);
+        let sessionData = this.cache.get(playerState.sessionId);
+        this.log(`[updateSessionData] adjust amount: ${amount} & balance before: ${sessionData.gameData.items[playerState.currency]}`, playerState.player);
         let gameData = sessionData.gameData;
 
         // Check DAO and Session prior to adding change
-        const playerDAO = await dao.getResourceBalance(this.playerId, this.currency);
-        if (parseInt(playerDAO) !== parseInt(gameData.items[this.currency])) {
-            this.errorEncountered(`[JACKACE: DAO/SESSIONDATA DISCREPENCY] DAO ${playerDAO}, SESSIONDATA ${gameData.items[this.currency]}`);
-            gameData.items[this.currency] = Math.min(parseInt(playerDAO), parseInt(gameData.items[this.currency]));
-            this.errorEncountered(`[JACKACE: updateSessionData] sessionData set to: ${gameData.items[this.currency]}`);
+        const playerDAO = await dao.getResourceBalance(playerState.player, playerState.currency);
+        if (parseInt(playerDAO) !== parseInt(gameData.items[playerState.currency])) {
+            this.errorEncountered(`JACKACE ERROR`, `updateSessionData`, `DAO/SESSIONDATA DISCREPENCY`, `DAO ${playerDAO}, SESSIONDATA ${gameData.items[playerState.currency]}`, playerState.player);
+            gameData.items[playerState.currency] = parseInt(playerDAO); // use DAO as default
+            this.errorEncountered(`JACKACE ERROR`, `updateSessionData`, `DAO/SESSIONDATA DISCREPENCY`, `sessionData set to: ${gameData.items[playerState.currency]}`, playerState.player);
         } else {
-            gameData.items[this.currency] = parseInt(playerDAO);
+            gameData.items[playerState.currency] = parseInt(playerDAO);
         }
 
         if (gameData.items === undefined) { gameData.items = {}; }
 
-        if (gameData.items[this.currency]) {
-            gameData.items[this.currency] = Math.max(0, parseInt(gameData.items[this.currency]) + parseInt(amount));
+        if (gameData.items[playerState.currency]) {
+            gameData.items[playerState.currency] = Math.max(0, parseInt(gameData.items[playerState.currency]) + parseInt(amount));
         } else {
-            gameData.items[this.currency] = Math.max(0, parseInt(amount));
+            gameData.items[playerState.currency] = Math.max(0, parseInt(amount));
         }
 
-        playerState.playerMoney = gameData.items[this.currency];
+        playerState.playerMoney = gameData.items[playerState.currency];
 
         sessionData.gameData = gameData;
-        this.cache.set(this.sessionId, sessionData);
-        this.log(`[updateSessionData] balance after: ${sessionData.gameData.items[this.currency]}`);
+        this.cache.set(playerState.sessionId, sessionData);
+        this.log(`[updateSessionData] balance after: ${sessionData.gameData.items[playerState.currency]}`, playerState.player);
     }
 
     // Need to initially hide values in the dealers hand to prevent cheating
     sanitizePlayerState(playerState) {
-        this.log(`[sanitizePlayerState] START: ${this.logPlayerState(playerState)}`);
+        this.log(`[sanitizePlayerState] START: ${this.logPlayerState(playerState)}`, playerState.player);
 
         const { deck, ...rest } = playerState; // exclude the deck from the data sent back
         const sanitizedState = {
@@ -619,36 +605,35 @@ class JackAce {
                 aceIs11: "hidden"
             };
         }
-        this.log(`[sanitizePlayerState] END: allPlayerHandsDone? ${allPlayerHandsDone} dealerPlayed? ${playerState.dealerHand.hasPlayed} ==> ${JSON.stringify(sanitizedState.dealerHand)}`);
+        this.log(`[sanitizePlayerState] END: allPlayerHandsDone? ${allPlayerHandsDone} dealerPlayed? ${playerState.dealerHand.hasPlayed} ==> ${JSON.stringify(sanitizedState.dealerHand)}`, playerState.player);
         return sanitizedState;
     }
 
     async drawCard(playerState, handIndex = playerState.currentHandIndex, isDealer = false) {
-        this.log(`[DRAW CARD] Start - Player State: ${this.logPlayerState(playerState)}, handIndex: ${handIndex}, isDealer: ${isDealer}`);
+        this.log(`[DRAW CARD] Start - Player State: ${this.logPlayerState(playerState)}, handIndex: ${handIndex}, isDealer: ${isDealer}`, playerState.player);
         try {
-            //const { data } = await axios.get(`http://deckofcardsapi.com/api/deck/${playerState.deckId}/draw/?count=1`);
             const card = playerState.deck.shift();
             if (!isDealer) {
                 playerState.playerHands[handIndex].hand.push(card);
-                this.updateHandWithCard(playerState.playerHands[handIndex], card);
+                this.updateHandWithCard(playerState.playerHands[handIndex], card, playerState.player);
             } else {
                 playerState.dealerHand.hand.push(card);
-                this.updateHandWithCard(playerState.dealerHand, card);
+                this.updateHandWithCard(playerState.dealerHand, card, playerState.player);
             }
 
             playerState.cardsLeft = playerState.deck.length;
-            this.log(`[DRAW CARD] End - Player State: ${this.logPlayerState(playerState)}`);
+            this.log(`[DRAW CARD] End - Player State: ${this.logPlayerState(playerState)}`, playerState.player);
         } catch (error) {
             playerState.inProgress = false;
             playerState.gameWindow = 'bet';
             playerState.gameMessage = "Error drawing card.";
-            this.log(`[DRAW CARD ERROR] Player State: ${this.logPlayerState(playerState)}`);
-            this.errorEncountered(`[JACKACE ERROR] Error drawing card: ${error}`);
+            this.log(`[DRAW CARD ERROR] Player State: ${this.logPlayerState(playerState)}`, playerState.player);
+            this.errorEncountered(`JACKACE ERROR`, `drawCard`, `Error drawing card`, `${error}`, playerState.player);
         }
     }
 
-    updateHandWithCard(hand, card) {
-        this.log(`[UPDATE HAND] Start - Hand: ${JSON.stringify(hand)}, Card: ${card}`);
+    updateHandWithCard(hand, card, player) {
+        this.log(`[UPDATE HAND] Start - Hand: ${JSON.stringify(hand)}, Card: ${card}`, player);
         const value = card.charAt(0);
         if (['K', 'Q', 'J', '0'].includes(value)) {
             hand.total += 10;
@@ -662,7 +647,7 @@ class JackAce {
             hand.total -= 10;
             hand.aceIs11 -= 1;
         }
-        this.log(`[UPDATE HAND] End --- Hand: ${JSON.stringify(hand)}`);
+        this.log(`[UPDATE HAND] End --- Hand: ${JSON.stringify(hand)}`, player);
     }
 
     shuffleDeck(deck) {
@@ -672,24 +657,8 @@ class JackAce {
         }
     }
 
-    /*     async shuffle(playerState) {
-            this.log(`[SHUFFLE] Start - Player State: ${this.logPlayerState(playerState)}`);
-            try {
-                const { data } = await axios.get(`http://deckofcardsapi.com/api/deck/${playerState.deckId}/shuffle/`);
-                if (!data.shuffled) {
-                    await this.shuffle(playerState);
-                } else {
-                    playerState.cardsLeft = data.remaining;
-                }
-            } catch (error) {
-                playerState.gameMessage = "Error shuffling deck.";
-                this.errorEncountered(`[JACKACE ERROR] Error shuffling deck: ${error}`);
-            }
-            this.log(`[SHUFFLE] End - Player State: ${this.logPlayerState(playerState)}`);
-        } */
-
-    canDouble(cardValues) {
-        this.log(`[canDouble] Start - cardValues: ${JSON.stringify(cardValues)}`);
+    canDouble(cardValues, player) {
+        this.log(`[canDouble] Start - cardValues: ${JSON.stringify(cardValues)}`, player);
         let possibleSums = [0];
 
         cardValues.forEach(cardValue => {
@@ -705,7 +674,7 @@ class JackAce {
             possibleSums = newPossibleSums;
         });
 
-        this.log(`[canDouble] End - canDouble: ${possibleSums.includes(9) || possibleSums.includes(10) || possibleSums.includes(11)} ===> possibleSums includes: 9? ${possibleSums.includes(9)}, 10? ${possibleSums.includes(10)}, 11? ${possibleSums.includes(11)} `);
+        this.log(`[canDouble] End - canDouble: ${possibleSums.includes(9) || possibleSums.includes(10) || possibleSums.includes(11)} ===> possibleSums includes: 9? ${possibleSums.includes(9)}, 10? ${possibleSums.includes(10)}, 11? ${possibleSums.includes(11)} `, player);
         return possibleSums.includes(9) || possibleSums.includes(10) || possibleSums.includes(11);
     }
 
@@ -714,78 +683,87 @@ class JackAce {
     //////////////////////////
 
     async validateAction(req, action) {
-        this.log(`[validateAction] Start - action: ${action}, player: ${this.playerId}, session: ${this.sessionId}`);
 
-        this.log(`[validateAction] Validate player`);
+        // Get player requesting action
+        const [player, sessionId, walletId, getPlayerError] = await this.getPlayer(req);
+        this.log(`[HANDLE ACTION] Start - Action: ${action}`, player);
+        this.log(`[HANDLE ACTION] Player: ${player}, Session ID: ${sessionId}, Wallet ID: ${walletId}`, player);
+
+        if (getPlayerError) {
+            return [player, { status: 500, message: getPlayerError }];
+        }
+
+        // Verify a valid action was requested
+        const validActions = ['DEAL', 'HIT', 'STAND', 'SPLIT', 'DOUBLE', 'INSURANCE', 'REWARD', 'RESET'];
+        if (!validActions.includes(action)) {
+            return [player, { status: 400, message: `[JACKACE ERROR] Error: action not recognized ==> ${action}` }];
+        }
+
+        // Make sure player has access
         try {
-            await this.ensurePlayerId(req);
-        } catch (error) {
-            this.errorEncountered(`[JACKACE ERROR] Error validating player: ${error}`);
-            return { status: 500, message: error };
-        }
-
-        this.log(`[validateAction] Validate action`);
-        if (!action) {
-            this.errorEncountered(`[JACKACE ERROR] Error: action not recognized ==> ${action}`);
-            return { status: 400, message: "Action not recognized" };
-        }
-
-        this.log(`[validateAction] Initialize player state if it doesn't exist`);
-        if (!this.playerGameStates[this.playerId]) {
-            try {
-                this.log(`[validateAction] Player not found, initializing: ${this.playerGameStates[this.playerId]}`);
-                this.playerGameStates[this.playerId] = await this.initializePlayerState(req);
-                this.log(`[validateAction] Player state initialized: ${JSON.stringify(this.playerGameStates[this.playerId])}`);
-
-            } catch (error) {
-                this.errorEncountered(`[JACKACE ERROR] Error initializing player state: ${error}`);
-                return { status: 500, message: "[SERVER ERROR] Error initializing player state" };
+            const allowAccess = await this.platformClient.checkOwnershipOfCollection("bits x bit", walletId);
+            if (!allowAccess) {
+                return [player, { status: 400, message: "[JackAce Early Access Denied] Early Access Limited to bits x bit holders." }];
             }
+            this.log(`[validateAction] player: ${player}, session: ${sessionId}, access granted: ${allowAccess}`, player);
+        } catch (error) {
+            return [player, { status: 500, message: `[JACKACE ERROR] Error validating access: ${error}` }];
         }
 
-        if (action === 'RESET') { return null; }
 
-        const sessionData = this.cache.get(this.sessionId);
-        this.log(`[validateAction] sessionData: ${JSON.stringify(sessionData)}`);
-        const allowAccess = await this.platformClient.checkOwnershipOfCollection("bits x bit", sessionData.walletId);
-
-        if (!allowAccess) {
-            this.errorEncountered(`[JackAce Early Access Denied]`);
-            return { status: 400, message: "Early Access Limited to bits x bit holders." };
+        // Make sure player has a gamestate initiated
+        if (!this.playerGameStates[player]) {
+            this.log(`[validateAction] Initializing new player state for: ${player}`, player);
+            try {
+                this.playerGameStates[player] = await this.initializePlayerState(player, sessionId, walletId, req);
+                this.log(`[validateAction] Player state initialized: ${JSON.stringify(this.playerGameStates[player])}`, player);
+            } catch (error) {
+                return [player, { status: 500, message: `[JACKACE ERROR] Error initializing player state: ${error}` }];
+            }
+        } else {
+            // Set sessionId and walletId to make sure they are up to date 
+            this.playerGameStates[player].sessionId = sessionId;
+            this.playerGameStates[player].walletId = walletId;
         }
 
-        // Validate action based on game statel
-        if (action === 'DEAL' && this.playerGameStates[this.playerId].inProgress) {
-            this.log(`[validateAction] ${action} requested when player has game in progress, forcing reset.`);
+        if (action === 'RESET') { return [player, null]; }
+
+        // Validate action based on player's current gamestate
+        if (action === 'DEAL' && this.playerGameStates[player].inProgress) {
+            this.log(`[validateAction] ${action} requested when player has game in progress, forcing reset.`, player);
             action = `RESET`;
-            return null;
-        } else if (!this.playerGameStates[this.playerId].inProgress && action !== 'DEAL') {
-            this.log(`[DEAL] Invalid action >> no hand in progress.`);
-            return { status: 400, message: `[${action}] Invalid action >> no hand in progress.` };
+            return [player, null];
+        } else if (!this.playerGameStates[player].inProgress && action !== 'DEAL') {
+            this.log(`[DEAL] Invalid action >> no hand in progress.`, player);
+            return [player, { status: 400, message: `[${action}] Invalid action >> no hand in progress.` }];
         }
 
-        return null;
+        return [player, null];
     }
 
-    async ensurePlayerId(req) {
-        if (!this.playerId || !this.sessionId) {
-            await this.setPlayerId(req);
-            if (!this.playerId) {
-                this.errorEncountered(`[JACKACE ERROR] Player ID not found: ${JSON.stringify(req)}`);
+    async getPlayer(req) {
+        try {
+            const sessionId = req.params.sessionId;
+
+            const sessionData = this.cache.get(sessionId);
+            if (!sessionData) {
+                throw new Error(`No session with id ${sessionId} found`);
+            }
+
+            const player = sessionData.nftId;
+            if (!player) {
                 throw new Error("Player ID not found");
             }
-        }
-    }
 
-    async setPlayerId(req) {
-        const sessionId = req.params.sessionId;
-        this.sessionId = sessionId;
-        const sessionData = this.cache.get(sessionId);
-        if (!sessionData) {
-            this.errorEncountered(`[JACKACE ERROR] No session with id ${sessionId} found`);
-            throw new Error(`No session with id ${sessionId} found`);
+            const walletId = sessionData.walletId;
+            if (!walletId) {
+                throw new Error("Wallet ID not found");
+            }
+
+            return [player, sessionId, walletId, null];
+        } catch (error) {
+            return [null, null, null, JSON.stringify(error)];
         }
-        this.playerId = sessionData.nftId;
     }
 
     // Check betAmount against valid bets
@@ -799,7 +777,7 @@ class JackAce {
     // check if the payout/payment value provided is actually valid
     isValidAmount(playerState, amountToCheck, type) {
         if (!['payout', 'payment'].includes(type)) {
-            this.errorEncountered(`[JACKACE ERROR] Invalid type '${type}' provided to isValidAmount.`);
+            this.errorEncountered(`JACKACE ERROR`, `isValidAmount`, `Invalid type`, `type '${type}' was provided to isValidAmount.`, playerState.player);
             return false;
         }
 
@@ -837,23 +815,33 @@ class JackAce {
         return JSON.stringify(shortenedPlayerState);
     }
 
-    log(message) {
-        if (DEBUG && this.playerId === "0x7e0e930b5bfdb8214d40cdcdc9d83d6beab056dbfc551430b6be4f13facfadb3") {
+    log(message, player) {
+        if (DEBUG && player === "0x7e0e930b5bfdb8214d40cdcdc9d83d6beab056dbfc551430b6be4f13facfadb3") {
             discord.sendToDebugChannel(message);
             console.log(message);
         }
     }
 
-    errorEncountered(message) {
+    errorEncountered(errorTitle, currentFunction, errorSummary, rawError, player) {
+        const file = `jackace_ss.js`;
+        const message = JSON.stringify({
+            title: errorTitle,
+            location: currentFunction,
+            file: file,
+            summary: errorSummary,
+            error: rawError
+        });
+    
         if (DEBUG) {
-            if(this.playerId === "0x7e0e930b5bfdb8214d40cdcdc9d83d6beab056dbfc551430b6be4f13facfadb3"){
-                discord.sendToDebugChannel(message);
+            if (player === "0x7e0e930b5bfdb8214d40cdcdc9d83d6beab056dbfc551430b6be4f13facfadb3") {
+                exports.sendToDebugChannel(message, true);
             }
         } else {
-            discord.sendToDevChannel(message);
+            exports.sendToDevChannel(message, true);
         }
         console.log(message);
     }
+
 }
 
 module.exports = JackAce;
