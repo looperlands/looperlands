@@ -49,9 +49,9 @@ const KEYDOWN_REGISTER_DELAY = 1000;
 const LOOPERLANDS_MUSIC_FADE_STEP = 0.05;
 const MINIGAME_MENU =
     '<div id="menubtn" class="original-menu">MENU</div>' +
-    '<div id="minigameMenu-content" class="original-menu">' +
-    '<a href="#" id="mgMAIZfm" class="original-menu">🌽 MAIZ.fm</a>' +
-    '<a href="#" id="mgClose" class="original-menu">❌ Close Minigame</a>' +
+    '<div id="minigameMenu-content" class="original-menu" style="opacity: 0;">' +
+    '<a href="#" id="mgMAIZfm" class="original-menu" style="opacity: 0;">🌽 MAIZ.fm</a>' +
+    '<a href="#" id="mgClose" class="original-menu" style="opacity: 0;">❌ Close Minigame</a>' +
     '</div>';
 
 
@@ -86,6 +86,7 @@ async function setupMinigamePlatform() {
         $("#minigame").append(`<div id="minigameMenu"></div>`);
         $("#minigameMenu").append(MINIGAME_MENU);
 
+
         // LOAD MINIGAME.CSS
         fetch('css/minigame.css')
             .then(response => response.text())
@@ -104,7 +105,19 @@ async function setupMinigamePlatform() {
     // MINIGAME MENU EVENT LISTENERS
     $('#resources').fadeOut(FADE_DURATION * 1000 * 0.6);   // HIDE IN GAME RESOURCES BY DEFAULT >> ALLOWS FOR A CLEANER TRANSITION
     $("#minigame").css('opacity', 0).removeClass('hidden');
-    gsap.to("#minigame", { opacity: 1, duration: FADE_DURATION });
+    const tl = gsap.timeline();
+
+    // Add the first animation to the timeline
+    tl.to("#minigame", { opacity: 1, duration: FADE_DURATION });
+
+    // Add the other animations to the timeline, starting after the first one completes
+    tl.to("#minigameMenu-content", { opacity: 1, duration: FADE_DURATION }, "+=0")
+        .to("#mgMAIZfm", { opacity: 1, duration: FADE_DURATION }, "-=FADE_DURATION")
+        .to("#mgClose", { opacity: 1, duration: FADE_DURATION }, "-=FADE_DURATION");
+
+    // Play the timeline
+    tl.play();
+
 }
 
 

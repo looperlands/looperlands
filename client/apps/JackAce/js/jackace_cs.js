@@ -253,7 +253,6 @@ function showHelpPanel() {
 
 async function makeRequest(action, additionalData = {}) {
     return new Promise((resolve, reject) => {
-        //console.log(`[REQUEST: ${action}]`);
         const sessionId = new URLSearchParams(window.location.search).get('sessionId');
         const minigameQuery = `/session/${sessionId}/minigame`;
 
@@ -386,7 +385,6 @@ async function handleSplit() {
         if (playerBet > 0 && playerMoney >= BET_AMOUNTS[playerBet]) {
             $("#uiWindow").addClass('processing');
             const data = await makeRequest('SPLIT');
-            isUpdatingPlayerMoney ? await updatePlayerMoney(data, -data.playerBet) : updatePlayerMoney(data, -data.playerBet);
             await animateSplit(data);
             $("#uiWindow").removeClass('processing');
         } else {
@@ -598,98 +596,88 @@ async function animateDealersTurn(data) {
 }
 
 async function animateSplit(data) {
+
+    if (isUpdatingPlayerMoney) {
+        await updatePlayerMoney(data, -data.playerBet)
+    } else {
+        updatePlayerMoney(data, -data.playerBet);
+    }
+
     const originalHandIndex = data.currentHandIndex;
-    const originalHand = data.playerHands[originalHandIndex]; // Original hand with matching cards that will be split (Card1, Card2)
     const newHandIndex = data.playerHands.length - 1; // Index for new hand (if we start with one hand, the next hand added will be playerHands[1])
 
-    // Grab the second card in the hand that's being split
     const divToMove = $(`#hand${originalHandIndex + 1} .playingCard:last-child`);
-    const cardToMove = originalHand.hand[0]; // Card value of card being moved to new hand
-
-    // Log the elements to ensure they exist
-    console.log(`Original hand index: ${originalHandIndex}`);
-    console.log(`New hand index: ${newHandIndex}`);
-    console.log(`divToMove:`, divToMove);
-    console.log(`cardToMove:`, cardToMove);
-
     // Check if divToMove exists
     if (divToMove.length === 0) {
         console.error(`Element to move not found: #hand${originalHandIndex + 1} .playingCard:last-child`);
         return;
     }
 
-    // Create a new div for the new hand with initial opacity 0
-    const newHandDivHtml = `<div id="hand${newHandIndex + 1}" class="playerHands" style="opacity: 0;"><div class="arrow"></div><div class="hand-total"></div></div>`;
-    $('#playerHand').append(newHandDivHtml);
-    const newHandDiv = $(`#hand${newHandIndex + 1}`);
+    const newHandDiv = await createNewHandDiv(newHandIndex);
+    if (!newHandDiv) return;
 
-    // Check if newHandDiv exists
-    if (newHandDiv.length === 0) {
-        console.error(`New hand div not created: #hand${newHandIndex + 1}`);
-        return;
-    }
-
-    // Find the arrow element of originalHand and set its initial opacity to 0
     const arrowElement = $(`#hand${originalHandIndex + 1} .arrow`);
     arrowElement.css('opacity', 0);
 
-    // Create a GSAP timeline
+    await fadeInNewHandAndArrow(newHandDiv, arrowElement);
+    await moveCardToNewHand(divToMove, newHandDiv, data, originalHandIndex, newHandIndex);
+    await drawNewCards(data, originalHandIndex, newHandIndex);
+    await dimNewHand(newHandIndex);
+    await updateScores(data);
+    await showGameWindow(data);
+}
+
+async function createNewHandDiv(newHandIndex) {
+    const newHandDivHtml = `<div id="hand${newHandIndex + 1}" class="playerHands" style="opacity: 0;"><div class="arrow"></div><div class="hand-total"></div></div>`;
+    $('#playerHand').append(newHandDivHtml);
+    const newHandDiv = $(`#hand${newHandIndex + 1}`);
+    if (newHandDiv.length === 0) {
+        console.error(`New hand div not created: #hand${newHandIndex + 1}`);
+        return null;
+    }
+    return newHandDiv;
+}
+
+async function fadeInNewHandAndArrow(newHandDiv, arrowElement) {
     const tl = gsap.timeline();
-
-    // Add fade-in animations for newHandDiv and arrowElement to the timeline
     tl.to(newHandDiv, { duration: 0.2, opacity: 1 }, 0)
-        .to(arrowElement, { duration: 0.2, opacity: 1 }, 0); // Fade in the arrow element
+        .to(arrowElement, { duration: 0.2, opacity: 1 }, 0);
+    await tl.play();
+}
 
-    await tl.play(); // Play the timeline
-
-    // Animate the second card moving to the new hand and new cards being added to both hands
-
-    const newCardPosition = await getCardBackgroundPosition(cardToMove);
+async function moveCardToNewHand(divToMove, newHandDiv, data, originalHandIndex, newHandIndex) {
+    const newCardPosition = await getCardBackgroundPosition(data.playerHands[originalHandIndex].hand[0]);
     const newHandOffsetTop = newHandDiv.offset().top;
     const divToMoveOffsetTop = divToMove.offset().top;
-
-    // Log the offsets to ensure they are valid
-    console.log(`newHandDiv offset top: ${newHandOffsetTop}`);
-    console.log(`divToMove offset top: ${divToMoveOffsetTop}`);
-
 
     await gsap.to(divToMove, {
         duration: 0.2,
         y: newHandOffsetTop - divToMoveOffsetTop,
-        onComplete: async () => {
-            divToMove.css('transform', ''); // Reset transformations
+        onComplete: () => {
+            divToMove.css('transform', '');
             divToMove.css('background-position', newCardPosition);
-            newHandDiv.append(divToMove); // Move the card to the new hand div
-
-            // Draw a new card for the original hand
-            const originalNewCard = data.playerHands[originalHandIndex].hand.slice(-1)[0];
-            const originalNewCardPosition = await getCardBackgroundPosition(originalNewCard);
-            const $originalNewCardElement = $('<div class="playingCard"></div>').css('background-position', originalNewCardPosition);
-            $(`#hand${originalHandIndex + 1}`).append($originalNewCardElement);
-
-            await gsap.fromTo($originalNewCardElement, { opacity: 0, y: -50 }, { opacity: 1, y: 0, duration: 0.2 });
-
-            // Draw a new card for the new hand
-            const newHandNewCard = data.playerHands[newHandIndex].hand.slice(-1)[0];
-            const newHandNewCardPosition = await getCardBackgroundPosition(newHandNewCard);
-            const $newHandNewCardElement = $('<div class="playingCard"></div>').css('background-position', newHandNewCardPosition);
-            $(`#hand${newHandIndex + 1}`).append($newHandNewCardElement);
-
-            await gsap.fromTo($newHandNewCardElement, { opacity: 0, y: -50 }, { opacity: 1, y: 0, duration: 0.2 });
-
-            // Update the scores after the split animation is complete
-            await updateScores(data);
-
-            // Dim the new hand
-            await gsap.to(`#hand${newHandIndex + 1}`, {
-                duration: 0.5,
-                filter: 'brightness(0.5)',
-                onComplete: () => $(`#hand${newHandIndex + 1}`).addClass('notCurrentHand')
-            });
-
-            // Show the game window
-            await showGameWindow(data);
+            newHandDiv.append(divToMove);
         }
+    });
+}
+
+async function drawNewCards(data, originalHandIndex, newHandIndex) {
+    await drawNewCardForHand(originalHandIndex, data.playerHands[originalHandIndex].hand.slice(-1)[0]);
+    await drawNewCardForHand(newHandIndex, data.playerHands[newHandIndex].hand.slice(-1)[0]);
+}
+
+async function drawNewCardForHand(handIndex, card) {
+    const cardPosition = await getCardBackgroundPosition(card);
+    const $newCardElement = $('<div class="playingCard"></div>').css('background-position', cardPosition);
+    $(`#hand${handIndex + 1}`).append($newCardElement);
+    await gsap.fromTo($newCardElement, { opacity: 0, y: -50 }, { opacity: 1, y: 0, duration: 0.2 });
+}
+
+async function dimNewHand(newHandIndex) {
+    await gsap.to(`#hand${newHandIndex + 1}`, {
+        duration: 0.5,
+        filter: 'brightness(0.5)',
+        onComplete: () => $(`#hand${newHandIndex + 1}`).addClass('notCurrentHand')
     });
 }
 
@@ -896,6 +884,7 @@ async function showGameWindow(data = {}, callWindow = null) {
             $('#insurance').addClass('hidden');
             break;
         case 'insurance':
+            console.log('showing insurance');
             $('#uiWindow').css('background-position', await getUiBackgroundPosition('insurance'));
             $('#uiWindow').css('height', '370px');
             $('#uiWindow').css('align-content', 'end');
