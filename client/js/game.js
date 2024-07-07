@@ -52,7 +52,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.toggledLayers = {};
 
                 // minigame
+                this.hoveringMinigamePrompt = false;
                 this.minigameLoaded = false;
+                this.lastMinigameTrigger = null;
 
                 // combat
                 this.infoManager = new InfoManager(this);
@@ -125,13 +127,16 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "oafish11", "oafish12", "oafish13", "oafish14", "oafish15", "oafish16", "oafish17", "oafish18", "oafish19", "oafish20",
                     "oafish21", "oafish22", "oafish23", "oafish24", "oafish25", "oafish26", "oafish27", "oafish28", "oafish29", "oafish30",
                     "oafish31", "oafish32", "oafish33", "oafish34", "oafish35", "oafish36",
-                    //m88n Dream Fishing
+                    //m88n Fishing
                     "m88ndreamduckyy", "m88ndreamduckyg", "m88ndreamduckyb", "m88ndreamduckyp", "m88ndreamduckyr","m88ndreamcandyy", "m88ndreamcandyg", "m88ndreamcandyb", "m88ndreamcandyp", "m88ndreamcandyr","m88ndreamgumbally", "m88ndreamgumballg", "m88ndreamgumballb", "m88ndreamgumballp", "m88ndreamgumballr", "m88ngmeshare", "m88nwhiskey", "m88ndiamondhand", "m88ngoldenbanana", "m88nshorts",
                     "m88nseafrog", "m88nseahorse", "m88nseaurchin", "m88nstarfish", "m88nseaweed", "m88nspirula", "m88nshrimp", "m88nsilvereel", "m88npinkfantasia", "m88npiranha", "m88nscallop", "m88nsaltwatersnail", "m88nseaspider", "m88noctopus", "m88npufferfish", "m88nseacucumber", "m88ntigerfish", "m88nguppy", "m88nkoifish", "m88nturtle", "m88nsanddollar", "m88njellyfish", "m88nlionfish",
-                    "m88nsundial", "m88ntuna", "m88ncharfish", "m88ncrab", "m88ncowfish", "m88nlampreyeel", "m88nbluelobster", "m88nparrotfish", "m88nconch", "m88ndumbooctopus", "m88nbettafish", "m88nsquid", "m88nnautilus", "m88nwolffish", "m88nblobfish", "m88nclownfish", "m88noyster", "m88npearl", "m88naxolotl", "m88nbutterflyfish", "m88ncoral", "m88nseaangel", "m88nanglerfish", "m88nbluetang", "m88nclam", "m88npompano", 
-                    //m88n's NPCs
+                    "m88nsundial", "m88ntuna", "m88ncharfish", "m88ncrab", "m88ncowfish", "m88nlampreyeel", "m88nbluelobster", "m88nparrotfish", "m88nconch", "m88ndumbooctopus", "m88nbettafish", "m88nsquid", "m88nnautilus", "m88nwolffish", "m88nblobfish", "m88nclownfish", "m88noyster", "m88npearl", "m88naxolotl", "m88nbutterflyfish", "m88ncoral", "m88nseaangel", "m88nanglerfish", "m88nbluetang", 
+                    "m88nclam", "m88npompano", "m88nmackerel", "m88noceanbass",
+                    //m88n NPCs
                     "wenmoon",
                     "kingfroggy",
+                    "nexan4",
+                    "nexan5",
                     "nexan11",
                     "nexan12",
                     "nexan13",
@@ -143,7 +148,21 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "nexan19",
                     "nexan20",
                     "nexan28",
-                    //m88n's Mobs
+                    "nexan29",
+                    "thehookup",
+                    "nexan31",
+                    "nexan32",
+                    "nexan33",
+                    "nexan34",
+                    "m88nbushguy",
+                    "m88nsignguy",
+                    "m88nmysteryhood",
+                    "m88ntaikotwin1",
+                    "m88ntaikotwin2",
+                    "m88nstimytimy",
+                    "m88nrealtyagent",
+                    "m88ngenie",
+                    //m88n Mobs
                     "balloondogb",
                     "balloondogy",
                     "balloondoga",
@@ -182,12 +201,19 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "m88nvulture",
                     "m88nbigchungus",
                     "m88noctopussy",
+                    "m88nmagiccarpet",
+                    "m88nhermie",
+                    "m88nmrcrab",
+                    "m88npinataballoons",
+                    "m88ndinor",
+                    "m88ndinow",
+                    "m88ndinob",
+                    "m88ndinog",
+                    "roachclip",
                     //m88n's Mob Nexans
                     "nexan1",
                     "nexan2",
                     "nexan3",
-                    "nexan4",
-                    "nexan5",
                     "nexan6",
                     "nexan7",
                     "nexan8",
@@ -200,6 +226,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "nexan25",
                     "nexan26",
                     "nexan27",
+                    "nexan30",
+                    "m88njeeves",
                     //MRMlabs Fishing
                     "bbqchips",
                     "blackpepperchips",
@@ -212,6 +240,15 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "valleydew",
                     //MRMlabs NPCs
                     "tylerdurden",
+                    //Taiko Town NPCs
+                    "taikotownnpc1",
+                    "taikotownnpc2",
+                    "taikotownnpc3",
+                    "taikotownnpc4",
+                    "taikotownnpc5",
+                    "taikotownnpc6",
+                    "taikotownnpc7",
+                    "stupidmonkey",
                     //Robits NPCs
                     "ROBITSC1",
                     "CLOWNCAPONEBIT",
@@ -254,7 +291,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "mayoroswald",
                     "newcomersilas",
                     "guardianfintan",
-                    //mycupbloody
+                    //Duckville Mobs
                     "BORAC",
                     "INFERNOTH",
                     "WINGELLA",
@@ -267,7 +304,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "derrick", "frog", "angrymom", "devon", "misty", "managertim", "oracle", "gill", "customer1", "customer2", "portalgill",
                     //SDU Fish
                     "clownfish", "swedishfish", "rainbowfish", "lollipop",
-                    //mycupbloody npc
+                    //Duckville NPCs
                     "GOFFREY",
                     "cobWalkingNpc1",
                     "cobWalkingNpc2",
@@ -420,6 +457,28 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "item-m88ndirt",
                     "item-m88nworm",
                     "item-m88nsnail",
+                    "item-m88ntentacle",
+                    "item-m88nfastshoes",
+                    "item-m88nslowshoes",
+                    "item-m88nwizardshat",
+                    "item-m88nbrassknuckles",
+                    "item-m88nkevlararmor",
+                    "item-m88ngrenade",
+                    "item-m88ndinnerbell",
+                    "item-m88npants",
+                    "item-m88ntshirt",
+                    "item-m88ngoldmedal",
+                    "item-m88nsilvermedal",
+                    "item-m88nbronzemedal",
+                    "item-m88nfishingpole",
+                    "item-m88nprizes",
+                    "item-m88nlamp",
+                    "item-m88ngemticket",
+                    "item-m88nbag",
+                    "item-m88nvipbag",
+                    "item-m88ngoldbag",
+                    "item-m88ngembag",
+                    "item-m88nluckybag",
                     //MRMlabs
                     "item-firstaidkit",
                     "item-bandaid",
@@ -428,10 +487,54 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "item-cigarettepack",
                     "item-soap",
                     "item-strangeyellowliquid",
-                    //mycupbloody
+                    //m88n TT Items
+                    "item-m88nammocan",
+                    "item-m88nbanana",
+                    "item-m88nbasketball",
+                    "item-m88nblueprint",
+                    "item-m88nbnote",
+                    "item-m88nbone",
+                    "item-m88ncarrot",
+                    "item-m88ncheese",
+                    "item-m88nchocolate",
+                    "item-m88ncleanundies",
+                    "item-m88ndogcollar",
+                    "item-m88nducky",
+                    "item-m88nenote",
+                    "item-m88nfancyhat",
+                    "item-m88nglowstick",
+                    "item-m88nguitar",
+                    "item-m88nhardhat",
+                    "item-m88nhockeystick",
+                    "item-m88nipod",
+                    "item-m88njoystick",
+                    "item-m88nlettermanjacket",
+                    "item-m88nluggage",
+                    "item-m88npolicebadge",
+                    "item-m88npolicehat",
+                    "item-m88nqnote",
+                    "item-m88nrainbow",
+                    "item-m88nrolex",
+                    "item-m88nrollingpin",
+                    "item-m88nrose",
+                    "item-m88nrubyring",
+                    "item-m88nshades",
+                    "item-m88nsnote",
+                    "item-m88nsnowflake",
+                    "item-m88ntp",
+                    "item-m88nworkgloves",
+                    "item-m88ncheesepizza",
+                    "item-m88npizza",
+                    "item-m88nsword",
+                    //Duckville Items
                     "item-EYEBALL",
                     "item-REDPOTION",
                     "item-GREYPOTION",
+                    //Duckville Fishing
+                    "dragonegg",
+                    "dragonbreath",
+                    "dragonclaw",
+                    "luckybabydragon",
                      //BITCORN PHISHIES
                     "bit_BoneFish", "bit_Corn", "bit_FEET", "bit_freshPrawnce", "bit_JEFF", "bit_Kickle", "bit_maCORNtosh", "bit_MrPunchy", "bit_SnaggletoothEel", "bit_NOPEmato", "cornBootFish", "cornCanFish", "cornWinkyFish",
                                 "item-HAMSTER1",
@@ -5897,7 +6000,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     console.log("Map loaded.");
                     var tilesetIndex = self.renderer.upscaledRendering ? 0 : self.renderer.scale - 1;
                     self.renderer.setTileset(self.map.tilesets[tilesetIndex]);
-                    self.map._initStreamCheck();
+                    self.map._initStreamCheck();                       
                 });
             },
 
@@ -5974,10 +6077,13 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     /* m88n Fishing*/
                     ["m88ndreamduckyy", "m88ndreamduckyg", "m88ndreamduckyb", "m88ndreamduckyp", "m88ndreamduckyr", "m88ndreamcandyy", "m88ndreamcandyo", "m88ndreamcandya", "m88ndreamcandyg", "m88ndreamcandyb", "m88ndreamcandyp", "m88ndreamcandyr", "m88ndreamgumbally", "m88ndreamgumballo", "m88ndreamgumballa", "m88ndreamgumballg", "m88ndreamgumballb", "m88ndreamgumballp", "m88ndreamgumballr" , "m88ngmeshare", "m88nwhiskey", 
                     "m88ndiamondhand", "m88ngoldenbanana", "m88nshorts", "m88nseafrog", "m88nseahorse", "m88nseaurchin", "m88nstarfish", "m88nseaweed", "m88nspirula", "m88nshrimp", "m88nsilvereel", "m88npinkfantasia", "m88npiranha", "m88nscallop", "m88nsaltwatersnail", "m88nseaspider", "m88noctopus", "m88npufferfish", "m88nseacucumber", "m88ntigerfish", "m88nguppy", "m88nkoifish", "m88nturtle", "m88nsanddollar", "m88njellyfish", "m88nlionfish",
-                    "m88nsundial", "m88ntuna", "m88ncharfish", "m88ncrab", "m88ncowfish", "m88nlampreyeel", "m88nbluelobster", "m88nparrotfish", "m88nconch", "m88ndumbooctopus", "m88nbettafish", "m88nsquid", "m88nnautilus", "m88nwolffish", "m88nblobfish", "m88nclownfish", "m88noyster", "m88npearl", "m88naxolotl", "m88nbutterflyfish", "m88ncoral", "m88nseaangel", "m88nanglerfish", "m88nbluetang", "m88nclam", "m88npompano"],
+                    "m88nsundial", "m88ntuna", "m88ncharfish", "m88ncrab", "m88ncowfish", "m88nlampreyeel", "m88nbluelobster", "m88nparrotfish", "m88nconch", "m88ndumbooctopus", "m88nbettafish", "m88nsquid", "m88nnautilus", "m88nwolffish", "m88nblobfish", "m88nclownfish", "m88noyster", "m88npearl", "m88naxolotl", "m88nbutterflyfish", "m88ncoral", "m88nseaangel", "m88nanglerfish", "m88nbluetang", "m88nclam", "m88npompano", "m88nmackerel", "m88noceanbass"],
 
                     /* MRMlabs FISH*/
                     ["bbqchips", "blackpepperchips", "dillpicklechips", "saltnvinegarchips", "berryblast", "cherrycola", "gingerale", "rootbeer", "valleydew"],
+
+                    /* Duckville Fishing*/
+                    ["dragonegg", "dragonbreath", "dragonclaw", "luckybabydragon"],
 
                     /*BITCORN PHISHIES*/
                     ["bit_BoneFish", "bit_Corn", "bit_FEET", "bit_freshPrawnce", "bit_JEFF", "bit_Kickle", "bit_maCORNtosh", "bit_MrPunchy", "bit_SnaggletoothEel", "bit_NOPEmato", "cornBootFish", "cornCanFish", "cornWinkyFish"],
@@ -6143,6 +6249,14 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     this.setCursor("float");
                     this.hoveringTarget = false;
                     this.targetCellVisible = true;
+                }
+                else if(this.hoveringMinigamePrompt){
+                    this.hoveringMinigamePrompt = $("#minigameprompt").hasClass(`active`) && $(`#minigameprompt:hover`).length;
+                }
+                else if($("#minigameprompt").hasClass(`active`) && $(`#minigameprompt:hover`).length){
+                    this.hoveringMinigamePrompt = true;
+                    this.hoveringTarget = false;
+                    this.targetCellVisible = false;
                 }
                 else if($(`#minigame`).length && $(`#minigame`).hasClass("clickable active")){
                     this.minigameLoaded = true;
@@ -6736,6 +6850,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                     self.addEntity(self.player);
                     self.player.dirtyRect = self.renderer.getEntityBoundingRect(self.player);
+                    self.player.playerClassSelectionShown = false;
 
                     if(!self.storage.hasAlreadyPlayed()) {
                         self.storage.initPlayer(self.player.name);
@@ -8499,10 +8614,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
              */
             click: function(pos) {
 
-
                 if($('body').hasClass('inventory') 
                     || $('body').hasClass('settings') 
-                    || this.minigameLoaded) {
+                    || this.minigameLoaded
+                    || this.hoveringMinigamePrompt) {
                     return;
                 }
 
@@ -8599,6 +8714,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     }
                     else {
                         this.makePlayerGoTo(pos.x, pos.y);
+                        if ($('#miniMap').is(':visible')) {
+                            this.app.toggleMiniMap(true);
+                        }
                     }
                 }
             },
@@ -8695,21 +8813,34 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         self.showNotification(trigger.message);
                     }
 
-                    if (entity.id === self.player.id && trigger.minigame && !this.minigameLoaded){
-                        let minigamePromptClickHandler = function() {loadMinigame(trigger.minigame, self);};
-                        $("#minigameprompt").addClass('active');
-                        $("#minigameprompt").one("click", minigamePromptClickHandler); //limit the use of this to a single fire
+                    if (entity.id === self.player.id && trigger.minigame && !this.minigameLoaded) {
+                        if($("#minigameprompt").hasClass(`active`)){$("#minigameprompt").removeAttr('style').off();} // if walking from one trigger to the next, clear data.                        
+                        let containerScale = Math.min(($(window).width() / $("#container").width() * 0.95), ($(window).height() / $("#container").height() * 0.95));
+                        let [offsetX, offsetY] = (trigger.offset || "0,0").split(',').map(Number);
+
+                        const toPercent = (value, offset, dimension) => {
+                            if (value.includes("px")) {
+                                value = `${(parseFloat(value) / dimension) * 100}%`; 
+                            }
+                            return (parseFloat(value) + ((offset * this.renderer.tilesize * this.renderer.scale) / (dimension * containerScale)) * 100) + '%';
+                        };
+                        
+                        lastMinigameTrigger = trigger.id;
+                        $("#minigameprompt").css({
+                            'left': toPercent($("#minigameprompt").css('left'), offsetX, $("#container").width()),
+                            'top': toPercent($("#minigameprompt").css('top'), offsetY, $("#container").height())
+                        }).addClass('active').one("click", () => loadMinigame(trigger.minigame, self)); // Limit the use of this to a single fire
                     }
 
                     entity.onLeave(trigger, function () {
                         entity.triggerArea = null;
-                        if (!self.client) {
-                            $("#minigameprompt").removeClass('active').off();
+                        if (!self.client && lastMinigameTrigger === trigger.id) {
+                            $("#minigameprompt").removeClass('active').removeAttr('style').off();
                             return;
                         }
                         self.client.sendTrigger(trigger.id, false);
-                        if (entity.id === self.player.id && trigger.minigame){
-                            $("#minigameprompt").removeClass('active').off();
+                        if (entity.id === self.player.id && trigger.minigame && lastMinigameTrigger === trigger.id){
+                            $("#minigameprompt").removeClass('active').removeAttr('style').off();
                         }
                     })
                 }
@@ -9320,6 +9451,11 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 axios.get("/session/" + self.sessionId + "/polling").then(function (response) {
                     if (response.data !== null && response.data !== undefined) {
                         if (response.data.playerInfo !== undefined) {
+                            const { playerClass, level } = response.data.playerInfo;
+                            if (!playerClass && level >= 5 && !self.player.playerClassSelectionShown) {
+                                self.app.showPlayerClassSelection();
+                                self.player.playerClassSelectionShown = true;
+                            }
                             if (response.data.playerInfo.powerUpActive === false && self.player.spriteName !== response.data.playerInfo.armor) {
                                 self.player.switchArmor(self.sprites[response.data.playerInfo.armor]);
                             }
@@ -9341,6 +9477,12 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                     } else if (self.entities[id].inCombat && !toUpdateEntity.inCombat) {
                                         self.entities[id].exitCombat();
                                     }
+                                }
+
+                                if (self.entities[id].classEmoji !== toUpdateEntity.classEmoji) {
+                                    self.entities[id].classEmoji = toUpdateEntity.classEmoji;
+                                    const name = self.entities[id].name + `${toUpdateEntity.classEmoji.trim()}`;
+                                    self.entities[id].setName(name);
                                 }
                             } else {
                                 console.debug("Unknown entity " + id);

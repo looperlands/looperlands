@@ -168,6 +168,23 @@ module.exports = World = cls.Class.extend({
                 }
             });
 
+            player.onReleaseNpc(function (kind, timeToLive) {
+                const npc = self.addNpc(kind, player.x, player.y);
+
+                setTimeout(()=> {
+                    player.broadcast(npc.despawn(), false);
+                    self.removeEntity(npc);
+                }, timeToLive)
+            });
+
+            player.onReleaseItem(function (kind) {
+                const item = self.createItem(kind, player.x, player.y);
+                self.addItem(item);
+                if (item) {
+                    player.broadcast(player.drop(item), false);
+                }
+            });
+
             if (self.added_callback) {
                 self.added_callback();
             }
@@ -239,6 +256,7 @@ module.exports = World = cls.Class.extend({
                 area.trigger = a.trigger;
                 area.message = a.message;
                 area.minigame = a.minigame;
+                area.offset = a.offset;
                 area.delay = a.delay;
                 self.triggerAreas[a.id] = area;
             });
@@ -461,6 +479,9 @@ module.exports = World = cls.Class.extend({
         if (entity.id in this.items) {
             delete this.items[entity.id];
         }
+        if (entity.id in this.npcs) {
+            delete this.npcs[entity.id];
+        }        
 
         if (entity.type === "mob") {
             this.clearMobAggroLink(entity);
@@ -1127,7 +1148,9 @@ module.exports = World = cls.Class.extend({
 
         let playerInfo = {
             armor: Types.getKindAsString(player.armor),
-            powerUpActive: player.getPowerUpActive()
+            powerUpActive: player.getPowerUpActive(),
+            playerClass: player.playerClassModifiers?.playerClass,
+            level: player.getLevel()
         }
 
         let characterInfo = this.getCharactersInfoInPlayerGroup(player);
@@ -1155,7 +1178,8 @@ module.exports = World = cls.Class.extend({
                     inCombat: entity.isInCombat(),
                     x: entity.x,
                     y: entity.y,
-                    stealth: entity.getStealth()
+                    stealth: entity.getStealth(),
+                    classEmoji: entity.playerClassModifiers?.emoji
                 }
             }
         }

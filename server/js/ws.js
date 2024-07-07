@@ -1,4 +1,3 @@
-
 var cls = require("./lib/class"),
     url = require('url'),
     // wsserver = require("websocket-server"),
@@ -29,8 +28,10 @@ const Properties = require('./properties.js')
 const Types = require("../../shared/js/gametypes");
 const platform = require('./looperlandsplatformclient.js');
 const minigame = require('../apps/minigame.js');
+const MinigameController = require('./minigamecontroller.js');
 const dynamicnft = require('./dynamicnftcontroller.js');
 const announcement = require('./announcementcontroller.js');
+const PlayerClassController = require('./playerclasscontroller.js').PlayerClassController;
 const cache = new NodeCache();
 
 const LOOPWORMS_LOOPERLANDS_BASE_URL = process.env.LOOPWORMS_LOOPERLANDS_BASE_URL;
@@ -38,10 +39,11 @@ const APP_URL = process.env.APP_URL;
 const GAMESERVER_NAME = process.env.GAMESERVER_NAME;
 const LOOPERLANDS_PLATFORM_BASE_URL = process.env.LOOPERLANDS_PLATFORM_BASE_URL;
 const LOOPERLANDS_PLATFORM_API_KEY = process.env.LOOPERLANDS_PLATFORM_API_KEY;
-
+const CORNHOLE = '0xc00631db8eba1ab88589a599b67df7727ae39348f961c62c11dcd7992f62a2ad';
 
 const platformClient = new platform.LooperLandsPlatformClient(LOOPERLANDS_PLATFORM_API_KEY, LOOPERLANDS_PLATFORM_BASE_URL);
 const dynamicNFTcontroller = new dynamicnft.DynamicNFTController(cache, platformClient, Types);
+const minigameController = new MinigameController(cache, platformClient);
 
 function extractDetails(inputUrl) {
     const parsedUrl = new URL(inputUrl);
@@ -283,6 +285,7 @@ WS.socketIOServer = Server.extend({
             body.xp = sessionData.xp;
             body.title = sessionData.title;
             body.f2p = sessionData.f2p;
+            body.trait = sessionData.trait;
             delete body.map;
 
             let responseJson = await newSession(body, true);
@@ -1104,49 +1107,78 @@ WS.socketIOServer = Server.extend({
             }
         });
 
+        // MINIGAME CONTROLLER
+        app.post('/session/:sessionId/minigame', (req, res) => {minigameController.handleRequest(req, res);});
+
+        // LUCKYFUNKZ 
         app.get('/session/:sessionId/getSpin/:linesPlayed/:bet', async (req, res) => {
+            try {
+                const linesPlayed = parseInt(req.params.linesPlayed);
+                const betPerLine = parseInt(req.params.bet);
+                const sessionId = req.params.sessionId;
+                const sessionData = cache.get(sessionId);
+                
+                if (sessionData === undefined) {
+                    res.status(404).json({
+                        error: "No session with id " + sessionId + " found",
+                    });
+                    return;
+                }
 
-            const linesPlayed = parseInt(req.params.linesPlayed);
-            const betPerLine = parseInt(req.params.bet);
-            const sessionId = req.params.sessionId;
-            const sessionData = cache.get(sessionId);
+                // Reset player timeout so LooperLands knows player is still active while in minigame
+                const player = self.worldsMap[sessionData.mapId].getPlayerById(sessionData.entityId);
+                player.resetTimeout(); 
 
-            if (sessionData === undefined) {
-                res.status(404).json({
-                    status: false,
-                    error: "No session with id " + sessionId + " found",
-                    user: null
-                });
-                return;
+                // MAKE SURE PLAYER CAN AFFORD SPIN
+                const spinCost = linesPlayed * betPerLine;
+                const playerBalance = await dao.getResourceBalance(sessionData.nftId,Types.Entities.GOLD);
+                
+                // LOG BALANCE BEFORE SPIN
+                //console.log(`DAO, ${playerBalance}, SESSION, ${sessionData.gameData.items[Types.Entities.GOLD]}, PRIOR TO SPIN`);
+                
+                if(spinCost > playerBalance){
+                    res.status(400).json({
+                        message: "Not Enough Gold",
+                    });
+                    return;
+                }
+
+                // GET SPIN
+                const spinResponse = await minigame.getSpin(platformClient, linesPlayed, betPerLine);           
+                const { chosenSpin, payout, winningLines } = spinResponse;
+
+                
+                const spinResult = payout - spinCost;
+                if (spinResult !== 0){
+                    // UPDATE BALANCES
+                    let transferSuccess = false;
+                    await player.incrementResourceAmount(Types.Entities.GOLD, spinResult);                      // UPDATE SESSIONDATA BALANCE
+                    if(spinResult > 0){
+                        transferSuccess = await dao.transferResourceFromTo(CORNHOLE, sessionData.nftId, spinResult);              // UPDATE DAO BALANCE (PLAYER WIN)
+                    } else{
+                        transferSuccess = await dao.transferResourceFromTo(sessionData.nftId, CORNHOLE, Math.abs(spinResult));    // UPDATE DAO BALANCE (PLAYER LOSE)
+                    }
+                    if(!transferSuccess){
+                        res.status(400).json({message: "DAO transfer failed"});
+                        return;
+                    }
+                }
+                
+                // LOG BALANCE AFTER SPIN
+                //const playerBalanceAfter = await dao.getResourceBalance(sessionData.nftId,Types.Entities.GOLD);
+                //const sessionData2 = cache.get(sessionId);
+                //console.log(`DAO, ${playerBalanceAfter}, SESSION, ${sessionData2.gameData.items[Types.Entities.GOLD]}, AFTER SPIN [- ${spinCost}, + ${payout}, = ${spinResult}]`);
+
+                const response = {
+                    spinData: chosenSpin,
+                    valueToPayout: payout,
+                    winningLines: winningLines
+                };
+                res.status(200).send(response);
+            } catch (error) {
+                console.error('Error during getSpin:', error);
+                res.status(500).json({ message: 'Internal server error' });
             }
-
-            const spinResponse = await minigame.getSpin(platformClient, sessionData, linesPlayed, betPerLine);
-
-            if (spinResponse === "Not Enough Gold") {
-                res.status(400).json({
-                    status: false,
-                    error: "Not Enough Gold",
-                    user: null
-                });
-                return;
-            }
-            
-            const { chosenSpin, payout, winningLines } = spinResponse;
-
-            //update cached gold amount
-            const spinCost = linesPlayed * betPerLine;
-            const spinResult = payout - spinCost;
-            const player = self.worldsMap[sessionData.mapId].getPlayerById(sessionData.entityId);
-            player.incrementResourceAmount(Types.Entities.GOLD, spinResult);
-            player.resetTimeout();
-
-            const response = {
-                spinData: chosenSpin,
-                valueToPayout: payout,
-                winningLines: winningLines
-            };
-
-            res.status(200).send(response);
         });
 
         app.get('/session/:sessionId/completePartnerTask/:taskId', async (req, res) => {
@@ -1181,6 +1213,22 @@ WS.socketIOServer = Server.extend({
                 announcementController = new announcement.AnnouncementController(self.worldsMap);
             }
             announcementController.sendAnnouncement(req, res);
+        });
+
+
+        app.get("/playerclasses", async (req, res) => {
+            const playerClassController = new PlayerClassController(platformClient, cache, this.worldsMap);
+            return await playerClassController.getPlayerClasses(req, res);
+        });
+
+        app.get("/session/:sessionId/playerclassmodifiers", async (req, res) => {
+            const playerClassController = new PlayerClassController(platformClient, cache, this.worldsMap);
+            return await playerClassController.getPlayerModifiers(req, res);
+        });
+
+        app.post("/session/:sessionId/setclass", async (req, res) => {
+            const playerClassController = new PlayerClassController(platformClient, cache, this.worldsMap);
+            return playerClassController.setLooperClass(req, res);
         });
 
         self.io.on('connection', function (connection) {
@@ -1221,9 +1269,6 @@ WS.socketIOServer = Server.extend({
     onRequestStatus: function (status_callback) {
         this.status_callback = status_callback;
     }
-
-
-
 });
 
 WS.socketIOConnection = Connection.extend({

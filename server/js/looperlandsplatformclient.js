@@ -1,6 +1,7 @@
 const axios = require('axios');
 
 class LooperLandsPlatformClient {
+    static playerClasses;
     constructor(apiKey, baseUrl) {
         this.platformDefined = apiKey && baseUrl;
         if (!this.platformDefined) {
@@ -43,7 +44,9 @@ class LooperLandsPlatformClient {
             console.log("Registered gameserver hostname with platform:", hostname);
             return response.data;
         } catch (error) {
-            this.handleError(error);
+            console.log(error);
+            this.createOrUpdateGameServer(hostname, port, name);
+            //this.handleError(error);
         }
     }
 
@@ -268,6 +271,58 @@ class LooperLandsPlatformClient {
         }
     }
 
+    async getAllLooperClasses() {
+        try {
+            if (LooperLandsPlatformClient.playerClasses === undefined) {
+                const url = `/api/game/modifiers/traits`;
+                const response = await this.client.get(url);
+                const playerClassModifiersData = {};
+                Object.keys(response.data).forEach(key => {
+                  const { description, modifiers } = response.data[key];
+                  playerClassModifiersData[key] = { description, ...modifiers };
+                });
+                LooperLandsPlatformClient.playerClasses = playerClassModifiersData;
+            }
+            return LooperLandsPlatformClient.playerClasses;
+        } catch (error) {
+            this.handleError(error);
+        }
+    }
+
+    async getLooperModifierData(nftId) {
+        try {
+            const url = `/api/game/asset/modifiers/${nftId}`;
+            const response = await this.client.get(url);
+            return response.data;
+        } catch (error) {
+            this.handleError(error);
+        }
+    }
+
+    async setLooperClass(nftId, playerClass) {
+        try {
+            const url = `/api/game/asset/trait`;
+            const postData = {
+                "nftId" : nftId,
+                "trait" : playerClass
+            }
+            const response = await this.client.post(url, postData);
+            return response.data;
+        } catch (error) {
+            this.handleError(error);
+        }
+    }
+
+    async getFreeRental(nftId, walletAddress) {
+        try {
+            const url = `/api/game/rental/free/${nftId}/${walletAddress}`
+            const response = await this.client.get(url);
+            return response.data;
+        } catch (error) {
+            this.handleError(error);
+        }
+    }
+
     handleError(error) {
         if (error.response) {
             // The request was made and the server responded with a status code
@@ -275,6 +330,7 @@ class LooperLandsPlatformClient {
             throw new Error(`HTTP error! status: ${error.response.status}`);
         } else if (error.request) {
             // The request was made but no response was received
+            console.error(error);
             throw new Error('No response received');
         } else {
             // Something happened in setting up the request that triggered an Error

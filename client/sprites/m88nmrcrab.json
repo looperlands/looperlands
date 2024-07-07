@@ -1,0 +1,49 @@
+{
+	"id": "m88nmrcrab",
+	"width": 48,
+	"height": 48,
+	"animations": {
+		"death": {
+			"length": 7,
+			"row": 0
+		},
+		"atk_right": {
+			"length": 5,
+			"row": 1
+		},
+		"walk_right": {
+			"length": 4,
+			"row": 2
+		},
+		"idle_right": {
+			"length": 4,
+			"row": 3
+		},
+		"atk_up": {
+			"length": 5,
+			"row": 4
+		},
+		"walk_up": {
+			"length": 4,
+			"row": 5
+		},
+		"idle_up": {
+			"length": 4,
+			"row": 6
+		},
+		"atk_down": {
+			"length": 5,
+			"row": 7
+		},
+		"walk_down": {
+			"length": 4,
+			"row": 8
+		},
+		"idle_down": {
+			"length": 4,
+			"row": 9
+		}
+	},
+	"offset_x": -4,
+	"offset_y": -28
+}

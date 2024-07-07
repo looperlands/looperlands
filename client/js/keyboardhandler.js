@@ -49,7 +49,7 @@ class KeyBoardHandler {
         }
 
         // Keyboard shortcuts
-        const shortCuts = 'zxcvbt1234';
+        const shortCuts = 'zxcvbtm1234';
 
         if (shortCuts.indexOf(key) > -1) {
             if(!this.game.started || this.inputHasFocus()) {
@@ -85,6 +85,9 @@ class KeyBoardHandler {
                     break;
                 case 't':
                     this.highlightClosestTarget(event);
+                    break;
+                case 'm':
+                    this.app.toggleMiniMap();
                     break;
             }
         }

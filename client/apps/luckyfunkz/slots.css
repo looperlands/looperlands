@@ -62,15 +62,7 @@
 
 #payoutContainer td.symbolCell {
     height: 8vh;
-}
-
-.headerText{
-    font-family: "256BYTES", "Orbitron", "Helvetica Neue", "Futura", "Trebuchet MS", Arial;
-    font-weight: bold;
-}
-
-.payoutCell {
-    filter: drop-shadow(0 0 2px black) drop-shadow(0 0 2px black) drop-shadow(0 0 2px white) drop-shadow(0 0 4px magenta) drop-shadow(0 0 8px magenta) !important
+	position: relative; /* Ensure proper positioning for child elements */
 }
 
 #payoutContainer td.symbolCell img{
@@ -82,9 +74,33 @@
     filter: drop-shadow(0 0 2px black) drop-shadow(0 0 2px white) drop-shadow(0 0 2px magenta) drop-shadow(0 0 2px magenta) !important;
 }
 
+#payoutContainer td.wildCell {
+    height: 10vh;
+	align-items: center;
+	justify-content: space-between;
+	position: relative;
+}
+
 #payoutContainer td.wildCell img{
     height: 10vh;
     filter: drop-shadow(0 0 2px black) drop-shadow(0 0 2px white) drop-shadow(0 0 2px magenta) drop-shadow(0 0 2px magenta) !important;
+}
+
+#payoutContainer td.wildCell svg {
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+    height: 100%;
+    width: auto;
+}
+
+.headerText{
+    font-family: "256BYTES", "Orbitron", "Helvetica Neue", "Futura", "Trebuchet MS", Arial;
+    font-weight: bold;
+}
+
+.payoutCell {
+    filter: drop-shadow(0 0 2px black) drop-shadow(0 0 2px black) drop-shadow(0 0 2px white) drop-shadow(0 0 4px magenta) drop-shadow(0 0 8px magenta) !important
 }
 
 .closeButton {

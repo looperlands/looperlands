@@ -2,9 +2,9 @@
     "name": "looperlands",
     "version": "0.0.1",
     "private": false,
-    "scripts" : {
-        "test" : "jest",
-        "coverage" : "jest --coverage"
+    "scripts": {
+        "test": "jest",
+        "coverage": "jest --coverage"
     },
     "dependencies": {
         "alchemy-sdk": "^2.8.3",
@@ -18,12 +18,16 @@
         "moment": "^2.29.4",
         "newrelic": "^10.6.2",
         "node-cache": "^5.1.2",
+        "node-cron": "^3.0.3",
         "profane-words": "^1.5.9",
         "sanitizer": "0.1.2",
         "socket.io": ">0",
         "underscore": "^1.13.6"
     },
     "devDependencies": {
+        "@babel/plugin-syntax-dynamic-import": "^7.8.3",
+        "@babel/preset-env": "^7.24.7",
+        "babel-jest": "^29.7.0",
         "eslint": "^8.57.0",
         "jest": "^29.7.0"
     }

@@ -59,8 +59,6 @@ module.exports = Player = Character.extend({
 
         this.playerEventBroker = new PlayerEventBroker.PlayerEventBroker(this);
 
-        this.playerClassModifiers = new PlayerClassModifiers();
-
         this.connection.listen(async function (message) {
 
             var action = parseInt(message[0]);
@@ -97,6 +95,7 @@ module.exports = Player = Character.extend({
                 }
                 self.walletId = playerCache.walletId;
                 self.nftId = playerCache.nftId;
+                self.playerClassModifiers = new PlayerClassModifiers(platformClient, self.nftId, playerCache.trait);
 
                 self.kind = Types.Entities.WARRIOR;
                 self.equipArmor(message[2]);
@@ -1242,6 +1241,26 @@ module.exports = Player = Character.extend({
     releaseMob: function (kind) {
         if (this.releaseMob_callback) {
             return this.releaseMob_callback(kind);
+        }
+    },
+
+    onReleaseNpc: function (callback) {
+        this.releaseNpc_callback = callback;
+    },
+
+    releaseNpc: function (kind, timeToLive) {
+        if (this.releaseNpc_callback) {
+            return this.releaseNpc_callback(kind, timeToLive);
+        }
+    },
+
+    onReleaseItem: function (callback) {
+        this.releaseItem_callback = callback;
+    },
+
+    releaseItem: function (kind) {
+        if (this.releaseItem_callback) {
+            return this.releaseItem_callback(kind);
         }
     },
 

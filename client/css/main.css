@@ -352,34 +352,6 @@ body.upscaled.game {background:#000;}
     cursor: pointer;
 }
 
-#avatarStats {
-    position: absolute;
-    left: 70px;
-    background: url(../img/1/barsheet.png);
-    background-position: -240px -48px;
-    width: 91px;
-    color: #FFF;
-    font-family: 'GraphicPixel';
-    font-size: 9px;
-    text-align: center;
-    height: 0;
-    opacity: 0;
-    padding: 20px;
-    padding-top: 0;
-    padding-bottom: 0;
-    transition: 0.2s ease-in-out all;
-    bottom: 18px;
-}
-
-#avatarStats.visible {
-    height: 20px;
-    padding-top: 5px;
-    padding-bottom: 10px;
-    opacity: 100;
-    transition: 0.2s ease-in-out all;
-    line-height: 9px;
-}
-
 #weaponStats {
     position: absolute;
     left: 70px;
@@ -473,6 +445,45 @@ body.upscaled.game {background:#000;}
 #emoteMenu .emote:hover {
     background: rgba(255,255,255,0.6);
     transition: ease-in-out all 0.2s;
+}
+
+#resources-minigame {
+    position: absolute;
+    top: 2%;
+    right: 2%;
+    aspect-ratio: 2.97;
+    width: 17%;
+    background: url(../img/common/minigameResourcePanel.png);
+    background-size: 100%;
+    background-repeat: no-repeat;
+    image-rendering: pixelated;
+    color: #e4d0b6;
+    font-family: 'GraphicPixel';
+    display: flex;
+    align-items: center;
+    z-index: 2;
+    transform: scale(1);
+}
+
+#resource-text {
+    width: 80%;
+    margin-left: 37%;
+    margin-bottom: 2%;
+    z-index: 3;
+}
+
+#resource-text.flash-red {
+    color: red;
+    transition: color 0.5s;
+}
+
+
+#resources-minigame.hidden{
+    display: none !important;
+}
+
+#minigame.hidden{
+    display: none !important;
 }
 
 #resources {
@@ -969,13 +980,13 @@ body.inventory .inventorySidebar {
 #create-new span span:hover {color:#b2af9b;}
 #playername {color:#fff;}
 
-#credits, #loadcharacter, #confirmation, #death, #error, #settings, #keyboardCommands, #instructions, #gamepadCommands, #announcement {position:absolute;left:50%;text-align:center;font-family:'GraphicPixel', sans-serif;z-index:1000;}
+#credits, #loadcharacter, #confirmation, #death, #error, #settings, #keyboardCommands, #instructions, #gamepadCommands, #announcement, #playerClassSelection, #avatarStats, #miniMap {position:absolute;left:50%;text-align:center;font-family:'GraphicPixel', sans-serif;z-index:1000;}
 
 #playerimage {image-rendering: -moz-crisp-edges; image-rendering: -webkit-optimize-contrast;}
 
 #parchment p {font-family:'GraphicPixel';}
 
-#credits, #death, #settings, #keyboardCommands, #instructions, #gamepadCommands, #announcement {top:50%;}
+#credits, #death, #settings, #keyboardCommands, #instructions, #gamepadCommands, #announcement, #playerClassSelection, #avatarStats, #miniMap {top:50%;}
 .intro #credits {top:55%;}
 #credits h1 a {color:#fcda5c;text-decoration:none;}
 #authors div a {display:block;color:#fff;text-decoration:none;}
@@ -1114,29 +1125,33 @@ footer div  {display:inline-block;}
     opacity: 1;
     transition: ease-in all 0.3s;
 }
-#settings, #keyboardCommands, #instructions, #gamepadCommands, #announcement {
+#settings, #keyboardCommands, #instructions, #gamepadCommands, #announcement, #playerClassSelection, #avatarStats, #miniMap {
     color: #b9b9b9;
     padding:0 25px;
     width:770px;
     position: absolute;
-    top: 10%;
+    top: 5%;
     left: calc(50% - 400px);
     padding-bottom: 40px;
     transition: ease-in all 0.3s;
+}
+
+#miniMap {
+    background: transparent !important; 
 }
 
 #settings small {
     padding-top:20px;
 }
 
-#settings button, #instructions button {
+#settings button, #instructions button, #playerClassSelection button {
     border-image-width: 4px;
     background: #533642 !important;
     padding: 6px 20px;
     color: #b9b9b9;
     cursor: pointer;
 }
-#settings button:hover, #instructions button {
+#settings button:hover, #instructions button, #playerClassSelection button {
     color: white;
     background: #967784 !important;
 }
@@ -1242,6 +1257,99 @@ footer div  {display:inline-block;}
 }
 
 
+#playerClassSelection .class-container {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    padding: 10px;
+    text-align: left;
+    margin: 10px;
+    width: 100%;
+}
+
+#playerClassSelection .class-container .left {
+    flex: 1;
+    margin-left: 10px;
+    margin-right: 10px;
+    max-width: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#playerClassSelection .class-container .right {
+    flex: 1;
+    max-width: 45%;
+    overflow-x: auto;
+    text-align: center;
+}
+
+
+#playerClassSelection .class-container img {
+    width: 100%;
+    max-width: 150px;
+    height: auto;
+    margin-bottom: 10px;
+}
+
+#playerClassSelection .panelContent {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+
+/* Parent container with transparent background */
+#miniMap .panelContent {
+    width: 100%;
+    height: 400px;  /* Set a fixed height */
+    overflow-y: auto;  /* Allow vertical scrolling */
+    overflow-x: hidden;  /* Hide horizontal scrolling */
+    position: relative;  /* Ensure the playerDot can be absolutely positioned */
+    background: transparent;  /* Fully transparent background */
+    opacity: 1; /* Ensures the container itself is fully transparent */
+}
+
+/* Hide scrollbar for Chrome, Safari, and Opera */
+#miniMap .panelContent::-webkit-scrollbar {
+    display: none;
+}
+
+/* Image inside the panelContent with 50% opacity */
+#miniMap .panelContent img {
+    display: block;  /* Ensure the image is treated as a block-level element */
+    width: 100%;  /* Scale the image to fit the width of the container */
+    height: auto;  /* Maintain the aspect ratio */
+    opacity: 0.75;  /* Set the image opacity to 50% */
+}
+
+/* Red dot representing the player */
+.playerDot {
+    width: 10px;  /* Set the size of the dot */
+    height: 10px;  /* Set the size of the dot */
+    background-color: red;  /* Red color for the dot */
+    border-radius: 50%;  /* Make it a circle */
+    position: absolute;  /* Position it absolutely within the container */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Label above the red dot */
+.playerLabel {
+    position: absolute;
+    top: -20px;  /* Adjust as needed to position the label above the dot */
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;  /* Color of the text */
+    font-size: 12px;  /* Adjust font size as needed */
+    font-weight: bold;
+    background: rgba(0, 0, 0, 0.5);  /* Optional: Background color for better visibility */
+    padding: 2px 4px;  /* Optional: Padding for the label */
+    border-radius: 3px;  /* Optional: Rounded corners for the label */
+}
 /* Magic Parchment */
 
 .parchment-left {position:absolute;top:0;left:0%;}
@@ -1498,21 +1606,6 @@ footer div  {display:inline-block;}
     .upscaled #minigameprompt:before {content: "";position:absolute;height:200%;width:400%;top:-200%;left:-150%;background:radial-gradient(transparent 40%, rgba(255, 255, 255, 0.7) 60%, transparent 75%);transform-origin:bottom center;z-index:10;}
     .upscaled #minigameprompt:hover:before {animation:minigameglow 1.5s infinite forwards ease-in-out;}
 
-    .upscaled #avatarStats {
-        left: 210px;
-        bottom: 65px;
-        background: url('../img/3/barsheet.png');
-        background-position: -720px -144px;
-        width: 353px;
-        font-size: 16px;
-        line-height: 24px;
-    }
-    .upscaled #avatarStats.visible {
-        height: 43px;
-        padding-top: 28px;
-        padding-bottom: 20px;
-    }
-
     .upscaled #weaponStats {
         left: 161px;
         bottom: 65px;
@@ -1607,6 +1700,7 @@ footer div  {display:inline-block;}
     #fish {height:48px;width:48px;position:absolute;}
 
     #minigameprompt {width:48px;height:48px;}
+    #resources-minigame {font-size: 42px;}
 
     #armor, #weapon {width:48px;height:48px;position:absolute;background-size:288px;background-position:-96px;}
     #weapon {left:312px;top:3px;background-size:288px;}
@@ -1793,6 +1887,7 @@ footer div  {display:inline-block;}
     }
 
     #resources { right: 40px; }
+
     #shop-popup {
         max-height: 570px;
     }
@@ -1867,35 +1962,6 @@ footer div  {display:inline-block;}
         background: url(../img/2/barsheet.png);
         background-position-y: -129px;
         cursor: pointer;
-    }
-
-    #avatarStats {
-        position: absolute;
-        left: 132px;
-        bottom: 43px;
-        background: url(../img/2/barsheet.png);
-        background-position: -480px -96px;
-        width: 222px;
-        color: #FFF;
-        font-family: 'GraphicPixel';
-        font-size: 12px;
-        text-align: center;
-        height:0;
-        opacity: 0;
-        padding: 20px;
-        padding-top: 0;
-        padding-bottom: 0;
-        transition: 0.2s ease-in-out all;
-        border-radius: 10px 0 0 0;
-    }
-
-    #avatarStats.visible {
-        height: 27px;
-        padding-top: 18px;
-        padding-bottom: 20px;
-        opacity: 100;
-        transition: 0.2s ease-in-out all;
-        line-height:18px;
     }
 
     #weaponStats {
@@ -1998,6 +2064,7 @@ footer div  {display:inline-block;}
     #fish {height:32px;width:32px;position:absolute;}
 
     #minigameprompt {width:32px;height:32px;}
+    #resources-minigame {font-size: 30px;}
 
     #armor, #weapon {width:32px;height:32px;position:absolute;background-size:192px;background-position:-64px;}
     #weapon {left:208px;top:2px;}
@@ -2132,34 +2199,6 @@ footer div  {display:inline-block;}
     #canvas {width:100%;height:448px;}
     #fade {width:960px;height:448px;top:10px;left:10px;}
 
-    .upscaled #avatarStats {
-        position: absolute;
-        left: 132px;
-        bottom: 43px;
-        background: url(../img/2/barsheet.png);
-        background-position: -480px -96px;
-        width: 222px;
-        color: #FFF;
-        font-family: 'GraphicPixel';
-        font-size: 12px;
-        text-align: center;
-        height:0;
-        opacity: 0;
-        padding: 20px;
-        padding-top: 0;
-        padding-bottom: 0;
-        transition: 0.2s ease-in-out all;
-    }
-
-    .upscaled #avatarStats.visible {
-        height: 27px;
-        padding-top: 18px;
-        padding-bottom: 20px;
-        opacity: 100;
-        transition: 0.2s ease-in-out all;
-        line-height:18px;
-    }
-
     .upscaled #weaponStats {
         position: absolute;
         left: 106px;
@@ -2244,6 +2283,7 @@ footer div  {display:inline-block;}
     #fish {height:32px;width:32px;position:absolute;}
 
     #minigameprompt {width:32px;height:32px;}
+    #resources-minigame {font-size: 30px;}
 
     #armor, #weapon {width:32px;height:32px;position:absolute;background-size:192px;background-position:-64px;}
     #weapon {left:208px;top:2px;}
@@ -2407,6 +2447,7 @@ footer div  {display:inline-block;}
     #fish {height:16px;width:16px;position:absolute;}
 
     #minigameprompt {width:16px;height:16px;}
+    #resources-minigame {font-size: 16px;}
 
     #armor, #weapon {width:16px;height:16px;position:absolute;background-size:96px;background-position:-32px;}
     #weapon {left:104px;top:1px;}
@@ -2472,34 +2513,6 @@ footer div  {display:inline-block;}
     .game.credits .parchment-middle, .game.death .parchment-middle {width:346px;margin-left:-173px;background-position: -38px -294px;}
 
     #resize-check {height:1px;}
-
-    #avatarStats {
-        position: absolute;
-        left: 70px;
-        background: url(../img/1/barsheet.png);
-        background-position: -240px -48px;
-        width: 91px;
-        color: #FFF;
-        font-family: 'GraphicPixel';
-        font-size: 9px;
-        text-align: center;
-        height: 0;
-        opacity: 0;
-        padding: 20px;
-        padding-top: 0;
-        padding-bottom: 0;
-        transition: 0.2s ease-in-out all;
-        bottom: 18px;
-    }
-
-    #avatarStats.visible {
-        height: 20px;
-        padding-top: 5px;
-        padding-bottom: 10px;
-        opacity: 100;
-        transition: 0.2s ease-in-out all;
-        line-height: 9px;
-    }
 
     #weaponStats {
         position: absolute;
@@ -2602,6 +2615,7 @@ footer div  {display:inline-block;}
     #fish {height:32px;width:32px;position:absolute;}
 
     #minigameprompt {width:32px;;height:32px;}
+    #resources-minigame {font-size: 30px;}
 
     #armor, #weapon {width:32px;height:32px;position:absolute;background-size:192px;background-position:-64px;}
     #weapon {left:208px;top:2px;} 
@@ -2653,34 +2667,6 @@ footer div  {display:inline-block;}
 
     footer {display:none;}
     #bubbles {overflow:hidden;}
-
-    #avatarStats {
-        position: absolute;
-        left: 70px;
-        background: url(../img/1/barsheet.png);
-        background-position: -240px -48px;
-        width: 91px;
-        color: #FFF;
-        font-family: 'GraphicPixel';
-        font-size: 9px;
-        text-align: center;
-        height: 0;
-        opacity: 0;
-        padding: 20px;
-        padding-top: 0;
-        padding-bottom: 0;
-        transition: 0.2s ease-in-out all;
-        bottom: 18px;
-    }
-
-    #avatarStats.visible {
-        height: 20px;
-        padding-top: 5px;
-        padding-bottom: 10px;
-        opacity: 100;
-        transition: 0.2s ease-in-out all;
-        line-height: 9px;
-    }
 
     #weaponStats {
         position: absolute;

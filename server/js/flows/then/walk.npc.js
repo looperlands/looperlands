@@ -1,5 +1,6 @@
 var cls = require("../../lib/class")
 const Messages = require("../../message");
+const _ = require("underscore");
 
 module.exports = Block = cls.Class.extend({
     init: function(options, worldserver) {

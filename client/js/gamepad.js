@@ -104,6 +104,9 @@ class GamePadListener {
             case 9:
                 this.simulateKeyPress('c', 'KeyC'); // Settings
                 break;
+            case 13:
+                this.simulateKeyPress('m', 'KeyM'); // Mini Map
+                break;
         }
     }
 
