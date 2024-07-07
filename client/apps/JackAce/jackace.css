@@ -244,6 +244,29 @@
   background-size: var(--scoreSpriteSize);
 }
 
+.hand-total{
+  background-position: -360px 0px;
+}
+
+.dealerScoreOverlay {
+  position: relative;
+}
+
+.dealerScoreOverlay::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--scoreWidth);
+  height: var(--buttonHeight);
+  background: var(--scoreSprite);
+  background-position: -0px -0px; /* Position of the dealer border in the sprite */
+  background-size: var(--scoreSpriteSize);
+  z-index: 1;
+}
+
+
+
 .card-back {
   width: var(--cardWidth);
   height: var(--cardHeight);

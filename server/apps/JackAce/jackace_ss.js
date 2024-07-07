@@ -633,7 +633,7 @@ class JackAce {
     }
 
     updateHandWithCard(hand, card, player) {
-        this.log(`[UPDATE HAND] Start - Hand: ${JSON.stringify(hand)}, Card: ${card}`, player);
+        this.log(`[UPDATE HAND] Start - Hand: ${JSON.stringify(hand)}, `, player);
         const value = card.charAt(0);
         if (['K', 'Q', 'J', '0'].includes(value)) {
             hand.total += 10;
@@ -705,7 +705,7 @@ class JackAce {
             if (!allowAccess) {
                 return [player, { status: 400, message: "[JackAce Early Access Denied] Early Access Limited to bits x bit holders." }];
             }
-            this.log(`[validateAction] player: ${player}, session: ${sessionId}, access granted: ${allowAccess}`, player);
+            this.log(`[validateAction] access granted: ${allowAccess}`, player);
         } catch (error) {
             return [player, { status: 500, message: `[JACKACE ERROR] Error validating access: ${error}` }];
         }
@@ -713,7 +713,7 @@ class JackAce {
 
         // Make sure player has a gamestate initiated
         if (!this.playerGameStates[player]) {
-            this.log(`[validateAction] Initializing new player state for: ${player}`, player);
+            this.log(`[validateAction] Initializing player state for: ${player}`, player);
             try {
                 this.playerGameStates[player] = await this.initializePlayerState(player, sessionId, walletId, req);
                 this.log(`[validateAction] Player state initialized: ${JSON.stringify(this.playerGameStates[player])}`, player);
@@ -834,10 +834,10 @@ class JackAce {
     
         if (DEBUG) {
             if (player === "0x7e0e930b5bfdb8214d40cdcdc9d83d6beab056dbfc551430b6be4f13facfadb3") {
-                exports.sendToDebugChannel(message, true);
+                discord.sendToDebugChannel(message, true);
             }
         } else {
-            exports.sendToDevChannel(message, true);
+            discord.sendToDevChannel(message, true);
         }
         console.log(message);
     }

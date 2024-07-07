@@ -60,7 +60,7 @@ const SCORE_SPRITE_GAP = 1; // Gap between score sprites
 const SCORE_SPRITE_COLUMNS = 10; // Number of columns in the score sprite sheet
 const SCORE_CARD_SCALE = 10; // Scale for score elements
 const SCORE_SPRITE_POSITIONS = {
-    'blank': 0, 'arrow': 1, 'questionMark': 2, '4': 3, '5': 4, '6': 5, '7': 6, '8': 7, '9': 8, '10': 9,
+    'dealerborder': 0, 'arrow': 1, 'questionMark': 2, '4': 3, '5': 4, '6': 5, '7': 6, '8': 7, '9': 8, '10': 9,
     '11': 10, '12': 11, '13': 12, '14': 13, '15': 14, '16': 15, '17': 16, '18': 17, '19': 18, '20': 19, '21': 20,
     '22': 21, '23': 22, '24': 23, '25': 24, '26': 25, '27': 26, '28': 27, '29': 28, '30': 29
 };
@@ -118,11 +118,23 @@ async function init() {
         </div>
     `);
 
-        $('#dealerHand').append('<div class="arrow"></div><div class="dealerScore" style="background-position: -360px 0px;"></div><div class="card-back"></div><div class="card-back"></div>');
-        $('#playerHand').append('<div id="hand1" class="playerHands"><div class="arrow"></div><div class="hand-total" style="background-position: -360px 0px;"></div><div class="card-back"></div><div class="card-back"></div></div>');
+        $('#dealerHand').append(
+            '<div class="arrow"></div>' +
+            '<div class="dealerScore dealerScoreOverlay" style="background-position: -360px 0px;"></div>' +
+            '<div class="card-back"></div>' +
+            '<div class="card-back"></div>');
+
+        $('#playerHand').append(
+            '<div id="hand1" class="playerHands">' +
+            '<div class="arrow"></div>' +
+            '<div class="hand-total" style="background-position: -360px 0px;"></div>' +
+            '<div class="card-back"></div>' +
+            '<div class="card-back"></div>' +
+            '</div>');
+
         await setUpButtonEvents();
         await showGameWindow(null, 'splashScreen');
-        if(!isLIVE){
+        if (!isLIVE) {
             alert('JackAce is currently being worked on. Please try again.');
             $('#mgClose')[0].click();
         }
@@ -241,7 +253,7 @@ function showHelpPanel() {
 
 async function makeRequest(action, additionalData = {}) {
     return new Promise((resolve, reject) => {
-        console.log(`[REQUEST: ${action}]`);
+        //console.log(`[REQUEST: ${action}]`);
         const sessionId = new URLSearchParams(window.location.search).get('sessionId');
         const minigameQuery = `/session/${sessionId}/minigame`;
 
@@ -594,10 +606,28 @@ async function animateSplit(data) {
     const divToMove = $(`#hand${originalHandIndex + 1} .playingCard:last-child`);
     const cardToMove = originalHand.hand[0]; // Card value of card being moved to new hand
 
+    // Log the elements to ensure they exist
+    console.log(`Original hand index: ${originalHandIndex}`);
+    console.log(`New hand index: ${newHandIndex}`);
+    console.log(`divToMove:`, divToMove);
+    console.log(`cardToMove:`, cardToMove);
+
+    // Check if divToMove exists
+    if (divToMove.length === 0) {
+        console.error(`Element to move not found: #hand${originalHandIndex + 1} .playingCard:last-child`);
+        return;
+    }
+
     // Create a new div for the new hand with initial opacity 0
     const newHandDivHtml = `<div id="hand${newHandIndex + 1}" class="playerHands" style="opacity: 0;"><div class="arrow"></div><div class="hand-total"></div></div>`;
     $('#playerHand').append(newHandDivHtml);
     const newHandDiv = $(`#hand${newHandIndex + 1}`);
+
+    // Check if newHandDiv exists
+    if (newHandDiv.length === 0) {
+        console.error(`New hand div not created: #hand${newHandIndex + 1}`);
+        return;
+    }
 
     // Find the arrow element of originalHand and set its initial opacity to 0
     const arrowElement = $(`#hand${originalHandIndex + 1} .arrow`);
@@ -615,10 +645,17 @@ async function animateSplit(data) {
     // Animate the second card moving to the new hand and new cards being added to both hands
 
     const newCardPosition = await getCardBackgroundPosition(cardToMove);
+    const newHandOffsetTop = newHandDiv.offset().top;
+    const divToMoveOffsetTop = divToMove.offset().top;
+
+    // Log the offsets to ensure they are valid
+    console.log(`newHandDiv offset top: ${newHandOffsetTop}`);
+    console.log(`divToMove offset top: ${divToMoveOffsetTop}`);
+
 
     await gsap.to(divToMove, {
         duration: 0.2,
-        y: newHandDiv.offset().top - divToMove.offset().top,
+        y: newHandOffsetTop - divToMoveOffsetTop,
         onComplete: async () => {
             divToMove.css('transform', ''); // Reset transformations
             divToMove.css('background-position', newCardPosition);
@@ -689,7 +726,7 @@ async function displayStartingHands(data) {
 
     // Area for dealer's total hand value
     let questionScorePosition = await getScoreBackgroundPosition(`questionMark`);
-    let $dealerScore = $('<div class="dealerScore"></div>').css('opacity', 0).css('background-position', questionScorePosition);
+    let $dealerScore = $('<div class="dealerScore dealerScoreOverlay"></div>').css('opacity', 0).css('background-position', questionScorePosition);
     $('#dealerHand').append($dealerScore);
 
     // Area for dealer's hand
@@ -778,9 +815,16 @@ async function updateScores(data, updatePlayer = true) {
         }
     }
 
-    //update dealers hand
+    // Update dealer's hand
     if (!updatePlayer) {
-        $('.dealerScore').css('background-position', await getScoreBackgroundPosition(`${data.dealerHand.total === 'hidden' ? 'questionMark' : data.dealerHand.total}`));
+        const dealerScoreElement = $('.dealerScore');
+        const backgroundPosition = await getScoreBackgroundPosition(data.dealerHand.total === 'hidden' ? 'questionMark' : data.dealerHand.total);
+
+        if (data.dealerHand.total >= 21) {
+            dealerScoreElement.css('background-position', backgroundPosition).removeClass('dealerScoreOverlay');
+        } else {
+            dealerScoreElement.css('background-position', backgroundPosition).addClass('dealerScoreOverlay');
+        }
     }
 }
 
@@ -804,7 +848,7 @@ async function showGameWindow(data = {}, callWindow = null) {
         await updateCurrentHand(currentHandIndex); // update hand arrows if more than one hand
     }
 
-    console.log(`[LOADING WINDOW: ${loadWindow}]`);
+    // console.log(`[LOADING WINDOW: ${loadWindow}]`);
     if (data?.gameWindow) await updateButtonStates(data);
 
     if (loadWindow === 'splitDouble') {
@@ -994,7 +1038,7 @@ async function updatePlayerMoney(data, adjustBy = null, showRewards = false) {
         let currentMoney = parseInt(playerMoney);
         let rewardCountdown = data?.reward ?? 0;
         let processingReward = false;
-        const minDisplayTime = 800; // Minimum display time for reward in milliseconds
+        const minDisplayTime = 300; // Minimum display time for reward in milliseconds
 
 
 
@@ -1006,7 +1050,7 @@ async function updatePlayerMoney(data, adjustBy = null, showRewards = false) {
 
             timeline.to(`#${rewardTextElementId}`, {
                 top: '65px',
-                duration: 0.5
+                duration: 0.25
             }, 0);
 
             if (data.boughtInsurance && data.dealerHandTotal === 21 && data.dealerHand.length === 2) {
@@ -1014,7 +1058,7 @@ async function updatePlayerMoney(data, adjustBy = null, showRewards = false) {
 
                 timeline.to(`#${insuranceTextElementId}`, {
                     opacity: 1,
-                    duration: 0.5
+                    duration: 0.25
                 }, 0);
             }
 
