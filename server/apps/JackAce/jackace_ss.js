@@ -690,7 +690,7 @@ class JackAce {
         this.log(`[HANDLE ACTION] Player: ${player}, Session ID: ${sessionId}, Wallet ID: ${walletId}`, player);
 
         if (getPlayerError) {
-            return [player, { status: 500, message: getPlayerError }];
+            return [player, { status: 500, message: `getPlayer error: ${getPlayerError}` }];
         }
 
         // Verify a valid action was requested
@@ -716,7 +716,7 @@ class JackAce {
             this.log(`[validateAction] Initializing player state for: ${player}`, player);
             try {
                 this.playerGameStates[player] = await this.initializePlayerState(player, sessionId, walletId, req);
-                this.log(`[validateAction] Player state initialized: ${JSON.stringify(this.playerGameStates[player])}`, player);
+                this.log(`[validateAction] Player state initialized: ${this.logPlayerState(this.playerGameStates[player])}`, player);
             } catch (error) {
                 return [player, { status: 500, message: `[JACKACE ERROR] Error initializing player state: ${error}` }];
             }
