@@ -1,3 +1,5 @@
+const isLIVE = true;
+
 // Global Variables
 let gameWindow = ""; // Current UI window shown
 let playerBet = 1;
@@ -58,7 +60,7 @@ const SCORE_SPRITE_GAP = 1; // Gap between score sprites
 const SCORE_SPRITE_COLUMNS = 10; // Number of columns in the score sprite sheet
 const SCORE_CARD_SCALE = 10; // Scale for score elements
 const SCORE_SPRITE_POSITIONS = {
-    'blank': 0, 'arrow': 1, 'questionMark': 2, '4': 3, '5': 4, '6': 5, '7': 6, '8': 7, '9': 8, '10': 9,
+    'dealerborder': 0, 'arrow': 1, 'questionMark': 2, '4': 3, '5': 4, '6': 5, '7': 6, '8': 7, '9': 8, '10': 9,
     '11': 10, '12': 11, '13': 12, '14': 13, '15': 14, '16': 15, '17': 16, '18': 17, '19': 18, '20': 19, '21': 20,
     '22': 21, '23': 22, '24': 23, '25': 24, '26': 25, '27': 26, '28': 27, '29': 28, '30': 29
 };
@@ -116,10 +118,26 @@ async function init() {
         </div>
     `);
 
-        $('#dealerHand').append('<div class="arrow"></div><div class="dealerScore" style="background-position: -360px 0px;"></div><div class="card-back"></div><div class="card-back"></div>');
-        $('#playerHand').append('<div id="hand1" class="playerHands"><div class="arrow"></div><div class="hand-total" style="background-position: -360px 0px;"></div><div class="card-back"></div><div class="card-back"></div></div>');
+        $('#dealerHand').append(
+            '<div class="arrow"></div>' +
+            '<div class="dealerScore dealerScoreOverlay" style="background-position: -360px 0px;"></div>' +
+            '<div class="card-back"></div>' +
+            '<div class="card-back"></div>');
+
+        $('#playerHand').append(
+            '<div id="hand1" class="playerHands">' +
+            '<div class="arrow"></div>' +
+            '<div class="hand-total" style="background-position: -360px 0px;"></div>' +
+            '<div class="card-back"></div>' +
+            '<div class="card-back"></div>' +
+            '</div>');
+
         await setUpButtonEvents();
         await showGameWindow(null, 'splashScreen');
+        if (!isLIVE) {
+            alert('JackAce is currently being worked on. Please try again.');
+            $('#mgClose')[0].click();
+        }
     } catch (error) {
         console.error('Error starting JackAce:', error);
     }
@@ -235,7 +253,6 @@ function showHelpPanel() {
 
 async function makeRequest(action, additionalData = {}) {
     return new Promise((resolve, reject) => {
-        console.log(`[REQUEST: ${action}]`);
         const sessionId = new URLSearchParams(window.location.search).get('sessionId');
         const minigameQuery = `/session/${sessionId}/minigame`;
 
@@ -290,21 +307,23 @@ async function makeRequest(action, additionalData = {}) {
 }
 
 async function resetGame(hideUIWindow = false) {
-    const sessionId = new URLSearchParams(window.location.search).get('sessionId');
-    const minigameQuery = `/session/${sessionId}/minigame`;
+    if (isLIVE) {
+        const sessionId = new URLSearchParams(window.location.search).get('sessionId');
+        const minigameQuery = `/session/${sessionId}/minigame`;
 
-    try {
-        const response = await axios.post(minigameQuery, {
-            minigame: 'jackace',
-            player: playerId,
-            action: 'RESET'
-        });
-        console.log('[GAME RESET]');
-    } catch (error) {
-        console.error('Error resetting the game:', error);
-        alert('An error occurred while resetting the game. Please try again.');
+        try {
+            const response = await axios.post(minigameQuery, {
+                minigame: 'jackace',
+                player: playerId,
+                action: 'RESET'
+            });
+            console.log('[GAME RESET]');
+        } catch (error) {
+            console.error('Error resetting the game:', error);
+            alert('An error occurred while resetting the game. Please try again.');
+        }
+        await showGameWindow(null, 'bet');
     }
-    await showGameWindow(null, 'bet');
     $('#resources-minigame').addClass('hidden');
     $("#uiWindow").removeClass('processing');
 
@@ -317,8 +336,7 @@ async function resetGame(hideUIWindow = false) {
 
 
 async function handleDeal() {
-    if (!$("#uiWindow").hasClass('processing')) {
-
+    if (!$("#uiWindow").hasClass('processing') && isLIVE) {
         if (playerBet > 0 && playerMoney >= BET_AMOUNTS[playerBet]) {
             $("#uiWindow").addClass('processing');
             const data = await makeRequest('DEAL', { playerBet: BET_AMOUNTS[playerBet] });
@@ -340,7 +358,7 @@ async function handleDeal() {
 }
 
 async function handleHit() {
-    if (!$("#uiWindow").hasClass('processing')) {
+    if (!$("#uiWindow").hasClass('processing') && isLIVE) {
         $("#uiWindow").addClass('processing');
         const data = await makeRequest('HIT');
         await animateCard(data);
@@ -349,7 +367,7 @@ async function handleHit() {
 }
 
 async function handleStand() {
-    if (!$("#uiWindow").hasClass('processing')) {
+    if (!$("#uiWindow").hasClass('processing') && isLIVE) {
         $("#uiWindow").addClass('processing');
         const data = await makeRequest('STAND');
         if (data.dealerHand.total !== 'hidden') {
@@ -363,11 +381,10 @@ async function handleStand() {
 }
 
 async function handleSplit() {
-    if (!$("#uiWindow").hasClass('processing')) {
+    if (!$("#uiWindow").hasClass('processing') && isLIVE) {
         if (playerBet > 0 && playerMoney >= BET_AMOUNTS[playerBet]) {
             $("#uiWindow").addClass('processing');
             const data = await makeRequest('SPLIT');
-            isUpdatingPlayerMoney ? await updatePlayerMoney(data, -data.playerBet) : updatePlayerMoney(data, -data.playerBet);
             await animateSplit(data);
             $("#uiWindow").removeClass('processing');
         } else {
@@ -377,7 +394,7 @@ async function handleSplit() {
 }
 
 async function handleInsurance(boughtInsurance) {
-    if (!$("#uiWindow").hasClass('processing')) {
+    if (!$("#uiWindow").hasClass('processing') && isLIVE) {
         if (playerBet > 0 && playerMoney >= parseInt(BET_AMOUNTS[playerBet] / 2)) {
             $("#uiWindow").addClass('processing');
             const data = await makeRequest('INSURANCE', { boughtInsurance: boughtInsurance });
@@ -399,7 +416,7 @@ async function handleInsurance(boughtInsurance) {
 }
 
 async function handleDouble() {
-    if (!$("#uiWindow").hasClass('processing')) {
+    if (!$("#uiWindow").hasClass('processing') && isLIVE) {
         if (playerMoney >= BET_AMOUNTS[playerBet]) {
             $("#uiWindow").addClass('processing');
             $('#double').addClass('inactive');
@@ -579,73 +596,88 @@ async function animateDealersTurn(data) {
 }
 
 async function animateSplit(data) {
+
+    if (isUpdatingPlayerMoney) {
+        await updatePlayerMoney(data, -data.playerBet)
+    } else {
+        updatePlayerMoney(data, -data.playerBet);
+    }
+
     const originalHandIndex = data.currentHandIndex;
-    const originalHand = data.playerHands[originalHandIndex]; // Original hand with matching cards that will be split (Card1, Card2)
     const newHandIndex = data.playerHands.length - 1; // Index for new hand (if we start with one hand, the next hand added will be playerHands[1])
 
-    // Grab the second card in the hand that's being split
     const divToMove = $(`#hand${originalHandIndex + 1} .playingCard:last-child`);
-    const cardToMove = originalHand.hand[0]; // Card value of card being moved to new hand
+    // Check if divToMove exists
+    if (divToMove.length === 0) {
+        console.error(`Element to move not found: #hand${originalHandIndex + 1} .playingCard:last-child`);
+        return;
+    }
 
-    // Create a new div for the new hand with initial opacity 0
-    const newHandDivHtml = `<div id="hand${newHandIndex + 1}" class="playerHands" style="opacity: 0;"><div class="arrow"></div><div class="hand-total"></div></div>`;
-    $('#playerHand').append(newHandDivHtml);
-    const newHandDiv = $(`#hand${newHandIndex + 1}`);
+    const newHandDiv = await createNewHandDiv(newHandIndex);
+    if (!newHandDiv) return;
 
-    // Find the arrow element of originalHand and set its initial opacity to 0
     const arrowElement = $(`#hand${originalHandIndex + 1} .arrow`);
     arrowElement.css('opacity', 0);
 
-    // Create a GSAP timeline
+    await fadeInNewHandAndArrow(newHandDiv, arrowElement);
+    await moveCardToNewHand(divToMove, newHandDiv, data, originalHandIndex, newHandIndex);
+    await drawNewCards(data, originalHandIndex, newHandIndex);
+    await dimNewHand(newHandIndex);
+    await updateScores(data);
+    await showGameWindow(data);
+}
+
+async function createNewHandDiv(newHandIndex) {
+    const newHandDivHtml = `<div id="hand${newHandIndex + 1}" class="playerHands" style="opacity: 0;"><div class="arrow"></div><div class="hand-total"></div></div>`;
+    $('#playerHand').append(newHandDivHtml);
+    const newHandDiv = $(`#hand${newHandIndex + 1}`);
+    if (newHandDiv.length === 0) {
+        console.error(`New hand div not created: #hand${newHandIndex + 1}`);
+        return null;
+    }
+    return newHandDiv;
+}
+
+async function fadeInNewHandAndArrow(newHandDiv, arrowElement) {
     const tl = gsap.timeline();
-
-    // Add fade-in animations for newHandDiv and arrowElement to the timeline
     tl.to(newHandDiv, { duration: 0.2, opacity: 1 }, 0)
-        .to(arrowElement, { duration: 0.2, opacity: 1 }, 0); // Fade in the arrow element
+        .to(arrowElement, { duration: 0.2, opacity: 1 }, 0);
+    await tl.play();
+}
 
-    await tl.play(); // Play the timeline
-
-    // Animate the second card moving to the new hand and new cards being added to both hands
-
-    const newCardPosition = await getCardBackgroundPosition(cardToMove);
+async function moveCardToNewHand(divToMove, newHandDiv, data, originalHandIndex, newHandIndex) {
+    const newCardPosition = await getCardBackgroundPosition(data.playerHands[originalHandIndex].hand[0]);
+    const newHandOffsetTop = newHandDiv.offset().top;
+    const divToMoveOffsetTop = divToMove.offset().top;
 
     await gsap.to(divToMove, {
         duration: 0.2,
-        y: newHandDiv.offset().top - divToMove.offset().top,
-        onComplete: async () => {
-            divToMove.css('transform', ''); // Reset transformations
+        y: newHandOffsetTop - divToMoveOffsetTop,
+        onComplete: () => {
+            divToMove.css('transform', '');
             divToMove.css('background-position', newCardPosition);
-            newHandDiv.append(divToMove); // Move the card to the new hand div
-
-            // Draw a new card for the original hand
-            const originalNewCard = data.playerHands[originalHandIndex].hand.slice(-1)[0];
-            const originalNewCardPosition = await getCardBackgroundPosition(originalNewCard);
-            const $originalNewCardElement = $('<div class="playingCard"></div>').css('background-position', originalNewCardPosition);
-            $(`#hand${originalHandIndex + 1}`).append($originalNewCardElement);
-
-            await gsap.fromTo($originalNewCardElement, { opacity: 0, y: -50 }, { opacity: 1, y: 0, duration: 0.2 });
-
-            // Draw a new card for the new hand
-            const newHandNewCard = data.playerHands[newHandIndex].hand.slice(-1)[0];
-            const newHandNewCardPosition = await getCardBackgroundPosition(newHandNewCard);
-            const $newHandNewCardElement = $('<div class="playingCard"></div>').css('background-position', newHandNewCardPosition);
-            $(`#hand${newHandIndex + 1}`).append($newHandNewCardElement);
-
-            await gsap.fromTo($newHandNewCardElement, { opacity: 0, y: -50 }, { opacity: 1, y: 0, duration: 0.2 });
-
-            // Update the scores after the split animation is complete
-            await updateScores(data);
-
-            // Dim the new hand
-            await gsap.to(`#hand${newHandIndex + 1}`, {
-                duration: 0.5,
-                filter: 'brightness(0.5)',
-                onComplete: () => $(`#hand${newHandIndex + 1}`).addClass('notCurrentHand')
-            });
-
-            // Show the game window
-            await showGameWindow(data);
+            newHandDiv.append(divToMove);
         }
+    });
+}
+
+async function drawNewCards(data, originalHandIndex, newHandIndex) {
+    await drawNewCardForHand(originalHandIndex, data.playerHands[originalHandIndex].hand.slice(-1)[0]);
+    await drawNewCardForHand(newHandIndex, data.playerHands[newHandIndex].hand.slice(-1)[0]);
+}
+
+async function drawNewCardForHand(handIndex, card) {
+    const cardPosition = await getCardBackgroundPosition(card);
+    const $newCardElement = $('<div class="playingCard"></div>').css('background-position', cardPosition);
+    $(`#hand${handIndex + 1}`).append($newCardElement);
+    await gsap.fromTo($newCardElement, { opacity: 0, y: -50 }, { opacity: 1, y: 0, duration: 0.2 });
+}
+
+async function dimNewHand(newHandIndex) {
+    await gsap.to(`#hand${newHandIndex + 1}`, {
+        duration: 0.5,
+        filter: 'brightness(0.5)',
+        onComplete: () => $(`#hand${newHandIndex + 1}`).addClass('notCurrentHand')
     });
 }
 
@@ -682,7 +714,7 @@ async function displayStartingHands(data) {
 
     // Area for dealer's total hand value
     let questionScorePosition = await getScoreBackgroundPosition(`questionMark`);
-    let $dealerScore = $('<div class="dealerScore"></div>').css('opacity', 0).css('background-position', questionScorePosition);
+    let $dealerScore = $('<div class="dealerScore dealerScoreOverlay"></div>').css('opacity', 0).css('background-position', questionScorePosition);
     $('#dealerHand').append($dealerScore);
 
     // Area for dealer's hand
@@ -771,9 +803,16 @@ async function updateScores(data, updatePlayer = true) {
         }
     }
 
-    //update dealers hand
+    // Update dealer's hand
     if (!updatePlayer) {
-        $('.dealerScore').css('background-position', await getScoreBackgroundPosition(`${data.dealerHand.total === 'hidden' ? 'questionMark' : data.dealerHand.total}`));
+        const dealerScoreElement = $('.dealerScore');
+        const backgroundPosition = await getScoreBackgroundPosition(data.dealerHand.total === 'hidden' ? 'questionMark' : data.dealerHand.total);
+
+        if (data.dealerHand.total >= 21) {
+            dealerScoreElement.css('background-position', backgroundPosition).removeClass('dealerScoreOverlay');
+        } else {
+            dealerScoreElement.css('background-position', backgroundPosition).addClass('dealerScoreOverlay');
+        }
     }
 }
 
@@ -797,7 +836,7 @@ async function showGameWindow(data = {}, callWindow = null) {
         await updateCurrentHand(currentHandIndex); // update hand arrows if more than one hand
     }
 
-    console.log(`[LOADING WINDOW: ${loadWindow}]`);
+    // console.log(`[LOADING WINDOW: ${loadWindow}]`);
     if (data?.gameWindow) await updateButtonStates(data);
 
     if (loadWindow === 'splitDouble') {
@@ -845,6 +884,7 @@ async function showGameWindow(data = {}, callWindow = null) {
             $('#insurance').addClass('hidden');
             break;
         case 'insurance':
+            console.log('showing insurance');
             $('#uiWindow').css('background-position', await getUiBackgroundPosition('insurance'));
             $('#uiWindow').css('height', '370px');
             $('#uiWindow').css('align-content', 'end');
@@ -987,7 +1027,7 @@ async function updatePlayerMoney(data, adjustBy = null, showRewards = false) {
         let currentMoney = parseInt(playerMoney);
         let rewardCountdown = data?.reward ?? 0;
         let processingReward = false;
-        const minDisplayTime = 800; // Minimum display time for reward in milliseconds
+        const minDisplayTime = 300; // Minimum display time for reward in milliseconds
 
 
 
@@ -999,7 +1039,7 @@ async function updatePlayerMoney(data, adjustBy = null, showRewards = false) {
 
             timeline.to(`#${rewardTextElementId}`, {
                 top: '65px',
-                duration: 0.5
+                duration: 0.25
             }, 0);
 
             if (data.boughtInsurance && data.dealerHandTotal === 21 && data.dealerHand.length === 2) {
@@ -1007,7 +1047,7 @@ async function updatePlayerMoney(data, adjustBy = null, showRewards = false) {
 
                 timeline.to(`#${insuranceTextElementId}`, {
                     opacity: 1,
-                    duration: 0.5
+                    duration: 0.25
                 }, 0);
             }
 
