@@ -133,6 +133,8 @@ async function init() {
             '</div>');
 
         await setUpButtonEvents();
+        window.addEventListener('resize', adjustJackaceGameScale);
+        await adjustJackaceGameScale();
         await showGameWindow(null, 'splashScreen');
         if (!isLIVE) {
             alert('JackAce is currently being worked on. Please try again.');
@@ -142,6 +144,31 @@ async function init() {
         console.error('Error starting JackAce:', error);
     }
 }
+
+// Function to get the scale value from the transform property
+function getScale(element) {
+    const transform = window.getComputedStyle(element).transform;
+    if (transform === 'none') return 1;
+
+    const matrix = transform.match(/^matrix\((.+)\)$/);
+    if (matrix) {
+        const values = matrix[1].split(', ');
+        return parseFloat(values[0]); // Extract the scale value
+    }
+
+    return 1;
+}
+
+// Function to set the scale of #jackaceGame based on #container's scale
+async function adjustJackaceGameScale() {
+    const container = document.querySelector('#container');
+    const jackaceGame = document.querySelector('#jackaceGame');
+    const containerScale = getScale(container);
+
+    // Apply the new scale to #jackaceGame
+    jackaceGame.style.transform = `scale(${containerScale * 0.5})`;
+}
+
 
 async function setUpButtonEvents() {
     const buttons = [
@@ -395,23 +422,24 @@ async function handleSplit() {
 
 async function handleInsurance(boughtInsurance) {
     if (!$("#uiWindow").hasClass('processing') && isLIVE) {
-        if (playerBet > 0 && playerMoney >= parseInt(BET_AMOUNTS[playerBet] / 2)) {
-            $("#uiWindow").addClass('processing');
-            const data = await makeRequest('INSURANCE', { boughtInsurance: boughtInsurance });
-            if (boughtInsurance) {
-                isUpdatingPlayerMoney ? await updatePlayerMoney(data, parseInt(-data.playerBet / 2)) : updatePlayerMoney(data, parseInt(-data.playerBet / 2));
-            }
-            if (data.dealerHand.total === 21) {
-                await animateDealersTurn(data);
-                await showRewards(data);
-            } else {
-                await showGameWindow(data);
-            }
-            $("#uiWindow").removeClass('processing');
+        $("#uiWindow").addClass('processing');
+        const data = await makeRequest('INSURANCE', { boughtInsurance: boughtInsurance });
+
+        if (boughtInsurance && playerBet > 0 && playerMoney >= parseInt(BET_AMOUNTS[playerBet] / 2)) {
+            isUpdatingPlayerMoney ? await updatePlayerMoney(data, parseInt(-data.playerBet / 2)) : updatePlayerMoney(data, parseInt(-data.playerBet / 2));
         } else {
             await flashCredits();
             await handleInsurance(false);
         }
+
+        if (data.dealerHand.total === 21) {
+            await animateDealersTurn(data);
+            await showRewards(data);
+        } else {
+            await showGameWindow(data);
+        }
+
+        $("#uiWindow").removeClass('processing');
     }
 }
 
@@ -520,19 +548,21 @@ async function animateDeal(data) {
     // Animate player's first card
     await cardAnimation(playerFirstCard, playerFirstCardPosition, tl, delay);
     delay += 0.2;
-    
+
     // Animate dealer's first card (face down)
     if (!$(dealerFirstCard).hasClass('card-back')) {
         await cardAnimation(dealerFirstCard, null, tl, delay);
         delay += 0.2;
     }
-    
+
     // Animate player's second card
     await cardAnimation(playerSecondCard, playerSecondCardPosition, tl, delay);
     delay += 0.2;
-    
+
     // Animate dealer's second card
     await cardAnimation(dealerSecondCard, dealerSecondCardPosition, tl, delay);
+
+    await tl.play();
 
     // Update hand totals
     await updateScores(data);
@@ -615,13 +645,13 @@ async function animateDealersTurn(data) {
         hideArrowsNoDim = true;
         await updateCurrentHand(null);
     }
-    
+
     // Get the background position for the hidden card and animate flip
     const dealerFirstCard = $('#dealerHand .card-back').first();
     if (dealerFirstCard.length) {
         const dealerFirstCardPosition = await getCardBackgroundPosition(data.dealerHand.hand[0]);
         await cardAnimation(dealerFirstCard, dealerFirstCardPosition, gsap.timeline(), 0);
-    }else{
+    } else {
         console.error('Dealer first card not found.');
         return;
     }
@@ -1069,7 +1099,7 @@ async function flashCredits() {
     resourceText.addClass('flash-red');
 
     // Play sound
-    const audio = new Audio('./apps/JackAce/audio/nomonies.mp3');
+    const audio = new Audio('./apps/JackAce/audio/nomonies.wav');
     audio.play();
 
     await new Promise(resolve => setTimeout(resolve, 500));
@@ -1097,10 +1127,10 @@ async function updatePlayerMoney(data, adjustBy = null, showRewards = false) {
             const timeline = gsap.timeline();
 
             processingReward = true;
-            const rewardTextElementId = await createRewardTextElement(rewardCountdown);
+            const { rewardTextElementId, targetTop } = await createRewardTextElement(rewardCountdown);
 
             timeline.to(`#${rewardTextElementId}`, {
-                top: '65px',
+                top: `${targetTop}px`,
                 duration: 0.25
             }, 0);
 
@@ -1200,17 +1230,38 @@ async function createRewardTextElement(rewardCountdown) {
 
     $('#resources-minigame').after(rewardTextElement);
 
+    // Get the height of #resources-minigame
+    const resourcesMinigame = $('#resources-minigame');
+    const resourcesMinigameHeight = resourcesMinigame.outerHeight();
+    const resourcesMinigameBottom = resourcesMinigame.offset().top + resourcesMinigameHeight;
+
+    // Get the scale applied to the #container
+    const container = $('#container');
+    const containerTransform = container.css('transform');
+    let scale = 1;
+    if (containerTransform && containerTransform !== 'none') {
+        const matrix = containerTransform.match(/^matrix\((.+)\)$/);
+        if (matrix) {
+            scale = parseFloat(matrix[1].split(', ')[0]);
+        }
+    }
+
+    // Calculate the target top position
+    const targetTop = resourcesMinigameBottom / scale;
+    console.log(targetTop);
+
     $(`#${rewardTextElementId}`).css({
         position: 'absolute',
-        width: `fit-content`,
-        top: '0px',
-        right: '1vh',
+        width: `17%`,
+        top: '0%',
+        right: '2%',
+        overflow: 'visible',
         zIndex: '1',
-        'font-size': '4vh',
+        'font-size': '6vh',
         'font-family': '"Orbitron", "Helvetica Neue", "Futura", "Trebuchet MS", Arial'
     });
 
-    return rewardTextElementId;
+    return { rewardTextElementId, targetTop };
 }
 
 // Helper function to create the insurance text element
