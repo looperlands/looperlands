@@ -1,7 +1,7 @@
 const discord = require("../../js/discord");
 const dao = require('../../js/dao');
 
-const DEBUG = true;
+const DEBUG = false;
 
 class JackAce {
     constructor(cache, platformClient) {
