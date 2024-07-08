@@ -73,9 +73,16 @@ const sendMessageToChannel = (channels, message, embed = false) => {
                     sendMessageToChannel(channels, message, false);
                 }
             } else {
-                const messages = splitMessage(message);
-                for (let msg of messages) {
-                    channel.send(`${GAMESERVER_NAME}: ${msg}`);
+                const prefix = `${GAMESERVER_NAME}: `;
+                const availableLength = MAX_MESSAGE_LENGTH - prefix.length;
+
+                if (message.length <= availableLength) {
+                    channel.send(`${prefix}${message}`);
+                } else {
+                    const messages = splitMessage(message);
+                    for (let msg of messages) {
+                        channel.send(`${prefix}${msg}`);
+                    }
                 }
             }
         } catch (e) {

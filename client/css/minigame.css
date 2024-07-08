@@ -64,6 +64,7 @@
   text-decoration: none;
   display: flex;
   align-items: center;
+  background: #FAFAFA;
 }
 
 #minigameMenu-content a:hover {
@@ -92,46 +93,5 @@
     aspect-ratio: 16/9;
     height:40%;
     top:30%;
-  }
-
-  #minigameMenu {
-    top: 2%;
-    right: 1%;
-    width: fit-content;
-    z-index: 9999;
-    position: absolute;
-    transform: translate(0%, 8%);
-    transform-origin: top right;
-  }
-
-  #minigameMenu-content {
-    display:  none;
-    transform: scale(0);
-    min-width: 2.5vh;
-    position: relative;
-    white-space: nowrap;
-    font-family: v-sans, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-    font-size: max(1.5vh,1.125vw);    
-    line-height: max(2.5vh,1.875vw);
-    background-color: #FAFAFA;
-    box-shadow: 0.25vh 0.25vh 0.75vh 0.42vh rgba(0, 0, 0, 0.9);
-  }
-
-  #minigameMenu:not(:hover) #minigameMenu-content {
-    display: unset;
-    transform: scale(0);
-    transform-origin: top right;
-    opacity: 0;
-    transition: transform 0.5s ease, opacity 0.25s ease;
-    width: 2.5vh;
-  }
-
-  #minigameMenu:hover #minigameMenu-content {
-    display: unset;
-    transform: scale(1, 1);
-    transform-origin: top right;
-    width: fit-content;
-    opacity: 1;
-    transition: transform 0.5s ease, opacity 0.25s ease;
   }
 }

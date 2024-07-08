@@ -1,7 +1,9 @@
 const discord = require("../../js/discord");
 const dao = require('../../js/dao');
+const ens = require('../../js/ens')
 
-const DEBUG = true;
+const DEBUG = false;
+const BETA = true;
 
 class JackAce {
     constructor(cache, platformClient) {
@@ -50,12 +52,7 @@ class JackAce {
                 case 'DEAL':
                     this.log(`[HANDLE ACTION] Dealing cards`, player);
                     playerState.playerBet = this.getValidBetAmount(req.body.playerBet);
-                    if (playerState.playerMoney === 0) {
-                        const paid = await dao.updateResourceBalance(playerState.player, playerState.currency, 147);
-                        if (!paid) {
-                            this.errorEncountered(`JACKACE ERROR`, `handleAction: DEAL`, `dao.updateResourceBalance returned false`, `PAYMENT NOT PROCESSED: 147 to ${playerState.player}`, player);
-                        }
-                    } else if (playerState.playerMoney >= playerState.playerBet && await this.payToCORNHOLE(playerState)) {
+                    if (playerState.playerMoney >= playerState.playerBet && await this.payToCORNHOLE(playerState)) {
                         await this.deal(playerState);
                         res.json(this.sanitizePlayerState(playerState));
                     } else {
@@ -334,8 +331,9 @@ class JackAce {
         }
 
         try {
+            const playerName = await ens.getEns(walletId);
             const deck = this.initializeDeck(this.DECK_COUNT);
-            return await this.createPlayerState(player, sessionId, walletId, playerBet, deck);
+            return await this.createPlayerState(player, sessionId, walletId, playerName, playerBet, deck);
         } catch (error) {
             this.errorEncountered(`JACKACE ERROR`, `initializePlayerState`, `Error initializing deck and creating playerState`, `${error}`, player);
             throw error;
@@ -357,11 +355,12 @@ class JackAce {
         return deck;
     }
 
-    async createPlayerState(player, sessionId, walletId, playerBet, deck) {
+    async createPlayerState(player, sessionId, walletId, playerName, playerBet, deck) {
         const validBetAmount = this.getValidBetAmount(playerBet);
         const playerMoney = await dao.getResourceBalance(player, this.GOLD);
         return {
             player: player,
+            playerName: playerName,
             sessionId: sessionId,
             walletId: walletId,
             currency: this.GOLD,
@@ -500,6 +499,7 @@ class JackAce {
                 // Dealer busts or player wins
                 if (playerState.playerHands.length === 1 && hand.hand.length === 2 && playerTotal === 21) {
                     totalReward += Math.round(hand.bet * 2.5); // Blackjack pays 3:2 (1 + 1.5 = 2.5)
+
                 } else {
                     totalReward += hand.bet * 2; // Regular win pays 1:1 (1 + 1 = 2) includes jackacs on a split hand
                 }
@@ -511,6 +511,10 @@ class JackAce {
                 totalReward += 0;
             }
         });
+
+        if(BETA && playerState.playerMoney === 0 && totalReward === 0){
+            totalReward = 147;
+        }
 
         if (totalReward > 0) {
             playerState.reward = totalReward;
@@ -690,7 +694,7 @@ class JackAce {
         this.log(`[HANDLE ACTION] Player: ${player}, Session ID: ${sessionId}, Wallet ID: ${walletId}`, player);
 
         if (getPlayerError) {
-            return [player, { status: 500, message: getPlayerError }];
+            return [player, { status: 500, message: `getPlayer error: ${getPlayerError}` }];
         }
 
         // Verify a valid action was requested
@@ -716,7 +720,8 @@ class JackAce {
             this.log(`[validateAction] Initializing player state for: ${player}`, player);
             try {
                 this.playerGameStates[player] = await this.initializePlayerState(player, sessionId, walletId, req);
-                this.log(`[validateAction] Player state initialized: ${JSON.stringify(this.playerGameStates[player])}`, player);
+                this.log(`[validateAction] Player state initialized: ${this.logPlayerState(this.playerGameStates[player])}`, player);
+
             } catch (error) {
                 return [player, { status: 500, message: `[JACKACE ERROR] Error initializing player state: ${error}` }];
             }
@@ -725,6 +730,8 @@ class JackAce {
             this.playerGameStates[player].sessionId = sessionId;
             this.playerGameStates[player].walletId = walletId;
         }
+
+        discord.sendMessage(`${this.playerGameStates[player].playerName} is at the cornHOLE playing JackAce.`);
 
         if (action === 'RESET') { return [player, null]; }
 
@@ -831,7 +838,7 @@ class JackAce {
             summary: errorSummary,
             error: rawError
         });
-    
+
         if (DEBUG) {
             if (player === "0x7e0e930b5bfdb8214d40cdcdc9d83d6beab056dbfc551430b6be4f13facfadb3") {
                 discord.sendToDebugChannel(message, true);
