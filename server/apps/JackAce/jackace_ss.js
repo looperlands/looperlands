@@ -731,7 +731,7 @@ class JackAce {
             this.playerGameStates[player].walletId = walletId;
         }
 
-        discord.sendMessage(`${this.playerGameStates[player].playerName} is at the cornHOLE playing JackAce.`);
+        discord.sendMessage(`🃏 **${this.playerGameStates[player].playerName}** is at the cornHOLE playing JackAce.`);
 
         if (action === 'RESET') { return [player, null]; }
 

@@ -131,7 +131,7 @@ module.exports = Player = Character.extend({
                 self.hasEnteredGame = true;
                 self.isDead = false;
                 if (!self.isBot()) {
-                    discord.sendMessage(`Player ${self.name} joined the game.`);
+                    discord.sendMessage(`👋 **${self.name}** joined the game.`);
                 }
                 dao.saveAvatarMapAndCheckpoint(playerCache.nftId, playerCache.mapId, playerCache.checkpointId);
                 self.mapId = playerCache.mapId;
@@ -175,7 +175,7 @@ module.exports = Player = Character.extend({
                 var emotion = Utils.sanitize(message[1]);
                 self.broadcastToZone(new Messages.Emote(self, emotion), false);
                 let emoticon = Types.emotions[emotion];
-                discord.sendMessage(`${self.name} ${emoticon}`);
+                discord.sendMessage(`**${self.name}** ${emoticon}`);
             }
             else if (action === Types.Messages.MOVE) {
                 if (self.move_callback) {
@@ -633,10 +633,10 @@ module.exports = Player = Character.extend({
                 let killer = AltNames.getName(kindString);
 
                 if (mob instanceof Player) {
-                    discord.sendMessage(`Player ${this.name} ganked by ${mob.name}.`);
+                    discord.sendMessage(`💀 **${this.name}** ganked by **${mob.name}**.`);
                     this.updatePVPStats(mob);
                 } else {
-                    discord.sendMessage(`Player ${this.name} killed by ${killer}.`);
+                    discord.sendMessage(`💀 **${this.name}** killed by *${killer}*.`);
                 }
 
                 this.isDead = true;
@@ -659,7 +659,7 @@ module.exports = Player = Character.extend({
         let updatedLevel = Formulas.level(session.xp);
         if (this.level < updatedLevel) {
             this.level = updatedLevel;
-            let message = `${this.name} advanced to level ${updatedLevel}`;
+            let message = `💪 **${this.name}** advanced to level ${updatedLevel}`;
             discord.sendMessage(message);
             this.updateHitPoints();
         }
