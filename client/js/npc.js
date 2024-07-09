@@ -575,6 +575,8 @@ define(['character'], function (Character) {
             "Howdy! I'm Gary, the real estate agent for Nexus Realty.",
             "If you're looking to buy some property in The Nexus, you've come to the right place.",
             "Right now we have several properties available and when you buy from us you get a FREE Lambo!",
+            //"If you're digging the boardwalk in Paradise Point, we have two new beach houses coming avialable soon...",
+            //"And if you're looking for something a little more exclusive we have private islands available in the Helio Islands.",
             "If you're looking for something exclusive we have private islands available in the Helio Islands.",
             //"That yacht over there, The Sun Chaser, has a private Captain's Quarters on it that is available to purchse.",
             //"And if you really want to get out of town, we have 2 m88n pods available in Lunaria",

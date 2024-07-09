@@ -479,6 +479,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "item-m88ngoldbag",
                     "item-m88ngembag",
                     "item-m88nluckybag",
+                    "item-m88nchampagne",
+                    "item-m88nchampagnebottle",
+                    "item-m88nshine",
+                    "item-m88nwhiskey",
                     //MRMlabs
                     "item-firstaidkit",
                     "item-bandaid",

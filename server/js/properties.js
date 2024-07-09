@@ -1290,11 +1290,11 @@ let Properties = {
             m88nmail: 1,
             m88nworm: 1,
             m88ngem: 1,
-            gameboy: 5,
+            gameboy: 4,
             battery: 3,
             hardwallet: 2,
             movieglasses: 1,
-            m88ntentacle: 1,
+            m88ntentacle: 2,
             GOLD3: 10
         },
         messages: ['Hahaha, no chance!', 'You should stay out of the ocean...', 'Why are you wasting my time?', 'Stay away or come back with friends!'],
@@ -1318,9 +1318,9 @@ let Properties = {
             m88nworm: 1,
             m88negg1: 1,
             m88negg2: 1,
-            burger: 10,
-            m88ngem: 1,
-            GOLD3: 35,
+            burger: 5,
+            m88ngem: 10,
+            GOLD3: 30,
             GOLD4: 1,
             GOLD5: 1,
         },
@@ -2120,6 +2120,30 @@ let Properties = {
         respawnDelay: 60000,
         onConsume: function(player) {
             player.releaseItem(Types.Entities.M88NKEVLARARMOR);
+        }
+    },
+    m88nchampagne: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "hpPotions",
+            duration: 60000
+        },
+        inventoryDescription: "Glass of Champagne",
+        onConsume: function(player){
+            player.regenHealthBy(300);
+        }
+    },
+    m88nshine: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "hpPotions",
+            duration: 60000
+        },
+        inventoryDescription: "Shot of m88nshine",
+        onConsume: function(player){
+            player.regenHealthBy(300);
         }
     },
     m88nfastshoes: {
