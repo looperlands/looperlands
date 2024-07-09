@@ -964,6 +964,10 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.M88NGOLDBAG] = function(id) { return new Items.m88ngoldbag(id); };
     EntityFactory.builders[Types.Entities.M88NGEMBAG] = function(id) { return new Items.m88ngembag(id); };
     EntityFactory.builders[Types.Entities.M88NLUCKYBAG] = function(id) { return new Items.m88nluckybag(id); };
+    EntityFactory.builders[Types.Entities.M88NCHAMPAGNE] = function(id) { return new Items.m88nchampagne(id); };
+    EntityFactory.builders[Types.Entities.M88NCHAMPAGNEBOTTLE] = function(id) { return new Items.m88nchampagnebottle(id); };
+    EntityFactory.builders[Types.Entities.M88NSHINE] = function(id) { return new Items.m88nshine(id); };
+    EntityFactory.builders[Types.Entities.M88NWHISKEY] = function(id) { return new Items.m88nwhiskey(id); };
     //MRMlabs Items
     EntityFactory.builders[Types.Entities.FIRSTAIDKIT] = function(id) { return new Items.firstaidkit(id); };
     EntityFactory.builders[Types.Entities.BANDAID] = function(id) { return new Items.bandaid(id); };

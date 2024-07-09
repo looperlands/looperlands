@@ -339,6 +339,10 @@ define(['item'], function(Item) {
         m88ngoldbag:Item.extend({init:function(id){this._super(id,Types.Entities.M88NGOLDBAG,"object");this.lootMessage="You found a mysterious bag!";}}),
         m88ngembag:Item.extend({init:function(id){this._super(id,Types.Entities.M88NGEMBAG,"object");this.lootMessage="You found a mysterious bag!";}}),
         m88nluckybag:Item.extend({init:function(id){this._super(id,Types.Entities.M88NLUCKYBAG,"object");this.lootMessage="You found a mysterious bag!";}}),
+        m88nchampagne:Item.extend({init:function(id){this._super(id,Types.Entities.M88NCHAMPAGNE,"object");this.lootMessage="You found a glass of champagne!";}}),
+        m88nchampagnebottle:Item.extend({init:function(id){this._super(id,Types.Entities.M88NCHAMPAGNEBOTTLE,"object");this.lootMessage="You found a bottle of champagne!";}}),
+        m88nshine:Item.extend({init:function(id){this._super(id,Types.Entities.M88NSHINE,"object");this.lootMessage="You found a shot of m88nshine!";}}),
+        m88nwhiskey:Item.extend({init:function(id){this._super(id,Types.Entities.M88NWHISKEY,"object");this.lootMessage="You found a glass of whiskey!";}}),
         //MRMlabs Items
         firstaidkit:Item.extend({init:function(id){this._super(id,Types.Entities.FIRSTAIDKIT,"object");this.lootMessage="You found a first aid kit!";}}),
         bandaid:Item.extend({init:function(id){this._super(id,Types.Entities.BANDAID,"object");this.lootMessage="You found a bandaid!";}}),

@@ -471,6 +471,10 @@ Types = {
         M88NGOLDBAG: 78007000,
         M88NGEMBAG: 78007100,
         M88NLUCKYBAG: 78007200,
+        M88NCHAMPAGNE: 78007300,
+        M88NCHAMPAGNEBOTTLE: 78007400,
+        M88NSHINE: 78007500,
+        M88NWHISKEY: 78007600,
         //MRMlabs NPCs
         TYLERDURDEN: 79000000,
         //MRMlabs Items
@@ -6247,6 +6251,10 @@ var kinds = {
     m88ngoldbag: [Types.Entities.M88NGOLDBAG, "object"],
     m88ngembag: [Types.Entities.M88NGEMBAG, "object"],
     m88nluckybag: [Types.Entities.M88NLUCKYBAG, "object"],
+    m88nchampagne: [Types.Entities.M88NCHAMPAGNE, "object"],
+    m88nchampagnebottle: [Types.Entities.M88NCHAMPAGNEBOTTLE, "object"],
+    m88nshine: [Types.Entities.M88NSHINE, "object"],
+    m88nwhiskey: [Types.Entities.M88NWHISKEY, "object"],
     //MRMlabs Items
     firstaidkit: [Types.Entities.FIRSTAIDKIT, "object"],
     bandaid: [Types.Entities.BANDAID, "object"],
