@@ -8,6 +8,8 @@ let playerId = "";
 let processingBypass = false; // used to forceResetHoverState
 let hideArrowsNoDim = false;
 let isUpdatingPlayerMoney = false; // Flag to track if the function is running
+let generateParticles = false;
+let particleAnimationPromises = [];
 
 const GOLD = "21300041";
 const BET_AMOUNTS = { 1: 1, 2: 2, 3: 5, 4: 10, 5: 25, 6: 50, 7: 100 };
@@ -425,11 +427,13 @@ async function handleInsurance(boughtInsurance) {
         $("#uiWindow").addClass('processing');
         const data = await makeRequest('INSURANCE', { boughtInsurance: boughtInsurance });
 
-        if (boughtInsurance && playerBet > 0 && playerMoney >= parseInt(BET_AMOUNTS[playerBet] / 2)) {
-            isUpdatingPlayerMoney ? await updatePlayerMoney(data, parseInt(-data.playerBet / 2)) : updatePlayerMoney(data, parseInt(-data.playerBet / 2));
-        } else {
-            await flashCredits();
-            await handleInsurance(false);
+        if (boughtInsurance) {
+            if (playerBet > 0 && playerMoney >= parseInt(BET_AMOUNTS[playerBet] / 2)) {
+                isUpdatingPlayerMoney ? await updatePlayerMoney(data, parseInt(-data.playerBet / 2)) : updatePlayerMoney(data, parseInt(-data.playerBet / 2));
+            } else {
+                await flashCredits();
+                await handleInsurance(false);
+            }
         }
 
         if (data.dealerHand.total === 21) {
@@ -1119,17 +1123,15 @@ async function updatePlayerMoney(data, adjustBy = null, showRewards = false) {
         let currentMoney = parseInt(playerMoney);
         let rewardCountdown = data?.reward ?? 0;
         let processingReward = false;
-        const minDisplayTime = 750; // Minimum display time for reward in milliseconds
-
-
+        const minDisplayTime = 1000; // Minimum display time for reward in milliseconds
 
         if (rewardCountdown > 0 && showRewards) {
             const timeline = gsap.timeline();
 
             processingReward = true;
-            const { rewardTextElementId, targetTop } = await createRewardTextElement(rewardCountdown);
+            const { rewardContainerId, targetTop } = await createRewardTextElement(rewardCountdown);
 
-            timeline.to(`#${rewardTextElementId}`, {
+            timeline.to(`#${rewardContainerId}`, {
                 top: `${targetTop}px`,
                 duration: 0.25
             }, 0);
@@ -1158,7 +1160,11 @@ async function updatePlayerMoney(data, adjustBy = null, showRewards = false) {
                     });
             }
 
-            await timeline.then(() => new Promise(resolve => setTimeout(resolve, minDisplayTime)));;
+            await timeline.then(() => new Promise(resolve => setTimeout(resolve, minDisplayTime)));
+
+            // Start generating particles
+            generateParticles = true;
+            createParticlesContinuously(`#${rewardContainerId}`);
         }
 
         // Calculate total steps and delay time per step
@@ -1195,12 +1201,19 @@ async function updatePlayerMoney(data, adjustBy = null, showRewards = false) {
         }
 
         if (processingReward) {
+
+            generateParticles = false; // Stop generating particles
+
             const tl = gsap.timeline();
 
-            tl.to(`#reward-text`, {
+            tl.to(`#reward-container`, {
                 opacity: 0,
                 duration: 0.5,
-                onComplete: () => $(`#reward-text`).remove()
+                onComplete: async () => {
+                    // Wait for all particle animations to complete
+                    await Promise.all(particleAnimationPromises);
+                    $(`#reward-container`).remove();
+                }
             });
 
             if (data.boughtInsurance && data.dealerHandTotal === 21 && data.dealerHand.length === 2) {
@@ -1209,26 +1222,48 @@ async function updatePlayerMoney(data, adjustBy = null, showRewards = false) {
                 tl.to(`#${insuranceTextElementId}`, {
                     opacity: 0,
                     y: 20,
-                    scake: 1.2,
+                    scale: 1.2,
                     duration: 0.5,
                     onComplete: () => $(`#${insuranceTextElementId}`).remove()
                 }, "-=0.5");
             }
 
             await tl;
+            generateParticles = false; // Stop generating particles
         }
 
     } finally {
         isUpdatingPlayerMoney = false; // Reset the flag
+        particleAnimationPromises = []; // Reset the promises array
     }
 }
 
 // Helper function to create the reward text element
 async function createRewardTextElement(rewardCountdown) {
+    const rewardContainerId = 'reward-container';
     const rewardTextElementId = 'reward-text';
+
+    // Create the container div
+    const rewardContainer = $('<div></div>').attr('id', rewardContainerId).css({
+        position: 'absolute',
+        width: '17%',
+        top: '0%',
+        right: '2%',
+        overflow: 'visible',
+        zIndex: '1',
+        'font-size': '3vh',
+        'font-family': '"Orbitron", "Helvetica Neue", "Futura", "Trebuchet MS", Arial'
+    });
+
+    // Create the SVG text element
     const rewardTextElement = createSvgText(`+${rewardCountdown}`, rewardTextElementId);
 
-    $('#resources-minigame').after(rewardTextElement);
+    // Create the particle container
+    const particleContainer = $('<div class="particle-container"></div>');
+
+    // Append SVG and particle container to the reward container div
+    rewardContainer.append(rewardTextElement, particleContainer);
+    $('#resources-minigame').after(rewardContainer);
 
     // Get the height of #resources-minigame
     const resourcesMinigame = $('#resources-minigame');
@@ -1248,20 +1283,73 @@ async function createRewardTextElement(rewardCountdown) {
 
     // Calculate the target top position
     const targetTop = resourcesMinigameBottom / scale;
-    console.log(targetTop);
 
-    $(`#${rewardTextElementId}`).css({
-        position: 'absolute',
-        width: `17%`,
-        top: '0%',
-        right: '2%',
-        overflow: 'visible',
-        zIndex: '1',
-        'font-size': '6vh',
-        'font-family': '"Orbitron", "Helvetica Neue", "Futura", "Trebuchet MS", Arial'
+    return { rewardContainerId, targetTop };
+}
+
+// Function to create particles continuously
+async function createParticlesContinuously(target) {
+    while (generateParticles) {
+        createParticles(target);
+        await new Promise(resolve => setTimeout(resolve, 10)); // Adjust the interval as needed
+    }
+}
+
+// Function to create particle animation
+function createParticles(target) {
+    const particleContainer = $(`${target} .particle-container`);
+    const svgTextElement = $(`${target} svg text`);
+    const svgTextWidth = svgTextElement[0].getBoundingClientRect().width;
+    const svgTextHeight = svgTextElement[0].getBoundingClientRect().height;
+
+    const particle = $('<div class="particle"></div>');
+    particleContainer.append(particle);
+
+    const inner25PercentWidth = svgTextWidth * 0.25;
+    const initialX = (Math.random() - 0.5) * inner25PercentWidth; // Random initial X position within the inner 25%
+    const initialY = 0;
+    const targetX = initialX + (Math.random() - 0.5) * svgTextWidth; // Ensure target X does not exceed SVG width
+    const targetY = -(0.5 + (Math.random() * 0.75)) * svgTextHeight; // Target Y position with a random height
+
+    const maxScale = Math.random() * 0.4 + 0.6; // Max scale at the top of the arch
+    const endOpacity = Math.random() * 0.75 + 0.25; // End opacity
+
+    // Ensure targetX is within bounds
+    const finalTargetX = Math.max(-svgTextWidth / 2, Math.min(svgTextWidth / 2, targetX));
+
+    // Animate particles
+    const particlePromise = new Promise((resolve) => {
+        gsap.fromTo(particle, {
+            x: initialX,
+            y: initialY,
+            opacity: 1.0,
+            scale: 0.1,
+            backgroundColor: "white",
+            boxShadow: "0 0 5px white"
+        }, {
+            x: finalTargetX,
+            y: 0,
+            opacity: endOpacity,
+            duration: 0.8,
+            ease: "power1.out",
+            onUpdate: function () {
+                const progress = this.progress();
+
+                // Cubic bezier formula for X and Y coordinates
+                const currentX = Math.pow(1 - progress, 2) * initialX + 2 * (1 - progress) * progress * ((initialX + finalTargetX) / 2) + Math.pow(progress, 2) * finalTargetX;
+                const currentY = Math.pow(1 - progress, 2) * initialY + 2 * (1 - progress) * progress * targetY + Math.pow(progress, 2) * 0;
+                const scaleValue = 0.1 + ((maxScale - 0.1) * Math.sin(Math.PI * progress));
+                gsap.set(particle, { x: currentX, y: currentY, scale: scaleValue });
+            },
+            onComplete: () => {
+                particle.remove();
+                resolve(); // Resolve the promise when the animation is complete
+            }
+        });
     });
 
-    return { rewardTextElementId, targetTop };
+    // Add the promise to the array
+    particleAnimationPromises.push(particlePromise);
 }
 
 // Helper function to create the insurance text element
@@ -1314,6 +1402,8 @@ function createSvgText(textContent, id) {
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
     svg.setAttribute('id', id); // Assign id to the svg element
+    svg.setAttribute('viewBox', '0 0 100 30');
+    svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
 
     const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
     const linearGradient = createLinearGradient();
@@ -1325,6 +1415,7 @@ function createSvgText(textContent, id) {
     svgText.setAttribute('x', '50%');
     svgText.setAttribute('y', '50%');
     svgText.setAttribute('text-anchor', 'middle');
+    svgText.setAttribute('dominant-baseline', 'middle');
     svgText.textContent = textContent;
 
     // Apply additional styles directly to the <text> element

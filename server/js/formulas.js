@@ -47,14 +47,14 @@ Formulas.setXPMultiplier = function (multiplier, timeout) {
 
     if (calledEndTime > XP_END_TIME)
     {
-        discord.sendMessage("XP is " + multiplier + "x for " + duration.humanize());
+        discord.sendMessage("⚠️ **XP is " + multiplier + "x for " + duration.humanize() + "**");
         console.log("XP multiplier set to " + multiplier + " for " + timeout + " seconds");
         
         XP_MULTIPLIER = multiplier;
         XP_END_TIME = calledEndTime;
         clearTimeout(XP_TIMEOUT);
         XP_TIMEOUT = setTimeout(function () {
-            discord.sendMessage("XP is back to normal");
+            discord.sendMessage("⚠️ **XP is back to normal**");
             console.log("XP multiplier reset to 1");
             XP_MULTIPLIER = 1;
         }, timeout * 1000);
