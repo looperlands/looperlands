@@ -33,7 +33,13 @@ class PlayerQuestEventConsumer extends PlayerEventConsumer {
     }
 
     consume(event) {
-        let inProgressQuests = event.playerCache.gameData?.quests[quests.STATES.IN_PROGRESS];
+
+        if (!event.playerCache || !event.playerCache.gameData) {
+            console.error("Player cache or gameData is undefined", JSON.stringify(event));
+            return {change: false};
+        }
+
+        let inProgressQuests = event.playerCache.gameData.quests?.[quests.STATES.IN_PROGRESS];
         //console.log("inProgressQuests: ", event.playerCache.gameData.quests, inProgressQuests);
         if (inProgressQuests === undefined) {
             return {change: false};
