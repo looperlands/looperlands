@@ -12,6 +12,7 @@
         "bison": ">0",
         "discord.js": "^14.11.0",
         "express": ">0",
+        "flatted": "^3.3.1",
         "log": "^6.3.1",
         "logs": "^1.5.10",
         "memcache": "0.3.0",
