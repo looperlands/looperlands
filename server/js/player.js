@@ -704,6 +704,10 @@ module.exports = Player = Character.extend({
         if (self.consumableBuff.buffTimeout) {
             clearTimeout(self.consumableBuff.buffTimeout);
         }
+
+        if (self.flowInterval) {
+            clearInterval(self.flowInterval);
+        }
     },
 
     getState: function () {
