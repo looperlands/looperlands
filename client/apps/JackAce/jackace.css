@@ -11,25 +11,29 @@
   --splashScreenSprite: url('./img/jackace.png') no-repeat;
   --splashScreenWidth: 680px;
   --splashScreenHeight: 530px;
-  --uiWindowWidth: 720px;
-  --uiWindowHeight: 1000px;
+  --uiWindowWidth: 360px;
+  --uiWindowHeight: 500px;
   --uiWindowSprite: url('./img/ui.png') no-repeat;
-  --buttonWidth: 300px;
-  --buttonHeight: 130px;
+  --buttonWidth: 150px;
+  --buttonHeight: 65px;
   --buttonSprite: url('./img/buttons.png') no-repeat;
-  --buttonSpriteSize: 920px 1250px;
-  --scoreWidth: 170px;
+  --buttonSpriteSize: 460px 625px;
+  --scoreWidth: 85px;
   --scoreSprite: url('./img/score.png') no-repeat;
-  --scoreSpriteSize: 1790px 410px;
-  --cardWidth: 110px;
-  --cardHeight: 90px;
+  --scoreSpriteSize: 895px 205px;
+  --cardWidth: 55px;
+  --cardHeight: 45px;
   --cardsSprite: url('./img/cards.png') no-repeat;
-  --cardsSpriteSize: 1670px 390px;
+  --cardsSpriteSize: 835px 195px;
+  --dealerBotMargin: 35px;
+  --uiWindowTopMargin: 10px;
 }
 
 #splashScreen {
   position: fixed;
-  left: 32%;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   opacity: 0%;
   height: var(--splashScreenHeight);
   width: var(--splashScreenWidth);
@@ -248,7 +252,7 @@
 }
 
 .hand-total{
-  background-position: -360px 0px;
+  background-position: -180px 0px;
 }
 
 .dealerScoreOverlay {
@@ -268,49 +272,19 @@
   z-index: 1;
 }
 
-.hand-total{
-  background-position: -360px 0px;
-}
-
-.dealerScoreOverlay {
-  position: relative;
-}
-
-.dealerScoreOverlay::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: var(--scoreWidth);
-  height: var(--buttonHeight);
-  background: var(--scoreSprite);
-  background-position: -0px -0px; /* Position of the dealer border in the sprite */
-  background-size: var(--scoreSpriteSize);
-  z-index: 1;
-}
-
-
-
-.card-back {
+.playingCard, .card-back {
   width: var(--cardWidth);
   height: var(--cardHeight);
-  background: var(--cardsSprite) -1560px 0;
-  margin: 5px;
-  display: inline-block;
-  image-rendering: pixelated;
-  background-size: var(--cardsSpriteSize);
-  filter: drop-shadow(1vh 1vh 0.5vh rgba(0, 0, 0, 0.75));
-}
-
-.playingCard {
-  width: var(--cardWidth);
-  height: var(--cardHeight);
-  background: var(--cardsSprite);
   margin: 5px;
   display: inline-block; 
   image-rendering: pixelated;
+  background: var(--cardsSprite);
   background-size: var(--cardsSpriteSize);
   filter: drop-shadow(1vh 1vh 0.5vh rgba(0, 0, 0, 0.75));
+}
+
+.card-back {
+  background-position: -780px 0;
 }
 
 .hidden {

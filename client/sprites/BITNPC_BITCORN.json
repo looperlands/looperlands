@@ -1,0 +1,14 @@
+{
+    "id": "BITNPC_BITCORN",
+    "width": 32,
+    "height": 32,
+    "animations": {
+      "idle_down": {
+        "length": 16,
+        "row": 0,
+        "speed": [1000, 40, 40, 40, 3000, 40, 60, 80, 150, 80, 60, 40, 60, 40, 40, 40]
+      }
+    },
+    "offset_x": -8,
+    "offset_y": -16
+  }

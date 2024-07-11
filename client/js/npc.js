@@ -873,7 +873,6 @@ define(['character'], function (Character) {
             "Ya got a meme buddy?",
             "Hang in there!"
         ],
-
         "PRINCEBIT": [
             "Have you seen Joe?",
             "I hear MRM Labs has a map coming soon.",
@@ -916,6 +915,15 @@ define(['character'], function (Character) {
             "Legends say that Sirens have held the Arden Depths captive since the beginning of time.",
             "Check out my Apebrain Collection <a target='_blank' href='https://loopexchange.art/collection/sirensoftheardendepths'>here</a>!",
             "Embrace the Siren's song!"
+        ],
+        // BITCORN NPCS
+        "BITNPC_BITCORN": [
+            "Hello There. Welcorne to the cornHOLE!",
+            "Looking for bits x bit looperland items? <a target='_blank' href='https://loopexchange.art/collection/bitsxbit'>Try Here!</a>",
+            "<a target='_blank' href='https://loopexchange.art/collection/FunkyTacos'>FunkyTacos purchased from enchworm.loopring.eth</a> are also a part of the bits x bit looperlands collection!",
+            "Have you heard of the worminati?",
+            "👀👀",            
+            "LIFE IS A-MAIZ-ING",
         ],
         // @nextNPCLine@
     };
