@@ -162,7 +162,7 @@ WS.socketIOServer = Server.extend({
         this.cache = cache;
         var express = require('express');
         var app = express();
-        app.use("/", express.static(__dirname + "/../../client-build"));
+        app.use("/", express.static(__dirname + "/../../dist"));
 
         let httpInclude = require('http');
         let http = new httpInclude.Server(app);

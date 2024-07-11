@@ -1,7 +1,7 @@
 ({
     appDir: "../",
     baseUrl: "js/",
-    dir: "../../client-build",
+    dir: "../../dist",
     optimize: "none",
     optimizeCss: "standard.keepLines",
     
