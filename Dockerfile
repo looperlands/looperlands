@@ -2,6 +2,7 @@ FROM ubuntu:latest
 ENV NEW_RELIC_NO_CONFIG_FILE=true
 EXPOSE 443
 EXPOSE 8000
+EXPOSE 9229
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt -y update
 RUN apt -q -y install curl
@@ -25,3 +26,4 @@ WORKDIR /opt/app/bin
 RUN ./build.sh
 WORKDIR /opt/app
 CMD node server/js/main.js
+# CMD node --inspect=0.0.0.0:9229 server/js/main.js # comment this in to enable debugging

@@ -1,5 +1,6 @@
 const quests = require('./quests.js');
 const dao = require('../dao.js');
+const { stringify } = require('flatted');
 
 const PlayerEventConsumer = require('./playereventconsumer.js').PlayerEventConsumer;
 const platform = require('../looperlandsplatformclient.js');
@@ -16,15 +17,15 @@ class PlayerQuestEventConsumer extends PlayerEventConsumer {
     }
 
     completionCheckers = {
-        "KILL_MOB": function(quest, playerCache) {
-            if (quest === undefined) { 
+        "KILL_MOB": function (quest, playerCache) {
+            if (quest === undefined) {
                 return false;
             }
             let count = playerCache.gameData.mobKills[quest.target] || 0;
             return count >= quest.amount;
         },
-        "LOOT_ITEM": function(quest, playerCache) {
-            if (quest === undefined) { 
+        "LOOT_ITEM": function (quest, playerCache) {
+            if (quest === undefined) {
                 return false;
             }
             let count = playerCache.gameData.items[quest.target] || 0;
@@ -33,15 +34,21 @@ class PlayerQuestEventConsumer extends PlayerEventConsumer {
     }
 
     consume(event) {
-        let inProgressQuests = event.playerCache.gameData?.quests[quests.STATES.IN_PROGRESS];
+
+        if (!event.playerCache || !event.playerCache.gameData) {
+            console.error("Player cache or gameData is undefined", stringify(event));
+            return { change: false };
+        }
+
+        let inProgressQuests = event.playerCache.gameData.quests?.[quests.STATES.IN_PROGRESS];
         //console.log("inProgressQuests: ", event.playerCache.gameData.quests, inProgressQuests);
         if (inProgressQuests === undefined) {
-            return {change: false};
+            return { change: false };
         }
 
         let completionCheckerFN = this.completionCheckers[event.eventType];
         if (completionCheckerFN === undefined) {
-            return {change: false};
+            return { change: false };
         }
 
         let changedQuests = []
@@ -52,7 +59,7 @@ class PlayerQuestEventConsumer extends PlayerEventConsumer {
             if (completionCheckerFN(quest, event.playerCache)) {
                 dao.setQuestStatus(event.playerCache.nftId, questKey, quests.STATES.COMPLETED);
                 let completedQuests = event.playerCache.gameData.quests[quests.STATES.COMPLETED];
-                let questInCacheFormat = {questKey: questKey, status: quests.STATES.COMPLETED};
+                let questInCacheFormat = { questKey: questKey, status: quests.STATES.COMPLETED };
                 if (!completedQuests) {
                     event.playerCache.gameData.quests[quests.STATES.COMPLETED] = [questInCacheFormat];
                 }
@@ -68,7 +75,7 @@ class PlayerQuestEventConsumer extends PlayerEventConsumer {
                 }
             }
         }
-        return {changedQuests: changedQuests, quests : event.playerCache.gameData.quests};
+        return { changedQuests: changedQuests, quests: event.playerCache.gameData.quests };
     }
 }
 

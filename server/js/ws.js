@@ -18,6 +18,7 @@ const axios = require('axios');
 const crypto = require('crypto');
 const NodeCache = require("node-cache");
 const dao = require('./dao.js');
+const discord = require('./discord.js');
 const Formulas = require('./formulas.js');
 const ens = require("./ens.js");
 const chat = require("./chat.js");
@@ -209,7 +210,7 @@ WS.socketIOServer = Server.extend({
         app.post('/session', async (req, res) => {
             const body = req.body;
             const apiKey = req.headers['x-api-key'];
-            
+
             if (apiKey !== process.env.LOOPWORMS_API_KEY) {
                 console.error("Invalid api key");
                 res.status(401).json({
@@ -1108,7 +1109,16 @@ WS.socketIOServer = Server.extend({
         });
 
         // MINIGAME CONTROLLER
-        app.post('/session/:sessionId/minigame', (req, res) => {minigameController.handleRequest(req, res);});
+        app.post('/session/:sessionId/minigame', (req, res) => {
+            minigameController.handleRequest(req, res);
+
+            // Reset player timeout so LooperLands knows player is still active while in minigame
+            const sessionId = req.params.sessionId;
+            const sessionData = cache.get(sessionId);
+            const player = self.worldsMap[sessionData.mapId].getPlayerById(sessionData.entityId);
+            player.resetTimeout();
+
+        });
 
         // LUCKYFUNKZ 
         app.get('/session/:sessionId/getSpin/:linesPlayed/:bet', async (req, res) => {
@@ -1117,7 +1127,7 @@ WS.socketIOServer = Server.extend({
                 const betPerLine = parseInt(req.params.bet);
                 const sessionId = req.params.sessionId;
                 const sessionData = cache.get(sessionId);
-                
+
                 if (sessionData === undefined) {
                     res.status(404).json({
                         error: "No session with id " + sessionId + " found",
@@ -1127,16 +1137,16 @@ WS.socketIOServer = Server.extend({
 
                 // Reset player timeout so LooperLands knows player is still active while in minigame
                 const player = self.worldsMap[sessionData.mapId].getPlayerById(sessionData.entityId);
-                player.resetTimeout(); 
+                player.resetTimeout();
 
                 // MAKE SURE PLAYER CAN AFFORD SPIN
                 const spinCost = linesPlayed * betPerLine;
-                const playerBalance = await dao.getResourceBalance(sessionData.nftId,Types.Entities.GOLD);
-                
+                const playerBalance = await dao.getResourceBalance(sessionData.nftId, Types.Entities.GOLD);
+
                 // LOG BALANCE BEFORE SPIN
                 //console.log(`DAO, ${playerBalance}, SESSION, ${sessionData.gameData.items[Types.Entities.GOLD]}, PRIOR TO SPIN`);
-                
-                if(spinCost > playerBalance){
+
+                if (spinCost > playerBalance) {
                     res.status(400).json({
                         message: "Not Enough Gold",
                     });
@@ -1144,26 +1154,34 @@ WS.socketIOServer = Server.extend({
                 }
 
                 // GET SPIN
-                const spinResponse = await minigame.getSpin(platformClient, linesPlayed, betPerLine);           
+                const spinResponse = await minigame.getSpin(platformClient, linesPlayed, betPerLine);
                 const { chosenSpin, payout, winningLines } = spinResponse;
 
-                
                 const spinResult = payout - spinCost;
-                if (spinResult !== 0){
+                if (spinResult !== 0) {
+
+                    //send message to discord if player won 1337+
+                    if (spinResult >= 1337) {
+                        let name = await ens.getEns(sessionData.walletId);
+                        if (name && sessionData.mapId === "bitcorn") {
+                            discord.sendMessage(`🎰 **${name} won ${spinResult}** playing LuckyFUNKZ at the cornHOLE!`);
+                        }
+                    }
+
                     // UPDATE BALANCES
                     let transferSuccess = false;
                     await player.incrementResourceAmount(Types.Entities.GOLD, spinResult);                      // UPDATE SESSIONDATA BALANCE
-                    if(spinResult > 0){
+                    if (spinResult > 0) {
                         transferSuccess = await dao.transferResourceFromTo(CORNHOLE, sessionData.nftId, spinResult);              // UPDATE DAO BALANCE (PLAYER WIN)
-                    } else{
+                    } else {
                         transferSuccess = await dao.transferResourceFromTo(sessionData.nftId, CORNHOLE, Math.abs(spinResult));    // UPDATE DAO BALANCE (PLAYER LOSE)
                     }
-                    if(!transferSuccess){
-                        res.status(400).json({message: "DAO transfer failed"});
+                    if (!transferSuccess) {
+                        res.status(400).json({ message: "DAO transfer failed" });
                         return;
                     }
                 }
-                
+
                 // LOG BALANCE AFTER SPIN
                 //const playerBalanceAfter = await dao.getResourceBalance(sessionData.nftId,Types.Entities.GOLD);
                 //const sessionData2 = cache.get(sessionId);
@@ -1206,7 +1224,7 @@ WS.socketIOServer = Server.extend({
 
         app.get("/session/:sessionId/dynamicnft/:nftId/nftid", dynamicNFTcontroller.getNFTData);
         app.get("/session/:sessionId/dynamicnft/:kindId/kindid", dynamicNFTcontroller.getNFTDataByKindId);
-        
+
         let announcementController;
         app.post("/announce", async (req, res) => {
             if (announcementController === undefined) {

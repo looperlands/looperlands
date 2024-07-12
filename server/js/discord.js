@@ -1,9 +1,15 @@
 const { Client, GatewayIntentBits, EmbedBuilder } = require('discord.js')
 const NodeCache = require("node-cache");
 const cache = new NodeCache();
-const GAMESERVER_NAME = process.env.GAMESERVER_NAME;
+
+const GAMESERVER_NAME = process.env.GAMESERVER_NAME.toUpperCase();
+const MESSAGE_PREFIX = `\`${GAMESERVER_NAME}\` `;
 const MAX_MESSAGE_LENGTH = 2000; // DISCORD LIMIT
 const MAX_SPLIT_MESSAGES = 2;
+
+const GAME_LOG_CHANNEL = '1156612974669209723';
+const GAME_ERROR_CHANNEL = `1156613041467695144`;
+const GAME_DEBUG_CHANNEL = `1259006864981758043`;
 
 exports.ready = false;
 
@@ -26,7 +32,7 @@ if (process.env.DISCORD_TOKEN === undefined) {
 }
 
 exports.sendMessage = (message) => {
-    const channels = ['1156612974669209723'];
+    const channels = [GAME_LOG_CHANNEL];
     try {
         for (let channelId of channels) {
             let channel = client.channels.cache.get(channelId);
@@ -34,7 +40,7 @@ exports.sendMessage = (message) => {
             try {
                 if (cache.get(message + channelId) === undefined) {
                     cache.set(message + channelId, true, 60 * 5);
-                    channel.send(`${GAMESERVER_NAME}: ${message}`);
+                    channel.send(`${MESSAGE_PREFIX}${message}`);
                 }
             } catch (e) {
                 //console.log(message, e);
@@ -47,12 +53,12 @@ exports.sendMessage = (message) => {
 }
 
 exports.sendToDevChannel = (message, embed = false) => {
-    const channels = ['1156613041467695144'];
+    const channels = [GAME_ERROR_CHANNEL];
     sendMessageToChannel(channels, message, embed);
 }
 
 exports.sendToDebugChannel = (message, embed = false) => {
-    const channels = ['1259006864981758043'];
+    const channels = [GAME_DEBUG_CHANNEL];
     sendMessageToChannel(channels, message, embed);
 }
 
@@ -73,9 +79,14 @@ const sendMessageToChannel = (channels, message, embed = false) => {
                     sendMessageToChannel(channels, message, false);
                 }
             } else {
-                const messages = splitMessage(message);
-                for (let msg of messages) {
-                    channel.send(`${GAMESERVER_NAME}: ${msg}`);
+                const availableLength = MAX_MESSAGE_LENGTH - MESSAGE_PREFIX.length;
+                if (message.length <= availableLength) {
+                    channel.send(`${MESSAGE_PREFIX}${message}`);
+                } else {
+                    const messages = splitMessage(message);
+                    for (let msg of messages) {
+                        channel.send(`${MESSAGE_PREFIX}${msg}`);
+                    }
                 }
             }
         } catch (e) {
@@ -85,8 +96,7 @@ const sendMessageToChannel = (channels, message, embed = false) => {
 };
 
 const splitMessage = (message) => {
-    const prefix = `${GAMESERVER_NAME}: `;
-    const availableLength = MAX_MESSAGE_LENGTH - prefix.length;
+    const availableLength = MAX_MESSAGE_LENGTH - MESSAGE_PREFIX.length;
     let messages = [];
 
     // Split message into chunks of availableLength

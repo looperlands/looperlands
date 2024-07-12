@@ -17,7 +17,7 @@ exports.addMessage = function(playerName, message) {
     if (messages.length > MAX_MESSAGES) {
         messages.shift();
     }
-    let discordMessage = `${playerName}: ${message.message.replace(/@|\//g, "")}`;
+    let discordMessage = `💬 **${playerName}:** ${message.message.replace(/@|\//g, "")}`;
     discord.sendMessage(discordMessage);
     cache.set("logs", messages);
 }
