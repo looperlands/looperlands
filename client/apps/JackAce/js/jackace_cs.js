@@ -11,9 +11,10 @@ let isUpdatingPlayerMoney = false; // Flag to track if the function is running
 let generateParticles = false;
 let particleAnimationPromises = [];
 
+
 const GOLD = "21300041";
 const BET_AMOUNTS = { 1: 1, 2: 2, 3: 5, 4: 10, 5: 25, 6: 50, 7: 100 };
-
+const OVERALL_SCALE = 5;
 
 ////////////////////////
 // SPRITE SHEET SETUP //
@@ -22,7 +23,7 @@ const BET_AMOUNTS = { 1: 1, 2: 2, 3: 5, 4: 10, 5: 25, 6: 50, 7: 100 };
 const RESULT_WIDTH = 48; // Width of each card in the sprite sheet
 const RESULT_HEIGHT = 13; // Height of each card in the sprite sheet
 const RESULT_GAP = 1; // Gap between cards in the sprite sheet
-const RESULT_SCALE = 10; // Scale of the cards
+const RESULT_SCALE = OVERALL_SCALE; // Scale of the cards
 const RESULT_POSITIONS = {
     'busted': 0,
     'youlost': 1,
@@ -35,7 +36,7 @@ const RESULT_POSITIONS = {
 const CARD_WIDTH = 11; // Width of each card in the sprite sheet
 const CARD_HEIGHT = 9; // Height of each card in the sprite sheet
 const CARD_GAP = 1; // Gap between cards in the sprite sheet
-const CARD_SCALE = 10; // Scale of the cards
+const CARD_SCALE = OVERALL_SCALE; // Scale of the cards
 const SPRITE_COLUMNS = 13; // Number of columns in the sprite sheet
 const CARD_POSITIONS = {
     'AC': 0, '2C': 1, '3C': 2, '4C': 3, '5C': 4, '6C': 5, '7C': 6, '8C': 7, '9C': 8, '0C': 9, 'JC': 10, 'QC': 11, 'KC': 12,
@@ -48,7 +49,7 @@ const CARD_POSITIONS = {
 // UI SPRITE SHEET
 const UI_SPRITE_HEIGHTS = [23, 38, 37]; // Heights for each row
 const UI_SPRITE_GAP = 1; // Gap between rows
-const UI_CARD_SCALE = 10; // Scale for UI elements
+const UI_CARD_SCALE = OVERALL_SCALE; // Scale for UI elements
 const UI_SPRITE_POSITIONS = {
     'twoButton': 0,
     'fourButton': 1,
@@ -60,7 +61,7 @@ const SCORE_SPRITE_WIDTH = 17; // Width of each score sprite
 const SCORE_SPRITE_HEIGHT = 13; // Height of each score sprite
 const SCORE_SPRITE_GAP = 1; // Gap between score sprites
 const SCORE_SPRITE_COLUMNS = 10; // Number of columns in the score sprite sheet
-const SCORE_CARD_SCALE = 10; // Scale for score elements
+const SCORE_CARD_SCALE = OVERALL_SCALE; // Scale for score elements
 const SCORE_SPRITE_POSITIONS = {
     'dealerborder': 0, 'arrow': 1, 'questionMark': 2, '4': 3, '5': 4, '6': 5, '7': 6, '8': 7, '9': 8, '10': 9,
     '11': 10, '12': 11, '13': 12, '14': 13, '15': 14, '16': 15, '17': 16, '18': 17, '19': 18, '20': 19, '21': 20,
@@ -72,7 +73,7 @@ const BUTTON_SPRITE_WIDTH = 30; // Width of each button sprite
 const BUTTON_SPRITE_HEIGHT = 13; // Height of each button sprite
 const BUTTON_SPRITE_GAP = 1; // Gap between button sprites
 const BUTTON_SPRITE_COLUMNS = 3; // Number of columns in the button sprite sheet
-const BUTTON_CARD_SCALE = 10; // Scale for button elements
+const BUTTON_CARD_SCALE = OVERALL_SCALE; // Scale for button elements
 const BUTTON_SPRITE_POSITIONS = {
     'dealHover': 0, 'deal': 1, 'bet1': 2,
     'betIncreaseHover': 3, 'betIncrease': 4, 'bet2': 5,
@@ -122,14 +123,14 @@ async function init() {
 
         $('#dealerHand').append(
             '<div class="arrow"></div>' +
-            '<div class="dealerScore dealerScoreOverlay" style="background-position: -360px 0px;"></div>' +
+            '<div class="dealerScore dealerScoreOverlay" style="background-position: -180px 0px;"></div>' +
             '<div class="card-back"></div>' +
             '<div class="card-back"></div>');
 
         $('#playerHand').append(
             '<div id="hand1" class="playerHands">' +
             '<div class="arrow"></div>' +
-            '<div class="hand-total" style="background-position: -360px 0px;"></div>' +
+            '<div class="hand-total" style="background-position: -180px 0px;"></div>' +
             '<div class="card-back"></div>' +
             '<div class="card-back"></div>' +
             '</div>');
@@ -168,7 +169,7 @@ async function adjustJackaceGameScale() {
     const containerScale = getScale(container);
 
     // Apply the new scale to #jackaceGame
-    jackaceGame.style.transform = `scale(${containerScale * 0.5})`;
+    jackaceGame.style.transform = `scale(${containerScale})`;
 }
 
 
@@ -950,7 +951,7 @@ async function showGameWindow(data = {}, callWindow = null) {
             }
             if (gameWindow !== 'splitDouble') {
                 $('#uiWindow').css('background-position', await getUiBackgroundPosition('fourButton'));
-                $('#uiWindow').css('height', '380px');
+                $('#uiWindow').css('height', '190px');
                 $('#uiWindow').css('align-content', 'center');
             }
             hideArrowsNoDim = false;
@@ -960,7 +961,7 @@ async function showGameWindow(data = {}, callWindow = null) {
             break;
         case 'hit':
             $('#uiWindow').css('background-position', await getUiBackgroundPosition('twoButton'));
-            $('#uiWindow').css('height', '230px');
+            $('#uiWindow').css('height', '115px');
             $('#uiWindow').css('align-content', 'center');
             $('#hit-stand-window').removeClass('hidden');
             $('#bet-window').addClass('hidden');
@@ -971,7 +972,7 @@ async function showGameWindow(data = {}, callWindow = null) {
         case 'splitDouble':
             if (gameWindow !== 'bet') {
                 $('#uiWindow').css('background-position', await getUiBackgroundPosition('fourButton'));
-                $('#uiWindow').css('height', '380px');
+                $('#uiWindow').css('height', '190px');
                 $('#uiWindow').css('align-content', 'center');
             }
             $('#hit-stand-window').removeClass('hidden');
@@ -982,7 +983,7 @@ async function showGameWindow(data = {}, callWindow = null) {
         case 'insurance':
             console.log('showing insurance');
             $('#uiWindow').css('background-position', await getUiBackgroundPosition('insurance'));
-            $('#uiWindow').css('height', '370px');
+            $('#uiWindow').css('height', '185px');
             $('#uiWindow').css('align-content', 'end');
             $('#insurance').removeClass('hidden');
             $('#bet-window').addClass('hidden');

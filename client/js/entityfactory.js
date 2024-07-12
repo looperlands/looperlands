@@ -1371,6 +1371,8 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.FEDORABIT]=function(id){return new NPCs.FEDORABIT(id);};
     EntityFactory.builders[Types.Entities.APEBRAINOG]=function(id){return new NPCs.APEBRAINOG(id);};
     EntityFactory.builders[Types.Entities.SIREN]=function(id){return new NPCs.SIREN(id);};
+    //BITCORN NPCS
+    EntityFactory.builders[Types.Entities.BITNPC_BITCORN]=function(id){return new NPCs.BITNPC_BITCORN(id);};
     // @nextNPCLine@
 
      //====== FieldEffectss ======

@@ -108,7 +108,13 @@ define(function() {
     				if(name.substr(0, 3) === "atk") {
     				    this.currentAnimation.reset();
     				}
-    				this.currentAnimation.setSpeed(speed);
+                    
+                    if(!a.speed){
+                        this.currentAnimation.setSpeed(speed);
+                    }else{
+                        this.currentAnimation.setSpeed(a.speed);
+                    }
+
     				this.currentAnimation.setCount(count ? count : 0, onEndCount || function() {
     				    self.idle();
     				});
