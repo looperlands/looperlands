@@ -443,6 +443,9 @@ define(['npc'], function(Npc) {
         FEDORABIT: Npc.extend({init: function(id) {this._super(id, Types.Entities.FEDORABIT, 1);}}),
         APEBRAINOG: Npc.extend({init: function(id) {this._super(id, Types.Entities.APEBRAINOG, 1);}}),
         SIREN: Npc.extend({init: function(id) {this._super(id, Types.Entities.SIREN, 1);}}),
+        // BITCORN NPCS
+        BITNPC_BITCORN: Npc.extend({init: function(id) {this._super(id, Types.Entities.BITNPC_BITCORN, 1);}}),
+
         // @nextNPCLine@
     };
     

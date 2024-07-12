@@ -684,7 +684,8 @@ Types = {
         FEDORABIT: 34000114,
         APEBRAINOG: 34000115,
         SIREN: 34000116, 
-        CLOWNCAPONEBIT: 34000117, // @lastidCharacter@
+        CLOWNCAPONEBIT: 34000117, 
+        BITNPC_BITCORN: 34000118,// @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -6517,6 +6518,8 @@ var kinds = {
     FEDORABIT: [Types.Entities.FEDORABIT, "npc"],
     APEBRAINOG: [Types.Entities.APEBRAINOG, "npc"],
     SIREN: [Types.Entities.SIREN, "npc"],
+    //BITCORN NPCS
+    BITNPC_BITCORN: [Types.Entities.BITNPC_BITCORN, "npc"],
     //Taiko Town NPCs
     taikotownnpc1: [Types.Entities.TAIKOTOWNNPC1, "npc"],
     taikotownnpc2: [Types.Entities.TAIKOTOWNNPC2, "npc"],
