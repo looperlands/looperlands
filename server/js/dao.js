@@ -238,7 +238,7 @@ const saveLootEvent = async function (nftId, itemId, amount = 1) {          // D
   LOOT_EVENTS_QUEUE.push({ nftId: nftId, item: String(itemId), amount })
 
   if (LOOT_QUEUE_INTERVAL === undefined) {
-    LOOT_QUEUE_INTERVAL = setInterval(processLootEventQueue, 1000 * 30);    // Set LootEventQueue to process every 30 seconds
+    LOOT_QUEUE_INTERVAL = setInterval(processLootEventQueue, 1000 * 1);    // Set LootEventQueue to process every 30 seconds
   }
 
 }
@@ -253,7 +253,7 @@ const saveMultiLootEvent = function (transactions) {
   LOOT_EVENTS_QUEUE.push(...newEvents);
 
   if (LOOT_QUEUE_INTERVAL === undefined) {
-    LOOT_QUEUE_INTERVAL = setInterval(processLootEventQueue, 1000 * 30);  // Set LootEventQueue to process every 30 seconds
+    LOOT_QUEUE_INTERVAL = setInterval(processLootEventQueue, 1000 * 1);  // Set LootEventQueue to process every 30 seconds
   }
 }
 
