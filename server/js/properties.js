@@ -1218,15 +1218,15 @@ let Properties = {
     },
 
     balloondogp: {
-        level: 2,
+        level: 1,
         drops: {
-            m88nmap: 7,
+            m88nmap: 5,
             m88nsteak: 1,
             m88nmail: 1,
             m88nshovel: 1,
             burger: 25,
-            GOLD: 22,
-            GOLD2: 25
+            GOLD: 25,
+            GOLD2: 30
         },
     },
 
