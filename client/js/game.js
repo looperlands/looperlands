@@ -91,9 +91,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                 // sprites
                 this.spriteNames = ["hand", "handclick", "sword", "loot", "target", "talk", "float", "sparks", "shadow16", "rat", "skeleton", "skeleton2", "spectre", "boss", "deathknight",
-                    "ogre", "crab", "snake", "eye", "bat", "goblin", "wizard", "guard", "taikoguard", "king", "villagegirl", "villager", "coder", "agent", "rick", "scientist", "nyan", "priest", "coblumberjack", "cobhillsnpc", "cobcobmin", "cobellen", "cobjohnny", "cobashley",
+                    "ogre", "crab", "snake", "eye", "bat", "goblin", "wizard", "guard", "taikoguard", "king", "villagegirl", "villager", "coder", "agent", "rick", "scientist", "nyan", "priest", "coblumberjack", "cobhillsnpc", "cobcobmin", "cobellen", "cobminer", "cobjohnny", "cobashley",
                     "king2", "goose", "tanashi", "slime","kingslime","silkshade","redslime","villagesign1","wildgrin","loomleaf","gnashling","arachweave","spider","fangwing", "minimag", "miner", "megamag", "seacreature", "tentacle", "tentacle2", "wildwill","shopowner","blacksmith",
-                    "cobchicken", "alaric","orlan","jayce", "cobcow", "cobpig", "cobgoat", "ghostie","cobslimered", "cobslimeyellow", "cobslimeblue", "cobslimepurple", "cobslimegreen", "cobslimepink", "cobslimecyan", "cobslimemint", "cobslimeking", "cobyorkie", "cobcat", "cobdirt", "cobincubator", "cobcoblin", "cobcobane", "cobogre",
+                    "cobchicken", "alaric","orlan","jayce", "cobcow", "cobpig", "cobgoat", "ghostie","cobslimered", "cobslimeyellow", "cobslimeblue", "cobslimepurple", "cobslimegreen", "cobslimepink", "cobslimecyan", "cobslimemint", "cobslimeking", "cobyorkie", "cobcat", "cobcatblack", "cobcatorange", "cobcatbrown", "cobdirt", "cobhay", "cobhaytwo", "cobincubator", "cobcoblin", "cobcobane", "cobogre",
                     "sorcerer", "octocat", "beachnpc", "forestnpc", "desertnpc", "lavanpc","thudlord", "clotharmor", "leatherarmor", "mailarmor","boar","grizzlefang","barrel","neena","athlyn","jeniper",
                     "platearmor", "redarmor", "goldenarmor", "firefox", "death", "sword1", "transparentweapon", "torin","elric","glink", "axe", "chest","elara","eldrin","draylen","thaelen","keldor","torvin","liora","aria",
                     "sword2", "redsword", "bluesword", "goldensword", "item-sword2", "item-axe", "item-redsword", "item-bluesword", "item-goldensword", "item-leatherarmor", "item-mailarmor","whiskers",
@@ -120,7 +120,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "VILLAGESIGN8",
                     "VILLAGESIGN9",
                     "cobneon","cobguppy","cobgoldfish","cobtrout","coblobster","cobcatfish","cobangelfish","cobsardine","cobstingray","cobwhiting",
-                    "cobrosette", "cobparadisefish", "cobfatheadminnow", "cobgrasscarp", "cobgreensunfish", "cobcruciancarp", "cobbluegill",
+                    "cobrosette", "cobparadisefish", "cobfatheadminnow", "cobgrasscarp", "cobgreensunfish", "cobcruciancarp", "cobbluegill", "cobkoi", "cobcan", "cobtrashbag",
                     //OA fIsHIes
                     "oagreyfish",
                     "oafish1", "oafish2", "oafish3", "oafish4", "oafish5", "oafish6", "oafish7", "oafish8", "oafish9", "oafish10",
@@ -6073,7 +6073,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                 const fishGroups = [
                     /* COBS FARM FISH*/ 
-                    ["cobneon", "cobguppy", "cobgoldfish", "coblobster", "cobcatfish", "cobtrout", "cobangelfish", "cobsardine", "cobstingray", "cobwhiting", "cobrosette", "cobparadisefish", "cobfatheadminnow", "cobgrasscarp", "cobgreensunfish", "cobcruciancarp", "cobbluegill"],
+                    ["cobneon", "cobguppy", "cobgoldfish", "coblobster", "cobcatfish", "cobtrout", "cobangelfish", "cobsardine", "cobstingray", "cobwhiting", "cobrosette", "cobparadisefish", "cobfatheadminnow", "cobgrasscarp", "cobgreensunfish", "cobcruciancarp", "cobbluegill", "cobkoi", "cobcan", "cobtrashbag"],
 
                     /* OAFISHIES*/ 
                     ["oagreyfish", "oafish1", "oafish2", "oafish3", "oafish4", "oafish5", "oafish6", "oafish7", "oafish8", "oafish9", "oafish10", "oafish11", "oafish12", "oafish13", "oafish14", "oafish15", "oafish16", "oafish17", "oafish18", "oafish19", "oafish20", "oafish21", "oafish22", "oafish23", "oafish24", "oafish25", "oafish26", "oafish27", "oafish28", "oafish29", "oafish30", "oafish31", "oafish32", "oafish33", "oafish34", "oafish35", "oafish36"],

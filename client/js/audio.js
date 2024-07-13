@@ -17,7 +17,7 @@ define(['area'], function (Area) {
                 // OA MUSIC
                 "oaspooky", "oafortressboss", "oacastle", "oasnowcon", "oanightharrow", "oainsidecastle", "oacrystal", "oavillage", "oaglacialord", "oaforest", "oasnowthaven", "overworld", "oaseacombat", "oacave", "oawind", "oaforesttown", "oatitle", "oaporttown", "oaplanes", "oacave2", "oaforestboss", "oahome", "oaspiderboss", "oaforest2", "oamain", "oacustoms", "oafishing", "oanorthern", "oatower", "oaarena", "oachristmas", "oachristmas2", "oatavern","taikotown","taikocity","taikotrain",
                 // COBS FARM MUSIC
-                "cobsfarmmain", "cobdungeon", "cobspookyforest", "cobactionadventure", "cobsnuggles", "cobbasicfishing", "cobreggae",
+                "cobsfarmmain", "cobdungeon", "cobspookyforest", "cobactionadventure", "cobsnuggles", "cobbasicfishing", "cobreggae", "CobHomeAutomation", "CobAboveItAll", "CobLettingTheLeavesFall", "CobCow5", "CobChickenCoop3", "CobDarkThrillerMystery",
                 // DUCKVILLE MUSIC
                 "duckvilleaoe", "duckvillefly",
                 // M88N MUSIC

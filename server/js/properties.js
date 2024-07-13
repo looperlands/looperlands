@@ -956,12 +956,38 @@ let Properties = {
         friendly: true
     },
 
+    cobcatorange: {
+        level: 1,
+        friendly: true
+    },
+
+    cobcatbrown: {
+        level: 1,
+        friendly: true
+    },
+
     cobyorkie: {
         level: 1,
         friendly: true
     },
 
     cobdirt: {
+        level: 1,
+        friendly: true, //not actually friendly, just AoE immune
+        hp: 1,
+        xp: 0,
+        respawnDelay: 10000
+    },
+
+    cobhay: {
+        level: 1,
+        friendly: true, //not actually friendly, just AoE immune
+        hp: 1,
+        xp: 0,
+        respawnDelay: 10000
+    },
+
+    cobhaytwo: {
         level: 1,
         friendly: true, //not actually friendly, just AoE immune
         hp: 1,

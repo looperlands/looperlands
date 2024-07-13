@@ -247,6 +247,12 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.COBCAT] = function(id) {
         return new Mobs.Cobcat(id);
     };
+    EntityFactory.builders[Types.Entities.COBCATORANGE] = function(id) {
+        return new Mobs.Cobcatorange(id);
+    };
+    EntityFactory.builders[Types.Entities.COBCATBROWN] = function(id) {
+        return new Mobs.Cobcatbrown(id);
+    };
         
     EntityFactory.builders[Types.Entities.COBDIRT] = function(id) {
         return new Mobs.Cobdirt(id);
@@ -258,6 +264,14 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
 
     EntityFactory.builders[Types.Entities.COBYORKIE] = function(id) {
         return new Mobs.Cobyorkie(id);
+    };
+
+    EntityFactory.builders[Types.Entities.COBHAY] = function(id) {
+        return new Mobs.Cobhay(id);
+    };
+
+    EntityFactory.builders[Types.Entities.COBHAYTWO] = function(id) {
+        return new Mobs.Cobhaytwo(id);
     };
 
     // OA Villagers
@@ -1202,7 +1216,11 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     
     EntityFactory.builders[Types.Entities.COBLUMBERJACK] = function(id) {
         return new NPCs.Coblumberjack(id);
-    };    
+    };  
+    
+    EntityFactory.builders[Types.Entities.COBCATBLACK] = function(id) {
+        return new NPCs.Cobcatblack(id);
+    };  
 
     EntityFactory.builders[Types.Entities.COBHILLSNPC] = function(id) {
         return new NPCs.Cobhillsnpc(id);
@@ -1225,6 +1243,10 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
 
     EntityFactory.builders[Types.Entities.COBELLEN] = function(id) {
         return new NPCs.Cobellen(id);
+    };  
+
+    EntityFactory.builders[Types.Entities.COBMINER] = function(id) {
+        return new NPCs.Cobminer(id);
     };  
 
     EntityFactory.builders[Types.Entities.COBASHLEY] = function(id) {

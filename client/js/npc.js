@@ -310,12 +310,23 @@ define(['character'], function (Character) {
             "But the campfire keeps them away!"
         ],
 
+        "cobcatblack": [
+            "Meow!",
+            "Welcome to the basement, traveler.",
+            "I'm BC, the guardian of the portals.",
+            "Simply step on a portal to be transported to your desired destination.",
+            "For now, you can return to Looper Lands or visit the Gilded Gryphon.",
+            "More destinations will be available in the future, so keep an eye out!"
+        ],
+
         "cobcobmin": [
             "Welcome to Cob's Farm, traveler!",
-            "View our scenic farms, admire vibrant flowers, and animals.",
-            "If adventure calls, our dungeons are rife with monsters and rewards.",
-            "Cob's Farm offers beauty and valor for everyone."
+            "Our world is new and ripe for exploration.",
+            "For now, you can wander our scenic farms, admire vibrant flowers, and meet the animals.",
+            "Exciting adventures and quests will be added soon, so stay tuned!",
+            "Cob's Farm is a place of beauty and potential, with many surprises on the horizon."
         ],
+
         "VILLAGESIGN2": ["Gregloop and Thunders Humble Abode."], //GREGLOOP
         "VILLAGESIGN3": ["Home of Ripnatius Ironhand"], //RIPNTEAR
         "VILLAGESIGN4": ["Pneuma's Dispensary"], //PNEUMA
@@ -326,9 +337,19 @@ define(['character'], function (Character) {
         "VILLAGESIGN9": ["Home of JackStraw"], // Jackstraw
 
         "cobellen": [
-            "Ahh such beauty.",
-            "I can't wait to grow my own flowers."
+            "Welcome to our lovely home!",
+            "Isn't this world beautiful? I can't wait to fill our garden with vibrant flowers.",
+            "Feel free to explore and relax. The farm holds many secrets and wonders.",
+            "Together, we'll make Cob's Farm flourish with life and color."
         ],
+
+        "cobminer": [
+            "Hey there, traveler!",
+            "You've stumbled upon my latest discovery, this mysterious cave.",
+            "I'm just starting to dig, and who knows what treasures or secrets lie within.",
+            "Come back later to see what I've unearthed!"
+        ],
+
 
         "cobfern": [
             "Adventurer, beware! Slimes have taken over these parts recently.",
