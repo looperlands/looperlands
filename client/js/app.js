@@ -210,7 +210,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                 $('#chatinput').show().focus();
                 $('#chatbutton').addClass('active');
                 self = this;
-                axios.get("/chat").then(function (response) {
+                axiosClient.get("/chat").then(function (response) {
                     if (response.data === undefined) {
                         return;
                     }
@@ -626,7 +626,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                 consumablesInventory = {},
                 botsInventory = [];
 
-            axios.get(inventoryQuery).then(function(response) {
+            axiosClient.get(inventoryQuery).then(function(response) {
                 if (response.data){
                     weaponInventory = response.data.inventory;
                     specialInventory = response.data.special;
@@ -886,7 +886,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                                 botNftId: botNftId,
                                 dynamicNFTData : item.dynamicNFTData
                             };
-                            axios.post("/session/" + _this.storage.sessionId + "/newBot", postData).then(function(response) {
+                            axiosClient.post("/session/" + _this.storage.sessionId + "/newBot", postData).then(function(response) {
                                 console.log("new bot", response);
                             }).catch(function(error) {
                                 console.log(error);
@@ -1030,7 +1030,7 @@ define(['jquery', 'storage'], function ($, Storage) {
 
             let inventoryQuery = "/session/" + _this.storage.sessionId + "/inventory";
 
-            axios.get(inventoryQuery).then(function(response) {
+            axiosClient.get(inventoryQuery).then(function(response) {
                 let resourcesInventory = response.data.resources;
                 if (Object.keys(resourcesInventory).length > 0) {
                     Object.keys(resourcesInventory).forEach(item => {
@@ -1047,7 +1047,7 @@ define(['jquery', 'storage'], function ($, Storage) {
 
             let consumeQuery = "/session/" + _this.storage.sessionId + "/consumeItem/" + item;
 
-            axios.get(consumeQuery).then(function(response) {
+            axiosClient.get(consumeQuery).then(function(response) {
                 let items = response.data.items;
                 let cooldown = response.data.cooldown;
                 if (cooldown && items.length > 0) {
@@ -1091,7 +1091,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                 $("#avatarStats").hide();
             } else {
                 const url = `/session/${this.sessionId}/playerclassmodifiers`;
-                axios.get(url).then((res) => {
+                axiosClient.get(url).then((res) => {
                     const value = res.data;
                     $("#playerModifiersTable").html(`<modifiers-table value='${JSON.stringify(value)}'></modifiers-table>`)
                     $("#avatarStats").show();
@@ -1151,7 +1151,7 @@ define(['jquery', 'storage'], function ($, Storage) {
             shopPopup.find('#shop-popup-name').text(shopName);
 
             let shopInventoryQuery = "/shop/" + shopId + "/inventory";
-            axios.get(shopInventoryQuery).then(function(response) {
+            axiosClient.get(shopInventoryQuery).then(function(response) {
                 let items = response.data;
                 shopPopup.find('#shop-popup-items').html('');
                 shopPopup.scrollTop(0);
@@ -1263,7 +1263,7 @@ define(['jquery', 'storage'], function ($, Storage) {
         purchaseShopItem: function(shopId, itemId) {
             let self = this;
             let shopInventoryQuery = "/session/" + _this.storage.sessionId + "/shop/" + shopId + "/buy/" + itemId;
-            axios.get(shopInventoryQuery)
+            axiosClient.get(shopInventoryQuery)
                 .then(function(response) {
                     self.initResourcesDisplay();
                     self.game.audioManager.playSound("achievement");
@@ -1375,7 +1375,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                     const postData = {
                         "playerClass" : playerClass
                     }
-                    axios.post(url, postData).then((response) => {
+                    axiosClient.post(url, postData).then((response) => {
                         console.log("Player class set response", response);
                         this.hideWindows();
                         $('#armor').click();
@@ -1386,7 +1386,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                 });
             }   
 
-            axios.get("/playerclasses")
+            axiosClient.get("/playerclasses")
                 .then((res) => {
                     classes = res.data;
                     classKeys = Object.keys(classes);

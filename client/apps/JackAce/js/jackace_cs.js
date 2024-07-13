@@ -285,7 +285,7 @@ async function makeRequest(action, additionalData = {}) {
         const sessionId = new URLSearchParams(window.location.search).get('sessionId');
         const minigameQuery = `/session/${sessionId}/minigame`;
 
-        axios.post(minigameQuery, {
+        axiosClient.post(minigameQuery, {
             minigame: 'jackace',
             player: playerId,
             action,
@@ -341,7 +341,7 @@ async function resetGame(hideUIWindow = false) {
         const minigameQuery = `/session/${sessionId}/minigame`;
 
         try {
-            const response = await axios.post(minigameQuery, {
+            const response = await axiosClient.post(minigameQuery, {
                 minigame: 'jackace',
                 player: playerId,
                 action: 'RESET'
@@ -1465,7 +1465,7 @@ async function getGoldAmount() {
     return new Promise((resolve, reject) => {
         const sessionId = new URLSearchParams(window.location.search).get('sessionId');
         const inventoryQuery = `/session/${sessionId}/inventory`;
-        axios.get(inventoryQuery).then(response => {
+        axiosClient.get(inventoryQuery).then(response => {
             resolve(response.data.resources[GOLD] || 0);
         }).catch(error => {
             reject(error);

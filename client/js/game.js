@@ -6129,7 +6129,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             initAchievements: function() {
                 var self = this;
                 var questLogUrl = "/session/" + self.sessionId + "/quests";
-                axios.get(questLogUrl).then(function(response) {
+                axiosClient.get(questLogUrl).then(function(response) {
                     self.achievements = response.data
                     let unlockedAchievements = [];
 
@@ -7015,7 +7015,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             function goInside() {
                                 if (dest.map !== undefined) {
                                     let url = '/session/' + self.sessionId + '/teleport';
-                                    axios.post(url, dest).then(function (response) {
+                                    axiosClient.post(url, dest).then(function (response) {
                                         if (response.status === 200) {
                                             let newSessionID = response.data.sessionId;
                                             window.location.href = '/?sessionId=' + newSessionID;
@@ -7083,7 +7083,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                                     let trUrl = '/session/' + self.sessionId + '/requestTeleport/' + triggerId;
                                     _self.doorCheck = true;
-                                    axios.get(trUrl).then(function (response) {
+                                    axiosClient.get(trUrl).then(function (response) {
                                         if ( (response.data === true && !inverted) || (response.data === false && inverted))
                                         {
                                             goInside();
@@ -7105,7 +7105,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             if (dest.nft !== undefined) {
                                 var url = '/session/' + self.sessionId + '/owns/' + dest.nft;
                                 _self.doorCheck = true;
-                                axios.get(url).then(function (response) {
+                                axiosClient.get(url).then(function (response) {
                                     if (response.data === true) {
                                         checkTrigger()
                                     } else {
@@ -7119,7 +7119,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             } else if (dest.item !== undefined) {
                                 let url = '/session/' + self.sessionId + '/ownsItem/' + dest.item;
                                 _self.doorCheck = true;
-                                axios.get(url).then(function (response) {
+                                axiosClient.get(url).then(function (response) {
                                     if (response.data === true) {
                                         checkTrigger();
                                     } else {
@@ -7133,7 +7133,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             } else if (dest.quest !== undefined) {
                                 let url = '/session/' + self.sessionId + '/completedQuest/' + dest.quest;
                                 _self.doorCheck = true;
-                                axios.get(url).then(function (response) {
+                                axiosClient.get(url).then(function (response) {
                                     if (response.data === true) {
                                         checkTrigger();
                                     } else {
@@ -7147,7 +7147,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             } else if (dest.collection !== undefined) {
                                 var url = '/session/' + self.sessionId + '/ownsNFTCollection/' + dest.collection;
                                 _self.doorCheck = true;
-                                axios.get(url).then(function (response) {
+                                axiosClient.get(url).then(function (response) {
                                     let walletHasCollection = false;
 
                                     if (response.data !== undefined) {
@@ -7390,7 +7390,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                                         function checkTrigger() {
                                                             if (dest.triggerId !== undefined) {
                                                                 let trUrl = '/session/' + self.sessionId + '/requestTeleport/' + dest.triggerId;
-                                                                axios.get(trUrl).then(function (response) {
+                                                                axiosClient.get(trUrl).then(function (response) {
                                                                     if (response.data === true) {
                                                                         entity.setGridPosition(dest.x, dest.y);
                                                                         self.updatePos(entity);
@@ -7406,7 +7406,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                                                         if (dest.nft !== undefined) {
                                                             var url = self.map.mapId + '/player/' + entity.id + '/owns/' + dest.nft;
-                                                            axios.get(url).then(function (response) {
+                                                            axiosClient.get(url).then(function (response) {
                                                                 if (response.data === true) {
                                                                     checkTrigger()
                                                                 }
@@ -8111,7 +8111,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             checkForPartnerTask: function(npc) {
                 let self = this;
                 if (npc.name === "taikoguard") {
-                    axios.get("/session/" + this.sessionId + "/completePartnerTask/taikoguard").then(function(response){
+                    axiosClient.get("/session/" + this.sessionId + "/completePartnerTask/taikoguard").then(function(response){
                         console.log("PartnerTask Response", response);
                         if (response.data === true) {
                             self.showQuestCompleteNotification("Taiko Midle Task", "You completed the Taiko Midle task", 0, Types.Medals.TREE);
@@ -8136,7 +8136,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     }
                     return;
                 }
-                axios.get(url).then(function (response) {
+                axiosClient.get(url).then(function (response) {
                     if (response.data !== "") {
                         let messages;
                         if(_.isObject(response.data)) {
@@ -9355,7 +9355,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     return !invalid;
                 }
 
-                axios.get("/session/" + this.sessionId + "/statistics").then(function(response){
+                axiosClient.get("/session/" + this.sessionId + "/statistics").then(function(response){
 
                     if (response.data !== null && response.data !== undefined) {
 
@@ -9452,7 +9452,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 }
                 self.lastHPCall = now;
 
-                axios.get("/session/" + self.sessionId + "/polling").then(function (response) {
+                axiosClient.get("/session/" + self.sessionId + "/polling").then(function (response) {
                     if (response.data !== null && response.data !== undefined) {
                         if (response.data.playerInfo !== undefined) {
                             const { playerClass, level } = response.data.playerInfo;
@@ -9536,7 +9536,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     self.player.isFishing = true;
 
                     let url = '/session/' + self.sessionId + '/requestFish/' + self.map.getLakeName(gX, gY) + '/' + gX + '/' + gY;
-                    axios.get(url).then(function (response) {
+                    axiosClient.get(url).then(function (response) {
                         if (!response.data.allowed) {
                             self.showNotification("You need level  " + response.data.reqLevel + " fishing to fish here.");
                             return;

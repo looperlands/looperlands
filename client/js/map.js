@@ -35,7 +35,7 @@ define(['jquery', 'area'], function ($, Area) {
             let self = this;
             let audio;
             setInterval(function () {
-                axios.get(url).then(function (response) {
+                axiosClient.get(url).then(function (response) {
                     if (response.data === undefined || response.data.length === 0) {
                         return;
                     }

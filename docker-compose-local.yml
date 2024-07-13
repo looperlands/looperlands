@@ -1,7 +1,9 @@
 version: '3.8'
 services:
   gameserver:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
     image: looperlands-gameserver
     environment:
       LOOPWORMS_API_KEY: ${LOOPWORMS_API_KEY:-placeholder}
@@ -20,14 +22,6 @@ services:
     tty: true
     depends_on:
       - jsonserver
-    develop:
-      watch:
-        - path: server/
-          action: rebuild
-        - path: client/
-          action: rebuild
-        - path: shared/
-          action: rebuild
 
   jsonserver:
     image: codfish/json-server:0.17.3
@@ -36,4 +30,13 @@ services:
       - ./mock/middleware.js:/app/middleware.js:delegated
       - ./mock/routes.json:/app/routes.json:delegated
     ports:
-      - 3000:80
+      - "3000:80"
+
+  nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "8081:8081"  # Map host port 8081 to container port 8081
+    depends_on:
+      - gameserver

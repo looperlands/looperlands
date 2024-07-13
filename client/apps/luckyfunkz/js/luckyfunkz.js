@@ -634,7 +634,7 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
             //Request spin from server
             const sessionId = new URLSearchParams(window.location.search).get('sessionId');
             const spinRequest = `${urlPrefix}/session/${sessionId}/getSpin/${playing_lines}/${bet}`;
-            const response = await axios.get(spinRequest);
+            const response = await axiosClient.get(spinRequest);
 
             const { spinData, valueToPayout, winningLines } = response.data;
             payout = valueToPayout || 0;
@@ -787,7 +787,7 @@ A̶r̶t̶ ̶b̶y̶ ̶C̶l̶i̶n̶t̶ ̶B̶e̶l̶l̶a̶n̶g̶e̶r̶ ̶(̶C̶C̶-�
         return new Promise((resolve, reject) => {
             const sessionId = new URLSearchParams(window.location.search).get('sessionId');
             const inventoryQuery = `/session/${sessionId}/inventory`;
-            axios.get(inventoryQuery).then(response => {
+            axiosClient.get(inventoryQuery).then(response => {
                 resolve(response.data.resources[GOLD] || 0);
             }).catch(error => {
                 reject(error);

@@ -15,3 +15,4 @@ newrelic_agent.log
 run.sh
 local.sh
 coverage/
+dist/

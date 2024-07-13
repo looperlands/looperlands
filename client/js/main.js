@@ -1,3 +1,6 @@
+const axiosClient = axios.create({
+    baseURL: 'http://localhost:8000/'
+});
 
 define(['jquery', 'app'], function($, App) {
     var app, game;

@@ -193,7 +193,7 @@ class KeyBoardHandler {
             var inventoryQuery = "/session/" + this.game.sessionId + "/inventory";
             let self = this;
             this.weapons = [];
-            axios.get(inventoryQuery).then(function(response) {
+            axiosClient.get(inventoryQuery).then(function(response) {
                 for(var i = 0; i < response.data.inventory.length; i++) {
                     if (Types.isWeapon(Types.Entities[response.data.inventory[i].nftId])) {
                         self.weapons.push(response.data.inventory[i].nftId);

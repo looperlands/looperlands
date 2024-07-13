@@ -7,7 +7,7 @@ define(function() {
         dirty: false,
         loadData: async function() {
             console.log("Loading data");
-            let response = await axios.get(`/session/${this.sessionId}`);
+            let response = await axiosClient.get(`/session/${this.sessionId}`);
             this.data = response.data;
             this.nftId = this.data.nftId;
             this.walletId = this.data.walletId;
