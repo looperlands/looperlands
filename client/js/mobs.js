@@ -2056,6 +2056,42 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
 
+        Cobcatorange: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.COBCATORANGE);
+                this.idleSpeed = 333;
+                this.walkSpeed = 250;
+                this.moveSpeed = 300;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
+        Cobcatbrown: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.COBCATBROWN);
+                this.idleSpeed = 333;
+                this.walkSpeed = 250;
+                this.moveSpeed = 300;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
         Cobyorkie: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.COBYORKIE);
@@ -2069,6 +2105,38 @@ define(['mob', 'timer'], function(Mob, Timer) {
         Cobdirt: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.COBDIRT);
+                this.isAggressive = false;
+                this.nameless = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
+        Cobhay: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.COBHAY);
+                this.isAggressive = false;
+                this.nameless = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
+        Cobhaytwo: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.COBHAYTWO);
                 this.isAggressive = false;
                 this.nameless = true;
             },

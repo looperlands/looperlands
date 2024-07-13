@@ -11,6 +11,14 @@ const rarities = {
 //---START CONFIG---
 //Not all rarities have to be defined within a lake, but a COMMON is mandatory
 const Lakes = {
+    cobBathTub: {
+        level: 17,
+        fish: {
+            cobtrashbag: "common",
+            cobcan: "uncommon",
+            cobkoi: "legendary"
+        },
+    },
     cobFarmLake: {
         level: 1,
         fish: {

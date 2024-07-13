@@ -205,6 +205,10 @@ Types = {
         COBSLIMEPINK: 400019,
         COBSLIMECYAN: 400020,
         COBSLIMEMINT: 400021,
+        COBHAY: 400022,
+        COBHAYTWO: 400023,
+        COBCATORANGE: 400024,
+        COBCATBROWN: 400025,
         //Short Destroyers
         LATEFLEA: 770001,
         WOLFBOSS: 770002,
@@ -685,7 +689,9 @@ Types = {
         APEBRAINOG: 34000115,
         SIREN: 34000116, 
         CLOWNCAPONEBIT: 34000117, 
-        BITNPC_BITCORN: 34000118,// @lastidCharacter@
+        BITNPC_BITCORN: 34000118,
+        COBCATBLACK: 34000119,// @lastidCharacter@
+        COBMINER: 34000120,// @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -5931,6 +5937,8 @@ var kinds = {
     alaric: [Types.Entities.ALARIC, "mob"],
     cobdirt: [Types.Entities.COBDIRT, "mob"],
     cobincubator: [Types.Entities.COBINCUBATOR, "mob"],
+    cobhay: [Types.Entities.COBHAY, "mob"],
+    cobhaytwo: [Types.Entities.COBHAYTWO, "mob"],
 
     brownspotdog: [Types.Entities.BROWNSPOTDOG, "mob"],
     turtle: [Types.Entities.TURTLE, "mob"],
@@ -6015,6 +6023,8 @@ var kinds = {
     cobslimecyan: [Types.Entities.COBSLIMECYAN, "mob"],
     cobslimemint: [Types.Entities.COBSLIMEMINT, "mob"],
     cobcat: [Types.Entities.COBCAT, "mob"],
+    cobcatorange: [Types.Entities.COBCATORANGE, "mob"],
+    cobcatbrown: [Types.Entities.COBCATBROWN, "mob"],
     cobyorkie: [Types.Entities.COBYORKIE, "mob"],
     cobcoblin: [Types.Entities.COBCOBLIN, "mob"],
     cobcobane: [Types.Entities.COBCOBANE, "mob"],
@@ -6363,6 +6373,7 @@ var kinds = {
     miner: [Types.Entities.MINER, "npc"],
     villagesign1: [Types.Entities.VILLAGESIGN1, "npc"],
     coblumberjack: [Types.Entities.COBLUMBERJACK, "npc"],
+    cobcatblack: [Types.Entities.COBCATBLACK, "npc"],
     cobhillsnpc: [Types.Entities.COBHILLSNPC, "npc"],
     cobcobmin: [Types.Entities.COBCOBMIN, "npc"],
     VILLAGESIGN2: [Types.Entities.VILLAGESIGN2, "npc"],
@@ -6374,6 +6385,7 @@ var kinds = {
     VILLAGESIGN8: [Types.Entities.VILLAGESIGN8, "npc"],
     VILLAGESIGN9: [Types.Entities.VILLAGESIGN9, "npc"],
     cobellen: [Types.Entities.COBELLEN, "npc"],
+    cobminer: [Types.Entities.COBMINER, "npc"],
     cobjohnny: [Types.Entities.COBJOHNNY, "npc"],
     cobfern: [Types.Entities.COBFERN, "npc"],
     cobelliott: [Types.Entities.COBELLIOTT, "npc"],

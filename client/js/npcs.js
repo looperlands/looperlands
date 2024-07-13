@@ -273,6 +273,12 @@ define(['npc'], function(Npc) {
             }
         }),
 
+        Cobcatblack: Npc.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.COBCATBLACK, 1);
+            }
+        }),
+
         Cobhillsnpc: Npc.extend({
             init: function(id) {
                 this._super(id, Types.Entities.COBHILLSNPC, 1);
@@ -297,6 +303,12 @@ define(['npc'], function(Npc) {
         Cobellen: Npc.extend({
             init: function(id) {
                 this._super(id, Types.Entities.COBELLEN, 1);
+            }
+        }),
+
+        Cobminer: Npc.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.COBMINER, 1);
             }
         }),
 
