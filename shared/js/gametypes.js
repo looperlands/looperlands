@@ -388,6 +388,9 @@ Types = {
         M88NDINOB: 78000057,
         M88NDINOG: 78000058,
         ROACHCLIP: 78000059,
+        M88NLION: 78000060,
+        M88NTIGER: 78000061,
+        M88NCAMEL: 78000062,
         //m88n Mob Nexans
         NEXAN1: 78000037,
         NEXAN2: 78000038,
@@ -6086,6 +6089,9 @@ var kinds = {
     m88ndinob: [Types.Entities.M88NDINOB, "mob"],
     m88ndinog: [Types.Entities.M88NDINOG, "mob"],
     roachclip: [Types.Entities.ROACHCLIP, "mob"],
+    m88nlion: [Types.Entities.M88NLION, "mob"],
+    m88ntiger: [Types.Entities.M88NTIGER, "mob"],
+    m88ncamel: [Types.Entities.M88NCAMEL, "mob"],
 
     //m88n Mob Nexans
     nexan1: [Types.Entities.NEXAN1, "mob"],

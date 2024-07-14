@@ -596,9 +596,9 @@ define(['character'], function (Character) {
             "Howdy! I'm Gary, the real estate agent for Nexus Realty.",
             "If you're looking to buy some property in The Nexus, you've come to the right place.",
             "Right now we have several properties available and when you buy from us you get a FREE Lambo!",
-            //"If you're digging the boardwalk in Paradise Point, we have two new beach houses coming avialable soon...",
-            //"And if you're looking for something a little more exclusive we have private islands available in the Helio Islands.",
-            "If you're looking for something exclusive we have private islands available in the Helio Islands.",
+            "If you're digging the boardwalk in Paradise Point, we have two new beach houses avialable...",
+            "And if you're looking for something a little more exclusive we have private islands available in the Helio Islands.",
+            //"If you're looking for something exclusive we have private islands available in the Helio Islands.",
             //"That yacht over there, The Sun Chaser, has a private Captain's Quarters on it that is available to purchse.",
             //"And if you really want to get out of town, we have 2 m88n pods available in Lunaria",
             'Checkout <a target="_blank" href="https://discord.gg/bjjNewZegM">PLANET M88NWALKER in Discord</a> and DM m88nwalker to inquire.',
@@ -609,17 +609,18 @@ define(['character'], function (Character) {
         "m88ngenie": [
             "What's up pal! I'm the all powerful magic genie!",
             "Congratulations on finding my magic lamp...you gave it a rub and now I'm here to grant your wish!",
-            "You have 10 seconds to pick as many wishes as you can, then I will disappear until you find my lamp again..."
+            "You have 10 seconds to pick as many wishes as you can, then I will disappear until you find my lamp again...",
+            "/openShop make_a_wish Make a Wish"
         ],
 
         //MRMlabs NPCs
         "tylerdurden": [
-            "We are all part of the same compost heap.",
+            //"We are all part of the same compost heap.",
             //"The things you own end up owning you.",
             //"It's only after we've lost everything that we're free to do anything.",
             //"Sticking feathers up your butt does not make you a chicken!",
             //"You decide your own level of involvement.",
-            //"You wanna make an omelet, you gotta break some eggs.",
+            "You wanna make an omelet, you gotta break some eggs.",
             //"His name was Robert Paulson",
             //"I want you to hit me as hard as you can."
         ],

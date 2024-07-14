@@ -211,6 +211,9 @@ const AltNames = {
     m88ndinob: "Blue Dino",
     m88ndinog: "Green Dino",
     roachclip: "Roach Clip",
+    m88nlion: "Leo",
+    m88ntiger: "Ty",
+    m88ncamel: "Mel",
 
     //m88n Mob Nexans
     nexan8: "The Mail Lady",

@@ -640,6 +640,15 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.ROACHCLIP] = function(id) {
         return new Mobs.roachclip(id);
     };
+    EntityFactory.builders[Types.Entities.M88NLION] = function(id) {
+        return new Mobs.m88nlion(id);
+    };
+    EntityFactory.builders[Types.Entities.M88NTIGER] = function(id) {
+        return new Mobs.m88ntiger(id);
+    };
+    EntityFactory.builders[Types.Entities.M88NCAMEL] = function(id) {
+        return new Mobs.m88ncamel(id);
+    };
     
     //m88n Mob Nexans
     EntityFactory.builders[Types.Entities.NEXAN1] = function(id) {
