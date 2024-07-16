@@ -725,8 +725,8 @@ Types = {
         SIREN: 34000116, 
         CLOWNCAPONEBIT: 34000117, 
         BITNPC_BITCORN: 34000118,
-        COBCATBLACK: 34000119,// @lastidCharacter@
-        COBMINER: 34000120,// @lastidCharacter@
+        COBCATBLACK: 34000119,
+        COBMINER: 34000120, // @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
