@@ -424,36 +424,40 @@ generateFishDataMap = function() { // also do config checks
 const fishDataMap = generateFishDataMap();
 
 Lakes.getRandomFish = function(lake, lucky) {
-    if(Object.keys(Lakes[lake].fish).length == 1){
-        return Object.keys(Lakes[lake].fish)[0];
-    }
-
-    let luckyFish = lucky ? Lakes.getRandomFish(lake,false) : false;
-
-    let allFish = Lakes[lake].fish,
-        p = 0,
-        retRarity = null,
-        oddsSum = Object.values(rarities).reduce((partialSum, curr) => partialSum + curr.chance, 0),
-        v = Utils.random(oddsSum);
-
-        for(let rarity in rarities) {
-            let percentage = rarities[rarity].chance;
-            p += percentage;
-            
-            if(v < p) {
-                retRarity = rarity;
-                break;
+    try{
+        if(Object.keys(Lakes[lake].fish).length == 1){
+            return Object.keys(Lakes[lake].fish)[0];
+        }
+    
+        let luckyFish = lucky ? Lakes.getRandomFish(lake,false) : false;
+    
+        let allFish = Lakes[lake].fish,
+            p = 0,
+            retRarity = null,
+            oddsSum = Object.values(rarities).reduce((partialSum, curr) => partialSum + curr.chance, 0),
+            v = Utils.random(oddsSum);
+    
+            for(let rarity in rarities) {
+                let percentage = rarities[rarity].chance;
+                p += percentage;
+                
+                if(v < p) {
+                    retRarity = rarity;
+                    break;
+                }
             }
-        }
-
-    let retFish = Object.keys(allFish).filter(key => allFish[key] === retRarity) || Object.keys(allFish).filter(key => allFish[key] === "common");
-    retFish = Utils.shuffleAndGetRandom(retFish);
-
-        if(luckyFish && rarities[allFish[luckyFish]].chance < rarities[allFish[retFish]].chance) {
-            return luckyFish;
-        } else {
-            return retFish;
-        }
+    
+        let retFish = Object.keys(allFish).filter(key => allFish[key] === retRarity) || Object.keys(allFish).filter(key => allFish[key] === "common");
+        retFish = Utils.shuffleAndGetRandom(retFish);
+    
+            if(luckyFish && rarities[allFish[luckyFish]].chance < rarities[allFish[retFish]].chance) {
+                return luckyFish;
+            } else {
+                return retFish;
+            }
+    }catch(error){
+        throw new Error(`[ERROR] lakes.js | getRandomFish >> lake: ${lake}, lucky: ${lucky} \n${error}`);
+    }
 };
 
 Lakes.getLakeLevel = function(lake) {
