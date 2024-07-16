@@ -956,12 +956,38 @@ let Properties = {
         friendly: true
     },
 
+    cobcatorange: {
+        level: 1,
+        friendly: true
+    },
+
+    cobcatbrown: {
+        level: 1,
+        friendly: true
+    },
+
     cobyorkie: {
         level: 1,
         friendly: true
     },
 
     cobdirt: {
+        level: 1,
+        friendly: true, //not actually friendly, just AoE immune
+        hp: 1,
+        xp: 0,
+        respawnDelay: 10000
+    },
+
+    cobhay: {
+        level: 1,
+        friendly: true, //not actually friendly, just AoE immune
+        hp: 1,
+        xp: 0,
+        respawnDelay: 10000
+    },
+
+    cobhaytwo: {
         level: 1,
         friendly: true, //not actually friendly, just AoE immune
         hp: 1,
@@ -1218,15 +1244,12 @@ let Properties = {
     },
 
     balloondogp: {
-        level: 2,
+        level: 1,
         drops: {
-            m88nmap: 7,
-            m88nsteak: 1,
-            m88nmail: 1,
-            m88nshovel: 1,
+            m88nmap: 5,
             burger: 25,
-            GOLD: 22,
-            GOLD2: 25
+            GOLD: 25,
+            GOLD2: 30
         },
     },
 
@@ -1326,7 +1349,7 @@ let Properties = {
         },
         messages: ['Mmmmm, tasty!', 'Yum!', 'Eww, that was a little tough...', 'Stay on land or come back with friends!'],
         armorMod: 1,
-        hpMod: 6,
+        hpMod: 5,
         weaponMod: 1,
         respawnDelay: 30000,
         xp: 88000
@@ -1335,7 +1358,9 @@ let Properties = {
     m88nhermie: {
         level: 1,
         drops: {
-            flask: 40,
+            flask: 30,
+            GOLD: 30,
+            GOLD2: 20,
             burger: 10,
             firepotion: 5
         },
@@ -1345,8 +1370,10 @@ let Properties = {
     m88nmrcrab: {
         level: 2,
         drops: {
-            flask: 50,
-            GOLD: 20,
+            flask: 20,
+            GOLD: 40,
+            GOLD2: 25,
+            GOLD3: 10,
             firepotion: 5
         }
     },
@@ -1579,6 +1606,26 @@ let Properties = {
         friendly: true
     },
 
+    m88nlion: {
+        level: 1,
+        friendly: true
+    },
+
+    m88ntiger: {
+        level: 1,
+        friendly: true
+    },
+
+    m88ncamel: {
+        level: 1,
+        friendly: true
+    },
+
+    m88nflybutterfly: {
+        level: 1,
+        friendly: true
+    },
+
     //m88n Mob Nexans
     nexan1: {
         hp: 10,
@@ -1693,6 +1740,118 @@ let Properties = {
     },
 
     m88njeeves: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+
+    nexan49: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+
+    nexan50: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+
+    nexan51: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+
+    nexan52: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+
+    nexan53: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+
+    nexan54: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+
+    m88nmermaid1: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+
+    m88nmermaid2: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+
+    m88nmermaid3: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+
+    m88nmermaid4: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+
+    m88nmermaid5: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+
+    m88nmerman1: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+
+    m88nmerman2: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+
+    m88nmerman3: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+
+    m88nmerman4: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+
+    m88nmerman5: {
         hp: 10,
         armor: 1,
         weapon: 1,

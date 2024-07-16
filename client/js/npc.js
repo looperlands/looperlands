@@ -310,12 +310,23 @@ define(['character'], function (Character) {
             "But the campfire keeps them away!"
         ],
 
+        "cobcatblack": [
+            "Meow!",
+            "Welcome to the basement, traveler.",
+            "I'm BC, the guardian of the portals.",
+            "Simply step on a portal to be transported to your desired destination.",
+            "For now, you can return to Looper Lands or visit the Gilded Gryphon.",
+            "More destinations will be available in the future, so keep an eye out!"
+        ],
+
         "cobcobmin": [
             "Welcome to Cob's Farm, traveler!",
-            "View our scenic farms, admire vibrant flowers, and animals.",
-            "If adventure calls, our dungeons are rife with monsters and rewards.",
-            "Cob's Farm offers beauty and valor for everyone."
+            "Our world is new and ripe for exploration.",
+            "For now, you can wander our scenic farms, admire vibrant flowers, and meet the animals.",
+            "Exciting adventures and quests will be added soon, so stay tuned!",
+            "Cob's Farm is a place of beauty and potential, with many surprises on the horizon."
         ],
+
         "VILLAGESIGN2": ["Gregloop and Thunders Humble Abode."], //GREGLOOP
         "VILLAGESIGN3": ["Home of Ripnatius Ironhand"], //RIPNTEAR
         "VILLAGESIGN4": ["Pneuma's Dispensary"], //PNEUMA
@@ -326,9 +337,19 @@ define(['character'], function (Character) {
         "VILLAGESIGN9": ["Home of JackStraw"], // Jackstraw
 
         "cobellen": [
-            "Ahh such beauty.",
-            "I can't wait to grow my own flowers."
+            "Welcome to our lovely home!",
+            "Isn't this world beautiful? I can't wait to fill our garden with vibrant flowers.",
+            "Feel free to explore and relax. The farm holds many secrets and wonders.",
+            "Together, we'll make Cob's Farm flourish with life and color."
         ],
+
+        "cobminer": [
+            "Hey there, traveler!",
+            "You've stumbled upon my latest discovery, this mysterious cave.",
+            "I'm just starting to dig, and who knows what treasures or secrets lie within.",
+            "Come back later to see what I've unearthed!"
+        ],
+
 
         "cobfern": [
             "Adventurer, beware! Slimes have taken over these parts recently.",
@@ -527,7 +548,7 @@ define(['character'], function (Character) {
 
         "nexan33": [
             "Hey, what's up buddy?",
-            "Nice day out huh? I have a new quest on the way for you..."
+            "Nice day out huh?"
         ],
 
         "nexan34": [
@@ -575,9 +596,9 @@ define(['character'], function (Character) {
             "Howdy! I'm Gary, the real estate agent for Nexus Realty.",
             "If you're looking to buy some property in The Nexus, you've come to the right place.",
             "Right now we have several properties available and when you buy from us you get a FREE Lambo!",
-            //"If you're digging the boardwalk in Paradise Point, we have two new beach houses coming avialable soon...",
-            //"And if you're looking for something a little more exclusive we have private islands available in the Helio Islands.",
-            "If you're looking for something exclusive we have private islands available in the Helio Islands.",
+            "If you're digging the boardwalk in Paradise Point, we have two new beach houses avialable...",
+            "And if you're looking for something a little more exclusive we have private islands available in the Helio Islands.",
+            //"If you're looking for something exclusive we have private islands available in the Helio Islands.",
             //"That yacht over there, The Sun Chaser, has a private Captain's Quarters on it that is available to purchse.",
             //"And if you really want to get out of town, we have 2 m88n pods available in Lunaria",
             'Checkout <a target="_blank" href="https://discord.gg/bjjNewZegM">PLANET M88NWALKER in Discord</a> and DM m88nwalker to inquire.',
@@ -588,17 +609,105 @@ define(['character'], function (Character) {
         "m88ngenie": [
             "What's up pal! I'm the all powerful magic genie!",
             "Congratulations on finding my magic lamp...you gave it a rub and now I'm here to grant your wish!",
-            "You have 10 seconds to pick as many wishes as you can, then I will disappear until you find my lamp again..."
+            "You have 10 seconds to pick as many wishes as you can, then I will disappear until you find my lamp again...",
+            "/openShop make_a_wish Make a Wish"
+        ],
+
+        "nexan35": [
+            "How's it going?",
+            "You like gold?",
+            "If you go bash some crabs on the beach they drop gold sometimes."
+        ],
+
+        "nexan36": [
+            "Hey there explorer!",
+            "Keep your eyes peeled for treasure chests filled with random goodies.",
+            "Make sure to look behind things too, they're not always out in the open..."
+        ],
+
+        "nexan37": [
+            "Ya dig the drums? So does my cat.",
+            'Check it... <a target="_blank" href="https://www.youtube.com/watch?v=NUYvbT6vTPs">Cat Digs Polka Drums</a> ...LOL'
+        ],
+
+        "nexan38": [
+            //"Hey there!",
+            "Where am I?"
+        ],
+
+        "nexan39": [
+            "Well hello!",
+            "How do you do?",
+            "Welcome to Paradise Point West."
+        ],
+
+        "nexan40": [
+            "Hey there!",
+            "I hear the ocean is worth exploring...",
+            "But first you have to beat up that octopus and take one of his tentacles."
+        ],
+
+        "nexan41": [
+            //"Hey there!",
+            "So many beautiful flowers around here!"
+        ],
+
+        "nexan42": [
+            //"Hey there!",
+            "Some of these bushes really don't like when I trim them."
+        ],
+
+        "nexan43": [
+            //"Hey there!",
+            "Have you fished in the ocean yet?"
+        ],
+
+        "nexan44": [
+            //"Hey there!",
+            "How do you like the tunes?"
+        ],
+
+        "nexan45": [
+            //"Hey there!",
+            "Just sweeping up some sand..."
+        ],
+
+        "nexan46": [
+            "Hey there!",
+            "I'm trying to make some m88n gems being a street performer.",
+            "It's a pretty good gig, there are a lot of tourists that come through here."
+        ],
+
+        "nexan47": [
+            //"Hey there!",
+            "It's been 84 years..."
+        ],
+
+        "nexan48": [
+            //"Hey there!",
+            "Mmmmmm, m88nshine!"
+        ],
+
+        "m88nmermanking": [
+            "Hey there!",
+            "Welcome to my kingdom. Congratulations on finding my treasure!",
+            "If you own a house in The Nexus pick out a couple pieces to take home with you.",
+            "Just let m88nwalker know and he'll move it over for you."
+        ],
+
+        "m88nmermaidprincess": [
+            "Hey there!",
+            "I need your help."
         ],
 
         //MRMlabs NPCs
         "tylerdurden": [
-            "We are all part of the same compost heap.",
+            //"We are all part of the same compost heap.",
             //"The things you own end up owning you.",
             //"It's only after we've lost everything that we're free to do anything.",
             //"Sticking feathers up your butt does not make you a chicken!",
             //"You decide your own level of involvement.",
-            //"You wanna make an omelet, you gotta break some eggs.",
+            "You wanna make an omelet, you gotta break some eggs.",
             //"His name was Robert Paulson",
             //"I want you to hit me as hard as you can."
         ],

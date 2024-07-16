@@ -13,6 +13,8 @@ const AltNames = {
     cobslimeking: "slime king",
     magcrack: "megamag",
     cobdirt: "pile of dirt",
+    cobhay: "pile of hay",
+    cobhaytwo: "hay",
     cobincubator: "egg incubator",
     cobcoblin: "coblin",
     cobcobane: "cobane",
@@ -21,6 +23,9 @@ const AltNames = {
     cobguppy: "guppy",
     cobneon: "neon tetra",
     cobgoldfish: "goldfish",
+    cobkoi: "koi fish",
+    cobcan: "soda can",
+    cobtrashbag: "trash bag",
     cobtrout: "trout",
     cobcatfish: "catfish",
     coblobster: "red lobster",
@@ -206,6 +211,9 @@ const AltNames = {
     m88ndinob: "Blue Dino",
     m88ndinog: "Green Dino",
     roachclip: "Roach Clip",
+    m88nlion: "Leo",
+    m88ntiger: "Ty",
+    m88ncamel: "Mel",
 
     //m88n Mob Nexans
     nexan8: "The Mail Lady",
