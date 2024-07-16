@@ -548,7 +548,7 @@ define(['character'], function (Character) {
 
         "nexan33": [
             "Hey, what's up buddy?",
-            "Nice day out huh? I have a new quest on the way for you..."
+            "Nice day out huh?"
         ],
 
         "nexan34": [
@@ -611,6 +611,93 @@ define(['character'], function (Character) {
             "Congratulations on finding my magic lamp...you gave it a rub and now I'm here to grant your wish!",
             "You have 10 seconds to pick as many wishes as you can, then I will disappear until you find my lamp again...",
             "/openShop make_a_wish Make a Wish"
+        ],
+
+        "nexan35": [
+            "How's it going?",
+            "You like gold?",
+            "If you go bash some crabs on the beach they drop gold sometimes."
+        ],
+
+        "nexan36": [
+            "Hey there explorer!",
+            "Keep your eyes peeled for treasure chests filled with random goodies.",
+            "Make sure to look behind things too, they're not always out in the open..."
+        ],
+
+        "nexan37": [
+            "Ya dig the drums? So does my cat.",
+            'Check it... <a target="_blank" href="https://www.youtube.com/watch?v=NUYvbT6vTPs">Cat Digs Polka Drums</a> ...LOL'
+        ],
+
+        "nexan38": [
+            //"Hey there!",
+            "Where am I?"
+        ],
+
+        "nexan39": [
+            "Well hello!",
+            "How do you do?",
+            "Welcome to Paradise Point West."
+        ],
+
+        "nexan40": [
+            "Hey there!",
+            "I hear the ocean is worth exploring...",
+            "But first you have to beat up that octopus and take one of his tentacles."
+        ],
+
+        "nexan41": [
+            //"Hey there!",
+            "So many beautiful flowers around here!"
+        ],
+
+        "nexan42": [
+            //"Hey there!",
+            "Some of these bushes really don't like when I trim them."
+        ],
+
+        "nexan43": [
+            //"Hey there!",
+            "Have you fished in the ocean yet?"
+        ],
+
+        "nexan44": [
+            //"Hey there!",
+            "How do you like the tunes?"
+        ],
+
+        "nexan45": [
+            //"Hey there!",
+            "Just sweeping up some sand..."
+        ],
+
+        "nexan46": [
+            "Hey there!",
+            "I'm trying to make some m88n gems being a street performer.",
+            "It's a pretty good gig, there are a lot of tourists that come through here."
+        ],
+
+        "nexan47": [
+            //"Hey there!",
+            "It's been 84 years..."
+        ],
+
+        "nexan48": [
+            //"Hey there!",
+            "Mmmmmm, m88nshine!"
+        ],
+
+        "m88nmermanking": [
+            "Hey there!",
+            "Welcome to my kingdom. Congratulations on finding my treasure!",
+            "If you own a house in The Nexus pick out a couple pieces to take home with you.",
+            "Just let m88nwalker know and he'll move it over for you."
+        ],
+
+        "m88nmermaidprincess": [
+            "Hey there!",
+            "I need your help."
         ],
 
         //MRMlabs NPCs
