@@ -733,6 +733,65 @@ quests = [
         level: 10,
         xp: 100000,
         medal: Types.Medals.SKULL
+    },
+    {
+        id: "MRCRAB_QUEST_1",
+        name: "The Crab Basher's Common Request",
+        startText: ["Those little crabs on the beach are annoying. Go bash 100 of them and see how much gold you collect.",
+        "I'll load you up with 1000 bonus xp too."],
+        endText: "Nice job. Maybe we should open up a crab shack.",
+        eventType: "KILL_MOB",
+        npc: Types.Entities.NEXAN35,
+        target: Types.Entities.M88NMRCRAB,
+        amount: 100,
+        level: 1,
+        xp: 1000,
+        medal: Types.Medals.SKULL
+    },
+    {
+        id: "MRCRAB_QUEST_2",
+        name: "The Crab Basher's Uncommon Request",
+        startText: ["Nice job bashing those little bastardos. Wanna start making some real xp?",
+        "Go bash 1000 more and I'll hook you up with 69k xp."],
+        endText: "Haha, thanks. They keep coming back, maybe we should also start a crab extermination business.",
+        eventType: "KILL_MOB",
+        npc: Types.Entities.NEXAN35,
+        target: Types.Entities.M88NMRCRAB,
+        amount: 1000,
+        requiredQuest: "MRCRAB_QUEST_1",
+        level: 4,
+        xp: 69000,
+        medal: Types.Medals.SKULL
+    },
+    {
+        id: "MRCRAB_QUEST_3",
+        name: "The Crab Basher's Rare Request",
+        startText: ["Okay, so I landed a contract with the city. They said if we keep bashing crabs they'll pay us handsomly.", 
+        "If you bash 4000 more crabs your cut will be 200k xp!"],
+        endText: "Nice job. We should start selling crab merchandise...",
+        eventType: "KILL_MOB",
+        npc: Types.Entities.NEXAN35,
+        target: Types.Entities.M88NMRCRAB,
+        amount: 4000,
+        requiredQuest: "MRCRAB_QUEST_2",
+        level: 6,
+        xp: 200000,
+        medal: Types.Medals.SKULL
+    },
+    {
+        id: "MRCRAB_QUEST_4",
+        name: "The Crab Basher's Epic Request",
+        startText: ["The city is very pleased with the service we're providing. You up for another tour of duty?",
+        "If you can bash 8888 more crabs they're gonna give us a bonus. This time your cut will be 500k xp!"],
+        endText: "Nice job. You must be getting a pretty tweaked by now huh? Let's take a little PTSD prevention break.",
+        eventType: "KILL_MOB",
+        npc: Types.Entities.NEXAN35,
+        target: Types.Entities.M88NMRCRAB,
+        amount: 8888,
+        requiredQuest: "MRCRAB_QUEST_3",
+        level: 8,
+        xp: 500000,
+        medal: Types.Medals.SKULL
     }
 ]
 
