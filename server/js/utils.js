@@ -6,8 +6,8 @@ var Utils = {},
 module.exports = Utils;
 
 const bad_words = require("profane-words");
-const bad_word_exceptions = ["cornhole"];
-const badWordsToFilter = bad_words.filter(word => !new Set(bad_word_exceptions.map(e => e.toLowerCase())).has(word.toLowerCase()));
+const whitelisted_words = ["cornhole"];
+const badWordsToFilter = bad_words.filter(word => !new Set(whitelisted_words.map(e => e.toLowerCase())).has(word.toLowerCase()));
 
 Utils.sanitize = function(string) {
     // Strip unsafe tags, then escape as html entities.
