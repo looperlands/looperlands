@@ -6,7 +6,7 @@ var Utils = {},
 module.exports = Utils;
 
 const bad_words = require("profane-words");
-const whitelisted_words = ["cornhole"];
+const whitelisted_words = ["cornhole", "wang", "rigger"];
 const badWordsToFilter = bad_words.filter(word => !new Set(whitelisted_words.map(e => e.toLowerCase())).has(word.toLowerCase()));
 
 Utils.sanitize = function(string) {
