@@ -4,15 +4,18 @@ var Utils = {},
     Types = require("../../shared/js/gametypes");
 
 module.exports = Utils;
+
 const bad_words = require("profane-words");
+const bad_word_exceptions = ["cornhole"];
+const badWordsToFilter = bad_words.filter(word => !new Set(bad_word_exceptions.map(e => e.toLowerCase())).has(word.toLowerCase()));
 
 Utils.sanitize = function(string) {
     // Strip unsafe tags, then escape as html entities.
     let injectSafe = sanitizer.escape(sanitizer.sanitize(string));
+    
     // Replace bad words with asterisks
-    const badWordsLength = bad_words.length;
-    for (let i = 0; i < badWordsLength; i++) {
-        injectSafe = injectSafe.replace(new RegExp("\\b"+bad_words[i]+"\\b", "ig"), "*".repeat(bad_words[i].length));
+    for (const badWord of badWordsToFilter) {
+        injectSafe = injectSafe.replace(new RegExp(`\\b${badWord}\\b`, "ig"), "*".repeat(badWord.length));
     }
     return injectSafe;
 };
