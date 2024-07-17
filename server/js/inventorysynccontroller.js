@@ -23,7 +23,10 @@ class InventorySyncController {
         for (const i in cacheKeys) {
             const sessionId = cacheKeys[i];
             const sessionData = this.cache.get(sessionId);
-            const found = sessionData?.nftId === nftId;
+            if (!sessionData) {
+                continue;
+            }
+            const found = sessionData.nftId === nftId;
             if (found) {
                 await this.dao.processLootEventQueue();
                 const gameData = await this.dao.loadAvatarGameData(nftId);

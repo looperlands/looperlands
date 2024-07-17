@@ -648,6 +648,9 @@ module.exports = Player = Character.extend({
     },
 
     handleExperience: async function (experience) {
+        if (this.level === Formulas.MAX_LEVEL) {
+            return;
+        }
 
         let session = this.server.server.cache.get(this.sessionId);
 
@@ -657,6 +660,7 @@ module.exports = Player = Character.extend({
         this.server.server.cache.set(this.sessionId, session);
 
         let updatedLevel = Formulas.level(session.xp);
+
         if (this.level < updatedLevel) {
             this.level = updatedLevel;
             let message = `💪 **${this.name}** advanced to level ${updatedLevel}`;
