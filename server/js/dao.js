@@ -537,5 +537,6 @@ module.exports = {
   transferResourceFromTo,
   completePartnerTask,
   getPartnerTask,
-  getInventory
+  getInventory,
+  processLootEventQueue
 };
