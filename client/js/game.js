@@ -9410,6 +9410,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             self.player.level = level;
                         }
 
+                        if (self.player.level === 100) {
+                            percentage = "0.0";
+                        }
+
                         $('#avatarLevel').text(level);
                         $('#avatarProgress').text(percentage);
 
