@@ -160,7 +160,7 @@ quests = [
         amount: 69,
         requiredQuest: "GAMER_QUEST_1",
         level: 20,
-        xp: 69420,
+        xp: 100000,
         medal: Types.Medals.SKULL
     },
     {
@@ -175,7 +175,7 @@ quests = [
         amount: 69,
         requiredQuest: "GAMER_QUEST_2",
         level: 30,
-        xp: 69420,
+        xp: 100000,
         medal: Types.Medals.SKULL
     },
     {
@@ -190,7 +190,7 @@ quests = [
         amount: 69,
         requiredQuest: "GAMER_QUEST_3",
         level: 40,
-        xp: 69420,
+        xp: 100000,
         medal: Types.Medals.SKULL
     },
     {
@@ -508,7 +508,7 @@ quests = [
         level: 10,
         xp: 1000,
         medal: Types.Medals.SKULL,
-        rental: "0xd3894a9a6f325cd660916340ba5e040ca17b53504a7c7860d61329ac013e5d84"
+        rental: "0xb5ed38ed7bd87b69887f974d89dd91e336cba129575fd799f0e72a9e65896dcc"
     },
     {
         id: "FISHERMAN_QUEST_2",
@@ -624,7 +624,7 @@ quests = [
     {
         id: "FOREMAN_QUEST_3",
         name: "The Foreman's Blueprint Request",
-        startText: ["Finally, we're going to need some blueprints to follow along to...",
+        startText: ["Finally, we're going to need some blueprints...",
         "Each worker is going to need their own copy.",
         "Can you look around and see if you can find me 10 blueprints?"],
         endText: ["Great job, thank you!",
