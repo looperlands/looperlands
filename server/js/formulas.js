@@ -101,7 +101,7 @@ Formulas.calculateToolLevelMap = function (numLevels) {
 };
 
 // Usage example:
-const numLevels = 100;
+const numLevels = 1000;
 const EXPERIENCE_MAP = Formulas.calculateExperienceMap(numLevels);
 const SPEEDTRAIT_MAP = Formulas.calculateSpeedTraitMap(numLevels);
 const TOOLLEVEL_MAP = Formulas.calculateToolLevelMap(numLevels);
