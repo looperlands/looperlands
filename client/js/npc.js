@@ -1034,6 +1034,34 @@ define(['character'], function (Character) {
             "👀👀",            
             "LIFE IS A-MAIZ-ING",
         ],
+        "VOYAGER": [
+            "Prepare for the Dark Voyage!",
+            "Help us take back our ship and save our crew!",
+            "Please take this to help you on your journey <a target='_blank' href='https://imgur.com/a/2fOBZvn'>Try Here!</a>",
+        ], 
+        "VOYAGERMONKEY": [
+            "Save our friends!",
+            "HOO HOO HA HA!",
+            "Ape dont fight ape!, we must unite!",
+        ], 
+        "CHEN": [
+            "Are you ready to journey into space?",
+            "Aliens are dangerous, dont get caught!",
+            "You might need this <a target='_blank' href='https://imgur.com/a/gKoXhHK'>Try Here!</a>",
+        ], 
+        "VOYAGERROBIT": [
+            "The aliens are up ahead, get ready!",
+            "Take this with you <a target='_blank' href='https://imgur.com/a/ZDJq7xb'>Try Here!</a>!",
+            "Beep Boop",
+        ], 
+        "SARAH": [
+            "The evil Zorath is up ahead!",
+            "Let's take back our ship!",
+        ], 
+        "MOONBASES": [
+            "Thank you for your help space cadet!",
+            "I hope this helps you on your journey <a target='_blank' href='https://imgur.com/a/QaDRUKn'>Try Here!</a>",
+        ], 
         // @nextNPCLine@
     };
 

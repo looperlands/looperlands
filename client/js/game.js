@@ -395,6 +395,12 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 "SIREN",
                                 "ZAROTH",
                                 "INFECTION",
+                                "VOYAGER",
+                                "VOYAGERMONKEY",
+                                "CHEN",
+                                "VOYAGERROBIT",
+                                "SARAH",
+                                "MOONBASES",
                                 // @nextCharacterLine@
                     "item-BOARHIDE",
                     "item-THUDKEY",

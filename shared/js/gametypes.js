@@ -728,7 +728,13 @@ Types = {
         COBCATBLACK: 34000119,// @lastidCharacter@
         COBMINER: 34000120,// @lastidCharacter@
         ZAROTH:34000121,
-        INFECTION: 34000122, // @lastidCharacter@
+        INFECTION: 34000122,
+        VOYAGER: 34000123,
+        VOYAGERMONKEY: 34000124,
+        CHEN: 34000125,
+        VOYAGERROBIT: 34000126,
+        SARAH: 34000127,
+        MOONBASES: 34000128, // @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -6616,6 +6622,12 @@ var kinds = {
     stupidmonkey: [Types.Entities.STUPIDMONKEY, "npc"],
     ZAROTH: [Types.Entities.ZAROTH, "mob"],
     INFECTION: [Types.Entities.INFECTION, "mob"],
+    VOYAGER: [Types.Entities.VOYAGER, "npc"],
+    VOYAGERMONKEY: [Types.Entities.VOYAGERMONKEY, "npc"],
+    CHEN: [Types.Entities.CHEN, "npc"],
+    VOYAGERROBIT: [Types.Entities.VOYAGERROBIT, "npc"],
+    SARAH: [Types.Entities.SARAH, "npc"],
+    MOONBASES: [Types.Entities.MOONBASES, "npc"],
     // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],

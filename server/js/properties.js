@@ -1176,7 +1176,7 @@ let Properties = {
         armorMod: 2.2,
         xp: 30000,
         redpacket: true,
-        respawnDelay: 180000
+        respawnDelay: 60000
     },
 
     INFECTION: {
@@ -1184,13 +1184,12 @@ let Properties = {
         drops: {
             burger: 50,
             GOLD: 50,
-            GOLD2: 10,
-            GOLD3: 2,
+            GOLD2: 25,
         },
         messages: ['I will beepin destroy you!'],
         armorMod: 2.2,
-        xp: 1000,
-        respawnDelay: 180000
+        xp: 3000,
+        respawnDelay:  60000
     },
 
      COLOSSUS: {

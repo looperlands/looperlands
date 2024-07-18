@@ -474,6 +474,12 @@ define(['npc'], function(Npc) {
         // BITCORN NPCS
         BITNPC_BITCORN: Npc.extend({init: function(id) {this._super(id, Types.Entities.BITNPC_BITCORN, 1);}}),
 
+        VOYAGER: Npc.extend({init: function(id) {this._super(id, Types.Entities.VOYAGER, 1);}}),
+        VOYAGERMONKEY: Npc.extend({init: function(id) {this._super(id, Types.Entities.VOYAGERMONKEY, 1);}}),
+        CHEN: Npc.extend({init: function(id) {this._super(id, Types.Entities.CHEN, 1);}}),
+        VOYAGERROBIT: Npc.extend({init: function(id) {this._super(id, Types.Entities.VOYAGERROBIT, 1);}}),
+        SARAH: Npc.extend({init: function(id) {this._super(id, Types.Entities.SARAH, 1);}}),
+        MOONBASES: Npc.extend({init: function(id) {this._super(id, Types.Entities.MOONBASES, 1);}}),
         // @nextNPCLine@
     };
     
