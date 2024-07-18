@@ -1,0 +1,36 @@
+name: deploy
+on:
+  push:
+    branches:
+      - main
+concurrency:
+  group: environment-${{ github.ref }}
+  cancel-in-progress: true      
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - name: executing remote ssh commands using password
+      uses: appleboy/ssh-action@v0.1.7
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        port: 22
+        script: |
+          docker system prune -af
+          cd /home/looperlands/git/looperlands
+          git checkout .
+          git checkout main
+          git pull
+          docker-compose build --no-cache
+          sudo systemctl restart looperlands
+          cd ../looperlands-backend
+          git checkout .
+          git checkout main
+          git pull
+          cp ../looperlands/shared/js/gametypes.js src/gametypes.cjs
+          cp /home/looperlands/git/docker-flyway-looperlands-backend.config /home/looperlands/git/looperlands-backend/docker-flyway.config          
+          docker-compose build --no-cache
+          sudo systemctl restart looperlands-backend 
