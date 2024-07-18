@@ -1296,7 +1296,7 @@ let Properties = {
     },
 
     balloongiraffeo: {
-        level: 50,
+        level: 40,
         drops: {
             m88nmap: 15,
             m88nsteak: 1,
@@ -1308,7 +1308,7 @@ let Properties = {
     },
 
     m88nbigchungus: {
-        level: 55,
+        level: 50,
         drops: {
             m88nmap: 30,
             m88nsteak: 1,
