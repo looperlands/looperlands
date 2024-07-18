@@ -393,6 +393,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 "FEDORABIT",
                                 "APEBRAINOG",
                                 "SIREN",
+                                "ZAROTH",
+                                "INFECTION",
                                 // @nextCharacterLine@
                     "item-BOARHIDE",
                     "item-THUDKEY",

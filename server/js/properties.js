@@ -1164,6 +1164,35 @@ let Properties = {
         respawnDelay: 180000
     },
 
+    ZAROTH: {
+        level: 55,
+        drops: {
+            burger: 50,
+            GOLD: 50,
+            GOLD2: 10,
+            GOLD3: 2,
+        },
+        messages: ['I will beepin destroy you!'],
+        armorMod: 2.2,
+        xp: 30000,
+        redpacket: true,
+        respawnDelay: 180000
+    },
+
+    INFECTION: {
+        level: 5,
+        drops: {
+            burger: 50,
+            GOLD: 50,
+            GOLD2: 10,
+            GOLD3: 2,
+        },
+        messages: ['I will beepin destroy you!'],
+        armorMod: 2.2,
+        xp: 1000,
+        respawnDelay: 180000
+    },
+
      COLOSSUS: {
         level: 30,
         drops: {
