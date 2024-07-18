@@ -7598,6 +7598,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 entity.open();
                             } else if (entity instanceof Fieldeffect) {
                                 self.removeFieldEffect(entity);
+                            } else if (entity instanceof Npc) {
+                                $('#shop-popup').hide()
+                                $('#shop-confirmation').hide();
                             }
 
                             entity.clean();
