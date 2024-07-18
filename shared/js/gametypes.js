@@ -727,6 +727,8 @@ Types = {
         BITNPC_BITCORN: 34000118,
         COBCATBLACK: 34000119,// @lastidCharacter@
         COBMINER: 34000120,// @lastidCharacter@
+        ZAROTH:34000121,
+        INFECTION: 34000122, // @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -6612,6 +6614,8 @@ var kinds = {
     taikotownnpc6: [Types.Entities.TAIKOTOWNNPC6, "npc"],
     taikotownnpc7: [Types.Entities.TAIKOTOWNNPC7, "npc"],
     stupidmonkey: [Types.Entities.STUPIDMONKEY, "npc"],
+    ZAROTH: [Types.Entities.ZAROTH, "mob"],
+    INFECTION: [Types.Entities.INFECTION, "mob"],
     // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],
