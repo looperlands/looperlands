@@ -652,6 +652,27 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.M88NFLYBUTTERFLY] = function(id) {
         return new Mobs.m88nflybutterfly(id);
     };
+    EntityFactory.builders[Types.Entities.M88NNIGHTMAREMONSTERA] = function(id) {
+        return new Mobs.m88nnightmaremonstera(id);
+    };
+    EntityFactory.builders[Types.Entities.M88NNIGHTMAREMONSTERB] = function(id) {
+        return new Mobs.m88nnightmaremonsterb(id);
+    };
+    EntityFactory.builders[Types.Entities.M88NNIGHTMAREMONSTERG] = function(id) {
+        return new Mobs.m88nnightmaremonsterg(id);
+    };
+    EntityFactory.builders[Types.Entities.M88NNIGHTMAREMONSTERP] = function(id) {
+        return new Mobs.m88nnightmaremonsterp(id);
+    };
+    EntityFactory.builders[Types.Entities.M88NNIGHTMAREMONSTERV] = function(id) {
+        return new Mobs.m88nnightmaremonsterv(id);
+    };
+    EntityFactory.builders[Types.Entities.M88NNIGHTMAREMONSTERY] = function(id) {
+        return new Mobs.m88nnightmaremonstery(id);
+    };
+    EntityFactory.builders[Types.Entities.M88NBONER] = function(id) {
+        return new Mobs.m88nboner(id);
+    };
     
     //m88n Mob Nexans
     EntityFactory.builders[Types.Entities.NEXAN1] = function(id) {
@@ -1044,6 +1065,10 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.M88NCHAMPAGNEBOTTLE] = function(id) { return new Items.m88nchampagnebottle(id); };
     EntityFactory.builders[Types.Entities.M88NSHINE] = function(id) { return new Items.m88nshine(id); };
     EntityFactory.builders[Types.Entities.M88NWHISKEY] = function(id) { return new Items.m88nwhiskey(id); };
+    EntityFactory.builders[Types.Entities.M88NDARKCLOUD] = function(id) { return new Items.m88ndarkcloud(id); };
+    EntityFactory.builders[Types.Entities.M88NDREAMCLOUD] = function(id) { return new Items.m88ndreamcloud(id); };
+    EntityFactory.builders[Types.Entities.M88NSUNSHINE] = function(id) { return new Items.m88nsunshine(id); };
+    EntityFactory.builders[Types.Entities.M88NSKELETONKEY] = function(id) { return new Items.m88nskeletonkey(id); };
     //MRMlabs Items
     EntityFactory.builders[Types.Entities.FIRSTAIDKIT] = function(id) { return new Items.firstaidkit(id); };
     EntityFactory.builders[Types.Entities.BANDAID] = function(id) { return new Items.bandaid(id); };

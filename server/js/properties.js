@@ -1415,6 +1415,86 @@ let Properties = {
         }
     },
 
+    m88nboner: {
+        level: 55,
+        drops: {
+            m88nskeletonkey: 100
+        },
+        messages: ['Boner kill!', 'I thought I was already dead...', 'Cant touch this...', 'Stay away or come back with friends!'],
+        armorMod: 1,
+        hpMod: 5,
+        weaponMod: 0.8,
+        respawnDelay: 1000000,
+        xp: 69420
+    },
+
+    m88nnightmaremonsterb: {
+        level: 2,
+        drops: {
+            burger: 60,
+            m88ndarkcloud: 10,
+            m88ndreamcloud: 2,
+            m88nbone: 2,
+            GOLD: 20
+        },
+    },
+
+    m88nnightmaremonstery: {
+        level: 4,
+        drops: {
+            burger: 40,
+            m88ndarkcloud: 20,
+            m88ndreamcloud: 4,
+            m88nbone: 4,
+            GOLD: 25
+        },
+    },
+
+    m88nnightmaremonsterg: {
+        level: 6,
+        drops: {
+            m88ndreamcloud: 10,
+            m88nbone: 6,
+            burger: 47,
+            GOLD: 30
+        },
+    },
+
+    m88nnightmaremonstera: {
+        level: 8,
+        drops: {
+            m88ndreamcloud: 25,
+            m88nsunshine: 2,
+            m88nbone: 8,
+            burger: 25,
+            GOLD: 35
+        },
+    },
+
+    m88nnightmaremonsterv: {
+        level: 10,
+        drops: {
+            m88nsunshine: 5,
+            m88nbone: 10,
+            burger: 20,
+            GOLD: 30,
+            GOLD2: 20,
+            GOLD3: 10
+        },
+    },
+
+
+    m88nnightmaremonsterp: {
+        level: 12,
+        drops: {
+            m88nsunshine: 10,
+            burger: 25,
+            GOLD: 30,
+            GOLD2: 20,
+            GOLD3: 10
+        },
+    },
+
     m88nmine: {
         level: 1,
         friendly: true, //not actually friendly, just AoE immune
