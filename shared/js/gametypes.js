@@ -408,6 +408,13 @@ Types = {
         M88NTIGER: 78000061,
         M88NCAMEL: 78000062,
         M88NFLYBUTTERFLY: 78000063,
+        M88NNIGHTMAREMONSTERA: 78000080,
+        M88NNIGHTMAREMONSTERB: 78000081,
+        M88NNIGHTMAREMONSTERG: 78000082,
+        M88NNIGHTMAREMONSTERP: 78000083,
+        M88NNIGHTMAREMONSTERV: 78000084,
+        M88NNIGHTMAREMONSTERY: 78000085,
+        M88NBONER: 78000086,
         //m88n Mob Nexans
         NEXAN1: 78000037,
         NEXAN2: 78000038,
@@ -514,6 +521,10 @@ Types = {
         M88NCHAMPAGNEBOTTLE: 78007400,
         M88NSHINE: 78007500,
         M88NWHISKEY: 78007600,
+        M88NDARKCLOUD: 78007700,
+        M88NDREAMCLOUD: 78007800,
+        M88NSUNSHINE: 78007900,
+        M88NSKELETONKEY: 78008000,
         //MRMlabs NPCs
         TYLERDURDEN: 79000000,
         //MRMlabs Items
@@ -6133,6 +6144,13 @@ var kinds = {
     m88ntiger: [Types.Entities.M88NTIGER, "mob"],
     m88ncamel: [Types.Entities.M88NCAMEL, "mob"],
     m88nflybutterfly: [Types.Entities.M88NFLYBUTTERFLY, "mob"],
+    m88nnightmaremonstera: [Types.Entities.M88NNIGHTMAREMONSTERA, "mob"],
+    m88nnightmaremonsterb: [Types.Entities.M88NNIGHTMAREMONSTERB, "mob"],
+    m88nnightmaremonsterg: [Types.Entities.M88NNIGHTMAREMONSTERG, "mob"],
+    m88nnightmaremonsterp: [Types.Entities.M88NNIGHTMAREMONSTERP, "mob"],
+    m88nnightmaremonsterv: [Types.Entities.M88NNIGHTMAREMONSTERV, "mob"],
+    m88nnightmaremonstery: [Types.Entities.M88NNIGHTMAREMONSTERY, "mob"],
+    m88nboner: [Types.Entities.M88NBONER, "mob"],
 
     //m88n Mob Nexans
     nexan1: [Types.Entities.NEXAN1, "mob"],
@@ -6329,6 +6347,10 @@ var kinds = {
     m88nchampagnebottle: [Types.Entities.M88NCHAMPAGNEBOTTLE, "object"],
     m88nshine: [Types.Entities.M88NSHINE, "object"],
     m88nwhiskey: [Types.Entities.M88NWHISKEY, "object"],
+    m88ndarkcloud: [Types.Entities.M88NDARKCLOUD, "object"],
+    m88ndreamcloud: [Types.Entities.M88NDREAMCLOUD, "object"],
+    m88nsunshine: [Types.Entities.M88NSUNSHINE, "object"],
+    m88nskeletonkey: [Types.Entities.M88NSKELETONKEY, "object"],
     //MRMlabs Items
     firstaidkit: [Types.Entities.FIRSTAIDKIT, "object"],
     bandaid: [Types.Entities.BANDAID, "object"],

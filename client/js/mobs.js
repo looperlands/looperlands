@@ -2456,6 +2456,97 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
 
+        m88nnightmaremonsterb: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NNIGHTMAREMONSTERB);
+                this.moveSpeed = 300;
+                this.atkSpeed = 100;
+                this.idleSpeed = 750;
+                this.setAttackRate(1000);
+                this.deathAnimated = true;
+                this.isAggressive = true;
+                this.aggroRange = 3;
+            }
+        }),
+
+        m88nnightmaremonstery: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NNIGHTMAREMONSTERY);
+                this.moveSpeed = 250;
+                this.atkSpeed = 100;
+                this.idleSpeed = 750;
+                this.setAttackRate(1000);
+                this.deathAnimated = true;
+                this.isAggressive = true;
+                this.aggroRange = 3;
+            }
+        }),
+
+        m88nnightmaremonstera: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NNIGHTMAREMONSTERA);
+                this.moveSpeed = 200;
+                this.atkSpeed = 100;
+                this.idleSpeed = 750;
+                this.setAttackRate(1000);
+                this.deathAnimated = true;
+                this.isAggressive = true;
+                this.aggroRange = 4;
+            }
+        }),
+
+        m88nnightmaremonsterv: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NNIGHTMAREMONSTERV);
+                this.moveSpeed = 150;
+                this.atkSpeed = 200;
+                this.idleSpeed = 750;
+                this.setAttackRate(1000);
+                this.deathAnimated = true;
+                this.isAggressive = true;
+                this.aggroRange = 4;
+            }
+        }),
+
+        m88nnightmaremonsterp: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NNIGHTMAREMONSTERP);
+                this.moveSpeed = 150;
+                this.atkSpeed = 200;
+                this.idleSpeed = 750;
+                this.setAttackRate(750);
+                this.deathAnimated = true;
+                this.isAggressive = true;
+                this.aggroRange = 3;
+            }
+        }),
+
+        m88nnightmaremonsterg: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NNIGHTMAREMONSTERG);
+                this.moveSpeed = 200;
+                this.atkSpeed = 100;
+                this.idleSpeed = 750;
+                this.setAttackRate(1000);
+                this.deathAnimated = true;
+                this.isAggressive = true;
+                this.aggroRange = 4;
+            }
+        }),
+
+        m88nboner: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NBONER);
+                this.moveSpeed = 300;
+                this.atkSpeed = 250;
+                this.idleSpeed = 750;
+                this.setAttackRate(500);
+                this.deathAnimated = true;
+                this.isAggressive = true;
+                this.aggroRange = 3;
+            }
+        }),
+
         m88nmine: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.M88NMINE);
