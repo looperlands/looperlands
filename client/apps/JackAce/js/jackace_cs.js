@@ -1,6 +1,106 @@
+/*
+╔════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║                                                                                                                                                ║
+║                                 __     ______     ______     __  __     ______     ______     ______                                           ║
+║                                /\ \   /\  __ \   /\  ___\   /\ \/ /    /\  __ \   /\  ___\   /\  ___\                                          ║
+║                               _\_\ \  \ \  __ \  \ \ \____  \ \  _"-.  \ \  __ \  \ \ \____  \ \  __\                                          ║
+║                              /\_____\  \ \_\ \_\  \ \_____\  \ \_\ \_\  \ \_\ \_\  \ \_____\  \ \_____\                                        ║
+║                              \/_____/   \/_/\/_/   \/_____/   \/_/\/_/   \/_/\/_/   \/_____/   \/_____/                                        ║
+║                                                                                                   by bitcorn                                   ║
+║                                                                                                                                                ║
+╚════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+THE ORIGINAL CODE LINKED BELOW WAS PUT INTO BLENDER ON HIGH WHICH WAS THEN PUT INTO AN INCINERATOR. AFTER THE DUST SETTLED AND NEARLY ALL THE CODE
+WAS REPLACED, WE FIND OURSELVES STARING AT A CAT EATING PIZZA FLYING IN A WHIRLWIND ON A FRIDAY NIGHT. IT TOOK MORE TURNS THAN A FERRET IN A
+FUNHOUSE AND A HEAVY DOSE OF BONKIN', YANKIN' AND CRANKIN', BUT... IZ READY.
+
+[ORIGINAL CODE]
+https://github.com/nhedeker/blackjack/tree/master
+
+Copyright (c) 2014-2016 Materialize [MIT License]
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
+to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+    - The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
+
+CASINO AMBIENCE [License: Attribution NonCommercial 4.0]
+nona.aaa -- https://freesound.org/s/654362 
+YeshniGounden -- https://freesound.org/s/654199
+
+WIN SOUND
+Jingle_Win_Synth_05.wav by LittleRobotSoundFactory -- https://freesound.org/s/274182 -- License: Attribution 4.0
+
+CARD SOUNDS
+Cards Sounds by uEffects -- https://freesound.org/s/208790 -- License: Creative Commons 0
+
+ART >> by bitcorn (2024)
+*/
+
 const isLIVE = true;
 
-// Global Variables
+const sounds = {
+    soundSprite: new Howl({
+        src: ['./apps/JackAce/audio/JackAce.mp3'],
+        sprite: {
+            shuffle: [0, 2500],
+            dealCard1: [3000, 500],
+            dealCard2: [3500, 500],
+            dealCard3: [4000, 700],
+            dealCard4: [4700, 550],
+            singleCard: [6000, 500],
+            flipCard: [7000, 500],
+            noMonies: [8000, 250],
+            win: [8500, 2000]
+        }
+    }),
+    casinoAmbiance: new Howl({
+        src: ['./apps/JackAce/audio/casino_ambiance.mp3'],
+        loop: true
+    })
+};
+
+function getSpriteDuration(key) {
+    if (sounds.soundSprite._sprite[key]) {
+        return sounds.soundSprite._sprite[key][1] / 1000;
+    }
+    return 0;
+}
+
+function startUpJackAce() {
+    setPlayerMoney();
+    gsap.to(`#jackaceGame`, { opacity: 1, duration: 0.5 });
+    if (!sounds.casinoAmbiance.playing()) {
+        sounds.casinoAmbiance.volume(0.5); // Set volume to 50%
+        sounds.casinoAmbiance.play();
+    }
+    launchJackAce();
+};
+
+async function stopJackAce() {
+    sounds.casinoAmbiance.stop();
+    await resetGame(true);
+    $('#bet-window').addClass('hidden');
+
+};
+
+async function setPlayerMoney(setup = true) {
+    playerMoney = await getGoldAmount();
+    if (setup) {
+        $('#resources-minigame').removeClass('hidden');
+        gsap.to('#resources-minigame', { opacity: 1, duration: 0.5 });
+        $('#resources-minigame').addClass('JackAce');
+    }
+    $('#resources-minigame #resource-text').text(playerMoney);
+}
+
+//////////////////////
+// Global Variables //
+//////////////////////
+
 let gameWindow = ""; // Current UI window shown
 let playerBet = 1;
 let playerMoney = 0;
@@ -10,7 +110,6 @@ let hideArrowsNoDim = false;
 let isUpdatingPlayerMoney = false; // Flag to track if the function is running
 let generateParticles = false;
 let particleAnimationPromises = [];
-
 
 const GOLD = "21300041";
 const BET_AMOUNTS = { 1: 1, 2: 2, 3: 5, 4: 10, 5: 25, 6: 50, 7: 100 };
@@ -94,14 +193,9 @@ async function init() {
     try {
         setupJackAceMenu();
         setupHelpPanel();
-        playerMoney = await getGoldAmount();
-        $('#resources-minigame').removeClass('hidden');
-        gsap.to('#resources-minigame', { opacity: 1, duration: 0.5 });
-        $('#resources-minigame').addClass('JackAce');
-        $('#resources-minigame #resource-text').text(playerMoney);
         $('#uiWindow').empty();
         $('#uiWindow').append(`
-        <div id="bet-window">
+        <div id="bet-window" class="hidden">
             <div id="bet_increase"></div>
             <div id="bet_amount"></div>
             <div id="bet_decrease"></div>
@@ -134,17 +228,20 @@ async function init() {
             '<div class="card-back"></div>' +
             '<div class="card-back"></div>' +
             '</div>');
-
         await setUpButtonEvents();
         window.addEventListener('resize', adjustJackaceGameScale);
-        await adjustJackaceGameScale();
-        await showGameWindow(null, 'splashScreen');
-        if (!isLIVE) {
-            alert('JackAce is currently being worked on. Please try again.');
-            $('#mgClose')[0].click();
-        }
+        launchJackAce();
     } catch (error) {
         console.error('Error starting JackAce:', error);
+    }
+}
+
+async function launchJackAce() {
+    await adjustJackaceGameScale();
+    await showGameWindow(null, 'splashScreen');
+    if (!isLIVE) {
+        alert('JackAce is currently being worked on. Please try again.');
+        $('#mgClose')[0].click();
     }
 }
 
@@ -214,7 +311,7 @@ async function setUpButtonEvents() {
     // Register additional events
     //$(document).on('fadeIn_JackAce', () => fadeInSetupJackAce());
     $(`#minigameMenu`).on('click', '#mgJackAceHelp', () => showHelpPanel());
-    $(`#minigameMenu`).on('click', '#mgClose', () => resetGame());
+    $(`#minigameMenu`).on('click', '#mgClose', () => stopJackAce());
 }
 
 // Add help to minigame menu if it doesn't exist
@@ -228,7 +325,7 @@ function setupJackAceMenu() {
 
 /* function fadeInSetupJackAce() {
     console.log("Running fadeInSetupJackAce");
-    gsap.to(`#jackaceGame`, { opacity: 1, duration: 0.5 });
+    
     setupJackAceMenu();
     showGameWindow();
 } */
@@ -288,7 +385,6 @@ async function makeRequest(action, additionalData = {}) {
 
         axios.post(minigameQuery, {
             minigame: 'jackace',
-            player: playerId,
             action,
             ...additionalData
         })
@@ -317,18 +413,19 @@ async function makeRequest(action, additionalData = {}) {
                             break;
                         case `Early Access Limited to bits x bit holders.`:
                             $("#uiWindow").removeClass('processing');
-                            console.log(errorResponse.message);
+                            console.log('access limited to holders: ', errorResponse.message);
                             await animateText(errorResponse.message);
                             $('#mgClose')[0].click();
                             break;
                         default:
-                            console.log(errorResponse.message);
+                            console.log('something borked: ', errorResponse.message);
                             alert(`${errorResponse.message}`);
                             $('#mgClose')[0].click();
                             break;
                     }
                 } else {
                     alert('An unexpected error occurred. Please try again later.');
+                    console.log(error);
                     $('#mgClose')[0].click();
                 }
                 reject(error);
@@ -337,30 +434,37 @@ async function makeRequest(action, additionalData = {}) {
 }
 
 async function resetGame(hideUIWindow = false) {
-    if (isLIVE) {
-        const sessionId = new URLSearchParams(window.location.search).get('sessionId');
-        const minigameQuery = `/session/${sessionId}/minigame`;
 
-        try {
-            const response = await axios.post(minigameQuery, {
-                minigame: 'jackace',
-                player: playerId,
-                action: 'RESET'
-            });
-            console.log('[GAME RESET]');
-        } catch (error) {
-            console.error('Error resetting the game:', error);
-            alert('An error occurred while resetting the game. Please try again.');
-        }
-        await showGameWindow(null, 'bet');
+    // send RESET command to server to reset game state
+    const sessionId = new URLSearchParams(window.location.search).get('sessionId');
+    const minigameQuery = `/session/${sessionId}/minigame`;
+    try {
+        const response = await axios.post(minigameQuery, {
+            minigame: 'jackace',
+            action: 'RESET'
+        });
+        console.log('[GAME RESET]');
+    } catch (error) {
+        console.error('Error resetting the game:', error);
+        alert('An error occurred while resetting the game. Please try again.');
     }
-    $('#resources-minigame').addClass('hidden');
-    $("#uiWindow").removeClass('processing');
+
 
     if (hideUIWindow) {
+        // if reset on close, handle close of UI window
         await gsap.to(`#jackaceGame`, { opacity: 0, duration: 0.5 });
+        hideArrowsNoDim = false;
+        $('#bet-window').addClass('hidden');
+        $('#hit-stand-window').addClass('hidden');
+        $('#insurance').addClass('hidden');
+
+        $('#resources-minigame').addClass('hidden');
+    } else {
+        // if standard reset, load bet window
+        await showGameWindow(null, 'bet');
     }
 
+    $("#uiWindow").removeClass('processing');
 
 }
 
@@ -381,9 +485,14 @@ async function handleDeal() {
             }
             $("#uiWindow").removeClass('processing');
         } else {
-            await flashCredits();
+            await setPlayerMoney(false);
+            if (playerBet > 0 && playerMoney >= BET_AMOUNTS[playerBet]) {
+                await flashCredits();
+            } else {
+                console.log('[handleDeal] playerMoney updated and running again.');
+                handleDeal();
+            }
         }
-
     }
 }
 
@@ -418,7 +527,13 @@ async function handleSplit() {
             await animateSplit(data);
             $("#uiWindow").removeClass('processing');
         } else {
-            await flashCredits();
+            await setPlayerMoney(false);
+            if (playerBet > 0 && playerMoney >= BET_AMOUNTS[playerBet]) {
+                await flashCredits();
+            } else {
+                console.log('[handleSplit] playerMoney updated and running again.');
+                handleSplit();
+            }
         }
     }
 }
@@ -432,8 +547,14 @@ async function handleInsurance(boughtInsurance) {
             if (playerBet > 0 && playerMoney >= parseInt(BET_AMOUNTS[playerBet] / 2)) {
                 isUpdatingPlayerMoney ? await updatePlayerMoney(data, parseInt(-data.playerBet / 2)) : updatePlayerMoney(data, parseInt(-data.playerBet / 2));
             } else {
-                await flashCredits();
-                await handleInsurance(false);
+                await setPlayerMoney(false);
+                if (playerBet > 0 && playerMoney >= parseInt(BET_AMOUNTS[playerBet] / 2)) {
+                    await flashCredits();
+                    await handleInsurance(false);
+                } else {
+                    console.log('[handleInsurance] playerMoney updated and running again.');
+                    await handleInsurance(true);
+                }
             }
         }
 
@@ -450,7 +571,7 @@ async function handleInsurance(boughtInsurance) {
 
 async function handleDouble() {
     if (!$("#uiWindow").hasClass('processing') && isLIVE) {
-        if (playerMoney >= BET_AMOUNTS[playerBet]) {
+        if (playerBet > 0 && playerMoney >= BET_AMOUNTS[playerBet]) {
             $("#uiWindow").addClass('processing');
             $('#double').addClass('inactive');
             const data = await makeRequest('DOUBLE');
@@ -458,7 +579,13 @@ async function handleDouble() {
             await animateCard(data);
             $("#uiWindow").removeClass('processing');
         } else {
-            await flashCredits();
+            await setPlayerMoney(false);
+            if (playerBet > 0 && playerMoney >= BET_AMOUNTS[playerBet]) {
+                await flashCredits();
+            } else {
+                console.log('[handleDouble] playerMoney updated and running again.');
+                handleDouble();
+            }
         }
 
     }
@@ -550,22 +677,21 @@ async function animateDeal(data) {
     const playerSecondCardPosition = await getCardBackgroundPosition(data.playerHands[0].hand[1]);
     const dealerSecondCardPosition = await getCardBackgroundPosition(data.dealerHand.hand[1]);
 
+
     // Animate player's first card
-    await cardAnimation(playerFirstCard, playerFirstCardPosition, tl, delay);
-    delay += 0.2;
+    delay = await cardAnimation(playerFirstCard, playerFirstCardPosition, tl, delay, 'dealCard1');
 
     // Animate dealer's first card (face down)
     if (!$(dealerFirstCard).hasClass('card-back')) {
-        await cardAnimation(dealerFirstCard, null, tl, delay);
-        delay += 0.2;
+        delay = await cardAnimation(dealerFirstCard, null, tl, delay, 'dealCard2');
     }
 
     // Animate player's second card
-    await cardAnimation(playerSecondCard, playerSecondCardPosition, tl, delay);
+    delay = await cardAnimation(playerSecondCard, playerSecondCardPosition, tl, delay, 'dealCard3');
     delay += 0.2;
 
     // Animate dealer's second card
-    await cardAnimation(dealerSecondCard, dealerSecondCardPosition, tl, delay);
+    delay = await cardAnimation(dealerSecondCard, dealerSecondCardPosition, tl, delay, 'dealCard4');
 
     await tl.play();
 
@@ -573,13 +699,16 @@ async function animateDeal(data) {
     await updateScores(data);
 }
 
-async function cardAnimation(card, cardPosition, timeline = gsap.timeline(), delay = 0) {
+async function cardAnimation(card, cardPosition, timeline = gsap.timeline(), delay = 0, soundKey = null) {
     if ($(card).hasClass('card-back')) {
         //animate flip
         timeline.to(card, {
             duration: 0.2,
             rotationY: -90,
             delay: delay,
+            onStart: () => {
+                if (soundKey) { sounds.soundSprite.play(soundKey); }
+            },
             onComplete: () => {
                 $(card).removeClass('card-back').addClass('playingCard');
                 $(card).css('background-position', cardPosition);
@@ -599,9 +728,18 @@ async function cardAnimation(card, cardPosition, timeline = gsap.timeline(), del
             opacity: 1,
             y: 0,
             duration: 0.2,
-            delay: delay
+            delay: delay,
+            onStart: () => {
+                if (soundKey) { sounds.soundSprite.play(soundKey); }
+            }
         });
     }
+
+    let soundDuration = 0;
+    if (soundKey) { soundDuration = getSpriteDuration(soundKey); }
+    delay += Math.max(0.2, soundDuration);
+
+    return delay;
 }
 
 
@@ -609,7 +747,17 @@ async function animateCard(data) {
     await displayNewPlayerCard(data);
     await new Promise(resolve => setTimeout(resolve, 0));
     const handToProcess = data.processPriorHand ? data.currentHandIndex : data.currentHandIndex + 1;
-    await gsap.fromTo(`#hand${handToProcess} .playingCard:last-child`, { opacity: 0, y: -50 }, { opacity: 1, y: 0 });
+    const gsapDuration = Math.max(getSpriteDuration('singleCard'), 0.2);
+
+    await gsap.fromTo(`#hand${handToProcess} .playingCard:last-child`, { opacity: 0, y: -50 }, {
+        opacity: 1,
+        y: 0,
+        duration: gsapDuration,
+        onStart: () => {
+            sounds.soundSprite.play('singleCard');
+        }
+    });
+
     await updateScores(data);
     if (data.dealerHand.total !== 'hidden') {
         await new Promise(resolve => setTimeout(resolve, 200));
@@ -655,7 +803,7 @@ async function animateDealersTurn(data) {
     const dealerFirstCard = $('#dealerHand .card-back').first();
     if (dealerFirstCard.length) {
         const dealerFirstCardPosition = await getCardBackgroundPosition(data.dealerHand.hand[0]);
-        await cardAnimation(dealerFirstCard, dealerFirstCardPosition, gsap.timeline(), 0);
+        await cardAnimation(dealerFirstCard, dealerFirstCardPosition, gsap.timeline(), 0, "flipCard");
     } else {
         console.error('Dealer first card not found.');
         return;
@@ -676,13 +824,23 @@ async function animateDealersTurn(data) {
     data.dealerHand.total = partialDealerHand;
     await updateScores(data, false);
 
+    let gsapDuration = Math.max(getSpriteDuration('singleCard'), 0.2);
+
     for (let i = 2; i < data.dealerHand.hand.length; i++) {
         const card = data.dealerHand.hand[i];
         ({ currentTotal: partialDealerHand, aceCount } = calculateCardValue(partialDealerHand, aceCount, card));
 
         const dealerBackgroundPosition = await getCardBackgroundPosition(card);
         $("#dealerHand").append(`<div class="playingCard" style="background-position: ${dealerBackgroundPosition};"></div>`);
-        await gsap.fromTo(`#dealerHand .playingCard:last-child`, { opacity: 0, y: -50 }, { opacity: 1, y: 0, duration: 0.2 });
+
+        await gsap.fromTo(`#dealerHand .playingCard:last-child`, { opacity: 0, y: -50 }, {
+            opacity: 1,
+            y: 0,
+            duration: gsapDuration,
+            onStart: () => {
+                sounds.soundSprite.play('singleCard');
+            }
+        });
 
         // Update scores with the updated partialDealerHand
         data.dealerHand.total = partialDealerHand;
@@ -724,7 +882,7 @@ async function animateSplit(data) {
     arrowElement.css('opacity', 0);
 
     await fadeInNewHandAndArrow(newHandDiv, arrowElement);
-    await moveCardToNewHand(divToMove, newHandDiv, data, originalHandIndex, newHandIndex);
+    await moveCardToNewHand(divToMove, newHandDiv, data, originalHandIndex);
     await drawNewCards(data, originalHandIndex, newHandIndex);
     await dimNewHand(newHandIndex);
     await updateScores(data);
@@ -749,14 +907,18 @@ async function fadeInNewHandAndArrow(newHandDiv, arrowElement) {
     await tl.play();
 }
 
-async function moveCardToNewHand(divToMove, newHandDiv, data, originalHandIndex, newHandIndex) {
+async function moveCardToNewHand(divToMove, newHandDiv, data, originalHandIndex) {
+    let gsapDuration = Math.max(getSpriteDuration('dealCard4'), 0.2);
     const newCardPosition = await getCardBackgroundPosition(data.playerHands[originalHandIndex].hand[0]);
     const newHandOffsetTop = newHandDiv.offset().top;
     const divToMoveOffsetTop = divToMove.offset().top;
 
     await gsap.to(divToMove, {
-        duration: 0.2,
+        duration: gsapDuration,
         y: newHandOffsetTop - divToMoveOffsetTop,
+        onStart: () => {
+            sounds.soundSprite.play('dealCard4');
+        },
         onComplete: () => {
             divToMove.css('transform', '');
             divToMove.css('background-position', newCardPosition);
@@ -766,15 +928,23 @@ async function moveCardToNewHand(divToMove, newHandDiv, data, originalHandIndex,
 }
 
 async function drawNewCards(data, originalHandIndex, newHandIndex) {
-    await drawNewCardForHand(originalHandIndex, data.playerHands[originalHandIndex].hand.slice(-1)[0]);
-    await drawNewCardForHand(newHandIndex, data.playerHands[newHandIndex].hand.slice(-1)[0]);
+    let gsapDuration = Math.max(getSpriteDuration('singleCard'), 0.2);
+    await drawNewCardForHand(originalHandIndex, data.playerHands[originalHandIndex].hand.slice(-1)[0], gsapDuration);
+    await drawNewCardForHand(newHandIndex, data.playerHands[newHandIndex].hand.slice(-1)[0], gsapDuration);
 }
 
-async function drawNewCardForHand(handIndex, card) {
+async function drawNewCardForHand(handIndex, card, gsapDuration) {
     const cardPosition = await getCardBackgroundPosition(card);
     const $newCardElement = $('<div class="playingCard"></div>').css('background-position', cardPosition);
     $(`#hand${handIndex + 1}`).append($newCardElement);
-    await gsap.fromTo($newCardElement, { opacity: 0, y: -50 }, { opacity: 1, y: 0, duration: 0.2 });
+    await gsap.fromTo($newCardElement, { opacity: 0, y: -50 }, {
+        opacity: 1,
+        y: 0,
+        duration: gsapDuration,
+        onStart: () => {
+            sounds.soundSprite.play('singleCard');
+        }
+    });
 }
 
 async function dimNewHand(newHandIndex) {
@@ -994,10 +1164,21 @@ async function showGameWindow(data = {}, callWindow = null) {
     if (loadWindow == 'splashScreen') {
         await new Promise(resolve => setTimeout(resolve, 1500));
 
+        // Ensure initial opacity is 0 for these elements
+        $('#jackaceGame, #dealerHand, #playerHand, #uiWindow').css('opacity', '0');
+
         const tl = gsap.timeline();
-        tl.to('#splashScreen', { opacity: 0, duration: 1, onComplete: () => $('#splashScreen').css('display', 'none') })
-            .to('#jackaceGame', { opacity: 1, duration: 1 }, "-=1");
-        await tl.play();
+        tl.to('#splashScreen', {
+            opacity: 0,
+            duration: 1,
+            onComplete: () => $('#splashScreen').css('display', 'none')
+        })
+            .to('#jackaceGame, #dealerHand, #playerHand, #uiWindow', {
+                opacity: 1,
+                duration: 1
+            }, "-=1");
+
+        await new Promise(resolve => tl.eventCallback("onComplete", resolve));
 
         gameWindow = 'bet';
     } else {
@@ -1104,8 +1285,7 @@ async function flashCredits() {
     resourceText.addClass('flash-red');
 
     // Play sound
-    const audio = new Audio('./apps/JackAce/audio/nomonies.wav');
-    audio.play();
+    sounds.soundSprite.play('noMonies');
 
     await new Promise(resolve => setTimeout(resolve, 500));
     resourceText.removeClass('flash-red');
@@ -1134,7 +1314,10 @@ async function updatePlayerMoney(data, adjustBy = null, showRewards = false) {
 
             timeline.to(`#${rewardContainerId}`, {
                 top: `${targetTop}px`,
-                duration: 0.25
+                duration: 0.25,
+                onStart: () => {
+                    sounds.soundSprite.play('win');
+                }
             }, 0);
 
             if (data.boughtInsurance && data.dealerHandTotal === 21 && data.dealerHand.length === 2) {
