@@ -410,6 +410,7 @@ define(['npc'], function(Npc) {
         nexan48: Npc.extend({init: function(id) {this._super(id, Types.Entities.NEXAN48, 1);}}),
         m88nmermanking: Npc.extend({init: function(id) {this._super(id, Types.Entities.M88NMERMANKING, 1);}}),
         m88nmermaidprincess: Npc.extend({init: function(id) {this._super(id, Types.Entities.M88NMERMAIDPRINCESS, 1);}}),
+        kingfroggybw: Npc.extend({init: function(id) {this._super(id, Types.Entities.KINGFROGGYBW, 1);}}),
         //MRMlabs NPCs
         tylerdurden: Npc.extend({init: function(id) {this._super(id, Types.Entities.TYLERDURDEN, 1);}}),
         //Taiko Town NPCs

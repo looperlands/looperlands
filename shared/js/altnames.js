@@ -170,7 +170,7 @@ const AltNames = {
     m88nnightmareduckyb: "a black billed ducky",
     m88nnightmareduckyv: "a violet billed ducky",
     m88nnightmareduckyg: "a gold billed ducky",
-    m88nnightmareduckyr: "a red billed ducky",
+    m88nnightmareduckyr: "a radioactive billed ducky",
 
     //MRMlabs Fishing
     bbqchips: "BBQ chips",  

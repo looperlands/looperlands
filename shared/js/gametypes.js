@@ -356,6 +356,7 @@ Types = {
         NEXAN48: 78470000,
         M88NMERMANKING: 78480000,
         M88NMERMAIDPRINCESS: 78490000,
+        KINGFROGGYBW: 78500000,
         //m88n Mobs
         BALLOONDOGB: 78000001,
         BALLOONDOGY: 78000002,
@@ -6583,6 +6584,7 @@ var kinds = {
     nexan48: [Types.Entities.NEXAN48, "npc"],
     m88nmermanking: [Types.Entities.M88NMERMANKING, "npc"],
     m88nmermaidprincess: [Types.Entities.M88NMERMAIDPRINCESS, "npc"],
+    kingfroggybw: [Types.Entities.KINGFROGGYBW, "npc"],
     //MRMlabs NPCs
     tylerdurden: [Types.Entities.TYLERDURDEN, "npc"],
     ROBITSE3: [Types.Entities.ROBITSE3, "mob"],
