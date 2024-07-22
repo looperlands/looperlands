@@ -32,10 +32,10 @@ const minigame = require('../apps/minigame.js');
 const MinigameController = require('./minigamecontroller.js');
 const dynamicnft = require('./dynamicnftcontroller.js');
 const announcement = require('./announcementcontroller.js');
+const { InventorySyncController } = require("./inventorysynccontroller.js");
 const PlayerClassController = require('./playerclasscontroller.js').PlayerClassController;
 const cache = new NodeCache();
 
-const LOOPWORMS_LOOPERLANDS_BASE_URL = process.env.LOOPWORMS_LOOPERLANDS_BASE_URL;
 const APP_URL = process.env.APP_URL;
 const GAMESERVER_NAME = process.env.GAMESERVER_NAME;
 const LOOPERLANDS_PLATFORM_BASE_URL = process.env.LOOPERLANDS_PLATFORM_BASE_URL;
@@ -1247,6 +1247,11 @@ WS.socketIOServer = Server.extend({
         app.post("/session/:sessionId/setclass", async (req, res) => {
             const playerClassController = new PlayerClassController(platformClient, cache, this.worldsMap);
             return playerClassController.setLooperClass(req, res);
+        });
+
+        app.post("/inventorysync", async(req, res) => {
+            const inventorySyncController = new InventorySyncController(dao, cache);
+            return inventorySyncController.syncPlayer(req,res);
         });
 
         self.io.on('connection', function (connection) {

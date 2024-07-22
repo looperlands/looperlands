@@ -1164,6 +1164,34 @@ let Properties = {
         respawnDelay: 180000
     },
 
+    ZAROTH: {
+        level: 55,
+        drops: {
+            burger: 50,
+            GOLD: 50,
+            GOLD2: 10,
+            GOLD3: 2,
+        },
+        messages: ['I will beepin destroy you!'],
+        armorMod: 2.2,
+        xp: 30000,
+        redpacket: true,
+        respawnDelay: 60000
+    },
+
+    INFECTION: {
+        level: 5,
+        drops: {
+            burger: 50,
+            GOLD: 50,
+            GOLD2: 25,
+        },
+        messages: ['I will beepin destroy you!'],
+        armorMod: 2.2,
+        xp: 3000,
+        respawnDelay:  60000
+    },
+
      COLOSSUS: {
         level: 30,
         drops: {
@@ -1200,7 +1228,7 @@ let Properties = {
         level: 2,
         drops: {
             burger: 50,
-            GOLD: 20
+            GOLD: 50
         },
     },
 
@@ -1208,7 +1236,7 @@ let Properties = {
         level: 4,
         drops: {
             burger: 50,
-            GOLD: 25
+            GOLD: 50
         },
     },
 
@@ -1216,17 +1244,20 @@ let Properties = {
         level: 6,
         drops: {
             m88nmap: 3,
-            burger: 47,
-            GOLD: 30
+            burger: 37,
+            GOLD: 50,
+            GOLD2: 10
         },
     },
 
     balloondoga: {
         level: 8,
         drops: {
-            m88nmap: 3,
+            m88nmap: 5,
             burger: 25,
-            GOLD: 47
+            GOLD: 40,
+            GOLD2: 20,
+            GOLD3: 10,
         },
     },
 
@@ -1238,8 +1269,9 @@ let Properties = {
             m88nmail: 1,
             m88nshovel: 1,
             burger: 25,
-            GOLD: 32,
-            GOLD2: 10
+            GOLD: 10,
+            GOLD2: 25,
+            GOLD3: 30,
         },
     },
 
@@ -1256,18 +1288,18 @@ let Properties = {
     balloonhotdogr: {
         level: 20,
         drops: {
-            m88nmap: 8,
+            m88nmap: 10,
             m88nsteak: 1,
             m88nmail: 1,
             m88nshovel: 1,
             burger: 5,
             GOLD2: 20,
-            GOLD3: 64
+            GOLD3: 55
         },
     },
 
     balloongiraffeo: {
-        level: 50,
+        level: 40,
         drops: {
             m88nmap: 15,
             m88nsteak: 1,
@@ -1279,18 +1311,14 @@ let Properties = {
     },
 
     m88nbigchungus: {
-        level: 55,
+        level: 50,
         drops: {
             m88nmap: 30,
             m88nsteak: 1,
             m88nmail: 1,
             m88nshovel: 1,
-            m88negg3: 1,
-            m88negg4: 1,
-            m88negg5: 1,
-            m88negg6: 1,
             burger: 15,
-            GOLD3: 45
+            GOLD3: 50
         },
         messages: ['Mmmmm, Easter Eggs!', 'O Doyle Rules!', 'Cant touch this...', 'Stay away or come back with friends!'],
         armorMod: 1,
@@ -1304,7 +1332,7 @@ let Properties = {
     m88noctopussy: {
         level: 69,
         drops: {
-            m88nmap: 69,
+            m88nmap: 60,
             m88nsteak: 1,
             m88nmail: 1,
             m88nshovel: 1,
@@ -1312,12 +1340,12 @@ let Properties = {
             m88npotato: 1,
             m88nmail: 1,
             m88nworm: 1,
-            m88ngem: 1,
+            m88ngem: 3,
             gameboy: 4,
             battery: 3,
             hardwallet: 2,
             movieglasses: 1,
-            m88ntentacle: 2,
+            m88ntentacle: 3,
             GOLD3: 10
         },
         messages: ['Hahaha, no chance!', 'You should stay out of the ocean...', 'Why are you wasting my time?', 'Stay away or come back with friends!'],
@@ -1331,21 +1359,44 @@ let Properties = {
     sharkboss: {
         level: 88,
         drops: {
-            m88nmap: 30,
+            m88nmap: 25,
+            movieglasses: 1,
+            battery: 1,
+            gameboy: 1,
+            hardwallet: 1,
+            m88npeel: 1,
+            m88ndungbeetle: 1,
+            m88nfly: 1,
+            m88njunebug: 1,
+            m88nstickbug: 1,
+            m88ndiamondnecklace: 1,
+            m88ndiamondring: 1,
+            m88ngoldearrings: 1,
             m88nsteak: 1,
+            m88nclover: 1,
             m88nmail: 1,
             m88nshovel: 1,
+            m88nwatercan: 1,
             m88nseeds: 1,
             m88npotato: 1,
-            m88nmail: 1,
+            m88npackage: 1,
+            m88nsalad: 1,
+            m88nsnail: 1,
+            m88nblueprint: 1,
+            m88nhardhat: 1,
+            m88nrose: 1,
+            m88nworkgloves: 1,
+            m88nbrewski: 1,
+            m88npie: 1,
+            m88nsack: 1,
             m88nworm: 1,
             m88negg1: 1,
             m88negg2: 1,
             burger: 5,
             m88ngem: 10,
-            GOLD3: 30,
-            GOLD4: 1,
-            GOLD5: 1,
+            GOLD3: 10,
+            GOLD4: 5,
+            GOLD5: 5,
         },
         messages: ['Mmmmm, tasty!', 'Yum!', 'Eww, that was a little tough...', 'Stay on land or come back with friends!'],
         armorMod: 1,
@@ -1359,6 +1410,7 @@ let Properties = {
         level: 1,
         drops: {
             flask: 30,
+            m88nmap: 2,
             GOLD: 30,
             GOLD2: 20,
             burger: 10,
@@ -1383,8 +1435,91 @@ let Properties = {
         drops: {
             flask: 50,
             GOLD: 20,
+            GOLD2: 20,
+            GOLD3: 5,
             firepotion: 5
         }
+    },
+
+    m88nboner: {
+        level: 55,
+        drops: {
+            m88nskeletonkey: 100
+        },
+        messages: ['Boner kill!', 'I thought I was already dead...', 'Cant touch this...', 'Stay away or come back with friends!'],
+        armorMod: 1,
+        hpMod: 5,
+        weaponMod: 0.8,
+        respawnDelay: 1000000,
+        xp: 69420
+    },
+
+    m88nnightmaremonsterb: {
+        level: 3,
+        drops: {
+            m88ndarkcloud: 10,
+            m88ndreamcloud: 2,
+            m88nbone: 2,
+            burger: 60,
+            GOLD: 20
+        },
+    },
+
+    m88nnightmaremonstery: {
+        level: 6,
+        drops: {
+            m88ndarkcloud: 20,
+            m88ndreamcloud: 4,
+            m88nbone: 4,
+            burger: 40,
+            GOLD: 25
+        },
+    },
+
+    m88nnightmaremonsterg: {
+        level: 9,
+        drops: {
+            m88ndarkcloud: 25,
+            m88ndreamcloud: 10,
+            m88nsunshine: 5,
+            m88nbone: 6,
+            burger: 20,
+            GOLD: 20,
+            GOLD2: 10
+        },
+    },
+
+    m88nnightmaremonstera: {
+        level: 12,
+        drops: {
+            m88nsunshine: 15,
+            m88nbone: 8,
+            burger: 20,
+            GOLD: 30,
+            GOLD2: 20
+        },
+    },
+
+    m88nnightmaremonsterv: {
+        level: 15,
+        drops: {
+            m88nbone: 20,
+            burger: 20,
+            GOLD: 30,
+            GOLD2: 20,
+            GOLD3: 10
+        },
+    },
+
+
+    m88nnightmaremonsterp: {
+        level: 18,
+        drops: {
+            burger: 20,
+            GOLD: 10,
+            GOLD2: 20,
+            GOLD3: 50
+        },
     },
 
     m88nmine: {

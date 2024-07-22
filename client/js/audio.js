@@ -21,13 +21,13 @@ define(['area'], function (Area) {
                 // DUCKVILLE MUSIC
                 "duckvilleaoe", "duckvillefly",
                 // M88N MUSIC
-                "pillowfight", "dreamstroll", "steeldrums", "mib", "bitbeats", "elevatormusic", "watertheme",
+                "pillowfight", "dreamstroll", "steeldrums", "mib", "bitbeats", "elevatormusic", "watertheme", "exploration",
                 // MRMLABS MUSIC
                 "battletheme",
                 // BITCORN MUSIC
                 "bitcorncornsino", "bit_sludgeriver", "bit_portal",
                 // ROBITS MUSIC
-                "ccmain", "cclobby", "ccgrid", "ROBITSMAIN1",
+                "ROBITSMAIN1", "MOONBASES",
             ];
 
             this.soundNames = [

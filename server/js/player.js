@@ -657,7 +657,8 @@ module.exports = Player = Character.extend({
         this.server.server.cache.set(this.sessionId, session);
 
         let updatedLevel = Formulas.level(session.xp);
-        if (this.level < updatedLevel) {
+
+        if (updatedLevel <= Formulas.MAX_LEVEL && this.level < updatedLevel) {
             this.level = updatedLevel;
             let message = `💪 **${this.name}** advanced to level ${updatedLevel}`;
             discord.sendMessage(message);
