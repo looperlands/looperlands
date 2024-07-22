@@ -178,6 +178,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "nexan48",
                     "m88nmermanking",
                     "m88nmermaidprincess",
+                    "kingfroggybw",
                     //m88n Mobs
                     "balloondogb",
                     "balloondogy",

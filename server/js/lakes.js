@@ -200,8 +200,8 @@ const Lakes = {
         fish: {
             m88nnightmareduckyb: "common",
             m88nnightmareduckyv: "uncommon",
-            m88nnightmareduckyg: "epic",
-            m88nnightmareduckyr: "legendary",
+            m88nnightmareduckyr: "epic",
+            m88nnightmareduckyg: "legendary",
         }
     },
 
@@ -402,7 +402,7 @@ const Lakes = {
 const ConsumableFish = {
     hp: ["cobparadisefish","oafish27","m88ndreamcandyr","gingerale", "m88nanglerfish", "m88nbettafish", "m88njellyfish", "m88npiranha"],
     atk: ["cobbluegill","oafish31","oafish22","m88ndreamduckyp","saltnvinegarchips", "m88naxolotl", "m88nbluelobster", "m88nkoifish", "m88nshrimp"],
-    exp: ["cobgreensunfish","oafish36", "lollipop","m88ndreamgumballa","m88ngoldenbanana", "m88nblobfish", "m88ncharfish", "m88noctopus", "m88nstarfish", "luckybabydragon", "m88nnightmareduckyg"]
+    exp: ["cobgreensunfish","oafish36", "lollipop","m88ndreamgumballa","m88ngoldenbanana", "m88nblobfish", "m88ncharfish", "m88noctopus", "m88nstarfish", "luckybabydragon", "m88nnightmareduckyr"]
 };
 
 //---END CONFIG---

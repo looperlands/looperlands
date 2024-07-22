@@ -643,8 +643,11 @@ define(['character'], function (Character) {
 
         "nexan40": [
             "Hey there!",
-            "I hear the ocean is worth exploring...",
-            "But first you have to beat up that octopus and take one of his tentacles."
+            //"Legend has it there is a secret portal back to DreamLand somewhere in LooperLands...",
+            //"But you have to be wearing a magical onesie to pass through it.",
+            //'View available onesies from the <a target="_blank" href="https://loopexchange.art/collection/onesie-party">Its a Onesie Party! collection</a> and choose yours!',
+            //'Join us in Discord! <a target="_blank" href="https://discord.gg/bjjNewZegM">Checkout PLANET M88NWALKER</a> for insider details.',
+            "Good luck on your journey!"
         ],
 
         "nexan41": [
@@ -668,8 +671,9 @@ define(['character'], function (Character) {
         ],
 
         "nexan45": [
-            //"Hey there!",
-            "Just sweeping up some sand..."
+            "Just sweeping up some sand...",
+            "Hey, I hear the ocean is worth exploring...",
+            "But first you have to beat up that octopus and take one of his tentacles."
         ],
 
         "nexan46": [
@@ -698,6 +702,19 @@ define(['character'], function (Character) {
         "m88nmermaidprincess": [
             "Hey there!",
             "I need your help."
+        ],
+
+        "kingfroggybw": [
+            "Greetings! I'm Froggy, you have entered the twilight zone. Welcome to NightmareLand...",
+            "If you ask around enough you may find a few who remember the magic of DreamLand.",
+            "But that is nothing but a faint memory now...",
+            "When the dark clouds rolled in these horrible monsters came with them.",
+            "Will you please help us restore DreamLand to it's origins by completing a series quests?",
+            //"By the way, legend has it there is a secret portal back to DreamLand somewhere in LooperLands...",
+            //"But you have to be wearing a magical onesie to pass through it.",
+            //'View available onesies from the <a target="_blank" href="https://loopexchange.art/collection/onesie-party">Its a Onesie Party! collection</a> and choose yours!',
+            //'Join us in Discord! <a target="_blank" href="https://discord.gg/bjjNewZegM">Checkout PLANET M88NWALKER</a> for insider details.',
+            "Good luck on your journey!"
         ],
 
         //MRMlabs NPCs
