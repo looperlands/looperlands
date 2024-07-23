@@ -1188,7 +1188,6 @@ let Properties = {
         },
         messages: ['I will beepin destroy you!'],
         armorMod: 2.2,
-        xp: 3000,
         respawnDelay:  60000
     },
 
