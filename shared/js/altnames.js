@@ -167,6 +167,10 @@ const AltNames = {
     m88npompano: "a pompano",
     m88nmackerel: "a mackerel",
     m88noceanbass: "an ocean bass",
+    m88nnightmareduckyb: "a black billed ducky",
+    m88nnightmareduckyv: "a violet billed ducky",
+    m88nnightmareduckyg: "a gold billed ducky",
+    m88nnightmareduckyr: "a radioactive billed ducky",
 
     //MRMlabs Fishing
     bbqchips: "BBQ chips",  
@@ -214,6 +218,13 @@ const AltNames = {
     m88nlion: "Leo",
     m88ntiger: "Ty",
     m88ncamel: "Mel",
+    m88nnightmaremonstera: "Aqua Monster",
+    m88nnightmaremonsterb: "Blue Monster",
+    m88nnightmaremonsterg: "Green Monster",
+    m88nnightmaremonsterp: "Pink Monster",
+    m88nnightmaremonsterv: "Violet Monster",
+    m88nnightmaremonstery: "Yellow Monster",
+    m88nboner: "Boner",
 
     //m88n Mob Nexans
     nexan8: "The Mail Lady",
@@ -258,6 +269,10 @@ const AltNames = {
     m88nprizes: "mysterious prizes",
     m88nlamp: "a mysterious lamp",
     m88ngemticket: "a m88n mine ticket",
+    m88ndarkcloud: "a dark cloud",
+    m88ndreamcloud: "a dream cloud",
+    m88nsunshine: "some sunshine",
+    m88nskeletonkey: "a skeleton key",
 
     //m88n TT Items
     m88nammocan: "ammo can",
