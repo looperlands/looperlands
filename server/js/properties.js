@@ -1212,10 +1212,7 @@ let Properties = {
             burger: 40,
             GOLD: 40,
             GOLD2: 10,
-            GOLD3: 2,
-            m88nsteak: 1,
-            m88nmail: 1,
-            m88nshovel: 1
+            GOLD3: 2
         },
         messages: ['Shinu!'],
         armorMod: 2.2,
