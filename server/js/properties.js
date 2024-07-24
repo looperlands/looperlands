@@ -2332,7 +2332,7 @@ let Properties = {
         inventoryDescription: "Mysterious Lamp",
         respawnDelay: 1500000,
         onConsume: function(player) {
-            player.releaseNpc(Types.Entities.M88NGENIE, 10000);
+            player.releaseNpc(Types.Entities.M88NGENIE, 15000);
         }
     },
     m88nprizes: {

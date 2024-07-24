@@ -439,9 +439,11 @@ define(['character'], function (Character) {
         "wenmoon": [
             "Yo! I'm wenmoon, m88nwalker sent me down here to be your lunar envoy.",
             "Where Worlds Collide, Secrets Reside: Welcome to the Nexus!",
+            //"First stop: Paradise Point!",
             'First stop: Dreamland! Own a piece from the <a target="_blank" href="https://loopexchange.art/collection/onesie-party">Its a Onesie Party! collection</a> for access to the VIP Lounge!',
             'On X? <a target="_blank" href="https://twitter.com/moonwalker_nfts">Give him a follow</a> to stay updated.',
             'How about Discord? <a target="_blank" href="https://discord.gg/bjjNewZegM">Checkout PLANET M88NWALKER</a> for lots more!',
+            //"Keep your eyes open and have fun!"
             "Have fun!"
         ],
 
@@ -601,7 +603,7 @@ define(['character'], function (Character) {
             "Howdy! I'm Gary, the real estate agent for Nexus Realty.",
             "If you're looking to buy some property in The Nexus, you've come to the right place.",
             "Right now we have several properties available and when you buy from us you get a FREE Lambo!",
-            "If you're digging the boardwalk in Paradise Point, we have two new beach houses avialable...",
+            "If you're digging the boardwalk, we have two beach houses avialable in Paradise Point West...",
             "And if you're looking for something a little more exclusive we have private islands available in the Helio Islands.",
             //"If you're looking for something exclusive we have private islands available in the Helio Islands.",
             //"That yacht over there, The Sun Chaser, has a private Captain's Quarters on it that is available to purchse.",
@@ -614,7 +616,7 @@ define(['character'], function (Character) {
         "m88ngenie": [
             "What's up pal! I'm the all powerful magic genie!",
             "Congratulations on finding my magic lamp...you gave it a rub and now I'm here to grant your wish!",
-            "You have 10 seconds to pick as many wishes as you can, then I will disappear until you find my lamp again...",
+            "You have 15 seconds to pick as many wishes as you can, then I will disappear until you find my lamp again...",
             "/openShop make_a_wish Make a Wish"
         ],
 
@@ -689,7 +691,9 @@ define(['character'], function (Character) {
 
         "nexan47": [
             //"Hey there!",
-            "It's been 84 years..."
+            "It's been 84 years...",
+            "But I did find it once, long ago...",
+            "And it was glorious..."
         ],
 
         "nexan48": [
@@ -698,14 +702,14 @@ define(['character'], function (Character) {
         ],
 
         "m88nmermanking": [
-            "Hey there!",
+            "Hey there explorer!",
             "Welcome to my kingdom. Congratulations on finding my treasure!",
             "If you own a house in The Nexus pick out a couple pieces to take home with you.",
             "Just let m88nwalker know and he'll move it over for you."
         ],
 
         "m88nmermaidprincess": [
-            "Hey there!",
+            "Heyyyy!",
             "I need your help."
         ],
 
