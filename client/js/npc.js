@@ -454,6 +454,8 @@ define(['character'], function (Character) {
         ],
 
         "nexan4": [
+            "Pleased to meet you traveler!",
+            "Welcome to Paradise Point East.",
             "This is such a cute little beach town!",
             "Have you been on the yacht yet?"
         ],
@@ -526,8 +528,11 @@ define(['character'], function (Character) {
 
         "nexan29": [
             "Welcome to the Sun Chaser Champagne Lounge, special guest!",
-            "Here we have a luxurious place to relax and portals to the private Helio Islands.",
-            "On the far right is a portal to a secret hidden island. You'll need a compass to navigate to that one..."
+            "A luxurious place to relax in style.",
+            "Most of these portals go to the private Helio Islands.",
+            "If you're interested in becoming an island owner you can DM m88nwalker to inquire.",
+            "On the far right of the second floor is a portal to a secret hidden island.",
+            "You'll need to find a mysterious compass to navigate to that one though..."
         ],
 
         "thehookup": [
