@@ -31,12 +31,6 @@ CASINO AMBIENCE [License: Attribution NonCommercial 4.0]
 nona.aaa -- https://freesound.org/s/654362 
 YeshniGounden -- https://freesound.org/s/654199
 
-WIN SOUND
-Jingle_Win_Synth_05.wav by LittleRobotSoundFactory -- https://freesound.org/s/274182 -- License: Attribution 4.0
-
-CARD SOUNDS
-Cards Sounds by uEffects -- https://freesound.org/s/208790 -- License: Creative Commons 0
-
 ART >> by bitcorn (2024)
 */
 
@@ -46,15 +40,27 @@ const sounds = {
     soundSprite: new Howl({
         src: ['./apps/JackAce/audio/JackAce.mp3'],
         sprite: {
-            shuffle: [0, 2500],
-            dealCard1: [3000, 500],
-            dealCard2: [3500, 500],
-            dealCard3: [4000, 700],
-            dealCard4: [4700, 550],
-            singleCard: [6000, 500],
-            flipCard: [7000, 500],
+            shuffle: [0, 2500],             // Cards Sounds by uEffects -- https://freesound.org/s/208790 -- License: Creative Commons 0
+            dealCard1: [3000, 500],         // Cards Sounds by uEffects -- https://freesound.org/s/208790 -- License: Creative Commons 0
+            dealCard2: [3500, 500],         // Cards Sounds by uEffects -- https://freesound.org/s/208790 -- License: Creative Commons 0
+            dealCard3: [4000, 700],         // Cards Sounds by uEffects -- https://freesound.org/s/208790 -- License: Creative Commons 0
+            dealCard4: [4700, 550],         // Cards Sounds by uEffects -- https://freesound.org/s/208790 -- License: Creative Commons 0
+            singleCard: [6000, 500],        // Cards Sounds by uEffects -- https://freesound.org/s/208790 -- License: Creative Commons 0    
+            flipCard: [7000, 500],          // Cards Sounds by uEffects -- https://freesound.org/s/208790 -- License: Creative Commons 0
             noMonies: [8000, 250],
-            win: [8500, 2000]
+            win: [8500, 2000],              // Jingle_Win_Synth_05.wav by LittleRobotSoundFactory -- https://freesound.org/s/274182 -- License: Attribution 4.0
+            cardSlide: [11000, 500],        // by bitcorn (2024)
+            jackace1: [11500, 1750],        // by bitcorn (2024)
+            jackace2: [13250, 2500],        // by bitcorn (2024)
+            jackace3: [15750, 1750],        // by bitcorn (2024)
+            dealerIsJackAce: [17500, 2250], // by bitcorn (2024)
+            doubleDown: [19750, 1500],      // by bitcorn (2024)
+            split: [21250, 1500],           // by bitcorn (2024)
+            winner: [22750, 1750],          // by bitcorn (2024)
+            youWin: [24500, 1750],          // by bitcorn (2024)
+            youLose: [26250, 2000],         // by bitcorn (2024)
+            busted: [28250, 1500],          // by bitcorn (2024)
+            push: [29750, 2000]             // by bitcorn (2024)
         }
     }),
     casinoAmbiance: new Howl({
@@ -63,11 +69,21 @@ const sounds = {
     })
 };
 
+const cardSounds = ['dealCard1', 'dealCard2', 'dealCard3', 'dealCard4', 'singleCard', 'cardSlide'];
+const jackaceSounds = ['jackace1', 'jackace2', 'jackace3'];
+const winSounds = ['winner', 'youWin'];
+
 function getSpriteDuration(key) {
     if (sounds.soundSprite._sprite[key]) {
         return sounds.soundSprite._sprite[key][1] / 1000;
     }
     return 0;
+}
+
+// Function to play a sound sprite with specified volume
+function playSound(sprite, volume = 1) {
+    const soundId = sounds.soundSprite.play(sprite);
+    sounds.soundSprite.volume(volume, soundId);
 }
 
 function startUpJackAce() {
@@ -125,7 +141,7 @@ const RESULT_GAP = 1; // Gap between cards in the sprite sheet
 const RESULT_SCALE = OVERALL_SCALE; // Scale of the cards
 const RESULT_POSITIONS = {
     'busted': 0,
-    'youlost': 1,
+    'youlose': 1,
     'push': 2,
     'winner': 3,
     'jackace': 4
@@ -191,8 +207,15 @@ const BUTTON_SPRITE_POSITIONS = {
 
 async function init() {
     try {
+
+        // Ensure initial opacity is 0 for these elements
+        $('#jackaceGame, #dealerHand, #playerHand, #uiWindow').css('opacity', '0');
+
         setupJackAceMenu();
         setupHelpPanel();
+
+
+
         $('#uiWindow').empty();
         $('#uiWindow').append(`
         <div id="bet-window" class="hidden">
@@ -453,6 +476,7 @@ async function resetGame(hideUIWindow = false) {
     if (hideUIWindow) {
         // if reset on close, handle close of UI window
         await gsap.to(`#jackaceGame`, { opacity: 0, duration: 0.5 });
+        $('#jackaceGame, #dealerHand, #playerHand, #uiWindow').css('opacity', '0');
         hideArrowsNoDim = false;
         $('#bet-window').addClass('hidden');
         $('#hit-stand-window').addClass('hidden');
@@ -524,6 +548,7 @@ async function handleSplit() {
         if (playerBet > 0 && playerMoney >= BET_AMOUNTS[playerBet]) {
             $("#uiWindow").addClass('processing');
             const data = await makeRequest('SPLIT');
+            playSound('split');
             await animateSplit(data);
             $("#uiWindow").removeClass('processing');
         } else {
@@ -576,6 +601,7 @@ async function handleDouble() {
             $('#double').addClass('inactive');
             const data = await makeRequest('DOUBLE');
             isUpdatingPlayerMoney ? await updatePlayerMoney(data, -data.playerBet) : updatePlayerMoney(data, -data.playerBet);
+            playSound('doubleDown');
             await animateCard(data);
             $("#uiWindow").removeClass('processing');
         } else {
@@ -618,6 +644,7 @@ async function betAdjustClick(direction) {
 /////////////////////////
 
 async function animateDeal(data) {
+    let firstDeal = true;
 
     // Collect all cards present
     let playerHandCards = $('#playerHand .card-back, #playerHand .playingCard');
@@ -629,6 +656,8 @@ async function animateDeal(data) {
 
     if (!allPlayerCardsAreBack && !allDealerCardsAreBack) {
         // If all are not card-back, clear and setup new hand
+        firstDeal = false;
+
         await displayStartingHands(data);
 
         // Reset collection of all cards present
@@ -682,13 +711,12 @@ async function animateDeal(data) {
     delay = await cardAnimation(playerFirstCard, playerFirstCardPosition, tl, delay, 'dealCard1');
 
     // Animate dealer's first card (face down)
-    if (!$(dealerFirstCard).hasClass('card-back')) {
-        delay = await cardAnimation(dealerFirstCard, null, tl, delay, 'dealCard2');
+    if (!firstDeal) {
+        delay = await cardAnimation(dealerFirstCard, null, tl, delay, 'dealCard2', true);
     }
 
     // Animate player's second card
     delay = await cardAnimation(playerSecondCard, playerSecondCardPosition, tl, delay, 'dealCard3');
-    delay += 0.2;
 
     // Animate dealer's second card
     delay = await cardAnimation(dealerSecondCard, dealerSecondCardPosition, tl, delay, 'dealCard4');
@@ -699,15 +727,15 @@ async function animateDeal(data) {
     await updateScores(data);
 }
 
-async function cardAnimation(card, cardPosition, timeline = gsap.timeline(), delay = 0, soundKey = null) {
-    if ($(card).hasClass('card-back')) {
+async function cardAnimation(card, cardPosition, timeline = gsap.timeline(), delay = 0, soundKey = null, dealCardBack = false) {
+    if ($(card).hasClass('card-back') && dealCardBack === false) {
         //animate flip
         timeline.to(card, {
             duration: 0.2,
             rotationY: -90,
             delay: delay,
             onStart: () => {
-                if (soundKey) { sounds.soundSprite.play(soundKey); }
+                if (soundKey) { playSound(soundKey); }
             },
             onComplete: () => {
                 $(card).removeClass('card-back').addClass('playingCard');
@@ -730,14 +758,14 @@ async function cardAnimation(card, cardPosition, timeline = gsap.timeline(), del
             duration: 0.2,
             delay: delay,
             onStart: () => {
-                if (soundKey) { sounds.soundSprite.play(soundKey); }
+                if (soundKey) { playSound(soundKey); }
             }
         });
     }
 
     let soundDuration = 0;
     if (soundKey) { soundDuration = getSpriteDuration(soundKey); }
-    delay += Math.max(0.2, soundDuration);
+    delay = Math.max(0.2, soundDuration);
 
     return delay;
 }
@@ -747,14 +775,15 @@ async function animateCard(data) {
     await displayNewPlayerCard(data);
     await new Promise(resolve => setTimeout(resolve, 0));
     const handToProcess = data.processPriorHand ? data.currentHandIndex : data.currentHandIndex + 1;
-    const gsapDuration = Math.max(getSpriteDuration('singleCard'), 0.2);
+    const randomCardSound = cardSounds[Math.floor(Math.random() * cardSounds.length)];
+    const gsapDuration = Math.max(getSpriteDuration(randomCardSound), 0.2);
 
     await gsap.fromTo(`#hand${handToProcess} .playingCard:last-child`, { opacity: 0, y: -50 }, {
         opacity: 1,
         y: 0,
         duration: gsapDuration,
         onStart: () => {
-            sounds.soundSprite.play('singleCard');
+            playSound(randomCardSound);
         }
     });
 
@@ -824,9 +853,10 @@ async function animateDealersTurn(data) {
     data.dealerHand.total = partialDealerHand;
     await updateScores(data, false);
 
-    let gsapDuration = Math.max(getSpriteDuration('singleCard'), 0.2);
-
     for (let i = 2; i < data.dealerHand.hand.length; i++) {
+        let randomCardSound = cardSounds[Math.floor(Math.random() * cardSounds.length)];
+        let gsapDuration = Math.max(getSpriteDuration(randomCardSound), 0.2);
+
         const card = data.dealerHand.hand[i];
         ({ currentTotal: partialDealerHand, aceCount } = calculateCardValue(partialDealerHand, aceCount, card));
 
@@ -838,7 +868,7 @@ async function animateDealersTurn(data) {
             y: 0,
             duration: gsapDuration,
             onStart: () => {
-                sounds.soundSprite.play('singleCard');
+                playSound(randomCardSound);
             }
         });
 
@@ -865,13 +895,22 @@ async function animateSplit(data) {
         updatePlayerMoney(data, -data.playerBet);
     }
 
-    const originalHandIndex = data.currentHandIndex;
+    const originalHandIndex = data.processPriorHand ? data.currentHandIndex - 1 : data.currentHandIndex;
     const newHandIndex = data.playerHands.length - 1; // Index for new hand (if we start with one hand, the next hand added will be playerHands[1])
 
+    const firstCard = $(`#hand${originalHandIndex + 1} .playingCard:first`);
+
+    // Check if firstCard exists
+    if (firstCard.length === 0) {
+        console.error(`Element firstCard not found: #hand${originalHandIndex + 1} .playingCard:first`);
+        return;
+    }
+
     const divToMove = $(`#hand${originalHandIndex + 1} .playingCard:last-child`);
+
     // Check if divToMove exists
     if (divToMove.length === 0) {
-        console.error(`Element to move not found: #hand${originalHandIndex + 1} .playingCard:last-child`);
+        console.error(`Element divToMove not found: #hand${originalHandIndex + 1} .playingCard:last-child`);
         return;
     }
 
@@ -880,9 +919,8 @@ async function animateSplit(data) {
 
     const arrowElement = $(`#hand${originalHandIndex + 1} .arrow`);
     arrowElement.css('opacity', 0);
-
     await fadeInNewHandAndArrow(newHandDiv, arrowElement);
-    await moveCardToNewHand(divToMove, newHandDiv, data, originalHandIndex);
+    await moveCardToNewHand(divToMove, firstCard, newHandDiv, data, originalHandIndex);
     await drawNewCards(data, originalHandIndex, newHandIndex);
     await dimNewHand(newHandIndex);
     await updateScores(data);
@@ -907,17 +945,20 @@ async function fadeInNewHandAndArrow(newHandDiv, arrowElement) {
     await tl.play();
 }
 
-async function moveCardToNewHand(divToMove, newHandDiv, data, originalHandIndex) {
+async function moveCardToNewHand(divToMove, firstCard, newHandDiv, data, originalHandIndex) {
     let gsapDuration = Math.max(getSpriteDuration('dealCard4'), 0.2);
     const newCardPosition = await getCardBackgroundPosition(data.playerHands[originalHandIndex].hand[0]);
     const newHandOffsetTop = newHandDiv.offset().top;
     const divToMoveOffsetTop = divToMove.offset().top;
+    const leftOfFirstCard = firstCard.offset().left;
+    const divToMoveOffsetLeft = divToMove.offset().left;
 
     await gsap.to(divToMove, {
         duration: gsapDuration,
+        x: leftOfFirstCard - divToMoveOffsetLeft,
         y: newHandOffsetTop - divToMoveOffsetTop,
         onStart: () => {
-            sounds.soundSprite.play('dealCard4');
+            playSound('dealCard4');
         },
         onComplete: () => {
             divToMove.css('transform', '');
@@ -928,12 +969,13 @@ async function moveCardToNewHand(divToMove, newHandDiv, data, originalHandIndex)
 }
 
 async function drawNewCards(data, originalHandIndex, newHandIndex) {
-    let gsapDuration = Math.max(getSpriteDuration('singleCard'), 0.2);
-    await drawNewCardForHand(originalHandIndex, data.playerHands[originalHandIndex].hand.slice(-1)[0], gsapDuration);
-    await drawNewCardForHand(newHandIndex, data.playerHands[newHandIndex].hand.slice(-1)[0], gsapDuration);
+    await drawNewCardForHand(originalHandIndex, data.playerHands[originalHandIndex].hand.slice(-1)[0]);
+    await drawNewCardForHand(newHandIndex, data.playerHands[newHandIndex].hand.slice(-1)[0]);
 }
 
-async function drawNewCardForHand(handIndex, card, gsapDuration) {
+async function drawNewCardForHand(handIndex, card) {
+    const randomCardSound = cardSounds[Math.floor(Math.random() * cardSounds.length)];
+    let gsapDuration = Math.max(getSpriteDuration(randomCardSound), 0.2);
     const cardPosition = await getCardBackgroundPosition(card);
     const $newCardElement = $('<div class="playingCard"></div>').css('background-position', cardPosition);
     $(`#hand${handIndex + 1}`).append($newCardElement);
@@ -942,7 +984,7 @@ async function drawNewCardForHand(handIndex, card, gsapDuration) {
         y: 0,
         duration: gsapDuration,
         onStart: () => {
-            sounds.soundSprite.play('singleCard');
+            playSound(randomCardSound);
         }
     });
 }
@@ -1164,9 +1206,6 @@ async function showGameWindow(data = {}, callWindow = null) {
     if (loadWindow == 'splashScreen') {
         await new Promise(resolve => setTimeout(resolve, 1500));
 
-        // Ensure initial opacity is 0 for these elements
-        $('#jackaceGame, #dealerHand, #playerHand, #uiWindow').css('opacity', '0');
-
         const tl = gsap.timeline();
         tl.to('#splashScreen', {
             opacity: 0,
@@ -1285,7 +1324,7 @@ async function flashCredits() {
     resourceText.addClass('flash-red');
 
     // Play sound
-    sounds.soundSprite.play('noMonies');
+    playSound('noMonies');
 
     await new Promise(resolve => setTimeout(resolve, 500));
     resourceText.removeClass('flash-red');
@@ -1304,7 +1343,7 @@ async function updatePlayerMoney(data, adjustBy = null, showRewards = false) {
         let currentMoney = parseInt(playerMoney);
         let rewardCountdown = data?.reward ?? 0;
         let processingReward = false;
-        const minDisplayTime = 1000; // Minimum display time for reward in milliseconds
+        let minDisplayTime = 1000; // Minimum display time for reward in milliseconds
 
         if (rewardCountdown > 0 && showRewards) {
             const timeline = gsap.timeline();
@@ -1316,12 +1355,13 @@ async function updatePlayerMoney(data, adjustBy = null, showRewards = false) {
                 top: `${targetTop}px`,
                 duration: 0.25,
                 onStart: () => {
-                    sounds.soundSprite.play('win');
+                    playSound('win', 0.7);
                 }
             }, 0);
 
             if (data.boughtInsurance && data.dealerHandTotal === 21 && data.dealerHand.length === 2) {
                 const insuranceTextElementId = await createInsuranceTextElement();
+                minDisplayTime = Math.max(minDisplayTime, getSpriteDuration('dealerIsJackAce'));
 
                 // Initial properties before the animation
                 gsap.set(`#${insuranceTextElementId}`, {
@@ -1340,7 +1380,8 @@ async function updatePlayerMoney(data, adjustBy = null, showRewards = false) {
                         opacity: 1,
                         y: 0,
                         scale: 1,
-                        duration: 0.25
+                        duration: 0.25,
+                        onStart: () => playSound('dealerIsJackAce')
                     });
             }
 
@@ -1699,17 +1740,54 @@ async function getResultPosition(resultCode) {
     return `-${x}px -${y}px`;
 }
 
-async function animateResult(results) {
-    const validResults = ['busted', 'youlost', 'push', 'winner', 'jackace'];
-    const animationTimeline = gsap.timeline();
+function calculateSkewAdjustment(height, skewX) {
+    const skewAngle = parseFloat(skewX) * (Math.PI / 180); // Convert skewX to radians
+    const displacement = Math.tan(skewAngle) * height;
+    return displacement;
+}
 
+async function animateResult(results) {
+    const validResults = ['busted', 'youlose', 'push', 'winner', 'jackace'];
+    const animationTimeline = gsap.timeline();
+    const uniqueResults = new Set();
+
+    // Define base animation durations
+    const baseDurations = {
+        busted: 0.8,
+        youlose: 0.8,
+        push: 0.5,
+        winner1: 0.3,
+        winner2: 0.4,
+        jackace: 1
+    };
+
+    // Collect sprite durations
+    const randomJackAce = jackaceSounds[Math.floor(Math.random() * jackaceSounds.length)];
+    const randomWin = winSounds[Math.floor(Math.random() * winSounds.length)];
+    const resultSounds = {
+        busted: 'busted',
+        youlose: 'youLose',
+        push: 'push',
+        winner: randomWin,
+        jackace: randomJackAce
+    };
+
+    // Calculate maximum durations considering both animation and sprite durations
+    const resultDurations = {
+        busted: Math.max(baseDurations.busted, getSpriteDuration(resultSounds.busted)),
+        youlose: Math.max(baseDurations.youlose, getSpriteDuration(resultSounds.youlose)),
+        push: Math.max(baseDurations.push, getSpriteDuration(resultSounds.push)),
+        winner: Math.max(baseDurations.winner1 + baseDurations.winner2, getSpriteDuration(resultSounds.winner)),
+        jackace: Math.max(baseDurations.jackace, getSpriteDuration(resultSounds.jackace))
+    };
+
+    // First pass: Determine unique results and exclude hands with existing result images
     for (let handIndex = 0; handIndex < results.length; handIndex++) {
         const result = results[handIndex];
+        const currentHandDiv = $(`#hand${handIndex + 1}`);
 
-        // Skip hands without a result
-        if (result === '') {
-            continue;
-        }
+        // Skip hands without a result or with existing result images
+        if (result === '' || currentHandDiv.find('.result-image').length > 0) { continue; }
 
         // Check if the result is one of the expected cases
         if (!validResults.includes(result)) {
@@ -1717,10 +1795,19 @@ async function animateResult(results) {
             return;
         }
 
+        uniqueResults.add(result);
+    }
+
+    const isSingleResult = uniqueResults.size === 1;
+    let delay = 0;
+
+    // Second pass: Animate results and play sounds
+    for (let handIndex = 0; handIndex < results.length; handIndex++) {
+        const result = results[handIndex];
         const currentHandDiv = $(`#hand${handIndex + 1}`);
 
-        // Check if the result image has already been added to this hand
-        if (currentHandDiv.find('.result-image').length > 0) {
+        // Skip hands without a result or with existing result images
+        if (result === '' || currentHandDiv.find('.result-image').length > 0) {
             continue;
         }
 
@@ -1758,38 +1845,31 @@ async function animateResult(results) {
         const firstCardWidth = firstCard.outerWidth();
         const correctedLeft = (firstCardPosition.left + firstCardWidth / 2) / scale;
 
-        const finalPosition = {
-            left: correctedLeft
-        };
+        const finalPosition = { left: correctedLeft };
 
         // Adjust the position of the result image
-        resultImage.css({
-            left: `${finalPosition.left}px`
-        });
+        resultImage.css({ left: `${finalPosition.left}px` });
 
+        // Set up the animations and sounds based on the result
         switch (result) {
             case 'busted':
-            case 'youlost':
+            case 'youlose':
                 animationTimeline.fromTo(resultImage,
                     { top: -400, left: finalPosition.left, scale: 1.5 },
-                    { top: 0, scale: 1, duration: 0.8, ease: "bounce.out" },
-                    0 // Start all animations at the same time
+                    { top: 0, scale: 1, duration: resultDurations[result], ease: "bounce.out", onStart: () => playSound(resultSounds[result]) },
+                    isSingleResult ? 0 : delay
                 );
                 break;
+
             case 'push':
                 animationTimeline.fromTo(resultImage,
                     { left: finalPosition.left - 200, scaleX: 0 },
-                    { left: finalPosition.left, scaleX: 1, duration: 0.5, ease: "elastic.out(1, 0.3)" },
-                    0 // Start all animations at the same time
+                    { left: finalPosition.left, scaleX: 1, duration: resultDurations.push, ease: "elastic.out(1, 0.3)", onStart: () => playSound(resultSounds[result]) },
+                    isSingleResult ? 0 : delay
                 );
                 break;
-            case 'winner':
-                function calculateSkewAdjustment(height, skewX) {
-                    const skewAngle = parseFloat(skewX) * (Math.PI / 180); // Convert skewX to radians
-                    const displacement = Math.tan(skewAngle) * height;
-                    return displacement;
-                }
 
+            case 'winner':
                 const resultImageHeight = resultImage.height();
 
                 // Animate left with power4.out and handle skewX for braking effect
@@ -1797,49 +1877,56 @@ async function animateResult(results) {
                     { left: finalPosition.left + 600 },
                     {
                         left: finalPosition.left - calculateSkewAdjustment(resultImageHeight, "-15deg"),
-                        duration: 0.3, ease: "linear"
+                        duration: baseDurations.winner1, ease: "linear"
                     },
-                    0 // Start all animations at the same time
+                    isSingleResult ? 0 : delay
                 );
 
                 // Slow down exponentially for the last bit
                 animationTimeline.to(resultImage,
                     {
                         left: finalPosition.left,
-                        duration: 0.4, ease: "back.out(2)"
+                        duration: baseDurations.winner2, ease: "back.out(2)", onStart: () => playSound(resultSounds[result])
                     },
-                    0.3 // Continue the left position animation
+                    isSingleResult ? baseDurations.winner1 : delay + baseDurations.winner1
                 );
 
                 // Maintain skewX at -25deg during the initial deceleration phase
                 animationTimeline.to(resultImage,
-                    { skewX: "-15deg", duration: 0.3 },
-                    0 // Start all animations at the same time
+                    { skewX: "-15deg", duration: baseDurations.winner1 },
+                    isSingleResult ? 0 : delay
                 );
 
                 // Adjust skewX to create the braking effect
                 animationTimeline.to(resultImage,
                     {
-                        skewX: "0deg", duration: 0.4, ease: "back.out(2)",
+                        skewX: "0deg", duration: baseDurations.winner2, ease: "back.out(2)",
                         onUpdate: function () {
                             const displacement = calculateSkewAdjustment(resultImageHeight, resultImage.skewX);
                             resultImage.css('left', `${finalPosition.left + displacement}px`);
                         }
                     },
-                    0.3 // Continue the skew animation
+                    isSingleResult ? baseDurations.winner1 : delay + baseDurations.winner1
                 );
                 break;
+
             case 'jackace':
                 animationTimeline.fromTo(resultImage,
                     { scale: 0, rotation: 720 },
-                    { scale: 1, rotation: 0, duration: 1, ease: "back.out(1.7)" },
-                    0 // Start all animations at the same time
+                    { scale: 1, rotation: 0, duration: resultDurations.jackace, ease: "back.out(1.7)", onStart: () => playSound(randomJackAce) },
+                    0 // can't have multiple hands when you get jackace
                 );
                 break;
+
             default:
                 // If the result type is not recognized, hide the image
                 resultImage.hide();
                 return;
+        }
+
+        // Increase delay for the next hand result if there are different results
+        if (!isSingleResult) {
+            delay += resultDurations[result];
         }
     }
 
@@ -1847,7 +1934,6 @@ async function animateResult(results) {
     if ($('.result-image').length > 0) {
         await animationTimeline.to(`.result-image`, { opacity: 0, duration: 1, delay: 0.5 });
     }
-
 }
 
 
@@ -1870,7 +1956,7 @@ async function determineResults(data) {
         } else if (dealerHandTotal > 21 || playerHandTotal > dealerHandTotal) {
             results[i] = 'winner';
         } else if (playerHandTotal < dealerHandTotal) {
-            results[i] = 'youlost';
+            results[i] = 'youlose';
         } else {
             results[i] = 'push';
         }

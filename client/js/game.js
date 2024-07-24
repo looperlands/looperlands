@@ -8893,7 +8893,13 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         $("#minigameprompt").css({
                             'left': toPercent($("#minigameprompt").css('left'), offsetX, $("#container").width()),
                             'top': toPercent($("#minigameprompt").css('top'), offsetY, $("#container").height())
-                        }).addClass('active').one("click", () => loadMinigame(trigger.minigame, self)); // Limit the use of this to a single fire
+                        }).addClass('active').one("click", () => loadMinigame(trigger.minigame, self).then(() => {
+                            const startUpFunctionName = `startUp${trigger.minigame}`;
+                            if (typeof window[startUpFunctionName] === 'function') {
+                                console.log('[handleTrigger] launching minigame startup function');
+                                window[startUpFunctionName]();
+                            }
+                        })); // Limit the use of this to a single fire
                     }
 
                     entity.onLeave(trigger, function () {
