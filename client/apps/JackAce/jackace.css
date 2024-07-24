@@ -102,7 +102,7 @@
 /*Button Positioning*/
 #bet_amount{
   image-rendering: pixelated;
-  margin: 10px;
+  margin: 5px;
   width: var(--buttonWidth);
   height: var(--buttonHeight);
   background: var(--buttonSprite);
@@ -111,7 +111,7 @@
 
 #deal{
   image-rendering: pixelated;
-  margin: 10px;
+  margin: 5px;
   width: var(--buttonWidth);
   height: var(--buttonHeight);
   background: var(--buttonSprite) -310px 0px;
@@ -120,7 +120,7 @@
 
 #bet_increase{
   image-rendering: pixelated;
-  margin: 10px;
+  margin: 5px;
   width: var(--buttonWidth);
   height: var(--buttonHeight);
   background: var(--buttonSprite) -310px -140px;
@@ -129,7 +129,7 @@
 
 #bet_decrease{
   image-rendering: pixelated;
-  margin: 10px;
+  margin: 5px;
   width: var(--buttonWidth);
   height: var(--buttonHeight);
   background: var(--buttonSprite) -310px -280px;
@@ -138,7 +138,7 @@
 
 #hit{
   image-rendering: pixelated;
-  margin: 10px;
+  margin: 5px;
   width: var(--buttonWidth);
   height: var(--buttonHeight);
   background: var(--buttonSprite);
@@ -147,7 +147,7 @@
 
 #stand{
   image-rendering: pixelated;
-  margin: 10px;
+  margin: 5px;
   width: var(--buttonWidth);
   height: var(--buttonHeight);
   background: var(--buttonSprite);
@@ -156,7 +156,7 @@
 
 #ins-yes{
   image-rendering: pixelated;
-  margin: 10px 10px 50px 10px;
+  margin: 10px 5px 25px 15px;
   width: var(--buttonWidth);
   height: var(--buttonHeight);
   background: var(--buttonSprite);
@@ -165,7 +165,7 @@
 
 #ins-no{
   image-rendering: pixelated;
-  margin: 10px 10px 50px 10px;
+  margin: 10px 15px 25px 5px;
   width: var(--buttonWidth);
   height: var(--buttonHeight);
   background: var(--buttonSprite);
@@ -174,7 +174,7 @@
 
 #split{
   image-rendering: pixelated;
-  margin: 10px;
+  margin: 5px;
   width: var(--buttonWidth);
   height: var(--buttonHeight);
   background: var(--buttonSprite);
@@ -183,7 +183,7 @@
 
 #double{
   image-rendering: pixelated;
-  margin: 10px;
+  margin: 5px;
   width: var(--buttonWidth);
   height: var(--buttonHeight);
   background: var(--buttonSprite);
@@ -232,7 +232,7 @@
   display: inline-block;
   width: var(--scoreWidth);
   height: var(--buttonHeight);
-  background: var(--scoreSprite) -180px 0;
+  background: var(--scoreSprite) -90px 0;
   margin: 5px;
   image-rendering: pixelated;
   background-size: var(--scoreSpriteSize);
