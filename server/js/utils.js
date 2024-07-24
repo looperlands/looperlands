@@ -1,18 +1,20 @@
-
 var Utils = {},
     sanitizer = require('sanitizer'),
     Types = require("../../shared/js/gametypes");
 
 module.exports = Utils;
+
 const bad_words = require("profane-words");
+const whitelisted_words = ["cornhole", "wang", "rigger"];
+const badWordsToFilter = bad_words.filter(word => !new Set(whitelisted_words.map(e => e.toLowerCase())).has(word.toLowerCase()));
 
 Utils.sanitize = function(string) {
     // Strip unsafe tags, then escape as html entities.
     let injectSafe = sanitizer.escape(sanitizer.sanitize(string));
+    
     // Replace bad words with asterisks
-    const badWordsLength = bad_words.length;
-    for (let i = 0; i < badWordsLength; i++) {
-        injectSafe = injectSafe.replace(new RegExp("\\b"+bad_words[i]+"\\b", "ig"), "*".repeat(bad_words[i].length));
+    for (const badWord of badWordsToFilter) {
+        injectSafe = injectSafe.replace(new RegExp(`\\b${badWord}\\b`, "ig"), "*".repeat(badWord.length));
     }
     return injectSafe;
 };
@@ -86,4 +88,3 @@ Utils.shuffleAndGetRandom = function(arrayOrValue) {
     const shuffledArray = Array.isArray(arrayOrValue) ? Utils.shuffleArray([...arrayOrValue]) : arrayOrValue;
     return Array.isArray(shuffledArray) ? shuffledArray[Math.floor(Math.random() * shuffledArray.length)] : shuffledArray;
 };
-
