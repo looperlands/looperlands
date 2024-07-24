@@ -131,7 +131,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "m88ndreamduckyy", "m88ndreamduckyg", "m88ndreamduckyb", "m88ndreamduckyp", "m88ndreamduckyr","m88ndreamcandyy", "m88ndreamcandyg", "m88ndreamcandyb", "m88ndreamcandyp", "m88ndreamcandyr","m88ndreamgumbally", "m88ndreamgumballg", "m88ndreamgumballb", "m88ndreamgumballp", "m88ndreamgumballr", "m88ngmeshare", "m88nwhiskey", "m88ndiamondhand", "m88ngoldenbanana", "m88nshorts",
                     "m88nseafrog", "m88nseahorse", "m88nseaurchin", "m88nstarfish", "m88nseaweed", "m88nspirula", "m88nshrimp", "m88nsilvereel", "m88npinkfantasia", "m88npiranha", "m88nscallop", "m88nsaltwatersnail", "m88nseaspider", "m88noctopus", "m88npufferfish", "m88nseacucumber", "m88ntigerfish", "m88nguppy", "m88nkoifish", "m88nturtle", "m88nsanddollar", "m88njellyfish", "m88nlionfish",
                     "m88nsundial", "m88ntuna", "m88ncharfish", "m88ncrab", "m88ncowfish", "m88nlampreyeel", "m88nbluelobster", "m88nparrotfish", "m88nconch", "m88ndumbooctopus", "m88nbettafish", "m88nsquid", "m88nnautilus", "m88nwolffish", "m88nblobfish", "m88nclownfish", "m88noyster", "m88npearl", "m88naxolotl", "m88nbutterflyfish", "m88ncoral", "m88nseaangel", "m88nanglerfish", "m88nbluetang", 
-                    "m88nclam", "m88npompano", "m88nmackerel", "m88noceanbass", "m88nnightmareduckyb", "m88nnightmareduckyv", "m88nnightmareduckyg", "m88nnightmareduckyr",
+                    "m88nclam", "m88npompano", "m88nmackerel", "m88noceanbass", "m88nnightmareduckyb", "m88nnightmareduckyv", "m88nnightmareduckyg", "m88nnightmareduckyr", "m88n24kancientscroll", "m88n24kapestatuette", "m88n24kcigarcutter", "m88n24kcrown", "m88n24knecklace", "m88n24kwarriorhelmet",
                     //m88n NPCs
                     "wenmoon",
                     "kingfroggy",
@@ -539,6 +539,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "item-m88ndreamcloud",
                     "item-m88nsunshine",
                     "item-m88nskeletonkey",
+                    "item-m88nholyhandgrenade",
                     //MRMlabs
                     "item-firstaidkit",
                     "item-bandaid",
@@ -6141,7 +6142,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     ["m88ndreamduckyy", "m88ndreamduckyg", "m88ndreamduckyb", "m88ndreamduckyp", "m88ndreamduckyr", "m88ndreamcandyy", "m88ndreamcandyo", "m88ndreamcandya", "m88ndreamcandyg", "m88ndreamcandyb", "m88ndreamcandyp", "m88ndreamcandyr", "m88ndreamgumbally", "m88ndreamgumballo", "m88ndreamgumballa", "m88ndreamgumballg", "m88ndreamgumballb", "m88ndreamgumballp", "m88ndreamgumballr" , "m88ngmeshare", "m88nwhiskey", 
                     "m88ndiamondhand", "m88ngoldenbanana", "m88nshorts", "m88nseafrog", "m88nseahorse", "m88nseaurchin", "m88nstarfish", "m88nseaweed", "m88nspirula", "m88nshrimp", "m88nsilvereel", "m88npinkfantasia", "m88npiranha", "m88nscallop", "m88nsaltwatersnail", "m88nseaspider", "m88noctopus", "m88npufferfish", "m88nseacucumber", "m88ntigerfish", "m88nguppy", "m88nkoifish", "m88nturtle", "m88nsanddollar", "m88njellyfish", "m88nlionfish",
                     "m88nsundial", "m88ntuna", "m88ncharfish", "m88ncrab", "m88ncowfish", "m88nlampreyeel", "m88nbluelobster", "m88nparrotfish", "m88nconch", "m88ndumbooctopus", "m88nbettafish", "m88nsquid", "m88nnautilus", "m88nwolffish", "m88nblobfish", "m88nclownfish", "m88noyster", "m88npearl", "m88naxolotl", "m88nbutterflyfish", "m88ncoral", "m88nseaangel", "m88nanglerfish", "m88nbluetang", "m88nclam", "m88npompano", "m88nmackerel", "m88noceanbass",
-                    "m88nnightmareduckyb", "m88nnightmareduckyv", "m88nnightmareduckyg", "m88nnightmareduckyr"],
+                    "m88nnightmareduckyb", "m88nnightmareduckyv", "m88nnightmareduckyg", "m88nnightmareduckyr", "m88n24kancientscroll", "m88n24kapestatuette", "m88n24kcigarcutter", "m88n24kcrown", "m88n24knecklace", "m88n24kwarriorhelmet"],
 
                     /* MRMlabs FISH*/
                     ["bbqchips", "blackpepperchips", "dillpicklechips", "saltnvinegarchips", "berryblast", "cherrycola", "gingerale", "rootbeer", "valleydew"],

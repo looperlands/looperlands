@@ -345,6 +345,18 @@ const Lakes = {
         }
     },
 
+    m88n24kpool: {
+        level: 1,
+        fish: {
+            m88n24knecklace: "common",
+            m88n24kcrown: "common",
+            m88n24kwarriorhelmet: "uncommon",
+            m88n24kcigarcutter: "rare",
+            m88n24kapestatuette: "epic",
+            m88n24kancientscroll: "legendary",
+        }
+    },
+
     mrmsodamachine: {
         level: 1,
         fish: {
@@ -402,7 +414,7 @@ const Lakes = {
 const ConsumableFish = {
     hp: ["cobparadisefish","oafish27","m88ndreamcandyr","gingerale", "m88nanglerfish", "m88nbettafish", "m88njellyfish", "m88npiranha"],
     atk: ["cobbluegill","oafish31","oafish22","m88ndreamduckyp","saltnvinegarchips", "m88naxolotl", "m88nbluelobster", "m88nkoifish", "m88nshrimp"],
-    exp: ["cobgreensunfish","oafish36", "lollipop","m88ndreamgumballa","m88ngoldenbanana", "m88nblobfish", "m88ncharfish", "m88noctopus", "m88nstarfish", "luckybabydragon", "m88nnightmareduckyr"]
+    exp: ["cobgreensunfish","oafish36", "lollipop","m88ndreamgumballa","m88ngoldenbanana", "m88nblobfish", "m88ncharfish", "m88noctopus", "m88nstarfish", "luckybabydragon", "m88nnightmareduckyr", "m88n24kapestatuette"]
 };
 
 //---END CONFIG---
