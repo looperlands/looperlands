@@ -73,6 +73,13 @@ class PlayerQuestEventConsumer extends PlayerEventConsumer {
                 if (quest.rental) {
                     platformClient.getFreeRental(quest.rental, event.playerCache.walletId);
                 }
+
+                if (event.eventType === "LOOT_ITEM") {
+                    const amount = -(quest.amount);
+                    const nftId = event.playerCache.nftId;
+                    const item = quest.target;
+                    dao.updateResourceBalance(nftId, item, amount);
+                }
             }
         }
         return { changedQuests: changedQuests, quests: event.playerCache.gameData.quests };

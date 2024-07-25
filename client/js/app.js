@@ -574,6 +574,10 @@ define(['jquery', 'storage'], function ($, Storage) {
             if(_.isArray(desc)) {
                 desc = desc.join(" ");
             }
+            const maxDescriptionLength = 50;
+            if (desc.length > maxDescriptionLength) {
+                desc = desc.substring(0, maxDescriptionLength) + "...";
+            }
             $el.find('.achievement-description').html(desc);
             $el.find('.achievement-description').attr('title', desc);
         },
