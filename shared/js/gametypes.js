@@ -526,6 +526,7 @@ Types = {
         M88NDREAMCLOUD: 78007800,
         M88NSUNSHINE: 78007900,
         M88NSKELETONKEY: 78008000,
+        M88NHOLYHANDGRENADE: 78008100,
         //MRMlabs NPCs
         TYLERDURDEN: 79000000,
         //MRMlabs Items
@@ -6352,6 +6353,7 @@ var kinds = {
     m88ndreamcloud: [Types.Entities.M88NDREAMCLOUD, "object"],
     m88nsunshine: [Types.Entities.M88NSUNSHINE, "object"],
     m88nskeletonkey: [Types.Entities.M88NSKELETONKEY, "object"],
+    m88nholyhandgrenade: [Types.Entities.M88NHOLYHANDGRENADE, "object"],
     //MRMlabs Items
     firstaidkit: [Types.Entities.FIRSTAIDKIT, "object"],
     bandaid: [Types.Entities.BANDAID, "object"],

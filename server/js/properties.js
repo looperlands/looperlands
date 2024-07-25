@@ -2508,6 +2508,18 @@ let Properties = {
             player.playerClassModifiers.applyTemporaryModifierWithTimeout('rangedDamageDealt', 5, 20000);
         }
     },
+    m88nholyhandgrenade: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "rangedDamageDealt",
+            duration: 180000
+        },
+        inventoryDescription: "Holy Hand Grenade",
+        onConsume: function(player){
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('rangedDamageDealt', 15, 60000);
+        }
+    },
     m88ngem: {
         collectable: true,
         inventoryDescription: "m88n gems",

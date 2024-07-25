@@ -171,6 +171,12 @@ const AltNames = {
     m88nnightmareduckyv: "a violet billed ducky",
     m88nnightmareduckyg: "a gold billed ducky",
     m88nnightmareduckyr: "a radioactive billed ducky",
+    m88n24knecklace: "a 24K necklace",
+    m88n24kcrown: "a 24K crown",
+    m88n24kwarriorhelmet: "a 24K warrior helmet",
+    m88n24kcigarcutter: "a 24K cigar cutter",
+    m88n24kapestatuette: "a 24K ape statuette",
+    m88n24kancientscroll: "a 24K ancient scroll",
 
     //MRMlabs Fishing
     bbqchips: "BBQ chips",  
@@ -273,6 +279,7 @@ const AltNames = {
     m88ndreamcloud: "a dream cloud",
     m88nsunshine: "some sunshine",
     m88nskeletonkey: "a skeleton key",
+    m88nholyhandgrenade: "the Holy Hand Grenade",
 
     //m88n TT Items
     m88nammocan: "ammo can",
