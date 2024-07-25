@@ -60,7 +60,8 @@ const sounds = {
             youWin: [24500, 1750],          // by bitcorn (2024)
             youLose: [26250, 2000],         // by bitcorn (2024)
             busted: [28250, 1500],          // by bitcorn (2024)
-            push: [29750, 2000]             // by bitcorn (2024)
+            push: [29750, 2000],            // by bitcorn (2024)
+            click: [32000, 100]
         }
     }),
     casinoAmbiance: new Howl({
@@ -214,8 +215,6 @@ async function init() {
         setupJackAceMenu();
         setupHelpPanel();
 
-
-
         $('#uiWindow').empty();
         $('#uiWindow').append(`
         <div id="bet-window" class="hidden">
@@ -310,7 +309,10 @@ async function setUpButtonEvents() {
     $('#bet_amount').css('background-position', await getButtonBackgroundPosition(`bet1`));
 
     for (const { id, hoverState, defaultState, clickFunction } of buttons) {
-        $(id).on('click', clickFunction);
+        $(id).on('click', () => {
+            playSound('click');
+            clickFunction();
+        });
         $(id).hover(
             async function () {
                 if (processingBypass || (!$("#uiWindow").hasClass('processing') && !$(this).hasClass('inactive'))) {
@@ -345,13 +347,6 @@ function setupJackAceMenu() {
         $('#minigameMenu-content').find('.JackAce').show();
     }
 }
-
-/* function fadeInSetupJackAce() {
-    console.log("Running fadeInSetupJackAce");
-    
-    setupJackAceMenu();
-    showGameWindow();
-} */
 
 function setupHelpPanel() {
     if (!$('#jackaceHelp').length) {
@@ -427,10 +422,11 @@ async function makeRequest(action, additionalData = {}) {
                             console.log(`Invalid action: ${errorResponse.message}`);
                             $("#uiWindow").removeClass('processing');
                             await animateText(errorResponse.message);
-                            await resetGame();
+                            await resetGame();  // need to make sure we don't kill a game in progress without returning $$
                             break;
                         case 'Not Enough Gold.':
                             console.log('You do not have enough gold to place this bet.');
+                            await setPlayerMoney(false);
                             await flashCredits();
                             $("#uiWindow").removeClass('processing');
                             break;
@@ -441,7 +437,7 @@ async function makeRequest(action, additionalData = {}) {
                             $('#mgClose')[0].click();
                             break;
                         default:
-                            console.log('something borked: ', errorResponse.message);
+                            console.log('somethings borked: ', errorResponse.message);
                             alert(`${errorResponse.message}`);
                             $('#mgClose')[0].click();
                             break;
@@ -509,13 +505,7 @@ async function handleDeal() {
             }
             $("#uiWindow").removeClass('processing');
         } else {
-            await setPlayerMoney(false);
-            if (playerBet > 0 && playerMoney >= BET_AMOUNTS[playerBet]) {
-                await flashCredits();
-            } else {
-                console.log('[handleDeal] playerMoney updated and running again.');
-                handleDeal();
-            }
+            await flashCredits();
         }
     }
 }
@@ -552,13 +542,7 @@ async function handleSplit() {
             await animateSplit(data);
             $("#uiWindow").removeClass('processing');
         } else {
-            await setPlayerMoney(false);
-            if (playerBet > 0 && playerMoney >= BET_AMOUNTS[playerBet]) {
-                await flashCredits();
-            } else {
-                console.log('[handleSplit] playerMoney updated and running again.');
-                handleSplit();
-            }
+            await flashCredits();
         }
     }
 }
@@ -572,14 +556,8 @@ async function handleInsurance(boughtInsurance) {
             if (playerBet > 0 && playerMoney >= parseInt(BET_AMOUNTS[playerBet] / 2)) {
                 isUpdatingPlayerMoney ? await updatePlayerMoney(data, parseInt(-data.playerBet / 2)) : updatePlayerMoney(data, parseInt(-data.playerBet / 2));
             } else {
-                await setPlayerMoney(false);
-                if (playerBet > 0 && playerMoney >= parseInt(BET_AMOUNTS[playerBet] / 2)) {
-                    await flashCredits();
-                    await handleInsurance(false);
-                } else {
-                    console.log('[handleInsurance] playerMoney updated and running again.');
-                    await handleInsurance(true);
-                }
+                await flashCredits();
+                await handleInsurance(false);
             }
         }
 
@@ -605,13 +583,7 @@ async function handleDouble() {
             await animateCard(data);
             $("#uiWindow").removeClass('processing');
         } else {
-            await setPlayerMoney(false);
-            if (playerBet > 0 && playerMoney >= BET_AMOUNTS[playerBet]) {
-                await flashCredits();
-            } else {
-                console.log('[handleDouble] playerMoney updated and running again.');
-                handleDouble();
-            }
+            await flashCredits();
         }
 
     }
@@ -1145,7 +1117,6 @@ async function showGameWindow(data = {}, callWindow = null) {
         await updateCurrentHand(currentHandIndex); // update hand arrows if more than one hand
     }
 
-    // console.log(`[LOADING WINDOW: ${loadWindow}]`);
     if (data?.gameWindow) await updateButtonStates(data);
 
     if (loadWindow === 'splitDouble') {
@@ -1193,7 +1164,6 @@ async function showGameWindow(data = {}, callWindow = null) {
             $('#insurance').addClass('hidden');
             break;
         case 'insurance':
-            console.log('showing insurance');
             $('#uiWindow').css('background-position', await getUiBackgroundPosition('insurance'));
             $('#uiWindow').css('height', '185px');
             $('#uiWindow').css('align-content', 'end');
@@ -1331,6 +1301,7 @@ async function flashCredits() {
 }
 
 async function updatePlayerMoney(data, adjustBy = null, showRewards = false) {
+
     // Wait for the current update to finish if it's already running
     while (isUpdatingPlayerMoney) {
         await new Promise(resolve => setTimeout(resolve, 50)); // Wait 50ms before checking again
@@ -1427,15 +1398,13 @@ async function updatePlayerMoney(data, adjustBy = null, showRewards = false) {
 
         if (processingReward) {
 
-            generateParticles = false; // Stop generating particles
-
             const tl = gsap.timeline();
 
             tl.to(`#reward-container`, {
                 opacity: 0,
                 duration: 0.5,
                 onComplete: async () => {
-                    // Wait for all particle animations to complete
+                    generateParticles = false;
                     await Promise.all(particleAnimationPromises);
                     $(`#reward-container`).remove();
                 }
@@ -1449,14 +1418,13 @@ async function updatePlayerMoney(data, adjustBy = null, showRewards = false) {
                     y: 20,
                     scale: 1.2,
                     duration: 0.5,
-                    onComplete: () => $(`#${insuranceTextElementId}`).remove()
+                    onComplete: () => {
+                        $(`#${insuranceTextElementId}`).remove();
+                    }
                 }, "-=0.5");
             }
-
             await tl;
-            generateParticles = false; // Stop generating particles
         }
-
     } finally {
         isUpdatingPlayerMoney = false; // Reset the flag
         particleAnimationPromises = []; // Reset the promises array
@@ -1830,24 +1798,7 @@ async function animateResult(results) {
         }
 
         currentHandDiv.append(resultImage);
-
-        // Get the scale value from the transform property
-        const transformMatrix = currentHandDiv.css('transform');
-        let scale = 1;
-
-        if (transformMatrix !== 'none') {
-            const matrixValues = transformMatrix.match(/matrix.*\((.+)\)/)[1].split(', ');
-            scale = parseFloat(matrixValues[0]);
-        }
-
-        // Calculate the corrected position
-        const firstCardPosition = firstCard.position();
-        const firstCardWidth = firstCard.outerWidth();
-        const correctedLeft = (firstCardPosition.left + firstCardWidth / 2) / scale;
-
-        const finalPosition = { left: correctedLeft };
-
-        // Adjust the position of the result image
+        const finalPosition = { left: 200 };
         resultImage.css({ left: `${finalPosition.left}px` });
 
         // Set up the animations and sounds based on the result
@@ -1855,16 +1806,16 @@ async function animateResult(results) {
             case 'busted':
             case 'youlose':
                 animationTimeline.fromTo(resultImage,
-                    { top: -400, left: finalPosition.left, scale: 1.5 },
-                    { top: 0, scale: 1, duration: resultDurations[result], ease: "bounce.out", onStart: () => playSound(resultSounds[result]) },
+                    { top: -400, left: finalPosition.left, scale: 1.5, opacity: 0 },
+                    { top: 0, scale: 1, opacity: 1, duration: resultDurations[result], ease: "bounce.out", onStart: () => playSound(resultSounds[result]) },
                     isSingleResult ? 0 : delay
                 );
                 break;
 
             case 'push':
                 animationTimeline.fromTo(resultImage,
-                    { left: finalPosition.left - 200, scaleX: 0 },
-                    { left: finalPosition.left, scaleX: 1, duration: resultDurations.push, ease: "elastic.out(1, 0.3)", onStart: () => playSound(resultSounds[result]) },
+                    { left: finalPosition.left - 200, scaleX: 0, opacity: 0 },
+                    { left: finalPosition.left, scaleX: 1, opacity: 1, duration: resultDurations.push, ease: "elastic.out(1, 0.3)", onStart: () => playSound(resultSounds[result]) },
                     isSingleResult ? 0 : delay
                 );
                 break;
@@ -1874,9 +1825,10 @@ async function animateResult(results) {
 
                 // Animate left with power4.out and handle skewX for braking effect
                 animationTimeline.fromTo(resultImage,
-                    { left: finalPosition.left + 600 },
+                    { left: finalPosition.left + 800, opacity: 0 },
                     {
-                        left: finalPosition.left - calculateSkewAdjustment(resultImageHeight, "-15deg"),
+                        left: finalPosition.left + 200 - calculateSkewAdjustment(resultImageHeight, "-15deg"),
+                        opacity: 1,
                         duration: baseDurations.winner1, ease: "linear"
                     },
                     isSingleResult ? 0 : delay
@@ -1902,8 +1854,7 @@ async function animateResult(results) {
                     {
                         skewX: "0deg", duration: baseDurations.winner2, ease: "back.out(2)",
                         onUpdate: function () {
-                            const displacement = calculateSkewAdjustment(resultImageHeight, resultImage.skewX);
-                            resultImage.css('left', `${finalPosition.left + displacement}px`);
+                            resultImage.css('left', `${finalPosition.left + calculateSkewAdjustment(resultImageHeight, resultImage.skewX)}px`);
                         }
                     },
                     isSingleResult ? baseDurations.winner1 : delay + baseDurations.winner1
@@ -1912,8 +1863,8 @@ async function animateResult(results) {
 
             case 'jackace':
                 animationTimeline.fromTo(resultImage,
-                    { scale: 0, rotation: 720 },
-                    { scale: 1, rotation: 0, duration: resultDurations.jackace, ease: "back.out(1.7)", onStart: () => playSound(randomJackAce) },
+                    { scale: 0, rotation: 720, opacity: 0 },
+                    { scale: 1, rotation: 0, opacity: 1, duration: resultDurations.jackace, ease: "back.out(1.7)", onStart: () => playSound(randomJackAce) },
                     0 // can't have multiple hands when you get jackace
                 );
                 break;

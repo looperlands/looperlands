@@ -2,7 +2,7 @@ const discord = require("../../js/discord");
 const dao = require('../../js/dao');
 const ens = require('../../js/ens');
 
-const DEBUG = false;
+const DEBUG = true;
 const BETA = true;
 
 class JackAce {
@@ -43,9 +43,20 @@ class JackAce {
         }
 
         const playerState = this.playerGameStates[player];
-        playerState.playerMoney = await dao.getResourceBalance(playerState.player, playerState.currency);
+        const playerMoney = await dao.getResourceBalance(playerState.player, playerState.currency);
+        playerState.playerMoney = playerMoney;
+
+        if (playerState.lastStatusCheck < Date.now() - 900000) {
+            await this.checkStatus(playerState);
+            if (!playerState.bitsxbit) {
+                return res.status(400).json({ message: `[JackAce Early Access Denied] Early Access Limited to bits x bit holders: ${playerState.player}` });
+            }
+        }
+
+        this.log(`[HANDLE ACTION: ${action}] Dao Balance: ${playerState.playerMoney}`, player);
         playerState.processPriorHand = false;
-        this.log(`[HANDLE ACTION] Player State: ${this.logPlayerState(playerState)}`, player);
+
+        //this.log(`[HANDLE ACTION] Player State: ${this.logPlayerState(playerState)}`, player);
 
         try {
             switch (action) {
@@ -359,10 +370,12 @@ class JackAce {
         }
         this.shuffleDeck(deck);
         
+        /*
         if (DEBUG) {
             const customDeck = ['AC', '5C', 'AS', 'AH', '8C', 'AD', '8S', 'AD', 'KC', 'AC', "AS"];
             deck = customDeck.concat(deck);
         }
+        */
         
         return deck;
     }
@@ -370,6 +383,7 @@ class JackAce {
     async createPlayerState(player, sessionId, walletId, playerName, playerBet, deck) {
         const validBetAmount = this.getValidBetAmount(playerBet);
         const playerMoney = await dao.getResourceBalance(player, this.GOLD);
+        this.log(`Initial Dao Balance: ${playerMoney}`, player);
         const bitsXbitHODLr = await this.platformClient.checkOwnershipOfCollection("bits x bit", walletId);
         return {
             player: player,
@@ -408,6 +422,12 @@ class JackAce {
             inProgress: false,
             lastStatusCheck: new Date()
         };
+    }
+
+    async checkStatus(playerState) {
+        const bitsXbitHODLr = await this.platformClient.checkOwnershipOfCollection("bits x bit", playerState.walletId);
+        playerState.bitsxbit = bitsXbitHODLr;
+        playerState.lastStatusCheck = new Date();
     }
 
     // Reset player's hands to the initial state
@@ -514,7 +534,7 @@ class JackAce {
                     totalReward += Math.round(hand.bet * 2.5); // Blackjack pays 3:2 (1 + 1.5 = 2.5)
 
                 } else {
-                    totalReward += hand.bet * 2; // Regular win pays 1:1 (1 + 1 = 2) includes jackacs on a split hand
+                    totalReward += hand.bet * 2; // Regular win pays 1:1 (1 + 1 = 2) includes jackace on a split hand
                 }
             } else if (playerTotal === dealerTotal) {
                 // Push
@@ -539,7 +559,11 @@ class JackAce {
 
     async transferItem(from, to, amount, playerState) {
         try {
+            const sender = from === this.CORNHOLE ? "CORNHOLE" : "player";
+            const sendTo = sender === "CORNHOLE" ? "player" : "CORNHOLE";
+            this.log(`Requesting transfer of ${amount} from ${sender} to ${sendTo}`, playerState.player);
             dao.transferResourceFromTo(from, to, amount, playerState.currency);
+            this.log(`>>>>> Transfer request sent to dao: ${amount}`, playerState.player);
 
             let cache = this.cache.get(playerState.sessionId);
             if (!cache) { throw new Error('Session cache not found'); }
@@ -550,9 +574,15 @@ class JackAce {
 
             // Adjust item count based on the direction of the transfer
             if (from === playerState.player) {
+                this.log(`>>>>> decrease Dao Balance [${playerState.playerMoney}] and gameData.items[playerState.currency] ${gameData.items[playerState.currency]} by ${amount}`, playerState.player);
+                playerState.playerMoney -= amount;
                 gameData.items[playerState.currency] -= amount;
+                this.log(`>>>>> updated Dao Balance: ${playerState.playerMoney}, updated gameData: ${gameData.items[playerState.currency]}`, playerState.player);
             } else {
+                this.log(`>>>>> increase playerMoney [${playerState.playerMoney}] and gameData.items[playerState.currency] ${gameData.items[playerState.currency]} by ${amount}`, playerState.player);
+                playerState.playerMoney += amount;
                 gameData.items[playerState.currency] += amount;
+                this.log(`>>>>> updated playerMoney: ${playerState.playerMoney}, updated gameData: ${gameData.items[playerState.currency]}`, playerState.player);
             }
 
             this.cache.set(playerState.sessionId, cache);
@@ -562,7 +592,6 @@ class JackAce {
             }
 
         } catch (error) {
-            console.log('error encountered while transferring item...');
             this.errorEncountered(`JACKACE ERROR`, `transferItem`, `Unexpected Error`, `${error}`, playerState.player);
             throw error;
         }
@@ -571,9 +600,6 @@ class JackAce {
     // Transfer gold from CORNHOLE to Player
     async payToPlayer(playerState) {
         try {
-            console.log(`increase playerMoney from ${playerState.playerMoney} by ${playerState.reward}`);
-            playerState.playerMoney += playerState.reward;
-            console.log(`updated playerMoney: ${playerState.playerMoney}`);
             this.transferItem(this.CORNHOLE, playerState.player, playerState.reward, playerState);
         } catch (error) {
             this.errorEncountered(`JACKACE ERROR`, `payToPlayer`, `Unexpected Error`, `${error}`, playerState.player);
@@ -583,9 +609,6 @@ class JackAce {
     // Transfer gold from Player to CORNHOLE
     async payToCORNHOLE(playerState, amount = playerState.playerBet) {
         try {
-            console.log(`decrease playerMoney from ${playerState.playerMoney} by ${amount}`);
-            playerState.playerMoney -= amount;
-            console.log(`updated playerMoney: ${playerState.playerMoney}`);
             this.transferItem(playerState.player, this.CORNHOLE, amount, playerState);
         } catch (error) {
             this.errorEncountered(`JACKACE ERROR`, `payToCORNHOLE`, `Unexpected Error`, `${error}`, playerState.player);
@@ -705,17 +728,18 @@ class JackAce {
             return [player, { status: 400, message: `[JACKACE ERROR] Error: action not recognized ==> ${action}` }];
         }
 
+        if (action === 'RESET') { return [player, null]; }
+
         // Make sure player has access
         try {
             const allowAccess = await this.platformClient.checkOwnershipOfCollection("bits x bit", walletId);
             if (!allowAccess) {
-                return [player, { status: 400, message: "[JackAce Early Access Denied] Early Access Limited to bits x bit holders." }];
+                return [player, { status: 400, message: `[JackAce Early Access Denied] Early Access Limited to bits x bit holders: ${player}` }];
             }
             this.log(`[validateAction] access granted: ${allowAccess}`, player);
         } catch (error) {
             return [player, { status: 500, message: `[JACKACE ERROR] Error validating access: ${error}` }];
         }
-
 
         // Make sure player has a gamestate initiated
         if (!this.playerGameStates[player]) {
@@ -734,8 +758,6 @@ class JackAce {
         }
 
         discord.sendMessage(`🃏 **${this.playerGameStates[player].playerName}** is at the cornHOLE playing JackAce.`);
-
-        if (action === 'RESET') { return [player, null]; }
 
         // Validate action based on player's current gamestate
         if (action === 'DEAL' && this.playerGameStates[player].inProgress) {

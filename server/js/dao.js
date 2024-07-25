@@ -211,34 +211,48 @@ const saveAvatarMapAndCheckpoint = async function (nft, mapId, checkpointId) {
   }
 }
 
-LOOT_EVENTS_QUEUE = []
+let LOOT_EVENTS_QUEUE = []
+let processingQueue = false;
+let pendingQueue = [];
+let LOOT_QUEUE_INTERVAL = undefined;
 
 const processLootEventQueue = async function (retry) {
-  if (!LOOT_EVENTS_QUEUE?.length) { return; }
+  if (processingQueue || !LOOT_EVENTS_QUEUE?.length) { return; }
+  processingQueue = true;
 
   try {
-    let response = await platformClient.storeInventoryTransaction(LOOT_EVENTS_QUEUE)
+    let response = await platformClient.storeInventoryTransaction(LOOT_EVENTS_QUEUE);
     printResponseJSON('storeInventoryTransactions', response);
     LOOT_EVENTS_QUEUE = [];
+
   } catch (error) {
     if (retry === undefined) {
       retry = MAX_RETRY_COUNT;
     }
     retry -= 1;
     if (retry > 0) {
+      processingQueue = false;
       processLootEventQueue(retry);
+    }
+  } finally {
+    processingQueue = false;
+    if (pendingQueue?.length) {
+      LOOT_EVENTS_QUEUE = LOOT_EVENTS_QUEUE.concat(pendingQueue);
+      pendingQueue = [];
     }
   }
 }
 
-let LOOT_QUEUE_INTERVAL = undefined;
-
 // Process a single transaction
 const saveLootEvent = async function (nftId, itemId, amount = 1) {          // Default amount to 1 if undefined
-  LOOT_EVENTS_QUEUE.push({ nftId: nftId, item: String(itemId), amount })
+  if (processingQueue) {
+    pendingQueue.push({ nftId: nftId, item: String(itemId), amount })
+  } else {
+    LOOT_EVENTS_QUEUE.push({ nftId: nftId, item: String(itemId), amount })
+  }
 
   if (LOOT_QUEUE_INTERVAL === undefined) {
-    LOOT_QUEUE_INTERVAL = setInterval(processLootEventQueue, 1000 * 1);    // Set LootEventQueue to process every 30 seconds
+    LOOT_QUEUE_INTERVAL = setInterval(processLootEventQueue, 1000);    // Set LootEventQueue to process every second
   }
 
 }
@@ -250,10 +264,14 @@ const saveMultiLootEvent = function (transactions) {
     return { nftId, item: String(itemId), amount: quantity };
   });
 
-  LOOT_EVENTS_QUEUE.push(...newEvents);
+  if (processingQueue) {
+    pendingQueue.push(...newEvents);
+  } else {
+    LOOT_EVENTS_QUEUE.push(...newEvents);
+  }
 
   if (LOOT_QUEUE_INTERVAL === undefined) {
-    LOOT_QUEUE_INTERVAL = setInterval(processLootEventQueue, 1000 * 1);  // Set LootEventQueue to process every 30 seconds
+    LOOT_QUEUE_INTERVAL = setInterval(processLootEventQueue, 1000);  // Set LootEventQueue to process every second
   }
 }
 
@@ -439,8 +457,32 @@ const getShopInventory = async function (shopId) {
 }
 
 const getResourceBalance = async function (nftId, itemId) {
+  // Check if there are any pending transactions for the given nftId and itemId
+  if (!LOOT_EVENTS_QUEUE?.length && !pendingQueue?.length) {
+    return await getItemCount(nftId, itemId);
+  }
+
+  const hasPendingTransactions = LOOT_EVENTS_QUEUE.some(event => event.nftId === nftId && event.item === String(itemId)) ||
+    pendingQueue.some(event => event.nftId === nftId && event.item === String(itemId));
+
+  // If there are pending transactions, wait for them to be processed
+  if (hasPendingTransactions) {
+    console.log('[LOOT_EVENTS_QUEUE] Waiting for pending transactions to process...');
+    await new Promise(resolve => {
+      const interval = setInterval(() => {
+        const stillPending = LOOT_EVENTS_QUEUE.some(event => event.nftId === nftId && event.item === String(itemId)) ||
+          pendingQueue.some(event => event.nftId === nftId && event.item === String(itemId));
+        if (!stillPending) {
+          clearInterval(interval);
+          resolve();
+        }
+      }, 250); // Check every 250ms
+    });
+  }
+
   return await getItemCount(nftId, itemId);
 }
+
 
 // Process a Group of Transactions or a Single Transaction
 const updateResourceBalance = async function (nftId_or_transactionData, itemId = Types.Entities.GOLD, quantity = 1) {
@@ -462,13 +504,15 @@ const transferResourceFromTo = async function (from, to, amount = 1, resource = 
 
   const fromBalance = await getResourceBalance(from, resource); // CHECK BALANCE OF ACCOUNT SENDING 
   if (fromBalance >= amount) {
+
     const transactionData = [
       { nftId: from, itemId: resource, quantity: -amount },     // ACCOUNT SENDING
       { nftId: to, itemId: resource, quantity: amount },        // ACCOUNT RECEIVING
     ];
     saveMultiLootEvent(transactionData);
     await processLootEventQueue();
-    return true; // TRANSFER SUCCESSFUL
+    return true; // TRANSFER SUCCESSFUL'
+
   } else {
     console.log(`[TRANSFER FAIL] ${from} ${resource} balance [${fromBalance}] is less than transfer requested [${amount}] to ${to}`);
     return false; // TRANSFER FAIL
