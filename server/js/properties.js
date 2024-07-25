@@ -1188,7 +1188,6 @@ let Properties = {
         },
         messages: ['I will beepin destroy you!'],
         armorMod: 2.2,
-        xp: 3000,
         respawnDelay:  60000
     },
 
@@ -2332,7 +2331,7 @@ let Properties = {
         inventoryDescription: "Mysterious Lamp",
         respawnDelay: 1500000,
         onConsume: function(player) {
-            player.releaseNpc(Types.Entities.M88NGENIE, 10000);
+            player.releaseNpc(Types.Entities.M88NGENIE, 15000);
         }
     },
     m88nprizes: {

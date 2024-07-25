@@ -7613,6 +7613,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                     }
                                 });
                                 entity.die();
+                                if (entity instanceof Npc) {
+                                    $('#close-shop').click();
+                                }
                             } else if(entity instanceof Chest) {
                                 entity.open();
                             } else if (entity instanceof Fieldeffect) {

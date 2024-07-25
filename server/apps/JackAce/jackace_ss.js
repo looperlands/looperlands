@@ -1,6 +1,6 @@
 const discord = require("../../js/discord");
 const dao = require('../../js/dao');
-const ens = require('../../js/ens');
+const ens = require('../../js/ens');;
 
 const DEBUG = true;
 const BETA = true;
@@ -369,12 +369,14 @@ class JackAce {
             }
         }
         this.shuffleDeck(deck);
-
+        
+        /*
         if (DEBUG) {
             const customDeck = ['AC', '5C', 'AS', 'AH', '8C', 'AD', '8S', 'AD', 'KC', 'AC', "AS"];
             deck = customDeck.concat(deck);
         }
-
+        */
+        
         return deck;
     }
 
