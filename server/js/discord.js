@@ -3,7 +3,7 @@ const NodeCache = require("node-cache");
 const cache = new NodeCache();
 
 const GAMESERVER_NAME = process.env.GAMESERVER_NAME.toUpperCase();
-const MESSAGE_PREFIX = `\`${GAMESERVER_NAME}\` `;
+const MESSAGE_PREFIX = ''; //`\`${GAMESERVER_NAME}\` `;  // Exclude gameserver name while there's only one server
 const MAX_MESSAGE_LENGTH = 2000; // DISCORD LIMIT
 const MAX_SPLIT_MESSAGES = 2;
 

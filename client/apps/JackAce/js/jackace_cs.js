@@ -1270,6 +1270,16 @@ async function updateButtonStates(playerState) {
     const currentHand = playerHands[playerState.currentHandIndex];
     const canSplit = currentHand.canSplit;
 
+    // Ensure the player can afford the current bet or disable the Deal button
+    if (playerMoney < BET_AMOUNTS[1]) {
+        $('#deal').addClass('inactive');
+    } else {
+        $('#deal').removeClass('inactive');
+        while (playerMoney < BET_AMOUNTS[playerBet]) {
+            await betAdjustClick('decrease');
+        }
+    }
+
     const doubleButtonPosition = await getButtonBackgroundPosition(canDouble ? 'double' : 'doubleInactive');
     const splitButtonPosition = await getButtonBackgroundPosition(canSplit ? 'split' : 'splitInactive');
 
