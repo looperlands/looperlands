@@ -1270,21 +1270,34 @@ async function updateButtonStates(playerState) {
     const currentHand = playerHands[playerState.currentHandIndex];
     const canSplit = currentHand.canSplit;
 
-    // Ensure the player can afford the current bet or disable the Deal button
-    if (playerMoney < BET_AMOUNTS[1]) {
-        $('#deal').addClass('inactive');
-    } else {
-        $('#deal').removeClass('inactive');
-        while (playerMoney < BET_AMOUNTS[playerBet]) {
-            await betAdjustClick('decrease');
-        }
-    }
-
     const doubleButtonPosition = await getButtonBackgroundPosition(canDouble ? 'double' : 'doubleInactive');
     const splitButtonPosition = await getButtonBackgroundPosition(canSplit ? 'split' : 'splitInactive');
 
     $('#double').css('background-position', doubleButtonPosition).toggleClass('inactive', !canDouble);
     $('#split').css('background-position', splitButtonPosition).toggleClass('inactive', !canSplit);
+
+    // Check if player can afford any bet amount
+    let canAffordBet = false;
+    for (let i = 1; i <= Object.keys(BET_AMOUNTS).length; i++) {
+        if (playerState.playerMoney >= BET_AMOUNTS[i]) {
+            canAffordBet = true;
+            break;
+        }
+    }
+    if (!canAffordBet) { playerState.playerBet = 1; }
+
+    // Adjust the bet amount if necessary
+    if (playerState.playerMoney < BET_AMOUNTS[playerState.playerBet]) {
+        while (playerState.playerBet > 1 && playerState.playerMoney < BET_AMOUNTS[playerState.playerBet]) {
+            playerState.playerBet--;
+        }
+    }
+
+    // Disable or enable the deal button based on the player's ability to afford a bet
+    $('#deal').toggleClass('inactive', !canAffordBet);
+
+    // Update bet amount background position
+    $('#bet_amount').css('background-position', await getButtonBackgroundPosition(`bet${playerState.playerBet}`));
 }
 
 async function forceHoverStateCheck() {
