@@ -2445,7 +2445,7 @@ let Properties = {
         },
         inventoryDescription: "Fast Shoes",
         onConsume: function(player){
-            player.playerClassModifiers.applyTemporaryModifierWithTimeout('moveSpeed', 2, 20000);
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('moveSpeed', 2, 30000);
         }
     },
     m88nslowshoes: {
@@ -2469,7 +2469,7 @@ let Properties = {
         },
         inventoryDescription: "Wizard's Hat",
         onConsume: function(player){
-            player.playerClassModifiers.applyTemporaryModifierWithTimeout('stealth', 2, 20000);
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('stealth', 2, 30000);
         }
     },
     m88nbrassknuckles: {
@@ -2481,7 +2481,7 @@ let Properties = {
         },
         inventoryDescription: "Brass Knuckles",
         onConsume: function(player){
-            player.playerClassModifiers.applyTemporaryModifierWithTimeout('meleeDamageDealt', 5, 20000);
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('meleeDamageDealt', 5, 30000);
         }
     },
     m88nkevlararmor: {
@@ -2493,7 +2493,7 @@ let Properties = {
         },
         inventoryDescription: "Kevlar Armor",
         onConsume: function(player){
-            player.playerClassModifiers.applyTemporaryModifierWithTimeout('meleeDamageTaken', 0.5, 20000);
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('meleeDamageTaken', 0.5, 30000);
         }
     },
     m88ngrenade: {
@@ -2505,19 +2505,7 @@ let Properties = {
         },
         inventoryDescription: "Grenade",
         onConsume: function(player){
-            player.playerClassModifiers.applyTemporaryModifierWithTimeout('rangedDamageDealt', 5, 20000);
-        }
-    },
-    m88nholyhandgrenade: {
-        collectable: true,
-        consumable: true,
-        cooldown: {
-            group: "rangedDamageDealt",
-            duration: 180000
-        },
-        inventoryDescription: "Holy Hand Grenade",
-        onConsume: function(player){
-            player.playerClassModifiers.applyTemporaryModifierWithTimeout('rangedDamageDealt', 15, 60000);
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('rangedDamageDealt', 5, 30000);
         }
     },
     m88ngem: {
@@ -2542,17 +2530,30 @@ let Properties = {
         inventoryDescription: "Golden Poo",
         respawnDelay: 8800000
     },
+    m88nholyhandgrenade: {
+        collectable: true,
+        consumable: true,
+        respawnDelay: 8800000,
+        cooldown: {
+            group: "rangedDamageDealt",
+            duration: 180000
+        },
+        inventoryDescription: "Holy Hand Grenade",
+        onConsume: function(player){
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('rangedDamageDealt', 15, 60000);
+        }
+    },
     m88ngoldenchalis: {
         collectable: true,
         consumable: true,
         respawnDelay: 8800000,
         cooldown: {
-            group: "immunity",
+            group: "meleeDamageDealt",
             duration: 180000
         },
         inventoryDescription: "Golden Chalis",
         onConsume: function(player){
-            player.startInvincibility();
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('meleeDamageDealt', 15, 60000);
         }
     },
     m88ndrsgme: {
