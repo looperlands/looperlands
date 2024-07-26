@@ -439,12 +439,12 @@ define(['character'], function (Character) {
         "wenmoon": [
             "Yo! I'm wenmoon, m88nwalker sent me down here to be your lunar envoy.",
             "Where Worlds Collide, Secrets Reside: Welcome to the Nexus!",
-            //"First stop: Paradise Point!",
-            'First stop: Dreamland! Own a piece from the <a target="_blank" href="https://loopexchange.art/collection/onesie-party">Its a Onesie Party! collection</a> for access to the VIP Lounge!',
+            "First stop: Paradise Point!",
+            //'First stop: Dreamland! Own a piece from the <a target="_blank" href="https://loopexchange.art/collection/onesie-party">Its a Onesie Party! collection</a> for access to the VIP Lounge!',
             'On X? <a target="_blank" href="https://twitter.com/moonwalker_nfts">Give him a follow</a> to stay updated.',
             'How about Discord? <a target="_blank" href="https://discord.gg/bjjNewZegM">Checkout PLANET M88NWALKER</a> for lots more!',
-            //"Keep your eyes open and have fun!"
-            "Have fun!"
+            "Keep your eyes open and have fun!"
+            //"Have fun!"
         ],
 
         "kingfroggy": [
@@ -464,7 +464,7 @@ define(['character'], function (Character) {
 
         "nexan5": [
             "Hey friend! Are you looking for a quick snack?",
-            "What can I get ya?"
+            "I'm waiting for my assistant to bring more supplies, check back again soon!"
         ],
 
         "nexan10": [
@@ -475,7 +475,7 @@ define(['character'], function (Character) {
         "nexan11": [
             "Greetings, power to the players! I'm a fellow gamer and collector.",
             'Join us in Discord! <a target="_blank" href="https://discord.gg/bjjNewZegM">Checkout PLANET M88NWALKER</a> for insider details.',
-            "Have fun!"
+            "Keep your eyes open for hidden stuff and have fun!"
         ],
 
         "nexan12": [
@@ -555,12 +555,15 @@ define(['character'], function (Character) {
 
         "nexan33": [
             "Hey, what's up buddy?",
-            "Nice day out huh?"
+            "Nice day out huh?",
+            "Did you know that completing certain quests in The Nexus will unlock secret doors?"
         ],
 
         "nexan34": [
             "Hey there!",
-            "What's shakin? I have a new quest on the way for you..."
+            "What's shakin?",
+            "That octopus can be hard to take down unless you have a group.",
+            "He does give a pretty massive xp reward once you defeat him though..."
         ],
 
         "m88nbushguy": [
@@ -659,7 +662,8 @@ define(['character'], function (Character) {
 
         "nexan41": [
             //"Hey there!",
-            "So many beautiful flowers around here!"
+            "So many beautiful flowers around here!",
+            "Completing quests in The Nexus can yeild some big xp rewards..."
         ],
 
         "nexan42": [
@@ -669,7 +673,8 @@ define(['character'], function (Character) {
 
         "nexan43": [
             //"Hey there!",
-            "Have you fished in the ocean yet?"
+            "Have you fished in the ocean yet?",
+            "There is a fisherman down by the beach who can rent you a pole if you don't have one..."
         ],
 
         "nexan44": [
@@ -698,7 +703,8 @@ define(['character'], function (Character) {
 
         "nexan48": [
             //"Hey there!",
-            "Mmmmmm, m88nshine!"
+            "Mmmmmm, m88nshine!",
+            "Have you been to the Champagne Lounge on the yacht yet?"
         ],
 
         "m88nmermanking": [
