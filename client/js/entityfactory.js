@@ -1069,6 +1069,7 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.M88NDREAMCLOUD] = function(id) { return new Items.m88ndreamcloud(id); };
     EntityFactory.builders[Types.Entities.M88NSUNSHINE] = function(id) { return new Items.m88nsunshine(id); };
     EntityFactory.builders[Types.Entities.M88NSKELETONKEY] = function(id) { return new Items.m88nskeletonkey(id); };
+    EntityFactory.builders[Types.Entities.M88NHOLYHANDGRENADE] = function(id) { return new Items.m88nholyhandgrenade(id); };
     //MRMlabs Items
     EntityFactory.builders[Types.Entities.FIRSTAIDKIT] = function(id) { return new Items.firstaidkit(id); };
     EntityFactory.builders[Types.Entities.BANDAID] = function(id) { return new Items.bandaid(id); };
