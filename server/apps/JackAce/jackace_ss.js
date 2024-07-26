@@ -190,7 +190,13 @@ class JackAce {
                 // Check for insurance condition
                 if (dealerCard2.charAt(0) === "A" && playerState.playerHands[playerState.currentHandIndex].total !== 21) {
                     playerState.eligibleForInsurance = true;
-                    playerState.gameWindow = 'insurance';
+                    const insuranceBet = Math.round(playerState.playerBet / 2);
+                    if (playerState.playerMoney >= insuranceBet) {
+                        playerState.gameWindow = 'insurance';
+                    } else {
+                        // Player cannot afford insurance, process without insurance.
+                        await this.insurance(playerState, false);
+                    }
                 } else {
                     if (playerState.playerHands[playerState.currentHandIndex].canSplit || playerState.canDouble) {
                         playerState.gameWindow = 'splitDouble';

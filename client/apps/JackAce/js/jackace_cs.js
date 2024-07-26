@@ -1285,6 +1285,29 @@ async function updateButtonStates(playerState) {
 
     $('#double').css('background-position', doubleButtonPosition).toggleClass('inactive', !canDouble);
     $('#split').css('background-position', splitButtonPosition).toggleClass('inactive', !canSplit);
+
+    // Check if player can afford any bet amount
+    let canAffordBet = false;
+    for (let i = 1; i <= Object.keys(BET_AMOUNTS).length; i++) {
+        if (playerState.playerMoney >= BET_AMOUNTS[i]) {
+            canAffordBet = true;
+            break;
+        }
+    }
+    if (!canAffordBet) { playerBet = 1; }
+
+    // Adjust the bet amount if necessary
+    if (playerState.playerMoney < BET_AMOUNTS[playerBet]) {
+        while (playerBet > 1 && playerState.playerMoney < BET_AMOUNTS[playerBet]) {
+            playerBet--;
+        }
+    }
+
+    // Disable or enable the deal button based on the player's ability to afford a bet
+    $('#deal').toggleClass('inactive', !canAffordBet);
+
+    // Update bet amount background position
+    $('#bet_amount').css('background-position', await getButtonBackgroundPosition(`bet${playerBet}`));
 }
 
 async function forceHoverStateCheck() {
