@@ -2,7 +2,7 @@ const discord = require("../../js/discord");
 const dao = require('../../js/dao');
 const ens = require('../../js/ens');
 
-const DEBUG = true;
+const DEBUG = false;
 const BETA = true;
 
 class JackAce {
@@ -46,11 +46,12 @@ class JackAce {
         const playerMoney = await dao.getResourceBalance(playerState.player, playerState.currency);
         playerState.playerMoney = playerMoney;
 
-        if (playerState.lastStatusCheck < Date.now() - 900000) {
+        if (playerState.lastStatusCheck < Date.now() - (10 * 60 * 1000)) { //check every 10 minutes
             await this.checkStatus(playerState);
             if (!playerState.bitsxbit) {
                 return res.status(400).json({ message: `[JackAce Early Access Denied] Early Access Limited to bits x bit holders: ${playerState.player}` });
             }
+            discord.sendMessage(`🃏 **${playerState.playerName}** is at the cornHOLE playing JackAce.`);
         }
 
         this.log(`[HANDLE ACTION: ${action}] Dao Balance: ${playerState.playerMoney}`, player);
@@ -369,14 +370,14 @@ class JackAce {
             }
         }
         this.shuffleDeck(deck);
-        
+
         /*
         if (DEBUG) {
             const customDeck = ['AC', '5C', 'AS', 'AH', '8C', 'AD', '8S', 'AD', 'KC', 'AC', "AS"];
             deck = customDeck.concat(deck);
         }
         */
-        
+
         return deck;
     }
 
@@ -422,6 +423,12 @@ class JackAce {
             inProgress: false,
             lastStatusCheck: new Date()
         };
+    }
+
+    async checkStatus(playerState) {
+        const bitsXbitHODLr = await this.platformClient.checkOwnershipOfCollection("bits x bit", playerState.walletId);
+        playerState.bitsxbit = bitsXbitHODLr;
+        playerState.lastStatusCheck = new Date();
     }
 
     async checkStatus(playerState) {
@@ -756,8 +763,6 @@ class JackAce {
             this.playerGameStates[player].sessionId = sessionId;
             this.playerGameStates[player].walletId = walletId;
         }
-
-        discord.sendMessage(`🃏 **${this.playerGameStates[player].playerName}** is at the cornHOLE playing JackAce.`);
 
         // Validate action based on player's current gamestate
         if (action === 'DEAL' && this.playerGameStates[player].inProgress) {
