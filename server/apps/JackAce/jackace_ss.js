@@ -59,8 +59,6 @@ class JackAce {
 
         //this.log(`[HANDLE ACTION] Player State: ${this.logPlayerState(playerState)}`, player);
 
-        //this.log(`[HANDLE ACTION] Player State: ${this.logPlayerState(playerState)}`, player);
-
         try {
             switch (action) {
                 case 'DEAL':
