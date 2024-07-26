@@ -1284,12 +1284,12 @@ async function updateButtonStates(playerState) {
             break;
         }
     }
-    if (!canAffordBet) { playerState.playerBet = 1; }
+    if (!canAffordBet) { playerBet = 1; }
 
     // Adjust the bet amount if necessary
-    if (playerState.playerMoney < BET_AMOUNTS[playerState.playerBet]) {
-        while (playerState.playerBet > 1 && playerState.playerMoney < BET_AMOUNTS[playerState.playerBet]) {
-            playerState.playerBet--;
+    if (playerState.playerMoney < BET_AMOUNTS[playerBet]) {
+        while (playerBet > 1 && playerState.playerMoney < BET_AMOUNTS[playerBet]) {
+            playerBet--;
         }
     }
 
@@ -1297,7 +1297,7 @@ async function updateButtonStates(playerState) {
     $('#deal').toggleClass('inactive', !canAffordBet);
 
     // Update bet amount background position
-    $('#bet_amount').css('background-position', await getButtonBackgroundPosition(`bet${playerState.playerBet}`));
+    $('#bet_amount').css('background-position', await getButtonBackgroundPosition(`bet${playerBet}`));
 }
 
 async function forceHoverStateCheck() {
