@@ -194,7 +194,8 @@ class JackAce {
                     if (playerState.playerMoney >= insuranceBet) {
                         playerState.gameWindow = 'insurance';
                     } else {
-                        handleInsurance(false);
+                        // Player cannot afford insurance, process without insurance.
+                        await this.insurance(playerState, false);
                     }
                 } else {
                     if (playerState.playerHands[playerState.currentHandIndex].canSplit || playerState.canDouble) {
