@@ -2,7 +2,7 @@ const discord = require("../../js/discord");
 const dao = require('../../js/dao');
 const ens = require('../../js/ens');
 
-const DEBUG = true;
+const DEBUG = false;
 const BETA = true;
 
 class JackAce {
