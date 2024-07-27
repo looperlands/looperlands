@@ -444,16 +444,7 @@ const newBot = async function (mapId, botNftId, xp, name, walletId, ownerEntityI
 }
 
 const getShopInventory = async function (shopId) {
-  const options = { headers: { 'X-Api-Key': API_KEY, 'Content-Type': 'application/json' } }
-  const url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/shopInventory.php?shopName=${shopId}`;
-  const shopResponse = await axios.get(url, options);
-  try {
-    printResponseJSON(url, shopResponse);
-    return shopResponse.data;
-  } catch (error) {
-    console.log("getShopInventory", error)
-    return null;
-  }
+  return await platformClient.getShopInventory(shopId);
 }
 
 const getResourceBalance = async function (nftId, itemId) {
