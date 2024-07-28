@@ -737,6 +737,23 @@ describe('LooperLandsPlatformClient', () => {
       expect(client.client.post).toHaveBeenCalledWith('/api/game/asset/trait', { nftId, trait: playerClass });
       expect(client.handleError).toHaveBeenCalledWith(error);
     });
+  });
+  
+  describe('get shop inventory', () => {
+
+    it('should get the shop inventory', async() => {
+      const shopId = 'nft123';
+
+      client.client.get.mockResolvedValue({ data: "test"});
+
+      jest.spyOn(client, 'handleError').mockImplementation(() => {});
+
+      await client.getShopInventory(shopId);
+
+      expect(client.client.get).toHaveBeenCalledWith('/api/game/shop/inventory/' + shopId);
+
+    });
+
   });  
 
   
