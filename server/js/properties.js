@@ -1237,6 +1237,7 @@ let Properties = {
             burger: 50,
             GOLD: 50
         },
+        xp: 69
     },
 
     balloondogy: {
@@ -1245,6 +1246,7 @@ let Properties = {
             burger: 50,
             GOLD: 50
         },
+        xp: 99
     },
 
     balloondogg: {
@@ -1255,6 +1257,7 @@ let Properties = {
             GOLD: 50,
             GOLD2: 10
         },
+        xp: 147
     },
 
     balloondoga: {
@@ -1266,6 +1269,7 @@ let Properties = {
             GOLD2: 20,
             GOLD3: 10,
         },
+        xp: 222
     },
 
     balloondogv: {
@@ -1280,6 +1284,7 @@ let Properties = {
             GOLD2: 25,
             GOLD3: 30,
         },
+        xp: 333
     },
 
     balloondogp: {
@@ -1303,6 +1308,7 @@ let Properties = {
             GOLD2: 20,
             GOLD3: 55
         },
+        xp: 888
     },
 
     balloongiraffeo: {
@@ -1315,6 +1321,7 @@ let Properties = {
             burger: 5,
             GOLD3: 75
         },
+        xp: 2222
     },
 
     m88nbigchungus: {
@@ -1360,7 +1367,7 @@ let Properties = {
         hpMod: 5,
         weaponMod: 0.8,
         respawnDelay: 420000,
-        xp: 69420
+        xp: 88000
     },
 
     sharkboss: {
@@ -1410,20 +1417,21 @@ let Properties = {
         hpMod: 5,
         weaponMod: 1,
         respawnDelay: 30000,
-        xp: 88000
+        xp: 99000
     },
 
     m88nhermie: {
         level: 1,
         drops: {
             flask: 30,
-            m88nmap: 2,
+            m88nmap: 5,
             GOLD: 30,
             GOLD2: 20,
             burger: 10,
             firepotion: 5
         },
         respawnDelay: 10000,
+        xp: 7
     },
 
     m88nmrcrab: {
@@ -1434,7 +1442,8 @@ let Properties = {
             GOLD2: 25,
             GOLD3: 10,
             firepotion: 5
-        }
+        },
+        xp: 11
     },
 
     roachclip: {
@@ -1445,7 +1454,8 @@ let Properties = {
             GOLD2: 20,
             GOLD3: 5,
             firepotion: 5
-        }
+        },
+        xp: 111
     },
 
     m88nboner: {
@@ -1470,6 +1480,7 @@ let Properties = {
             burger: 60,
             GOLD: 20
         },
+        xp: 22
     },
 
     m88nnightmaremonstery: {
@@ -1481,6 +1492,7 @@ let Properties = {
             burger: 40,
             GOLD: 25
         },
+        xp: 44
     },
 
     m88nnightmaremonsterg: {
@@ -1494,6 +1506,7 @@ let Properties = {
             GOLD: 20,
             GOLD2: 10
         },
+        xp: 69
     },
 
     m88nnightmaremonstera: {
@@ -1505,6 +1518,7 @@ let Properties = {
             GOLD: 30,
             GOLD2: 20
         },
+        xp: 111
     },
 
     m88nnightmaremonsterv: {
@@ -1516,6 +1530,7 @@ let Properties = {
             GOLD2: 20,
             GOLD3: 10
         },
+        xp: 147
     },
 
 
@@ -1527,6 +1542,7 @@ let Properties = {
             GOLD2: 20,
             GOLD3: 50
         },
+        xp: 174
     },
 
     m88nmine: {
@@ -2551,7 +2567,7 @@ let Properties = {
         },
         inventoryDescription: "Holy Hand Grenade",
         onConsume: function(player){
-            player.playerClassModifiers.applyTemporaryModifierWithTimeout('rangedDamageDealt', 15, 60000);
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('rangedDamageDealt', 20, 60000);
         }
     },
     m88ngoldenchalis: {
@@ -2564,7 +2580,7 @@ let Properties = {
         },
         inventoryDescription: "Golden Chalis",
         onConsume: function(player){
-            player.playerClassModifiers.applyTemporaryModifierWithTimeout('meleeDamageDealt', 15, 60000);
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('meleeDamageDealt', 20, 60000);
         }
     },
     m88ndrsgme: {
