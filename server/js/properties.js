@@ -231,6 +231,17 @@ let Properties = {
 			GOLD4: 1
         },
     },
+    SPACECRAB: {
+        level: 15,
+        drops: {
+            flask: 30,
+			burger: 5,
+			GOLD: 15,
+            GOLD2: 35,
+            GOLD3: 8,
+			GOLD4: 2
+        },
+    },
 
 
 

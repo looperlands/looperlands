@@ -347,6 +347,7 @@ const AltNames = {
 
     //BITCORN MOBS
     SLUDGERAT: "sludgeRAT",
+    SPACECRAB: "spaceCRAB",
 
     devon: "Chase", 
 };

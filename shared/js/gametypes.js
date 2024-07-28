@@ -748,7 +748,8 @@ Types = {
         VOYAGERROBIT: 34000126,
         SARAH: 34000127,
         MOONBASES: 34000128, 
-        SLUDGERAT: 34000129, // @lastidCharacter@
+        SLUDGERAT: 34000129,
+        SPACECRAB: 34000130, // @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -6191,6 +6192,7 @@ var kinds = {
 
     //BITCORN MOBS
     SLUDGERAT: [Types.Entities.SLUDGERAT, "mob"],
+    SPACECRAB: [Types.Entities.SPACECRAB, "mob"],
 
     sword1: [Types.Entities.SWORD1, "weapon"],
     sword2: [Types.Entities.SWORD2, "weapon"],
