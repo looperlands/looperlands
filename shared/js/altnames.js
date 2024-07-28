@@ -345,6 +345,9 @@ const AltNames = {
     cornCanFish: "an empty can of Mother Shucker",
     cornWinkyFish: "The Legendary Winky",
 
+    //BITCORN MOBS
+    SLUDGERAT: "sludgeRAT",
+
     devon: "Chase", 
 };
 

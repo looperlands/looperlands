@@ -817,6 +817,10 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.INFERNOID]=function(id){return new Mobs.INFERNOID(id);};
     EntityFactory.builders[Types.Entities.ZAROTH]=function(id){return new Mobs.ZAROTH(id);};
     EntityFactory.builders[Types.Entities.INFECTION]=function(id){return new Mobs.INFECTION(id);};
+
+    //BITCORN MOBS
+    EntityFactory.builders[Types.Entities.SLUDGERAT] = function(id) {return new Mobs.SLUDGERAT(id);};
+
     // @nextMobLine@
     //===== items ======
  
@@ -1500,6 +1504,7 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.SIREN]=function(id){return new NPCs.SIREN(id);};
     //BITCORN NPCS
     EntityFactory.builders[Types.Entities.BITNPC_BITCORN]=function(id){return new NPCs.BITNPC_BITCORN(id);};
+
     EntityFactory.builders[Types.Entities.VOYAGER]=function(id){return new NPCs.VOYAGER(id);};
     EntityFactory.builders[Types.Entities.VOYAGERMONKEY]=function(id){return new NPCs.VOYAGERMONKEY(id);};
     EntityFactory.builders[Types.Entities.CHEN]=function(id){return new NPCs.CHEN(id);};
