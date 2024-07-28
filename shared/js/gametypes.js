@@ -738,8 +738,8 @@ Types = {
         SIREN: 34000116, 
         CLOWNCAPONEBIT: 34000117, 
         BITNPC_BITCORN: 34000118,
-        COBCATBLACK: 34000119,// @lastidCharacter@
-        COBMINER: 34000120,// @lastidCharacter@
+        COBCATBLACK: 34000119,
+        COBMINER: 34000120,
         ZAROTH:34000121,
         INFECTION: 34000122,
         VOYAGER: 34000123,
@@ -747,7 +747,8 @@ Types = {
         CHEN: 34000125,
         VOYAGERROBIT: 34000126,
         SARAH: 34000127,
-        MOONBASES: 34000128, // @lastidCharacter@
+        MOONBASES: 34000128, 
+        SLUDGERAT: 34000129, // @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -6187,6 +6188,9 @@ var kinds = {
     m88nmerman3: [Types.Entities.M88NMERMAN3, "mob"],
     m88nmerman4: [Types.Entities.M88NMERMAN4, "mob"],
     m88nmerman5: [Types.Entities.M88NMERMAN5, "mob"],
+
+    //BITCORN MOBS
+    SLUDGERAT: [Types.Entities.SLUDGERAT, "mob"],
 
     sword1: [Types.Entities.SWORD1, "weapon"],
     sword2: [Types.Entities.SWORD2, "weapon"],

@@ -220,6 +220,17 @@ let Properties = {
             WILDBLADE: 40,
         },
     },
+    SLUDGERAT: {
+        level: 10,
+        drops: {
+            flask: 34,
+			burger: 5,
+			GOLD: 40,
+            GOLD2: 15,
+            GOLD3: 5,
+			GOLD4: 1
+        },
+    },
 
 
 

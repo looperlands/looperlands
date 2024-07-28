@@ -900,8 +900,13 @@ define(['text!../sprites/agent.json',
         'text!../sprites/FEDORABIT.json',
         'text!../sprites/APEBRAINOG.json',
         'text!../sprites/SIREN.json',
+
         // BITCORN NPCS
         'text!../sprites/BITNPC_BITCORN.json',
+
+        // BITCORN MOBS
+        'text!../sprites/SLUDGERAT.json',
+
         'text!../sprites/ZAROTH.json',
         'text!../sprites/INFECTION.json',
         'text!../sprites/VOYAGER.json',
