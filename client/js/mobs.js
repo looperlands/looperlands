@@ -3996,6 +3996,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
         SLUDGERAT: Mob.extend({ init: function(id) {this._super(id, Types.Entities.SLUDGERAT); this.moveSpeed = 100 + Math.random()*300; this.atkSpeed = 50 + Math.random()*100; this.idleSpeed = 700; this.shadowOffsetY = -2; this.isAggressive = true; this.aggroRange = 1 + Math.random()*4; this.deathAnimated = true;}}),
+        SPACECRAB: Mob.extend({ init: function(id) {this._super(id, Types.Entities.SPACECRAB); this.moveSpeed = 150 + Math.random()*100; this.atkSpeed = 20 + Math.random()*40; this.idleSpeed = 500; this.isAggressive = true; this.aggroRange = 1 + Math.random()*3; this.deathAnimated = true;}}),
         // @nextMobLine@
     };
     return Mobs;
