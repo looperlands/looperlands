@@ -636,8 +636,10 @@ define(['character'], function (Character) {
         ],
 
         "nexan37": [
-            "Ya dig the drums? So does my cat.",
-            'Check it... <a target="_blank" href="https://www.youtube.com/watch?v=NUYvbT6vTPs">Cat Digs Polka Drums</a> ...LOL'
+            //"Ya dig the drums? So does my cat.",
+            //'Check it... <a target="_blank" href="https://www.youtube.com/watch?v=NUYvbT6vTPs">Cat Digs Polka Drums</a> ...LOL',
+            "Did you hear about DreamLand?? Something weird happened...",
+            "It's more of a NightmareLand now...I think they need your help in there!"
         ],
 
         "nexan38": [
