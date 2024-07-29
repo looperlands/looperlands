@@ -2459,7 +2459,7 @@ let Properties = {
         },
         inventoryDescription: "Glass of Champagne",
         onConsume: function(player){
-            player.regenHealthBy(300);
+            player.setDropOverride(Entities.GOLD, 20000);
         }
     },
     m88nshine: {

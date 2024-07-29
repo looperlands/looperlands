@@ -739,8 +739,12 @@ module.exports = World = cls.Class.extend({
         // If the entity is about to die
         if (entity.hitPoints <= 0) {
             if (entity.type === "mob") {
-                var mob = entity,
+                let mob = entity,
                     item = this.getDroppedItem(mob);
+
+                if (attacker.dropOverride !== undefined) {
+                    item = attacker.dropOverride;
+                }
 
                 let kind = Types.getKindAsString(mob.kind);
                 this.handleRedPacket(mob, kind);
