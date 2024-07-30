@@ -1,4 +1,3 @@
-
 define(['jquery', 'area'], function ($, Area) {
 
     var Mapx = Class.extend({
@@ -290,14 +289,14 @@ define(['jquery', 'area'], function ($, Area) {
             }
 
             // Loop over keys of this.hiddenLayers
-            for(var	i = 0; i < Object.keys(this.hiddenLayers).length; i++) {
+            for (var i = 0; i < Object.keys(this.hiddenLayers).length; i++) {
                 let layerName = Object.keys(this.hiddenLayers)[i]
-                if(this.game.toggledLayers[layerName]) {
+                if (this.game.toggledLayers[layerName]) {
 
                     // if layer has collision
                     let tileIndex = this.GridPositionToTileIndex(x - 1, y);
                     let tileType = this.hiddenLayers[layerName][tileIndex];
-                    if(tileType !== null) {
+                    if (tileType !== null) {
                         return (this.collidingTiles[tileType] === true);
                     }
                 }
@@ -400,25 +399,24 @@ define(['jquery', 'area'], function ($, Area) {
             }
         },
 
-        /**
-         * 
-         */
-        getTileAnimationLength: function (id) {
-            return this.animated[id + 1].l;
-        },
-
-        /**
-         * 
-         */
-        getTileAnimationDelay: function (id) {
-            var animProperties = this.animated[id + 1];
-            if (animProperties.d) {
-                return animProperties.d;
-            } else {
-                return 100;
+        getTileAnimationProps: function(id) {
+            function parseCSV(value) {
+                if (typeof value === 'string') {
+                    return value.split(',').map(Number);
+                }
+                return value;
             }
+    
+            const tileProps = this.animated[id + 1] || {};
+            if(tileProps.direction != 'r'){ console.log(tileProps)};
+            return {
+                length: tileProps.l,
+                speed: parseCSV(tileProps.d) || [100], // Default speed to 100ms if not defined; handles comma-separated values
+                direction: tileProps.direction || 'r', // Default direction to right if not defined
+                slide_amount: parseCSV(tileProps.slide_amount) || [16] // Default slide amount to 16px if not defined; handles comma-separated values
+            };
         },
-
+        
         isDoor: function (x, y) {
             return this.doors[this.GridPositionToTileIndex(x, y)] !== undefined;
         },
@@ -463,9 +461,9 @@ define(['jquery', 'area'], function ($, Area) {
                     callback(x, y);
                 }
             }
-        },        
+        },
 
-        getLakeName: function(x, y) {
+        getLakeName: function (x, y) {
             return this.fishingTiles[this.GridPositionToTileIndex(x, y) - 1];
         }
     });

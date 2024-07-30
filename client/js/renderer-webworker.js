@@ -52,11 +52,26 @@ async function loadFont() {
     hasLoadedFont = true;
 }
 
-function getX(id, w) {
+var getX = function (id, w, slideOffsetX = 0) {
     if (id == 0) {
         return 0;
     }
-    return (id % w == 0) ? w - 1 : (id % w) - 1;
+    let x = (id % w == 0) ? w - 1 : (id % w) - 1;
+    x += slideOffsetX / 16; // Convert slide offset to tiles
+    if (x >= w) x = w - 1; // Boundary check
+    if (x < 0) x = 0; // Boundary check
+    return x;
+};
+
+var getY = function (id, w, h, slideOffsetY = 0) {
+    if (id == 0) {
+        return 0;
+    }
+    let y = Math.floor((id - 1) / w);
+    y += slideOffsetY / 16; // Convert slide offset to tiles
+    if (y >= h) y = h - 1; // Boundary check
+    if (y < 0) y = 0; // Boundary check
+    return y;
 };
 
 // Cache object to store scaled images
@@ -102,17 +117,13 @@ function drawScaledImage(ctx, image, x, y, w, h, dx, dy, scale) {
     }
 }
 
-function drawTile(ctx, tileid, tileset, setW, gridW, cellid, scale) {
+function drawTile(ctx, tileid, tileset, setW, setH, gridW, cellid, scale, slideOffsetX, slideOffsetY) {
     if (tileid !== -1) { // -1 when tile is empty in Tiled. Don't attempt to draw it.
-        drawScaledImage(ctx,
-            tileset,
-            getX(tileid + 1, setW) * tilesize,
-            Math.floor(tileid / setW) * tilesize,
-            tilesize,
-            tilesize,
-            getX(cellid + 1, gridW) * tilesize,
-            Math.floor(cellid / gridW) * tilesize,
-            scale);
+        const tileX = getX(tileid + 1, setW, slideOffsetX) * tilesize;
+        const tileY = getY(tileid + 1, setW, setH, slideOffsetY) * tilesize;
+        const destX = getX(cellid + 1, gridW) * tilesize;
+        const destY = Math.floor(cellid / gridW) * tilesize;
+        drawScaledImage(ctx, tileset, tileX, tileY, tilesize, tilesize, destX, destY, scale);
     }
 }
 
@@ -129,7 +140,9 @@ function render(id, tiles, cameraX, cameraY, scale, clear) {
     const tilesLength = tiles.length;
     for (let i = 0; i < tilesLength; i++) {
         let tile = tiles[i];
-        drawTile(ctx, tile.tileid, tileset, tile.setW, tile.gridW, tile.cellid, scale);
+        if (tile.id !== -1) { // -1 when tile is empty in Tiled. Don't attempt to draw it.
+            drawTile(ctx, tile.tileid, tileset, tile.setW, tile.setH, tile.gridW, tile.cellid, scale, tile.slideOffsetX, tile.slideOffsetY);
+        }
     }
 
     ctx.restore();

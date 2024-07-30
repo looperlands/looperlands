@@ -74,6 +74,24 @@ module.exports = function processMap(json, options) {
                 }
                 map.animated[id].d = property.value;
             }
+            if (property.name === "direction") {
+                if (!map.animated[id]) {
+                    map.animated[id] = {};
+                }
+                map.animated[id].direction = property.value;
+            }
+            if (property.name === "slide_amount") {
+                if (!map.animated[id]) {
+                    map.animated[id] = {};
+                }
+                map.animated[id].slide_amount = property.value;
+            }
+            if (property.name === "ping_pong") {
+                if (!map.animated[id]) {
+                    map.animated[id] = {};
+                }
+                map.animated[id].ping_pong = property.value;
+            }
             if(property.name === "lake") {
                 lakes[id] = property.value;
             }

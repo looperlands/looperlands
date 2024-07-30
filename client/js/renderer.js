@@ -288,17 +288,13 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                           h * this.scale);
         },
 
-        drawTile: function(ctx, tileid, tileset, setW, gridW, cellid) {
-            var s = this.upscaledRendering ? 1 : this.scale;
-            if(tileid !== -1) { // -1 when tile is empty in Tiled. Don't attempt to draw it.
-                this.drawScaledImage(ctx,
-                                     tileset,
-                                     getX(tileid + 1, (setW / s)) * this.tilesize,
-                                     Math.floor(tileid / (setW / s)) * this.tilesize,
-                                     this.tilesize,
-                                     this.tilesize,
-                                     getX(cellid + 1, gridW) * this.tilesize,
-                                     Math.floor(cellid / gridW) * this.tilesize);
+        drawTile: function(ctx, tileid, tileset, setW, setH, gridW, cellid, scale, slideOffsetX, slideOffsetY) {
+            if (tileid !== -1) { // -1 when tile is empty in Tiled. Don't attempt to draw it.
+                const tileX = getX(tileid + 1, (setW / scale), slideOffsetX) * this.tilesize;
+                const tileY =  getY(tileid + 1, (setW / scale), (setH / scale), slideOffsetY) * this.tilesize;
+                const destX = getX(cellid + 1, gridW) * this.tilesize;
+                const destY = Math.floor(cellid / gridW) * this.tilesize;
+                this.drawScaledImage(ctx, tileset, tileX, tileY, this.tilesize, this.tilesize, destX, destY);            
             }
         },
     
@@ -675,6 +671,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
         drawAnimatedTiles: function() {
             let m = this.game.map,
                 tilesetwidth = this.tileset.width / m.tilesize;
+                tilesetheight = this.tileset.height / m.tilesize;
 
             let visbileTiles = [];
             if (this.game.visibleAnimatedTiles !== undefined) {
@@ -682,7 +679,8 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                 let visibileAnimatedTilesLength = visibleAnimatedTiles.length;
                 for (let i = 0; i < visibileAnimatedTilesLength; i++) {
                     let tile = visibleAnimatedTiles[i];
-                    visbileTiles.push({tileid: tile.id, setW: tilesetwidth, gridW: m.width, cellid: tile.index});
+                    let slideOffset = tile ? tile.getCurrentOffset() : { x: 0, y: 0 };
+                    visbileTiles.push({tileid: tile.id, setW: tilesetwidth, setH: tilesetheight, gridW: m.width, cellid: tile.index, slideOffsetX: slideOffset.x, slideOffsetY: slideOffset.y});
                 }
                 return {"type": "render", id: "background", tiles: visbileTiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: false};
             }
@@ -691,6 +689,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
         drawHighAnimatedTiles: function() {
             let m = this.game.map,
                 tilesetwidth = this.tileset.width / m.tilesize;
+                tilesetheight = this.tileset.height / m.tilesize;
 
                 let visbileTiles = [];
                 if (this.game.visibleAnimatedHighTiles !== undefined) {
@@ -698,11 +697,11 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                     let visibileAnimatedTilesLength = visibileAnimatedHighTiles.length;
                     for (let i = 0; i < visibileAnimatedTilesLength; i++) {
                         let tile = visibileAnimatedHighTiles[i];
-                        visbileTiles.push({tileid: tile.id, setW: tilesetwidth, gridW: m.width, cellid: tile.index});
+                        let slideOffset = tile ? tile.getCurrentOffset() : { x: 0, y: 0 };
+                        visbileTiles.push({tileid: tile.id, setW: tilesetwidth, setH: tilesetheight, gridW: m.width, cellid: tile.index,  slideOffsetX: slideOffset.x, slideOffsetY: slideOffset.y});
                     }
                     return {"type": "render", id: "high", tiles: visbileTiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: false};
                 }
-
         },
         
         drawDirtyAnimatedTiles: function() {
@@ -721,7 +720,10 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             }
             var self = this,
                 m = this.game.map,
+                visbileTiles = self.game.visibleAnimatedTiles;
                 tilesetwidth = this.tileset.width / m.tilesize;
+                tilesetheight = this.tileset.height / m.tilesize;
+                var scale = this.upscaledRendering ? 1 : this.scale;
 
             _.forEach(Object.keys(self.game.map.hiddenLayers), function(layerName) {
                 if(self.game.toggledLayers[layerName] === true) {
@@ -731,7 +733,9 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                             return;
                         }
                         if(highTile === m.isHighTile(layer[tileIndex]) && animated === m.isAnimatedTile(layer[tileIndex])) {
-                            self.drawTile(ctx, layer[tileIndex] - 1, self.tileset, tilesetwidth, m.width, tileIndex);
+                            let tile = visbileTiles.find(t => t.id === layer[tileIndex] - 1);
+                            let slideOffset = tile ? tile.getCurrentOffset() : { x: 0, y: 0 };
+                            self.drawTile(ctx, layer[tileIndex] - 1, self.tileset, tilesetwidth, tilesetheight, m.width, tileIndex, scale, slideOffset.x, slideOffset.y);
                         }
                     }, 1);
                 }
@@ -922,11 +926,26 @@ function(Camera, Item, Character, Player, Timer, Mob) {
         }
     });
 
-    var getX = function(id, w) {
-        if(id == 0) {
+    var getX = function(id, w, slideOffsetX = 0) {
+        if (id == 0) {
             return 0;
         }
-        return (id % w == 0) ? w - 1 : (id % w) - 1;
+        let x = (id % w == 0) ? w - 1 : (id % w) - 1;
+        x += slideOffsetX / 16; // Convert slide offset to tiles
+        if (x >= w) x = w - 1; // Boundary check
+        if (x < 0) x = 0; // Boundary check
+        return x;
+    };
+    
+    var getY = function(id, w, h, slideOffsetY = 0) {
+        if (id == 0) {
+            return 0;
+        }
+        let y = Math.floor((id - 1) / w);
+        y += slideOffsetY / 16; // Convert slide offset to tiles
+        if (y >= h) y = h - 1; // Boundary check
+        if (y < 0) y = 0; // Boundary check
+        return y;
     };
     
     return Renderer;

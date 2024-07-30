@@ -6550,7 +6550,15 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.highAnimatedTiles = [];
                 this.forEachTile(function (id, index) {
                     if(m.isAnimatedTile(id)) {
-                        var tile = new AnimatedTile(id, m.getTileAnimationLength(id), m.getTileAnimationDelay(id), index),
+                        var tileProps = m.getTileAnimationProps(id);
+                        var tile = new AnimatedTile(
+                            id, 
+                            tileProps.length,
+                            tileProps.speed, 
+                            index, 
+                            tileProps.direction, 
+                            tileProps.slide_amount
+                        );
                             pos = self.map.tileIndexToGridPosition(tile.index);
 
                         tile.x = pos.x;
