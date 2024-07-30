@@ -743,7 +743,7 @@ module.exports = World = cls.Class.extend({
                     item = this.getDroppedItem(mob);
 
                 if (attacker.dropOverride !== undefined) {
-                    item = attacker.dropOverride;
+                    item = this.addItem(this.createItem(attacker.dropOverride, mob.x, mob.y));
                 }
 
                 let kind = Types.getKindAsString(mob.kind);
