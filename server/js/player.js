@@ -1271,5 +1271,12 @@ module.exports = Player = Character.extend({
 
     sendAnnoucement: function(message, timeToShow) {
         this.send(new Messages.Announcement(message, timeToShow).serialize());
+    },
+
+    setDropOverride: function(item, timeout) {
+        this.dropOverride = item;
+        setTimeout(() => {
+            delete this.dropOverride;
+        }, timeout);
     }
 });
