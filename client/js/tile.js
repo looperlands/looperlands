@@ -1,42 +1,110 @@
+/**
+ * AnimatedTile Class
+ * 
+ * This class extends the Tile class to add advanced animation features for tiles in a tileset.
+ * 
+ * Required Parameter:
+ * - `length`: Number of 16x16 tiles in the image source.
+ *
+ * Optional Parameters:
+ * - `frames`: Number of animation frames (calculated if not provided).
+ * - `speed`: Delay for each frame in milliseconds (array or single value, defaults to 100).
+ * - `direction`: Direction of length and slide from source tile ('u', 'r', 'd', 'l', defaults to 'r').
+ * - `slide_amount`: Amount to slide per animation frame (single value or array, defaults to 16, i.e., 1 tile).
+ * - `hue_change`: Changes tile color over animation.
+ *     - Single value: Total hue rotation over all frames in degrees.
+ *     - Two comma-separated colors: Change from first color to the second color over the animation.
+ * - `loop_style`: Different looping behaviors.
+ *     - `loop`: The animation plays from start to end and then loops back to the beginning.
+ *     - `ping-pong`: The animation plays from start to end and then reverses back to the start.
+ *     - `bounce`: Similar to ping-pong, but the end frames may be repeated before reversing.
+ *     - `once`: The animation plays from start to end and then stops.
+ *     - `reverse-loop`: The animation plays from end to start and then loops back to the end.
+ *     - `triggered`: The animation waits for 'startTrigger' to animate forward to the end, then waits for 'endTrigger' to animate backward to the start.
+ */
 
 define(function () {
 
     var Tile = Class.extend({});
 
     var AnimatedTile = Tile.extend({
-        init: function (id, length, speed, index, direction, slide_amount, ping_pong) {
-            this.startId = id;
+        init: function (id, length, frames, speed, index, direction, slide_amount, hue_change, loop_style) {
             this.id = id;
             this.length = length; // Number of 16x16 tiles that make up the image source
-            this.speed = Array.isArray(speed) ? speed : [speed || 100]; // Speed for each frame
+            this.speed = Array.isArray(speed) ? speed : [speed || 100]; // Speed for each frame (aka delay)
             this.index = index;
             this.lastTime = 0;
-            this.currentFrame = 0;
             this.direction = direction || 'r'; // Default direction is right
-            this.currentSlideX = 0;
-            this.currentSlideY = 0;
             this.maxSlide = length * 16;
             this.slide_amount = Array.isArray(slide_amount) ? slide_amount : [slide_amount || 16]; // Default is one full tile per frame
-            this.ping_pong = ping_pong ? true : false;
+            this.currentSlideX = 0;
+            this.currentSlideY = 0;
+            this.hue_change = hue_change ? this.parseHueChange(hue_change) : null;
+            this.loop_style = loop_style || 'loop'; // Default loop style is 'loop'
+            this.loop_style = loop_style ? loop_style : null;
+            this.frames = frames ? frames : this.calculateFrames();
+            this.currentFrame = 0;
+            this.forward = true; // Used for ping-pong, bounce, and triggered styles
+            this.waitingForTrigger = this.loop_style === 'triggered';
+        },
+
+        calculateFrames: function () {
+            const slideFrames = this.slide_amount.length === 1 ? Math.ceil(this.maxSlide / Math.abs(this.slide_amount[0])) : this.slide_amount.length;
+            return Math.max(this.length, this.speed.length, slideFrames);
         },
 
         tick: function () {
-            if(this.length > 1){
+            if (this.length > 1 && !this.waitingForTrigger) {
+                this.handleLoopStyle();
                 const slideOffset = this.getNextSlideOffset();
-                if (Math.abs(this.currentSlideX + slideOffset.x) >= this.maxSlide || Math.abs(this.currentSlideY + slideOffset.y) >= this.maxSlide) {
-                    this.currentFrame = 0;
-                    this.currentSlideX = 0;
-                    this.currentSlideY = 0;
-                } else {
-                    this.currentFrame++;
-                    this.currentSlideX += slideOffset.x;
-                    this.currentSlideY += slideOffset.y;
+                this.currentSlideX += slideOffset.x;
+                this.currentSlideY += slideOffset.y;
+            }
+        },
+
+        handleLoopStyle: function () {
+            switch (this.loop_style) {
+                case 'ping-pong':
+                case 'bounce':
+                    this.handlePingPongAndBounce();
+                    break;
+                case 'once':
+                    if (this.currentFrame < this.frames - 1) this.currentFrame++;
+                    break;
+                case 'reverse-loop':
+                    this.currentFrame = this.currentFrame <= 0 ? this.frames - 1 : this.currentFrame - 1;
+                    break;
+                case 'triggered':
+                    this.handleTriggered();
+                    break;
+                default: // 'loop'
+                this.currentFrame = this.currentFrame >= this.frames - 1 ? 0 : this.currentFrame + 1;
+                    break;
+            }
+        },
+
+        handlePingPongAndBounce: function () {
+            this.currentFrame += this.forward ? 1 : -1;
+
+            if (this.currentFrame >= this.frames - 1 || this.currentFrame <= 0) {
+                this.forward = !this.forward;
+                if (this.loop_style === 'bounce') {
+                    this.currentFrame += this.forward ? 1 : -1;
                 }
             }
         },
 
+        handleTriggered: function () {
+            if (this.waitingForTrigger) return;
+            this.currentFrame += this.forward ? 1 : -1;
+
+            if ((this.forward && this.currentFrame >= this.frames - 1) || (!this.forward && this.currentFrame <= 0)) {
+                this.waitingForTrigger = true;
+            }
+        },
+
         animate: function (time) {
-            if ((time - this.lastTime) > this.getDelayForFrame()) {
+            if ((time - this.lastTime) > this.getDelayForFrame() && !this.waitingForTrigger) {
                 this.tick();
                 this.lastTime = time;
                 return true;
@@ -49,8 +117,12 @@ define(function () {
             return this.speed[this.currentFrame] || this.speed[this.speed.length - 1];
         },
 
-        getCurrentOffset: function (){
+        getCurrentOffset: function () {
             return { x: this.currentSlideX, y: this.currentSlideY };
+        },
+
+        getCurrentHueAngle: function () {
+            return this.hue_change ? this.getHueForFrame() : null;
         },
 
         getNextSlideOffset: function () {
@@ -62,8 +134,55 @@ define(function () {
                 case 'l': return { x: -frameOffset, y: 0 };
                 default: return { x: 0, y: 0 };
             }
+        },
 
+        parseHueChange: function (hueChange) {
+            const values = hueChange.split(',');
+            if (values.length === 1) {
+                const hueValue = parseFloat(values[0]);
+                if (!isNaN(hueValue)) {
+                    return hueValue;
+                }
+            } else if (values.length === 2) {
+                const startColor = this.parseColor(values[0]);
+                const endColor = this.parseColor(values[1]);
+                if (startColor && endColor) {
+                    return [startColor, endColor];
+                }
+            }
+            return null;
+        },
+
+        parseColor: function (color) {
+            if (color.length === 6 && !isNaN(parseInt(color, 16))) {
+                return {
+                    r: parseInt(color.slice(0, 2), 16),
+                    g: parseInt(color.slice(2, 4), 16),
+                    b: parseInt(color.slice(4, 6), 16)
+                };
+            }
+            return null;
+        },
+
+        getHueForFrame: function () {
+            if (!this.hue_change) return null;
+
+            if (typeof this.hue_change === 'number') {
+                const hueAnglePerFrame = this.hue_change / this.frames;
+                return hueAnglePerFrame * this.currentFrame;
+            }
+
+            const startColor = this.hue_change[0];
+            const endColor = this.hue_change[1];
+            const progress = this.currentFrame / this.frames;
+
+            const r = Math.round(startColor.r + (endColor.r - startColor.r) * progress);
+            const g = Math.round(startColor.g + (endColor.g - startColor.g) * progress);
+            const b = Math.round(startColor.b + (endColor.b - startColor.b) * progress);
+
+            return `rgb(${r},${g},${b})`;
         }
+
     });
 
     return AnimatedTile;
