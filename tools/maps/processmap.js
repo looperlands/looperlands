@@ -86,23 +86,29 @@ module.exports = function processMap(json, options) {
                 }
                 map.animated[id].direction = property.value;
             }
-            if (property.name === "slide_amount") {
+            if (property.name === "slideAmount") {
                 if (!map.animated[id]) {
                     map.animated[id] = {};
                 }
-                map.animated[id].slide_amount = property.value;
+                map.animated[id].slideAmount = property.value;
             }
-            if (property.name === "hue_change") {
+            if (property.name === "hueChange") {
                 if (!map.animated[id]) {
                     map.animated[id] = {};
                 }
-                map.animated[id].hue_change = property.value;
+                map.animated[id].hueChange = property.value;
             }
-            if (property.name === "loop_style") {
+            if (property.name === "loopStyle") {
                 if (!map.animated[id]) {
                     map.animated[id] = {};
                 }
-                map.animated[id].ping_pong = property.value;
+                map.animated[id].loopStyle = property.value;
+            }
+            if (property.name === "delayedStart") {
+                if (!map.animated[id]) {
+                    map.animated[id] = {};
+                }
+                map.animated[id].delayedStart = property.value;
             }
             if(property.name === "lake") {
                 lakes[id] = property.value;

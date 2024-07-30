@@ -408,15 +408,16 @@ define(['jquery', 'area'], function ($, Area) {
             }
     
             const tileProps = this.animated[id + 1] || {};
-            if(tileProps.direction != 'r'){ console.log(tileProps)};
+
             return {
                 frames: tileProps.frames,
                 length: tileProps.l,
                 speed: Array.isArray(parseCSV(tileProps.d)) ? parseCSV(tileProps.d) : [100], // Default speed to 100ms if not defined; handles comma-separated values
-                direction: tileProps.direction || 'r', // Default direction to right if not defined
-                slide_amount: Array.isArray(parseCSV(tileProps.slide_amount)) ? parseCSV(tileProps.slide_amount) : [16], // Default slide amount to 16px if not defined; handles comma-separated values
-                hue_change: tileProps.hue_change,
-                loop_style: tileProps.loop_style
+                direction: tileProps.direction,
+                slideAmount: Array.isArray(parseCSV(tileProps.slideAmount)) ? parseCSV(tileProps.slideAmount) : [16], // Default slide amount to 16px if not defined; handles comma-separated values
+                hueChange: tileProps.hueChange,
+                loopStyle: tileProps.loopStyle,
+                delayedStart: tileProps.delayedStart
             };
         },
         
