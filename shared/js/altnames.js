@@ -280,6 +280,18 @@ const AltNames = {
     m88nsunshine: "some sunshine",
     m88nskeletonkey: "a skeleton key",
     m88nholyhandgrenade: "the Holy Hand Grenade",
+    m88nchampagne: "a glass of Champagne",
+    m88nchampagnebottle: "a bottle of Champagne",
+    m88nshine: "a shot of m88nshine",
+    m88nwhiskey: "a glass of Whiskey",
+    m88ndirtymartini: "a Dirty Martini",
+    m88nhelioislandicedtea: "a Helio Island Iced Tea",
+    m88nmanamaitai: "a Mana Mai Tai",
+    m88nmermaidmojito: "a Mermaid Mojito",
+    m88nmimosa: "a Mimosa",
+    m88nnexussangria: "a glass of Nexus Sangria",
+    m88nparadisehurricane: "a Paradise Hurricane",
+    m88nsunsetdaiquiri: "a Sunset Daiquiri",
 
     //m88n TT Items
     m88nammocan: "ammo can",
