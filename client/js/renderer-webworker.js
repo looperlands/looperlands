@@ -84,7 +84,7 @@ function getCacheKey(x, y, w, h, scale, hueAngle) {
     return `${x}-${y}-${w}-${h}-${scale}-${hueAngle !== null ? hueAngle : 'na'}`;
 }
 
-function drawScaledImage(ctx, image, x, y, w, h, dx, dy, scale, hueAngle) {
+function drawScaledImage(ctx, image, x, y, w, h, dx, dy, scale, hueAngle = null) {
     const cacheKey = getCacheKey(x, y, w, h, scale, hueAngle);
 
     // Check if the scaled image is in the cache
@@ -99,15 +99,13 @@ function drawScaledImage(ctx, image, x, y, w, h, dx, dy, scale, hueAngle) {
         // Disable image smoothing
         offCtx.imageSmoothingEnabled = false;
 
+        // Apply hue rotation if specified
+        if (hueAngle !== null) {
+            offCtx.filter = `hue-rotate(${hueAngle}deg)`;
+        }
+
         // Draw the scaled image to the offscreen canvas
         offCtx.drawImage(image, x, y, w, h, 0, 0, w * scale, h * scale);
-
-        // Apply hue rotation if hueAngle is provided
-        if (hueAngle !== null) {
-            const imageData = offCtx.getImageData(0, 0, w * scale, h * scale);
-            const rotatedImageData = rotateHue(imageData, hueAngle);
-            offCtx.putImageData(rotatedImageData, 0, 0);
-        }
 
         // Store the scaled image in the cache
         imageCache[cacheKey] = offCanvas;
@@ -132,36 +130,6 @@ function drawTile(ctx, tileid, tileset, setW, setH, gridW, cellid, scale, slideO
         const destY = Math.floor(cellid / gridW) * tilesize;
         drawScaledImage(ctx, tileset, tileX, tileY, tilesize, tilesize, destX, destY, scale, hueAngle);
     }
-}
-
-function rotateHue(imageData, angle) {
-    const data = imageData.data;
-    const cosA = Math.cos(angle);
-    const sinA = Math.sin(angle);
-    for (let i = 0; i < data.length; i += 4) {
-        const r = data[i] / 255;
-        const g = data[i + 1] / 255;
-        const b = data[i + 2] / 255;
-        
-        // Convert RGB to YIQ
-        const y = 0.299 * r + 0.587 * g + 0.114 * b;
-        const i = 0.596 * r - 0.274 * g - 0.322 * b;
-        const q = 0.211 * r - 0.522 * g + 0.311 * b;
-        
-        // Rotate hue
-        const iNew = i * cosA - q * sinA;
-        const qNew = i * sinA + q * cosA;
-        
-        // Convert YIQ back to RGB
-        const rNew = y + 0.956 * iNew + 0.621 * qNew;
-        const gNew = y - 0.272 * iNew - 0.647 * qNew;
-        const bNew = y - 1.106 * iNew + 1.703 * qNew;
-        
-        data[i] = Math.max(0, Math.min(255, rNew * 255));
-        data[i + 1] = Math.max(0, Math.min(255, gNew * 255));
-        data[i + 2] = Math.max(0, Math.min(255, bNew * 255));
-    }
-    return imageData;
 }
 
 function render(id, tiles, cameraX, cameraY, scale, clear) {

@@ -288,66 +288,29 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             let dw = w * this.scale;
             let dh = h * this.scale;
 
-                if (hueAngle !== null) {
-                    const offscreenCanvas = document.createElement('canvas');
-                    offscreenCanvas.width = w;
-                    offscreenCanvas.height = h;
-                    const offscreenCtx = offscreenCanvas.getContext('2d');
-                    offscreenCtx.drawImage(image, sx, sy, sw, sh, 0, 0, w, h);
-                    const imageData = offscreenCtx.getImageData(0, 0, w, h);
-                    const rotatedImageData = this.rotateHue(imageData, hueAngle);
-                    offscreenCtx.putImageData(rotatedImageData, 0, 0);
-            
-                    ctx.drawImage(offscreenCanvas, 0, 0, w, h, dxs, dys, dw, dh);
-                } else {
-                    ctx.drawImage(image, sx, sy, sw, sh, dxs, dys, dw, dh);
-                }
-            },
+            ctx.save();
+            if (hueAngle !== null) {
+                ctx.filter = `hue-rotate(${hueAngle}deg)`;
+            }
+
+            ctx.drawImage(image, sx, sy, sw, sh, dxs, dys, dw, dh);
+
+            if (hueAngle !== null) {
+                ctx.filter = 'none';
+            }
+            ctx.restore();
+        },
 
         drawTile: function(ctx, tileid, tileset, setW, setH, gridW, cellid, scale, slideOffsetX, slideOffsetY, hueAngle) {
-            if (tileid !== -1) { // -1 when tile is empty in Tiled. Don't attempt to draw it.
-                ctx.save();
-        
+            if (tileid !== -1) { // -1 when tile is empty in Tiled. Don't attempt to draw it.      
                 const tileX = getX(tileid + 1, (setW / scale), slideOffsetX) * this.tilesize;
                 const tileY = getY(tileid + 1, (setW / scale), (setH / scale), slideOffsetY) * this.tilesize;
                 const destX = getX(cellid + 1, gridW) * this.tilesize;
                 const destY = Math.floor(cellid / gridW) * this.tilesize;
     
                 this.drawScaledImage(ctx, tileset, tileX, tileY, this.tilesize, this.tilesize, destX, destY, hueAngle);
-        
-                ctx.restore();
             }
         },
-
-        rotateHue: function(imageData, angle) {
-            const data = imageData.data;
-            const cosA = Math.cos(angle);
-            const sinA = Math.sin(angle);
-            for (let i = 0; i < data.length; i += 4) {
-                const r = data[i] / 255;
-                const g = data[i + 1] / 255;
-                const b = data[i + 2] / 255;
-                
-                // Convert RGB to YIQ
-                const y = 0.299 * r + 0.587 * g + 0.114 * b;
-                const i = 0.596 * r - 0.274 * g - 0.322 * b;
-                const q = 0.211 * r - 0.522 * g + 0.311 * b;
-                
-                // Rotate hue
-                const iNew = i * cosA - q * sinA;
-                const qNew = i * sinA + q * cosA;
-                
-                // Convert YIQ back to RGB
-                const rNew = y + 0.956 * iNew + 0.621 * qNew;
-                const gNew = y - 0.272 * iNew - 0.647 * qNew;
-                const bNew = y - 1.106 * iNew + 1.703 * qNew;
-                
-                data[i] = Math.max(0, Math.min(255, rNew * 255));
-                data[i + 1] = Math.max(0, Math.min(255, gNew * 255));
-                data[i + 2] = Math.max(0, Math.min(255, bNew * 255));
-            }
-            return imageData;
-        },        
     
         clearTile: function(ctx, gridW, cellid) {
             var s = this.scale,
@@ -729,16 +692,17 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                 let visibleAnimatedTiles = this.game.visibleAnimatedTiles;
                 let visibileAnimatedTilesLength = visibleAnimatedTiles.length;
                 for (let i = 0; i < visibileAnimatedTilesLength; i++) {
+                    console.log(tile);
                     let tile = visibleAnimatedTiles[i];
                     let slideOffset = tile ? tile.getCurrentOffset() : { x: 0, y: 0 };
-                    let hueAngle = tile ? tile.getCurrentHueAngle() : null;
+                    let hueAngle = tile ? tile.getHueForFrame() : null;
                     visbileTiles.push({tileid: tile.id, setW: tilesetwidth, setH: tilesetheight, gridW: m.width, cellid: tile.index, slideOffsetX: slideOffset.x, slideOffsetY: slideOffset.y, hueAngle: hueAngle});
                 }
                 return {"type": "render", id: "background", tiles: visbileTiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: false};
             }
         },
 
-        drawHighAnimatedTiles: function() {
+        drawHighAnimatedTiles: function() {l
             let m = this.game.map,
                 tilesetwidth = this.tileset.width / m.tilesize;
                 tilesetheight = this.tileset.height / m.tilesize;
@@ -750,7 +714,7 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                     for (let i = 0; i < visibileAnimatedTilesLength; i++) {
                         let tile = visibileAnimatedHighTiles[i];
                         let slideOffset = tile ? tile.getCurrentOffset() : { x: 0, y: 0 };
-                        let hueAngle = tile ? tile.getCurrentHueAngle() : null;
+                        let hueAngle = tile ? tile.getHueForFrame() : null;
                         visbileTiles.push({tileid: tile.id, setW: tilesetwidth, setH: tilesetheight, gridW: m.width, cellid: tile.index,  slideOffsetX: slideOffset.x, slideOffsetY: slideOffset.y, hueAngle: hueAngle});
                     }
                     return {"type": "render", id: "high", tiles: visbileTiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: false};

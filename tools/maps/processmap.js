@@ -104,11 +104,11 @@ module.exports = function processMap(json, options) {
                 }
                 map.animated[id].loopStyle = property.value;
             }
-            if (property.name === "delayedStart") {
+            if (property.name === "startFrame") {
                 if (!map.animated[id]) {
                     map.animated[id] = {};
                 }
-                map.animated[id].delayedStart = property.value;
+                map.animated[id].startFrame = property.value;
             }
             if(property.name === "lake") {
                 lakes[id] = property.value;

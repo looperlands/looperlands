@@ -401,23 +401,62 @@ define(['jquery', 'area'], function ($, Area) {
 
         getTileAnimationProps: function(id) {
             function parseCSV(value) {
-                if (typeof value === 'string') {
-                    return value.split(',').map(Number);
-                }
+                if (typeof value === 'string') { return value.split(',').map(Number); }
                 return value;
             }
     
-            const tileProps = this.animated[id + 1] || {};
+            function parseHueChange(hueChange) {
+                if (Array.isArray(hueChange) && hueChange.length === 1) {
+                    return parseFloat(hueChange[0]);
+                } else if (Array.isArray(hueChange) && hueChange.length === 2) {
+                    const startColor = parseColor(hueChange[0]);
+                    const endColor = parseColor(hueChange[1]);
+                    if (startColor && endColor) { return calculateHueAngle(startColor, endColor); }
+                }
+                return null;
+            }
+        
+            function parseColor(color) {
+                if (color.length === 6 && !isNaN(parseInt(color, 16))) {
+                    return {
+                        r: parseInt(color.slice(0, 2), 16),
+                        g: parseInt(color.slice(2, 4), 16),
+                        b: parseInt(color.slice(4, 6), 16)
+                    };
+                }
+                return null;
+            }
+        
+            function calculateHueAngle(startColor, endColor) {
+                const startHue = rgbToHue(startColor.r, startColor.g, startColor.b);
+                const endHue = rgbToHue(endColor.r, endColor.g, endColor.b);
+                return endHue - startHue;
+            }
+        
+            function rgbToHue(r, g, b) {
+                r /= 255;
+                g /= 255;
+                b /= 255;
+                const max = Math.max(r, g, b);
+                const min = Math.min(r, g, b);
+                let hue;
+                if (max === min) { hue = 0; }
+                else if (max === r) { hue = (60 * ((g - b) / (max - min)) + 360) % 360; }
+                else if (max === g) { hue = (60 * ((b - r) / (max - min)) + 120) % 360; }
+                else { hue = (60 * ((r - g) / (max - min)) + 240) % 360; }
+                return hue;
+            }
 
+            const tileProps = this.animated[id + 1] || {};
             return {
                 frames: tileProps.frames,
                 length: tileProps.l,
                 speed: Array.isArray(parseCSV(tileProps.d)) ? parseCSV(tileProps.d) : [100], // Default speed to 100ms if not defined; handles comma-separated values
                 direction: tileProps.direction,
                 slideAmount: Array.isArray(parseCSV(tileProps.slideAmount)) ? parseCSV(tileProps.slideAmount) : [16], // Default slide amount to 16px if not defined; handles comma-separated values
-                hueChange: tileProps.hueChange,
+                hueChange: parseHueChange(parseCSV(tileProps.hueChange)),
                 loopStyle: tileProps.loopStyle,
-                delayedStart: tileProps.delayedStart
+                startFrame: tileProps.startFrame
             };
         },
         

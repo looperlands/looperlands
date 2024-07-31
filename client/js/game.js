@@ -6561,7 +6561,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             tileProps.slideAmount,
                             tileProps.hueChange,
                             tileProps.loopStyle,
-                            tileProps.delayedStart
+                            tileProps.startFrame
                         );
                             pos = self.map.tileIndexToGridPosition(tile.index);
 
