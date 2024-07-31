@@ -1248,7 +1248,7 @@ let Properties = {
             burger: 50,
             GOLD: 50
         },
-        xp: 69
+        xp: 138
     },
 
     balloondogy: {
@@ -1257,7 +1257,7 @@ let Properties = {
             burger: 50,
             GOLD: 50
         },
-        xp: 99
+        xp: 198
     },
 
     balloondogg: {
@@ -1268,7 +1268,7 @@ let Properties = {
             GOLD: 50,
             GOLD2: 10
         },
-        xp: 147
+        xp: 295
     },
 
     balloondoga: {
@@ -1280,7 +1280,7 @@ let Properties = {
             GOLD2: 20,
             GOLD3: 10,
         },
-        xp: 222
+        xp: 444
     },
 
     balloondogv: {
@@ -1295,7 +1295,7 @@ let Properties = {
             GOLD2: 25,
             GOLD3: 30,
         },
-        xp: 333
+        xp: 777
     },
 
     balloondogp: {
@@ -1319,7 +1319,7 @@ let Properties = {
             GOLD2: 20,
             GOLD3: 55
         },
-        xp: 888
+        xp: 1776
     },
 
     balloongiraffeo: {
@@ -1332,7 +1332,7 @@ let Properties = {
             burger: 5,
             GOLD3: 75
         },
-        xp: 2222
+        xp: 4444
     },
 
     m88nbigchungus: {
@@ -1442,7 +1442,7 @@ let Properties = {
             firepotion: 5
         },
         respawnDelay: 10000,
-        xp: 7
+        xp: 11
     },
 
     m88nmrcrab: {
@@ -1454,7 +1454,7 @@ let Properties = {
             GOLD3: 10,
             firepotion: 5
         },
-        xp: 11
+        xp: 22
     },
 
     roachclip: {
@@ -1466,7 +1466,7 @@ let Properties = {
             GOLD3: 5,
             firepotion: 5
         },
-        xp: 111
+        xp: 222
     },
 
     m88nboner: {
@@ -1491,7 +1491,7 @@ let Properties = {
             burger: 60,
             GOLD: 20
         },
-        xp: 22
+        xp: 44
     },
 
     m88nnightmaremonstery: {
@@ -1503,7 +1503,7 @@ let Properties = {
             burger: 40,
             GOLD: 25
         },
-        xp: 44
+        xp: 88
     },
 
     m88nnightmaremonsterg: {
@@ -1517,7 +1517,7 @@ let Properties = {
             GOLD: 20,
             GOLD2: 10
         },
-        xp: 69
+        xp: 138
     },
 
     m88nnightmaremonstera: {
@@ -1529,7 +1529,7 @@ let Properties = {
             GOLD: 30,
             GOLD2: 20
         },
-        xp: 111
+        xp: 222
     },
 
     m88nnightmaremonsterv: {
@@ -1541,7 +1541,7 @@ let Properties = {
             GOLD2: 20,
             GOLD3: 10
         },
-        xp: 147
+        xp: 294
     },
 
 
@@ -1553,7 +1553,7 @@ let Properties = {
             GOLD2: 20,
             GOLD3: 50
         },
-        xp: 174
+        xp: 348
     },
 
     m88nmine: {
@@ -2450,6 +2450,18 @@ let Properties = {
             player.releaseItem(Types.Entities.M88NKEVLARARMOR);
         }
     },
+    m88nmimosa: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "hpPotions",
+            duration: 60000
+        },
+        inventoryDescription: "Mimosa",
+        onConsume: function(player){
+            player.setDropOverride(Types.Entities.GOLD, 20000);
+        }
+    },
     m88nchampagne: {
         collectable: true,
         consumable: true,
@@ -2459,7 +2471,19 @@ let Properties = {
         },
         inventoryDescription: "Glass of Champagne",
         onConsume: function(player){
-            player.setDropOverride(Types.Entities.GOLD, 60000);
+            player.setDropOverride(Types.Entities.GOLD2, 20000);
+        }
+    },
+    m88nchampagnebottle: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "hpPotions",
+            duration: 60000
+        },
+        inventoryDescription: "Bottle of Champagne",
+        onConsume: function(player){
+            player.setDropOverride(Types.Entities.GOLD3, 20000);
         }
     },
     m88nshine: {
@@ -2471,7 +2495,55 @@ let Properties = {
         },
         inventoryDescription: "Shot of m88nshine",
         onConsume: function(player){
-            player.regenHealthBy(300);
+            player.setDropOverride(Types.Entities.M88NGEM, 20000);
+        }
+    },
+    m88ndirtymartini: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "hpPotions",
+            duration: 60000
+        },
+        inventoryDescription: "Dirty Martini",
+        onConsume: function(player){
+            player.setDropOverride(Types.Entities.M88NDIRT, 20000);
+        }
+    },
+    m88nmanamaitai: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "hpPotions",
+            duration: 60000
+        },
+        inventoryDescription: "Mana Mai Tai",
+        onConsume: function(player){
+            player.setDropOverride(Types.Entities.MANACRYSTAL, 20000);
+        }
+    },
+    m88nmermaidmojito: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "hpPotions",
+            duration: 60000
+        },
+        inventoryDescription: "Mermaid Mojito",
+        onConsume: function(player){
+            player.setDropOverride(Types.Entities.WOOD, 20000);
+        }
+    },
+    m88nnexussangria: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "hpPotions",
+            duration: 60000
+        },
+        inventoryDescription: "Nexus Sangria",
+        onConsume: function(player){
+            player.setDropOverride(Types.Entities.ORE, 20000);
         }
     },
     m88nfastshoes: {
@@ -2559,13 +2631,13 @@ let Properties = {
         respawnDelay: 4000000
     },
     m88nmoneybags: {
-        collectable: true,
-        inventoryDescription: "Money Bags",
+        //collectable: true,
+        //inventoryDescription: "Money Bags",
         respawnDelay: 8800000
     },
     m88ngoldenpoo: {
-        collectable: true,
-        inventoryDescription: "Golden Poo",
+        //collectable: true,
+        //inventoryDescription: "Golden Poo",
         respawnDelay: 8800000
     },
     m88nholyhandgrenade: {
