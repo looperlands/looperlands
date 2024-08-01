@@ -71,7 +71,7 @@ module.exports = function processMap(json, options) {
                 if (!map.animated[id]) {
                     map.animated[id] = {};
                 }
-
+    
                 // Special handling for 'length' and 'delay'
                 if (property.name === "length") {
                     map.animated[id].l = property.value;
