@@ -6561,15 +6561,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         var tileProps = m.getTileAnimationProps(id);
                         var tile = new AnimatedTile(
                             id,            
-                            tileProps.length,
-                            tileProps.frames,
-                            tileProps.speed, 
                             index, 
-                            tileProps.direction, 
-                            tileProps.slideAmount,
-                            tileProps.colorShift,
-                            tileProps.loopStyle,
-                            tileProps.startFrame
+                            tileProps
                         );
                             pos = self.map.tileIndexToGridPosition(tile.index);
 
@@ -6584,7 +6577,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 }, 1);
 
                 this.findVisibleTiles();
-                //console.log("Initialized animated tiles.", JSON.stringify(self.animatedTiles));
+                //console.log("Initialized animated tiles.");
             },
 
             addToRenderingGrid: function(entity, x, y) {

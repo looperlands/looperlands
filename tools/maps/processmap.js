@@ -51,7 +51,7 @@ module.exports = function processMap(json, options) {
     map.height = Tiled.height;
     map.tilesize = Tiled.tilewidth;
 
-    // Tile properties (collision, z-index, animation length...)
+    // Tile properties (collision, z-index, animation properties...)
     var tileProperties;
     var handleProp = function(property, id) {
         if(property.name === "c") {
@@ -62,56 +62,24 @@ module.exports = function processMap(json, options) {
             if(property.name === "v") {
                 map.high.push(id);
             }
-            if(property.name === "length") {
-                if(!map.animated[id]) {
-                    map.animated[id] = {};
-                }
-                map.animated[id].l = property.value;
-            }
-            if(property.name === "frames") {
-                if(!map.animated[id]) {
-                    map.animated[id] = {};
-                }
-                map.animated[id].frames = property.value;
-            }
-            if(property.name === "delay") {
-                if(!map.animated[id]) {
-                    map.animated[id] = {};
-                }
-                map.animated[id].d = property.value;
-            }
-            if (property.name === "direction") {
-                if (!map.animated[id]) {
-                    map.animated[id] = {};
-                }
-                map.animated[id].direction = property.value;
-            }
-            if (property.name === "slideAmount") {
-                if (!map.animated[id]) {
-                    map.animated[id] = {};
-                }
-                map.animated[id].slideAmount = property.value;
-            }
-            if (property.name === "colorShift") {
-                if (!map.animated[id]) {
-                    map.animated[id] = {};
-                }
-                map.animated[id].colorShift = property.value;
-            }
-            if (property.name === "loopStyle") {
-                if (!map.animated[id]) {
-                    map.animated[id] = {};
-                }
-                map.animated[id].loopStyle = property.value;
-            }
-            if (property.name === "startFrame") {
-                if (!map.animated[id]) {
-                    map.animated[id] = {};
-                }
-                map.animated[id].startFrame = property.value;
-            }
-            if(property.name === "lake") {
+
+            if (property.name === "lake") {
                 lakes[id] = property.value;
+            }
+            const animProps = ["length", "frames", "delay", "direction", "slideAmount", "colorShift", "loopStyle", "startFrame", "bouncePause"];
+            if (animProps.includes(property.name)) {
+                if (!map.animated[id]) {
+                    map.animated[id] = {};
+                }
+    
+                // Special handling for 'length' and 'delay'
+                if (property.name === "length") {
+                    map.animated[id].l = property.value;
+                } else if (property.name === "delay") {
+                    map.animated[id].d = property.value;
+                } else {
+                    map.animated[id][property.name] = property.value;
+                }
             }
         }
     }

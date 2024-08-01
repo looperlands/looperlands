@@ -4,22 +4,24 @@
  * This class extends the Tile class to add advanced animation features for tiles in a tileset.
  * 
  * Required Parameter:
- * - `length`: Number of 16x16 tiles in the image source.
+ * > `length`: Number of 16x16 tiles in the image source.
  *
  * Optional Parameters:
- * - `frames`: Number of animation frames (calculated if not provided, required mainly for colorShift).
- * - `speed`: Delay for each frame in milliseconds (array or single value, defaults to 100).
- * - `direction`: Direction of length and slide from source tile ('u', 'r', 'd', 'l', defaults to 'r').
- * - `slideAmount`: Amount to slide per animation frame (single value or array, defaults to 16, i.e., 1 tile).
- * - `colorShift`: Applies a tint shift to the image from one color to another over the duration of the animation.
- * - `loopStyle`: Different looping behaviors.
- *     - `loop`: The animation plays from start to end and then loops back to the beginning.
- *     - `ping-pong`: The animation plays from start to end and then reverses back to the start.
- *     - `bounce`: Similar to ping-pong, but the end frames are repeated before reversing.
- *     - `once`: The animation plays from start to end and then stops.
- *     - `reverse-loop`: The animation plays from end to start and then loops back to the end.
- *     - `triggered`: The animation waits for 'startTrigger' to animate forward to the end, then waits for 'endTrigger' to animate backward to the start.
- * - `startFrame`: Frame to start the animation on (default is the first frame).
+ * > `frames`: Number of animation frames (calculated if not provided, required mainly for colorShift).
+ * > `speed`: Delay for each frame in milliseconds (array or single value, defaults to 100).
+ * > `direction`: Direction of length and slide from source tile ('u', 'r', 'd', 'l', defaults to 'r').
+ * > `slideAmount`: Amount to slide per animation frame (single value or array, defaults to 16, i.e., 1 tile).
+ * > `colorShift`: Applies a tint shift to the image from one color to another over the duration of the animation.
+ *     .:. Tiled Input: Start Color Hex Code, End Color Hex Code (i.e. FF00FF, FEE8FF)
+ * > `loopStyle`: Different looping behaviors.
+ *     .:. `loop`: The animation plays from start to end and then loops back to the beginning.
+ *     .:. `ping-pong`: The animation plays from start to end and then reverses back to the start.
+ *     .:. `bounce`: Similar to ping-pong, but the end frames are repeated before reversing.
+ *     .:. `once`: The animation plays from start to end and then stops.
+ *     .:. `reverse-loop`: The animation plays from end to start and then loops back to the end.
+ *     .:. `triggered`: The animation waits for 'startTrigger' to animate forward to the end, then waits for 'endTrigger' to animate backward to the start.
+ * > `startFrame`: Frame to start the animation on (default is the first frame).
+ * > `bouncePause`: Additional delay (in milliseconds) at each end of the bounce loop (default is 0).
  */
 
 define(function () {
@@ -27,21 +29,25 @@ define(function () {
     var Tile = Class.extend({});
 
     var AnimatedTile = Tile.extend({
-        init: function (id, length, frames, speed, index, direction, slideAmount, colorShift, loopStyle, startFrame) {
+        init: function (id, index, tileProps) {
+            const { length, frames, speed, direction, slideAmount, colorShift, loopStyle, startFrame, bouncePause } = tileProps;
+            
             this.id = id;
+            this.index = index;
             this.length = length; // Number of 16x16 tiles that make up the image source
             this.lengthPixels = length * 16; // Total pixels in length of tiles
-            this.speed = Array.isArray(speed) ? speed : [speed || 100]; // Speed for each frame (aka delay)
-            this.index = index;
+            this.speed = Array.isArray(speed) ? speed : [speed || 100]; // Speed for each frame (aka delay) default is 100ms (csv allowed)
+            this.FPS = 50; // Max FPS is set in renderer.js as 50
             this.direction = direction || 'r'; // Default direction is right
-            this.slideAmount = Array.isArray(slideAmount) ? slideAmount : [slideAmount || 16]; // Default is one full tile per frame
+            this.slideAmount = Array.isArray(slideAmount) ? slideAmount : [slideAmount || (length > 1 ? 16 : 0)]; // Default is one full tile (16px) per frame if length > 1 (csv allowed)
             this.currentSlideX = 0;
             this.currentSlideY = 0;
             this.loopStyle = loopStyle || 'loop'; // Default loop style is 'loop'
             this.currentFrame = startFrame || 0;
-            this.forward = true; // Used for ping-pong, bounce, and triggered styles
+            this.forward = true; // Used for some loopStyles
             this.waitingForTrigger = this.loopStyle === 'triggered';
             this.bounceInProgress = false;
+            this.bouncePause = bouncePause || 0;
             this.colorShift = colorShift || null;
             this.frames = frames ? frames : this.calculateFrames();
             this.lastTime = 0;
@@ -64,7 +70,7 @@ define(function () {
                 // Calculate slide offset if length of tile source is greater than 1
                 if (this.length > 1) {
                     slideOffset = this.getNextSlideOffset();
-                }else{
+                } else {
                     slideOffset = { x: 0, y: 0 };
                 }
 
@@ -141,7 +147,13 @@ define(function () {
         },
 
         getDelayForFrame: function () {
-            return this.speed[this.currentFrame] || this.speed[this.speed.length - 1];
+            const minDelay = 1000 / this.FPS;
+            const frameDelay = this.speed[this.currentFrame] || this.speed[this.speed.length - 1];
+        
+            if (this.loopStyle === 'bounce' && (this.currentFrame === 0 || this.currentFrame === this.frames - 1)) {
+                return Math.max(frameDelay, minDelay) + this.bouncePause;
+            }
+            return Math.max(frameDelay, minDelay);
         },
 
         getCurrentOffset: function () {

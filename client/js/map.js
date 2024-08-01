@@ -427,6 +427,7 @@ define(['jquery', 'area'], function ($, Area) {
             }
         
             function parseColorShift(colorShift) {
+                if (!colorShift) { return null; }
                 const values = colorShift.split(',').map(v => v.trim());
                 if (values.length === 2) {
                     const startColor = parseColor(values[0]);
@@ -443,12 +444,13 @@ define(['jquery', 'area'], function ($, Area) {
             return {
                 frames: tileProps.frames,
                 length: tileProps.l,
-                speed: parseCSV(tileProps.d) ? parseCSV(tileProps.d) : [100], // Default speed to 100ms if not defined; handles comma-separated values
+                speed: parseCSV(tileProps.d),
                 direction: tileProps.direction,
-                slideAmount: parseCSV(tileProps.slideAmount) ? parseCSV(tileProps.slideAmount) : [tileProps.slideAmount || (tileProps.l > 1 ? 16 : 0)], // Default slide amount to 16px if not defined; handles comma-separated values
-                colorShift: tileProps.colorShift ? parseColorShift(tileProps.colorShift) : null,
+                slideAmount: parseCSV(tileProps.slideAmount),
+                colorShift: parseColorShift(tileProps.colorShift),
                 loopStyle: tileProps.loopStyle,
-                startFrame: tileProps.startFrame
+                startFrame: tileProps.startFrame,
+                bouncePause: tileProps.bouncePause
             };
         },
         
