@@ -1347,7 +1347,7 @@ let Properties = {
         },
         messages: ['Mmmmm, Easter Eggs!', 'O Doyle Rules!', 'Cant touch this...', 'Stay away or come back with friends!'],
         armorMod: 1,
-        hpMod: 5,
+        hpMod: 3,
         weaponMod: 0.8,
         respawnDelay: 1000000,
         xp: 69420,
@@ -1375,7 +1375,7 @@ let Properties = {
         },
         messages: ['Hahaha, no chance!', 'You should stay out of the ocean...', 'Why are you wasting my time?', 'Stay away or come back with friends!'],
         armorMod: 1,
-        hpMod: 5,
+        hpMod: 3,
         weaponMod: 0.8,
         respawnDelay: 420000,
         xp: 88000
@@ -1424,9 +1424,9 @@ let Properties = {
             GOLD5: 5,
         },
         messages: ['Mmmmm, tasty!', 'Yum!', 'Eww, that was a little tough...', 'Stay on land or come back with friends!'],
-        armorMod: 1,
-        hpMod: 5,
-        weaponMod: 1,
+        armorMod: 0.8,
+        hpMod: 4,
+        weaponMod: 0.8,
         respawnDelay: 30000,
         xp: 99000
     },
@@ -2522,14 +2522,14 @@ let Properties = {
             player.setDropOverride(Types.Entities.MANACRYSTAL, 20000);
         }
     },
-    m88nmermaidmojito: {
+    m88nparadisehurricane: {
         collectable: true,
         consumable: true,
         cooldown: {
             group: "hpPotions",
             duration: 60000
         },
-        inventoryDescription: "Mermaid Mojito",
+        inventoryDescription: "Paradise Hurricane",
         onConsume: function(player){
             player.setDropOverride(Types.Entities.WOOD, 20000);
         }
