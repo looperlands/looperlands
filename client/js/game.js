@@ -6560,12 +6560,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     if(m.isAnimatedTile(id)) {
                         var tileProps = m.getTileAnimationProps(id);
                         var tile = new AnimatedTile(
-                            id, 
-                            tileProps.length,
-                            tileProps.speed, 
+                            id,            
                             index, 
-                            tileProps.direction, 
-                            tileProps.slide_amount
+                            tileProps
                         );
                             pos = self.map.tileIndexToGridPosition(tile.index);
 

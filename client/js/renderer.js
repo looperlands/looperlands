@@ -268,33 +268,72 @@ function(Camera, Item, Character, Player, Timer, Mob) {
             return {"type": "render", id: "high", mx: mx, my: my, s: s, os: os, cursor : true, name: this.game.currentCursorName};
         },
 
-        drawScaledImage: function(ctx, image, x, y, w, h, dx, dy) {
+        drawScaledImage: function(ctx, image, x, y, w, h, dx, dy, colorShift = null) {
             var s = this.upscaledRendering ? 1 : this.scale;
-            _.each(arguments, function(arg) {
-                if(_.isUndefined(arg) || _.isNaN(arg) || _.isNull(arg) || arg < 0) {
-                    console.error("x:"+x+" y:"+y+" w:"+w+" h:"+h+" dx:"+dx+" dy:"+dy, true);
-                    throw Error("A problem occured when trying to draw on the canvas");
+	    
+            // Validate required arguments
+            [x, y, w, h, dx, dy].forEach((arg) => {
+                if (arg === undefined || isNaN(arg) || arg === null || arg < 0) {
+                    console.error("x:" + x + " y:" + y + " w:" + w + " h:" + h + " dx:" + dx + " dy:" + dy, true);
+                    throw new Error("A problem occurred when trying to draw on the canvas");
                 }
             });
+
+            let sx = x * s;
+            let sy = y * s;
+            let sw = w * s;
+            let sh = h * s;
+            let dxs = dx * this.scale;
+            let dys = dy * this.scale;
+            let dw = w * this.scale;
+            let dh = h * this.scale;
+
+            if (colorShift) {
+                // Create an offscreen canvas
+                const offscreenCanvas = document.createElement('canvas');
+                offscreenCanvas.width = dw;
+                offscreenCanvas.height = dh;
+                const offscreenCtx = offscreenCanvas.getContext('2d');
+            
+                // Clear the offscreen canvas before drawing
+                offscreenCtx.clearRect(0, 0, dw, dh);
+                offscreenCtx.drawImage(image, sx, sy, sw, sh, 0, 0, dw, dh);
+            
+                if (colorShift) {
+                    let imageData = offscreenCtx.getImageData(0, 0, dw, dh);
+                    imageData = this.applyColorShift(imageData, colorShift);
+                    offscreenCtx.putImageData(imageData, 0, 0);
+                }
+ 
+                // Draw the scaled image from the offscreen canvas to the main canvas
+                ctx.drawImage(offscreenCanvas, 0, 0, dw, dh, dxs, dys, dw, dh);
+            } else {
+                ctx.drawImage(image, sx, sy, sw, sh, dxs, dys, dw, dh);
+            }
+        },
         
-            ctx.drawImage(image,
-                          x * s,
-                          y * s,
-                          w * s,
-                          h * s,
-                          dx * this.scale,
-                          dy * this.scale,
-                          w * this.scale,
-                          h * this.scale);
+        applyColorShift: function(imageData, colorShift) {
+            const { colorDifference, progress } = colorShift;
+            const data = imageData.data;
+
+            for (let i = 0; i < data.length; i += 4) {
+                data[i] = Math.min(255, Math.max(0, data[i] + Math.round(colorDifference.r * progress))); // Red
+                data[i + 1] = Math.min(255, Math.max(0, data[i + 1] + Math.round(colorDifference.g * progress))); // Green
+                data[i + 2] = Math.min(255, Math.max(0, data[i + 2] + Math.round(colorDifference.b * progress))); // Blue
+                //data[i + 3] = data[i + 3]; // Alpha remains the same as the original
+            }
+
+            return imageData;
         },
 
-        drawTile: function(ctx, tileid, tileset, setW, setH, gridW, cellid, scale, slideOffsetX, slideOffsetY) {
-            if (tileid !== -1) { // -1 when tile is empty in Tiled. Don't attempt to draw it.
+        drawTile: function(ctx, tileid, tileset, setW, setH, gridW, cellid, scale, slideOffsetX, slideOffsetY, colorShift = null) {
+            if (tileid !== -1) { // -1 when tile is empty in Tiled. Don't attempt to draw it.      
                 const tileX = getX(tileid + 1, (setW / scale), slideOffsetX) * this.tilesize;
-                const tileY =  getY(tileid + 1, (setW / scale), (setH / scale), slideOffsetY) * this.tilesize;
+                const tileY = getY(tileid + 1, (setW / scale), (setH / scale), slideOffsetY) * this.tilesize;
                 const destX = getX(cellid + 1, gridW) * this.tilesize;
                 const destY = Math.floor(cellid / gridW) * this.tilesize;
-                this.drawScaledImage(ctx, tileset, tileX, tileY, this.tilesize, this.tilesize, destX, destY);            
+    
+                this.drawScaledImage(ctx, tileset, tileX, tileY, this.tilesize, this.tilesize, destX, destY, colorShift);
             }
         },
     
@@ -680,7 +719,8 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                 for (let i = 0; i < visibileAnimatedTilesLength; i++) {
                     let tile = visibleAnimatedTiles[i];
                     let slideOffset = tile ? tile.getCurrentOffset() : { x: 0, y: 0 };
-                    visbileTiles.push({tileid: tile.id, setW: tilesetwidth, setH: tilesetheight, gridW: m.width, cellid: tile.index, slideOffsetX: slideOffset.x, slideOffsetY: slideOffset.y});
+                    let colorShift = tile ? tile.getColorShiftForFrame() : null;
+                    visbileTiles.push({tileid: tile.id, setW: tilesetwidth, setH: tilesetheight, gridW: m.width, cellid: tile.index, slideOffsetX: slideOffset.x, slideOffsetY: slideOffset.y, colorShift: colorShift});
                 }
                 return {"type": "render", id: "background", tiles: visbileTiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: false};
             }
@@ -698,7 +738,8 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                     for (let i = 0; i < visibileAnimatedTilesLength; i++) {
                         let tile = visibileAnimatedHighTiles[i];
                         let slideOffset = tile ? tile.getCurrentOffset() : { x: 0, y: 0 };
-                        visbileTiles.push({tileid: tile.id, setW: tilesetwidth, setH: tilesetheight, gridW: m.width, cellid: tile.index,  slideOffsetX: slideOffset.x, slideOffsetY: slideOffset.y});
+                        let colorShift = tile ? tile.getColorShiftForFrame() : null;
+                        visbileTiles.push({tileid: tile.id, setW: tilesetwidth, setH: tilesetheight, gridW: m.width, cellid: tile.index,  slideOffsetX: slideOffset.x, slideOffsetY: slideOffset.y, colorShift: colorShift});
                     }
                     return {"type": "render", id: "high", tiles: visbileTiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: false};
                 }
@@ -735,7 +776,8 @@ function(Camera, Item, Character, Player, Timer, Mob) {
                         if(highTile === m.isHighTile(layer[tileIndex]) && animated === m.isAnimatedTile(layer[tileIndex])) {
                             let tile = visbileTiles.find(t => t.id === layer[tileIndex] - 1);
                             let slideOffset = tile ? tile.getCurrentOffset() : { x: 0, y: 0 };
-                            self.drawTile(ctx, layer[tileIndex] - 1, self.tileset, tilesetwidth, tilesetheight, m.width, tileIndex, scale, slideOffset.x, slideOffset.y);
+                            let colorShift = tile ? tile.getColorShiftForFrame() : null;
+                            self.drawTile(ctx, layer[tileIndex] - 1, self.tileset, tilesetwidth, tilesetheight, m.width, tileIndex, scale, slideOffset.x, slideOffset.y, colorShift);
                         }
                     }, 1);
                 }

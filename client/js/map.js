@@ -406,14 +406,51 @@ define(['jquery', 'area'], function ($, Area) {
                 }
                 return value;
             }
-    
+
+            function parseColor(color) {
+                if (color.length === 6 && !isNaN(parseInt(color, 16))) {
+                    return {
+                        r: parseInt(color.slice(0, 2), 16),
+                        g: parseInt(color.slice(2, 4), 16),
+                        b: parseInt(color.slice(4, 6), 16)
+                    };
+                }
+                return null;
+            }
+
+            function calculateColorDifference(startColor, endColor) {
+                return {
+                    r: endColor.r - startColor.r,
+                    g: endColor.g - startColor.g,
+                    b: endColor.b - startColor.b
+                };
+            }
+        
+            function parseColorShift(colorShift) {
+                if (!colorShift) { return null; }
+                const values = colorShift.split(',').map(v => v.trim());
+                if (values.length === 2) {
+                    const startColor = parseColor(values[0]);
+                    const endColor = parseColor(values[1]);
+                    if (startColor && endColor) {
+                        return calculateColorDifference(startColor, endColor);
+                    }
+                }
+                return null;
+            }
+
             const tileProps = this.animated[id + 1] || {};
-            if(tileProps.direction != 'r'){ console.log(tileProps)};
+
             return {
+                frames: tileProps.frames,
                 length: tileProps.l,
-                speed: parseCSV(tileProps.d) || [100], // Default speed to 100ms if not defined; handles comma-separated values
-                direction: tileProps.direction || 'r', // Default direction to right if not defined
-                slide_amount: parseCSV(tileProps.slide_amount) || [16] // Default slide amount to 16px if not defined; handles comma-separated values
+                speed: parseCSV(tileProps.d),
+                direction: tileProps.direction,
+                slideAmount: parseCSV(tileProps.slideAmount),
+                colorShift: parseColorShift(tileProps.colorShift),
+                loopStyle: tileProps.loopStyle,
+                startFrame: tileProps.startFrame,
+                bouncePause: tileProps.bouncePause
             };
         },
         
