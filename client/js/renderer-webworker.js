@@ -80,55 +80,78 @@ const cacheKeys = [];
 const MAX_CACHE_SIZE = 4096; // Adjust as needed
 
 // Function to generate a unique cache key
-function getCacheKey(x, y, w, h, scale, hueAngle) {
-    return `${x}-${y}-${w}-${h}-${scale}-${hueAngle !== null ? hueAngle : 'na'}`;
+function getCacheKey(x, y, w, h, scale, colorShift) {
+    const colorDiffKey = colorShift ? `${colorShift.colorDifference.r},${colorShift.colorDifference.g},${colorShift.colorDifference.b}` : 'null';
+    const progressKey = colorShift ? colorShift.progress : 'null';
+    return `${x},${y},${w},${h},${scale},${colorDiffKey},${progressKey}`;
 }
 
-function drawScaledImage(ctx, image, x, y, w, h, dx, dy, scale, hueAngle = null) {
-    const cacheKey = getCacheKey(x, y, w, h, scale, hueAngle);
+function drawScaledImage(ctx, image, x, y, w, h, dx, dy, scale, colorShift = null) {
+    const cacheKey = getCacheKey(x, y, w, h, scale, colorShift);
+
+    let dxs = dx * scale;
+    let dys = dy * scale;
+    let dw = w * scale;
+    let dh = h * scale;
 
     // Check if the scaled image is in the cache
     if (imageCache[cacheKey]) {
         // Draw the cached image
-        ctx.drawImage(imageCache[cacheKey], dx * scale, dy * scale);
+        ctx.drawImage(imageCache[cacheKey], dxs, dys);
     } else {
         // Create an offscreen canvas
-        const offCanvas = new OffscreenCanvas(w * scale, h * scale);
+        const offCanvas = new OffscreenCanvas(dw, dh);
         const offCtx = offCanvas.getContext('2d');
 
         // Disable image smoothing
         offCtx.imageSmoothingEnabled = false;
 
-        // Apply hue rotation if specified
-        if (hueAngle !== null) {
-            offCtx.filter = `hue-rotate(${hueAngle}deg)`;
-        }
+        // Clear offscreen canvas then draw the scaled image
+        offCtx.clearRect(0, 0, dw, dh);
+        offCtx.drawImage(image, x, y, w, h, 0, 0, dw , dh);
 
-        // Draw the scaled image to the offscreen canvas
-        offCtx.drawImage(image, x, y, w, h, 0, 0, w * scale, h * scale);
+        // Apply color transition if applicable
+        if (colorShift) {
+            let imageData = offCtx.getImageData(0, 0, dw , dh);
+            imageData = applyColorShift(imageData, colorShift);
+            offCtx.putImageData(imageData, 0, 0);
+        }
 
         // Store the scaled image in the cache
         imageCache[cacheKey] = offCanvas;
-
         cacheKeys.push(cacheKey);
 
+        // Handle cache size limit
         if (cacheKeys.length > MAX_CACHE_SIZE) {
             const oldestKey = cacheKeys.shift();
             delete imageCache[oldestKey];
         }
 
         // Draw the scaled image from the offscreen canvas to the main canvas
-        ctx.drawImage(offCanvas, dx * scale, dy * scale);
+        ctx.drawImage(offCanvas, dxs, dys);
     }
 }
 
-function drawTile(ctx, tileid, tileset, setW, setH, gridW, cellid, scale, slideOffsetX, slideOffsetY, hueAngle) {
+function applyColorShift(imageData, colorShift) {
+    const { colorDifference, progress } = colorShift;
+    const data = imageData.data;
+    for (let i = 0; i < data.length; i += 4) {
+        data[i] = Math.min(255, Math.max(0, data[i] + Math.round(colorDifference.r * progress))); // Red
+        data[i + 1] = Math.min(255, Math.max(0, data[i + 1] + Math.round(colorDifference.g * progress))); // Green
+        data[i + 2] = Math.min(255, Math.max(0, data[i + 2] + Math.round(colorDifference.b * progress))); // Blue
+        //data[i + 3] = data[i + 3]; // Alpha remains the same as the original
+    }
+
+    return imageData;
+}
+
+function drawTile(ctx, tileid, tileset, setW, setH, gridW, cellid, scale, slideOffsetX, slideOffsetY, colorShift = null) {
     if (tileid !== -1) { // -1 when tile is empty in Tiled. Don't attempt to draw it.
         const tileX = getX(tileid + 1, setW, slideOffsetX) * tilesize;
         const tileY = getY(tileid + 1, setW, setH, slideOffsetY) * tilesize;
         const destX = getX(cellid + 1, gridW) * tilesize;
         const destY = Math.floor(cellid / gridW) * tilesize;
-        drawScaledImage(ctx, tileset, tileX, tileY, tilesize, tilesize, destX, destY, scale, hueAngle);
+        drawScaledImage(ctx, tileset, tileX, tileY, tilesize, tilesize, destX, destY, scale, colorShift);
     }
 }
 
@@ -145,13 +168,12 @@ function render(id, tiles, cameraX, cameraY, scale, clear) {
     for (let i = 0; i < tilesLength; i++) {
         let tile = tiles[i];
         if (tile.id !== -1) { // -1 when tile is empty in Tiled. Don't attempt to draw it.
-            drawTile(ctx, tile.tileid, tileset, tile.setW, tile.setH, tile.gridW, tile.cellid, scale, tile.slideOffsetX, tile.slideOffsetY, tile.hueAngle);
+            drawTile(ctx, tile.tileid, tileset, tile.setW, tile.setH, tile.gridW, tile.cellid, scale, tile.slideOffsetX, tile.slideOffsetY, tile.colorShift);
         }
     }
 
     ctx.restore();
 }
-
 
 onmessage = (e) => {
     if(!hasLoadedFont) {

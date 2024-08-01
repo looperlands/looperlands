@@ -72,7 +72,7 @@ module.exports = function processMap(json, options) {
                 if(!map.animated[id]) {
                     map.animated[id] = {};
                 }
-                map.animated[id].l = property.value;
+                map.animated[id].frames = property.value;
             }
             if(property.name === "delay") {
                 if(!map.animated[id]) {
@@ -92,11 +92,11 @@ module.exports = function processMap(json, options) {
                 }
                 map.animated[id].slideAmount = property.value;
             }
-            if (property.name === "hueChange") {
+            if (property.name === "colorShift") {
                 if (!map.animated[id]) {
                     map.animated[id] = {};
                 }
-                map.animated[id].hueChange = property.value;
+                map.animated[id].colorShift = property.value;
             }
             if (property.name === "loopStyle") {
                 if (!map.animated[id]) {

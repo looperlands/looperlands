@@ -7,13 +7,11 @@
  * - `length`: Number of 16x16 tiles in the image source.
  *
  * Optional Parameters:
- * - `frames`: Number of animation frames (calculated if not provided, required mainly for hueChange).
+ * - `frames`: Number of animation frames (calculated if not provided, required mainly for colorShift).
  * - `speed`: Delay for each frame in milliseconds (array or single value, defaults to 100).
  * - `direction`: Direction of length and slide from source tile ('u', 'r', 'd', 'l', defaults to 'r').
  * - `slideAmount`: Amount to slide per animation frame (single value or array, defaults to 16, i.e., 1 tile).
- * - `hueChange`: Changes tile color over animation.
- *     - Tiled input => Single value: Total hue rotation over all frames in degrees.
- *     - Tiled input => Two comma-separated colors: Change from first color to the second color over the animation.
+ * - `colorShift`: Applies a tint shift to the image from one color to another over the duration of the animation.
  * - `loopStyle`: Different looping behaviors.
  *     - `loop`: The animation plays from start to end and then loops back to the beginning.
  *     - `ping-pong`: The animation plays from start to end and then reverses back to the start.
@@ -29,50 +27,61 @@ define(function () {
     var Tile = Class.extend({});
 
     var AnimatedTile = Tile.extend({
-        init: function (id, length, frames, speed, index, direction, slideAmount, hueChange, loopStyle, startFrame) {
+        init: function (id, length, frames, speed, index, direction, slideAmount, colorShift, loopStyle, startFrame) {
             this.id = id;
             this.length = length; // Number of 16x16 tiles that make up the image source
+            this.lengthPixels = length * 16; // Total pixels in length of tiles
             this.speed = Array.isArray(speed) ? speed : [speed || 100]; // Speed for each frame (aka delay)
             this.index = index;
-            this.lastTime = 0;
             this.direction = direction || 'r'; // Default direction is right
-            this.maxSlide = length * 16;
             this.slideAmount = Array.isArray(slideAmount) ? slideAmount : [slideAmount || 16]; // Default is one full tile per frame
             this.currentSlideX = 0;
             this.currentSlideY = 0;
-            this.hueChange = hueChange || null; // Hue change in degrees
             this.loopStyle = loopStyle || 'loop'; // Default loop style is 'loop'
-            this.frames = frames ? frames : this.calculateFrames();
             this.currentFrame = startFrame || 0;
             this.forward = true; // Used for ping-pong, bounce, and triggered styles
             this.waitingForTrigger = this.loopStyle === 'triggered';
             this.bounceInProgress = false;
+            this.colorShift = colorShift || null;
+            this.frames = frames ? frames : this.calculateFrames();
+            this.lastTime = 0;
         },
 
         calculateFrames: function () {
-            if (this.length === 1 && (this.slideAmount[0] !== 0 || this.hueChange)) {
-                const slideFrames = this.slideAmount.length === 1 ? Math.ceil(this.maxSlide / Math.abs(this.slideAmount[0])) : this.slideAmount.length;
-                return Math.max(this.speed.length, slideFrames);
+            if (this.length === 1 && (this.slideAmount[0] !== 0 || this.colorShift)) {
+                const slideFrames = this.slideAmount.length === 1 ? Math.ceil(this.lengthPixels / Math.abs(this.slideAmount[0])) : this.slideAmount.length;
+                return Math.max(this.length, this.speed.length, slideFrames);
             }
-            const slideFrames = (this.slideAmount.length === 1 && this.slideAmount[0] !== 0) ? Math.ceil(this.maxSlide / Math.abs(this.slideAmount[0])) : this.slideAmount.length;
+            const slideFrames = (this.length > 1 && this.slideAmount.length === 1 && this.slideAmount[0] !== 0) ? Math.ceil(this.lengthPixels / Math.abs(this.slideAmount[0])) : this.slideAmount.length;
             return Math.max(this.length, this.speed.length, this.slideAmount[0] === 0 ? 1 : slideFrames);
         },
-        
+
         tick: function () {
-            if ((this.length > 1 || this.slideAmount[0] !== 0 || this.hueChange) && !this.waitingForTrigger) {
-                const slideOffset = this.getNextSlideOffset();
-                if (Math.abs(this.currentSlideX + slideOffset.x) >= this.maxSlide || Math.abs(this.currentSlideY + slideOffset.y) >= this.maxSlide) {
+            // Check if the animation should proceed (length > 1 or colorShift is defined and not waiting for trigger)
+            if ((this.length > 1 || this.colorShift) && !this.waitingForTrigger) {
+                let slideOffset;
+
+                // Calculate slide offset if length of tile source is greater than 1
+                if (this.length > 1) {
+                    slideOffset = this.getNextSlideOffset();
+                }else{
+                    slideOffset = { x: 0, y: 0 };
+                }
+
+                // Reset frame and slide if max slide length is reached
+                if (this.length > 1 && (Math.abs(this.currentSlideX + slideOffset.x) >= this.lengthPixels || Math.abs(this.currentSlideY + slideOffset.y) >= this.lengthPixels)) {
                     this.currentFrame = 0;
                     this.currentSlideX = 0;
                     this.currentSlideY = 0;
                 } else {
+                    // Handle loop style and update slide positions
                     this.handleLoopStyle();
                     this.currentSlideX += slideOffset.x;
                     this.currentSlideY += slideOffset.y;
                 }
             }
         },
-        
+
         handleLoopStyle: function () {
             switch (this.loopStyle) {
                 case 'ping-pong':
@@ -96,21 +105,21 @@ define(function () {
 
         handlePingPongAndBounce: function () {
             this.currentFrame += this.forward ? 1 : -1;
-        
+
             if (this.currentFrame >= this.frames - 1 || this.currentFrame <= 0) {
                 if (this.loopStyle === 'ping-pong') {
-                    this.forward = !this.forward;
+                    this.forward = this.currentFrame <= 0;
                 } else if (this.loopStyle === 'bounce') {
                     if (!this.bounceInProgress) {
                         this.bounceInProgress = true;
                         this.currentFrame += this.forward ? -1 : 1;
                     } else {
-                        this.forward = !this.forward;
+                        this.forward = this.currentFrame <= 0;
                         this.bounceInProgress = false;
                     }
                 }
             }
-        },       
+        },
 
         handleTriggered: function () {
             if (this.waitingForTrigger) return;
@@ -150,15 +159,15 @@ define(function () {
             }
         },
 
-        getHueForFrame: function () {
-            if (!this.hueChange) return null;
+        getColorShiftForFrame: function () {
+            if (!this.colorShift) return null;
 
-            if (typeof this.hueChange === 'number') {
-                const hueAnglePerFrame = this.hueChange / this.frames;
-                return hueAnglePerFrame * this.currentFrame;
-            }
-            
-            return null;
+            const progress = this.currentFrame / (this.frames - 1);
+
+            return {
+                colorDifference: this.colorShift,
+                progress: progress
+            };
         }
     });
 

@@ -6559,7 +6559,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             index, 
                             tileProps.direction, 
                             tileProps.slideAmount,
-                            tileProps.hueChange,
+                            tileProps.colorShift,
                             tileProps.loopStyle,
                             tileProps.startFrame
                         );
@@ -6576,7 +6576,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 }, 1);
 
                 this.findVisibleTiles();
-                //console.log("Initialized animated tiles.");
+                //console.log("Initialized animated tiles.", JSON.stringify(self.animatedTiles));
             },
 
             addToRenderingGrid: function(entity, x, y) {
