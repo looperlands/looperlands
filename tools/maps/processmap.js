@@ -29,7 +29,7 @@ module.exports = function processMap(json, options) {
     };
     mode = options.mode;
 
-    if(mode === "client") {
+    if (mode === "client") {
         map.data = [];
         map.high = [];
         map.animated = {};
@@ -39,7 +39,7 @@ module.exports = function processMap(json, options) {
         map.pvpZones = [];
         map.fishingTiles = {};
     }
-    if(mode === "server") {
+    if (mode === "server") {
         map.roamingAreas = [];
         map.chestAreas = [];
         map.staticChests = [];
@@ -53,13 +53,13 @@ module.exports = function processMap(json, options) {
 
     // Tile properties (collision, z-index, animation properties...)
     var tileProperties;
-    var handleProp = function(property, id) {
-        if(property.name === "c") {
+    var handleProp = function (property, id) {
+        if (property.name === "c") {
             map.collidingTiles[id] = true;
         }
 
-        if(mode === "client") {
-            if(property.name === "v") {
+        if (mode === "client") {
+            if (property.name === "v") {
                 map.high.push(id);
             }
 
@@ -71,7 +71,7 @@ module.exports = function processMap(json, options) {
                 if (!map.animated[id]) {
                     map.animated[id] = {};
                 }
-    
+
                 // Special handling for 'length' and 'delay'
                 if (property.name === "length") {
                     map.animated[id].l = property.value;
@@ -84,19 +84,19 @@ module.exports = function processMap(json, options) {
         }
     }
 
-    var getObjectGroupByName = function(groupName) {
-        for(var i=0; i < Tiled.objectgroup.length; i += 1) {
+    var getObjectGroupByName = function (groupName) {
+        for (var i = 0; i < Tiled.objectgroup.length; i += 1) {
             var group = Tiled.objectgroup[i];
-            if(group.name !== groupName) {
+            if (group.name !== groupName) {
                 continue;
             }
 
             let objects = group.object;
-            if(objects === undefined) {
+            if (objects === undefined) {
                 return null;
             }
 
-            if(objects[0] === undefined) {
+            if (objects[0] === undefined) {
                 objects = [objects];
             }
 
@@ -104,26 +104,26 @@ module.exports = function processMap(json, options) {
         }
     }
 
-    var processGroup = function(groupName, callback) {
+    var processGroup = function (groupName, callback) {
         console.log("Processing " + groupName + "...");
         var group = getObjectGroupByName(groupName);
-        if(group) {
-            _.each(group, function(object, idx) {
+        if (group) {
+            _.each(group, function (object, idx) {
                 callback(object, idx);
             });
         }
     }
 
-    if(Tiled.tileset instanceof Array) {
-        _.each(Tiled.tileset, function(tileset) {
-            if(tileset.name === "tilesheet") {
+    if (Tiled.tileset instanceof Array) {
+        _.each(Tiled.tileset, function (tileset) {
+            if (tileset.name === "tilesheet") {
                 console.log("Processing terrain properties...");
                 tileProperties = tileset.tile;
-                for(var i=0; i < tileProperties.length; i += 1) {
+                for (var i = 0; i < tileProperties.length; i += 1) {
                     var property = tileProperties[i].properties.property;
                     var tilePropertyId = tileProperties[i].id + 1;
-                    if(property instanceof Array) {
-                        for(var pi=0; pi < property.length; pi += 1) {
+                    if (property instanceof Array) {
+                        for (var pi = 0; pi < property.length; pi += 1) {
                             handleProp(property[pi], tilePropertyId);
                         }
                     } else {
@@ -131,14 +131,24 @@ module.exports = function processMap(json, options) {
                     }
                 }
             }
-            else if(tileset.name === "Mobs" && mode === "server") {
+            else if (tileset.name === "Mobs" && mode === "server") {
+
+                // Substitution dictionary (to safeguard against old naming convention)
+                var substitutionDict = {
+                    "firepotion": "loopring",
+                    "burger": "taikoboost"
+                };
+
                 console.log("Processing static entity properties...");
                 mobsFirstgid = tileset.firstgid;
-                _.each(tileset.tile, function(p) {
+                _.each(tileset.tile, function (p) {
                     var property = p.properties.property,
                         id = p.id + 1;
 
-                    if(property.name === "type") {
+                    // Check if property name needs to be substituted
+                    var propName = substitutionDict[property.name] || property.name;
+
+                    if (property.name === "type") {
                         staticEntities[id] = property.value;
                     }
                 });
@@ -148,7 +158,7 @@ module.exports = function processMap(json, options) {
         console.error("A tileset is missing");
     }
 
-    var processDoor = function(door) {
+    var processDoor = function (door) {
         let newDoor = {
             x: door.x / map.tilesize,
             y: door.y / map.tilesize,
@@ -156,16 +166,16 @@ module.exports = function processMap(json, options) {
             map: door.map
         }
         var doorProps = door.properties.property;
-        for(var k=0; k < doorProps.length; k += 1) {
-            newDoor['t'+doorProps[k].name] = doorProps[k].value;
+        for (var k = 0; k < doorProps.length; k += 1) {
+            newDoor['t' + doorProps[k].name] = doorProps[k].value;
         }
 
         map.doors.push(newDoor);
     }
 
-    var processRoamingArea = function(area, idx) {
+    var processRoamingArea = function (area, idx) {
         var nb = null;
-        if(area.properties) {
+        if (area.properties) {
             nb = area.properties.property.value;
         }
 
@@ -180,7 +190,7 @@ module.exports = function processMap(json, options) {
         });
     }
 
-    var processTriggerArea = function(triggerArea, idx) {
+    var processTriggerArea = function (triggerArea, idx) {
         var trigger = {
             id: triggerArea.id,
             x: triggerArea.x / map.tilesize,
@@ -189,7 +199,7 @@ module.exports = function processMap(json, options) {
             h: triggerArea.height / map.tilesize,
         };
 
-        if(triggerArea.properties) {
+        if (triggerArea.properties) {
             var triggerProps = triggerArea.properties.property;
 
             if (triggerProps[0] === undefined) {
@@ -204,19 +214,19 @@ module.exports = function processMap(json, options) {
         map.triggers.push(trigger);
     }
 
-    var processChestArea = function(area) {
+    var processChestArea = function (area) {
         var chestArea = {
             x: area.x / map.tilesize,
             y: area.y / map.tilesize,
             w: area.width / map.tilesize,
             h: area.height / map.tilesize
         };
-        _.each(area.properties.property, function(prop) {
-            if(prop.name === 'items') {
-                chestArea['i'] = _.map(prop.value.split(','), function(name) {
+        _.each(area.properties.property, function (prop) {
+            if (prop.name === 'items') {
+                chestArea['i'] = _.map(prop.value.split(','), function (name) {
                     return Types.getKindFromString(name);
                 });
-            } else if(prop.name === 'chances') {
+            } else if (prop.name === 'chances') {
                 chestArea['c'] = {};
                 let changes = prop.value.split(',');
                 for (let i = 0; i < changes.length; i += 1) {
@@ -224,19 +234,19 @@ module.exports = function processMap(json, options) {
                     chestArea['c'][Types.getKindFromString(chance[0])] = parseFloat(chance[1]);
                 }
             } else {
-                chestArea['t'+prop.name] = prop.value;
+                chestArea['t' + prop.name] = prop.value;
             }
         });
         map.chestAreas.push(chestArea);
     }
 
-    var processChest = function(chest) {
-        if(chest.properties.property.value) {
+    var processChest = function (chest) {
+        if (chest.properties.property.value) {
             var items = chest.properties.property.value;
             var newChest = {
                 y: chest.y / map.tilesize,
                 x: chest.x / map.tilesize,
-                i: _.map(items.split(','), function(name) {
+                i: _.map(items.split(','), function (name) {
                     return Types.getKindFromString(name);
                 })
             };
@@ -245,22 +255,22 @@ module.exports = function processMap(json, options) {
                 y: chest.y / map.tilesize,
                 x: chest.x / map.tilesize
             }
-            _.each(chest.properties.property, function(prop) {
-                if(prop.name === 'items') {
-                    newChest['i'] = _.map(prop.value.split(','), function(name) {
+            _.each(chest.properties.property, function (prop) {
+                if (prop.name === 'items') {
+                    newChest['i'] = _.map(prop.value.split(','), function (name) {
                         return Types.getKindFromString(name);
                     });
-                } else if(prop.name === 'chances') {
+                } else if (prop.name === 'chances') {
                     newChest['c'] = {};
                     let changes = prop.value.split(',');
                     for (let i = 0; i < changes.length; i += 1) {
                         let chance = changes[i].split(':');
                         newChest['c'][Types.getKindFromString(chance[0])] = parseFloat(chance[1]);
                     }
-                } else if(prop.name === 'delay') {
+                } else if (prop.name === 'delay') {
                     newChest['d'] = parseInt(prop.value) * 1000;
                 } else {
-                    newChest['t'+prop.name] = prop.value;
+                    newChest['t' + prop.name] = prop.value;
                 }
             });
         }
@@ -279,7 +289,7 @@ module.exports = function processMap(json, options) {
         map.musicAreas.push(musicArea);
     }
 
-    var processCheckpoint = function(checkpoint, idx) {
+    var processCheckpoint = function (checkpoint, idx) {
         var cp = {
             id: idx + 1,
             x: checkpoint.x / map.tilesize,
@@ -288,14 +298,14 @@ module.exports = function processMap(json, options) {
             h: checkpoint.height / map.tilesize
         };
 
-        if(mode === "server") {
+        if (mode === "server") {
             cp.s = checkpoint.type ? 1 : 0;
         }
 
         map.checkpoints.push(cp);
     }
 
-    var processPvpZone = function(pvp) {
+    var processPvpZone = function (pvp) {
         var pvpZone = {
             x: pvp.x / map.tilesize,
             y: pvp.y / map.tilesize,
@@ -323,18 +333,18 @@ module.exports = function processMap(json, options) {
     processGroup('checkpoints', processCheckpoint);
 
     // Layers
-    if(Tiled.layer instanceof Array) {
-        for(var i=Tiled.layer.length - 1; i > 0; i -= 1) {
+    if (Tiled.layer instanceof Array) {
+        for (var i = Tiled.layer.length - 1; i > 0; i -= 1) {
             processLayer(Tiled.layer[i]);
         }
     } else {
         processLayer(Tiled.layer);
     }
 
-    if(mode === "client") {
+    if (mode === "client") {
         // Set all undefined tiles to 0
-        for(var i=0, max=map.data.length; i < max; i+=1) {
-            if(!map.data[i]) {
+        for (var i = 0, max = map.data.length; i < max; i += 1) {
+            if (!map.data[i]) {
                 map.data[i] = 0;
             }
         }
@@ -344,15 +354,15 @@ module.exports = function processMap(json, options) {
 };
 
 var processLayer = function processLayer(layer) {
-    if(mode === "server") {
+    if (mode === "server") {
         // Mobs
-        if(layer.name === "entities") {
+        if (layer.name === "entities") {
             console.log("Processing positions of static entities ...");
             var tiles = layer.data.tile;
 
-            for(var j=0; j < tiles.length; j += 1) {
+            for (var j = 0; j < tiles.length; j += 1) {
                 var gid = tiles[j].gid - mobsFirstgid + 1;
-                if(gid && gid > 0) {
+                if (gid && gid > 0) {
                     map.staticEntities[j] = staticEntities[gid];
                 }
             }
@@ -361,13 +371,13 @@ var processLayer = function processLayer(layer) {
 
     var tiles = layer.data.tile;
 
-    if(layer.name === "blocking") {
+    if (layer.name === "blocking") {
         console.log("Processing blocking tiles...");
         for (var i = 0; i < tiles.length; i += 1) {
             var gid = tiles[i].gid;
 
             if (gid && gid > 0) {
-                if(mode === "server") {
+                if (mode === "server") {
                     map.collisions.push(i);
                 } else {
                     map.blocking.push(i);
@@ -375,56 +385,56 @@ var processLayer = function processLayer(layer) {
             }
         }
     }
-    else if(mode === "client" && layer.name === "plateau") {
+    else if (mode === "client" && layer.name === "plateau") {
         console.log("Processing plateau tiles...");
-        for(var i=0; i < tiles.length; i += 1) {
+        for (var i = 0; i < tiles.length; i += 1) {
             var gid = tiles[i].gid;
 
-            if(gid && gid > 0) {
+            if (gid && gid > 0) {
                 map.plateau.push(i);
             }
         }
     }
-    else if(layer.visible !== 0 && layer.name !== "entities") {
-        console.log("Processing layer: "+ layer.name);
+    else if (layer.visible !== 0 && layer.name !== "entities") {
+        console.log("Processing layer: " + layer.name);
 
-        for(var j=0; j < tiles.length; j += 1) {
+        for (var j = 0; j < tiles.length; j += 1) {
             var gid = tiles[j].gid;
 
-            if(mode === "client") {
+            if (mode === "client") {
                 // Set tile gid in the tilesheet
-                if(gid > 0) {
-                    if(map.data[j] === undefined) {
+                if (gid > 0) {
+                    if (map.data[j] === undefined) {
                         map.data[j] = gid;
                     }
-                    else if(map.data[j] instanceof Array) {
+                    else if (map.data[j] instanceof Array) {
                         map.data[j].unshift(gid);
                     }
                     else {
                         map.data[j] = [gid, map.data[j]];
                     }
-                // fishing tiles
-                if(gid in lakes) {
-                    map.fishingTiles[j] = lakes[gid];
+                    // fishing tiles
+                    if (gid in lakes) {
+                        map.fishingTiles[j] = lakes[gid];
                     }
                 }
             }
 
             // Colliding tiles
-            if(gid in map.collidingTiles) {
+            if (gid in map.collidingTiles) {
                 map.collisions.push(j);
             }
         }
-    } else if(layer.visible === 0) {
-        console.log("Processing hidden layer: "+ layer.name);
+    } else if (layer.visible === 0) {
+        console.log("Processing hidden layer: " + layer.name);
         map.hiddenLayers[layer.name] = [];
-        for(var j=0; j < tiles.length; j += 1) {
+        for (var j = 0; j < tiles.length; j += 1) {
             var gid = tiles[j].gid;
-            if(gid > 0) {
-                if(map.hiddenLayers[layer.name][j] === undefined) {
+            if (gid > 0) {
+                if (map.hiddenLayers[layer.name][j] === undefined) {
                     map.hiddenLayers[layer.name][j] = gid;
                 }
-                else if(map.hiddenLayers[layer.name][j] instanceof Array) {
+                else if (map.hiddenLayers[layer.name][j] instanceof Array) {
                     map.hiddenLayers[layer.name][j].unshift(gid);
                 }
                 else {
