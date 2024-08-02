@@ -236,9 +236,9 @@ Types = {
         CPOTION_L: 333011,
         CIMMUPOT: 333012,
         CAGEDRAT: 333013,
-        BURGER: 36,
+        TAIKOBOOST: 36,
         CHEST: 37,
-        FIREPOTION: 38,
+        LOOPRING: 38,
 
         COBEGG: 21300007,
         COBLOG: 21300008,
@@ -6235,9 +6235,9 @@ var kinds = {
     cobclover: [Types.Entities.COBCLOVER, "object"],
     cobegg: [Types.Entities.COBEGG, "object"],
     cake: [Types.Entities.CAKE, "object"],
-    burger: [Types.Entities.BURGER, "object"],
+    taikoboost: [Types.Entities.TAIKOBOOST, "object"],
     chest: [Types.Entities.CHEST, "object"],
-    firepotion: [Types.Entities.FIREPOTION, "object"],
+    loopring: [Types.Entities.LOOPRING, "object"],
     KEY_ARACHWEAVE: [Types.Entities.KEY_ARACHWEAVE, "object"],
     BOARHIDE: [Types.Entities.BOARHIDE, "object"],
     THUDKEY: [Types.Entities.THUDKEY, "object"],
@@ -11948,7 +11948,7 @@ Types.isItem = function(kind) {
 
 Types.isHealingItem = function(kind) {
     return kind === Types.Entities.FLASK
-        || kind === Types.Entities.BURGER
+        || kind === Types.Entities.TAIKOBOOST
         || kind === Types.Entities.POTION
         || kind === Types.Entities.COBAPPLE
         || kind === Types.Entities.REDPOTION
@@ -11958,7 +11958,7 @@ Types.isHealingItem = function(kind) {
 
 Types.isExpendableItem = function(kind) {
     return Types.isHealingItem(kind)
-        || kind === Types.Entities.FIREPOTION
+        || kind === Types.Entities.LOOPRING
         || kind === Types.Entities.CAKE
         || kind === Types.Entities.COBCORN
         || kind === Types.Entities.COBCLOVER

@@ -876,12 +876,12 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
         return new Items.Potion(id);
     };
     
-    EntityFactory.builders[Types.Entities.FIREPOTION] = function(id) {
-        return new Items.FirePotion(id);
+    EntityFactory.builders[Types.Entities.LOOPRING] = function(id) {
+        return new Items.Loopring(id);
     };
 
-    EntityFactory.builders[Types.Entities.BURGER] = function(id) {
-        return new Items.Burger(id);
+    EntityFactory.builders[Types.Entities.TAIKOBOOST] = function(id) {
+        return new Items.TaikoBoost(id);
     };
     
     EntityFactory.builders[Types.Entities.CAKE] = function(id) {

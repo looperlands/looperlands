@@ -397,7 +397,7 @@ module.exports = Player = Character.extend({
                         self.broadcast(item.despawn());
                         self.server.removeEntity(item);
 
-                        if (kind === Types.Entities.FIREPOTION || kind === Types.Entities.COBCORN || kind === Types.Entities.EYEBALL || kind === Types.Entities.ENERGYDRINK) {
+                        if (kind === Types.Entities.LOOPRING || kind === Types.Entities.COBCORN || kind === Types.Entities.EYEBALL || kind === Types.Entities.ENERGYDRINK) {
                             self.startInvincibility();
                             self.updateHitPoints();
                             self.send(new Messages.HitPoints(self.maxHitPoints).serialize());
@@ -412,7 +412,7 @@ module.exports = Player = Character.extend({
                                 case Types.Entities.REDPOTION:
                                     amount = 40;
                                     break;
-                                case Types.Entities.BURGER:
+                                case Types.Entities.TAIKOBOOST:
                                 case Types.Entities.GREYPOTION:
                                     amount = 100;
                                     break;
@@ -569,8 +569,8 @@ module.exports = Player = Character.extend({
         });
 
         this.connection.onClose(function () {
-            if (self.firepotionTimeout) {
-                clearTimeout(self.firepotionTimeout);
+            if (self.loopringTimeout) {
+                clearTimeout(self.loopringTimeout);
             }
             clearTimeout(self.disconnectTimeout);
             if (self.exit_callback) {
@@ -640,8 +640,8 @@ module.exports = Player = Character.extend({
                 }
 
                 this.isDead = true;
-                if (this.firepotionTimeout) {
-                    clearTimeout(this.firepotionTimeout);
+                if (this.loopringTimeout) {
+                    clearTimeout(this.loopringTimeout);
                 }
             }
         }
@@ -947,7 +947,7 @@ module.exports = Player = Character.extend({
     },
 
     getPowerUpActive: function () {
-        return this.firepotionTimeout !== null && this.firepotionTimeout !== undefined;
+        return this.loopringTimeout !== null && this.loopringTimeout !== undefined;
     },
 
     getAttackRate: function () {
@@ -1220,21 +1220,21 @@ module.exports = Player = Character.extend({
     startInvincibility: function () {
         let self = this;
 
-        if (self.firepotionTimeout !== null && self.firepotionTimeout !== undefined) {
-            /* Issue #195: If the player is already a firefox when picking a firepotion
+        if (self.loopringTimeout !== null && self.loopringTimeout !== undefined) {
+            /* Issue #195: If the player is already a firefox when picking a loopring
             Then cancel the queued "return to normal"
             New timeout will start and refresh the duration */
-            clearTimeout(self.firepotionTimeout);
-            self.firepotionTimeout = null;
+            clearTimeout(self.loopringTimeout);
+            self.loopringTimeout = null;
         }
         else {
             self.broadcast(self.equip(Types.Entities.FIREFOX), false);
             self.invincible = true;
         }
 
-        self.firepotionTimeout = setTimeout(function () {
+        self.loopringTimeout = setTimeout(function () {
             self.broadcast(self.equip(self.armor), false); // return to normal
-            self.firepotionTimeout = null;
+            self.loopringTimeout = null;
             self.invincible = false;
         }, Types.timeouts[Types.Entities.FIREFOX]);
     },

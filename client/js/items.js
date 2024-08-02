@@ -129,16 +129,16 @@ define(['item'], function(Item) {
             },
         }),
 
-        Burger: Item.extend({
+        TaikoBoost: Item.extend({
             init: function(id) {
-                this._super(id, Types.Entities.BURGER, "object");
+                this._super(id, Types.Entities.TAIKOBOOST, "object");
                 this.lootMessage = "Loopring Layer 3 Taiko Boost!";
             },
         }),
 
-        FirePotion: Item.extend({
+        Loopring: Item.extend({
             init: function(id) {
-                this._super(id, Types.Entities.FIREPOTION, "object");
+                this._super(id, Types.Entities.LOOPRING, "object");
                 this.lootMessage = "You feel the power of Loopring!";
             }
         }),

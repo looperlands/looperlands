@@ -5,8 +5,8 @@ let Properties = {
         level: 1,
         drops: {
             flask: 40,
-            burger: 10,
-            firepotion: 5
+            taikoboost: 10,
+            loopring: 5
         },
         respawnDelay: 10000,
     },
@@ -16,7 +16,7 @@ let Properties = {
         drops: {
             flask: 40,
             axe: 20,
-            firepotion: 5
+            loopring: 5
         },
         weaponMod: 1.5, //bigger mod cause attack rate is 50% slower
         respawnDelay: 45000,
@@ -27,17 +27,17 @@ let Properties = {
         drops: {
             flask: 50,
             axe: 10,
-            firepotion: 5
+            loopring: 5
         }
     },
 
     ogre: {
         level: 6,
         drops: {
-            burger: 10,
+            taikoboost: 10,
             flask: 50,
             bluesword: 5,
-            firepotion: 5
+            loopring: 5
         }
     },
 
@@ -46,7 +46,7 @@ let Properties = {
         drops: {
             flask: 30,
             redsword: 30,
-            firepotion: 5
+            loopring: 5
         },
         weaponMod: 1.25,
         hpMod: 0.8
@@ -55,8 +55,8 @@ let Properties = {
     deathknight: {
         level: 12,
         drops: {
-            burger: 50,
-            firepotion: 5
+            taikoboost: 50,
+            loopring: 5
         },
         weaponMod: 0.9,
         hpMod: 1.2
@@ -67,7 +67,7 @@ let Properties = {
         drops: {
             flask: 50,
             axe: 20,
-            firepotion: 5
+            loopring: 5
         }
     },
 
@@ -76,7 +76,7 @@ let Properties = {
         drops: {
             flask: 50,
             morningstar: 10,
-            firepotion: 5
+            loopring: 5
         },
         weaponMod: 1.2,
         armorMod: 0.5
@@ -85,8 +85,8 @@ let Properties = {
     skeleton2: {
         level: 20,
         drops: {
-            burger: 30,
-            firepotion: 10
+            taikoboost: 30,
+            loopring: 10
         },
         weaponMod: 1.5, //bgger mod cause attack rate is 50% slower
         respawnDelay: 30000
@@ -97,7 +97,7 @@ let Properties = {
         drops: {
             flask: 50,
             redsword: 10,
-            firepotion: 5
+            loopring: 5
         }
     },
 
@@ -106,7 +106,7 @@ let Properties = {
         drops: {
             flask: 50,
             axe: 10,
-            firepotion: 5
+            loopring: 5
         }
     },
 
@@ -114,7 +114,7 @@ let Properties = {
         level: 4,
         drops: {
             flask: 50,
-            firepotion: 5
+            loopring: 5
         }
     },
 
@@ -224,7 +224,7 @@ let Properties = {
         level: 10,
         drops: {
             flask: 34,
-	    burger: 5,
+	    taikoboost: 5,
 	    GOLD: 40,
             GOLD2: 15,
             GOLD3: 5,
@@ -235,7 +235,7 @@ let Properties = {
         level: 15,
         drops: {
             flask: 30,
-	    burger: 5,
+	    taikoboost: 5,
 	    GOLD: 15,
             GOLD2: 35,
             GOLD3: 8,
@@ -377,7 +377,7 @@ let Properties = {
     megamag: {
         level: 20,
         drops: {
-            burger: 100
+            taikoboost: 100
         },
         armorMod: 2.5,
         weaponMod: 2.5,
@@ -1119,7 +1119,7 @@ let Properties = {
     ROBITSE4: {
         level: 5,
         drops: {
-            burger: 50,
+            taikoboost: 50,
             GOLD: 3
         },
     },
@@ -1127,7 +1127,7 @@ let Properties = {
     ROBITSE5: {
         level: 10,
         drops: {
-            burger: 10,
+            taikoboost: 10,
             GOLD: 10
         },
     },
@@ -1135,7 +1135,7 @@ let Properties = {
     ROBITSE6: {
         level: 15,
         drops: {
-            burger: 50,
+            taikoboost: 50,
             GOLD: 50
         },
     },
@@ -1143,7 +1143,7 @@ let Properties = {
     ROBITSE7: {
         level: 10,
         drops: {
-            burger: 50,
+            taikoboost: 50,
             GOLD: 50
         },
     },
@@ -1151,7 +1151,7 @@ let Properties = {
     ROBITSE8: {
         level: 15,
         drops: {
-            burger: 50,
+            taikoboost: 50,
             GOLD: 50
         },
     },
@@ -1159,7 +1159,7 @@ let Properties = {
     ROBITSE9: {
         level: 13,
         drops: {
-            burger: 50,
+            taikoboost: 50,
             GOLD: 50,
         },
     },
@@ -1167,7 +1167,7 @@ let Properties = {
     ROBITSE10: {
         level: 5,
         drops: {
-            burger: 50,
+            taikoboost: 50,
             GOLD: 50
         },
     },
@@ -1175,7 +1175,7 @@ let Properties = {
     INFERNOID: {
         level: 3,
         drops: {
-            burger: 50,
+            taikoboost: 50,
             GOLD: 50,
             GOLD2: 10,
             GOLD3: 2,
@@ -1189,7 +1189,7 @@ let Properties = {
     ZAROTH: {
         level: 55,
         drops: {
-            burger: 50,
+            taikoboost: 50,
             GOLD: 50,
             GOLD2: 10,
             GOLD3: 2,
@@ -1204,7 +1204,7 @@ let Properties = {
     INFECTION: {
         level: 5,
         drops: {
-            burger: 50,
+            taikoboost: 50,
             GOLD: 50,
             GOLD2: 25,
         },
@@ -1216,7 +1216,7 @@ let Properties = {
      COLOSSUS: {
         level: 30,
         drops: {
-            burger: 50,
+            taikoboost: 50,
             GOLD: 50,
             GOLD2: 10,
             GOLD3: 2,
@@ -1230,7 +1230,7 @@ let Properties = {
     ONI: {
         level: 30,
         drops: {
-            burger: 40,
+            taikoboost: 40,
             GOLD: 40,
             GOLD2: 10,
             GOLD3: 2
@@ -1245,7 +1245,7 @@ let Properties = {
     balloondogb: {
         level: 2,
         drops: {
-            burger: 50,
+            taikoboost: 50,
             GOLD: 50
         },
         xp: 138
@@ -1254,7 +1254,7 @@ let Properties = {
     balloondogy: {
         level: 4,
         drops: {
-            burger: 50,
+            taikoboost: 50,
             GOLD: 50
         },
         xp: 198
@@ -1264,7 +1264,7 @@ let Properties = {
         level: 6,
         drops: {
             m88nmap: 3,
-            burger: 37,
+            taikoboost: 37,
             GOLD: 50,
             GOLD2: 10
         },
@@ -1275,7 +1275,7 @@ let Properties = {
         level: 8,
         drops: {
             m88nmap: 5,
-            burger: 25,
+            taikoboost: 25,
             GOLD: 40,
             GOLD2: 20,
             GOLD3: 10,
@@ -1290,7 +1290,7 @@ let Properties = {
             m88nsteak: 1,
             m88nmail: 1,
             m88nshovel: 1,
-            burger: 25,
+            taikoboost: 25,
             GOLD: 10,
             GOLD2: 25,
             GOLD3: 30,
@@ -1302,7 +1302,7 @@ let Properties = {
         level: 1,
         drops: {
             m88nmap: 5,
-            burger: 25,
+            taikoboost: 25,
             GOLD: 25,
             GOLD2: 30
         },
@@ -1315,7 +1315,7 @@ let Properties = {
             m88nsteak: 1,
             m88nmail: 1,
             m88nshovel: 1,
-            burger: 5,
+            taikoboost: 5,
             GOLD2: 20,
             GOLD3: 55
         },
@@ -1329,7 +1329,7 @@ let Properties = {
             m88nsteak: 1,
             m88nmail: 1,
             m88nshovel: 1,
-            burger: 5,
+            taikoboost: 5,
             GOLD3: 75
         },
         xp: 4444
@@ -1342,7 +1342,7 @@ let Properties = {
             m88nsteak: 1,
             m88nmail: 1,
             m88nshovel: 1,
-            burger: 15,
+            taikoboost: 15,
             GOLD3: 50
         },
         messages: ['Mmmmm, Easter Eggs!', 'O Doyle Rules!', 'Cant touch this...', 'Stay away or come back with friends!'],
@@ -1417,7 +1417,7 @@ let Properties = {
             m88nworm: 1,
             m88negg1: 1,
             m88negg2: 1,
-            burger: 5,
+            taikoboost: 5,
             m88ngem: 10,
             GOLD3: 10,
             GOLD4: 5,
@@ -1438,8 +1438,8 @@ let Properties = {
             m88nmap: 5,
             GOLD: 30,
             GOLD2: 20,
-            burger: 10,
-            firepotion: 5
+            taikoboost: 10,
+            loopring: 5
         },
         respawnDelay: 10000,
         xp: 11
@@ -1452,7 +1452,7 @@ let Properties = {
             GOLD: 40,
             GOLD2: 25,
             GOLD3: 10,
-            firepotion: 5
+            loopring: 5
         },
         xp: 22
     },
@@ -1464,7 +1464,7 @@ let Properties = {
             GOLD: 20,
             GOLD2: 20,
             GOLD3: 5,
-            firepotion: 5
+            loopring: 5
         },
         xp: 222
     },
@@ -1488,7 +1488,7 @@ let Properties = {
             m88ndarkcloud: 10,
             m88ndreamcloud: 2,
             m88nbone: 2,
-            burger: 60,
+            taikoboost: 60,
             GOLD: 20
         },
         xp: 44
@@ -1500,7 +1500,7 @@ let Properties = {
             m88ndarkcloud: 20,
             m88ndreamcloud: 4,
             m88nbone: 4,
-            burger: 40,
+            taikoboost: 40,
             GOLD: 25
         },
         xp: 88
@@ -1513,7 +1513,7 @@ let Properties = {
             m88ndreamcloud: 10,
             m88nsunshine: 5,
             m88nbone: 6,
-            burger: 20,
+            taikoboost: 20,
             GOLD: 20,
             GOLD2: 10
         },
@@ -1525,7 +1525,7 @@ let Properties = {
         drops: {
             m88nsunshine: 15,
             m88nbone: 8,
-            burger: 20,
+            taikoboost: 20,
             GOLD: 30,
             GOLD2: 20
         },
@@ -1536,7 +1536,7 @@ let Properties = {
         level: 15,
         drops: {
             m88nbone: 20,
-            burger: 20,
+            taikoboost: 20,
             GOLD: 30,
             GOLD2: 20,
             GOLD3: 10
@@ -1548,7 +1548,7 @@ let Properties = {
     m88nnightmaremonsterp: {
         level: 18,
         drops: {
-            burger: 20,
+            taikoboost: 20,
             GOLD: 10,
             GOLD2: 20,
             GOLD3: 50
@@ -1610,7 +1610,7 @@ let Properties = {
             m88ngrenade: 1,
             m88nkevlararmor: 1,
             m88nwizardshat: 1,
-            burger: 1,
+            taikoboost: 1,
             m88ndirt: 10,
             m88ngem: 20,
             GOLD3: 1,
