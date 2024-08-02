@@ -2719,6 +2719,7 @@ let Properties = {
         respawnDelay: 9900000,
     },
     m88ncompass: {
+        collectable: true,
         respawnDelay: 9900000
     },
     m88nbinoculars: {
@@ -2803,6 +2804,7 @@ let Properties = {
         respawnDelay: 9900000
     },
     m88ntentacle: {
+        collectable: true,
         respawnDelay: 9900000
     },
     strangeyellowliquid: {
