@@ -50,7 +50,8 @@ Types = {
         SPAWNPROJECTILE: 48,
         OUTOFAMMO: 49,
         SELECTPROJECTILE: 50,
-        ANNOUNCEMENT: 51
+        ANNOUNCEMENT: 51,
+        INDICATOR: 52
     },
 
     Entities: {

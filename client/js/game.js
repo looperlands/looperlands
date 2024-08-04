@@ -90,7 +90,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.lowAmmoThreshold = 10;
 
                 // sprites
-                this.spriteNames = ["hand", "handclick", "sword", "loot", "target", "talk", "float", "sparks", "shadow16", "rat", "skeleton", "skeleton2", "spectre", "boss", "deathknight",
+                this.spriteNames = ["hand", "handclick", "sword", "loot", "target", "talk", "float", "indicator", "sparks", "shadow16", "rat", "skeleton", "skeleton2", "spectre", "boss", "deathknight",
                     "ogre", "crab", "snake", "eye", "bat", "goblin", "wizard", "guard", "taikoguard", "king", "villagegirl", "villager", "coder", "agent", "rick", "scientist", "nyan", "priest", "coblumberjack", "cobhillsnpc", "cobcobmin", "cobellen", "cobminer", "cobjohnny", "cobashley",
                     "king2", "goose", "tanashi", "slime","kingslime","silkshade","redslime","villagesign1","wildgrin","loomleaf","gnashling","arachweave","spider","fangwing", "minimag", "miner", "megamag", "seacreature", "tentacle", "tentacle2", "wildwill","shopowner","blacksmith",
                     "cobchicken", "alaric","orlan","jayce", "cobcow", "cobpig", "cobgoat", "ghostie","cobslimered", "cobslimeyellow", "cobslimeblue", "cobslimepurple", "cobslimegreen", "cobslimepink", "cobslimecyan", "cobslimemint", "cobslimeking", "cobyorkie", "cobcat", "cobcatblack", "cobcatorange", "cobcatbrown", "cobdirt", "cobhay", "cobhaytwo", "cobincubator", "cobcoblin", "cobcobane", "cobogre",
@@ -6179,6 +6179,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.sparksAnimation = new Animation("idle_down", 6, 0, 16, 16);
                 this.sparksAnimation.setSpeed(120);
 
+                this.indicatorAnimation = new Animation("idle_down", 7, 0, 16, 16);
+                this.indicatorAnimation.setSpeed(120);
+
                 this.floatAnimation = new Animation("idle", 6, 0, 16, 16);
                 this.floatAnimation.setSpeed(240);
             },
@@ -8032,6 +8035,14 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     self.client.onAnnouncement(function(message, timeToShow ) {
                         self.app.showAnnouncement(message, timeToShow);
                     });
+
+                    self.client.onIndicatorUpdate(function(entityId, showIndicator) {
+                        console.log('indicator updated', entityId, showIndicator);
+                        let entity = self.getEntityById(entityId);
+                        if(entity instanceof Npc) {
+                            entity.setShowIndicator(showIndicator)
+                        }
+                    })
 
                     self.gamestart_callback();
 
