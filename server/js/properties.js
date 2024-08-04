@@ -2495,7 +2495,7 @@ let Properties = {
         },
         inventoryDescription: "Shot of m88nshine",
         onConsume: function(player){
-            player.setDropOverride(Types.Entities.M88NGEM, 20000);
+            player.setDropOverride(Types.Entities.M88NGEM, 10000);
         }
     },
     m88ndirtymartini: {
@@ -2507,7 +2507,7 @@ let Properties = {
         },
         inventoryDescription: "Dirty Martini",
         onConsume: function(player){
-            player.setDropOverride(Types.Entities.M88NDIRT, 20000);
+            player.setDropOverride(Types.Entities.M88NDIRT, 10000);
         }
     },
     m88nmanamaitai: {
@@ -2519,7 +2519,7 @@ let Properties = {
         },
         inventoryDescription: "Mana Mai Tai",
         onConsume: function(player){
-            player.setDropOverride(Types.Entities.MANACRYSTAL, 20000);
+            player.setDropOverride(Types.Entities.MANACRYSTAL, 10000);
         }
     },
     m88nparadisehurricane: {
@@ -2531,7 +2531,7 @@ let Properties = {
         },
         inventoryDescription: "Paradise Hurricane",
         onConsume: function(player){
-            player.setDropOverride(Types.Entities.WOOD, 20000);
+            player.setDropOverride(Types.Entities.WOOD, 10000);
         }
     },
     m88nnexussangria: {
@@ -2543,7 +2543,7 @@ let Properties = {
         },
         inventoryDescription: "Nexus Sangria",
         onConsume: function(player){
-            player.setDropOverride(Types.Entities.ORE, 20000);
+            player.setDropOverride(Types.Entities.ORE, 10000);
         }
     },
     m88nfastshoes: {
@@ -2623,7 +2623,7 @@ let Properties = {
         inventoryDescription: "m88n gems",
         collectItem: Types.Entities.M88NGEM,
         collectAmount: 1,
-        respawnDelay: 8800000
+        respawnDelay: 42069000
     },
     m88ndirt: {
         collectable: true,
@@ -2719,9 +2719,13 @@ let Properties = {
         respawnDelay: 9900000,
     },
     m88ncompass: {
+        collectable: true,
+        inventoryDescription: "Mysterious Compass",
         respawnDelay: 9900000
     },
     m88nbinoculars: {
+        collectable: true,
+        inventoryDescription: "Mysterious Binoculars",
         respawnDelay: 9900000
     },
     m88npeel: {
@@ -2803,6 +2807,8 @@ let Properties = {
         respawnDelay: 9900000
     },
     m88ntentacle: {
+        collectable: true,
+        inventoryDescription: "Octopussy Tentacle",
         respawnDelay: 9900000
     },
     strangeyellowliquid: {
