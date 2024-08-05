@@ -55,6 +55,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             this.handlers[Types.Messages.SPAWNPROJECTILE] = this.receiveSpawnProjectile;
             this.handlers[Types.Messages.OUTOFAMMO] = this.receiveOutOfAmmo;
             this.handlers[Types.Messages.ANNOUNCEMENT] = this.receiveAnnouncement;
+            this.handlers[Types.Messages.INDICATOR] = this.receiveIndicatorUpdate;
 
             this.useBison = false;
             this.enable();
@@ -264,7 +265,6 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
                         target = data[7];
                     }
                 }
-
                 var character = EntityFactory.createEntity(kind, id, name);
             
                 if(character instanceof Player) {
@@ -276,7 +276,11 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
                 if(character instanceof Mob || character instanceof Player) {
                     character.level = level;
                 }
-            
+
+                if(Types.isNpc(kind)) {
+                    character.setShowIndicator(data[5]);
+                }
+
                 if(this.spawn_character_callback) {
                     const isDynamicNFT = character.spriteName === undefined || character.weaponName === undefined;
                     if (character instanceof Player && isDynamicNFT) {
@@ -589,6 +593,12 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             }
         },
 
+        receiveIndicatorUpdate: function(data) {
+            if (this.on_indicator_update_callback) {
+                this.on_indicator_update_callback(data[1], data[2]);
+            }
+        },
+
         onDispatched: function(callback) {
             this.dispatched_callback = callback;
         },
@@ -755,6 +765,10 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
 
         onAnnouncement: function(callback) {
             this.on_announcement_callback = callback;
+        },
+
+        onIndicatorUpdate: function(callback) {
+          this.on_indicator_update_callback = callback;
         },
 
         sendHello: function(player) {

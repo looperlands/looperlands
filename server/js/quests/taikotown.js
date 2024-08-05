@@ -13,7 +13,8 @@ quests = [
         amount: 1,
         level: 1,
         xp: 1000,
-        medal: Types.Medals.HEARTH
+        medal: Types.Medals.HEARTH,
+        showIndicator: false,
     },
     {
         id: "TRAILBLAZER_QUEST_2",
@@ -29,7 +30,8 @@ quests = [
         requiredQuest: "TRAILBLAZER_QUEST_1",
         level: 2,
         xp: 2000,
-        medal: Types.Medals.HEARTH
+        medal: Types.Medals.HEARTH,
+        showIndicator: false,
     },
     {
         id: "TRAILBLAZER_QUEST_3",
@@ -46,7 +48,8 @@ quests = [
         requiredQuest: "TRAILBLAZER_QUEST_2",
         level: 3,
         medal: Types.Medals.HEARTH,
-        rental: "0x139b4906d04d012fd7b296bb06182b67d9f88734cf89a1de9b87e97508a82500"
+        rental: "0x139b4906d04d012fd7b296bb06182b67d9f88734cf89a1de9b87e97508a82500",
+        showIndicator: false,
     },
     {
         id: "TRAILBLAZER_QUEST_4",
@@ -62,7 +65,8 @@ quests = [
         requiredQuest: "TRAILBLAZER_QUEST_3",
         level: 4,
         xp: 3000,
-        medal: Types.Medals.HEARTH
+        medal: Types.Medals.HEARTH,
+        showIndicator: false,
     },
     {
         id: "TRAILBLAZER_QUEST_5",
@@ -78,7 +82,8 @@ quests = [
         requiredQuest: "TRAILBLAZER_QUEST_4",
         level: 5,
         medal: Types.Medals.HEARTH,
-        rental: "0x344ec7868b6f0fc509e79ddf53b1320ce875673150cae151dd9cbd2764d96273"
+        rental: "0x344ec7868b6f0fc509e79ddf53b1320ce875673150cae151dd9cbd2764d96273",
+        showIndicator: false,
     },
     {
         id: "TRAILBLAZER_QUEST_6",
@@ -94,7 +99,8 @@ quests = [
         requiredQuest: "TRAILBLAZER_QUEST_5",
         level: 6,
         xp: 4000,
-        medal: Types.Medals.HEARTH
+        medal: Types.Medals.HEARTH,
+        showIndicator: false,
     },
     {
         id: "TRAILBLAZER_QUEST_7",
@@ -110,7 +116,8 @@ quests = [
         requiredQuest: "TRAILBLAZER_QUEST_6",
         level: 7,
         xp: 10000,
-        medal: Types.Medals.HEARTH
+        medal: Types.Medals.HEARTH,
+        showIndicator: false,
     }
 
 ]

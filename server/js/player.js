@@ -1067,6 +1067,7 @@ module.exports = Player = Character.extend({
                 this.playerEventBroker.questCompleteEvent(quest, xpReward);
             }
         }
+        this.updateIndicators();
     },
 
     addConsumable: function (consumable) {
@@ -1278,5 +1279,19 @@ module.exports = Player = Character.extend({
         setTimeout(() => {
             delete this.dropOverride;
         }, timeout);
+    },
+
+    //loop over all npcs and check if they need to show an indicator now
+    updateIndicators: function() {
+        for (let id in this.server.entities) {
+            let entity = this.server.entities[id];
+            if(entity instanceof Npc) {
+                let hadIndicator = entity.showIndicator;
+                entity.checkIndicator(this.sessionId, this.server.server.cache);
+                if (hadIndicator !== entity.showIndicator) {
+                    this.send(new Messages.Indicator(entity.id, entity.showIndicator).serialize())
+                }
+            }
+        }
     }
 });

@@ -1107,6 +1107,7 @@ define(['character'], function (Character) {
             this.talkIndex = 0;
             this.thoughts = [];
             this.thoughtsClearedCallback = null;
+            this.showIndicator = false;
         },
 
         talk: function (walletId) {
@@ -1132,7 +1133,11 @@ define(['character'], function (Character) {
             }
 
             this.thoughtsClearedCallback = thoughtsClearedCallback;
-        }
+        },
+
+        setShowIndicator: function (indicator) {
+            this.showIndicator = indicator;
+        },
     });
 
     return Npc;
