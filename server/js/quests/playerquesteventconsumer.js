@@ -22,6 +22,9 @@ class PlayerQuestEventConsumer extends PlayerEventConsumer {
                 return false;
             }
             let count = playerCache.gameData.mobKills[quest.target] || 0;
+            quest.done = count;
+            quest.remaining = quest.amount - count;
+
             return count >= quest.amount;
         },
         "LOOT_ITEM": function (quest, playerCache) {
@@ -29,6 +32,9 @@ class PlayerQuestEventConsumer extends PlayerEventConsumer {
                 return false;
             }
             let count = playerCache.gameData.items[quest.target] || 0;
+            quest.done = count;
+            quest.remaining = quest.amount - count;
+
             return count >= quest.amount;
         }
     }
@@ -57,32 +63,37 @@ class PlayerQuestEventConsumer extends PlayerEventConsumer {
             let questKey = quest.id || quest.questKey;
             quest = quests.questsByID[questKey];
             if (completionCheckerFN(quest, event.playerCache)) {
-                dao.setQuestStatus(event.playerCache.nftId, questKey, quests.STATES.COMPLETED);
-                let completedQuests = event.playerCache.gameData.quests[quests.STATES.COMPLETED];
-                let questInCacheFormat = { questKey: questKey, status: quests.STATES.COMPLETED };
-                if (!completedQuests) {
-                    event.playerCache.gameData.quests[quests.STATES.COMPLETED] = [questInCacheFormat];
-                }
-                else {
-                    event.playerCache.gameData.quests[quests.STATES.COMPLETED].push(questInCacheFormat);
-                }
-                //console.log("inprogress quest: ", event.playerCache.gameData.quests[quests.STATES.IN_PROGRESS]);
-                event.playerCache.gameData.quests[quests.STATES.IN_PROGRESS] = event.playerCache.gameData.quests[quests.STATES.IN_PROGRESS].filter(q => q.id !== questKey);
-                changedQuests.push(quest);
-
-                if (quest.rental) {
-                    platformClient.getFreeRental(quest.rental, event.playerCache.walletId);
-                }
-
-                if (event.eventType === "LOOT_ITEM") {
-                    const amount = -(quest.amount);
-                    const nftId = event.playerCache.nftId;
-                    const item = quest.target;
-                    dao.updateResourceBalance(nftId, item, amount);
+                if(!quest.needToReturn) {
+                    this.completeQuest(event.playerCache, questKey, quest);
+                    changedQuests.push(quest);
                 }
             }
         }
         return { changedQuests: changedQuests, quests: event.playerCache.gameData.quests };
+    }
+
+    completeQuest(playerCache, questKey, quest) {
+        dao.setQuestStatus(playerCache.nftId, questKey, quests.STATES.COMPLETED);
+        let completedQuests = playerCache.gameData.quests[quests.STATES.COMPLETED];
+        let questInCacheFormat = {questKey: questKey, status: quests.STATES.COMPLETED};
+        if (!completedQuests) {
+            playerCache.gameData.quests[quests.STATES.COMPLETED] = [questInCacheFormat];
+        } else {
+            playerCache.gameData.quests[quests.STATES.COMPLETED].push(questInCacheFormat);
+        }
+        //console.log("inprogress quest: ", event.playerCache.gameData.quests[quests.STATES.IN_PROGRESS]);
+        playerCache.gameData.quests[quests.STATES.IN_PROGRESS] = playerCache.gameData.quests[quests.STATES.IN_PROGRESS].filter(q => q.id !== questKey);
+
+        if (quest.rental) {
+            platformClient.getFreeRental(quest.rental, playerCache.walletId);
+        }
+
+        if (quest.eventType === "LOOT_ITEM") {
+            const amount = -(quest.amount);
+            const nftId = playerCache.nftId;
+            const item = quest.target;
+            dao.updateResourceBalance(nftId, item, amount);
+        }
     }
 }
 

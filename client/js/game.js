@@ -8222,7 +8222,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     self.audioManager.playSound("npc");
 
                     if (npc.thoughts.length === 0 && npc.thoughtsClearedCallback) {
-                        setTimeout(() => { npc.thoughtsClearedCallback(); npc.thoughtsClearedCallback = null}, 1500);
+                        setTimeout(() => { if(npc.thoughtsClearedCallback) {npc.thoughtsClearedCallback();  npc.thoughtsClearedCallback = null }}, 1500);
                     }
                     return;
                 }
@@ -8238,10 +8238,16 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         let message = messages.shift()
                         if (messages.length > 0) {
                             npc.addThoughts(messages, () => {
-                                self.showNewQuestPopup(response.data.quest)
+                                if(response.data.quest) {
+                                    self.showNewQuestPopup(response.data.quest)
+                                }
                             });
                         } else {
-                            setTimeout(() => { self.showNewQuestPopup(response.data.quest); }, 1500);
+                            if(response.data.quest) {
+                                setTimeout(() => {
+                                    self.showNewQuestPopup(response.data.quest);
+                                }, 1500);
+                            }
                         }
                         self.createBubble(npc.id, message);
                         self.assignBubbleTo(npc);

@@ -4,18 +4,21 @@ quests = [
         id: "KING_QUEST_1",
         name: "The King's Kill Request",
         startText: "The King has requested that you slay 100 rats.",
-        endText: "Thanks for killing the rats",
+        inProgressText: "You are doing great! Keep it up, {{remaining}} to go! Come back for another quest when you have killed 100 rats.",
+        endText: ["Thanks for killing the rats", "Here is your next quest"],
         eventType: "KILL_MOB",
         npc: Types.Entities.KING,
         target: Types.Entities.RAT,
         amount: 100,
         level: 1,
-        medal: Types.Medals.RAT
+        medal: Types.Medals.RAT,
+        needToReturn: true
     },
     {
         id: "KING_QUEST_2",
         name: "The King's Loot Request",
         startText: "The King has requested that you use 100 potions",
+        inProgressText: "You are doing great! Keep it up! Collect {{remaining}} more potions to finish the quest.",
         endText: "Thanks for using the potions",
         eventType: "LOOT_ITEM",
         npc: Types.Entities.KING,
