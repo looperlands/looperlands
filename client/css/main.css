@@ -1048,13 +1048,12 @@ footer div  {display:inline-block;}
     margin: 3px;
     background-color: #341e28 !important;
     border-image-width: 4px;
+    position: relative;
 }
 #inventory .item:hover {
     background-color: #533642 !important;
 }
 #inventory .item p {
-    position: absolute;
-    translate: 30px -14px;
     color: #d2ba2f;
     background: #533642;
     box-shadow: 1px 1px 1px 0px rgba(0,0,0,1);
@@ -1108,10 +1107,9 @@ footer div  {display:inline-block;}
     color: #000000;
     text-align: center;
     border-radius: 0.25em;
-    white-space: nowrap;
     position: absolute;
     z-index: 1;
-    translate: 30px 30px;
+    translate: -10px 30px;
     font-family: "GraphicPixel";
     outline-style: solid;
     outline-color: #a18b61;
