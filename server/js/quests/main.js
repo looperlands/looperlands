@@ -40,7 +40,24 @@ quests = [
         amount: 10,
         level: 1,
         medal: Types.Medals.HEARTH
-    }
+    },
+
+    // SAMPLE QUEST
+    // {
+    //     id: "KING_QUEST_TALK",
+    //     name: "Find the cat",
+    //     startText: "The King has requested that you find a cat",
+    //     inProgressText: "Still looking for that cat?",
+    //     endText: "Oh you find my kitty! Thank you!",
+    //     eventType: "NPC_TALKED",
+    //     npc: Types.Entities.KING,
+    //     target: Types.Entities.NYAN,
+    //     requiredQuest: "KING_QUEST_1",
+    //     level: 1,
+    //     medal: Types.Medals.FOX,
+    //     needToReturn: true,
+    //     npcText: "Meow",
+    // },
 ]
 
 exports.quests = quests;

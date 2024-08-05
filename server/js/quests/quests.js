@@ -138,6 +138,17 @@ exports.handleNPCClick = function (cache, sessionId, npcId) {
     }
   }
 
+  let npcTargetQuests = quests.filter(quest => quest.eventType === "NPC_TALKED" && quest.target === npcId);
+    if(npcTargetQuests) {
+        let npcQuestIds = npcTargetQuests.map(quest => quest.id);
+        for (const questID of npcQuestIds) {
+            let quest = questsByID[questID];
+            if(avatarHasQuest(questID, sessionData.gameData.quests) && !avatarHasCompletedQuest(questID, sessionData.gameData.quests)) {
+              return { text: quest.npcText };
+            }
+        }
+    }
+
   return "";
 }
 

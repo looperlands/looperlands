@@ -17,7 +17,7 @@ class PlayerQuestEventConsumer extends PlayerEventConsumer {
     }
 
     completionCheckers = {
-        "KILL_MOB": function (quest, playerCache) {
+        "KILL_MOB": function (quest, playerCache, event) {
             if (quest === undefined) {
                 return false;
             }
@@ -27,7 +27,7 @@ class PlayerQuestEventConsumer extends PlayerEventConsumer {
 
             return count >= quest.amount;
         },
-        "LOOT_ITEM": function (quest, playerCache) {
+        "LOOT_ITEM": function (quest, playerCache, event) {
             if (quest === undefined) {
                 return false;
             }
@@ -36,6 +36,9 @@ class PlayerQuestEventConsumer extends PlayerEventConsumer {
             quest.remaining = quest.amount - count;
 
             return count >= quest.amount;
+        },
+        "NPC_TALKED": function(quest, playerCache, event) {
+            return quest.completed || parseInt(event.data.npc) === parseInt(quest.target);
         }
     }
 
@@ -56,16 +59,24 @@ class PlayerQuestEventConsumer extends PlayerEventConsumer {
         if (completionCheckerFN === undefined) {
             return { change: false };
         }
-
         let changedQuests = []
 
         for (let quest of inProgressQuests) {
             let questKey = quest.id || quest.questKey;
             quest = quests.questsByID[questKey];
-            if (completionCheckerFN(quest, event.playerCache)) {
+            if(!quest) {
+                continue;
+            }
+            if(quest.eventType !== event.eventType) {
+                continue;
+            }
+
+            if (completionCheckerFN(quest, event.playerCache, event)) {
                 if(!quest.needToReturn) {
                     this.completeQuest(event.playerCache, questKey, quest);
                     changedQuests.push(quest);
+                } else {
+                    quest.completed = true;
                 }
             }
         }
