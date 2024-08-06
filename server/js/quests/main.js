@@ -57,6 +57,10 @@ quests = [
     //     medal: Types.Medals.FOX,
     //     needToReturn: true,
     //     npcText: "Meow",
+    //     reward: {
+    //         item: Types.Entities.cpotion_m,
+    //         amount: 5
+    //     }
     // },
 ]
 
