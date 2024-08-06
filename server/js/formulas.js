@@ -31,7 +31,7 @@ Formulas.hp = function (level) {
 };
 
 Formulas.xp = function (mob) {
-    let baseXp = mob.level * 7;
+    let baseXp = mob.level * 11;
     let xp = baseXp * XP_MULTIPLIER;
     return xp;
 }
