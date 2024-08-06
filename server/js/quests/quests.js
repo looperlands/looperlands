@@ -11,6 +11,8 @@ const MRMlabs = require('./MRMlabs.js');
 const robits = require('./robits.js');
 const taikotown = require('./taikotown.js');
 const _ = require('underscore');
+const PlayerQuestEventConsumer = require('./playerquesteventconsumer.js');
+const {PlayerEventBroker} = require("./playereventbroker");
 
 const STATES = {
   IN_PROGRESS: "IN_PROGRESS", // picked up from an NPC
@@ -20,6 +22,7 @@ const STATES = {
 
 // Put new quests from other files here
 let maps = [main.quests, oa.quests, cobsfarm.quests, cobsfarmcity.quests, m88n.quests, MRMlabs.quests, sdu.quests, robits.quests, taikotown.quests]
+const eventConsumer = new PlayerQuestEventConsumer.PlayerQuestEventConsumer()
 
 function findDuplicateValues(arr) {
   const frequencyMap = {};
@@ -102,6 +105,49 @@ exports.handleNPCClick = function (cache, sessionId, npcId) {
   if (handedOutQuest) {
     return {text: msgText, quest: handedOutQuest};
   }
+
+  // Handle in-progress / completed quests when returned to NPC
+  if(npcQuests) {
+    let broker = PlayerEventBroker.playerEventBrokers[sessionId];
+    let npcQuestIds = npcQuests.map(quest => quest.id);
+    for (const questID of npcQuestIds) {
+      let quest = questsByID[questID];
+      // Check if quest is in progress
+      if(quest.inProgressText && avatarHasQuest(questID, sessionData.gameData.quests) && !avatarHasCompletedQuest(questID, sessionData.gameData.quests)) {
+        let isCompleted = eventConsumer.completionCheckers[quest.eventType](quest, sessionData);
+
+        if(isCompleted) {
+          // Complete the quest
+          eventConsumer.completeQuest(sessionData, questID, quest);
+          broker.player.handleCompletedQuests([quest]);
+
+          // Update cache
+          sessionData.gameData.quests[this.STATES.IN_PROGRESS] = sessionData.gameData.quests[this.STATES.IN_PROGRESS].filter(q => q.id !== questID);
+          quest.questKey = questID;
+          sessionData.gameData.quests[this.STATES.COMPLETED].push(quest);
+          cache.set(sessionId, sessionData);
+
+          return { text: quest.endText };
+        } else {
+          // Quest is in progress, parse template
+          let textTemplate = quest.inProgressText;
+          let templateParser = _.template(textTemplate, {interpolate: /\{\{(.+?)\}\}/g });
+          return { text: templateParser(quest) };
+        }
+      }
+    }
+  }
+
+  let npcTargetQuests = quests.filter(quest => quest.eventType === "NPC_TALKED" && quest.target === npcId);
+    if(npcTargetQuests) {
+        let npcQuestIds = npcTargetQuests.map(quest => quest.id);
+        for (const questID of npcQuestIds) {
+            let quest = questsByID[questID];
+            if(avatarHasQuest(questID, sessionData.gameData.quests) && !avatarHasCompletedQuest(questID, sessionData.gameData.quests)) {
+              return { text: quest.npcText };
+            }
+        }
+    }
 
   return "";
 }

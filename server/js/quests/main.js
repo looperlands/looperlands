@@ -4,18 +4,21 @@ quests = [
         id: "KING_QUEST_1",
         name: "The King's Kill Request",
         startText: "The King has requested that you slay 100 rats.",
-        endText: "Thanks for killing the rats",
+        inProgressText: "You are doing great! Keep it up, {{remaining}} to go! Come back for another quest when you have killed 100 rats.",
+        endText: ["Thanks for killing the rats", "Here is your next quest"],
         eventType: "KILL_MOB",
         npc: Types.Entities.KING,
         target: Types.Entities.RAT,
         amount: 100,
         level: 1,
-        medal: Types.Medals.RAT
+        medal: Types.Medals.RAT,
+        needToReturn: true
     },
     {
         id: "KING_QUEST_2",
         name: "The King's Loot Request",
         startText: "The King has requested that you use 100 potions",
+        inProgressText: "You are doing great! Keep it up! Collect {{remaining}} more potions to finish the quest.",
         endText: "Thanks for using the potions",
         eventType: "LOOT_ITEM",
         npc: Types.Entities.KING,
@@ -37,7 +40,24 @@ quests = [
         amount: 10,
         level: 1,
         medal: Types.Medals.HEARTH
-    }
+    },
+
+    // SAMPLE QUEST
+    // {
+    //     id: "KING_QUEST_TALK",
+    //     name: "Find the cat",
+    //     startText: "The King has requested that you find a cat",
+    //     inProgressText: "Still looking for that cat?",
+    //     endText: "Oh you find my kitty! Thank you!",
+    //     eventType: "NPC_TALKED",
+    //     npc: Types.Entities.KING,
+    //     target: Types.Entities.NYAN,
+    //     requiredQuest: "KING_QUEST_1",
+    //     level: 1,
+    //     medal: Types.Medals.FOX,
+    //     needToReturn: true,
+    //     npcText: "Meow",
+    // },
 ]
 
 exports.quests = quests;
