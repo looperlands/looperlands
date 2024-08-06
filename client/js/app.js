@@ -657,101 +657,94 @@ define(['jquery', 'storage'], function ($, Storage) {
 
                 inventoryHtml += "<div class='inventorySection' id='inventory-weapons'><div class='inventoryTitle'>Weapons</div>";
                 inventoryHtml += "<div class='inventorySectionItems'>"
-                if (weaponInventory.length > 0) {
-                    columns++;
-                    weaponInventory.forEach(function(item) {
-                        let url = getItemURL(item);
-                        let normalURL = url.replace("/3/", "/2/");
-                        // error url is used to display ranged weapons
-                        let errorURL = url.replace("/3/", "/1/").replace("item-", "");
-                        if (item.dynamicNFTData?.assetType === "ranged_weapon") {
-                            normalURL = "-1"; //cause error;
-                        }
-                        imgTag = "<div class='item panelBorder'>" +
-                            "<div class='tooltiptext pixel-corners-xs'><span class='tooltipHighlight'>Level " + item.level + "</span> " + item.name + " (" + item.trait + ")</div>" +
-                            "<img id='" + item.nftId + "' style='width: 32px; height: 32px; object-fit: none; object-position: 0 4px; cursor: pointer;' src='"+ normalURL +"' onerror='this.onerror=null;this.src=\""+ errorURL + "\"; $(this).css({objectPosition: \"0 -400px\"});' />" +
-                            "</div>";
-                        inventoryHtml += imgTag;
-                    });
-                }
+                columns++;
+                weaponInventory.forEach(function(item) {
+                    let url = getItemURL(item);
+                    let normalURL = url.replace("/3/", "/2/");
+                    // error url is used to display ranged weapons
+                    let errorURL = url.replace("/3/", "/1/").replace("item-", "");
+                    if (item.dynamicNFTData?.assetType === "ranged_weapon") {
+                        normalURL = "-1"; //cause error;
+                    }
+                    imgTag = "<div class='item panelBorder'>" +
+                        "<div class='tooltiptext pixel-corners-xs'><span class='tooltipHighlight'>Level " + item.level + "</span> " + item.name + " (" + item.trait + ")</div>" +
+                        "<img id='" + item.nftId + "' style='width: 32px; height: 32px; object-fit: none; object-position: 0 4px; cursor: pointer;' src='"+ normalURL +"' onerror='this.onerror=null;this.src=\""+ errorURL + "\"; $(this).css({objectPosition: \"0 -400px\"});' />" +
+                        "</div>";
+                    inventoryHtml += imgTag;
+                });
                 inventoryHtml += "</div></div>";
 
-                if (specialInventory.length > 0) {
-                    columns++;
-                    inventoryHtml += "<div class='inventorySection' id='inventory-tools'><div class='inventoryTitle'>Tools</div>";
-                    inventoryHtml += "<div class='inventorySectionItems'>"
+                columns++;
+                inventoryHtml += "<div class='inventorySection' id='inventory-tools'><div class='inventoryTitle'>Tools</div>";
+                inventoryHtml += "<div class='inventorySectionItems'>"
 
-                    specialInventory.forEach(function(item) {
-                        const itemURL = getItemURL(item);
+                specialInventory.forEach(function(item) {
+                    const itemURL = getItemURL(item);
 
-                        inventoryHtml += "<div class='item panelBorder'>" +
-                        "<div class='tooltiptext pixel-corners-xs'><span class='tooltipHighlight'>Level " + item.level + "</span> " + item.name + " (" + item.trait + ")</div>" +
-                        "<img id='" + item.nftId + "' style='width: 32px; height: 32px; object-fit: cover; cursor: pointer; object-position: 100% 0;' src='"+itemURL+"' /></div>";
-                    });
-                    inventoryHtml += "</div></div>";
-                }
+                    inventoryHtml += "<div class='item panelBorder'>" +
+                    "<div class='tooltiptext pixel-corners-xs'><span class='tooltipHighlight'>Level " + item.level + "</span> " + item.name + " (" + item.trait + ")</div>" +
+                    "<img id='" + item.nftId + "' style='width: 32px; height: 32px; object-fit: cover; cursor: pointer; object-position: 100% 0;' src='"+itemURL+"' /></div>";
+                });
+                inventoryHtml += "</div></div>";
+
 
                 let hasConsumable = false;
-                if (Object.keys(consumablesInventory).length > 0) {
-                    let itemHtml = "<div class='inventorySection' id='inventory-tools'><div class='inventoryTitle'>Items</div>";
-                    itemHtml += "<div class='inventorySectionItems'>"
-                    let hasItem = false;
+                let itemHtml = "<div class='inventorySection' id='inventory-tools'><div class='inventoryTitle'>Items</div>";
+                itemHtml += "<div class='inventorySectionItems'>"
+                let hasItem = false;
 
-                    Object.keys(consumablesInventory).forEach(item => {
-                        if (Types.isResource(item)) {
-                            return;
-                        }
-                        hasItem = true;
-
-                        if (consumablesInventory[item].cooldown) {
-                            _this.cooldownMap[item] = consumablesInventory[item].cooldown;
-                        }
-
-                        let description = consumablesInventory[item].description;
-                        let tooltipText = "";
-                        if (description){
-                            tooltipText = "<div class='tooltiptext pixel-corners-xs'>" + description + "</div>";
-                        }
-
-                        if(consumablesInventory[item].consumable) {
-                            hasConsumable = true;
-                        }
-
-                        let cursor = consumablesInventory[item].consumable ? "pointer" : "not-allowed";
-                        let draggable = consumablesInventory[item].consumable ? "true" : "false";
-                        itemHtml += "<div class='item panelBorder " + (consumablesInventory[item].consumable ? 'consumable' : '') + "' draggable='" + draggable + "' data-item='" + item + "'>" + tooltipText + "<img id='" + item + "' draggable='false' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0; cursor: " + cursor + ";' src='img/3/" + consumablesInventory[item].image + ".png' />";
-                        itemHtml += "<div class='timer' id='timer_" + item + "'></div>";
-                        itemHtml += "<p id='count_" + item + "'>" + consumablesInventory[item].qty + "</p>"
-                        itemHtml += "</div>";
-                    });
-
-                    itemHtml += "</div></div>";
-
-                    if (hasItem) {
-                        columns++;
-                        inventoryHtml += itemHtml;
+                Object.keys(consumablesInventory).forEach(item => {
+                    if (Types.isResource(item)) {
+                        return;
                     }
-                }
+                    hasItem = true;
 
-                if (botsInventory.length > 0) {
+                    if (consumablesInventory[item].cooldown) {
+                        _this.cooldownMap[item] = consumablesInventory[item].cooldown;
+                    }
+
+                    let description = consumablesInventory[item].description;
+                    let tooltipText = "";
+                    if (description){
+                        tooltipText = "<div class='tooltiptext pixel-corners-xs'>" + description + "</div>";
+                    }
+
+                    if(consumablesInventory[item].consumable) {
+                        hasConsumable = true;
+                    }
+
+                    let cursor = consumablesInventory[item].consumable ? "pointer" : "not-allowed";
+                    let draggable = consumablesInventory[item].consumable ? "true" : "false";
+                    itemHtml += "<div class='item panelBorder " + (consumablesInventory[item].consumable ? 'consumable' : '') + "' draggable='" + draggable + "' data-item='" + item + "'>" + tooltipText + "<img id='" + item + "' draggable='false' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0; cursor: " + cursor + ";' src='img/3/" + consumablesInventory[item].image + ".png' />";
+                    itemHtml += "<div class='timer' id='timer_" + item + "'></div>";
+                    itemHtml += "<p id='count_" + item + "'>" + consumablesInventory[item].qty + "</p>"
+                    itemHtml += "</div>";
+                });
+
+                itemHtml += "</div></div>";
+
+                if (hasItem) {
                     columns++;
-                    inventoryHtml += "<div class='inventorySection' id='inventory-companions'><div class='inventoryTitle'>Companions</div>";
-                    inventoryHtml += "<div class='inventorySectionItems'>"
-
-                    botsInventory.forEach(function(bot) {
-                        if (bot) {
-                            let url;
-                            if (bot.dynamicNFTData !== undefined) {
-                                url = `https://looperlands.sfo3.digitaloceanspaces.com/assets/companion/1/${bot.dynamicNFTData.tokenHash}.png`;
-                            } else {
-                                url = `img/1/${bot.nftId}.png`;
-                            }
-                            imgTag = `<div class='item panelBorder'><div class='tooltiptext pixel-corners-xs'><span class='tooltipHighlight'>Level ${bot.level}</span> ${bot.name}</div><img id=${bot.nftId} style='width: 32px; height: 32px; object-fit: none; cursor: pointer; object-position: 100% 0;' src='` + url + "'/></div>";
-                            inventoryHtml += imgTag;
-                        }
-                    });
-                    inventoryHtml += "</div></div>";
+                    inventoryHtml += itemHtml;
                 }
+
+                columns++;
+                inventoryHtml += "<div class='inventorySection' id='inventory-companions'><div class='inventoryTitle'>Companions</div>";
+                inventoryHtml += "<div class='inventorySectionItems'>"
+
+                botsInventory.forEach(function(bot) {
+                    if (bot) {
+                        let url;
+                        if (bot.dynamicNFTData !== undefined) {
+                            url = `https://looperlands.sfo3.digitaloceanspaces.com/assets/companion/1/${bot.dynamicNFTData.tokenHash}.png`;
+                        } else {
+                            url = `img/1/${bot.nftId}.png`;
+                        }
+                        imgTag = `<div class='item panelBorder'><div class='tooltiptext pixel-corners-xs'><span class='tooltipHighlight'>Level ${bot.level}</span> ${bot.name}</div><img id=${bot.nftId} style='width: 32px; height: 32px; object-fit: none; cursor: pointer; object-position: 100% 0;' src='` + url + "'/></div>";
+                        inventoryHtml += imgTag;
+                    }
+                });
+                inventoryHtml += "</div></div>";
                 let sidebar = '';
                 if(hasConsumable) {
                     sidebar = '<div class="inventorySidebar panelBorder"><div class="header">Quick access slots</div><div class="slots">' +
