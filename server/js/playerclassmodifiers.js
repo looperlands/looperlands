@@ -14,6 +14,7 @@ class PlayerClassModifiers {
         this._hate = 1;
         this._attackRate = 1;
         this._stealth = 1;
+        this._xp = 1;
 
         this._temporaryModifiers = {};
         this.loadModifierData();
@@ -30,6 +31,7 @@ class PlayerClassModifiers {
         this._hate = modifiers.hate;
         this._attackRate = modifiers.attackRate;
         this._stealth = modifiers.stealth;
+        this._xp = modifiers.xp;
     }
 
     get playerClass() {
@@ -78,6 +80,10 @@ class PlayerClassModifiers {
         return this._applyTemporaryModifier(this._stealth, 'stealth');
     }
 
+    get xp() {
+        return this._applyTemporaryModifier(this._xp, 'xp');
+    }
+
     get emoji() {
         switch(this.playerClass) {
             case 'fighter':
@@ -113,7 +119,8 @@ class PlayerClassModifiers {
             hate: this.hate,
             attackRate: this.attackRate,
             stealth: this.stealth,
-            emoji: this.emoji
+            emoji: this.emoji,
+            xp: this.xp
         };
     }
 

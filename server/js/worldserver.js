@@ -1282,6 +1282,7 @@ module.exports = World = cls.Class.extend({
                 if (buff && buff.stat === "exp"){
                     accompliceShare = Math.round(accompliceShare * (100 + buff.percent)/100);
                 }
+                accompliceShare = accompliceShare * accomplice.playerClassModifiers.xp;
                 accomplice.handleExperience(accompliceShare);
                 self.pushToPlayer(accomplice, new Messages.Kill(mob, accompliceShare));
             }

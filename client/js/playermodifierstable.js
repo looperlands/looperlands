@@ -42,6 +42,7 @@ class PlayerModifiersTable extends HTMLElement {
                 <tr><td>Hate</td><td>${value.hate}</td></tr>
                 <tr><td>Attack Rate</td><td>${value.attackRate}</td></tr>
                 <tr><td>Stealth</td><td>${value.stealth}</td></tr>
+                <tr><td>XP</td><td>${value.xp}</td></tr>                
             </table>
         `;
     }
