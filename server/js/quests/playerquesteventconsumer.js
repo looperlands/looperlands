@@ -72,7 +72,7 @@ class PlayerQuestEventConsumer extends PlayerEventConsumer {
             }
 
             if (completionCheckerFN(quest, event.playerCache, event)) {
-                if(!quest.needToReturn) {
+                if(!quest.needToReturn && !quest.returnToNpc) {
                     this.completeQuest(event.playerCache, questKey, quest);
                     changedQuests.push(quest);
                 } else {
