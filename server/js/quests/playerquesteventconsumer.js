@@ -38,7 +38,7 @@ class PlayerQuestEventConsumer extends PlayerEventConsumer {
             return count >= quest.amount;
         },
         "NPC_TALKED": function(quest, playerCache, event) {
-            return quest.completed || parseInt(event.data.npc) === parseInt(quest.target);
+            return quest.completed || parseInt(event?.data?.npc) === parseInt(quest?.target);
         }
     }
 
@@ -92,11 +92,16 @@ class PlayerQuestEventConsumer extends PlayerEventConsumer {
         } else {
             playerCache.gameData.quests[quests.STATES.COMPLETED].push(questInCacheFormat);
         }
-        //console.log("inprogress quest: ", event.playerCache.gameData.quests[quests.STATES.IN_PROGRESS]);
+
         playerCache.gameData.quests[quests.STATES.IN_PROGRESS] = playerCache.gameData.quests[quests.STATES.IN_PROGRESS].filter(q => q.id !== questKey);
 
         if (quest.rental) {
             platformClient.getFreeRental(quest.rental, playerCache.walletId);
+        }
+
+        let gameData = playerCache.gameData;
+        if (gameData.items === undefined) {
+            gameData.items = {};
         }
 
         if (quest.eventType === "LOOT_ITEM") {
@@ -104,7 +109,22 @@ class PlayerQuestEventConsumer extends PlayerEventConsumer {
             const nftId = playerCache.nftId;
             const item = quest.target;
             dao.updateResourceBalance(nftId, item, amount);
+
+            let itemCount = gameData.items[quest.target] ?? quest.amount;
+            gameData.items[quest.target] = itemCount - quest.amount;
         }
+
+        if (quest.reward) {
+            const amount = (quest.reward.amount);
+            const nftId = playerCache.nftId;
+            const item = quest.reward.item;
+
+            dao.updateResourceBalance(nftId, item, amount);
+
+            let itemCount = gameData.items[quest.reward.item] ?? 0;
+            gameData.items[quest.reward.item] = itemCount + quest.reward.amount;
+        }
+        playerCache.gameData = gameData;
     }
 }
 
