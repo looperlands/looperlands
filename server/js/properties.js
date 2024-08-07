@@ -1424,9 +1424,9 @@ let Properties = {
             GOLD5: 5,
         },
         messages: ['Mmmmm, tasty!', 'Yum!', 'Eww, that was a little tough...', 'Stay on land or come back with friends!'],
-        armorMod: 0.8,
-        hpMod: 4,
-        weaponMod: 0.8,
+        armorMod: 0.5,
+        hpMod: 3,
+        weaponMod: 0.5,
         respawnDelay: 30000,
         xp: 99000
     },
@@ -2809,6 +2809,11 @@ let Properties = {
     m88ntentacle: {
         collectable: true,
         inventoryDescription: "Octopussy Tentacle",
+        respawnDelay: 9900000
+    },
+    m88nskeletonkey: {
+        collectable: true,
+        inventoryDescription: "Skeleton Key",
         respawnDelay: 9900000
     },
     strangeyellowliquid: {
