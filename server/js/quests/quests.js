@@ -51,132 +51,21 @@ if (duplicateIds.length !== 0) {
     process.exit(1);
 }
 
-for (const quest of quests) {
-    if (quest.id.length > 100) {
-        console.error("Quest ID is too long: ", quest);
-        process.exit(1);
-    }
-    let target = quest.target;
-    if (target !== "FLOW") {
-        if (Types.isMob(target) && quest.eventType !== "KILL_MOB") {
-            console.error("Quest target is a mob but event type is not KILL_MOB: ", quest);
-            process.exit(1);
-        }
-
-        if (Types.isItem(target) && quest.eventType !== "LOOT_ITEM") {
-            console.error("Quest target is an item but event type is not LOOT_ITEM: ", quest);
-            process.exit(1);
-        }
-    }
-}
-
-const questsByNPC = quests.reduce((acc, quest) => {
-    if (acc[quest.npc]) {
-        acc[quest.npc].push(quest);
-    } else {
-        acc[quest.npc] = [quest];
-    }
-    return acc;
-}, {});
-
-const questsByID = quests.reduce((acc, quest) => {
-    acc[quest.id] = quest;
-    return acc;
-}, {});
+quests.forEach(quest => validateQuest(quest));
+const questsByNPC = groupBy(quests, 'npc');
+const questsByID = groupBy(quests, 'id', true);
 
 exports.handleNPCClick = function (cache, sessionId, npcId) {
-    let npcQuests = questsByNPC[npcId];
-    let sessionData = cache.get(sessionId);
-    let msgText = "";
-    let handedOutQuest = null;
-    if (npcQuests) {
-        let npcQuestIds = npcQuests.map(quest => quest.id);
-        for (const questID of npcQuestIds) {
-            msgText = handoutQuest(questID, sessionData);
-            if (msgText) {
-                handedOutQuest = questsByID[questID];
-                break;
-            }
-        }
+    const sessionData = cache.get(sessionId);
+    const npcQuests = questsByNPC[npcId];
+    const broker = PlayerEventBroker.playerEventBrokers[sessionId];
 
-        cache.set(sessionId, sessionData);
-    }
+    let response = handleHandoutQuests(npcQuests, sessionData, cache, sessionId) ||
+        handleInProgressQuests(npcQuests, sessionData, broker) ||
+        handleNpcTargetQuests(quests, sessionData, npcId) ||
+        handleReturnToNpcQuests(quests, sessionData, npcId, cache, sessionId, broker);
 
-    if (handedOutQuest) {
-        return {text: msgText, quest: handedOutQuest};
-    }
-
-    let broker = PlayerEventBroker.playerEventBrokers[sessionId];
-
-    // Handle in-progress / completed quests when returned to NPC
-    if (npcQuests) {
-        let npcQuestIds = npcQuests.map(quest => quest.id);
-        for (const questID of npcQuestIds) {
-            let quest = questsByID[questID];
-            // Check if quest is in progress
-            if (quest.inProgressText && avatarHasQuest(questID, sessionData.gameData.quests) && !avatarHasCompletedQuest(questID, sessionData.gameData.quests)) {
-                let isCompleted = eventConsumer.completionCheckers[quest.eventType](quest, sessionData);
-
-                if (isCompleted && !quest.returnToNpc) {
-                    // Complete the quest
-                    eventConsumer.completeQuest(sessionData, questID, quest);
-                    broker.player.handleCompletedQuests([quest]);
-
-                    // Update cache
-                    sessionData.gameData.quests[this.STATES.IN_PROGRESS] = sessionData.gameData.quests[this.STATES.IN_PROGRESS].filter(q => q.id !== questID);
-                    quest.questKey = questID;
-                    sessionData.gameData.quests[this.STATES.COMPLETED].push(quest);
-                    cache.set(sessionId, sessionData);
-
-                    return {text: quest.endText};
-                } else {
-                    // Quest is in progress, parse template
-                    let textTemplate = quest.inProgressText;
-                    let templateParser = _.template(textTemplate, {interpolate: /\{\{(.+?)\}\}/g});
-                    return {text: templateParser(quest)};
-                }
-            }
-        }
-    }
-
-    let npcTargetQuests = quests.filter(quest => quest.eventType === "NPC_TALKED" && quest.target === npcId);
-    if (npcTargetQuests) {
-        let npcQuestIds = npcTargetQuests.map(quest => quest.id);
-        for (const questID of npcQuestIds) {
-            let quest = questsByID[questID];
-            if (avatarHasQuest(questID, sessionData.gameData.quests) && !avatarHasCompletedQuest(questID, sessionData.gameData.quests)) {
-                return {text: quest.npcText};
-            }
-        }
-    }
-
-
-    let returnToNpcQuests = quests.filter(quest => quest.returnToNpc === npcId);
-    if (returnToNpcQuests) {
-        let npcQuestIds = returnToNpcQuests.map(quest => quest.id);
-        for (const questID of npcQuestIds) {
-            let quest = questsByID[questID];
-            if (avatarHasQuest(questID, sessionData.gameData.quests) && !avatarHasCompletedQuest(questID, sessionData.gameData.quests)) {
-                let isCompleted = eventConsumer.completionCheckers[quest.eventType](quest, sessionData);
-
-                if (isCompleted) {
-                    // Complete the quest
-                    eventConsumer.completeQuest(sessionData, questID, quest);
-                    broker.player.handleCompletedQuests([quest]);
-
-                    // Update cache
-                    sessionData.gameData.quests[this.STATES.IN_PROGRESS] = sessionData.gameData.quests[this.STATES.IN_PROGRESS].filter(q => q.id !== questID);
-                    quest.questKey = questID;
-                    sessionData.gameData.quests[this.STATES.COMPLETED].push(quest);
-                    cache.set(sessionId, sessionData);
-
-                    return {text: quest.endText};
-                }
-            }
-        }
-    }
-
-    return "";
+    return response || "";
 }
 
 exports.newQuest = function (cache, sessionId, questID) {
@@ -198,6 +87,68 @@ exports.completeQuest = function (cache, sessionId, questID) {
 
     let quest = questsByID[questID];
     return quest.endText ?? null;
+}
+
+function handleHandoutQuests(npcQuests, sessionData, cache, sessionId) {
+    if (!npcQuests) return null;
+    for (const questID of npcQuests.map(quest => quest.id)) {
+        const msgText = handoutQuest(questID, sessionData);
+        if (msgText) {
+            cache.set(sessionId, sessionData);
+            return { text: msgText, quest: questsByID[questID] };
+        }
+    }
+    return null;
+}
+
+function handleInProgressQuests(npcQuests, sessionData, broker) {
+    if (!npcQuests) return null;
+    for (const questID of npcQuests.map(quest => quest.id)) {
+        const quest = questsByID[questID];
+        if (quest.inProgressText && avatarHasQuest(questID, sessionData.gameData.quests) && !avatarHasCompletedQuest(questID, sessionData.gameData.quests)) {
+            const isCompleted = eventConsumer.completionCheckers[quest.eventType](quest, sessionData);
+            if (isCompleted && !quest.returnToNpc) {
+                completeQuest(questID, sessionData);
+                broker.player.handleCompletedQuests([quest]);
+                return { text: quest.endText };
+            } else {
+                return { text: _.template(quest.inProgressText, { interpolate: /\{\{(.+?)\}\}/g })(quest) };
+            }
+        }
+    }
+    return null;
+}
+
+function handleNpcTargetQuests(quests, sessionData, npcId) {
+    const npcTargetQuests = quests.filter(quest => quest.eventType === "NPC_TALKED" && quest.target === npcId);
+    if (npcTargetQuests) {
+        for (const questID of npcTargetQuests.map(quest => quest.id)) {
+            const quest = questsByID[questID];
+            if (avatarHasQuest(questID, sessionData.gameData.quests) && !avatarHasCompletedQuest(questID, sessionData.gameData.quests)) {
+                return { text: quest.npcText };
+            }
+        }
+    }
+    return null;
+}
+
+function handleReturnToNpcQuests(quests, sessionData, npcId, cache, sessionId, broker) {
+    const returnToNpcQuests = quests.filter(quest => quest.returnToNpc === npcId);
+    if (returnToNpcQuests) {
+        for (const questID of returnToNpcQuests.map(quest => quest.id)) {
+            const quest = questsByID[questID];
+            if (avatarHasQuest(questID, sessionData.gameData.quests) && !avatarHasCompletedQuest(questID, sessionData.gameData.quests)) {
+                const isCompleted = eventConsumer.completionCheckers[quest.eventType](quest, sessionData);
+                if (isCompleted) {
+                    completeQuest(questID, sessionData);
+                    broker.player.handleCompletedQuests([quest]);
+                    cache.set(sessionId, sessionData);
+                    return { text: quest.endText };
+                }
+            }
+        }
+    }
+    return null;
 }
 
 function handoutQuest(questID, sessionData) {
@@ -232,32 +183,12 @@ exports.hasCompletedQuest = function (questID, sessionData) {
 }
 
 function avatarHasQuest(questId, avatarQuests) {
-    if (_.isEmpty(avatarQuests)) {
-        return false;
-    }
-
-    for (const [status, quests] of Object.entries(avatarQuests)) {
-        for (const quest of quests) {
-            if (quest.questKey === questId) {
-                return true;
-            }
-        }
-    }
-
-    return false;
+    if (_.isEmpty(avatarQuests)) return false;
+    return Object.values(avatarQuests).flat().some(quest => quest.questKey === questId);
 }
 
 function avatarHasCompletedQuest(questId, avatarQuests) {
-    let completed = avatarQuests[STATES.COMPLETED];
-    if (completed !== undefined) {
-        for (const quest of completed) {
-            if (quest.questKey === questId) {
-                return true;
-            }
-        }
-    }
-
-    return false;
+    return (avatarQuests[STATES.COMPLETED] || []).some(quest => quest.questKey === questId);
 }
 
 function startQuest(sessionData, questID) {
@@ -280,7 +211,8 @@ function completeQuest(questID, sessionData) {
         return;
     }
 
-    dao.setQuestStatus(sessionData.nftId, questID, STATES.COMPLETED);
+    eventConsumer.completeQuest(sessionData, questID, questsByID[questID]);
+
     let completedQuests = sessionData.gameData.quests[STATES.COMPLETED];
     let questInCacheFormat = {questKey: questID, status: STATES.COMPLETED};
     if (!completedQuests) {
@@ -290,6 +222,40 @@ function completeQuest(questID, sessionData) {
     }
 
     sessionData.gameData.quests[STATES.IN_PROGRESS] = sessionData.gameData.quests[STATES.IN_PROGRESS].filter(q => q.id !== questID);
+}
+
+
+function groupBy(array, key, isSingleValue = false) {
+    return array.reduce((acc, item) => {
+        if (isSingleValue) {
+            acc[item[key]] = item;
+        } else {
+            if (!acc[item[key]]) {
+                acc[item[key]] = [];
+            }
+            acc[item[key]].push(item);
+        }
+        return acc;
+    }, {});
+}
+
+function validateQuest(quest) {
+    if (quest.id.length > 100) {
+        console.error("Quest ID is too long: ", quest);
+        process.exit(1);
+    }
+    let target = quest.target;
+    if (target !== "FLOW") {
+        if (Types.isMob(target) && quest.eventType !== "KILL_MOB") {
+            console.error("Quest target is a mob but event type is not KILL_MOB: ", quest);
+            process.exit(1);
+        }
+
+        if (Types.isItem(target) && quest.eventType !== "LOOT_ITEM") {
+            console.error("Quest target is an item but event type is not LOOT_ITEM: ", quest);
+            process.exit(1);
+        }
+    }
 }
 
 exports.npcHasQuest = function (cache, sessionId, npcId) {
