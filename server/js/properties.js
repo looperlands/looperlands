@@ -2546,6 +2546,18 @@ let Properties = {
             player.setDropOverride(Types.Entities.ORE, 10000);
         }
     },
+    m88nhelioislandicedtea: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "xpPotions",
+            duration: 60000
+        },
+        inventoryDescription: "Double XP Boost",
+        onConsume: function(player){
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('xp', 10, 30000);
+        }
+    },
     m88nfastshoes: {
         collectable: true,
         consumable: true,
