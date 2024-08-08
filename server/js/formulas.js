@@ -36,8 +36,8 @@ Formulas.xp = function (mob) {
     const mobProperties = Properties[Types.getKindAsString(mob.kind)];
     // Define weights for each attribute
     const hpWeight = 1.2;
-    const armorWeight = 1.2;
-    const weaponWeight = 1.2;
+    const armorWeight = 1.3;
+    const weaponWeight = 1.3;
 
     // Use default values with the nullish coalescing operator
     const hp = mobProperties.hpMod ?? 1;
