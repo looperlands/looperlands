@@ -44,19 +44,19 @@ quests = [
 
     // SAMPLE QUEST
     // {
-    //     id: "KING_QUEST_TALK",
-    //     name: "Find the cat",
-    //     startText: "The King has requested that you find a cat",
-    //     inProgressText: "Still looking for that cat?",
-    //     endText: "Oh you find my kitty! Thank you!",
-    //     eventType: "NPC_TALKED",
+    //     id: "KING_QUEST_FEED_CAT",
+    //     name: "Feed the cat",
+    //     startText: "Go feed my cat. Kill a rat and bring it to her.",
+    //     inProgressText: "The cat is hungry, Hurry up!",
+    //     endText: "Yum Yum, Thank you for the rat",
+    //     eventType: "KILL_MOB",
     //     npc: Types.Entities.KING,
-    //     target: Types.Entities.NYAN,
+    //     target: Types.Entities.RAT,
+    //     amount: 1,
     //     requiredQuest: "KING_QUEST_1",
     //     level: 1,
     //     medal: Types.Medals.FOX,
-    //     needToReturn: true,
-    //     npcText: "Meow",
+    //     returnToNpc: Types.Entities.NYAN,
     //     reward: {
     //         item: Types.Entities.cpotion_m,
     //         amount: 5
