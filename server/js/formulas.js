@@ -35,12 +35,12 @@ Formulas.xp = function (mob) {
 
     const mobProperties = Properties[Types.getKindAsString(mob.kind)];
     // Define weights for each attribute
-    const hpWeight = 1.2;
-    const armorWeight = 1.3;
-    const weaponWeight = 1.3;
+    const hpWeight = 0.01;
+    const armorWeight = 0.5;
+    const weaponWeight = 0.5;
 
     // Use default values with the nullish coalescing operator
-    const hp = mobProperties.hpMod ?? 1;
+    const hp = mob.maxHitPoints;
     const armor = mobProperties.armorMod ?? 1;
     const weapon = mobProperties.weaponMod ?? 1;
 
@@ -54,6 +54,7 @@ Formulas.xp = function (mob) {
 
     return xp;
 }
+
 
 Formulas.setXPMultiplier = function (multiplier, timeout) {
     // Only set multiplier if the duration is greater than the current bonus
