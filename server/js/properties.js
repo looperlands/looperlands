@@ -1544,7 +1544,6 @@ let Properties = {
         xp: 294
     },
 
-
     m88nnightmaremonsterp: {
         level: 18,
         drops: {
@@ -1554,6 +1553,16 @@ let Properties = {
             GOLD3: 50
         },
         xp: 348
+    },
+
+    m88nshortsqueeze: {
+        level: 11,
+        drops: {
+            m88ndrsgme: 1,
+            m88ngem: 4,
+            m88ndirt: 7,
+            GOLD3: 80
+        },
     },
 
     m88nmine: {
@@ -1791,6 +1800,11 @@ let Properties = {
     },
 
     m88nflybutterfly: {
+        level: 1,
+        friendly: true
+    },
+
+    m88ndaddybearbrown: {
         level: 1,
         friendly: true
     },
@@ -2454,7 +2468,7 @@ let Properties = {
         collectable: true,
         consumable: true,
         cooldown: {
-            group: "hpPotions",
+            group: "dropPotions",
             duration: 60000
         },
         inventoryDescription: "Mimosa",
@@ -2466,7 +2480,7 @@ let Properties = {
         collectable: true,
         consumable: true,
         cooldown: {
-            group: "hpPotions",
+            group: "dropPotions",
             duration: 60000
         },
         inventoryDescription: "Glass of Champagne",
@@ -2478,7 +2492,7 @@ let Properties = {
         collectable: true,
         consumable: true,
         cooldown: {
-            group: "hpPotions",
+            group: "dropPotions",
             duration: 60000
         },
         inventoryDescription: "Bottle of Champagne",
@@ -2490,7 +2504,7 @@ let Properties = {
         collectable: true,
         consumable: true,
         cooldown: {
-            group: "hpPotions",
+            group: "dropPotions",
             duration: 60000
         },
         inventoryDescription: "Shot of m88nshine",
@@ -2502,7 +2516,7 @@ let Properties = {
         collectable: true,
         consumable: true,
         cooldown: {
-            group: "hpPotions",
+            group: "dropPotions",
             duration: 60000
         },
         inventoryDescription: "Dirty Martini",
@@ -2514,7 +2528,7 @@ let Properties = {
         collectable: true,
         consumable: true,
         cooldown: {
-            group: "hpPotions",
+            group: "dropPotions",
             duration: 60000
         },
         inventoryDescription: "Mana Mai Tai",
@@ -2526,7 +2540,7 @@ let Properties = {
         collectable: true,
         consumable: true,
         cooldown: {
-            group: "hpPotions",
+            group: "dropPotions",
             duration: 60000
         },
         inventoryDescription: "Paradise Hurricane",
@@ -2538,7 +2552,7 @@ let Properties = {
         collectable: true,
         consumable: true,
         cooldown: {
-            group: "hpPotions",
+            group: "dropPotions",
             duration: 60000
         },
         inventoryDescription: "Nexus Sangria",
@@ -2546,16 +2560,100 @@ let Properties = {
             player.setDropOverride(Types.Entities.ORE, 10000);
         }
     },
+    m88nsunsetdaiquiri: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "xpPotions",
+            duration: 360000
+        },
+        inventoryDescription: "Sunset Daiquiri",
+        onConsume: function(player){
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('xp', 3, 180000);
+        }
+    },
     m88nhelioislandicedtea: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "xpPotions",
+            duration: 360000
+        },
+        inventoryDescription: "Helio Island Iced Tea",
+        onConsume: function(player){
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('xp', 4, 180000);
+        }
+    },
+    m88nmermaidmojito: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "xpPotions",
+            duration: 180000
+        },
+        inventoryDescription: "Mermaid Mojito",
+        onConsume: function(player){
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('xp', 5, 180000);
+        }
+    },
+    m88nfries: {
         collectable: true,
         consumable: true,
         cooldown: {
             group: "xpPotions",
             duration: 60000
         },
-        inventoryDescription: "Double XP Boost",
+        inventoryDescription: "French Fries",
         onConsume: function(player){
-            player.playerClassModifiers.applyTemporaryModifierWithTimeout('xp', 10, 30000);
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('xp', 2, 30000);
+        }
+    },
+    m88ntaco: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "xpPotions",
+            duration: 120000
+        },
+        inventoryDescription: "Taco Tuesday!",
+        onConsume: function(player){
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('xp', 2, 60000);
+        }
+    },
+    m88nhotdog: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "xpPotions",
+            duration: 180000
+        },
+        inventoryDescription: "Loaded Hot Dog",
+        onConsume: function(player){
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('xp', 2, 90000);
+        }
+    },
+    m88nburger: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "xpPotions",
+            duration: 240000
+        },
+        inventoryDescription: "Double Burger",
+        onConsume: function(player){
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('xp', 2, 120000);
+        }
+    },
+    m88npizza: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "xpPotions",
+            duration: 360000
+        },
+        inventoryDescription: "Slice of Pizza",
+        onConsume: function(player){
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('xp', 2, 180000);
         }
     },
     m88nfastshoes: {
