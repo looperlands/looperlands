@@ -36,8 +36,8 @@ Formulas.xp = function (mob) {
     const mobProperties = Properties[Types.getKindAsString(mob.kind)];
     // Define weights for each attribute
     const hpWeight = 0.01;
-    const armorWeight = 0.5;
-    const weaponWeight = 0.5;
+    const armorWeight = 0.005;
+    const weaponWeight = 0.005;
 
     // Use default values with the nullish coalescing operator
     const hp = mob.maxHitPoints;
