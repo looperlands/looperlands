@@ -2547,6 +2547,19 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
 
+        m88nshortsqueeze: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NSHORTSQUEEZE);
+                this.moveSpeed = 200;
+                this.atkSpeed = 100;
+                this.idleSpeed = 750;
+                this.setAttackRate(1000);
+                this.deathAnimated = true;
+                this.isAggressive = true;
+                this.aggroRange = 4;
+            }
+        }),
+
         m88nmine: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.M88NMINE);
@@ -3194,6 +3207,24 @@ define(['mob', 'timer'], function(Mob, Timer) {
         m88nflybutterfly: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.M88NFLYBUTTERFLY);
+                this.idleSpeed = 420;
+                this.walkSpeed = 225;
+                this.moveSpeed = 250;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
+        m88ndaddybearbrown: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NDADDYBEARBROWN);
                 this.idleSpeed = 420;
                 this.walkSpeed = 225;
                 this.moveSpeed = 250;
