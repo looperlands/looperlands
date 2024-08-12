@@ -296,7 +296,7 @@ const Lakes = {
     },
 
     m88nocean10: {
-        level: 16,
+        level: 7,
         fish: {
             m88npinkfantasia: "common",
             m88nscallop: "uncommon",

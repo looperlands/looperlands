@@ -706,7 +706,7 @@ define(['character'], function (Character) {
         "nexan48": [
             //"Hey there!",
             "Mmmmmm, m88nshine!",
-            "Have you been to the Champagne Lounge on the yacht yet?"
+            "This stuff is out of this world!"
         ],
 
         "m88nmermanking": [

@@ -132,7 +132,11 @@ quests = [
         requiredQuest: "KINGFROGGY_QUEST_8",
         level: 30,
         xp: 300000,
-        medal: Types.Medals.SKULL
+        medal: Types.Medals.SKULL,
+        reward: {
+            item: Types.Entities.m88ndirt,
+            amount: 69
+        }
     },
     {
         id: "NIGHTMARELAND_QUEST_1",
@@ -300,25 +304,65 @@ quests = [
         medal: Types.Medals.SKULL
     },
     {
+        id: "M88NGEM_QUEST_1",
+        name: "The m88nshiner's m88n gem Request",
+        startText: ["You see these m88n gems? There is something special about them...",
+        "Most people use them for currency around here.",
+        "wenmoon uses them to make m88nshine and other weird concoctions up in the m88n lab.",
+        "Collect 69 of them and I'll give you a shot of it to try!"],
+        inProgressText: ["Only {{remaining}} left to go...woot woot! It's almost party time!",
+        "Have you been to the Champagne Lounge yet?",
+        "Sometimes they have m88nshine on hand. It goes fast though..."],
+        endText: ["Wow, great job collecting all of those m88n gems!",
+        "Once you drink this you'll have 10 seconds to kill as many mobs as you can.",
+        "Wait till you see what happens..."],
+        eventType: "LOOT_ITEM",
+        npc: Types.Entities.NEXAN48,
+        target: Types.Entities.M88NGEM,
+        amount: 69,
+        level: 10,
+        xp: 69420,
+        medal: Types.Medals.SKULL,
+        needToReturn: true,
+        reward: {
+            item: Types.Entities.m88nshine,
+            amount: 1
+        }
+    },
+    {
         id: "GAMER_QUEST_1",
         name: "The Gamer's Vintage Gameboy Request",
         startText: ["I'm pretty sure I've seen some sweet vintage Gameboys around here...",
-        "Can you help me find as many as you can? There might be some cool old school games on them!"],
-        endText: "Wow, great job collecting all of those Gameboys! Looks like they don't have any batteries in them though...",
+        "Can you help me find as many as you can?",
+        "There might be some cool old school games on them!"],
+        inProgressText: ["Only {{remaining}} left to go...LFG!!",
+        "Wouldn't it be cool if we could play LooperLands on those Gameboys?"],
+        endText: ["Wow, great job collecting all of those Gameboys!",
+        "Looks like they don't have any batteries in them though..."],
         eventType: "LOOT_ITEM",
         npc: Types.Entities.NEXAN11,
         target: Types.Entities.GAMEBOY,
         amount: 69,
         level: 10,
         xp: 69420,
-        medal: Types.Medals.SKULL
+        medal: Types.Medals.SKULL,
+        needToReturn: true,
+        reward: {
+            item: Types.Entities.m88ngem,
+            amount: 10
+        }
     },
     {
         id: "GAMER_QUEST_2",
         name: "The Gamer's Battery Request",
-        startText: ["I've seen some batteries around here somewhere...we're gonna need them if we wanna play these Gameboys...",
-        "Can you help me find as many as you can? Hopefully they're all charged up!"],
-        endText: "Wow, great job collecting all of those batteries! Power to the players and to the collectors ;)",
+        startText: ["I've seen some batteries around here somewhere...",
+        "We're gonna need them if we wanna play these Gameboys...",
+        "Can you help me find as many as you can?",
+        "Hopefully they're all charged up!"],
+        inProgressText: ["Only {{remaining}} left to go, keep it up!",
+        "Don't worry you'll get some m88n gems for helping me find these..."],
+        endText: ["Wow, great job collecting all of those batteries!",
+        "Power to the players...and to the collectors ;)"],
         eventType: "LOOT_ITEM",
         npc: Types.Entities.NEXAN11,
         target: Types.Entities.BATTERY,
@@ -326,14 +370,24 @@ quests = [
         requiredQuest: "GAMER_QUEST_1",
         level: 20,
         xp: 100000,
-        medal: Types.Medals.SKULL
+        medal: Types.Medals.SKULL,
+        needToReturn: true,
+        reward: {
+            item: Types.Entities.m88ngem,
+            amount: 10
+        }
     },
     {
         id: "GAMER_QUEST_3",
         name: "The Gamer's Hard Wallet Request",
-        startText: ["Did you know the safest place to store your crypto is on a hard wallet? I know I've seen some around here every once in a while...",
-        "Can you help me find as many as you can? Then we can make sure to keep our investments safe!"],
-        endText: "Wow, great job collecting all of those hard wallets! Power to the investors ;)",
+        startText: ["Did you know the safest place to store your crypto is on a hard wallet?",
+        "I know I've seen some around here every once in a while...",
+        "Can you help me find as many as you can?",
+        "Then we can share them with our friends and make sure to keep our investments safe!"],
+        inProgressText: ["Only {{remaining}} left to go...",
+        "This might take a while, go bash some crabs. Trust me it helps."],
+        endText: ["Wow, great job collecting all of those hard wallets!",
+        "Power to the investors ;)"],
         eventType: "LOOT_ITEM",
         npc: Types.Entities.NEXAN11,
         target: Types.Entities.HARDWALLET,
@@ -341,14 +395,25 @@ quests = [
         requiredQuest: "GAMER_QUEST_2",
         level: 30,
         xp: 100000,
-        medal: Types.Medals.SKULL
+        medal: Types.Medals.SKULL,
+        needToReturn: true,
+        reward: {
+            item: Types.Entities.m88ngem,
+            amount: 10
+        }
     },
     {
         id: "GAMER_QUEST_4",
         name: "The Gamer's 3D Movie Glasses Request",
-        startText: ["I heard if you have some special 3D movie glasses you can actually see which shares are synthetic...Sounds weird, but it's worth a try!",
-        "Can you help me find as many as you can? Then we can try them on and see if the rumor is true!"],
-        endText: "Wow, great job collecting all of those 3D movie glasses! Did you try them on yet?? Some of the shares have a little purple circle on them now!",
+        startText: ["I heard if you have some special 3D movie glasses you can actually see which shares are synthetic...",
+        "Sounds weird, but it's worth a try! Can you help me find as many as you can?",
+        "Then we can try them on and see if the rumor is true!"],
+        inProgressText: ["Only {{remaining}} left to go...LFG!!",
+        "I've heard there are an absolute TON of synthetic shares.",
+        "We should probably DRS our shares for safe keeping..."],
+        endText: ["Wow, great job collecting all of those 3D movie glasses!",
+        "Did you try them on yet?? Some of the shares have a little purple circle on them now!",
+        "Here, have one! Maybe you can turn it into more..."],
         eventType: "LOOT_ITEM",
         npc: Types.Entities.NEXAN11,
         target: Types.Entities.MOVIEGLASSES,
@@ -356,29 +421,45 @@ quests = [
         requiredQuest: "GAMER_QUEST_3",
         level: 40,
         xp: 100000,
-        medal: Types.Medals.SKULL
+        medal: Types.Medals.SKULL,
+        needToReturn: true,
+        reward: {
+            item: Types.Entities.m88ndrsgme,
+            amount: 1
+        }
     },
     {
         id: "CHEF_QUEST_1",
         name: "The Chef's Steak Dinner Request",
-        startText: ["I'm preparing a spectacular dinner party...do you want to help me find the ingredients?",
-        "It's not going to be easy but I'll gladly pay you 420k xp for your time!",
-        "The first thing we're going to need is the main course...steak! Can you help me find 20 yummy steaks?"],
-        endText: "Wow, great job collecting all of those delicious steaks! How about we have baked potatoes for the side?",
+        startText: ["I'm preparing a spectacular dinner party...",
+        "Do you want to help me find the ingredients?",
+        "It's not going to be easy but I'll gladly pay you in m88n gems for your time!",
+        "The first thing we're going to need is the main course...steak!",
+        "Can you help me find 20 yummy steaks?"],
+        inProgressText: ["There's nothing like a fresh steak dinner!",
+        "Only {{remaining}} left to go. Keep it up..."],
+        endText: "Wow, great job collecting all of those delicious steaks!",
         eventType: "LOOT_ITEM",
         npc: Types.Entities.NEXAN12,
         target: Types.Entities.M88NSTEAK,
         amount: 20,
         level: 10,
         xp: 50000,
-        medal: Types.Medals.SKULL
+        medal: Types.Medals.SKULL,
+        needToReturn: true,
+        reward: {
+            item: Types.Entities.m88ngem,
+            amount: 3
+        }
     },
     {
         id: "CHEF_QUEST_2",
         name: "The Chef's Baked Potato Request",
         startText: ["I can't think of a better side to go with steak than a baked potato!",
         "Can you help me find 20 potatoes?"],
-        endText: "Nice, great job collecting all of those potatoes! I think a nice tossed salad would go well with these!",
+        inProgressText: ["You're doing great, this is a huge help!",
+        "Only {{remaining}} left to go..."],
+        endText: "Nice, great job collecting all of those potatoes!",
         eventType: "LOOT_ITEM",
         npc: Types.Entities.NEXAN12,
         target: Types.Entities.M88NPOTATO,
@@ -386,14 +467,21 @@ quests = [
         requiredQuest: "CHEF_QUEST_1",
         level: 10,
         xp: 50000,
-        medal: Types.Medals.SKULL
+        medal: Types.Medals.SKULL,
+        needToReturn: true,
+        reward: {
+            item: Types.Entities.m88ngem,
+            amount: 3
+        }
     },
     {
         id: "CHEF_QUEST_3",
         name: "The Chef's Tossed Salad Request",
         startText: ["We should probably make sure to be healthy and have our greens with dinner!",
         "Can you help me find 20 salads?"],
-        endText: "Awesome, great job collecting all of those salads! How about we have some ice cold brewskis with dinner?",
+        inProgressText: ["Keep up the good work!",
+        "Only {{remaining}} left to go..."],
+        endText: "Awesome, great job collecting all of those salads!",
         eventType: "LOOT_ITEM",
         npc: Types.Entities.NEXAN12,
         target: Types.Entities.M88NSALAD,
@@ -401,14 +489,23 @@ quests = [
         requiredQuest: "CHEF_QUEST_2",
         level: 10,
         xp: 50000,
-        medal: Types.Medals.SKULL
+        medal: Types.Medals.SKULL,
+        needToReturn: true,
+        reward: {
+            item: Types.Entities.m88ngem,
+            amount: 3
+        }
     },
     {
         id: "CHEF_QUEST_4",
         name: "The Chef's Ice Cold Brewski Request",
-        startText: ["We're going to need something to wash all this food down with, how about we celebrate with some brewskis?!",
+        startText: ["We're going to need something to wash all this food down with.",
+        "How about we celebrate with something to loosen us up a little?!",
         "Can you help me find 20 ice cold brewskis?"],
-        endText: "Cheers! Great job collecting all of those brewskis! How does boysenberry pie sound for dessert?",
+        inProgressText: ["Keep up the great work, we're almost there!",
+        "Only {{remaining}} left to go.",
+        "Make sure you're not drinking those things..."],
+        endText: "Cheers! Great job collecting all of those brewskis!",
         eventType: "LOOT_ITEM",
         npc: Types.Entities.NEXAN12,
         target: Types.Entities.M88NBREWSKI,
@@ -416,13 +513,20 @@ quests = [
         requiredQuest: "CHEF_QUEST_3",
         level: 10,
         xp: 50000,
-        medal: Types.Medals.SKULL
+        medal: Types.Medals.SKULL,
+        needToReturn: true,
+        reward: {
+            item: Types.Entities.m88ngem,
+            amount: 3
+        }
     },
     {
         id: "CHEF_QUEST_5",
         name: "The Chef's Boysenberry Pie Request",
         startText: ["And for our final course, I think boysenberry pie should hit the spot!",
         "Can you help me find 20 slices of pie?"],
+        inProgressText: ["Man oh man, I'm getting hungry!",
+        "You're doing great though, only {{remaining}} left to go..."],
         endText: ["Ayyy! Great job collecting all of those slices of pie!",
         "Thanks so much for helping put this amazing dinner together!"],
         eventType: "LOOT_ITEM",
@@ -432,15 +536,22 @@ quests = [
         requiredQuest: "CHEF_QUEST_4",
         level: 10,
         xp: 120000,
-        medal: Types.Medals.SKULL
+        medal: Types.Medals.SKULL,
+        needToReturn: true,
+        reward: {
+            item: Types.Entities.m88ngem,
+            amount: 3
+        }
     },
     {
         id: "CHEF_QUEST_6",
         name: "The Chef's Dinner Bell Request",
         startText: ["Now we just need to let everyone know it's dinner time!",
         "Can you find a dinner bell for me?"],
-        endText: ["Amazing, thanks mate!",
-        "Dinner is served!"],
+        endText: ["Amazing, thanks mate! Dinner is served!",
+        "There is a secret door somewhere in The Nexus that I have unlocked for you!",
+        "Find it and there is a golden compass waiting beyond it.",
+        "It will come in handy soon, trust me!"],
         eventType: "LOOT_ITEM",
         npc: Types.Entities.NEXAN12,
         target: Types.Entities.M88NDINNERBELL,
@@ -448,29 +559,46 @@ quests = [
         requiredQuest: "CHEF_QUEST_5",
         level: 10,
         xp: 100000,
-        medal: Types.Medals.SKULL
+        medal: Types.Medals.SKULL,
+        needToReturn: true,
+        reward: {
+            item: Types.Entities.m88ngem,
+            amount: 2
+        }
     },
     {
         id: "FARMERS_QUEST_1",
         name: "Farmer Joe's Shovel Request",
         startText: ["Sheesh...I'm exhausted. The only garden tool we have so far is a hand trowel!",
-        "If you can help me find some new supplies to plant another set of crops I'll hook you up with some xp!",
-        "The first thing we're going to need is bigger shovel! Can you help me find 2 large shovels?"],
-        endText: "Thanks so much for finding those shovels! Next we're going to need lots and lots of seeds!",
+        "Can you can help me find some new supplies to plant another set of crops with?",
+        "I'll hook you up with some m88n dirt for all your help!",
+        "The first thing we're going to need is bigger shovel!",
+        "Can you help me find 2 large shovels?"],
+        endText: ["Thanks so much for finding those shovels!",
+        "Next we're going to need lots and lots of seeds!"],
         eventType: "LOOT_ITEM",
         npc: Types.Entities.NEXAN13,
         target: Types.Entities.M88NSHOVEL,
         amount: 2,
         level: 10,
         xp: 20000,
-        medal: Types.Medals.SKULL
+        medal: Types.Medals.SKULL,
+        needToReturn: true,
+        reward: {
+            item: Types.Entities.m88ndirt,
+            amount: 2
+        }
     },
     {
         id: "FARMERS_QUEST_2",
         name: "Farmer Joe's Seed Request",
-        startText: ["Okay, while we digging can you keep your eyes open for some seeds?",
-        "A couple months ago we found some that had washed up by the shore! See if you can find like 20 bags of seeds."],
-        endText: ["Thanks so much for finding those seeds! That'll keep us busy for a while.",
+        startText: ["Okay, while we're digging can you keep your eyes open for some seeds?",
+        "A couple months ago we found some that had washed up by the shore in an unmarked bag!",
+        "See if you can find like 20 bags of seeds."],
+        inProgressText: ["Great job so far, keep it up!",
+        "Only {{remaining}} left to go..."],
+        endText: ["Thanks so much for finding those seeds!",
+        "That'll keep us busy for a while.",
         "Now we just need a couple of watering cans!"],
         eventType: "LOOT_ITEM",
         npc: Types.Entities.NEXAN13,
@@ -479,7 +607,12 @@ quests = [
         requiredQuest: "FARMERS_QUEST_1",
         level: 10,
         xp: 100000,
-        medal: Types.Medals.SKULL
+        medal: Types.Medals.SKULL,
+        needToReturn: true,
+        reward: {
+            item: Types.Entities.m88ndirt,
+            amount: 20
+        }
     },
     {
         id: "FARMERS_QUEST_3",
@@ -496,15 +629,23 @@ quests = [
         requiredQuest: "FARMERS_QUEST_2",
         level: 10,
         xp: 20000,
-        medal: Types.Medals.SKULL
+        medal: Types.Medals.SKULL,
+        needToReturn: true,
+        reward: {
+            item: Types.Entities.m88ndirt,
+            amount: 2
+        }
     },
     {
         id: "FARMERS_QUEST_4",
         name: "Farmer Joe's Harvest Sack Request",
-        startText: ["Now we're cooking! I think the last thing we need is a sack of some sort to put our harvested crops in.",
+        startText: ["Now we're cooking!",
+        "I think the last thing we need is a sack of some sort to put our harvested crops in.",
         "Can you please find us 2 burlap sacks?"],
-        endText: ["Amazing, thank you so much for finding these supplies for us, this will make our life so much easier!",
-        "We're happy to be your hook up while you're visiting The Nexus! Anytime you need uh...tomatoes you know where to find us!"],
+        endText: ["Amazing, thank you so much for finding these supplies for us.",
+        "This will make our life so much easier!",
+        "We're happy to be your hook up while you're visiting The Nexus!",
+        "Anytime you need uh...tomatoes you know where to find us!"],
         eventType: "LOOT_ITEM",
         npc: Types.Entities.NEXAN13,
         target: Types.Entities.M88NSACK,
@@ -512,30 +653,49 @@ quests = [
         requiredQuest: "FARMERS_QUEST_3",
         level: 10,
         xp: 20000,
-        medal: Types.Medals.SKULL
+        medal: Types.Medals.SKULL,
+        needToReturn: true,
+        reward: {
+            item: Types.Entities.m88ndirt,
+            amount: 2
+        }
     },
     {
         id: "MAILMAN_QUEST_1",
         name: "The Mail Man's Mail Request",
         startText: ["So, um, I have a request for some help if you have any extra time...",
-        "I set my mail bag down and accidentally let a bunch of envelopes blow away, can you help me find 20 pieces of mail?"],
-        endText: ["Oh, thank goodness! You're amazing! Thanks for finding those for me!",
-        "While I'm delivering these do you think you can help me collect some packages that need to be brought to the post office?"],
+        "I set my mail bag down and accidentally let a bunch of envelopes blow away.",
+        "Can you help me find 20 pieces of mail?"],
+        inProgressText: ["Great job so far, keep it up!",
+        "Only {{remaining}} left to find..."],
+        endText: ["Oh, thank goodness! You're amazing!",
+        "Thanks for finding those for me!"],
         eventType: "LOOT_ITEM",
         npc: Types.Entities.NEXAN15,
         target: Types.Entities.M88NMAIL,
         amount: 20,
         level: 10,
         xp: 50000,
-        medal: Types.Medals.SKULL
+        medal: Types.Medals.SKULL,
+        needToReturn: true,
+        reward: {
+            item: Types.Entities.m88ngem,
+            amount: 2
+        }
     },
     {
         id: "MAILMAN_QUEST_2",
         name: "The Mail Man's Package Request",
-        startText: ["You have a great eye and you're saving me lots of time, would you mind helping me find some packages too?",
-        "There are 20 packages around here somewhere that I need to get back to the post office. After you help me I have a cool surpise for you!"],
-        endText: ["Thank you so much! If you ever want to work for the post office here in The Nexus I'll put in a good word for you!",
-        "There is a secret door somewhere in Paradise Point that I unlocked for you... Find it and there is a yacht boarding ticket just for you!"],
+        startText: ["You have a great eye and you're saving me lots of time.",
+        "Would you mind helping me find some packages too?",
+        "There are 20 packages around here somewhere that I need to get back to the post office.",
+        "After you help me I have a cool surpise for you!"],
+        inProgressText: ["Great job so far, keep it up!",
+        "Only {{remaining}} left to go..."],
+        endText: ["Thank you so much, I'll put in a good word for you!",
+        "If you ever want to work for the post office here in The Nexus let me know!",
+        "There is a secret door somewhere in Paradise Point that I unlocked for you...",
+        "Find it and there is a yacht boarding ticket just for you!"],
         eventType: "LOOT_ITEM",
         npc: Types.Entities.NEXAN15,
         target: Types.Entities.M88NPACKAGE,
@@ -543,15 +703,22 @@ quests = [
         requiredQuest: "MAILMAN_QUEST_1",
         level: 10,
         xp: 50000,
-        medal: Types.Medals.SKULL
+        medal: Types.Medals.SKULL,
+        needToReturn: true,
+        reward: {
+            item: Types.Entities.m88ngem,
+            amount: 2
+        }
     },
     {
         id: "MAILMAN_QUEST_3",
         name: "The Mail Man's Mysterious Ticket Request",
         startText: ["You know that cool yacht over there? You need a special ticket to board...",
         "Find a secret hidden door somewhere in Paradise Point and there's a boarding ticket waiting for you!"],
+        inProgressText: ["If I gave you a hint it wouldn't be a secret hidden door, sorry.",
+        "Look harder, it's in plain view"],
         endText: ["Have fun on the Sun Chaser! I hear there is some special fishing on it for the apes!",
-        "And if you're able to find the golden ticket there is a cool champagne lounge on the yacht too..."],
+        "And if you're able to find the golden ticket there is a luxirious Champagne Lounge on the yacht too..."],
         eventType: "LOOT_ITEM",
         npc: Types.Entities.NEXAN15,
         target: Types.Entities.M88NTICKET,
@@ -559,14 +726,21 @@ quests = [
         requiredQuest: "MAILMAN_QUEST_2",
         level: 10,
         xp: 100000,
-        medal: Types.Medals.SKULL
+        medal: Types.Medals.SKULL,
+        needToReturn: true,
+        reward: {
+            item: Types.Entities.m88ngem,
+            amount: 1
+        }
     },
     {
         id: "EXPLORER_QUEST_1",
         name: "The Explorer's Fly Request",
         startText: ["There are so many cool little bugs around The Nexus...",
-        "I need to catch a bunch of them, alive, so I can study them.",
+        "I need to catch a bunch of them, alive, so I can study them. I'll gladly pay you in m88n gems!",
         "Right now I'm looking for these weird little flies, can you help me find 10 of them?"],
+        inProgressText: ["Only {{remaining}} left to go...",
+        "These flies are the secret to something big, I just know it!"],
         endText: ["Hey, nice! Thanks for finding those for me!"],
         eventType: "LOOT_ITEM",
         npc: Types.Entities.NEXAN10,
@@ -574,7 +748,12 @@ quests = [
         amount: 10,
         level: 10,
         xp: 10000,
-        medal: Types.Medals.SKULL
+        medal: Types.Medals.SKULL,
+        needToReturn: true,
+        reward: {
+            item: Types.Entities.m88ngem,
+            amount: 1
+        }
     },
     {
         id: "EXPLORER_QUEST_2",
@@ -582,6 +761,8 @@ quests = [
         startText: ["There are so many interesting bugs around The Nexus...",
         "I need to catch a bunch of them, alive, so I can study them.",
         "Next, I'm looking for these odd little green june bugs, can you help me find 10 of them?"],
+        inProgressText: ["Only {{remaining}} left to go...",
+        "I know they're shiny but don't eat any of them, they taste terrible!"],
         endText: ["Hey, nice! Thanks for finding those for me!"],
         eventType: "LOOT_ITEM",
         npc: Types.Entities.NEXAN10,
@@ -590,7 +771,12 @@ quests = [
         requiredQuest: "EXPLORER_QUEST_1",
         level: 10,
         xp: 20000,
-        medal: Types.Medals.SKULL
+        medal: Types.Medals.SKULL,
+        needToReturn: true,
+        reward: {
+            item: Types.Entities.m88ngem,
+            amount: 1
+        }
     },
     {
         id: "EXPLORER_QUEST_3",
@@ -598,6 +784,8 @@ quests = [
         startText: ["There are so many cool little bugs around The Nexus...",
         "I need to catch a bunch of them, alive, so I can study them.",
         "Next, I'm looking for these smelly little dung beetles, can you help me find 10 of them?"],
+        inProgressText: ["Follow the smell.",
+        "It's what you think it is..."],
         endText: ["Hey, nice! Thanks for finding those for me!"],
         eventType: "LOOT_ITEM",
         npc: Types.Entities.NEXAN10,
@@ -606,7 +794,12 @@ quests = [
         requiredQuest: "EXPLORER_QUEST_2",
         level: 10,
         xp: 30000,
-        medal: Types.Medals.SKULL
+        medal: Types.Medals.SKULL,
+        needToReturn: true,
+        reward: {
+            item: Types.Entities.m88ngem,
+            amount: 1
+        }
     },
     {
         id: "EXPLORER_QUEST_4",
@@ -614,6 +807,8 @@ quests = [
         startText: ["There are so many odd little bugs around The Nexus...",
         "I need to catch a bunch of them, alive, so I can study them.",
         "Next, I'm looking for these skinny little stick bugs, can you help me find 10 of them?"],
+        inProgressText: ["These little buggers can be hard to find.",
+        "They look like...sticks."],
         endText: ["Hey, nice! Thanks for finding those for me!"],
         eventType: "LOOT_ITEM",
         npc: Types.Entities.NEXAN10,
@@ -622,7 +817,12 @@ quests = [
         requiredQuest: "EXPLORER_QUEST_3",
         level: 10,
         xp: 40000,
-        medal: Types.Medals.SKULL
+        medal: Types.Medals.SKULL,
+        needToReturn: true,
+        reward: {
+            item: Types.Entities.m88ngem,
+            amount: 1
+        }
     },
     {
         id: "EXPLORER_QUEST_5",
@@ -630,6 +830,9 @@ quests = [
         startText: ["There are so many weird little bugs around The Nexus...",
         "I need to catch a bunch of them, alive, so I can study them.",
         "Next, I'm looking for these slimey little snails, can you help me find 10 of them?"],
+        inProgressText: ["Look for the snail trail...",
+        "Only {{remaining}} more to go.",
+        "These snails do leave a trail don't they?"],
         endText: ["Hey, nice! Thanks for finding those for me!"],
         eventType: "LOOT_ITEM",
         npc: Types.Entities.NEXAN10,
@@ -638,7 +841,12 @@ quests = [
         requiredQuest: "EXPLORER_QUEST_4",
         level: 10,
         xp: 50000,
-        medal: Types.Medals.SKULL
+        medal: Types.Medals.SKULL,
+        needToReturn: true,
+        reward: {
+            item: Types.Entities.m88ngem,
+            amount: 1
+        }
     },
     {
         id: "EXPLORER_QUEST_6",
@@ -646,10 +854,14 @@ quests = [
         startText: ["There are so many weird little bugs around The Nexus...",
         "I need to catch a bunch of them, alive, so I can study them.",
         "For my last request, I'm looking for these magical little butterflies.",
-        "If you help me find 10 of them my mission will be complete!",
-        "As a thank you for all of your help I'd love to give you a really special item that you'll find handy soon...",
-        "There's a hidden door around Paradise Point somewhere. If you find it there are a pair of binoculars waiting for you!"],
-        endText: ["Hey, nice! Thanks for finding those for me!"],
+        "If you help me find 10 of them my mission will be complete!"],
+        inProgressText: ["These butterflies are going to be my greatest find yet!",
+        "I have somethings special to give you for all of your help!",
+        "You'll find that they come in handy soon..."],
+        endText: ["Hey, nice! Thanks for finding those for me!",
+        "I unlocked a secret hidden door around Paradise Point somewhere.",
+        "If you find it there are a pair of binoculars waiting for you!",
+        "You'll need these to find what you don't know you're looking for..."],
         eventType: "LOOT_ITEM",
         npc: Types.Entities.NEXAN10,
         target: Types.Entities.M88NBUTTERFLY,
@@ -657,13 +869,19 @@ quests = [
         requiredQuest: "EXPLORER_QUEST_5",
         level: 10,
         xp: 69000,
-        medal: Types.Medals.SKULL
+        medal: Types.Medals.SKULL,
+        needToReturn: true,
+        reward: {
+            item: Types.Entities.m88ngem,
+            amount: 8
+        }
     },
     {
         id: "FISHERMAN_QUEST_1",
         name: "The Fisherman's Fishing Request",
         startText: ["Did you know you there are TONS of different fish that you can catch in this ocean?",
-        "You'll need a fishing pole first though. Wanna borrow one of mine to try it out before you buy your own?",
+        "You'll need a fishing pole first though.",
+        "Wanna borrow one of mine to try it out before you buy your own?",
         "Grab that fishing pole right there and I'll drop a 24 hour rental pole into your inventory!"],
         endText: ["Happy fishing friend!!"],
         eventType: "LOOT_ITEM",
@@ -679,8 +897,14 @@ quests = [
         id: "FISHERMAN_QUEST_2",
         name: "The Fisherman's Worm Request",
         startText: ["If I had some nice plump worms I'd probably be able to catch some bigger fish...",
-        "Do you think you could find me like 20 worms?"],
-        endText: ["Thanks for the new bait! It's working like a charm! Happy fishing friend!!"],
+        "Do you think you could find me like 20 worms?",
+        "I'll give you some m88n dirt to store yours in!",
+        "It does something special to them..."],
+        inProgressText: ["Keep up the hard work!",
+        "You only have {{remaining}} more to go.",
+        "I'm not going anywhere, a bad day of fishing is better than a good day at work, am I right?"],
+        endText: ["Thanks for the new bait! It's working like a charm!",
+        "Happy fishing friend!!"],
         eventType: "LOOT_ITEM",
         npc: Types.Entities.NEXAN16,
         target: Types.Entities.M88NWORM,
@@ -688,7 +912,12 @@ quests = [
         requiredQuest: "FISHERMAN_QUEST_1",
         level: 10,
         xp: 50000,
-        medal: Types.Medals.SKULL
+        medal: Types.Medals.SKULL,
+        needToReturn: true,
+        reward: {
+            item: Types.Entities.m88ndirt,
+            amount: 20
+        }
     },
     {
         id: "CLASSYLADY_QUEST_1",
@@ -702,7 +931,12 @@ quests = [
         amount: 1,
         level: 10,
         xp: 10000,
-        medal: Types.Medals.SKULL
+        medal: Types.Medals.SKULL,
+        needToReturn: true,
+        reward: {
+            item: Types.Entities.m88ngem,
+            amount: 1
+        }
     },
     {
         id: "CLASSYLADY_QUEST_2",
@@ -717,7 +951,12 @@ quests = [
         requiredQuest: "CLASSYLADY_QUEST_1",
         level: 10,
         xp: 10000,
-        medal: Types.Medals.SKULL
+        medal: Types.Medals.SKULL,
+        needToReturn: true,
+        reward: {
+            item: Types.Entities.m88ngem,
+            amount: 1
+        }
     },
     {
         id: "CLASSYLADY_QUEST_3",
@@ -725,7 +964,7 @@ quests = [
         startText: ["I lost my wedding ring! My husband will be so mad if he finds out...",
         "Can you please try to find my diamond ring? And make sure you keep this on the downlow!"],
         endText: ["Oh, my hero! Thank you so much! Do you know how much this thing is worth?!",
-        "Please accept this 50,000 bonus xp as a reward for finding it!"],
+        "Please accept these 5 m88n gems as a reward for finding it!"],
         eventType: "LOOT_ITEM",
         npc: Types.Entities.NEXAN4,
         target: Types.Entities.M88NDIAMONDRING,
@@ -733,13 +972,23 @@ quests = [
         requiredQuest: "CLASSYLADY_QUEST_2",
         level: 10,
         xp: 50000,
-        medal: Types.Medals.SKULL
+        medal: Types.Medals.SKULL,
+        needToReturn: true,
+        reward: {
+            item: Types.Entities.m88ngem,
+            amount: 5
+        }
     },
     {
         id: "CLASSYLADY_QUEST_4",
         name: "The Classy Lady's Gold Tiara Request",
-        startText: ["Okay, the last big piece of jewelry I am missing is my gold tiara. I won it when I was crowned Miss Nexus...",
-        "Please look all over to help me find this! If you are able to find it I have a really special reward for you..."],
+        startText: ["Okay, the last big piece of jewelry I am missing is my gold tiara.",
+        "I won it when I was crowned Miss Nexus...",
+        "Please look all over to help me find this!",
+        "If you are able to find it I have a really special reward for you..."],
+        inProgressText: ["Thank you for your help!",
+        "This is the last thing I need.",
+        "Then I have a cool surprise for you!"],
         endText: ["Yay! I feel complete again and now I can go to that dinner party!",
         "There is a secret door somewhere in The Nexus that I have unlocked for you!",
         "Find it and there is a golden ticket to the Champagne Lounge beyond it!"],
@@ -751,7 +1000,12 @@ quests = [
         requiredQuest: "CLASSYLADY_QUEST_3",
         level: 10,
         xp: 20000,
-        medal: Types.Medals.SKULL
+        medal: Types.Medals.SKULL,
+        needToReturn: true,
+        reward: {
+            item: Types.Entities.m88ngem,
+            amount: 1
+        }
     },
     {
         id: "FOREMAN_QUEST_1",
@@ -759,6 +1013,9 @@ quests = [
         startText: ["I need to add more men to my crew if I want to get this finished anytime soon...",
         "The first thing we're going to need are some hard hats to make sure everyone is safe.",
         "Can you look around and see if you can find me 10 hard hats?"],
+        inProgressText: ["Thanks for your help finding these.",
+        "You only have {{remaining}} more to go!",
+        "Can't have any head injuries on my watch."],
         endText: ["Great job, thank you!",
         "Now we're going to need to find some work gloves!"],
         eventType: "LOOT_ITEM",
@@ -767,7 +1024,12 @@ quests = [
         amount: 10,
         level: 10,
         xp: 20000,
-        medal: Types.Medals.SKULL
+        medal: Types.Medals.SKULL,
+        needToReturn: true,
+        reward: {
+            item: Types.Entities.m88ndirt,
+            amount: 10
+        }
     },
     {
         id: "FOREMAN_QUEST_2",
@@ -775,6 +1037,9 @@ quests = [
         startText: ["Next, my men are going to need some work gloves...",
         "Each worker is going to need a pair of them.",
         "Can you look around and see if you can find me 20 work gloves?"],
+        inProgressText: ["Don't worry about how long it takes.",
+        "You only have {{remaining}} more to go.",
+        "I'm gonna go take a load off at the Champagne Lounge for a few."],
         endText: ["Great job, thank you!",
         "Now we're going to need to find some blueprints!"],
         eventType: "LOOT_ITEM",
@@ -784,7 +1049,12 @@ quests = [
         requiredQuest: "FOREMAN_QUEST_1",
         level: 10,
         xp: 30000,
-        medal: Types.Medals.SKULL
+        medal: Types.Medals.SKULL,
+        needToReturn: true,
+        reward: {
+            item: Types.Entities.m88ndirt,
+            amount: 10
+        }
     },
     {
         id: "FOREMAN_QUEST_3",
@@ -792,6 +1062,9 @@ quests = [
         startText: ["Finally, we're going to need some blueprints...",
         "Each worker is going to need their own copy.",
         "Can you look around and see if you can find me 10 blueprints?"],
+        inProgressText: ["You're doing great.",
+        "You only have {{remaining}} more to find!",
+        "Keep it up kid!"],
         endText: ["Great job, thank you!",
         "Now we can get cracking on expanding Paradise Point!"],
         eventType: "LOOT_ITEM",
@@ -801,7 +1074,12 @@ quests = [
         requiredQuest: "FOREMAN_QUEST_2",
         level: 10,
         xp: 50000,
-        medal: Types.Medals.SKULL
+        medal: Types.Medals.SKULL,
+        needToReturn: true,
+        reward: {
+            item: Types.Entities.m88ndirt,
+            amount: 10
+        }
     },
     {
         id: "GREASER_QUEST_1",
@@ -810,6 +1088,9 @@ quests = [
         "I'm real keen on her and want to go steady...",
         "I gotta do something to get her attention though.",
         "Can you help me find a dozen red roses to give her?"],
+        inProgressText: ["Isn't she just swell?",
+        "You only have {{remaining}} more roses to find!",
+        "Thank you friend. Keep it up!"],
         endText: ["Ayyy, thank you!",
         "I think she'd appreciate a nice promise ring too!"],
         eventType: "LOOT_ITEM",
@@ -818,15 +1099,22 @@ quests = [
         amount: 12,
         level: 10,
         xp: 20000,
-        medal: Types.Medals.SKULL
+        medal: Types.Medals.SKULL,
+        needToReturn: true,
+        reward: {
+            item: Types.Entities.m88ngem,
+            amount: 1
+        }
     },
     {
         id: "GREASER_QUEST_2",
         name: "The Greaser's Promise Ring Request",
         startText: ["Those flowers are definitely going to get her attention!",
         "If I want everyone to know she's my gal she's gonna need a promise ring too...",
-        "I know she likes rubies...Do you think you could help me find something nice?",
+        "Do you think you could help me find something nice?",
         "That would be the bee's knees!"],
+        inProgressText: ["Any luck finding something nice?",
+        "I know she likes rubies..."],
         endText: ["Ayyy, thank you so much! Wish me luck!"],
         eventType: "LOOT_ITEM",
         npc: Types.Entities.NEXAN32,
@@ -835,7 +1123,12 @@ quests = [
         requiredQuest: "GREASER_QUEST_1",
         level: 10,
         xp: 10000,
-        medal: Types.Medals.SKULL
+        medal: Types.Medals.SKULL,
+        needToReturn: true,
+        reward: {
+            item: Types.Entities.m88ngem,
+            amount: 1
+        }
     },
     {
         id: "BUSHGUY_QUEST_1",
@@ -845,6 +1138,8 @@ quests = [
         "I'm hiding in this bush now because I'm naked!",
         "Can you help me find my clothes so I can get out of here?",
         "First, I'm going to need a pair of clean undies."],
+        inProgressText: ["Any luck yet?",
+        "No worries, I'm chillin', it's actually kind of fun in here."],
         endText: ["Oh wow, thank you so much! How about a pair of pants?"],
         eventType: "LOOT_ITEM",
         npc: Types.Entities.M88NBUSHGUY,
@@ -852,13 +1147,20 @@ quests = [
         amount: 1,
         level: 10,
         xp: 10000,
-        medal: Types.Medals.SKULL
+        medal: Types.Medals.SKULL,
+        needToReturn: true,
+        reward: {
+            item: Types.Entities.m88ndirt,
+            amount: 10
+        }
     },
     {
         id: "BUSHGUY_QUEST_2",
         name: "The Bush Guy's Pants Request",
         startText: ["Okay, at least I have some clean undies now! Thank you!",
         "Do you think you can find me a pair of pants to wear too?"],
+        inProgressText: ["Any luck yet?",
+        "Not to be too picky but I'd really like a pair of blue jeans if you have a choice."],
         endText: ["Haha, sweet! You're a savior! One last thing? How about a t-shirt now?"],
         eventType: "LOOT_ITEM",
         npc: Types.Entities.M88NBUSHGUY,
@@ -867,13 +1169,20 @@ quests = [
         requiredQuest: "BUSHGUY_QUEST_1",
         level: 10,
         xp: 10000,
-        medal: Types.Medals.SKULL
+        medal: Types.Medals.SKULL,
+        needToReturn: true,
+        reward: {
+            item: Types.Entities.m88ndirt,
+            amount: 10
+        }
     },
     {
         id: "BUSHGUY_QUEST_3",
         name: "The Bush Guy's T-Shirt Request",
         startText: ["Wow, I'm so lucky you came around! Thank you for your help!",
         "Would you do me one last favor and find me a t-shirt to wear so I can get out of here?"],
+        inProgressText: ["I really like those goofy crabs over there!",
+        "Do you think you can find me a shirt that says like I got crabs in Paradise Point?"],
         endText: ["Haha, amazing! Thank you so much for your help friend!",
         "Believe it or not I'm actually getting use to it in here! I think I might stick around for a little longer..."],
         eventType: "LOOT_ITEM",
@@ -883,7 +1192,12 @@ quests = [
         requiredQuest: "BUSHGUY_QUEST_2",
         level: 10,
         xp: 10000,
-        medal: Types.Medals.SKULL
+        medal: Types.Medals.SKULL,
+        needToReturn: true,
+        reward: {
+            item: Types.Entities.m88ndirt,
+            amount: 10
+        }
     },
     {
         id: "BUTLERS_QUEST_1",
@@ -902,8 +1216,12 @@ quests = [
     {
         id: "MRCRAB_QUEST_1",
         name: "The Crab Basher's Common Request",
-        startText: ["Those little crabs on the beach are annoying. Go bash 100 of them and see how much gold you collect.",
-        "I'll load you up with 1000 bonus xp too."],
+        startText: ["Those little crabs on the beach are annoying.",
+        "Go bash 100 of them and see how much gold you collect.",
+        "I'll give you a m88n gem too!"],
+        inProgressText: ["Kind of fun right?!",
+        "You only have another {{remaining}} to go.",
+        "Keep it up!"],
         endText: "Nice job. Maybe we should open up a crab shack.",
         eventType: "KILL_MOB",
         npc: Types.Entities.NEXAN35,
@@ -911,13 +1229,22 @@ quests = [
         amount: 100,
         level: 1,
         xp: 1000,
-        medal: Types.Medals.SKULL
+        medal: Types.Medals.SKULL,
+        needToReturn: true,
+        reward: {
+            item: Types.Entities.m88ngem,
+            amount: 1
+        }
     },
     {
         id: "MRCRAB_QUEST_2",
         name: "The Crab Basher's Uncommon Request",
-        startText: ["Nice job bashing those little bastardos. Wanna start making some real xp?",
-        "Go bash 1000 more and I'll hook you up with 69k xp."],
+        startText: ["Nice job bashing those little bastardos.",
+        "Wanna start making some real money?",
+        "Go bash 1000 more and I'll hook you up with 5 m88n gems!"],
+        inProgressText: ["Nice job, keep it up!",
+        "You only have another {{remaining}} to go.",
+        "Pretty decent gold payout too huh?"],
         endText: "Haha, thanks. They keep coming back, maybe we should also start a crab extermination business.",
         eventType: "KILL_MOB",
         npc: Types.Entities.NEXAN35,
@@ -925,14 +1252,23 @@ quests = [
         amount: 1000,
         requiredQuest: "MRCRAB_QUEST_1",
         level: 4,
-        xp: 69000,
-        medal: Types.Medals.SKULL
+        xp: 42000,
+        medal: Types.Medals.SKULL,
+        needToReturn: true,
+        reward: {
+            item: Types.Entities.m88ngem,
+            amount: 5
+        }
     },
     {
         id: "MRCRAB_QUEST_3",
         name: "The Crab Basher's Rare Request",
-        startText: ["Okay, so I landed a contract with the city. They said if we keep bashing crabs they'll pay us handsomly.", 
-        "If you bash 4000 more crabs your cut will be 200k xp!"],
+        startText: ["Okay, so I landed a contract with the city.",
+        "They said if we keep bashing crabs they'll pay us handsomly.", 
+        "If you bash 4000 more crabs your cut will be 10 m88n gems!"],
+        inProgressText: ["Keep going, you can do it!",
+        "You still have another {{remaining}} to go.",
+        "Maybe you should go blow off some steam at the Cornhole Casino."],
         endText: "Nice job. We should start selling crab merchandise...",
         eventType: "KILL_MOB",
         npc: Types.Entities.NEXAN35,
@@ -940,23 +1276,38 @@ quests = [
         amount: 4000,
         requiredQuest: "MRCRAB_QUEST_2",
         level: 6,
-        xp: 200000,
-        medal: Types.Medals.SKULL
+        xp: 100000,
+        medal: Types.Medals.SKULL,
+        needToReturn: true,
+        reward: {
+            item: Types.Entities.m88ngem,
+            amount: 10
+        }
     },
     {
         id: "MRCRAB_QUEST_4",
         name: "The Crab Basher's Epic Request",
-        startText: ["The city is very pleased with the service we're providing. You up for another tour of duty?",
-        "If you can bash 8888 more crabs they're gonna give us a bonus. This time your cut will be 500k xp!"],
-        endText: "Nice job. You must be getting a pretty tweaked by now huh? Let's take a little PTSD prevention break.",
+        startText: ["The city is very pleased with the service we're providing.",
+        "You up for another tour of duty?",
+        "If you can bash 8888 more crabs they're gonna give us a bonus.",
+        "This time your cut will be 20 m88n gems!"],
+        inProgressText: ["You must be getting pretty tweaked by now huh?",
+        "You still have another {{remaining}} to go.",
+        "Maybe you should take a little PTSD prevention break."],
+        endText: "Nice job. Take a break soldier.",
         eventType: "KILL_MOB",
         npc: Types.Entities.NEXAN35,
         target: Types.Entities.M88NMRCRAB,
         amount: 8888,
         requiredQuest: "MRCRAB_QUEST_3",
         level: 8,
-        xp: 500000,
-        medal: Types.Medals.SKULL
+        xp: 100000,
+        medal: Types.Medals.SKULL,
+        needToReturn: true,
+        reward: {
+            item: Types.Entities.m88ngem,
+            amount: 20
+        }
     }
 ]
 
