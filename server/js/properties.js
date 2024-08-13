@@ -1449,7 +1449,8 @@ let Properties = {
         level: 2,
         drops: {
             flask: 20,
-            GOLD: 40,
+            hardwallet: 1,
+            GOLD: 30,
             GOLD2: 25,
             GOLD3: 10,
             loopring: 5
