@@ -464,7 +464,9 @@ define(['character'], function (Character) {
 
         "nexan5": [
             "Hey friend! Are you looking for a quick snack?",
-            "I'm waiting for my assistant to bring more supplies, check back again soon!"
+            "What are you in the mood for?",
+            "/openShop the_snack_stand The Snack Stand"
+            //"I'm waiting for my assistant to bring more supplies, check back again soon!"
         ],
 
         "nexan10": [
@@ -530,11 +532,13 @@ define(['character'], function (Character) {
 
         "nexan29": [
             "Welcome to the Sun Chaser Champagne Lounge, special guest!",
-            "A luxurious place to relax in style.",
-            "Most of these portals go to the private Helio Islands.",
-            "If you're interested in becoming an island owner you can DM m88nwalker to inquire.",
-            "On the far right of the second floor is a portal to a secret hidden island.",
-            "You'll need to find a mysterious compass to navigate to that one though..."
+            "Can I get you something to drink from the bar?",
+            "/openShop the_bar The Bar"
+            //"A luxurious place to relax in style.",
+            //"Most of these portals go to the private Helio Islands.",
+            //"If you're interested in becoming an island owner you can DM m88nwalker to inquire.",
+            //"On the far right of the second floor is a portal to a secret hidden island.",
+            //"You'll need to find a mysterious compass to navigate to that one though..."
         ],
 
         "thehookup": [
