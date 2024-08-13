@@ -1096,6 +1096,12 @@ define(['character'], function (Character) {
             "Thank you for your help space cadet!",
             "I hope this helps you on your journey <a target='_blank' href='https://imgur.com/a/QaDRUKn'>Try Here!</a>",
         ], 
+        "NURSEOWNER": [
+            "Welcome to Aberdeen Institute School of Nursing, my name is Dr. Bernard!",
+            "Left-sided heart failure occurs when the left ventricle cannot pump blood effectively to the rest of the body, leading to a buildup of fluid in the lungs.",
+            "Common symptoms include shortness of breath, coughing, and fatigue.",
+            "Please check out our Institute's website <a target='_blank' href='https://aberdeen.institute/'>Here!</a>",
+        ], 
         // @nextNPCLine@
     };
 

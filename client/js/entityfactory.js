@@ -828,6 +828,8 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.SLUDGERAT] = function(id) {return new Mobs.SLUDGERAT(id);};
     EntityFactory.builders[Types.Entities.SPACECRAB] = function(id) {return new Mobs.SPACECRAB(id);};
 
+    EntityFactory.builders[Types.Entities.BURGERBOSS]=function(id){return new Mobs.BURGERBOSS(id);};
+    EntityFactory.builders[Types.Entities.FRYGUY]=function(id){return new Mobs.FRYGUY(id);};
     // @nextMobLine@
     //===== items ======
  
@@ -1530,6 +1532,7 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.VOYAGERROBIT]=function(id){return new NPCs.VOYAGERROBIT(id);};
     EntityFactory.builders[Types.Entities.SARAH]=function(id){return new NPCs.SARAH(id);};
     EntityFactory.builders[Types.Entities.MOONBASES]=function(id){return new NPCs.MOONBASES(id);};
+    EntityFactory.builders[Types.Entities.NURSEOWNER]=function(id){return new NPCs.NURSEOWNER(id);};
     // @nextNPCLine@
 
      //====== FieldEffectss ======

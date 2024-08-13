@@ -764,7 +764,11 @@ Types = {
         SARAH: 34000127,
         MOONBASES: 34000128, 
         SLUDGERAT: 34000129,
-        SPACECRAB: 34000130, // @lastidCharacter@
+        SPACECRAB: 34000130,
+        NURSEOWNER: 34000131,
+        BURGERBOSS: 34000132,
+       
+        FRYGUY: 34000134, // @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -6689,6 +6693,9 @@ var kinds = {
     VOYAGERROBIT: [Types.Entities.VOYAGERROBIT, "npc"],
     SARAH: [Types.Entities.SARAH, "npc"],
     MOONBASES: [Types.Entities.MOONBASES, "npc"],
+    NURSEOWNER: [Types.Entities.NURSEOWNER, "npc"],
+    BURGERBOSS: [Types.Entities.BURGERBOSS, "mob"],
+    FRYGUY: [Types.Entities.FRYGUY, "mob"],
     // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],

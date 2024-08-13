@@ -1213,6 +1213,19 @@ let Properties = {
         respawnDelay:  60000
     },
 
+    FRYGUY: {
+        level: 5,
+        drops: {
+            taikoboost: 50,
+            GOLD: 5,
+            GOLD1: 3,
+            GOLD2: 1,
+        },
+        messages: ['I will beepin destroy you!'],
+        armorMod: 2.2,
+        respawnDelay:  60000
+    },
+
      COLOSSUS: {
         level: 30,
         drops: {
@@ -1237,7 +1250,20 @@ let Properties = {
         },
         messages: ['Shinu!'],
         armorMod: 2.2,
-        xp: 18000,
+        redpacket: true,
+        respawnDelay: 180000
+    },
+
+    BURGERBOSS: {
+        level: 30,
+        drops: {
+            taikoboost: 40,
+            GOLD: 40,
+            GOLD2: 10,
+            GOLD3: 2
+        },
+        messages: ['Shinu!'],
+        armorMod: 2.2,
         redpacket: true,
         respawnDelay: 180000
     },
