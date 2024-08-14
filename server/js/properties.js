@@ -1450,9 +1450,9 @@ let Properties = {
             GOLD5: 5,
         },
         messages: ['Mmmmm, tasty!', 'Yum!', 'Eww, that was a little tough...', 'Stay on land or come back with friends!'],
-        armorMod: 0.5,
-        hpMod: 3,
-        weaponMod: 0.5,
+        armorMod: 1,
+        hpMod: 4,
+        weaponMod: 1,
         respawnDelay: 30000,
         xp: 99000
     },
@@ -2623,6 +2623,18 @@ let Properties = {
             player.playerClassModifiers.applyTemporaryModifierWithTimeout('xp', 5, 180000);
         }
     },
+    m88nwhiskey: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "dropPotions",
+            duration: 600000
+        },
+        inventoryDescription: "DRS'd GME",
+        onConsume: function(player){
+            player.setDropOverride(Types.Entities.M88NDRSGME, 10000);
+        }
+    },
     m88nfries: {
         collectable: true,
         consumable: true,
@@ -2844,16 +2856,22 @@ let Properties = {
         respawnDelay: 9900000,
     },
     gameboy: {
-        respawnDelay: 9900000,
+        collectable: true,
+        inventoryDescription: "Gameboy",
+        respawnDelay: 9900000
     },
     battery: {
-        respawnDelay: 9900000,
+        collectable: true,
+        inventoryDescription: "Battery",
+        respawnDelay: 9900000
     },
     hardwallet: {
-        respawnDelay: 9900000,
+        collectable: true,
+        inventoryDescription: "Hard Wallet",
+        respawnDelay: 9900000
     },
     movieglasses: {
-        respawnDelay: 9900000,
+        respawnDelay: 9900000
     },
     m88ncompass: {
         collectable: true,
@@ -2866,6 +2884,8 @@ let Properties = {
         respawnDelay: 9900000
     },
     m88npeel: {
+        collectable: true,
+        inventoryDescription: "Banana Peel",
         respawnDelay: 9900000
     },
     m88nfly: {
@@ -2877,10 +2897,13 @@ let Properties = {
     m88ndungbeetle: {
         respawnDelay: 9900000
     },
-    m88nbutterfly: {
+    m88nstickbug: {
         respawnDelay: 9900000
     },
-    m88nstickbug: {
+    m88nsnail: {
+        respawnDelay: 9900000
+    },
+    m88nbutterfly: {
         respawnDelay: 9900000
     },
     m88ndiamondnecklace: {
@@ -2938,9 +2961,28 @@ let Properties = {
         respawnDelay: 9900000
     },
     m88nworm: {
+        collectable: true,
+        inventoryDescription: "Worm",
         respawnDelay: 9900000
     },
-    m88nsnail: {
+    m88nrose: {
+        collectable: true,
+        inventoryDescription: "Red Rose",
+        respawnDelay: 9900000
+    },
+    m88nhardhat: {
+        collectable: true,
+        inventoryDescription: "Hard Hat",
+        respawnDelay: 9900000
+    },
+    m88nworkgloves: {
+        collectable: true,
+        inventoryDescription: "Work Glove",
+        respawnDelay: 9900000
+    },
+    m88nblueprint: {
+        collectable: true,
+        inventoryDescription: "Blueprint",
         respawnDelay: 9900000
     },
     m88ntentacle: {
