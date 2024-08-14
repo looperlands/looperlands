@@ -992,7 +992,6 @@ quests = [
         endText: ["Yay! I feel complete again and now I can go to that dinner party!",
         "There is a secret door somewhere in The Nexus that I have unlocked for you!",
         "Find it and there is a golden ticket to the Champagne Lounge beyond it!"],
-        //"Find it and there is a golden compass waiting beyond it. It will come in handy soon, trust me!"],
         eventType: "LOOT_ITEM",
         npc: Types.Entities.NEXAN4,
         target: Types.Entities.M88NGOLDTIARA,
