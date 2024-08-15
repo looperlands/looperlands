@@ -2424,6 +2424,20 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
 
+        m88njaws: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NJAWS);
+                this.moveSpeed = 100;
+                this.idleSpeed = 100;
+                this.setAttackRate(500);
+                this.atkSpeed = 50;                
+                this.isAggressive = true;
+                this.aggroRange = 4;
+                this.deathAnimated = true;
+                this.title = "Shark!";
+            }
+        }),
+
         m88nhermie: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.M88NHERMIE);

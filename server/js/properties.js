@@ -1444,14 +1444,64 @@ let Properties = {
             m88negg1: 1,
             m88negg2: 1,
             taikoboost: 5,
-            m88ngem: 10,
+            m88ngem: 8,
             GOLD3: 10,
             GOLD4: 5,
             GOLD5: 5,
         },
         messages: ['Mmmmm, tasty!', 'Yum!', 'Eww, that was a little tough...', 'Stay on land or come back with friends!'],
-        armorMod: 1,
+        armorMod: 0.8,
         hpMod: 4,
+        weaponMod: 0.8,
+        respawnDelay: 30000,
+        xp: 99000
+    },
+
+    m88njaws: {
+        level: 150,
+        drops: {
+            m88nmap: 25,
+            movieglasses: 1,
+            battery: 1,
+            gameboy: 1,
+            hardwallet: 1,
+            m88npeel: 1,
+            m88ndungbeetle: 1,
+            m88nfly: 1,
+            m88njunebug: 1,
+            m88nstickbug: 1,
+            m88ndiamondnecklace: 1,
+            m88ndiamondring: 1,
+            m88ngoldearrings: 1,
+            m88nsteak: 1,
+            m88nclover: 1,
+            m88nmail: 1,
+            m88nshovel: 1,
+            m88nwatercan: 1,
+            m88nseeds: 1,
+            m88npotato: 1,
+            m88npackage: 1,
+            m88nsalad: 1,
+            m88nsnail: 1,
+            m88nblueprint: 1,
+            m88nhardhat: 1,
+            m88nrose: 1,
+            m88nworkgloves: 1,
+            m88nbrewski: 1,
+            m88npie: 1,
+            m88nsack: 1,
+            m88nworm: 1,
+            m88negg1: 1,
+            m88negg2: 1,
+            taikoboost: 5,
+            m88ngem: 25,
+            GOLD3: 1,
+            GOLD4: 1,
+            GOLD5: 1,
+        },
+        messages: ['Mmmmm, tasty!', 'Yum!', 'Eww, that was a little tough...', 'Stay on land or come back with friends!'],
+        armorMod: 1,
+        hpMod: 8,
         weaponMod: 1,
         respawnDelay: 30000,
         xp: 99000
@@ -1583,7 +1633,7 @@ let Properties = {
     },
 
     m88nshortsqueeze: {
-        level: 11,
+        level: 22,
         drops: {
             m88ndrsgme: 1,
             m88ngem: 4,
@@ -2772,7 +2822,7 @@ let Properties = {
         inventoryDescription: "m88n gems",
         collectItem: Types.Entities.M88NGEM,
         collectAmount: 1,
-        respawnDelay: 42069000
+        respawnDelay: 42069741
     },
     m88ndirt: {
         collectable: true,
@@ -2818,7 +2868,7 @@ let Properties = {
     m88ndrsgme: {
         collectable: true,
         inventoryDescription: "DRS'd GME",
-        respawnDelay: 8800000
+        respawnDelay: 42069741
     },
     bandaid: {
         collectable: true,
