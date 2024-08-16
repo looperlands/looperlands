@@ -534,6 +534,7 @@ define(['character'], function (Character) {
             "Welcome to the Sun Chaser Champagne Lounge, special guest!",
             "Can I get you something to drink from the bar?",
             "/openShop the_bar The Bar"
+            //"Jeeves ran out to get more bar supplies, check back soon!.",
             //"A luxurious place to relax in style.",
             //"Most of these portals go to the private Helio Islands.",
             //"If you're interested in becoming an island owner you can DM m88nwalker to inquire.",
@@ -1043,12 +1044,13 @@ define(['character'], function (Character) {
             "Welcome to the Tea room!",
         ],
         "WENMOONBIT":  [
-            "Hey there I was sent here by m88nwalker, welcome to the m88n lab!",
-            "We're still working on updating the interior, check back in soon to see our progress!",
-            'On X? <a target="_blank" href="https://twitter.com/moonwalker_nfts">Give him a follow</a> to stay updated.',
+            "Hey there, I'm wenmoon. I was sent here by m88nwalker, welcome to LooperLands!",
+            "There are many different galaxies in LooperLands, our home is The Nexus.",
+            "Come check it out sometime, Paradise Point is where you're gonna want to start.",
+            'On X? <a target="_blank" href="https://twitter.com/moonwalker_nfts">Give us a follow</a> to stay updated.',
             'How about Discord? <a target="_blank" href="https://discord.gg/bjjNewZegM">Checkout PLANET M88NWALKER</a> for lots more!',
-            "Check out his collections <a target='_blank' href='https://loopexchange.art/profile/0x1e8ab2cc09be581530bb9f3ac94353f6f7412239'>here</a>!",
-            "Have fun exploring Cyber City!"
+            "Check out our collections <a target='_blank' href='https://loopexchange.art/profile/0x1e8ab2cc09be581530bb9f3ac94353f6f7412239'>here</a>!",
+            "Have fun exploring LooperLands!"
         ],
         "FEDORABIT":  [
             "Hi im Fedora!",
