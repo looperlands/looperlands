@@ -1,3 +1,4 @@
+
 name: deploy
 on:
   push:
@@ -5,25 +6,33 @@ on:
       - main
 concurrency:
   group: environment-${{ github.ref }}
-  cancel-in-progress: true      
+  cancel-in-progress: true
 jobs:
   build:
-    name: Build
+    name: Build and Deploy
     runs-on: ubuntu-latest
     steps:
-    - name: executing remote ssh commands using password
-      uses: appleboy/ssh-action@v0.1.7
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        password: ${{ secrets.PASSWORD }}
-        port: 22
-        script: |
-          sudo systemctl stop looperlands
-          docker system prune -af
-          cd /home/looperlands/git/looperlands
-          git checkout .
-          git checkout main
-          git pull
-          docker-compose build --no-cache
-          sudo systemctl restart looperlands
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+        
+      - name: Build Docker Image
+        run: docker build -f Dockerfile.prod -t balkshamster/looperlands:latest .
+
+      - name: Push Docker Image to Docker Hub
+        run: docker push balkshamster/looperlands:latest      
+
+      - name: executing remote ssh commands using password
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          port: 22
+          script: |
+            docker-compose up --pull --force-recreate
+            sudo systemctl restart looperlands
+
+
