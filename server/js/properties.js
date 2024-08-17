@@ -1059,7 +1059,6 @@ let Properties = {
     },
 
     BORAC: {
-        //level: 9,
         level: 25,
         drops: {
             GREYPOTION: 90,
@@ -1078,7 +1077,6 @@ let Properties = {
     },
 
     WINGELLA: {
-        //level: 5,
         level: 15,
         drops: {
             REDPOTION: 40
@@ -1087,7 +1085,6 @@ let Properties = {
     },
 
     GAUNTER: {
-        //level: 13,
         level: 30,
         drops: {
             GREYPOTION: 90,
@@ -1104,7 +1101,6 @@ let Properties = {
     },
 
     VALKYM: {
-        //level: 7,
         level: 20,
         drops: {
             REDPOTION: 40,
@@ -1186,7 +1182,6 @@ let Properties = {
         },
         messages: ['I will beepin destroy you!'],
         armorMod: 2.2,
-        xp: 18000,
         respawnDelay: 180000
     },
 
@@ -1278,7 +1273,7 @@ let Properties = {
             taikoboost: 50,
             GOLD: 50
         },
-        xp: 138
+        xp: 69
     },
 
     balloondogy: {
@@ -1287,7 +1282,7 @@ let Properties = {
             taikoboost: 50,
             GOLD: 50
         },
-        xp: 198
+        xp: 99
     },
 
     balloondogg: {
@@ -1298,7 +1293,7 @@ let Properties = {
             GOLD: 50,
             GOLD2: 10
         },
-        xp: 295
+        xp: 222
     },
 
     balloondoga: {
@@ -1349,7 +1344,7 @@ let Properties = {
             GOLD2: 20,
             GOLD3: 55
         },
-        xp: 1776
+        xp: 2222
     },
 
     balloongiraffeo: {
@@ -1362,7 +1357,7 @@ let Properties = {
             taikoboost: 5,
             GOLD3: 75
         },
-        xp: 4444
+        xp: 22222
     },
 
     m88nbigchungus: {
@@ -1408,7 +1403,7 @@ let Properties = {
         hpMod: 3,
         weaponMod: 0.8,
         respawnDelay: 420000,
-        xp: 88000
+        xp: 69420
     },
 
     sharkboss: {
@@ -1436,7 +1431,6 @@ let Properties = {
             m88npotato: 1,
             m88npackage: 1,
             m88nsalad: 1,
-            m88nsnail: 1,
             m88nblueprint: 1,
             m88nhardhat: 1,
             m88nrose: 1,
@@ -1457,12 +1451,11 @@ let Properties = {
         armorMod: 0.8,
         hpMod: 4,
         weaponMod: 0.8,
-        respawnDelay: 30000,
-        xp: 99000
+        respawnDelay: 30000
     },
 
     m88njaws: {
-        level: 150,
+        level: 222,
         drops: {
             m88nmap: 25,
             movieglasses: 1,
@@ -1486,7 +1479,6 @@ let Properties = {
             m88npotato: 1,
             m88npackage: 1,
             m88nsalad: 1,
-            m88nsnail: 1,
             m88nblueprint: 1,
             m88nhardhat: 1,
             m88nrose: 1,
@@ -1499,16 +1491,16 @@ let Properties = {
             m88negg2: 1,
             taikoboost: 5,
             m88ngem: 25,
+            m88nhelioislandicedtea: 1,
             GOLD3: 1,
             GOLD4: 1,
             GOLD5: 1,
         },
         messages: ['Mmmmm, tasty!', 'Yum!', 'Eww, that was a little tough...', 'Stay on land or come back with friends!'],
-        armorMod: 1,
-        hpMod: 8,
-        weaponMod: 1,
-        respawnDelay: 30000,
-        xp: 99000
+        armorMod: 2,
+        hpMod: 20,
+        weaponMod: 2,
+        respawnDelay: 30000
     },
 
     m88nhermie: {
@@ -1572,7 +1564,6 @@ let Properties = {
             taikoboost: 60,
             GOLD: 20
         },
-        xp: 44
     },
 
     m88nnightmaremonstery: {
@@ -1584,7 +1575,6 @@ let Properties = {
             taikoboost: 40,
             GOLD: 25
         },
-        xp: 88
     },
 
     m88nnightmaremonsterg: {
@@ -1598,7 +1588,6 @@ let Properties = {
             GOLD: 20,
             GOLD2: 10
         },
-        xp: 138
     },
 
     m88nnightmaremonstera: {
@@ -1610,7 +1599,6 @@ let Properties = {
             GOLD: 30,
             GOLD2: 20
         },
-        xp: 222
     },
 
     m88nnightmaremonsterv: {
@@ -1622,7 +1610,6 @@ let Properties = {
             GOLD2: 20,
             GOLD3: 10
         },
-        xp: 294
     },
 
     m88nnightmaremonsterp: {
@@ -1633,7 +1620,6 @@ let Properties = {
             GOLD2: 20,
             GOLD3: 50
         },
-        xp: 348
     },
 
     m88nshortsqueeze: {
@@ -1686,7 +1672,6 @@ let Properties = {
             m88npotato: 1,
             m88npackage: 1,
             m88nsalad: 1,
-            m88nsnail: 1,
             m88nblueprint: 1,
             m88nhardhat: 1,
             m88nrose: 1,
@@ -2754,7 +2739,7 @@ let Properties = {
         consumable: true,
         cooldown: {
             group: "moveSpeed",
-            duration: 180000
+            duration: 60000
         },
         inventoryDescription: "Fast Shoes",
         onConsume: function(player){
@@ -2778,7 +2763,7 @@ let Properties = {
         consumable: true,
         cooldown: {
             group: "stealth",
-            duration: 180000
+            duration: 60000
         },
         inventoryDescription: "Wizard's Hat",
         onConsume: function(player){
@@ -2790,7 +2775,7 @@ let Properties = {
         consumable: true,
         cooldown: {
             group: "meleeDamageDealt",
-            duration: 180000
+            duration: 90000
         },
         inventoryDescription: "Brass Knuckles",
         onConsume: function(player){
@@ -2802,11 +2787,11 @@ let Properties = {
         consumable: true,
         cooldown: {
             group: "meleeDamageTaken",
-            duration: 180000
+            duration: 90000
         },
         inventoryDescription: "Kevlar Armor",
         onConsume: function(player){
-            player.playerClassModifiers.applyTemporaryModifierWithTimeout('meleeDamageTaken', 0.5, 30000);
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('meleeDamageTaken', 0.4, 30000);
         }
     },
     m88ngrenade: {
@@ -2814,7 +2799,7 @@ let Properties = {
         consumable: true,
         cooldown: {
             group: "rangedDamageDealt",
-            duration: 180000
+            duration: 90000
         },
         inventoryDescription: "Grenade",
         onConsume: function(player){
@@ -2849,7 +2834,7 @@ let Properties = {
         respawnDelay: 8800000,
         cooldown: {
             group: "rangedDamageDealt",
-            duration: 180000
+            duration: 120000
         },
         inventoryDescription: "Holy Hand Grenade",
         onConsume: function(player){
@@ -2862,7 +2847,7 @@ let Properties = {
         respawnDelay: 8800000,
         cooldown: {
             group: "meleeDamageDealt",
-            duration: 180000
+            duration: 120000
         },
         inventoryDescription: "Golden Chalis",
         onConsume: function(player){
