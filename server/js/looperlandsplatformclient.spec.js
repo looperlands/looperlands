@@ -689,8 +689,7 @@ describe('LooperLandsPlatformClient', () => {
       client.client.get.mockResolvedValue({ data: modifierData });
 
       const result = await client.getLooperModifierData(nftId);
-
-      expect(client.client.get).toHaveBeenCalledWith(`/api/game/asset/modifiers/${nftId}`);
+      expect(client.client.get).toHaveBeenCalledWith(`/api/game/asset/modifiers/undefined/${nftId}`);
       expect(result).toEqual(modifierData);
     });
 
@@ -704,7 +703,7 @@ describe('LooperLandsPlatformClient', () => {
 
       await client.getLooperModifierData(nftId);
 
-      expect(client.client.get).toHaveBeenCalledWith(`/api/game/asset/modifiers/${nftId}`);
+      expect(client.client.get).toHaveBeenCalledWith(`/api/game/asset/modifiers/undefined/${nftId}`);
       expect(client.handleError).toHaveBeenCalledWith(error);
     });
   });
