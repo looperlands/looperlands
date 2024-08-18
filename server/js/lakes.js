@@ -163,7 +163,7 @@ const Lakes = {
     },
 
     m88nDreamPond2: {
-        level: 2,
+        level: 7,
         fish: {
             m88ndreamcandyy: "common",
             m88ndreamcandyp: "common",
@@ -175,7 +175,7 @@ const Lakes = {
     },
 
     m88nDreamPond3: {
-        level: 5,
+        level: 6,
         fish: {
             m88ndreamgumbally: "common",
             m88ndreamgumballp: "common",
@@ -196,7 +196,7 @@ const Lakes = {
     },
 
     m88nNightmarePond1: {
-        level: 1,
+        level: 13,
         fish: {
             m88nnightmareduckyb: "common",
             m88nnightmareduckyv: "uncommon",
@@ -206,7 +206,7 @@ const Lakes = {
     },
 
     m88nocean1: {
-        level: 3,
+        level: 8,
         fish: {
             m88nbluetang: "common",
             m88npompano: "uncommon",
@@ -226,7 +226,7 @@ const Lakes = {
     },
 
     m88nocean3: {
-        level: 3,
+        level: 9,
         fish: {
             m88nclownfish: "common",
             m88noyster: "uncommon",
@@ -246,7 +246,7 @@ const Lakes = {
     },
 
     m88nocean5: {
-        level: 3,
+        level: 11,
         fish: {
             m88nparrotfish: "common",
             m88nconch: "uncommon",
@@ -266,7 +266,7 @@ const Lakes = {
     },
 
     m88nocean7: {
-        level: 3,
+        level: 10,
         fish: {
             m88ntuna: "common",
             m88nsundial: "uncommon",
@@ -296,7 +296,7 @@ const Lakes = {
     },
 
     m88nocean10: {
-        level: 4,
+        level: 7,
         fish: {
             m88npinkfantasia: "common",
             m88nscallop: "uncommon",
@@ -317,7 +317,7 @@ const Lakes = {
     },
 
     m88nocean12: {
-        level: 4,
+        level: 12,
         fish: {
             m88nseafrog: "common",
             m88nseaurchin: "uncommon",

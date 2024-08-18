@@ -286,6 +286,11 @@ define(['character', 'projectile', 'timer'], function(Character, Projectile, Tim
                 sparks.update(t);
             }
 
+            var indicator = this.game.indicatorAnimation;
+            if(indicator) {
+                indicator.update(t);
+            }
+
             var target = this.game.targetAnimation;
             if(target) {
                 target.update(t);

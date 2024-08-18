@@ -31,14 +31,30 @@ Formulas.hp = function (level) {
 };
 
 Formulas.xp = function (mob) {
-    if (Properties[Types.getKindAsString(mob.kind)].xp != undefined) {
-        return Properties[Types.getKindAsString(mob.kind)].xp * XP_MULTIPLIER;
-    } else {
-        let baseXp = mob.level * 7;
-        let xp = baseXp * XP_MULTIPLIER;
-        return xp;
-    }
+    let baseXp = mob.level * 11;
+
+    const mobProperties = Properties[Types.getKindAsString(mob.kind)];
+    // Define weights for each attribute
+    const hpWeight = 0.01;
+    const armorWeight = 0.005;
+    const weaponWeight = 0.005;
+
+    // Use default values with the nullish coalescing operator
+    const hp = mob.maxHitPoints;
+    const armor = mobProperties.armorMod ?? 1;
+    const weapon = mobProperties.weaponMod ?? 1;
+
+    // Calculate weighted contributions
+    const hpContribution = 1 + (hp - 1) * hpWeight;
+    const armorContribution = 1 + (armor - 1) * armorWeight;
+    const weaponContribution = 1 + (weapon - 1) * weaponWeight;
+
+    // Calculate the final XP
+    let xp = baseXp * XP_MULTIPLIER * hpContribution * armorContribution * weaponContribution;
+
+    return xp;
 }
+
 
 Formulas.setXPMultiplier = function (multiplier, timeout) {
     // Only set multiplier if the duration is greater than the current bonus

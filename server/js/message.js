@@ -402,7 +402,6 @@ Messages.Buffinfo = Message.extend({
     },
 });
 
-
 Messages.Announcement = Message.extend({
     init: function(message, timeToShow) {
         this.message = message;
@@ -410,5 +409,16 @@ Messages.Announcement = Message.extend({
     },
     serialize: function() {
         return [Types.Messages.ANNOUNCEMENT, this.message, this.timeToShow];
+    },
+});
+
+
+Messages.Indicator = Message.extend({
+    init: function(entityId, showIndicator) {
+        this.entitiyId = entityId;
+        this.showIndicator = showIndicator;
+    },
+    serialize: function() {
+        return [Types.Messages.INDICATOR, this.entitiyId, this.showIndicator];
     },
 });

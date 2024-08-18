@@ -50,7 +50,8 @@ Types = {
         SPAWNPROJECTILE: 48,
         OUTOFAMMO: 49,
         SELECTPROJECTILE: 50,
-        ANNOUNCEMENT: 51
+        ANNOUNCEMENT: 51,
+        INDICATOR: 52
     },
 
     Entities: {
@@ -416,6 +417,10 @@ Types = {
         M88NNIGHTMAREMONSTERV: 78000084,
         M88NNIGHTMAREMONSTERY: 78000085,
         M88NBONER: 78000086,
+        M88NSHORTSQUEEZE: 78000087,
+        M88NDADDYBEARBROWN: 78000088,
+        M88NJAWS: 78000089,
+        M88NJEEVES: 78000090,
         //m88n Mob Nexans
         NEXAN1: 78000037,
         NEXAN2: 78000038,
@@ -535,6 +540,10 @@ Types = {
         M88NNEXUSSANGRIA: 78008700,
         M88NPARADISEHURRICANE: 78008800,
         M88NSUNSETDAIQUIRI: 78008900,
+        M88NBURGER: 78009000,
+        M88NFRIES: 78009100,
+        M88NHOTDOG: 78009200,
+        M88NTACO: 78009300,
         //MRMlabs NPCs
         TYLERDURDEN: 79000000,
         //MRMlabs Items
@@ -757,7 +766,11 @@ Types = {
         SARAH: 34000127,
         MOONBASES: 34000128, 
         SLUDGERAT: 34000129,
-        SPACECRAB: 34000130, // @lastidCharacter@
+        SPACECRAB: 34000130,
+        NURSEOWNER: 34000131,
+        BURGERBOSS: 34000132,
+       
+        FRYGUY: 34000134, // @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -6163,6 +6176,9 @@ var kinds = {
     m88nnightmaremonsterv: [Types.Entities.M88NNIGHTMAREMONSTERV, "mob"],
     m88nnightmaremonstery: [Types.Entities.M88NNIGHTMAREMONSTERY, "mob"],
     m88nboner: [Types.Entities.M88NBONER, "mob"],
+    m88nshortsqueeze: [Types.Entities.M88NSHORTSQUEEZE, "mob"],
+    m88ndaddybearbrown: [Types.Entities.M88NDADDYBEARBROWN, "mob"],
+    m88njaws: [Types.Entities.M88NJAWS, "mob"],
 
     //m88n Mob Nexans
     nexan1: [Types.Entities.NEXAN1, "mob"],
@@ -6376,6 +6392,10 @@ var kinds = {
     m88nnexussangria: [Types.Entities.M88NNEXUSSANGRIA, "object"],
     m88nparadisehurricane: [Types.Entities.M88NPARADISEHURRICANE, "object"],
     m88nsunsetdaiquiri: [Types.Entities.M88NSUNSETDAIQUIRI, "object"],
+    m88nburger: [Types.Entities.M88NBURGER, "object"],
+    m88nfries: [Types.Entities.M88NFRIES, "object"],
+    m88nhotdog: [Types.Entities.M88NHOTDOG, "object"],
+    m88ntaco: [Types.Entities.M88NTACO, "object"],
     //MRMlabs Items
     firstaidkit: [Types.Entities.FIRSTAIDKIT, "object"],
     bandaid: [Types.Entities.BANDAID, "object"],
@@ -6676,6 +6696,9 @@ var kinds = {
     VOYAGERROBIT: [Types.Entities.VOYAGERROBIT, "npc"],
     SARAH: [Types.Entities.SARAH, "npc"],
     MOONBASES: [Types.Entities.MOONBASES, "npc"],
+    NURSEOWNER: [Types.Entities.NURSEOWNER, "npc"],
+    BURGERBOSS: [Types.Entities.BURGERBOSS, "mob"],
+    FRYGUY: [Types.Entities.FRYGUY, "mob"],
     // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],

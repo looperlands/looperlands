@@ -1059,6 +1059,7 @@ module.exports = Player = Character.extend({
         for (quest of completedQuests) {
             if (!this.completedQuestsIDs.includes(quest.id)) {
                 let xpReward = Formulas.xpPercentageOfLevel(quest.level, 5);
+                xpReward = xpReward * this.playerClassModifiers.xp;
                 this.handleExperience(xpReward);
                 let msg = new Messages.QuestComplete(quest.name, quest.endText, xpReward, quest.medal);
                 this.server.pushToPlayer(this, msg);
@@ -1067,6 +1068,7 @@ module.exports = Player = Character.extend({
                 this.playerEventBroker.questCompleteEvent(quest, xpReward);
             }
         }
+        this.updateIndicators();
     },
 
     addConsumable: function (consumable) {
@@ -1278,5 +1280,19 @@ module.exports = Player = Character.extend({
         setTimeout(() => {
             delete this.dropOverride;
         }, timeout);
+    },
+
+    //loop over all npcs and check if they need to show an indicator now
+    updateIndicators: function() {
+        for (let id in this.server.entities) {
+            let entity = this.server.entities[id];
+            if(entity instanceof Npc) {
+                let hadIndicator = entity.showIndicator;
+                entity.checkIndicator(this.sessionId, this.server.server.cache);
+                if (hadIndicator !== entity.showIndicator) {
+                    this.send(new Messages.Indicator(entity.id, entity.showIndicator).serialize())
+                }
+            }
+        }
     }
 });

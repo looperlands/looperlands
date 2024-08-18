@@ -22,6 +22,7 @@ var cls = require("./lib/class"),
 const quests = require("./quests/quests");
 
 const WorldEventBroker = require("./flows/worldeventbroker.js");
+const {cache} = require("express/lib/application");
 
     Lakes = require('./lakes');
 
@@ -169,7 +170,7 @@ module.exports = World = cls.Class.extend({
             });
 
             player.onReleaseNpc(function (kind, timeToLive) {
-                const npc = self.addNpc(kind, player.x, player.y);
+                const npc = self.addNpc(kind, player.x, player.y, player);
 
                 setTimeout(()=> {
                     player.broadcast(npc.despawn(), false);
@@ -346,6 +347,7 @@ module.exports = World = cls.Class.extend({
                 return parseInt(id);
             });
             entities = entities.filter(id=> id != null);
+
             if (entities) {
                 this.pushToPlayer(player, new Messages.List(entities));
             }
@@ -359,6 +361,9 @@ module.exports = World = cls.Class.extend({
         _.each(ids, function(id) {
             var entity = self.getEntityById(id);
             if (entity) {
+                if(entity instanceof Npc) {
+                    entity.checkIndicator(player.sessionId, self.server.cache);
+                }
                 self.pushToPlayer(player, new Messages.Spawn(entity));
             }
         });
@@ -519,7 +524,9 @@ module.exports = World = cls.Class.extend({
 
     addNpc: function (kind, x, y) {
         var npc = new Npc('8' + x + '' + y, kind, x, y);
+
         this.addEntity(npc);
+
         this.npcs[npc.id] = npc;
 
         return npc;
@@ -816,7 +823,7 @@ module.exports = World = cls.Class.extend({
                 pos = self.map.tileIndexToGridPosition(tid);
 
             if (Types.isNpc(kind)) {
-                self.addNpc(kind, pos.x + 1, pos.y);
+                self.addNpc(kind, pos.x + 1, pos.y, self.map.player);
             }
             if (Types.isFieldEffect(kind)) {
                 self.addFieldEffect(kind, pos.x + 1, pos.y);
@@ -1275,6 +1282,7 @@ module.exports = World = cls.Class.extend({
                 if (buff && buff.stat === "exp"){
                     accompliceShare = Math.round(accompliceShare * (100 + buff.percent)/100);
                 }
+                accompliceShare = accompliceShare * accomplice.playerClassModifiers.xp;
                 accomplice.handleExperience(accompliceShare);
                 self.pushToPlayer(accomplice, new Messages.Kill(mob, accompliceShare));
             }

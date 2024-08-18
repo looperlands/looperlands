@@ -90,7 +90,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.lowAmmoThreshold = 10;
 
                 // sprites
-                this.spriteNames = ["hand", "handclick", "sword", "loot", "target", "talk", "float", "sparks", "shadow16", "rat", "skeleton", "skeleton2", "spectre", "boss", "deathknight",
+                this.spriteNames = ["hand", "handclick", "sword", "loot", "target", "talk", "float", "indicator", "sparks", "shadow16", "rat", "skeleton", "skeleton2", "spectre", "boss", "deathknight",
                     "ogre", "crab", "snake", "eye", "bat", "goblin", "wizard", "guard", "taikoguard", "king", "villagegirl", "villager", "coder", "agent", "rick", "scientist", "nyan", "priest", "coblumberjack", "cobhillsnpc", "cobcobmin", "cobellen", "cobminer", "cobjohnny", "cobashley",
                     "king2", "goose", "tanashi", "slime","kingslime","silkshade","redslime","villagesign1","wildgrin","loomleaf","gnashling","arachweave","spider","fangwing", "minimag", "miner", "megamag", "seacreature", "tentacle", "tentacle2", "wildwill","shopowner","blacksmith",
                     "cobchicken", "alaric","orlan","jayce", "cobcow", "cobpig", "cobgoat", "ghostie","cobslimered", "cobslimeyellow", "cobslimeblue", "cobslimepurple", "cobslimegreen", "cobslimepink", "cobslimecyan", "cobslimemint", "cobslimeking", "cobyorkie", "cobcat", "cobcatblack", "cobcatorange", "cobcatbrown", "cobdirt", "cobhay", "cobhaytwo", "cobincubator", "cobcoblin", "cobcobane", "cobogre",
@@ -238,6 +238,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "m88nnightmaremonsterv",
                     "m88nnightmaremonstery",
                     "m88nboner",
+                    "m88nshortsqueeze",
+                    "m88ndaddybearbrown",
+                    "m88njaws",
                     //m88n's Mob Nexans
                     "nexan1",
                     "nexan2",
@@ -409,6 +412,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 "VOYAGERROBIT",
                                 "SARAH",
                                 "MOONBASES",
+                                "NURSEOWNER",
+                                "BURGERBOSS",
+                
+                                "FRYGUY",
                                 // @nextCharacterLine@
                     "item-BOARHIDE",
                     "item-THUDKEY",
@@ -548,6 +555,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "item-m88nnexussangria",
                     "item-m88nparadisehurricane",
                     "item-m88nsunsetdaiquiri",
+                    "item-m88nburger",
+                    "item-m88nfries",
+                    "item-m88nhotdog",
+                    "item-m88ntaco",
                     //MRMlabs
                     "item-firstaidkit",
                     "item-bandaid",
@@ -6179,6 +6190,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.sparksAnimation = new Animation("idle_down", 6, 0, 16, 16);
                 this.sparksAnimation.setSpeed(120);
 
+                this.indicatorAnimation = new Animation("idle_down", 7, 0, 16, 16);
+                this.indicatorAnimation.setSpeed(120);
+
                 this.floatAnimation = new Animation("idle", 6, 0, 16, 16);
                 this.floatAnimation.setSpeed(240);
             },
@@ -8033,6 +8047,14 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         self.app.showAnnouncement(message, timeToShow);
                     });
 
+                    self.client.onIndicatorUpdate(function(entityId, showIndicator) {
+                        console.log('indicator updated', entityId, showIndicator);
+                        let entity = self.getEntityById(entityId);
+                        if(entity instanceof Npc) {
+                            entity.setShowIndicator(showIndicator)
+                        }
+                    })
+
                     self.gamestart_callback();
 
                     if(self.hasNeverStarted) {
@@ -8211,7 +8233,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     self.audioManager.playSound("npc");
 
                     if (npc.thoughts.length === 0 && npc.thoughtsClearedCallback) {
-                        setTimeout(() => { npc.thoughtsClearedCallback(); npc.thoughtsClearedCallback = null}, 1500);
+                        setTimeout(() => { if(npc.thoughtsClearedCallback) {npc.thoughtsClearedCallback();  npc.thoughtsClearedCallback = null }}, 1500);
                     }
                     return;
                 }
@@ -8227,10 +8249,16 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         let message = messages.shift()
                         if (messages.length > 0) {
                             npc.addThoughts(messages, () => {
-                                self.showNewQuestPopup(response.data.quest)
+                                if(response.data.quest) {
+                                    self.showNewQuestPopup(response.data.quest)
+                                }
                             });
                         } else {
-                            setTimeout(() => { self.showNewQuestPopup(response.data.quest); }, 1500);
+                            if(response.data.quest) {
+                                setTimeout(() => {
+                                    self.showNewQuestPopup(response.data.quest);
+                                }, 1500);
+                            }
                         }
                         self.createBubble(npc.id, message);
                         self.assignBubbleTo(npc);

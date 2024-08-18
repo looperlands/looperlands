@@ -215,6 +215,7 @@ onmessage = (e) => {
         combinedCtx.drawImage(canvases["entities"], 0, 0);
         combinedCtx.drawImage(canvases["text"], 0, 0);
         combinedCtx.drawImage(canvases["high"], 0, 0);
+        combinedCtx.drawImage(canvases["highEntities"], 0, 0);
         combinedCtx.restore();
 
         requestAnimationFrame(() => {
@@ -345,6 +346,8 @@ function drawEntities(drawEntitiesData) {
     let id = drawEntitiesData.id;
     let ctx = contexes[id];
     let canvas = canvases[id];
+    let highCtx = contexes["highEntities"];
+    let highCanvas = canvases["highEntities"];
 
     const cameraX = drawEntitiesData.cameraX;
     const cameraY = drawEntitiesData.cameraY;
@@ -353,26 +356,37 @@ function drawEntities(drawEntitiesData) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.save();
     ctx.translate(-cameraX * scale, -cameraY * scale);
+    highCtx.clearRect(0, 0, highCanvas.width, highCanvas.height);
+    highCtx.save();
+    highCtx.translate(-cameraX * scale, -cameraY * scale);
 
     const entityCount = drawEntitiesData.entityData.length;
 
     for (let i = 0; i < entityCount; i++) {
         const entityData = drawEntitiesData.entityData[i];
         ctx.save();
+        highCtx.save();
+
         if (entityData.globalAlpha !== undefined && Number.isNaN(entityData.globalAlpha) === false) {
             ctx.globalAlpha = entityData.globalAlpha;
+            highCtx.globalAlpha = entityData.globalAlpha;
         }
 
         ctx.translate(entityData.translateX, entityData.translateY);
+        highCtx.translate(entityData.translateX, entityData.translateY);
         if (entityData.scaleX !== undefined && entityData.scaleY !== undefined) {
             ctx.scale(entityData.scaleX, entityData.scaleY);
+            highCtx.scale(entityData.scaleX, entityData.scaleY);
         }
         let drawDataLength = entityData.drawData.length;
 
         for (let y = 0; y < drawDataLength; y++) {
             const drawData = entityData.drawData[y];
-            const {id, spriteName, sx, sy, sW, sH, dx, dy, dW, dH, a} = drawData;
-
+            const {id, spriteName, sx, sy, sW, sH, dx, dy, dW, dH, a, renderAbove} = drawData;
+            const origCtx = ctx;
+            if (renderAbove) {
+                ctx = highCtx;
+            }
             let sprite = sprites[spriteName];
 
             if (sprite) {
@@ -404,9 +418,12 @@ function drawEntities(drawEntitiesData) {
             } else {
                 console.log('no sprite', spriteName);
             }
+
+            ctx = origCtx;
         }
         ctx.restore();
-
+        highCtx.restore();
     }
     ctx.restore();
+    highCtx.restore();
 }

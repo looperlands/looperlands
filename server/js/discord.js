@@ -11,6 +11,10 @@ const GAME_LOG_CHANNEL = '1156612974669209723';
 const GAME_ERROR_CHANNEL = `1156613041467695144`;
 const GAME_DEBUG_CHANNEL = `1259006864981758043`;
 
+let lastMessageSent = "";
+let lastMessageIds = [];
+let repeatCount = 0;
+
 exports.ready = false;
 
 const client = new Client({
@@ -31,7 +35,7 @@ if (process.env.DISCORD_TOKEN === undefined) {
     console.warn("DISCORD_TOKEN environment variable not set");
 }
 
-exports.sendMessage = (message) => {
+exports.sendMessage = async (message) => {
     const channels = [GAME_LOG_CHANNEL];
     try {
         for (let channelId of channels) {
@@ -40,7 +44,7 @@ exports.sendMessage = (message) => {
             try {
                 if (cache.get(message + channelId) === undefined) {
                     cache.set(message + channelId, true, 60 * 5);
-                    channel.send(`${MESSAGE_PREFIX}${message}`);
+                    await channel.send(`${MESSAGE_PREFIX}${message}`);
                 }
             } catch (e) {
                 //console.log(message, e);
@@ -52,40 +56,48 @@ exports.sendMessage = (message) => {
     }
 }
 
-exports.sendToDevChannel = (message, embed = false) => {
+exports.sendToDevChannel = async (message, embed = false) => {
     const channels = [GAME_ERROR_CHANNEL];
-    sendMessageToChannel(channels, message, embed);
+    await sendMessageToChannel(channels, message, embed);
 }
 
-exports.sendToDebugChannel = (message, embed = false) => {
+exports.sendToDebugChannel = async (message, embed = false) => {
     const channels = [GAME_DEBUG_CHANNEL];
-    sendMessageToChannel(channels, message, embed);
+    await sendMessageToChannel(channels, message, embed);
 }
 
 //////////////////////
 // HELPER FUNCTIONS //
 //////////////////////
 
-const sendMessageToChannel = (channels, message, embed = false) => {
+const sendMessageToChannel = async (channels, message, embed = false) => {
     for (let channelId of channels) {
         let channel = client.channels.cache.get(channelId);
         try {
             if (embed) {
                 const embedMessage = buildErrorEmbed(message);
                 if (embedMessage) {
-                    channel.send({ embeds: [embedMessage] });
+                    await channel.send({ embeds: [embedMessage] });
                 } else {
                     // Invalid embed ==> send as message
-                    sendMessageToChannel(channels, message, false);
+                    await sendMessageToChannel(channels, message, false);
                 }
             } else {
                 const availableLength = MAX_MESSAGE_LENGTH - MESSAGE_PREFIX.length;
-                if (message.length <= availableLength) {
-                    channel.send(`${MESSAGE_PREFIX}${message}`);
+                const messages = splitMessage(message);
+
+                if (message === lastMessageSent) {
+                    repeatCount++;
+                    let lastMessage = await channel.messages.fetch(lastMessageIds[lastMessageIds.length - 1]);
+                    await lastMessage.edit(`${MESSAGE_PREFIX}${messages[messages.length - 1]}\n\n**ERROR REPEAT COUNT: ${repeatCount}**`);
                 } else {
-                    const messages = splitMessage(message);
+                    repeatCount = 0;
+                    lastMessageSent = message;
+                    lastMessageIds = [];
+
                     for (let msg of messages) {
-                        channel.send(`${MESSAGE_PREFIX}${msg}`);
+                        const sentMessage = await channel.send(`${MESSAGE_PREFIX}${msg}`);
+                        lastMessageIds.push(sentMessage.id);
                     }
                 }
             }

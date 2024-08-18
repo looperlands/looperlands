@@ -231,6 +231,9 @@ const AltNames = {
     m88nnightmaremonsterv: "Violet Monster",
     m88nnightmaremonstery: "Yellow Monster",
     m88nboner: "Boner",
+    m88nshortsqueeze: "Short Squeeze",
+    m88ndaddybearbrown: "Daddy Brown Bear",
+    m88njaws: "Jaws",
 
     //m88n Mob Nexans
     nexan8: "The Mail Lady",
@@ -292,6 +295,10 @@ const AltNames = {
     m88nnexussangria: "a glass of Nexus Sangria",
     m88nparadisehurricane: "a Paradise Hurricane",
     m88nsunsetdaiquiri: "a Sunset Daiquiri",
+    m88nfries: "some fries",
+    m88ntaco: "a taco",
+    m88nhotdog: "a hot dog",
+    m88nburger: "a burger",
 
     //m88n TT Items
     m88nammocan: "ammo can",
