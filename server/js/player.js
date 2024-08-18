@@ -804,7 +804,7 @@ module.exports = Player = Character.extend({
         this.weapon = kind;
         const kindString = Types.getKindAsString(kind);
         if (kindString.startsWith("NFT")) {
-            this.nftWeapon = new NFTWeapon.NFTWeapon(this.walletId, kindString);
+            this.nftWeapon = new NFTWeapon.NFTWeapon(this.walletId, kindString, this);
             this.nftWeapon.loadWeaponData();
         } else {
             this.nftWeapon = undefined;

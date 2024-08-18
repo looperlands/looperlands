@@ -4,7 +4,7 @@ const dao = require('./dao.js');
 const XP_BATCH_SIZE = 500;
 class NFTWeapon {
 
-    constructor(walletId, nftId) {
+    constructor(walletId, nftId, player) {
         //console.log("Creating NFTWeapon: ", nftId, walletId);
         this.nftId = nftId.replace("NFT_", "0x");
         this.walletId = walletId;
@@ -13,6 +13,7 @@ class NFTWeapon {
         this.level = 1;
         this.accumulatedExperience = 0;
         this.weaponClass = null;
+        this.player = player
     }
 
     async loadWeaponData() {
@@ -59,9 +60,10 @@ class NFTWeapon {
         try {
             damageDealt = damageDealt/4;
             damageDealt = Math.round(damageDealt);
+            const xp = this.player.playerClassModifiers.xp * damageDealt;
 
-            this.accumulatedExperience += damageDealt;
-            this.experience += damageDealt;
+            this.accumulatedExperience += xp;
+            this.experience += xp;
             let updatedLevel = Formulas.level(this.experience);
             if (updatedLevel > this.level) {
                 this.level = updatedLevel;
