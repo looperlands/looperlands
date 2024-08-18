@@ -299,6 +299,12 @@ const AltNames = {
     m88ntaco: "a taco",
     m88nhotdog: "a hot dog",
     m88nburger: "a burger",
+    m88nmedic: "Medic Bag",
+    m88nmedic2: "Medic Bag 2",
+    m88nruck: "Ruck Sack",
+    m88nruck2: "Ruck Sack 2",
+    m88nruck3: "Ruck Sack 3",
+    m88ngoldknuckles: "Gold Knuckles",
 
     //m88n TT Items
     m88nammocan: "ammo can",

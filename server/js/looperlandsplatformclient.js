@@ -291,7 +291,8 @@ class LooperLandsPlatformClient {
 
     async getLooperModifierData(nftId) {
         try {
-            const url = `/api/game/asset/modifiers/${nftId}`;
+            let server = process.env.GAMESERVER_NAME;
+            const url = `/api/game/asset/modifiers/${server}/${nftId}`;
             const response = await this.client.get(url);
             return response.data;
         } catch (error) {

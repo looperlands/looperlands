@@ -559,6 +559,12 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "item-m88nfries",
                     "item-m88nhotdog",
                     "item-m88ntaco",
+                    "item-m88nmedic",
+                    "item-m88nmedic2",
+                    "item-m88nruck",
+                    "item-m88nruck2",
+                    "item-m88nruck3",
+                    "item-m88ngoldknuckles",
                     //MRMlabs
                     "item-firstaidkit",
                     "item-bandaid",

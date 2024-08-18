@@ -670,7 +670,7 @@ define(['character'], function (Character) {
         "nexan41": [
             //"Hey there!",
             "So many beautiful flowers around here!",
-            "Completing quests in The Nexus can yeild some big xp rewards..."
+            "Completing quests in The Nexus can yeild some big rewards..."
         ],
 
         "nexan42": [

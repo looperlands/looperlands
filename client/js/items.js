@@ -360,6 +360,12 @@ define(['item'], function(Item) {
         m88ntaco:Item.extend({init:function(id){this._super(id,Types.Entities.M88NTACO,"object");this.lootMessage="You found a taco!";}}),
         m88nburger:Item.extend({init:function(id){this._super(id,Types.Entities.M88NBURGER,"object");this.lootMessage="You found a burger!";}}),
         m88nhotdog:Item.extend({init:function(id){this._super(id,Types.Entities.M88NHOTDOG,"object");this.lootMessage="You found a hot dog!";}}),
+        m88nmedic:Item.extend({init:function(id){this._super(id,Types.Entities.M88NMEDIC,"object");this.lootMessage="You found a medic bag!";}}),
+        m88nmedic2:Item.extend({init:function(id){this._super(id,Types.Entities.M88NMEDIC2,"object");this.lootMessage="You found a medic bag!";}}),
+        m88nruck:Item.extend({init:function(id){this._super(id,Types.Entities.M88NRUCK,"object");this.lootMessage="You found a ruck sack!";}}),
+        m88nruck2:Item.extend({init:function(id){this._super(id,Types.Entities.M88NRUCK2,"object");this.lootMessage="You found a ruck sack!";}}),
+        m88nruck3:Item.extend({init:function(id){this._super(id,Types.Entities.M88NRUCK3,"object");this.lootMessage="You found a ruck sack!";}}),
+        m88ngoldknuckles:Item.extend({init:function(id){this._super(id,Types.Entities.M88NGOLDKNUCKLES,"object");this.lootMessage="You found gold knuckles!";}}),
         //MRMlabs Items
         firstaidkit:Item.extend({init:function(id){this._super(id,Types.Entities.FIRSTAIDKIT,"object");this.lootMessage="You found a first aid kit!";}}),
         bandaid:Item.extend({init:function(id){this._super(id,Types.Entities.BANDAID,"object");this.lootMessage="You found a bandaid!";}}),
