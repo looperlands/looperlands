@@ -929,6 +929,7 @@ define(['text!../sprites/agent.json',
         // BITCORN MOBS
         'text!../sprites/SLUDGERAT.json',
         'text!../sprites/SPACECRAB.json',
+        'text!../sprites/BLACKMAGE.json',
 
         'text!../sprites/ZAROTH.json',
         'text!../sprites/INFECTION.json',

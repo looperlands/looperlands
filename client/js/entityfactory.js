@@ -830,6 +830,7 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     //BITCORN MOBS
     EntityFactory.builders[Types.Entities.SLUDGERAT] = function(id) {return new Mobs.SLUDGERAT(id);};
     EntityFactory.builders[Types.Entities.SPACECRAB] = function(id) {return new Mobs.SPACECRAB(id);};
+    EntityFactory.builders[Types.Entities.BLACKMAGE] = function(id) {return new Mobs.BLACKMAGE(id);};
 
     EntityFactory.builders[Types.Entities.BURGERBOSS]=function(id){return new Mobs.BURGERBOSS(id);};
     EntityFactory.builders[Types.Entities.FRYGUY]=function(id){return new Mobs.FRYGUY(id);};

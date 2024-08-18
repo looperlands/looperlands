@@ -221,7 +221,7 @@ let Properties = {
         },
     },
     SLUDGERAT: {
-        level: 10,
+        level: 15,
         drops: {
             flask: 34,
 	    taikoboost: 5,
@@ -232,7 +232,7 @@ let Properties = {
         },
     },
     SPACECRAB: {
-        level: 15,
+        level: 20,
         drops: {
             flask: 30,
 	    taikoboost: 5,
@@ -241,6 +241,16 @@ let Properties = {
             GOLD3: 8,
 	    GOLD4: 2
         },
+    },
+    BLACKMAGE: {
+        level: 20,
+        drops: {
+            flask: 50
+        },
+        armorMod: 2,
+        weaponMod: 1.5,
+        hpMod: 5,
+        messages: ['Etheriumos!', 'Bitcornia!', 'Go-go-gadget magic!', 'BooyahKORNsha!'],
     },
 
 

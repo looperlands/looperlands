@@ -775,7 +775,7 @@ Types = {
         SPACECRAB: 34000130,
         NURSEOWNER: 34000131,
         BURGERBOSS: 34000132,
-       
+        BLACKMAGE: 34000133,
         FRYGUY: 34000134, // @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
@@ -6223,6 +6223,7 @@ var kinds = {
     //BITCORN MOBS
     SLUDGERAT: [Types.Entities.SLUDGERAT, "mob"],
     SPACECRAB: [Types.Entities.SPACECRAB, "mob"],
+    BLACKMAGE: [Types.Entities.BLACKMAGE, "mob"],
 
     sword1: [Types.Entities.SWORD1, "weapon"],
     sword2: [Types.Entities.SWORD2, "weapon"],
