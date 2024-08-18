@@ -544,6 +544,12 @@ Types = {
         M88NFRIES: 78009100,
         M88NHOTDOG: 78009200,
         M88NTACO: 78009300,
+        M88NMEDIC: 78009400,
+        M88NMEDIC2: 78009500,
+        M88NRUCK: 78009600,
+        M88NRUCK2: 78009700,
+        M88NRUCK3: 78009800,
+        M88NGOLDKNUCKLES: 78009900,
         //MRMlabs NPCs
         TYLERDURDEN: 79000000,
         //MRMlabs Items
@@ -6396,6 +6402,12 @@ var kinds = {
     m88nfries: [Types.Entities.M88NFRIES, "object"],
     m88nhotdog: [Types.Entities.M88NHOTDOG, "object"],
     m88ntaco: [Types.Entities.M88NTACO, "object"],
+    m88nmedic: [Types.Entities.M88NMEDIC, "object"],
+    m88nmedic2: [Types.Entities.M88NMEDIC2, "object"],
+    m88nruck: [Types.Entities.M88NRUCK, "object"],
+    m88nruck2: [Types.Entities.M88NRUCK2, "object"],
+    m88nruck3: [Types.Entities.M88NRUCK3, "object"],
+    m88ngoldknuckles: [Types.Entities.M88NGOLDKNUCKLES, "object"],
     //MRMlabs Items
     firstaidkit: [Types.Entities.FIRSTAIDKIT, "object"],
     bandaid: [Types.Entities.BANDAID, "object"],
