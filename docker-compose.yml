@@ -8,6 +8,6 @@ services:
   gameserver2:
     image: balkshamster/looperlands:latest
     ports:
-      - "8000:443"
+      - "8001:443"
     env_file:
       - /home/looperlands/.env2
