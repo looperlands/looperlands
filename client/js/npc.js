@@ -470,7 +470,8 @@ define(['character'], function (Character) {
         ],
 
         "nexan10": [
-            "Ahoy! I'm Darwin, an explorer of the metaverse...I've noticed some cool new bugs around The Nexus.",
+            "Ahoy! I'm Darwin, an explorer of the metaverse...",
+            "I've noticed some cool new bugs around The Nexus.",
             "Keep your eyes peeled and see if you can find any too!"
         ],
 
@@ -482,12 +483,14 @@ define(['character'], function (Character) {
 
         "nexan12": [
             "Pleased to meet you, I'm the head chef here in The Nexus!",
-            "If you're ever looking for a little snack, let me know!"
+            "If you're ever looking for a little snack, check out our cart at the end of the street!"
         ],
 
         "nexan13": [
-            "Whew, it's a warm one out today. Great weather to help the crops grow fast!",
-            "We have some special crops in our garden ;) If you ever need a uh...tomato hook up, we got you covered!"
+            "Whew, it's a warm one out today.",
+            "Great weather to help the crops grow fast!",
+            "We have some special crops in our garden ;)",
+            "If you ever need a uh...tomato hook up, we got you covered!"
         ],
 
         "nexan14": [
@@ -517,7 +520,7 @@ define(['character'], function (Character) {
         ],
 
         "nexan19": [
-            "It's a beatiful day for lounging at the beach!"
+            "It's a beautiful day for lounging at the beach!"
         ],
 
         "nexan20": [
@@ -532,10 +535,10 @@ define(['character'], function (Character) {
 
         "nexan29": [
             "Welcome to the Sun Chaser Champagne Lounge, special guest!",
-            "Can I get you something to drink from the bar?",
-            "/openShop the_bar The Bar"
-            //"Jeeves ran out to get more bar supplies, check back soon!.",
-            //"A luxurious place to relax in style.",
+            //"Can I get you something to drink from the bar?",
+            //"/openShop the_bar The Bar"
+            "The bar is closed right now while re-stock, but it will open again soon!",
+            "Hang out and enjoy the luxuious vibes though! The fishing is great off the bow."
             //"Most of these portals go to the private Helio Islands.",
             //"If you're interested in becoming an island owner you can DM m88nwalker to inquire.",
             //"On the far right of the second floor is a portal to a secret hidden island.",
@@ -603,8 +606,8 @@ define(['character'], function (Character) {
             "You should check out my new collection!",
             "You can integrate any of the NFT's from my collection as a LooperLands avatar or a companion!",
             'Checkout <a target="_blank" href="https://loopexchange.art/collection/stimy-timy">my new collection here</a>...',
-            'Click this link to <a target="_blank" href="https://x.com/stimytimy">follow me on X here</a>...',
-            "If you want to buy a private island here in The Nexus checkout Nexus Real Estate, they have some for sale."
+            'Click this link to <a target="_blank" href="https://x.com/stimytimy">follow me on X here</a>...'
+            //"If you want to buy a private island here in The Nexus checkout Nexus Real Estate, they have some for sale."
         ],
 
         "m88nrealtyagent": [
@@ -722,8 +725,11 @@ define(['character'], function (Character) {
         ],
 
         "m88nmermaidprincess": [
-            "Heyyyy!",
-            "I need your help."
+            "Heyyyy, you found Atlantis!",
+            "Congratulations, that's pretty impressive...",
+            "Considering how often it magically relocates...",
+            "Have you been collecting those mysterious maps we hid around The Nexus?",
+            "If you have all 741 of them, you may enter the forbidden city behind me!"
         ],
 
         "kingfroggybw": [
