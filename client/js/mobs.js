@@ -2429,10 +2429,10 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this._super(id, Types.Entities.M88NJAWS);
                 this.moveSpeed = 100;
                 this.idleSpeed = 100;
-                this.setAttackRate(500);
-                this.atkSpeed = 50;                
+                this.setAttackRate(300);
+                this.atkSpeed = 30;                
                 this.isAggressive = true;
-                this.aggroRange = 4;
+                this.aggroRange = 5;
                 this.deathAnimated = true;
                 this.title = "Shark!";
             }

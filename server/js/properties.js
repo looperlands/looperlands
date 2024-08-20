@@ -1283,8 +1283,8 @@ let Properties = {
     balloondogb: {
         level: 2,
         drops: {
-            taikoboost: 50,
-            GOLD: 50
+            taikoboost: 10,
+            GOLD: 69
         },
         xp: 69
     },
@@ -1292,8 +1292,8 @@ let Properties = {
     balloondogy: {
         level: 4,
         drops: {
-            taikoboost: 50,
-            GOLD: 50
+            taikoboost: 20,
+            GOLD: 69
         },
         xp: 99
     },
@@ -1302,7 +1302,7 @@ let Properties = {
         level: 6,
         drops: {
             m88nmap: 3,
-            taikoboost: 37,
+            taikoboost: 20,
             GOLD: 50,
             GOLD2: 10
         },
@@ -1313,7 +1313,7 @@ let Properties = {
         level: 8,
         drops: {
             m88nmap: 5,
-            taikoboost: 25,
+            taikoboost: 20,
             GOLD: 40,
             GOLD2: 20,
             GOLD3: 10,
@@ -1340,8 +1340,8 @@ let Properties = {
         level: 1,
         drops: {
             m88nmap: 5,
-            taikoboost: 25,
-            GOLD: 25,
+            taikoboost: 10,
+            GOLD: 10,
             GOLD2: 30
         },
     },
@@ -1410,7 +1410,7 @@ let Properties = {
             battery: 3,
             hardwallet: 2,
             movieglasses: 1,
-            m88ntentacle: 3,
+            m88ntentacle: 2,
             GOLD3: 10,
             loopring: 10
         },
@@ -1462,14 +1462,14 @@ let Properties = {
             loopring: 10
         },
         messages: ['Mmmmm, tasty!', 'Yum!', 'Eww, that was a little tough...', 'Stay on land or come back with friends!'],
-        armorMod: 0.8,
+        armorMod: 1,
         hpMod: 4,
-        weaponMod: 0.8,
+        weaponMod: 1,
         respawnDelay: 30000
     },
 
     m88njaws: {
-        level: 222,
+        level: 333,
         drops: {
             m88nmap: 35,
             movieglasses: 1,
@@ -1506,8 +1506,8 @@ let Properties = {
             taikoboost: 5,
             m88ngem: 25,
             m88nhelioislandicedtea: 1,
-            m88nbrassknuckles: 1,
-            m88nkevlararmor: 1,
+            m88nbrassknuckles: 3,
+            m88nkevlararmor: 5,
             GOLD3: 1,
             GOLD4: 1,
             GOLD5: 1,
@@ -1523,15 +1523,10 @@ let Properties = {
     m88nhermie: {
         level: 1,
         drops: {
-            flask: 5,
-            m88nmap: 5,
-            GOLD: 10,
-            GOLD2: 10,
-            taikoboost: 5,
-            loopring: 5
+            m88nmap: 20,
+            GOLD: 10
         },
-        respawnDelay: 10000,
-        xp: 11
+        respawnDelay: 20000,
     },
 
     m88nmrcrab: {
@@ -1550,11 +1545,11 @@ let Properties = {
     roachclip: {
         level: 3,
         drops: {
-            flask: 50,
+            flask: 10,
             GOLD: 20,
             GOLD2: 20,
-            GOLD3: 5,
-            loopring: 5
+            GOLD3: 20,
+            loopring: 10
         },
         xp: 222
     },
@@ -1564,7 +1559,7 @@ let Properties = {
         drops: {
             m88nskeletonkey: 100
         },
-        messages: ['Boner kill!', 'I thought I was already dead...', 'Cant touch this...', 'Stay away or come back with friends!'],
+        messages: ['Boner kill!', 'I thought I was already dead...', 'Cant touch this...', 'I have a bone to pick with you...', 'Stay away or come back with friends!'],
         armorMod: 1,
         hpMod: 5,
         weaponMod: 0.8,
@@ -2379,7 +2374,7 @@ let Properties = {
         consumable: true,
         cooldown: {
             group: "immunity",
-            duration: 30000
+            duration: 20000
         },
         inventoryDescription: "Immunity Easter Egg",
         onConsume: function(player){
@@ -2391,7 +2386,7 @@ let Properties = {
         consumable: true,
         cooldown: {
             group: "hpPotions",
-            duration: 30000
+            duration: 20000
         },
         inventoryDescription: "HP Easter Egg",
         onConsume: function(player){
@@ -2481,7 +2476,7 @@ let Properties = {
         consumable: true,
         cooldown: {
             group: "caged",
-            duration: 10000
+            duration: 5000
         },
         inventoryDescription: "Mysterious Prizes",
         respawnDelay: 60000,
@@ -2494,7 +2489,7 @@ let Properties = {
         consumable: true,
         cooldown: {
             group: "caged",
-            duration: 10000
+            duration: 5000
         },
         inventoryDescription: "Brown Bag",
         respawnDelay: 60000,
@@ -2507,7 +2502,7 @@ let Properties = {
         consumable: true,
         cooldown: {
             group: "caged",
-            duration: 10000
+            duration: 5000
         },
         inventoryDescription: "Black Bag",
         respawnDelay: 60000,
@@ -2520,7 +2515,7 @@ let Properties = {
         consumable: true,
         cooldown: {
             group: "caged",
-            duration: 10000
+            duration: 5000
         },
         inventoryDescription: "Golden Bag",
         respawnDelay: 60000,
@@ -2533,7 +2528,7 @@ let Properties = {
         consumable: true,
         cooldown: {
             group: "caged",
-            duration: 10000
+            duration: 5000
         },
         inventoryDescription: "Gem Bag",
         respawnDelay: 60000,
@@ -2546,7 +2541,7 @@ let Properties = {
         consumable: true,
         cooldown: {
             group: "caged",
-            duration: 10000
+            duration: 5000
         },
         inventoryDescription: "Lucky Bag",
         respawnDelay: 60000,
@@ -2953,7 +2948,7 @@ let Properties = {
         },
         inventoryDescription: "Golden Chalis",
         onConsume: function(player){
-            player.playerClassModifiers.applyTemporaryModifierWithTimeout('meleeDamageDealt', 15, 60000);
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('meleeDamageDealt', 30, 60000);
         }
     },
     m88ndrsgme: {
