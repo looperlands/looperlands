@@ -1074,7 +1074,7 @@ let Properties = {
             GREYPOTION: 90,
             EYEBALL: 10
         },
-        respawnDelay: 60000
+        respawnDelay: 30000
     },
 
     INFERNOTH: {
@@ -1083,7 +1083,7 @@ let Properties = {
         weaponMod: 2.2,
         xp:10000,
         redpacket: true,
-        respawnDelay: 60000
+        respawnDelay: 30000
     },
 
     WINGELLA: {
@@ -1091,7 +1091,7 @@ let Properties = {
         drops: {
             REDPOTION: 40
         },
-        respawnDelay: 60000
+        respawnDelay: 30000
     },
 
     GAUNTER: {
@@ -1100,7 +1100,7 @@ let Properties = {
             GREYPOTION: 90,
             EYEBALL: 10
         },
-        respawnDelay: 60000
+        respawnDelay: 30000
     },
 
     MASTROM: {
@@ -1109,7 +1109,7 @@ let Properties = {
             GREYPOTION: 100,
             EYEBALL: 10
         },
-        respawnDelay: 60000
+        respawnDelay: 30000
     },
 
     VALKYM: {
@@ -1118,7 +1118,7 @@ let Properties = {
             REDPOTION: 40,
             EYEBALL: 10
         },
-        respawnDelay: 60000
+        respawnDelay: 30000
     },
 
      //robits Mobs
@@ -1471,42 +1471,17 @@ let Properties = {
     m88njaws: {
         level: 333,
         drops: {
-            m88nmap: 35,
-            movieglasses: 1,
-            battery: 1,
-            gameboy: 1,
-            hardwallet: 1,
-            m88npeel: 1,
-            m88ndungbeetle: 1,
-            m88nfly: 1,
-            m88njunebug: 1,
-            m88nstickbug: 1,
+            m88nmap: 25,
             m88ndiamondnecklace: 1,
             m88ndiamondring: 1,
             m88ngoldearrings: 1,
-            m88nsteak: 1,
-            m88nclover: 1,
-            m88nmail: 1,
-            m88nshovel: 1,
-            m88nwatercan: 1,
-            m88nseeds: 1,
-            m88npotato: 1,
-            m88npackage: 1,
-            m88nsalad: 1,
-            m88nblueprint: 1,
-            m88nhardhat: 1,
-            m88nrose: 1,
-            m88nworkgloves: 1,
-            m88nbrewski: 1,
-            m88npie: 1,
-            m88nsack: 1,
-            m88nworm: 1,
             m88negg1: 1,
             m88negg2: 1,
-            taikoboost: 5,
-            m88ngem: 25,
-            m88nhelioislandicedtea: 1,
-            m88nbrassknuckles: 3,
+            taikoboost: 3,
+            m88ngem: 40,
+            m88nhelioislandicedtea: 2,
+            m88nsunsetdaiquiri: 3,
+            m88nbrassknuckles: 4,
             m88nkevlararmor: 5,
             GOLD3: 1,
             GOLD4: 1,
