@@ -243,7 +243,7 @@ let Properties = {
         },
     },
     BLACKMAGE: {
-        level: 20,
+        level: 25,
         drops: {
             flask: 50
         },
@@ -259,7 +259,7 @@ let Properties = {
         },
         respawnDelay: 15000
     },
-    HOPPURP: {
+    HOPPINK: {
         level: 35,
         drops: {
             flask: 40,
@@ -268,21 +268,22 @@ let Properties = {
         respawnDelay: 30000
     },
     ZOMBBID: {
-        level: 40,
+        level: 42,
         drops: {
             flask: 90,
             taikoboost: 10
         },
-        respawnDelay: 60000
+        respawnDelay: 120000
     },
     RABBID: {
-        level: 50,
+        level: 100,
         drops: {
             flask: 90,
             taikoboost: 10
         },
-        weaponMod: 1.69,
-        respawnDelay: 80000
+        weaponMod: 3,
+        hpMod: 2,
+        respawnDelay: 160000
     },
     
 

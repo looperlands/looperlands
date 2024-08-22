@@ -1,5 +1,3 @@
-const { ZOMBBID, HOPPURP, HOPPINK } = require("./altnames");
-
 Types = {
     Messages: {
         HELLO: 0,

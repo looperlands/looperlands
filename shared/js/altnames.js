@@ -1,5 +1,3 @@
-const { HOPPURP } = require("../../server/js/properties");
-
 const AltNames = {
     skeleton2: 'greater skeleton',
     eye: 'evil eye',
