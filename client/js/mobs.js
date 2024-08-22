@@ -2456,6 +2456,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.moveSpeed = 200;
                 this.atkSpeed = 40;
                 this.idleSpeed = 500;
+                this.deathAnimated = true;
             }
         }),
 
@@ -2467,6 +2468,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.idleSpeed = 600;
                 this.setAttackRate(700);
                 this.aggroRange = 2;
+                this.deathAnimated = true;
             }
         }),
 
@@ -3251,6 +3253,86 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 } else {
                     this._super(orientation);
                 }
+            }
+        }),
+
+        m88nfishy: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NFISHY);
+                this.idleSpeed = 420;
+                this.walkSpeed = 225;
+                this.moveSpeed = 250;
+                this.isFriendly = true;
+            }
+        }),
+
+        m88nfishyb: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NFISHYB);
+                this.idleSpeed = 420;
+                this.walkSpeed = 225;
+                this.moveSpeed = 250;
+                this.isFriendly = true;
+            }
+        }),
+
+        m88nfishyc: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NFISHYC);
+                this.idleSpeed = 420;
+                this.walkSpeed = 225;
+                this.moveSpeed = 250;
+                this.isFriendly = true;
+            }
+        }),
+
+        m88nfishyd: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NFISHYD);
+                this.idleSpeed = 420;
+                this.walkSpeed = 225;
+                this.moveSpeed = 250;
+                this.isFriendly = true;
+            }
+        }),
+
+        m88nfishye: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NFISHYE);
+                this.idleSpeed = 420;
+                this.walkSpeed = 225;
+                this.moveSpeed = 250;
+                this.isFriendly = true;
+            }
+        }),
+
+        m88nfishyf: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NFISHYF);
+                this.idleSpeed = 420;
+                this.walkSpeed = 225;
+                this.moveSpeed = 250;
+                this.isFriendly = true;
+            }
+        }),
+
+        m88nfishyg: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NFISHYG);
+                this.idleSpeed = 420;
+                this.walkSpeed = 225;
+                this.moveSpeed = 250;
+                this.isFriendly = true;
+            }
+        }),
+
+        m88nfishyh: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NFISHYH);
+                this.idleSpeed = 420;
+                this.walkSpeed = 225;
+                this.moveSpeed = 250;
+                this.isFriendly = true;
             }
         }),
 
