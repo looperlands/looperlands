@@ -831,6 +831,10 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.SLUDGERAT] = function(id) {return new Mobs.SLUDGERAT(id);};
     EntityFactory.builders[Types.Entities.SPACECRAB] = function(id) {return new Mobs.SPACECRAB(id);};
     EntityFactory.builders[Types.Entities.BLACKMAGE] = function(id) {return new Mobs.BLACKMAGE(id);};
+    EntityFactory.builders[Types.Entities.RABBID] = function(id) {return new Mobs.RABBID(id);};
+    EntityFactory.builders[Types.Entities.ZOMBBID] = function(id) {return new Mobs.ZOMBBID(id);};
+    EntityFactory.builders[Types.Entities.HOPPURP] = function(id) {return new Mobs.HOPPURP(id);};
+    EntityFactory.builders[Types.Entities.HOPPINK] = function(id) {return new Mobs.HOPPINK(id);};
 
     EntityFactory.builders[Types.Entities.BURGERBOSS]=function(id){return new Mobs.BURGERBOSS(id);};
     EntityFactory.builders[Types.Entities.FRYGUY]=function(id){return new Mobs.FRYGUY(id);};

@@ -1,3 +1,5 @@
+const { ZOMBBID, HOPPURP, HOPPINK } = require("./altnames");
+
 Types = {
     Messages: {
         HELLO: 0,
@@ -776,7 +778,11 @@ Types = {
         NURSEOWNER: 34000131,
         BURGERBOSS: 34000132,
         BLACKMAGE: 34000133,
-        FRYGUY: 34000134, // @lastidCharacter@
+        FRYGUY: 34000134, 
+        RABBID: 34000135,
+        ZOMBBID: 34000136,
+        HOPPURP: 34000137,
+        HOPPINK: 34000138,        // @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -6224,6 +6230,10 @@ var kinds = {
     SLUDGERAT: [Types.Entities.SLUDGERAT, "mob"],
     SPACECRAB: [Types.Entities.SPACECRAB, "mob"],
     BLACKMAGE: [Types.Entities.BLACKMAGE, "mob"],
+    RABBID: [Types.Entities.RABBID, "mob"],
+    ZOMBBID: [Types.Entities.ZOMBBID, "mob"],
+    HOPPURP: [Types.Entities.HOPPURP, "mob"],
+    HOPPINK: [Types.Entities.HOPPINK, "mob"],
 
     sword1: [Types.Entities.SWORD1, "weapon"],
     sword2: [Types.Entities.SWORD2, "weapon"],

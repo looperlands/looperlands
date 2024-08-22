@@ -252,6 +252,39 @@ let Properties = {
         hpMod: 5,
         messages: ['Etheriumos!', 'Bitcornia!', 'Go-go-gadget magic!', 'BooyahKORNsha!'],
     },
+    HOPPURP: {
+        level: 30,
+        drops: {
+            flask: 40
+        },
+        respawnDelay: 15000
+    },
+    HOPPURP: {
+        level: 35,
+        drops: {
+            flask: 40,
+            taikoboost: 10
+        },
+        respawnDelay: 30000
+    },
+    ZOMBBID: {
+        level: 40,
+        drops: {
+            flask: 90,
+            taikoboost: 10
+        },
+        respawnDelay: 60000
+    },
+    RABBID: {
+        level: 50,
+        drops: {
+            flask: 90,
+            taikoboost: 10
+        },
+        weaponMod: 1.69,
+        respawnDelay: 80000
+    },
+    
 
 
 

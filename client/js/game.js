@@ -626,7 +626,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     //BITCORN NPCS
                     "BITNPC_BITCORN",
                     //BITCORN MOBS
-                    "SLUDGERAT", "SPACECRAB", "BLACKMAGE",
+                    "SLUDGERAT", "SPACECRAB", "BLACKMAGE", "RABBID", "ZOMBBID", "HOPPURP", "HOPPINK",
                     //OTHER
                     "item-HAMSTER1",
                     "item-DUCKBIT",
