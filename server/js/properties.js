@@ -255,7 +255,7 @@ let Properties = {
     HOPPURP: {
         level: 30,
         drops: {
-            flask: 40
+            flask: 25
         },
         respawnDelay: 15000
     },
@@ -271,15 +271,18 @@ let Properties = {
         level: 42,
         drops: {
             flask: 90,
-            taikoboost: 10
+            taikoboost: 8,
+            loopring: 2
         },
         respawnDelay: 120000
     },
     RABBID: {
         level: 100,
         drops: {
-            flask: 90,
-            taikoboost: 10
+            flask: 5,
+            taikoboost: 5,
+            GOLD4: 45,
+            GOLD5: 45
         },
         weaponMod: 3,
         hpMod: 2,
