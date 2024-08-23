@@ -243,7 +243,7 @@ let Properties = {
         },
     },
     BLACKMAGE: {
-        level: 20,
+        level: 25,
         drops: {
             flask: 50
         },
@@ -252,6 +252,40 @@ let Properties = {
         hpMod: 5,
         messages: ['Etheriumos!', 'Bitcornia!', 'Go-go-gadget magic!', 'BooyahKORNsha!'],
     },
+    HOPPURP: {
+        level: 30,
+        drops: {
+            flask: 40
+        },
+        respawnDelay: 15000
+    },
+    HOPPINK: {
+        level: 35,
+        drops: {
+            flask: 40,
+            taikoboost: 10
+        },
+        respawnDelay: 30000
+    },
+    ZOMBBID: {
+        level: 42,
+        drops: {
+            flask: 90,
+            taikoboost: 10
+        },
+        respawnDelay: 120000
+    },
+    RABBID: {
+        level: 100,
+        drops: {
+            flask: 90,
+            taikoboost: 10
+        },
+        weaponMod: 3,
+        hpMod: 2,
+        respawnDelay: 160000
+    },
+    
 
 
 

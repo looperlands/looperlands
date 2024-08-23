@@ -374,6 +374,10 @@ const AltNames = {
     SLUDGERAT: "sludgeRAT",
     SPACECRAB: "spaceCRAB",
     BLACKMAGE: "motherFlippin BlackMAGE",
+    RABBID: "Rabbid",
+    ZOMBBID: "Zombbid",
+    HOPPURP: "HOPpurp",
+    HOPPINK: "HOPpink",
 
     devon: "Chase", 
 };
