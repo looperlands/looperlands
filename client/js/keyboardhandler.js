@@ -49,13 +49,16 @@ class KeyBoardHandler {
         }
 
         // Keyboard shortcuts
-        const shortCuts = 'zxcvbtm1234';
+        const shortCuts = 'ezxcvbtm1234';
 
         if (shortCuts.indexOf(key) > -1) {
             if(!this.game.started || this.inputHasFocus()) {
                 return;
             }
             switch (key) {
+                case 'e':
+                    this.game.interact();
+                    break;
                 case 'z':
                     this.app.toggleInventory();
                     break;

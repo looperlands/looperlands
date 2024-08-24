@@ -1156,6 +1156,16 @@ define(['character'], function (Character) {
         setShowIndicator: function (indicator) {
             this.showIndicator = indicator;
         },
+
+        hasInteraction : function () {
+            if (this.showIndicator || this.thoughts.length > 0 || NpcTalk[this.itemKind].length > 0) {
+                return true;
+            }
+
+            // TODO: Check dialogue controller/ws call
+
+            return false;
+        }
     });
 
     return Npc;

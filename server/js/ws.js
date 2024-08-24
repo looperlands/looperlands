@@ -852,6 +852,7 @@ WS.socketIOServer = Server.extend({
         app.get("/session/:sessionId/npc/:npcId", async (req, res) => {
             const sessionId = req.params.sessionId;
             const npcId = req.params.npcId;
+            const sessionData = cache.get(sessionId);
 
             if (sessionData === undefined) {
                 res.status(404).json({
@@ -862,16 +863,15 @@ WS.socketIOServer = Server.extend({
                 return;
             }
 
-            if (DialogueController.hasDialogueTree(req.params.npcId)) {
-                let node = DialogueController.processDialogueTree(req.params.npcId)
-                if(node) {
+            if (dialogueController.hasDialogueTree(sessionData.mapId, npcId)) {
+                let node = dialogueController.processDialogueTree(sessionData.mapId, npcId)
+                if (node) {
                     res.status(202).json(node)
                     return
                 }
             }
 
             let questData = quests.handleNPCClick(cache, sessionId, parseInt(npcId));
-            const sessionData = cache.get(sessionId);
 
             if (questData) {
                 self.worldsMap[sessionData.mapId].npcTalked(npcId, questData.text, sessionData)

@@ -7068,6 +7068,16 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         if(!self.player.isDead) {
                             self.audioManager.updateMusic();
                         }
+
+                        // Loop over all entities around player
+                        self.forEachEntityAround(self.player.gridX, self.player.gridY, 1, (entity) => {
+                            if (Types.isNpc(entity.kind) && entity.hasInteraction()) {
+                                self.createBubble(entity.id, "Press [E] to talk", function() {
+                                    return self.player.isAdjacent(entity)
+                                });
+                                self.assignBubbleTo(entity);
+                            }
+                        })
                     });
 
                     self.player.onStopPathing(function(x, y) {
@@ -7276,6 +7286,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         }
 
                         if(self.player.target instanceof Npc) {
+                            self.destroyBubble(self.player.target);
                             self.makeNpcTalk(self.player.target);
                         } else if(self.player.target instanceof Chest) {
                             self.client.sendOpen(self.player.target);
@@ -9209,8 +9220,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.client.sendEmotion(emotion);
             },
 
-            createBubble: function(id, message) {
-                this.bubbleManager.create(id, message, this.currentTime);
+            createBubble: function(id, message, showCheck) {
+                this.bubbleManager.create(id, message, this.currentTime, showCheck);
             },
 
             destroyBubble: function(id) {
@@ -9860,6 +9871,16 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         }
                     }
                 }, this.renderer.mobile ? 0 : 2);
+            },
+
+            interact: function() {
+                let self = this;
+                this.forEachEntityAround(this.player.gridX, this.player.gridY, 1, function(entity) {
+                    if (Types.isNpc(entity.kind) && entity.hasInteraction()) {
+                        self.destroyBubble(entity.id);
+                        self.makeNpcTalk(entity);
+                    }
+                });
             }
 
         });

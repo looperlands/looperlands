@@ -1,6 +1,7 @@
 Types = require("../../../shared/js/gametypes");
 dialogue = {
-    "npc": "king",
+    "npc": Types.Entities.VILLAGEGIRL,
+    "name": "Village girl",
     "start": "start",
     "resume_conditions": [
         {
@@ -169,3 +170,5 @@ dialogue = {
         }
     }
 };
+
+exports.dialogue = dialogue

@@ -2,7 +2,7 @@
 define(['jquery', 'timer'], function($, Timer) {
 
     var Bubble = Class.extend({
-        init: function(id, element, time) {
+        init: function(id, element, time, showCheck) {
             this.id = id;
             this.element = element;
             timeout = 5000;
@@ -10,6 +10,7 @@ define(['jquery', 'timer'], function($, Timer) {
                 timeout = 1000 * 60 * 15;
             }
             this.timer = new Timer(timeout, time);
+            this.showCheck = showCheck;
         },
     
         isOver: function(time) {
@@ -41,7 +42,7 @@ define(['jquery', 'timer'], function($, Timer) {
             return null;
         },
     
-        create: function(id, message, time) {
+        create: function(id, message, time, showCheck) {
             if(this.bubbles[id]) {
                 this.bubbles[id].reset(time);
                 $("#"+id+" p").html(message);
@@ -53,7 +54,7 @@ define(['jquery', 'timer'], function($, Timer) {
                     var el = $("<div id=\""+id+"\" class=\"bubble\"><p>"+message+"</p><div class=\"thingy\"></div></div>"); //.attr('id', id);
                 }
                 $(el).appendTo(this.container);
-                this.bubbles[id] = new Bubble(id, el, time);
+                this.bubbles[id] = new Bubble(id, el, time, showCheck);
             }
         },
     
@@ -62,7 +63,7 @@ define(['jquery', 'timer'], function($, Timer) {
                 bubblesToDelete = [];
         
             _.each(this.bubbles, function(bubble) {
-                if(bubble.isOver(time)) {
+                if(bubble.isOver(time) || (bubble.showCheck && !bubble.showCheck())) {
                     bubble.destroy();
                     bubblesToDelete.push(bubble.id);
                 }
