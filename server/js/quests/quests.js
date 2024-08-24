@@ -112,7 +112,9 @@ function handleInProgressQuests(npcQuests, sessionData, broker) {
                 broker.player.handleCompletedQuests([quest]);
                 return { text: quest.endText };
             } else {
-                return { text: _.template(quest.inProgressText, { interpolate: /\{\{(.+?)\}\}/g })(quest) };
+                if(quest.inProgressText) {
+                    return {text: _.template(quest.inProgressText, {interpolate: /\{\{(.+?)\}\}/g})(quest)};
+                }
             }
         }
     }

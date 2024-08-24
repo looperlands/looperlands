@@ -301,7 +301,9 @@ module.exports = class Mapx {
         let nbAreas = _.size(this.startingAreas);
         let i = Utils.randomInt(0, nbAreas-1);
         let area = this.startingAreas[i];
-        
+        if(area === undefined) {
+            area = this.startingAreas[0];
+        }
         return area.getRandomPosition();
     }
 
