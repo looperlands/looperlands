@@ -1488,7 +1488,6 @@ let Properties = {
             m88npie: 1,
             m88nsack: 1,
             m88nworm: 1,
-            taikoboost: 5,
             m88ngem: 5,
             GOLD3: 5,
             GOLD4: 5,
@@ -1511,7 +1510,6 @@ let Properties = {
             m88ngoldearrings: 1,
             m88negg1: 1,
             m88negg2: 1,
-            taikoboost: 3,
             m88ngem: 40,
             m88nhelioislandicedtea: 2,
             m88nsunsetdaiquiri: 3,
@@ -1650,7 +1648,7 @@ let Properties = {
     },
 
     m88nshortsqueeze: {
-        level: 22,
+        level: 30,
         drops: {
             m88ndrsgme: 1,
             m88ngem: 4,
@@ -1658,6 +1656,54 @@ let Properties = {
             GOLD3: 20,
             loopring: 10
         },
+    },
+
+    m88nconepooper: {
+        level: 22,
+        drops: {
+            m88ndrsbook: 1,
+            m88ngoldenpoo: 1,
+            m88ngem: 4,
+            m88ndirt: 7,
+            GOLD3: 20,
+            loopring: 10
+        },
+    },
+
+    m88nfishlips: {
+        level: 11,
+        drops: {
+            GOLD5: 100,
+        },
+        //messages: ['Darkness shall embrance you!', 'Your doom is woven', 'Fear binds you', 'Your end is spun', 'The old world beckons you'],
+        armorMod: 1,
+        hpMod: 3,
+        weaponMod: 0.8,
+        respawnDelay: 30000
+    },
+
+    m88nsushi: {
+        level: 7,
+        drops: {
+            GOLD5: 100,
+        },
+        //messages: ['Darkness shall embrance you!', 'Your doom is woven', 'Fear binds you', 'Your end is spun', 'The old world beckons you'],
+        armorMod: 1,
+        hpMod: 3,
+        weaponMod: 0.8,
+        respawnDelay: 30000
+    },
+
+    m88nsashimi: {
+        level: 8,
+        drops: {
+            GOLD5: 100,
+        },
+        //messages: ['Darkness shall embrance you!', 'Your doom is woven', 'Fear binds you', 'Your end is spun', 'The old world beckons you'],
+        armorMod: 1,
+        hpMod: 3,
+        weaponMod: 0.8,
+        respawnDelay: 30000
     },
 
     m88nmine: {
@@ -2439,7 +2485,7 @@ let Properties = {
         },
         inventoryDescription: "HP Easter Egg",
         onConsume: function(player){
-            player.regenHealthBy(300);
+            player.regenHealthBy(600);
         }
     },
     m88negg3: {
@@ -3015,7 +3061,7 @@ let Properties = {
         inventoryDescription: "For minor cuts and scrapes",
         respawnDelay: 500000,
         onConsume: function(player){
-            player.regenHealthBy(150);
+            player.regenHealthBy(300);
         }
     },
     firstaidkit: {
@@ -3028,7 +3074,7 @@ let Properties = {
         inventoryDescription: "Full first aid kit",
         respawnDelay: 1500000,
         onConsume: function(player){
-            player.regenHealthBy(300);
+            player.regenHealthBy(600);
         }
     },
     cigarette: {

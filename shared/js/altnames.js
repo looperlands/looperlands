@@ -234,6 +234,10 @@ const AltNames = {
     m88nshortsqueeze: "Short Squeeze",
     m88ndaddybearbrown: "Daddy Brown Bear",
     m88njaws: "Jaws",
+    m88nfishlips: "Fish Lips",
+    m88nsushi: "Sushi",
+    m88nsashimi: "Sashimi",
+    m88nconepooper: "Cone Pooper",
 
     //m88n Mob Nexans
     nexan8: "The Mail Lady",
