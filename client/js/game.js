@@ -238,6 +238,17 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "m88nnightmaremonsterv",
                     "m88nnightmaremonstery",
                     "m88nboner",
+                    "m88nshortsqueeze",
+                    "m88ndaddybearbrown",
+                    "m88njaws",
+                    "m88nfishy",
+                    "m88nfishyb",
+                    "m88nfishyc",
+                    "m88nfishyd",
+                    "m88nfishye",
+                    "m88nfishyf",
+                    "m88nfishyg",
+                    "m88nfishyh",
                     //m88n's Mob Nexans
                     "nexan1",
                     "nexan2",
@@ -409,6 +420,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 "VOYAGERROBIT",
                                 "SARAH",
                                 "MOONBASES",
+                                "NURSEOWNER",
+                                "BURGERBOSS",
+                
+                                "FRYGUY",
                                 // @nextCharacterLine@
                     "item-BOARHIDE",
                     "item-THUDKEY",
@@ -548,6 +563,16 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "item-m88nnexussangria",
                     "item-m88nparadisehurricane",
                     "item-m88nsunsetdaiquiri",
+                    "item-m88nburger",
+                    "item-m88nfries",
+                    "item-m88nhotdog",
+                    "item-m88ntaco",
+                    "item-m88nmedic",
+                    "item-m88nmedic2",
+                    "item-m88nruck",
+                    "item-m88nruck2",
+                    "item-m88nruck3",
+                    "item-m88ngoldknuckles",
                     //MRMlabs
                     "item-firstaidkit",
                     "item-bandaid",
@@ -609,7 +634,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     //BITCORN NPCS
                     "BITNPC_BITCORN",
                     //BITCORN MOBS
-                    "SLUDGERAT", "SPACECRAB",
+                    "SLUDGERAT", "SPACECRAB", "BLACKMAGE", "RABBID", "ZOMBBID", "HOPPURP", "HOPPINK",
                     //OTHER
                     "item-HAMSTER1",
                     "item-DUCKBIT",

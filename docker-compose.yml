@@ -1,10 +1,13 @@
 services:
   gameserver:
-    image: looperlands
-    build: 
-      context: .
-      dockerfile: Dockerfile.prod
+    image: balkshamster/looperlands:latest
     ports:
       - "8000:443"
     env_file:
       - /home/looperlands/.env
+  gameserver2:
+    image: balkshamster/looperlands:latest
+    ports:
+      - "8001:443"
+    env_file:
+      - /home/looperlands/.env2

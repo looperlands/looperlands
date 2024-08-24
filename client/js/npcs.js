@@ -481,6 +481,7 @@ define(['npc'], function(Npc) {
         VOYAGERROBIT: Npc.extend({init: function(id) {this._super(id, Types.Entities.VOYAGERROBIT, 1);}}),
         SARAH: Npc.extend({init: function(id) {this._super(id, Types.Entities.SARAH, 1);}}),
         MOONBASES: Npc.extend({init: function(id) {this._super(id, Types.Entities.MOONBASES, 1);}}),
+        NURSEOWNER: Npc.extend({init: function(id) {this._super(id, Types.Entities.NURSEOWNER, 1);}}),
         // @nextNPCLine@
     };
     

@@ -2424,6 +2424,20 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
 
+        m88njaws: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NJAWS);
+                this.moveSpeed = 100;
+                this.idleSpeed = 100;
+                this.setAttackRate(300);
+                this.atkSpeed = 30;                
+                this.isAggressive = true;
+                this.aggroRange = 5;
+                this.deathAnimated = true;
+                this.title = "Shark!";
+            }
+        }),
+
         m88nhermie: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.M88NHERMIE);
@@ -2442,6 +2456,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.moveSpeed = 200;
                 this.atkSpeed = 40;
                 this.idleSpeed = 500;
+                this.deathAnimated = true;
             }
         }),
 
@@ -2453,6 +2468,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.idleSpeed = 600;
                 this.setAttackRate(700);
                 this.aggroRange = 2;
+                this.deathAnimated = true;
             }
         }),
 
@@ -2544,6 +2560,19 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.deathAnimated = true;
                 this.isAggressive = true;
                 this.aggroRange = 3;
+            }
+        }),
+
+        m88nshortsqueeze: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NSHORTSQUEEZE);
+                this.moveSpeed = 200;
+                this.atkSpeed = 100;
+                this.idleSpeed = 750;
+                this.setAttackRate(1000);
+                this.deathAnimated = true;
+                this.isAggressive = true;
+                this.aggroRange = 4;
             }
         }),
 
@@ -3206,6 +3235,104 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 } else {
                     this._super(orientation);
                 }
+            }
+        }),
+
+        m88ndaddybearbrown: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NDADDYBEARBROWN);
+                this.idleSpeed = 420;
+                this.walkSpeed = 225;
+                this.moveSpeed = 250;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
+        m88nfishy: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NFISHY);
+                this.idleSpeed = 420;
+                this.walkSpeed = 225;
+                this.moveSpeed = 250;
+                this.isFriendly = true;
+            }
+        }),
+
+        m88nfishyb: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NFISHYB);
+                this.idleSpeed = 420;
+                this.walkSpeed = 225;
+                this.moveSpeed = 250;
+                this.isFriendly = true;
+            }
+        }),
+
+        m88nfishyc: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NFISHYC);
+                this.idleSpeed = 420;
+                this.walkSpeed = 225;
+                this.moveSpeed = 250;
+                this.isFriendly = true;
+            }
+        }),
+
+        m88nfishyd: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NFISHYD);
+                this.idleSpeed = 420;
+                this.walkSpeed = 225;
+                this.moveSpeed = 250;
+                this.isFriendly = true;
+            }
+        }),
+
+        m88nfishye: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NFISHYE);
+                this.idleSpeed = 420;
+                this.walkSpeed = 225;
+                this.moveSpeed = 250;
+                this.isFriendly = true;
+            }
+        }),
+
+        m88nfishyf: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NFISHYF);
+                this.idleSpeed = 420;
+                this.walkSpeed = 225;
+                this.moveSpeed = 250;
+                this.isFriendly = true;
+            }
+        }),
+
+        m88nfishyg: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NFISHYG);
+                this.idleSpeed = 420;
+                this.walkSpeed = 225;
+                this.moveSpeed = 250;
+                this.isFriendly = true;
+            }
+        }),
+
+        m88nfishyh: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NFISHYH);
+                this.idleSpeed = 420;
+                this.walkSpeed = 225;
+                this.moveSpeed = 250;
+                this.isFriendly = true;
             }
         }),
 
@@ -3997,6 +4124,14 @@ define(['mob', 'timer'], function(Mob, Timer) {
         }),
         SLUDGERAT: Mob.extend({ init: function(id) {this._super(id, Types.Entities.SLUDGERAT); this.moveSpeed = 100 + Math.random()*300; this.atkSpeed = 50 + Math.random()*100; this.idleSpeed = 700; this.shadowOffsetY = -2; this.isAggressive = true; this.aggroRange = 1 + Math.random()*4; this.deathAnimated = true;}}),
         SPACECRAB: Mob.extend({ init: function(id) {this._super(id, Types.Entities.SPACECRAB); this.moveSpeed = 150 + Math.random()*100; this.atkSpeed = 20 + Math.random()*40; this.idleSpeed = 500; this.isAggressive = true; this.aggroRange = 1 + Math.random()*3; this.deathAnimated = true;}}),
+        BLACKMAGE: Mob.extend({ init: function(id) {this._super(id, Types.Entities.BLACKMAGE); this.moveSpeed = 100 + Math.random()*100; this.atkSpeed = 50 + Math.random()*50; this.idleSpeed = 150; this.isAggressive = true; this.aggroRange = 1 + Math.random()*3; this.deathAnimated = true;}}),
+        RABBID: Mob.extend({ init: function(id) {this._super(id, Types.Entities.RABBID); this.moveSpeed = 100 + Math.random()*100; this.atkSpeed = 50 + Math.random()*50; this.idleSpeed = 250; this.isAggressive = true; this.aggroRange = 1 + Math.random()*3; this.deathAnimated = true;}}),
+        ZOMBBID: Mob.extend({ init: function(id) {this._super(id, Types.Entities.ZOMBBID); this.moveSpeed = 100 + Math.random()*200; this.atkSpeed = 50 + Math.random()*50; this.idleSpeed = 250; this.isAggressive = true; this.aggroRange = 3; this.deathAnimated = true;}}),
+        HOPPURP: Mob.extend({ init: function(id) {this._super(id, Types.Entities.HOPPURP); this.moveSpeed = 100 + Math.random()*250; this.atkSpeed = 50 + Math.random()*50; this.idleSpeed = 250; this.deathAnimated = true;}}),
+        HOPPINK: Mob.extend({ init: function(id) {this._super(id, Types.Entities.HOPPINK); this.moveSpeed = 100 + Math.random()*250; this.atkSpeed = 50 + Math.random()*50; this.idleSpeed = 250; this.deathAnimated = true;}}),
+                
+        BURGERBOSS: Mob.extend({ init: function(id) { this._super(id, Types.Entities.BURGERBOSS); this.moveSpeed = 200; this.atkSpeed = 250; this.idleSpeed = 800; this.shadowOffsetY = 1; this.setAttackRate(1200);}}),
+        FRYGUY: Mob.extend({ init: function(id) { this._super(id, Types.Entities.FRYGUY); this.moveSpeed = 350; this.atkSpeed = 100; this.idleSpeed = 800; this.shadowOffsetY = 1; this.setAttackRate(1200);}}),
         // @nextMobLine@
     };
     return Mobs;

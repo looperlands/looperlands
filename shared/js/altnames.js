@@ -231,6 +231,9 @@ const AltNames = {
     m88nnightmaremonsterv: "Violet Monster",
     m88nnightmaremonstery: "Yellow Monster",
     m88nboner: "Boner",
+    m88nshortsqueeze: "Short Squeeze",
+    m88ndaddybearbrown: "Daddy Brown Bear",
+    m88njaws: "Jaws",
 
     //m88n Mob Nexans
     nexan8: "The Mail Lady",
@@ -292,6 +295,16 @@ const AltNames = {
     m88nnexussangria: "a glass of Nexus Sangria",
     m88nparadisehurricane: "a Paradise Hurricane",
     m88nsunsetdaiquiri: "a Sunset Daiquiri",
+    m88nfries: "some fries",
+    m88ntaco: "a taco",
+    m88nhotdog: "a hot dog",
+    m88nburger: "a burger",
+    m88nmedic: "Medic Bag",
+    m88nmedic2: "Medic Bag 2",
+    m88nruck: "Ruck Sack",
+    m88nruck2: "Ruck Sack 2",
+    m88nruck3: "Ruck Sack 3",
+    m88ngoldknuckles: "Gold Knuckles",
 
     //m88n TT Items
     m88nammocan: "ammo can",
@@ -360,6 +373,11 @@ const AltNames = {
     //BITCORN MOBS
     SLUDGERAT: "sludgeRAT",
     SPACECRAB: "spaceCRAB",
+    BLACKMAGE: "motherFlippin BlackMAGE",
+    RABBID: "Rabbid",
+    ZOMBBID: "Zombbid",
+    HOPPURP: "HOPpurp",
+    HOPPINK: "HOPpink",
 
     devon: "Chase", 
 };

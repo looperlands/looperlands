@@ -464,11 +464,14 @@ define(['character'], function (Character) {
 
         "nexan5": [
             "Hey friend! Are you looking for a quick snack?",
-            "I'm waiting for my assistant to bring more supplies, check back again soon!"
+            "What are you in the mood for?",
+            "/openShop the_snack_stand The Snack Stand"
+            //"I'm waiting for my assistant to bring more supplies, check back again soon!"
         ],
 
         "nexan10": [
-            "Ahoy! I'm Darwin, an explorer of the metaverse...I've noticed some cool new bugs around The Nexus.",
+            "Ahoy! I'm Darwin, an explorer of the metaverse...",
+            "I've noticed some cool new bugs around The Nexus.",
             "Keep your eyes peeled and see if you can find any too!"
         ],
 
@@ -480,12 +483,14 @@ define(['character'], function (Character) {
 
         "nexan12": [
             "Pleased to meet you, I'm the head chef here in The Nexus!",
-            "If you're ever looking for a little snack, let me know!"
+            "If you're ever looking for a little snack, check out our cart at the end of the street!"
         ],
 
         "nexan13": [
-            "Whew, it's a warm one out today. Great weather to help the crops grow fast!",
-            "We have some special crops in our garden ;) If you ever need a uh...tomato hook up, we got you covered!"
+            "Whew, it's a warm one out today.",
+            "Great weather to help the crops grow fast!",
+            "We have some special crops in our garden ;)",
+            "If you ever need a uh...tomato hook up, we got you covered!"
         ],
 
         "nexan14": [
@@ -515,7 +520,7 @@ define(['character'], function (Character) {
         ],
 
         "nexan19": [
-            "It's a beatiful day for lounging at the beach!"
+            "It's a beautiful day for lounging at the beach!"
         ],
 
         "nexan20": [
@@ -530,11 +535,14 @@ define(['character'], function (Character) {
 
         "nexan29": [
             "Welcome to the Sun Chaser Champagne Lounge, special guest!",
-            "A luxurious place to relax in style.",
-            "Most of these portals go to the private Helio Islands.",
-            "If you're interested in becoming an island owner you can DM m88nwalker to inquire.",
-            "On the far right of the second floor is a portal to a secret hidden island.",
-            "You'll need to find a mysterious compass to navigate to that one though..."
+            //"Can I get you something to drink from the bar?",
+            //"/openShop the_bar The Bar"
+            "The bar is closed right now while re-stock, but it will open again soon!",
+            "Hang out and enjoy the luxuious vibes though! The fishing is great off the bow."
+            //"Most of these portals go to the private Helio Islands.",
+            //"If you're interested in becoming an island owner you can DM m88nwalker to inquire.",
+            //"On the far right of the second floor is a portal to a secret hidden island.",
+            //"You'll need to find a mysterious compass to navigate to that one though..."
         ],
 
         "thehookup": [
@@ -598,8 +606,8 @@ define(['character'], function (Character) {
             "You should check out my new collection!",
             "You can integrate any of the NFT's from my collection as a LooperLands avatar or a companion!",
             'Checkout <a target="_blank" href="https://loopexchange.art/collection/stimy-timy">my new collection here</a>...',
-            'Click this link to <a target="_blank" href="https://x.com/stimytimy">follow me on X here</a>...',
-            "If you want to buy a private island here in The Nexus checkout Nexus Real Estate, they have some for sale."
+            'Click this link to <a target="_blank" href="https://x.com/stimytimy">follow me on X here</a>...'
+            //"If you want to buy a private island here in The Nexus checkout Nexus Real Estate, they have some for sale."
         ],
 
         "m88nrealtyagent": [
@@ -665,7 +673,7 @@ define(['character'], function (Character) {
         "nexan41": [
             //"Hey there!",
             "So many beautiful flowers around here!",
-            "Completing quests in The Nexus can yeild some big xp rewards..."
+            "Completing quests in The Nexus can yeild some big rewards..."
         ],
 
         "nexan42": [
@@ -706,7 +714,7 @@ define(['character'], function (Character) {
         "nexan48": [
             //"Hey there!",
             "Mmmmmm, m88nshine!",
-            "Have you been to the Champagne Lounge on the yacht yet?"
+            "This stuff is out of this world!"
         ],
 
         "m88nmermanking": [
@@ -717,8 +725,11 @@ define(['character'], function (Character) {
         ],
 
         "m88nmermaidprincess": [
-            "Heyyyy!",
-            "I need your help."
+            "Heyyyy, you found Atlantis!",
+            "Congratulations, that's pretty impressive...",
+            "Considering how often it magically relocates...",
+            "Have you been collecting those mysterious maps we hid around The Nexus?",
+            "If you have all 741 of them, you may enter the forbidden city behind me!"
         ],
 
         "kingfroggybw": [
@@ -1039,12 +1050,13 @@ define(['character'], function (Character) {
             "Welcome to the Tea room!",
         ],
         "WENMOONBIT":  [
-            "Hey there I was sent here by m88nwalker, welcome to the m88n lab!",
-            "We're still working on updating the interior, check back in soon to see our progress!",
-            'On X? <a target="_blank" href="https://twitter.com/moonwalker_nfts">Give him a follow</a> to stay updated.',
+            "Hey there, I'm wenmoon. I was sent here by m88nwalker, welcome to LooperLands!",
+            "There are many different galaxies in LooperLands, our home is The Nexus.",
+            "Come check it out sometime, Paradise Point is where you're gonna want to start.",
+            'On X? <a target="_blank" href="https://twitter.com/moonwalker_nfts">Give us a follow</a> to stay updated.',
             'How about Discord? <a target="_blank" href="https://discord.gg/bjjNewZegM">Checkout PLANET M88NWALKER</a> for lots more!',
-            "Check out his collections <a target='_blank' href='https://loopexchange.art/profile/0x1e8ab2cc09be581530bb9f3ac94353f6f7412239'>here</a>!",
-            "Have fun exploring Cyber City!"
+            "Check out our collections <a target='_blank' href='https://loopexchange.art/profile/0x1e8ab2cc09be581530bb9f3ac94353f6f7412239'>here</a>!",
+            "Have fun exploring LooperLands!"
         ],
         "FEDORABIT":  [
             "Hi im Fedora!",
@@ -1095,6 +1107,12 @@ define(['character'], function (Character) {
         "MOONBASES": [
             "Thank you for your help space cadet!",
             "I hope this helps you on your journey <a target='_blank' href='https://imgur.com/a/QaDRUKn'>Try Here!</a>",
+        ], 
+        "NURSEOWNER": [
+            "Welcome to Aberdeen Institute School of Nursing, my name is Dr. Bernard!",
+            "Left-sided heart failure occurs when the left ventricle cannot pump blood effectively to the rest of the body, leading to a buildup of fluid in the lungs.",
+            "Common symptoms include shortness of breath, coughing, and fatigue.",
+            "Please check out our Institute's website <a target='_blank' href='https://aberdeen.institute/'>Here!</a>",
         ], 
         // @nextNPCLine@
     };
