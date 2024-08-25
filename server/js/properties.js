@@ -1676,37 +1676,37 @@ let Properties = {
     m88nfishlips: {
         level: 11,
         drops: {
-            GOLD5: 100,
+            GOLD5: 50,
         },
         //messages: ['Darkness shall embrance you!', 'Your doom is woven', 'Fear binds you', 'Your end is spun', 'The old world beckons you'],
         armorMod: 1,
         hpMod: 3,
         weaponMod: 0.8,
-        respawnDelay: 30000
+        respawnDelay: 90000
     },
 
     m88nsushi: {
         level: 7,
         drops: {
-            GOLD5: 100,
+            GOLD5: 25,
         },
         //messages: ['Darkness shall embrance you!', 'Your doom is woven', 'Fear binds you', 'Your end is spun', 'The old world beckons you'],
         armorMod: 1,
         hpMod: 3,
         weaponMod: 0.8,
-        respawnDelay: 30000
+        respawnDelay: 60000
     },
 
     m88nsashimi: {
         level: 8,
         drops: {
-            GOLD5: 100,
+            GOLD5: 25,
         },
         //messages: ['Darkness shall embrance you!', 'Your doom is woven', 'Fear binds you', 'Your end is spun', 'The old world beckons you'],
         armorMod: 1,
         hpMod: 3,
         weaponMod: 0.8,
-        respawnDelay: 30000
+        respawnDelay: 60000
     },
 
     m88nmine: {
@@ -2488,7 +2488,7 @@ let Properties = {
         },
         inventoryDescription: "HP Easter Egg",
         onConsume: function(player){
-            player.regenHealthBy(600);
+            player.regenHealthBy(2400);
         }
     },
     m88negg3: {
@@ -3077,7 +3077,7 @@ let Properties = {
         inventoryDescription: "Full first aid kit",
         respawnDelay: 1500000,
         onConsume: function(player){
-            player.regenHealthBy(600);
+            player.regenHealthBy(2400);
         }
     },
     cigarette: {
