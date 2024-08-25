@@ -18,11 +18,13 @@
         "m88n",
         "m88n2",
         "MRMlabs",
+        "oatenkai",
         "duckville",
         "taikotown",
         "oainteriors",
         "shortdestroyers",
         "robits"
+
 
     ],
     "map_directory": "./server/maps/",
