@@ -1157,13 +1157,17 @@ define(['character'], function (Character) {
             this.showIndicator = indicator;
         },
 
+        hasTalked: function() {
+          this.hasTalkedRecently = true;
+        },
         hasInteraction : function () {
-            if (this.showIndicator || this.thoughts.length > 0 || NpcTalk[this.itemKind].length > 0) {
+            if ((this.showIndicator || this.thoughts.length > 0 || NpcTalk[this.itemKind].length > 0) && !this.hasTalkedRecently) {
                 return true;
             }
 
             // TODO: Check dialogue controller/ws call
 
+            setTimeout(() => this.hasTalkedRecently = false, 500);
             return false;
         }
     });

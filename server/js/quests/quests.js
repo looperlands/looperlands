@@ -265,7 +265,7 @@ exports.npcHasQuest = function (cache, sessionId, npcId) {
         let sessionData = cache.get(sessionId);
 
         for (const quest of questsByNPC[npcId]) {
-            if (quest.requiredQuest && !avatarHasCompletedQuest(quest.requiredQuest, sessionData.gameData.quests)) {
+            if (quest.requiredQuest && !avatarHasCompletedQuest(quest.requiredQuest, sessionData.gameData?.quests)) {
                 continue;
             }
 
@@ -273,7 +273,7 @@ exports.npcHasQuest = function (cache, sessionId, npcId) {
                 continue;
             }
 
-            if (avatarHasQuest(quest.id, sessionData.gameData.quests)) {
+            if (avatarHasQuest(quest.id, sessionData.gameData?.quests)) {
                 continue;
             }
 

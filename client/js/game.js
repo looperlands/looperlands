@@ -7286,7 +7286,6 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         }
 
                         if(self.player.target instanceof Npc) {
-                            self.destroyBubble(self.player.target);
                             self.makeNpcTalk(self.player.target);
                         } else if(self.player.target instanceof Chest) {
                             self.client.sendOpen(self.player.target);
@@ -8226,8 +8225,6 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 }
                 this.lastNPCTalk = now;
 
-                var msg;
-
                 if(npc) {
                     this.checkForQuests(npc);
                     this.checkForPartnerTask(npc);
@@ -8253,6 +8250,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 let url = '/session/' + self.sessionId + '/npc/' + npc.kind;
                 if(npc.thoughts.length > 0) {
                     let message = npc.thoughts.shift()
+                    npc.hasTalked();
                     self.createBubble(npc.id, message);
                     self.assignBubbleTo(npc);
                     self.audioManager.playSound("npc");
@@ -8277,6 +8275,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 if(response.data.quest) {
                                     self.showNewQuestPopup(response.data.quest)
                                 }
+
+                                if(response.data.options) {
+                                    self.handleInputOptions(npc.id, response.data);
+                                }
                             });
                         } else {
                             if(response.data.quest) {
@@ -8284,7 +8286,11 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                     self.showNewQuestPopup(response.data.quest);
                                 }, 1500);
                             }
+                            if(response.data.options) {
+                                self.handleInputOptions(npc.id, response.data);
+                            }
                         }
+                        npc.hasTalked();
                         self.createBubble(npc.id, message);
                         self.assignBubbleTo(npc);
                         self.audioManager.playSound("npc");
@@ -8299,6 +8305,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 let shopName = shop.join(" ");
                                 self.app.openShop(shopId, shopName)
                             } else {
+                            npc.hasTalked();
                             self.createBubble(npc.id, msg);
                             self.assignBubbleTo(npc);
                             self.audioManager.playSound("npc");
@@ -8309,7 +8316,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         }
                     }
                 }).catch(function (error) {
-                    console.error("Error while checking for quests.");
+                    console.error("Error while checking for quests.", error);
                 });
             },
 
@@ -9364,6 +9371,21 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.quest_handout_callback = callback;
             },
 
+            onPlayerChoice: function(callback) {
+              this.player_choice_callback = callback;
+            },
+
+            makeChoice: function(npcId, choice) {
+                let self = this;
+                let npc = self.getEntityById(npcId);
+                let url = '/session/' + self.sessionId + '/npc/' + npc.kind + '/dialogue/' + choice;
+                axios.get(url).then(function (response) {
+                    setTimeout(() => {
+                        self.makeNpcTalk(npc);
+                    }, 500);
+                })
+            },
+
             showNewQuestPopup: function(quest) {
                 if (this.quest_handout_callback) {
                     this.quest_handout_callback(quest);
@@ -9381,6 +9403,14 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 if(this.notification_callback) {
                     this.notification_callback(message);
                 }
+            },
+
+            handleInputOptions(npcId, dialogueNode) {
+                setTimeout(() => {
+                    if (this.player_choice_callback) {
+                        this.player_choice_callback(npcId, dialogueNode)
+                    }
+                }, 800)
             },
 
             removeObsoleteEntities: function() {
@@ -9876,8 +9906,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             interact: function() {
                 let self = this;
                 this.forEachEntityAround(this.player.gridX, this.player.gridY, 1, function(entity) {
-                    if (Types.isNpc(entity.kind) && entity.hasInteraction()) {
-                        self.destroyBubble(entity.id);
+                    if (Types.isNpc(entity.kind)) {
                         self.makeNpcTalk(entity);
                     }
                 });

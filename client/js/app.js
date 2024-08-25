@@ -293,6 +293,33 @@ define(['jquery', 'storage'], function ($, Storage) {
             newQuestPopup.removeClass("hidden");
         },
 
+        showChoicesPopup(npcId, dialogue) {
+            let playerChoicePopup = $('#dialogue-popup');
+            if(Array.isArray(dialogue.text)) {
+                dialogue.text = dialogue.text[dialogue.text.length - 1];
+            }
+            playerChoicePopup.find('#question').text(dialogue.text);
+            playerChoicePopup.find('#choices').empty();
+            for (let i = 0; i < dialogue.options.length; i++) {
+                let option = dialogue.options[i];
+
+                let choice = $('<div class="choice">' + option.text + "</div>");
+                choice.click(() => {
+                    this.game.makeChoice(npcId, option.goto);
+                    playerChoicePopup.addClass('hidden');
+                });
+                playerChoicePopup.find('#choices').append(choice);
+            }
+            playerChoicePopup.scrollTop(0);
+            playerChoicePopup.removeClass("hidden");
+
+            playerChoicePopup.find('#close-dialogue-popup').click(function(e) {
+                $('#dialogue-popup').addClass('hidden');
+                e.preventDefault();
+                e.stopImmediatePropagation();
+            });
+        },
+
         resetPage: function () {
             var self = this,
                 $achievements = $('#achievements');

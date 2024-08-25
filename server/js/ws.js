@@ -864,7 +864,7 @@ WS.socketIOServer = Server.extend({
             }
 
             if (dialogueController.hasDialogueTree(sessionData.mapId, npcId)) {
-                let node = dialogueController.processDialogueTree(sessionData.mapId, npcId)
+                let node = dialogueController.processDialogueTree(sessionData.mapId, npcId, cache, sessionId)
                 if (node) {
                     res.status(202).json(node)
                     return
@@ -877,6 +877,28 @@ WS.socketIOServer = Server.extend({
                 self.worldsMap[sessionData.mapId].npcTalked(npcId, questData.text, sessionData)
             }
             res.status(202).json(questData);
+        });
+
+        app.get("/session/:sessionId/npc/:npcId/dialogue/:gotoNode", async (req, res) => {
+            const sessionId = req.params.sessionId;
+            const npcId = req.params.npcId;
+            const gotoNode = req.params.gotoNode;
+            const sessionData = cache.get(sessionId);
+
+            if (sessionData === undefined) {
+                res.status(404).json({
+                    status: false,
+                    "error": "session not found",
+                    user: null
+                });
+                return;
+            }
+
+            if (dialogueController.hasDialogueTree(sessionData.mapId, npcId)) {
+                dialogueController.goto(sessionData.mapId, npcId, gotoNode, cache, sessionId)
+            }
+
+            res.status(200).json({});
         });
 
         app.post('/activateTrigger', async (req, res) => {

@@ -1068,7 +1068,7 @@ module.exports = Player = Character.extend({
                 this.playerEventBroker.questCompleteEvent(quest, xpReward);
             }
         }
-        this.updateIndicators();
+        setTimeout(() => this.updateIndicators(), 100);
     },
 
     addConsumable: function (consumable) {

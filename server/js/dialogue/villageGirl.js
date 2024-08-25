@@ -27,7 +27,7 @@ dialogue = {
     ],
     "nodes": {
         "start": {
-            "text": "Welcome, traveler. The village has been waiting for someone like you.",
+            "text": [["Welcome, traveler.", "hi there"], "The village has been waiting for someone like you."],
             "goto": "intro"
         },
         "intro": {
@@ -89,7 +89,7 @@ dialogue = {
         "ask_cause": {
             "text": "We believe the creatures are linked to the strange storm that hit the village.",
             "record_choice": "ask_cause",
-            "goto": "response_options"
+            "goto": "ask_help"
         },
         "ask_storm": {
             "text": "The storm was unlike anything we've seen. It brought an eerie silence followed by these strange creatures.",
@@ -117,13 +117,6 @@ dialogue = {
         },
         "check_creature_quest_completion": {
             "text": "Thank you again for your help.",
-            "conditions": [
-                {
-                    "if": "quest_completed",
-                    "quest": "creature-investigation",
-                    "goto": "offer_second_quest"
-                }
-            ]
         },
         "offer_second_quest": {
             "text": "With the creatures gone, a new threat has arisen. Bandits have started raiding our supplies. Can you help us once more?",
@@ -154,13 +147,10 @@ dialogue = {
         },
         "check_bandit_quest_completion": {
             "text": "You have done so much for us.",
-            "conditions": [
-                {
-                    "if": "quest_completed",
-                    "quest": "bandit-raid",
-                    "goto": "final_thanks"
-                }
-            ]
+        },
+        "decline_help": {
+            "text": "We understand. Please come back if you change your mind.",
+            "goto": "end_conversation"
         },
         "final_thanks": {
             "text": "Your bravery has saved our village. We are forever in your debt."

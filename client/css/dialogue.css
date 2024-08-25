@@ -1,0 +1,80 @@
+#dialogue-popup .body::-webkit-scrollbar {
+    width: 10px;
+    background-color: #533643;
+}
+
+#dialogue-popup .body::-webkit-scrollbar-thumb {
+    background-color: #b86f50;
+}
+
+#dialogue-popup .body::-webkit-scrollbar-thumb:hover {
+    background-color: #FCE045;
+}
+
+#dialogue-popup .body::-webkit-scrollbar-thumb:active {
+    background-color: #FCE045;
+}
+
+#close-dialogue-popup {
+    background-image: url(../img/2/spritesheet.png);
+    position: absolute;
+    cursor: pointer;
+    height: 32px;
+    width: 32px;
+    top: -4px;
+    right: -5px;
+    background-position: -708px -252px;
+}
+
+#close-dialogue-popup:hover {background-position: -740px -252px;}
+#close-dialogue-popup:active{background-position:-772px -252px;}
+
+#dialogue-popup {
+    position: absolute;
+    top: 15%;
+    left: 25%;
+    margin-left: -150px;
+    width: 300px;
+    padding-bottom: 30px;
+    font-family: 'GraphicPixel', arial, sans-serif;
+    transition: ease-in-out 500ms;
+    opacity: 100;
+    color: #b9b9b9;
+    box-shadow: 0 0 25px rgba(0,0,0,0.5);
+}
+
+#dialogue-popup.hidden {
+    pointer-events: none;
+    opacity: 0;
+    transition: ease-in-out 500ms;
+}
+#dialogue-popup .body{
+    padding:2px 25px;
+    max-height: 250px;
+    overflow-y: auto;
+    font-size:14px;
+}
+
+#dialogue-popup .header {
+    padding: 25px 25px 10px
+}
+
+#dialogue-popup #question {
+    color: #FCE045;
+}
+
+#dialogue-popup .choice {
+    padding: 7px 10px;
+    border: 1px solid;
+    border-radius: 4px;
+    margin-right: 4px;
+    margin-left: 4px;
+    margin-top: 10px;
+    cursor: pointer;
+    width: auto;
+    background: #00000033;
+}
+#dialogue-popup .choice:hover {
+    background: #FCE04511;
+    color: #f7dc44;
+}
