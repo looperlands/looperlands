@@ -65,7 +65,7 @@ class DialogueController {
             cache.set(sessionId, sessionData);
 
             let nodeActions = [];
-            if(node.actions) {
+            if (node.actions) {
                 nodeActions = _.clone(node.actions);
             }
 
@@ -93,8 +93,8 @@ class DialogueController {
     handleNodeActions(actions, cache, sessionId, sessionData) {
         for (let action of actions) {
 
-            if(action.conditions) {
-                if(!this.checkConditions(action.conditions, sessionData)) {
+            if (action.conditions) {
+                if (!this.checkConditions(action.conditions, sessionData)) {
                     continue;
                 }
             }
@@ -140,10 +140,10 @@ class DialogueController {
 
     goto(mapId, npcId, nodeKey, cache, sessionId) {
         const dialogue = this.findDialogueTree(mapId, npcId);
-        if(!dialogue) {
+        if (!dialogue) {
             return;
         }
-        if(!dialogue.nodes[nodeKey]) {
+        if (!dialogue.nodes[nodeKey]) {
             return;
         }
 
@@ -160,7 +160,7 @@ class DialogueController {
             sessionData.currentNpc = npcId;
         }
 
-        if(sessionData.currentNode) {
+        if (sessionData.currentNode) {
             return sessionData.currentNode;
         }
 
@@ -172,9 +172,17 @@ class DialogueController {
             // Iterate in reverse order to find the last matching condition
             for (let i = resumeConditions.length - 1; i >= 0; i--) {
                 let condition = resumeConditions[i];
-                if (this.checkCondition(condition, sessionData)) {
-                    nodeKey = condition.goto;
-                    break;  // Break as we found the last matching condition
+
+                if (condition.conditions) {
+                    if (this.checkConditions(condition.conditions, sessionData)) {
+                        nodeKey = condition.goto;
+                        break;  // Break as we found the last matching condition
+                    }
+                } else {
+                    if (this.checkCondition(condition, sessionData)) {
+                        nodeKey = condition.goto;
+                        break;  // Break as we found the last matching condition
+                    }
                 }
             }
         }
@@ -204,7 +212,7 @@ class DialogueController {
         }
 
         let invert = false;
-        if(condition.if_not) {
+        if (condition.if_not) {
             condition.if = condition.if_not;
             invert = true;
         }
@@ -237,7 +245,7 @@ class DialogueController {
                 result = false;
         }
 
-        if(invert) {
+        if (invert) {
             return !result;
         }
 
@@ -269,14 +277,14 @@ class DialogueController {
     }
 
     chooseRandomLines(node) {
-        if(!Array.isArray(node.text)) {
+        if (!Array.isArray(node.text)) {
             return node;
         }
 
         let texts = [];
         for (let i = 0; i < node.text.length; i++) {
             let text = node.text[i];
-            if(Array.isArray(text)) {
+            if (Array.isArray(text)) {
                 let randomIndex = Math.floor(Math.random() * node.text[i].length);
                 texts[i] = node.text[i][randomIndex];
             } else {

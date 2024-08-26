@@ -5,8 +5,12 @@ dialogue = {
     "start": "start",
     "resume_conditions": [
         {
-            "if": "quest_open",
-            "quest": "TEST_DIALOG_QUEST_3",
+            "conditions": [
+                {
+                    "if": "quest_open",
+                    "quest": "TEST_DIALOG_QUEST_3",
+                }
+            ],
             "goto": "check_creature_quest_completion"
         },
         {
