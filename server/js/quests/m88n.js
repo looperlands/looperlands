@@ -629,6 +629,7 @@ quests = [
         level: 10,
         xp: 20000,
         medal: Types.Medals.SKULL,
+        needToReturn: true,
         reward: {
             item: Types.Entities.m88ndirt,
             amount: 2
