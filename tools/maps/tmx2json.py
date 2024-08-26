@@ -1,4 +1,4 @@
-#!/usr/bin/python2 
+#!/usr/bin/python3
 import sys
 from lxml import etree
 import json
@@ -16,7 +16,7 @@ def process(el, tagname):
         if attrs[a].isdigit():
             attrs[a] = int(attrs[a])
     
-    children = el.getchildren()
+    children = list(el)
     
     if len(children) > 1:
         sibs = {}
@@ -41,4 +41,4 @@ dest.write(json.dumps(res))
 tmx.close()
 dest.close()
 
-print "Finished converting TMX to JSON."
+print("Finished converting TMX to JSON.")
