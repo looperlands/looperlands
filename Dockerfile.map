@@ -1,4 +1,12 @@
 FROM ubuntu:22.04
+# Disable signature check and update the package list
+RUN apt-get update -o Acquire::AllowInsecureRepositories=true \
+    && apt-get install -y --no-install-recommends \
+    apt-transport-https \
+    ca-certificates \
+    software-properties-common
+
+
 ENV NEW_RELIC_NO_CONFIG_FILE=true
 ENV DEBIAN_FRONTEND noninteractive
 ARG MAP_FILE
