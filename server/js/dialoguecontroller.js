@@ -55,10 +55,14 @@ class DialogueController {
 
             let nodeKey = this.determineStartingNode(dialogue, sessionData, npcId);
             let node = dialogue.nodes[nodeKey];
+            node = _.clone(node);
+
+            if (node.conditions) {
+                this.applyNodeConditions(node, sessionData);
+            }
 
             sessionData.currentNode = node.goto ? node.goto : (node.options ? nodeKey : null);
             cache.set(sessionId, sessionData);
-            node = _.clone(node);
 
             let nodeActions = [];
             if(node.actions) {
@@ -207,18 +211,22 @@ class DialogueController {
 
         let result;
         switch (condition.if) {
+            case 'open_quest':
             case 'quest_open':
                 result = this.checkQuestIsOpen(condition.quest, sessionData);
                 break;
+            case 'completed_quest':
             case 'quest_completed':
                 result = this.checkQuestIsCompleted(condition.quest, sessionData);
                 break;
+            case "made_choice":
             case 'choice_made':
                 result = this.checkPlayerMadeChoice(condition.choice, sessionData);
                 break;
             case 'has_item':
                 result = this.checkPlayerOwnsItem(condition.item, condition.amount ?? 1, sessionData);
                 break;
+            case 'mob_killed':
             case 'killed_mob':
                 result = this.checkPlayerKilledMob(condition.mob, condition.amount ?? 1, sessionData);
                 break;
@@ -294,6 +302,21 @@ class DialogueController {
             }
         }
         node.options = filteredOptions;
+
+        return node;
+    }
+
+    applyNodeConditions(node, sessionData) {
+        for (let condition of node.conditions) {
+            if (this.checkCondition(condition, sessionData)) {
+                if (condition.text) {
+                    node.text = condition.text;
+                }
+                if (condition.goto) {
+                    node.goto = condition.goto;
+                }
+            }
+        }
 
         return node;
     }

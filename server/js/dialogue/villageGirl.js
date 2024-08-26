@@ -6,22 +6,22 @@ dialogue = {
     "resume_conditions": [
         {
             "if": "quest_open",
-            "quest": "TEST_DIALOG_QUEST",
+            "quest": "TEST_DIALOG_QUEST_3",
             "goto": "check_creature_quest_completion"
         },
         {
             "if": "quest_completed",
-            "quest": "TEST_DIALOG_QUEST",
+            "quest": "TEST_DIALOG_QUEST_3",
             "goto": "offer_second_quest"
         },
         {
             "if": "quest_open",
-            "quest": "TEST_DIALOG_QUEST_2",
+            "quest": "TEST_DIALOG_QUEST_3",
             "goto": "check_bandit_quest_completion"
         },
         {
             "if": "quest_completed",
-            "quest": "TEST_DIALOG_QUEST_2",
+            "quest": "TEST_DIALOG_QUEST_4",
             "goto": "final_thanks"
         }
     ],
@@ -159,7 +159,14 @@ dialogue = {
             "text": "Your bravery has saved our village. We are forever in your debt."
         },
         "end_conversation": {
-            "text": "Farewell, traveler."
+            "text": "Farewell, traveler.",
+            "conditions": [
+                {
+                    "if": "made_choice",
+                    "choice": "ask_storm",
+                    "text": "Goodbye, and may the storm never return."
+                }
+            ]
         }
     }
 };
