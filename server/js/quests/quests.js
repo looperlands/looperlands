@@ -113,6 +113,15 @@ function handleInProgressQuests(npcQuests, sessionData, broker) {
                 return { text: quest.endText };
             } else {
                 if(quest.inProgressText) {
+                    if(Array.isArray(quest.inProgressText)) {
+                        let texts = [];
+                        for (const inProgressText of quest.inProgressText) {
+                            texts.push(_.template(inProgressText, {interpolate: /\{\{(.+?)\}\}/g})(quest));
+                        }
+
+                        return {text: texts};
+                    }
+
                     return {text: _.template(quest.inProgressText, {interpolate: /\{\{(.+?)\}\}/g})(quest)};
                 }
             }
