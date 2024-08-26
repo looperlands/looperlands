@@ -294,30 +294,91 @@ define(['jquery', 'storage'], function ($, Storage) {
         },
 
         showChoicesPopup(npcId, dialogue) {
+            let self = this;
             let playerChoicePopup = $('#dialogue-popup');
             if(Array.isArray(dialogue.text)) {
                 dialogue.text = dialogue.text[dialogue.text.length - 1];
             }
             playerChoicePopup.find('#question').text(dialogue.text);
             playerChoicePopup.find('#choices').empty();
+
+            // add event listener for keyboard input
+            $(document).off('keydown').on('keydown', this.handleChoiceKeyboardInput.bind(this));
+
             for (let i = 0; i < dialogue.options.length; i++) {
                 let option = dialogue.options[i];
 
                 let choice = $('<div class="choice">' + option.text + "</div>");
-                choice.click(() => {
+                choice.click((e) => {
+                    this.closeChoicesPopup();
                     this.game.makeChoice(npcId, option.goto);
-                    playerChoicePopup.addClass('hidden');
+                    e.stopImmediatePropagation();
+                    e.preventDefault();
                 });
                 playerChoicePopup.find('#choices').append(choice);
             }
             playerChoicePopup.scrollTop(0);
-            playerChoicePopup.removeClass("hidden");
-
+            playerChoicePopup.removeClass("hidden").addClass('active');
             playerChoicePopup.find('#close-dialogue-popup').click(function(e) {
-                $('#dialogue-popup').addClass('hidden');
+                self.closeChoicesPopup();
                 e.preventDefault();
                 e.stopImmediatePropagation();
             });
+        },
+
+        closeChoicesPopup() {
+            let playerChoicePopup = $('#dialogue-popup');
+            playerChoicePopup.addClass('hidden').removeClass('active');
+            $(document).off('keydown');
+        },
+
+        handleChoiceKeyboardInput(event) {
+            // on W or up arrow, select the previous choice, on no selected choice, select the last choice
+            // on S or down arrow, select the next choice, on no selected choice, select the first choice
+            // on Enter, make selected choice
+            // on ESC close the dialogue popup
+            let choices = $('#choices').children();
+            let selectedIndex = -1;
+            let selectedChoice = null;
+            for (let i = 0; i < choices.length; i++) {
+                if (choices[i].classList.contains('selected')) {
+                    selectedIndex = i;
+                    selectedChoice = choices[i];
+                    break;
+                }
+            }
+
+            switch (event.key) {
+                case 'w':
+                case 'ArrowUp':
+                    selectedIndex = selectedIndex - 1;
+                    if (selectedIndex < 0) {
+                        selectedIndex = choices.length - 1;
+                    }
+                    break;
+                case 's':
+                case 'ArrowDown':
+                    selectedIndex = selectedIndex + 1;
+                    if (selectedIndex >= choices.length) {
+                        selectedIndex = 0;
+                    }
+                    break;
+                case 'Enter':
+                case 'e':
+                    if(selectedChoice !== null) {
+                        selectedChoice.click();
+                    }
+                    break;
+                case 'Escape':
+                    this.closeChoicesPopup();
+                    break;
+            }
+
+            $('#choices .selected').removeClass('selected');
+            $(choices[selectedIndex]).addClass('selected');
+
+            event.stopImmediatePropagation();
+            event.preventDefault();
         },
 
         resetPage: function () {

@@ -6,22 +6,22 @@ dialogue = {
     "resume_conditions": [
         {
             "if": "quest_open",
-            "quest": "creature-investigation",
+            "quest": "TEST_DIALOG_QUEST",
             "goto": "check_creature_quest_completion"
         },
         {
             "if": "quest_completed",
-            "quest": "creature-investigation",
+            "quest": "TEST_DIALOG_QUEST",
             "goto": "offer_second_quest"
         },
         {
             "if": "quest_open",
-            "quest": "bandit-raid",
+            "quest": "TEST_DIALOG_QUEST_2",
             "goto": "check_bandit_quest_completion"
         },
         {
             "if": "quest_completed",
-            "quest": "bandit-raid",
+            "quest": "TEST_DIALOG_QUEST_2",
             "goto": "final_thanks"
         }
     ],
@@ -31,7 +31,7 @@ dialogue = {
             "goto": "intro"
         },
         "intro": {
-            "text": "Our village has faced many troubles recently. Strange creatures have been appearing in the forest.",
+            "text": "Our village has faced many troubles recently.<br\>Strange creatures have been appearing in the forest.",
             "goto": "ask_help"
         },
         "ask_help": {
@@ -42,17 +42,17 @@ dialogue = {
                     "goto": "accept_help"
                 },
                 {
-                    "text": "I need more information before deciding.",
-                    "goto": "more_info"
-                },
-                {
                     "text": "I'm not interested, sorry.",
                     "goto": "decline_help"
                 },
                 {
                     "text": "What caused the creatures to appear?",
                     "goto": "ask_cause"
-                }
+                },
+                {
+                    "text": "I need more information before deciding.",
+                    "goto": "more_info"
+                },
             ]
         },
         "accept_help": {
@@ -93,14 +93,17 @@ dialogue = {
         },
         "ask_storm": {
             "text": "The storm was unlike anything we've seen. It brought an eerie silence followed by these strange creatures.",
+            "record_choice": "ask_storm",
             "actions": [
                 {
-                    "type": "record_choice",
-                    "choice": "ask_storm"
-                },
-                {
                     "type": "give_item",
-                    "item": Types.Entities.CPOTION_L
+                    "item": Types.Entities.CPOTION_L,
+                    "conditions": [
+                        {
+                            "if_not": "choice_made",
+                            "choice": "ask_storm"
+                        }
+                    ]
                 }
             ],
             "goto": "response_options_2"
@@ -110,7 +113,7 @@ dialogue = {
             "actions": [
                 {
                     "type": "handout_quest",
-                    "quest": "creature-investigation"
+                    "quest": "TEST_DIALOG_QUEST"
                 }
             ],
             "goto": "check_creature_quest_completion"
@@ -140,7 +143,7 @@ dialogue = {
             "actions": [
                 {
                     "type": "handout_quest",
-                    "quest": "bandit-raid"
+                    "quest": "TEST_DIALOG_QUEST_2"
                 }
             ],
             "goto": "check_bandit_quest_completion"

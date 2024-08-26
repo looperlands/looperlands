@@ -74,7 +74,8 @@
     width: auto;
     background: #00000033;
 }
-#dialogue-popup .choice:hover {
+#dialogue-popup .choice:hover,
+#dialogue-popup .choice.selected {
     background: #FCE04511;
     color: #f7dc44;
 }

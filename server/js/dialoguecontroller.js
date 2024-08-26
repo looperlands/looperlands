@@ -1,5 +1,6 @@
 const discord = require("../js/discord");
 const _ = require("underscore");
+const dao = require('./dao.js');
 const main = require("./dialogue/main.js");
 const quests = require("./quests/quests.js");
 const Formulas = require("./formulas");
@@ -23,7 +24,6 @@ class DialogueController {
             for (let i = 0; i < dialogues.length; i++) {
                 const dialogue = dialogues[i];
                 if (parseInt(dialogue.npc) === parseInt(npcId)) {
-                    dialogue.playerState = {}
                     return dialogue;
                 }
             }
@@ -58,8 +58,24 @@ class DialogueController {
 
             sessionData.currentNode = node.goto ? node.goto : (node.options ? nodeKey : null);
             cache.set(sessionId, sessionData);
-
             node = _.clone(node);
+
+            let nodeActions = [];
+            if(node.actions) {
+                nodeActions = _.clone(node.actions);
+            }
+
+            if (node.record_choice) {
+                nodeActions.push({
+                    type: 'record_choice',
+                    choice: node.record_choice
+                });
+            }
+
+            if (nodeActions.length > 0) {
+                this.handleNodeActions(nodeActions, cache, sessionId, sessionData);
+            }
+
             node = this.chooseRandomLines(node);
             node = this.filterOptions(node, sessionData);
 
@@ -67,6 +83,54 @@ class DialogueController {
         } catch (error) {
             this.errorEncountered(`[DIALOGUE] Error with dialogue: ${error}`);
             return null;
+        }
+    }
+
+    handleNodeActions(actions, cache, sessionId, sessionData) {
+        for (let action of actions) {
+
+            if(action.conditions) {
+                if(!this.checkConditions(action.conditions, sessionData)) {
+                    continue;
+                }
+            }
+
+            const nftId = sessionData.nftId;
+            const item = action.item;
+            const amount = action.amount || 1;
+
+            switch (action.type) {
+                case 'record_choice':
+                    console.log('record choice', action.choice);
+                    sessionData.choices = sessionData.choices || [];
+                    sessionData.choices.push(action.choice);
+                    cache.set(sessionId, sessionData);
+                    break;
+                case 'give_item':
+                    console.log('give item', item, amount);
+                    sessionData.gameData.items = sessionData.gameData.items || {};
+                    sessionData.gameData.items[action.item] = (sessionData.gameData.items[item] || 0) + amount;
+                    cache.set(sessionId, sessionData);
+                    dao.updateResourceBalance(nftId,
+                        item, amount);
+                    break;
+                case 'take_item':
+                    console.log('take item', item, amount);
+                    sessionData.gameData.items = sessionData.gameData.items || {};
+                    sessionData.gameData.items[item] = (sessionData.gameData.items[item] || 0) - amount;
+                    dao.updateResourceBalance(nftId, item, amount);
+                    break;
+                case 'handout_quest':
+                    console.log('handout quest', action.quest);
+                    quests.newQuest(cache, sessionId, action.quest);
+                    break;
+                case 'complete_quest':
+                    console.log('complete quest', action.quest);
+                    quests.completeQuest(cache, sessionId, action.quest);
+                    break;
+                default:
+                    this.errorEncountered(`[DIALOGUE] Unknown action type: ${action.type}`);
+            }
         }
     }
 
@@ -135,22 +199,41 @@ class DialogueController {
             return false
         }
 
+        let invert = false;
+        if(condition.if_not) {
+            condition.if = condition.if_not;
+            invert = true;
+        }
+
+        let result;
         switch (condition.if) {
             case 'quest_open':
-                return this.checkQuestIsOpen(condition.quest, sessionData);
+                result = this.checkQuestIsOpen(condition.quest, sessionData);
+                break;
             case 'quest_completed':
-                return this.checkQuestIsCompleted(condition.quest, sessionData);
+                result = this.checkQuestIsCompleted(condition.quest, sessionData);
+                break;
             case 'choice_made':
-                return this.checkPlayerMadeChoice(condition.choice, sessionData);
+                result = this.checkPlayerMadeChoice(condition.choice, sessionData);
+                break;
             case 'has_item':
-                return this.checkPlayerOwnsItem(condition.item, condition.amount ?? 1, sessionData);
+                result = this.checkPlayerOwnsItem(condition.item, condition.amount ?? 1, sessionData);
+                break;
             case 'killed_mob':
-                return this.checkPlayerKilledMob(condition.mob, condition.amount ?? 1, sessionData);
+                result = this.checkPlayerKilledMob(condition.mob, condition.amount ?? 1, sessionData);
+                break;
             case 'is_level':
-                return this.checkPlayerIsLevel(condition.level, sessionData);
+                result = this.checkPlayerIsLevel(condition.level, sessionData);
+                break;
             default:
-                return false;
+                result = false;
         }
+
+        if(invert) {
+            return !result;
+        }
+
+        return result;
     }
 
     checkQuestIsOpen(questId, sessionData) {
@@ -162,8 +245,7 @@ class DialogueController {
     }
 
     checkPlayerMadeChoice(choiceId, sessionData) {
-        // todo
-        return false;
+        return sessionData?.choices?.includes(choiceId) || false;
     }
 
     checkPlayerOwnsItem(itemId, amount, sessionData) {

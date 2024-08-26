@@ -7289,9 +7289,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             }
                         }
 
-                        if(self.player.target instanceof Npc) {
-                            self.makeNpcTalk(self.player.target);
-                        } else if(self.player.target instanceof Chest) {
+                        if(self.player.target instanceof Chest) {
                             self.client.sendOpen(self.player.target);
                             self.audioManager.playSound("chest");
                         }
@@ -8223,7 +8221,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 now = new Date().getTime();
 
                 if (this.lastNPCTalk !== undefined) {
-                    if (now - this.lastNPCTalk < 500) {
+                    if (now - this.lastNPCTalk < 100) {
                         return;
                     }
                 }
@@ -8260,12 +8258,17 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     self.audioManager.playSound("npc");
 
                     if (npc.thoughts.length === 0 && npc.thoughtsClearedCallback) {
-                        setTimeout(() => { if(npc.thoughtsClearedCallback) {npc.thoughtsClearedCallback();  npc.thoughtsClearedCallback = null }}, 1500);
+                        setTimeout(() => { if(npc.thoughtsClearedCallback) {npc.thoughtsClearedCallback();  npc.thoughtsClearedCallback = null }}, 500);
                     }
                     return;
                 }
                 axios.get(url).then(function (response) {
                     if (response.data !== "") {
+                        if(response.data.options) {
+                            self.handleInputOptions(npc.id, response.data);
+                            return;
+                        }
+
                         let messages;
                         if(_.isObject(response.data)) {
                             messages = (!_.isArray(response.data.text) ? [response.data.text] : response.data.text);
@@ -8279,19 +8282,12 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 if(response.data.quest) {
                                     self.showNewQuestPopup(response.data.quest)
                                 }
-
-                                if(response.data.options) {
-                                    self.handleInputOptions(npc.id, response.data);
-                                }
                             });
                         } else {
                             if(response.data.quest) {
                                 setTimeout(() => {
                                     self.showNewQuestPopup(response.data.quest);
                                 }, 1500);
-                            }
-                            if(response.data.options) {
-                                self.handleInputOptions(npc.id, response.data);
                             }
                         }
                         npc.hasTalked();
@@ -8762,7 +8758,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             click: function(pos) {
 
                 if($('body').hasClass('inventory') 
-                    || $('body').hasClass('settings') 
+                    || $('body').hasClass('settings')
+                    || $('#dialogue-popup').hasClass("active")
                     || this.minigameLoaded
                     || this.hoveringMinigamePrompt) {
                     return;
@@ -8776,11 +8773,11 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 let clickThrottle;
                 if (pos.keyboard) {
                     this.keyboardMovement = true;
-                    clickThrottle = 25;
+                    clickThrottle = 50;
                 } else {
                     this.mousedown = true;
                     this.keyboardMovement = false;
-                    clickThrottle = 500;
+                    clickThrottle = 150;
                 }
 
                 let now = new Date().getTime();
@@ -8837,7 +8834,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     else if(entity instanceof Item) {
                         this.makePlayerGoToItem(entity);
                     }
-                    else if(entity instanceof Npc) {
+                    else if(entity instanceof Npc && !pos.keyboard) {
                         if(this.player.isAdjacentNonDiagonal(entity) === false) {
                             this.makePlayerTalkTo(entity);
                         } else {
@@ -9410,11 +9407,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             },
 
             handleInputOptions(npcId, dialogueNode) {
-                setTimeout(() => {
-                    if (this.player_choice_callback) {
-                        this.player_choice_callback(npcId, dialogueNode)
-                    }
-                }, 800)
+                if (this.player_choice_callback) {
+                    this.destroyBubble(npcId);
+                    this.player_choice_callback(npcId, dialogueNode)
+                }
             },
 
             removeObsoleteEntities: function() {
@@ -9910,7 +9906,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             interact: function() {
                 let self = this;
                 this.forEachEntityAround(this.player.gridX, this.player.gridY, 1, function(entity) {
-                    if (Types.isNpc(entity.kind)) {
+                    if (Types.isNpc(entity.kind) && !$('#dialogue-popup').hasClass('active')) {
                         self.makeNpcTalk(entity);
                     }
                 });

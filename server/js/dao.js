@@ -24,7 +24,7 @@ const printResponseJSON = function (url, response) {
   }
 }
 
-const updateExperience = async function (walletId, nftId, xp, retry) {
+const updateExperience = async function (nftId, xp, retry) {
   const responseData = await platformClient.increaseExperience(nftId, xp);
 
   printResponseJSON('increaseExperience', responseData);
@@ -35,9 +35,9 @@ const updateExperience = async function (walletId, nftId, xp, retry) {
     }
     retry -= 1;
     if (retry > 0) {
-      return updateExperience(walletId, nftId, xp, retry);
+      return updateExperience(nftId, xp, retry);
     } else {
-      console.error("Error updating avatar experience", walletId, nftId, xp, responseData.data);
+      console.error("Error updating avatar experience", nftId, xp, responseData.data);
     }
   }
   return updatedXp;

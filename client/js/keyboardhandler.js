@@ -22,7 +22,7 @@ class KeyBoardHandler {
             'Comma': () => this.previousWeapon(),
             'Period': () => this.nextWeapon(),
             'Tab': (event) => this.highlightNextTarget(event),
-            'Space': (event) => this.engageTarget(event)
+            'Space': (event) => this.engageTarget(event),
         };
         this.game = game;
         this.interval = false;
@@ -119,7 +119,7 @@ class KeyBoardHandler {
     }
 
     handleMovement() {
-        if (this.game.player.path != null || $('#chatbox').hasClass("active")  || $(`#minigame`).hasClass("active")) {
+        if (this.game.player.path != null || $('#chatbox').hasClass("active")  || $(`#minigame`).hasClass("active") || $(`#dialogue-popup`).hasClass("active")) {
             return;
         }
         var x = this.game.player.gridX;
