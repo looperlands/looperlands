@@ -115,14 +115,13 @@ class DialogueController {
                     sessionData.gameData.items = sessionData.gameData.items || {};
                     sessionData.gameData.items[action.item] = (sessionData.gameData.items[item] || 0) + amount;
                     cache.set(sessionId, sessionData);
-                    dao.updateResourceBalance(nftId,
-                        item, amount);
+                    dao.updateResourceBalance(nftId, item, amount);
                     break;
                 case 'take_item':
                     console.log('take item', item, amount);
                     sessionData.gameData.items = sessionData.gameData.items || {};
                     sessionData.gameData.items[item] = (sessionData.gameData.items[item] || 0) - amount;
-                    dao.updateResourceBalance(nftId, item, amount);
+                    dao.updateResourceBalance(nftId, item, -amount);
                     break;
                 case 'handout_quest':
                     console.log('handout quest', action.quest);

@@ -312,6 +312,10 @@ define(['jquery', 'storage'], function ($, Storage) {
                 choice.click((e) => {
                     this.closeChoicesPopup();
                     this.game.makeChoice(npcId, option.goto);
+
+                    setTimeout(self.initResourcesDisplay.bind(self), 1000);
+                    setTimeout(self.initResourcesDisplay.bind(self), 10000);
+
                     e.stopImmediatePropagation();
                     e.preventDefault();
                 });
