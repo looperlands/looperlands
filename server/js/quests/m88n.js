@@ -1225,10 +1225,9 @@ quests = [
         npc: Types.Entities.NEXAN35,
         target: Types.Entities.M88NMRCRAB,
         amount: 100,
-        level: 1,
-        xp: 1000,
+        level: 2,
         medal: Types.Medals.SKULL,
-        needToReturn: true,
+        //needToReturn: true,
         reward: {
             item: Types.Entities.m88ngem,
             amount: 1
@@ -1249,10 +1248,9 @@ quests = [
         target: Types.Entities.M88NMRCRAB,
         amount: 1000,
         requiredQuest: "MRCRAB_QUEST_1",
-        level: 4,
-        xp: 42000,
+        level: 10,
         medal: Types.Medals.SKULL,
-        needToReturn: true,
+        //needToReturn: true,
         reward: {
             item: Types.Entities.m88ngem,
             amount: 5
@@ -1273,10 +1271,9 @@ quests = [
         target: Types.Entities.M88NMRCRAB,
         amount: 4000,
         requiredQuest: "MRCRAB_QUEST_2",
-        level: 6,
-        xp: 100000,
+        level: 25,
         medal: Types.Medals.SKULL,
-        needToReturn: true,
+        //needToReturn: true,
         reward: {
             item: Types.Entities.m88ngem,
             amount: 10
@@ -1298,10 +1295,9 @@ quests = [
         target: Types.Entities.M88NMRCRAB,
         amount: 8888,
         requiredQuest: "MRCRAB_QUEST_3",
-        level: 8,
-        xp: 100000,
+        level: 50,
         medal: Types.Medals.SKULL,
-        needToReturn: true,
+        //needToReturn: true,
         reward: {
             item: Types.Entities.m88ngem,
             amount: 20

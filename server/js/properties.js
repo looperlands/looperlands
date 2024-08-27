@@ -1511,6 +1511,8 @@ let Properties = {
             m88ndiamondnecklace: 1,
             m88ndiamondring: 1,
             m88ngoldearrings: 1,
+            m88ngoldtiara: 1,
+            m88ndinnerbell: 1,
             m88negg1: 1,
             m88negg2: 1,
             m88ngem: 40,
