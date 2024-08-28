@@ -931,7 +931,6 @@ quests = [
         level: 10,
         xp: 10000,
         medal: Types.Medals.SKULL,
-        needToReturn: true,
         reward: {
             item: Types.Entities.m88ngem,
             amount: 1
@@ -951,7 +950,6 @@ quests = [
         level: 10,
         xp: 10000,
         medal: Types.Medals.SKULL,
-        needToReturn: true,
         reward: {
             item: Types.Entities.m88ngem,
             amount: 1
@@ -972,7 +970,6 @@ quests = [
         level: 10,
         xp: 50000,
         medal: Types.Medals.SKULL,
-        needToReturn: true,
         reward: {
             item: Types.Entities.m88ngem,
             amount: 5
@@ -999,7 +996,6 @@ quests = [
         level: 10,
         xp: 20000,
         medal: Types.Medals.SKULL,
-        needToReturn: true,
         reward: {
             item: Types.Entities.m88ngem,
             amount: 1
@@ -1212,6 +1208,24 @@ quests = [
         medal: Types.Medals.SKULL
     },
     {
+        id: "DRS_QUEST_1",
+        name: "The Mysterious Hooded Entity's Request",
+        startText: ["Have you been DRSing your shares?",
+        "Wanna make a trade? Give me 147 of them I'll give you the key to the jail...",
+        "Then you can go in there and sling pies at Kenny and the other clowns and time you want!"],
+        endText: ["Sweet, thanks, I'll add these to the pile! Have fun in there!"],
+        eventType: "LOOT_ITEM",
+        npc: Types.Entities.M88NMYSTERYHOOD,
+        target: Types.Entities.M88NDRSGME,
+        amount: 147,
+        level: 147,
+        medal: Types.Medals.SKULL,
+        reward: {
+            item: Types.Entities.m88ndrsbook,
+            amount: 2
+        }
+    },
+    {
         id: "MRCRAB_QUEST_1",
         name: "The Crab Basher's Common Request",
         startText: ["Those little crabs on the beach are annoying.",
@@ -1227,7 +1241,6 @@ quests = [
         amount: 100,
         level: 2,
         medal: Types.Medals.SKULL,
-        //needToReturn: true,
         reward: {
             item: Types.Entities.m88ngem,
             amount: 1
@@ -1250,7 +1263,6 @@ quests = [
         requiredQuest: "MRCRAB_QUEST_1",
         level: 10,
         medal: Types.Medals.SKULL,
-        //needToReturn: true,
         reward: {
             item: Types.Entities.m88ngem,
             amount: 5
@@ -1273,7 +1285,6 @@ quests = [
         requiredQuest: "MRCRAB_QUEST_2",
         level: 25,
         medal: Types.Medals.SKULL,
-        //needToReturn: true,
         reward: {
             item: Types.Entities.m88ngem,
             amount: 10
@@ -1297,7 +1308,6 @@ quests = [
         requiredQuest: "MRCRAB_QUEST_3",
         level: 50,
         medal: Types.Medals.SKULL,
-        //needToReturn: true,
         reward: {
             item: Types.Entities.m88ngem,
             amount: 20

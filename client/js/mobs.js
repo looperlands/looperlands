@@ -2669,6 +2669,51 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
 
+        m88nkennyclown: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NKENNYCLOWN);
+                this.isAggressive = false;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
+        m88nnancyclown: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NNANCYCLOWN);
+                this.isAggressive = false;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
+        m88njimmyclown: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NJIMMYCLOWN);
+                this.isAggressive = false;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
         m88npinataballoons: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.M88NPINATABALLOONS);
