@@ -1511,6 +1511,8 @@ let Properties = {
             m88ndiamondnecklace: 1,
             m88ndiamondring: 1,
             m88ngoldearrings: 1,
+            m88ngoldtiara: 1,
+            m88ndinnerbell: 1,
             m88negg1: 1,
             m88negg2: 1,
             m88ngem: 40,
@@ -1664,7 +1666,6 @@ let Properties = {
     m88nconepooper: {
         level: 22,
         drops: {
-            m88ndrsbook: 1,
             m88ngoldenpoo: 1,
             m88ngem: 4,
             m88ndirt: 7,
@@ -1707,6 +1708,36 @@ let Properties = {
         hpMod: 3,
         weaponMod: 0.8,
         respawnDelay: 60000
+    },
+
+    m88nkennyclown: {
+        level: 69,
+        friendly: true, //not actually friendly, just AoE immune
+        hp: 1,
+        drops: {
+            m88ndrsgme: 25,
+        },
+        respawnDelay: 1000000 //quarter hour
+    },
+
+    m88nnancyclown: {
+        level: 69,
+        friendly: true, //not actually friendly, just AoE immune
+        hp: 1,
+        drops: {
+            m88ndrsgme: 25,
+        },
+        respawnDelay: 1000000 //quarter hour
+    },
+
+    m88njimmyclown: {
+        level: 69,
+        friendly: true, //not actually friendly, just AoE immune
+        hp: 1,
+        drops: {
+            m88ndrsgme: 25,
+        },
+        respawnDelay: 1000000 //quarter hour
     },
 
     m88nmine: {

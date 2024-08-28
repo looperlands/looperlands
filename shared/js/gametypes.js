@@ -433,6 +433,9 @@ Types = {
         M88NSUSHI: 78000101,
         M88NSASHIMI: 78000102,
         M88NCONEPOOPER: 78000103,
+        M88NKENNYCLOWN: 78000104,
+        M88NNANCYCLOWN: 78000105,
+        M88NJIMMYCLOWN: 78000106,
         //m88n Mob Nexans
         NEXAN1: 78000037,
         NEXAN2: 78000038,
@@ -6213,6 +6216,9 @@ var kinds = {
     m88nsushi: [Types.Entities.M88NSUSHI, "mob"],
     m88nsashimi: [Types.Entities.M88NSASHIMI, "mob"],
     m88nconepooper: [Types.Entities.M88NCONEPOOPER, "mob"],
+    m88nkennyclown: [Types.Entities.M88NKENNYCLOWN, "mob"],
+    m88nnancyclown: [Types.Entities.M88NNANCYCLOWN, "mob"],
+    m88njimmyclown: [Types.Entities.M88NJIMMYCLOWN, "mob"],
 
     //m88n Mob Nexans
     nexan1: [Types.Entities.NEXAN1, "mob"],

@@ -238,6 +238,9 @@ const AltNames = {
     m88nsushi: "Sushi",
     m88nsashimi: "Sashimi",
     m88nconepooper: "Cone Pooper",
+    m88nkennyclown: "Kenny The Clown",
+    m88nnancyclown: "Nancy The Clown",
+    m88njimmyclown: "Jimmy The Clown",
 
     //m88n Mob Nexans
     nexan8: "The Mail Lady",
@@ -255,7 +258,7 @@ const AltNames = {
     thehookup: "The Hookup",
     m88nbushguy: "Bush Guy",
     m88nsignguy: "Sign Guy",
-    m88nmysteryhood: "Mystery Hooded Guy",
+    m88nmysteryhood: "Mystery Hooded Entity",
     m88ntaikotwin1: "Taiko Twin 1",
     m88ntaikotwin2: "Taiko Twin 2",
     m88nstimytimy: "Stimy Timy",

@@ -535,10 +535,10 @@ define(['character'], function (Character) {
 
         "nexan29": [
             "Welcome to the Sun Chaser Champagne Lounge, special guest!",
-            "Can I get you something to drink from the bar?",
-            "/openShop the_bar The Bar"
-            //"The bar is closed right now while re-stock, but it will open again soon!",
-            //"Hang out and enjoy the luxuious vibes though! The fishing is great off the bow."
+            //"Can I get you something to drink from the bar?",
+            //"/openShop the_bar The Bar"
+            "The bar is closed right now while re-stock, but it will open again soon!",
+            "Hang out and enjoy the luxuious vibes though! The fishing is great off the bow."
             //"Most of these portals go to the private Helio Islands.",
             //"If you're interested in becoming an island owner you can DM m88nwalker to inquire.",
             //"On the far right of the second floor is a portal to a secret hidden island.",
