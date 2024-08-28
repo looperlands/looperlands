@@ -374,12 +374,12 @@ onmessage = (e) => {
         combinedCtx.drawImage(canvases["entities"], 0, 0);
         combinedCtx.drawImage(canvases["text"], 0, 0);
         combinedCtx.drawImage(canvases["high"], 0, 0);
+        combinedCtx.drawImage(canvases["highEntities"], 0, 0);
+
         // Render the light overlay on top of everything else
         combinedCtx.globalCompositeOperation = 'multiply';  // Use 'multiply' for lighting effect
         combinedCtx.drawImage(canvases['lighting'], 0, 0);
         combinedCtx.globalCompositeOperation = 'source-over';  // Reset the composite operation
-
-        combinedCtx.drawImage(canvases["highEntities"], 0, 0);
 
         // Restore the default composite operation
         combinedCtx.restore();
