@@ -19,6 +19,7 @@ function(Camera, Item, Character, Player, Timer, Mob, Npc) {
             let textCanvas = new OffscreenCanvas(width, height);
             let entitiesCanvas = new OffscreenCanvas(width, height);
             let highEntitiesCanvas = new OffscreenCanvas(width, height);
+            let lightCanvas = new OffscreenCanvas(width, height);
 
             this.background = background;
 
@@ -53,6 +54,8 @@ function(Camera, Item, Character, Player, Timer, Mob, Npc) {
             this.worker.postMessage({"canvas":  entitiesCanvas, "type": "setCanvas", "id": "entities"}, [entitiesCanvas]);
             this.worker.postMessage({"canvas":  highEntitiesCanvas, "type": "setCanvas", "id": "highEntities"}, [highEntitiesCanvas]);
             this.worker.postMessage({"canvas":  combinedCanvas, "type": "setCanvas", "id": "combined"}, [combinedCanvas]);
+            this.worker.postMessage({"canvas":  lightCanvas, "type": "setCanvas", "id": "lighting"}, [lightCanvas]);
+
             this.rescale(this.getScaleFactor());
 
             let self = this;
@@ -995,7 +998,7 @@ function(Camera, Item, Character, Player, Timer, Mob, Npc) {
                 renderData.push(cursorData);
             }
             this.drawDebugInfo();
-            this.worker.postMessage({"type": "render", "renderData": renderData});
+            this.worker.postMessage({"type": "render", "renderData": renderData, "player": { x: this.game.player.x, y: this.game.player.y }});
         }
     });
 
