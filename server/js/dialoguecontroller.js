@@ -105,36 +105,51 @@ class DialogueController {
 
             switch (action.type) {
                 case 'record_choice':
-                    console.log('record choice', action.choice);
-                    sessionData.choices = sessionData.choices || [];
-                    sessionData.choices.push(action.choice);
-                    cache.set(sessionId, sessionData);
+                    this.recordChoice(action, sessionData, cache, sessionId);
                     break;
                 case 'give_item':
-                    console.log('give item', item, amount);
-                    sessionData.gameData.items = sessionData.gameData.items || {};
-                    sessionData.gameData.items[action.item] = (sessionData.gameData.items[item] || 0) + amount;
-                    cache.set(sessionId, sessionData);
-                    dao.updateResourceBalance(nftId, item, amount);
+                    this.giveItem(item, amount, sessionData, action, cache, sessionId, nftId);
                     break;
                 case 'take_item':
-                    console.log('take item', item, amount);
-                    sessionData.gameData.items = sessionData.gameData.items || {};
-                    sessionData.gameData.items[item] = (sessionData.gameData.items[item] || 0) - amount;
-                    dao.updateResourceBalance(nftId, item, -amount);
+                    this.takeItem(item, amount, sessionData, nftId);
                     break;
                 case 'handout_quest':
-                    console.log('handout quest', action.quest);
-                    quests.newQuest(cache, sessionId, action.quest);
+                    this.handoutQuest(action, cache, sessionId);
                     break;
                 case 'complete_quest':
-                    console.log('complete quest', action.quest);
-                    quests.completeQuest(cache, sessionId, action.quest);
+                    this.completeQuest(action, cache, sessionId);
                     break;
                 default:
                     this.errorEncountered(`[DIALOGUE] Unknown action type: ${action.type}`);
             }
         }
+    }
+
+    completeQuest(action, cache, sessionId) {
+        quests.completeQuest(cache, sessionId, action.quest);
+    }
+
+    handoutQuest(action, cache, sessionId) {
+        quests.newQuest(cache, sessionId, action.quest);
+    }
+
+    takeItem(item, amount, sessionData, nftId) {
+        sessionData.gameData.items = sessionData.gameData.items || {};
+        sessionData.gameData.items[item] = (sessionData.gameData.items[item] || 0) - amount;
+        dao.updateResourceBalance(nftId, item, -amount);
+    }
+
+    giveItem(item, amount, sessionData, action, cache, sessionId, nftId) {
+        sessionData.gameData.items = sessionData.gameData.items || {};
+        sessionData.gameData.items[action.item] = (sessionData.gameData.items[item] || 0) + amount;
+        cache.set(sessionId, sessionData);
+        dao.updateResourceBalance(nftId, item, amount);
+    }
+
+    recordChoice(action, sessionData, cache, sessionId) {
+        sessionData.choices = sessionData.choices || [];
+        sessionData.choices.push(action.choice);
+        cache.set(sessionId, sessionData);
     }
 
     goto(mapId, npcId, nodeKey, cache, sessionId) {
@@ -330,7 +345,6 @@ class DialogueController {
 
     errorEncountered(message) {
         discord.sendToDevChannel(message);
-        console.log(message);
     }
 }
 
