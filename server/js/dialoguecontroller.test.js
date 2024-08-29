@@ -777,3 +777,26 @@ describe('DialogueController - checkPlayerIsLevel', () => {
     });
 });
 
+describe('DialogueController - hasDialogueTree Error Handling', () => {
+    let dialogueController;
+
+    beforeEach(() => {
+        // Initialize the necessary objects
+        dialogueController = new DialogueController(new Map(), {});
+
+        // Mock the findDialogueTree method to throw an error
+        jest.spyOn(dialogueController, 'findDialogueTree').mockImplementation(() => {
+            throw new Error('Test error');
+        });
+
+        // Mock the errorEncountered method to observe its call
+        jest.spyOn(dialogueController, 'errorEncountered').mockImplementation((msg) => console.error(msg));
+    });
+
+    test('should return false and log an error when findDialogueTree throws an error', () => {
+        const result = dialogueController.hasDialogueTree('testMap', 1);
+
+        expect(result).toBe(false);  // Ensure the method returns false
+        expect(dialogueController.errorEncountered).toHaveBeenCalledWith(expect.stringContaining('[DIALOGUE] Error with Dialogue: Test error'));  // Ensure the error is logged
+    });
+});
