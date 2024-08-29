@@ -310,3 +310,105 @@ describe('DialogueController - checkCondition', () => {
         expect(dialogueController.checkQuestIsOpen).toHaveBeenCalledWith('TEST_DIALOG_QUEST_3', sessionData);
     });
 });
+
+describe('DialogueController - processDialogueTree', () => {
+    let dialogueController, cache, sessionId, mapId, npcId, dialogue, sessionData;
+
+    beforeEach(() => {
+        // Initialize the necessary objects
+        cache = new Map();
+        sessionId = 'testSession';
+        mapId = 'main';
+        npcId = 1;
+
+        dialogueController = new DialogueController(cache, {});
+
+        // Mock the methods that are used within processDialogueTree
+        jest.spyOn(dialogueController, 'findDialogueTree').mockReturnValue({
+            npc: 1,
+            nodes: {
+                start: {
+                    text: 'Hello, adventurer!',
+                    goto: 'nextNode',
+                },
+                nextNode: {
+                    text: 'Welcome to the village.',
+                    options: [
+                        { text: 'Tell me more.', goto: 'detailsNode' },
+                        { text: 'I need to go.', goto: 'exitNode' },
+                    ],
+                },
+                detailsNode: {
+                    text: 'Here are the details...',
+                },
+            },
+        });
+
+        jest.spyOn(dialogueController, 'determineStartingNode').mockReturnValue('start');
+        jest.spyOn(dialogueController, 'applyNodeConditions').mockImplementation(node => node);
+        jest.spyOn(dialogueController, 'handleNodeActions').mockImplementation(() => {});
+        jest.spyOn(dialogueController, 'chooseRandomLines').mockImplementation(node => node);
+        jest.spyOn(dialogueController, 'filterOptions').mockImplementation(node => node);
+        jest.spyOn(dialogueController, 'errorEncountered').mockImplementation((msg) => console.error(msg));
+
+        // Set up initial session data
+        sessionData = {
+            currentNpc: 1,
+            gameData: {
+                items: { key: 1 },
+                completedQuests: [],
+            },
+        };
+
+        cache.set(sessionId, sessionData);
+    });
+
+    test('should process dialogue tree and return the correct node', () => {
+        const node = dialogueController.processDialogueTree(mapId, npcId, cache, sessionId);
+
+        expect(dialogueController.findDialogueTree).toHaveBeenCalledWith(mapId, npcId);
+        expect(dialogueController.determineStartingNode).toHaveBeenCalledWith(dialogueController.findDialogueTree(), sessionData, npcId);
+        expect(node).not.toBeNull();
+        expect(node.text).toBe('Hello, adventurer!');
+        expect(cache.get(sessionId).currentNode).toBe('nextNode');
+    });
+
+    test('should return null if no dialogue is found', () => {
+        dialogueController.findDialogueTree.mockReturnValue(null);
+
+        const node = dialogueController.processDialogueTree(mapId, npcId, cache, sessionId);
+
+        expect(node).toBeNull();
+    });
+
+    test('should handle conditions and actions properly', () => {
+        dialogueController.findDialogueTree.mockReturnValue({
+            npc: 1,
+            nodes: {
+                start: {
+                    text: 'Hello, adventurer!',
+                    conditions: [{ if: 'has_item', item: 'key' }],
+                    actions: [{ type: 'someAction' }],
+                    goto: 'nextNode',
+                },
+            },
+        });
+
+        const node = dialogueController.processDialogueTree(mapId, npcId, cache, sessionId);
+
+        expect(dialogueController.applyNodeConditions).toHaveBeenCalled();
+        expect(dialogueController.handleNodeActions).toHaveBeenCalled();
+        expect(node).not.toBeNull();
+    });
+
+    test('should catch and log errors, returning null', () => {
+        dialogueController.findDialogueTree.mockImplementation(() => {
+            throw new Error('Unexpected error');
+        });
+
+        const node = dialogueController.processDialogueTree(mapId, npcId, cache, sessionId);
+
+        expect(node).toBeNull();
+    });
+});
+
