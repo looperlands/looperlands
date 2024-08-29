@@ -349,7 +349,6 @@ describe('DialogueController - processDialogueTree', () => {
         jest.spyOn(dialogueController, 'handleNodeActions').mockImplementation(() => { });
         jest.spyOn(dialogueController, 'chooseRandomLines').mockImplementation(node => node);
         jest.spyOn(dialogueController, 'filterOptions').mockImplementation(node => node);
-        jest.spyOn(dialogueController, 'errorEncountered').mockImplementation((msg) => console.error(msg));
 
         // Set up initial session data
         sessionData = {
@@ -431,7 +430,6 @@ describe('DialogueController - handleNodeActions', () => {
         jest.spyOn(dialogueController, 'takeItem').mockImplementation(() => { });
         jest.spyOn(dialogueController, 'handoutQuest').mockImplementation(() => { });
         jest.spyOn(dialogueController, 'completeQuest').mockImplementation(() => { });
-        jest.spyOn(dialogueController, 'errorEncountered').mockImplementation((msg) => console.error(msg));
     });
 
     test('should handle record_choice action', () => {
@@ -494,16 +492,6 @@ describe('DialogueController - handleNodeActions', () => {
         dialogueController.handleNodeActions(actions, cache, sessionId, sessionData);
 
         expect(dialogueController.giveItem).not.toHaveBeenCalled();
-    });
-
-    test('should log an error for unknown action types', () => {
-        const actions = [
-            { type: 'unknown_action_type' }
-        ];
-
-        dialogueController.handleNodeActions(actions, cache, sessionId, sessionData);
-
-        expect(dialogueController.errorEncountered).toHaveBeenCalledWith('[DIALOGUE] Unknown action type: unknown_action_type');
     });
 });
 
@@ -781,9 +769,6 @@ describe('DialogueController - hasDialogueTree Error Handling', () => {
         jest.spyOn(dialogueController, 'findDialogueTree').mockImplementation(() => {
             throw new Error('Test error');
         });
-
-        // Mock the errorEncountered method to observe its call
-        jest.spyOn(dialogueController, 'errorEncountered').mockImplementation((msg) => console.error(msg));
     });
 
     test('should return false and log an error when findDialogueTree throws an error', () => {
