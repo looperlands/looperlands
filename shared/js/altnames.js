@@ -241,6 +241,7 @@ const AltNames = {
     m88nkennyclown: "Kenny The Clown",
     m88nnancyclown: "Nancy The Clown",
     m88njimmyclown: "Jimmy The Clown",
+    m88nthewarden: "The Warden",
 
     //m88n Mob Nexans
     nexan8: "The Mail Lady",

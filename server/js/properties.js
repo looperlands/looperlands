@@ -1710,6 +1710,19 @@ let Properties = {
         respawnDelay: 60000
     },
 
+    m88nthewarden: {
+        level: 88,
+        drops: {
+            GOLD5: 88,
+            m88ndrsgme: 1,
+        },
+        messages: ['Choose peace!', 'We do not need to fight...', 'There is another way...', 'Why cant we be friends...', 'This whole world is a puzzle...'],
+        armorMod: 0.8,
+        hpMod: 8,
+        weaponMod: 0.8,
+        respawnDelay: 88888
+    },
+
     m88nkennyclown: {
         level: 69,
         friendly: true, //not actually friendly, just AoE immune
@@ -1717,6 +1730,7 @@ let Properties = {
         drops: {
             m88ndrsgme: 25,
         },
+        messages: ['I wish I never shorted that stupid stock!'],
         respawnDelay: 1000000 //quarter hour
     },
 
@@ -1727,6 +1741,7 @@ let Properties = {
         drops: {
             m88ndrsgme: 25,
         },
+        messages: ['Buy the dip!'],
         respawnDelay: 1000000 //quarter hour
     },
 
@@ -1737,6 +1752,7 @@ let Properties = {
         drops: {
             m88ndrsgme: 25,
         },
+        messages: ['Where should I put this banana?'],
         respawnDelay: 1000000 //quarter hour
     },
 
