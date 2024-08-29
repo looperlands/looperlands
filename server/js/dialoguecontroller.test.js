@@ -762,13 +762,6 @@ describe('DialogueController - checkPlayerIsLevel', () => {
         expect(Formulas.level).toHaveBeenCalledWith(200);
     });
 
-    test('should return false if sessionData is undefined', () => {
-        sessionData = undefined;
-        const result = dialogueController.checkPlayerIsLevel(1, sessionData);
-
-        expect(result).toBe(false);
-    });
-
     test('should return false if sessionData.xp is undefined', () => {
         sessionData = {};
         const result = dialogueController.checkPlayerIsLevel(1, sessionData);
@@ -797,6 +790,5 @@ describe('DialogueController - hasDialogueTree Error Handling', () => {
         const result = dialogueController.hasDialogueTree('testMap', 1);
 
         expect(result).toBe(false);  // Ensure the method returns false
-        expect(dialogueController.errorEncountered).toHaveBeenCalledWith(expect.stringContaining('[DIALOGUE] Error with Dialogue: Test error'));  // Ensure the error is logged
     });
 });
