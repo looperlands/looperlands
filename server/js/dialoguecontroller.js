@@ -147,9 +147,13 @@ class DialogueController {
     }
 
     recordChoice(action, sessionData, cache, sessionId) {
-        sessionData.choices = sessionData.choices || [];
-        sessionData.choices.push(action.choice);
-        cache.set(sessionId, sessionData);
+        sessionData.gameData.choices = sessionData.gameData.choices || [];
+
+        if (!sessionData.gameData.choices.includes(action.choice)) {
+            sessionData.gameData.choices.push(action.choice);
+            cache.set(sessionId, sessionData);
+            dao.registerChoice(sessionData.nftId, action.choice);
+        }
     }
 
     goto(mapId, npcId, nodeKey, cache, sessionId) {
@@ -275,7 +279,7 @@ class DialogueController {
     }
 
     checkPlayerMadeChoice(choiceId, sessionData) {
-        return sessionData?.choices?.includes(choiceId) || false;
+        return sessionData?.gameData.choices?.includes(choiceId) || false;
     }
 
     checkPlayerOwnsItem(itemId, amount, sessionData) {

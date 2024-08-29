@@ -261,6 +261,18 @@ class LooperLandsPlatformClient {
         }
     }
 
+    async registerChoice(nftId, choice) {
+        try {
+            console.log('registering choice', nftId, choice);
+            const url = `/api/game/asset/choice`;
+            const data = {nftId, choice};
+            const response = await this.client.post(url, data);
+            return response.data;
+        } catch (error) {
+            this.handleError(error);
+        }
+    }
+
     async getCompanions(wallet) {
         try {
             const url = `/api/game/wallet/${wallet}/companions`;
