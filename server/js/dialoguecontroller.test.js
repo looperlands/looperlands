@@ -507,3 +507,273 @@ describe('DialogueController - handleNodeActions', () => {
     });
 });
 
+describe('DialogueController - Quests Methods', () => {
+    let dialogueController, cache, sessionId, action;
+    let quests;
+
+    beforeEach(() => {
+        // Initialize the necessary objects
+        cache = new Map();
+        sessionId = 'testSession';
+
+        dialogueController = new DialogueController(cache, {});
+
+        // Mock the quests module
+        quests = require('./quests/quests.js');  // Ensure quests is imported and assigned
+        jest.spyOn(quests, 'completeQuest').mockImplementation(() => { });
+        jest.spyOn(quests, 'newQuest').mockImplementation(() => { });
+
+        action = { quest: 'testQuest' };
+    });
+
+    test('completeQuest should call quests.completeQuest', () => {
+        dialogueController.completeQuest(action, cache, sessionId);
+
+        expect(quests.completeQuest).toHaveBeenCalledWith(cache, sessionId, 'testQuest');
+    });
+
+    test('handoutQuest should call quests.newQuest', () => {
+        dialogueController.handoutQuest(action, cache, sessionId);
+
+        expect(quests.newQuest).toHaveBeenCalledWith(cache, sessionId, 'testQuest');
+    });
+});
+
+describe('DialogueController - Items Methods', () => {
+    let dialogueController, sessionData, nftId, item, amount, cache, sessionId, action;
+    let dao;
+
+    beforeEach(() => {
+        // Initialize the necessary objects
+        sessionData = { gameData: { items: { testItem: 5 } } };
+        nftId = 'testNftId';
+        item = 'testItem';
+        amount = 3;
+        sessionId = 'testSession';
+        cache = new Map().set(sessionId, sessionData);
+
+        dialogueController = new DialogueController(cache, {});
+
+        // Mock the dao module
+        dao = require('./dao.js');  // Ensure dao is imported and assigned
+        jest.spyOn(dao, 'updateResourceBalance').mockImplementation(() => { });
+    });
+
+    test('takeItem should reduce the item amount and update resource balance', () => {
+        dialogueController.takeItem(item, amount, sessionData, nftId);
+
+        expect(sessionData.gameData.items[item]).toBe(2);  // 5 - 3 = 2
+        expect(dao.updateResourceBalance).toHaveBeenCalledWith(nftId, item, -amount);
+    });
+
+    test('takeItem should handle non-existent items correctly', () => {
+        const newItem = 'newItem';
+        dialogueController.takeItem(newItem, amount, sessionData, nftId);
+
+        expect(sessionData.gameData.items[newItem]).toBe(-amount);  // New item should be initialized and subtracted
+        expect(dao.updateResourceBalance).toHaveBeenCalledWith(nftId, newItem, -amount);
+    });
+
+    test('giveItem should increase the item amount and update resource balance', () => {
+        action = { item: 'testItem' };
+        dialogueController.giveItem(item, amount, sessionData, action, cache, sessionId, nftId);
+
+        expect(sessionData.gameData.items[item]).toBe(8);  // 5 + 3 = 8
+        expect(cache.get(sessionId)).toBe(sessionData);  // Ensure the cache is updated
+        expect(dao.updateResourceBalance).toHaveBeenCalledWith(nftId, item, amount);
+    });
+
+    test('giveItem should handle non-existent items correctly', () => {
+        const newItem = 'newItem';
+        action = { item: newItem };
+        dialogueController.giveItem(newItem, amount, sessionData, action, cache, sessionId, nftId);
+
+        expect(sessionData.gameData.items[newItem]).toBe(amount);  // New item should be initialized and added
+        expect(cache.get(sessionId)).toBe(sessionData);  // Ensure the cache is updated
+        expect(dao.updateResourceBalance).toHaveBeenCalledWith(nftId, newItem, amount);
+    });
+});
+
+describe('DialogueController - recordChoice', () => {
+    let dialogueController, sessionData, cache, sessionId, action;
+    let dao;
+
+    beforeEach(() => {
+        // Initialize the necessary objects
+        sessionData = { nftId: 'testNftId', gameData: { choices: ['choice1'] } };
+        sessionId = 'testSession';
+        cache = new Map().set(sessionId, sessionData);
+        action = { choice: 'testChoice' };
+
+        dialogueController = new DialogueController(cache, {});
+
+        // Mock the dao module
+        dao = require('./dao.js');  // Ensure dao is imported and assigned
+        jest.spyOn(dao, 'registerChoice').mockImplementation(() => { });
+    });
+
+    test('recordChoice should add a choice if not already present and update cache', () => {
+        dialogueController.recordChoice(action, sessionData, cache, sessionId);
+
+        expect(sessionData.gameData.choices).toContain('testChoice');
+        expect(cache.get(sessionId)).toBe(sessionData);
+        expect(dao.registerChoice).toHaveBeenCalledWith('testNftId', 'testChoice');
+    });
+
+    test('recordChoice should initialize choices array if it does not exist', () => {
+        sessionData.gameData.choices = undefined;
+        dialogueController.recordChoice(action, sessionData, cache, sessionId);
+
+        expect(sessionData.gameData.choices).toEqual(['testChoice']);
+        expect(cache.get(sessionId)).toBe(sessionData);
+        expect(dao.registerChoice).toHaveBeenCalledWith('testNftId', 'testChoice');
+    });
+});
+
+describe('DialogueController - goto', () => {
+    let dialogueController, cache, sessionId, mapId, npcId, nodeKey, sessionData;
+
+    beforeEach(() => {
+        // Initialize the necessary objects
+        cache = new Map();
+        sessionId = 'testSession';
+        mapId = 'main';
+        npcId = 1;
+        nodeKey = 'nextNode';
+
+        dialogueController = new DialogueController(cache, {});
+
+        // Mock the methods that are used within goto
+        jest.spyOn(dialogueController, 'findDialogueTree').mockReturnValue({
+            npc: 1,
+            nodes: {
+                start: { text: 'Hello, adventurer!' },
+                nextNode: { text: 'Welcome to the village.' },
+            },
+        });
+
+        // Set up initial session data
+        sessionData = {};
+        cache.set(sessionId, sessionData);
+    });
+
+    test('goto should set the currentNode in session data if the node exists', () => {
+        dialogueController.goto(mapId, npcId, nodeKey, cache, sessionId);
+
+        expect(sessionData.currentNode).toBe(nodeKey);
+        expect(cache.get(sessionId)).toBe(sessionData);
+    });
+
+    test('goto should not modify session data if the node does not exist', () => {
+        nodeKey = 'nonExistentNode';
+        dialogueController.goto(mapId, npcId, nodeKey, cache, sessionId);
+
+        expect(sessionData.currentNode).toBeUndefined();
+        expect(cache.get(sessionId)).toBe(sessionData);
+    });
+
+    test('goto should not modify session data if no dialogue is found', () => {
+        dialogueController.findDialogueTree.mockReturnValue(null);
+
+        dialogueController.goto(mapId, npcId, nodeKey, cache, sessionId);
+
+        expect(sessionData.currentNode).toBeUndefined();
+        expect(cache.get(sessionId)).toBe(sessionData);
+    });
+});
+
+describe('DialogueController - checkPlayerKilledMob', () => {
+    let dialogueController, sessionData;
+
+    beforeEach(() => {
+        dialogueController = new DialogueController(new Map(), {});
+    });
+
+    test('should return true if player has killed enough of the specified mob', () => {
+        sessionData = {
+            gameData: {
+                mobKills: {
+                    testMob: 5
+                }
+            }
+        };
+        const result = dialogueController.checkPlayerKilledMob('testMob', 3, sessionData);
+
+        expect(result).toBe(true);
+    });
+
+    test('should return false if player has not killed enough of the specified mob', () => {
+        sessionData = {
+            gameData: {
+                mobKills: {
+                    testMob: 2
+                }
+            }
+        };
+        const result = dialogueController.checkPlayerKilledMob('testMob', 3, sessionData);
+
+        expect(result).toBe(false);
+    });
+
+    test('should return false if player has not killed the specified mob at all', () => {
+        sessionData = {
+            gameData: {
+                mobKills: {}
+            }
+        };
+        const result = dialogueController.checkPlayerKilledMob('testMob', 1, sessionData);
+
+        expect(result).toBe(false);
+    });
+
+    test('should return false if sessionData is undefined', () => {
+        sessionData = undefined;
+        const result = dialogueController.checkPlayerKilledMob('testMob', 1, sessionData);
+
+        expect(result).toBe(false);
+    });
+});
+
+describe('DialogueController - checkPlayerIsLevel', () => {
+    let dialogueController, sessionData;
+    let Formulas;
+
+    beforeEach(() => {
+        dialogueController = new DialogueController(new Map(), {});
+
+        // Mock the Formulas module
+        Formulas = require('./formulas');
+        jest.spyOn(Formulas, 'level').mockImplementation((xp) => Math.floor(xp / 100));  // Example mock implementation
+    });
+
+    test('should return true if player level is equal to or greater than specified level', () => {
+        sessionData = { xp: 300 };
+        const result = dialogueController.checkPlayerIsLevel(3, sessionData);
+
+        expect(result).toBe(true);
+        expect(Formulas.level).toHaveBeenCalledWith(300);
+    });
+
+    test('should return false if player level is less than the specified level', () => {
+        sessionData = { xp: 200 };
+        const result = dialogueController.checkPlayerIsLevel(3, sessionData);
+
+        expect(result).toBe(false);
+        expect(Formulas.level).toHaveBeenCalledWith(200);
+    });
+
+    test('should return false if sessionData is undefined', () => {
+        sessionData = undefined;
+        const result = dialogueController.checkPlayerIsLevel(1, sessionData);
+
+        expect(result).toBe(false);
+    });
+
+    test('should return false if sessionData.xp is undefined', () => {
+        sessionData = {};
+        const result = dialogueController.checkPlayerIsLevel(1, sessionData);
+
+        expect(result).toBe(false);
+    });
+});
+
