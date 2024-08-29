@@ -1,5 +1,5 @@
 
-var Utils = require("./utils");
+const Utils = require("./utils");
 let discord = require("./discord");
 let moment = require("moment");
 let Properties = require("./properties");

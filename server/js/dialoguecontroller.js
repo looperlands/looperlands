@@ -9,6 +9,7 @@ class DialogueController {
     constructor(cache, platformClient) {
         this.cache = cache;
         this.platformClient = platformClient;
+        console.log(main.dialogues)
         this.dialogueTrees = {
             main: main.dialogues
         };
@@ -16,6 +17,7 @@ class DialogueController {
 
     findDialogueTree(mapId, npcId) {
         try {
+            console.log(this.dialogueTrees, this.dialogueTrees[mapId], mapId)
             const dialogues = this.dialogueTrees[mapId];
             if (dialogues === null || dialogues === undefined) {
                 return null;

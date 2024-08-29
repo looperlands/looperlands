@@ -1,0 +1,245 @@
+process.env.GAMESERVER_NAME = 'TEST_SERVER';
+
+// Mock for gametypes
+jest.mock('../../shared/js/gametypes', () => ({
+    Messages: {
+        HELLO: 0,
+        WELCOME: 1
+    },
+    Actions: {
+        START: 0,
+        STOP: 1
+    },
+    Entities: {
+        GOLD: 5
+    }
+}));
+
+// Mock for formulas
+jest.mock('./formulas', () => ({
+    level: jest.fn((xp) => {
+        // Example mock implementation
+        if (xp < 0) {
+            throw new Error('XP cannot be negative');
+        }
+        return Math.floor(xp / 100);  // Example: level based on XP
+    }),
+}));
+
+// Mock for quests
+jest.mock('./quests/quests.js', () => ({
+    completeQuest: jest.fn(),
+    newQuest: jest.fn(),
+    hasCompletedQuest: jest.fn()
+}));
+
+// Mock for discord
+jest.mock('../js/discord');
+
+// Mock for dao
+jest.mock('./dao.js', () => ({
+    updateResourceBalance: jest.fn(),
+    registerChoice: jest.fn(),
+    MOB_KILL_QUEUE: [],  // Mock the MOB_KILL_QUEUE variable
+    processMobKillEventQueue: jest.fn()
+}));
+
+// Mock for dialogue/main.js
+jest.mock('./dialogue/main.js', () => ({
+    main: {
+        dialogues: {
+            testMap: [
+                {
+                    npc: 1,
+                    name: "John Do",
+                    start: "start",
+                    resume_conditions: [
+                        {
+                            conditions: [
+                                {
+                                    "if": "quest_open",
+                                    "quest": "TEST_DIALOG_QUEST_3",
+                                },
+                                {
+                                    "if_not": "quest_completed",
+                                    "quest": "TEST_DIALOG_QUEST_3",
+                                }
+                            ],
+                            "goto": "check_creature_quest_completion"
+                        },
+                        {
+                            "if": "quest_completed",
+                            "quest": "TEST_DIALOG_QUEST_3",
+                            "goto": "offer_second_quest"
+                        },
+                        {
+                            "if": "quest_open",
+                            "quest": "TEST_DIALOG_QUEST_3",
+                            "goto": "check_bandit_quest_completion"
+                        },
+                        {
+                            "if": "quest_completed",
+                            "quest": "TEST_DIALOG_QUEST_4",
+                            "goto": "final_thanks"
+                        }
+                    ],
+                    nodes: {
+                        "start": {
+                            text: [
+                                ["Welcome, traveler.", "hi there"],
+                                "The village has been waiting for someone like you."
+                            ],
+                            goto: "intro"
+                        },
+                        "intro": {
+                            text: "Our village has faced many troubles recently.<br\>Strange creatures have been appearing in the forest.",
+                            goto: "ask_help"
+                        },
+                        "ask_help": {
+                            text: "We need your help to investigate this. Could you assist us?",
+                            options: [
+                                { text: "Of course, I will help the village.", goto: "accept_help" },
+                                { text: "I'm not interested, sorry.", goto: "decline_help" },
+                                { text: "What caused the creatures to appear?", goto: "ask_cause" },
+                                { text: "I need more information before deciding.", goto: "more_info" }
+                            ]
+                        },
+                        "accept_help": {
+                            text: "Thank you, brave one! Your courage will not be forgotten.",
+                            goto: "handout_quest"
+                        },
+                        "more_info": {
+                            text: "The creatures appeared shortly after a mysterious storm last week.",
+                            goto: "response_options"
+                        },
+                        "response_options": {
+                            text: "Do you now wish to help us?",
+                            options: [
+                                { text: "Yes, I will help.", goto: "accept_help" },
+                                { text: "I still need to think about it.", goto: "decline_help" },
+                                { text: "What was the storm about?", goto: "ask_storm" }
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}));
+
+const DialogueController = require('./dialoguecontroller.js');
+
+describe('DialogueController', () => {
+    let cache, platformClient, dialogueController;
+
+    beforeEach(() => {
+        cache = new Map();
+        platformClient = {};  // Mock platform client as needed
+        dialogueController = new DialogueController(cache, platformClient);
+    });
+
+    test('findDialogueTree should return the correct dialogue for given mapId and npcId', () => {
+        const dialogue = dialogueController.findDialogueTree('testMap', 1);
+        expect(dialogue).not.toBeNull();
+        expect(dialogue.npc).toBe(1);
+    });
+
+    test('findDialogueTree should return null if mapId does not exist', () => {
+        const dialogue = dialogueController.findDialogueTree('nonExistentMap', 1);
+        expect(dialogue).toBeNull();
+    });
+
+    test('hasDialogueTree should return true if dialogue tree exists', () => {
+        const hasDialogue = dialogueController.hasDialogueTree('testMap', 1);
+        expect(hasDialogue).toBe(true);
+    });
+
+    test('hasDialogueTree should return false if dialogue tree does not exist', () => {
+        const hasDialogue = dialogueController.hasDialogueTree('nonExistentMap', 1);
+        expect(hasDialogue).toBe(false);
+    });
+
+    test('processDialogueTree should process the dialogue and return the correct node', () => {
+        const sessionId = 'testSession';
+        cache.set(sessionId, {});
+
+        const node = dialogueController.processDialogueTree('testMap', 1, cache, sessionId);
+
+        expect(node).not.toBeNull();
+        expect(node.text).toBe('Hello, adventurer!');
+        expect(cache.get(sessionId).currentNode).toBe('start');
+    });
+
+    test('processDialogueTree should return null if dialogue tree does not exist', () => {
+        const sessionId = 'testSession';
+        const node = dialogueController.processDialogueTree('nonExistentMap', 1, cache, sessionId);
+        expect(node).toBeNull();
+    });
+
+    test('determineStartingNode should return the correct node based on conditions', () => {
+        const dialogue = {
+            start: 'start',
+            resume_conditions: [
+                { if: 'has_item', item: 'key', goto: 'node1' },
+                { if: 'completed_quest', quest: 'quest1', goto: 'node2' }
+            ]
+        };
+        const sessionData = { currentNpc: 1, gameData: { items: { key: 1 }, completedQuests: [] } };
+
+        const nodeKey = dialogueController.determineStartingNode(dialogue, sessionData, 1);
+        expect(nodeKey).toBe('node1');
+    });
+
+    test('applyNodeConditions should modify the node based on conditions', () => {
+        const node = {
+            text: 'Hello, adventurer!',
+            conditions: [
+                { if: 'has_item', item: 'key', text: 'You have the key!' }
+            ]
+        };
+        const sessionData = { gameData: { items: { key: 1 } } };
+
+        const modifiedNode = dialogueController.applyNodeConditions(node, sessionData);
+        expect(modifiedNode.text).toBe('You have the key!');
+    });
+
+    test('filterOptions should return only the options that meet the conditions', () => {
+        const node = {
+            options: [
+                { text: 'Option 1', goto: 'node1' },
+                { text: 'Option 2', goto: 'node2', conditions: [{ if: 'has_item', item: 'key', amount: 1 }] }
+            ]
+        };
+        const sessionData = { gameData: { items: { key: 1 } } };
+
+        const filteredNode = dialogueController.filterOptions(node, sessionData);
+        expect(filteredNode.options.length).toBe(2);
+    });
+
+    test('filterOptions should return only the options that meet the conditions', () => {
+        const node = {
+            options: [
+                { text: 'Option 1', goto: 'node1' },
+                { text: 'Option 2', goto: 'node2', conditions: [{ if: 'has_item', item: 'key', amount: 1 }] }
+            ]
+        };
+        const sessionData = { gameData: { items: { key: 0 } } };
+
+        const filteredNode = dialogueController.filterOptions(node, sessionData);
+        expect(filteredNode.options.length).toBe(1);
+    });
+
+    test('chooseRandomLines should choose a random line when multiple options are provided', () => {
+        const node = {
+            text: [
+                ['Line 1', 'Line 2'],
+                ['Line 3', 'Line 4']
+            ]
+        };
+
+        const modifiedNode = dialogueController.chooseRandomLines(node);
+        expect(modifiedNode.text.length).toBe(2);
+        expect(['Line 1', 'Line 2']).toContain(modifiedNode.text[0]);
+        expect(['Line 3', 'Line 4']).toContain(modifiedNode.text[1]);
+    });
+});
