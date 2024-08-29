@@ -3,7 +3,6 @@ Types = require("../../../shared/js/gametypes");
 
 dialogue = {
     // The NPC That talks
-    // Make use to add a
     "npc": Types.Entities.DIALOGUE_EXAMPLE_NPC,
     "name": "John Do", // The name of the NPC (might be used in UI in the future), free text
     "start": "start", // The first node to start the dialogue (if no resume conditions are met)
