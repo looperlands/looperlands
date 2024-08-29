@@ -346,7 +346,7 @@ describe('DialogueController - processDialogueTree', () => {
 
         jest.spyOn(dialogueController, 'determineStartingNode').mockReturnValue('start');
         jest.spyOn(dialogueController, 'applyNodeConditions').mockImplementation(node => node);
-        jest.spyOn(dialogueController, 'handleNodeActions').mockImplementation(() => {});
+        jest.spyOn(dialogueController, 'handleNodeActions').mockImplementation(() => { });
         jest.spyOn(dialogueController, 'chooseRandomLines').mockImplementation(node => node);
         jest.spyOn(dialogueController, 'filterOptions').mockImplementation(node => node);
         jest.spyOn(dialogueController, 'errorEncountered').mockImplementation((msg) => console.error(msg));
@@ -409,6 +409,101 @@ describe('DialogueController - processDialogueTree', () => {
         const node = dialogueController.processDialogueTree(mapId, npcId, cache, sessionId);
 
         expect(node).toBeNull();
+    });
+});
+
+
+describe('DialogueController - handleNodeActions', () => {
+    let dialogueController, cache, sessionId, sessionData;
+
+    beforeEach(() => {
+        // Initialize the necessary objects
+        cache = new Map();
+        sessionId = 'testSession';
+        sessionData = { nftId: 'testNftId', currentNpc: 1 };
+
+        dialogueController = new DialogueController(cache, {});
+
+        // Mock the methods that are used within handleNodeActions
+        jest.spyOn(dialogueController, 'checkConditions').mockReturnValue(true);
+        jest.spyOn(dialogueController, 'recordChoice').mockImplementation(() => { });
+        jest.spyOn(dialogueController, 'giveItem').mockImplementation(() => { });
+        jest.spyOn(dialogueController, 'takeItem').mockImplementation(() => { });
+        jest.spyOn(dialogueController, 'handoutQuest').mockImplementation(() => { });
+        jest.spyOn(dialogueController, 'completeQuest').mockImplementation(() => { });
+        jest.spyOn(dialogueController, 'errorEncountered').mockImplementation((msg) => console.error(msg));
+    });
+
+    test('should handle record_choice action', () => {
+        const actions = [
+            { type: 'record_choice', choice: 'testChoice' }
+        ];
+
+        dialogueController.handleNodeActions(actions, cache, sessionId, sessionData);
+
+        expect(dialogueController.recordChoice).toHaveBeenCalledWith(actions[0], sessionData, cache, sessionId);
+    });
+
+    test('should handle give_item action', () => {
+        const actions = [
+            { type: 'give_item', item: 'testItem', amount: 3 }
+        ];
+
+        dialogueController.handleNodeActions(actions, cache, sessionId, sessionData);
+
+        expect(dialogueController.giveItem).toHaveBeenCalledWith('testItem', 3, sessionData, actions[0], cache, sessionId, 'testNftId');
+    });
+
+    test('should handle take_item action', () => {
+        const actions = [
+            { type: 'take_item', item: 'testItem', amount: 2 }
+        ];
+
+        dialogueController.handleNodeActions(actions, cache, sessionId, sessionData);
+
+        expect(dialogueController.takeItem).toHaveBeenCalledWith('testItem', 2, sessionData, 'testNftId');
+    });
+
+    test('should handle handout_quest action', () => {
+        const actions = [
+            { type: 'handout_quest', quest: 'testQuest' }
+        ];
+
+        dialogueController.handleNodeActions(actions, cache, sessionId, sessionData);
+
+        expect(dialogueController.handoutQuest).toHaveBeenCalledWith(actions[0], cache, sessionId);
+    });
+
+    test('should handle complete_quest action', () => {
+        const actions = [
+            { type: 'complete_quest', quest: 'testQuest' }
+        ];
+
+        dialogueController.handleNodeActions(actions, cache, sessionId, sessionData);
+
+        expect(dialogueController.completeQuest).toHaveBeenCalledWith(actions[0], cache, sessionId);
+    });
+
+    test('should skip action if conditions are not met', () => {
+        dialogueController.checkConditions.mockReturnValue(false);
+
+        const actions = [
+            { type: 'give_item', item: 'testItem', amount: 3, conditions: [{ if: 'has_item', item: 'key' }] }
+        ];
+
+        dialogueController.handleNodeActions(actions, cache, sessionId, sessionData);
+
+        expect(dialogueController.giveItem).not.toHaveBeenCalled();
+    });
+
+    test('should log an error for unknown action types', () => {
+        const actions = [
+            { type: 'unknown_action_type' }
+        ];
+
+        dialogueController.handleNodeActions(actions, cache, sessionId, sessionData);
+
+        expect(dialogueController.errorEncountered).toHaveBeenCalledWith('[DIALOGUE] Unknown action type: unknown_action_type');
     });
 });
 
