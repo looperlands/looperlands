@@ -229,3 +229,84 @@ describe('DialogueController', () => {
         expect(['Line 3', 'Line 4']).toContain(modifiedNode.text[1]);
     });
 });
+
+describe('DialogueController - checkCondition', () => {
+    let dialogueController, sessionData;
+
+    beforeEach(() => {
+        // Mock implementation of required functions
+        dialogueController = new DialogueController(new Map(), {});
+        jest.spyOn(dialogueController, 'checkQuestIsOpen').mockReturnValue(true);
+        jest.spyOn(dialogueController, 'checkQuestIsCompleted').mockReturnValue(false);
+        jest.spyOn(dialogueController, 'checkPlayerMadeChoice').mockReturnValue(true);
+        jest.spyOn(dialogueController, 'checkPlayerOwnsItem').mockReturnValue(true);
+        jest.spyOn(dialogueController, 'checkPlayerKilledMob').mockReturnValue(true);
+        jest.spyOn(dialogueController, 'checkPlayerIsLevel').mockReturnValue(true);
+
+        sessionData = {
+            gameData: {
+                items: { key: 1 },
+                completedQuests: ['quest1']
+            },
+            currentNpc: 1
+        };
+    });
+
+    test('should return true for quest_open condition', () => {
+        const condition = { if: 'quest_open', quest: 'TEST_DIALOG_QUEST_3' };
+        expect(dialogueController.checkCondition(condition, sessionData)).toBe(true);
+        expect(dialogueController.checkQuestIsOpen).toHaveBeenCalledWith('TEST_DIALOG_QUEST_3', sessionData);
+    });
+
+    test('should return false for quest_completed condition when the quest is not completed', () => {
+        const condition = { if: 'quest_completed', quest: 'TEST_DIALOG_QUEST_2' };
+        expect(dialogueController.checkCondition(condition, sessionData)).toBe(false);
+        expect(dialogueController.checkQuestIsCompleted).toHaveBeenCalledWith('TEST_DIALOG_QUEST_2', sessionData);
+    });
+
+    test('should return true for made_choice condition', () => {
+        const condition = { if: 'made_choice', choice: 'choice1' };
+        expect(dialogueController.checkCondition(condition, sessionData)).toBe(true);
+        expect(dialogueController.checkPlayerMadeChoice).toHaveBeenCalledWith('choice1', sessionData);
+    });
+
+    test('should return true for has_item condition', () => {
+        const condition = { if: 'has_item', item: 'key', amount: 1 };
+        expect(dialogueController.checkCondition(condition, sessionData)).toBe(true);
+        expect(dialogueController.checkPlayerOwnsItem).toHaveBeenCalledWith('key', 1, sessionData);
+    });
+
+    test('should return true for mob_killed condition', () => {
+        const condition = { if: 'mob_killed', mob: 'mob1', amount: 1 };
+        expect(dialogueController.checkCondition(condition, sessionData)).toBe(true);
+        expect(dialogueController.checkPlayerKilledMob).toHaveBeenCalledWith('mob1', 1, sessionData);
+    });
+
+    test('should return true for is_level condition', () => {
+        const condition = { if: 'is_level', level: 5 };
+        expect(dialogueController.checkCondition(condition, sessionData)).toBe(true);
+        expect(dialogueController.checkPlayerIsLevel).toHaveBeenCalledWith(5, sessionData);
+    });
+
+    test('should return false for an unknown condition', () => {
+        const condition = { if: 'unknown_condition' };
+        expect(dialogueController.checkCondition(condition, sessionData)).toBe(false);
+    });
+
+    test('should return false when sessionData is not provided', () => {
+        const condition = { if: 'quest_open', quest: 'TEST_DIALOG_QUEST_3' };
+        expect(dialogueController.checkCondition(condition)).toBe(false);
+    });
+
+    test('should invert the result for if_not condition', () => {
+        const condition = { if_not: 'quest_completed', quest: 'TEST_DIALOG_QUEST_2' };
+        expect(dialogueController.checkCondition(condition, sessionData)).toBe(true);
+        expect(dialogueController.checkQuestIsCompleted).toHaveBeenCalledWith('TEST_DIALOG_QUEST_2', sessionData);
+    });
+
+    test('should return false for inverted condition if the original condition is true', () => {
+        const condition = { if_not: 'quest_open', quest: 'TEST_DIALOG_QUEST_3' };
+        expect(dialogueController.checkCondition(condition, sessionData)).toBe(false);
+        expect(dialogueController.checkQuestIsOpen).toHaveBeenCalledWith('TEST_DIALOG_QUEST_3', sessionData);
+    });
+});
