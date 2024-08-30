@@ -176,6 +176,25 @@ describe('DialogueController', () => {
         expect(nodeKey).toBe('node1');
     });
 
+    test('determineStartingNode should reset session data when talking to a different NPC', () => {
+        const dialogue = {
+            start: 'start',
+            resume_conditions: [
+                { if: 'has_item', item: 'key', goto: 'node1' },
+                { if: 'completed_quest', quest: 'quest1', goto: 'node2' }
+            ]
+        };
+        const sessionData = { currentNpc: 2, currentNode: 'previousNode', gameData: { items: { key: 1 }, completedQuests: [] } };
+    
+        const nodeKey = dialogueController.determineStartingNode(dialogue, sessionData, 1);
+    
+        expect(sessionData.currentNode).toBe("node1");
+        // Ensure that sessionData.currentNpc was updated
+        expect(sessionData.currentNpc).toBe(1);
+        // Ensure that the correct nodeKey is returned after resetting sessionData
+        expect(nodeKey).toBe('node1');
+    });    
+
     test('applyNodeConditions should modify the node based on conditions', () => {
         const node = {
             text: 'Hello, adventurer!',

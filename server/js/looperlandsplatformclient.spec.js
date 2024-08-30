@@ -766,7 +766,7 @@ describe('LooperLandsPlatformClient', () => {
 
       await client.registerChoice(nftId, 'blah');
 
-      expect(client.client.post).toHaveBeenCalledWith('/api/game/asset/choice');
+      expect(client.client.post).toHaveBeenCalledWith('/api/game/asset/choice', {"choice": "blah", "nftId": "nft123"});
 
     });
 
