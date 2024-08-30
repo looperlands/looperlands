@@ -1222,8 +1222,25 @@ quests = [
         medal: Types.Medals.SKULL,
         reward: {
             item: Types.Entities.m88ndrsbook,
-            amount: 2
+            amount: 1
         }
+    },
+    {
+        id: "PIE_SLINGER_QUEST_1",
+        name: "The Fisherman's Fishing Request",
+        startText: ["Wanna sling some pies at these clowns? It's fun and they drop shares.",
+        "You'll need a Pie Slinger first though.",
+        "Wanna borrow one of mine to try it out before you buy your own?",
+        "Grab that Crossbow right there and I'll drop a 24 hour rental crossbow into your inventory!"],
+        endText: ["Have fun friend!!"],
+        eventType: "LOOT_ITEM",
+        npc: Types.Entities.M88NAPE,
+        target: Types.Entities.M88NPIESLINGER,
+        amount: 1,
+        level: 10,
+        xp: 1000,
+        medal: Types.Medals.SKULL,
+        //rental: "0xb5ed38ed7bd87b69887f974d89dd91e336cba129575fd799f0e72a9e65896dcc"
     },
     {
         id: "MRCRAB_QUEST_1",

@@ -1157,6 +1157,7 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.M88NRUCK2] = function(id) { return new Items.m88nruck2(id); };
     EntityFactory.builders[Types.Entities.M88NRUCK3] = function(id) { return new Items.m88nruck3(id); };
     EntityFactory.builders[Types.Entities.M88NGOLDKNUCKLES] = function(id) { return new Items.m88ngoldknuckles(id); };
+    EntityFactory.builders[Types.Entities.M88NPIESLINGER] = function(id) { return new Items.m88npieslinger(id); };
     //MRMlabs Items
     EntityFactory.builders[Types.Entities.FIRSTAIDKIT] = function(id) { return new Items.firstaidkit(id); };
     EntityFactory.builders[Types.Entities.BANDAID] = function(id) { return new Items.bandaid(id); };
@@ -1519,6 +1520,7 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.M88NMERMANKING]=function(id){return new NPCs.m88nmermanking(id);};
     EntityFactory.builders[Types.Entities.M88NMERMAIDPRINCESS]=function(id){return new NPCs.m88nmermaidprincess(id);};
     EntityFactory.builders[Types.Entities.KINGFROGGYBW]=function(id){return new NPCs.kingfroggybw(id);};
+    EntityFactory.builders[Types.Entities.M88NAPE]=function(id){return new NPCs.m88nape(id);};
 
     //MRMlabs NPCs
     EntityFactory.builders[Types.Entities.TYLERDURDEN]=function(id){return new NPCs.tylerdurden(id);};
