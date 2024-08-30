@@ -28,7 +28,6 @@ quests = [
         level: 1,
         medal: Types.Medals.HEARTH
     },
-
     {
         id: "JIMI_QUEST",
         name: "DIMMILIZATION ON THE BRINK",

@@ -7078,6 +7078,16 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         if(!self.player.isDead) {
                             self.audioManager.updateMusic();
                         }
+
+                        // Loop over all entities around player
+                        self.forEachEntityAround(self.player.gridX, self.player.gridY, 1, (entity) => {
+                            if (Types.isNpc(entity.kind) && entity.hasInteraction()) {
+                                self.createBubble(entity.id, "Press [E] to talk", function() {
+                                    return self.player.isAdjacent(entity)
+                                });
+                                self.assignBubbleTo(entity);
+                            }
+                        })
                     });
 
                     self.player.onStopPathing(function(x, y) {
@@ -7285,9 +7295,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             }
                         }
 
-                        if(self.player.target instanceof Npc) {
-                            self.makeNpcTalk(self.player.target);
-                        } else if(self.player.target instanceof Chest) {
+                        if(self.player.target instanceof Chest) {
                             self.client.sendOpen(self.player.target);
                             self.audioManager.playSound("chest");
                         }
@@ -8219,13 +8227,11 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 now = new Date().getTime();
 
                 if (this.lastNPCTalk !== undefined) {
-                    if (now - this.lastNPCTalk < 500) {
+                    if (now - this.lastNPCTalk < 100) {
                         return;
                     }
                 }
                 this.lastNPCTalk = now;
-
-                var msg;
 
                 if(npc) {
                     this.checkForQuests(npc);
@@ -8252,17 +8258,23 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 let url = '/session/' + self.sessionId + '/npc/' + npc.kind;
                 if(npc.thoughts.length > 0) {
                     let message = npc.thoughts.shift()
+                    npc.hasTalked();
                     self.createBubble(npc.id, message);
                     self.assignBubbleTo(npc);
                     self.audioManager.playSound("npc");
 
                     if (npc.thoughts.length === 0 && npc.thoughtsClearedCallback) {
-                        setTimeout(() => { if(npc.thoughtsClearedCallback) {npc.thoughtsClearedCallback();  npc.thoughtsClearedCallback = null }}, 1500);
+                        setTimeout(() => { if(npc.thoughtsClearedCallback) {npc.thoughtsClearedCallback();  npc.thoughtsClearedCallback = null }}, 500);
                     }
                     return;
                 }
                 axios.get(url).then(function (response) {
                     if (response.data !== "") {
+                        if(response.data.options) {
+                            self.handleInputOptions(npc.id, response.data);
+                            return;
+                        }
+
                         let messages;
                         if(_.isObject(response.data)) {
                             messages = (!_.isArray(response.data.text) ? [response.data.text] : response.data.text);
@@ -8284,6 +8296,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 }, 1500);
                             }
                         }
+                        npc.hasTalked();
                         self.createBubble(npc.id, message);
                         self.assignBubbleTo(npc);
                         self.audioManager.playSound("npc");
@@ -8298,6 +8311,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 let shopName = shop.join(" ");
                                 self.app.openShop(shopId, shopName)
                             } else {
+                            npc.hasTalked();
                             self.createBubble(npc.id, msg);
                             self.assignBubbleTo(npc);
                             self.audioManager.playSound("npc");
@@ -8308,7 +8322,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         }
                     }
                 }).catch(function (error) {
-                    console.error("Error while checking for quests.");
+                    console.error("Error while checking for quests.", error);
                 });
             },
 
@@ -8750,7 +8764,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             click: function(pos) {
 
                 if($('body').hasClass('inventory') 
-                    || $('body').hasClass('settings') 
+                    || $('body').hasClass('settings')
+                    || $('#dialogue-popup').hasClass("active")
                     || this.minigameLoaded
                     || this.hoveringMinigamePrompt) {
                     return;
@@ -8764,11 +8779,11 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 let clickThrottle;
                 if (pos.keyboard) {
                     this.keyboardMovement = true;
-                    clickThrottle = 25;
+                    clickThrottle = 50;
                 } else {
                     this.mousedown = true;
                     this.keyboardMovement = false;
-                    clickThrottle = 500;
+                    clickThrottle = 150;
                 }
 
                 let now = new Date().getTime();
@@ -8825,7 +8840,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     else if(entity instanceof Item) {
                         this.makePlayerGoToItem(entity);
                     }
-                    else if(entity instanceof Npc) {
+                    else if(entity instanceof Npc && !pos.keyboard) {
                         if(this.player.isAdjacentNonDiagonal(entity) === false) {
                             this.makePlayerTalkTo(entity);
                         } else {
@@ -9219,8 +9234,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.client.sendEmotion(emotion);
             },
 
-            createBubble: function(id, message) {
-                this.bubbleManager.create(id, message, this.currentTime);
+            createBubble: function(id, message, showCheck) {
+                this.bubbleManager.create(id, message, this.currentTime, showCheck);
             },
 
             destroyBubble: function(id) {
@@ -9363,6 +9378,21 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.quest_handout_callback = callback;
             },
 
+            onPlayerChoice: function(callback) {
+              this.player_choice_callback = callback;
+            },
+
+            makeChoice: function(npcId, choice) {
+                let self = this;
+                let npc = self.getEntityById(npcId);
+                let url = '/session/' + self.sessionId + '/npc/' + npc.kind + '/dialogue/' + choice;
+                axios.get(url).then(function (response) {
+                    setTimeout(() => {
+                        self.makeNpcTalk(npc);
+                    }, 500);
+                })
+            },
+
             showNewQuestPopup: function(quest) {
                 if (this.quest_handout_callback) {
                     this.quest_handout_callback(quest);
@@ -9379,6 +9409,13 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             showNotification: function(message) {
                 if(this.notification_callback) {
                     this.notification_callback(message);
+                }
+            },
+
+            handleInputOptions(npcId, dialogueNode) {
+                if (this.player_choice_callback) {
+                    this.destroyBubble(npcId);
+                    this.player_choice_callback(npcId, dialogueNode)
                 }
             },
 
@@ -9870,6 +9907,15 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         }
                     }
                 }, this.renderer.mobile ? 0 : 2);
+            },
+
+            interact: function() {
+                let self = this;
+                this.forEachEntityAround(this.player.gridX, this.player.gridY, 1, function(entity) {
+                    if (Types.isNpc(entity.kind) && !$('#dialogue-popup').hasClass('active')) {
+                        self.makeNpcTalk(entity);
+                    }
+                });
             }
 
         });

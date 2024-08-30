@@ -22,7 +22,7 @@ class KeyBoardHandler {
             'Comma': () => this.previousWeapon(),
             'Period': () => this.nextWeapon(),
             'Tab': (event) => this.highlightNextTarget(event),
-            'Space': (event) => this.engageTarget(event)
+            'Space': (event) => this.engageTarget(event),
         };
         this.game = game;
         this.interval = false;
@@ -49,13 +49,16 @@ class KeyBoardHandler {
         }
 
         // Keyboard shortcuts
-        const shortCuts = 'zxcvbtm1234';
+        const shortCuts = 'ezxcvbtm1234';
 
         if (shortCuts.indexOf(key) > -1) {
             if(!this.game.started || this.inputHasFocus()) {
                 return;
             }
             switch (key) {
+                case 'e':
+                    this.game.interact();
+                    break;
                 case 'z':
                     this.app.toggleInventory();
                     break;
@@ -116,7 +119,7 @@ class KeyBoardHandler {
     }
 
     handleMovement() {
-        if (this.game.player.path != null || $('#chatbox').hasClass("active")  || $(`#minigame`).hasClass("active")) {
+        if (this.game.player.path != null || $('#chatbox').hasClass("active")  || $(`#minigame`).hasClass("active") || $(`#dialogue-popup`).hasClass("active")) {
             return;
         }
         var x = this.game.player.gridX;

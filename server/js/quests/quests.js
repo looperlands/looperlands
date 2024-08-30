@@ -274,6 +274,32 @@ exports.npcHasQuest = function (cache, sessionId, npcId) {
         let sessionData = cache.get(sessionId);
 
         for (const quest of questsByNPC[npcId]) {
+            if (quest.requiredQuest && !avatarHasCompletedQuest(quest.requiredQuest, sessionData.gameData?.quests)) {
+                continue;
+            }
+
+            if (quest.requiredLevel && Formulas.level(sessionData.xp) < quest.requiredLevel) {
+                continue;
+            }
+
+            if (avatarHasQuest(quest.id, sessionData.gameData?.quests)) {
+                continue;
+            }
+
+            if (quest.showIndicator !== false) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+};
+
+exports.npcHasOpenQuest = function (cache, sessionId, npcId) {
+    if (questsByNPC[npcId] !== undefined) {
+        let sessionData = cache.get(sessionId);
+
+        for (const quest of questsByNPC[npcId]) {
             if (quest.requiredQuest && !avatarHasCompletedQuest(quest.requiredQuest, sessionData.gameData.quests)) {
                 continue;
             }
@@ -282,7 +308,11 @@ exports.npcHasQuest = function (cache, sessionId, npcId) {
                 continue;
             }
 
-            if (avatarHasQuest(quest.id, sessionData.gameData.quests)) {
+            if(!avatarHasQuest(quest.id, sessionData.gameData.quests)) {
+                continue
+            }
+
+            if (avatarHasCompletedQuest(quest.id, sessionData.gameData.quests)) {
                 continue;
             }
 

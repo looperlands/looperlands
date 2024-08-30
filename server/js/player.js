@@ -28,7 +28,6 @@ const BASE_ATTACK_RATE = 800;
 const XP_BATCH_SIZE = 500;
 
 const mapflows = require("./flows/mapflow.js");
-const { getItemCount } = require("./dao");
 
 const platformClient = new platform.LooperLandsPlatformClient(LOOPERLANDS_PLATFORM_API_KEY, LOOPERLANDS_PLATFORM_BASE_URL);
 
@@ -139,6 +138,7 @@ module.exports = Player = Character.extend({
 
                 try {
                     await mapflows.loadFlow(playerCache.mapId, self.playerEventBroker, self.server);
+
                     if (self.flowInterval) {
                         clearInterval(self.flowInterval);
                     }
@@ -671,7 +671,7 @@ module.exports = Player = Character.extend({
     },
 
     syncExperience: async function (session) {
-        let updatedXp = await dao.updateExperience(this.walletId, this.nftId, this.accumulatedExperience);
+        let updatedXp = await dao.updateExperience(this.nftId, this.accumulatedExperience);
         if (!Number.isNaN(updatedXp)) {
             if (session !== undefined) {
                 session.xp = updatedXp;

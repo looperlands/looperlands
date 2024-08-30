@@ -24,7 +24,7 @@ const printResponseJSON = function (url, response) {
   }
 }
 
-const updateExperience = async function (walletId, nftId, xp, retry) {
+const updateExperience = async function (nftId, xp, retry) {
   const responseData = await platformClient.increaseExperience(nftId, xp);
 
   printResponseJSON('increaseExperience', responseData);
@@ -35,9 +35,9 @@ const updateExperience = async function (walletId, nftId, xp, retry) {
     }
     retry -= 1;
     if (retry > 0) {
-      return updateExperience(walletId, nftId, xp, retry);
+      return updateExperience(nftId, xp, retry);
     } else {
-      console.error("Error updating avatar experience", walletId, nftId, xp, responseData.data);
+      console.error("Error updating avatar experience", nftId, xp, responseData.data);
     }
   }
   return updatedXp;
@@ -359,10 +359,13 @@ const loadAvatarGameData = async function (avatarId, retry) {
       return avatarQuests;
     }, {});
 
+    let choices = responseData.choices;
+
     return {
       mobKills: mobKills,
       quests: quests,
       items: items,
+      choices: choices,
     };
   } catch (error) {
     if (retry === undefined) {
@@ -400,6 +403,10 @@ const setQuestStatus = async function (avatarId, questId, status, retry) {
 const saveConsumable = async function (nft, item, qty) {
   this.saveLootEvent(nft, item, qty);
   await processLootEventQueue();
+}
+
+const registerChoice = function (nft, choice) {
+  platformClient.registerChoice(nft, choice);
 }
 
 const getBots = async function (walletId) {
@@ -573,5 +580,6 @@ module.exports = {
   completePartnerTask,
   getPartnerTask,
   getInventory,
-  processLootEventQueue
+  processLootEventQueue,
+  registerChoice,
 };

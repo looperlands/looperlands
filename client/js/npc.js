@@ -1,6 +1,8 @@
 define(['character'], function (Character) {
-
     let NpcTalk = {
+        // "example_dialogue_npc": [
+        //     "You can put anything here, it won't be used, but there needs to be at least one line for the npc to show up"
+        // ],
         "guard": [
             "Hello there, Looper",
             'You can learn more about <a target="_blank" href="https://medium.loopring.io/loopring-taiko-ready-layer-3-d9657327f908">Loopring and Taiko on Layer 3</a>.',
@@ -105,9 +107,6 @@ define(['character'], function (Character) {
         "liora": [
             "Be careful of what lurks in the shadow",
         ],
-        "torvin": [
-            "Greetings traveller",
-        ],
         "glink": [
             "Hehe! Twisted paths and endless loops, in this maze of many stoops.",
             "First may lead, third's a trick, but second steps, back you pick.",
@@ -170,19 +169,9 @@ define(['character'], function (Character) {
             "Now go about your adventure, Looper!"
         ],
 
-        "beachnpc": [
-            "lorem ipsum dolor sit amet",
-            "consectetur adipisicing elit, sed do eiusmod tempor"
-        ],
-
         "forestnpc": [
             "Yahaha! You completed the quest!",
             'Follow <a href="https://loopworms.io/DEV/LooperLands/QR/qr.php?NPC=beachnpc" target="blank">this link</a> and collect your prize!',
-        ],
-
-        "desertnpc": [
-            "lorem ipsum dolor sit amet",
-            "consectetur adipisicing elit, sed do eiusmod tempor"
         ],
 
         "lavanpc": [
@@ -1124,9 +1113,11 @@ define(['character'], function (Character) {
             "Left-sided heart failure occurs when the left ventricle cannot pump blood effectively to the rest of the body, leading to a buildup of fluid in the lungs.",
             "Common symptoms include shortness of breath, coughing, and fatigue.",
             "Please check out our Institute's website <a target='_blank' href='https://aberdeen.institute/'>Here!</a>",
-        ], 
+        ],
         // @nextNPCLine@
     };
+
+
 
     var Npc = Character.extend({
         init: function (id, kind) {
@@ -1167,6 +1158,19 @@ define(['character'], function (Character) {
         setShowIndicator: function (indicator) {
             this.showIndicator = indicator;
         },
+
+        hasTalked: function() {
+          this.hasTalkedRecently = true;
+        },
+
+        hasInteraction : function () {
+            if ((this.showIndicator || this.thoughts.length > 0 || NpcTalk[this.itemKind].length > 0) && !this.hasTalkedRecently) {
+                return true;
+            }
+
+            setTimeout(() => this.hasTalkedRecently = false, 500);
+            return false;
+        }
     });
 
     return Npc;
