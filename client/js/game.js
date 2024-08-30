@@ -179,6 +179,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "m88nmermanking",
                     "m88nmermaidprincess",
                     "kingfroggybw",
+                    "m88nape",
                     //m88n Mobs
                     "balloondogb",
                     "balloondogy",
@@ -581,6 +582,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "item-m88nruck2",
                     "item-m88nruck3",
                     "item-m88ngoldknuckles",
+                    "item-m88npieslinger",
                     //MRMlabs
                     "item-firstaidkit",
                     "item-bandaid",

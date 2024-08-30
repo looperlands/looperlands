@@ -358,6 +358,7 @@ Types = {
         M88NMERMANKING: 78480000,
         M88NMERMAIDPRINCESS: 78490000,
         KINGFROGGYBW: 78500000,
+        M88NAPE: 78510000,
         //m88n Mobs
         BALLOONDOGB: 78000001,
         BALLOONDOGY: 78000002,
@@ -566,6 +567,7 @@ Types = {
         M88NRUCK2: 78009700,
         M88NRUCK3: 78009800,
         M88NGOLDKNUCKLES: 78009900,
+        M88NPIESLINGER: 78010100,
         //MRMlabs NPCs
         TYLERDURDEN: 79000000,
         //MRMlabs Items
@@ -6449,6 +6451,7 @@ var kinds = {
     m88nruck2: [Types.Entities.M88NRUCK2, "object"],
     m88nruck3: [Types.Entities.M88NRUCK3, "object"],
     m88ngoldknuckles: [Types.Entities.M88NGOLDKNUCKLES, "object"],
+    m88npieslinger: [Types.Entities.M88NPIESLINGER, "object"],
     //MRMlabs Items
     firstaidkit: [Types.Entities.FIRSTAIDKIT, "object"],
     bandaid: [Types.Entities.BANDAID, "object"],
@@ -6682,6 +6685,7 @@ var kinds = {
     m88nmermanking: [Types.Entities.M88NMERMANKING, "npc"],
     m88nmermaidprincess: [Types.Entities.M88NMERMAIDPRINCESS, "npc"],
     kingfroggybw: [Types.Entities.KINGFROGGYBW, "npc"],
+    m88nape: [Types.Entities.M88NAPE, "npc"],
     //MRMlabs NPCs
     tylerdurden: [Types.Entities.TYLERDURDEN, "npc"],
     ROBITSE3: [Types.Entities.ROBITSE3, "mob"],

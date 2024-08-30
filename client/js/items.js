@@ -366,6 +366,7 @@ define(['item'], function(Item) {
         m88nruck2:Item.extend({init:function(id){this._super(id,Types.Entities.M88NRUCK2,"object");this.lootMessage="You found a ruck sack!";}}),
         m88nruck3:Item.extend({init:function(id){this._super(id,Types.Entities.M88NRUCK3,"object");this.lootMessage="You found a ruck sack!";}}),
         m88ngoldknuckles:Item.extend({init:function(id){this._super(id,Types.Entities.M88NGOLDKNUCKLES,"object");this.lootMessage="You found gold knuckles!";}}),
+        m88npieslinger:Item.extend({init:function(id){this._super(id,Types.Entities.M88NPIESLINGER,"object");this.lootMessage="You found a pie slinger!";}}),
         //MRMlabs Items
         firstaidkit:Item.extend({init:function(id){this._super(id,Types.Entities.FIRSTAIDKIT,"object");this.lootMessage="You found a first aid kit!";}}),
         bandaid:Item.extend({init:function(id){this._super(id,Types.Entities.BANDAID,"object");this.lootMessage="You found a bandaid!";}}),
