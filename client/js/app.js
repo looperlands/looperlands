@@ -24,6 +24,26 @@ define(['jquery', 'storage'], function ($, Storage) {
             this.dynamicNFTIconURL = {};
             this.dynamicNFTData = {};
             this.hideWindows();
+            this.calculateTime();
+        },
+
+        calculateTime: function() {
+            let self = this;
+            setInterval(function() {
+                const timeOffset = 1000 * 60 * 15; // 15 minutes
+                const cycleTime = 1000 * 60 * 60 // 1 hour
+                const cycleProgress = ((timeOffset + performance.now()) % cycleTime) / cycleTime;
+                const cycleAngle = cycleProgress * Math.PI * 2;
+                const cycleIntensity = Math.sin(cycleAngle) * 0.5 + 0.5;
+
+                // Human-readable time, based on angle
+                const timeHours = Math.floor(cycleProgress * 24);
+                const timeMinutes = Math.floor(cycleProgress * 24 * 60) % 60;
+
+                let time = `${String(timeHours).padStart(2, '0')}:${String(timeMinutes).padStart(2, '0')} (${cycleIntensity.toFixed(2)})`;
+
+                $('#time').text(time);
+            }, 1000);
         },
 
         setGame: function (game) {

@@ -7,10 +7,17 @@ let cursor = undefined;
 let sprites = {};
 let hasLoadedFont = false;
 let GLOBAL_LIGHT_INTENSITY = 0.2;
-let MIN_GLOBAL_LIGHT_INTENSITY = 0.1;
-let MAX_GLOBAL_LIGHT_INTENSITY = 0.9;
+const MIN_GLOBAL_LIGHT_INTENSITY = 0.05;
+const MAX_GLOBAL_LIGHT_INTENSITY = 0.95;
+const MAX_LIGHTS_TO_RENDER = 10;
+const MAX_SHADOWS_TO_RENDER = 10;
+
+// Day/night cycle of 1 hour
+const CYCLE_DURATION = 1000 * 60 * 60;
+
 let lightSources = [
     {
+        id: 1,
         x: 211,
         y: 3527,
         radius: 15,
@@ -20,9 +27,10 @@ let lightSources = [
         spread: 140,
         spreadInner: 45,
         color: {r: 255, g: 280, b: 240},
-        shadow: 0.8,
+        shadow: 0.6,
     },
     {
+        id: 2,
         x: 270,
         y: 3527,
         radius: 15,
@@ -32,10 +40,10 @@ let lightSources = [
         spread: 140,
         spreadInner: 45,
         color: {r: 255, g: 280, b: 240},
-        shadow: 0.8,
-        //animation: flickerAnimation
+        shadow: 0.6,
     },
     {
+        id: 3,
         x: 210,
         y: 3461,
         radius: 12, innerRadius: 2,
@@ -43,14 +51,26 @@ let lightSources = [
         shadow: 0.2,
     },
     {
+        id: 4,
         x: 200,
         y: 3770,
         radius: 6,
         innerRadius: 1,
-        intensity: 0.8,
-        animation: fireAnimation,
+        intensity: 0.5,
+        // animation: fireAnimation,
         color: {r: 255, g: 180, b: 140},
-        shadow: 1,
+        shadow: 0.5,
+    },
+    {
+        id: 5,
+        x: 648,
+        y: 2620,
+        radius: 20,
+        innerRadius: 1,
+        intensity: 0.5,
+        //animation: fireAnimation,
+        color: {r: 255, g: 180, b: 140},
+        shadow: 0.5,
     },
 ];
 
@@ -68,6 +88,46 @@ let obstacles = [
     {
         x: 364.533,
         y: 3539.49,
+        points: "0,0 14.5238,3.7388 23.727,11.0726 30.3418,19.2692 33.2178,40.6954 14.2362,56.5134 -0.2876,57.9514 -21.4262,48.892 -25.4526,40.983 -26.1716,29.3352 -16.2494,6.1834"
+    },
+    {
+        x: 480.533,
+        y: 3539.49,
+        points: "0,0 14.5238,3.7388 23.727,11.0726 30.3418,19.2692 33.2178,40.6954 14.2362,56.5134 -0.2876,57.9514 -21.4262,48.892 -25.4526,40.983 -26.1716,29.3352 -16.2494,6.1834"
+    },
+    {
+        x: 590,
+        y: 2548,
+        points: "0,0 14.5238,3.7388 23.727,11.0726 30.3418,19.2692 33.2178,40.6954 14.2362,56.5134 -0.2876,57.9514 -21.4262,48.892 -25.4526,40.983 -26.1716,29.3352 -16.2494,6.1834"
+    },
+    {
+        x: 526,
+        y: 2628,
+        points: "0,0 14.5238,3.7388 23.727,11.0726 30.3418,19.2692 33.2178,40.6954 14.2362,56.5134 -0.2876,57.9514 -21.4262,48.892 -25.4526,40.983 -26.1716,29.3352 -16.2494,6.1834"
+    },
+    {
+        x: 751,
+        y: 2533,
+        points: "0,0 14.5238,3.7388 23.727,11.0726 30.3418,19.2692 33.2178,40.6954 14.2362,56.5134 -0.2876,57.9514 -21.4262,48.892 -25.4526,40.983 -26.1716,29.3352 -16.2494,6.1834"
+    },
+    {
+        x: 654,
+        y: 2436,
+        points: "0,0 14.5238,3.7388 23.727,11.0726 30.3418,19.2692 33.2178,40.6954 14.2362,56.5134 -0.2876,57.9514 -21.4262,48.892 -25.4526,40.983 -26.1716,29.3352 -16.2494,6.1834"
+    },
+    {
+        x: 814,
+        y: 2595,
+        points: "0,0 14.5238,3.7388 23.727,11.0726 30.3418,19.2692 33.2178,40.6954 14.2362,56.5134 -0.2876,57.9514 -21.4262,48.892 -25.4526,40.983 -26.1716,29.3352 -16.2494,6.1834"
+    },
+    {
+        x: 622,
+        y: 2707,
+        points: "0,0 14.5238,3.7388 23.727,11.0726 30.3418,19.2692 33.2178,40.6954 14.2362,56.5134 -0.2876,57.9514 -21.4262,48.892 -25.4526,40.983 -26.1716,29.3352 -16.2494,6.1834"
+    },
+    {
+        x: 733,
+        y: 2675,
         points: "0,0 14.5238,3.7388 23.727,11.0726 30.3418,19.2692 33.2178,40.6954 14.2362,56.5134 -0.2876,57.9514 -21.4262,48.892 -25.4526,40.983 -26.1716,29.3352 -16.2494,6.1834"
     }
 ];
@@ -98,51 +158,14 @@ function transformObstacles(obstacles) {
 
     return transformedObstacles;
 }
+
 obstacles = transformObstacles(obstacles);
 
-function flickerAnimation(lightSource, time) {
-    let baseIntensity = 0.7;
-    let flickerRange = 0.05;
-    let minFlickerSpeed = 100;
-    let maxFlickerSpeed = 300;
-
-    // Randomly decide the current state of the light: on, off, or flickering
-    const flickerState = Math.random();
-
-    if (flickerState < 0.01) {
-        // 10% chance the light goes almost complwssetely off
-        lightSource.intensity = Math.random() * 0.2;  // Very dim light
-    } else if (flickerState < 0.05) {
-        // 40% chance of heavy flickering
-        const flicker = Math.random() * flickerRange - flickerRange / 2;
-        lightSource.intensity = Math.max(0, Math.min(baseIntensity + flicker, 1));
-    } else {
-        // 50% chance the light is mostly stable but with slight flickering
-        lightSource.intensity = Math.max(0, baseIntensity);
-    }
-
-    // Randomly change the flicker speed for the next update
-    lightSource.nextFlickerTime = Math.random() * (maxFlickerSpeed - minFlickerSpeed) + minFlickerSpeed;
-}
-
-function lighthouseAnimation(lightSource, time) {
-    // Increment the angle
-    lightSource.angle += time / 1000;
-
-    // Ensure the angle wraps around between 0 and 2*PI (360 degrees)
-    if (lightSource.angle >= 2 * Math.PI) {
-        lightSource.angle -= 2 * Math.PI;
-    }
-
-    // convert from rad to deg
-    lightSource.angle = lightSource.angle * (180 / Math.PI);
-}
-
 function fireAnimation(lightSource, time) {
-    const flickerStrength = 0.2; // Controls how much the light flickers
+    const flickerStrength = 0.05; // Controls how much the light flickers
     const positionVariation = 0.8; // Controls how much the light "jumps" in position
-    const radiusVariation = 0.10; // Controls the variation in light radius
-    const intensityVariation = 0.02; // Controls the variation in light intensity
+    const radiusVariation = 0.15; // Controls the variation in light radius
+    const intensityVariation = 0.01; // Controls the variation in light intensity
 
     // Simulate flickering by adjusting the radius and intensity with sine and random noise
     const flicker = Math.sin(time * 3) * flickerStrength + Math.random() * flickerStrength;
@@ -237,6 +260,17 @@ function getCacheKey(x, y, w, h, scale, colorShift) {
     return `${x},${y},${w},${h},${scale},${colorDiffKey},${progressKey}`;
 }
 
+function addToImageCache(cacheKey, offCanvas) {
+    imageCache[cacheKey] = offCanvas;
+    cacheKeys.push(cacheKey);
+
+    // Handle cache size limit
+    if (cacheKeys.length > MAX_CACHE_SIZE) {
+        cacheKeys.shift();
+        delete imageCache[cacheKeys];
+    }
+}
+
 function drawScaledImage(ctx, image, x, y, w, h, dx, dy, scale, colorShift = null) {
     const cacheKey = getCacheKey(x, y, w, h, scale, colorShift);
 
@@ -269,14 +303,7 @@ function drawScaledImage(ctx, image, x, y, w, h, dx, dy, scale, colorShift = nul
         }
 
         // Store the scaled image in the cache
-        imageCache[cacheKey] = offCanvas;
-        cacheKeys.push(cacheKey);
-
-        // Handle cache size limit
-        if (cacheKeys.length > MAX_CACHE_SIZE) {
-            const oldestKey = cacheKeys.shift();
-            delete imageCache[oldestKey];
-        }
+        addToImageCache(cacheKey, offCanvas);
 
         // Draw the scaled image from the offscreen canvas to the main canvas
         ctx.drawImage(offCanvas, dxs, dys);
@@ -348,10 +375,10 @@ onmessage = (e) => {
         });
     } else if (e.data.type === "render") {
         const renderDataLength = e.data.renderData.length;
+        let scale = 1;
         for (let i = 0; i < renderDataLength; i++) {
             let renderData = e.data.renderData[i];
             playerPosition = e.data.player;
-
 
             if (renderData.cursor !== undefined) {
                 renderCursor(renderData);
@@ -360,7 +387,8 @@ onmessage = (e) => {
             } else if (renderData.type === "entities") {
                 drawEntities(renderData);
             } else {
-                render(renderData.id, renderData.tiles, renderData.cameraX, renderData.cameraY, renderData.scale, renderData.clear);
+                scale = renderData.scale;
+                render(renderData.id, renderData.tiles, renderData.cameraX, renderData.cameraY, 1, renderData.clear);
             }
         }
 
@@ -370,16 +398,18 @@ onmessage = (e) => {
         // Perform double buffering by drawing all canvases to a single canvas
         combinedCtx.clearRect(0, 0, combinedCanvas.width, combinedCanvas.height);
         combinedCtx.save();
-        combinedCtx.drawImage(canvases["background"], 0, 0);
+        combinedCtx.drawImage(canvases["background"], 0, 0, canvases["background"].width * scale, canvases["background"].height * scale);
         combinedCtx.drawImage(canvases["entities"], 0, 0);
         combinedCtx.drawImage(canvases["text"], 0, 0);
-        combinedCtx.drawImage(canvases["high"], 0, 0);
+        combinedCtx.drawImage(canvases["high"], 0, 0, canvases["high"].width * scale, canvases["high"].height * scale);
         combinedCtx.drawImage(canvases["highEntities"], 0, 0);
 
         // Render the light overlay on top of everything else
         combinedCtx.globalCompositeOperation = 'multiply';  // Use 'multiply' for lighting effect
-        combinedCtx.drawImage(canvases['lighting'], 0, 0);
+        combinedCtx.drawImage(canvases['lighting'], 0, 0, canvases['lighting'].width * scale, canvases['lighting'].height * scale);
         combinedCtx.globalCompositeOperation = 'source-over';  // Reset the composite operation
+
+        combinedCtx.drawImage(canvases["aboveLight"], 0, 0);
 
         // Restore the default composite operation
         combinedCtx.restore();
@@ -419,6 +449,7 @@ function renderCursor(renderData) {
     let os = renderData.os;
     let cursorImg = cursors[renderData.name];
     let ctx = contexes[renderData.id];
+    ctx.clearRect(0, 0, canvases[renderData.id].width, canvases[renderData.id].height);
     ctx.save();
     ctx.drawImage(cursorImg, 0, 0, 14 * os, 14 * os, mx, my, 14 * s, 14 * s);
     ctx.restore();
@@ -610,23 +641,10 @@ function drawEntities(drawEntitiesData) {
 lastTime = null;
 
 function renderLightOverlay(lightSources, cameraX, cameraY, scale) {
-
-    // Day/night cycle of 1 minute
-    const cycleDuration = 60000 / 4;
-    const cycleProgress = (performance.now() % cycleDuration) / cycleDuration;
+    const cycleProgress = (performance.now() % CYCLE_DURATION) / CYCLE_DURATION;
     const cycleAngle = cycleProgress * Math.PI * 2;
     const cycleIntensity = Math.sin(cycleAngle) * 0.5 + 0.5;
-    //GLOBAL_LIGHT_INTENSITY = cycleIntensity * (MAX_GLOBAL_LIGHT_INTENSITY - MIN_GLOBAL_LIGHT_INTENSITY) + MIN_GLOBAL_LIGHT_INTENSITY;
-
-    // calculate in-game hour:minute time
-    const totalMinutes = Math.floor(cycleProgress * 1440);
-    const hour = Math.floor(totalMinutes / 60);
-    const minute = totalMinutes % 60;
-
-    let htime = `${hour}:${minute}`;
-    if (htime !== lastTime) {
-        lastTime = htime;
-    }
+    GLOBAL_LIGHT_INTENSITY = cycleIntensity * (MAX_GLOBAL_LIGHT_INTENSITY - MIN_GLOBAL_LIGHT_INTENSITY) + MIN_GLOBAL_LIGHT_INTENSITY;
 
     // Clear the light canvas
     let canvas = canvases['lighting'];
@@ -637,59 +655,98 @@ function renderLightOverlay(lightSources, cameraX, cameraY, scale) {
     // Add global light
     ctx.fillStyle = `rgba(0, 0, 0, ${1 - GLOBAL_LIGHT_INTENSITY})`;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
+
     const time = performance.now()
 
     // Draw each light source on the light canvas
-    lightSources.forEach(lightSource => {
+    lightSources.filter((lightSource) => {
+        // Light source in camera view
+        return lightSource.x + lightSource.radius > cameraX &&
+            lightSource.x - lightSource.radius < cameraX + canvas.width &&
+            lightSource.y + lightSource.radius > cameraY &&
+            lightSource.y - lightSource.radius < cameraY + canvas.height;
+    }).slice(0, MAX_LIGHTS_TO_RENDER).forEach(lightSource => {
         if (lightSource.animation) {
             lightSource = Object.assign({}, lightSource); // Clone the light source to avoid modifying the original
             lightSource.animation(lightSource, time);
         }
 
-        drawLightSource(ctx, lightSource, scale, cameraX, cameraY);
+        drawLightSource(ctx, lightSource, cameraX, cameraY);
     });
+
+    // Player holds lantern
+    drawLightSource(ctx, {
+        id: 9999,
+        x: playerPosition.x + 8,
+        y: playerPosition.y + 6,
+        radius: 6,
+        innerRadius: 0,
+        intensity: 0.3,
+        shadow: 0,
+    }, cameraX, cameraY);
 }
 
-function drawLightSource(ctx, lightSource, scale, cameraX, cameraY) {
+function drawLightSource(ctx, lightSource, cameraX, cameraY) {
     // Adjust light source position by subtracting the camera's position
-    const lightX = (lightSource.x - cameraX) * scale;
-    const lightY = (lightSource.y - cameraY) * scale;
-    const innerRadius = (lightSource.innerRadius || 0) * tilesize * scale;
-    const outerRadius = lightSource.radius * tilesize * scale;
+    const lightX = (lightSource.x - cameraX);
+    const lightY = (lightSource.y - cameraY);
+    const innerRadius = (lightSource.innerRadius || 0) * tilesize;
+    const outerRadius = lightSource.radius * tilesize;
     const intensity = lightSource.intensity || 1;
     const color = lightSource.color || {r: 255, g: 255, b: 255};
-    const tmpCanvas = new OffscreenCanvas(outerRadius * 2, outerRadius * 2);
-    const tmpCtx = tmpCanvas.getContext('2d');
 
-    // Create the arc for the spread
-    if (lightSource.spread > 0) {
-        const spread = lightSource.spread;
-        const spreadInner = lightSource.spreadInner || 0;
-        const angle = toRad((lightSource.angle || 0) + 90);
-        const arcGradient = tmpCtx.createConicGradient(angle - toRad(spread / 2), outerRadius, outerRadius);
-        arcGradient.addColorStop(0, `rgba(${color.r},${color.g},${color.b}, 0)`);
-        arcGradient.addColorStop(toPerc(spread / 2) - toPerc(spreadInner) / 2, `rgba(${color.r},${color.g},${color.b}, ${intensity})`);
-        arcGradient.addColorStop(toPerc(spread / 2) + toPerc(spreadInner) / 2, `rgba(${color.r},${color.g},${color.b}, ${intensity})`);
-        arcGradient.addColorStop(toPerc(spread), `rgba(${color.r},${color.g},${color.b}, 0)`);
-
-        tmpCtx.fillStyle = arcGradient;
-        tmpCtx.beginPath();
-        tmpCtx.arc(outerRadius, outerRadius, outerRadius, angle, spread, false); // Draw an arc
-        tmpCtx.closePath();
-        tmpCtx.fill();
-        tmpCtx.globalCompositeOperation = 'destination-in';
+    let cacheKey = 'l.' + outerRadius + ',' + innerRadius + '|' + lightSource.intensity + ',' + lightSource.shadow + '|' + lightSource.color;
+    if(lightSource.shadow > 0) {
+        cacheKey += '|' + lightSource.x + ',' + lightSource.y;
+    }
+    if (!lightSource.animation && imageCache[cacheKey]) {
+        ctx.globalCompositeOperation = "lighter";
+        ctx.drawImage(imageCache[cacheKey], lightX - outerRadius, lightY - outerRadius);
+        return
     }
 
-    const gradient = tmpCtx.createRadialGradient(outerRadius, outerRadius, innerRadius, outerRadius, outerRadius, outerRadius);
+    const tmpCanvas = new OffscreenCanvas(outerRadius * 2, outerRadius * 2);
+    const tmpCtx = tmpCanvas.getContext('2d');
+    tmpCtx.imageSmoothingEnabled = false;
 
-    // The light starts fully bright at the center and fades to zero at the radius
-    gradient.addColorStop(0, `rgba(${color.r},${color.g},${color.b}, ${intensity})`);
-    gradient.addColorStop(1, `rgba(${color.r},${color.g},${color.b}, 0)`);
+    const temp_cacheKey = 'tl.' + outerRadius + ',' + innerRadius + '|' + lightSource.intensity + ',' + lightSource.shadow + '|' + lightSource.color;
+    if (!imageCache[temp_cacheKey]) {
+        // Create the arc for the spread
+        if (lightSource.spread > 0) {
+            const spread = lightSource.spread;
+            const spreadInner = lightSource.spreadInner || 0;
+            const angle = toRad((lightSource.angle || 0) + 90);
+            const arcGradient = tmpCtx.createConicGradient(angle - toRad(spread / 2), outerRadius, outerRadius);
+            arcGradient.addColorStop(0, `rgba(${color.r},${color.g},${color.b}, 0)`);
+            arcGradient.addColorStop(toPerc(spread / 2) - toPerc(spreadInner) / 2, `rgba(${color.r},${color.g},${color.b}, ${intensity})`);
+            arcGradient.addColorStop(toPerc(spread / 2) + toPerc(spreadInner) / 2, `rgba(${color.r},${color.g},${color.b}, ${intensity})`);
+            arcGradient.addColorStop(toPerc(spread), `rgba(${color.r},${color.g},${color.b}, 0)`);
 
-    tmpCtx.fillStyle = gradient;
-    tmpCtx.fillRect(0, 0, outerRadius * 2, outerRadius * 2);
+            tmpCtx.fillStyle = arcGradient;
+            tmpCtx.beginPath();
+            tmpCtx.arc(outerRadius, outerRadius, outerRadius, angle, spread, false); // Draw an arc
+            tmpCtx.closePath();
+            tmpCtx.fill();
+            tmpCtx.globalCompositeOperation = 'destination-in';
+        }
 
-    if(lightSource.shadow > 0) {
+        const gradient = tmpCtx.createRadialGradient(outerRadius, outerRadius, innerRadius, outerRadius, outerRadius, outerRadius);
+
+        // The light starts fully bright at the center and fades to zero at the radius
+        gradient.addColorStop(0, `rgba(${color.r},${color.g},${color.b}, ${intensity})`);
+        gradient.addColorStop(1, `rgba(${color.r},${color.g},${color.b}, 0)`);
+
+        tmpCtx.fillStyle = gradient;
+        tmpCtx.fillRect(0, 0, outerRadius * 2, outerRadius * 2);
+
+        if (!lightSource.animation) {
+            addToImageCache(temp_cacheKey, tmpCanvas);
+        }
+    } else {
+        tmpCtx.drawImage(imageCache[temp_cacheKey], 0, 0);
+    }
+
+    if (lightSource.shadow > 0) {
         const shadow = tmpCtx.createRadialGradient(outerRadius, outerRadius, innerRadius, outerRadius, outerRadius, outerRadius);
 
         // The light starts fully bright at the center and fades to zero at the radius
@@ -698,19 +755,28 @@ function drawLightSource(ctx, lightSource, scale, cameraX, cameraY) {
 
         const shadowCanvas = new OffscreenCanvas(outerRadius * 2, outerRadius * 2);
         const shadowCtx = shadowCanvas.getContext('2d');
+        shadowCtx.imageSmoothingEnabled = false;
 
-        // all obstacles is a clone of obstacles
-        let allObstacles = obstacles.slice();
-        allObstacles.push({
-            x: playerPosition.x + 6,
-            y: playerPosition.y + 6,
-            width: 6,
-            height: 6
-        });
+        // clone obstacles
+        let allObstacles = obstacles.map(obstacle => obstacle.map(point => ({x: point.x, y: point.y})));
 
-        allObstacles = transformObstacles(allObstacles);
-        allObstacles.forEach(obstacle => {
-            const shadowPoly = calculateShadow(lightX, lightY, outerRadius, obstacle, cameraX, cameraY, scale);
+        // // player shadow
+        // allObstacles.push(
+        //     {
+        //         x: playerPosition.x + 6,
+        //         y: playerPosition.y + 6,
+        //         width: 6,
+        //         height: 6
+        //     });
+        // allObstacles = transformObstacles(allObstacles);
+
+        allObstacles.filter((obstacle) => {
+            // Obstacle in light radius
+            return obstacle.filter((point) => {
+                return hypot(point.x - lightSource.x, point.y - lightSource.y) < outerRadius;
+            }).length > 0;
+        }).slice(0, MAX_SHADOWS_TO_RENDER).forEach(obstacle => {
+            const shadowPoly = calculateShadow(lightX, lightY, outerRadius, obstacle, cameraX, cameraY, lightSource.animation);
 
             shadowCtx.globalCompositeOperation = "source-out";
             shadowCtx.fillStyle = shadow;
@@ -725,12 +791,10 @@ function drawLightSource(ctx, lightSource, scale, cameraX, cameraY) {
 
             shadowCtx.fillStyle = "black";
             shadowCtx.beginPath();
-            shadowCtx.moveTo(((obstacle[0].x - cameraX) * scale) - lightX + outerRadius, ((obstacle[0].y - cameraY) * scale) - lightY + outerRadius);
-            obstacle.forEach(point => shadowCtx.lineTo(((point.x - cameraX) * scale) - lightX + outerRadius, ((point.y - cameraY) * scale) - lightY + outerRadius));
+            shadowCtx.moveTo(obstacle[0].x - cameraX - lightX + outerRadius, obstacle[0].y - cameraY - lightY + outerRadius);
+            obstacle.forEach(point => shadowCtx.lineTo(point.x - cameraX - lightX + outerRadius, point.y - cameraY - lightY + outerRadius));
             shadowCtx.closePath();
             shadowCtx.fill();
-
-            shadowCtx.drawImage(canvases["high"], cameraX, cameraY, outerRadius * 2, outerRadius * 2, 0, 0, outerRadius * 2, outerRadius * 2);
 
             // Draw the shadow
             tmpCtx.globalCompositeOperation = "destination-out";
@@ -740,9 +804,14 @@ function drawLightSource(ctx, lightSource, scale, cameraX, cameraY) {
 
     ctx.globalCompositeOperation = "lighter";
     ctx.drawImage(tmpCanvas, lightX - outerRadius, lightY - outerRadius);
+
+    if(!lightSource.animation) {
+        addToImageCache(cacheKey, tmpCanvas);
+    }
 }
 
-function calculateShadow(lightX, lightY, lightRadius, polygon, cameraX, cameraY, scale) {
+shadowPolygonCache = {};
+function calculateShadow(lightX, lightY, lightRadius, polygon, cameraX, cameraY, animation) {
     const shadowPolygon = [];
 
     let firstShadowVertex = null;
@@ -756,10 +825,10 @@ function calculateShadow(lightX, lightY, lightRadius, polygon, cameraX, cameraY,
         const nextVertex = polygon[(i + 1) % polygon.length];
 
         // Calculate vectors from the light to the current and next vertices
-        const currentDx = ((currentVertex.x - cameraX) * scale) - lightX;
-        const currentDy = ((currentVertex.y - cameraY) * scale) - lightY;
-        const nextDx = ((nextVertex.x - cameraX) * scale) - lightX;
-        const nextDy = ((nextVertex.y - cameraY) * scale) - lightY;
+        const currentDx = currentVertex.x - cameraX - lightX;
+        const currentDy = currentVertex.y - cameraY - lightY;
+        const nextDx = nextVertex.x - cameraX - lightX;
+        const nextDy = nextVertex.y - cameraY - lightY;
 
         // Determine if the edge is facing the light source
         const isFacingLight = (currentDx * nextDy - currentDy * nextDx) < 0;
@@ -797,13 +866,13 @@ function calculateShadow(lightX, lightY, lightRadius, polygon, cameraX, cameraY,
 
     if (firstShadowVertex && lastShadowVertex) {
 
-        let firstX = (firstShadowVertex.x - cameraX) * scale;
-        let firstY = (firstShadowVertex.y - cameraY) * scale;
-        let lastX = (lastShadowVertex.x - cameraX) * scale;
-        let lastY = (lastShadowVertex.y - cameraY) * scale;
+        let firstX = firstShadowVertex.x - cameraX;
+        let firstY = firstShadowVertex.y - cameraY;
+        let lastX = lastShadowVertex.x - cameraX;
+        let lastY = lastShadowVertex.y - cameraY;
 
         // project the first and last shadow vertex to the light source
-        const lengthFirst = Math.hypot(firstX - lightX, firstY - lightY);
+        const lengthFirst = Math.min(50, hypot(firstX - lightX, firstY - lightY));
         const directionFirstX = (firstX - lightX) / lengthFirst;
         const directionFirstY = (firstY - lightY) / lengthFirst;
         let firstShadowVertex2 = {
@@ -811,7 +880,7 @@ function calculateShadow(lightX, lightY, lightRadius, polygon, cameraX, cameraY,
             y: lightY + directionFirstY * lightRadius * 3,
         };
 
-        const lengthLast = Math.hypot(lastX - lightX, lastY - lightY);
+        const lengthLast = Math.min(50, hypot(lastX - lightX, lastY - lightY));
         const directionLastX = (lastX - lightX) / lengthLast;
         const directionLastY = (lastY - lightY) / lengthLast;
         let lastShadowVertex2 = {
@@ -826,6 +895,10 @@ function calculateShadow(lightX, lightY, lightRadius, polygon, cameraX, cameraY,
     }
 
     return shadowPolygon;
+}
+
+function hypot(x, y) {
+    return Math.sqrt(x * x + y * y);
 }
 
 function toPerc(angle) {

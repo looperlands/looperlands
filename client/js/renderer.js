@@ -20,6 +20,7 @@ function(Camera, Item, Character, Player, Timer, Mob, Npc) {
             let entitiesCanvas = new OffscreenCanvas(width, height);
             let highEntitiesCanvas = new OffscreenCanvas(width, height);
             let lightCanvas = new OffscreenCanvas(width, height);
+            let aboveLight = new OffscreenCanvas(width, height);
 
             this.background = background;
 
@@ -55,6 +56,7 @@ function(Camera, Item, Character, Player, Timer, Mob, Npc) {
             this.worker.postMessage({"canvas":  highEntitiesCanvas, "type": "setCanvas", "id": "highEntities"}, [highEntitiesCanvas]);
             this.worker.postMessage({"canvas":  combinedCanvas, "type": "setCanvas", "id": "combined"}, [combinedCanvas]);
             this.worker.postMessage({"canvas":  lightCanvas, "type": "setCanvas", "id": "lighting"}, [lightCanvas]);
+            this.worker.postMessage({"canvas":  aboveLight, "type": "setCanvas", "id": "aboveLight"}, [aboveLight]);
 
             this.rescale(this.getScaleFactor());
 
@@ -137,7 +139,7 @@ function(Camera, Item, Character, Player, Timer, Mob, Npc) {
         },
 
         initFPS: function() {
-            this.FPS = this.mobile ? 50 : 50;
+            this.FPS = 120;
         },
 
         initFont: function() {
@@ -271,7 +273,7 @@ function(Camera, Item, Character, Player, Timer, Mob, Npc) {
                 s = this.scale,
                 os = this.upscaledRendering ? 1 : this.scale;
 
-            return {"type": "render", id: "high", mx: mx, my: my, s: s, os: os, cursor : true, name: this.game.currentCursorName};
+            return {"type": "render", id: "aboveLight", mx: mx, my: my, s: s, os: os, cursor : true, name: this.game.currentCursorName};
         },
 
         drawScaledImage: function(ctx, image, x, y, w, h, dx, dy, colorShift = null) {
@@ -828,6 +830,7 @@ function(Camera, Item, Character, Player, Timer, Mob, Npc) {
 
             if (diffTime >= 1000) {
                 this.realFPS = this.frameCount;
+                console.log(this.realFPS);
                 this.frameCount = 0;
                 this.lastTime = nowTime;
             }
@@ -839,7 +842,7 @@ function(Camera, Item, Character, Player, Timer, Mob, Npc) {
     
         drawDebugInfo: function() {
             if(this.isDebugInfoVisible) {
-                //this.drawFPS();
+                this.drawFPS();
                 //this.drawText("A: " + this.animatedTileCount, 100, 30, false);
                 //this.drawText("H: " + this.highTileCount, 140, 30, false);
             }
