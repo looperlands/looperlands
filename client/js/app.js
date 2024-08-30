@@ -23,6 +23,7 @@ define(['jquery', 'storage'], function ($, Storage) {
             this.cooldownMap = {};
             this.dynamicNFTIconURL = {};
             this.dynamicNFTData = {};
+            this.timeOffset = 1000 * 60 * 15;
             this.hideWindows();
             this.calculateTime();
         },
@@ -30,9 +31,9 @@ define(['jquery', 'storage'], function ($, Storage) {
         calculateTime: function() {
             let self = this;
             setInterval(function() {
-                const timeOffset = 1000 * 60 * 15; // 15 minutes
+
                 const cycleTime = 1000 * 60 * 60 // 1 hour
-                const cycleProgress = ((timeOffset + performance.now()) % cycleTime) / cycleTime;
+                const cycleProgress = ((self.timeOffset + performance.now()) % cycleTime) / cycleTime;
                 const cycleAngle = cycleProgress * Math.PI * 2;
                 const cycleIntensity = Math.sin(cycleAngle) * 0.5 + 0.5;
 
@@ -40,7 +41,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                 const timeHours = Math.floor(cycleProgress * 24);
                 const timeMinutes = Math.floor(cycleProgress * 24 * 60) % 60;
 
-                let time = `${String(timeHours).padStart(2, '0')}:${String(timeMinutes).padStart(2, '0')} (${cycleIntensity.toFixed(2)})`;
+                let time = `${String(timeHours).padStart(2, '0')}:${String(timeMinutes).padStart(2, '0')}`;
 
                 $('#time').text(time);
             }, 1000);

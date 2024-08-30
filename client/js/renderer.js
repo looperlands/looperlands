@@ -1001,7 +1001,7 @@ function(Camera, Item, Character, Player, Timer, Mob, Npc) {
                 renderData.push(cursorData);
             }
             this.drawDebugInfo();
-            this.worker.postMessage({"type": "render", "renderData": renderData, "player": { x: this.game.player.x, y: this.game.player.y }});
+            this.worker.postMessage({"type": "render", "renderData": renderData, "player": { x: this.game.player.x, y: this.game.player.y }, "serverTime": this.game.serverTime});
         }
     });
 

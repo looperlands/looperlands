@@ -333,7 +333,7 @@ function drawTile(ctx, tileid, tileset, setW, setH, gridW, cellid, scale, slideO
     }
 }
 
-function render(id, tiles, cameraX, cameraY, scale, clear) {
+function render(id, tiles, cameraX, cameraY, scale, clear, serverTime) {
     let ctx = contexes[id];
     let canvas = canvases[id];
     if (clear === true) {
@@ -354,7 +354,7 @@ function render(id, tiles, cameraX, cameraY, scale, clear) {
     }
 
     // Render the light overlay
-    renderLightOverlay(lightSources, cameraX, cameraY, scale);
+    renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime);
 
     ctx.restore();
 }
@@ -388,7 +388,7 @@ onmessage = (e) => {
                 drawEntities(renderData);
             } else {
                 scale = renderData.scale;
-                render(renderData.id, renderData.tiles, renderData.cameraX, renderData.cameraY, 1, renderData.clear);
+                render(renderData.id, renderData.tiles, renderData.cameraX, renderData.cameraY, 1, renderData.clear, e.data.serverTime);
             }
         }
 
@@ -640,8 +640,9 @@ function drawEntities(drawEntitiesData) {
 
 lastTime = null;
 
-function renderLightOverlay(lightSources, cameraX, cameraY, scale) {
-    const cycleProgress = (performance.now() % CYCLE_DURATION) / CYCLE_DURATION;
+function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime) {
+    console.log(serverTime);
+    const cycleProgress = ((serverTime + performance.now()) % CYCLE_DURATION) / CYCLE_DURATION;
     const cycleAngle = cycleProgress * Math.PI * 2;
     const cycleIntensity = Math.sin(cycleAngle) * 0.5 + 0.5;
     GLOBAL_LIGHT_INTENSITY = cycleIntensity * (MAX_GLOBAL_LIGHT_INTENSITY - MIN_GLOBAL_LIGHT_INTENSITY) + MIN_GLOBAL_LIGHT_INTENSITY;

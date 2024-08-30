@@ -126,7 +126,7 @@ module.exports = Player = Character.extend({
                 self.title = playerCache.title;
                 self.level = Formulas.level(playerCache.xp);
                 self.updateHitPoints();
-                self.send([Types.Messages.WELCOME, self.id, self.name, self.x, self.y, self.hitPoints, self.title]);
+                self.send([Types.Messages.WELCOME, self.id, self.name, self.x, self.y, self.hitPoints, self.title, performance.now()]);
                 self.hasEnteredGame = true;
                 self.isDead = false;
                 if (!self.isBot()) {

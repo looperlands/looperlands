@@ -6947,7 +6947,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     }
                 });
 
-                this.client.onWelcome(function(id, name, x, y, hp, title) {
+                this.client.onWelcome(function(id, name, x, y, hp, title, serverTimeOffset) {
                     console.log("Received player ID from server : "+ id);
                     self.player.id = id;
                     self.playerId = id;
@@ -6962,6 +6962,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     self.resetCamera();
                     self.updatePlateauMode();
                     self.audioManager.updateMusic();
+                    self.app.timeOffset += serverTimeOffset
+                    self.serverTime = serverTimeOffset;
 
                     self.addEntity(self.player);
                     self.player.dirtyRect = self.renderer.getEntityBoundingRect(self.player);
