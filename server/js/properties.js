@@ -1489,7 +1489,6 @@ let Properties = {
             m88nworkgloves: 1,
             m88nbrewski: 1,
             m88npie: 1,
-            m88nsack: 1,
             m88nworm: 1,
             m88ngem: 5,
             GOLD3: 5,
@@ -1653,7 +1652,7 @@ let Properties = {
     },
 
     m88nshortsqueeze: {
-        level: 30,
+        level: 35,
         drops: {
             m88ndrsgme: 1,
             m88ngem: 4,
@@ -1664,7 +1663,7 @@ let Properties = {
     },
 
     m88nconepooper: {
-        level: 22,
+        level: 25,
         drops: {
             m88ngoldenpoo: 1,
             m88ngem: 4,
@@ -1802,7 +1801,6 @@ let Properties = {
             m88nworkgloves: 1,
             m88nbrewski: 1,
             m88npie: 1,
-            m88nsack: 1,
             m88nworm: 1,
             m88nfastshoes: 1,
             m88nbrassknuckles: 1,
@@ -2522,6 +2520,7 @@ let Properties = {
             duration: 20000
         },
         inventoryDescription: "Immunity Easter Egg",
+        respawnDelay: 42069741,
         onConsume: function(player){
             player.startInvincibility();
         }
@@ -2534,6 +2533,7 @@ let Properties = {
             duration: 20000
         },
         inventoryDescription: "HP Easter Egg",
+        respawnDelay: 42069741,
         onConsume: function(player){
             player.regenHealthBy(2400);
         }
@@ -2546,7 +2546,7 @@ let Properties = {
             duration: 120000
         },
         inventoryDescription: "Special Easter Egg",
-        respawnDelay: 1500000,
+        respawnDelay: 42069741,
         onConsume: function(player) {
             player.releaseMob(Types.Entities.M88NBUNNYBLUE);
         }
@@ -2559,7 +2559,7 @@ let Properties = {
             duration: 120000
         },
         inventoryDescription: "Special Easter Egg",
-        respawnDelay: 1500000,
+        respawnDelay: 42069741,
         onConsume: function(player) {
             player.releaseMob(Types.Entities.M88NBUNNYPINK);
         }
@@ -2572,7 +2572,7 @@ let Properties = {
             duration: 300000
         },
         inventoryDescription: "Special Easter Egg",
-        respawnDelay: 1500000,
+        respawnDelay: 42069741,
         onConsume: function(player) {
             player.releaseMob(Types.Entities.M88NSHORTSQUEEZE);
         }
@@ -2585,7 +2585,7 @@ let Properties = {
             duration: 180000
         },
         inventoryDescription: "Special Easter Egg",
-        respawnDelay: 1500000,
+        respawnDelay: 42069741,
         onConsume: function(player) {
             player.releaseMob(Types.Entities.M88NBIGCHUNGUS);
         }
@@ -2598,9 +2598,9 @@ let Properties = {
             duration: 180000
         },
         inventoryDescription: "Golden Faberge Egg",
-        respawnDelay: 1500000,
+        respawnDelay: 42069741,
         onConsume: function(player) {
-            player.releaseMob(Types.Entities.M88NOCTOPUSSY);
+            player.releaseMob(Types.Entities.M88NJIMMYCLOWN);
         }
     },
     m88nlamp: {
@@ -2611,7 +2611,7 @@ let Properties = {
             duration: 180000
         },
         inventoryDescription: "Mysterious Lamp",
-        respawnDelay: 1500000,
+        respawnDelay: 42069741,
         onConsume: function(player) {
             player.releaseNpc(Types.Entities.M88NGENIE, 15000);
         }
@@ -3050,17 +3050,17 @@ let Properties = {
     m88nmoneybags: {
         //collectable: true,
         //inventoryDescription: "Money Bags",
-        respawnDelay: 8800000
+        respawnDelay: 42069741
     },
     m88ngoldenpoo: {
         //collectable: true,
         //inventoryDescription: "Golden Poo",
-        respawnDelay: 8800000
+        respawnDelay: 42069741
     },
     m88nholyhandgrenade: {
         collectable: true,
         consumable: true,
-        respawnDelay: 8800000,
+        respawnDelay: 42069741,
         cooldown: {
             group: "rangedDamageDealt",
             duration: 60000
@@ -3073,7 +3073,7 @@ let Properties = {
     m88ngoldknuckles: {
         collectable: true,
         consumable: true,
-        respawnDelay: 8800000,
+        respawnDelay: 42069741,
         cooldown: {
             group: "meleeDamageDealt",
             duration: 60000
@@ -3086,7 +3086,7 @@ let Properties = {
     m88ngoldenchalis: {
         collectable: true,
         consumable: true,
-        respawnDelay: 8800000,
+        respawnDelay: 42069741,
         cooldown: {
             group: "meleeDamageDealt",
             duration: 60000
@@ -3224,15 +3224,21 @@ let Properties = {
         respawnDelay: 9900000
     },
     m88nseeds: {
+        collectable: true,
+        inventoryDescription: "Sack of Seeds",
         respawnDelay: 9900000
     },
     m88nsack: {
         respawnDelay: 9900000
     },
     m88nshovel: {
+        collectable: true,
+        inventoryDescription: "Shovel",
         respawnDelay: 9900000
     },
     m88nwatercan: {
+        collectable: true,
+        inventoryDescription: "Water Can",
         respawnDelay: 9900000
     },
     m88nticket: {
