@@ -134,7 +134,7 @@ quests = [
         xp: 300000,
         medal: Types.Medals.SKULL,
         reward: {
-            item: Types.Entities.m88ndirt,
+            item: Types.Entities.M88NDIRT,
             amount: 69
         }
     },
@@ -320,11 +320,9 @@ quests = [
         target: Types.Entities.M88NGEM,
         amount: 1,
         level: 10,
-        xp: 888,
         medal: Types.Medals.SKULL,
-        needToReturn: true,
         reward: {
-            item: Types.Entities.m88nshine,
+            item: Types.Entities.M88NSHINE,
             amount: 1
         }
     },
@@ -372,7 +370,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 10
         }
     },
@@ -397,7 +395,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 10
         }
     },
@@ -423,7 +421,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ndrsgme,
+            item: Types.Entities.M88NDRSGME,
             amount: 1
         }
     },
@@ -447,7 +445,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 3
         }
     },
@@ -469,7 +467,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 3
         }
     },
@@ -491,7 +489,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 3
         }
     },
@@ -515,7 +513,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 3
         }
     },
@@ -538,7 +536,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 3
         }
     },
@@ -561,7 +559,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 2
         }
     },
@@ -584,7 +582,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ndirt,
+            item: Types.Entities.M88NDIRT,
             amount: 2
         }
     },
@@ -609,7 +607,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ndirt,
+            item: Types.Entities.M88NDIRT,
             amount: 20
         }
     },
@@ -631,7 +629,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ndirt,
+            item: Types.Entities.M88NDIRT,
             amount: 2
         }
     },
@@ -655,7 +653,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ndirt,
+            item: Types.Entities.M88NDIRT,
             amount: 2
         }
     },
@@ -678,7 +676,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 2
         }
     },
@@ -705,7 +703,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 2
         }
     },
@@ -728,7 +726,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 1
         }
     },
@@ -750,7 +748,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 1
         }
     },
@@ -773,7 +771,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 1
         }
     },
@@ -796,7 +794,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 1
         }
     },
@@ -819,7 +817,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 1
         }
     },
@@ -843,7 +841,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 1
         }
     },
@@ -871,7 +869,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 8
         }
     },
@@ -914,7 +912,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ndirt,
+            item: Types.Entities.M88NGEM,
             amount: 20
         }
     },
@@ -932,7 +930,7 @@ quests = [
         xp: 10000,
         medal: Types.Medals.SKULL,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 1
         }
     },
@@ -951,7 +949,7 @@ quests = [
         xp: 10000,
         medal: Types.Medals.SKULL,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 1
         }
     },
@@ -971,7 +969,7 @@ quests = [
         xp: 50000,
         medal: Types.Medals.SKULL,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 5
         }
     },
@@ -997,7 +995,7 @@ quests = [
         xp: 20000,
         medal: Types.Medals.SKULL,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 1
         }
     },
@@ -1021,7 +1019,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ndirt,
+            item: Types.Entities.M88NDIRT,
             amount: 10
         }
     },
@@ -1046,7 +1044,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ndirt,
+            item: Types.Entities.M88NDIRT,
             amount: 10
         }
     },
@@ -1071,7 +1069,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ndirt,
+            item: Types.Entities.M88NDIRT,
             amount: 10
         }
     },
@@ -1096,7 +1094,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 1
         }
     },
@@ -1120,7 +1118,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 1
         }
     },
@@ -1144,7 +1142,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ndirt,
+            item: Types.Entities.M88NDIRT,
             amount: 10
         }
     },
@@ -1166,7 +1164,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ndirt,
+            item: Types.Entities.M88NDIRT,
             amount: 10
         }
     },
@@ -1189,7 +1187,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ndirt,
+            item: Types.Entities.M88NDIRT,
             amount: 10
         }
     },
@@ -1221,13 +1219,13 @@ quests = [
         level: 147,
         medal: Types.Medals.SKULL,
         reward: {
-            item: Types.Entities.m88ndrsbook,
+            item: Types.Entities.M88NDRSBOOK,
             amount: 1
         }
     },
     {
         id: "PIE_SLINGER_QUEST_1",
-        name: "The Fisherman's Fishing Request",
+        name: "The Apes Pie Slinger Request",
         startText: ["Wanna sling some pies at these clowns? It's fun and they drop shares.",
         "You'll need a Pie Slinger first though.",
         "Wanna borrow one of mine to try it out before you buy your own?",
@@ -1241,6 +1239,26 @@ quests = [
         xp: 1000,
         medal: Types.Medals.SKULL,
         //rental: "0xb5ed38ed7bd87b69887f974d89dd91e336cba129575fd799f0e72a9e65896dcc"
+    },
+    {
+        id: "BANANA_PEEL_QUEST_1",
+        name: "The Apes Banana Peel Request",
+        startText: ["Hey have you seen any little monkeys running around The Nexus?",
+        "Those are my kiddos. I hear they've been littering banana peels all over the place...",
+        "Do you mind collecting them when you see them to help keep the place clean?",
+        "I'll compost them and give ya some m88n gems for your time."],
+        endText: ["Have fun friend!!"],
+        eventType: "LOOT_ITEM",
+        npc: Types.Entities.M88NAPE,
+        target: Types.Entities.M88NPEEL,
+        amount: 420,
+        requiredQuest: "PIE_SLINGER_QUEST_1",
+        level: 100,
+        medal: Types.Medals.SKULL,
+        reward: {
+            item: Types.Entities.M88NGEM,
+            amount: 8
+        }
     },
     {
         id: "MRCRAB_QUEST_1",
@@ -1259,7 +1277,7 @@ quests = [
         level: 2,
         medal: Types.Medals.SKULL,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 1
         }
     },
@@ -1281,7 +1299,7 @@ quests = [
         level: 10,
         medal: Types.Medals.SKULL,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 5
         }
     },
@@ -1303,7 +1321,7 @@ quests = [
         level: 25,
         medal: Types.Medals.SKULL,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 10
         }
     },
@@ -1326,7 +1344,7 @@ quests = [
         level: 50,
         medal: Types.Medals.SKULL,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 20
         }
     }
