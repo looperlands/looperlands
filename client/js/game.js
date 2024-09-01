@@ -8243,6 +8243,11 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     this.checkForQuests(npc);
                     this.checkForPartnerTask(npc);
                 }
+
+                let self = this;
+                setTimeout(() => {
+                    self.app.initResourcesDisplay()
+                }, 1000)
             },
 
             checkForPartnerTask: function(npc) {

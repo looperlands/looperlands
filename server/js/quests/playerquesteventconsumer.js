@@ -84,6 +84,10 @@ class PlayerQuestEventConsumer extends PlayerEventConsumer {
     }
 
     completeQuest(playerCache, questKey, quest) {
+        if(quests.hasCompletedQuest(questKey, playerCache)) {
+            return;
+        }
+
         dao.setQuestStatus(playerCache.nftId, questKey, quests.STATES.COMPLETED);
         let completedQuests = playerCache.gameData.quests[quests.STATES.COMPLETED];
         let questInCacheFormat = {questKey: questKey, status: quests.STATES.COMPLETED};
