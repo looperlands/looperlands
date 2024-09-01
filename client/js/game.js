@@ -7082,7 +7082,13 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         // Loop over all entities around player
                         self.forEachEntityAround(self.player.gridX, self.player.gridY, 1, (entity) => {
                             if (Types.isNpc(entity.kind) && entity.hasInteraction()) {
-                                self.createBubble(entity.id, "Press [E] to talk", function() {
+                                let msg;
+                                if (self.gamepadListener.isActive()) {
+                                    msg = "Press left stick button to talk"
+                                } else {
+                                    msg = "Press [E] to talk"
+                                }
+                                self.createBubble(entity.id, msg, function() {
                                     return self.player.isAdjacent(entity)
                                 });
                                 self.assignBubbleTo(entity);
@@ -8750,7 +8756,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.forEachVisibleEntityByDepth((entity) => {
                     if (!Types.isMob(entity.kind) || entity.isFriendly || entity.isDead) {
                         return;
-                }
+                    }
                     let distance = this.player.getDistanceToEntity(entity);
                     mobDistances.push({entity: entity, distance: distance});
                 });
