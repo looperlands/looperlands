@@ -1440,7 +1440,7 @@ let Properties = {
             m88nshovel: 1,
             m88nseeds: 1,
             m88npotato: 1,
-            m88nmail: 1,
+            m88nsnail: 1,
             m88nworm: 1,
             m88ngem: 3,
             gameboy: 4,
@@ -1730,7 +1730,7 @@ let Properties = {
             m88ndrsgme: 25,
         },
         messages: ['I wish I never shorted that stupid stock!'],
-        respawnDelay: 1000000 //quarter hour
+        respawnDelay: 300000 //five minutes
     },
 
     m88nnancyclown: {
@@ -1741,7 +1741,7 @@ let Properties = {
             m88ndrsgme: 25,
         },
         messages: ['Buy the dip!'],
-        respawnDelay: 1000000 //quarter hour
+        respawnDelay: 300000 //five minutes
     },
 
     m88njimmyclown: {
@@ -1752,7 +1752,7 @@ let Properties = {
             m88ndrsgme: 25,
         },
         messages: ['Where should I put this banana?'],
-        respawnDelay: 1000000 //quarter hour
+        respawnDelay: 300000 //five minutes
     },
 
     m88nmine: {

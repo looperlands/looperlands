@@ -524,10 +524,10 @@ define(['character'], function (Character) {
 
         "nexan29": [
             "Welcome to the Sun Chaser Champagne Lounge, special guest!",
-            //"Can I get you something to drink from the bar?",
-            //"/openShop the_bar The Bar"
-            "The bar is closed right now while re-stock, but it will open again soon!",
-            "Hang out and enjoy the luxuious vibes though! The fishing is great off the bow."
+            "Can I get you something to drink from the bar?",
+            "/openShop the_bar The Bar"
+            //"The bar is closed right now while re-stock, but it will open again soon!",
+            //"Hang out and enjoy the luxuious vibes though! The fishing is great off the bow."
             //"Most of these portals go to the private Helio Islands.",
             //"If you're interested in becoming an island owner you can DM m88nwalker to inquire.",
             //"On the far right of the second floor is a portal to a secret hidden island.",
@@ -739,7 +739,7 @@ define(['character'], function (Character) {
             "Looks like our plan of no cell, no sell worked, check out who we locked up so far...",
             "If you grab that crossbow to the side there you can sling pies at these clowns!",
             "Have fun and enjoy that free rental for 24 hours!",
-            'If you want to buy a premium asset <a target="_blank" href="https://loopexchange.art/collection/assets-for-looperlands">check out the Pie Slingers collection</a> and choose yours!',
+            'If you want to buy a premium asset <a target="_blank" href="https://explorer.loopring.io/collections/0xdd2221cfd3a7068ca78c03784fa076c39f11de60">check out the Pie Slingers collection</a> and choose yours!',
             'If you want to see the origins of the clowns <a target="_blank" href="https://loopexchange.art/collection/clown-people">check out the Clown People collection</a> and tell us your favorite!',
             'Join us in Discord! <a target="_blank" href="https://discord.gg/bjjNewZegM">Checkout PLANET M88NWALKER</a> for insider details.',
             "Have fun! They drop more DRS'd shares of GME so you can stock back up!"
