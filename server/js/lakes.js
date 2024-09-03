@@ -379,7 +379,7 @@ const Lakes = {
     },
 
     lavalake: {
-        level: 8,
+        level: 9,
         fish: {
             dragonegg: "common",
             dragonbreath: "uncommon",
