@@ -2691,7 +2691,7 @@ let Properties = {
         inventoryDescription: "Lucky Bag",
         respawnDelay: 60000,
         onConsume: function(player) {
-            player.releaseItem(Types.Entities.M88NPIZZA);
+            player.releaseItem(Types.Entities.M88NTACO);
         }
     },
     m88nmedic: {
