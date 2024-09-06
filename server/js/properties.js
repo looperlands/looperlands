@@ -1727,7 +1727,7 @@ let Properties = {
         friendly: true, //not actually friendly, just AoE immune
         hp: 1,
         drops: {
-            m88ndrsgme: 25,
+            m88ndrsgme: 50,
         },
         messages: ['I wish I never shorted that stupid stock!'],
         respawnDelay: 300000 //five minutes
@@ -1741,7 +1741,7 @@ let Properties = {
             m88ndrsgme: 25,
         },
         messages: ['Buy the dip!'],
-        respawnDelay: 300000 //five minutes
+        respawnDelay: 120000 //two minutes
     },
 
     m88njimmyclown: {
@@ -1752,14 +1752,13 @@ let Properties = {
             m88ndrsgme: 25,
         },
         messages: ['Where should I put this banana?'],
-        respawnDelay: 300000 //five minutes
+        respawnDelay: 120000 //two minutes
     },
 
     m88nmine: {
-        level: 1,
+        level: 69,
         friendly: true, //not actually friendly, just AoE immune
         hp: 1,
-        xp: 4444,
         drops: {
             m88ndirt: 99,
             m88ngem: 1,
@@ -1768,10 +1767,9 @@ let Properties = {
     },
 
     m88npinataballoons: {
-        level: 1,
+        level: 111,
         friendly: true, //not actually friendly, just AoE immune
         hp: 1,
-        xp: 8888,
         drops: {
             m88nmap: 5,
             movieglasses: 1,
@@ -1786,6 +1784,8 @@ let Properties = {
             m88ndiamondnecklace: 1,
             m88ndiamondring: 1,
             m88ngoldearrings: 1,
+            m88ngoldtiara: 1,
+            m88ndinnerbell: 1,
             m88nsteak: 1,
             m88nclover: 1,
             m88nmail: 1,
@@ -1807,10 +1807,8 @@ let Properties = {
             m88ngrenade: 1,
             m88nkevlararmor: 1,
             m88nwizardshat: 1,
-            taikoboost: 1,
             m88ndirt: 10,
             m88ngem: 20,
-            GOLD3: 1,
             GOLD4: 10,
             GOLD5: 10,
         },
@@ -2516,7 +2514,7 @@ let Properties = {
         collectable: true,
         consumable: true,
         cooldown: {
-            group: "immunity",
+            group: "easterEggs",
             duration: 20000
         },
         inventoryDescription: "Immunity Easter Egg",
@@ -2529,7 +2527,7 @@ let Properties = {
         collectable: true,
         consumable: true,
         cooldown: {
-            group: "hpPotions",
+            group: "easterEggs",
             duration: 20000
         },
         inventoryDescription: "HP Easter Egg",
@@ -2542,7 +2540,7 @@ let Properties = {
         collectable: true,
         consumable: true,
         cooldown: {
-            group: "caged",
+            group: "easterEggs",
             duration: 120000
         },
         inventoryDescription: "Special Easter Egg",
@@ -2555,7 +2553,7 @@ let Properties = {
         collectable: true,
         consumable: true,
         cooldown: {
-            group: "caged",
+            group: "easterEggs",
             duration: 120000
         },
         inventoryDescription: "Special Easter Egg",
@@ -2568,7 +2566,7 @@ let Properties = {
         collectable: true,
         consumable: true,
         cooldown: {
-            group: "caged",
+            group: "easterEggs",
             duration: 300000
         },
         inventoryDescription: "Special Easter Egg",
@@ -2581,7 +2579,7 @@ let Properties = {
         collectable: true,
         consumable: true,
         cooldown: {
-            group: "caged",
+            group: "easterEggs",
             duration: 180000
         },
         inventoryDescription: "Special Easter Egg",
@@ -2594,7 +2592,7 @@ let Properties = {
         collectable: true,
         consumable: true,
         cooldown: {
-            group: "caged",
+            group: "easterEggs",
             duration: 180000
         },
         inventoryDescription: "Golden Faberge Egg",
@@ -2607,7 +2605,7 @@ let Properties = {
         collectable: true,
         consumable: true,
         cooldown: {
-            group: "caged",
+            group: "lamp",
             duration: 180000
         },
         inventoryDescription: "Mysterious Lamp",
@@ -2620,7 +2618,7 @@ let Properties = {
         collectable: true,
         consumable: true,
         cooldown: {
-            group: "caged",
+            group: "pinata",
             duration: 5000
         },
         inventoryDescription: "Mysterious Prizes",
@@ -2633,7 +2631,7 @@ let Properties = {
         collectable: true,
         consumable: true,
         cooldown: {
-            group: "caged",
+            group: "bags",
             duration: 5000
         },
         inventoryDescription: "Brown Bag",
@@ -2646,7 +2644,7 @@ let Properties = {
         collectable: true,
         consumable: true,
         cooldown: {
-            group: "caged",
+            group: "bags",
             duration: 5000
         },
         inventoryDescription: "Black Bag",
@@ -2659,7 +2657,7 @@ let Properties = {
         collectable: true,
         consumable: true,
         cooldown: {
-            group: "caged",
+            group: "bags",
             duration: 5000
         },
         inventoryDescription: "Golden Bag",
@@ -2672,7 +2670,7 @@ let Properties = {
         collectable: true,
         consumable: true,
         cooldown: {
-            group: "caged",
+            group: "bags",
             duration: 5000
         },
         inventoryDescription: "Gem Bag",
@@ -2685,7 +2683,7 @@ let Properties = {
         collectable: true,
         consumable: true,
         cooldown: {
-            group: "caged",
+            group: "bags",
             duration: 5000
         },
         inventoryDescription: "Lucky Bag",
@@ -2698,7 +2696,7 @@ let Properties = {
         collectable: true,
         consumable: true,
         cooldown: {
-            group: "caged",
+            group: "medic",
             duration: 5000
         },
         inventoryDescription: "Medic Bag",
@@ -2711,7 +2709,7 @@ let Properties = {
         collectable: true,
         consumable: true,
         cooldown: {
-            group: "caged",
+            group: "medic",
             duration: 5000
         },
         inventoryDescription: "Medic Bag 2",
@@ -2724,7 +2722,7 @@ let Properties = {
         collectable: true,
         consumable: true,
         cooldown: {
-            group: "caged",
+            group: "ruck",
             duration: 5000
         },
         inventoryDescription: "Ruck Sack",
@@ -2737,7 +2735,7 @@ let Properties = {
         collectable: true,
         consumable: true,
         cooldown: {
-            group: "caged",
+            group: "ruck",
             duration: 5000
         },
         inventoryDescription: "Ruck Sack 2",
@@ -2750,7 +2748,7 @@ let Properties = {
         collectable: true,
         consumable: true,
         cooldown: {
-            group: "caged",
+            group: "ruck",
             duration: 5000
         },
         inventoryDescription: "Ruck Sack 3",
