@@ -3099,6 +3099,11 @@ let Properties = {
         inventoryDescription: "DRS'd GME",
         respawnDelay: 42069741
     },
+    m88ndrsbook: {
+        collectable: true,
+        inventoryDescription: "DRS Book",
+        respawnDelay: 42069741
+    },
     bandaid: {
         collectable: true,
         consumable: true,
