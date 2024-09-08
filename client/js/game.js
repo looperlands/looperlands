@@ -7399,8 +7399,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     });
 
                     self.client.onSpawnItem(function(item, x, y) {
-                        console.log("Spawned " + Types.getKindAsString(item.kind) + " (" + item.id + ") at "+x+", "+y);
-                        self.addItem(item, x, y);
+                        if (!self.isItemAt(x,y)) { // only allow one item to spawn to prevent stuck grid issue
+                            console.log("Spawned " + Types.getKindAsString(item.kind) + " (" + item.id + ") at "+x+", "+y);
+                            self.addItem(item, x, y);
+                        }
                     });
 
                     self.client.onSpawnFieldEffect(function(fieldEffect, x, y) {
