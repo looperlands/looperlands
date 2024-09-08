@@ -465,7 +465,7 @@ const getResourceBalance = async function (nftId, itemId) {
 
   // If there are pending transactions, wait for them to be processed
   if (hasPendingTransactions) {
-    console.log('[LOOT_EVENTS_QUEUE] Waiting for pending transactions to process...');
+    //console.log('[LOOT_EVENTS_QUEUE] Waiting for pending transactions to process...');
     await new Promise(resolve => {
       const interval = setInterval(() => {
         const stillPending = LOOT_EVENTS_QUEUE.some(event => event.nftId === nftId && event.item === String(itemId)) ||
@@ -512,7 +512,7 @@ const transferResourceFromTo = async function (from, to, amount = 1, resource = 
     return true; // TRANSFER SUCCESSFUL'
 
   } else {
-    console.log(`[TRANSFER FAIL] ${from} ${resource} balance [${fromBalance}] is less than transfer requested [${amount}] to ${to}`);
+    //console.log(`[TRANSFER FAIL] ${from} ${resource} balance [${fromBalance}] is less than transfer requested [${amount}] to ${to}`);
     return false; // TRANSFER FAIL
   }
 }
