@@ -28,7 +28,6 @@ quests = [
         level: 1,
         medal: Types.Medals.HEARTH
     },
-
     {
         id: "TEST_DIALOG_QUEST",
         name: "Test dialog quest 1",

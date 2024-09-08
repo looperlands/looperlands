@@ -241,6 +241,7 @@ const AltNames = {
     m88nkennyclown: "Kenny The Clown",
     m88nnancyclown: "Nancy The Clown",
     m88njimmyclown: "Jimmy The Clown",
+    m88nthewarden: "The Warden",
 
     //m88n Mob Nexans
     nexan8: "The Mail Lady",
@@ -266,6 +267,7 @@ const AltNames = {
     m88ngenie: "Magic Genie!",
     nexan32: "The Greaser",
     nexan10: "Darwin",
+    m88nape: "m88n Ape",
 
     //m88n Items
     m88nmail: "mail",
@@ -312,6 +314,7 @@ const AltNames = {
     m88nruck2: "Ruck Sack 2",
     m88nruck3: "Ruck Sack 3",
     m88ngoldknuckles: "Gold Knuckles",
+    m88npieslinger: "a Pie Slinger",
 
     //m88n TT Items
     m88nammocan: "ammo can",

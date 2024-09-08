@@ -359,10 +359,13 @@ const loadAvatarGameData = async function (avatarId, retry) {
       return avatarQuests;
     }, {});
 
+    let choices = responseData.choices;
+
     return {
       mobKills: mobKills,
       quests: quests,
       items: items,
+      choices: choices,
     };
   } catch (error) {
     if (retry === undefined) {
@@ -400,6 +403,10 @@ const setQuestStatus = async function (avatarId, questId, status, retry) {
 const saveConsumable = async function (nft, item, qty) {
   this.saveLootEvent(nft, item, qty);
   await processLootEventQueue();
+}
+
+const registerChoice = function (nft, choice) {
+  platformClient.registerChoice(nft, choice);
 }
 
 const getBots = async function (walletId) {
@@ -573,5 +580,6 @@ module.exports = {
   completePartnerTask,
   getPartnerTask,
   getInventory,
-  processLootEventQueue
+  processLootEventQueue,
+  registerChoice,
 };

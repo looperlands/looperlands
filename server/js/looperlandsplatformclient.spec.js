@@ -753,7 +753,24 @@ describe('LooperLandsPlatformClient', () => {
 
     });
 
-  });  
+  });
+
+  describe('register choice', () => {
+
+    it('register the choice with the nft id', async() => {
+      const nftId = 'nft123';
+
+      client.client.get.mockResolvedValue({ data: "test"});
+
+      jest.spyOn(client, 'handleError').mockImplementation(() => {});
+
+      await client.registerChoice(nftId, 'blah');
+
+      expect(client.client.post).toHaveBeenCalledWith('/api/game/asset/choice', {"choice": "blah", "nftId": "nft123"});
+
+    });
+
+  });   
 
   
 });

@@ -358,6 +358,7 @@ Types = {
         M88NMERMANKING: 78480000,
         M88NMERMAIDPRINCESS: 78490000,
         KINGFROGGYBW: 78500000,
+        M88NAPE: 78510000,
         //m88n Mobs
         BALLOONDOGB: 78000001,
         BALLOONDOGY: 78000002,
@@ -436,6 +437,7 @@ Types = {
         M88NKENNYCLOWN: 78000104,
         M88NNANCYCLOWN: 78000105,
         M88NJIMMYCLOWN: 78000106,
+        M88NTHEWARDEN: 78000107,
         //m88n Mob Nexans
         NEXAN1: 78000037,
         NEXAN2: 78000038,
@@ -565,6 +567,7 @@ Types = {
         M88NRUCK2: 78009700,
         M88NRUCK3: 78009800,
         M88NGOLDKNUCKLES: 78009900,
+        M88NPIESLINGER: 78010100,
         //MRMlabs NPCs
         TYLERDURDEN: 79000000,
         //MRMlabs Items
@@ -6219,6 +6222,7 @@ var kinds = {
     m88nkennyclown: [Types.Entities.M88NKENNYCLOWN, "mob"],
     m88nnancyclown: [Types.Entities.M88NNANCYCLOWN, "mob"],
     m88njimmyclown: [Types.Entities.M88NJIMMYCLOWN, "mob"],
+    m88nthewarden: [Types.Entities.M88NTHEWARDEN, "mob"],
 
     //m88n Mob Nexans
     nexan1: [Types.Entities.NEXAN1, "mob"],
@@ -6447,6 +6451,7 @@ var kinds = {
     m88nruck2: [Types.Entities.M88NRUCK2, "object"],
     m88nruck3: [Types.Entities.M88NRUCK3, "object"],
     m88ngoldknuckles: [Types.Entities.M88NGOLDKNUCKLES, "object"],
+    m88npieslinger: [Types.Entities.M88NPIESLINGER, "object"],
     //MRMlabs Items
     firstaidkit: [Types.Entities.FIRSTAIDKIT, "object"],
     bandaid: [Types.Entities.BANDAID, "object"],
@@ -6680,6 +6685,7 @@ var kinds = {
     m88nmermanking: [Types.Entities.M88NMERMANKING, "npc"],
     m88nmermaidprincess: [Types.Entities.M88NMERMAIDPRINCESS, "npc"],
     kingfroggybw: [Types.Entities.KINGFROGGYBW, "npc"],
+    m88nape: [Types.Entities.M88NAPE, "npc"],
     //MRMlabs NPCs
     tylerdurden: [Types.Entities.TYLERDURDEN, "npc"],
     ROBITSE3: [Types.Entities.ROBITSE3, "mob"],

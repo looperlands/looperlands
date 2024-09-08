@@ -179,6 +179,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "m88nmermanking",
                     "m88nmermaidprincess",
                     "kingfroggybw",
+                    "m88nape",
                     //m88n Mobs
                     "balloondogb",
                     "balloondogy",
@@ -256,6 +257,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "m88nkennyclown",
                     "m88nnancyclown",
                     "m88njimmyclown",
+                    "m88nthewarden",
                     //m88n's Mob Nexans
                     "nexan1",
                     "nexan2",
@@ -580,6 +582,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "item-m88nruck2",
                     "item-m88nruck3",
                     "item-m88ngoldknuckles",
+                    "item-m88npieslinger",
                     //MRMlabs
                     "item-firstaidkit",
                     "item-bandaid",
@@ -7084,7 +7087,13 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         // Loop over all entities around player
                         self.forEachEntityAround(self.player.gridX, self.player.gridY, 1, (entity) => {
                             if (Types.isNpc(entity.kind) && entity.hasInteraction()) {
-                                self.createBubble(entity.id, "Press [E] to talk", function() {
+                                let msg;
+                                if (self.gamepadListener.isActive()) {
+                                    msg = "Press left stick button to talk"
+                                } else {
+                                    msg = "Press [E] to talk"
+                                }
+                                self.createBubble(entity.id, msg, function() {
                                     return self.player.isAdjacent(entity)
                                 });
                                 self.assignBubbleTo(entity);
@@ -8251,6 +8260,11 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     this.checkForQuests(npc);
                     this.checkForPartnerTask(npc);
                 }
+
+                let self = this;
+                setTimeout(() => {
+                    self.app.initResourcesDisplay()
+                }, 1000)
             },
 
             checkForPartnerTask: function(npc) {
@@ -8787,7 +8801,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.forEachVisibleEntityByDepth((entity) => {
                     if (!Types.isMob(entity.kind) || entity.isFriendly || entity.isDead) {
                         return;
-                }
+                    }
                     let distance = this.player.getDistanceToEntity(entity);
                     mobDistances.push({entity: entity, distance: distance});
                 });

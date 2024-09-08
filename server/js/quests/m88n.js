@@ -5,12 +5,15 @@ quests = [
         name: "The King's Blue Pop Request",
         startText: ["If we can't get these darn balloon animals under control the whole cloud kingdom is going to float away!",
         "The King has requested that you pop 100 blue balloon dogs to see if that helps."],
-        endText: "Thanks for your help popping those blue balloon dogs! It looks like we're still floating higher and higher though.",
+        inProgressText: ["Keep up the great work friend!",
+        "You only have {{remaining}} blue balloon dogs left to pop!"],
+        endText: ["Thanks for your help popping those blue balloon dogs!",
+        "It looks like we're still floating higher and higher though."],
         eventType: "KILL_MOB",
         npc: Types.Entities.KINGFROGGY,
         target: Types.Entities.BALLOONDOGB,
         amount: 100,
-        level: 1,
+        level: 5,
         xp: 10000,
         medal: Types.Medals.SKULL
     },
@@ -19,13 +22,16 @@ quests = [
         name: "The King's Yellow Pop Request",
         startText: ["If we can't get these darn balloon animals under control the whole cloud kingdom is going to float away!",
         "The King has requested that you pop 100 yellow balloon dogs."],
-        endText: "Thanks for your help popping those yellow balloon dogs! It looks like we're still floating higher and higher though.",
+        inProgressText: ["Keep up the great work friend!",
+        "You only have {{remaining}} yellow balloon dogs left to pop!"],
+        endText: ["Thanks for your help popping those yellow balloon dogs!",
+        "It looks like we're still floating higher and higher though."],
         eventType: "KILL_MOB",
         npc: Types.Entities.KINGFROGGY,
         target: Types.Entities.BALLOONDOGY,
         amount: 100,
         requiredQuest: "KINGFROGGY_QUEST_1",
-        level: 4,
+        level: 10,
         xp: 20000,
         medal: Types.Medals.SKULL
     },
@@ -34,13 +40,16 @@ quests = [
         name: "The King's Green Pop Request",
         startText: ["If we can't get these darn balloon animals under control the whole cloud kingdom is going to float away!", 
         "The King has requested that you pop 100 green balloon dogs."],
-        endText: "Thanks for your help popping those green balloon dogs! It looks like we're still floating higher and higher though.",
+        inProgressText: ["Keep up the great work friend!",
+        "You only have {{remaining}} green balloon dogs left to pop!"],
+        endText: ["Thanks for your help popping those green balloon dogs!",
+        "It looks like we're still floating higher and higher though."],
         eventType: "KILL_MOB",
         npc: Types.Entities.KINGFROGGY,
         target: Types.Entities.BALLOONDOGG,
         amount: 100,
         requiredQuest: "KINGFROGGY_QUEST_2",
-        level: 6,
+        level: 15,
         xp: 30000,
         medal: Types.Medals.SKULL
     },
@@ -49,13 +58,16 @@ quests = [
         name: "The King's Aqua Pop Request",
         startText: ["If we can't get these darn balloon animals under control the whole cloud kingdom is going to float away!",
         "The King has requested that you pop 100 aqua balloon dogs."],
-        endText: "Thanks for your help popping those aqua balloon dogs! It looks like we're still floating higher and higher though.",
+        inProgressText: ["Keep up the great work friend!",
+        "You only have {{remaining}} aqua balloon dogs left to pop!"],
+        endText: ["Thanks for your help popping those aqua balloon dogs!",
+        "It looks like we're still floating higher and higher though."],
         eventType: "KILL_MOB",
         npc: Types.Entities.KINGFROGGY,
         target: Types.Entities.BALLOONDOGA,
         amount: 100,
         requiredQuest: "KINGFROGGY_QUEST_3",
-        level: 8,
+        level: 20,
         xp: 40000,
         medal: Types.Medals.SKULL
     },
@@ -64,13 +76,16 @@ quests = [
         name: "The King's Violet Pop Request",
         startText: ["If we can't get these darn balloon animals under control the whole cloud kingdom is going to float away!",
         "The King has requested that you pop 100 violet balloon dogs."],
-        endText: "Thanks for your help popping those violet balloon dogs! It looks like we're still floating higher and higher though.",
+        inProgressText: ["Keep up the great work friend!",
+        "You only have {{remaining}} violet balloon dogs left to pop!"],
+        endText: ["Thanks for your help popping those violet balloon dogs!",
+        "It looks like we're still floating higher and higher though."],
         eventType: "KILL_MOB",
         npc: Types.Entities.KINGFROGGY,
         target: Types.Entities.BALLOONDOGV,
         amount: 100,
         requiredQuest: "KINGFROGGY_QUEST_4",
-        level: 10,
+        level: 25,
         xp: 50000,
         medal: Types.Medals.SKULL
     },
@@ -79,13 +94,17 @@ quests = [
         name: "The King's Pink Pop Request",
         startText: ["If we can't get these darn balloon animals under control the whole cloud kingdom is going to float away!",
         "The King has requested that you pop 100 pink balloon dogs."],
-        endText: "Thanks for your help popping those pink balloon dogs! It looks like we're still floating higher and higher though. I bet that menacing looking hotdog has a lot of helium in it.",
+        inProgressText: ["Keep up the great work friend!",
+        "You only have {{remaining}} pink balloon dogs left to pop!"],
+        endText: ["Thanks for your help popping those pink balloon dogs!",
+        "It looks like we're still floating higher and higher though.",
+        "I bet that menacing looking hotdog has a lot of helium in it."],
         eventType: "KILL_MOB",
         npc: Types.Entities.KINGFROGGY,
         target: Types.Entities.BALLOONDOGP,
         amount: 100,
         requiredQuest: "KINGFROGGY_QUEST_5",
-        level: 12,
+        level: 30,
         xp: 50000,
         medal: Types.Medals.SKULL
     },
@@ -94,13 +113,17 @@ quests = [
         name: "The King's Red Pop Request",
         startText: ["If we can't get these darn balloon animals under control the whole cloud kingdom is going to float away!",
         "The King has requested that you pop 5 red balloon hotdogs."],
-        endText: "Thanks for your help popping those red balloon hotdogs! It looks like we're still floating higher and higher though. Hmmm, I thought for sure that would do it. We have one more chance...",
+        inProgressText: ["Keep up the great work friend!",
+        "You only have {{remaining}} red balloon hotdogs left to pop!"],
+        endText: ["Thanks for your help popping those red balloon hotdogs!",
+        "It looks like we're still floating higher and higher though.",
+        "Hmmm, I thought for sure that would do it. We have one more chance..."],
         eventType: "KILL_MOB",
         npc: Types.Entities.KINGFROGGY,
         target: Types.Entities.BALLOONHOTDOGR,
         amount: 5,
         requiredQuest: "KINGFROGGY_QUEST_6",
-        level: 20,
+        level: 35,
         xp: 100000,
         medal: Types.Medals.SKULL
     },
@@ -109,13 +132,14 @@ quests = [
         name: "The King's Orange Pop Request",
         startText: ["If we can't get these darn balloon animals under control the whole cloud kingdom is going to float away!",
         "The King has requested that you pop 1 orange balloon giraffe."],
-        endText: "Thanks for your help popping all of those balloon animals! You did it!! Thank you! It looks like we're going to stay in this stratosphere for now!",
+        endText: ["Thanks for your help popping all of those balloon animals! You did it!!",
+        "Thank you! It looks like we're going to stay in this stratosphere for now!"],
         eventType: "KILL_MOB",
         npc: Types.Entities.KINGFROGGY,
         target: Types.Entities.BALLOONGIRAFFEO,
         amount: 1,
         requiredQuest: "KINGFROGGY_QUEST_7",
-        level: 20,
+        level: 40,
         xp: 100000,
         medal: Types.Medals.SKULL
     },
@@ -124,17 +148,18 @@ quests = [
         name: "The King's Mysterious Map Request",
         startText: ["Every now and then I see a mysterious map pop up around here...",
         "I wonder what would happen if you collected them? The next time you see one hang on to it!"],
-        endText: "Wow, great job collecting all of those maps! What an interesting number...Keep your eyes peeled for some sort of secret portal or something...",
+        endText: ["Wow, great job collecting all of those maps! What an interesting number...",
+        "Keep your eyes peeled for some sort of secret portal or something..."],
         eventType: "LOOT_ITEM",
         npc: Types.Entities.KINGFROGGY,
         target: Types.Entities.M88NMAP,
         amount: 741,
         requiredQuest: "KINGFROGGY_QUEST_8",
-        level: 30,
+        level: 50,
         xp: 300000,
         medal: Types.Medals.SKULL,
         reward: {
-            item: Types.Entities.m88ndirt,
+            item: Types.Entities.M88NDIRT,
             amount: 69
         }
     },
@@ -143,12 +168,15 @@ quests = [
         name: "The King's Blue Monster Request",
         startText: ["Will you please help us restore DreamLand to it's origins by completing a series quests?",
         "The King has requested that you slay 100 blue monsters."],
-        endText: "Thanks for your help whooping on those blue monsters! Are they dropping any items for you to collect?",
+        inProgressText: ["Keep up the great work friend!",
+        "You only have {{remaining}} blue monsters left to slay!"],
+        endText: ["Thanks for your help whooping on those blue monsters!",
+        "Are they dropping any items for you to collect?"],
         eventType: "KILL_MOB",
         npc: Types.Entities.KINGFROGGYBW,
         target: Types.Entities.M88NNIGHTMAREMONSTERB,
         amount: 100,
-        level: 1,
+        level: 2,
         xp: 10000,
         medal: Types.Medals.SKULL
     },
@@ -157,7 +185,10 @@ quests = [
         name: "The King's Yellow Monster Request",
         startText: ["Thanks for whooping on those blue monsters, those are ugly little things aren't they?",
         "The King has requested that you slay 100 yellow monsters next."],
-        endText: "Thanks for your help whooping on those yellow monsters! Are they dropping any items for you to collect?",
+        inProgressText: ["Keep up the great work friend!",
+        "You only have {{remaining}} yellow monsters left to slay!"],
+        endText: ["Thanks for your help whooping on those yellow monsters!",
+        "Are they dropping any items for you to collect?"],
         eventType: "KILL_MOB",
         npc: Types.Entities.KINGFROGGYBW,
         target: Types.Entities.M88NNIGHTMAREMONSTERY,
@@ -172,7 +203,10 @@ quests = [
         name: "The King's Green Monster Request",
         startText: ["Thanks for whooping on those yellow monsters. Keep an eye out for unique items that they drop.", 
         "The King has requested that you slay 100 green monsters next."],
-        endText: "Thanks for your help whooping on those green monsters! Are they dropping any items for you to collect?",
+        inProgressText: ["Keep up the great work friend!",
+        "You only have {{remaining}} green monsters left to slay!"],
+        endText: ["Thanks for your help whooping on those green monsters!",
+        "Are they dropping any items for you to collect?"],
         eventType: "KILL_MOB",
         npc: Types.Entities.KINGFROGGYBW,
         target: Types.Entities.M88NNIGHTMAREMONSTERG,
@@ -187,6 +221,8 @@ quests = [
         name: "The King's Dark Cloud Request",
         startText: ["These dark clouds are depressing, let's clear them out of here.", 
         "The King has requested that you collect 30 dark clouds."],
+        inProgressText: ["Keep up the great work friend!",
+        "You only have {{remaining}} dark clouds left to collect!"],
         endText: "Thanks for your help gathering all of those dark clouds up",
         eventType: "LOOT_ITEM",
         npc: Types.Entities.KINGFROGGYBW,
@@ -202,6 +238,8 @@ quests = [
         name: "The King's Dream Cloud Request",
         startText: ["We need to replace those dark clouds with a bunch of OG dream clouds, those fluffy white ones.", 
         "The King has requested that you collect 30 dream clouds."],
+        inProgressText: ["Keep up the great work friend!",
+        "You only have {{remaining}} dream clouds left to collect!"],
         endText: "Thanks for your help gathering all of those dream clouds up",
         eventType: "LOOT_ITEM",
         npc: Types.Entities.KINGFROGGYBW,
@@ -217,6 +255,8 @@ quests = [
         name: "The King's Aqua Monster Request",
         startText: ["There are so many of these monsters! They're all over the place!",
         "The King has requested that you slay 100 aqua monsters next."],
+        inProgressText: ["Keep up the great work friend!",
+        "You only have {{remaining}} aqua monsters left to slay!"],
         endText: "Thanks for your help whooping on those aqua monsters!",
         eventType: "KILL_MOB",
         npc: Types.Entities.KINGFROGGYBW,
@@ -232,6 +272,8 @@ quests = [
         name: "The King's Sunshine Request",
         startText: ["The last big thing we need to restore DreamLand is some sunshine!", 
         "The King has requested that you collect 30 rays of sunshine."],
+        inProgressText: ["Keep up the great work friend!",
+        "You only have {{remaining}} rays of sunshine left to collect!"],
         endText: "Thanks for your help gathering all of that sunshine up.",
         eventType: "LOOT_ITEM",
         npc: Types.Entities.KINGFROGGYBW,
@@ -247,6 +289,8 @@ quests = [
         name: "The King's Violet Monster Request",
         startText: ["We almost have everything we need to restore DreamLand and get back there!",
         "The King has requested that you slay 100 violet monsters next."],
+        inProgressText: ["Keep up the great work friend!",
+        "You only have {{remaining}} violet monsters left to slay!"],
         endText: "Thanks for your help whooping on those violet monsters!",
         eventType: "KILL_MOB",
         npc: Types.Entities.KINGFROGGYBW,
@@ -263,6 +307,8 @@ quests = [
         startText: ["Do you see the suspicious graveyard over to the right?",
         "I wonder what's going on over there...", 
         "The King has requested that you collect 30 random bones so you can go check it out."],
+        inProgressText: ["Keep up the great work friend!",
+        "You only have {{remaining}} random bones left to collect!"],
         endText: "Thanks for your help gathering all of those random bones.",
         eventType: "LOOT_ITEM",
         npc: Types.Entities.KINGFROGGYBW,
@@ -278,6 +324,8 @@ quests = [
         name: "The King's Pink Monster Request",
         startText: ["This is the last set of monsters we need you to beat up!",
         "The King has requested that you slay 100 pink monsters."],
+        inProgressText: ["Keep up the great work friend!",
+        "You only have {{remaining}} pink monsters left to slay!"],
         endText: "Thanks for your help whooping on those pink monsters!",
         eventType: "KILL_MOB",
         npc: Types.Entities.KINGFROGGYBW,
@@ -320,11 +368,10 @@ quests = [
         target: Types.Entities.M88NGEM,
         amount: 1,
         level: 10,
-        xp: 888,
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88nshine,
+            item: Types.Entities.M88NSHINE,
             amount: 1
         }
     },
@@ -372,7 +419,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 10
         }
     },
@@ -397,7 +444,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 10
         }
     },
@@ -423,7 +470,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ndrsgme,
+            item: Types.Entities.M88NDRSGME,
             amount: 1
         }
     },
@@ -447,7 +494,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 3
         }
     },
@@ -469,7 +516,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 3
         }
     },
@@ -491,7 +538,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 3
         }
     },
@@ -515,7 +562,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 3
         }
     },
@@ -538,7 +585,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 3
         }
     },
@@ -547,6 +594,8 @@ quests = [
         name: "The Chef's Dinner Bell Request",
         startText: ["Now we just need to let everyone know it's dinner time!",
         "Can you find a dinner bell for me?"],
+        inProgressText: ["Great job so far, keep it up!",
+        "Only {{remaining}} left to find..."],
         endText: ["Amazing, thanks mate! Dinner is served!",
         "There is a secret door somewhere in The Nexus that I have unlocked for you!",
         "Find it and there is a golden compass waiting beyond it.",
@@ -561,7 +610,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 2
         }
     },
@@ -573,6 +622,8 @@ quests = [
         "I'll hook you up with some m88n dirt for all your help!",
         "The first thing we're going to need is bigger shovel!",
         "Can you help me find 2 large shovels?"],
+        inProgressText: ["Great job so far, keep it up!",
+        "Only {{remaining}} left to find..."],
         endText: ["Thanks so much for finding those shovels!",
         "Next we're going to need lots and lots of seeds!"],
         eventType: "LOOT_ITEM",
@@ -584,7 +635,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ndirt,
+            item: Types.Entities.M88NDIRT,
             amount: 2
         }
     },
@@ -609,7 +660,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ndirt,
+            item: Types.Entities.M88NDIRT,
             amount: 20
         }
     },
@@ -619,6 +670,8 @@ quests = [
         startText: ["Sweet! We're going to start planting some of these seeds.",
         "We're going to need to water them pretty quickly though.",
         "Can you please find us 2 watering cans?"],
+        inProgressText: ["Great job so far, keep it up!",
+        "Only {{remaining}} left to find..."],
         endText: ["Perfect, thanks for finding those watering cans!",
         "The last thing we're going to need are some sacks to store our harvest in!"],
         eventType: "LOOT_ITEM",
@@ -631,7 +684,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ndirt,
+            item: Types.Entities.M88NDIRT,
             amount: 2
         }
     },
@@ -641,6 +694,8 @@ quests = [
         startText: ["Now we're cooking!",
         "I think the last thing we need is a sack of some sort to put our harvested crops in.",
         "Can you please find us 2 burlap sacks?"],
+        inProgressText: ["Great job so far, keep it up!",
+        "Only {{remaining}} left to find..."],
         endText: ["Amazing, thank you so much for finding these supplies for us.",
         "This will make our life so much easier!",
         "We're happy to be your hook up while you're visiting The Nexus!",
@@ -655,7 +710,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ndirt,
+            item: Types.Entities.M88NDIRT,
             amount: 2
         }
     },
@@ -678,7 +733,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 2
         }
     },
@@ -705,7 +760,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 2
         }
     },
@@ -728,7 +783,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 1
         }
     },
@@ -750,7 +805,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 1
         }
     },
@@ -773,7 +828,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 1
         }
     },
@@ -796,7 +851,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 1
         }
     },
@@ -819,7 +874,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 1
         }
     },
@@ -843,7 +898,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 1
         }
     },
@@ -871,7 +926,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 8
         }
     },
@@ -914,7 +969,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ndirt,
+            item: Types.Entities.M88NGEM,
             amount: 20
         }
     },
@@ -923,6 +978,8 @@ quests = [
         name: "The Classy Lady's Earring Request",
         startText: ["Some of my luggage got misplaced and I can't go to the dinner party without my jewelry...",
         "Can you please find my gold earrings?"],
+        inProgressText: ["Thank you for your help!",
+        "Please find my earrings!"],
         endText: ["Oh thank you! I love these earrings!"],
         eventType: "LOOT_ITEM",
         npc: Types.Entities.NEXAN4,
@@ -931,8 +988,9 @@ quests = [
         level: 10,
         xp: 10000,
         medal: Types.Medals.SKULL,
+        needToReturn: true,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 1
         }
     },
@@ -941,6 +999,8 @@ quests = [
         name: "The Classy Lady's Diamond Necklace Request",
         startText: ["The next piece of jewelry that I'm missing is my Diamond Necklace...",
         "Can you please keep your eyes open for that too?"],
+        inProgressText: ["Thank you for your help!",
+        "Please find my necklace!"],
         endText: ["Oh my goodness thank you so much! This was my grandmother's necklace!"],
         eventType: "LOOT_ITEM",
         npc: Types.Entities.NEXAN4,
@@ -950,8 +1010,9 @@ quests = [
         level: 10,
         xp: 10000,
         medal: Types.Medals.SKULL,
+        needToReturn: true,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 1
         }
     },
@@ -960,6 +1021,8 @@ quests = [
         name: "The Classy Lady's Diamond Ring Request",
         startText: ["I lost my wedding ring! My husband will be so mad if he finds out...",
         "Can you please try to find my diamond ring? And make sure you keep this on the downlow!"],
+        inProgressText: ["Thank you for your help!",
+        "Please find my ring!"],
         endText: ["Oh, my hero! Thank you so much! Do you know how much this thing is worth?!",
         "Please accept these 5 m88n gems as a reward for finding it!"],
         eventType: "LOOT_ITEM",
@@ -970,8 +1033,9 @@ quests = [
         level: 10,
         xp: 50000,
         medal: Types.Medals.SKULL,
+        needToReturn: true,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 5
         }
     },
@@ -996,8 +1060,9 @@ quests = [
         level: 10,
         xp: 20000,
         medal: Types.Medals.SKULL,
+        needToReturn: true,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 1
         }
     },
@@ -1021,7 +1086,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ndirt,
+            item: Types.Entities.M88NDIRT,
             amount: 10
         }
     },
@@ -1046,7 +1111,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ndirt,
+            item: Types.Entities.M88NDIRT,
             amount: 10
         }
     },
@@ -1071,7 +1136,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ndirt,
+            item: Types.Entities.M88NDIRT,
             amount: 10
         }
     },
@@ -1096,7 +1161,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 1
         }
     },
@@ -1120,7 +1185,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 1
         }
     },
@@ -1144,7 +1209,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ndirt,
+            item: Types.Entities.M88NDIRT,
             amount: 10
         }
     },
@@ -1166,7 +1231,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ndirt,
+            item: Types.Entities.M88NDIRT,
             amount: 10
         }
     },
@@ -1189,7 +1254,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.m88ndirt,
+            item: Types.Entities.M88NDIRT,
             amount: 10
         }
     },
@@ -1213,6 +1278,8 @@ quests = [
         startText: ["Have you been DRSing your shares?",
         "Wanna make a trade? Give me 147 of them I'll give you the key to the jail...",
         "Then you can go in there and sling pies at Kenny and the other clowns and time you want!"],
+        inProgressText: ["Keep it up, you're doing great!",
+        "You only have {{remaining}} shares left to DRS..."],
         endText: ["Sweet, thanks, I'll add these to the pile! Have fun in there!"],
         eventType: "LOOT_ITEM",
         npc: Types.Entities.M88NMYSTERYHOOD,
@@ -1221,8 +1288,47 @@ quests = [
         level: 147,
         medal: Types.Medals.SKULL,
         reward: {
-            item: Types.Entities.m88ndrsbook,
-            amount: 2
+            item: Types.Entities.M88NDRSBOOK,
+            amount: 1
+        }
+    },
+    {
+        id: "PIE_SLINGER_QUEST_1",
+        name: "The Apes Pie Slinger Request",
+        startText: ["Wanna sling some pies at these clowns? It's fun and they drop shares.",
+        "You'll need a Pie Slinger first though.",
+        "Wanna borrow one of mine to try it out before you buy your own?",
+        "Grab that Crossbow right there and I'll drop a 24 hour rental crossbow into your inventory!"],
+        endText: ["Have fun friend!!"],
+        eventType: "LOOT_ITEM",
+        npc: Types.Entities.M88NAPE,
+        target: Types.Entities.M88NPIESLINGER,
+        amount: 1,
+        level: 10,
+        xp: 1000,
+        medal: Types.Medals.SKULL,
+        rental: "0xd61339b2944c119dfd10424375ef8d805e1813b436bb0a12b91ed482f31b9bda"
+    },
+    {
+        id: "BANANA_PEEL_QUEST_1",
+        name: "The Apes Banana Peel Request",
+        startText: ["Hey have you seen any little monkeys running around The Nexus?",
+        "Those are my kiddos. I hear they've been littering banana peels all over the place...",
+        "Do you mind collecting them when you see them to help keep the place clean?",
+        "I'll compost them and give ya some m88n gems for your time."],
+        inProgressText: ["Keep it up, you're doing great!",
+        "You only have {{remaining}} more banana peels to find..."],
+        endText: ["Have fun friend!!"],
+        eventType: "LOOT_ITEM",
+        npc: Types.Entities.M88NAPE,
+        target: Types.Entities.M88NPEEL,
+        amount: 420,
+        requiredQuest: "PIE_SLINGER_QUEST_1",
+        level: 100,
+        medal: Types.Medals.SKULL,
+        reward: {
+            item: Types.Entities.M88NGEM,
+            amount: 20
         }
     },
     {
@@ -1241,8 +1347,9 @@ quests = [
         amount: 100,
         level: 2,
         medal: Types.Medals.SKULL,
+        needToReturn: true,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 1
         }
     },
@@ -1263,8 +1370,9 @@ quests = [
         requiredQuest: "MRCRAB_QUEST_1",
         level: 10,
         medal: Types.Medals.SKULL,
+        needToReturn: true,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 5
         }
     },
@@ -1285,8 +1393,9 @@ quests = [
         requiredQuest: "MRCRAB_QUEST_2",
         level: 25,
         medal: Types.Medals.SKULL,
+        needToReturn: true,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 10
         }
     },
@@ -1308,8 +1417,9 @@ quests = [
         requiredQuest: "MRCRAB_QUEST_3",
         level: 50,
         medal: Types.Medals.SKULL,
+        needToReturn: true,
         reward: {
-            item: Types.Entities.m88ngem,
+            item: Types.Entities.M88NGEM,
             amount: 20
         }
     }

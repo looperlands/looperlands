@@ -104,9 +104,24 @@ class GamePadListener {
             case 9:
                 this.simulateKeyPress('c', 'KeyC'); // Settings
                 break;
-            case 13:
-                this.simulateKeyPress('m', 'KeyM'); // Mini Map
+            case 10:
+                this.simulateKeyPress('e', 'KeyE'); // Interact
                 break;
+            case 11:
+                this.simulateKeyPress('m', 'KeyM'); // Right stick click -- Mini map
+                break;
+            case 12:
+                this.simulateKeyPress('1', 'Key1'); // D-Pad Up -- Consume Slot 1
+                break
+            case 13:
+                this.simulateKeyPress('2', 'Key2'); // D-Pad Down -- Consume Slot 2
+                break
+            case 14:
+                this.simulateKeyPress('3', 'Key3'); // D-Pad Left -- Consume Slot 3
+                break
+            case 14:
+                this.simulateKeyPress('4', 'Key4'); // D-Pad Right -- Consume Slot 4
+                break
         }
     }
 
@@ -128,5 +143,9 @@ class GamePadListener {
             code: code
         });
         document.dispatchEvent(event);
-    }    
+    }
+
+    isActive() {
+        return this.gamepad !== undefined;
+    }
 }

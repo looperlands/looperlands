@@ -1,6 +1,8 @@
 define(['character'], function (Character) {
-
     let NpcTalk = {
+        // "example_dialogue_npc": [
+        //     "You can put anything here, it won't be used, but there needs to be at least one line for the npc to show up"
+        // ],
         "guard": [
             "Hello there, Looper",
             'You can learn more about <a target="_blank" href="https://medium.loopring.io/loopring-taiko-ready-layer-3-d9657327f908">Loopring and Taiko on Layer 3</a>.',
@@ -105,9 +107,6 @@ define(['character'], function (Character) {
         "liora": [
             "Be careful of what lurks in the shadow",
         ],
-        "torvin": [
-            "Greetings traveller",
-        ],
         "glink": [
             "Hehe! Twisted paths and endless loops, in this maze of many stoops.",
             "First may lead, third's a trick, but second steps, back you pick.",
@@ -170,19 +169,9 @@ define(['character'], function (Character) {
             "Now go about your adventure, Looper!"
         ],
 
-        "beachnpc": [
-            "lorem ipsum dolor sit amet",
-            "consectetur adipisicing elit, sed do eiusmod tempor"
-        ],
-
         "forestnpc": [
             "Yahaha! You completed the quest!",
             'Follow <a href="https://loopworms.io/DEV/LooperLands/QR/qr.php?NPC=beachnpc" target="blank">this link</a> and collect your prize!',
-        ],
-
-        "desertnpc": [
-            "lorem ipsum dolor sit amet",
-            "consectetur adipisicing elit, sed do eiusmod tempor"
         ],
 
         "lavanpc": [
@@ -535,10 +524,10 @@ define(['character'], function (Character) {
 
         "nexan29": [
             "Welcome to the Sun Chaser Champagne Lounge, special guest!",
-            //"Can I get you something to drink from the bar?",
-            //"/openShop the_bar The Bar"
-            "The bar is closed right now while re-stock, but it will open again soon!",
-            "Hang out and enjoy the luxuious vibes though! The fishing is great off the bow."
+            "Can I get you something to drink from the bar?",
+            "/openShop the_bar The Bar"
+            //"The bar is closed right now while re-stock, but it will open again soon!",
+            //"Hang out and enjoy the luxuious vibes though! The fishing is great off the bow."
             //"Most of these portals go to the private Helio Islands.",
             //"If you're interested in becoming an island owner you can DM m88nwalker to inquire.",
             //"On the far right of the second floor is a portal to a secret hidden island.",
@@ -743,6 +732,17 @@ define(['character'], function (Character) {
             //'View available onesies from the <a target="_blank" href="https://loopexchange.art/collection/onesie-party">Its a Onesie Party! collection</a> and choose yours!',
             //'Join us in Discord! <a target="_blank" href="https://discord.gg/bjjNewZegM">Checkout PLANET M88NWALKER</a> for insider details.',
             "Good luck on your journey!"
+        ],
+
+        "m88nape": [
+            "Congratulations on finding the hidden island!",
+            "Looks like our plan of no cell, no sell worked, check out who we locked up so far...",
+            "If you grab that crossbow to the side there you can sling pies at these clowns!",
+            "Have fun and enjoy that free rental for 24 hours!",
+            'If you want to buy a premium asset <a target="_blank" href="https://explorer.loopring.io/collections/0xdd2221cfd3a7068ca78c03784fa076c39f11de60">check out the Pie Slingers collection</a> and choose yours!',
+            'If you want to see the origins of the clowns <a target="_blank" href="https://loopexchange.art/collection/clown-people">check out the Clown People collection</a> and tell us your favorite!',
+            'Join us in Discord! <a target="_blank" href="https://discord.gg/bjjNewZegM">Checkout PLANET M88NWALKER</a> for insider details.',
+            "Have fun! They drop more DRS'd shares of GME so you can stock back up!"
         ],
 
         //MRMlabs NPCs
@@ -1113,9 +1113,11 @@ define(['character'], function (Character) {
             "Left-sided heart failure occurs when the left ventricle cannot pump blood effectively to the rest of the body, leading to a buildup of fluid in the lungs.",
             "Common symptoms include shortness of breath, coughing, and fatigue.",
             "Please check out our Institute's website <a target='_blank' href='https://aberdeen.institute/'>Here!</a>",
-        ], 
+        ],
         // @nextNPCLine@
     };
+
+
 
     var Npc = Character.extend({
         init: function (id, kind) {
@@ -1160,12 +1162,11 @@ define(['character'], function (Character) {
         hasTalked: function() {
           this.hasTalkedRecently = true;
         },
+
         hasInteraction : function () {
             if ((this.showIndicator || this.thoughts.length > 0 || NpcTalk[this.itemKind].length > 0) && !this.hasTalkedRecently) {
                 return true;
             }
-
-            // TODO: Check dialogue controller/ws call
 
             setTimeout(() => this.hasTalkedRecently = false, 500);
             return false;

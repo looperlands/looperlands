@@ -9,7 +9,7 @@ module.exports = {
       statements: 90,
     },
   },
-  coveragePathIgnorePatterns: ['./shared/js/*'],
+  coveragePathIgnorePatterns: ['./shared/js/*', '/server/js/discord.js'],
   transform: {
     '^.+\\.jsx?$': 'babel-jest',
   },

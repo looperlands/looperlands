@@ -1440,7 +1440,7 @@ let Properties = {
             m88nshovel: 1,
             m88nseeds: 1,
             m88npotato: 1,
-            m88nmail: 1,
+            m88nsnail: 1,
             m88nworm: 1,
             m88ngem: 3,
             gameboy: 4,
@@ -1489,7 +1489,6 @@ let Properties = {
             m88nworkgloves: 1,
             m88nbrewski: 1,
             m88npie: 1,
-            m88nsack: 1,
             m88nworm: 1,
             m88ngem: 5,
             GOLD3: 5,
@@ -1653,7 +1652,7 @@ let Properties = {
     },
 
     m88nshortsqueeze: {
-        level: 30,
+        level: 35,
         drops: {
             m88ndrsgme: 1,
             m88ngem: 4,
@@ -1664,7 +1663,7 @@ let Properties = {
     },
 
     m88nconepooper: {
-        level: 22,
+        level: 25,
         drops: {
             m88ngoldenpoo: 1,
             m88ngem: 4,
@@ -1710,14 +1709,28 @@ let Properties = {
         respawnDelay: 60000
     },
 
+    m88nthewarden: {
+        level: 88,
+        drops: {
+            GOLD5: 88,
+            m88ndrsgme: 1,
+        },
+        messages: ['Choose peace!', 'We do not need to fight...', 'There is another way...', 'Why cant we be friends...', 'This whole world is a puzzle...'],
+        armorMod: 0.8,
+        hpMod: 8,
+        weaponMod: 0.8,
+        respawnDelay: 88888
+    },
+
     m88nkennyclown: {
         level: 69,
         friendly: true, //not actually friendly, just AoE immune
         hp: 1,
         drops: {
-            m88ndrsgme: 25,
+            m88ndrsgme: 50,
         },
-        respawnDelay: 1000000 //quarter hour
+        messages: ['I wish I never shorted that stupid stock!'],
+        respawnDelay: 300000 //five minutes
     },
 
     m88nnancyclown: {
@@ -1727,7 +1740,8 @@ let Properties = {
         drops: {
             m88ndrsgme: 25,
         },
-        respawnDelay: 1000000 //quarter hour
+        messages: ['Buy the dip!'],
+        respawnDelay: 120000 //two minutes
     },
 
     m88njimmyclown: {
@@ -1737,14 +1751,14 @@ let Properties = {
         drops: {
             m88ndrsgme: 25,
         },
-        respawnDelay: 1000000 //quarter hour
+        messages: ['Where should I put this banana?'],
+        respawnDelay: 120000 //two minutes
     },
 
     m88nmine: {
-        level: 1,
+        level: 69,
         friendly: true, //not actually friendly, just AoE immune
         hp: 1,
-        xp: 4444,
         drops: {
             m88ndirt: 99,
             m88ngem: 1,
@@ -1753,10 +1767,9 @@ let Properties = {
     },
 
     m88npinataballoons: {
-        level: 1,
+        level: 111,
         friendly: true, //not actually friendly, just AoE immune
         hp: 1,
-        xp: 8888,
         drops: {
             m88nmap: 5,
             movieglasses: 1,
@@ -1771,6 +1784,8 @@ let Properties = {
             m88ndiamondnecklace: 1,
             m88ndiamondring: 1,
             m88ngoldearrings: 1,
+            m88ngoldtiara: 1,
+            m88ndinnerbell: 1,
             m88nsteak: 1,
             m88nclover: 1,
             m88nmail: 1,
@@ -1786,17 +1801,14 @@ let Properties = {
             m88nworkgloves: 1,
             m88nbrewski: 1,
             m88npie: 1,
-            m88nsack: 1,
             m88nworm: 1,
             m88nfastshoes: 1,
             m88nbrassknuckles: 1,
             m88ngrenade: 1,
             m88nkevlararmor: 1,
             m88nwizardshat: 1,
-            taikoboost: 1,
             m88ndirt: 10,
             m88ngem: 20,
-            GOLD3: 1,
             GOLD4: 10,
             GOLD5: 10,
         },
@@ -2502,10 +2514,11 @@ let Properties = {
         collectable: true,
         consumable: true,
         cooldown: {
-            group: "immunity",
+            group: "easterEggs",
             duration: 20000
         },
         inventoryDescription: "Immunity Easter Egg",
+        respawnDelay: 42069741,
         onConsume: function(player){
             player.startInvincibility();
         }
@@ -2514,10 +2527,11 @@ let Properties = {
         collectable: true,
         consumable: true,
         cooldown: {
-            group: "hpPotions",
+            group: "easterEggs",
             duration: 20000
         },
         inventoryDescription: "HP Easter Egg",
+        respawnDelay: 42069741,
         onConsume: function(player){
             player.regenHealthBy(2400);
         }
@@ -2526,11 +2540,11 @@ let Properties = {
         collectable: true,
         consumable: true,
         cooldown: {
-            group: "caged",
+            group: "easterEggs",
             duration: 120000
         },
         inventoryDescription: "Special Easter Egg",
-        respawnDelay: 1500000,
+        respawnDelay: 42069741,
         onConsume: function(player) {
             player.releaseMob(Types.Entities.M88NBUNNYBLUE);
         }
@@ -2539,11 +2553,11 @@ let Properties = {
         collectable: true,
         consumable: true,
         cooldown: {
-            group: "caged",
+            group: "easterEggs",
             duration: 120000
         },
         inventoryDescription: "Special Easter Egg",
-        respawnDelay: 1500000,
+        respawnDelay: 42069741,
         onConsume: function(player) {
             player.releaseMob(Types.Entities.M88NBUNNYPINK);
         }
@@ -2552,11 +2566,11 @@ let Properties = {
         collectable: true,
         consumable: true,
         cooldown: {
-            group: "caged",
+            group: "easterEggs",
             duration: 300000
         },
         inventoryDescription: "Special Easter Egg",
-        respawnDelay: 1500000,
+        respawnDelay: 42069741,
         onConsume: function(player) {
             player.releaseMob(Types.Entities.M88NSHORTSQUEEZE);
         }
@@ -2565,11 +2579,11 @@ let Properties = {
         collectable: true,
         consumable: true,
         cooldown: {
-            group: "caged",
+            group: "easterEggs",
             duration: 180000
         },
         inventoryDescription: "Special Easter Egg",
-        respawnDelay: 1500000,
+        respawnDelay: 42069741,
         onConsume: function(player) {
             player.releaseMob(Types.Entities.M88NBIGCHUNGUS);
         }
@@ -2578,24 +2592,24 @@ let Properties = {
         collectable: true,
         consumable: true,
         cooldown: {
-            group: "caged",
+            group: "easterEggs",
             duration: 180000
         },
         inventoryDescription: "Golden Faberge Egg",
-        respawnDelay: 1500000,
+        respawnDelay: 42069741,
         onConsume: function(player) {
-            player.releaseMob(Types.Entities.M88NOCTOPUSSY);
+            player.releaseMob(Types.Entities.M88NJIMMYCLOWN);
         }
     },
     m88nlamp: {
         collectable: true,
         consumable: true,
         cooldown: {
-            group: "caged",
+            group: "lamp",
             duration: 180000
         },
         inventoryDescription: "Mysterious Lamp",
-        respawnDelay: 1500000,
+        respawnDelay: 42069741,
         onConsume: function(player) {
             player.releaseNpc(Types.Entities.M88NGENIE, 15000);
         }
@@ -2604,7 +2618,7 @@ let Properties = {
         collectable: true,
         consumable: true,
         cooldown: {
-            group: "caged",
+            group: "pinata",
             duration: 5000
         },
         inventoryDescription: "Mysterious Prizes",
@@ -2617,7 +2631,7 @@ let Properties = {
         collectable: true,
         consumable: true,
         cooldown: {
-            group: "caged",
+            group: "bags",
             duration: 5000
         },
         inventoryDescription: "Brown Bag",
@@ -2630,7 +2644,7 @@ let Properties = {
         collectable: true,
         consumable: true,
         cooldown: {
-            group: "caged",
+            group: "bags",
             duration: 5000
         },
         inventoryDescription: "Black Bag",
@@ -2643,7 +2657,7 @@ let Properties = {
         collectable: true,
         consumable: true,
         cooldown: {
-            group: "caged",
+            group: "bags",
             duration: 5000
         },
         inventoryDescription: "Golden Bag",
@@ -2656,7 +2670,7 @@ let Properties = {
         collectable: true,
         consumable: true,
         cooldown: {
-            group: "caged",
+            group: "bags",
             duration: 5000
         },
         inventoryDescription: "Gem Bag",
@@ -2669,20 +2683,20 @@ let Properties = {
         collectable: true,
         consumable: true,
         cooldown: {
-            group: "caged",
+            group: "bags",
             duration: 5000
         },
         inventoryDescription: "Lucky Bag",
         respawnDelay: 60000,
         onConsume: function(player) {
-            player.releaseItem(Types.Entities.M88NPIZZA);
+            player.releaseItem(Types.Entities.M88NTACO);
         }
     },
     m88nmedic: {
         collectable: true,
         consumable: true,
         cooldown: {
-            group: "caged",
+            group: "medic",
             duration: 5000
         },
         inventoryDescription: "Medic Bag",
@@ -2695,7 +2709,7 @@ let Properties = {
         collectable: true,
         consumable: true,
         cooldown: {
-            group: "caged",
+            group: "medic",
             duration: 5000
         },
         inventoryDescription: "Medic Bag 2",
@@ -2708,7 +2722,7 @@ let Properties = {
         collectable: true,
         consumable: true,
         cooldown: {
-            group: "caged",
+            group: "ruck",
             duration: 5000
         },
         inventoryDescription: "Ruck Sack",
@@ -2721,7 +2735,7 @@ let Properties = {
         collectable: true,
         consumable: true,
         cooldown: {
-            group: "caged",
+            group: "ruck",
             duration: 5000
         },
         inventoryDescription: "Ruck Sack 2",
@@ -2734,7 +2748,7 @@ let Properties = {
         collectable: true,
         consumable: true,
         cooldown: {
-            group: "caged",
+            group: "ruck",
             duration: 5000
         },
         inventoryDescription: "Ruck Sack 3",
@@ -3034,17 +3048,17 @@ let Properties = {
     m88nmoneybags: {
         //collectable: true,
         //inventoryDescription: "Money Bags",
-        respawnDelay: 8800000
+        respawnDelay: 42069741
     },
     m88ngoldenpoo: {
         //collectable: true,
         //inventoryDescription: "Golden Poo",
-        respawnDelay: 8800000
+        respawnDelay: 42069741
     },
     m88nholyhandgrenade: {
         collectable: true,
         consumable: true,
-        respawnDelay: 8800000,
+        respawnDelay: 42069741,
         cooldown: {
             group: "rangedDamageDealt",
             duration: 60000
@@ -3057,7 +3071,7 @@ let Properties = {
     m88ngoldknuckles: {
         collectable: true,
         consumable: true,
-        respawnDelay: 8800000,
+        respawnDelay: 42069741,
         cooldown: {
             group: "meleeDamageDealt",
             duration: 60000
@@ -3070,7 +3084,7 @@ let Properties = {
     m88ngoldenchalis: {
         collectable: true,
         consumable: true,
-        respawnDelay: 8800000,
+        respawnDelay: 42069741,
         cooldown: {
             group: "meleeDamageDealt",
             duration: 60000
@@ -3083,6 +3097,11 @@ let Properties = {
     m88ndrsgme: {
         collectable: true,
         inventoryDescription: "DRS'd GME",
+        respawnDelay: 42069741
+    },
+    m88ndrsbook: {
+        collectable: true,
+        inventoryDescription: "DRS Book",
         respawnDelay: 42069741
     },
     bandaid: {
@@ -3208,15 +3227,21 @@ let Properties = {
         respawnDelay: 9900000
     },
     m88nseeds: {
+        collectable: true,
+        inventoryDescription: "Sack of Seeds",
         respawnDelay: 9900000
     },
     m88nsack: {
         respawnDelay: 9900000
     },
     m88nshovel: {
+        collectable: true,
+        inventoryDescription: "Shovel",
         respawnDelay: 9900000
     },
     m88nwatercan: {
+        collectable: true,
+        inventoryDescription: "Water Can",
         respawnDelay: 9900000
     },
     m88nticket: {
