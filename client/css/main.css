@@ -349,6 +349,7 @@ body.upscaled.game {background:#000;}
 #population.visible {opacity:1;pointer-events:auto;}
 
 #time {
+    text-shadow: 0 0 2px black;
     position: absolute;
     top: 16px;
     left: 16px;

@@ -38,6 +38,7 @@ module.exports = function processMap(json, options) {
         map.musicAreas = [];
         map.pvpZones = [];
         map.fishingTiles = {};
+        map.scenes = [];
     }
     if (mode === "server") {
         map.roamingAreas = [];
@@ -214,6 +215,32 @@ module.exports = function processMap(json, options) {
         map.triggers.push(trigger);
     }
 
+
+    var processScene = function (scene, idx) {
+        var newScene = {
+            id: scene.id,
+            x: Math.floor(scene.x / map.tilesize),
+            y: Math.floor(scene.y / map.tilesize),
+            w: Math.ceil(scene.width / map.tilesize),
+            h: Math.ceil(scene.height / map.tilesize),
+            name: scene.name,
+        };
+
+        if (scene.properties) {
+            var sceneProps = scene.properties.property;
+
+            if (sceneProps[0] === undefined) {
+                sceneProps = [scene.properties.property];
+            }
+
+            for (var k = 0; k < sceneProps.length; k += 1) {
+                newScene[sceneProps[k].name] = sceneProps[k].value;
+            }
+        }
+
+        map.scenes.push(newScene);
+    }
+
     var processChestArea = function (area) {
         var chestArea = {
             x: area.x / map.tilesize,
@@ -328,6 +355,7 @@ module.exports = function processMap(json, options) {
     if (mode === "client") {
         processGroup('music', processMusic);
         processGroup('pvpzones', processPvpZone);
+        processGroup('scenes', processScene);
     }
 
     processGroup('checkpoints', processCheckpoint);

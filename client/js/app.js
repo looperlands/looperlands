@@ -1571,6 +1571,10 @@ define(['jquery', 'storage'], function ($, Storage) {
             let scale = this.game.renderer.scale;
 
             $("#fish-box").css('margin-top', pos * scale + "px");
+        },
+
+        setBackground(value) {
+            $('#canvas').css('background', value);
         }
     });
 

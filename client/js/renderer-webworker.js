@@ -13,7 +13,8 @@ const MAX_LIGHTS_TO_RENDER = 10;
 const MAX_SHADOWS_TO_RENDER = 10;
 
 // Day/night cycle of 1 hour
-const CYCLE_DURATION = 1000 * 60 * 60;
+//const CYCLE_DURATION = 1000 * 60 * 60;
+const CYCLE_DURATION = 1000 * 60;
 
 let lightSources = [
     {
@@ -333,7 +334,7 @@ function drawTile(ctx, tileid, tileset, setW, setH, gridW, cellid, scale, slideO
     }
 }
 
-function render(id, tiles, cameraX, cameraY, scale, clear, serverTime) {
+function render(id, tiles, cameraX, cameraY, scale, clear, serverTime, scene) {
     let ctx = contexes[id];
     let canvas = canvases[id];
     if (clear === true) {
@@ -349,12 +350,12 @@ function render(id, tiles, cameraX, cameraY, scale, clear, serverTime) {
         let tile = tiles[i];
         if (tile.id !== -1) {
             // Render your tile here as usual...
-            drawTile(ctx, tile.tileid, tileset, tile.setW, tile.setH, tile.gridW, tile.cellid, scale, tile.slideOffsetX, tile.slideOffsetY, tile.colorShift, id);
+            drawTile(ctx, tile.tileid, tileset, tile.setW, tile.setH, tile.gridW, tile.cellid, scale, tile.slideOffsetX, tile.slideOffsetY, tile.colorShift);
         }
     }
 
     // Render the light overlay
-    renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime);
+    renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime, scene);
 
     ctx.restore();
 }
@@ -388,7 +389,7 @@ onmessage = (e) => {
                 drawEntities(renderData);
             } else {
                 scale = renderData.scale;
-                render(renderData.id, renderData.tiles, renderData.cameraX, renderData.cameraY, 1, renderData.clear, e.data.serverTime);
+                render(renderData.id, renderData.tiles, renderData.cameraX, renderData.cameraY, 1, renderData.clear, e.data.serverTime, e.data.scene);
             }
         }
 
@@ -640,13 +641,15 @@ function drawEntities(drawEntitiesData) {
 
 lastTime = null;
 
-function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime) {
-    console.log(serverTime);
-    const cycleProgress = ((serverTime + performance.now()) % CYCLE_DURATION) / CYCLE_DURATION;
-    const cycleAngle = cycleProgress * Math.PI * 2;
-    const cycleIntensity = Math.sin(cycleAngle) * 0.5 + 0.5;
-    GLOBAL_LIGHT_INTENSITY = cycleIntensity * (MAX_GLOBAL_LIGHT_INTENSITY - MIN_GLOBAL_LIGHT_INTENSITY) + MIN_GLOBAL_LIGHT_INTENSITY;
-
+function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime, scene) {
+    if(scene.dn_cycle && scene.dn_cycle !== "false") {
+        const cycleProgress = ((serverTime + performance.now()) % CYCLE_DURATION) / CYCLE_DURATION;
+        const cycleAngle = cycleProgress * Math.PI * 2;
+        const cycleIntensity = Math.sin(cycleAngle) * 0.5 + 0.5;
+        GLOBAL_LIGHT_INTENSITY = cycleIntensity * (MAX_GLOBAL_LIGHT_INTENSITY - MIN_GLOBAL_LIGHT_INTENSITY) + MIN_GLOBAL_LIGHT_INTENSITY;
+    } else {
+        GLOBAL_LIGHT_INTENSITY = 1 - parseFloat(scene.darkness);
+    }
     // Clear the light canvas
     let canvas = canvases['lighting'];
     let ctx = contexes['lighting'];
@@ -662,32 +665,36 @@ function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime) {
     // Draw each light source on the light canvas
     lightSources.filter((lightSource) => {
         // Light source in camera view
-        return lightSource.x + lightSource.radius > cameraX &&
-            lightSource.x - lightSource.radius < cameraX + canvas.width &&
-            lightSource.y + lightSource.radius > cameraY &&
-            lightSource.y - lightSource.radius < cameraY + canvas.height;
+        let dx = lightSource.x - cameraX;
+        let dy = lightSource.y - cameraY;
+        let distance = hypot(dx, dy);
+
+        return distance < canvas.width + (lightSource.radius * tilesize);
     }).slice(0, MAX_LIGHTS_TO_RENDER).forEach(lightSource => {
         if (lightSource.animation) {
             lightSource = Object.assign({}, lightSource); // Clone the light source to avoid modifying the original
             lightSource.animation(lightSource, time);
         }
 
-        drawLightSource(ctx, lightSource, cameraX, cameraY);
+        drawLightSource(ctx, lightSource, cameraX, cameraY, scene);
     });
 
     // Player holds lantern
-    drawLightSource(ctx, {
-        id: 9999,
-        x: playerPosition.x + 8,
-        y: playerPosition.y + 6,
-        radius: 6,
-        innerRadius: 0,
-        intensity: 0.3,
-        shadow: 0,
-    }, cameraX, cameraY);
+    if(GLOBAL_LIGHT_INTENSITY < 0.7) {
+        drawLightSource(ctx, {
+            id: 9999,
+            x: playerPosition.x + 8,
+            y: playerPosition.y + 6,
+            radius: 6,
+            innerRadius: 0,
+            intensity: 0.3,
+            shadow: 0,
+        }, cameraX, cameraY, scene);
+    }
 }
 
-function drawLightSource(ctx, lightSource, cameraX, cameraY) {
+
+function drawLightSource(ctx, lightSource, cameraX, cameraY, scene) {
     // Adjust light source position by subtracting the camera's position
     const lightX = (lightSource.x - cameraX);
     const lightY = (lightSource.y - cameraY);
@@ -710,7 +717,7 @@ function drawLightSource(ctx, lightSource, cameraX, cameraY) {
     const tmpCtx = tmpCanvas.getContext('2d');
     tmpCtx.imageSmoothingEnabled = false;
 
-    const temp_cacheKey = 'tl.' + outerRadius + ',' + innerRadius + '|' + lightSource.intensity + ',' + lightSource.shadow + '|' + lightSource.color;
+    const temp_cacheKey = 'tl.' + outerRadius + ',' + innerRadius + '|' + intensity + ',' + lightSource.shadow + '|' + color + '|' + lightSource.spread + '|' + lightSource.spreadInner + '|' + lightSource.angle + '|' + lightX + ',' + lightY;
     if (!imageCache[temp_cacheKey]) {
         // Create the arc for the spread
         if (lightSource.spread > 0) {
@@ -741,7 +748,7 @@ function drawLightSource(ctx, lightSource, cameraX, cameraY) {
         tmpCtx.fillRect(0, 0, outerRadius * 2, outerRadius * 2);
 
         if (!lightSource.animation) {
-            addToImageCache(temp_cacheKey, tmpCanvas);
+           addToImageCache(temp_cacheKey, tmpCanvas);
         }
     } else {
         tmpCtx.drawImage(imageCache[temp_cacheKey], 0, 0);
