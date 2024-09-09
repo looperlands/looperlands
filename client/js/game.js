@@ -7399,10 +7399,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     });
 
                     self.client.onSpawnItem(function(item, x, y) {
-                        if (!self.isItemAt(x,y)) { // only allow one item to spawn to prevent stuck grid issue
-                            console.log("Spawned " + Types.getKindAsString(item.kind) + " (" + item.id + ") at "+x+", "+y);
-                            self.addItem(item, x, y);
-                        }
+                        console.log("Spawned " + Types.getKindAsString(item.kind) + " (" + item.id + ") at "+x+", "+y);
+                        self.addItem(item, x, y);
                     });
 
                     self.client.onSpawnFieldEffect(function(fieldEffect, x, y) {
@@ -9478,8 +9476,27 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     if(!lastCheckpoint || (lastCheckpoint && lastCheckpoint.id !== checkpoint.id)) {
                         this.player.lastCheckpoint = checkpoint;
                         this.client.sendCheck(checkpoint.id);
+                        this.lastCheckpoint = checkpoint;
                     }
                 }
+            },
+            
+            newSession: function() {
+                const url = '/session/' + this.sessionId + '/teleport';
+                const dest = this.lastCheckpoint;
+                dest.map = this.mapId;
+                axios.post(url, dest).then(function (response) {
+                    if (response.status === 200) {
+                        let newSessionID = response.data.sessionId;
+                        window.location.href = '/?sessionId=' + newSessionID;
+                    } else {
+                        console.error(response);
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                }).finally(function(e) {
+
+                });                
             },
 
             forEachEntityAround: function(x, y, r, callback) {
