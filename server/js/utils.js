@@ -89,3 +89,8 @@ Utils.shuffleAndGetRandom = function(arrayOrValue) {
     const shuffledArray = Array.isArray(arrayOrValue) ? Utils.shuffleArray([...arrayOrValue]) : arrayOrValue;
     return Array.isArray(shuffledArray) ? shuffledArray[Math.floor(Math.random() * shuffledArray.length)] : shuffledArray;
 };
+
+let lastID = 1000000
+Utils.getID = function() {
+    return lastID++
+}
