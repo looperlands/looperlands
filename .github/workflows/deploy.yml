@@ -33,5 +33,7 @@ jobs:
           port: 22
           script: |
             sudo systemctl restart looperlands
+            sudo docker system prune -af
+            sudo journalctl --vacuum-time=2d
 
 
