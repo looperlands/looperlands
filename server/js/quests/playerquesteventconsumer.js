@@ -1,6 +1,5 @@
 const quests = require('./quests.js');
 const dao = require('../dao.js');
-const { stringify } = require('flatted');
 
 const PlayerEventConsumer = require('./playereventconsumer.js').PlayerEventConsumer;
 const platform = require('../looperlandsplatformclient.js');
@@ -45,7 +44,7 @@ class PlayerQuestEventConsumer extends PlayerEventConsumer {
     consume(event) {
 
         if (!event.playerCache || !event.playerCache.gameData) {
-            console.error("Player cache or gameData is undefined", stringify(event));
+            console.error("Player cache or gameData is undefined");
             return { change: false };
         }
 
