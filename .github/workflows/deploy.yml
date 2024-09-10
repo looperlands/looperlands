@@ -32,6 +32,8 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           port: 22
           script: |
+            sudo docker system prune -af
+            sudo journalctl --vacuum-time=2d
             sudo systemctl restart looperlands
 
 
