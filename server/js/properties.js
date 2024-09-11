@@ -1504,7 +1504,7 @@ let Properties = {
     },
 
     m88njaws: {
-        level: 333,
+        level: 369,
         drops: {
             m88nmap: 25,
             m88ndiamondnecklace: 1,
