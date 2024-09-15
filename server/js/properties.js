@@ -1340,7 +1340,7 @@ let Properties = {
         drops: {
             m88nmap: 3,
             taikoboost: 20,
-            GOLD: 50,
+            GOLD: 30,
             GOLD2: 10
         },
         xp: 222
@@ -1351,7 +1351,7 @@ let Properties = {
         drops: {
             m88nmap: 5,
             taikoboost: 20,
-            GOLD: 40,
+            GOLD: 30,
             GOLD2: 20,
             GOLD3: 10,
         },
@@ -1367,7 +1367,7 @@ let Properties = {
             m88nshovel: 1,
             taikoboost: 25,
             GOLD: 10,
-            GOLD2: 25,
+            GOLD2: 20,
             GOLD3: 30,
         },
         xp: 777
@@ -1379,7 +1379,7 @@ let Properties = {
             m88nmap: 5,
             taikoboost: 10,
             GOLD: 10,
-            GOLD2: 30
+            GOLD2: 5
         },
     },
 
