@@ -969,7 +969,7 @@ quests = [
         medal: Types.Medals.SKULL,
         needToReturn: true,
         reward: {
-            item: Types.Entities.M88NGEM,
+            item: Types.Entities.M88NDIRT,
             amount: 20
         }
     },
@@ -1421,6 +1421,30 @@ quests = [
         reward: {
             item: Types.Entities.M88NGEM,
             amount: 20
+        }
+    },
+    {
+        id: "MRCRAB_QUEST_5",
+        name: "The Crab Basher's Legendary Request",
+        startText: ["The city is very pleased with the service we're providing.",
+        "You up for another tour of duty?",
+        "If you can bash 88888 more crabs they're gonna give us a HUGE bonus.",
+        "This time your cut will be 200 m88n gems!"],
+        inProgressText: ["You must be getting pretty tweaked by now huh?",
+        "You still have another {{remaining}} to go.",
+        "Maybe you should take a little PTSD prevention break."],
+        endText: "Nice job. Take a break soldier.",
+        eventType: "KILL_MOB",
+        npc: Types.Entities.NEXAN35,
+        target: Types.Entities.M88NMRCRAB,
+        amount: 88888,
+        requiredQuest: "MRCRAB_QUEST_4",
+        level: 250,
+        medal: Types.Medals.SKULL,
+        needToReturn: true,
+        reward: {
+            item: Types.Entities.M88NGEM,
+            amount: 200
         }
     }
 ]

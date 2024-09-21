@@ -263,7 +263,7 @@ class LooperLandsPlatformClient {
 
     async registerChoice(nftId, choice) {
         try {
-            console.log('registering choice', nftId, choice);
+            //console.log('registering choice', nftId, choice);
             const url = `/api/game/asset/choice`;
             const data = {nftId, choice};
             const response = await this.client.post(url, data);

@@ -860,7 +860,7 @@ class JackAce {
     log(message, player) {
         if (DEBUG && player === "0x7e0e930b5bfdb8214d40cdcdc9d83d6beab056dbfc551430b6be4f13facfadb3") {
             discord.sendToDebugChannel(message);
-            console.log(message);
+            //console.log(message);
         }
     }
 
@@ -881,7 +881,7 @@ class JackAce {
         } else {
             discord.sendToDevChannel(message, true);
         }
-        console.log(message);
+        //console.log(message);
     }
 
 }

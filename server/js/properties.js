@@ -1340,7 +1340,7 @@ let Properties = {
         drops: {
             m88nmap: 3,
             taikoboost: 20,
-            GOLD: 50,
+            GOLD: 30,
             GOLD2: 10
         },
         xp: 222
@@ -1351,7 +1351,7 @@ let Properties = {
         drops: {
             m88nmap: 5,
             taikoboost: 20,
-            GOLD: 40,
+            GOLD: 30,
             GOLD2: 20,
             GOLD3: 10,
         },
@@ -1367,7 +1367,7 @@ let Properties = {
             m88nshovel: 1,
             taikoboost: 25,
             GOLD: 10,
-            GOLD2: 25,
+            GOLD2: 20,
             GOLD3: 30,
         },
         xp: 777
@@ -1379,7 +1379,7 @@ let Properties = {
             m88nmap: 5,
             taikoboost: 10,
             GOLD: 10,
-            GOLD2: 30
+            GOLD2: 5
         },
     },
 
@@ -1442,7 +1442,7 @@ let Properties = {
             m88npotato: 1,
             m88nsnail: 1,
             m88nworm: 1,
-            m88ngem: 3,
+            m88ngem: 1,
             gameboy: 4,
             battery: 3,
             hardwallet: 2,
@@ -1490,7 +1490,7 @@ let Properties = {
             m88nbrewski: 1,
             m88npie: 1,
             m88nworm: 1,
-            m88ngem: 5,
+            m88ngem: 3,
             GOLD3: 5,
             GOLD4: 5,
             GOLD5: 5,
@@ -1504,7 +1504,7 @@ let Properties = {
     },
 
     m88njaws: {
-        level: 333,
+        level: 369,
         drops: {
             m88nmap: 25,
             m88ndiamondnecklace: 1,
@@ -1514,7 +1514,7 @@ let Properties = {
             m88ndinnerbell: 1,
             m88negg1: 1,
             m88negg2: 1,
-            m88ngem: 40,
+            m88ngem: 5,
             m88nhelioislandicedtea: 2,
             m88nsunsetdaiquiri: 3,
             m88nbrassknuckles: 4,
@@ -1528,7 +1528,7 @@ let Properties = {
         armorMod: 2,
         hpMod: 20,
         weaponMod: 2,
-        respawnDelay: 30000
+        respawnDelay: 60000
     },
 
     m88nhermie: {
@@ -1655,9 +1655,11 @@ let Properties = {
         level: 35,
         drops: {
             m88ndrsgme: 1,
-            m88ngem: 4,
-            m88ndirt: 7,
-            GOLD3: 20,
+            m88nmap: 5,
+            GOLD: 30,
+            GOLD2: 20,
+            GOLD3: 10,
+            GOLD4: 5,
             loopring: 10
         },
     },
@@ -1666,9 +1668,10 @@ let Properties = {
         level: 25,
         drops: {
             m88ngoldenpoo: 1,
-            m88ngem: 4,
-            m88ndirt: 7,
-            GOLD3: 20,
+            m88nmap: 5,
+            GOLD: 20,
+            GOLD2: 10,
+            GOLD3: 5,
             loopring: 10
         },
     },
@@ -2798,7 +2801,7 @@ let Properties = {
         consumable: true,
         cooldown: {
             group: "dropPotions",
-            duration: 60000
+            duration: 300000
         },
         inventoryDescription: "Shot of m88nshine",
         onConsume: function(player){
@@ -2893,7 +2896,7 @@ let Properties = {
         collectable: true,
         consumable: true,
         cooldown: {
-            group: "dropPotions",
+            group: "specialdropPotions",
             duration: 600000
         },
         inventoryDescription: "DRS'd GME",
