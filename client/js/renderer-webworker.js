@@ -17,6 +17,10 @@ const MAX_GLOBAL_LIGHT_INTENSITY = 0.90;
 const MAX_LIGHTS_TO_RENDER = 100;
 const MAX_SHADOWS_TO_RENDER = 100;
 
+let OPTION_SHADOWS = true;
+let OPTION_DYNAMIC_LIGHTS = true;
+let OPTION_PLAYER_SHADOW = true;
+
 // Day/night cycle of 1 hour
 const CYCLE_DURATION = 1000 * 60 * 60;
 let playerPosition = null;
@@ -225,7 +229,7 @@ function drawTile(ctx, tileid, tileset, setW, setH, gridW, cellid, scale, slideO
 
 let tileLights = [];
 
-function render(id, tiles, cameraX, cameraY, scale, clear, serverTime, scene) {
+function render(id, tiles, cameraX, cameraY, scale, clear, serverTime, scene, options) {
     let ctx = contexes[id];
     if(id !== "lights") {
         let canvas = canvases[id];
@@ -258,7 +262,7 @@ function render(id, tiles, cameraX, cameraY, scale, clear, serverTime, scene) {
 
         ctx.restore();
     } else {
-        renderLightOverlay(lights, cameraX, cameraY, scale, serverTime, scene, tileLights);
+        renderLightOverlay(lights, cameraX, cameraY, scale, serverTime, scene, tileLights, options);
         tileLights = [];
     }
 }
@@ -292,7 +296,7 @@ onmessage = (e) => {
                 drawEntities(renderData);
             } else {
                 scale = renderData.scale;
-                render(renderData.id, renderData.tiles, renderData.cameraX, renderData.cameraY, 1, renderData.clear, e.data.serverTime, e.data.scene);
+                render(renderData.id, renderData.tiles, renderData.cameraX, renderData.cameraY, 1, renderData.clear, e.data.serverTime, e.data.scene, renderData.options);
             }
         }
 
@@ -551,7 +555,12 @@ function drawEntities(drawEntitiesData) {
 
 lastTime = null;
 
-function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime, scene, tileLights) {
+function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime, scene, tileLights, options) {
+
+    OPTION_SHADOWS = options?.shadows ?? true;
+    OPTION_PLAYER_SHADOW = options?.playerShadow ?? true;
+    OPTION_DYNAMIC_LIGHTS = options?.dynamicLights ?? true;
+
     if(scene.dn_cycle && scene.dn_cycle !== "false") {
         const cycleProgress = ((serverTime + performance.now()) % CYCLE_DURATION) / CYCLE_DURATION;
         const cycleAngle = cycleProgress * Math.PI * 2;
@@ -573,7 +582,6 @@ function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime, s
     const time = performance.now()
 
     if(lightSources) {
-
         // Draw each light source on the light canvas
         lightSources.filter((lightSource) => {
             // Light source in camera view
@@ -591,7 +599,7 @@ function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime, s
 
             return distance < canvas.width + (lightSource.radius * tilesize) && lightIsInScene;
         }).slice(0, MAX_LIGHTS_TO_RENDER).forEach(lightSource => {
-            if (lightSource.animation) {
+            if (lightSource.animation && OPTION_DYNAMIC_LIGHTS) {
                 lightSource = updateAnimatedLightSource(lightSource, time);
             }
             drawLightSource(ctx, lightSource, cameraX, cameraY);
@@ -603,7 +611,7 @@ function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime, s
         let lightSource = tileLights[i];
         lightSource = Object.assign({}, lightSource); // Clone the light source to avoid modifying the original
 
-        if (lightSource.animation) {
+        if (lightSource.animation && OPTION_DYNAMIC_LIGHTS) {
             lightSource = updateAnimatedLightSource(tileLights[i], time);
         }
 
@@ -629,7 +637,11 @@ function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime, s
 }
 
 function updateAnimatedLightSource(lightSource, time) {
-    if(lightSource.animation instanceof Function) {
+    if(!OPTION_DYNAMIC_LIGHTS) {
+        return lightSource
+    }
+
+    if (lightSource.animation instanceof Function) {
         lightSource.animation(lightSource, time);
     } else {
         switch (lightSource.animation) {
@@ -657,7 +669,7 @@ function drawLightSource(ctx, lightSource, cameraX, cameraY) {
 
     let cacheKey = 'l.' + outerRadius + ',' + innerRadius + '|' + lightSource.intensity + ',' + lightSource.shadow + '|' + lightSource.color + '|' + lightSource.x + ',' + lightSource.y;
 
-    if (!lightSource.animation && imageCache[cacheKey]) {
+    if (!(lightSource.animation || !OPTION_DYNAMIC_LIGHTS) && imageCache[cacheKey]) {
         ctx.globalCompositeOperation = "screen";
         if(lightSource.global) {
             ctx.drawImage(imageCache[cacheKey], lightX, lightY, lightSource.w, lightSource.h);
@@ -704,7 +716,7 @@ function drawLightSource(ctx, lightSource, cameraX, cameraY) {
             tmpCtx.fillRect(0, 0, outerRadius * 2, outerRadius * 2);
         }
 
-        if (!lightSource.animation) {
+        if (!lightSource.animation || !OPTION_DYNAMIC_LIGHTS) {
            addToImageCache(temp_cacheKey, tmpCanvas);
         }
     } else {
@@ -723,16 +735,21 @@ function drawLightSource(ctx, lightSource, cameraX, cameraY) {
         shadowCtx.imageSmoothingEnabled = false;
 
         // clone obstacles
-        let allObstacles = obstacles.map(obstacle => obstacle.map(point => ({x: point.x, y: point.y})));
+        let allObstacles = [];
+        if(OPTION_SHADOWS) {
+            allObstacles = obstacles.map(obstacle => obstacle.map(point => ({x: point.x, y: point.y})));
+        }
 
         // player shadow
-        allObstacles.push(
-            {
-                x: playerPosition.x + 6,
-                y: playerPosition.y + 6,
-                width: 6,
-                height: 6
-            });
+        if (OPTION_PLAYER_SHADOW) {
+            allObstacles.push(
+                {
+                    x: playerPosition.x + 6,
+                    y: playerPosition.y + 6,
+                    width: 6,
+                    height: 6
+                });
+        }
         allObstacles = transformObstacles(allObstacles);
 
         allObstacles.filter((obstacle) => {
@@ -767,6 +784,7 @@ function drawLightSource(ctx, lightSource, cameraX, cameraY) {
         });
     }
 
+
     ctx.globalCompositeOperation = "screen";
     if(lightSource.global) {
         ctx.drawImage(tmpCanvas, lightX, lightY);
@@ -774,7 +792,7 @@ function drawLightSource(ctx, lightSource, cameraX, cameraY) {
         ctx.drawImage(tmpCanvas, lightX - outerRadius, lightY - outerRadius);
     }
 
-    if(!lightSource.animation) {
+    if(!lightSource.animation || !OPTION_DYNAMIC_LIGHTS) {
         addToImageCache(cacheKey, tmpCanvas);
     }
 }

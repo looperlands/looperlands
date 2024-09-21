@@ -312,7 +312,7 @@ LooperLands (https://looperlands.io), initially conceived by BalksHamster and bu
 					<small>Disable centered camera and/or animated tiles for performance.</small>
 					<br>
 					<form id="settingsForm">
-						<ul style="text-align: left;">
+						<ul style="text-align: left; display:block; width: 50%; float: left">
 							<li>
 								<input type="checkbox" id="musicEnabled" name="musicEnabled" value="true">
 								<label for="musicEnabled">Game Music Enabled</label>
@@ -344,6 +344,20 @@ LooperLands (https://looperlands.io), initially conceived by BalksHamster and bu
 							<li>
 								<input type="checkbox" id="renderText" name="renderText" value="true">
 								<label for="renderText">Render Text (names of entities and combat info)</label>
+							</li>
+						</ul>
+						<ul style="text-align: left; display:block; width: 50%; float: left">
+							<li>
+								<input type="checkbox" id="renderShadows" name="renderShadows" value="true">
+								<label for="renderShadows">Render shadows</label>
+							</li>
+							<li>
+								<input type="checkbox" id="renderPlayerShadow" name="renderPlayerShadow" value="true">
+								<label for="renderPlayerShadow">Render player shadow</label>
+							</li>
+							<li>
+								<input type="checkbox" id="enableDynamicLights" name="enableDynamicLights" value="true">
+								<label for="enableDynamicLights">Enable dynamic lights</label>
 							</li>
 						</ul>
 						<br>

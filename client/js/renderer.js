@@ -917,7 +917,20 @@ function(Camera, Item, Character, Player, Timer, Mob, Npc) {
         },
 
         drawLights: function() {
-          return {"type": "render", "id":"lights", "tiles": [], "cameraX": this.camera.x, "cameraY": this.camera.y, "scale": this.scale, "clear": false};
+          return {
+              "type": "render",
+              "id":"lights",
+              "tiles": [],
+              "cameraX": this.camera.x,
+              "cameraY": this.camera.y,
+              "scale": this.scale,
+              "clear": false,
+              "options": {
+                  'shadows': this.game.app.settings.getRenderShadows(),
+                  'playerShadow': this.game.app.settings.getRenderPlayerShadow(),
+                  'dynamicLights': this.game.app.settings.getEnableDynamicLights(),
+              }
+          };
         },
 
         setCameraView: function(ctx) {
