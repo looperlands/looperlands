@@ -12,14 +12,13 @@ let obstacles = [];
 
 let hasLoadedFont = false;
 let GLOBAL_LIGHT_INTENSITY = 0.2;
-const MIN_GLOBAL_LIGHT_INTENSITY = 0.05;
+const MIN_GLOBAL_LIGHT_INTENSITY = 0.08;
 const MAX_GLOBAL_LIGHT_INTENSITY = 0.90;
 const MAX_LIGHTS_TO_RENDER = 100;
 const MAX_SHADOWS_TO_RENDER = 100;
 
 // Day/night cycle of 1 hour
-//const CYCLE_DURATION = 1000 * 60 * 60;
-const CYCLE_DURATION = 1000 * 60;
+const CYCLE_DURATION = 1000 * 60 * 60;
 let playerPosition = null;
 
 function transformObstacles(obstacles) {
