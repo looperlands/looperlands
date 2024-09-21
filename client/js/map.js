@@ -169,6 +169,9 @@ define(['jquery', 'area'], function ($, Area) {
             this.doors = this._getDoors(map);
             this.triggers = this._getTriggers(map);
             this.scenes = this._getScenes(map);
+            this.lights = map.lights;
+            this.shadows = map.shadows;
+            this.lightTiles = map.lightTiles;
             this.checkpoints = this._getCheckpoints(map);
         },
 

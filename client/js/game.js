@@ -6854,7 +6854,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 const animatedTilesLength = animatedTiles.length;
                 for (let i = 0; i < animatedTilesLength; i++) {
                     let tile = animatedTiles[i];
-                    if (this.camera.isVisiblePosition(tile.x, tile.y, 2) && (!scene || !scene.isOutOfBounds(tile.x, tile.y))) {
+                    if (this.camera.isVisiblePosition(tile.x, tile.y, 20) && (!scene || !scene.isOutOfBounds(tile.x, tile.y))) {
                         visibleAnimatedTiles.push(tile);
                     }
                 }
@@ -6878,7 +6878,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     else if(m.isHighTile(id) && !m.isAnimatedTile(id)) {
                         self.visibleHighTiles.push({tileid: id, setW: tilesetwidth, gridW: m.width, cellid: index});
                     }
-                }, 1);
+                }, 10);
             },
 
             connect: function(started_callback) {
@@ -6973,6 +6973,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     self.player.dirtyRect = self.renderer.getEntityBoundingRect(self.player);
                     self.player.playerClassSelectionShown = false;
                     self.handleScene(self.player);
+                    setTimeout(() => self.handleScene(self.player), 50);
+                    setTimeout(() => self.handleScene(self.player), 500);
 
                     if(!self.storage.hasAlreadyPlayed()) {
                         self.storage.initPlayer(self.player.name);
@@ -7666,6 +7668,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                             self.handleTrigger(self.map.getCurrentTrigger(entity), entity);
                                         }
                                     }
+                                } else {
+                                    handleScene(entity);
                                 }
                             }
                             catch(e) {
@@ -9368,6 +9372,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     this.renderer.clearScreen(this.renderer.context);
                 }
 
+                setTimeout(() => this.handleScene(this.player), 500);
                 console.debug("Finished restart");
             },
 

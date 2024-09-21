@@ -5,137 +5,29 @@ let contexes = {};
 let cursors = {};
 let cursor = undefined;
 let sprites = {};
+
+let lightEmittingTiles = {};
+let lights = [];
+let obstacles = [];
+
 let hasLoadedFont = false;
 let GLOBAL_LIGHT_INTENSITY = 0.2;
 const MIN_GLOBAL_LIGHT_INTENSITY = 0.05;
-const MAX_GLOBAL_LIGHT_INTENSITY = 0.95;
-const MAX_LIGHTS_TO_RENDER = 10;
-const MAX_SHADOWS_TO_RENDER = 10;
+const MAX_GLOBAL_LIGHT_INTENSITY = 0.90;
+const MAX_LIGHTS_TO_RENDER = 100;
+const MAX_SHADOWS_TO_RENDER = 100;
 
 // Day/night cycle of 1 hour
 //const CYCLE_DURATION = 1000 * 60 * 60;
 const CYCLE_DURATION = 1000 * 60;
-
-let lightSources = [
-    {
-        id: 1,
-        x: 211,
-        y: 3527,
-        radius: 15,
-        innerRadius: 2,
-        intensity: 0.7,
-        angle: 0,
-        spread: 140,
-        spreadInner: 45,
-        color: {r: 255, g: 280, b: 240},
-        shadow: 0.6,
-    },
-    {
-        id: 2,
-        x: 270,
-        y: 3527,
-        radius: 15,
-        innerRadius: 2,
-        intensity: 0.7,
-        angle: 0,
-        spread: 140,
-        spreadInner: 45,
-        color: {r: 255, g: 280, b: 240},
-        shadow: 0.6,
-    },
-    {
-        id: 3,
-        x: 210,
-        y: 3461,
-        radius: 12, innerRadius: 2,
-        intensity: 0.6,
-        shadow: 0.2,
-    },
-    {
-        id: 4,
-        x: 200,
-        y: 3770,
-        radius: 6,
-        innerRadius: 1,
-        intensity: 0.5,
-        // animation: fireAnimation,
-        color: {r: 255, g: 180, b: 140},
-        shadow: 0.5,
-    },
-    {
-        id: 5,
-        x: 648,
-        y: 2620,
-        radius: 20,
-        innerRadius: 1,
-        intensity: 0.5,
-        //animation: fireAnimation,
-        color: {r: 255, g: 180, b: 140},
-        shadow: 0.5,
-    },
-];
-
-let obstacles = [
-    {
-        x: 128,
-        y: 3520,
-        points: "0,0 9.9375,2.875 31.5,30 31.5625,39.8125 28.3125,45.3125 17.6875,51.3125 10.4375,51.5625 6.25,48.4375 4.125,46.8125 -6.875,46.9375 -14,40.625 -15.6875,34.5 -13.875,27.1875 -13.8125,21.4375 -15.75,17.5625 -7.1875,2"
-    },
-    {
-        x: 191.685,
-        y: 3698,
-        points: "0,0 14.8114,13.661 14.5238,45.1532 9.9222,47.3102 7.19,47.3102 4.8892,45.7284 -6.0396,46.016 -9.0594,47.454 -12.223,47.1664 -12.942,46.1598 -15.6742,46.1598 -15.5304,14.2362"
-    },
-    {
-        x: 364.533,
-        y: 3539.49,
-        points: "0,0 14.5238,3.7388 23.727,11.0726 30.3418,19.2692 33.2178,40.6954 14.2362,56.5134 -0.2876,57.9514 -21.4262,48.892 -25.4526,40.983 -26.1716,29.3352 -16.2494,6.1834"
-    },
-    {
-        x: 480.533,
-        y: 3539.49,
-        points: "0,0 14.5238,3.7388 23.727,11.0726 30.3418,19.2692 33.2178,40.6954 14.2362,56.5134 -0.2876,57.9514 -21.4262,48.892 -25.4526,40.983 -26.1716,29.3352 -16.2494,6.1834"
-    },
-    {
-        x: 590,
-        y: 2548,
-        points: "0,0 14.5238,3.7388 23.727,11.0726 30.3418,19.2692 33.2178,40.6954 14.2362,56.5134 -0.2876,57.9514 -21.4262,48.892 -25.4526,40.983 -26.1716,29.3352 -16.2494,6.1834"
-    },
-    {
-        x: 526,
-        y: 2628,
-        points: "0,0 14.5238,3.7388 23.727,11.0726 30.3418,19.2692 33.2178,40.6954 14.2362,56.5134 -0.2876,57.9514 -21.4262,48.892 -25.4526,40.983 -26.1716,29.3352 -16.2494,6.1834"
-    },
-    {
-        x: 751,
-        y: 2533,
-        points: "0,0 14.5238,3.7388 23.727,11.0726 30.3418,19.2692 33.2178,40.6954 14.2362,56.5134 -0.2876,57.9514 -21.4262,48.892 -25.4526,40.983 -26.1716,29.3352 -16.2494,6.1834"
-    },
-    {
-        x: 654,
-        y: 2436,
-        points: "0,0 14.5238,3.7388 23.727,11.0726 30.3418,19.2692 33.2178,40.6954 14.2362,56.5134 -0.2876,57.9514 -21.4262,48.892 -25.4526,40.983 -26.1716,29.3352 -16.2494,6.1834"
-    },
-    {
-        x: 814,
-        y: 2595,
-        points: "0,0 14.5238,3.7388 23.727,11.0726 30.3418,19.2692 33.2178,40.6954 14.2362,56.5134 -0.2876,57.9514 -21.4262,48.892 -25.4526,40.983 -26.1716,29.3352 -16.2494,6.1834"
-    },
-    {
-        x: 622,
-        y: 2707,
-        points: "0,0 14.5238,3.7388 23.727,11.0726 30.3418,19.2692 33.2178,40.6954 14.2362,56.5134 -0.2876,57.9514 -21.4262,48.892 -25.4526,40.983 -26.1716,29.3352 -16.2494,6.1834"
-    },
-    {
-        x: 733,
-        y: 2675,
-        points: "0,0 14.5238,3.7388 23.727,11.0726 30.3418,19.2692 33.2178,40.6954 14.2362,56.5134 -0.2876,57.9514 -21.4262,48.892 -25.4526,40.983 -26.1716,29.3352 -16.2494,6.1834"
-    }
-];
 let playerPosition = null;
 
 function transformObstacles(obstacles) {
     let transformedObstacles = [];
+    if(!obstacles) {
+        return transformedObstacles;
+    }
+
     obstacles.forEach(obstacle => {
         // if we get an object with x, y, width, height, convert it to a polygon
         if (obstacle.width !== undefined && obstacle.height !== undefined) {
@@ -147,10 +39,10 @@ function transformObstacles(obstacles) {
             ];
         }
 
-        if (obstacle.points) {
-            obstacle = obstacle.points.split(" ").map(point => {
+        if (obstacle.polygon) {
+            obstacle = obstacle.polygon.points.split(" ").map(point => {
                 const [x, y] = point.split(",").map(Number);
-                return {x: obstacle.x + x, y: obstacle.y + y};
+                return {x: parseFloat(obstacle.x) + x, y: parseFloat(obstacle.y) + y};
             });
         }
 
@@ -159,8 +51,6 @@ function transformObstacles(obstacles) {
 
     return transformedObstacles;
 }
-
-obstacles = transformObstacles(obstacles);
 
 function fireAnimation(lightSource, time) {
     const flickerStrength = 0.05; // Controls how much the light flickers
@@ -334,30 +224,44 @@ function drawTile(ctx, tileid, tileset, setW, setH, gridW, cellid, scale, slideO
     }
 }
 
+let tileLights = [];
+
 function render(id, tiles, cameraX, cameraY, scale, clear, serverTime, scene) {
     let ctx = contexes[id];
-    let canvas = canvases[id];
-    if (clear === true) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
-    ctx.save();
-    ctx.translate(-cameraX * scale, -cameraY * scale);
-
-    const tilesLength = tiles.length;
-
-    // Render the game world normally (tiles, entities, etc.)
-    for (let i = 0; i < tilesLength; i++) {
-        let tile = tiles[i];
-        if (tile.id !== -1) {
-            // Render your tile here as usual...
-            drawTile(ctx, tile.tileid, tileset, tile.setW, tile.setH, tile.gridW, tile.cellid, scale, tile.slideOffsetX, tile.slideOffsetY, tile.colorShift);
+    if(id !== "lights") {
+        let canvas = canvases[id];
+        if (clear === true) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
+        ctx.save();
+        ctx.translate(-cameraX * scale, -cameraY * scale);
+
+        const tilesLength = tiles.length;
+
+        // Render the game world normally (tiles, entities, etc.)
+        for (let i = 0; i < tilesLength; i++) {
+            let tile = tiles[i];
+            if (tile.id !== -1) {
+                // Render your tile here as usual...
+                drawTile(ctx, tile.tileid, tileset, tile.setW, tile.setH, tile.gridW, tile.cellid, scale, tile.slideOffsetX, tile.slideOffsetY, tile.colorShift);
+
+                if (lightEmittingTiles && lightEmittingTiles[String(parseInt(tile.tileid + 1))]) {
+                    let lightEmittingTile = Object.assign({}, lightEmittingTiles[tile.tileid + 1]);
+
+                    let destX = getX(tile.cellid + 1, tile.gridW) * tilesize;
+                    let destY = Math.floor(tile.cellid / tile.gridW) * tilesize;
+                    lightEmittingTile.x = destX;
+                    lightEmittingTile.y = destY;
+                    tileLights.push(lightEmittingTile);
+                }
+            }
+        }
+
+        ctx.restore();
+    } else {
+        renderLightOverlay(lights, cameraX, cameraY, scale, serverTime, scene, tileLights);
+        tileLights = [];
     }
-
-    // Render the light overlay
-    renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime, scene);
-
-    ctx.restore();
 }
 
 onmessage = (e) => {
@@ -436,6 +340,13 @@ onmessage = (e) => {
         contexes[id] = ctx;
     } else if (e.data.type === "loadSprite") {
         sprites[e.data.spriteName] = new Sprite(e.data.spriteName, e.data.src, e.data.animationData, e.data.width, e.data.height, e.data.offsetX, e.data.offsetY);
+    }  else if (e.data.type === "setLights") {
+        lights = e.data.lights;
+    } else if (e.data.type === "setObstacles") {
+        obstacles = e.data.obstacles;
+        obstacles = transformObstacles(obstacles);
+    }  else if (e.data.type === "setLightEmittingTiles") {
+        lightEmittingTiles = e.data.lightEmittingTiles;
     } else if (e.data.type === "idle") {
         requestAnimationFrame(() => {
             postMessage({type: "rendered"});
@@ -641,7 +552,7 @@ function drawEntities(drawEntitiesData) {
 
 lastTime = null;
 
-function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime, scene) {
+function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime, scene, tileLights) {
     if(scene.dn_cycle && scene.dn_cycle !== "false") {
         const cycleProgress = ((serverTime + performance.now()) % CYCLE_DURATION) / CYCLE_DURATION;
         const cycleAngle = cycleProgress * Math.PI * 2;
@@ -662,54 +573,98 @@ function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime, s
 
     const time = performance.now()
 
-    // Draw each light source on the light canvas
-    lightSources.filter((lightSource) => {
-        // Light source in camera view
-        let dx = lightSource.x - cameraX;
-        let dy = lightSource.y - cameraY;
-        let distance = hypot(dx, dy);
+    if(lightSources) {
 
-        return distance < canvas.width + (lightSource.radius * tilesize);
-    }).slice(0, MAX_LIGHTS_TO_RENDER).forEach(lightSource => {
+        // Draw each light source on the light canvas
+        lightSources.filter((lightSource) => {
+            // Light source in camera view
+            let dx = lightSource.x - cameraX;
+            let dy = lightSource.y - cameraY;
+            let distance = hypot(dx, dy);
+
+            // Light is within scene
+            let lightIsInScene = lightSource.x >= (scene.x * tilesize) && lightSource.x <= (scene.x + scene.width) * tilesize && lightSource.y >= scene.y * tilesize && lightSource.y <= (scene.y + scene.height) * tilesize;
+            // let lightIsInScene = true;
+
+            if (lightSource.global) {
+                return distance < canvas.width + lightSource.w && lightIsInScene;
+            }
+
+            return distance < canvas.width + (lightSource.radius * tilesize) && lightIsInScene;
+        }).slice(0, MAX_LIGHTS_TO_RENDER).forEach(lightSource => {
+            if (lightSource.animation) {
+                lightSource = updateAnimatedLightSource(lightSource, time);
+            }
+            drawLightSource(ctx, lightSource, cameraX, cameraY);
+        });
+    }
+
+    // Draw tile lights
+    for(let i = 0; i < tileLights.length; i++) {
+        let lightSource = tileLights[i];
+        lightSource = Object.assign({}, lightSource); // Clone the light source to avoid modifying the original
+
         if (lightSource.animation) {
-            lightSource = Object.assign({}, lightSource); // Clone the light source to avoid modifying the original
-            lightSource.animation(lightSource, time);
+            lightSource = updateAnimatedLightSource(tileLights[i], time);
         }
 
-        drawLightSource(ctx, lightSource, cameraX, cameraY, scene);
-    });
+        drawLightSource(ctx, lightSource, cameraX, cameraY);
+    }
 
     // Player holds lantern
-    if(GLOBAL_LIGHT_INTENSITY < 0.7) {
-        drawLightSource(ctx, {
-            id: 9999,
-            x: playerPosition.x + 8,
-            y: playerPosition.y + 6,
-            radius: 6,
-            innerRadius: 0,
-            intensity: 0.3,
-            shadow: 0,
-        }, cameraX, cameraY, scene);
-    }
+    drawLightSource(ctx, {
+        id: 9999,
+        x: playerPosition.x + 8,
+        y: playerPosition.y + 6,
+        radius: 4,
+        innerRadius: 0,
+        intensity: 0.2,
+        shadow: 0,
+    }, cameraX, cameraY, scene);
+
+    let origCompositeOperation = ctx.globalCompositeOperation;
+    ctx.globalCompositeOperation = "destination-in";
+    ctx.fillStyle = "black";
+    ctx.fillRect((scene.x * tilesize) - cameraX, (scene.y * tilesize) - cameraY, scene.width * tilesize, scene.height * tilesize);
+    ctx.globalCompositeOperation = origCompositeOperation;
 }
 
+function updateAnimatedLightSource(lightSource, time) {
+    if(lightSource.animation instanceof Function) {
+        lightSource.animation(lightSource, time);
+    } else {
+        switch (lightSource.animation) {
+            case 'fire':
+                fireAnimation(lightSource, time);
+                break;
+            default:
+                break
+        }
+    }
+    return lightSource
+}
 
-function drawLightSource(ctx, lightSource, cameraX, cameraY, scene) {
+function drawLightSource(ctx, lightSource, cameraX, cameraY) {
     // Adjust light source position by subtracting the camera's position
     const lightX = (lightSource.x - cameraX);
     const lightY = (lightSource.y - cameraY);
     const innerRadius = (lightSource.innerRadius || 0) * tilesize;
-    const outerRadius = lightSource.radius * tilesize;
+    const outerRadius = (lightSource.radius || 1) * tilesize;
     const intensity = lightSource.intensity || 1;
     const color = lightSource.color || {r: 255, g: 255, b: 255};
+    const spread = parseInt(lightSource.spread || 0);
+    const innerSpread = parseInt(lightSource.innerSpread || 0);
+    const angleDeg = parseInt(lightSource.angle || 0);
 
-    let cacheKey = 'l.' + outerRadius + ',' + innerRadius + '|' + lightSource.intensity + ',' + lightSource.shadow + '|' + lightSource.color;
-    if(lightSource.shadow > 0) {
-        cacheKey += '|' + lightSource.x + ',' + lightSource.y;
-    }
+    let cacheKey = 'l.' + outerRadius + ',' + innerRadius + '|' + lightSource.intensity + ',' + lightSource.shadow + '|' + lightSource.color + '|' + lightSource.x + ',' + lightSource.y;
+
     if (!lightSource.animation && imageCache[cacheKey]) {
-        ctx.globalCompositeOperation = "lighter";
-        ctx.drawImage(imageCache[cacheKey], lightX - outerRadius, lightY - outerRadius);
+        ctx.globalCompositeOperation = "screen";
+        if(lightSource.global) {
+            ctx.drawImage(imageCache[cacheKey], lightX, lightY, lightSource.w, lightSource.h);
+        } else {
+            ctx.drawImage(imageCache[cacheKey], lightX - outerRadius, lightY - outerRadius);
+        }
         return
     }
 
@@ -717,17 +672,15 @@ function drawLightSource(ctx, lightSource, cameraX, cameraY, scene) {
     const tmpCtx = tmpCanvas.getContext('2d');
     tmpCtx.imageSmoothingEnabled = false;
 
-    const temp_cacheKey = 'tl.' + outerRadius + ',' + innerRadius + '|' + intensity + ',' + lightSource.shadow + '|' + color + '|' + lightSource.spread + '|' + lightSource.spreadInner + '|' + lightSource.angle + '|' + lightX + ',' + lightY;
+    const temp_cacheKey = 'tl.' + outerRadius + ',' + innerRadius + '|' + intensity + ',' + lightSource.shadow + '|' + color + '|' + lightSource.spread + '|' + lightSource.innerSpread + '|' + lightSource.angle + '|' + lightX + ',' + lightY;
     if (!imageCache[temp_cacheKey]) {
         // Create the arc for the spread
-        if (lightSource.spread > 0) {
-            const spread = lightSource.spread;
-            const spreadInner = lightSource.spreadInner || 0;
-            const angle = toRad((lightSource.angle || 0) + 90);
+        if (spread > 0) {
+            const angle = toRad(angleDeg + 90);
             const arcGradient = tmpCtx.createConicGradient(angle - toRad(spread / 2), outerRadius, outerRadius);
             arcGradient.addColorStop(0, `rgba(${color.r},${color.g},${color.b}, 0)`);
-            arcGradient.addColorStop(toPerc(spread / 2) - toPerc(spreadInner) / 2, `rgba(${color.r},${color.g},${color.b}, ${intensity})`);
-            arcGradient.addColorStop(toPerc(spread / 2) + toPerc(spreadInner) / 2, `rgba(${color.r},${color.g},${color.b}, ${intensity})`);
+            arcGradient.addColorStop(toPerc(spread / 2) - toPerc(innerSpread) / 2, `rgba(${color.r},${color.g},${color.b}, ${intensity})`);
+            arcGradient.addColorStop(toPerc(spread / 2) + toPerc(innerSpread) / 2, `rgba(${color.r},${color.g},${color.b}, ${intensity})`);
             arcGradient.addColorStop(toPerc(spread), `rgba(${color.r},${color.g},${color.b}, 0)`);
 
             tmpCtx.fillStyle = arcGradient;
@@ -738,14 +691,19 @@ function drawLightSource(ctx, lightSource, cameraX, cameraY, scene) {
             tmpCtx.globalCompositeOperation = 'destination-in';
         }
 
-        const gradient = tmpCtx.createRadialGradient(outerRadius, outerRadius, innerRadius, outerRadius, outerRadius, outerRadius);
+        if (lightSource.global) {
+            tmpCtx.fillStyle = `rgba(${color.r},${color.g},${color.b}, ${intensity})`;
+            tmpCtx.fillRect(0, 0, lightSource.w, lightSource.h);
+        } else {
+            const gradient = tmpCtx.createRadialGradient(outerRadius, outerRadius, innerRadius, outerRadius, outerRadius, outerRadius);
 
-        // The light starts fully bright at the center and fades to zero at the radius
-        gradient.addColorStop(0, `rgba(${color.r},${color.g},${color.b}, ${intensity})`);
-        gradient.addColorStop(1, `rgba(${color.r},${color.g},${color.b}, 0)`);
+            // The light starts fully bright at the center and fades to zero at the radius
+            gradient.addColorStop(0, `rgba(${color.r},${color.g},${color.b}, ${intensity})`);
+            gradient.addColorStop(1, `rgba(${color.r},${color.g},${color.b}, 0)`);
 
-        tmpCtx.fillStyle = gradient;
-        tmpCtx.fillRect(0, 0, outerRadius * 2, outerRadius * 2);
+            tmpCtx.fillStyle = gradient;
+            tmpCtx.fillRect(0, 0, outerRadius * 2, outerRadius * 2);
+        }
 
         if (!lightSource.animation) {
            addToImageCache(temp_cacheKey, tmpCanvas);
@@ -768,15 +726,15 @@ function drawLightSource(ctx, lightSource, cameraX, cameraY, scene) {
         // clone obstacles
         let allObstacles = obstacles.map(obstacle => obstacle.map(point => ({x: point.x, y: point.y})));
 
-        // // player shadow
-        // allObstacles.push(
-        //     {
-        //         x: playerPosition.x + 6,
-        //         y: playerPosition.y + 6,
-        //         width: 6,
-        //         height: 6
-        //     });
-        // allObstacles = transformObstacles(allObstacles);
+        // player shadow
+        allObstacles.push(
+            {
+                x: playerPosition.x + 6,
+                y: playerPosition.y + 6,
+                width: 6,
+                height: 6
+            });
+        allObstacles = transformObstacles(allObstacles);
 
         allObstacles.filter((obstacle) => {
             // Obstacle in light radius
@@ -810,8 +768,12 @@ function drawLightSource(ctx, lightSource, cameraX, cameraY, scene) {
         });
     }
 
-    ctx.globalCompositeOperation = "lighter";
-    ctx.drawImage(tmpCanvas, lightX - outerRadius, lightY - outerRadius);
+    ctx.globalCompositeOperation = "screen";
+    if(lightSource.global) {
+        ctx.drawImage(tmpCanvas, lightX, lightY);
+    } else {
+        ctx.drawImage(tmpCanvas, lightX - outerRadius, lightY - outerRadius);
+    }
 
     if(!lightSource.animation) {
         addToImageCache(cacheKey, tmpCanvas);
