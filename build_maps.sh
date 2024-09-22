@@ -9,7 +9,7 @@ if [ ! -f "tools/maps/tmx/$1" ]; then
   echo "File $1 does not exist"
   exit 1
 fi
-export DOCKER_DEFAULT_PLATFORM=linux/amd64
+#export DOCKER_DEFAULT_PLATFORM=linux/amd64
 export PROGRESS_NO_TRUNC=1
 docker kill $(docker ps -q) 2> /dev/null
 docker build --progress plain -f Dockerfile.map . -t mapbuild --build-arg "MAP_FILE=$1" || exit 1

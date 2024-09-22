@@ -2675,7 +2675,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.moveSpeed = 100;
                 this.idleSpeed = 100;
                 this.setAttackRate(500);
-                this.atkSpeed = 50;                
+                this.atkSpeed = 50;
                 this.isAggressive = true;
                 this.aggroRange = 4;
             }
