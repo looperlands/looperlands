@@ -2038,6 +2038,16 @@ let Properties = {
         friendly: true
     },
 
+    m88nbabyyoda1: {
+        level: 1,
+        friendly: true
+    },
+
+    m88nbabyyoda2: {
+        level: 1,
+        friendly: true
+    },
+
     //m88n Mob Nexans
     nexan1: {
         hp: 10,
