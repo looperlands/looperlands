@@ -45,7 +45,7 @@ function(Camera, Item, Character, Player, Timer, Mob, Npc) {
             this.maxFPS = this.FPS;
             this.realFPS = 0;
             this.frameTime = 1000 / this.FPS;
-            this.isDebugInfoVisible = true;
+            this.isDebugInfoVisible = false;
 
             this.animatedTileCount = 0;
             this.highTileCount = 0;
@@ -146,7 +146,7 @@ function(Camera, Item, Character, Player, Timer, Mob, Npc) {
         },
 
         initFPS: function() {
-            this.FPS = 120;
+            this.FPS = 50;
         },
 
         initFont: function() {
@@ -952,8 +952,6 @@ function(Camera, Item, Character, Player, Timer, Mob, Npc) {
                 this.worker.postMessage({"type": "setObstacles", "obstacles": this.game.map.shadows})
                 this.worker.postMessage({"type": "setLightEmittingTiles", "lightEmittingTiles": this.game.map.lightTiles})
                 this.syncedLights = true;
-                console.log(this.game.map.lights)
-                console.log(this.game.map.lightTiles)
             }
 
             let centeredCamera = !this.game.canUseCenteredCamera();
