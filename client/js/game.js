@@ -6854,7 +6854,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 const animatedTilesLength = animatedTiles.length;
                 for (let i = 0; i < animatedTilesLength; i++) {
                     let tile = animatedTiles[i];
-                    if (this.camera.isVisiblePosition(tile.x, tile.y, 20) && (!scene || !scene.isOutOfBounds(tile.x, tile.y))) {
+                    if (this.camera.isVisiblePosition(tile.x, tile.y, 2) && (!scene || !scene.isOutOfBounds(tile.x, tile.y))) {
                         visibleAnimatedTiles.push(tile);
                     }
                 }
@@ -6871,14 +6871,24 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.visibleAnimatedHighTiles = this.findVisibleAnimatedTiles(this.highAnimatedTiles);
                 this.visibleTerrainTiles = []
                 this.visibleHighTiles = []
+                let renderedLightTiles = [];
                 this.forEachVisibleTile(function (id, index) {
-                    if(!m.isHighTile(id) && !m.isAnimatedTile(id))  {
+                    if(m.isLightTile(id)) {
+                        renderedLightTiles.push(id);
+                    }
+                    if(!m.isHighTile(id) && !m.isAnimatedTile(id)) {
                         self.visibleTerrainTiles.push({tileid: id, setW: tilesetwidth, gridW: m.width, cellid: index});
                     }
                     else if(m.isHighTile(id) && !m.isAnimatedTile(id)) {
                         self.visibleHighTiles.push({tileid: id, setW: tilesetwidth, gridW: m.width, cellid: index});
                     }
-                }, 10);
+                }, 2);
+
+                this.forEachVisibleTile(function (id, index) {
+                    if(m.isLightTile(id) && !renderedLightTiles.includes(id)) {
+                        self.visibleTerrainTiles.push({tileid: id, setW: tilesetwidth, gridW: m.width, cellid: index});
+                    }
+                }, 20);
             },
 
             connect: function(started_callback) {
@@ -7335,11 +7345,11 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         return new Promise((resolve, reject) => {
                             try {
                                 var ignored = [self.player]; // Always ignore self
-                    
+
                                 if (self.player.hasTarget()) {
                                     ignored.push(self.player.target);
                                 }
-                    
+
                                 self.findPath(self.player, x, y, ignored)
                                     .then(path => resolve(path))
                                     .catch(error => reject(error));
@@ -7582,16 +7592,16 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                             return new Promise((resolve, reject) => {
                                                 try {
                                                     var ignored = [entity]; // Always ignore self
-                                        
+
                                                     var ignoreTarget = function(target) {
                                                         ignored.push(target);
-                                        
+
                                                         // also ignore other attackers of the target entity
                                                         target.forEachAttacker(function(attacker) {
                                                             ignored.push(attacker);
                                                         });
                                                     };
-                                        
+
                                                     if (entity.hasTarget()) {
                                                         ignoreTarget(entity.target);
                                                     } else if (entity.previousTarget) {
@@ -7599,7 +7609,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                                         // See: tryMovingToADifferentTile()
                                                         ignoreTarget(entity.previousTarget);
                                                     }
-                                        
+
                                                     self.findPath(entity, x, y, ignored)
                                                         .then(path => resolve(path))
                                                         .catch(error => reject(error));

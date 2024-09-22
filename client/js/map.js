@@ -408,6 +408,10 @@ define(['jquery', 'area'], function ($, Area) {
             }
         },
 
+        isLightTile: function (id) {
+            return this.lightTiles[id+1];
+        },
+
         getTileAnimationProps: function(id) {
             function parseCSV(value) {
                 if (typeof value === 'string') {
