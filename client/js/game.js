@@ -6618,6 +6618,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 //console.log("Initialized animated tiles.");
             },
 
+            initLightTiles: function() {
+
+            },
+
             addToRenderingGrid: function(entity, x, y) {
                 if(!this.map.isOutOfBounds(x, y)) {
                     this.renderingGrid[y][x][entity.id] = entity;
@@ -6854,7 +6858,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 const animatedTilesLength = animatedTiles.length;
                 for (let i = 0; i < animatedTilesLength; i++) {
                     let tile = animatedTiles[i];
-                    if (this.camera.isVisiblePosition(tile.x, tile.y, 2) && (!scene || !scene.isOutOfBounds(tile.x, tile.y))) {
+                    let extra = this.map.isLightTile(tile.id) ? 20 : 2;
+
+                    if (this.camera.isVisiblePosition(tile.x, tile.y, extra) && (!scene || !scene.isOutOfBounds(tile.x, tile.y))) {
                         visibleAnimatedTiles.push(tile);
                     }
                 }
@@ -6871,11 +6877,11 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.visibleAnimatedHighTiles = this.findVisibleAnimatedTiles(this.highAnimatedTiles);
                 this.visibleTerrainTiles = []
                 this.visibleHighTiles = []
-                let renderedLightTiles = [];
                 this.forEachVisibleTile(function (id, index) {
                     if(m.isLightTile(id)) {
-                        renderedLightTiles.push(id);
+                        return
                     }
+
                     if(!m.isHighTile(id) && !m.isAnimatedTile(id)) {
                         self.visibleTerrainTiles.push({tileid: id, setW: tilesetwidth, gridW: m.width, cellid: index});
                     }
@@ -6885,8 +6891,15 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 }, 2);
 
                 this.forEachVisibleTile(function (id, index) {
-                    if(m.isLightTile(id) && !renderedLightTiles.includes(id)) {
+                    if (!m.isLightTile(id)) {
+                        return;
+                    }
+
+                    if(!m.isHighTile(id) && !m.isAnimatedTile(id)) {
                         self.visibleTerrainTiles.push({tileid: id, setW: tilesetwidth, gridW: m.width, cellid: index});
+                    }
+                    else if(m.isHighTile(id) && !m.isAnimatedTile(id)) {
+                        self.visibleHighTiles.push({tileid: id, setW: tilesetwidth, gridW: m.width, cellid: index});
                     }
                 }, 20);
             },
