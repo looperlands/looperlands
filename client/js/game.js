@@ -89,6 +89,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 // Projectiles
                 this.lowAmmoThreshold = 10;
 
+                setInterval(() => this.handleScene(this.player), 100);
+
+
                 // sprites
                 this.spriteNames = ["hand", "handclick", "sword", "loot", "target", "talk", "float", "indicator", "sparks", "shadow16", "rat", "skeleton", "skeleton2", "spectre", "boss", "deathknight",
                     "ogre", "crab", "snake", "eye", "bat", "goblin", "wizard", "guard", "taikoguard", "king", "villagegirl", "villager", "coder", "agent", "rick", "scientist", "nyan", "priest", "coblumberjack", "cobhillsnpc", "cobcobmin", "cobellen", "cobminer", "cobjohnny", "cobashley",
@@ -6617,11 +6620,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.findVisibleTiles();
                 //console.log("Initialized animated tiles.");
             },
-
-            initLightTiles: function() {
-
-            },
-
+            
             addToRenderingGrid: function(entity, x, y) {
                 if(!this.map.isOutOfBounds(x, y)) {
                     this.renderingGrid[y][x][entity.id] = entity;

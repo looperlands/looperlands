@@ -376,7 +376,7 @@ define(['jquery', 'area'], function ($, Area) {
 
         /**
          * Returns true if the given tile id is "high", i.e. above all entities.
-         * Used by the renderer to know which tiles to draw after all the entities 
+         * Used by the renderer to know which tiles to draw after all the entities
          * have been drawn.
          *
          * @param {Number} id The tile id in the tileset
@@ -409,6 +409,10 @@ define(['jquery', 'area'], function ($, Area) {
         },
 
         isLightTile: function (id) {
+            if(!this.lightTiles) {
+                return false;
+            }
+
             return this.lightTiles[id+1];
         },
 
@@ -438,7 +442,7 @@ define(['jquery', 'area'], function ($, Area) {
                     b: endColor.b - startColor.b
                 };
             }
-        
+
             function parseColorShift(colorShift) {
                 if (!colorShift) { return null; }
                 const values = colorShift.split(',').map(v => v.trim());
@@ -466,7 +470,7 @@ define(['jquery', 'area'], function ($, Area) {
                 bouncePause: tileProps.bouncePause
             };
         },
-        
+
         isDoor: function (x, y) {
             return this.doors[this.GridPositionToTileIndex(x, y)] !== undefined;
         },
