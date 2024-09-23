@@ -89,8 +89,6 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 // Projectiles
                 this.lowAmmoThreshold = 10;
 
-                setInterval(() => this.handleScene(this.player), 100);
-
 
                 // sprites
                 this.spriteNames = ["hand", "handclick", "sword", "loot", "target", "talk", "float", "indicator", "sparks", "shadow16", "rat", "skeleton", "skeleton2", "spectre", "boss", "deathknight",
@@ -6145,6 +6143,11 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     this.player.setSprite(playerSprite);
                     this.player.idle();
                 }
+
+                let self = this;
+                setInterval(() => self.handleScene(self.player), 100);
+                setTimeout(() => self.handleScene(self.player), 100);
+
                 console.debug("Finished initPlayer");
             },
 
@@ -6620,7 +6623,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.findVisibleTiles();
                 //console.log("Initialized animated tiles.");
             },
-            
+
             addToRenderingGrid: function(entity, x, y) {
                 if(!this.map.isOutOfBounds(x, y)) {
                     this.renderingGrid[y][x][entity.id] = entity;
@@ -6859,7 +6862,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     let tile = animatedTiles[i];
                     let extra = this.map.isLightTile(tile.id) ? 20 : 2;
 
-                    if (this.camera.isVisiblePosition(tile.x, tile.y, extra) && (!scene || !scene.isOutOfBounds(tile.x, tile.y))) {
+                    if (this.camera && this.camera.isVisiblePosition(tile.x, tile.y, extra) && (!scene || !scene.isOutOfBounds(tile.x, tile.y))) {
                         visibleAnimatedTiles.push(tile);
                     }
                 }
@@ -6867,6 +6870,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             },
 
             findVisibleTiles: function() {
+                if(!this.renderer || !this.renderer.tileset) {
+                    return
+                }
+
                 let self = this,
                     m = this.map,
                     tilesetwidth = this.renderer.tileset.width / m.tilesize;
@@ -6994,7 +7001,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     self.addEntity(self.player);
                     self.player.dirtyRect = self.renderer.getEntityBoundingRect(self.player);
                     self.player.playerClassSelectionShown = false;
-                    self.handleScene(self.player);
+
                     setTimeout(() => self.handleScene(self.player), 50);
                     setTimeout(() => self.handleScene(self.player), 500);
 
@@ -7512,10 +7519,6 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                                     console.debug("Spawned " + Types.getKindAsString(entity.kind) + " (" + entity.id + ") at "+entity.gridX+", "+entity.gridY);
 
-                                    if (entity instanceof Player) {
-                                        self.handleScene(entity);
-                                    }
-
                                     if(entity instanceof Character) {
                                         entity.onBeforeStep(function() {
                                             self.unregisterEntityPosition(entity);
@@ -7691,7 +7694,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                         }
                                     }
                                 } else {
-                                    handleScene(entity);
+                                    self.handleScene(entity);
                                 }
                             }
                             catch(e) {
@@ -8416,6 +8419,13 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     if (m.isOutOfBounds(x, y)) {
                         return;
                     }
+
+                    if (!self.renderingGrid) {
+                        return;
+                    }
+                    if (!self.renderingGrid[y]) {
+                        return;
+                    }
                     if (!self.renderingGrid[y][x]) {
                         return;
                     }
@@ -8434,6 +8444,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
              *
              */
             forEachVisibleTileIndex: function(callback, extra) {
+                if(!this.camera) {
+                    return;
+                }
+
                 var self  = this;
                 var m = this.map;
                 var scene = this.player.getScene();
@@ -8937,7 +8951,41 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         }
                     }
                     else {
-                        this.makePlayerGoTo(pos.x, pos.y);
+                        if(this.isZoningTile(pos.x, pos.y) && !pos.keyboard) {
+                            let z = this.getZoningOrientation(pos.x, pos.y);
+                            switch (z) {
+                                case Types.Orientations.LEFT:
+                                    if(!this.map.isColliding(pos.x-1, pos.y)) {
+                                        this.makePlayerGoTo(pos.x - 1, pos.y);
+                                    } else {
+                                        this.makePlayerGoTo(pos.x, pos.y);
+                                    }
+                                    break;
+                                case Types.Orientations.RIGHT:
+                                    if(!this.map.isColliding(pos.x+1, pos.y)) {
+                                        this.makePlayerGoTo(pos.x + 1, pos.y);
+                                    } else {
+                                        this.makePlayerGoTo(pos.x, pos.y);
+                                    }
+                                    break;
+                                case Types.Orientations.UP:
+                                    if(!this.map.isColliding(pos.x, pos.y-1)) {
+                                        this.makePlayerGoTo(pos.x, pos.y-1);
+                                    } else {
+                                        this.makePlayerGoTo(pos.x, pos.y);
+                                    }
+                                    break;
+                                case Types.Orientations.DOWN:
+                                    if(!this.map.isColliding(pos.x, pos.y+1)) {
+                                        this.makePlayerGoTo(pos.x, pos.y+1);
+                                    } else {
+                                        this.makePlayerGoTo(pos.x, pos.y);
+                                    }
+                                    break;
+                            }
+                        } else {
+                            this.makePlayerGoTo(pos.x, pos.y);
+                        }
                         if ($('#miniMap').is(':visible')) {
                             this.app.toggleMiniMap(true);
                         }
@@ -9025,6 +9073,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             },
 
             handleScene(entity) {
+                if (!this.camera) {
+                    return
+                }
                 const entityScene = entity.getScene();
                 const currentScene = this.map.getCurrentScene(entity);
                 if(entity.getScene() !== currentScene) {
@@ -9032,9 +9083,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         this.camera.setBoundingBox(currentScene.x, currentScene.y, currentScene.width, currentScene.height);
 
                         if(currentScene.message) {
-                            self.showNotification(currentScene.message);
+                            this.showNotification(currentScene.message);
                         } else if(currentScene.name && (!entityScene || entityScene.name !== currentScene.name)) {
-                            self.showNotification("Welcome to " + currentScene.name);
+                            this.showNotification("Welcome to " + currentScene.name);
                         }
                     } else {
                         this.camera.removeBoundingBox(this.player);
@@ -9046,6 +9097,13 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     } else {
                         this.app.setBackground('black');
                     }
+
+                    let self = this;
+                    setTimeout(() => {
+                        self.renderer.clearScreen(this.renderer.context);
+                        self.renderer.redrawTerrain = true;
+                        self.resetZone();
+                    }, 100)
                 }
             },
 
@@ -9394,7 +9452,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     this.renderer.clearScreen(this.renderer.context);
                 }
 
-                setTimeout(() => this.handleScene(this.player), 500);
+                let self = this;
+                setTimeout(() => {
+                    self.handleScene(self.player)
+                }, 100);
                 console.debug("Finished restart");
             },
 
