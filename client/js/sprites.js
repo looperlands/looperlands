@@ -666,6 +666,8 @@ define(['text!../sprites/agent.json',
         'text!../sprites/m88nnancyclown.json',
         'text!../sprites/m88njimmyclown.json',
         'text!../sprites/m88nthewarden.json',
+        'text!../sprites/m88nbabyyoda1.json',
+        'text!../sprites/m88nbabyyoda2.json',
         //m88n Mob Nexans
         'text!../sprites/nexan1.json',
         'text!../sprites/nexan2.json',

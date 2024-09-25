@@ -3471,6 +3471,42 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
 
+        m88nbabyyoda1: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NBABYYODA1);
+                this.idleSpeed = 420;
+                this.walkSpeed = 225;
+                this.moveSpeed = 250;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
+        m88nbabyyoda2: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NBABYYODA2);
+                this.idleSpeed = 420;
+                this.walkSpeed = 225;
+                this.moveSpeed = 250;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
         //m88n Mob Nexans
         nexan1: Mob.extend({
             init: function(id) {
