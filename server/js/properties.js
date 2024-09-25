@@ -2038,6 +2038,16 @@ let Properties = {
         friendly: true
     },
 
+    m88nbabyyoda1: {
+        level: 1,
+        friendly: true
+    },
+
+    m88nbabyyoda2: {
+        level: 1,
+        friendly: true
+    },
+
     //m88n Mob Nexans
     nexan1: {
         hp: 10,
@@ -2800,7 +2810,7 @@ let Properties = {
         collectable: true,
         consumable: true,
         cooldown: {
-            group: "dropPotions",
+            group: "specialdropPotions",
             duration: 300000
         },
         inventoryDescription: "Shot of m88nshine",
@@ -2812,8 +2822,8 @@ let Properties = {
         collectable: true,
         consumable: true,
         cooldown: {
-            group: "dropPotions",
-            duration: 60000
+            group: "specialdropPotions",
+            duration: 300000
         },
         inventoryDescription: "Dirty Martini",
         onConsume: function(player){
@@ -2896,7 +2906,7 @@ let Properties = {
         collectable: true,
         consumable: true,
         cooldown: {
-            group: "specialdropPotions",
+            group: "superspecialdropPotions",
             duration: 600000
         },
         inventoryDescription: "DRS'd GME",
