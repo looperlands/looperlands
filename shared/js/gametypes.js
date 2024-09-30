@@ -12179,7 +12179,17 @@ Types.spriteIsDynamicRangedWeapon = function(spriteName) {
 Types.hasShadow = function(spriteName) {
     let kind = kinds[spriteName];
 
-    if (kind && kind[3].shadow === false) {
+    if (kind && kind[3] && kind[3].shadow === false) {
+        return false;
+    }
+
+    return true;
+}
+
+Types.alwaysOnTop = function(spriteName) {
+    let kind = kinds[spriteName];
+    return false;
+    if (kind && kind[3] && kind[3].renderAlwaysOnTop === false) {
         return false;
     }
 
