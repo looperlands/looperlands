@@ -4,10 +4,11 @@
 // Check the example.js file for an example dialogue, with comments explaining the structure of the dialogue.
 
 // Import the dialogue from the example.js file
-exampleDialogue = require("./example.js");
+// exampleDialogue = require("./example.js");
 
 // Define all dialogues in this array
-dialogues = [exampleDialogue.dialogue]
+//dialogues = [exampleDialogue.dialogue]
+dialogues = [];
 
 // Export the dialogues array, to make it available for the map to load this data
 exports.dialogues = dialogues;

@@ -89,6 +89,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 // Projectiles
                 this.lowAmmoThreshold = 10;
 
+
                 // sprites
                 this.spriteNames = ["hand", "handclick", "sword", "loot", "target", "talk", "float", "indicator", "sparks", "shadow16", "rat", "skeleton", "skeleton2", "spectre", "boss", "deathknight",
                     "ogre", "crab", "snake", "eye", "bat", "goblin", "wizard", "guard", "taikoguard", "king", "villagegirl", "villager", "coder", "agent", "rick", "scientist", "nyan", "priest", "coblumberjack", "cobhillsnpc", "cobcobmin", "cobellen", "cobminer", "cobjohnny", "cobashley",
@@ -258,6 +259,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "m88nnancyclown",
                     "m88njimmyclown",
                     "m88nthewarden",
+                    "m88nbabyyoda1",
+                    "m88nbabyyoda2",
                     //m88n's Mob Nexans
                     "nexan1",
                     "nexan2",
@@ -6109,7 +6112,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     console.log("Map loaded.");
                     var tilesetIndex = self.renderer.upscaledRendering ? 0 : self.renderer.scale - 1;
                     self.renderer.setTileset(self.map.tilesets[tilesetIndex]);
-                    self.map._initStreamCheck();                       
+                    self.map._initStreamCheck();
                 });
             },
 
@@ -6144,6 +6147,11 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     this.player.setSprite(playerSprite);
                     this.player.idle();
                 }
+
+                let self = this;
+                setInterval(() => self.handleScene(self.player), 100);
+                setTimeout(() => self.handleScene(self.player), 100);
+
                 console.debug("Finished initPlayer");
             },
 
@@ -6783,7 +6791,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             },
 
             canUseCenteredCamera: function() {
-                return this.mapId !== "main" && this.app.settings.getCenteredCamera();
+                return this.app.settings.getCenteredCamera();
             },
 
             tick: function() {
@@ -6851,11 +6859,14 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             },
 
             findVisibleAnimatedTiles: function(animatedTiles) {
+                let scene = this.map.getCurrentScene(this.player);
                 let visibleAnimatedTiles = [];
                 const animatedTilesLength = animatedTiles.length;
                 for (let i = 0; i < animatedTilesLength; i++) {
                     let tile = animatedTiles[i];
-                    if (this.camera.isVisiblePosition(tile.x, tile.y, 2)) {
+                    let extra = this.map.isLightTile(tile.id) ? 20 : 2;
+
+                    if (this.camera && this.camera.isVisiblePosition(tile.x, tile.y, extra) && (!scene || !scene.isOutOfBounds(tile.x, tile.y))) {
                         visibleAnimatedTiles.push(tile);
                     }
                 }
@@ -6863,6 +6874,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             },
 
             findVisibleTiles: function() {
+                if(!this.renderer || !this.renderer.tileset) {
+                    return
+                }
+
                 let self = this,
                     m = this.map,
                     tilesetwidth = this.renderer.tileset.width / m.tilesize;
@@ -6873,13 +6888,30 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.visibleTerrainTiles = []
                 this.visibleHighTiles = []
                 this.forEachVisibleTile(function (id, index) {
-                    if(!m.isHighTile(id) && !m.isAnimatedTile(id))  {
+                    if(m.isLightTile(id)) {
+                        return
+                    }
+
+                    if(!m.isHighTile(id) && !m.isAnimatedTile(id)) {
                         self.visibleTerrainTiles.push({tileid: id, setW: tilesetwidth, gridW: m.width, cellid: index});
                     }
                     else if(m.isHighTile(id) && !m.isAnimatedTile(id)) {
                         self.visibleHighTiles.push({tileid: id, setW: tilesetwidth, gridW: m.width, cellid: index});
                     }
-                }, 1);
+                }, 2);
+
+                this.forEachVisibleTile(function (id, index) {
+                    if (!m.isLightTile(id)) {
+                        return;
+                    }
+
+                    if(!m.isHighTile(id) && !m.isAnimatedTile(id)) {
+                        self.visibleTerrainTiles.push({tileid: id, setW: tilesetwidth, gridW: m.width, cellid: index});
+                    }
+                    else if(m.isHighTile(id) && !m.isAnimatedTile(id)) {
+                        self.visibleHighTiles.push({tileid: id, setW: tilesetwidth, gridW: m.width, cellid: index});
+                    }
+                }, 20);
             },
 
             connect: function(started_callback) {
@@ -6952,7 +6984,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     }
                 });
 
-                this.client.onWelcome(function(id, name, x, y, hp, title) {
+                this.client.onWelcome(function(id, name, x, y, hp, title, serverTimeOffset) {
                     console.log("Received player ID from server : "+ id);
                     self.player.id = id;
                     self.playerId = id;
@@ -6967,10 +6999,15 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     self.resetCamera();
                     self.updatePlateauMode();
                     self.audioManager.updateMusic();
+                    self.app.timeOffset += serverTimeOffset
+                    self.serverTime = serverTimeOffset;
 
                     self.addEntity(self.player);
                     self.player.dirtyRect = self.renderer.getEntityBoundingRect(self.player);
                     self.player.playerClassSelectionShown = false;
+
+                    setTimeout(() => self.handleScene(self.player), 50);
+                    setTimeout(() => self.handleScene(self.player), 500);
 
                     if(!self.storage.hasAlreadyPlayed()) {
                         self.storage.initPlayer(self.player.name);
@@ -7047,6 +7084,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     });
 
                     self.player.onStep(function() {
+                        self.handleScene(self.player)
                         self.findVisibleTiles();
 
                         if(this.isFishing) {
@@ -7102,6 +7140,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         if(self.player.hasTarget()) {
                             self.player.lookAtTarget();
                         }
+
+                        self.handleScene(self.player);
 
                         self.selectedCellVisible = false;
 
@@ -7163,6 +7203,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                     _self.player.setGridPosition(dest.x, dest.y);
                                     _self.player.nextGridX = dest.x;
                                     _self.player.nextGridY = dest.y;
+                                    _self.handleScene(_self.player);
+
                                     _self.player.turnTo(dest.orientation);
                                     _self.client.sendTeleport(dest.x, dest.y);
 
@@ -7326,11 +7368,11 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         return new Promise((resolve, reject) => {
                             try {
                                 var ignored = [self.player]; // Always ignore self
-                    
+
                                 if (self.player.hasTarget()) {
                                     ignored.push(self.player.target);
                                 }
-                    
+
                                 self.findPath(self.player, x, y, ignored)
                                     .then(path => resolve(path))
                                     .catch(error => reject(error));
@@ -7514,6 +7556,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                                     var gridX = entity.destination.gridX,
                                                         gridY = entity.destination.gridY;
 
+                                                    self.handleScene(entity);
+
                                                     if(self.map.isDoor(gridX, gridY)) {
                                                         var dest = self.map.getDoorDestination(gridX, gridY);
 
@@ -7567,16 +7611,16 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                             return new Promise((resolve, reject) => {
                                                 try {
                                                     var ignored = [entity]; // Always ignore self
-                                        
+
                                                     var ignoreTarget = function(target) {
                                                         ignored.push(target);
-                                        
+
                                                         // also ignore other attackers of the target entity
                                                         target.forEachAttacker(function(attacker) {
                                                             ignored.push(attacker);
                                                         });
                                                     };
-                                        
+
                                                     if (entity.hasTarget()) {
                                                         ignoreTarget(entity.target);
                                                     } else if (entity.previousTarget) {
@@ -7584,7 +7628,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                                         // See: tryMovingToADifferentTile()
                                                         ignoreTarget(entity.previousTarget);
                                                     }
-                                        
+
                                                     self.findPath(entity, x, y, ignored)
                                                         .then(path => resolve(path))
                                                         .catch(error => reject(error));
@@ -7653,6 +7697,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                             self.handleTrigger(self.map.getCurrentTrigger(entity), entity);
                                         }
                                     }
+                                } else {
+                                    self.handleScene(entity);
                                 }
                             }
                             catch(e) {
@@ -7873,9 +7919,11 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 attacker.idle();
                                 attacker.stop();
                             });
+
                         }
 
                         if(id === self.playerId) {
+                            self.handleScene(entity);
                             self.resetCamera();
                         }
                     });
@@ -8368,16 +8416,31 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
              */
             forEachVisibleEntityByDepth: function(callback) {
                 var self = this,
-                    m = this.map;
+                    m = this.map,
+                    scene = this.map.getCurrentScene(this.player);
 
                 this.camera.forEachVisiblePosition(function(x, y) {
-                    if(!m.isOutOfBounds(x, y)) {
-                        if(self.renderingGrid[y][x]) {
-                            _.each(self.renderingGrid[y][x], function(entity) {
-                                callback(entity);
-                            });
-                        }
+                    if (m.isOutOfBounds(x, y)) {
+                        return;
                     }
+
+                    if (!self.renderingGrid) {
+                        return;
+                    }
+                    if (!self.renderingGrid[y]) {
+                        return;
+                    }
+                    if (!self.renderingGrid[y][x]) {
+                        return;
+                    }
+
+                    if(scene && scene.isOutOfBounds(x, y)) {
+                        return;
+                    }
+
+                    _.each(self.renderingGrid[y][x], function(entity) {
+                        callback(entity);
+                    });
                 }, this.renderer.mobile ? 0 : 2);
             },
 
@@ -8385,12 +8448,24 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
              *
              */
             forEachVisibleTileIndex: function(callback, extra) {
+                if(!this.camera) {
+                    return;
+                }
+
+                var self  = this;
                 var m = this.map;
+                var scene = this.player.getScene();
 
                 this.camera.forEachVisiblePosition(function(x, y) {
-                    if(!m.isOutOfBounds(x, y)) {
-                        callback(m.GridPositionToTileIndex(x, y) - 1);
+                    if(m.isOutOfBounds(x, y)) {
+                        return;
                     }
+
+                    if(scene && scene.isOutOfBounds(x, y)) {
+                        return;
+                    }
+
+                    callback(m.GridPositionToTileIndex(x, y) - 1);
                 }, extra);
             },
 
@@ -8421,11 +8496,18 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
             forEachTileIndex: function(callback, extra) {
                 var m = this.map;
+                var scene = this.map.getCurrentScene();
 
                 this.map.forEachPosition(function(x, y) {
-                    if(!m.isOutOfBounds(x, y)) {
-                        callback(m.GridPositionToTileIndex(x, y) - 1);
+                    if(m.isOutOfBounds(x, y)) {
+                        return;
                     }
+
+                    if(scene && scene.isOutOfBounds(x, y)) {
+                        return;
+                    }
+
+                    callback(m.GridPositionToTileIndex(x, y) - 1);
                 }, extra);
             },
 
@@ -8819,11 +8901,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                 var entity;
                 let fishablePos;
-
                 if(this.started
                     && this.player
-                    && !this.isZoning()
-                    && !this.isZoningTile(this.player.nextGridX, this.player.nextGridY)
                     && !this.player.isDead
                     && (!this.hoveringCollidingTile || pos.keyboard || this.hoveringFishableTile)
                     && (!this.hoveringPlateauTile || pos.keyboard)
@@ -8876,7 +8955,41 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         }
                     }
                     else {
-                        this.makePlayerGoTo(pos.x, pos.y);
+                        if(this.isZoningTile(pos.x, pos.y) && !pos.keyboard) {
+                            let z = this.getZoningOrientation(pos.x, pos.y);
+                            switch (z) {
+                                case Types.Orientations.LEFT:
+                                    if(!this.map.isColliding(pos.x-1, pos.y)) {
+                                        this.makePlayerGoTo(pos.x - 1, pos.y);
+                                    } else {
+                                        this.makePlayerGoTo(pos.x, pos.y);
+                                    }
+                                    break;
+                                case Types.Orientations.RIGHT:
+                                    if(!this.map.isColliding(pos.x+1, pos.y)) {
+                                        this.makePlayerGoTo(pos.x + 1, pos.y);
+                                    } else {
+                                        this.makePlayerGoTo(pos.x, pos.y);
+                                    }
+                                    break;
+                                case Types.Orientations.UP:
+                                    if(!this.map.isColliding(pos.x, pos.y-1)) {
+                                        this.makePlayerGoTo(pos.x, pos.y-1);
+                                    } else {
+                                        this.makePlayerGoTo(pos.x, pos.y);
+                                    }
+                                    break;
+                                case Types.Orientations.DOWN:
+                                    if(!this.map.isColliding(pos.x, pos.y+1)) {
+                                        this.makePlayerGoTo(pos.x, pos.y+1);
+                                    } else {
+                                        this.makePlayerGoTo(pos.x, pos.y);
+                                    }
+                                    break;
+                            }
+                        } else {
+                            this.makePlayerGoTo(pos.x, pos.y);
+                        }
                         if ($('#miniMap').is(':visible')) {
                             this.app.toggleMiniMap(true);
                         }
@@ -8961,6 +9074,41 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     }
                 }
                 return false;
+            },
+
+            handleScene(entity) {
+                if (!this.camera) {
+                    return
+                }
+                const entityScene = entity.getScene();
+                const currentScene = this.map.getCurrentScene(entity);
+                if(entity.getScene() !== currentScene) {
+                    if(currentScene) {
+                        this.camera.setBoundingBox(currentScene.x, currentScene.y, currentScene.width, currentScene.height);
+
+                        if(currentScene.message) {
+                            this.showNotification(currentScene.message);
+                        } else if(currentScene.name && (!entityScene || entityScene.name !== currentScene.name)) {
+                            this.showNotification("Welcome to " + currentScene.name);
+                        }
+                    } else {
+                        this.camera.removeBoundingBox(this.player);
+                    }
+                    entity.setScene(currentScene)
+
+                    if(currentScene && currentScene.bg) {
+                        this.app.setBackground(currentScene.bg);
+                    } else {
+                        this.app.setBackground('black');
+                    }
+
+                    let self = this;
+                    setTimeout(() => {
+                        self.renderer.clearScreen(this.renderer.context);
+                        self.renderer.redrawTerrain = true;
+                        self.resetZone();
+                    }, 100)
+                }
             },
 
             handleTrigger(trigger, entity) {
@@ -9230,12 +9378,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             },
 
             resetCamera: function() {
-                if (this.mapId !== "main") {
-                    this.focusPlayer();
-                } else {
-                    this.camera.focusEntity(this.player);
-                }
-
+                this.focusPlayer();
                 this.resetZone();
             },
 
@@ -9313,6 +9456,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     this.renderer.clearScreen(this.renderer.context);
                 }
 
+                let self = this;
+                setTimeout(() => {
+                    self.handleScene(self.player)
+                }, 100);
                 console.debug("Finished restart");
             },
 

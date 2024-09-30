@@ -1,4 +1,3 @@
-
 var Log = require('log'),
     _ = require('underscore'),
     log = new Log(console.debug),
@@ -33,11 +32,15 @@ module.exports = function processMap(json, options) {
         map.data = [];
         map.high = [];
         map.animated = {};
+        map.lightTiles = {};
+        map.lights = [];
+        map.shadows = [];
         map.blocking = [];
         map.plateau = [];
         map.musicAreas = [];
         map.pvpZones = [];
         map.fishingTiles = {};
+        map.scenes = [];
     }
     if (mode === "server") {
         map.roamingAreas = [];
@@ -71,7 +74,7 @@ module.exports = function processMap(json, options) {
                 if (!map.animated[id]) {
                     map.animated[id] = {};
                 }
-    
+
                 // Special handling for 'length' and 'delay'
                 if (property.name === "length") {
                     map.animated[id].l = property.value;
@@ -79,6 +82,35 @@ module.exports = function processMap(json, options) {
                     map.animated[id].d = property.value;
                 } else {
                     map.animated[id][property.name] = property.value;
+                }
+            }
+
+            const lightProps = ["intensity", "light", "color", "radius", "innerRadius", "spread", "innerSpread", "angle", "shadow", "animation"];
+            if (lightProps.includes(property.name)) {
+                if (!map.lightTiles[id]) {
+                    map.lightTiles[id] = {};
+                }
+
+                if (property.name === "light" || property.name === "intensity") {
+                    map.lightTiles[id].intensity = parseFloat(String(property.value).replace(',', '.'));
+                } else if (property.name === "color") {
+                    // r,g,b as string
+                    let colors = property.value.split(',');
+                    map.lightTiles[id].color = {r: parseInt(colors[0]), g: parseInt(colors[1]), b: parseInt(colors[2])};
+                } else if (property.name === "radius") {
+                    map.lightTiles[id][property.name] = parseInt(property.value);
+                } else if (property.name === "innerRadius") {
+                    map.lightTiles[id][property.name] = parseInt(property.value);
+                } else if (property.name === "spread") {
+                    map.lightTiles[id][property.name] = parseInt(property.value);
+                } else if (property.name === "innerSpread") {
+                    map.lightTiles[id][property.name] = parseInt(property.value);
+                } else if (property.name === "angle") {
+                    map.lightTiles[id][property.name] = parseInt(property.value);
+                } else if (property.name === "shadow") {
+                    map.lightTiles[id][property.name] = parseFloat(String(property.value).replace(',', '.'));
+                } else {
+                    map.lightTiles[id][property.name] = property.value;
                 }
             }
         }
@@ -130,8 +162,7 @@ module.exports = function processMap(json, options) {
                         handleProp(property, tilePropertyId);
                     }
                 }
-            }
-            else if (tileset.name === "Mobs" && mode === "server") {
+            } else if (tileset.name === "Mobs" && mode === "server") {
 
                 // Substitution dictionary (to safeguard against old naming convention)
                 var substitutionDict = {
@@ -212,6 +243,108 @@ module.exports = function processMap(json, options) {
         }
 
         map.triggers.push(trigger);
+    }
+
+
+    var processScene = function (scene, idx) {
+        var newScene = {
+            id: scene.id,
+            x: Math.floor(scene.x / map.tilesize),
+            y: Math.floor(scene.y / map.tilesize),
+            w: Math.ceil(scene.width / map.tilesize),
+            h: Math.ceil(scene.height / map.tilesize),
+            name: scene.name,
+        };
+
+        if (scene.properties) {
+            var sceneProps = scene.properties.property;
+
+            if (sceneProps[0] === undefined) {
+                sceneProps = [scene.properties.property];
+            }
+
+            for (var k = 0; k < sceneProps.length; k += 1) {
+                newScene[sceneProps[k].name] = sceneProps[k].value;
+            }
+        }
+
+        map.scenes.push(newScene);
+    }
+
+
+    var processLights = function (light, idx) {
+        var newLight = {
+            id: light.id,
+            x: parseInt(light.x),
+            y: parseInt(light.y),
+        };
+
+        if (light.ellipse !== undefined) {
+            console.log("Processing light: " + light.id);
+            console.log(light);
+            console.log(newLight.x + " + " + light.width + " / 2 = " + (newLight.x + parseInt(light.width) / 2));
+            newLight.x += parseInt(light.width) / 2;
+            newLight.y += parseInt(light.height) / 2;
+            newLight.radius = Math.ceil(parseInt(light.width) / 2 / map.tilesize);
+        } else {
+            newLight.w = light.width
+            newLight.h = light.height
+            newLight.global = true;
+        }
+
+        if (light.properties) {
+
+            let lightProps = light.properties;
+            if (!Array.isArray(light.properties)) {
+                lightProps = [light.properties];
+            }
+
+            if (lightProps) {
+                for (var k = 0; k < lightProps.length; k += 1) {
+                    if (lightProps[k].property.name === "light") {
+                        lightProps[k].property.name = "intensity";
+                    }
+
+                    switch (lightProps[k].property.name) {
+                        case "intensity":
+                        case "light":
+                            newLight.intensity = parseFloat(String(lightProps[k].property.value).replace(',', '.'));
+                            break;
+                        case "color":
+                            let colors = lightProps[k].property.value.split(',');
+                            newLight.color = {r: parseInt(colors[0]), g: parseInt(colors[1]), b: parseInt(colors[2])};
+                            break;
+                        case "radius":
+                            newLight.radius = parseInt(lightProps[k].property.value);
+                            break;
+                        case "innerRadius":
+                            newLight.innerRadius = parseInt(lightProps[k].property.value);
+                            break;
+                        case "spread":
+                            newLight.spread = parseInt(lightProps[k].property.value);
+                            break;
+                        case "innerSpread":
+                            newLight.innerSpread = parseInt(lightProps[k].property.value);
+                            break;
+                        case "angle":
+                            newLight.angle = parseInt(lightProps[k].property.value);
+                            break;
+                        case "shadow":
+                            newLight.shadow = parseFloat(String(lightProps[k].property.value).replace(',', '.'));
+                            break;
+                        case "animation":
+                            newLight.animation = lightProps[k].property.value;
+                            break;
+                    }
+                }
+            }
+        }
+
+        map.lights.push(newLight);
+    }
+
+    var processShadows = function (shadow, idx) {
+        map.shadows.push(shadow);
     }
 
     var processChestArea = function (area) {
@@ -328,6 +461,9 @@ module.exports = function processMap(json, options) {
     if (mode === "client") {
         processGroup('music', processMusic);
         processGroup('pvpzones', processPvpZone);
+        processGroup('scenes', processScene);
+        processGroup('lights', processLights);
+        processGroup('shadows', processShadows);
     }
 
     processGroup('checkpoints', processCheckpoint);
@@ -384,8 +520,7 @@ var processLayer = function processLayer(layer) {
                 }
             }
         }
-    }
-    else if (mode === "client" && layer.name === "plateau") {
+    } else if (mode === "client" && layer.name === "plateau") {
         console.log("Processing plateau tiles...");
         for (var i = 0; i < tiles.length; i += 1) {
             var gid = tiles[i].gid;
@@ -394,8 +529,7 @@ var processLayer = function processLayer(layer) {
                 map.plateau.push(i);
             }
         }
-    }
-    else if (layer.visible !== 0 && layer.name !== "entities") {
+    } else if (layer.visible !== 0 && layer.name !== "entities") {
         console.log("Processing layer: " + layer.name);
 
         for (var j = 0; j < tiles.length; j += 1) {
@@ -406,11 +540,9 @@ var processLayer = function processLayer(layer) {
                 if (gid > 0) {
                     if (map.data[j] === undefined) {
                         map.data[j] = gid;
-                    }
-                    else if (map.data[j] instanceof Array) {
+                    } else if (map.data[j] instanceof Array) {
                         map.data[j].unshift(gid);
-                    }
-                    else {
+                    } else {
                         map.data[j] = [gid, map.data[j]];
                     }
                     // fishing tiles
@@ -433,11 +565,9 @@ var processLayer = function processLayer(layer) {
             if (gid > 0) {
                 if (map.hiddenLayers[layer.name][j] === undefined) {
                     map.hiddenLayers[layer.name][j] = gid;
-                }
-                else if (map.hiddenLayers[layer.name][j] instanceof Array) {
+                } else if (map.hiddenLayers[layer.name][j] instanceof Array) {
                     map.hiddenLayers[layer.name][j].unshift(gid);
-                }
-                else {
+                } else {
                     map.hiddenLayers[layer.name][j] = [gid, map.hiddenLayers[layer.name][j]];
                 }
             }

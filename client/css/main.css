@@ -348,6 +348,17 @@ body.upscaled.game {background:#000;}
 #population span:nth-child(1) {color:#FCE045;}
 #population.visible {opacity:1;pointer-events:auto;}
 
+#time {
+    text-shadow: 0 0 2px black;
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    font-family: 'GraphicPixel';
+    color: #e4d0b6;
+    font-size: 12px;
+    z-index: 2;
+}
+
 #armor, #weapon {
     cursor: pointer;
 }
@@ -1592,7 +1603,10 @@ footer div  {display:inline-block;}
 }
 
 @media screen and (min-width: 1501px) {
-
+    #time {
+      top: 32px;
+      left: 32px;
+    }
     .upscaled #logo, .upscaled #logosparks, .upscaled .left-ornament, .upscaled .right-ornament, .upscaled #character, .upscaled #character div, .upscaled .button, .upscaled .button div, .upscaled #respawn, .upscaled #scroll, .upscaled #instructions, .upscaled .icon, .upscaled #tilt, .upscaled .parchment-left, .upscaled .parchment-middle, .upscaled .parchment-right, .upscaled .avatar, .upscaled .facebook, .upscaled .twitter, .upscaled .close, .upscaled .ribbon .top, .upscaled .ribbon .bottom, .upscaled .ext-link {background-image:url('../img/3/spritesheet.png');}
     .upscaled #bar-container, .upscaled #healthbar, .upscaled .barbutton, .upscaled #chatbox, .upscaled #population {background-image:url('../img/3/barsheet.png');}
     .upscaled #achievements, .upscaled #achievements li, .upscaled .coin, .upscaled #achievement-notification, .upscaled #coinsparks, .upscaled .achievement-sharing a, .upscaled #previous, .upscaled #next {background:url('../img/3/achievements.png');}
