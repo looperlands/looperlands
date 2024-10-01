@@ -1,7 +1,7 @@
 const Formulas = require('./formulas.js');
 const dao = require('./dao.js');
 
-const XP_BATCH_SIZE = 500;
+const XP_BATCH_SIZE = 5000;
 class NFTWeapon {
 
     constructor(walletId, nftId, player) {

@@ -25,7 +25,7 @@ const LOOPERLANDS_PLATFORM_API_KEY = process.env.LOOPERLANDS_PLATFORM_API_KEY;
 
 const BASE_SPEED = 120;
 const BASE_ATTACK_RATE = 800;
-const XP_BATCH_SIZE = 500;
+const XP_BATCH_SIZE = 5000;
 
 const mapflows = require("./flows/mapflow.js");
 
