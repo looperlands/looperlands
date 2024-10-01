@@ -432,6 +432,35 @@ function(Camera, Item, Character, Player, Timer, Mob, Npc) {
                         });
                     }
 
+
+                    if(entity instanceof Character && !entity.isDead && entity.hasWeapon()) {
+                        let weapon = this.game.sprites[entity.getWeaponName()];
+
+                        if(!Types.alwaysOnTop(entity.getWeaponName()) && entity.orientation === Types.Orientations.UP) {
+                            if (weapon) {
+                                let weaponAnimData = weapon.animationData[anim.name],
+                                    index = frame.index < weaponAnimData.length ? frame.index : frame.index % weaponAnimData.length;
+                                wx = weapon.width * index * os,
+                                    wy = weapon.height * anim.row * os,
+                                    ww = weapon.width * os,
+                                    wh = weapon.height * os;
+
+                                entityData.drawData.push({
+                                    "id": weapon.id,
+                                    "spriteName": entity.getWeaponName(),
+                                    "sx": wx,
+                                    "sy": wy,
+                                    "sW": ww,
+                                    "sH": wh,
+                                    "dx": weapon.offsetX * ds,
+                                    "dy": weapon.offsetY * ds,
+                                    "dW": ww * ds,
+                                    "dH": wh * ds
+                                });
+                            }
+                        }
+                    }
+
                     entityData.drawData.push({
                         "id": sprite.id,
                         "spriteName": entity.sprite.name,
@@ -472,27 +501,28 @@ function(Camera, Item, Character, Player, Timer, Mob, Npc) {
 
                 if(entity instanceof Character && !entity.isDead && entity.hasWeapon()) {
                     let weapon = this.game.sprites[entity.getWeaponName()];
-
-                    if(weapon) {
-                        let weaponAnimData = weapon.animationData[anim.name],
-                            index = frame.index < weaponAnimData.length ? frame.index : frame.index % weaponAnimData.length;
+                    if(Types.alwaysOnTop(entity.getWeaponName()) || entity.orientation !== Types.Orientations.UP) {
+                        if (weapon) {
+                            let weaponAnimData = weapon.animationData[anim.name],
+                                index = frame.index < weaponAnimData.length ? frame.index : frame.index % weaponAnimData.length;
                             wx = weapon.width * index * os,
-                            wy = weapon.height * anim.row * os,
-                            ww = weapon.width * os,
-                            wh = weapon.height * os;
+                                wy = weapon.height * anim.row * os,
+                                ww = weapon.width * os,
+                                wh = weapon.height * os;
 
-                        entityData.drawData.push({
-                            "id": weapon.id,
-                            "spriteName": entity.getWeaponName(),
-                            "sx": wx,
-                            "sy": wy,
-                            "sW": ww,
-                            "sH": wh,
-                            "dx": weapon.offsetX * ds,
-                            "dy": weapon.offsetY * ds,
-                            "dW": ww * ds,
-                            "dH": wh * ds
-                        });
+                            entityData.drawData.push({
+                                "id": weapon.id,
+                                "spriteName": entity.getWeaponName(),
+                                "sx": wx,
+                                "sy": wy,
+                                "sW": ww,
+                                "sH": wh,
+                                "dx": weapon.offsetX * ds,
+                                "dy": weapon.offsetY * ds,
+                                "dW": ww * ds,
+                                "dH": wh * ds
+                            });
+                        }
                     }
                 }
 

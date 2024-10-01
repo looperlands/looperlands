@@ -12151,8 +12151,14 @@ Types.addDynamicNFT = function(nftData) {
         nftData.assetType = "bot";
     }
 
+    if(!nftData.options) {
+        nftData.options = {
+            shadow: true
+        }
+    }
+
     Types.Entities[kind] = id;
-    kinds[kind] = [id, nftData.assetType, true];
+    kinds[kind] = [id, nftData.assetType, true, nftData.options];
     return kind;
 }
 
@@ -12168,6 +12174,26 @@ Types.isDynamicNFT = function(kindId) {
 Types.spriteIsDynamicRangedWeapon = function(spriteName) {
     const spriteKind = Types.getKindFromString(spriteName);
     return Types.isDynamicNFT(spriteKind) && Types.isRangedWeapon(spriteKind);
+}
+
+Types.hasShadow = function(spriteName) {
+    let kind = kinds[spriteName];
+
+    if (kind && kind[3] && kind[3].shadow === false) {
+        return false;
+    }
+
+    return true;
+}
+
+Types.alwaysOnTop = function(spriteName) {
+    let kind = kinds[spriteName];
+    return false;
+    if (kind && kind[3] && kind[3].renderAlwaysOnTop === false) {
+        return false;
+    }
+
+    return true;
 }
 
 if(!(typeof exports === 'undefined')) {

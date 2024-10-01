@@ -92,7 +92,8 @@ class LooperLandsPlatformClient {
             const extractedData = {
                 tokenHash: nftData.token.tokenHash,
                 assetType: nftData.assetType,
-                nftId: nftId
+                nftId: nftId,
+                options: nftData.options,
             };
             this.nftDataCache[nftId] = extractedData;
             return extractedData;

@@ -6139,6 +6139,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         this.player.idle();
                         this.player.dynamicArmorNFTData = nftData;
                         this.player.dyanmicNFTLoaded = true;
+                        self = this;
+                        this.player.hasShadow = function() { return Types.hasShadow(spriteName); };
                     });
                 } else {
                     this.player.dyanmicNFTLoaded = true;
