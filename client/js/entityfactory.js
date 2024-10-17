@@ -892,6 +892,10 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
 
     EntityFactory.builders[Types.Entities.BURGERBOSS]=function(id){return new Mobs.BURGERBOSS(id);};
     EntityFactory.builders[Types.Entities.FRYGUY]=function(id){return new Mobs.FRYGUY(id);};
+    EntityFactory.builders[Types.Entities.GHOST1]=function(id){return new Mobs.GHOST1(id);};
+    EntityFactory.builders[Types.Entities.GHOST2]=function(id){return new Mobs.GHOST2(id);};
+    EntityFactory.builders[Types.Entities.GHOST3]=function(id){return new Mobs.GHOST3(id);};
+    EntityFactory.builders[Types.Entities.HORSEMAN]=function(id){return new Mobs.HORSEMAN(id);};
     // @nextMobLine@
     //===== items ======
  

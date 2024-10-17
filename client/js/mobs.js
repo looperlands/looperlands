@@ -4303,6 +4303,10 @@ define(['mob', 'timer'], function(Mob, Timer) {
         
         BURGERBOSS: Mob.extend({ init: function(id) { this._super(id, Types.Entities.BURGERBOSS); this.moveSpeed = 200; this.atkSpeed = 250; this.idleSpeed = 800; this.shadowOffsetY = 1; this.setAttackRate(1200);}}),
         FRYGUY: Mob.extend({ init: function(id) { this._super(id, Types.Entities.FRYGUY); this.moveSpeed = 350; this.atkSpeed = 100; this.idleSpeed = 800; this.shadowOffsetY = 1; this.setAttackRate(1200);}}),
+        GHOST1: Mob.extend({ init: function(id) { this._super(id, Types.Entities.GHOST1); this.moveSpeed = 300; this.atkSpeed = 100; this.idleSpeed = 800; this.shadowOffsetY = 1; this.aggroRange = 2; this.setAttackRate(1200);}}),
+        GHOST2: Mob.extend({ init: function(id) { this._super(id, Types.Entities.GHOST2); this.moveSpeed = 250; this.atkSpeed = 80; this.idleSpeed = 800; this.shadowOffsetY = 1; this.aggroRange = 3; this.setAttackRate(1200);}}),
+        GHOST3: Mob.extend({ init: function(id) { this._super(id, Types.Entities.GHOST3); this.moveSpeed = 350; this.atkSpeed = 50; this.idleSpeed = 800; this.shadowOffsetY = 1; this.aggroRange = 3; this.setAttackRate(1200);}}),
+        HORSEMAN: Mob.extend({ init: function(id) { this._super(id, Types.Entities.HORSEMAN); this.moveSpeed = 200; this.atkSpeed = 100; this.idleSpeed = 800; this.shadowOffsetY = 1; this.setAttackRate(1200);}}),
         // @nextMobLine@
     };
     return Mobs;
