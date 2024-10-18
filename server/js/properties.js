@@ -1299,7 +1299,6 @@ let Properties = {
         },
         messages: ['Shinu!'],
         armorMod: 2.2,
-        redpacket: true,
         respawnDelay: 180000
     },
 
@@ -1313,8 +1312,59 @@ let Properties = {
         },
         messages: ['Shinu!'],
         armorMod: 2.2,
-        redpacket: true,
         respawnDelay: 180000
+    },
+
+    GHOST1: {
+        level: 7,
+        drops: {
+            taikoboost: 50,
+            GOLD: 5,
+            GOLD1: 3,
+            GOLD2: 1,
+        },
+        messages: ['BOO!'],
+        respawnDelay:  60000
+    },
+
+    GHOST2: {
+        level: 10,
+        drops: {
+            taikoboost: 50,
+            GOLD: 5,
+            GOLD1: 3,
+            GOLD2: 1,
+        },
+        messages: ['BOO!'],
+        respawnDelay:  60000
+
+    },
+
+    GHOST3: {
+        level: 10,
+        drops: {
+            taikoboost: 50,
+            GOLD: 5,
+            GOLD1: 3,
+            GOLD2: 1,
+        },
+        messages: ['BOO!'],
+        respawnDelay:  60000
+    
+    },
+
+    HORSEMAN: {
+        level: 13,
+        drops: {
+            taikoboost: 40,
+            GOLD: 40,
+            GOLD2: 10,
+            GOLD3: 2
+        },
+        messages: ['Shinu!'],
+        armorMod: 2.2,
+        respawnDelay: 180000
+    
     },
     //m88n's Mobs
     balloondogb: {

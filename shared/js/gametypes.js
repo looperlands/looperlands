@@ -800,7 +800,11 @@ Types = {
         RABBID: 34000135,
         ZOMBBID: 34000136,
         HOPPURP: 34000137,
-        HOPPINK: 34000138,        // @lastidCharacter@
+        HOPPINK: 34000138,       
+        GHOST1: 34000139,
+        GHOST2: 34000140,
+        GHOST3: 34000141,
+        HORSEMAN: 34000142, // @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -6760,6 +6764,10 @@ var kinds = {
     NURSEOWNER: [Types.Entities.NURSEOWNER, "npc"],
     BURGERBOSS: [Types.Entities.BURGERBOSS, "mob"],
     FRYGUY: [Types.Entities.FRYGUY, "mob"],
+    GHOST1: [Types.Entities.GHOST1, "mob"],
+    GHOST2: [Types.Entities.GHOST2, "mob"],
+    GHOST3: [Types.Entities.GHOST3, "mob"],
+    HORSEMAN: [Types.Entities.HORSEMAN, "mob"],
     // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],
