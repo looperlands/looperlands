@@ -896,6 +896,10 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.GHOST2]=function(id){return new Mobs.GHOST2(id);};
     EntityFactory.builders[Types.Entities.GHOST3]=function(id){return new Mobs.GHOST3(id);};
     EntityFactory.builders[Types.Entities.HORSEMAN]=function(id){return new Mobs.HORSEMAN(id);};
+    EntityFactory.builders[Types.Entities.PUMPKINPUNK]=function(id){return new Mobs.PUMPKINPUNK(id);};
+    EntityFactory.builders[Types.Entities.WRAITH]=function(id){return new Mobs.WRAITH(id);};
+    EntityFactory.builders[Types.Entities.PUMPKINWARLOCK]=function(id){return new Mobs.PUMPKINWARLOCK(id);};
+    EntityFactory.builders[Types.Entities.EVILPUMPKIN]=function(id){return new Mobs.EVILPUMPKIN(id);};
     // @nextMobLine@
     //===== items ======
  

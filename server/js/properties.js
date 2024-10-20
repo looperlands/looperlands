@@ -1316,12 +1316,20 @@ let Properties = {
     },
 
     GHOST1: {
-        level: 7,
+        level: 2,
         drops: {
             taikoboost: 50,
-            GOLD: 5,
-            GOLD1: 3,
-            GOLD2: 1,
+            GOLD: 1,
+        },
+        messages: ['BOO!'],
+        respawnDelay:  60000
+    },
+
+    PUMPKINPUNK: {
+        level: 5,
+        drops: {
+            taikoboost: 50,
+            GOLD: 1
         },
         messages: ['BOO!'],
         respawnDelay:  60000
@@ -1366,6 +1374,46 @@ let Properties = {
         respawnDelay: 180000
     
     },
+
+    WRAITH: {
+        level: 40,
+        drops: {
+            taikoboost: 40,
+            GOLD: 40,
+            GOLD2: 10,
+            GOLD3: 2
+        },
+        messages: ['Shinu!'],
+        armorMod: 2.2,
+        respawnDelay: 120000
+    
+    },
+
+    PUMPKINWARLOCK: {
+        level: 69,
+        drops: {
+            taikoboost: 40,
+            GOLD: 40,
+            GOLD2: 10,
+            GOLD3: 2
+        },
+        messages: ['Shinu!'],
+        armorMod: 2.2,
+        respawnDelay: 120000
+    
+    },
+
+    EVILPUMPKIN: {
+        level: 2,
+        drops: {
+            taikoboost: 40,
+        },
+        messages: ['Shinu!'],
+        armorMod: 2.2,
+        respawnDelay: 6000
+    
+    },
+
     //m88n's Mobs
     balloondogb: {
         level: 2,

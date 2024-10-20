@@ -804,7 +804,11 @@ Types = {
         GHOST1: 34000139,
         GHOST2: 34000140,
         GHOST3: 34000141,
-        HORSEMAN: 34000142, // @lastidCharacter@
+        HORSEMAN: 34000142,
+        PUMPKINPUNK: 34000143,
+        WRAITH: 34000144,
+        PUMPKINWARLOCK: 34000145,
+        EVILPUMPKIN: 34000146, // @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -6768,6 +6772,10 @@ var kinds = {
     GHOST2: [Types.Entities.GHOST2, "mob"],
     GHOST3: [Types.Entities.GHOST3, "mob"],
     HORSEMAN: [Types.Entities.HORSEMAN, "mob"],
+    PUMPKINPUNK: [Types.Entities.PUMPKINPUNK, "mob"],
+    WRAITH: [Types.Entities.WRAITH, "mob"],
+    PUMPKINWARLOCK: [Types.Entities.PUMPKINWARLOCK, "mob"],
+    EVILPUMPKIN: [Types.Entities.EVILPUMPKIN, "mob"],
     // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],
