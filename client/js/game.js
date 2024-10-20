@@ -440,6 +440,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 "GHOST2",
                                 "GHOST3",
                                 "HORSEMAN",
+                                "PUMPKINPUNK",
+                                "WRAITH",
+                                "PUMPKINWARLOCK",
+                                "EVILPUMPKIN",
                                 // @nextCharacterLine@
                     "item-BOARHIDE",
                     "item-THUDKEY",

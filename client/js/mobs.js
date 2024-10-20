@@ -4307,6 +4307,10 @@ define(['mob', 'timer'], function(Mob, Timer) {
         GHOST2: Mob.extend({ init: function(id) { this._super(id, Types.Entities.GHOST2); this.moveSpeed = 250; this.atkSpeed = 80; this.idleSpeed = 800; this.shadowOffsetY = 1; this.aggroRange = 3; this.setAttackRate(1200);}}),
         GHOST3: Mob.extend({ init: function(id) { this._super(id, Types.Entities.GHOST3); this.moveSpeed = 350; this.atkSpeed = 50; this.idleSpeed = 800; this.shadowOffsetY = 1; this.aggroRange = 3; this.setAttackRate(1200);}}),
         HORSEMAN: Mob.extend({ init: function(id) { this._super(id, Types.Entities.HORSEMAN); this.moveSpeed = 200; this.atkSpeed = 100; this.idleSpeed = 800; this.shadowOffsetY = 1; this.setAttackRate(1200);}}),
+        PUMPKINPUNK: Mob.extend({ init: function(id) { this._super(id, Types.Entities.PUMPKINPUNK); this.moveSpeed = 350; this.atkSpeed = 100; this.idleSpeed = 800; this.shadowOffsetY = 1; this.setAttackRate(1200);}}),
+        WRAITH: Mob.extend({ init: function(id) { this._super(id, Types.Entities.WRAITH); this.moveSpeed = 350; this.atkSpeed = 100; this.idleSpeed = 800; this.shadowOffsetY = 1; this.setAttackRate(1200);}}),
+        PUMPKINWARLOCK: Mob.extend({ init: function(id) { this._super(id, Types.Entities.PUMPKINWARLOCK); this.moveSpeed = 350; this.atkSpeed = 100; this.idleSpeed = 800; this.shadowOffsetY = 1; this.setAttackRate(1200);}}),
+        EVILPUMPKIN: Mob.extend({ init: function(id) { this._super(id, Types.Entities.EVILPUMPKIN); this.moveSpeed = 350; this.atkSpeed = 100; this.idleSpeed = 800; this.shadowOffsetY = 1; this.setAttackRate(1200);}}),
         // @nextMobLine@
     };
     return Mobs;

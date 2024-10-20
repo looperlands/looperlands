@@ -27,7 +27,7 @@ define(['area'], function (Area) {
                 // BITCORN MUSIC
                 "bitcorncornsino", "bit_sludgeriver", "bit_portal",
                 // ROBITS MUSIC
-                "ROBITSMAIN1", "MOONBASES", "cclobby", "CCSPOOKY",
+                "ROBITSMAIN1", "MOONBASES", "cclobby", "CCSPOOKY", "CCHAUNTEDBOSS", "CCLIBRARY", "CCMANSION",
             ];
 
             this.soundNames = [
