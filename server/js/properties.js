@@ -1318,11 +1318,8 @@ let Properties = {
     GHOST1: {
         level: 2,
         drops: {
-            taikoboost: 50,
-            GOLD: 1,
+            WHISPYSPIRIT: 100
         },
-        messages: ['BOO!'],
-        respawnDelay:  60000
     },
 
     PUMPKINPUNK: {

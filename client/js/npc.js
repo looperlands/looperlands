@@ -1114,6 +1114,30 @@ define(['character'], function (Character) {
             "Common symptoms include shortness of breath, coughing, and fatigue.",
             "Please check out our Institute's website <a target='_blank' href='https://aberdeen.institute/'>Here!</a>",
         ],
+        "WHISPYRED": [
+            "Be sure to grab a little Ghosty <a target='_blank' href='https://loopexchange.art/collection/cybercity'>Here!</a>",
+            "Cyber City is Haunted!",
+            "Have you seen Whispy the Diamond Ghost anywhere?",
+            "He might be stuck in a secret spot in the Haunted Mansion!",
+            "Be on the lookout, he might have something for you...",
+        ],
+        "WHISPYWITCH": [
+            "Enter the Haunted House if you dare!",
+            "Thank you for coming! Take this red packet <a target='_blank' href='https://imgur.com/a/halloween-2024-cyber-city-WgjsXcs'>Here!</a> ",
+        ],
+        "WHISPYKING": [
+            "Are you ready to take on the Pumpkin Warlock?",
+            ""
+        ],
+        "WHISPYBOBBY": [
+            "Bobby here! Welcome back!",
+            "Evil lies beyond those doors, stay close to your friends.",
+        ],
+        "WHISPYDIAMOND": [
+            "Oh thank goodness! You found me!",
+            "Do you know the way out?",
+            "Take this Red Packet as a thank you for finding me!<a target='_blank' href='https://imgur.com/gallery/whispy-diamond-ghost-9mOqsxK'>Here!</a>",
+        ],
         // @nextNPCLine@
     };
 
