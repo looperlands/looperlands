@@ -483,6 +483,11 @@ define(['npc'], function(Npc) {
         SARAH: Npc.extend({init: function(id) {this._super(id, Types.Entities.SARAH, 1);}}),
         MOONBASES: Npc.extend({init: function(id) {this._super(id, Types.Entities.MOONBASES, 1);}}),
         NURSEOWNER: Npc.extend({init: function(id) {this._super(id, Types.Entities.NURSEOWNER, 1);}}),
+        WHISPYRED: Npc.extend({init: function(id) {this._super(id, Types.Entities.WHISPYRED, 1);}}),
+        WHISPYWITCH: Npc.extend({init: function(id) {this._super(id, Types.Entities.WHISPYWITCH, 1);}}),
+        WHISPYKING: Npc.extend({init: function(id) {this._super(id, Types.Entities.WHISPYKING, 1);}}),
+        WHISPYBOBBY: Npc.extend({init: function(id) {this._super(id, Types.Entities.WHISPYBOBBY, 1);}}),
+        WHISPYDIAMOND: Npc.extend({init: function(id) {this._super(id, Types.Entities.WHISPYDIAMOND, 1);}}),
         // @nextNPCLine@
     };
     

@@ -436,6 +436,7 @@ define(['item'], function(Item) {
         DUCKBIT:Item.extend({init:function(id){this._super(id,Types.Entities.DUCKBIT,"object");this.lootMessage="Quack Quack";}}),
         MILK2:Item.extend({init:function(id){this._super(id,Types.Entities.MILK2,"object");this.lootMessage="";}}),
         MILK1:Item.extend({init:function(id){this._super(id,Types.Entities.MILK1,"object");this.lootMessage="Yum milk!";}}),
+        WHISPYSPIRIT:Item.extend({init:function(id){this._super(id,Types.Entities.WHISPYSPIRIT,"object");this.lootMessage="You purified a ghost!";}}),
         // @nextItemLine@
     };
 

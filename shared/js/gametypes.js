@@ -587,7 +587,7 @@ Types = {
         HAMSTER1: 80000008,
         DUCKBIT: 80000009,
         MILK2: 80000010,
-        MILK1: 80000011, 
+        MILK1: 80000011,  
         //Taiko Town
         TAIKOTOWNNPC1: 81000000,
         TAIKOTOWNNPC2: 81000001,
@@ -635,7 +635,8 @@ Types = {
         M88NWORKGLOVES: 81003500,
         M88NCHEESEPIZZA: 81003600,
         M88NPIZZA: 81003700,
-        M88NSWORD: 81003800, // @lastidObject@
+        M88NSWORD: 81003800,
+        WHISPYSPIRIT: 81003801, // @lastidObject@
         //@nextIdLineObject@
 
         // NPCs
@@ -808,7 +809,12 @@ Types = {
         PUMPKINPUNK: 34000143,
         WRAITH: 34000144,
         PUMPKINWARLOCK: 34000145,
-        EVILPUMPKIN: 34000146, // @lastidCharacter@
+        EVILPUMPKIN: 34000146,
+        WHISPYRED: 34000147,
+        WHISPYWITCH: 34000148,
+        WHISPYKING: 34000149,
+        WHISPYBOBBY: 34000150,
+        WHISPYDIAMOND: 34000151, // @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -6522,6 +6528,7 @@ var kinds = {
     DUCKBIT: [Types.Entities.DUCKBIT, "object"],
     MILK2: [Types.Entities.MILK2, "object"],
     MILK1: [Types.Entities.MILK1, "object"],
+    WHISPYSPIRIT: [Types.Entities.WHISPYSPIRIT, "object"],
     // @nextObjectLine@
 
     guard: [Types.Entities.GUARD, "npc"],
@@ -6776,6 +6783,11 @@ var kinds = {
     WRAITH: [Types.Entities.WRAITH, "mob"],
     PUMPKINWARLOCK: [Types.Entities.PUMPKINWARLOCK, "mob"],
     EVILPUMPKIN: [Types.Entities.EVILPUMPKIN, "mob"],
+    WHISPYRED: [Types.Entities.WHISPYRED, "npc"],
+    WHISPYWITCH: [Types.Entities.WHISPYWITCH, "npc"],
+    WHISPYKING: [Types.Entities.WHISPYKING, "npc"],
+    WHISPYBOBBY: [Types.Entities.WHISPYBOBBY, "npc"],
+    WHISPYDIAMOND: [Types.Entities.WHISPYDIAMOND, "npc"],
     // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],

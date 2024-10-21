@@ -1232,7 +1232,7 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.HAMSTER1]=function(id){return new Items.HAMSTER1(id);};
     EntityFactory.builders[Types.Entities.DUCKBIT]=function(id){return new Items.DUCKBIT(id);};
     EntityFactory.builders[Types.Entities.MILK2]=function(id){return new Items.MILK2(id);};
-    EntityFactory.builders[Types.Entities.MILK1]=function(id){return new Items.MILK1(id);};
+    EntityFactory.builders[Types.Entities.WHISPYSPIRIT]=function(id){return new Items.WHISPYSPIRIT(id);};
     // @nextObjectLine@
 
     //====== NPCs ======
@@ -1611,6 +1611,11 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.SARAH]=function(id){return new NPCs.SARAH(id);};
     EntityFactory.builders[Types.Entities.MOONBASES]=function(id){return new NPCs.MOONBASES(id);};
     EntityFactory.builders[Types.Entities.NURSEOWNER]=function(id){return new NPCs.NURSEOWNER(id);};
+    EntityFactory.builders[Types.Entities.WHISPYRED]=function(id){return new NPCs.WHISPYRED(id);};
+    EntityFactory.builders[Types.Entities.WHISPYWITCH]=function(id){return new NPCs.WHISPYWITCH(id);};
+    EntityFactory.builders[Types.Entities.WHISPYKING]=function(id){return new NPCs.WHISPYKING(id);};
+    EntityFactory.builders[Types.Entities.WHISPYBOBBY]=function(id){return new NPCs.WHISPYBOBBY(id);};
+    EntityFactory.builders[Types.Entities.WHISPYDIAMOND]=function(id){return new NPCs.WHISPYDIAMOND(id);};
     // @nextNPCLine@
 
      //====== FieldEffectss ======
