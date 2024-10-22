@@ -814,7 +814,8 @@ Types = {
         WHISPYWITCH: 34000148,
         WHISPYKING: 34000149,
         WHISPYBOBBY: 34000150,
-        WHISPYDIAMOND: 34000151, // @lastidCharacter@
+        WHISPYDIAMOND: 34000151,
+        WHISPYLL: 34000152, // @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -6788,6 +6789,7 @@ var kinds = {
     WHISPYKING: [Types.Entities.WHISPYKING, "npc"],
     WHISPYBOBBY: [Types.Entities.WHISPYBOBBY, "npc"],
     WHISPYDIAMOND: [Types.Entities.WHISPYDIAMOND, "npc"],
+    WHISPYLL: [Types.Entities.WHISPYLL, "npc"],
     // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],

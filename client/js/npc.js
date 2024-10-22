@@ -1138,6 +1138,11 @@ define(['character'], function (Character) {
             "Do you know the way out?",
             "Take this Red Packet as a thank you for finding me!<a target='_blank' href='https://imgur.com/gallery/whispy-diamond-ghost-9mOqsxK'>Here!</a>",
         ],
+        "WHISPYLL": [
+            "Hi I'm Whispy the Ghost! Please help purify the ghosts in Cyber City!",
+            "Bring a little Ghosty home today <a target='_blank' href='https://loopexchange.art/collection/cybercity'>Here!</a>",
+
+        ],
         // @nextNPCLine@
     };
 
