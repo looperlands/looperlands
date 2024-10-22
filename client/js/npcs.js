@@ -488,6 +488,7 @@ define(['npc'], function(Npc) {
         WHISPYKING: Npc.extend({init: function(id) {this._super(id, Types.Entities.WHISPYKING, 1);}}),
         WHISPYBOBBY: Npc.extend({init: function(id) {this._super(id, Types.Entities.WHISPYBOBBY, 1);}}),
         WHISPYDIAMOND: Npc.extend({init: function(id) {this._super(id, Types.Entities.WHISPYDIAMOND, 1);}}),
+        WHISPYLL: Npc.extend({init: function(id) {this._super(id, Types.Entities.WHISPYLL, 1);}}),
         // @nextNPCLine@
     };
     

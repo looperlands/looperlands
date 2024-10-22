@@ -1616,6 +1616,7 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.WHISPYKING]=function(id){return new NPCs.WHISPYKING(id);};
     EntityFactory.builders[Types.Entities.WHISPYBOBBY]=function(id){return new NPCs.WHISPYBOBBY(id);};
     EntityFactory.builders[Types.Entities.WHISPYDIAMOND]=function(id){return new NPCs.WHISPYDIAMOND(id);};
+    EntityFactory.builders[Types.Entities.WHISPYLL]=function(id){return new NPCs.WHISPYLL(id);};
     // @nextNPCLine@
 
      //====== FieldEffectss ======

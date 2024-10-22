@@ -449,6 +449,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 "WHISPYKING",
                                 "WHISPYBOBBY",
                                 "WHISPYDIAMOND",
+                                "WHISPYLL",
                                 // @nextCharacterLine@
                     "item-BOARHIDE",
                     "item-THUDKEY",
