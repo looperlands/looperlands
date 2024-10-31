@@ -2485,8 +2485,15 @@ let Properties = {
     lateflea: {
         level: 5,
         drops: {
-            popcorn: 50,
-            energydrink: 10,
+            //popcorn: 50,
+            //energydrink: 10,
+            candycorntreat: 15,
+            candytreat: 5,
+            chocolatetreat: 5,
+            lollitreat: 10,
+            headstonetrick: 15,
+            skullnbonestrick: 2,
+            spidertrick: 10
         }
     },
 
