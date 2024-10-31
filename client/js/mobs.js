@@ -2726,6 +2726,45 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
 
+        m88nheadlessonesie: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NHEADLESSONESIE);
+                this.moveSpeed = 300;
+                this.atkSpeed = 100;
+                this.idleSpeed = 750;
+                this.setAttackRate(1000);
+                this.deathAnimated = true;
+                this.isAggressive = true;
+                this.aggroRange = 3;
+            }
+        }),
+
+        m88nheadlessskeleton: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NHEADLESSSKELETON);
+                this.moveSpeed = 300;
+                this.atkSpeed = 100;
+                this.idleSpeed = 750;
+                this.setAttackRate(1000);
+                this.deathAnimated = true;
+                this.isAggressive = true;
+                this.aggroRange = 3;
+            }
+        }),
+
+        m88nghostpumpkin: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NGHOSTPUMPKIN);
+                this.moveSpeed = 300;
+                this.atkSpeed = 100;
+                this.idleSpeed = 750;
+                this.setAttackRate(1000);
+                this.deathAnimated = true;
+                this.isAggressive = true;
+                this.aggroRange = 3;
+            }
+        }),
+
         m88npinataballoons: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.M88NPINATABALLOONS);

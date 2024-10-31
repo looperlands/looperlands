@@ -440,6 +440,9 @@ Types = {
         M88NTHEWARDEN: 78000107,
         M88NBABYYODA1: 78000108,
         M88NBABYYODA2: 78000109,
+        M88NHEADLESSONESIE: 78000110,
+        M88NHEADLESSSKELETON: 78000111,
+        M88NGHOSTPUMPKIN: 78000112,
         //m88n Mob Nexans
         NEXAN1: 78000037,
         NEXAN2: 78000038,
@@ -570,6 +573,14 @@ Types = {
         M88NRUCK3: 78009800,
         M88NGOLDKNUCKLES: 78009900,
         M88NPIESLINGER: 78010100,
+        CANDYBUCKET: 78010200,
+        CANDYCORNTREAT: 78010300,
+        CANDYTREAT: 78010400,
+        CHOCOLATETREAT: 78010500,
+        LOLLITREAT: 78010600,
+        HEADSTONETRICK: 78010700,
+        SKULLNBONESTRICK: 78010800,
+        SPIDERTRICK: 78010900,
         //MRMlabs NPCs
         TYLERDURDEN: 79000000,
         //MRMlabs Items
@@ -6242,6 +6253,9 @@ var kinds = {
     m88nthewarden: [Types.Entities.M88NTHEWARDEN, "mob"],
     m88nbabyyoda1: [Types.Entities.M88NBABYYODA1, "mob"],
     m88nbabyyoda2: [Types.Entities.M88NBABYYODA2, "mob"],
+    m88nheadlessonesie: [Types.Entities.M88NHEADLESSONESIE, "mob"],
+    m88nheadlessskeleton: [Types.Entities.M88NHEADLESSSKELETON, "mob"],
+    m88nghostpumpkin: [Types.Entities.M88NGHOSTPUMPKIN, "mob"],
 
     //m88n Mob Nexans
     nexan1: [Types.Entities.NEXAN1, "mob"],
@@ -6471,6 +6485,14 @@ var kinds = {
     m88nruck3: [Types.Entities.M88NRUCK3, "object"],
     m88ngoldknuckles: [Types.Entities.M88NGOLDKNUCKLES, "object"],
     m88npieslinger: [Types.Entities.M88NPIESLINGER, "object"],
+    candybucket: [Types.Entities.CANDYBUCKET, "object"],
+    candycorntreat: [Types.Entities.CANDYCORNTREAT, "object"],
+    candytreat: [Types.Entities.CANDYTREAT, "object"],
+    chocolatetreat: [Types.Entities.CHOCOLATETREAT, "object"],
+    lollitreat: [Types.Entities.LOLLITREAT, "object"],
+    headstonetrick: [Types.Entities.HEADSTONETRICK, "object"],
+    skullnbonestrick: [Types.Entities.SKULLNBONESTRICK, "object"],
+    spidertrick: [Types.Entities.SPIDERTRICK, "object"],
     //MRMlabs Items
     firstaidkit: [Types.Entities.FIRSTAIDKIT, "object"],
     bandaid: [Types.Entities.BANDAID, "object"],
