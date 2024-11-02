@@ -23,7 +23,8 @@
         "taikotown",
         "oainteriors",
         "shortdestroyers",
-        "robits"
+        "robits",
+        "rl"
 
     ],
     "map_directory": "./server/maps/",
