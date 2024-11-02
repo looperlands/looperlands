@@ -1715,7 +1715,7 @@ let Properties = {
             spidertrick: 5,
             skullnbonestrick: 2,
             m88ngem: 6,
-            candybucket: 2
+            candybucket: 1
         },
         xp: 222
     },
