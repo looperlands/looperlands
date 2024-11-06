@@ -25,7 +25,7 @@ module.exports = MobArea = Area.extend({
     _createMobInsideArea: function() {
         var k = Types.getKindFromString(this.kind),
             pos = this._getRandomPositionInsideArea(),
-            mob = new Mob('1' + this.id + ''+ k + ''+ this.entities.length, k, pos.x, pos.y);
+            mob = new Mob(Utils.getID(), k, pos.x, pos.y);
         
         mob.onMove(this.world.onMobMoveCallback.bind(this.world));
         mob.onExitCombat(this.world.onMobExitCombatCallback.bind(this.world));

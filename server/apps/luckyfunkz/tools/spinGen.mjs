@@ -39,7 +39,7 @@ let allInRange = false;
 let RTPstring = '';
 
 let options = 0;
-console.log(WINNING_COMBO_LIMITS);
+//console.log(WINNING_COMBO_LIMITS);
 while (options < GENERATIONS) {
     allInRange = false;
     while (!allInRange) {
@@ -296,7 +296,7 @@ function checkInRange() {
     RTPstring = RTParray.join("_");
     process.stdout.clearLine(0);
     process.stdout.cursorTo(0);
-    console.log(`${!outOfRange ? "[OK]" : "[NG]"} ${RTParray.join(" : ")}`);
+    //console.log(`${!outOfRange ? "[OK]" : "[NG]"} ${RTParray.join(" : ")}`);
 }
 
 
@@ -335,7 +335,7 @@ function Summary(spinData) {
     }
 
     summaryString += `SUM OF SCENARIO PROFITS: ${totalProfit.reduce((sum, val) => sum + val, 0)}\n`;
-    console.log(summaryString);
+    //console.log(summaryString);
 
     return summaryString;
 }
@@ -357,5 +357,5 @@ function writeToFile(spinData, summaryString) {
     const filePath = `./${RTPstring}.txt`;
     const fileContent = `/*\n${summaryString}\n*/\n\nconst spinSet =\n[\n        [\n${formattedSpin}\n        ],\n    ];\n\nmodule.exports = \{spinSet\};`;
     fs.writeFileSync(filePath, fileContent);
-    console.log(`File written to ${filePath}\n`);
+    //console.log(`File written to ${filePath}\n`);
 }

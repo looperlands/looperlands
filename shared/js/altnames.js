@@ -234,6 +234,17 @@ const AltNames = {
     m88nshortsqueeze: "Short Squeeze",
     m88ndaddybearbrown: "Daddy Brown Bear",
     m88njaws: "Jaws",
+    m88nfishlips: "Fish Lips",
+    m88nsushi: "Sushi",
+    m88nsashimi: "Sashimi",
+    m88nconepooper: "Cone Pooper",
+    m88nkennyclown: "Kenny The Clown",
+    m88nnancyclown: "Nancy The Clown",
+    m88njimmyclown: "Jimmy The Clown",
+    m88nthewarden: "The Warden",
+    m88nheadlessonesie: "The Headless Onesie",
+    m88nheadlessskeleton: "The Headless Skeleton",
+    m88nghostpumpkin: "The OG Ghost Costume",
 
     //m88n Mob Nexans
     nexan8: "The Mail Lady",
@@ -251,7 +262,7 @@ const AltNames = {
     thehookup: "The Hookup",
     m88nbushguy: "Bush Guy",
     m88nsignguy: "Sign Guy",
-    m88nmysteryhood: "Mystery Hooded Guy",
+    m88nmysteryhood: "Mystery Hooded Entity",
     m88ntaikotwin1: "Taiko Twin 1",
     m88ntaikotwin2: "Taiko Twin 2",
     m88nstimytimy: "Stimy Timy",
@@ -259,6 +270,7 @@ const AltNames = {
     m88ngenie: "Magic Genie!",
     nexan32: "The Greaser",
     nexan10: "Darwin",
+    m88nape: "m88n Ape",
 
     //m88n Items
     m88nmail: "mail",
@@ -305,6 +317,7 @@ const AltNames = {
     m88nruck2: "Ruck Sack 2",
     m88nruck3: "Ruck Sack 3",
     m88ngoldknuckles: "Gold Knuckles",
+    m88npieslinger: "a Pie Slinger",
 
     //m88n TT Items
     m88nammocan: "ammo can",

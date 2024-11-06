@@ -28,6 +28,34 @@ quests = [
         level: 1,
         medal: Types.Medals.HEARTH
     },
+    {
+        id: "TEST_DIALOG_QUEST",
+        name: "Test dialog quest 1",
+        startText: "Can you please kill 1 rat!",
+        inProgressText: ["Come on, you can do it", 'Really, I trust you!'],
+        endText: "Thanks for killing that rat for me",
+        eventType: "KILL_MOB",
+        npc: Types.Entities.VILLAGEGIRL,
+        target: Types.Entities.RAT,
+        amount: 1,
+        level: 1,
+        medal: Types.Medals.RAT
+    },
+
+
+    {
+        id: "TEST_DIALOG_QUEST_2",
+        name: "Test dialog quest 2",
+        startText: "Can you please kill 1 more rat!",
+        inProgressText: ["Come on, you can do it", 'Really, I trust you!'],
+        endText: "Thanks for killing that rat for me",
+        eventType: "KILL_MOB",
+        npc: Types.Entities.VILLAGEGIRL,
+        target: Types.Entities.RAT,
+        amount: 1,
+        level: 1,
+        medal: Types.Medals.RAT
+    },
 
     {
         id: "JIMI_QUEST",

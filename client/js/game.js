@@ -89,6 +89,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 // Projectiles
                 this.lowAmmoThreshold = 10;
 
+
                 // sprites
                 this.spriteNames = ["hand", "handclick", "sword", "loot", "target", "talk", "float", "indicator", "sparks", "shadow16", "rat", "skeleton", "skeleton2", "spectre", "boss", "deathknight",
                     "ogre", "crab", "snake", "eye", "bat", "goblin", "wizard", "guard", "taikoguard", "king", "villagegirl", "villager", "coder", "agent", "rick", "scientist", "nyan", "priest", "coblumberjack", "cobhillsnpc", "cobcobmin", "cobellen", "cobminer", "cobjohnny", "cobashley",
@@ -179,6 +180,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "m88nmermanking",
                     "m88nmermaidprincess",
                     "kingfroggybw",
+                    "m88nape",
                     //m88n Mobs
                     "balloondogb",
                     "balloondogy",
@@ -249,6 +251,19 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "m88nfishyf",
                     "m88nfishyg",
                     "m88nfishyh",
+                    "m88nfishlips",
+                    "m88nsushi",
+                    "m88nsashimi",
+                    "m88nconepooper",
+                    "m88nkennyclown",
+                    "m88nnancyclown",
+                    "m88njimmyclown",
+                    "m88nthewarden",
+                    "m88nbabyyoda1",
+                    "m88nbabyyoda2",
+                    "m88nheadlessonesie",
+                    "m88nheadlessskeleton",
+                    "m88nghostpumpkin",
                     //m88n's Mob Nexans
                     "nexan1",
                     "nexan2",
@@ -424,6 +439,20 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 "BURGERBOSS",
                 
                                 "FRYGUY",
+                                "GHOST1",
+                                "GHOST2",
+                                "GHOST3",
+                                "HORSEMAN",
+                                "PUMPKINPUNK",
+                                "WRAITH",
+                                "PUMPKINWARLOCK",
+                                "EVILPUMPKIN",
+                                "WHISPYRED",
+                                "WHISPYWITCH",
+                                "WHISPYKING",
+                                "WHISPYBOBBY",
+                                "WHISPYDIAMOND",
+                                "WHISPYLL",
                                 // @nextCharacterLine@
                     "item-BOARHIDE",
                     "item-THUDKEY",
@@ -573,6 +602,15 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "item-m88nruck2",
                     "item-m88nruck3",
                     "item-m88ngoldknuckles",
+                    "item-m88npieslinger",
+                    "item-candybucket",
+                    "item-candytreat",
+                    "item-candycorntreat",
+                    "item-chocolatetreat",
+                    "item-lollitreat",
+                    "item-headstonetrick",
+                    "item-skullnbonestrick",
+                    "item-spidertrick",
                     //MRMlabs
                     "item-firstaidkit",
                     "item-bandaid",
@@ -640,7 +678,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "item-DUCKBIT",
                     "item-MILK2",
                     "item-MILK1",
-                    // @nextObjectLine@
+                                "item-WHISPYSPIRIT",
+                                // @nextObjectLine@
                     "NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6",
                     "NFT_38278eacc7d1c86fdbc85d798dca146fbca59a2e5e567dc15898ce2edac21f5f",
                     "NFT_d2fb1ad9308803ea4df2ba6b1fe0930ad4d6443b3ac6468eaedbc9e2c214e57a",
@@ -6099,7 +6138,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     console.log("Map loaded.");
                     var tilesetIndex = self.renderer.upscaledRendering ? 0 : self.renderer.scale - 1;
                     self.renderer.setTileset(self.map.tilesets[tilesetIndex]);
-                    self.map._initStreamCheck();                       
+                    self.map._initStreamCheck();
                 });
             },
 
@@ -6126,12 +6165,19 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         this.player.idle();
                         this.player.dynamicArmorNFTData = nftData;
                         this.player.dyanmicNFTLoaded = true;
+                        self = this;
+                        this.player.hasShadow = function() { return Types.hasShadow(spriteName); };
                     });
                 } else {
                     this.player.dyanmicNFTLoaded = true;
                     this.player.setSprite(playerSprite);
                     this.player.idle();
                 }
+
+                let self = this;
+                setInterval(() => self.handleScene(self.player), 100);
+                setTimeout(() => self.handleScene(self.player), 100);
+
                 console.debug("Finished initPlayer");
             },
 
@@ -6771,7 +6817,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             },
 
             canUseCenteredCamera: function() {
-                return this.mapId !== "main" && this.app.settings.getCenteredCamera();
+                return this.app.settings.getCenteredCamera();
             },
 
             tick: function() {
@@ -6839,11 +6885,14 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             },
 
             findVisibleAnimatedTiles: function(animatedTiles) {
+                let scene = this.map.getCurrentScene(this.player);
                 let visibleAnimatedTiles = [];
                 const animatedTilesLength = animatedTiles.length;
                 for (let i = 0; i < animatedTilesLength; i++) {
                     let tile = animatedTiles[i];
-                    if (this.camera.isVisiblePosition(tile.x, tile.y, 2)) {
+                    let extra = this.map.isLightTile(tile.id) ? 20 : 2;
+
+                    if (this.camera && this.camera.isVisiblePosition(tile.x, tile.y, extra) && (!scene || !scene.isOutOfBounds(tile.x, tile.y))) {
                         visibleAnimatedTiles.push(tile);
                     }
                 }
@@ -6851,6 +6900,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             },
 
             findVisibleTiles: function() {
+                if(!this.renderer || !this.renderer.tileset) {
+                    return
+                }
+
                 let self = this,
                     m = this.map,
                     tilesetwidth = this.renderer.tileset.width / m.tilesize;
@@ -6861,13 +6914,30 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.visibleTerrainTiles = []
                 this.visibleHighTiles = []
                 this.forEachVisibleTile(function (id, index) {
-                    if(!m.isHighTile(id) && !m.isAnimatedTile(id))  {
+                    if(m.isLightTile(id)) {
+                        return
+                    }
+
+                    if(!m.isHighTile(id) && !m.isAnimatedTile(id)) {
                         self.visibleTerrainTiles.push({tileid: id, setW: tilesetwidth, gridW: m.width, cellid: index});
                     }
                     else if(m.isHighTile(id) && !m.isAnimatedTile(id)) {
                         self.visibleHighTiles.push({tileid: id, setW: tilesetwidth, gridW: m.width, cellid: index});
                     }
-                }, 1);
+                }, 2);
+
+                this.forEachVisibleTile(function (id, index) {
+                    if (!m.isLightTile(id)) {
+                        return;
+                    }
+
+                    if(!m.isHighTile(id) && !m.isAnimatedTile(id)) {
+                        self.visibleTerrainTiles.push({tileid: id, setW: tilesetwidth, gridW: m.width, cellid: index});
+                    }
+                    else if(m.isHighTile(id) && !m.isAnimatedTile(id)) {
+                        self.visibleHighTiles.push({tileid: id, setW: tilesetwidth, gridW: m.width, cellid: index});
+                    }
+                }, 20);
             },
 
             connect: function(started_callback) {
@@ -6940,7 +7010,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     }
                 });
 
-                this.client.onWelcome(function(id, name, x, y, hp, title) {
+                this.client.onWelcome(function(id, name, x, y, hp, title, serverTimeOffset) {
                     console.log("Received player ID from server : "+ id);
                     self.player.id = id;
                     self.playerId = id;
@@ -6955,10 +7025,15 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     self.resetCamera();
                     self.updatePlateauMode();
                     self.audioManager.updateMusic();
+                    self.app.timeOffset += serverTimeOffset
+                    self.serverTime = serverTimeOffset;
 
                     self.addEntity(self.player);
                     self.player.dirtyRect = self.renderer.getEntityBoundingRect(self.player);
                     self.player.playerClassSelectionShown = false;
+
+                    setTimeout(() => self.handleScene(self.player), 50);
+                    setTimeout(() => self.handleScene(self.player), 500);
 
                     if(!self.storage.hasAlreadyPlayed()) {
                         self.storage.initPlayer(self.player.name);
@@ -7035,6 +7110,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     });
 
                     self.player.onStep(function() {
+                        self.handleScene(self.player)
                         self.findVisibleTiles();
 
                         if(this.isFishing) {
@@ -7068,12 +7144,30 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         if(!self.player.isDead) {
                             self.audioManager.updateMusic();
                         }
+
+                        // Loop over all entities around player
+                        self.forEachEntityAround(self.player.gridX, self.player.gridY, 1, (entity) => {
+                            if (Types.isNpc(entity.kind) && entity.hasInteraction()) {
+                                let msg;
+                                if (self.gamepadListener.isActive()) {
+                                    msg = "Press left stick button to talk"
+                                } else {
+                                    msg = "Press [E] to talk"
+                                }
+                                self.createBubble(entity.id, msg, function() {
+                                    return self.player.isAdjacent(entity)
+                                });
+                                self.assignBubbleTo(entity);
+                            }
+                        })
                     });
 
                     self.player.onStopPathing(function(x, y) {
                         if(self.player.hasTarget()) {
                             self.player.lookAtTarget();
                         }
+
+                        self.handleScene(self.player);
 
                         self.selectedCellVisible = false;
 
@@ -7135,6 +7229,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                     _self.player.setGridPosition(dest.x, dest.y);
                                     _self.player.nextGridX = dest.x;
                                     _self.player.nextGridY = dest.y;
+                                    _self.handleScene(_self.player);
+
                                     _self.player.turnTo(dest.orientation);
                                     _self.client.sendTeleport(dest.x, dest.y);
 
@@ -7275,9 +7371,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             }
                         }
 
-                        if(self.player.target instanceof Npc) {
-                            self.makeNpcTalk(self.player.target);
-                        } else if(self.player.target instanceof Chest) {
+                        if(self.player.target instanceof Chest) {
                             self.client.sendOpen(self.player.target);
                             self.audioManager.playSound("chest");
                         }
@@ -7300,11 +7394,11 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         return new Promise((resolve, reject) => {
                             try {
                                 var ignored = [self.player]; // Always ignore self
-                    
+
                                 if (self.player.hasTarget()) {
                                     ignored.push(self.player.target);
                                 }
-                    
+
                                 self.findPath(self.player, x, y, ignored)
                                     .then(path => resolve(path))
                                     .catch(error => reject(error));
@@ -7488,6 +7582,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                                     var gridX = entity.destination.gridX,
                                                         gridY = entity.destination.gridY;
 
+                                                    self.handleScene(entity);
+
                                                     if(self.map.isDoor(gridX, gridY)) {
                                                         var dest = self.map.getDoorDestination(gridX, gridY);
 
@@ -7541,16 +7637,16 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                             return new Promise((resolve, reject) => {
                                                 try {
                                                     var ignored = [entity]; // Always ignore self
-                                        
+
                                                     var ignoreTarget = function(target) {
                                                         ignored.push(target);
-                                        
+
                                                         // also ignore other attackers of the target entity
                                                         target.forEachAttacker(function(attacker) {
                                                             ignored.push(attacker);
                                                         });
                                                     };
-                                        
+
                                                     if (entity.hasTarget()) {
                                                         ignoreTarget(entity.target);
                                                     } else if (entity.previousTarget) {
@@ -7558,7 +7654,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                                         // See: tryMovingToADifferentTile()
                                                         ignoreTarget(entity.previousTarget);
                                                     }
-                                        
+
                                                     self.findPath(entity, x, y, ignored)
                                                         .then(path => resolve(path))
                                                         .catch(error => reject(error));
@@ -7627,6 +7723,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                             self.handleTrigger(self.map.getCurrentTrigger(entity), entity);
                                         }
                                     }
+                                } else {
+                                    self.handleScene(entity);
                                 }
                             }
                             catch(e) {
@@ -7847,9 +7945,11 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 attacker.idle();
                                 attacker.stop();
                             });
+
                         }
 
                         if(id === self.playerId) {
+                            self.handleScene(entity);
                             self.resetCamera();
                         }
                     });
@@ -8209,18 +8309,21 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 now = new Date().getTime();
 
                 if (this.lastNPCTalk !== undefined) {
-                    if (now - this.lastNPCTalk < 500) {
+                    if (now - this.lastNPCTalk < 100) {
                         return;
                     }
                 }
                 this.lastNPCTalk = now;
 
-                var msg;
-
                 if(npc) {
                     this.checkForQuests(npc);
                     this.checkForPartnerTask(npc);
                 }
+
+                let self = this;
+                setTimeout(() => {
+                    self.app.initResourcesDisplay()
+                }, 1000)
             },
 
             checkForPartnerTask: function(npc) {
@@ -8242,17 +8345,23 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 let url = '/session/' + self.sessionId + '/npc/' + npc.kind;
                 if(npc.thoughts.length > 0) {
                     let message = npc.thoughts.shift()
+                    npc.hasTalked();
                     self.createBubble(npc.id, message);
                     self.assignBubbleTo(npc);
                     self.audioManager.playSound("npc");
 
                     if (npc.thoughts.length === 0 && npc.thoughtsClearedCallback) {
-                        setTimeout(() => { if(npc.thoughtsClearedCallback) {npc.thoughtsClearedCallback();  npc.thoughtsClearedCallback = null }}, 1500);
+                        setTimeout(() => { if(npc.thoughtsClearedCallback) {npc.thoughtsClearedCallback();  npc.thoughtsClearedCallback = null }}, 500);
                     }
                     return;
                 }
                 axios.get(url).then(function (response) {
                     if (response.data !== "") {
+                        if(response.data.options) {
+                            self.handleInputOptions(npc.id, response.data);
+                            return;
+                        }
+
                         let messages;
                         if(_.isObject(response.data)) {
                             messages = (!_.isArray(response.data.text) ? [response.data.text] : response.data.text);
@@ -8274,6 +8383,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 }, 1500);
                             }
                         }
+                        npc.hasTalked();
                         self.createBubble(npc.id, message);
                         self.assignBubbleTo(npc);
                         self.audioManager.playSound("npc");
@@ -8288,6 +8398,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 let shopName = shop.join(" ");
                                 self.app.openShop(shopId, shopName)
                             } else {
+                            npc.hasTalked();
                             self.createBubble(npc.id, msg);
                             self.assignBubbleTo(npc);
                             self.audioManager.playSound("npc");
@@ -8298,7 +8409,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         }
                     }
                 }).catch(function (error) {
-                    console.error("Error while checking for quests.");
+                    console.error("Error while checking for quests.", error);
                 });
             },
 
@@ -8331,16 +8442,31 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
              */
             forEachVisibleEntityByDepth: function(callback) {
                 var self = this,
-                    m = this.map;
+                    m = this.map,
+                    scene = this.map.getCurrentScene(this.player);
 
                 this.camera.forEachVisiblePosition(function(x, y) {
-                    if(!m.isOutOfBounds(x, y)) {
-                        if(self.renderingGrid[y][x]) {
-                            _.each(self.renderingGrid[y][x], function(entity) {
-                                callback(entity);
-                            });
-                        }
+                    if (m.isOutOfBounds(x, y)) {
+                        return;
                     }
+
+                    if (!self.renderingGrid) {
+                        return;
+                    }
+                    if (!self.renderingGrid[y]) {
+                        return;
+                    }
+                    if (!self.renderingGrid[y][x]) {
+                        return;
+                    }
+
+                    if(scene && scene.isOutOfBounds(x, y)) {
+                        return;
+                    }
+
+                    _.each(self.renderingGrid[y][x], function(entity) {
+                        callback(entity);
+                    });
                 }, this.renderer.mobile ? 0 : 2);
             },
 
@@ -8348,12 +8474,24 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
              *
              */
             forEachVisibleTileIndex: function(callback, extra) {
+                if(!this.camera) {
+                    return;
+                }
+
+                var self  = this;
                 var m = this.map;
+                var scene = this.player.getScene();
 
                 this.camera.forEachVisiblePosition(function(x, y) {
-                    if(!m.isOutOfBounds(x, y)) {
-                        callback(m.GridPositionToTileIndex(x, y) - 1);
+                    if(m.isOutOfBounds(x, y)) {
+                        return;
                     }
+
+                    if(scene && scene.isOutOfBounds(x, y)) {
+                        return;
+                    }
+
+                    callback(m.GridPositionToTileIndex(x, y) - 1);
                 }, extra);
             },
 
@@ -8384,11 +8522,18 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
             forEachTileIndex: function(callback, extra) {
                 var m = this.map;
+                var scene = this.map.getCurrentScene();
 
                 this.map.forEachPosition(function(x, y) {
-                    if(!m.isOutOfBounds(x, y)) {
-                        callback(m.GridPositionToTileIndex(x, y) - 1);
+                    if(m.isOutOfBounds(x, y)) {
+                        return;
                     }
+
+                    if(scene && scene.isOutOfBounds(x, y)) {
+                        return;
+                    }
+
+                    callback(m.GridPositionToTileIndex(x, y) - 1);
                 }, extra);
             },
 
@@ -8726,7 +8871,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.forEachVisibleEntityByDepth((entity) => {
                     if (!Types.isMob(entity.kind) || entity.isFriendly || entity.isDead) {
                         return;
-                }
+                    }
                     let distance = this.player.getDistanceToEntity(entity);
                     mobDistances.push({entity: entity, distance: distance});
                 });
@@ -8740,7 +8885,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             click: function(pos) {
 
                 if($('body').hasClass('inventory') 
-                    || $('body').hasClass('settings') 
+                    || $('body').hasClass('settings')
+                    || $('#dialogue-popup').hasClass("active")
                     || this.minigameLoaded
                     || this.hoveringMinigamePrompt) {
                     return;
@@ -8754,11 +8900,11 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 let clickThrottle;
                 if (pos.keyboard) {
                     this.keyboardMovement = true;
-                    clickThrottle = 25;
+                    clickThrottle = 50;
                 } else {
                     this.mousedown = true;
                     this.keyboardMovement = false;
-                    clickThrottle = 500;
+                    clickThrottle = 150;
                 }
 
                 let now = new Date().getTime();
@@ -8781,11 +8927,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                 var entity;
                 let fishablePos;
-
                 if(this.started
                     && this.player
-                    && !this.isZoning()
-                    && !this.isZoningTile(this.player.nextGridX, this.player.nextGridY)
                     && !this.player.isDead
                     && (!this.hoveringCollidingTile || pos.keyboard || this.hoveringFishableTile)
                     && (!this.hoveringPlateauTile || pos.keyboard)
@@ -8815,7 +8958,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     else if(entity instanceof Item) {
                         this.makePlayerGoToItem(entity);
                     }
-                    else if(entity instanceof Npc) {
+                    else if(entity instanceof Npc && !pos.keyboard) {
                         if(this.player.isAdjacentNonDiagonal(entity) === false) {
                             this.makePlayerTalkTo(entity);
                         } else {
@@ -8838,7 +8981,41 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         }
                     }
                     else {
-                        this.makePlayerGoTo(pos.x, pos.y);
+                        if(this.isZoningTile(pos.x, pos.y) && !pos.keyboard) {
+                            let z = this.getZoningOrientation(pos.x, pos.y);
+                            switch (z) {
+                                case Types.Orientations.LEFT:
+                                    if(!this.map.isColliding(pos.x-1, pos.y)) {
+                                        this.makePlayerGoTo(pos.x - 1, pos.y);
+                                    } else {
+                                        this.makePlayerGoTo(pos.x, pos.y);
+                                    }
+                                    break;
+                                case Types.Orientations.RIGHT:
+                                    if(!this.map.isColliding(pos.x+1, pos.y)) {
+                                        this.makePlayerGoTo(pos.x + 1, pos.y);
+                                    } else {
+                                        this.makePlayerGoTo(pos.x, pos.y);
+                                    }
+                                    break;
+                                case Types.Orientations.UP:
+                                    if(!this.map.isColliding(pos.x, pos.y-1)) {
+                                        this.makePlayerGoTo(pos.x, pos.y-1);
+                                    } else {
+                                        this.makePlayerGoTo(pos.x, pos.y);
+                                    }
+                                    break;
+                                case Types.Orientations.DOWN:
+                                    if(!this.map.isColliding(pos.x, pos.y+1)) {
+                                        this.makePlayerGoTo(pos.x, pos.y+1);
+                                    } else {
+                                        this.makePlayerGoTo(pos.x, pos.y);
+                                    }
+                                    break;
+                            }
+                        } else {
+                            this.makePlayerGoTo(pos.x, pos.y);
+                        }
                         if ($('#miniMap').is(':visible')) {
                             this.app.toggleMiniMap(true);
                         }
@@ -8923,6 +9100,41 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     }
                 }
                 return false;
+            },
+
+            handleScene(entity) {
+                if (!this.camera) {
+                    return
+                }
+                const entityScene = entity.getScene();
+                const currentScene = this.map.getCurrentScene(entity);
+                if(entity.getScene() !== currentScene) {
+                    if(currentScene) {
+                        this.camera.setBoundingBox(currentScene.x, currentScene.y, currentScene.width, currentScene.height);
+
+                        if(currentScene.message) {
+                            this.showNotification(currentScene.message);
+                        } else if(currentScene.name && (!entityScene || entityScene.name !== currentScene.name)) {
+                            this.showNotification("Welcome to " + currentScene.name);
+                        }
+                    } else {
+                        this.camera.removeBoundingBox(this.player);
+                    }
+                    entity.setScene(currentScene)
+
+                    if(currentScene && currentScene.bg) {
+                        this.app.setBackground(currentScene.bg);
+                    } else {
+                        this.app.setBackground('black');
+                    }
+
+                    let self = this;
+                    setTimeout(() => {
+                        self.renderer.clearScreen(this.renderer.context);
+                        self.renderer.redrawTerrain = true;
+                        self.resetZone();
+                    }, 100)
+                }
             },
 
             handleTrigger(trigger, entity) {
@@ -9192,12 +9404,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             },
 
             resetCamera: function() {
-                if (this.mapId !== "main") {
-                    this.focusPlayer();
-                } else {
-                    this.camera.focusEntity(this.player);
-                }
-
+                this.focusPlayer();
                 this.resetZone();
             },
 
@@ -9209,8 +9416,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.client.sendEmotion(emotion);
             },
 
-            createBubble: function(id, message) {
-                this.bubbleManager.create(id, message, this.currentTime);
+            createBubble: function(id, message, showCheck) {
+                this.bubbleManager.create(id, message, this.currentTime, showCheck);
             },
 
             destroyBubble: function(id) {
@@ -9275,6 +9482,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     this.renderer.clearScreen(this.renderer.context);
                 }
 
+                let self = this;
+                setTimeout(() => {
+                    self.handleScene(self.player)
+                }, 100);
                 console.debug("Finished restart");
             },
 
@@ -9353,6 +9564,21 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.quest_handout_callback = callback;
             },
 
+            onPlayerChoice: function(callback) {
+              this.player_choice_callback = callback;
+            },
+
+            makeChoice: function(npcId, choice) {
+                let self = this;
+                let npc = self.getEntityById(npcId);
+                let url = '/session/' + self.sessionId + '/npc/' + npc.kind + '/dialogue/' + choice;
+                axios.get(url).then(function (response) {
+                    setTimeout(() => {
+                        self.makeNpcTalk(npc);
+                    }, 500);
+                })
+            },
+
             showNewQuestPopup: function(quest) {
                 if (this.quest_handout_callback) {
                     this.quest_handout_callback(quest);
@@ -9369,6 +9595,13 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             showNotification: function(message) {
                 if(this.notification_callback) {
                     this.notification_callback(message);
+                }
+            },
+
+            handleInputOptions(npcId, dialogueNode) {
+                if (this.player_choice_callback) {
+                    this.destroyBubble(npcId);
+                    this.player_choice_callback(npcId, dialogueNode)
                 }
             },
 
@@ -9418,8 +9651,27 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     if(!lastCheckpoint || (lastCheckpoint && lastCheckpoint.id !== checkpoint.id)) {
                         this.player.lastCheckpoint = checkpoint;
                         this.client.sendCheck(checkpoint.id);
+                        this.lastCheckpoint = checkpoint;
                     }
                 }
+            },
+            
+            newSession: function() {
+                const url = '/session/' + this.sessionId + '/teleport';
+                const dest = this.lastCheckpoint;
+                dest.map = this.mapId;
+                axios.post(url, dest).then(function (response) {
+                    if (response.status === 200) {
+                        let newSessionID = response.data.sessionId;
+                        window.location.href = '/?sessionId=' + newSessionID;
+                    } else {
+                        console.error(response);
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                }).finally(function(e) {
+
+                });                
             },
 
             forEachEntityAround: function(x, y, r, callback) {
@@ -9860,6 +10112,15 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         }
                     }
                 }, this.renderer.mobile ? 0 : 2);
+            },
+
+            interact: function() {
+                let self = this;
+                this.forEachEntityAround(this.player.gridX, this.player.gridY, 1, function(entity) {
+                    if (Types.isNpc(entity.kind) && !$('#dialogue-popup').hasClass('active')) {
+                        self.makeNpcTalk(entity);
+                    }
+                });
             }
 
         });

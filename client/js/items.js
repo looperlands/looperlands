@@ -366,6 +366,15 @@ define(['item'], function(Item) {
         m88nruck2:Item.extend({init:function(id){this._super(id,Types.Entities.M88NRUCK2,"object");this.lootMessage="You found a ruck sack!";}}),
         m88nruck3:Item.extend({init:function(id){this._super(id,Types.Entities.M88NRUCK3,"object");this.lootMessage="You found a ruck sack!";}}),
         m88ngoldknuckles:Item.extend({init:function(id){this._super(id,Types.Entities.M88NGOLDKNUCKLES,"object");this.lootMessage="You found gold knuckles!";}}),
+        m88npieslinger:Item.extend({init:function(id){this._super(id,Types.Entities.M88NPIESLINGER,"object");this.lootMessage="You found a pie slinger!";}}),
+        candybucket:Item.extend({init:function(id){this._super(id,Types.Entities.CANDYBUCKET,"object");this.lootMessage="You found a whole candy bucket!";}}),
+        candycorntreat:Item.extend({init:function(id){this._super(id,Types.Entities.CANDYCORNTREAT,"object");this.lootMessage="Trick or TREAT!";}}),
+        candytreat:Item.extend({init:function(id){this._super(id,Types.Entities.CANDYTREAT,"object");this.lootMessage="Trick or TREAT!";}}),
+        chocolatetreat:Item.extend({init:function(id){this._super(id,Types.Entities.CHOCOLATETREAT,"object");this.lootMessage="Trick or TREAT!";}}),
+        lollitreat:Item.extend({init:function(id){this._super(id,Types.Entities.LOLLITREAT,"object");this.lootMessage="Trick or TREAT!";}}),
+        headstonetrick:Item.extend({init:function(id){this._super(id,Types.Entities.HEADSTONETRICK,"object");this.lootMessage="TRICK or Treat!";}}),
+        skullnbonestrick:Item.extend({init:function(id){this._super(id,Types.Entities.SKULLNBONESTRICK,"object");this.lootMessage="TRICK or Treat!";}}),
+        spidertrick:Item.extend({init:function(id){this._super(id,Types.Entities.SPIDERTRICK,"object");this.lootMessage="TRICK or Treat!";}}),
         //MRMlabs Items
         firstaidkit:Item.extend({init:function(id){this._super(id,Types.Entities.FIRSTAIDKIT,"object");this.lootMessage="You found a first aid kit!";}}),
         bandaid:Item.extend({init:function(id){this._super(id,Types.Entities.BANDAID,"object");this.lootMessage="You found a bandaid!";}}),
@@ -435,6 +444,7 @@ define(['item'], function(Item) {
         DUCKBIT:Item.extend({init:function(id){this._super(id,Types.Entities.DUCKBIT,"object");this.lootMessage="Quack Quack";}}),
         MILK2:Item.extend({init:function(id){this._super(id,Types.Entities.MILK2,"object");this.lootMessage="";}}),
         MILK1:Item.extend({init:function(id){this._super(id,Types.Entities.MILK1,"object");this.lootMessage="Yum milk!";}}),
+        WHISPYSPIRIT:Item.extend({init:function(id){this._super(id,Types.Entities.WHISPYSPIRIT,"object");this.lootMessage="You purified a ghost!";}}),
         // @nextItemLine@
     };
 

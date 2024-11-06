@@ -92,7 +92,8 @@ class LooperLandsPlatformClient {
             const extractedData = {
                 tokenHash: nftData.token.tokenHash,
                 assetType: nftData.assetType,
-                nftId: nftId
+                nftId: nftId,
+                options: nftData.options,
             };
             this.nftDataCache[nftId] = extractedData;
             return extractedData;
@@ -254,6 +255,18 @@ class LooperLandsPlatformClient {
         try {
             const url = `/api/game/asset/quest`;
             const data = {nftId, questKey, status};
+            const response = await this.client.post(url, data);
+            return response.data;
+        } catch (error) {
+            this.handleError(error);
+        }
+    }
+
+    async registerChoice(nftId, choice) {
+        try {
+            //console.log('registering choice', nftId, choice);
+            const url = `/api/game/asset/choice`;
+            const data = {nftId, choice};
             const response = await this.client.post(url, data);
             return response.data;
         } catch (error) {

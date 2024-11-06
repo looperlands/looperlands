@@ -595,7 +595,7 @@ module.exports = World = cls.Class.extend({
     },
 
     createItem: function (kind, x, y) {
-        var id = '9' + this.itemCount++,
+        var id = Utils.getID(),
             item = null;
 
         if(kind === Types.Entities.CHEST) {
@@ -829,7 +829,7 @@ module.exports = World = cls.Class.extend({
                 self.addFieldEffect(kind, pos.x + 1, pos.y);
             }
             if (Types.isMob(kind)) {
-                var mob = new Mob('7' + kind + count++, kind, pos.x + 1, pos.y);
+                let mob = new Mob(Utils.getID(), kind, pos.x + 1, pos.y);
                 mob.onRespawn(function () {
                     mob.isDead = false;
                     mob.generateLevel();
@@ -1423,7 +1423,7 @@ module.exports = World = cls.Class.extend({
         }
         if (parent.addArray.length < 15) { // Limit amount of adds to 15 to prevent any funny business
             let self = this;
-            let add = new Mob('8' + Math.round(Math.random() * 9999999), childKind, x, y);
+            let add = new Mob(Utils.getID(), childKind, x, y);
             add.parentId = parent.id;
             parent.addArray.push(add);
             if (canRespawn === true) {
@@ -1507,7 +1507,7 @@ module.exports = World = cls.Class.extend({
 
     nextMobId: function() {
         // return highest key + 1
-        return _.max(_.keys(this.mobs), function(id) { return parseInt(id); }) + 1;
+        return Utils.getID();
     },
 
     showLayer: function(player, layer) {

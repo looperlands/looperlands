@@ -411,6 +411,7 @@ define(['npc'], function(Npc) {
         m88nmermanking: Npc.extend({init: function(id) {this._super(id, Types.Entities.M88NMERMANKING, 1);}}),
         m88nmermaidprincess: Npc.extend({init: function(id) {this._super(id, Types.Entities.M88NMERMAIDPRINCESS, 1);}}),
         kingfroggybw: Npc.extend({init: function(id) {this._super(id, Types.Entities.KINGFROGGYBW, 1);}}),
+        m88nape: Npc.extend({init: function(id) {this._super(id, Types.Entities.M88NAPE, 1);}}),
         //MRMlabs NPCs
         tylerdurden: Npc.extend({init: function(id) {this._super(id, Types.Entities.TYLERDURDEN, 1);}}),
         //Taiko Town NPCs
@@ -483,6 +484,12 @@ define(['npc'], function(Npc) {
         SARAH: Npc.extend({init: function(id) {this._super(id, Types.Entities.SARAH, 1);}}),
         MOONBASES: Npc.extend({init: function(id) {this._super(id, Types.Entities.MOONBASES, 1);}}),
         NURSEOWNER: Npc.extend({init: function(id) {this._super(id, Types.Entities.NURSEOWNER, 1);}}),
+        WHISPYRED: Npc.extend({init: function(id) {this._super(id, Types.Entities.WHISPYRED, 1);}}),
+        WHISPYWITCH: Npc.extend({init: function(id) {this._super(id, Types.Entities.WHISPYWITCH, 1);}}),
+        WHISPYKING: Npc.extend({init: function(id) {this._super(id, Types.Entities.WHISPYKING, 1);}}),
+        WHISPYBOBBY: Npc.extend({init: function(id) {this._super(id, Types.Entities.WHISPYBOBBY, 1);}}),
+        WHISPYDIAMOND: Npc.extend({init: function(id) {this._super(id, Types.Entities.WHISPYDIAMOND, 1);}}),
+        WHISPYLL: Npc.extend({init: function(id) {this._super(id, Types.Entities.WHISPYLL, 1);}}),
         // @nextNPCLine@
     };
     

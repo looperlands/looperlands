@@ -19,6 +19,7 @@ class DynamicNFTController {
         }
         const nftId = req.params.nftId;
         const nftData = await this.platformClient.getNFTDataForGame(nftId);
+        console.log(nftData);
         this.Types.addDynamicNFT(nftData);
         res.status(200).send(nftData);
     }

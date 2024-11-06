@@ -14,6 +14,20 @@ quests = [
         xp: 1000,
         medal: Types.Medals.SKULL
     },
+    {
+        id: "Purify100",
+        name: "Purify 100 Ghost Spirits!",
+        startText: ["Help purify the ghosts scattered around Cyber City!",
+        "These ghosts need to be set free!"],
+        endText: "Thank you for purifying the ghosts!",
+        eventType: "LOOT_ITEM",
+        npc: Types.Entities.WHISPYKING,
+        target: Types.Entities.WHISPYSPIRIT,
+        amount: 100,
+        level: 1,
+        xp: 50000,
+        medal: Types.Medals.SKULL
+    },
     { 
         id: "Save the Ducklings Part 1",
         name: "Save the Ducklings Part 1",
@@ -40,6 +54,39 @@ quests = [
         level: 1,
         medal: Types.Medals.RAT
     },
+    {
+        id: "Purify1000",
+        name: "Purify 1000 Ghost Spirits!",
+        startText: ["There are more spirits that need our help!",
+        "Will you help purify them all?",],
+        inProgressText: ["Keep it up, you're doing great!",
+        "You only have {{remaining}} more ghosts to purify!"],
+        endText: ["You saved all the spirits!"],
+        eventType: "LOOT_ITEM",
+        npc: Types.Entities.WHISPYSPIRIT,
+        target: Types.Entities.WHISPYKING,
+        amount: 1000,
+        requiredQuest: "Purify100",
+        level: 5,
+        medal: Types.Medals.SKULL,
+        xp: 100000,
+        
+    },
+
+    {
+        id: "Defeat_the_Pumpkin_Warlock",
+        name: "Take on the final boss this Halloween!",
+        startText: ["Be careful of his evil pumpkin army.",
+        "Will you take on the final boss?"],
+        eventType: "KILL_MOB",
+        npc: Types.Entities.WHISPYBOBBY,
+        target: Types.Entities.PUMPKINWARLOCK,
+        amount: 88888,
+        level: 1,
+        medal: Types.Medals.SKULL,
+        needToReturn: true,
+        xp: 90000,
+    }
 ];
 
    

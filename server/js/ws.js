@@ -30,9 +30,10 @@ const Types = require("../../shared/js/gametypes");
 const platform = require('./looperlandsplatformclient.js');
 const minigame = require('../apps/minigame.js');
 const MinigameController = require('./minigamecontroller.js');
+const DialogueController = require('./dialoguecontroller.js');
 const dynamicnft = require('./dynamicnftcontroller.js');
 const announcement = require('./announcementcontroller.js');
-const { InventorySyncController } = require("./inventorysynccontroller.js");
+const {InventorySyncController} = require("./inventorysynccontroller.js");
 const PlayerClassController = require('./playerclasscontroller.js').PlayerClassController;
 const cache = new NodeCache();
 
@@ -45,7 +46,7 @@ const CORNHOLE = '0xc00631db8eba1ab88589a599b67df7727ae39348f961c62c11dcd7992f62
 const platformClient = new platform.LooperLandsPlatformClient(LOOPERLANDS_PLATFORM_API_KEY, LOOPERLANDS_PLATFORM_BASE_URL);
 const dynamicNFTcontroller = new dynamicnft.DynamicNFTController(cache, platformClient, Types);
 const minigameController = new MinigameController(cache, platformClient);
-
+const dialogueController = new DialogueController(cache, platformClient);
 function extractDetails(inputUrl) {
     const parsedUrl = new URL(inputUrl);
     let protocol = parsedUrl.protocol;
@@ -60,7 +61,7 @@ function extractDetails(inputUrl) {
 
     protocol = protocol.replace(':', '');
 
-    return { protocol, host, port };
+    return {protocol, host, port};
 }
 
 // Example usage
@@ -145,10 +146,10 @@ var Connection = cls.Class.extend({
 });
 
 /***************
-    SOCKET.IO
-    Author: Nenu Adrian
-            http://nenuadrian.com
-            http://codevolution.com
+ SOCKET.IO
+ Author: Nenu Adrian
+ http://nenuadrian.com
+ http://codevolution.com
  ***************/
 WS.socketIOServer = Server.extend({
     init: function () {
@@ -171,7 +172,7 @@ WS.socketIOServer = Server.extend({
         console.log("APP_URL", APP_URL);
         self.io = require('socket.io')(http, {
             allowEIO3: true,
-            cors: { origin: APP_URL, credentials: true }
+            cors: {origin: APP_URL, credentials: true}
         });
 
         app.use(express.json())
@@ -511,7 +512,13 @@ WS.socketIOServer = Server.extend({
 
             inventory = _(inventory).chain().sortBy("level").reverse().sortBy("trait").value();
             special = _(special).chain().sortBy("level").reverse().sortBy("trait").value();
-            res.status(200).json({ inventory: inventory, special: special, items: items, bots: bots, resources: resources });
+            res.status(200).json({
+                inventory: inventory,
+                special: special,
+                items: items,
+                bots: bots,
+                resources: resources
+            });
         });
 
         app.get("/session/:sessionId/quests", async (req, res) => {
@@ -533,7 +540,7 @@ WS.socketIOServer = Server.extend({
 
             if (quests && questStatus) {
                 _.each(quests?.questsByID, function (quest) {
-                    if (_.findIndex(questStatus.COMPLETED, { questKey: quest.id }) !== -1) {
+                    if (_.findIndex(questStatus.COMPLETED, {questKey: quest.id}) !== -1) {
 
                         availableQuests.push({
                             id: quest.id,
@@ -550,10 +557,10 @@ WS.socketIOServer = Server.extend({
                     }
                 });
                 _.each(quests?.questsByID, function (quest) {
-                    if (_.findIndex(questStatus.COMPLETED, { questKey: quest.id }) !== -1) {
+                    if (_.findIndex(questStatus.COMPLETED, {questKey: quest.id}) !== -1) {
                         return;
                     }
-                    if (_.findIndex(questStatus.IN_PROGRESS, { questKey: quest.id }) !== -1) {
+                    if (_.findIndex(questStatus.IN_PROGRESS, {questKey: quest.id}) !== -1) {
 
                         let progressCount = 0;
                         if (quest.eventType === "LOOT_ITEM") {
@@ -652,7 +659,7 @@ WS.socketIOServer = Server.extend({
                     res.status(200).json(false);
                 }
 
-                let completed = (_.findIndex(questStatus.COMPLETED, { questKey: questId }) !== -1);
+                let completed = (_.findIndex(questStatus.COMPLETED, {questKey: questId}) !== -1);
                 res.status(200).json(completed);
 
                 return;
@@ -846,21 +853,52 @@ WS.socketIOServer = Server.extend({
             const sessionId = req.params.sessionId;
             const npcId = req.params.npcId;
             const sessionData = cache.get(sessionId);
+
             if (sessionData === undefined) {
                 res.status(404).json({
                     status: false,
                     "error": "session not found",
                     user: null
                 });
-            } else {
-                let questData = quests.handleNPCClick(cache, sessionId, parseInt(npcId));
-                const sessionData = cache.get(sessionId);
-
-                if (questData) {
-                    self.worldsMap[sessionData.mapId].npcTalked(npcId, questData.text, sessionData)
-                }
-                res.status(202).json(questData);
+                return;
             }
+
+            if (dialogueController.hasDialogueTree(sessionData.mapId, npcId)) {
+                let node = dialogueController.processDialogueTree(sessionData.mapId, npcId, cache, sessionId)
+                if (node) {
+                    res.status(202).json(node)
+                    return
+                }
+            }
+
+            let questData = quests.handleNPCClick(cache, sessionId, parseInt(npcId));
+
+            if (questData) {
+                self.worldsMap[sessionData.mapId].npcTalked(npcId, questData.text, sessionData)
+            }
+            res.status(202).json(questData);
+        });
+
+        app.get("/session/:sessionId/npc/:npcId/dialogue/:gotoNode", async (req, res) => {
+            const sessionId = req.params.sessionId;
+            const npcId = req.params.npcId;
+            const gotoNode = req.params.gotoNode;
+            const sessionData = cache.get(sessionId);
+
+            if (sessionData === undefined) {
+                res.status(404).json({
+                    status: false,
+                    "error": "session not found",
+                    user: null
+                });
+                return;
+            }
+
+            if (dialogueController.hasDialogueTree(sessionData.mapId, npcId)) {
+                dialogueController.goto(sessionData.mapId, npcId, gotoNode, cache, sessionId)
+            }
+
+            res.status(200).json({});
         });
 
         app.post('/activateTrigger', async (req, res) => {
@@ -933,7 +971,7 @@ WS.socketIOServer = Server.extend({
                 let player = self.worldsMap[sessionData.mapId].getPlayerById(sessionData.entityId);
                 let lakeLvl = Lakes.getLakeLevel(lakeName);
                 if (player.getNFTWeapon().getLevel() < lakeLvl) {
-                    let response = { allowed: false, reqLevel: lakeLvl };
+                    let response = {allowed: false, reqLevel: lakeLvl};
                     res.status(200).send(response);
                     return;
                 } else {
@@ -948,11 +986,18 @@ WS.socketIOServer = Server.extend({
                         return;
                     }
                     let fishExp = Lakes.calculateFishExp(fish, lakeName);
-                    player.pendingFish = { name: fish, exp: fishExp, double: (activeTrait === "double_catch") };
+                    player.pendingFish = {name: fish, exp: fishExp, double: (activeTrait === "double_catch")};
                     let difficulty = Lakes.getDifficulty(player.getNFTWeapon().getLevel(), lakeName, (activeTrait === "upper_hand"));
                     let speed = Lakes.getFishSpeed(fish, lakeName);
 
-                    let response = { allowed: true, fish: fish, difficulty: difficulty?.difficulty, speed: speed, bullseyeSize: difficulty?.bullseye, trait: activeTrait };
+                    let response = {
+                        allowed: true,
+                        fish: fish,
+                        difficulty: difficulty?.difficulty,
+                        speed: speed,
+                        bullseyeSize: difficulty?.bullseye,
+                        trait: activeTrait
+                    };
                     self.worldsMap[sessionData.mapId].announceSpawnFloat(player, fx, fy);
                     res.status(200).send(response);
                 }
@@ -1103,7 +1148,7 @@ WS.socketIOServer = Server.extend({
                     }
                 }
 
-                let response = { consumed: consumed, cooldown: cooldown, items: itemsOnCooldown };
+                let response = {consumed: consumed, cooldown: cooldown, items: itemsOnCooldown};
                 res.status(200).send(response);
             }
         });
@@ -1155,7 +1200,7 @@ WS.socketIOServer = Server.extend({
 
                 // GET SPIN
                 const spinResponse = await minigame.getSpin(platformClient, linesPlayed, betPerLine);
-                const { chosenSpin, payout, winningLines } = spinResponse;
+                const {chosenSpin, payout, winningLines} = spinResponse;
 
                 const spinResult = payout - spinCost;
                 if (spinResult !== 0) {
@@ -1177,7 +1222,7 @@ WS.socketIOServer = Server.extend({
                         transferSuccess = await dao.transferResourceFromTo(sessionData.nftId, CORNHOLE, Math.abs(spinResult));    // UPDATE DAO BALANCE (PLAYER LOSE)
                     }
                     if (!transferSuccess) {
-                        res.status(400).json({ message: "DAO transfer failed" });
+                        res.status(400).json({message: "DAO transfer failed"});
                         return;
                     }
                 }
@@ -1195,7 +1240,7 @@ WS.socketIOServer = Server.extend({
                 res.status(200).send(response);
             } catch (error) {
                 console.error('Error during getSpin:', error);
-                res.status(500).json({ message: 'Internal server error' });
+                res.status(500).json({message: 'Internal server error'});
             }
         });
 
@@ -1249,9 +1294,9 @@ WS.socketIOServer = Server.extend({
             return playerClassController.setLooperClass(req, res);
         });
 
-        app.post("/inventorysync", async(req, res) => {
+        app.post("/inventorysync", async (req, res) => {
             const inventorySyncController = new InventorySyncController(dao, cache);
-            return inventorySyncController.syncPlayer(req,res);
+            return inventorySyncController.syncPlayer(req, res);
         });
 
         self.io.on('connection', function (connection) {
@@ -1266,7 +1311,6 @@ WS.socketIOServer = Server.extend({
             }
             self.addConnection(c);
         });
-
 
 
         self.io.on('error', function (err) {
@@ -1304,7 +1348,7 @@ WS.socketIOConnection = Connection.extend({
         // HANDLE DISPATCHER IN HERE
         connection.on("dispatch", function (message) {
             //console.log("Received dispatch request")
-            self._connection.emit("dispatched", { "status": "OK", host: server.host, port: server.port })
+            self._connection.emit("dispatched", {"status": "OK", host: server.host, port: server.port})
         });
 
         connection.on("message", function (message) {

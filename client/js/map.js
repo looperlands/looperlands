@@ -168,6 +168,10 @@ define(['jquery', 'area'], function ($, Area) {
             this.collidingTiles = map.collidingTiles || {};
             this.doors = this._getDoors(map);
             this.triggers = this._getTriggers(map);
+            this.scenes = this._getScenes(map);
+            this.lights = map.lights;
+            this.shadows = map.shadows;
+            this.lightTiles = map.lightTiles;
             this.checkpoints = this._getCheckpoints(map);
         },
 
@@ -214,6 +218,20 @@ define(['jquery', 'area'], function ($, Area) {
             });
 
             return doors;
+        },
+
+        _getScenes: function (map) {
+            var scenes = {};
+            _.each(map.scenes, function (scene) {
+                var area = new Area(scene.x, scene.y, scene.w, scene.h);
+                area.id = scene.id;
+                area.name = scene.name;
+                area.bg = scene.bg;
+                area.dn_cycle = scene.dn_cycle;
+                area.darkness = scene.darkness;
+                scenes[scene.id] = area;
+            });
+            return scenes;
         },
 
         _getTriggers: function (map) {
@@ -357,17 +375,8 @@ define(['jquery', 'area'], function ($, Area) {
         },
 
         /**
-         * Returns true if the given position is located within the dimensions of the map.
-         *
-         * @returns {Boolean} Whether the position is out of bounds.
-         */
-        isOutOfBounds: function (x, y) {
-            return isInt(x) && isInt(y) && (x < 0 || x >= this.width || y < 0 || y >= this.height);
-        },
-
-        /**
          * Returns true if the given tile id is "high", i.e. above all entities.
-         * Used by the renderer to know which tiles to draw after all the entities 
+         * Used by the renderer to know which tiles to draw after all the entities
          * have been drawn.
          *
          * @param {Number} id The tile id in the tileset
@@ -399,6 +408,14 @@ define(['jquery', 'area'], function ($, Area) {
             }
         },
 
+        isLightTile: function (id) {
+            if(!this.lightTiles) {
+                return false;
+            }
+
+            return this.lightTiles[id+1];
+        },
+
         getTileAnimationProps: function(id) {
             function parseCSV(value) {
                 if (typeof value === 'string') {
@@ -425,7 +442,7 @@ define(['jquery', 'area'], function ($, Area) {
                     b: endColor.b - startColor.b
                 };
             }
-        
+
             function parseColorShift(colorShift) {
                 if (!colorShift) { return null; }
                 const values = colorShift.split(',').map(v => v.trim());
@@ -453,7 +470,7 @@ define(['jquery', 'area'], function ($, Area) {
                 bouncePause: tileProps.bouncePause
             };
         },
-        
+
         isDoor: function (x, y) {
             return this.doors[this.GridPositionToTileIndex(x, y)] !== undefined;
         },
@@ -482,6 +499,23 @@ define(['jquery', 'area'], function ($, Area) {
             return _.detect(this.triggers, function (trigger) {
                 return trigger.contains(entity);
             });
+        },
+
+        getCurrentScene: function (entity) {
+            return _.detect(this.scenes, function (scene) {
+                return scene.contains(entity);
+            });
+        },
+
+        /**
+         * Returns true if the given position is outside the dimensions of the map.
+         *
+         * @param {Number} x - The x-coordinate of the position.
+         * @param {Number} y - The y-coordinate of the position.
+         * @returns {Boolean} Whether the position is out of bounds.
+         */
+        isOutOfBounds: function (x, y) {
+            return isInt(x) && isInt(y) && (x < 0 || x >= this.width || y < 0 || y >= this.height);
         },
 
         isInsidePvpZone: function (x, y) {

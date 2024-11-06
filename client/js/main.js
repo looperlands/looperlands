@@ -353,6 +353,10 @@ define(['jquery', 'app'], function($, App) {
                 app.showNewQuestPopup(questId);
             });
 
+            game.onPlayerChoice(function(npcId, dialogue) {
+                app.showChoicesPopup(npcId, dialogue);
+            })
+
     		game.onNotification(function(message) {
     		    app.showMessage(message);
     		});
@@ -414,7 +418,7 @@ define(['jquery', 'app'], function($, App) {
             
             $('#respawn').click(function(event) {
                 game.audioManager.playSound("revive");
-                game.restart();
+                game.newSession();
                 $('body').removeClass('death');
             });
             

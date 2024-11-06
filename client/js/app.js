@@ -23,7 +23,28 @@ define(['jquery', 'storage'], function ($, Storage) {
             this.cooldownMap = {};
             this.dynamicNFTIconURL = {};
             this.dynamicNFTData = {};
+            this.timeOffset = 1000 * 60 * 15;
             this.hideWindows();
+            this.calculateTime();
+        },
+
+        calculateTime: function() {
+            let self = this;
+            setInterval(function() {
+
+                const cycleTime = 1000 * 60 * 60 // 1 hour
+                const cycleProgress = ((self.timeOffset + performance.now()) % cycleTime) / cycleTime;
+                const cycleAngle = cycleProgress * Math.PI * 2;
+                const cycleIntensity = Math.sin(cycleAngle) * 0.5 + 0.5;
+
+                // Human-readable time, based on angle
+                const timeHours = Math.floor(cycleProgress * 24);
+                const timeMinutes = Math.floor(cycleProgress * 24 * 60) % 60;
+
+                let time = `${String(timeHours).padStart(2, '0')}:${String(timeMinutes).padStart(2, '0')}`;
+
+                $('#time').text(time);
+            }, 1000);
         },
 
         setGame: function (game) {
@@ -291,6 +312,98 @@ define(['jquery', 'storage'], function ($, Storage) {
             }
 
             newQuestPopup.removeClass("hidden");
+        },
+
+        showChoicesPopup(npcId, dialogue) {
+            let self = this;
+            let playerChoicePopup = $('#dialogue-popup');
+            if(Array.isArray(dialogue.text)) {
+                dialogue.text = dialogue.text[dialogue.text.length - 1];
+            }
+            playerChoicePopup.find('#question').text(dialogue.text);
+            playerChoicePopup.find('#choices').empty();
+
+            // add event listener for keyboard input
+            $(document).off('keydown').on('keydown', this.handleChoiceKeyboardInput.bind(this));
+
+            for (let i = 0; i < dialogue.options.length; i++) {
+                let option = dialogue.options[i];
+
+                let choice = $('<div class="choice">' + option.text + "</div>");
+                choice.click((e) => {
+                    this.closeChoicesPopup();
+                    this.game.makeChoice(npcId, option.goto);
+
+                    setTimeout(self.initResourcesDisplay.bind(self), 1000);
+                    setTimeout(self.initResourcesDisplay.bind(self), 10000);
+
+                    e.stopImmediatePropagation();
+                    e.preventDefault();
+                });
+                playerChoicePopup.find('#choices').append(choice);
+            }
+            playerChoicePopup.scrollTop(0);
+            playerChoicePopup.removeClass("hidden").addClass('active');
+            playerChoicePopup.find('#close-dialogue-popup').click(function(e) {
+                self.closeChoicesPopup();
+                e.preventDefault();
+                e.stopImmediatePropagation();
+            });
+        },
+
+        closeChoicesPopup() {
+            let playerChoicePopup = $('#dialogue-popup');
+            playerChoicePopup.addClass('hidden').removeClass('active');
+            $(document).off('keydown');
+        },
+
+        handleChoiceKeyboardInput(event) {
+            // on W or up arrow, select the previous choice, on no selected choice, select the last choice
+            // on S or down arrow, select the next choice, on no selected choice, select the first choice
+            // on Enter, make selected choice
+            // on ESC close the dialogue popup
+            let choices = $('#choices').children();
+            let selectedIndex = -1;
+            let selectedChoice = null;
+            for (let i = 0; i < choices.length; i++) {
+                if (choices[i].classList.contains('selected')) {
+                    selectedIndex = i;
+                    selectedChoice = choices[i];
+                    break;
+                }
+            }
+
+            switch (event.key) {
+                case 'w':
+                case 'ArrowUp':
+                    selectedIndex = selectedIndex - 1;
+                    if (selectedIndex < 0) {
+                        selectedIndex = choices.length - 1;
+                    }
+                    break;
+                case 's':
+                case 'ArrowDown':
+                    selectedIndex = selectedIndex + 1;
+                    if (selectedIndex >= choices.length) {
+                        selectedIndex = 0;
+                    }
+                    break;
+                case 'Enter':
+                case 'e':
+                    if(selectedChoice !== null) {
+                        selectedChoice.click();
+                    }
+                    break;
+                case 'Escape':
+                    this.closeChoicesPopup();
+                    break;
+            }
+
+            $('#choices .selected').removeClass('selected');
+            $(choices[selectedIndex]).addClass('selected');
+
+            event.stopImmediatePropagation();
+            event.preventDefault();
         },
 
         resetPage: function () {
@@ -1458,6 +1571,10 @@ define(['jquery', 'storage'], function ($, Storage) {
             let scale = this.game.renderer.scale;
 
             $("#fish-box").css('margin-top', pos * scale + "px");
+        },
+
+        setBackground(value) {
+            $('#canvas').css('background', value);
         }
     });
 

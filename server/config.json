@@ -13,6 +13,7 @@
         "fhf",
         "wk",
         "crimsonspace",
+        "oatenkai",
         "kbb",
         "bitcorn",
         "m88n",
@@ -22,7 +23,8 @@
         "taikotown",
         "oainteriors",
         "shortdestroyers",
-        "robits"
+        "robits",
+        "rl"
 
     ],
     "map_directory": "./server/maps/",

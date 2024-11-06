@@ -1,6 +1,5 @@
 const quests = require('./quests.js');
 const dao = require('../dao.js');
-const { stringify } = require('flatted');
 
 const PlayerEventConsumer = require('./playereventconsumer.js').PlayerEventConsumer;
 const platform = require('../looperlandsplatformclient.js');
@@ -45,7 +44,7 @@ class PlayerQuestEventConsumer extends PlayerEventConsumer {
     consume(event) {
 
         if (!event.playerCache || !event.playerCache.gameData) {
-            console.error("Player cache or gameData is undefined", stringify(event));
+            console.error("Player cache or gameData is undefined");
             return { change: false };
         }
 
@@ -84,6 +83,10 @@ class PlayerQuestEventConsumer extends PlayerEventConsumer {
     }
 
     completeQuest(playerCache, questKey, quest) {
+        if(quests.hasCompletedQuest(questKey, playerCache)) {
+            return;
+        }
+
         dao.setQuestStatus(playerCache.nftId, questKey, quests.STATES.COMPLETED);
         let completedQuests = playerCache.gameData.quests[quests.STATES.COMPLETED];
         let questInCacheFormat = {questKey: questKey, status: quests.STATES.COMPLETED};

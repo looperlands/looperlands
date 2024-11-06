@@ -19,6 +19,7 @@ define(function() {
 		
     		// Position
     		this.setGridPosition(0, 0);
+            this.scene = null;
 		
             // Modes
             this.isLoaded = false;
@@ -43,7 +44,15 @@ define(function() {
 		
     		this.setPosition(x * 16, y * 16);
     	},
-	
+
+        getScene: function() {
+            return this.scene;
+        },
+
+        setScene: function(scene) {
+            this.scene = scene;
+        },
+
     	setSprite: function(sprite) {
     	    if(!sprite) {
     	        console.error(this.id + " : sprite is null", true);

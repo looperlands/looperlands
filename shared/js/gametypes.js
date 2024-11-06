@@ -358,6 +358,7 @@ Types = {
         M88NMERMANKING: 78480000,
         M88NMERMAIDPRINCESS: 78490000,
         KINGFROGGYBW: 78500000,
+        M88NAPE: 78510000,
         //m88n Mobs
         BALLOONDOGB: 78000001,
         BALLOONDOGY: 78000002,
@@ -429,6 +430,19 @@ Types = {
         M88NFISHYF: 78000096,
         M88NFISHYG: 78000097,
         M88NFISHYH: 78000098,
+        M88NFISHLIPS: 78000099,
+        M88NSUSHI: 78000101,
+        M88NSASHIMI: 78000102,
+        M88NCONEPOOPER: 78000103,
+        M88NKENNYCLOWN: 78000104,
+        M88NNANCYCLOWN: 78000105,
+        M88NJIMMYCLOWN: 78000106,
+        M88NTHEWARDEN: 78000107,
+        M88NBABYYODA1: 78000108,
+        M88NBABYYODA2: 78000109,
+        M88NHEADLESSONESIE: 78000110,
+        M88NHEADLESSSKELETON: 78000111,
+        M88NGHOSTPUMPKIN: 78000112,
         //m88n Mob Nexans
         NEXAN1: 78000037,
         NEXAN2: 78000038,
@@ -558,6 +572,15 @@ Types = {
         M88NRUCK2: 78009700,
         M88NRUCK3: 78009800,
         M88NGOLDKNUCKLES: 78009900,
+        M88NPIESLINGER: 78010100,
+        CANDYBUCKET: 78010200,
+        CANDYCORNTREAT: 78010300,
+        CANDYTREAT: 78010400,
+        CHOCOLATETREAT: 78010500,
+        LOLLITREAT: 78010600,
+        HEADSTONETRICK: 78010700,
+        SKULLNBONESTRICK: 78010800,
+        SPIDERTRICK: 78010900,
         //MRMlabs NPCs
         TYLERDURDEN: 79000000,
         //MRMlabs Items
@@ -575,7 +598,7 @@ Types = {
         HAMSTER1: 80000008,
         DUCKBIT: 80000009,
         MILK2: 80000010,
-        MILK1: 80000011, 
+        MILK1: 80000011,  
         //Taiko Town
         TAIKOTOWNNPC1: 81000000,
         TAIKOTOWNNPC2: 81000001,
@@ -623,7 +646,8 @@ Types = {
         M88NWORKGLOVES: 81003500,
         M88NCHEESEPIZZA: 81003600,
         M88NPIZZA: 81003700,
-        M88NSWORD: 81003800, // @lastidObject@
+        M88NSWORD: 81003800,
+        WHISPYSPIRIT: 81003801, // @lastidObject@
         //@nextIdLineObject@
 
         // NPCs
@@ -788,9 +812,23 @@ Types = {
         RABBID: 34000135,
         ZOMBBID: 34000136,
         HOPPURP: 34000137,
-        HOPPINK: 34000138,
-        CRAPTOR: 34000139,        
-        BITNPC_THORNBEARD: 34000140,// @lastidCharacter@
+        HOPPINK: 34000138,       
+        GHOST1: 34000139,
+        GHOST2: 34000140,
+        GHOST3: 34000141,
+        HORSEMAN: 34000142,
+        PUMPKINPUNK: 34000143,
+        WRAITH: 34000144,
+        PUMPKINWARLOCK: 34000145,
+        EVILPUMPKIN: 34000146,
+        WHISPYRED: 34000147,
+        WHISPYWITCH: 34000148,
+        WHISPYKING: 34000149,
+        WHISPYBOBBY: 34000150,
+        WHISPYDIAMOND: 34000151,
+        WHISPYLL: 34000152, 
+        CRAPTOR: 34000153,        
+        BITNPC_THORNBEARD: 34000154,// @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -6207,6 +6245,19 @@ var kinds = {
     m88nfishyf: [Types.Entities.M88NFISHYF, "mob"],
     m88nfishyg: [Types.Entities.M88NFISHYG, "mob"],
     m88nfishyh: [Types.Entities.M88NFISHYH, "mob"],
+    m88nfishlips: [Types.Entities.M88NFISHLIPS, "mob"],
+    m88nsushi: [Types.Entities.M88NSUSHI, "mob"],
+    m88nsashimi: [Types.Entities.M88NSASHIMI, "mob"],
+    m88nconepooper: [Types.Entities.M88NCONEPOOPER, "mob"],
+    m88nkennyclown: [Types.Entities.M88NKENNYCLOWN, "mob"],
+    m88nnancyclown: [Types.Entities.M88NNANCYCLOWN, "mob"],
+    m88njimmyclown: [Types.Entities.M88NJIMMYCLOWN, "mob"],
+    m88nthewarden: [Types.Entities.M88NTHEWARDEN, "mob"],
+    m88nbabyyoda1: [Types.Entities.M88NBABYYODA1, "mob"],
+    m88nbabyyoda2: [Types.Entities.M88NBABYYODA2, "mob"],
+    m88nheadlessonesie: [Types.Entities.M88NHEADLESSONESIE, "mob"],
+    m88nheadlessskeleton: [Types.Entities.M88NHEADLESSSKELETON, "mob"],
+    m88nghostpumpkin: [Types.Entities.M88NGHOSTPUMPKIN, "mob"],
 
     //m88n Mob Nexans
     nexan1: [Types.Entities.NEXAN1, "mob"],
@@ -6436,6 +6487,15 @@ var kinds = {
     m88nruck2: [Types.Entities.M88NRUCK2, "object"],
     m88nruck3: [Types.Entities.M88NRUCK3, "object"],
     m88ngoldknuckles: [Types.Entities.M88NGOLDKNUCKLES, "object"],
+    m88npieslinger: [Types.Entities.M88NPIESLINGER, "object"],
+    candybucket: [Types.Entities.CANDYBUCKET, "object"],
+    candycorntreat: [Types.Entities.CANDYCORNTREAT, "object"],
+    candytreat: [Types.Entities.CANDYTREAT, "object"],
+    chocolatetreat: [Types.Entities.CHOCOLATETREAT, "object"],
+    lollitreat: [Types.Entities.LOLLITREAT, "object"],
+    headstonetrick: [Types.Entities.HEADSTONETRICK, "object"],
+    skullnbonestrick: [Types.Entities.SKULLNBONESTRICK, "object"],
+    spidertrick: [Types.Entities.SPIDERTRICK, "object"],
     //MRMlabs Items
     firstaidkit: [Types.Entities.FIRSTAIDKIT, "object"],
     bandaid: [Types.Entities.BANDAID, "object"],
@@ -6494,6 +6554,7 @@ var kinds = {
     DUCKBIT: [Types.Entities.DUCKBIT, "object"],
     MILK2: [Types.Entities.MILK2, "object"],
     MILK1: [Types.Entities.MILK1, "object"],
+    WHISPYSPIRIT: [Types.Entities.WHISPYSPIRIT, "object"],
     // @nextObjectLine@
 
     guard: [Types.Entities.GUARD, "npc"],
@@ -6669,6 +6730,7 @@ var kinds = {
     m88nmermanking: [Types.Entities.M88NMERMANKING, "npc"],
     m88nmermaidprincess: [Types.Entities.M88NMERMAIDPRINCESS, "npc"],
     kingfroggybw: [Types.Entities.KINGFROGGYBW, "npc"],
+    m88nape: [Types.Entities.M88NAPE, "npc"],
     //MRMlabs NPCs
     tylerdurden: [Types.Entities.TYLERDURDEN, "npc"],
     ROBITSE3: [Types.Entities.ROBITSE3, "mob"],
@@ -6740,6 +6802,20 @@ var kinds = {
     NURSEOWNER: [Types.Entities.NURSEOWNER, "npc"],
     BURGERBOSS: [Types.Entities.BURGERBOSS, "mob"],
     FRYGUY: [Types.Entities.FRYGUY, "mob"],
+    GHOST1: [Types.Entities.GHOST1, "mob"],
+    GHOST2: [Types.Entities.GHOST2, "mob"],
+    GHOST3: [Types.Entities.GHOST3, "mob"],
+    HORSEMAN: [Types.Entities.HORSEMAN, "mob"],
+    PUMPKINPUNK: [Types.Entities.PUMPKINPUNK, "mob"],
+    WRAITH: [Types.Entities.WRAITH, "mob"],
+    PUMPKINWARLOCK: [Types.Entities.PUMPKINWARLOCK, "mob"],
+    EVILPUMPKIN: [Types.Entities.EVILPUMPKIN, "mob"],
+    WHISPYRED: [Types.Entities.WHISPYRED, "npc"],
+    WHISPYWITCH: [Types.Entities.WHISPYWITCH, "npc"],
+    WHISPYKING: [Types.Entities.WHISPYKING, "npc"],
+    WHISPYBOBBY: [Types.Entities.WHISPYBOBBY, "npc"],
+    WHISPYDIAMOND: [Types.Entities.WHISPYDIAMOND, "npc"],
+    WHISPYLL: [Types.Entities.WHISPYLL, "npc"],
     // @nextCharacterLine@
     // FieldEffects
     magcrack: [Types.Entities.MAGCRACK, "fieldeffect"],
@@ -12131,8 +12207,14 @@ Types.addDynamicNFT = function(nftData) {
         nftData.assetType = "bot";
     }
 
+    if(!nftData.options) {
+        nftData.options = {
+            shadow: true
+        }
+    }
+
     Types.Entities[kind] = id;
-    kinds[kind] = [id, nftData.assetType, true];
+    kinds[kind] = [id, nftData.assetType, true, nftData.options];
     return kind;
 }
 
@@ -12148,6 +12230,26 @@ Types.isDynamicNFT = function(kindId) {
 Types.spriteIsDynamicRangedWeapon = function(spriteName) {
     const spriteKind = Types.getKindFromString(spriteName);
     return Types.isDynamicNFT(spriteKind) && Types.isRangedWeapon(spriteKind);
+}
+
+Types.hasShadow = function(spriteName) {
+    let kind = kinds[spriteName];
+
+    if (kind && kind[3] && kind[3].shadow === false) {
+        return false;
+    }
+
+    return true;
+}
+
+Types.alwaysOnTop = function(spriteName) {
+    let kind = kinds[spriteName];
+    return false;
+    if (kind && kind[3] && kind[3].renderAlwaysOnTop === false) {
+        return false;
+    }
+
+    return true;
 }
 
 if(!(typeof exports === 'undefined')) {
