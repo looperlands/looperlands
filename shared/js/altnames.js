@@ -378,6 +378,7 @@ const AltNames = {
     ZOMBBID: "Zombbid",
     HOPPURP: "HOPpurp",
     HOPPINK: "HOPpink",
+    CRAPTOR: "CRAPtor",
 
     devon: "Chase", 
 };

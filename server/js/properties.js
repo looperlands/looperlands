@@ -285,7 +285,16 @@ let Properties = {
         hpMod: 2,
         respawnDelay: 160000
     },
-    
+    CRAPTOR: {
+        level: 69,
+        drops: {
+            flask: 90,
+            taikoboost: 10
+        },
+        weaponMod: 3,
+        hpMod: 2,
+        respawnDelay: 160000
+    },
 
 
 

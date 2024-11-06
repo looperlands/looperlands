@@ -1080,6 +1080,15 @@ define(['character'], function (Character) {
             "👀👀",            
             "LIFE IS A-MAIZ-ING",
         ],
+        "BITNPC_THORNBEARD": [
+            "Folks round here call me Thornbeard.<br>Guess that's what happens when your beard's more weed than whisker.",
+            "I tell ya, getting seeds to grow in this soil is gonna be the end of me.",
+            "I give 'em water... Nothin'",
+            "I gave 'em shelter... Nothin'",
+            "I tell 'em stories.... Nothin'",
+            "I sing rockin' cool oldies.... Nothin'",
+            "Well... except Bud.<br><i>[Gently pats the little sprout]</i><br>I'll get this lil' one the family he deserves...",
+        ],
         "VOYAGER": [
             "Prepare for the Dark Voyage!",
             "Help us take back our ship and save our crew!",

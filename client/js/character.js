@@ -65,9 +65,9 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
     	    return false;
     	},
 	
-    	hasShadow: function() {
-    	    return true;
-    	},
+        hasShadow: function() {
+            return this.sprite.hasShadow !== undefined ? this.sprite.hasShadow : true;
+        },        
 
         animate: function(animation, speed, count, onEndCount) {
             var oriented = ['atk', 'walk', 'idle'];

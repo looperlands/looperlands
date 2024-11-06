@@ -413,7 +413,7 @@ function(Camera, Item, Character, Player, Timer, Mob, Npc) {
                             "sy": 0,
                             "sW": shadow.width * os,
                             "sH": shadow.height * os,
-                            "dx": 0,
+                            "dx": entity.shadowOffsetX * ds,
                             "dy": entity.shadowOffsetY * ds,
                             "dW": shadow.width * os * ds,
                             "dH": shadow.height * os * ds,
