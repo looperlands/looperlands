@@ -828,7 +828,8 @@ Types = {
         WHISPYDIAMOND: 34000151,
         WHISPYLL: 34000152, 
         CRAPTOR: 34000153,        
-        BITNPC_THORNBEARD: 34000154,// @lastidCharacter@
+        BITNPC_THORNBEARD_KNEEL: 34000154,
+        BITNPC_THORNBEARD: 34000155,// @lastidCharacter@
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,
@@ -6781,6 +6782,7 @@ var kinds = {
     SIREN: [Types.Entities.SIREN, "npc"],
     //BITCORN NPCS
     BITNPC_BITCORN: [Types.Entities.BITNPC_BITCORN, "npc"],
+    BITNPC_THORNBEARD_KNEEL: [Types.Entities.BITNPC_THORNBEARD_KNEEL, "npc"],
     BITNPC_THORNBEARD: [Types.Entities.BITNPC_THORNBEARD, "npc"],
     //Taiko Town NPCs
     taikotownnpc1: [Types.Entities.TAIKOTOWNNPC1, "npc"],

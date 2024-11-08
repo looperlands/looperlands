@@ -2,6 +2,7 @@ const discord = require("../js/discord");
 const _ = require("underscore");
 const dao = require('./dao.js');
 const main = require("./dialogue/main.js");
+const bitcorn = require("./dialogue/bitcorn.js");
 const quests = require("./quests/quests.js");
 const Formulas = require("./formulas");
 
@@ -10,7 +11,8 @@ class DialogueController {
         this.cache = cache;
         this.platformClient = platformClient;
         this.dialogueTrees = {
-            main: main.dialogues
+            main: main.dialogues,
+            //bitcorn: bitcorn.dialogues
         };
     }
 

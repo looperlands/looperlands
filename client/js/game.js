@@ -1,10 +1,10 @@
 define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile',
-        'warrior', 'gameclient', 'audio', 'updater', 'transition',
-        'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'fieldeffect', 'config', 'float', 'projectile', '../../shared/js/gametypes', '../../shared/js/altnames'],
+    'warrior', 'gameclient', 'audio', 'updater', 'transition',
+    'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'fieldeffect', 'config', 'float', 'projectile', '../../shared/js/gametypes', '../../shared/js/altnames'],
 
-    function(InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, AnimatedTile,
-             Warrior, GameClient, AudioManager, Updater, Transition,
-             Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, Fieldeffect, Config, Float, Projectile) {
+    function (InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, AnimatedTile,
+        Warrior, GameClient, AudioManager, Updater, Transition,
+        Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, Fieldeffect, Config, Float, Projectile) {
         var Game = Class.extend({
             init: function (app) {
                 this.app = app;
@@ -42,7 +42,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.targetCellVisible = true;
                 this.mousedown = false;
                 this.lastMousedown = null;
-                
+
                 this.hoveringTarget = false;
                 this.hoveringMob = false;
                 this.hoveringItem = false;
@@ -76,13 +76,15 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                 // fishing
                 this.floats = {};
-                this.fishingData = {fishName: null,
+                this.fishingData = {
+                    fishName: null,
                     fishPos: 0,
                     fishTime: null,
                     targetPos: 0,
                     targetHeight: 0,
                     bullseyeRelPos: 0,
-                    bullseyeHeight: 0};
+                    bullseyeHeight: 0
+                };
                 this.slidingFish = null;
                 this.uniFishTimeout = null;
 
@@ -93,25 +95,25 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 // sprites
                 this.spriteNames = ["hand", "handclick", "sword", "loot", "target", "talk", "float", "indicator", "sparks", "shadow16", "rat", "skeleton", "skeleton2", "spectre", "boss", "deathknight",
                     "ogre", "crab", "snake", "eye", "bat", "goblin", "wizard", "guard", "taikoguard", "king", "villagegirl", "villager", "coder", "agent", "rick", "scientist", "nyan", "priest", "coblumberjack", "cobhillsnpc", "cobcobmin", "cobellen", "cobminer", "cobjohnny", "cobashley",
-                    "king2", "goose", "tanashi", "slime","kingslime","silkshade","redslime","villagesign1","wildgrin","loomleaf","gnashling","arachweave","spider","fangwing", "minimag", "miner", "megamag", "seacreature", "tentacle", "tentacle2", "wildwill","shopowner","blacksmith",
-                    "cobchicken", "alaric","orlan","jayce", "cobcow", "cobpig", "cobgoat", "ghostie","cobslimered", "cobslimeyellow", "cobslimeblue", "cobslimepurple", "cobslimegreen", "cobslimepink", "cobslimecyan", "cobslimemint", "cobslimeking", "cobyorkie", "cobcat", "cobcatblack", "cobcatorange", "cobcatbrown", "cobdirt", "cobhay", "cobhaytwo", "cobincubator", "cobcoblin", "cobcobane", "cobogre",
-                    "sorcerer", "octocat", "beachnpc", "forestnpc", "desertnpc", "lavanpc","thudlord", "clotharmor", "leatherarmor", "mailarmor","boar","grizzlefang","barrel","neena","athlyn","jeniper",
-                    "platearmor", "redarmor", "goldenarmor", "firefox", "death", "sword1", "transparentweapon", "torin","elric","glink", "axe", "chest","elara","eldrin","draylen","thaelen","keldor","torvin","liora","aria",
-                    "sword2", "redsword", "bluesword", "goldensword", "item-sword2", "item-axe", "item-redsword", "item-bluesword", "item-goldensword", "item-leatherarmor", "item-mailarmor","whiskers",
+                    "king2", "goose", "tanashi", "slime", "kingslime", "silkshade", "redslime", "villagesign1", "wildgrin", "loomleaf", "gnashling", "arachweave", "spider", "fangwing", "minimag", "miner", "megamag", "seacreature", "tentacle", "tentacle2", "wildwill", "shopowner", "blacksmith",
+                    "cobchicken", "alaric", "orlan", "jayce", "cobcow", "cobpig", "cobgoat", "ghostie", "cobslimered", "cobslimeyellow", "cobslimeblue", "cobslimepurple", "cobslimegreen", "cobslimepink", "cobslimecyan", "cobslimemint", "cobslimeking", "cobyorkie", "cobcat", "cobcatblack", "cobcatorange", "cobcatbrown", "cobdirt", "cobhay", "cobhaytwo", "cobincubator", "cobcoblin", "cobcobane", "cobogre",
+                    "sorcerer", "octocat", "beachnpc", "forestnpc", "desertnpc", "lavanpc", "thudlord", "clotharmor", "leatherarmor", "mailarmor", "boar", "grizzlefang", "barrel", "neena", "athlyn", "jeniper",
+                    "platearmor", "redarmor", "goldenarmor", "firefox", "death", "sword1", "transparentweapon", "torin", "elric", "glink", "axe", "chest", "elara", "eldrin", "draylen", "thaelen", "keldor", "torvin", "liora", "aria",
+                    "sword2", "redsword", "bluesword", "goldensword", "item-sword2", "item-axe", "item-redsword", "item-bluesword", "item-goldensword", "item-leatherarmor", "item-mailarmor", "whiskers",
                     "item-wood", "item-ore", "item-manacrystal", "projectile", "shortarrow", "mediumarrow", "longarrow", "shortbullet", "mediumbullet", "longbullet", "shortmana", "mediummana", "longmana",
-                    "item-platearmor", "item-redarmor", "item-goldenarmor", "item-flask", "item-potion","item-cake", "item-taikoboost", "item-cobcorn", "item-cobapple", "item-coblog", "item-cobclover", "item-cobegg", "morningstar", "item-morningstar", "item-loopring", "item-cpotion_s", "item-cpotion_m", "item-cpotion_l", "item-cimmupot", "item-cagedrat",
-                    "item-KEY_ARACHWEAVE","shiverrock","shiverrockii","shiverrockiii","crystolith","stoneguard","glacialord","edur","lumi","snjor","gelidus","nightharrow",
-                    "fieldeffect-magcrack","fieldeffect-cobfallingrock","gloomforged","torian","gripnar","blackdog","browndog","whitedog",
-                    "villager1","villager2","villager3","villager4","villager5","villager6","brownspotdog",
-                    "villager7","villager8","villager9","villager10","villager11","villager12",
-                    "villager13","villager14","villager15","villager16","villager17","villager18","turtle",
-                    "villager19","villager20","villager21","villager22","villager23","villager24","oablackcat",
-                    "villager25","villager26","villager27","villager28","villager29","tabbycat",
-                    "fvillager1","fvillager2","fvillager3","fvillager4","fvillager5","fvillager6","fvillager7",
-                    "fvillager8","fvillager9","fvillager10","fvillager11","fvillager12","fvillager13","fvillager14",
-                    "fvillager15","fvillager16","fvillager17","fvillager18","fvillager19","fvillager20","fvillager21",
-                    "fvillager22","fvillager23","fvillager24","fvillager25","fvillager26","fvillager27","fvillager28",
-                    "fvillager29","fvillager30","fvillager31",
+                    "item-platearmor", "item-redarmor", "item-goldenarmor", "item-flask", "item-potion", "item-cake", "item-taikoboost", "item-cobcorn", "item-cobapple", "item-coblog", "item-cobclover", "item-cobegg", "morningstar", "item-morningstar", "item-loopring", "item-cpotion_s", "item-cpotion_m", "item-cpotion_l", "item-cimmupot", "item-cagedrat",
+                    "item-KEY_ARACHWEAVE", "shiverrock", "shiverrockii", "shiverrockiii", "crystolith", "stoneguard", "glacialord", "edur", "lumi", "snjor", "gelidus", "nightharrow",
+                    "fieldeffect-magcrack", "fieldeffect-cobfallingrock", "gloomforged", "torian", "gripnar", "blackdog", "browndog", "whitedog",
+                    "villager1", "villager2", "villager3", "villager4", "villager5", "villager6", "brownspotdog",
+                    "villager7", "villager8", "villager9", "villager10", "villager11", "villager12",
+                    "villager13", "villager14", "villager15", "villager16", "villager17", "villager18", "turtle",
+                    "villager19", "villager20", "villager21", "villager22", "villager23", "villager24", "oablackcat",
+                    "villager25", "villager26", "villager27", "villager28", "villager29", "tabbycat",
+                    "fvillager1", "fvillager2", "fvillager3", "fvillager4", "fvillager5", "fvillager6", "fvillager7",
+                    "fvillager8", "fvillager9", "fvillager10", "fvillager11", "fvillager12", "fvillager13", "fvillager14",
+                    "fvillager15", "fvillager16", "fvillager17", "fvillager18", "fvillager19", "fvillager20", "fvillager21",
+                    "fvillager22", "fvillager23", "fvillager24", "fvillager25", "fvillager26", "fvillager27", "fvillager28",
+                    "fvillager29", "fvillager30", "fvillager31",
                     "VILLAGESIGN2",
                     "VILLAGESIGN3",
                     "VILLAGESIGN4",
@@ -120,7 +122,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "VILLAGESIGN7",
                     "VILLAGESIGN8",
                     "VILLAGESIGN9",
-                    "cobneon","cobguppy","cobgoldfish","cobtrout","coblobster","cobcatfish","cobangelfish","cobsardine","cobstingray","cobwhiting",
+                    "cobneon", "cobguppy", "cobgoldfish", "cobtrout", "coblobster", "cobcatfish", "cobangelfish", "cobsardine", "cobstingray", "cobwhiting",
                     "cobrosette", "cobparadisefish", "cobfatheadminnow", "cobgrasscarp", "cobgreensunfish", "cobcruciancarp", "cobbluegill", "cobkoi", "cobcan", "cobtrashbag",
                     //OA fIsHIes
                     "oagreyfish",
@@ -129,9 +131,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "oafish21", "oafish22", "oafish23", "oafish24", "oafish25", "oafish26", "oafish27", "oafish28", "oafish29", "oafish30",
                     "oafish31", "oafish32", "oafish33", "oafish34", "oafish35", "oafish36",
                     //m88n Fishing
-                    "m88ndreamduckyy", "m88ndreamduckyg", "m88ndreamduckyb", "m88ndreamduckyp", "m88ndreamduckyr","m88ndreamcandyy", "m88ndreamcandyg", "m88ndreamcandyb", "m88ndreamcandyp", "m88ndreamcandyr","m88ndreamgumbally", "m88ndreamgumballg", "m88ndreamgumballb", "m88ndreamgumballp", "m88ndreamgumballa", "m88ndreamgumballr", "m88ngmeshare", "m88nwhiskey", "m88ndiamondhand", "m88ngoldenbanana", "m88nshorts",
+                    "m88ndreamduckyy", "m88ndreamduckyg", "m88ndreamduckyb", "m88ndreamduckyp", "m88ndreamduckyr", "m88ndreamcandyy", "m88ndreamcandyg", "m88ndreamcandyb", "m88ndreamcandyp", "m88ndreamcandyr", "m88ndreamgumbally", "m88ndreamgumballg", "m88ndreamgumballb", "m88ndreamgumballp", "m88ndreamgumballa", "m88ndreamgumballr", "m88ngmeshare", "m88nwhiskey", "m88ndiamondhand", "m88ngoldenbanana", "m88nshorts",
                     "m88nseafrog", "m88nseahorse", "m88nseaurchin", "m88nstarfish", "m88nseaweed", "m88nspirula", "m88nshrimp", "m88nsilvereel", "m88npinkfantasia", "m88npiranha", "m88nscallop", "m88nsaltwatersnail", "m88nseaspider", "m88noctopus", "m88npufferfish", "m88nseacucumber", "m88ntigerfish", "m88nguppy", "m88nkoifish", "m88nturtle", "m88nsanddollar", "m88njellyfish", "m88nlionfish",
-                    "m88nsundial", "m88ntuna", "m88ncharfish", "m88ncrab", "m88ncowfish", "m88nlampreyeel", "m88nbluelobster", "m88nparrotfish", "m88nconch", "m88ndumbooctopus", "m88nbettafish", "m88nsquid", "m88nnautilus", "m88nwolffish", "m88nblobfish", "m88nclownfish", "m88noyster", "m88npearl", "m88naxolotl", "m88nbutterflyfish", "m88ncoral", "m88nseaangel", "m88nanglerfish", "m88nbluetang", 
+                    "m88nsundial", "m88ntuna", "m88ncharfish", "m88ncrab", "m88ncowfish", "m88nlampreyeel", "m88nbluelobster", "m88nparrotfish", "m88nconch", "m88ndumbooctopus", "m88nbettafish", "m88nsquid", "m88nnautilus", "m88nwolffish", "m88nblobfish", "m88nclownfish", "m88noyster", "m88npearl", "m88naxolotl", "m88nbutterflyfish", "m88ncoral", "m88nseaangel", "m88nanglerfish", "m88nbluetang",
                     "m88nclam", "m88npompano", "m88nmackerel", "m88noceanbass", "m88nnightmareduckyb", "m88nnightmareduckyv", "m88nnightmareduckyg", "m88nnightmareduckyr", "m88n24kancientscroll", "m88n24kapestatuette", "m88n24kcigarcutter", "m88n24kcrown", "m88n24knecklace", "m88n24kwarriorhelmet",
                     //m88n NPCs
                     "wenmoon",
@@ -381,79 +383,79 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "cobWalkingNpc3",
                     "cobWalkingNpc4",
                     "cobWalkingNpc5",
-                                "ROBITSE3",
-                                "COLOSSUS",
-                                "ROBITSE4",
-                                "ROBITSE5",
-                                "ROBITSE6",
-                                "ONI",
-                                "ROBITSE7",
-                                "ROBITSE8",
-                                "ROBITSE9",
-                                "ROBITSE10",
-                                "INFERNOID",
-                                "KAWAIIPRINCESS",
-                                "KAWAIIPRINCESS2",
-                                "ZILEEL",
-                                "HDUCKLEE",
-                                "APEBRAIN1",
-                                "CORTEZ",
-                                "NICO1",
-                                "JUSTIN",
-                                "GAVIN",
-                                "KARAOKEBIT",
-                                "BALKSBIT",
-                                "BIRDSBIT",
-                                "CRISPYBIT",
-                                "DARIUS",
-                                "SEB",
-                                "NAH",
-                                "FUZZYBIT",
-                                "JIMBIT",
-                                "DSOUZBIT",
-                                "OBSERVER",
-                                "PIZZABIT",
-                                "JACKBIT",
-                                "GENTLEBIT",
-                                "MAGMABIT",
-                                "ROBITSMAIN",
-                                "DFVBIT",
-                                "PRINCEBIT",
-                                "BIDENBIT",
-                                "ARTWHITE",
-                                "ARTWHITEROBIT",
-                                "OCARINABIT",
-                                "WENMOONBIT",
-                                "FEDORABIT",
-                                "APEBRAINOG",
-                                "SIREN",
-                                "ZAROTH",
-                                "INFECTION",
-                                "VOYAGER",
-                                "VOYAGERMONKEY",
-                                "CHEN",
-                                "VOYAGERROBIT",
-                                "SARAH",
-                                "MOONBASES",
-                                "NURSEOWNER",
-                                "BURGERBOSS",
-                
-                                "FRYGUY",
-                                "GHOST1",
-                                "GHOST2",
-                                "GHOST3",
-                                "HORSEMAN",
-                                "PUMPKINPUNK",
-                                "WRAITH",
-                                "PUMPKINWARLOCK",
-                                "EVILPUMPKIN",
-                                "WHISPYRED",
-                                "WHISPYWITCH",
-                                "WHISPYKING",
-                                "WHISPYBOBBY",
-                                "WHISPYDIAMOND",
-                                "WHISPYLL",
-                                // @nextCharacterLine@
+                    "ROBITSE3",
+                    "COLOSSUS",
+                    "ROBITSE4",
+                    "ROBITSE5",
+                    "ROBITSE6",
+                    "ONI",
+                    "ROBITSE7",
+                    "ROBITSE8",
+                    "ROBITSE9",
+                    "ROBITSE10",
+                    "INFERNOID",
+                    "KAWAIIPRINCESS",
+                    "KAWAIIPRINCESS2",
+                    "ZILEEL",
+                    "HDUCKLEE",
+                    "APEBRAIN1",
+                    "CORTEZ",
+                    "NICO1",
+                    "JUSTIN",
+                    "GAVIN",
+                    "KARAOKEBIT",
+                    "BALKSBIT",
+                    "BIRDSBIT",
+                    "CRISPYBIT",
+                    "DARIUS",
+                    "SEB",
+                    "NAH",
+                    "FUZZYBIT",
+                    "JIMBIT",
+                    "DSOUZBIT",
+                    "OBSERVER",
+                    "PIZZABIT",
+                    "JACKBIT",
+                    "GENTLEBIT",
+                    "MAGMABIT",
+                    "ROBITSMAIN",
+                    "DFVBIT",
+                    "PRINCEBIT",
+                    "BIDENBIT",
+                    "ARTWHITE",
+                    "ARTWHITEROBIT",
+                    "OCARINABIT",
+                    "WENMOONBIT",
+                    "FEDORABIT",
+                    "APEBRAINOG",
+                    "SIREN",
+                    "ZAROTH",
+                    "INFECTION",
+                    "VOYAGER",
+                    "VOYAGERMONKEY",
+                    "CHEN",
+                    "VOYAGERROBIT",
+                    "SARAH",
+                    "MOONBASES",
+                    "NURSEOWNER",
+                    "BURGERBOSS",
+
+                    "FRYGUY",
+                    "GHOST1",
+                    "GHOST2",
+                    "GHOST3",
+                    "HORSEMAN",
+                    "PUMPKINPUNK",
+                    "WRAITH",
+                    "PUMPKINWARLOCK",
+                    "EVILPUMPKIN",
+                    "WHISPYRED",
+                    "WHISPYWITCH",
+                    "WHISPYKING",
+                    "WHISPYBOBBY",
+                    "WHISPYDIAMOND",
+                    "WHISPYLL",
+                    // @nextCharacterLine@
                     "item-BOARHIDE",
                     "item-THUDKEY",
                     "item-BATWING",
@@ -670,7 +672,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     //BITCORN PHISHIES
                     "bit_BoneFish", "bit_Corn", "bit_FEET", "bit_freshPrawnce", "bit_JEFF", "bit_Kickle", "bit_maCORNtosh", "bit_MrPunchy", "bit_SnaggletoothEel", "bit_NOPEmato", "cornBootFish", "cornCanFish", "cornWinkyFish",
                     //BITCORN NPCS
-                    "BITNPC_BITCORN","BITNPC_THORNBEARD",
+                    "BITNPC_BITCORN", "BITNPC_THORNBEARD_KNEEL", "BITNPC_THORNBEARD",
                     //BITCORN MOBS
                     "SLUDGERAT", "SPACECRAB", "BLACKMAGE", "RABBID", "ZOMBBID", "HOPPURP", "HOPPINK", "CRAPTOR",
                     //OTHER
@@ -678,8 +680,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "item-DUCKBIT",
                     "item-MILK2",
                     "item-MILK1",
-                                "item-WHISPYSPIRIT",
-                                // @nextObjectLine@
+                    "item-WHISPYSPIRIT",
+                    // @nextObjectLine@
                     "NFT_c762bf80c40453b66f5eb91a99a5a84731c3cc83e1bcadaa9c62e2e59e19e4f6",
                     "NFT_38278eacc7d1c86fdbc85d798dca146fbca59a2e5e567dc15898ce2edac21f5f",
                     "NFT_d2fb1ad9308803ea4df2ba6b1fe0930ad4d6443b3ac6468eaedbc9e2c214e57a",
@@ -5264,869 +5266,870 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "NFT_b5893a75b74f9caccd3c23b4a974db5f53b4e9d2",
                     "NFT_d61fbdec9853a9b09956ef8d852ca066a48e5968eb8786aa6ab02fb3b4d30a35",
                     "NFT_ef4dbad11f6944c9ba3222b3e8aa63157178dd1857f0f4fcd7e16d58fcd1b4f1",
-                                "NFT_01348c02000000000000000002386f26fc100000000000000000000000000164",
-                                "NFT_0b3edc80d7ec92657dfea9026e93747b1321b6d19cf43bef055d6e6860f48834",
-                                "NFT_47ba8458600ff9ad1a1b0b491ff0fc194371aa30d74a3267af0d7a3462a18048",
-                                "NFT_4bf7e4d0b3eb57a1c2eec39067b3e9076f9ad0e4ab1edf228d6f04a157dae862",
-                                "NFT_7449b1d14b8b75cb821d3ec02e571601e53b7d83e2f6527a0c1dfa1ab984cc25",
-                                "NFT_7d696015dff3275cf821a1b57a13d924ca4a14d69e73c87319dd94dedcea6478",
-                                "NFT_7ef75cc04c7b402ee451f35da8cd3c7e1da35f0d412a554e36fd812b185c4b8e",
-                                "NFT_96e76f5a947cf9683921d44bc024a7a18c46740c5a8ff5e22942608560cf88e8",
-                                "NFT_9c044104ee7e3ca03e88e1a69da4bbb433711cdeda27784845ae46dc73aab483",
-                                "NFT_a7cb0ef0b03620b5e00ee475d0b5b458b254f71c1056b11d64ea563896d44cd3",
-                                "NFT_b5893a75b74f9caccd3c23b4a974db5f53b4e9d2",
-                                "NFT_B5893a75b74F9cACCd3c23b4A974DB5F53B4E9D2_2107",
-                                "NFT_B5893a75b74F9cACCd3c23b4A974DB5F53B4E9D2_4671",
-                                "NFT_B5893a75b74F9cACCd3c23b4A974DB5F53B4E9D2_7194",
-                                "NFT_b99a5b4d6f1dd0f0afe810011cf7ae0c8b7a19602babf18e10eeb540dd448bcc",
-                                "NFT_bfae096ba8fb553472821f090562fb002b36f13b04a894cb8e97818fb6e20aa0",
-                                "NFT_C114f87326C0E07F40e73B6c9fCEa54888c2C67f_8490",
-                                "NFT_c305458767a8cd076c40b2173a16dcaba6ba1be85231d2ac4aaaa472a8b7e4d4",
-                                "NFT_c38a1cbc7b8c4de1cb4c382404b10074df02d5a3c80be3174ca080ec7b45d716",
-                                "NFT_c736cf7ce12651f07473a933fc094d3ac6cb2f1a6d848179cdeb1512d9ffc811",
-                                "NFT_caf4990be004267d088a5fa1e53248b4b78a10ae673789f65692c6508837fef8",
-                                "NFT_f7643234238c40c8d9fae0d2770f0ab8c5ed7ad7629f845d44c0a1da2c8d1889",
-                                "NFT_0dc6a550987426e53b874b1d55112c26035b36d01ac16aebba229aec0c4ebb34",
-                                "NFT_3aa11288fb0ad0c9a1225fa7725ac13196f60499523ebfdd1c07bde95be48f78",
-                                "NFT_5114029d89e58b94d30454306adfcfad10f606b4b95d1b73e826273a043efdca",
-                                "NFT_5b51bd2f8832b34cbe89075d326ed4b53449bae3df45e14b1daa58bd527627b4",
-                                "NFT_7a124cd266c4b097b65fdf20b90c93e606d133de9a8abd9a56468ae4490bb74f",
-                                "NFT_d32209f1ce94c2ec83b3546a7008b87bde59d48f0db0174af8006f3a9a0cb057",
-                                "NFT_d7e3bee32416b8fc2f47636d863094e7094a34ad199a1df1a2119eaff97a1fd4",
-                                "NFT_fde71b6ffc50c0137f992889919e1a2020994a000beec58afc62b89b185e8e03",
-                                "NFT_3a7e3663a9463dea86675ef78dfbc79e67460aacd2edd3d2903307a7eb1a5cda",
-                                "NFT_26c66a58d2e52ebbb4215824a83e295d0705c1dcf8b3349f57b63b2650e92bea",
-                                "NFT_2a1aab978f311059db6a56ffac205a0e7b0b43c838064f1532fdb5e24ac2a799",
-                                "NFT_37484d6fe7cfa46a83f7ef690dc0daf2a8db90c0c747a7564b864d66d459baea",
-                                "NFT_4c0f1f1f58454f2243010c1366064322654622c572fe355fef1a951eff8cdab1",
-                                "NFT_5543355385c76ab6ac12a5eacac18893994bd66a6aaef4881d9165df4bf52cc0",
-                                "NFT_5c31425b1b29bc283d34e2cc0547dd8464a5207ba7800f03fa4aad5f45554916",
-                                "NFT_72b8af0ff7540ef136b170f2ed9ccef3148bc7ca9586c5f75eb847e9d5354dd1",
-                                "NFT_cded0af2147e916d7e2d6e62c1ea076bafe80f3c0913c50ce9a14adc11306a46",
-                                "NFT_0b9497c98d7f648e73c93a64b6456924532485d77c74a55ae75ff5fb7c4cf9c9",
-                                "NFT_0bd4b47ebc0d0ee514962e69bfcf509e8467f455cf98c1e2f33545ddf6699008",
-                                "NFT_0c29fb654ada3db53e29dd746a7fb9eeabd41ba220843bddefefd09bef0c4ba2",
-                                "NFT_0db9f10c3e5fd056a162cdb81e248ed0f9b2411e1c46e4ae6292b43fc737f7bf",
-                                "NFT_0f804ed4fea7a5a95615546d7878cc08f3eb5a708d7aa14d3a3e23d83fe2f9c3",
-                                "NFT_15846a0b8007827cf6dedea92ac423a1d36f683fdb62c55d00ca4a53ec1fc75e",
-                                "NFT_2a3566f81206a9ecc470b4af68ab56ba4d6afc3791eb5f783ee7f5ba44a4032a",
-                                "NFT_2af6a0e89086e4e71ab59d0582b0fd0ae62572575eb4bada769e16250e98b43a",
-                                "NFT_2baec30807583bb981ec8b2513571e8bac09d962fbda5ba1f360ee84be423915",
-                                "NFT_2f46491664b6da130375e72ccca6c2b132bc020b85e7daec2609d44db5ef0c13",
-                                "NFT_2f5e8edc36fadf7a163b7a2a470965edadbe441b190edf8b14d7524e22b9824c",
-                                "NFT_3ed143791f9a4fa6c2722c47596f5949c6296a0a8a3d86b49f4d4664da7c44b1",
-                                "NFT_47ba8458600ff9ad1a1b0b491ff0fc194371aa30d74a3267af0d7a3462a18048",
-                                "NFT_616fbfdb872b920f727f362bfe04225af9f4fe9ccce8eba2ab22e9cc711eb646",
-                                "NFT_698708cec7b3430638cfa1ea2fc52d3ea41e5539b4cf11e72b0f6384c04cadd9",
-                                "NFT_79a73c4461334a687a02e4cfefc7b505278e33f9344490abc83de2d3955bfddb",
-                                "NFT_79fc134e4418ffb23ab929b4d9d21516d017f61b6281a0c7afb9f8655a8e636b",
-                                "NFT_8a7b1381c5d526550d8647813efece864a6e52362bb623c46e8543e5d4f96fa8",
-                                "NFT_99e3c7979a5bb5453d459f39f06d11ff313dbec3ec0428d5f08a7d6ca2da7612",
-                                "NFT_9e07e0a811be66e02064713212e3694185e07c07fc9294f5ccd9db6da3ab0e57",
-                                "NFT_9f177616246a7d339874987c7ce4cb30918d7f81e2cd0aa0a89cf1a188f483fe",
-                                "NFT_a799a76c5e2a23f8010941659e425fc528c504050707bd1235eede0e8a3f51d4",
-                                "NFT_a94172fb3e9a733b99f3c6bdad9842ae88dc2f2fc8065330f1cd8f6fee112999",
-                                "NFT_b9f5f33839bc82b9bff99749ef8b91904e6082e702057a3bbca36350b00b5de0",
-                                "NFT_c1e9d2673f11544fad34bbffdd76f054d1d342bbd63ab2fb1af142dc8bdc1a14",
-                                "NFT_d1eeb5f8647f35a7ddef7d1cffcfa32228f01140deb3dba5a9e1d4e42382f9f3",
-                                "NFT_df9b9f9f748c20b933411a58a38aa11974710eb081ff6207eca7636b83f20658",
-                                "NFT_f7e51ee3333b51081009f6868dcd149f9e7e6c94ba0a8102e9f70a71c9ce09b3",
-                                "NFT_2de7a994377a18f256c2ec6a06ad0d6ff50f5a5a27fd50f094c3ecbdaa945f76",
-                                "NFT_d1dbae96176a398214d9fee6ba98ddb8d7137787dd765db6fe9f8ceebddc80b9",
-                                "NFT_eab688c9de6a367bf0d7097e47ba237e4203171bcffa55c62753d5d58f21333c",
-                                "NFT_fbe7761150cd3859d52553cba7ae66326429a03ca50e9d775e8b1337556a2c27",
-                                "NFT_0c97f40def8645c524f10585c2963aca2dcd5edd83e757e2f0cb521b442a65cc",
-                                "NFT_2d9c84dd95515ba82004082b46f2930c26d6da4a40b5ff317bd0f300c3edc5a7",
-                                "NFT_2e5132bc326fedd5d6097b1ec4ca11282ac105fc0a9ab36c9a45f8827b286831",
-                                "NFT_64cc602df5e930895bcd9a84b307f7ee96eb997315e73ee88f6d19684d8a7e62",
-                                "NFT_65d1e3109bc584c3b7d151632328e3a316e5fff016c80af2fc1984637adb678a",
-                                "NFT_b99548519ac91396cebb4dbe5f9cd09b871ad05936e57818743b1e59f8d92897",
-                                "NFT_d6a406c9ace43f67ad713abfe2b7deccb5bab86957880ec135fbb741b47f1896",
-                                "NFT_f851c1154260113694292f290215e7c4c0d7c317bb5acfa280921b1942467af2",
-                                "NFT_232d47b18407508545a265b4df5300d17c70697aa5f4c5150605bec304730f4b",
-                                "NFT_2b0f68dba72984c538fb8e0bb05c62c1d1b7b14055d353b24ea0664da0d5ca66",
-                                "NFT_91105ca61b72a7ffbc73fdad2a59ef531a548d8c7b7ef802231a295b3058c06d",
-                                "NFT_c73cce659e4f5e7e649e289b582f4981a3cdd5da0978c2a75bd90fd800c9f367",
-                                "NFT_Ced2e00488DBCaFCb93849f44e9aF474Ae5B81cB_76884638938444227452830548250015601369949170215745069183993261117579614427216",
-                                "NFT_d606a24f64a905018dc142ab3e727059c8dfbe46d81e286f02b368dd679246f3",
-                                "NFT_fe6eb2a8b570d3f5d1387926963b3bbe8cca66f7c85e41f3c151fefdc5079f3e",
-                                "NFT_0db8fb057ea79da6523fb93a1016bba57a087dedbc5a0ffc620962092fe17bda",
-                                "NFT_0f92589663c22ce52d055b0f6d973e74e24caa6f04e274e1bdd2220709c16dd3",
-                                "NFT_28fedd37973b87cfe1cf862d80be0ebcbdbae95f7e2a075ea01a07318b24818f",
-                                "NFT_3a3e82d9813f50f34e683c7b2821fa61a17ea80aa6c71775eeaad671db23ddbc",
-                                "NFT_3ed143791f9a4fa6c2722c47596f5949c6296a0a8a3d86b49f4d4664da7c44b1",
-                                "NFT_4f7ddf75032310fa83d8b1d585da2a8c056ef13852afcc44862e30446722d05d",
-                                "NFT_6a24157c7ace633a1b71b015061844f1103b1159df4499749e7373ad909314b5",
-                                "NFT_74e1594367a13f4831c787db32fb0886f0a059ecc958cfc452ceae0368015b70",
-                                "NFT_913b0317e210f4c8a2a29eace6e8f5130fdd823159583da488f59fefa26e0494",
-                                "NFT_9f177616246a7d339874987c7ce4cb30918d7f81e2cd0aa0a89cf1a188f483fe",
-                                "NFT_a3ccf61f9559f4719c93070643696cac9645a142d39906a5db46ec2c1ff4a68b",
-                                "NFT_bf806bcf968b5333dbd7a94c6fecfefd5e8db3da1ad49988c7b90c96759f4597",
-                                "NFT_c085475f8ec6d6f419320ba84abcbf11d633114878eb4bccabe8d5fc40e71740",
-                                "NFT_c30c3e19e61c0012aa91128bccb906ed197e983a5b594230369376ed9531abb3",
-                                "NFT_cc26589c356ff963d33311ba45e8bb963ff143160fa1deb4163fe59f472bc725",
-                                "NFT_Ced2e00488DBCaFCb93849f44e9aF474Ae5B81cB_76884638938444227452830548250015601369949170215745069183993261117579614427216",
-                                "NFT_d1f036258cf3f1b3ab958695e78094767464a5675c11f15df2a21b42c2f23beb",
-                                "NFT_01348c02000000000000000002386f26fc1000000000000000000000000000b2",
-                                "NFT_24b1e49cba4d61afdb43f67ad736b984676938da1c51cc9de43778fe05022e1d",
-                                "NFT_32a4a8440a5694af0806a39c90f4f182c7e3e1cc1e7e4f894830c8bb5fc65c2f",
-                                "NFT_458d415c0e82311f81856b4d1c37c3d61b9ae6bd15c913cf1c20ac9ac544a9b5",
-                                "NFT_4f7ddf75032310fa83d8b1d585da2a8c056ef13852afcc44862e30446722d05d",
-                                "NFT_b14a816dfd97d10c9eed0e30fd586350a7bead8756aa41026aa0b93c419b0712",
-                                "NFT_28f54474dd8c62c98964e998e4b77c2d5f0dee1aaeda3afa52bb96b064fce533",
-                                "NFT_64f2fc753b07443aea04be793a117e8ae53a3d312d1593ede209d56a647a8492",
-                                "NFT_ca64c548fa7b782939707fc1ed551489e948880727ad1427976b77c80a90d7ea",
-                                "NFT_cdd8680bef6158cd2c4214323b123e42f05d49adf99fddd7c54199d29988bafe",
-                                "NFT_fd27cf7dbb4cfe48a2e67744b99b28811b0454793a2b118ced39283584b977b3",
-                                "NFT_07d96019af2706b2cfe037104b4158975518182923a49ce22576b7d242619428",
-                                "NFT_081014de24d547ba2f7ff39c5e2ff588a136c4a37709a08c8cc58d6435f26e58",
-                                "NFT_6edea18aa7c726524aa1564d61c6c286ec52135ef66dc24de945459a3d4a19f5",
-                                "NFT_72a77fa6c1ce34407e9665c7d31e9773463caf2da933e3d32f9ce6996496290f",
-                                "NFT_761c58be60d0ef24a76fb7af6886cfa99a4010ee6646add202a1979baed08b62",
-                                "NFT_892c7b473a2958c8854f41dde903125859458c21d0921bbe9f0ded0354db8d1a",
-                                "NFT_d78233a717643b0fb897085ce32fddd6c0284c8d69eb6fb460695862ffc4be58",
-                                "NFT_fc64b37e3cc38f81b4e45a47962975480e229c9eadc469771844cc80fafe633f",
-                                "NFT_01348a68000000000000000002386f26fc100000000000000000000000000282",
-                                "NFT_29783364ef9931b4964a90912bd0dbe7a9c7d1207e0bad62863eafb1567df09c",
-                                "NFT_34594325d4440e29b1f463f303f67a49ee3fe7b1c97043c81beb32a39fdf7d50",
-                                "NFT_38cd703fc26ae1119388db44476d8a1d80a02dc668f899559ef49460691d1340",
-                                "NFT_3a3e82d9813f50f34e683c7b2821fa61a17ea80aa6c71775eeaad671db23ddbc",
-                                "NFT_55b7d77c14ffe5e025e125d3f85fafcd61e2861577e7536fba736354f68ff13b",
-                                "NFT_c30c3e19e61c0012aa91128bccb906ed197e983a5b594230369376ed9531abb3",
-                                "NFT_3ed2d2ef85a53cbb4ace8c02ee49c04de4f81c555cf5e47b993750d917656ea4",
-                                "NFT_d56bb3cfd9216f69a34951ab242585f7fd427812d1152a78282e53b8fad7a411",
-                                "NFT_0214fa0e3855056394564c050d12857a9eb82ac5e7c442df8e5f94da98fd5804",
-                                "NFT_1fc2a10e8c957f7967613db7c171a9bf846a98a996c0c53efb74b7a86dc23e67",
-                                "NFT_2c84cc83408a2db4b84b574809a7268c6e43a567198b42b8cc65c49c6aabaab8",
-                                "NFT_2d6fc16f5a184e466e8fd6e56a7172118c11c7fc4594a0c93b805ac375edc338",
-                                "NFT_5eaab14e298d898462236b0f9086ac29241278952424d78fb187ed96297099a9",
-                                "NFT_b084ed19325de74b3f5c2cc4ca23abbb1f455c78faf7f799e5389e8e8502d83f",
-                                "NFT_dad1a7921503e12d1b37383656006bd88c4ff7bb0e1d256ff6e9c803bf638207",
-                                "NFT_013722ef544a20fa563efb77cb9220e063d5786def307e871f842e1ec5d4f216",
-                                "NFT_0fae79e9d995a8429c59f20822646d549a82befef9987ccb02d280da42054c6c",
-                                "NFT_388a4c9b946e0ffe0252d6f3c07f29d4deea54ba7e7545d1397bba15ca81feca",
-                                "NFT_4f626cf5eedef67f85a2225bc4a3b7302aab86c300d58e6bda99eeda3106f1df",
-                                "NFT_7869adc15d6ffefc7ff96d0cd61723f7dcb68864490128381c74ed88f39316af",
-                                "NFT_d12dae765971aff4a14d6c262f5b5ce1df6e1ec6351e525dc4b0c0fcc671ba5c",
-                                "NFT_ee972ad3b8ac062de2e4d5e6ea4a37e36c849a11_134043",
-                                "NFT_02bdc0b8c8a5cbfb9b8bd802c42a5f34877c06409b250e8ee8e57c87b6800d47",
-                                "NFT_034d8d27132a3006d6ec10ae92d829b1dbb6c7ebe1f1df7864c026e99e641b37",
-                                "NFT_04cc57f4b900cf26e30116827c782bb57038d771c847b5c0aacb113ee00c65c0",
-                                "NFT_0f91b3d60af1861367cb8be6b59f4c9c5dbde3be951fbd1cdffc7c709bed6cc3",
-                                "NFT_119877ec38b4ed677dd5fa6a47c2fd819a096ccd8c79182cd91b98675bc9ad76",
-                                "NFT_21268c6c502688d2e5662048b863c1f13c917a4e12f505c568b44459983b5046",
-                                "NFT_22322f8aff903eef327a5f4a4ae74e902b8f68bca9940df7f1216486e042994e",
-                                "NFT_2236927239b1d69bbcf761c7c9bb20cef5cc3ecca1e3d769781e5d3a05453977",
-                                "NFT_274a4d440bec9eaf0402a7d05d6250b88131c3f54b72936e2228d18274963ca5",
-                                "NFT_3606705e6f3015a0068bb80c59964e3e06ae10ef100377e1a1ae3dc870d376ea",
-                                "NFT_4956d6699e9b13cb40c6ff503675d37a7416973b138dc93014a25107495b007a",
-                                "NFT_4bf0ca555d0be98742684531595e57629e740bf1f3bc3b4866415fe4d7093242",
-                                "NFT_681365bb591a7abd32491af33830d857a6962153f64c84c9916fb164b7b36501",
-                                "NFT_6ed1b4bd32dada97e0b4a7b2b21573c45e2c08b591e866ddf3fa6ca3a3653e65",
-                                "NFT_7878060ff699bf8b8fc6c9e678cabbac376e237908e317eaa28b05dc6f4eddc0",
-                                "NFT_7d8dfe70ed18630a5724eb0f6f4babbe866a3607df5e21953dce327fbb3bfa60",
-                                "NFT_7db5057cf4e61201167b9881277d17a55e9d2011c378b5daacde42650a27ba2c",
-                                "NFT_87050110ba7489d5e9cd2956989c213fe3c26009c98a8c305fd4058322f90456",
-                                "NFT_88d5a053e36225c991c06fb9f64397e209bea2a8b1c4f53c923bbdf407c122e2",
-                                "NFT_90eefaedd432e061a23d091e0b19a7ec467c21306cc0c10dd3c8e22d7e45de6e",
-                                "NFT_9c2e70fdc8889da9ba9f910413403047190073cb5975a16c8150ec1eb72a224f",
-                                "NFT_a8710e2aef647dc965b8a1b057ebc0bdc5fcafc924bd9a2de1bcf1764898be2a",
-                                "NFT_b0239d75b913c6088134bc609a771848dbc9846e40ff3d9a876d35a5463bb966",
-                                "NFT_b27fcbe6f7c88d851e7d7f035ee852689aa81d98ef634cbd3b313cdec75b4e59",
-                                "NFT_d58bf6ccd4eb87ff37078a016d282f885c2be0625bb654d655346a36214f17b3",
-                                "NFT_d678d6fa4391fcfedfe937ab07a622fe6bb9416e8777f196d63e6157d62911e1",
-                                "NFT_f30f7895bad0a948eeef592a5dc978fea0bd748b11adc1073ab082e03feab37e",
-                                "NFT_2d8a81a3cd6e14c2d493273c86b16519209d723c3250936859f5e52c19f47090",
-                                "NFT_4135bb5e4ef5f381e357fb3ae1532b16926032e2c5d355fa08f3746130246c98",
-                                "NFT_446111d5084e7efc9f65b5d940a40915d762097ce76535aa5f813a8fa4ac37cf",
-                                "NFT_5bbc1a346b7002e07b548b7c58814e3b1a23a7f1d69847332515d74b50ed5981",
-                                "NFT_8ebdc76ff15587dea28f6b35ddd351dcb5a5d42d1a8fafae596e3eb24bf22a2d",
-                                "NFT_904339e3dd3fb4a35e198bff13a1955d1f78aa7ffbde42fce4d8b1d9cff9e593",
-                                "NFT_90d3764bc60e1bd4f6fe5d4a90f6587a3bfcb2cb0900909a1a28dc1a2aaeea9c",
-                                "NFT_c4ec0f3ced0d9ff396d07ec6c538a0737e046bb934fa2e3fc017fda956a2beae",
-                                "NFT_c6adbfabbc27bdb3c6a1a0a22a6d36bff04df14d80c4d0c18d4d25af0daf2549",
-                                "NFT_d42f123364d0dde8dd4bd7443b0d17c809a3a68ad5aa671ca3dbf939edc0b954",
-                                "NFT_d6b3f9fc8e4d65a68a3c2299ada0e17816cfe92e4e4249f4b223d19785a3f486",
-                                "NFT_fec3a05c4da18fc71a0359487835fe1c6fb922adbfc93d19d30bdef40a3b1abb",
-                                "NFT_32072635b39b2358541aa5fa89a3bccf475bf04a9cc2e3172a92ac6d8558c048",
-                                "NFT_8dca8ee05ed864d5a8398a747cb4cb65ebf85c8917e372ad5195917f3f54ec1e",
-                                "NFT_c9f9fd9f88482f70494aa240f646d8a62ae086a875791b2d0d7072305d075e53",
-                                "NFT_856076ab41c6943ebb4f614b3a9683465f9599036a11b1383c17616909544fe2",
-                                "NFT_cc39f1f1889dd4f91b49221aebd908279cfb1d6c5f156da27ea2da0586ec4437",
-                                "NFT_ef120a26f93f1690879bcefc8ad08002d6e750ed0f4b0d3a5eaeaa6b5f6271ab",
-                                "NFT_1961f46a587068e0ab2c03aabc6d936a65ec76e87404dbd4c8a147f94bd92fa5",
-                                "NFT_46299db55a060865fe9b79955a2f1e58b0034226fc1b5655efa95a93b2fa2ef9",
-                                "NFT_8052fb7264ef95ae658f59504c9dc7d46212aea5c7f0def93af2c47448f931f7",
-                                "NFT_c4abe968c607b96eb9c12ad484a6d037b73f4a252294ccef856d353a74604495",
-                                "NFT_1e89b203fc6dd313d36c5d7264cfdaf3ebd6d1e6e6e4c686b44e6414faa4c12e",
-                                "NFT_693e14602373cce08d84238440a6e72b2ada0d456b1c4248d1b5be19e57753ee",
-                                "NFT_6ec682d54eec1d7e7729dad833d63e115b14931d7d7627f10e1430a3a655c156",
-                                "NFT_b47a24f6e1d23a0f0bf711b48898d756854027dbd844b5cf78862c1c5bb7af2c",
-                                "NFT_544cd746eae6c178731d3287dfdb510f202543912dd7764eaa916ea41bd14d80",
-                                "NFT_dc22eca9c3210a4277ca82463c2814db0dfd54d0a9733ff26020498b2c0ebadc",
-                                "NFT_ed707ab9903b81b7e7d2e3e99741490e1cfa57ce2b0e8be1a729eee382eaa1bb",
-                                "NFT_13ca579d1c208fd0b4845168eeecd3b152a364673765d3cc4ff664ebdd2540fe",
-                                "NFT_1f1c4a873246b0fc5bab5d8e3844af88fad37635783cdf31f39a783829b115ed",
-                                "NFT_38584ec01c42d00eebaa9e278610874310f207c044b6f42ba5fbfb9b30028f97",
-                                "NFT_43be4655acf931f0a93174ffdd8b163b252da85e0e11961a4fc33ea290203a34",
-                                "NFT_897aaee79f49b7f07211eb5222f33a7b841a58ced9013f2b8a9cf97878921161",
-                                "NFT_c98d9cb9a47066587e5b89a06c5050261099936d7347945edff76cd45809e9c4",
-                                "NFT_d4684903a102fbb9e08b61cbe9b4039c02e7e7b42b970340a381483407051aa7",
-                                "NFT_ed51ee2dc83efb0e688c35bb661aeb74310d48ff3dcd2d8de4989084936fae8a",
-                                "NFT_edfc7398f3a774c23be044f068fb7d772fd3e5d38750873e6bb00c0912c98082",
-                                "NFT_f5cd79d0fa4bfb7b3e3fc2b4e54f5e8570ca35cf0ea980325c45492fe5a37a23",
-                                "NFT_0178a0c8e20623d352ca3a36a61dad8fe93919139dd89c318eaaf674bc7edf17",
-                                "NFT_05bc50cdf4b04aca1e438a196956161d31eab88104bbc7ef037a6161952afa27",
-                                "NFT_0d42a4e0b333259212cc3fbc89bc7068398ff991548b928498008b3a67a445f2",
-                                "NFT_2c3ff075cd2f2f39e018429846ed1e4b34b1f2b5fe520a9f351cff15f062c37e",
-                                "NFT_6adf87a8ba3ae6e6737ffcc0cac6f616fe38e8a06bf725eb165f6ce07d725deb",
-                                "NFT_ad39091cc553e1de542f6d2b61ec13b1621bb6b80129d007c4ab0a8d27d4fa70",
-                                "NFT_42180fd07bf0c6cfadda8d471ac75e7cea70c69ebbfdae962fa6b1cebfd83a74",
-                                "NFT_aa101d56d024d9bf8fd79d8bd99cdebcc58c04d9ef4867ed2c2491ce73a55ea8",
-                                "NFT_7462d006ca6491db7ca0671640a315c04b168513ffdb9fe1643a94e999a6f34d",
-                                "NFT_8339d543eb11a1e0f54727de3914d94c1f4581cf076c33e24bc79ff9482e6307",
-                                "NFT_97085b9ae74eb680e576b547fa097b3ac265f47c63ec4c410c9a88ac9a9610a4",
-                                "NFT_bd32b635e7091e8ba2f6c38480b07857e14b07c8835d66882ecfc0c6f4e26cfe",
-                                "NFT_3c1c9401dd8d1a25c342561fb65ad67734da60dea61c3767e07b4b9f456b5662",
-                                "NFT_8d735ae7dcb23ed5b3ff42f2ae196d659bb9c11721680950c5cfefb9affb43d3",
-                                "NFT_bf5da52d64243e2f97097aa1760a1352f8ceef7e559b338ad3d4b45056c785a9",
-                                "NFT_02bb7e5dc0e75c9f18569dabfe37adf842a364b91be9611e1a29ced8cfa76e21",
-                                "NFT_057171486384fcd111cc970f66427dd297064f970b4f66c9285fce97014f6dbf",
-                                "NFT_06480665504fa971460477ecf336f46efc37568a996e4b70fae12710c41e3721",
-                                "NFT_0795101748ebbc54b5a62c5f124f2b4cb3324d98ed8e274111bbd823c3b25a8a",
-                                "NFT_10d1ea3b2ef4086608ed687a21bd1809ec41219e3ce6be4b603d6d088b6c1be9",
-                                "NFT_1fd647da70fb3702ef73fd846fe640fd8e8ed62351dbad1e49cead82776d12f6",
-                                "NFT_22406b652e258f3019a7dfdd240808929dd7ebccc81b8d2bb32e6e3a3cea32b7",
-                                "NFT_441427c99c28a99989b521f87968c2857903ad9a190d1e446637b8d7122a4f2d",
-                                "NFT_4ea87fe079d64382bd2ed518285db14f89faca7818cb0fade85980a93bc805d8",
-                                "NFT_590675120e04e3f3520928dc124a015a83f5b3ca38c6c71a657ae4ebada87c3b",
-                                "NFT_5bbdfe2d3fa52063bda32cfe960285e23e433fe8f4fe8a0b3aab90c186d1455b",
-                                "NFT_6e77d3b70b5e275cb6f1bf857b5e28e1fe11e1bedacb67ac791dda34a4d7dbe1",
-                                "NFT_734d2391f3a56fa9402ea5efdf09d13f00072104332987f0c6492d7b9ca5b412",
-                                "NFT_754b87921d4fc228065f9b699cd3655fb25b14f1cf99ab75e219cab5a6bee30d",
-                                "NFT_7a5d05533cb2291b6ebeadd5cfb00f436492d84a90bac1ba2863b471fee5f393",
-                                "NFT_833f8372401cfe48ddcb5ebab28d37468d57998ccade9eb1ff68c2884019b2ae",
-                                "NFT_942803527790e28fe8e37d8564c5726e189cac92913384c595896e96e8424a29",
-                                "NFT_98187e51983da68cbe0bb56d39d4294409f8ac7a8c0f59ff5250ca1aafec6bf4",
-                                "NFT_9ac9bc00cfc632d086e9f854f672ebf678a3920a950ebc359e7b948331397b1d",
-                                "NFT_a9a9ca768a10ecfeacac1a2036aca8070adc9c7220f37f44ecdf1fdbbe624517",
-                                "NFT_ad2a11d5c32bc427252bf7a262910df522c9e139bc256e1b78f9cf0effee0a84",
-                                "NFT_af3a156c125cf5c91b1c12cefea2e6e63cdf08c31f55eb815c7f312c5f301784",
-                                "NFT_b4fde99808690a5d6b1b8c8f3920d1c6721ab37de2d3adc4e7c9a5193b4f04db",
-                                "NFT_c0d4818c748a4e36fb9a4421ad2f13b100e071f37416c30be71c38625105d61e",
-                                "NFT_c3a41af90e80d9e67a9b07b6d76d649065b381bb14ab3e39f974fe225d392b97",
-                                "NFT_c796b0fb8070d153a8a21a521afa9e019f66a33d0eebfb131dcbd68086e7a9cf",
-                                "NFT_ce69a2814303f993feef56f5b70fa0e8096a1cab1f72dd9abae056e10bf27f46",
-                                "NFT_cff93de1b022eef6c179af5304e2939de75e8428f79267813ad1aafd117c8e37",
-                                "NFT_de9b849a7ae961f5e7a8880beed7e6f73420990b937434f87cb6096f586dfaf5",
-                                "NFT_df0c3d196261971ec890657ac6c6526ae247dfa66ca13c6efc267370bc8ba193",
-                                "NFT_e96267ad87cb7c8b82bf01cbc5a3c4d3894541cb410fc4722acf9d5328b5e3ca",
-                                "NFT_ed0f438729407bfdbe2e3a8f39e51111070ed0610de1db2c89c5324aa4ad7b3a",
-                                "NFT_f178e2d9b9943bb83ed402c6ca3fc7e9975dcbdfdd50b9e10fd5c7b70ee0a07a",
-                                "NFT_fbb0dcd6c2fde387dd07aff421a72479322c5e8fc2d30320fed4a4da65f80ed8",
-                                "NFT_02fbae61935fbb21f72b307d7257a06cbb9215c90c20606f20454bbdc835e28d",
-                                "NFT_0b82a123d61661b8089a6bf055a9a95393b28f7487d3169efb3d048bc2277c8d",
-                                "NFT_4cb6e4bfdea9e74ae52bbed5d535ae6d763a915ac11119f3387b8acb92216fa9",
-                                "NFT_4f787b3acbaa7072781996d764c62653c946ec15e29bd11b8999f970d2ed0955",
-                                "NFT_5110bdd42cf56c2e415916341af2074969ac159616f4360ab61e1f357c877ecf",
-                                "NFT_5a60eca93659b5f64bcd2a3be5d3bd3354737aa018351047d5413e21d2d7d5e7",
-                                "NFT_81719c936db034523ad94ab73ff03b1dad02a928ce1bd0d917168a91136f5cf4",
-                                "NFT_89ff73f0a4ae3499591970de316eb3a2416926b3e4027541d84c4f065b969b04",
-                                "NFT_9c9ea2064be8700768bda3b736a2598bea366112eb4f7b0ebffe1c011765d6f1",
-                                "NFT_c544c32ac3cd248a73e5a9384b278903843fd40fe636c9168891bec6b6b65c7b",
-                                "NFT_e2dc95f06c42d95821fad3318a3d21cdc79994b2170e2d5fd5fc6f257ee7e1d0",
-                                "NFT_eb0f54ad098d2039f0ffae7aeaf684c066ac0a89069965dbd5b21e4a25443a42",
-                                "NFT_ecd5647a75b0c90fa9607160dd781f9cbe9663048d182118a7169f20b72ddd09",
-                                "NFT_fe6567f42313701e7c32d8137bd3ffe173b33d2cd669dd546e8b55323ae3bb9e",
-                                "NFT_29d9947196bf5c790309dfcb602248fdd1c5c5ec8addecf966bdd80b473a5579",
-                                "NFT_3fbb18dc6cef89b981d66fc783cfaad1aaacb78c7ab01ae4cfc60ef6a7762c91",
-                                "NFT_47398d62c9812051a6d87c234bfd66914dc8cf1b7cfb543fbbb004bbd9fd9e7f",
-                                "NFT_488a97c2f46359268a0af318a3dd4eff5423d7f445fbf9f3df34826aa6bcfc6c",
-                                "NFT_6ca617da2e60318f540b0130500cfc4860e74163ddd53c9d731a97e4ee101467",
-                                "NFT_715da4f0b49916b34762a1df602d008b7b0e109de861f916a954eb2b4533b987",
-                                "NFT_9c1efcd4c0617809700656bd3cce90ca953826c3c9c703c5a9bdc380373d145f",
-                                "NFT_a83c8877ad2c2bdbff359b072a6b6561dc37ab0e6c7b7327c05ea7fc0c1cb895",
-                                "NFT_a86e496f8af81dffa73171277d7bc499ae650add2146b981b4cdff5788126dee",
-                                "NFT_aca84e4f27909794ba4e6fe3bf8b046d26462341b959589195baa6782b1a5e7d",
-                                "NFT_b0c1cc0a2251bdbcd5150ca4e1c05a9a1ac529e3effc4c9f1eaf9503273ce51d",
-                                "NFT_e5c8d628f04a03473410f96ccde1385cec71c81797b29f86753bb7963d4e3e75",
-                                "NFT_e61d9fe9217b82dc81e284ed1ec3de4110663466a7043ee320911d99c1c3d213",
-                                "NFT_ec9d2c7620b087ce5ad14ecd82c337cff64ba53e9248d3d7f12bfe2d196d31ec",
-                                "NFT_f05f8f63985ac1737ae93832a6fe5f22cb8e4f6d1d292b9a95feb647ec0ae153",
-                                "NFT_f0f11638da0658e8de648df02adf7f03ced4d615021b6117b7a37815e14dd243",
-                                "NFT_fd86feecd57e03502f40d09738d71c37f36e0b3790fcdb98afa335484ed2e7aa",
-                                "NFT_fdee0094c00d2cf805fdf49b71326d9a5acff4894517d46d519a7d467a17266c",
-                                "NFT_47398d62c9812051a6d87c234bfd66914dc8cf1b7cfb543fbbb004bbd9fd9e7f",
-                                "NFT_4a9e42a3da8aae1fd50180a09371db5cb4a1fd10e7950b247ad7064e1e94571c",
-                                "NFT_6d81f68d39b4816164d74838f1bb685832a2a581ec564d8deec476cab1014afb",
-                                "NFT_ad9d9c0e92ff9012317e303447dcaeb6370dca408c2257a3258f475d6a29443f",
-                                "NFT_c2086c06034f03b8ea88ceb4938d8b3b7128f34e0e363632e5fc164f4404334c",
-                                "NFT_ec28e8db0ae7db4bf6860a47392f7dd0d4258626b19b3bd18d1dbfc811d969bd",
-                                "NFT_0041bd1db10b61f1e5d4416082b289110f18d72837d0813a424a182ee19c69e7",
-                                "NFT_2646f2c912ae540814a85974738b222af0f803197ad64c4d6a8247dbb420a9db",
-                                "NFT_27533a711ba386f1bd0a283d52c68b15e4e983f60bd36c7d4299725fb9348f5c",
-                                "NFT_1c5c8b927415fcdda1c244b624e4cad24c78901fbe45938907a7a30dc6010b77",
-                                "NFT_4d274092ea5dc3e5535c58436d2ea746cdaba54789a7dacd0c9e7557828e02fe",
-                                "NFT_6b100310c953de70a861d313f03aea32b2c6469c572ec0ba007377b2bf2ffbe4",
-                                "NFT_eccf2de74e7663a51440298d35790074e9a5439e9e4dbb3782f29bbb68eab6f6",
-                                "NFT_163021fc0af1bc001cc4c5a8f8a014135ad1179f2eb766dfff9eb84f6e5c3ab0",
-                                "NFT_4a29b9e8f957b92fc4c8767e6f1554ae2e05f0edf416a185a1275f5c592c0510",
-                                "NFT_b2bd12264fa346293b37a521e4f5b0d2342a561a5491a7a528e393080bd6826e",
-                                "NFT_bcc85340addad09ab47b29690b3adaae7be035c47e541a91b2b702fd8e1b08f1",
-                                "NFT_dff6df3fbee0a9fec4d8c803602079aab0e7d2c0ef67428fbac56f21280bfc20",
-                                "NFT_ee955c3f7980209b84143b0d67f6e6617d22d13cbc8965054305a2080296b273",
-                                "NFT_shortee955c3f7980209b84143b0d67f6e6617d22d13cbc8965054305a2080296b273",
-                                "NFT_mediumee955c3f7980209b84143b0d67f6e6617d22d13cbc8965054305a2080296b273",
-                                "NFT_longee955c3f7980209b84143b0d67f6e6617d22d13cbc8965054305a2080296b273",
-                                "NFT_f49308e033301819885fb9ea18103a27b69eed5138193b3309998d4d2f5fb1e0",
-                                "NFT_shortf49308e033301819885fb9ea18103a27b69eed5138193b3309998d4d2f5fb1e0",
-                                "NFT_mediumf49308e033301819885fb9ea18103a27b69eed5138193b3309998d4d2f5fb1e0",
-                                "NFT_longf49308e033301819885fb9ea18103a27b69eed5138193b3309998d4d2f5fb1e0",
-                                "NFT_da93747e4c9e54916c621ec9f6fe235ef6e260005302b9cd5ae37c22bf9dcfc1",
-                                "NFT_0bcf24bf800cf39ced029060ef352ba1f668d1f531f2c17e55f442992ec0c8b6",
-                                "NFT_short0bcf24bf800cf39ced029060ef352ba1f668d1f531f2c17e55f442992ec0c8b6",
-                                "NFT_medium0bcf24bf800cf39ced029060ef352ba1f668d1f531f2c17e55f442992ec0c8b6",
-                                "NFT_long0bcf24bf800cf39ced029060ef352ba1f668d1f531f2c17e55f442992ec0c8b6",
-                                "NFT_7dbcdd6ab36b736aad8956fc8317e3d38f511cabd956a20a429426ee2ef89ed5",
-                                "NFT_short7dbcdd6ab36b736aad8956fc8317e3d38f511cabd956a20a429426ee2ef89ed5",
-                                "NFT_medium7dbcdd6ab36b736aad8956fc8317e3d38f511cabd956a20a429426ee2ef89ed5",
-                                "NFT_long7dbcdd6ab36b736aad8956fc8317e3d38f511cabd956a20a429426ee2ef89ed5",
-                                "NFT_068fea3616941919281efb00daf6a7a015db508eff6231d929cac34bdfb70818",
-                                "NFT_2b7673257778094d9b65067c5f8fe0a0091cddac2b9438ef29b0413ef4e68095",
-                                "NFT_69f1986ed90de699616e54f5090027ce25e8f8549899ea50cb3675ef06455196",
-                                "NFT_6a00be285f1c050ae454e1fa089cd2a25080759c1c8f0094673c6856b32e2e27",
-                                "NFT_78087164044b9eba61c85ae6820e315ff44fbe179dca27c27a53c2f42c4e8bcd",
-                                "NFT_85081d01bac63ba2896799a250ee4b00d864458257e22fdbd637f04e20f9e79f",
-                                "NFT_971496348ac8582d7795101b9ca7e27bb316bbbdc22590d09ebbb72b22c341c5",
-                                "NFT_9eda1e9b159ccaff4b0e462e640395d3c7091420c3f0e5c1928bef34bfc3413e",
-                                "NFT_c6d3f76464f64cfe3b3e7efc346f1aba17360f064c0ef3699de614ee48188283",
-                                "NFT_shortc6d3f76464f64cfe3b3e7efc346f1aba17360f064c0ef3699de614ee48188283",
-                                "NFT_mediumc6d3f76464f64cfe3b3e7efc346f1aba17360f064c0ef3699de614ee48188283",
-                                "NFT_longc6d3f76464f64cfe3b3e7efc346f1aba17360f064c0ef3699de614ee48188283",
-                                "NFT_ef05e3d327ff124b3c180bb236d08c12eace6944139143648cc3753d6d7033db",
-                                "NFT_4f3a404d96cdd021449b3ab5908d2eb3b84e831c_5496305",
-                                "NFT_F85364c9Ee2bB9ed85A3b32b19C7493fdCB569BD_19918615690146066355690800931375925985630387238563754968424641628807186370381",
-                                "NFT_F85364c9Ee2bB9ed85A3b32b19C7493fdCB569BD_77123044749293774652580068647803968014499430784804917820666958229293037486712",
-                                "NFT_1438f740c51c543a6dfcff955e1aff22c2b97e13ce18d3bed1e3d6025d404429",
-                                "NFT_15d4a3c86f6c98e27063da3678675ea63ac392fc888f2f9f8c1ba4b07a0d2c38",
-                                "NFT_short15d4a3c86f6c98e27063da3678675ea63ac392fc888f2f9f8c1ba4b07a0d2c38",
-                                "NFT_medium15d4a3c86f6c98e27063da3678675ea63ac392fc888f2f9f8c1ba4b07a0d2c38",
-                                "NFT_long15d4a3c86f6c98e27063da3678675ea63ac392fc888f2f9f8c1ba4b07a0d2c38",
-                                "NFT_1786f06ebc4e8519c964b312acf66a95e14adc633d23ea1fd71145d856c26972",
-                                "NFT_short1786f06ebc4e8519c964b312acf66a95e14adc633d23ea1fd71145d856c26972",
-                                "NFT_medium1786f06ebc4e8519c964b312acf66a95e14adc633d23ea1fd71145d856c26972",
-                                "NFT_long1786f06ebc4e8519c964b312acf66a95e14adc633d23ea1fd71145d856c26972",
-                                "NFT_1a81e741826106eb47acdeec2c3ff420db401f560e743deca785a15499493338",
-                                "NFT_short1a81e741826106eb47acdeec2c3ff420db401f560e743deca785a15499493338",
-                                "NFT_medium1a81e741826106eb47acdeec2c3ff420db401f560e743deca785a15499493338",
-                                "NFT_long1a81e741826106eb47acdeec2c3ff420db401f560e743deca785a15499493338",
-                                "NFT_366cade0dcf755747c099d7485ea650ad7f50ce902380d9b34fd879fc76e4bbd",
-                                "NFT_short366cade0dcf755747c099d7485ea650ad7f50ce902380d9b34fd879fc76e4bbd",
-                                "NFT_medium366cade0dcf755747c099d7485ea650ad7f50ce902380d9b34fd879fc76e4bbd",
-                                "NFT_long366cade0dcf755747c099d7485ea650ad7f50ce902380d9b34fd879fc76e4bbd",
-                                "NFT_36ee162fecde9158ae4c87787062bc85053afa843e3a081180c1ee081d1adae0",
-                                "NFT_3b092b4c195d0e43ffe4273513f531bd7a1985fbc192aa08292b9fe129996364",
-                                "NFT_short3b092b4c195d0e43ffe4273513f531bd7a1985fbc192aa08292b9fe129996364",
-                                "NFT_medium3b092b4c195d0e43ffe4273513f531bd7a1985fbc192aa08292b9fe129996364",
-                                "NFT_long3b092b4c195d0e43ffe4273513f531bd7a1985fbc192aa08292b9fe129996364",
-                                "NFT_4d3cbfbda26ccb9a7002bd541397d9280efe723b16e3d7b7dee027155ca50f6f",
-                                "NFT_short4d3cbfbda26ccb9a7002bd541397d9280efe723b16e3d7b7dee027155ca50f6f",
-                                "NFT_medium4d3cbfbda26ccb9a7002bd541397d9280efe723b16e3d7b7dee027155ca50f6f",
-                                "NFT_long4d3cbfbda26ccb9a7002bd541397d9280efe723b16e3d7b7dee027155ca50f6f",
-                                "NFT_7bc7408bed195f28aaeec8449c6bb0237d07b03c2577946793db77d2ac08ece9",
-                                "NFT_93725b85a37e9b4c3932efbf57a87e63fb9c4d07858001e948945dde73cd799e",
-                                "NFT_short93725b85a37e9b4c3932efbf57a87e63fb9c4d07858001e948945dde73cd799e",
-                                "NFT_medium93725b85a37e9b4c3932efbf57a87e63fb9c4d07858001e948945dde73cd799e",
-                                "NFT_long93725b85a37e9b4c3932efbf57a87e63fb9c4d07858001e948945dde73cd799e",
-                                "NFT_a403f72cf284a4968862f9acca0f53c95575b28481fb4b2fee64febc0ad613d0",
-                                "NFT_b104e4f4e1924b712d513423a7dcce79cd35e3f90dd34e6dcdd8511c5d17724f",
-                                "NFT_shortb104e4f4e1924b712d513423a7dcce79cd35e3f90dd34e6dcdd8511c5d17724f",
-                                "NFT_mediumb104e4f4e1924b712d513423a7dcce79cd35e3f90dd34e6dcdd8511c5d17724f",
-                                "NFT_longb104e4f4e1924b712d513423a7dcce79cd35e3f90dd34e6dcdd8511c5d17724f",
-                                "NFT_c3b5e0bf7d84c267a08b190ccf53a49c686e57ba157d7200fc81132647396f67",
-                                "NFT_shortc3b5e0bf7d84c267a08b190ccf53a49c686e57ba157d7200fc81132647396f67",
-                                "NFT_mediumc3b5e0bf7d84c267a08b190ccf53a49c686e57ba157d7200fc81132647396f67",
-                                "NFT_longc3b5e0bf7d84c267a08b190ccf53a49c686e57ba157d7200fc81132647396f67",
-                                "NFT_d9c8a6cc44f6874f6b76c844ffc7263f184dcc5d86fb91d2d389caddf905a4ef",
-                                "NFT_shortd9c8a6cc44f6874f6b76c844ffc7263f184dcc5d86fb91d2d389caddf905a4ef",
-                                "NFT_mediumd9c8a6cc44f6874f6b76c844ffc7263f184dcc5d86fb91d2d389caddf905a4ef",
-                                "NFT_longd9c8a6cc44f6874f6b76c844ffc7263f184dcc5d86fb91d2d389caddf905a4ef",
-                                "NFT_e6bfd0633603fe1dfcf8613a0d7164c9956e830ce66d7f56d18fb1572d6dd67e",
-                                "NFT_ff3ada53b8f1d288a82615263441078f06e024c456b6105ce714df6e56c07e7a",
-                                "NFT_0ac27578ec1d734714960d306e4daa6907164c6e9067864c0b1d2128d33f1ad0",
-                                "NFT_short0ac27578ec1d734714960d306e4daa6907164c6e9067864c0b1d2128d33f1ad0",
-                                "NFT_medium0ac27578ec1d734714960d306e4daa6907164c6e9067864c0b1d2128d33f1ad0",
-                                "NFT_long0ac27578ec1d734714960d306e4daa6907164c6e9067864c0b1d2128d33f1ad0",
-                                "NFT_21263d17e53bef91cd691668a6d64dde878bd68379c20d0a3ea3a2e343b3ca6a",
-                                "NFT_short21263d17e53bef91cd691668a6d64dde878bd68379c20d0a3ea3a2e343b3ca6a",
-                                "NFT_medium21263d17e53bef91cd691668a6d64dde878bd68379c20d0a3ea3a2e343b3ca6a",
-                                "NFT_long21263d17e53bef91cd691668a6d64dde878bd68379c20d0a3ea3a2e343b3ca6a",
-                                "NFT_24c0913172301c0edd6ae8a7240e6e78f6d1226ca2bac1215af3c78eddfe0b40",
-                                "NFT_short24c0913172301c0edd6ae8a7240e6e78f6d1226ca2bac1215af3c78eddfe0b40",
-                                "NFT_medium24c0913172301c0edd6ae8a7240e6e78f6d1226ca2bac1215af3c78eddfe0b40",
-                                "NFT_long24c0913172301c0edd6ae8a7240e6e78f6d1226ca2bac1215af3c78eddfe0b40",
-                                "NFT_3baf6e547521920d018290967fcdf3430d9f133b0b54774532a5f6cf53cf9023",
-                                "NFT_short3baf6e547521920d018290967fcdf3430d9f133b0b54774532a5f6cf53cf9023",
-                                "NFT_medium3baf6e547521920d018290967fcdf3430d9f133b0b54774532a5f6cf53cf9023",
-                                "NFT_long3baf6e547521920d018290967fcdf3430d9f133b0b54774532a5f6cf53cf9023",
-                                "NFT_46119fac7772f647532cb6c0ae29603d2a2226000fbbf0a8073158fadca526e7",
-                                "NFT_short46119fac7772f647532cb6c0ae29603d2a2226000fbbf0a8073158fadca526e7",
-                                "NFT_medium46119fac7772f647532cb6c0ae29603d2a2226000fbbf0a8073158fadca526e7",
-                                "NFT_long46119fac7772f647532cb6c0ae29603d2a2226000fbbf0a8073158fadca526e7",
-                                "NFT_491076f855b5e0238f5a9d5edc47b52fcf28dba3dcd73066bb924f3ef92c632e",
-                                "NFT_short491076f855b5e0238f5a9d5edc47b52fcf28dba3dcd73066bb924f3ef92c632e",
-                                "NFT_medium491076f855b5e0238f5a9d5edc47b52fcf28dba3dcd73066bb924f3ef92c632e",
-                                "NFT_long491076f855b5e0238f5a9d5edc47b52fcf28dba3dcd73066bb924f3ef92c632e",
-                                "NFT_4f3a404d96cdd021449b3ab5908d2eb3b84e831c_5491371",
-                                "NFT_4f3a404d96cdd021449b3ab5908d2eb3b84e831c_5498761",
-                                "NFT_5589c2e5be5eb4558f0092eb642a80e538ef96899cdb7dbc335f0ae78179d075",
-                                "NFT_short5589c2e5be5eb4558f0092eb642a80e538ef96899cdb7dbc335f0ae78179d075",
-                                "NFT_medium5589c2e5be5eb4558f0092eb642a80e538ef96899cdb7dbc335f0ae78179d075",
-                                "NFT_long5589c2e5be5eb4558f0092eb642a80e538ef96899cdb7dbc335f0ae78179d075",
-                                "NFT_7d08a736f155d3e648702a6302c40a071dafa4c6fb714aa2591e475d0707b0eb",
-                                "NFT_short7d08a736f155d3e648702a6302c40a071dafa4c6fb714aa2591e475d0707b0eb",
-                                "NFT_medium7d08a736f155d3e648702a6302c40a071dafa4c6fb714aa2591e475d0707b0eb",
-                                "NFT_long7d08a736f155d3e648702a6302c40a071dafa4c6fb714aa2591e475d0707b0eb",
-                                "NFT_8713dfc6c0c0860ad8ed6f073680c6449e66dcd51c843d5b0b1d6402c7b99672",
-                                "NFT_short8713dfc6c0c0860ad8ed6f073680c6449e66dcd51c843d5b0b1d6402c7b99672",
-                                "NFT_medium8713dfc6c0c0860ad8ed6f073680c6449e66dcd51c843d5b0b1d6402c7b99672",
-                                "NFT_long8713dfc6c0c0860ad8ed6f073680c6449e66dcd51c843d5b0b1d6402c7b99672",
-                                "NFT_9de4a76297ab114361f7c39e33351f52c17d107607a56e0979a20543e0e93c19",
-                                "NFT_short9de4a76297ab114361f7c39e33351f52c17d107607a56e0979a20543e0e93c19",
-                                "NFT_medium9de4a76297ab114361f7c39e33351f52c17d107607a56e0979a20543e0e93c19",
-                                "NFT_long9de4a76297ab114361f7c39e33351f52c17d107607a56e0979a20543e0e93c19",
-                                "NFT_d2a6bfea80e32045b826dc584d46993f45fbd9423239a4c1d56f82c775702381",
-                                "NFT_shortd2a6bfea80e32045b826dc584d46993f45fbd9423239a4c1d56f82c775702381",
-                                "NFT_mediumd2a6bfea80e32045b826dc584d46993f45fbd9423239a4c1d56f82c775702381",
-                                "NFT_longd2a6bfea80e32045b826dc584d46993f45fbd9423239a4c1d56f82c775702381",
-                                "NFT_e1a75cbbe429d12927228dc809b12b9297ecb31bb1d4e8112b2997b6b85cc111",
-                                "NFT_shorte1a75cbbe429d12927228dc809b12b9297ecb31bb1d4e8112b2997b6b85cc111",
-                                "NFT_mediume1a75cbbe429d12927228dc809b12b9297ecb31bb1d4e8112b2997b6b85cc111",
-                                "NFT_longe1a75cbbe429d12927228dc809b12b9297ecb31bb1d4e8112b2997b6b85cc111",
-                                "NFT_2d716d24c454a4616f810e8f439a05017fa7d43ab3ccafaa3de39a517c5eb38b",
-                                "NFT_short2d716d24c454a4616f810e8f439a05017fa7d43ab3ccafaa3de39a517c5eb38b",
-                                "NFT_medium2d716d24c454a4616f810e8f439a05017fa7d43ab3ccafaa3de39a517c5eb38b",
-                                "NFT_long2d716d24c454a4616f810e8f439a05017fa7d43ab3ccafaa3de39a517c5eb38b",
-                                "NFT_52e7cfbbb559453de7344835957efd130d35e3bbed45fba656994e010a2759cb",
-                                "NFT_short52e7cfbbb559453de7344835957efd130d35e3bbed45fba656994e010a2759cb",
-                                "NFT_medium52e7cfbbb559453de7344835957efd130d35e3bbed45fba656994e010a2759cb",
-                                "NFT_long52e7cfbbb559453de7344835957efd130d35e3bbed45fba656994e010a2759cb",
-                                "NFT_65f31f167009872a30656a2021c4beeb20bc789126611fc0769970629ba3e6d8",
-                                "NFT_short65f31f167009872a30656a2021c4beeb20bc789126611fc0769970629ba3e6d8",
-                                "NFT_medium65f31f167009872a30656a2021c4beeb20bc789126611fc0769970629ba3e6d8",
-                                "NFT_long65f31f167009872a30656a2021c4beeb20bc789126611fc0769970629ba3e6d8",
-                                "NFT_80fc4835ceee1877a16b94c64532b2d04693667a3f0a8e3ed6723eaace4a1169",
-                                "NFT_97a962c5d9f36376f65d18b8af2175847802fd2418fc502c463b29d7eeedc64a",
-                                "NFT_short97a962c5d9f36376f65d18b8af2175847802fd2418fc502c463b29d7eeedc64a",
-                                "NFT_medium97a962c5d9f36376f65d18b8af2175847802fd2418fc502c463b29d7eeedc64a",
-                                "NFT_long97a962c5d9f36376f65d18b8af2175847802fd2418fc502c463b29d7eeedc64a",
-                                "NFT_d0a588d08323f2a513096f8bf5856b6162e7ff42a7e0c96c4d589e61cb163d7a",
-                                "NFT_shortd0a588d08323f2a513096f8bf5856b6162e7ff42a7e0c96c4d589e61cb163d7a",
-                                "NFT_mediumd0a588d08323f2a513096f8bf5856b6162e7ff42a7e0c96c4d589e61cb163d7a",
-                                "NFT_longd0a588d08323f2a513096f8bf5856b6162e7ff42a7e0c96c4d589e61cb163d7a",
-                                "NFT_5f4bc89474f0309e5ba74400f10a2299729135232479286ef8a5ff635eed9299",
-                                "NFT_short5f4bc89474f0309e5ba74400f10a2299729135232479286ef8a5ff635eed9299",
-                                "NFT_medium5f4bc89474f0309e5ba74400f10a2299729135232479286ef8a5ff635eed9299",
-                                "NFT_long5f4bc89474f0309e5ba74400f10a2299729135232479286ef8a5ff635eed9299",
-                                "NFT_15c7740cfff7273804d2a86702e99697c15f06bd54d4ab11a13a173791c89ebc",
-                                "NFT_73964119930274d788fef6ff88c4d2652edd6dca5e97a691e58580072f52804c",
-                                "NFT_short73964119930274d788fef6ff88c4d2652edd6dca5e97a691e58580072f52804c",
-                                "NFT_medium73964119930274d788fef6ff88c4d2652edd6dca5e97a691e58580072f52804c",
-                                "NFT_long73964119930274d788fef6ff88c4d2652edd6dca5e97a691e58580072f52804c",
-                                "NFT_882879c64e870c681d6f76e59270fdeef85ba4d22d281e60fedb4be82fcb1a81",
-                                "NFT_d05998eff1ae3bb65dcaa0077d02e39a3a35d06a24d6c43576360b7feae55a99",
-                                "NFT_139b4906d04d012fd7b296bb06182b67d9f88734cf89a1de9b87e97508a82500",
-                                "NFT_6584b6eba303f6c76dd151e6f4c184e6d7139ffb46233d8779b59d34686d3f8f",
-                                "NFT_8768a3c1e45e4ea63efe312b81778244d69601867db9f229caf83f66314634be",
-                                "NFT_adbfc05a478d0b3f1ccfc28ae408dcd9cc6e9eebca7877fad19b9b233438af24",
-                                "NFT_shortadbfc05a478d0b3f1ccfc28ae408dcd9cc6e9eebca7877fad19b9b233438af24",
-                                "NFT_mediumadbfc05a478d0b3f1ccfc28ae408dcd9cc6e9eebca7877fad19b9b233438af24",
-                                "NFT_longadbfc05a478d0b3f1ccfc28ae408dcd9cc6e9eebca7877fad19b9b233438af24",
-                                "NFT_4F3A404D96CDD021449B3AB5908D2EB3B84E831C_5493562",
-                                "NFT_19531ea970b310f8867dda6219614cff6592c31240742fe106baa46fcdab73bc",
-                                "NFT_25731e27bda51085704998afda5332c16696a34b416eb5f1859082839bbf7196",
-                                "NFT_6553fb56030bf2290678f0ff88664c9da2167428591ab013381a98c17de3f533",
-                                "NFT_7c2c2a3bd8a8d002e5672e7a085d2dc142fdec571466c89f213e5b096aa376a3",
-                                "NFT_91088446ca4625ef0936bbf5a9a60aaf2012d6a084cf9bc6598141e3711a7cfa",
-                                "NFT_96a11a0753ae414fa5a3682d5a5ada484e8a0e9cbb44e29df93e1720b0fbc25a",
-                                "NFT_9f3ae3dadf8709267f19af03b9aa35afa703d6d61a6e99fe75ba16c5d28cbefb",
-                                "NFT_a650c965bf0f754be062b2f5c9982a65a95c18f6b36a890885b2bd582b2badd8",
-                                "NFT_c4631a2d92d1c6e33fe7167dc2eb6e49e2fb9c5df6f741e70f6d66f8cf8e30f1",
-                                "NFT_shortc4631a2d92d1c6e33fe7167dc2eb6e49e2fb9c5df6f741e70f6d66f8cf8e30f1",
-                                "NFT_mediumc4631a2d92d1c6e33fe7167dc2eb6e49e2fb9c5df6f741e70f6d66f8cf8e30f1",
-                                "NFT_longc4631a2d92d1c6e33fe7167dc2eb6e49e2fb9c5df6f741e70f6d66f8cf8e30f1",
-                                "NFT_f06afcab0bac5f5e7b40edb0b2c1127886853dd1421c1636b5717744fecf80dd",
-                                "NFT_f17959056e4d31e16376b32c960c68c865d43efeb43b098a05dbd5e5f0d7d063",
-                                "NFT_shortf17959056e4d31e16376b32c960c68c865d43efeb43b098a05dbd5e5f0d7d063",
-                                "NFT_mediumf17959056e4d31e16376b32c960c68c865d43efeb43b098a05dbd5e5f0d7d063",
-                                "NFT_longf17959056e4d31e16376b32c960c68c865d43efeb43b098a05dbd5e5f0d7d063",
-                                "NFT_06dccb87e3d6807373b15e08da48ef625d307128f69bde62ba36bca81ee7c958",
-                                "NFT_0dee5fafc7aed9124a66005658b261492dbd98401b2064e0a6962b0957baef1e",
-                                "NFT_26b24f90ccd41bee364f1624dd8bf357afa1a0441b1d2e9ccadd7dd5d9da5d6c",
-                                "NFT_4582bba8f9088939f06a326bce23239279e8281de331a746a5832e0a17e3b508",
-                                "NFT_4e15926d9346a8008aeae64bf9b5398d33325b2051014cc06f648dde71833277",
-                                "NFT_9600392b1c867a764c560c72650895b6d99b94bff4d0e077216f0bb7ad03ea41",
-                                "NFT_a15113517c1ec4314765480482bd6234b571491c93ebe9f7072c16287cae142b",
-                                "NFT_a3dbb1750426dfc5db7ad44ee156c55d03d925a4606d06f19e99958fbd38038d",
-                                "NFT_ada59adeaa732ec7d0a9f9f6d1fdcc2d429aeb86bb295879ee1fa57c3e5715b7",
-                                "NFT_c499ec0d472afa324b8e51ae2d72d1ae0346c0b86a7829240613c196aff642d3",
-                                "NFT_c9e9e1544bf1915e1f3b7138471bac20c3bd19ffea5cd0950b43345429bc73ba",
-                                "NFT_cbb1d9185b658e448885206d3dfdd853d92f1de4b399e3b8732b43a13cf8a0bd",
-                                "NFT_d6f29872d3065fb5e1440dc2f9b491df0d26799d0b21eca25f61a2213a3b77cf",
-                                "NFT_f33799148147b53c97bc105fec1ae30e45580738bec91f7819ecde96c365158c",
-                                "NFT_f70f44a3ee5b375450f8363cb987f5511700339bbefbc6e4ec16453b0c4261cc",
-                                "NFT_shortf70f44a3ee5b375450f8363cb987f5511700339bbefbc6e4ec16453b0c4261cc",
-                                "NFT_mediumf70f44a3ee5b375450f8363cb987f5511700339bbefbc6e4ec16453b0c4261cc",
-                                "NFT_longf70f44a3ee5b375450f8363cb987f5511700339bbefbc6e4ec16453b0c4261cc",
-                                "NFT_686bee99e15e71659a960a9614816fc97a983e5cb769580267478a3d9dffe850",
-                                "NFT_7ce14f2f5d7ac1287e9173cc5dfa3fb9dadd15780e6ce73ee89b90ef2b3fc4a7",
-                                "NFT_short7ce14f2f5d7ac1287e9173cc5dfa3fb9dadd15780e6ce73ee89b90ef2b3fc4a7",
-                                "NFT_medium7ce14f2f5d7ac1287e9173cc5dfa3fb9dadd15780e6ce73ee89b90ef2b3fc4a7",
-                                "NFT_long7ce14f2f5d7ac1287e9173cc5dfa3fb9dadd15780e6ce73ee89b90ef2b3fc4a7",
-                                "NFT_d300d9508cc8b13f0fe022829afcb2e5516d82cb0bf7cfbd88ed3c10f0dd243b",
-                                "NFT_729809cce2bbf0d01c5188dc483c97a0c9fa02b464ff7adac13de40c2bb82740",
-                                "NFT_7b47737a2762649a8193974cd38545a3be98b41357eabe76e8e9d1c07fd45959",
-                                "NFT_2860af7b79f21335f6573c95795ce71f2e036ba525858ce7943c94f59ace7025",
-                                "NFT_345b0bb88b67cf6799aaa240cb7edbbfbf2584ff42fa7447fcd5f7f97eb30e68",
-                                "NFT_426e692855b731db9a0bb6cb74a3521ab3244a61b3d61804cc3e802488796af3",
-                                "NFT_f778236c33d8157211619ec572de5b6491e4720cb4861f4415d5ad812107bf9b",
-                                "NFT_84b4b8873d24de7b8d6bed1f361f9da37d5e4047ee5219c039759e9a5e018a62",
-                                "NFT_0a4dfa6a08fc82ce0a0cd7b0e402bc86240e6150e68eb67389e1b8a59711f74d",
-                                "NFT_329efa92b1c63d69303d548067d3019f4f930a3ce95881d0e4ea84964d469a49",
-                                "NFT_5910266c85469c4ac0e970be6ef7fd1fcd80d8d021d3ffe94503ec41f4bbb884",
-                                "NFT_7843137692a1007efba37c0c428d960ff7f0a699bf7f0f0cd9848e2a27a5e256",
-                                "NFT_83471d24a3eb9ac41147b6fea327a726bf873dc40f4554cf7cefddacb6089e61",
-                                "NFT_6bfc054b6a9c30934de53b318c67bdb790c67ffb79a2ee9272757affa688928b",
-                                "NFT_short6bfc054b6a9c30934de53b318c67bdb790c67ffb79a2ee9272757affa688928b",
-                                "NFT_medium6bfc054b6a9c30934de53b318c67bdb790c67ffb79a2ee9272757affa688928b",
-                                "NFT_long6bfc054b6a9c30934de53b318c67bdb790c67ffb79a2ee9272757affa688928b",
-                                "NFT_b871b671ca583557cd7b58e11dde7a1df28d437f14fd8823f45dda908e9c6c68",
-                                "NFT_shortb871b671ca583557cd7b58e11dde7a1df28d437f14fd8823f45dda908e9c6c68",
-                                "NFT_mediumb871b671ca583557cd7b58e11dde7a1df28d437f14fd8823f45dda908e9c6c68",
-                                "NFT_longb871b671ca583557cd7b58e11dde7a1df28d437f14fd8823f45dda908e9c6c68",
-                                "NFT_0d4cd50476ccbbd7e7b8524dff65f56a44f7cd0e2a9c546fedac7a4839b0fad2",
-                                "NFT_5158622854d8659a5ba93d13a46200f711d232794d3677c4760a952f27bfe1c5",
-                                "NFT_5295c057d6d81f79d31884a1529458091875b46d463294abeff354e1f198c4a1",
-                                "NFT_df40aeba7e507f60f2d2cdf2c782ec73d7f81f0c222d5fbfe72793b8a3644af0",
-                                "NFT_e2dd7c905cbb8735ba0f0dc12557e62624e957ded89ac4b13e6d453dabe52a21",
-                                "NFT_035e93aee43974d227b7ccb50a487fa0415a113fba994f9a3f01e49de7494f75",
-                                "NFT_7ef7ef2460fcafcfbf7e24aeac842dd346ff2ab8c06b977b3676f9db5cc7bde3",
-                                "NFT_94516b8e146125c8bfcc5d08b3233757b6cfdcf2426a9a0ec290e26489e58d3e",
-                                "NFT_64a2f2717fb34b740c3334f00a8f2e4f04b02d62f47010687d4db81e8e23339b",
-                                "NFT_42737531982908ecbefc04c85948be1de4d89819b026eb7f5fbd185aaa252582",
-                                "NFT_693386aaa7402bec32394ed3ca458d3541b6d5069051adc3717a8c178be82eb3",
-                                "NFT_d0f0b69047e81f117effd59aca641eb3c7654d92f2c8b59c6d769954d2ac5126",
-                                "NFT_shortd0f0b69047e81f117effd59aca641eb3c7654d92f2c8b59c6d769954d2ac5126",
-                                "NFT_mediumd0f0b69047e81f117effd59aca641eb3c7654d92f2c8b59c6d769954d2ac5126",
-                                "NFT_longd0f0b69047e81f117effd59aca641eb3c7654d92f2c8b59c6d769954d2ac5126",
-                                "NFT_fd21b0a6c1fe0327cc773f899994347c3b7601340813352e6a633ff7f27a246b",
-                                "NFT_shortfd21b0a6c1fe0327cc773f899994347c3b7601340813352e6a633ff7f27a246b",
-                                "NFT_mediumfd21b0a6c1fe0327cc773f899994347c3b7601340813352e6a633ff7f27a246b",
-                                "NFT_longfd21b0a6c1fe0327cc773f899994347c3b7601340813352e6a633ff7f27a246b",
-                                "NFT_cbb7bbaa1a42e292a754e4f4284659caafc6cb3f94c20db719a82c94806b3e9b",
-                                "NFT_8f3a50d935bb2b552a719a7b802eba117ba5531a893c9e4993556094e0a50bc3",
-                                "NFT_short8f3a50d935bb2b552a719a7b802eba117ba5531a893c9e4993556094e0a50bc3",
-                                "NFT_medium8f3a50d935bb2b552a719a7b802eba117ba5531a893c9e4993556094e0a50bc3",
-                                "NFT_long8f3a50d935bb2b552a719a7b802eba117ba5531a893c9e4993556094e0a50bc3",
-                                "NFT_000000000000000000000000000000000000000000000000000000000000026c",
-                                "NFT_0000000000000000000000000000000000000000000000000000000000000289",
-                                "NFT_000000000000000000000000000000000000000000000000000000000000029a",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000002cf",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000002d8",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000002e2",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000002f4",
-                                "NFT_0000000000000000000000000000000000000000000000000000000000000301",
-                                "NFT_0000000000000000000000000000000000000000000000000000000000000309",
-                                "NFT_0000000000000000000000000000000000000000000000000000000000000320",
-                                "NFT_0000000000000000000000000000000000000000000000000000000000000323",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000002c5",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000002f9",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000002d9",
-                                "NFT_21c0904a5e2e14359a234bbea7579b3512de6386b608b1b418ec2e83da6edcd4",
-                                "NFT_72fb82430de91ec2a5f242295a7a7baf8bce3530d32deb6cf38b95d1c54a3b57",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000000f0",
-                                "NFT_0000000000000000000000000000000000000000000000000000000000000113",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000001f2",
-                                "NFT_000000000000000000000000000000000000000000000000000000000000004f",
-                                "NFT_0000000000000000000000000000000000000000000000000000000000000050",
-                                "NFT_0000000000000000000000000000000000000000000000000000000000000191",
-                                "NFT_0000000000000000000000000000000000000000000000000000000000000197",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000001c6",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000001dd",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000001ec",
-                                "NFT_63178618555f658fc980381951a1390dc3a35058bbd356e65916aba7229325b4",
-                                "NFT_bf9d86a91c103b62773d699f00718fad6e2e56bd82de6388cb78a915899d14d6",
-                                "NFT_d09f2fe4988b91301e3e555a80e916edc85248b358ff51afd5d4ff748efdf066",
-                                "NFT_000000000000000000000000000000000000000000000000000000000000002c",
-                                "NFT_0000000000000000000000000000000000000000000000000000000000000038",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000001d1",
-                                "NFT_6C6cdDD608E6b31F8599A56336b0fD7b79313917_383",
-                                "NFT_0000000000000000000000000000000000000000000000000000000000000001",
-                                "NFT_000000000000000000000000000000000000000000000000000000000000004a",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000000f2",
-                                "NFT_000000000000000000000000000000000000000000000000000000000000011c",
-                                "NFT_0000000000000000000000000000000000000000000000000000000000000198",
-                                "NFT_d412fcf0be5bcc1f0ab40558c7cb9a0ff483ea133ffc47f0c58830b78ce7dc82",
-                                "NFT_0000000000000000000000000000000000000000000000000000000000000007",
-                                "NFT_0000000000000000000000000000000000000000000000000000000000000015",
-                                "NFT_000000000000000000000000000000000000000000000000000000000000004c",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000000d1",
-                                "NFT_0000000000000000000000000000000000000000000000000000000000000118",
-                                "NFT_0000000000000000000000000000000000000000000000000000000000000031",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000000de",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000000f3",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000001ef",
-                                "NFT_a1b1966dfaec0994170f697a7be9a34a2948839114734ff64c72f09d64afa505",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000000c9",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000000ef",
-                                "NFT_0000000000000000000000000000000000000000000000000000000000000107",
-                                "NFT_000000000000000000000000000000000000000000000000000000000000011a",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000001a4",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000001af",
-                                "NFT_0000000000000000000000000000000000000000000000000000000000000002",
-                                "NFT_0000000000000000000000000000000000000000000000000000000000000051",
-                                "NFT_6C6cdDD608E6b31F8599A56336b0fD7b79313917_174",
-                                "NFT_0000000000000000000000000000000000000000000000000000000000000024",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000001c3",
-                                "NFT_3aaf33d187d29b8438d384456f0d187f96f734610faac085dd882dac05320689",
-                                "NFT_short3aaf33d187d29b8438d384456f0d187f96f734610faac085dd882dac05320689",
-                                "NFT_medium3aaf33d187d29b8438d384456f0d187f96f734610faac085dd882dac05320689",
-                                "NFT_long3aaf33d187d29b8438d384456f0d187f96f734610faac085dd882dac05320689",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000001e5",
-                                "NFT_0000000000000000000000000000000000000000000000000000000000000260",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000002ca",
-                                "NFT_7979166322ef5dd801e5b3128f473938193a2617fbcadc1d85d9baf8de25c40e",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000000d5",
-                                "NFT_000000000000000000000000000000000000000000000000000000000000019b",
-                                "NFT_1eb7bc40ba929c8e7b0cbc2b3b74c19a448342fdaaa4d8df13bda2a83bb52612",
-                                "NFT_230417bedebae0940f547b1d533342f3db136129c497819e9a80e7cd4a594b92",
-                                "NFT_3126874850522c78e918aad1b2d853812b1f4b1f9f86a9917a0df9377f4584e9",
-                                "NFT_3417d55efa9f8d531c34a390fbee557d61c60f91439653c755b1ec12401392ec",
-                                "NFT_5e6bc91e5bc6c95d5c736cebd4c6f58712b74832d3a152a1ffbbe8044d07358c",
-                                "NFT_62f4d608ebad5d4b2fafb8db19a6eadb82739d262c02c10384bbd079fb39dd55",
-                                "NFT_6d5ca230e96b8b8abb05bf80757ee63700347c5bec1ce8a1f24847c029dfd7dc",
-                                "NFT_76272a35a56a8e5b74c3aa0ed6b299bf46582934e6e17d4f5f39cf1aac6fc6d4",
-                                "NFT_8b1d457cd11e43b6a627b2f5e5d45fe724ac1c0805951a54856bced7c0d6bdb9",
-                                "NFT_929cce2e50749991230410f45e39abaf97eb25d3bed4e67a49c245dbc15ca4f3",
-                                "NFT_9c4a089926b66f4933c1d497654656794105f98c1e46676b7d183f06b6a769bf",
-                                "NFT_a481b37bd3d0680b321501cfe3ffe7cc8d3a7e1a7cda952ca885dcbb1fba5165",
-                                "NFT_ab9bcf29717f044773bd4a620370d05446c7b83cb2f3a800521e2f400b6c1187",
-                                "NFT_afe62b08af1bebe0ae6e4b08117513e280c4eba035a3352a2710460939e6a008",
-                                "NFT_bc422520eda8d02cd5b0a5270645e87660d0e0f0e062fe6397fabf38e7ad93c0",
-                                "NFT_f20d4a9c3feb2749a62b7a71e1a890161533ca067b69feb4d91e6289ac9da271",
-                                "NFT_f58bf2da698c74299e4c4e154d117e1304abc0deaf0469570a4122675a8eab7f",
-                                "NFT_f94e13a3cdaa49b1a86348ec5740768665702c66d7096caefb5f14a54ac38ae1",
-                                "NFT_fc5dba7f589fdad6e5bcf74da24d7fb0cdef89096a1a25eed51c75f107f5433b",
-                                "NFT_3280237da5e2153aecaded04997c7f7392a8993cad763a75407d8a97a05be68a",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000000e6",
-                                "NFT_0000000000000000000000000000000000000000000000000000000000000122",
-                                "NFT_2766c74ebb9f13604cb947be9ab6e2f8e39b82a23345b8bff7415e1adabe06f5",
-                                "NFT_215034eca098ab4e3ce682fd519a32845209eb53abf822fd7391b3c2d66a8576",
-                                "NFT_short215034eca098ab4e3ce682fd519a32845209eb53abf822fd7391b3c2d66a8576",
-                                "NFT_medium215034eca098ab4e3ce682fd519a32845209eb53abf822fd7391b3c2d66a8576",
-                                "NFT_long215034eca098ab4e3ce682fd519a32845209eb53abf822fd7391b3c2d66a8576",
-                                "NFT_44f4d69a688a9b1361e76e4bb5a2e1590413f3c2a2f2d163f0711df80e2e1a74",
-                                "NFT_d753384bb0f21832f572dc5341e1ae4c8583a57ecc008bdbf96b2fe7f24424c8",
-                                "NFT_0ee9d8f002afdcafd290162cdbd11012958a3cb56fd6bfba23448f9a38377976",
-                                "NFT_short0ee9d8f002afdcafd290162cdbd11012958a3cb56fd6bfba23448f9a38377976",
-                                "NFT_medium0ee9d8f002afdcafd290162cdbd11012958a3cb56fd6bfba23448f9a38377976",
-                                "NFT_long0ee9d8f002afdcafd290162cdbd11012958a3cb56fd6bfba23448f9a38377976",
-                                "NFT_1bc0c7d2cab3113ea2edddd750ac48434c405602a0edca8b4f97303fe5644af1",
-                                "NFT_b1e7ba3496307bb38bfd1515652a5e78ced90efad81ccaf1eaf9b1c82dda1b1f",
-                                "NFT_shortb1e7ba3496307bb38bfd1515652a5e78ced90efad81ccaf1eaf9b1c82dda1b1f",
-                                "NFT_mediumb1e7ba3496307bb38bfd1515652a5e78ced90efad81ccaf1eaf9b1c82dda1b1f",
-                                "NFT_longb1e7ba3496307bb38bfd1515652a5e78ced90efad81ccaf1eaf9b1c82dda1b1f",
-                                "NFT_b35c6145cd0f1d0d61974f1a412f321947eb8914a27b90fd1aa9358862be0b6c",
-                                "NFT_bc32e595d608638030ac431e7676f2877a08541dc1c97e7e9cfd91eeede78367",
-                                "NFT_shortbc32e595d608638030ac431e7676f2877a08541dc1c97e7e9cfd91eeede78367",
-                                "NFT_mediumbc32e595d608638030ac431e7676f2877a08541dc1c97e7e9cfd91eeede78367",
-                                "NFT_longbc32e595d608638030ac431e7676f2877a08541dc1c97e7e9cfd91eeede78367",
-                                "NFT_f856a8be84d5136db09837a8be911d281b579cd0528546c4ea373ab0315fa3dc",
-                                "NFT_shortf856a8be84d5136db09837a8be911d281b579cd0528546c4ea373ab0315fa3dc",
-                                "NFT_mediumf856a8be84d5136db09837a8be911d281b579cd0528546c4ea373ab0315fa3dc",
-                                "NFT_longf856a8be84d5136db09837a8be911d281b579cd0528546c4ea373ab0315fa3dc",
-                                "NFT_000000000000000000000000000000000000000000000000000000000000002a",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000000cc",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000001da",
-                                "NFT_58b53c9c5c0ec0579cf26ab6760adeab9717c1f2352fea026fba738ddbf2b13c",
-                                "NFT_8247fa0c98ba154884d444e16f0a4fc99db342aec845916d04916821585aef87",
-                                "NFT_af37d97d4654181db460a2ddd0fc790f3326c32f8440cbb7990b3953a44d6e09",
-                                "NFT_0000000000000000000000000000000000000000000000000000000000000021",
-                                "NFT_0000000000000000000000000000000000000000000000000000000000000029",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000000ce",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000000f1",
-                                "NFT_000000000000000000000000000000000000000000000000000000000000011e",
-                                "NFT_000000000000000000000000000000000000000000000000000000000000012a",
-                                "NFT_000000000000000000000000000000000000000000000000000000000000038b",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000003b0",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000003bb",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000003d4",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000003e7",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000003e9",
-                                "NFT_0000000000000000000000000000000000000000000000000000000000000422",
-                                "NFT_000000000000000000000000000000000000000000000000000000000000042d",
-                                "NFT_000000000000000000000000000000000000000000000000000000000000042e",
-                                "NFT_000000000000000000000000000000000000000000000000000000000000046d",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000004a6",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000004af",
-                                "NFT_9da757d68a2199403617b87cc3593787c8dd09c5d335359d54cf39e5e14045a2",
-                                "NFT_6C6cdDD608E6b31F8599A56336b0fD7b79313917_364",
-                                "NFT_7b47b71f1bec0b45d40e159ec42b1802a5906779b6503e327abeb5fe4417cd9d",
-                                "NFT_short7b47b71f1bec0b45d40e159ec42b1802a5906779b6503e327abeb5fe4417cd9d",
-                                "NFT_medium7b47b71f1bec0b45d40e159ec42b1802a5906779b6503e327abeb5fe4417cd9d",
-                                "NFT_long7b47b71f1bec0b45d40e159ec42b1802a5906779b6503e327abeb5fe4417cd9d",
-                                "NFT_0000000000000000000000000000000000000000000000000000000000000003",
-                                "NFT_0000000000000000000000000000000000000000000000000000000000000278",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000003db",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000003e3",
-                                "NFT_000000000000000000000000000000000000000000000000000000000000047e",
-                                "NFT_05c74a4267272a56dda40a88b4e064331cb4707ab977186f0e2960ce0bd763a8",
-                                "NFT_short05c74a4267272a56dda40a88b4e064331cb4707ab977186f0e2960ce0bd763a8",
-                                "NFT_medium05c74a4267272a56dda40a88b4e064331cb4707ab977186f0e2960ce0bd763a8",
-                                "NFT_long05c74a4267272a56dda40a88b4e064331cb4707ab977186f0e2960ce0bd763a8",
-                                "NFT_4b8b1cf734e9686101be72ff3643e7da255f1a58287d2336c1bd062a042a1b6b",
-                                "NFT_short4b8b1cf734e9686101be72ff3643e7da255f1a58287d2336c1bd062a042a1b6b",
-                                "NFT_medium4b8b1cf734e9686101be72ff3643e7da255f1a58287d2336c1bd062a042a1b6b",
-                                "NFT_long4b8b1cf734e9686101be72ff3643e7da255f1a58287d2336c1bd062a042a1b6b",
-                                "NFT_5a2c78542ba6a206701ce99830d59a1af0ee4848e42fd560fc9075de2947b712",
-                                "NFT_e971f594088c5f2b1cf95553a1b6ef5e820bc8092f862a45234d139e3b5d6cca",
-                                "NFT_shorte971f594088c5f2b1cf95553a1b6ef5e820bc8092f862a45234d139e3b5d6cca",
-                                "NFT_mediume971f594088c5f2b1cf95553a1b6ef5e820bc8092f862a45234d139e3b5d6cca",
-                                "NFT_longe971f594088c5f2b1cf95553a1b6ef5e820bc8092f862a45234d139e3b5d6cca",
-                                "NFT_0000000000000000000000000000000000000000000000000000000000000301",
-                                "NFT_1e6bbd67f35fa6b3ca14ebc0e34fcdef1bfa7c1fb3c733819ec8e18b377c40d2",
-                                "NFT_5939aa333750fe8b4267f437f636c5198fa1facc7b737a53d500912cd9619e0f",
-                                "NFT_745221197d728beacc96caa0e65887d501239748c83e8bc2a6e30e8b5052f33a",
-                                "NFT_8c1763e1d512e1bcb017780c1ab8c1f8de96df5c4b3f9f9788a287702fa296a8",
-                                "NFT_9ab1ae406420339e7d35075fa9d84ed69135f45fc9df48a0a183bee04f80dd72",
-                                "NFT_a3b82973db1e6cf9480612d44178d746887efcfcede3289c4b743a2528889d8f",
-                                "NFT_a3d35b905cac186164843465b0c534af84dd745bf585c47a93de92d8cb54fc27",
-                                "NFT_aab08be23d32fe629527e8eb894e04ee8123ca007d0a83e5553dfaabac94d570",
-                                "NFT_d8c7a2fd808bc814b5dcfda057c0f5458bd487a597fdce169c14263c4cba507e",
-                                "NFT_eb6f5429bdf96e01a08ac96975d1302934d58596a215350daef92a502271667a",
-                                "NFT_0c0cc2c9a8e9b1f0304e06a194b36483f1ac379a961b732e42f9bf8ba199be73",
-                                "NFT_39bb2ac4f25023a0dcfd41a95ad555f1f43c6f98639fbd7009c1a161f87736fe",
-                                "NFT_3c4a8a1c27ebe705636fc6e1f50bed766d50a3d00aadea1690253a11c5e53ad6",
-                                "NFT_4fd3cb7925c7e96e6e26a285829b3c1689ccc177e28e911b81159a05aad6c318",
-                                "NFT_5892ca097a9a11ea74d5ff9cb841d4caf676ad67d71271f24d72d6f8dd3bf510",
-                                "NFT_59129a9defc223bfb71521416bdaf3b8de388b270f64e8c2757f8ed6f0ec2e3d",
-                                "NFT_748786c9f7837c7b5d4087717fd2f4317e0af9e94a93c0ada5c0c1bcdbcef888",
-                                "NFT_a75bcb65bcca53162593fc61d5128ec28c56f5d9374a3fb0f11d7040ad92dcdc",
-                                "NFT_c05497246652dada1eb8ae06ddfa032d48b035ab64095cfa1e9f7d168b63e27d",
-                                "NFT_c69c343e6e765273e08b402c998c22e85c952709019d4c5ed402f105e4d45b57",
-                                "NFT_cd49d0102fd542d91bdd0f67c00807eae2ce90bcbfb73490a5ced14070446bf8",
-                                "NFT_cf91cea89ab246e96a82ed78ec2481181f47697e9be1990a0851f7534b1659d5",
-                                "NFT_dcf2e213f98b8e10abc9bb2e0069ecd1fc830043bcb3c4670e834e26d726564d",
-                                "NFT_f15ee943cd54c0f1a9baddce8625261bc5953ce889224d6a7693cbbca18b4d20",
-                                "NFT_01348a66000000000000000002386f26fc100000000000000000000000000125",
-                                "NFT_6b612271abb19f148d80053f3f9d2bb9f7496a21260ea03690b337c98ce7aa7d",
-                                "NFT_93182897fa1e8a0cf2e2a26dffb4663705d592761fef0bfe4eaad4f9f45bc480",
-                                "NFT_937267d15f5a697182a7f0f744a494a8f5252c19f131e6eb817f5f8336cb7fde",
-                                "NFT_98e9e0afbb977ccc5074d3fa5200d17bc89b4161029c2178c0429c9513411f51",
-                                "NFT_a1f640e2bdb016634fcdbd1d29074c3c13ac260d76be3f55e31bb8410dec4884",
-                                "NFT_ac67d1513322c689f9c18bd88a00ab9f11dc8d91e9f3e2a61c693ad8ea3b0487",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000002e7",
-                                "NFT_0000000000000000000000000000000000000000000000000000000000000457",
-                                "NFT_0000000000000000000000000000000000000000000000000000000000000058",
-                                "NFT_000000000000000000000000000000000000000000000000000000000000010a",
-                                "NFT_000000000000000000000000000000000000000000000000000000000000012c",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000001c5",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000003ce",
-                                "NFT_000000000000000000000000000000000000000000000000000000000000042f",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000002f9",
-                                "NFT_b8226b182c403cbdcdd278a3eab706d8aa82deed77008853aa97e24c217c7e31",
-                                "NFT_shortb8226b182c403cbdcdd278a3eab706d8aa82deed77008853aa97e24c217c7e31",
-                                "NFT_mediumb8226b182c403cbdcdd278a3eab706d8aa82deed77008853aa97e24c217c7e31",
-                                "NFT_longb8226b182c403cbdcdd278a3eab706d8aa82deed77008853aa97e24c217c7e31",
-                                "NFT_000000000000000000000000000000000000000000000000000000000000061b",
-                                "NFT_19ab4e42aed4800caa64cef5661baffda4ba7754c93bc21071a4f7533f5225c8",
-                                "NFT_de12ef2a40a8c98336f5a6f71d2e9ff7982e6e0dc6e5bf0477e6d357b3e2b156",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000002d8",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000003a0",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000003b4",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000004ce",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000004da",
-                                "NFT_0000000000000000000000000000000000000000000000000000000000000531",
-                                "NFT_000000000000000000000000000000000000000000000000000000000000053b",
-                                "NFT_0000000000000000000000000000000000000000000000000000000000000548",
-                                "NFT_0000000000000000000000000000000000000000000000000000000000000561",
-                                "NFT_000000000000000000000000000000000000000000000000000000000000056c",
-                                "NFT_0b10a6e2f295032154d1126c73e04187bc6398dc6244ea2aec032f18d88f6170",
-                                "NFT_2313d67270975dcacb59074255d6cfd9529960bc537c6e0c0a09422ab5624db3",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000003e8",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000003f2",
-                                "NFT_00000000000000000000000000000000000000000000000000000000000004e6",
-                                "NFT_0000000000000000000000000000000000000000000000000000000000000521",
-                                "NFT_04c9373f3d2d8035ca9cc5c0d6934b862e0c975ecb9edd29214cd347002352b6",
-                                "NFT_235fb2401d95e87b89e72bd03d125d9ec5808f06bf0a14f4a7c7eab3562deb7e",
-                                "NFT_short235fb2401d95e87b89e72bd03d125d9ec5808f06bf0a14f4a7c7eab3562deb7e",
-                                "NFT_medium235fb2401d95e87b89e72bd03d125d9ec5808f06bf0a14f4a7c7eab3562deb7e",
-                                "NFT_long235fb2401d95e87b89e72bd03d125d9ec5808f06bf0a14f4a7c7eab3562deb7e",
-                                "NFT_f008eb9d51a7ebb1172464ee0e91c5c749eba15dce75ddf0c36807d6ef6b56de",
-                                "NFT_28624146f278d2bc62d3b44bee847f020e1945445848b8b1b8da04bc4258b7e1",
-                                "NFT_48d1b5a6ddb66c449a895a0fec13938c03b193aa753883336dfdd1f8c10c340c",
-                                "NFT_short48d1b5a6ddb66c449a895a0fec13938c03b193aa753883336dfdd1f8c10c340c",
-                                "NFT_medium48d1b5a6ddb66c449a895a0fec13938c03b193aa753883336dfdd1f8c10c340c",
-                                "NFT_long48d1b5a6ddb66c449a895a0fec13938c03b193aa753883336dfdd1f8c10c340c",
-                                "NFT_92067f50ce69bc6b4fdc7b03ece23846829756ad158b228630f140489af8cc89",
-                                "NFT_560199ea3c20461a2bdce94fe70e007e249fcab498ba72b7c4f1716b3afe551f",
-                                "NFT_5ed933c95cdb55ac9242e88ec8e4b8e81563c6f84b2c55e0b6a3bffaf9b4cb9e",
-                                "NFT_b4c4d281d2378196e905c8c9ec70a1f4044d3025dd49edc809a995a0a407a442",
-                                "NFT_b9629a043d80605af5e41d110847420b3ceed3154fabc05c9e420f28bb46cbd7",
-                                "NFT_772c4642d34252ab021a20121895a5e4752ae017fda708b1981bd27c85db7676",
-                                "NFT_c02f304ef174ed2f94c6e4d665f2430e198a2fc55050f2609c06801dcab7c674",
-                                "NFT_c13b39f7fa53a0d6f324e9e739dcc6ee02af0ddead0534d8c5bbfa12cfbd39da",
-                                "NFT_a3e52461aef546dccc1e8a286dc3b43c2436023eb3d3ada908651c0dc8988f9d",
-                                "NFT_0000000000000000000000000000000000000000000000000000000000000022",
-                                "NFT_0000000000000000000000000000000000000000000000000000000000000114",
-                                "NFT_63fa62d1d9de3de834689fb8f6bb02f5f1e53d6e7ecfaa26e5ee088f17ae50c6",
-                                "NFT_72c2eb4f152369973da708309fa5863e7988fd42d5ef28d9430e986c6080a048",
-                                "NFT_699da03ed44db02ad5c24279f3522e27e0370ed14da89af684667e38ea5c6ba2",
-                                "NFT_short699da03ed44db02ad5c24279f3522e27e0370ed14da89af684667e38ea5c6ba2",
-                                "NFT_medium699da03ed44db02ad5c24279f3522e27e0370ed14da89af684667e38ea5c6ba2",
-                                "NFT_long699da03ed44db02ad5c24279f3522e27e0370ed14da89af684667e38ea5c6ba2",
-                                "NFT_10efdb5fe416d5c7483da57c52b24e5dfb9e8e7686052db7aa900f52e2f001e4",
-                                "NFT_short10efdb5fe416d5c7483da57c52b24e5dfb9e8e7686052db7aa900f52e2f001e4",
-                                "NFT_medium10efdb5fe416d5c7483da57c52b24e5dfb9e8e7686052db7aa900f52e2f001e4",
-                                "NFT_long10efdb5fe416d5c7483da57c52b24e5dfb9e8e7686052db7aa900f52e2f001e4",
-                                "NFT_2e3ea84c3e2f9bf91868689579b7743a7d37fc461540593f9c7d937a4bed03c4",
-                                "NFT_75f8bec880bcaf46ba059dd0022d588ef93a2f01333a0d54f5d4291bdc9b74fa",
-                                // @nextSpriteLine@
+                    
+                    "NFT_01348c02000000000000000002386f26fc100000000000000000000000000164",
+                    "NFT_0b3edc80d7ec92657dfea9026e93747b1321b6d19cf43bef055d6e6860f48834",
+                    "NFT_47ba8458600ff9ad1a1b0b491ff0fc194371aa30d74a3267af0d7a3462a18048",
+                    "NFT_4bf7e4d0b3eb57a1c2eec39067b3e9076f9ad0e4ab1edf228d6f04a157dae862",
+                    "NFT_7449b1d14b8b75cb821d3ec02e571601e53b7d83e2f6527a0c1dfa1ab984cc25",
+                    "NFT_7d696015dff3275cf821a1b57a13d924ca4a14d69e73c87319dd94dedcea6478",
+                    "NFT_7ef75cc04c7b402ee451f35da8cd3c7e1da35f0d412a554e36fd812b185c4b8e",
+                    "NFT_96e76f5a947cf9683921d44bc024a7a18c46740c5a8ff5e22942608560cf88e8",
+                    "NFT_9c044104ee7e3ca03e88e1a69da4bbb433711cdeda27784845ae46dc73aab483",
+                    "NFT_a7cb0ef0b03620b5e00ee475d0b5b458b254f71c1056b11d64ea563896d44cd3",
+                    "NFT_b5893a75b74f9caccd3c23b4a974db5f53b4e9d2",
+                    "NFT_B5893a75b74F9cACCd3c23b4A974DB5F53B4E9D2_2107",
+                    "NFT_B5893a75b74F9cACCd3c23b4A974DB5F53B4E9D2_4671",
+                    "NFT_B5893a75b74F9cACCd3c23b4A974DB5F53B4E9D2_7194",
+                    "NFT_b99a5b4d6f1dd0f0afe810011cf7ae0c8b7a19602babf18e10eeb540dd448bcc",
+                    "NFT_bfae096ba8fb553472821f090562fb002b36f13b04a894cb8e97818fb6e20aa0",
+                    "NFT_C114f87326C0E07F40e73B6c9fCEa54888c2C67f_8490",
+                    "NFT_c305458767a8cd076c40b2173a16dcaba6ba1be85231d2ac4aaaa472a8b7e4d4",
+                    "NFT_c38a1cbc7b8c4de1cb4c382404b10074df02d5a3c80be3174ca080ec7b45d716",
+                    "NFT_c736cf7ce12651f07473a933fc094d3ac6cb2f1a6d848179cdeb1512d9ffc811",
+                    "NFT_caf4990be004267d088a5fa1e53248b4b78a10ae673789f65692c6508837fef8",
+                    "NFT_f7643234238c40c8d9fae0d2770f0ab8c5ed7ad7629f845d44c0a1da2c8d1889",
+                    "NFT_0dc6a550987426e53b874b1d55112c26035b36d01ac16aebba229aec0c4ebb34",
+                    "NFT_3aa11288fb0ad0c9a1225fa7725ac13196f60499523ebfdd1c07bde95be48f78",
+                    "NFT_5114029d89e58b94d30454306adfcfad10f606b4b95d1b73e826273a043efdca",
+                    "NFT_5b51bd2f8832b34cbe89075d326ed4b53449bae3df45e14b1daa58bd527627b4",
+                    "NFT_7a124cd266c4b097b65fdf20b90c93e606d133de9a8abd9a56468ae4490bb74f",
+                    "NFT_d32209f1ce94c2ec83b3546a7008b87bde59d48f0db0174af8006f3a9a0cb057",
+                    "NFT_d7e3bee32416b8fc2f47636d863094e7094a34ad199a1df1a2119eaff97a1fd4",
+                    "NFT_fde71b6ffc50c0137f992889919e1a2020994a000beec58afc62b89b185e8e03",
+                    "NFT_3a7e3663a9463dea86675ef78dfbc79e67460aacd2edd3d2903307a7eb1a5cda",
+                    "NFT_26c66a58d2e52ebbb4215824a83e295d0705c1dcf8b3349f57b63b2650e92bea",
+                    "NFT_2a1aab978f311059db6a56ffac205a0e7b0b43c838064f1532fdb5e24ac2a799",
+                    "NFT_37484d6fe7cfa46a83f7ef690dc0daf2a8db90c0c747a7564b864d66d459baea",
+                    "NFT_4c0f1f1f58454f2243010c1366064322654622c572fe355fef1a951eff8cdab1",
+                    "NFT_5543355385c76ab6ac12a5eacac18893994bd66a6aaef4881d9165df4bf52cc0",
+                    "NFT_5c31425b1b29bc283d34e2cc0547dd8464a5207ba7800f03fa4aad5f45554916",
+                    "NFT_72b8af0ff7540ef136b170f2ed9ccef3148bc7ca9586c5f75eb847e9d5354dd1",
+                    "NFT_cded0af2147e916d7e2d6e62c1ea076bafe80f3c0913c50ce9a14adc11306a46",
+                    "NFT_0b9497c98d7f648e73c93a64b6456924532485d77c74a55ae75ff5fb7c4cf9c9",
+                    "NFT_0bd4b47ebc0d0ee514962e69bfcf509e8467f455cf98c1e2f33545ddf6699008",
+                    "NFT_0c29fb654ada3db53e29dd746a7fb9eeabd41ba220843bddefefd09bef0c4ba2",
+                    "NFT_0db9f10c3e5fd056a162cdb81e248ed0f9b2411e1c46e4ae6292b43fc737f7bf",
+                    "NFT_0f804ed4fea7a5a95615546d7878cc08f3eb5a708d7aa14d3a3e23d83fe2f9c3",
+                    "NFT_15846a0b8007827cf6dedea92ac423a1d36f683fdb62c55d00ca4a53ec1fc75e",
+                    "NFT_2a3566f81206a9ecc470b4af68ab56ba4d6afc3791eb5f783ee7f5ba44a4032a",
+                    "NFT_2af6a0e89086e4e71ab59d0582b0fd0ae62572575eb4bada769e16250e98b43a",
+                    "NFT_2baec30807583bb981ec8b2513571e8bac09d962fbda5ba1f360ee84be423915",
+                    "NFT_2f46491664b6da130375e72ccca6c2b132bc020b85e7daec2609d44db5ef0c13",
+                    "NFT_2f5e8edc36fadf7a163b7a2a470965edadbe441b190edf8b14d7524e22b9824c",
+                    "NFT_3ed143791f9a4fa6c2722c47596f5949c6296a0a8a3d86b49f4d4664da7c44b1",
+                    "NFT_47ba8458600ff9ad1a1b0b491ff0fc194371aa30d74a3267af0d7a3462a18048",
+                    "NFT_616fbfdb872b920f727f362bfe04225af9f4fe9ccce8eba2ab22e9cc711eb646",
+                    "NFT_698708cec7b3430638cfa1ea2fc52d3ea41e5539b4cf11e72b0f6384c04cadd9",
+                    "NFT_79a73c4461334a687a02e4cfefc7b505278e33f9344490abc83de2d3955bfddb",
+                    "NFT_79fc134e4418ffb23ab929b4d9d21516d017f61b6281a0c7afb9f8655a8e636b",
+                    "NFT_8a7b1381c5d526550d8647813efece864a6e52362bb623c46e8543e5d4f96fa8",
+                    "NFT_99e3c7979a5bb5453d459f39f06d11ff313dbec3ec0428d5f08a7d6ca2da7612",
+                    "NFT_9e07e0a811be66e02064713212e3694185e07c07fc9294f5ccd9db6da3ab0e57",
+                    "NFT_9f177616246a7d339874987c7ce4cb30918d7f81e2cd0aa0a89cf1a188f483fe",
+                    "NFT_a799a76c5e2a23f8010941659e425fc528c504050707bd1235eede0e8a3f51d4",
+                    "NFT_a94172fb3e9a733b99f3c6bdad9842ae88dc2f2fc8065330f1cd8f6fee112999",
+                    "NFT_b9f5f33839bc82b9bff99749ef8b91904e6082e702057a3bbca36350b00b5de0",
+                    "NFT_c1e9d2673f11544fad34bbffdd76f054d1d342bbd63ab2fb1af142dc8bdc1a14",
+                    "NFT_d1eeb5f8647f35a7ddef7d1cffcfa32228f01140deb3dba5a9e1d4e42382f9f3",
+                    "NFT_df9b9f9f748c20b933411a58a38aa11974710eb081ff6207eca7636b83f20658",
+                    "NFT_f7e51ee3333b51081009f6868dcd149f9e7e6c94ba0a8102e9f70a71c9ce09b3",
+                    "NFT_2de7a994377a18f256c2ec6a06ad0d6ff50f5a5a27fd50f094c3ecbdaa945f76",
+                    "NFT_d1dbae96176a398214d9fee6ba98ddb8d7137787dd765db6fe9f8ceebddc80b9",
+                    "NFT_eab688c9de6a367bf0d7097e47ba237e4203171bcffa55c62753d5d58f21333c",
+                    "NFT_fbe7761150cd3859d52553cba7ae66326429a03ca50e9d775e8b1337556a2c27",
+                    "NFT_0c97f40def8645c524f10585c2963aca2dcd5edd83e757e2f0cb521b442a65cc",
+                    "NFT_2d9c84dd95515ba82004082b46f2930c26d6da4a40b5ff317bd0f300c3edc5a7",
+                    "NFT_2e5132bc326fedd5d6097b1ec4ca11282ac105fc0a9ab36c9a45f8827b286831",
+                    "NFT_64cc602df5e930895bcd9a84b307f7ee96eb997315e73ee88f6d19684d8a7e62",
+                    "NFT_65d1e3109bc584c3b7d151632328e3a316e5fff016c80af2fc1984637adb678a",
+                    "NFT_b99548519ac91396cebb4dbe5f9cd09b871ad05936e57818743b1e59f8d92897",
+                    "NFT_d6a406c9ace43f67ad713abfe2b7deccb5bab86957880ec135fbb741b47f1896",
+                    "NFT_f851c1154260113694292f290215e7c4c0d7c317bb5acfa280921b1942467af2",
+                    "NFT_232d47b18407508545a265b4df5300d17c70697aa5f4c5150605bec304730f4b",
+                    "NFT_2b0f68dba72984c538fb8e0bb05c62c1d1b7b14055d353b24ea0664da0d5ca66",
+                    "NFT_91105ca61b72a7ffbc73fdad2a59ef531a548d8c7b7ef802231a295b3058c06d",
+                    "NFT_c73cce659e4f5e7e649e289b582f4981a3cdd5da0978c2a75bd90fd800c9f367",
+                    "NFT_Ced2e00488DBCaFCb93849f44e9aF474Ae5B81cB_76884638938444227452830548250015601369949170215745069183993261117579614427216",
+                    "NFT_d606a24f64a905018dc142ab3e727059c8dfbe46d81e286f02b368dd679246f3",
+                    "NFT_fe6eb2a8b570d3f5d1387926963b3bbe8cca66f7c85e41f3c151fefdc5079f3e",
+                    "NFT_0db8fb057ea79da6523fb93a1016bba57a087dedbc5a0ffc620962092fe17bda",
+                    "NFT_0f92589663c22ce52d055b0f6d973e74e24caa6f04e274e1bdd2220709c16dd3",
+                    "NFT_28fedd37973b87cfe1cf862d80be0ebcbdbae95f7e2a075ea01a07318b24818f",
+                    "NFT_3a3e82d9813f50f34e683c7b2821fa61a17ea80aa6c71775eeaad671db23ddbc",
+                    "NFT_3ed143791f9a4fa6c2722c47596f5949c6296a0a8a3d86b49f4d4664da7c44b1",
+                    "NFT_4f7ddf75032310fa83d8b1d585da2a8c056ef13852afcc44862e30446722d05d",
+                    "NFT_6a24157c7ace633a1b71b015061844f1103b1159df4499749e7373ad909314b5",
+                    "NFT_74e1594367a13f4831c787db32fb0886f0a059ecc958cfc452ceae0368015b70",
+                    "NFT_913b0317e210f4c8a2a29eace6e8f5130fdd823159583da488f59fefa26e0494",
+                    "NFT_9f177616246a7d339874987c7ce4cb30918d7f81e2cd0aa0a89cf1a188f483fe",
+                    "NFT_a3ccf61f9559f4719c93070643696cac9645a142d39906a5db46ec2c1ff4a68b",
+                    "NFT_bf806bcf968b5333dbd7a94c6fecfefd5e8db3da1ad49988c7b90c96759f4597",
+                    "NFT_c085475f8ec6d6f419320ba84abcbf11d633114878eb4bccabe8d5fc40e71740",
+                    "NFT_c30c3e19e61c0012aa91128bccb906ed197e983a5b594230369376ed9531abb3",
+                    "NFT_cc26589c356ff963d33311ba45e8bb963ff143160fa1deb4163fe59f472bc725",
+                    "NFT_Ced2e00488DBCaFCb93849f44e9aF474Ae5B81cB_76884638938444227452830548250015601369949170215745069183993261117579614427216",
+                    "NFT_d1f036258cf3f1b3ab958695e78094767464a5675c11f15df2a21b42c2f23beb",
+                    "NFT_01348c02000000000000000002386f26fc1000000000000000000000000000b2",
+                    "NFT_24b1e49cba4d61afdb43f67ad736b984676938da1c51cc9de43778fe05022e1d",
+                    "NFT_32a4a8440a5694af0806a39c90f4f182c7e3e1cc1e7e4f894830c8bb5fc65c2f",
+                    "NFT_458d415c0e82311f81856b4d1c37c3d61b9ae6bd15c913cf1c20ac9ac544a9b5",
+                    "NFT_4f7ddf75032310fa83d8b1d585da2a8c056ef13852afcc44862e30446722d05d",
+                    "NFT_b14a816dfd97d10c9eed0e30fd586350a7bead8756aa41026aa0b93c419b0712",
+                    "NFT_28f54474dd8c62c98964e998e4b77c2d5f0dee1aaeda3afa52bb96b064fce533",
+                    "NFT_64f2fc753b07443aea04be793a117e8ae53a3d312d1593ede209d56a647a8492",
+                    "NFT_ca64c548fa7b782939707fc1ed551489e948880727ad1427976b77c80a90d7ea",
+                    "NFT_cdd8680bef6158cd2c4214323b123e42f05d49adf99fddd7c54199d29988bafe",
+                    "NFT_fd27cf7dbb4cfe48a2e67744b99b28811b0454793a2b118ced39283584b977b3",
+                    "NFT_07d96019af2706b2cfe037104b4158975518182923a49ce22576b7d242619428",
+                    "NFT_081014de24d547ba2f7ff39c5e2ff588a136c4a37709a08c8cc58d6435f26e58",
+                    "NFT_6edea18aa7c726524aa1564d61c6c286ec52135ef66dc24de945459a3d4a19f5",
+                    "NFT_72a77fa6c1ce34407e9665c7d31e9773463caf2da933e3d32f9ce6996496290f",
+                    "NFT_761c58be60d0ef24a76fb7af6886cfa99a4010ee6646add202a1979baed08b62",
+                    "NFT_892c7b473a2958c8854f41dde903125859458c21d0921bbe9f0ded0354db8d1a",
+                    "NFT_d78233a717643b0fb897085ce32fddd6c0284c8d69eb6fb460695862ffc4be58",
+                    "NFT_fc64b37e3cc38f81b4e45a47962975480e229c9eadc469771844cc80fafe633f",
+                    "NFT_01348a68000000000000000002386f26fc100000000000000000000000000282",
+                    "NFT_29783364ef9931b4964a90912bd0dbe7a9c7d1207e0bad62863eafb1567df09c",
+                    "NFT_34594325d4440e29b1f463f303f67a49ee3fe7b1c97043c81beb32a39fdf7d50",
+                    "NFT_38cd703fc26ae1119388db44476d8a1d80a02dc668f899559ef49460691d1340",
+                    "NFT_3a3e82d9813f50f34e683c7b2821fa61a17ea80aa6c71775eeaad671db23ddbc",
+                    "NFT_55b7d77c14ffe5e025e125d3f85fafcd61e2861577e7536fba736354f68ff13b",
+                    "NFT_c30c3e19e61c0012aa91128bccb906ed197e983a5b594230369376ed9531abb3",
+                    "NFT_3ed2d2ef85a53cbb4ace8c02ee49c04de4f81c555cf5e47b993750d917656ea4",
+                    "NFT_d56bb3cfd9216f69a34951ab242585f7fd427812d1152a78282e53b8fad7a411",
+                    "NFT_0214fa0e3855056394564c050d12857a9eb82ac5e7c442df8e5f94da98fd5804",
+                    "NFT_1fc2a10e8c957f7967613db7c171a9bf846a98a996c0c53efb74b7a86dc23e67",
+                    "NFT_2c84cc83408a2db4b84b574809a7268c6e43a567198b42b8cc65c49c6aabaab8",
+                    "NFT_2d6fc16f5a184e466e8fd6e56a7172118c11c7fc4594a0c93b805ac375edc338",
+                    "NFT_5eaab14e298d898462236b0f9086ac29241278952424d78fb187ed96297099a9",
+                    "NFT_b084ed19325de74b3f5c2cc4ca23abbb1f455c78faf7f799e5389e8e8502d83f",
+                    "NFT_dad1a7921503e12d1b37383656006bd88c4ff7bb0e1d256ff6e9c803bf638207",
+                    "NFT_013722ef544a20fa563efb77cb9220e063d5786def307e871f842e1ec5d4f216",
+                    "NFT_0fae79e9d995a8429c59f20822646d549a82befef9987ccb02d280da42054c6c",
+                    "NFT_388a4c9b946e0ffe0252d6f3c07f29d4deea54ba7e7545d1397bba15ca81feca",
+                    "NFT_4f626cf5eedef67f85a2225bc4a3b7302aab86c300d58e6bda99eeda3106f1df",
+                    "NFT_7869adc15d6ffefc7ff96d0cd61723f7dcb68864490128381c74ed88f39316af",
+                    "NFT_d12dae765971aff4a14d6c262f5b5ce1df6e1ec6351e525dc4b0c0fcc671ba5c",
+                    "NFT_ee972ad3b8ac062de2e4d5e6ea4a37e36c849a11_134043",
+                    "NFT_02bdc0b8c8a5cbfb9b8bd802c42a5f34877c06409b250e8ee8e57c87b6800d47",
+                    "NFT_034d8d27132a3006d6ec10ae92d829b1dbb6c7ebe1f1df7864c026e99e641b37",
+                    "NFT_04cc57f4b900cf26e30116827c782bb57038d771c847b5c0aacb113ee00c65c0",
+                    "NFT_0f91b3d60af1861367cb8be6b59f4c9c5dbde3be951fbd1cdffc7c709bed6cc3",
+                    "NFT_119877ec38b4ed677dd5fa6a47c2fd819a096ccd8c79182cd91b98675bc9ad76",
+                    "NFT_21268c6c502688d2e5662048b863c1f13c917a4e12f505c568b44459983b5046",
+                    "NFT_22322f8aff903eef327a5f4a4ae74e902b8f68bca9940df7f1216486e042994e",
+                    "NFT_2236927239b1d69bbcf761c7c9bb20cef5cc3ecca1e3d769781e5d3a05453977",
+                    "NFT_274a4d440bec9eaf0402a7d05d6250b88131c3f54b72936e2228d18274963ca5",
+                    "NFT_3606705e6f3015a0068bb80c59964e3e06ae10ef100377e1a1ae3dc870d376ea",
+                    "NFT_4956d6699e9b13cb40c6ff503675d37a7416973b138dc93014a25107495b007a",
+                    "NFT_4bf0ca555d0be98742684531595e57629e740bf1f3bc3b4866415fe4d7093242",
+                    "NFT_681365bb591a7abd32491af33830d857a6962153f64c84c9916fb164b7b36501",
+                    "NFT_6ed1b4bd32dada97e0b4a7b2b21573c45e2c08b591e866ddf3fa6ca3a3653e65",
+                    "NFT_7878060ff699bf8b8fc6c9e678cabbac376e237908e317eaa28b05dc6f4eddc0",
+                    "NFT_7d8dfe70ed18630a5724eb0f6f4babbe866a3607df5e21953dce327fbb3bfa60",
+                    "NFT_7db5057cf4e61201167b9881277d17a55e9d2011c378b5daacde42650a27ba2c",
+                    "NFT_87050110ba7489d5e9cd2956989c213fe3c26009c98a8c305fd4058322f90456",
+                    "NFT_88d5a053e36225c991c06fb9f64397e209bea2a8b1c4f53c923bbdf407c122e2",
+                    "NFT_90eefaedd432e061a23d091e0b19a7ec467c21306cc0c10dd3c8e22d7e45de6e",
+                    "NFT_9c2e70fdc8889da9ba9f910413403047190073cb5975a16c8150ec1eb72a224f",
+                    "NFT_a8710e2aef647dc965b8a1b057ebc0bdc5fcafc924bd9a2de1bcf1764898be2a",
+                    "NFT_b0239d75b913c6088134bc609a771848dbc9846e40ff3d9a876d35a5463bb966",
+                    "NFT_b27fcbe6f7c88d851e7d7f035ee852689aa81d98ef634cbd3b313cdec75b4e59",
+                    "NFT_d58bf6ccd4eb87ff37078a016d282f885c2be0625bb654d655346a36214f17b3",
+                    "NFT_d678d6fa4391fcfedfe937ab07a622fe6bb9416e8777f196d63e6157d62911e1",
+                    "NFT_f30f7895bad0a948eeef592a5dc978fea0bd748b11adc1073ab082e03feab37e",
+                    "NFT_2d8a81a3cd6e14c2d493273c86b16519209d723c3250936859f5e52c19f47090",
+                    "NFT_4135bb5e4ef5f381e357fb3ae1532b16926032e2c5d355fa08f3746130246c98",
+                    "NFT_446111d5084e7efc9f65b5d940a40915d762097ce76535aa5f813a8fa4ac37cf",
+                    "NFT_5bbc1a346b7002e07b548b7c58814e3b1a23a7f1d69847332515d74b50ed5981",
+                    "NFT_8ebdc76ff15587dea28f6b35ddd351dcb5a5d42d1a8fafae596e3eb24bf22a2d",
+                    "NFT_904339e3dd3fb4a35e198bff13a1955d1f78aa7ffbde42fce4d8b1d9cff9e593",
+                    "NFT_90d3764bc60e1bd4f6fe5d4a90f6587a3bfcb2cb0900909a1a28dc1a2aaeea9c",
+                    "NFT_c4ec0f3ced0d9ff396d07ec6c538a0737e046bb934fa2e3fc017fda956a2beae",
+                    "NFT_c6adbfabbc27bdb3c6a1a0a22a6d36bff04df14d80c4d0c18d4d25af0daf2549",
+                    "NFT_d42f123364d0dde8dd4bd7443b0d17c809a3a68ad5aa671ca3dbf939edc0b954",
+                    "NFT_d6b3f9fc8e4d65a68a3c2299ada0e17816cfe92e4e4249f4b223d19785a3f486",
+                    "NFT_fec3a05c4da18fc71a0359487835fe1c6fb922adbfc93d19d30bdef40a3b1abb",
+                    "NFT_32072635b39b2358541aa5fa89a3bccf475bf04a9cc2e3172a92ac6d8558c048",
+                    "NFT_8dca8ee05ed864d5a8398a747cb4cb65ebf85c8917e372ad5195917f3f54ec1e",
+                    "NFT_c9f9fd9f88482f70494aa240f646d8a62ae086a875791b2d0d7072305d075e53",
+                    "NFT_856076ab41c6943ebb4f614b3a9683465f9599036a11b1383c17616909544fe2",
+                    "NFT_cc39f1f1889dd4f91b49221aebd908279cfb1d6c5f156da27ea2da0586ec4437",
+                    "NFT_ef120a26f93f1690879bcefc8ad08002d6e750ed0f4b0d3a5eaeaa6b5f6271ab",
+                    "NFT_1961f46a587068e0ab2c03aabc6d936a65ec76e87404dbd4c8a147f94bd92fa5",
+                    "NFT_46299db55a060865fe9b79955a2f1e58b0034226fc1b5655efa95a93b2fa2ef9",
+                    "NFT_8052fb7264ef95ae658f59504c9dc7d46212aea5c7f0def93af2c47448f931f7",
+                    "NFT_c4abe968c607b96eb9c12ad484a6d037b73f4a252294ccef856d353a74604495",
+                    "NFT_1e89b203fc6dd313d36c5d7264cfdaf3ebd6d1e6e6e4c686b44e6414faa4c12e",
+                    "NFT_693e14602373cce08d84238440a6e72b2ada0d456b1c4248d1b5be19e57753ee",
+                    "NFT_6ec682d54eec1d7e7729dad833d63e115b14931d7d7627f10e1430a3a655c156",
+                    "NFT_b47a24f6e1d23a0f0bf711b48898d756854027dbd844b5cf78862c1c5bb7af2c",
+                    "NFT_544cd746eae6c178731d3287dfdb510f202543912dd7764eaa916ea41bd14d80",
+                    "NFT_dc22eca9c3210a4277ca82463c2814db0dfd54d0a9733ff26020498b2c0ebadc",
+                    "NFT_ed707ab9903b81b7e7d2e3e99741490e1cfa57ce2b0e8be1a729eee382eaa1bb",
+                    "NFT_13ca579d1c208fd0b4845168eeecd3b152a364673765d3cc4ff664ebdd2540fe",
+                    "NFT_1f1c4a873246b0fc5bab5d8e3844af88fad37635783cdf31f39a783829b115ed",
+                    "NFT_38584ec01c42d00eebaa9e278610874310f207c044b6f42ba5fbfb9b30028f97",
+                    "NFT_43be4655acf931f0a93174ffdd8b163b252da85e0e11961a4fc33ea290203a34",
+                    "NFT_897aaee79f49b7f07211eb5222f33a7b841a58ced9013f2b8a9cf97878921161",
+                    "NFT_c98d9cb9a47066587e5b89a06c5050261099936d7347945edff76cd45809e9c4",
+                    "NFT_d4684903a102fbb9e08b61cbe9b4039c02e7e7b42b970340a381483407051aa7",
+                    "NFT_ed51ee2dc83efb0e688c35bb661aeb74310d48ff3dcd2d8de4989084936fae8a",
+                    "NFT_edfc7398f3a774c23be044f068fb7d772fd3e5d38750873e6bb00c0912c98082",
+                    "NFT_f5cd79d0fa4bfb7b3e3fc2b4e54f5e8570ca35cf0ea980325c45492fe5a37a23",
+                    "NFT_0178a0c8e20623d352ca3a36a61dad8fe93919139dd89c318eaaf674bc7edf17",
+                    "NFT_05bc50cdf4b04aca1e438a196956161d31eab88104bbc7ef037a6161952afa27",
+                    "NFT_0d42a4e0b333259212cc3fbc89bc7068398ff991548b928498008b3a67a445f2",
+                    "NFT_2c3ff075cd2f2f39e018429846ed1e4b34b1f2b5fe520a9f351cff15f062c37e",
+                    "NFT_6adf87a8ba3ae6e6737ffcc0cac6f616fe38e8a06bf725eb165f6ce07d725deb",
+                    "NFT_ad39091cc553e1de542f6d2b61ec13b1621bb6b80129d007c4ab0a8d27d4fa70",
+                    "NFT_42180fd07bf0c6cfadda8d471ac75e7cea70c69ebbfdae962fa6b1cebfd83a74",
+                    "NFT_aa101d56d024d9bf8fd79d8bd99cdebcc58c04d9ef4867ed2c2491ce73a55ea8",
+                    "NFT_7462d006ca6491db7ca0671640a315c04b168513ffdb9fe1643a94e999a6f34d",
+                    "NFT_8339d543eb11a1e0f54727de3914d94c1f4581cf076c33e24bc79ff9482e6307",
+                    "NFT_97085b9ae74eb680e576b547fa097b3ac265f47c63ec4c410c9a88ac9a9610a4",
+                    "NFT_bd32b635e7091e8ba2f6c38480b07857e14b07c8835d66882ecfc0c6f4e26cfe",
+                    "NFT_3c1c9401dd8d1a25c342561fb65ad67734da60dea61c3767e07b4b9f456b5662",
+                    "NFT_8d735ae7dcb23ed5b3ff42f2ae196d659bb9c11721680950c5cfefb9affb43d3",
+                    "NFT_bf5da52d64243e2f97097aa1760a1352f8ceef7e559b338ad3d4b45056c785a9",
+                    "NFT_02bb7e5dc0e75c9f18569dabfe37adf842a364b91be9611e1a29ced8cfa76e21",
+                    "NFT_057171486384fcd111cc970f66427dd297064f970b4f66c9285fce97014f6dbf",
+                    "NFT_06480665504fa971460477ecf336f46efc37568a996e4b70fae12710c41e3721",
+                    "NFT_0795101748ebbc54b5a62c5f124f2b4cb3324d98ed8e274111bbd823c3b25a8a",
+                    "NFT_10d1ea3b2ef4086608ed687a21bd1809ec41219e3ce6be4b603d6d088b6c1be9",
+                    "NFT_1fd647da70fb3702ef73fd846fe640fd8e8ed62351dbad1e49cead82776d12f6",
+                    "NFT_22406b652e258f3019a7dfdd240808929dd7ebccc81b8d2bb32e6e3a3cea32b7",
+                    "NFT_441427c99c28a99989b521f87968c2857903ad9a190d1e446637b8d7122a4f2d",
+                    "NFT_4ea87fe079d64382bd2ed518285db14f89faca7818cb0fade85980a93bc805d8",
+                    "NFT_590675120e04e3f3520928dc124a015a83f5b3ca38c6c71a657ae4ebada87c3b",
+                    "NFT_5bbdfe2d3fa52063bda32cfe960285e23e433fe8f4fe8a0b3aab90c186d1455b",
+                    "NFT_6e77d3b70b5e275cb6f1bf857b5e28e1fe11e1bedacb67ac791dda34a4d7dbe1",
+                    "NFT_734d2391f3a56fa9402ea5efdf09d13f00072104332987f0c6492d7b9ca5b412",
+                    "NFT_754b87921d4fc228065f9b699cd3655fb25b14f1cf99ab75e219cab5a6bee30d",
+                    "NFT_7a5d05533cb2291b6ebeadd5cfb00f436492d84a90bac1ba2863b471fee5f393",
+                    "NFT_833f8372401cfe48ddcb5ebab28d37468d57998ccade9eb1ff68c2884019b2ae",
+                    "NFT_942803527790e28fe8e37d8564c5726e189cac92913384c595896e96e8424a29",
+                    "NFT_98187e51983da68cbe0bb56d39d4294409f8ac7a8c0f59ff5250ca1aafec6bf4",
+                    "NFT_9ac9bc00cfc632d086e9f854f672ebf678a3920a950ebc359e7b948331397b1d",
+                    "NFT_a9a9ca768a10ecfeacac1a2036aca8070adc9c7220f37f44ecdf1fdbbe624517",
+                    "NFT_ad2a11d5c32bc427252bf7a262910df522c9e139bc256e1b78f9cf0effee0a84",
+                    "NFT_af3a156c125cf5c91b1c12cefea2e6e63cdf08c31f55eb815c7f312c5f301784",
+                    "NFT_b4fde99808690a5d6b1b8c8f3920d1c6721ab37de2d3adc4e7c9a5193b4f04db",
+                    "NFT_c0d4818c748a4e36fb9a4421ad2f13b100e071f37416c30be71c38625105d61e",
+                    "NFT_c3a41af90e80d9e67a9b07b6d76d649065b381bb14ab3e39f974fe225d392b97",
+                    "NFT_c796b0fb8070d153a8a21a521afa9e019f66a33d0eebfb131dcbd68086e7a9cf",
+                    "NFT_ce69a2814303f993feef56f5b70fa0e8096a1cab1f72dd9abae056e10bf27f46",
+                    "NFT_cff93de1b022eef6c179af5304e2939de75e8428f79267813ad1aafd117c8e37",
+                    "NFT_de9b849a7ae961f5e7a8880beed7e6f73420990b937434f87cb6096f586dfaf5",
+                    "NFT_df0c3d196261971ec890657ac6c6526ae247dfa66ca13c6efc267370bc8ba193",
+                    "NFT_e96267ad87cb7c8b82bf01cbc5a3c4d3894541cb410fc4722acf9d5328b5e3ca",
+                    "NFT_ed0f438729407bfdbe2e3a8f39e51111070ed0610de1db2c89c5324aa4ad7b3a",
+                    "NFT_f178e2d9b9943bb83ed402c6ca3fc7e9975dcbdfdd50b9e10fd5c7b70ee0a07a",
+                    "NFT_fbb0dcd6c2fde387dd07aff421a72479322c5e8fc2d30320fed4a4da65f80ed8",
+                    "NFT_02fbae61935fbb21f72b307d7257a06cbb9215c90c20606f20454bbdc835e28d",
+                    "NFT_0b82a123d61661b8089a6bf055a9a95393b28f7487d3169efb3d048bc2277c8d",
+                    "NFT_4cb6e4bfdea9e74ae52bbed5d535ae6d763a915ac11119f3387b8acb92216fa9",
+                    "NFT_4f787b3acbaa7072781996d764c62653c946ec15e29bd11b8999f970d2ed0955",
+                    "NFT_5110bdd42cf56c2e415916341af2074969ac159616f4360ab61e1f357c877ecf",
+                    "NFT_5a60eca93659b5f64bcd2a3be5d3bd3354737aa018351047d5413e21d2d7d5e7",
+                    "NFT_81719c936db034523ad94ab73ff03b1dad02a928ce1bd0d917168a91136f5cf4",
+                    "NFT_89ff73f0a4ae3499591970de316eb3a2416926b3e4027541d84c4f065b969b04",
+                    "NFT_9c9ea2064be8700768bda3b736a2598bea366112eb4f7b0ebffe1c011765d6f1",
+                    "NFT_c544c32ac3cd248a73e5a9384b278903843fd40fe636c9168891bec6b6b65c7b",
+                    "NFT_e2dc95f06c42d95821fad3318a3d21cdc79994b2170e2d5fd5fc6f257ee7e1d0",
+                    "NFT_eb0f54ad098d2039f0ffae7aeaf684c066ac0a89069965dbd5b21e4a25443a42",
+                    "NFT_ecd5647a75b0c90fa9607160dd781f9cbe9663048d182118a7169f20b72ddd09",
+                    "NFT_fe6567f42313701e7c32d8137bd3ffe173b33d2cd669dd546e8b55323ae3bb9e",
+                    "NFT_29d9947196bf5c790309dfcb602248fdd1c5c5ec8addecf966bdd80b473a5579",
+                    "NFT_3fbb18dc6cef89b981d66fc783cfaad1aaacb78c7ab01ae4cfc60ef6a7762c91",
+                    "NFT_47398d62c9812051a6d87c234bfd66914dc8cf1b7cfb543fbbb004bbd9fd9e7f",
+                    "NFT_488a97c2f46359268a0af318a3dd4eff5423d7f445fbf9f3df34826aa6bcfc6c",
+                    "NFT_6ca617da2e60318f540b0130500cfc4860e74163ddd53c9d731a97e4ee101467",
+                    "NFT_715da4f0b49916b34762a1df602d008b7b0e109de861f916a954eb2b4533b987",
+                    "NFT_9c1efcd4c0617809700656bd3cce90ca953826c3c9c703c5a9bdc380373d145f",
+                    "NFT_a83c8877ad2c2bdbff359b072a6b6561dc37ab0e6c7b7327c05ea7fc0c1cb895",
+                    "NFT_a86e496f8af81dffa73171277d7bc499ae650add2146b981b4cdff5788126dee",
+                    "NFT_aca84e4f27909794ba4e6fe3bf8b046d26462341b959589195baa6782b1a5e7d",
+                    "NFT_b0c1cc0a2251bdbcd5150ca4e1c05a9a1ac529e3effc4c9f1eaf9503273ce51d",
+                    "NFT_e5c8d628f04a03473410f96ccde1385cec71c81797b29f86753bb7963d4e3e75",
+                    "NFT_e61d9fe9217b82dc81e284ed1ec3de4110663466a7043ee320911d99c1c3d213",
+                    "NFT_ec9d2c7620b087ce5ad14ecd82c337cff64ba53e9248d3d7f12bfe2d196d31ec",
+                    "NFT_f05f8f63985ac1737ae93832a6fe5f22cb8e4f6d1d292b9a95feb647ec0ae153",
+                    "NFT_f0f11638da0658e8de648df02adf7f03ced4d615021b6117b7a37815e14dd243",
+                    "NFT_fd86feecd57e03502f40d09738d71c37f36e0b3790fcdb98afa335484ed2e7aa",
+                    "NFT_fdee0094c00d2cf805fdf49b71326d9a5acff4894517d46d519a7d467a17266c",
+                    "NFT_47398d62c9812051a6d87c234bfd66914dc8cf1b7cfb543fbbb004bbd9fd9e7f",
+                    "NFT_4a9e42a3da8aae1fd50180a09371db5cb4a1fd10e7950b247ad7064e1e94571c",
+                    "NFT_6d81f68d39b4816164d74838f1bb685832a2a581ec564d8deec476cab1014afb",
+                    "NFT_ad9d9c0e92ff9012317e303447dcaeb6370dca408c2257a3258f475d6a29443f",
+                    "NFT_c2086c06034f03b8ea88ceb4938d8b3b7128f34e0e363632e5fc164f4404334c",
+                    "NFT_ec28e8db0ae7db4bf6860a47392f7dd0d4258626b19b3bd18d1dbfc811d969bd",
+                    "NFT_0041bd1db10b61f1e5d4416082b289110f18d72837d0813a424a182ee19c69e7",
+                    "NFT_2646f2c912ae540814a85974738b222af0f803197ad64c4d6a8247dbb420a9db",
+                    "NFT_27533a711ba386f1bd0a283d52c68b15e4e983f60bd36c7d4299725fb9348f5c",
+                    "NFT_1c5c8b927415fcdda1c244b624e4cad24c78901fbe45938907a7a30dc6010b77",
+                    "NFT_4d274092ea5dc3e5535c58436d2ea746cdaba54789a7dacd0c9e7557828e02fe",
+                    "NFT_6b100310c953de70a861d313f03aea32b2c6469c572ec0ba007377b2bf2ffbe4",
+                    "NFT_eccf2de74e7663a51440298d35790074e9a5439e9e4dbb3782f29bbb68eab6f6",
+                    "NFT_163021fc0af1bc001cc4c5a8f8a014135ad1179f2eb766dfff9eb84f6e5c3ab0",
+                    "NFT_4a29b9e8f957b92fc4c8767e6f1554ae2e05f0edf416a185a1275f5c592c0510",
+                    "NFT_b2bd12264fa346293b37a521e4f5b0d2342a561a5491a7a528e393080bd6826e",
+                    "NFT_bcc85340addad09ab47b29690b3adaae7be035c47e541a91b2b702fd8e1b08f1",
+                    "NFT_dff6df3fbee0a9fec4d8c803602079aab0e7d2c0ef67428fbac56f21280bfc20",
+                    "NFT_ee955c3f7980209b84143b0d67f6e6617d22d13cbc8965054305a2080296b273",
+                    "NFT_shortee955c3f7980209b84143b0d67f6e6617d22d13cbc8965054305a2080296b273",
+                    "NFT_mediumee955c3f7980209b84143b0d67f6e6617d22d13cbc8965054305a2080296b273",
+                    "NFT_longee955c3f7980209b84143b0d67f6e6617d22d13cbc8965054305a2080296b273",
+                    "NFT_f49308e033301819885fb9ea18103a27b69eed5138193b3309998d4d2f5fb1e0",
+                    "NFT_shortf49308e033301819885fb9ea18103a27b69eed5138193b3309998d4d2f5fb1e0",
+                    "NFT_mediumf49308e033301819885fb9ea18103a27b69eed5138193b3309998d4d2f5fb1e0",
+                    "NFT_longf49308e033301819885fb9ea18103a27b69eed5138193b3309998d4d2f5fb1e0",
+                    "NFT_da93747e4c9e54916c621ec9f6fe235ef6e260005302b9cd5ae37c22bf9dcfc1",
+                    "NFT_0bcf24bf800cf39ced029060ef352ba1f668d1f531f2c17e55f442992ec0c8b6",
+                    "NFT_short0bcf24bf800cf39ced029060ef352ba1f668d1f531f2c17e55f442992ec0c8b6",
+                    "NFT_medium0bcf24bf800cf39ced029060ef352ba1f668d1f531f2c17e55f442992ec0c8b6",
+                    "NFT_long0bcf24bf800cf39ced029060ef352ba1f668d1f531f2c17e55f442992ec0c8b6",
+                    "NFT_7dbcdd6ab36b736aad8956fc8317e3d38f511cabd956a20a429426ee2ef89ed5",
+                    "NFT_short7dbcdd6ab36b736aad8956fc8317e3d38f511cabd956a20a429426ee2ef89ed5",
+                    "NFT_medium7dbcdd6ab36b736aad8956fc8317e3d38f511cabd956a20a429426ee2ef89ed5",
+                    "NFT_long7dbcdd6ab36b736aad8956fc8317e3d38f511cabd956a20a429426ee2ef89ed5",
+                    "NFT_068fea3616941919281efb00daf6a7a015db508eff6231d929cac34bdfb70818",
+                    "NFT_2b7673257778094d9b65067c5f8fe0a0091cddac2b9438ef29b0413ef4e68095",
+                    "NFT_69f1986ed90de699616e54f5090027ce25e8f8549899ea50cb3675ef06455196",
+                    "NFT_6a00be285f1c050ae454e1fa089cd2a25080759c1c8f0094673c6856b32e2e27",
+                    "NFT_78087164044b9eba61c85ae6820e315ff44fbe179dca27c27a53c2f42c4e8bcd",
+                    "NFT_85081d01bac63ba2896799a250ee4b00d864458257e22fdbd637f04e20f9e79f",
+                    "NFT_971496348ac8582d7795101b9ca7e27bb316bbbdc22590d09ebbb72b22c341c5",
+                    "NFT_9eda1e9b159ccaff4b0e462e640395d3c7091420c3f0e5c1928bef34bfc3413e",
+                    "NFT_c6d3f76464f64cfe3b3e7efc346f1aba17360f064c0ef3699de614ee48188283",
+                    "NFT_shortc6d3f76464f64cfe3b3e7efc346f1aba17360f064c0ef3699de614ee48188283",
+                    "NFT_mediumc6d3f76464f64cfe3b3e7efc346f1aba17360f064c0ef3699de614ee48188283",
+                    "NFT_longc6d3f76464f64cfe3b3e7efc346f1aba17360f064c0ef3699de614ee48188283",
+                    "NFT_ef05e3d327ff124b3c180bb236d08c12eace6944139143648cc3753d6d7033db",
+                    "NFT_4f3a404d96cdd021449b3ab5908d2eb3b84e831c_5496305",
+                    "NFT_F85364c9Ee2bB9ed85A3b32b19C7493fdCB569BD_19918615690146066355690800931375925985630387238563754968424641628807186370381",
+                    "NFT_F85364c9Ee2bB9ed85A3b32b19C7493fdCB569BD_77123044749293774652580068647803968014499430784804917820666958229293037486712",
+                    "NFT_1438f740c51c543a6dfcff955e1aff22c2b97e13ce18d3bed1e3d6025d404429",
+                    "NFT_15d4a3c86f6c98e27063da3678675ea63ac392fc888f2f9f8c1ba4b07a0d2c38",
+                    "NFT_short15d4a3c86f6c98e27063da3678675ea63ac392fc888f2f9f8c1ba4b07a0d2c38",
+                    "NFT_medium15d4a3c86f6c98e27063da3678675ea63ac392fc888f2f9f8c1ba4b07a0d2c38",
+                    "NFT_long15d4a3c86f6c98e27063da3678675ea63ac392fc888f2f9f8c1ba4b07a0d2c38",
+                    "NFT_1786f06ebc4e8519c964b312acf66a95e14adc633d23ea1fd71145d856c26972",
+                    "NFT_short1786f06ebc4e8519c964b312acf66a95e14adc633d23ea1fd71145d856c26972",
+                    "NFT_medium1786f06ebc4e8519c964b312acf66a95e14adc633d23ea1fd71145d856c26972",
+                    "NFT_long1786f06ebc4e8519c964b312acf66a95e14adc633d23ea1fd71145d856c26972",
+                    "NFT_1a81e741826106eb47acdeec2c3ff420db401f560e743deca785a15499493338",
+                    "NFT_short1a81e741826106eb47acdeec2c3ff420db401f560e743deca785a15499493338",
+                    "NFT_medium1a81e741826106eb47acdeec2c3ff420db401f560e743deca785a15499493338",
+                    "NFT_long1a81e741826106eb47acdeec2c3ff420db401f560e743deca785a15499493338",
+                    "NFT_366cade0dcf755747c099d7485ea650ad7f50ce902380d9b34fd879fc76e4bbd",
+                    "NFT_short366cade0dcf755747c099d7485ea650ad7f50ce902380d9b34fd879fc76e4bbd",
+                    "NFT_medium366cade0dcf755747c099d7485ea650ad7f50ce902380d9b34fd879fc76e4bbd",
+                    "NFT_long366cade0dcf755747c099d7485ea650ad7f50ce902380d9b34fd879fc76e4bbd",
+                    "NFT_36ee162fecde9158ae4c87787062bc85053afa843e3a081180c1ee081d1adae0",
+                    "NFT_3b092b4c195d0e43ffe4273513f531bd7a1985fbc192aa08292b9fe129996364",
+                    "NFT_short3b092b4c195d0e43ffe4273513f531bd7a1985fbc192aa08292b9fe129996364",
+                    "NFT_medium3b092b4c195d0e43ffe4273513f531bd7a1985fbc192aa08292b9fe129996364",
+                    "NFT_long3b092b4c195d0e43ffe4273513f531bd7a1985fbc192aa08292b9fe129996364",
+                    "NFT_4d3cbfbda26ccb9a7002bd541397d9280efe723b16e3d7b7dee027155ca50f6f",
+                    "NFT_short4d3cbfbda26ccb9a7002bd541397d9280efe723b16e3d7b7dee027155ca50f6f",
+                    "NFT_medium4d3cbfbda26ccb9a7002bd541397d9280efe723b16e3d7b7dee027155ca50f6f",
+                    "NFT_long4d3cbfbda26ccb9a7002bd541397d9280efe723b16e3d7b7dee027155ca50f6f",
+                    "NFT_7bc7408bed195f28aaeec8449c6bb0237d07b03c2577946793db77d2ac08ece9",
+                    "NFT_93725b85a37e9b4c3932efbf57a87e63fb9c4d07858001e948945dde73cd799e",
+                    "NFT_short93725b85a37e9b4c3932efbf57a87e63fb9c4d07858001e948945dde73cd799e",
+                    "NFT_medium93725b85a37e9b4c3932efbf57a87e63fb9c4d07858001e948945dde73cd799e",
+                    "NFT_long93725b85a37e9b4c3932efbf57a87e63fb9c4d07858001e948945dde73cd799e",
+                    "NFT_a403f72cf284a4968862f9acca0f53c95575b28481fb4b2fee64febc0ad613d0",
+                    "NFT_b104e4f4e1924b712d513423a7dcce79cd35e3f90dd34e6dcdd8511c5d17724f",
+                    "NFT_shortb104e4f4e1924b712d513423a7dcce79cd35e3f90dd34e6dcdd8511c5d17724f",
+                    "NFT_mediumb104e4f4e1924b712d513423a7dcce79cd35e3f90dd34e6dcdd8511c5d17724f",
+                    "NFT_longb104e4f4e1924b712d513423a7dcce79cd35e3f90dd34e6dcdd8511c5d17724f",
+                    "NFT_c3b5e0bf7d84c267a08b190ccf53a49c686e57ba157d7200fc81132647396f67",
+                    "NFT_shortc3b5e0bf7d84c267a08b190ccf53a49c686e57ba157d7200fc81132647396f67",
+                    "NFT_mediumc3b5e0bf7d84c267a08b190ccf53a49c686e57ba157d7200fc81132647396f67",
+                    "NFT_longc3b5e0bf7d84c267a08b190ccf53a49c686e57ba157d7200fc81132647396f67",
+                    "NFT_d9c8a6cc44f6874f6b76c844ffc7263f184dcc5d86fb91d2d389caddf905a4ef",
+                    "NFT_shortd9c8a6cc44f6874f6b76c844ffc7263f184dcc5d86fb91d2d389caddf905a4ef",
+                    "NFT_mediumd9c8a6cc44f6874f6b76c844ffc7263f184dcc5d86fb91d2d389caddf905a4ef",
+                    "NFT_longd9c8a6cc44f6874f6b76c844ffc7263f184dcc5d86fb91d2d389caddf905a4ef",
+                    "NFT_e6bfd0633603fe1dfcf8613a0d7164c9956e830ce66d7f56d18fb1572d6dd67e",
+                    "NFT_ff3ada53b8f1d288a82615263441078f06e024c456b6105ce714df6e56c07e7a",
+                    "NFT_0ac27578ec1d734714960d306e4daa6907164c6e9067864c0b1d2128d33f1ad0",
+                    "NFT_short0ac27578ec1d734714960d306e4daa6907164c6e9067864c0b1d2128d33f1ad0",
+                    "NFT_medium0ac27578ec1d734714960d306e4daa6907164c6e9067864c0b1d2128d33f1ad0",
+                    "NFT_long0ac27578ec1d734714960d306e4daa6907164c6e9067864c0b1d2128d33f1ad0",
+                    "NFT_21263d17e53bef91cd691668a6d64dde878bd68379c20d0a3ea3a2e343b3ca6a",
+                    "NFT_short21263d17e53bef91cd691668a6d64dde878bd68379c20d0a3ea3a2e343b3ca6a",
+                    "NFT_medium21263d17e53bef91cd691668a6d64dde878bd68379c20d0a3ea3a2e343b3ca6a",
+                    "NFT_long21263d17e53bef91cd691668a6d64dde878bd68379c20d0a3ea3a2e343b3ca6a",
+                    "NFT_24c0913172301c0edd6ae8a7240e6e78f6d1226ca2bac1215af3c78eddfe0b40",
+                    "NFT_short24c0913172301c0edd6ae8a7240e6e78f6d1226ca2bac1215af3c78eddfe0b40",
+                    "NFT_medium24c0913172301c0edd6ae8a7240e6e78f6d1226ca2bac1215af3c78eddfe0b40",
+                    "NFT_long24c0913172301c0edd6ae8a7240e6e78f6d1226ca2bac1215af3c78eddfe0b40",
+                    "NFT_3baf6e547521920d018290967fcdf3430d9f133b0b54774532a5f6cf53cf9023",
+                    "NFT_short3baf6e547521920d018290967fcdf3430d9f133b0b54774532a5f6cf53cf9023",
+                    "NFT_medium3baf6e547521920d018290967fcdf3430d9f133b0b54774532a5f6cf53cf9023",
+                    "NFT_long3baf6e547521920d018290967fcdf3430d9f133b0b54774532a5f6cf53cf9023",
+                    "NFT_46119fac7772f647532cb6c0ae29603d2a2226000fbbf0a8073158fadca526e7",
+                    "NFT_short46119fac7772f647532cb6c0ae29603d2a2226000fbbf0a8073158fadca526e7",
+                    "NFT_medium46119fac7772f647532cb6c0ae29603d2a2226000fbbf0a8073158fadca526e7",
+                    "NFT_long46119fac7772f647532cb6c0ae29603d2a2226000fbbf0a8073158fadca526e7",
+                    "NFT_491076f855b5e0238f5a9d5edc47b52fcf28dba3dcd73066bb924f3ef92c632e",
+                    "NFT_short491076f855b5e0238f5a9d5edc47b52fcf28dba3dcd73066bb924f3ef92c632e",
+                    "NFT_medium491076f855b5e0238f5a9d5edc47b52fcf28dba3dcd73066bb924f3ef92c632e",
+                    "NFT_long491076f855b5e0238f5a9d5edc47b52fcf28dba3dcd73066bb924f3ef92c632e",
+                    "NFT_4f3a404d96cdd021449b3ab5908d2eb3b84e831c_5491371",
+                    "NFT_4f3a404d96cdd021449b3ab5908d2eb3b84e831c_5498761",
+                    "NFT_5589c2e5be5eb4558f0092eb642a80e538ef96899cdb7dbc335f0ae78179d075",
+                    "NFT_short5589c2e5be5eb4558f0092eb642a80e538ef96899cdb7dbc335f0ae78179d075",
+                    "NFT_medium5589c2e5be5eb4558f0092eb642a80e538ef96899cdb7dbc335f0ae78179d075",
+                    "NFT_long5589c2e5be5eb4558f0092eb642a80e538ef96899cdb7dbc335f0ae78179d075",
+                    "NFT_7d08a736f155d3e648702a6302c40a071dafa4c6fb714aa2591e475d0707b0eb",
+                    "NFT_short7d08a736f155d3e648702a6302c40a071dafa4c6fb714aa2591e475d0707b0eb",
+                    "NFT_medium7d08a736f155d3e648702a6302c40a071dafa4c6fb714aa2591e475d0707b0eb",
+                    "NFT_long7d08a736f155d3e648702a6302c40a071dafa4c6fb714aa2591e475d0707b0eb",
+                    "NFT_8713dfc6c0c0860ad8ed6f073680c6449e66dcd51c843d5b0b1d6402c7b99672",
+                    "NFT_short8713dfc6c0c0860ad8ed6f073680c6449e66dcd51c843d5b0b1d6402c7b99672",
+                    "NFT_medium8713dfc6c0c0860ad8ed6f073680c6449e66dcd51c843d5b0b1d6402c7b99672",
+                    "NFT_long8713dfc6c0c0860ad8ed6f073680c6449e66dcd51c843d5b0b1d6402c7b99672",
+                    "NFT_9de4a76297ab114361f7c39e33351f52c17d107607a56e0979a20543e0e93c19",
+                    "NFT_short9de4a76297ab114361f7c39e33351f52c17d107607a56e0979a20543e0e93c19",
+                    "NFT_medium9de4a76297ab114361f7c39e33351f52c17d107607a56e0979a20543e0e93c19",
+                    "NFT_long9de4a76297ab114361f7c39e33351f52c17d107607a56e0979a20543e0e93c19",
+                    "NFT_d2a6bfea80e32045b826dc584d46993f45fbd9423239a4c1d56f82c775702381",
+                    "NFT_shortd2a6bfea80e32045b826dc584d46993f45fbd9423239a4c1d56f82c775702381",
+                    "NFT_mediumd2a6bfea80e32045b826dc584d46993f45fbd9423239a4c1d56f82c775702381",
+                    "NFT_longd2a6bfea80e32045b826dc584d46993f45fbd9423239a4c1d56f82c775702381",
+                    "NFT_e1a75cbbe429d12927228dc809b12b9297ecb31bb1d4e8112b2997b6b85cc111",
+                    "NFT_shorte1a75cbbe429d12927228dc809b12b9297ecb31bb1d4e8112b2997b6b85cc111",
+                    "NFT_mediume1a75cbbe429d12927228dc809b12b9297ecb31bb1d4e8112b2997b6b85cc111",
+                    "NFT_longe1a75cbbe429d12927228dc809b12b9297ecb31bb1d4e8112b2997b6b85cc111",
+                    "NFT_2d716d24c454a4616f810e8f439a05017fa7d43ab3ccafaa3de39a517c5eb38b",
+                    "NFT_short2d716d24c454a4616f810e8f439a05017fa7d43ab3ccafaa3de39a517c5eb38b",
+                    "NFT_medium2d716d24c454a4616f810e8f439a05017fa7d43ab3ccafaa3de39a517c5eb38b",
+                    "NFT_long2d716d24c454a4616f810e8f439a05017fa7d43ab3ccafaa3de39a517c5eb38b",
+                    "NFT_52e7cfbbb559453de7344835957efd130d35e3bbed45fba656994e010a2759cb",
+                    "NFT_short52e7cfbbb559453de7344835957efd130d35e3bbed45fba656994e010a2759cb",
+                    "NFT_medium52e7cfbbb559453de7344835957efd130d35e3bbed45fba656994e010a2759cb",
+                    "NFT_long52e7cfbbb559453de7344835957efd130d35e3bbed45fba656994e010a2759cb",
+                    "NFT_65f31f167009872a30656a2021c4beeb20bc789126611fc0769970629ba3e6d8",
+                    "NFT_short65f31f167009872a30656a2021c4beeb20bc789126611fc0769970629ba3e6d8",
+                    "NFT_medium65f31f167009872a30656a2021c4beeb20bc789126611fc0769970629ba3e6d8",
+                    "NFT_long65f31f167009872a30656a2021c4beeb20bc789126611fc0769970629ba3e6d8",
+                    "NFT_80fc4835ceee1877a16b94c64532b2d04693667a3f0a8e3ed6723eaace4a1169",
+                    "NFT_97a962c5d9f36376f65d18b8af2175847802fd2418fc502c463b29d7eeedc64a",
+                    "NFT_short97a962c5d9f36376f65d18b8af2175847802fd2418fc502c463b29d7eeedc64a",
+                    "NFT_medium97a962c5d9f36376f65d18b8af2175847802fd2418fc502c463b29d7eeedc64a",
+                    "NFT_long97a962c5d9f36376f65d18b8af2175847802fd2418fc502c463b29d7eeedc64a",
+                    "NFT_d0a588d08323f2a513096f8bf5856b6162e7ff42a7e0c96c4d589e61cb163d7a",
+                    "NFT_shortd0a588d08323f2a513096f8bf5856b6162e7ff42a7e0c96c4d589e61cb163d7a",
+                    "NFT_mediumd0a588d08323f2a513096f8bf5856b6162e7ff42a7e0c96c4d589e61cb163d7a",
+                    "NFT_longd0a588d08323f2a513096f8bf5856b6162e7ff42a7e0c96c4d589e61cb163d7a",
+                    "NFT_5f4bc89474f0309e5ba74400f10a2299729135232479286ef8a5ff635eed9299",
+                    "NFT_short5f4bc89474f0309e5ba74400f10a2299729135232479286ef8a5ff635eed9299",
+                    "NFT_medium5f4bc89474f0309e5ba74400f10a2299729135232479286ef8a5ff635eed9299",
+                    "NFT_long5f4bc89474f0309e5ba74400f10a2299729135232479286ef8a5ff635eed9299",
+                    "NFT_15c7740cfff7273804d2a86702e99697c15f06bd54d4ab11a13a173791c89ebc",
+                    "NFT_73964119930274d788fef6ff88c4d2652edd6dca5e97a691e58580072f52804c",
+                    "NFT_short73964119930274d788fef6ff88c4d2652edd6dca5e97a691e58580072f52804c",
+                    "NFT_medium73964119930274d788fef6ff88c4d2652edd6dca5e97a691e58580072f52804c",
+                    "NFT_long73964119930274d788fef6ff88c4d2652edd6dca5e97a691e58580072f52804c",
+                    "NFT_882879c64e870c681d6f76e59270fdeef85ba4d22d281e60fedb4be82fcb1a81",
+                    "NFT_d05998eff1ae3bb65dcaa0077d02e39a3a35d06a24d6c43576360b7feae55a99",
+                    "NFT_139b4906d04d012fd7b296bb06182b67d9f88734cf89a1de9b87e97508a82500",
+                    "NFT_6584b6eba303f6c76dd151e6f4c184e6d7139ffb46233d8779b59d34686d3f8f",
+                    "NFT_8768a3c1e45e4ea63efe312b81778244d69601867db9f229caf83f66314634be",
+                    "NFT_adbfc05a478d0b3f1ccfc28ae408dcd9cc6e9eebca7877fad19b9b233438af24",
+                    "NFT_shortadbfc05a478d0b3f1ccfc28ae408dcd9cc6e9eebca7877fad19b9b233438af24",
+                    "NFT_mediumadbfc05a478d0b3f1ccfc28ae408dcd9cc6e9eebca7877fad19b9b233438af24",
+                    "NFT_longadbfc05a478d0b3f1ccfc28ae408dcd9cc6e9eebca7877fad19b9b233438af24",
+                    "NFT_4F3A404D96CDD021449B3AB5908D2EB3B84E831C_5493562",
+                    "NFT_19531ea970b310f8867dda6219614cff6592c31240742fe106baa46fcdab73bc",
+                    "NFT_25731e27bda51085704998afda5332c16696a34b416eb5f1859082839bbf7196",
+                    "NFT_6553fb56030bf2290678f0ff88664c9da2167428591ab013381a98c17de3f533",
+                    "NFT_7c2c2a3bd8a8d002e5672e7a085d2dc142fdec571466c89f213e5b096aa376a3",
+                    "NFT_91088446ca4625ef0936bbf5a9a60aaf2012d6a084cf9bc6598141e3711a7cfa",
+                    "NFT_96a11a0753ae414fa5a3682d5a5ada484e8a0e9cbb44e29df93e1720b0fbc25a",
+                    "NFT_9f3ae3dadf8709267f19af03b9aa35afa703d6d61a6e99fe75ba16c5d28cbefb",
+                    "NFT_a650c965bf0f754be062b2f5c9982a65a95c18f6b36a890885b2bd582b2badd8",
+                    "NFT_c4631a2d92d1c6e33fe7167dc2eb6e49e2fb9c5df6f741e70f6d66f8cf8e30f1",
+                    "NFT_shortc4631a2d92d1c6e33fe7167dc2eb6e49e2fb9c5df6f741e70f6d66f8cf8e30f1",
+                    "NFT_mediumc4631a2d92d1c6e33fe7167dc2eb6e49e2fb9c5df6f741e70f6d66f8cf8e30f1",
+                    "NFT_longc4631a2d92d1c6e33fe7167dc2eb6e49e2fb9c5df6f741e70f6d66f8cf8e30f1",
+                    "NFT_f06afcab0bac5f5e7b40edb0b2c1127886853dd1421c1636b5717744fecf80dd",
+                    "NFT_f17959056e4d31e16376b32c960c68c865d43efeb43b098a05dbd5e5f0d7d063",
+                    "NFT_shortf17959056e4d31e16376b32c960c68c865d43efeb43b098a05dbd5e5f0d7d063",
+                    "NFT_mediumf17959056e4d31e16376b32c960c68c865d43efeb43b098a05dbd5e5f0d7d063",
+                    "NFT_longf17959056e4d31e16376b32c960c68c865d43efeb43b098a05dbd5e5f0d7d063",
+                    "NFT_06dccb87e3d6807373b15e08da48ef625d307128f69bde62ba36bca81ee7c958",
+                    "NFT_0dee5fafc7aed9124a66005658b261492dbd98401b2064e0a6962b0957baef1e",
+                    "NFT_26b24f90ccd41bee364f1624dd8bf357afa1a0441b1d2e9ccadd7dd5d9da5d6c",
+                    "NFT_4582bba8f9088939f06a326bce23239279e8281de331a746a5832e0a17e3b508",
+                    "NFT_4e15926d9346a8008aeae64bf9b5398d33325b2051014cc06f648dde71833277",
+                    "NFT_9600392b1c867a764c560c72650895b6d99b94bff4d0e077216f0bb7ad03ea41",
+                    "NFT_a15113517c1ec4314765480482bd6234b571491c93ebe9f7072c16287cae142b",
+                    "NFT_a3dbb1750426dfc5db7ad44ee156c55d03d925a4606d06f19e99958fbd38038d",
+                    "NFT_ada59adeaa732ec7d0a9f9f6d1fdcc2d429aeb86bb295879ee1fa57c3e5715b7",
+                    "NFT_c499ec0d472afa324b8e51ae2d72d1ae0346c0b86a7829240613c196aff642d3",
+                    "NFT_c9e9e1544bf1915e1f3b7138471bac20c3bd19ffea5cd0950b43345429bc73ba",
+                    "NFT_cbb1d9185b658e448885206d3dfdd853d92f1de4b399e3b8732b43a13cf8a0bd",
+                    "NFT_d6f29872d3065fb5e1440dc2f9b491df0d26799d0b21eca25f61a2213a3b77cf",
+                    "NFT_f33799148147b53c97bc105fec1ae30e45580738bec91f7819ecde96c365158c",
+                    "NFT_f70f44a3ee5b375450f8363cb987f5511700339bbefbc6e4ec16453b0c4261cc",
+                    "NFT_shortf70f44a3ee5b375450f8363cb987f5511700339bbefbc6e4ec16453b0c4261cc",
+                    "NFT_mediumf70f44a3ee5b375450f8363cb987f5511700339bbefbc6e4ec16453b0c4261cc",
+                    "NFT_longf70f44a3ee5b375450f8363cb987f5511700339bbefbc6e4ec16453b0c4261cc",
+                    "NFT_686bee99e15e71659a960a9614816fc97a983e5cb769580267478a3d9dffe850",
+                    "NFT_7ce14f2f5d7ac1287e9173cc5dfa3fb9dadd15780e6ce73ee89b90ef2b3fc4a7",
+                    "NFT_short7ce14f2f5d7ac1287e9173cc5dfa3fb9dadd15780e6ce73ee89b90ef2b3fc4a7",
+                    "NFT_medium7ce14f2f5d7ac1287e9173cc5dfa3fb9dadd15780e6ce73ee89b90ef2b3fc4a7",
+                    "NFT_long7ce14f2f5d7ac1287e9173cc5dfa3fb9dadd15780e6ce73ee89b90ef2b3fc4a7",
+                    "NFT_d300d9508cc8b13f0fe022829afcb2e5516d82cb0bf7cfbd88ed3c10f0dd243b",
+                    "NFT_729809cce2bbf0d01c5188dc483c97a0c9fa02b464ff7adac13de40c2bb82740",
+                    "NFT_7b47737a2762649a8193974cd38545a3be98b41357eabe76e8e9d1c07fd45959",
+                    "NFT_2860af7b79f21335f6573c95795ce71f2e036ba525858ce7943c94f59ace7025",
+                    "NFT_345b0bb88b67cf6799aaa240cb7edbbfbf2584ff42fa7447fcd5f7f97eb30e68",
+                    "NFT_426e692855b731db9a0bb6cb74a3521ab3244a61b3d61804cc3e802488796af3",
+                    "NFT_f778236c33d8157211619ec572de5b6491e4720cb4861f4415d5ad812107bf9b",
+                    "NFT_84b4b8873d24de7b8d6bed1f361f9da37d5e4047ee5219c039759e9a5e018a62",
+                    "NFT_0a4dfa6a08fc82ce0a0cd7b0e402bc86240e6150e68eb67389e1b8a59711f74d",
+                    "NFT_329efa92b1c63d69303d548067d3019f4f930a3ce95881d0e4ea84964d469a49",
+                    "NFT_5910266c85469c4ac0e970be6ef7fd1fcd80d8d021d3ffe94503ec41f4bbb884",
+                    "NFT_7843137692a1007efba37c0c428d960ff7f0a699bf7f0f0cd9848e2a27a5e256",
+                    "NFT_83471d24a3eb9ac41147b6fea327a726bf873dc40f4554cf7cefddacb6089e61",
+                    "NFT_6bfc054b6a9c30934de53b318c67bdb790c67ffb79a2ee9272757affa688928b",
+                    "NFT_short6bfc054b6a9c30934de53b318c67bdb790c67ffb79a2ee9272757affa688928b",
+                    "NFT_medium6bfc054b6a9c30934de53b318c67bdb790c67ffb79a2ee9272757affa688928b",
+                    "NFT_long6bfc054b6a9c30934de53b318c67bdb790c67ffb79a2ee9272757affa688928b",
+                    "NFT_b871b671ca583557cd7b58e11dde7a1df28d437f14fd8823f45dda908e9c6c68",
+                    "NFT_shortb871b671ca583557cd7b58e11dde7a1df28d437f14fd8823f45dda908e9c6c68",
+                    "NFT_mediumb871b671ca583557cd7b58e11dde7a1df28d437f14fd8823f45dda908e9c6c68",
+                    "NFT_longb871b671ca583557cd7b58e11dde7a1df28d437f14fd8823f45dda908e9c6c68",
+                    "NFT_0d4cd50476ccbbd7e7b8524dff65f56a44f7cd0e2a9c546fedac7a4839b0fad2",
+                    "NFT_5158622854d8659a5ba93d13a46200f711d232794d3677c4760a952f27bfe1c5",
+                    "NFT_5295c057d6d81f79d31884a1529458091875b46d463294abeff354e1f198c4a1",
+                    "NFT_df40aeba7e507f60f2d2cdf2c782ec73d7f81f0c222d5fbfe72793b8a3644af0",
+                    "NFT_e2dd7c905cbb8735ba0f0dc12557e62624e957ded89ac4b13e6d453dabe52a21",
+                    "NFT_035e93aee43974d227b7ccb50a487fa0415a113fba994f9a3f01e49de7494f75",
+                    "NFT_7ef7ef2460fcafcfbf7e24aeac842dd346ff2ab8c06b977b3676f9db5cc7bde3",
+                    "NFT_94516b8e146125c8bfcc5d08b3233757b6cfdcf2426a9a0ec290e26489e58d3e",
+                    "NFT_64a2f2717fb34b740c3334f00a8f2e4f04b02d62f47010687d4db81e8e23339b",
+                    "NFT_42737531982908ecbefc04c85948be1de4d89819b026eb7f5fbd185aaa252582",
+                    "NFT_693386aaa7402bec32394ed3ca458d3541b6d5069051adc3717a8c178be82eb3",
+                    "NFT_d0f0b69047e81f117effd59aca641eb3c7654d92f2c8b59c6d769954d2ac5126",
+                    "NFT_shortd0f0b69047e81f117effd59aca641eb3c7654d92f2c8b59c6d769954d2ac5126",
+                    "NFT_mediumd0f0b69047e81f117effd59aca641eb3c7654d92f2c8b59c6d769954d2ac5126",
+                    "NFT_longd0f0b69047e81f117effd59aca641eb3c7654d92f2c8b59c6d769954d2ac5126",
+                    "NFT_fd21b0a6c1fe0327cc773f899994347c3b7601340813352e6a633ff7f27a246b",
+                    "NFT_shortfd21b0a6c1fe0327cc773f899994347c3b7601340813352e6a633ff7f27a246b",
+                    "NFT_mediumfd21b0a6c1fe0327cc773f899994347c3b7601340813352e6a633ff7f27a246b",
+                    "NFT_longfd21b0a6c1fe0327cc773f899994347c3b7601340813352e6a633ff7f27a246b",
+                    "NFT_cbb7bbaa1a42e292a754e4f4284659caafc6cb3f94c20db719a82c94806b3e9b",
+                    "NFT_8f3a50d935bb2b552a719a7b802eba117ba5531a893c9e4993556094e0a50bc3",
+                    "NFT_short8f3a50d935bb2b552a719a7b802eba117ba5531a893c9e4993556094e0a50bc3",
+                    "NFT_medium8f3a50d935bb2b552a719a7b802eba117ba5531a893c9e4993556094e0a50bc3",
+                    "NFT_long8f3a50d935bb2b552a719a7b802eba117ba5531a893c9e4993556094e0a50bc3",
+                    "NFT_000000000000000000000000000000000000000000000000000000000000026c",
+                    "NFT_0000000000000000000000000000000000000000000000000000000000000289",
+                    "NFT_000000000000000000000000000000000000000000000000000000000000029a",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000002cf",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000002d8",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000002e2",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000002f4",
+                    "NFT_0000000000000000000000000000000000000000000000000000000000000301",
+                    "NFT_0000000000000000000000000000000000000000000000000000000000000309",
+                    "NFT_0000000000000000000000000000000000000000000000000000000000000320",
+                    "NFT_0000000000000000000000000000000000000000000000000000000000000323",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000002c5",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000002f9",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000002d9",
+                    "NFT_21c0904a5e2e14359a234bbea7579b3512de6386b608b1b418ec2e83da6edcd4",
+                    "NFT_72fb82430de91ec2a5f242295a7a7baf8bce3530d32deb6cf38b95d1c54a3b57",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000000f0",
+                    "NFT_0000000000000000000000000000000000000000000000000000000000000113",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000001f2",
+                    "NFT_000000000000000000000000000000000000000000000000000000000000004f",
+                    "NFT_0000000000000000000000000000000000000000000000000000000000000050",
+                    "NFT_0000000000000000000000000000000000000000000000000000000000000191",
+                    "NFT_0000000000000000000000000000000000000000000000000000000000000197",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000001c6",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000001dd",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000001ec",
+                    "NFT_63178618555f658fc980381951a1390dc3a35058bbd356e65916aba7229325b4",
+                    "NFT_bf9d86a91c103b62773d699f00718fad6e2e56bd82de6388cb78a915899d14d6",
+                    "NFT_d09f2fe4988b91301e3e555a80e916edc85248b358ff51afd5d4ff748efdf066",
+                    "NFT_000000000000000000000000000000000000000000000000000000000000002c",
+                    "NFT_0000000000000000000000000000000000000000000000000000000000000038",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000001d1",
+                    "NFT_6C6cdDD608E6b31F8599A56336b0fD7b79313917_383",
+                    "NFT_0000000000000000000000000000000000000000000000000000000000000001",
+                    "NFT_000000000000000000000000000000000000000000000000000000000000004a",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000000f2",
+                    "NFT_000000000000000000000000000000000000000000000000000000000000011c",
+                    "NFT_0000000000000000000000000000000000000000000000000000000000000198",
+                    "NFT_d412fcf0be5bcc1f0ab40558c7cb9a0ff483ea133ffc47f0c58830b78ce7dc82",
+                    "NFT_0000000000000000000000000000000000000000000000000000000000000007",
+                    "NFT_0000000000000000000000000000000000000000000000000000000000000015",
+                    "NFT_000000000000000000000000000000000000000000000000000000000000004c",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000000d1",
+                    "NFT_0000000000000000000000000000000000000000000000000000000000000118",
+                    "NFT_0000000000000000000000000000000000000000000000000000000000000031",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000000de",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000000f3",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000001ef",
+                    "NFT_a1b1966dfaec0994170f697a7be9a34a2948839114734ff64c72f09d64afa505",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000000c9",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000000ef",
+                    "NFT_0000000000000000000000000000000000000000000000000000000000000107",
+                    "NFT_000000000000000000000000000000000000000000000000000000000000011a",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000001a4",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000001af",
+                    "NFT_0000000000000000000000000000000000000000000000000000000000000002",
+                    "NFT_0000000000000000000000000000000000000000000000000000000000000051",
+                    "NFT_6C6cdDD608E6b31F8599A56336b0fD7b79313917_174",
+                    "NFT_0000000000000000000000000000000000000000000000000000000000000024",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000001c3",
+                    "NFT_3aaf33d187d29b8438d384456f0d187f96f734610faac085dd882dac05320689",
+                    "NFT_short3aaf33d187d29b8438d384456f0d187f96f734610faac085dd882dac05320689",
+                    "NFT_medium3aaf33d187d29b8438d384456f0d187f96f734610faac085dd882dac05320689",
+                    "NFT_long3aaf33d187d29b8438d384456f0d187f96f734610faac085dd882dac05320689",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000001e5",
+                    "NFT_0000000000000000000000000000000000000000000000000000000000000260",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000002ca",
+                    "NFT_7979166322ef5dd801e5b3128f473938193a2617fbcadc1d85d9baf8de25c40e",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000000d5",
+                    "NFT_000000000000000000000000000000000000000000000000000000000000019b",
+                    "NFT_1eb7bc40ba929c8e7b0cbc2b3b74c19a448342fdaaa4d8df13bda2a83bb52612",
+                    "NFT_230417bedebae0940f547b1d533342f3db136129c497819e9a80e7cd4a594b92",
+                    "NFT_3126874850522c78e918aad1b2d853812b1f4b1f9f86a9917a0df9377f4584e9",
+                    "NFT_3417d55efa9f8d531c34a390fbee557d61c60f91439653c755b1ec12401392ec",
+                    "NFT_5e6bc91e5bc6c95d5c736cebd4c6f58712b74832d3a152a1ffbbe8044d07358c",
+                    "NFT_62f4d608ebad5d4b2fafb8db19a6eadb82739d262c02c10384bbd079fb39dd55",
+                    "NFT_6d5ca230e96b8b8abb05bf80757ee63700347c5bec1ce8a1f24847c029dfd7dc",
+                    "NFT_76272a35a56a8e5b74c3aa0ed6b299bf46582934e6e17d4f5f39cf1aac6fc6d4",
+                    "NFT_8b1d457cd11e43b6a627b2f5e5d45fe724ac1c0805951a54856bced7c0d6bdb9",
+                    "NFT_929cce2e50749991230410f45e39abaf97eb25d3bed4e67a49c245dbc15ca4f3",
+                    "NFT_9c4a089926b66f4933c1d497654656794105f98c1e46676b7d183f06b6a769bf",
+                    "NFT_a481b37bd3d0680b321501cfe3ffe7cc8d3a7e1a7cda952ca885dcbb1fba5165",
+                    "NFT_ab9bcf29717f044773bd4a620370d05446c7b83cb2f3a800521e2f400b6c1187",
+                    "NFT_afe62b08af1bebe0ae6e4b08117513e280c4eba035a3352a2710460939e6a008",
+                    "NFT_bc422520eda8d02cd5b0a5270645e87660d0e0f0e062fe6397fabf38e7ad93c0",
+                    "NFT_f20d4a9c3feb2749a62b7a71e1a890161533ca067b69feb4d91e6289ac9da271",
+                    "NFT_f58bf2da698c74299e4c4e154d117e1304abc0deaf0469570a4122675a8eab7f",
+                    "NFT_f94e13a3cdaa49b1a86348ec5740768665702c66d7096caefb5f14a54ac38ae1",
+                    "NFT_fc5dba7f589fdad6e5bcf74da24d7fb0cdef89096a1a25eed51c75f107f5433b",
+                    "NFT_3280237da5e2153aecaded04997c7f7392a8993cad763a75407d8a97a05be68a",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000000e6",
+                    "NFT_0000000000000000000000000000000000000000000000000000000000000122",
+                    "NFT_2766c74ebb9f13604cb947be9ab6e2f8e39b82a23345b8bff7415e1adabe06f5",
+                    "NFT_215034eca098ab4e3ce682fd519a32845209eb53abf822fd7391b3c2d66a8576",
+                    "NFT_short215034eca098ab4e3ce682fd519a32845209eb53abf822fd7391b3c2d66a8576",
+                    "NFT_medium215034eca098ab4e3ce682fd519a32845209eb53abf822fd7391b3c2d66a8576",
+                    "NFT_long215034eca098ab4e3ce682fd519a32845209eb53abf822fd7391b3c2d66a8576",
+                    "NFT_44f4d69a688a9b1361e76e4bb5a2e1590413f3c2a2f2d163f0711df80e2e1a74",
+                    "NFT_d753384bb0f21832f572dc5341e1ae4c8583a57ecc008bdbf96b2fe7f24424c8",
+                    "NFT_0ee9d8f002afdcafd290162cdbd11012958a3cb56fd6bfba23448f9a38377976",
+                    "NFT_short0ee9d8f002afdcafd290162cdbd11012958a3cb56fd6bfba23448f9a38377976",
+                    "NFT_medium0ee9d8f002afdcafd290162cdbd11012958a3cb56fd6bfba23448f9a38377976",
+                    "NFT_long0ee9d8f002afdcafd290162cdbd11012958a3cb56fd6bfba23448f9a38377976",
+                    "NFT_1bc0c7d2cab3113ea2edddd750ac48434c405602a0edca8b4f97303fe5644af1",
+                    "NFT_b1e7ba3496307bb38bfd1515652a5e78ced90efad81ccaf1eaf9b1c82dda1b1f",
+                    "NFT_shortb1e7ba3496307bb38bfd1515652a5e78ced90efad81ccaf1eaf9b1c82dda1b1f",
+                    "NFT_mediumb1e7ba3496307bb38bfd1515652a5e78ced90efad81ccaf1eaf9b1c82dda1b1f",
+                    "NFT_longb1e7ba3496307bb38bfd1515652a5e78ced90efad81ccaf1eaf9b1c82dda1b1f",
+                    "NFT_b35c6145cd0f1d0d61974f1a412f321947eb8914a27b90fd1aa9358862be0b6c",
+                    "NFT_bc32e595d608638030ac431e7676f2877a08541dc1c97e7e9cfd91eeede78367",
+                    "NFT_shortbc32e595d608638030ac431e7676f2877a08541dc1c97e7e9cfd91eeede78367",
+                    "NFT_mediumbc32e595d608638030ac431e7676f2877a08541dc1c97e7e9cfd91eeede78367",
+                    "NFT_longbc32e595d608638030ac431e7676f2877a08541dc1c97e7e9cfd91eeede78367",
+                    "NFT_f856a8be84d5136db09837a8be911d281b579cd0528546c4ea373ab0315fa3dc",
+                    "NFT_shortf856a8be84d5136db09837a8be911d281b579cd0528546c4ea373ab0315fa3dc",
+                    "NFT_mediumf856a8be84d5136db09837a8be911d281b579cd0528546c4ea373ab0315fa3dc",
+                    "NFT_longf856a8be84d5136db09837a8be911d281b579cd0528546c4ea373ab0315fa3dc",
+                    "NFT_000000000000000000000000000000000000000000000000000000000000002a",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000000cc",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000001da",
+                    "NFT_58b53c9c5c0ec0579cf26ab6760adeab9717c1f2352fea026fba738ddbf2b13c",
+                    "NFT_8247fa0c98ba154884d444e16f0a4fc99db342aec845916d04916821585aef87",
+                    "NFT_af37d97d4654181db460a2ddd0fc790f3326c32f8440cbb7990b3953a44d6e09",
+                    "NFT_0000000000000000000000000000000000000000000000000000000000000021",
+                    "NFT_0000000000000000000000000000000000000000000000000000000000000029",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000000ce",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000000f1",
+                    "NFT_000000000000000000000000000000000000000000000000000000000000011e",
+                    "NFT_000000000000000000000000000000000000000000000000000000000000012a",
+                    "NFT_000000000000000000000000000000000000000000000000000000000000038b",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000003b0",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000003bb",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000003d4",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000003e7",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000003e9",
+                    "NFT_0000000000000000000000000000000000000000000000000000000000000422",
+                    "NFT_000000000000000000000000000000000000000000000000000000000000042d",
+                    "NFT_000000000000000000000000000000000000000000000000000000000000042e",
+                    "NFT_000000000000000000000000000000000000000000000000000000000000046d",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000004a6",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000004af",
+                    "NFT_9da757d68a2199403617b87cc3593787c8dd09c5d335359d54cf39e5e14045a2",
+                    "NFT_6C6cdDD608E6b31F8599A56336b0fD7b79313917_364",
+                    "NFT_7b47b71f1bec0b45d40e159ec42b1802a5906779b6503e327abeb5fe4417cd9d",
+                    "NFT_short7b47b71f1bec0b45d40e159ec42b1802a5906779b6503e327abeb5fe4417cd9d",
+                    "NFT_medium7b47b71f1bec0b45d40e159ec42b1802a5906779b6503e327abeb5fe4417cd9d",
+                    "NFT_long7b47b71f1bec0b45d40e159ec42b1802a5906779b6503e327abeb5fe4417cd9d",
+                    "NFT_0000000000000000000000000000000000000000000000000000000000000003",
+                    "NFT_0000000000000000000000000000000000000000000000000000000000000278",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000003db",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000003e3",
+                    "NFT_000000000000000000000000000000000000000000000000000000000000047e",
+                    "NFT_05c74a4267272a56dda40a88b4e064331cb4707ab977186f0e2960ce0bd763a8",
+                    "NFT_short05c74a4267272a56dda40a88b4e064331cb4707ab977186f0e2960ce0bd763a8",
+                    "NFT_medium05c74a4267272a56dda40a88b4e064331cb4707ab977186f0e2960ce0bd763a8",
+                    "NFT_long05c74a4267272a56dda40a88b4e064331cb4707ab977186f0e2960ce0bd763a8",
+                    "NFT_4b8b1cf734e9686101be72ff3643e7da255f1a58287d2336c1bd062a042a1b6b",
+                    "NFT_short4b8b1cf734e9686101be72ff3643e7da255f1a58287d2336c1bd062a042a1b6b",
+                    "NFT_medium4b8b1cf734e9686101be72ff3643e7da255f1a58287d2336c1bd062a042a1b6b",
+                    "NFT_long4b8b1cf734e9686101be72ff3643e7da255f1a58287d2336c1bd062a042a1b6b",
+                    "NFT_5a2c78542ba6a206701ce99830d59a1af0ee4848e42fd560fc9075de2947b712",
+                    "NFT_e971f594088c5f2b1cf95553a1b6ef5e820bc8092f862a45234d139e3b5d6cca",
+                    "NFT_shorte971f594088c5f2b1cf95553a1b6ef5e820bc8092f862a45234d139e3b5d6cca",
+                    "NFT_mediume971f594088c5f2b1cf95553a1b6ef5e820bc8092f862a45234d139e3b5d6cca",
+                    "NFT_longe971f594088c5f2b1cf95553a1b6ef5e820bc8092f862a45234d139e3b5d6cca",
+                    "NFT_0000000000000000000000000000000000000000000000000000000000000301",
+                    "NFT_1e6bbd67f35fa6b3ca14ebc0e34fcdef1bfa7c1fb3c733819ec8e18b377c40d2",
+                    "NFT_5939aa333750fe8b4267f437f636c5198fa1facc7b737a53d500912cd9619e0f",
+                    "NFT_745221197d728beacc96caa0e65887d501239748c83e8bc2a6e30e8b5052f33a",
+                    "NFT_8c1763e1d512e1bcb017780c1ab8c1f8de96df5c4b3f9f9788a287702fa296a8",
+                    "NFT_9ab1ae406420339e7d35075fa9d84ed69135f45fc9df48a0a183bee04f80dd72",
+                    "NFT_a3b82973db1e6cf9480612d44178d746887efcfcede3289c4b743a2528889d8f",
+                    "NFT_a3d35b905cac186164843465b0c534af84dd745bf585c47a93de92d8cb54fc27",
+                    "NFT_aab08be23d32fe629527e8eb894e04ee8123ca007d0a83e5553dfaabac94d570",
+                    "NFT_d8c7a2fd808bc814b5dcfda057c0f5458bd487a597fdce169c14263c4cba507e",
+                    "NFT_eb6f5429bdf96e01a08ac96975d1302934d58596a215350daef92a502271667a",
+                    "NFT_0c0cc2c9a8e9b1f0304e06a194b36483f1ac379a961b732e42f9bf8ba199be73",
+                    "NFT_39bb2ac4f25023a0dcfd41a95ad555f1f43c6f98639fbd7009c1a161f87736fe",
+                    "NFT_3c4a8a1c27ebe705636fc6e1f50bed766d50a3d00aadea1690253a11c5e53ad6",
+                    "NFT_4fd3cb7925c7e96e6e26a285829b3c1689ccc177e28e911b81159a05aad6c318",
+                    "NFT_5892ca097a9a11ea74d5ff9cb841d4caf676ad67d71271f24d72d6f8dd3bf510",
+                    "NFT_59129a9defc223bfb71521416bdaf3b8de388b270f64e8c2757f8ed6f0ec2e3d",
+                    "NFT_748786c9f7837c7b5d4087717fd2f4317e0af9e94a93c0ada5c0c1bcdbcef888",
+                    "NFT_a75bcb65bcca53162593fc61d5128ec28c56f5d9374a3fb0f11d7040ad92dcdc",
+                    "NFT_c05497246652dada1eb8ae06ddfa032d48b035ab64095cfa1e9f7d168b63e27d",
+                    "NFT_c69c343e6e765273e08b402c998c22e85c952709019d4c5ed402f105e4d45b57",
+                    "NFT_cd49d0102fd542d91bdd0f67c00807eae2ce90bcbfb73490a5ced14070446bf8",
+                    "NFT_cf91cea89ab246e96a82ed78ec2481181f47697e9be1990a0851f7534b1659d5",
+                    "NFT_dcf2e213f98b8e10abc9bb2e0069ecd1fc830043bcb3c4670e834e26d726564d",
+                    "NFT_f15ee943cd54c0f1a9baddce8625261bc5953ce889224d6a7693cbbca18b4d20",
+                    "NFT_01348a66000000000000000002386f26fc100000000000000000000000000125",
+                    "NFT_6b612271abb19f148d80053f3f9d2bb9f7496a21260ea03690b337c98ce7aa7d",
+                    "NFT_93182897fa1e8a0cf2e2a26dffb4663705d592761fef0bfe4eaad4f9f45bc480",
+                    "NFT_937267d15f5a697182a7f0f744a494a8f5252c19f131e6eb817f5f8336cb7fde",
+                    "NFT_98e9e0afbb977ccc5074d3fa5200d17bc89b4161029c2178c0429c9513411f51",
+                    "NFT_a1f640e2bdb016634fcdbd1d29074c3c13ac260d76be3f55e31bb8410dec4884",
+                    "NFT_ac67d1513322c689f9c18bd88a00ab9f11dc8d91e9f3e2a61c693ad8ea3b0487",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000002e7",
+                    "NFT_0000000000000000000000000000000000000000000000000000000000000457",
+                    "NFT_0000000000000000000000000000000000000000000000000000000000000058",
+                    "NFT_000000000000000000000000000000000000000000000000000000000000010a",
+                    "NFT_000000000000000000000000000000000000000000000000000000000000012c",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000001c5",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000003ce",
+                    "NFT_000000000000000000000000000000000000000000000000000000000000042f",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000002f9",
+                    "NFT_b8226b182c403cbdcdd278a3eab706d8aa82deed77008853aa97e24c217c7e31",
+                    "NFT_shortb8226b182c403cbdcdd278a3eab706d8aa82deed77008853aa97e24c217c7e31",
+                    "NFT_mediumb8226b182c403cbdcdd278a3eab706d8aa82deed77008853aa97e24c217c7e31",
+                    "NFT_longb8226b182c403cbdcdd278a3eab706d8aa82deed77008853aa97e24c217c7e31",
+                    "NFT_000000000000000000000000000000000000000000000000000000000000061b",
+                    "NFT_19ab4e42aed4800caa64cef5661baffda4ba7754c93bc21071a4f7533f5225c8",
+                    "NFT_de12ef2a40a8c98336f5a6f71d2e9ff7982e6e0dc6e5bf0477e6d357b3e2b156",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000002d8",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000003a0",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000003b4",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000004ce",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000004da",
+                    "NFT_0000000000000000000000000000000000000000000000000000000000000531",
+                    "NFT_000000000000000000000000000000000000000000000000000000000000053b",
+                    "NFT_0000000000000000000000000000000000000000000000000000000000000548",
+                    "NFT_0000000000000000000000000000000000000000000000000000000000000561",
+                    "NFT_000000000000000000000000000000000000000000000000000000000000056c",
+                    "NFT_0b10a6e2f295032154d1126c73e04187bc6398dc6244ea2aec032f18d88f6170",
+                    "NFT_2313d67270975dcacb59074255d6cfd9529960bc537c6e0c0a09422ab5624db3",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000003e8",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000003f2",
+                    "NFT_00000000000000000000000000000000000000000000000000000000000004e6",
+                    "NFT_0000000000000000000000000000000000000000000000000000000000000521",
+                    "NFT_04c9373f3d2d8035ca9cc5c0d6934b862e0c975ecb9edd29214cd347002352b6",
+                    "NFT_235fb2401d95e87b89e72bd03d125d9ec5808f06bf0a14f4a7c7eab3562deb7e",
+                    "NFT_short235fb2401d95e87b89e72bd03d125d9ec5808f06bf0a14f4a7c7eab3562deb7e",
+                    "NFT_medium235fb2401d95e87b89e72bd03d125d9ec5808f06bf0a14f4a7c7eab3562deb7e",
+                    "NFT_long235fb2401d95e87b89e72bd03d125d9ec5808f06bf0a14f4a7c7eab3562deb7e",
+                    "NFT_f008eb9d51a7ebb1172464ee0e91c5c749eba15dce75ddf0c36807d6ef6b56de",
+                    "NFT_28624146f278d2bc62d3b44bee847f020e1945445848b8b1b8da04bc4258b7e1",
+                    "NFT_48d1b5a6ddb66c449a895a0fec13938c03b193aa753883336dfdd1f8c10c340c",
+                    "NFT_short48d1b5a6ddb66c449a895a0fec13938c03b193aa753883336dfdd1f8c10c340c",
+                    "NFT_medium48d1b5a6ddb66c449a895a0fec13938c03b193aa753883336dfdd1f8c10c340c",
+                    "NFT_long48d1b5a6ddb66c449a895a0fec13938c03b193aa753883336dfdd1f8c10c340c",
+                    "NFT_92067f50ce69bc6b4fdc7b03ece23846829756ad158b228630f140489af8cc89",
+                    "NFT_560199ea3c20461a2bdce94fe70e007e249fcab498ba72b7c4f1716b3afe551f",
+                    "NFT_5ed933c95cdb55ac9242e88ec8e4b8e81563c6f84b2c55e0b6a3bffaf9b4cb9e",
+                    "NFT_b4c4d281d2378196e905c8c9ec70a1f4044d3025dd49edc809a995a0a407a442",
+                    "NFT_b9629a043d80605af5e41d110847420b3ceed3154fabc05c9e420f28bb46cbd7",
+                    "NFT_772c4642d34252ab021a20121895a5e4752ae017fda708b1981bd27c85db7676",
+                    "NFT_c02f304ef174ed2f94c6e4d665f2430e198a2fc55050f2609c06801dcab7c674",
+                    "NFT_c13b39f7fa53a0d6f324e9e739dcc6ee02af0ddead0534d8c5bbfa12cfbd39da",
+                    "NFT_a3e52461aef546dccc1e8a286dc3b43c2436023eb3d3ada908651c0dc8988f9d",
+                    "NFT_0000000000000000000000000000000000000000000000000000000000000022",
+                    "NFT_0000000000000000000000000000000000000000000000000000000000000114",
+                    "NFT_63fa62d1d9de3de834689fb8f6bb02f5f1e53d6e7ecfaa26e5ee088f17ae50c6",
+                    "NFT_72c2eb4f152369973da708309fa5863e7988fd42d5ef28d9430e986c6080a048",
+                    "NFT_699da03ed44db02ad5c24279f3522e27e0370ed14da89af684667e38ea5c6ba2",
+                    "NFT_short699da03ed44db02ad5c24279f3522e27e0370ed14da89af684667e38ea5c6ba2",
+                    "NFT_medium699da03ed44db02ad5c24279f3522e27e0370ed14da89af684667e38ea5c6ba2",
+                    "NFT_long699da03ed44db02ad5c24279f3522e27e0370ed14da89af684667e38ea5c6ba2",
+                    "NFT_10efdb5fe416d5c7483da57c52b24e5dfb9e8e7686052db7aa900f52e2f001e4",
+                    "NFT_short10efdb5fe416d5c7483da57c52b24e5dfb9e8e7686052db7aa900f52e2f001e4",
+                    "NFT_medium10efdb5fe416d5c7483da57c52b24e5dfb9e8e7686052db7aa900f52e2f001e4",
+                    "NFT_long10efdb5fe416d5c7483da57c52b24e5dfb9e8e7686052db7aa900f52e2f001e4",
+                    "NFT_2e3ea84c3e2f9bf91868689579b7743a7d37fc461540593f9c7d937a4bed03c4",
+                    "NFT_75f8bec880bcaf46ba059dd0022d588ef93a2f01333a0d54f5d4291bdc9b74fa",
+                    // @nextSpriteLine@
                 ];
             },
 
-            setup: function($bubbleContainer, canvas, background, foreground, input) {
+            setup: function ($bubbleContainer, canvas, background, foreground, input) {
                 this.setBubbleManager(new BubbleManager($bubbleContainer));
                 this.setRenderer(new Renderer(this, canvas, background, foreground));
                 this.setChatInput(input);
             },
 
-            setStorage: function(storage) {
+            setStorage: function (storage) {
                 this.storage = storage;
             },
 
-            setRenderer: function(renderer) {
+            setRenderer: function (renderer) {
                 this.renderer = renderer;
                 this.renderer.initFont();
             },
 
-            setUpdater: function(updater) {
+            setUpdater: function (updater) {
                 this.updater = updater;
             },
 
-            setPathfinder: function(pathfinder) {
+            setPathfinder: function (pathfinder) {
                 this.pathfinder = pathfinder;
             },
 
-            setChatInput: function(element) {
+            setChatInput: function (element) {
                 this.chatinput = element;
             },
 
-            setBubbleManager: function(bubbleManager) {
+            setBubbleManager: function (bubbleManager) {
                 this.bubbleManager = bubbleManager;
             },
 
-            loadMap: function(mapId) {
+            loadMap: function (mapId) {
                 var self = this;
                 this.mapId = mapId;
 
@@ -6134,7 +6137,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                 this.storage.setMapId(mapId);
 
-                this.map.ready(function() {
+                this.map.ready(function () {
                     console.log("Map loaded.");
                     var tilesetIndex = self.renderer.upscaledRendering ? 0 : self.renderer.scale - 1;
                     self.renderer.setTileset(self.map.tilesets[tilesetIndex]);
@@ -6142,10 +6145,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 });
             },
 
-            initPlayer: function() {
-    
+            initPlayer: function () {
+
                 this.player.setSpriteName(this.storage.data.player.armor);
-                if(this.storage.hasAlreadyPlayed()) {
+                if (this.storage.hasAlreadyPlayed()) {
                     this.player.setWeaponName(this.storage.data.player.weapon);
                 }
 
@@ -6166,7 +6169,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         this.player.dynamicArmorNFTData = nftData;
                         this.player.dyanmicNFTLoaded = true;
                         self = this;
-                        this.player.hasShadow = function() { return Types.hasShadow(spriteName); };
+                        this.player.hasShadow = function () { return Types.hasShadow(spriteName); };
                     });
                 } else {
                     this.player.dyanmicNFTLoaded = true;
@@ -6181,12 +6184,12 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 console.debug("Finished initPlayer");
             },
 
-            initShadows: function() {
+            initShadows: function () {
                 this.shadows = {};
                 this.shadows["small"] = this.sprites["shadow16"];
             },
 
-            initCursors: function() {
+            initCursors: function () {
                 this.cursors["hand"] = this.sprites["hand"];
                 this.cursors["handclick"] = this.sprites["handclick"];
                 this.cursors["sword"] = this.sprites["sword"];
@@ -6200,30 +6203,30 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     let cursor = this.cursors[name];
                     if (cursor !== undefined) {
                         let isLocal = window.location.href.indexOf("127.0.0.1") > -1;
-                        let src =  isLocal ? "/" + cursor.filepath : cursor.filepath;
-                        this.renderer.worker.postMessage({type: "loadCursor", name: name, src: src});
+                        let src = isLocal ? "/" + cursor.filepath : cursor.filepath;
+                        this.renderer.worker.postMessage({ type: "loadCursor", name: name, src: src });
                     }
                 }
             },
 
-            initFish: function() {
+            initFish: function () {
                 this.fish = {};
 
                 const fishGroups = [
-                    /* COBS FARM FISH*/ 
+                    /* COBS FARM FISH*/
                     ["cobneon", "cobguppy", "cobgoldfish", "coblobster", "cobcatfish", "cobtrout", "cobangelfish", "cobsardine", "cobstingray", "cobwhiting", "cobrosette", "cobparadisefish", "cobfatheadminnow", "cobgrasscarp", "cobgreensunfish", "cobcruciancarp", "cobbluegill", "cobkoi", "cobcan", "cobtrashbag"],
 
-                    /* OAFISHIES*/ 
+                    /* OAFISHIES*/
                     ["oagreyfish", "oafish1", "oafish2", "oafish3", "oafish4", "oafish5", "oafish6", "oafish7", "oafish8", "oafish9", "oafish10", "oafish11", "oafish12", "oafish13", "oafish14", "oafish15", "oafish16", "oafish17", "oafish18", "oafish19", "oafish20", "oafish21", "oafish22", "oafish23", "oafish24", "oafish25", "oafish26", "oafish27", "oafish28", "oafish29", "oafish30", "oafish31", "oafish32", "oafish33", "oafish34", "oafish35", "oafish36"],
 
                     /* SDU FISH*/
                     ["clownfish", "swedishfish", "rainbowfish", "lollipop"],
 
                     /* m88n Fishing*/
-                    ["m88ndreamduckyy", "m88ndreamduckyg", "m88ndreamduckyb", "m88ndreamduckyp", "m88ndreamduckyr", "m88ndreamcandyy", "m88ndreamcandyo", "m88ndreamcandya", "m88ndreamcandyg", "m88ndreamcandyb", "m88ndreamcandyp", "m88ndreamcandyr", "m88ndreamgumbally", "m88ndreamgumballo", "m88ndreamgumballa", "m88ndreamgumballg", "m88ndreamgumballb", "m88ndreamgumballp", "m88ndreamgumballr" , "m88ngmeshare", "m88nwhiskey", 
-                    "m88ndiamondhand", "m88ngoldenbanana", "m88nshorts", "m88nseafrog", "m88nseahorse", "m88nseaurchin", "m88nstarfish", "m88nseaweed", "m88nspirula", "m88nshrimp", "m88nsilvereel", "m88npinkfantasia", "m88npiranha", "m88nscallop", "m88nsaltwatersnail", "m88nseaspider", "m88noctopus", "m88npufferfish", "m88nseacucumber", "m88ntigerfish", "m88nguppy", "m88nkoifish", "m88nturtle", "m88nsanddollar", "m88njellyfish", "m88nlionfish",
-                    "m88nsundial", "m88ntuna", "m88ncharfish", "m88ncrab", "m88ncowfish", "m88nlampreyeel", "m88nbluelobster", "m88nparrotfish", "m88nconch", "m88ndumbooctopus", "m88nbettafish", "m88nsquid", "m88nnautilus", "m88nwolffish", "m88nblobfish", "m88nclownfish", "m88noyster", "m88npearl", "m88naxolotl", "m88nbutterflyfish", "m88ncoral", "m88nseaangel", "m88nanglerfish", "m88nbluetang", "m88nclam", "m88npompano", "m88nmackerel", "m88noceanbass",
-                    "m88nnightmareduckyb", "m88nnightmareduckyv", "m88nnightmareduckyg", "m88nnightmareduckyr", "m88n24kancientscroll", "m88n24kapestatuette", "m88n24kcigarcutter", "m88n24kcrown", "m88n24knecklace", "m88n24kwarriorhelmet"],
+                    ["m88ndreamduckyy", "m88ndreamduckyg", "m88ndreamduckyb", "m88ndreamduckyp", "m88ndreamduckyr", "m88ndreamcandyy", "m88ndreamcandyo", "m88ndreamcandya", "m88ndreamcandyg", "m88ndreamcandyb", "m88ndreamcandyp", "m88ndreamcandyr", "m88ndreamgumbally", "m88ndreamgumballo", "m88ndreamgumballa", "m88ndreamgumballg", "m88ndreamgumballb", "m88ndreamgumballp", "m88ndreamgumballr", "m88ngmeshare", "m88nwhiskey",
+                        "m88ndiamondhand", "m88ngoldenbanana", "m88nshorts", "m88nseafrog", "m88nseahorse", "m88nseaurchin", "m88nstarfish", "m88nseaweed", "m88nspirula", "m88nshrimp", "m88nsilvereel", "m88npinkfantasia", "m88npiranha", "m88nscallop", "m88nsaltwatersnail", "m88nseaspider", "m88noctopus", "m88npufferfish", "m88nseacucumber", "m88ntigerfish", "m88nguppy", "m88nkoifish", "m88nturtle", "m88nsanddollar", "m88njellyfish", "m88nlionfish",
+                        "m88nsundial", "m88ntuna", "m88ncharfish", "m88ncrab", "m88ncowfish", "m88nlampreyeel", "m88nbluelobster", "m88nparrotfish", "m88nconch", "m88ndumbooctopus", "m88nbettafish", "m88nsquid", "m88nnautilus", "m88nwolffish", "m88nblobfish", "m88nclownfish", "m88noyster", "m88npearl", "m88naxolotl", "m88nbutterflyfish", "m88ncoral", "m88nseaangel", "m88nanglerfish", "m88nbluetang", "m88nclam", "m88npompano", "m88nmackerel", "m88noceanbass",
+                        "m88nnightmareduckyb", "m88nnightmareduckyv", "m88nnightmareduckyg", "m88nnightmareduckyr", "m88n24kancientscroll", "m88n24kapestatuette", "m88n24kcigarcutter", "m88n24kcrown", "m88n24knecklace", "m88n24kwarriorhelmet"],
 
                     /* MRMlabs FISH*/
                     ["bbqchips", "blackpepperchips", "dillpicklechips", "saltnvinegarchips", "berryblast", "cherrycola", "gingerale", "rootbeer", "valleydew"],
@@ -6233,7 +6236,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                     /*BITCORN PHISHIES*/
                     ["bit_BoneFish", "bit_Corn", "bit_FEET", "bit_freshPrawnce", "bit_JEFF", "bit_Kickle", "bit_maCORNtosh", "bit_MrPunchy", "bit_SnaggletoothEel", "bit_NOPEmato", "cornBootFish", "cornCanFish", "cornWinkyFish"],
-                
+
                 ];
 
                 fishGroups.forEach(group => {
@@ -6243,7 +6246,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 });
             },
 
-            initAnimations: function() {
+            initAnimations: function () {
                 this.targetAnimation = new Animation("idle_down", 4, 0, 16, 16);
                 this.targetAnimation.setSpeed(50);
 
@@ -6257,33 +6260,33 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.floatAnimation.setSpeed(240);
             },
 
-            initHurtSprites: function() {
+            initHurtSprites: function () {
                 var self = this;
 
-                Types.forEachArmorKind(function(kind, kindName) {
+                Types.forEachArmorKind(function (kind, kindName) {
                     self.sprites[kindName].createHurtSprite();
                 });
             },
 
-            initSilhouettes: function() {
+            initSilhouettes: function () {
                 var self = this;
                 self.sprites["chest"].createSilhouette();
                 self.sprites["item-cake"].createSilhouette();
             },
 
-            initAchievements: function() {
+            initAchievements: function () {
                 var self = this;
                 var questLogUrl = "/session/" + self.sessionId + "/quests";
-                axios.get(questLogUrl).then(function(response) {
+                axios.get(questLogUrl).then(function (response) {
                     self.achievements = response.data
                     let unlockedAchievements = [];
 
-                    _.each(self.achievements, function(obj) {
-                        if(!obj.hidden) {
+                    _.each(self.achievements, function (obj) {
+                        if (!obj.hidden) {
                             obj.hidden = false;
                         }
 
-                        if(obj.status === 'COMPLETED') {
+                        if (obj.status === 'COMPLETED') {
                             unlockedAchievements.push(obj.id);
                         }
 
@@ -6292,43 +6295,43 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                     self.app.initAchievementList(self.achievements);
 
-                    if(self.storage.hasAlreadyPlayed()) {
+                    if (self.storage.hasAlreadyPlayed()) {
                         self.app.initUnlockedAchievements(unlockedAchievements);
                     }
                 });
             },
 
-            getAchievementById: function(id) {
+            getAchievementById: function (id) {
                 var found = null;
-                _.each(this.achievements, function(achievement, key) {
-                    if(achievement.id === parseInt(id)) {
+                _.each(this.achievements, function (achievement, key) {
+                    if (achievement.id === parseInt(id)) {
                         found = achievement;
                     }
                 });
                 return found;
             },
 
-            loadSprite: function(name, tokenHash, assetType, nftId) {
-                if(this.renderer.upscaledRendering) {
+            loadSprite: function (name, tokenHash, assetType, nftId) {
+                if (this.renderer.upscaledRendering) {
                     return this.spritesets[0][name] = new Sprite(name, 1, this.renderer.worker, tokenHash, assetType, nftId);
                 } else {
                     let sprite = this.spritesets[1][name] = new Sprite(name, 2, this.renderer.worker, tokenHash, assetType, nftId);
-                    if(!this.renderer.mobile && !this.renderer.tablet) {
+                    if (!this.renderer.mobile && !this.renderer.tablet) {
                         sprite = this.spritesets[2][name] = new Sprite(name, 3, this.renderer.worker, tokenHash, assetType, nftId);
                     }
                     return sprite;
                 }
             },
 
-            setSpriteScale: function(scale) {
+            setSpriteScale: function (scale) {
                 var self = this;
 
-                if(this.renderer.upscaledRendering) {
+                if (this.renderer.upscaledRendering) {
                     this.sprites = this.spritesets[0];
                 } else {
                     this.sprites = this.spritesets[scale - 1];
 
-                    _.each(this.entities, function(entity) {
+                    _.each(this.entities, function (entity) {
                         entity.sprite = null;
                         entity.setSprite(self.sprites[entity.getSpriteName()]);
                     });
@@ -6339,7 +6342,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 }
             },
 
-            loadSprites: function() {
+            loadSprites: function () {
                 console.log("Loading sprites...");
                 this.spritesets = [];
                 this.spritesets[0] = {};
@@ -6350,85 +6353,85 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 }, this);
             },
 
-            spritesLoaded: function() {
-                if(_.any(this.sprites, function(sprite) { return !sprite.isLoaded; })) {
+            spritesLoaded: function () {
+                if (_.any(this.sprites, function (sprite) { return !sprite.isLoaded; })) {
                     return false;
                 }
                 return true;
             },
 
-            setCursor: function(name, orientation) {
-                if(name in this.cursors) {
+            setCursor: function (name, orientation) {
+                if (name in this.cursors) {
                     this.currentCursorOrientation = orientation;
                     if (name !== this.currentCursorName) {
                         this.currentCursorName = name;
                     }
                 } else {
-                    console.error("Unknown cursor name :"+name);
+                    console.error("Unknown cursor name :" + name);
                 }
             },
 
-            updateCursorLogic: function() {
+            updateCursorLogic: function () {
                 if (this.hoveringFishableTile && this.started) {
                     this.targetColor = "rgba(90, 90, 200, 0.5)";
                 }
-                else if(this.hoveringCollidingTile && this.started) {
+                else if (this.hoveringCollidingTile && this.started) {
                     this.targetColor = "rgba(255, 50, 50, 0.5)";
                 }
                 else {
                     this.targetColor = "rgba(255, 255, 255, 0.5)";
                 }
 
-                if(this.hoveringMob && this.started && this.player && !Types.isSpecialItem(Types.getKindFromString(this.player.weaponName))) {
+                if (this.hoveringMob && this.started && this.player && !Types.isSpecialItem(Types.getKindFromString(this.player.weaponName))) {
                     this.setCursor("sword");
                     this.hoveringTarget = false;
                     this.targetCellVisible = false;
                 }
-                else if(this.hoveringNpc && this.started) {
+                else if (this.hoveringNpc && this.started) {
                     this.setCursor("talk");
                     this.hoveringTarget = false;
                     this.targetCellVisible = false;
                 }
-                else if((this.hoveringItem || this.hoveringChest) && this.started) {
+                else if ((this.hoveringItem || this.hoveringChest) && this.started) {
                     this.setCursor("loot");
                     this.hoveringTarget = false;
                     this.targetCellVisible = true;
                 }
-                else if(this.hoveringFishableTile && this.started) {
+                else if (this.hoveringFishableTile && this.started) {
                     this.setCursor("float");
                     this.hoveringTarget = false;
                     this.targetCellVisible = true;
                 }
-                else if(this.hoveringMinigamePrompt){
+                else if (this.hoveringMinigamePrompt) {
                     this.hoveringMinigamePrompt = $("#minigameprompt").hasClass(`active`) && $(`#minigameprompt:hover`).length;
                 }
-                else if($("#minigameprompt").hasClass(`active`) && $(`#minigameprompt:hover`).length){
+                else if ($("#minigameprompt").hasClass(`active`) && $(`#minigameprompt:hover`).length) {
                     this.hoveringMinigamePrompt = true;
                     this.hoveringTarget = false;
                     this.targetCellVisible = false;
                 }
-                else if($(`#minigame`).length && $(`#minigame`).hasClass("clickable active")){
+                else if ($(`#minigame`).length && $(`#minigame`).hasClass("clickable active")) {
                     this.minigameLoaded = true;
                     this.hoveringTarget = false;
                     this.targetCellVisible = false;
                 }
-                else if(this.minigameLoaded){
+                else if (this.minigameLoaded) {
                     let clickThrottle = 500;
-                    if(!this.lastMousedown){
+                    if (!this.lastMousedown) {
                         this.lastMousedown = new Date().getTime();  //Set last click for use in clickthrottle
                     }
-                    else if(this.currentTime > this.lastMousedown + clickThrottle){ 
+                    else if (this.currentTime > this.lastMousedown + clickThrottle) {
                         this.minigameLoaded = false;
                         this.lastMousedown = null;
                     }
                 }
-                else if(this.mousedown) {
+                else if (this.mousedown) {
                     let clickThrottle = 100;   //minimum click duration to show handclick.png cursor
                     if (!this.lastMousedown) {
                         this.setCursor("handclick");
                         this.lastMousedown = new Date().getTime();
-                    } 
-                    else if(this.currentCursorName == "handclick" && this.currentTime > this.lastMousedown + clickThrottle) {
+                    }
+                    else if (this.currentCursorName == "handclick" && this.currentTime > this.lastMousedown + clickThrottle) {
                         //wait to make sure the cursor was changed, then allow the duration to be checked.     
                         this.lastMousedown = null;
                         this.mousedown = false;
@@ -6443,27 +6446,27 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 }
             },
 
-            focusPlayer: function() {
+            focusPlayer: function () {
                 this.renderer.camera.lookAt(this.player);
             },
 
-            addEntity: function(entity) {
+            addEntity: function (entity) {
                 var self = this;
 
-                if(this.entities[entity.id] === undefined) {
+                if (this.entities[entity.id] === undefined) {
                     this.entities[entity.id] = entity;
                     this.registerEntityPosition(entity);
 
-                    if(!(entity instanceof Item && entity.wasDropped)
+                    if (!(entity instanceof Item && entity.wasDropped)
                         && !(this.renderer.mobile || this.renderer.tablet)
                         && !(entity instanceof Projectile)
                     ) {
                         entity.fadeIn(this.currentTime);
                     }
 
-                    if(this.renderer.mobile || this.renderer.tablet) {
-                        entity.onDirty(function(e) {
-                            if(self.camera.isVisible(e)) {
+                    if (this.renderer.mobile || this.renderer.tablet) {
+                        entity.onDirty(function (e) {
+                            if (self.camera.isVisible(e)) {
                                 e.dirtyRect = self.renderer.getEntityBoundingRect(e);
                                 self.checkOtherDirtyRects(e.dirtyRect, e, e.gridX, e.gridY);
                             }
@@ -6475,29 +6478,29 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 }
             },
 
-            removeEntity: function(entity) {
-                if(entity.id in this.entities) {
+            removeEntity: function (entity) {
+                if (entity.id in this.entities) {
                     this.unregisterEntityPosition(entity);
                     delete this.entities[entity.id];
                 }
             },
 
-            addItem: function(item, x, y) {
+            addItem: function (item, x, y) {
                 item.setSprite(this.sprites[item.getSpriteName()]);
                 item.setGridPosition(x, y);
                 item.setAnimation("idle", 150);
                 this.addEntity(item);
             },
 
-            addFieldEffect: function(fieldEffect, x, y) {
-                let self=this;
+            addFieldEffect: function (fieldEffect, x, y) {
+                let self = this;
 
                 fieldEffect.setSprite(this.sprites[fieldEffect.getSpriteName()]);
                 fieldEffect.setGridPosition(x, y);
                 if (fieldEffect.type === "singleIndicatedAoe") {
-                    fieldEffect.setAnimation("idle", fieldEffect.idleSpeed, 1, function() {
+                    fieldEffect.setAnimation("idle", fieldEffect.idleSpeed, 1, function () {
                         let animation = self.isPlayerAt(fieldEffect.gridX, fieldEffect.gridY) ? "hit" : "miss";
-                        fieldEffect.setAnimation(animation, fieldEffect.projectileSpeed, 1, function(){
+                        fieldEffect.setAnimation(animation, fieldEffect.projectileSpeed, 1, function () {
                             fieldEffect.setVisible(false);
                         });
                     });
@@ -6507,8 +6510,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.addEntity(fieldEffect);
             },
 
-            removeItem: function(item) {
-                if(item) {
+            removeItem: function (item) {
+                if (item) {
                     this.removeFromItemGrid(item, item.gridX, item.gridY);
                     this.removeFromRenderingGrid(item, item.gridX, item.gridY);
                     delete this.entities[item.id];
@@ -6517,8 +6520,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 }
             },
 
-            removeFieldEffect: function(fieldEffect) {
-                if(fieldEffect) {
+            removeFieldEffect: function (fieldEffect) {
+                if (fieldEffect) {
                     self.removeFromRenderingGrid(fieldEffect, fieldEffect.gridX, fieldEffect.gridY);
                     self.removeFromEntityGrid(fieldEffect, fieldEffect.gridX, fieldEffect.gridY);
                     delete this.entities[fieldEffect.id];
@@ -6527,31 +6530,31 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 }
             },
 
-            addFloat: function(float) {
+            addFloat: function (float) {
                 let self = this;
-                float.despawnTimeout = setTimeout(function() {
+                float.despawnTimeout = setTimeout(function () {
                     self.removeFloat(float.id);
                 }, float.despawnDuration);
 
-                if(this.floats[float.id] === undefined) {
+                if (this.floats[float.id] === undefined) {
                     this.floats[float.id] = float;
                 }
                 else {
-                    console.error("This float already exists : " + float.id );
+                    console.error("This float already exists : " + float.id);
                 }
             },
 
-            castFloat: function(float) {
+            castFloat: function (float) {
                 let self = this;
                 let player = this.getEntityById(float.id);
-                if(player) {
+                if (player) {
                     let orientationToLake = player.getOrientationTo(float);
                     if (orientationToLake !== player.orientation) {
                         player.turnTo(orientationToLake);
                     };
 
                     if (this.camera.isVisible(player)) {
-                        player.animate("atk", 75, 1, function() {
+                        player.animate("atk", 75, 1, function () {
                             self.audioManager.playSound("watersplash");
                             player.idle();
                             self.addFloat(float);
@@ -6562,8 +6565,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 }
             },
 
-            removeFloat: function(floatId) {
-                if(floatId in this.floats) {
+            removeFloat: function (floatId) {
+                if (floatId in this.floats) {
                     clearTimeout(this.floats[floatId].despawnTimeout);
                     delete this.floats[floatId];
                 }
@@ -6572,14 +6575,14 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 }
             },
 
-            initPathingGrid: function() {
+            initPathingGrid: function () {
                 this.pathingGrid = [];
                 this.finalPathingGrid = [];
                 this.pathingGridBackup = [];
-                for(var i=0; i < this.map.height; i += 1) {
+                for (var i = 0; i < this.map.height; i += 1) {
                     this.pathingGrid[i] = [];
                     this.pathingGridBackup[i] = [];
-                    for(var j=0; j < this.map.width; j += 1) {
+                    for (var j = 0; j < this.map.width; j += 1) {
                         this.pathingGrid[i][j] = this.map.grid[i][j];
                         this.pathingGridBackup[i][j] = this.map.grid[i][j];
                     }
@@ -6588,33 +6591,33 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 _self = this;
             },
 
-            initEntityGrid: function() {
+            initEntityGrid: function () {
                 this.entityGrid = [];
-                for(var i=0; i < this.map.height; i += 1) {
+                for (var i = 0; i < this.map.height; i += 1) {
                     this.entityGrid[i] = [];
-                    for(var j=0; j < this.map.width; j += 1) {
+                    for (var j = 0; j < this.map.width; j += 1) {
                         this.entityGrid[i][j] = {};
                     }
                 }
                 console.log("Initialized the entity grid.");
             },
 
-            initRenderingGrid: function() {
+            initRenderingGrid: function () {
                 this.renderingGrid = [];
-                for(var i=0; i < this.map.height; i += 1) {
+                for (var i = 0; i < this.map.height; i += 1) {
                     this.renderingGrid[i] = [];
-                    for(var j=0; j < this.map.width; j += 1) {
+                    for (var j = 0; j < this.map.width; j += 1) {
                         this.renderingGrid[i][j] = {};
                     }
                 }
                 console.log("Initialized the rendering grid.");
             },
 
-            initItemGrid: function() {
+            initItemGrid: function () {
                 this.itemGrid = [];
-                for(var i=0; i < this.map.height; i += 1) {
+                for (var i = 0; i < this.map.height; i += 1) {
                     this.itemGrid[i] = [];
-                    for(var j=0; j < this.map.width; j += 1) {
+                    for (var j = 0; j < this.map.width; j += 1) {
                         this.itemGrid[i][j] = {};
                     }
                 }
@@ -6624,21 +6627,21 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             /**
              *
              */
-            initAnimatedTiles: function() {
+            initAnimatedTiles: function () {
                 var self = this,
                     m = this.map;
 
                 this.animatedTiles = [];
                 this.highAnimatedTiles = [];
                 this.forEachTile(function (id, index) {
-                    if(m.isAnimatedTile(id)) {
+                    if (m.isAnimatedTile(id)) {
                         var tileProps = m.getTileAnimationProps(id);
                         var tile = new AnimatedTile(
-                            id,            
-                            index, 
+                            id,
+                            index,
                             tileProps
                         );
-                            pos = self.map.tileIndexToGridPosition(tile.index);
+                        pos = self.map.tileIndexToGridPosition(tile.index);
 
                         tile.x = pos.x;
                         tile.y = pos.y;
@@ -6654,31 +6657,31 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 //console.log("Initialized animated tiles.");
             },
 
-            addToRenderingGrid: function(entity, x, y) {
-                if(!this.map.isOutOfBounds(x, y)) {
+            addToRenderingGrid: function (entity, x, y) {
+                if (!this.map.isOutOfBounds(x, y)) {
                     this.renderingGrid[y][x][entity.id] = entity;
                 }
             },
 
-            removeFromRenderingGrid: function(entity, x, y) {
-                if(entity && this.renderingGrid[y][x] && entity.id in this.renderingGrid[y][x]) {
+            removeFromRenderingGrid: function (entity, x, y) {
+                if (entity && this.renderingGrid[y][x] && entity.id in this.renderingGrid[y][x]) {
                     delete this.renderingGrid[y][x][entity.id];
                 }
             },
 
-            removeFromEntityGrid: function(entity, x, y) {
-                if(this.entityGrid[y][x][entity.id]) {
+            removeFromEntityGrid: function (entity, x, y) {
+                if (this.entityGrid[y][x][entity.id]) {
                     delete this.entityGrid[y][x][entity.id];
                 }
             },
 
-            removeFromItemGrid: function(item, x, y) {
-                if(item && this.itemGrid[y][x][item.id]) {
+            removeFromItemGrid: function (item, x, y) {
+                if (item && this.itemGrid[y][x][item.id]) {
                     delete this.itemGrid[y][x][item.id];
                 }
             },
 
-            removeFromPathingGrid: function(x, y) {
+            removeFromPathingGrid: function (x, y) {
                 this.pathingGrid[y][x] = 0;
             },
 
@@ -6689,15 +6692,15 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
              *
              * @param {Entity} entity The moving entity
              */
-            registerEntityDualPosition: function(entity) {
-                if(entity) {
+            registerEntityDualPosition: function (entity) {
+                if (entity) {
                     this.entityGrid[entity.gridY][entity.gridX][entity.id] = entity;
 
                     this.addToRenderingGrid(entity, entity.gridX, entity.gridY);
 
-                    if(entity.nextGridX >= 0 && entity.nextGridY >= 0) {
+                    if (entity.nextGridX >= 0 && entity.nextGridY >= 0) {
                         this.entityGrid[entity.nextGridY][entity.nextGridX][entity.id] = entity;
-                        if(!(entity instanceof Player) && !(entity instanceof Mob && entity.isFriendly)) {
+                        if (!(entity instanceof Player) && !(entity instanceof Mob && entity.isFriendly)) {
                             this.pathingGrid[entity.nextGridY][entity.nextGridX] = entity.id;
                         }
                     }
@@ -6709,32 +6712,32 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
              *
              * @param {Entity} entity The moving entity
              */
-            unregisterEntityPosition: function(entity) {
-                if(entity) {
+            unregisterEntityPosition: function (entity) {
+                if (entity) {
                     this.removeFromEntityGrid(entity, entity.gridX, entity.gridY);
                     this.removeFromPathingGrid(entity.gridX, entity.gridY);
 
                     this.removeFromRenderingGrid(entity, entity.gridX, entity.gridY);
 
-                    if(entity.nextGridX >= 0 && entity.nextGridY >= 0) {
+                    if (entity.nextGridX >= 0 && entity.nextGridY >= 0) {
                         this.removeFromEntityGrid(entity, entity.nextGridX, entity.nextGridY);
                         this.removeFromPathingGrid(entity.nextGridX, entity.nextGridY);
                     }
                 }
             },
 
-            registerEntityPosition: function(entity) {
+            registerEntityPosition: function (entity) {
                 var x = entity.gridX,
                     y = entity.gridY;
 
-                if(entity) {
-                    if(entity instanceof Character || entity instanceof Chest) {
+                if (entity) {
+                    if (entity instanceof Character || entity instanceof Chest) {
                         this.entityGrid[y][x][entity.id] = entity;
-                        if(!(entity instanceof Player) && !(entity instanceof Mob && entity.isFriendly)) {
+                        if (!(entity instanceof Player) && !(entity instanceof Mob && entity.isFriendly)) {
                             this.pathingGrid[y][x] = entity.id;
                         }
                     }
-                    if(entity instanceof Item) {
+                    if (entity instanceof Item) {
                         this.itemGrid[y][x][entity.id] = entity;
                         this.pathingGrid[y][x] = 0;
                     }
@@ -6743,12 +6746,12 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 }
             },
 
-            updatePos: function(entity) {
+            updatePos: function (entity) {
                 this.unregisterEntityPosition(entity);
                 this.registerEntityPosition(entity);
             },
 
-            setServerOptions: function(host, port, username, protocol) {
+            setServerOptions: function (host, port, username, protocol) {
                 console.log(host, port, protocol)
                 this.host = host;
                 this.port = port;
@@ -6756,19 +6759,19 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.protocol = protocol;
             },
 
-            loadAudio: function() {
+            loadAudio: function () {
                 this.audioManager = new AudioManager(this);
                 this.app.settings.setSettings();
             },
 
-            initMusicAreas: function() {
+            initMusicAreas: function () {
                 var self = this;
-                _.each(this.map.musicAreas, function(area) {
+                _.each(this.map.musicAreas, function (area) {
                     self.audioManager.addArea(area.x, area.y, area.w, area.h, area.id);
                 });
             },
 
-            run: function(started_callback) {
+            run: function (started_callback) {
                 var self = this;
 
                 this.loadSprites();
@@ -6777,8 +6780,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                 this.setSpriteScale(this.renderer.scale);
 
-                var wait = setInterval(function() {
-                    if(self.map.isLoaded && self.spritesLoaded()) {
+                var wait = setInterval(function () {
+                    if (self.map.isLoaded && self.spritesLoaded()) {
                         self.ready = true;
                         console.debug('All sprites loaded.');
 
@@ -6792,7 +6795,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         self.initFish();
                         //self.initHurtSprites();
 
-                        if(!self.renderer.mobile
+                        if (!self.renderer.mobile
                             && !self.renderer.tablet
                             && self.renderer.upscaledRendering) {
                             self.initSilhouettes();
@@ -6816,19 +6819,19 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 }, 100);
             },
 
-            canUseCenteredCamera: function() {
+            canUseCenteredCamera: function () {
                 return this.app.settings.getCenteredCamera();
             },
 
-            tick: function() {
+            tick: function () {
                 this.currentTime = new Date().getTime();
 
-                if(this.started) {
+                if (this.started) {
 
                     if (this.lastFrameTime !== undefined) {
                         let elaspedTime = this.currentTime - this.lastFrameTime;
                         if (elaspedTime < this.renderer.frameTime) {
-                            this.renderer.worker.postMessage({"type": "idle"});
+                            this.renderer.worker.postMessage({ "type": "idle" });
                             return;
                         }
                     }
@@ -6848,7 +6851,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 }
             },
 
-            start: function() {
+            start: function () {
                 this.tick();
                 this.hasNeverStarted = false;
                 $("#background").css('background', 'none');
@@ -6857,17 +6860,17 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 setInterval(this.garbageCollectEntities.bind(this), 5000);
             },
 
-            stop: function() {
+            stop: function () {
                 console.log("Game stopped.");
                 this.isStopped = true;
             },
 
-            entityIdExists: function(id) {
+            entityIdExists: function (id) {
                 return id in this.entities;
             },
 
-            getEntityById: function(id) {
-                if(id in this.entities) {
+            getEntityById: function (id) {
+                if (id in this.entities) {
                     return this.entities[id];
                 }
                 else {
@@ -6875,8 +6878,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 }
             },
 
-            getFloatById: function(id) {
-                if(id in this.floats) {
+            getFloatById: function (id) {
+                if (id in this.floats) {
                     return this.floats[id];
                 }
                 else {
@@ -6884,7 +6887,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 }
             },
 
-            findVisibleAnimatedTiles: function(animatedTiles) {
+            findVisibleAnimatedTiles: function (animatedTiles) {
                 let scene = this.map.getCurrentScene(this.player);
                 let visibleAnimatedTiles = [];
                 const animatedTilesLength = animatedTiles.length;
@@ -6899,8 +6902,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 return visibleAnimatedTiles;
             },
 
-            findVisibleTiles: function() {
-                if(!this.renderer || !this.renderer.tileset) {
+            findVisibleTiles: function () {
+                if (!this.renderer || !this.renderer.tileset) {
                     return
                 }
 
@@ -6914,15 +6917,15 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.visibleTerrainTiles = []
                 this.visibleHighTiles = []
                 this.forEachVisibleTile(function (id, index) {
-                    if(m.isLightTile(id)) {
+                    if (m.isLightTile(id)) {
                         return
                     }
 
-                    if(!m.isHighTile(id) && !m.isAnimatedTile(id)) {
-                        self.visibleTerrainTiles.push({tileid: id, setW: tilesetwidth, gridW: m.width, cellid: index});
+                    if (!m.isHighTile(id) && !m.isAnimatedTile(id)) {
+                        self.visibleTerrainTiles.push({ tileid: id, setW: tilesetwidth, gridW: m.width, cellid: index });
                     }
-                    else if(m.isHighTile(id) && !m.isAnimatedTile(id)) {
-                        self.visibleHighTiles.push({tileid: id, setW: tilesetwidth, gridW: m.width, cellid: index});
+                    else if (m.isHighTile(id) && !m.isAnimatedTile(id)) {
+                        self.visibleHighTiles.push({ tileid: id, setW: tilesetwidth, gridW: m.width, cellid: index });
                     }
                 }, 2);
 
@@ -6931,16 +6934,16 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         return;
                     }
 
-                    if(!m.isHighTile(id) && !m.isAnimatedTile(id)) {
-                        self.visibleTerrainTiles.push({tileid: id, setW: tilesetwidth, gridW: m.width, cellid: index});
+                    if (!m.isHighTile(id) && !m.isAnimatedTile(id)) {
+                        self.visibleTerrainTiles.push({ tileid: id, setW: tilesetwidth, gridW: m.width, cellid: index });
                     }
-                    else if(m.isHighTile(id) && !m.isAnimatedTile(id)) {
-                        self.visibleHighTiles.push({tileid: id, setW: tilesetwidth, gridW: m.width, cellid: index});
+                    else if (m.isHighTile(id) && !m.isAnimatedTile(id)) {
+                        self.visibleHighTiles.push({ tileid: id, setW: tilesetwidth, gridW: m.width, cellid: index });
                     }
                 }, 20);
             },
 
-            connect: function(started_callback) {
+            connect: function (started_callback) {
                 let self = this,
                     connecting = false; // always in dispatcher mode in the build version
 
@@ -6948,20 +6951,20 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.renderStatistics();
 
                 //>>includeStart("prodHost", pragmas.prodHost);
-                if(!connecting) {
+                if (!connecting) {
                     this.client.connect(true); // always use the dispatcher in production
                 }
                 //>>includeEnd("prodHost");
 
-                this.client.onDispatched(function(host, port) {
-                    console.debug("Dispatched to game server "+host+ ":"+port);
+                this.client.onDispatched(function (host, port) {
+                    console.debug("Dispatched to game server " + host + ":" + port);
 
                     self.client.host = host;
                     self.client.port = port;
                     self.client.connect(); // connect to actual game server
                 });
 
-                this.client.onConnected(function() {
+                this.client.onConnected(function () {
                     console.log("Starting client/server handshake");
 
                     function sendHello() {
@@ -6991,13 +6994,13 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     sendHello();
                 });
 
-                this.client.onEntityList(function(list) {
+                this.client.onEntityList(function (list) {
                     list = list.filter(item => item !== null);
                     var entityIds = _.pluck(self.entities, 'id'),
                         knownIds = _.intersection(entityIds, list),
                         newIds = _.difference(list, knownIds);
 
-                    self.obsoleteEntities = _.reject(self.entities, function(entity) {
+                    self.obsoleteEntities = _.reject(self.entities, function (entity) {
                         return _.include(knownIds, entity.id) || entity.id === self.player.id;
                     });
 
@@ -7005,13 +7008,13 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     //self.removeObsoleteEntities();
 
                     // Ask the server for spawn information about unknown entities
-                    if(_.size(newIds) > 0) {
+                    if (_.size(newIds) > 0) {
                         self.client.sendWho(newIds);
                     }
                 });
 
-                this.client.onWelcome(function(id, name, x, y, hp, title, serverTimeOffset) {
-                    console.log("Received player ID from server : "+ id);
+                this.client.onWelcome(function (id, name, x, y, hp, title, serverTimeOffset) {
+                    console.log("Received player ID from server : " + id);
                     self.player.id = id;
                     self.playerId = id;
                     // Always accept name received from the server which will
@@ -7035,7 +7038,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     setTimeout(() => self.handleScene(self.player), 50);
                     setTimeout(() => self.handleScene(self.player), 500);
 
-                    if(!self.storage.hasAlreadyPlayed()) {
+                    if (!self.storage.hasAlreadyPlayed()) {
                         self.storage.initPlayer(self.player.name);
                         self.storage.savePlayer(undefined,
                             self.player.getSpriteName(),
@@ -7047,15 +7050,15 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         setTimeout(() => self.renderStatistics(), 1000);
                     }
 
-                    self.player.onStartPathing(function(path) {
+                    self.player.onStartPathing(function (path) {
                         var i = path.length - 1,
-                            x =  path[i][0],
-                            y =  path[i][1];
+                            x = path[i][0],
+                            y = path[i][1];
 
-                        if(self.player.isMovingToLoot()) {
+                        if (self.player.isMovingToLoot()) {
                             self.player.isLootMoving = false;
                         }
-                        else if(!self.player.isAttacking()) {
+                        else if (!self.player.isAttacking()) {
                             self.client.sendMove(x, y);
                         }
 
@@ -7064,7 +7067,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         self.selectedY = y;
                         self.selectedCellVisible = true;
 
-                        if(self.renderer.mobile || self.renderer.tablet) {
+                        if (self.renderer.mobile || self.renderer.tablet) {
                             self.drawTarget = true;
                             self.clearTarget = true;
                             self.renderer.targetRect = self.renderer.getTargetBoundingRect();
@@ -7072,27 +7075,26 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         }
                     });
 
-                    self.player.onRooted(function(x,y) {
+                    self.player.onRooted(function (x, y) {
                         self.client.sendMove(x, y);
                     });
 
-                    self.player.onCheckAggro(function() {
-                        self.forEachMob(function(mob) {
-                            let aggroRange = Math.floor(mob.aggroRange/self.player.stealth);
-                            if(mob.isAggressive
+                    self.player.onCheckAggro(function () {
+                        self.forEachMob(function (mob) {
+                            let aggroRange = Math.floor(mob.aggroRange / self.player.stealth);
+                            if (mob.isAggressive
                                 && (!mob.isFriendly || mob.breakFriendly(self.player))
                                 && !mob.inCombat
-                                && self.player.isNear(mob, aggroRange))
-                            {
+                                && self.player.isNear(mob, aggroRange)) {
                                 self.player.aggro(mob);
                             }
                         });
                     });
 
-                    self.player.onAggro(function(mob) {
-                        if(!mob.isWaitingToAttack(self.player) && !self.player.isAttackedBy(mob) && !self.player.isDead) {
-                            self.player.log_info("Aggroed by " + mob.id + " at ("+self.player.gridX+", "+self.player.gridY+")");
-                            if(mob.aggroMessage != undefined) {
+                    self.player.onAggro(function (mob) {
+                        if (!mob.isWaitingToAttack(self.player) && !self.player.isAttackedBy(mob) && !self.player.isDead) {
+                            self.player.log_info("Aggroed by " + mob.id + " at (" + self.player.gridX + ", " + self.player.gridY + ")");
+                            if (mob.aggroMessage != undefined) {
                                 self.createBubble(mob.id, mob.aggroMessage);
                                 self.assignBubbleTo(mob);
                             }
@@ -7101,27 +7103,27 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         }
                     });
 
-                    self.player.onBeforeStep(function() {
+                    self.player.onBeforeStep(function () {
                         var blockingEntity = self.getEntityAt(self.player.nextGridX, self.player.nextGridY);
-                        if(blockingEntity && blockingEntity.id !== self.playerId) {
+                        if (blockingEntity && blockingEntity.id !== self.playerId) {
                             console.debug("Blocked by " + blockingEntity.id);
                         }
                         self.unregisterEntityPosition(self.player);
                     });
 
-                    self.player.onStep(function() {
+                    self.player.onStep(function () {
                         self.handleScene(self.player)
                         self.findVisibleTiles();
 
-                        if(this.isFishing) {
+                        if (this.isFishing) {
                             self.stopFishing(false, false, false);
                         }
 
-                        if(self.player.hasNextStep()) {
+                        if (self.player.hasNextStep()) {
                             self.registerEntityDualPosition(self.player);
                         }
 
-                        if(self.isZoningTile(self.player.gridX, self.player.gridY)) {
+                        if (self.isZoningTile(self.player.gridX, self.player.gridY)) {
                             self.enqueueZoningFrom(self.player.gridX, self.player.gridY);
                         }
 
@@ -7129,8 +7131,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             self.player.stop();
                         }
 
-                        self.player.forEachAttacker(function(attacker) {
-                            if(attacker.isAdjacent(attacker.target)) {
+                        self.player.forEachAttacker(function (attacker) {
+                            if (attacker.isAdjacent(attacker.target)) {
                                 attacker.lookAtTarget();
                             } else {
                                 if (!(attacker instanceof Player)) {
@@ -7141,7 +7143,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                         self.updatePlayerCheckpoint();
 
-                        if(!self.player.isDead) {
+                        if (!self.player.isDead) {
                             self.audioManager.updateMusic();
                         }
 
@@ -7154,7 +7156,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 } else {
                                     msg = "Press [E] to talk"
                                 }
-                                self.createBubble(entity.id, msg, function() {
+                                self.createBubble(entity.id, msg, function () {
                                     return self.player.isAdjacent(entity)
                                 });
                                 self.assignBubbleTo(entity);
@@ -7162,8 +7164,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         })
                     });
 
-                    self.player.onStopPathing(function(x, y) {
-                        if(self.player.hasTarget()) {
+                    self.player.onStopPathing(function (x, y) {
+                        if (self.player.hasTarget()) {
                             self.player.lookAtTarget();
                         }
 
@@ -7171,10 +7173,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                         self.selectedCellVisible = false;
 
-                        if(self.isItemAt(x, y)) {
+                        if (self.isItemAt(x, y)) {
                             var item = self.getItemAt(x, y);
 
-                            if(!item.unlootable) {
+                            if (!item.unlootable) {
                                 try {
                                     let aboutToEquipWeaponButHasNFTWeapon = item.type === "weapon" && self.player.getWeaponName().startsWith("NFT_");
                                     if (!aboutToEquipWeaponButHasNFTWeapon) {
@@ -7206,7 +7208,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             }
                         }
 
-                        if(!self.player.hasTarget() && self.map.isDoor(x, y)) {
+                        if (!self.player.hasTarget() && self.map.isDoor(x, y)) {
                             var dest = self.map.getDoorDestination(x, y);
                             var _self = self;
 
@@ -7222,7 +7224,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                         }
                                     }).catch(function (error) {
                                         console.log(error);
-                                    }).finally(function(e) {
+                                    }).finally(function (e) {
 
                                     });
                                 } else {
@@ -7234,11 +7236,11 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                     _self.player.turnTo(dest.orientation);
                                     _self.client.sendTeleport(dest.x, dest.y);
 
-                                    if(_self.renderer.mobile && dest.cameraX && dest.cameraY) {
+                                    if (_self.renderer.mobile && dest.cameraX && dest.cameraY) {
                                         _self.camera.setGridPosition(dest.cameraX, dest.cameraY);
                                         _self.resetZone();
                                     } else {
-                                        if(dest.portal) {
+                                        if (dest.portal) {
                                             _self.assignBubbleTo(_self.player);
                                         } else {
                                             if (_self.canUseCenteredCamera()) {
@@ -7250,23 +7252,23 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                         }
                                     }
 
-                                    _self.player.forEachAttacker(function(attacker) {
+                                    _self.player.forEachAttacker(function (attacker) {
                                         attacker.disengage();
                                         attacker.idle();
                                     });
 
                                     _self.updatePlateauMode();
 
-                                    if(_self.renderer.mobile || _self.renderer.tablet) {
+                                    if (_self.renderer.mobile || _self.renderer.tablet) {
                                         // When rendering with dirty rects, clear the whole screen when entering a door.
                                         _self.renderer.clearScreen(_self.renderer.context);
                                     }
 
-                                    if(dest.portal) {
+                                    if (dest.portal) {
                                         _self.audioManager.playSound("teleport");
                                     }
 
-                                    if(!_self.player.isDead) {
+                                    if (!_self.player.isDead) {
                                         _self.audioManager.updateMusic();
                                     }
                                 }
@@ -7276,7 +7278,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 if (dest.triggerId !== undefined) {
                                     let inverted = false;
                                     let triggerId = dest.triggerId;
-                                    if(triggerId.startsWith("!")) {
+                                    if (triggerId.startsWith("!")) {
                                         inverted = true;
                                         triggerId = dest.triggerId.substring(1);
                                     }
@@ -7284,8 +7286,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                     let trUrl = '/session/' + self.sessionId + '/requestTeleport/' + triggerId;
                                     _self.doorCheck = true;
                                     axios.get(trUrl).then(function (response) {
-                                        if ( (response.data === true && !inverted) || (response.data === false && inverted))
-                                        {
+                                        if ((response.data === true && !inverted) || (response.data === false && inverted)) {
                                             goInside();
                                             _self.updatePos(self.player);
                                         } else {
@@ -7293,7 +7294,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                         }
                                     }).catch(function (error) {
                                         console.error("Error while checking the trigger.");
-                                    }).finally(function(e) {
+                                    }).finally(function (e) {
                                         _self.doorCheck = false;
                                     });
                                 } else {
@@ -7313,7 +7314,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                     }
                                 }).catch(function (error) {
                                     console.error("Error while checking ownership of token gate.");
-                                }).finally(function(e) {
+                                }).finally(function (e) {
                                     _self.doorCheck = false;
                                 });
                             } else if (dest.item !== undefined) {
@@ -7327,7 +7328,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                     }
                                 }).catch(function (error) {
                                     console.error("Error while checking ownership of token gate.");
-                                }).finally(function(e) {
+                                }).finally(function (e) {
                                     _self.doorCheck = false;
                                 });
                             } else if (dest.quest !== undefined) {
@@ -7341,7 +7342,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                     }
                                 }).catch(function (error) {
                                     console.error("Error while checking ownership of token gate.");
-                                }).finally(function(e) {
+                                }).finally(function (e) {
                                     _self.doorCheck = false;
                                 });
                             } else if (dest.collection !== undefined) {
@@ -7360,7 +7361,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                     }
                                 }).catch(function (error) {
                                     console.error("Error while checking ownership of token gate.");
-                                }).finally(function(e) {
+                                }).finally(function (e) {
                                     _self.doorCheck = false;
                                 });
                             } else if (dest.http_redirect !== undefined) {
@@ -7371,26 +7372,26 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             }
                         }
 
-                        if(self.player.target instanceof Chest) {
+                        if (self.player.target instanceof Chest) {
                             self.client.sendOpen(self.player.target);
                             self.audioManager.playSound("chest");
                         }
 
-                        self.player.forEachAttacker(function(attacker) {
-                            if(!attacker.isAdjacentNonDiagonal(self.player) && !(attacker instanceof Player)) {
+                        self.player.forEachAttacker(function (attacker) {
+                            if (!attacker.isAdjacentNonDiagonal(self.player) && !(attacker instanceof Player)) {
                                 attacker.follow(self.player);
                             }
                         });
 
                         self.updatePos(self.player);
 
-                        if(self.map.getCurrentTrigger(self.player)) {
+                        if (self.map.getCurrentTrigger(self.player)) {
                             self.handleTrigger(self.map.getCurrentTrigger(self.player), self.player);
                         }
 
                     });
 
-                    self.player.onRequestPath(function(x, y) {
+                    self.player.onRequestPath(function (x, y) {
                         return new Promise((resolve, reject) => {
                             try {
                                 var ignored = [self.player]; // Always ignore self
@@ -7408,12 +7409,12 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         });
                     });
 
-                    self.player.onDeath(function() {
+                    self.player.onDeath(function () {
                         console.log(self.playerId + " is dead");
 
                         self.player.stopBlinking();
                         self.player.setSprite(self.sprites["death"]);
-                        self.player.animate("death", 120, 1, function() {
+                        self.player.animate("death", 120, 1, function () {
                             console.log(self.playerId + " was removed");
 
                             self.removeEntity(self.player);
@@ -7421,12 +7422,12 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                             self.player = null;
                             self.client.disable();
-                            setTimeout(function() {
+                            setTimeout(function () {
                                 self.playerdeath_callback();
                             }, 1000);
                         });
 
-                        self.player.forEachAttacker(function(attacker) {
+                        self.player.forEachAttacker(function (attacker) {
                             attacker.disengage();
                             attacker.idle();
                         });
@@ -7435,18 +7436,18 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         self.audioManager.playSound("death");
                     });
 
-                    self.player.onHasMoved(function(player) {
-                        self.bubbleManager.forEachBubble(function(bubble) {
+                    self.player.onHasMoved(function (player) {
+                        self.bubbleManager.forEachBubble(function (bubble) {
                             let character = self.getEntityById(bubble.id);
                             self.assignBubbleTo(character);
                         });
                     });
 
-                    self.player.onArmorLoot(function(armorName) {
+                    self.player.onArmorLoot(function (armorName) {
                         return;
                     });
 
-                    self.player.onSwitchItem(function() {
+                    self.player.onSwitchItem(function () {
                         let player = self.getEntityById(self.playerId);
                         let weaponName = player.getWeaponName();
 
@@ -7455,40 +7456,40 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             self.storage.setPlayerWeapon(player.getWeaponName());
                         }
 
-                        if(this.isFishing) {
+                        if (this.isFishing) {
                             self.stopFishing(false, false, false);
                         }
 
-                        if(self.equipment_callback) {
+                        if (self.equipment_callback) {
                             self.equipment_callback();
                         }
                     });
 
-                    self.player.onInvincible(function() {
+                    self.player.onInvincible(function () {
                         self.invincible_callback();
                     });
 
-                    self.client.onSpawnItem(function(item, x, y) {
-                        console.log("Spawned " + Types.getKindAsString(item.kind) + " (" + item.id + ") at "+x+", "+y);
+                    self.client.onSpawnItem(function (item, x, y) {
+                        console.log("Spawned " + Types.getKindAsString(item.kind) + " (" + item.id + ") at " + x + ", " + y);
                         self.addItem(item, x, y);
                     });
 
-                    self.client.onSpawnFieldEffect(function(fieldEffect, x, y) {
-                        console.log("Spawned field effect " + Types.getKindAsString(fieldEffect.kind) + " (" + fieldEffect.id + ") at "+x+", "+y);
+                    self.client.onSpawnFieldEffect(function (fieldEffect, x, y) {
+                        console.log("Spawned field effect " + Types.getKindAsString(fieldEffect.kind) + " (" + fieldEffect.id + ") at " + x + ", " + y);
                         self.addFieldEffect(fieldEffect, x, y);
                     });
 
-                    self.client.onSpawnChest(function(chest, x, y) {
-                        console.log("Spawned chest (" + chest.id + ") at "+x+", "+y);
+                    self.client.onSpawnChest(function (chest, x, y) {
+                        console.log("Spawned chest (" + chest.id + ") at " + x + ", " + y);
                         chest.setSprite(self.sprites[chest.getSpriteName()]);
                         chest.setGridPosition(x, y);
                         chest.setAnimation("idle_down", 150);
                         self.addEntity(chest, x, y);
 
-                        chest.onOpen(function() {
+                        chest.onOpen(function () {
                             chest.stopBlinking();
                             chest.setSprite(self.sprites["death"]);
-                            chest.setAnimation("death", 120, 1, function() {
+                            chest.setAnimation("death", 120, 1, function () {
                                 console.log(chest.id + " was removed");
                                 self.removeEntity(chest);
                                 self.removeFromRenderingGrid(chest, chest.gridX, chest.gridY);
@@ -7497,19 +7498,19 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         });
                     });
 
-                    self.client.onSpawnCharacter(function(entity, x, y, orientation, targetId) {
+                    self.client.onSpawnCharacter(function (entity, x, y, orientation, targetId) {
                         if (self.entityIdExists(entity.id) && entity instanceof Player) {
                             existingEntity = self.entities[entity.id];
-                            if(!self.camera.isVisiblePosition(existingEntity.gridX, existingEntity.gridY)) {
-                                console.log("Entity "+existingEntity.id+" is outside of the camera view so removing for respawn.");
+                            if (!self.camera.isVisiblePosition(existingEntity.gridX, existingEntity.gridY)) {
+                                console.log("Entity " + existingEntity.id + " is outside of the camera view so removing for respawn.");
                                 self.removeEntity(existingEntity);
                                 self.removeFromRenderingGrid(existingEntity, existingEntity.gridX, existingEntity.gridY);
                             }
                         }
 
-                        if(!self.entityIdExists(entity.id)) {
+                        if (!self.entityIdExists(entity.id)) {
                             try {
-                                if(entity.id !== self.playerId) {
+                                if (entity.id !== self.playerId) {
 
                                     if (entity.dynamicArmorNFTData) {
                                         const sprite = self.loadSprite(
@@ -7547,44 +7548,44 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                     self.getServerInfo();
 
 
-                                    console.debug("Spawned " + Types.getKindAsString(entity.kind) + " (" + entity.id + ") at "+entity.gridX+", "+entity.gridY);
+                                    console.debug("Spawned " + Types.getKindAsString(entity.kind) + " (" + entity.id + ") at " + entity.gridX + ", " + entity.gridY);
 
-                                    if(entity instanceof Character) {
-                                        entity.onBeforeStep(function() {
+                                    if (entity instanceof Character) {
+                                        entity.onBeforeStep(function () {
                                             self.unregisterEntityPosition(entity);
                                         });
 
-                                        entity.onStep(function() {
-                                            if(!entity.isDying) {
+                                        entity.onStep(function () {
+                                            if (!entity.isDying) {
                                                 self.registerEntityDualPosition(entity);
 
-                                                entity.forEachAttacker(function(attacker) {
-                                                    if(attacker.isAdjacent(attacker.target)) {
+                                                entity.forEachAttacker(function (attacker) {
+                                                    if (attacker.isAdjacent(attacker.target)) {
                                                         attacker.lookAtTarget();
                                                     } else {
                                                         attacker.follow(entity);
                                                     }
                                                 });
 
-                                                if(self.map.getCurrentTrigger(entity)) {
+                                                if (self.map.getCurrentTrigger(entity)) {
                                                     self.handleTrigger(self.map.getCurrentTrigger(entity), entity);
                                                 }
                                             }
                                         });
 
-                                        entity.onStopPathing(function(x, y) {
-                                            if(!entity.isDying) {
-                                                if(entity.hasTarget() && entity.isAdjacent(entity.target)) {
+                                        entity.onStopPathing(function (x, y) {
+                                            if (!entity.isDying) {
+                                                if (entity.hasTarget() && entity.isAdjacent(entity.target)) {
                                                     entity.lookAtTarget();
                                                 }
 
-                                                if(entity instanceof Player) {
+                                                if (entity instanceof Player) {
                                                     var gridX = entity.destination.gridX,
                                                         gridY = entity.destination.gridY;
 
                                                     self.handleScene(entity);
 
-                                                    if(self.map.isDoor(gridX, gridY)) {
+                                                    if (self.map.isDoor(gridX, gridY)) {
                                                         var dest = self.map.getDoorDestination(gridX, gridY);
 
                                                         function checkTrigger() {
@@ -7619,30 +7620,30 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                                     }
                                                 }
 
-                                                entity.forEachAttacker(function(attacker) {
-                                                    if(!attacker.isAdjacentNonDiagonal(entity) && attacker.id !== self.playerId) {
+                                                entity.forEachAttacker(function (attacker) {
+                                                    if (!attacker.isAdjacentNonDiagonal(entity) && attacker.id !== self.playerId) {
                                                         attacker.follow(entity);
                                                     }
                                                 });
 
                                                 self.updatePos(entity);
 
-                                                if(self.map.getCurrentTrigger(entity)) {
+                                                if (self.map.getCurrentTrigger(entity)) {
                                                     self.handleTrigger(self.map.getCurrentTrigger(entity), entity);
                                                 }
                                             }
                                         });
 
-                                        entity.onRequestPath(function(x, y) {
+                                        entity.onRequestPath(function (x, y) {
                                             return new Promise((resolve, reject) => {
                                                 try {
                                                     var ignored = [entity]; // Always ignore self
 
-                                                    var ignoreTarget = function(target) {
+                                                    var ignoreTarget = function (target) {
                                                         ignored.push(target);
 
                                                         // also ignore other attackers of the target entity
-                                                        target.forEachAttacker(function(attacker) {
+                                                        target.forEachAttacker(function (attacker) {
                                                             ignored.push(attacker);
                                                         });
                                                     };
@@ -7664,32 +7665,32 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                             });
                                         });
 
-                                        entity.onDeath(function() {
+                                        entity.onDeath(function () {
                                             console.log(entity.id + " is dead");
 
-                                            if(entity instanceof Mob) {
+                                            if (entity instanceof Mob) {
                                                 // Keep track of where mobs die in order to spawn their dropped items
                                                 // at the right position later.
-                                                self.deathpositions[entity.id] = {x: entity.gridX, y: entity.gridY};
+                                                self.deathpositions[entity.id] = { x: entity.gridX, y: entity.gridY };
                                             }
 
                                             entity.isDying = true;
 
-                                            if(!entity.deathAnimated) {
+                                            if (!entity.deathAnimated) {
                                                 entity.setSprite(self.sprites["death"]);
                                             }
-                                            entity.animate("death", entity.deathSpeed, 1, function() {
+                                            entity.animate("death", entity.deathSpeed, 1, function () {
                                                 console.log(entity.id + " was removed");
 
                                                 self.removeEntity(entity);
                                                 self.removeFromRenderingGrid(entity, entity.gridX, entity.gridY);
                                             });
 
-                                            entity.forEachAttacker(function(attacker) {
+                                            entity.forEachAttacker(function (attacker) {
                                                 attacker.disengage();
                                             });
 
-                                            if(self.player.target && self.player.target.id === entity.id) {
+                                            if (self.player.target && self.player.target.id === entity.id) {
                                                 self.player.disengage();
                                             }
 
@@ -7699,27 +7700,27 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                             self.removeFromEntityGrid(entity, entity.gridX, entity.gridY);
                                             self.removeFromPathingGrid(entity.gridX, entity.gridY);
 
-                                            if(self.camera.isVisible(entity)) {
-                                                self.audioManager.playSound("kill"+Math.floor(Math.random()*2+1));
+                                            if (self.camera.isVisible(entity)) {
+                                                self.audioManager.playSound("kill" + Math.floor(Math.random() * 2 + 1));
                                             }
 
                                             self.updateCursor();
                                         });
 
-                                        entity.onHasMoved(function(entity) {
+                                        entity.onHasMoved(function (entity) {
                                             self.assignBubbleTo(entity); // Make chat bubbles follow moving entities
                                         });
 
-                                        if(entity instanceof Mob || entity instanceof Player) {
-                                            if(targetId) {
+                                        if (entity instanceof Mob || entity instanceof Player) {
+                                            if (targetId) {
                                                 var player = self.getEntityById(targetId);
-                                                if(player) {
+                                                if (player) {
                                                     self.createAttackLink(entity, player);
                                                 }
                                             }
                                         }
 
-                                        if(self.map.getCurrentTrigger(entity)) {
+                                        if (self.map.getCurrentTrigger(entity)) {
                                             self.handleTrigger(self.map.getCurrentTrigger(entity), entity);
                                         }
                                     }
@@ -7727,7 +7728,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                     self.handleScene(entity);
                                 }
                             }
-                            catch(e) {
+                            catch (e) {
                                 console.error(e, entity);
                             }
                         } else {
@@ -7735,22 +7736,22 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         }
                     });
 
-                    self.client.onDespawnEntity(function(entityId) {
+                    self.client.onDespawnEntity(function (entityId) {
                         var entity = self.getEntityById(entityId);
 
-                        if(entity) {
-                            console.log("Despawning " + Types.getKindAsString(entity.kind) + " (" + entity.id+ ")");
+                        if (entity) {
+                            console.log("Despawning " + Types.getKindAsString(entity.kind) + " (" + entity.id + ")");
 
-                            if(entity.gridX === self.previousClickPosition.x
+                            if (entity.gridX === self.previousClickPosition.x
                                 && entity.gridY === self.previousClickPosition.y) {
                                 self.previousClickPosition = {};
                             }
 
-                            if(entity instanceof Item) {
+                            if (entity instanceof Item) {
                                 self.removeItem(entity);
-                            } else if(entity instanceof Character) {
-                                entity.forEachAttacker(function(attacker) {
-                                    if(attacker.canReachTarget()) {
+                            } else if (entity instanceof Character) {
+                                entity.forEachAttacker(function (attacker) {
+                                    if (attacker.canReachTarget()) {
                                         attacker.hit();
                                     }
                                 });
@@ -7758,7 +7759,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 if (entity instanceof Npc) {
                                     $('#close-shop').click();
                                 }
-                            } else if(entity instanceof Chest) {
+                            } else if (entity instanceof Chest) {
                                 entity.open();
                             } else if (entity instanceof Fieldeffect) {
                                 self.removeFieldEffect(entity);
@@ -7768,59 +7769,59 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         }
                     });
 
-                    self.client.onItemBlink(function(id) {
+                    self.client.onItemBlink(function (id) {
                         var item = self.getEntityById(id);
 
-                        if(item) {
+                        if (item) {
                             item.blink(150);
                         }
                     });
 
-                    self.client.onEntityMove(function(id, x, y) {
+                    self.client.onEntityMove(function (id, x, y) {
                         var entity = null;
                         entity = self.getEntityById(id);
 
-                        if(entity) {
+                        if (entity) {
                             entity.disengage();
                             entity.idle();
                             self.makeCharacterGoTo(entity, x, y);
                         }
                     });
 
-                    self.client.onEntityDestroy(function(id) {
+                    self.client.onEntityDestroy(function (id) {
                         var entity = self.getEntityById(id);
-                        if(entity) {
-                            if(entity instanceof Item) {
+                        if (entity) {
+                            if (entity instanceof Item) {
                                 self.removeItem(entity);
                             } else {
                                 self.removeEntity(entity);
                             }
-                            console.debug("Entity was destroyed: "+entity.id);
+                            console.debug("Entity was destroyed: " + entity.id);
                         }
                     });
 
-                    self.client.onPlayerMoveToItem(function(playerId, itemId) {
+                    self.client.onPlayerMoveToItem(function (playerId, itemId) {
                         var player, item;
 
-                        if(playerId !== self.playerId) {
+                        if (playerId !== self.playerId) {
                             player = self.getEntityById(playerId);
                             item = self.getEntityById(itemId);
 
-                            if(player && item) {
+                            if (player && item) {
                                 self.makeCharacterGoTo(player, item.gridX, item.gridY);
                             }
                         }
                     });
 
-                    self.client.onEntityAttack(function(attackerId, targetId) {
+                    self.client.onEntityAttack(function (attackerId, targetId) {
                         self.getServerInfo();
                         var attacker = self.getEntityById(attackerId),
                             target = self.getEntityById(targetId);
-                        if(attacker && target && attacker.id !== self.playerId) {
+                        if (attacker && target && attacker.id !== self.playerId) {
                             console.debug(attacker.id + " attacks " + target.id);
 
-                            if(attacker && target instanceof Player && target.id !== self.playerId && target.target && target.target.id === attacker.id && attacker.getDistanceToEntity(target) < 3) {
-                                setTimeout(function() {
+                            if (attacker && target instanceof Player && target.id !== self.playerId && target.target && target.target.id === attacker.id && attacker.getDistanceToEntity(target) < 3) {
+                                setTimeout(function () {
                                     self.createAttackLink(attacker, target);
                                 }, 200); // delay to prevent other players attacking mobs from ending up on the same tile as they walk towards each other.
                             } else {
@@ -7829,27 +7830,27 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         }
                     });
 
-                    self.client.onPlayerDamageMob(function(mobId, points) {
+                    self.client.onPlayerDamageMob(function (mobId, points) {
                         var mob = self.getEntityById(mobId);
-                        if(mob && points) {
+                        if (mob && points) {
                             self.infoManager.addDamageInfo(points, mob.x, mob.y - 15, "inflicted");
                         }
                     });
 
-                    self.client.onPlayerKillMob(function(kind, xp) {
+                    self.client.onPlayerKillMob(function (kind, xp) {
                         let kindString = Types.getKindAsString(kind);
                         let mobName = AltNames.getName(kindString);
 
-                        setTimeout(function() {
-                            self.infoManager.addDamageInfo("+"+xp+" XP", self.player.x, self.player.y - 15, "xp");
+                        setTimeout(function () {
+                            self.infoManager.addDamageInfo("+" + xp + " XP", self.player.x, self.player.y - 15, "xp");
                         }, 200);
 
                         self.renderStatistics();
 
-                        if(mobName === 'boss') {
+                        if (mobName === 'boss') {
                             self.showNotification("You killed the skeleton king");
                         } else {
-                            if(_.include(['a', 'e', 'i', 'o', 'u'], mobName[0])) {
+                            if (_.include(['a', 'e', 'i', 'o', 'u'], mobName[0])) {
                                 self.showNotification("You killed an " + mobName);
                             } else {
                                 self.showNotification("You killed a " + mobName);
@@ -7858,51 +7859,51 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                         self.storage.incrementTotalKills();
 
-                        if(kind === Types.Entities.RAT) {
+                        if (kind === Types.Entities.RAT) {
                             self.storage.incrementRatCount();
                         }
 
-                        if(kind === Types.Entities.SKELETON || kind === Types.Entities.SKELETON2) {
+                        if (kind === Types.Entities.SKELETON || kind === Types.Entities.SKELETON2) {
                             self.storage.incrementSkeletonCount();
                         }
 
                     });
 
-                    self.client.onPlayerChangeHealth(function(points, isRegen) {
+                    self.client.onPlayerChangeHealth(function (points, isRegen) {
                         var player = self.player,
                             diff,
                             isHurt;
 
-                        if(player && !player.isDead) {
+                        if (player && !player.isDead) {
                             isHurt = points <= player.hitPoints;
                             diff = points - player.hitPoints;
                             player.hitPoints = points;
 
-                            if(player.hitPoints <= 0) {
+                            if (player.hitPoints <= 0) {
                                 player.die();
                             }
-                            if(isHurt) {
+                            if (isHurt) {
                                 player.hurt();
                                 self.infoManager.addDamageInfo(diff, player.x, player.y - 15, "received");
                                 self.audioManager.playSound("hurt");
                                 self.storage.addDamage(-diff);
-                                if(self.playerhurt_callback) {
+                                if (self.playerhurt_callback) {
                                     self.playerhurt_callback();
                                 }
-                            } else if(!isRegen){
-                                self.infoManager.addDamageInfo("+"+diff, player.x, player.y - 15, "healed");
+                            } else if (!isRegen) {
+                                self.infoManager.addDamageInfo("+" + diff, player.x, player.y - 15, "healed");
                             }
                             self.updateBars();
                         }
                     });
 
-                    self.client.onPlayerChangeMaxHitPoints(function(hp) {
+                    self.client.onPlayerChangeMaxHitPoints(function (hp) {
                         self.player.maxHitPoints = hp;
                         self.player.hitPoints = hp;
                         self.updateBars();
                     });
 
-                    self.client.onPlayerEquipItem(function(playerId, itemKind) {
+                    self.client.onPlayerEquipItem(function (playerId, itemKind) {
                         const player = self.getEntityById(playerId),
                             itemName = Types.getKindAsString(itemKind);
 
@@ -7918,7 +7919,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                         player.stopInvincibility();
                                     }
                                     player.setSprite(self.sprites[itemName]);
-                                } else if(Types.isWeapon(itemKind)) {
+                                } else if (Types.isWeapon(itemKind)) {
                                     player.setWeaponName(itemName);
                                 }
                                 if (itemKind === Types.Entities.FIREFOX) {
@@ -7928,19 +7929,19 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         }
                     });
 
-                    self.client.onPlayerTeleport(function(id, x, y) {
+                    self.client.onPlayerTeleport(function (id, x, y) {
                         var entity = null,
                             currentOrientation;
 
                         entity = self.getEntityById(id);
 
-                        if(entity) {
+                        if (entity) {
                             currentOrientation = entity.orientation;
 
                             self.makeCharacterTeleportTo(entity, x, y);
                             entity.setOrientation(currentOrientation);
 
-                            entity.forEachAttacker(function(attacker) {
+                            entity.forEachAttacker(function (attacker) {
                                 attacker.disengage();
                                 attacker.idle();
                                 attacker.stop();
@@ -7948,46 +7949,46 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                         }
 
-                        if(id === self.playerId) {
+                        if (id === self.playerId) {
                             self.handleScene(entity);
                             self.resetCamera();
                         }
                     });
 
-                    self.client.onDropItem(function(item, mobId) {
+                    self.client.onDropItem(function (item, mobId) {
                         var pos = self.getDeadMobPosition(mobId);
 
-                        if(pos) {
+                        if (pos) {
                             self.addItem(item, pos.x, pos.y);
                             self.updateCursor();
                         }
                     });
 
-                    self.client.onChatMessage(function(entityId, message) {
+                    self.client.onChatMessage(function (entityId, message) {
                         var entity = self.getEntityById(entityId);
-                        if(entity) {
+                        if (entity) {
                             self.createBubble(entityId, message);
                             self.assignBubbleTo(entity);
                             self.audioManager.playSound("chat");
                         }
                     });
 
-                    self.client.onEmotion(function(entityId, emotion) {
+                    self.client.onEmotion(function (entityId, emotion) {
                         var entity = self.getEntityById(entityId);
 
-                        if(!Types.emotions[emotion]) {
+                        if (!Types.emotions[emotion]) {
                             return;
                         }
 
                         const icons = 25;
                         let delay = 0;
-                        for(let i = 0; i < icons; i++) {
+                        for (let i = 0; i < icons; i++) {
                             // randomize
                             delay += Math.floor(Math.random() * 500);
                             let randomXOffset = Math.floor(Math.random() * 40) - 20;
                             let randomYOffset = -1 * (Math.floor(Math.random() * 20) + 5);
 
-                            setTimeout(() => {self.infoManager.addDamageInfo(Types.emotions[emotion], entity.x + randomXOffset, entity.y + randomYOffset, "emote");}, delay)
+                            setTimeout(() => { self.infoManager.addDamageInfo(Types.emotions[emotion], entity.x + randomXOffset, entity.y + randomYOffset, "emote"); }, delay)
                         }
                     });
 
@@ -7996,22 +7997,22 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     self.client.onLayer(self.handleLayer);
                     self.client.onAnimate(self.handleAnimationTrigger);
 
-                    self.client.onPopulationChange(function(worldPlayers, totalPlayers) {
-                        if(self.nbplayers_callback) {
+                    self.client.onPopulationChange(function (worldPlayers, totalPlayers) {
+                        if (self.nbplayers_callback) {
                             self.nbplayers_callback(worldPlayers, totalPlayers);
                         }
                     });
 
-                    self.client.onDisconnected(function(message) {
-                        if(self.player) {
+                    self.client.onDisconnected(function (message) {
+                        if (self.player) {
                             self.player.die();
                         }
-                        if(self.disconnect_callback) {
+                        if (self.disconnect_callback) {
                             self.disconnect_callback(message);
                         }
                     });
 
-                    self.client.onMobDoSpecial(function(id) {
+                    self.client.onMobDoSpecial(function (id) {
                         let mob = self.getEntityById(id);
 
                         if (typeof mob.doSpecial === 'function') {
@@ -8019,7 +8020,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         }
                     });
 
-                    self.client.onMobExitCombat(function(id) {
+                    self.client.onMobExitCombat(function (id) {
                         let mob = self.getEntityById(id);
 
                         if (typeof mob.exitCombat === 'function') {
@@ -8027,41 +8028,41 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         }
                     });
 
-                    self.client.onQuestComplete(function(questName, endText, xpReward, medal) {
+                    self.client.onQuestComplete(function (questName, endText, xpReward, medal) {
                         console.log("Completed Quest!", questName, endText, xpReward, medal);
                         self.showQuestCompleteNotification(questName, endText, xpReward, medal);
-                        setTimeout(function() {
-                            self.infoManager.addDamageInfo("+"+xpReward+" XP", self.player.x, self.player.y - 15, "xp");
+                        setTimeout(function () {
+                            self.infoManager.addDamageInfo("+" + xpReward + " XP", self.player.x, self.player.y - 15, "xp");
                         }, 200);
                     });
 
-                    self.client.onFollow(function(entityId) {
+                    self.client.onFollow(function (entityId) {
                         self.renderer.camera.focusEntity(self.getEntityById(entityId));
                     });
 
-                    self.client.onCamera(function(x, y) {
-                        let cameraX = x - (self.renderer.camera.gridW/2);
-                        let cameraY = y - (self.renderer.camera.gridH/2);
+                    self.client.onCamera(function (x, y) {
+                        let cameraX = x - (self.renderer.camera.gridW / 2);
+                        let cameraY = y - (self.renderer.camera.gridH / 2);
 
-                        if(cameraX < 0) {cameraX = 0}
-                        if(cameraY < 0) {cameraY = 0}
+                        if (cameraX < 0) { cameraX = 0 }
+                        if (cameraY < 0) { cameraY = 0 }
 
-                        if(cameraX > self.map.width - self.renderer.camera.gridW) {
+                        if (cameraX > self.map.width - self.renderer.camera.gridW) {
                             cameraX = self.map.width - self.renderer.camera.gridW
                         }
-                        if(cameraY > self.map.height - self.renderer.camera.gridH) {
+                        if (cameraY > self.map.height - self.renderer.camera.gridH) {
                             cameraY = self.map.height - self.renderer.camera.gridH
                         }
 
                         self.renderer.camera.setGridPosition(cameraX, cameraY);
                     })
 
-                    self.client.onSpawnFloat(function(id, name, x, y) {
+                    self.client.onSpawnFloat(function (id, name, x, y) {
                         let float = new Float(x, y, id, name);
                         self.castFloat(float);
                     });
 
-                    self.client.onDespawnFloat(function(id) {
+                    self.client.onDespawnFloat(function (id) {
                         self.removeFloat(id);
                     });
 
@@ -8081,16 +8082,16 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         if (projectile.shooter.id === self.player.id) {
                             self.player.currentProjectileType = projectileType;
                         }
-                        let lastHitPos = {x: null, y: null};
+                        let lastHitPos = { x: null, y: null };
                         projectile.onMove(() => {
-                            let projectilePos = {x: Math.floor(projectile.x / 16), y: Math.floor(projectile.y / 16)}
+                            let projectilePos = { x: Math.floor(projectile.x / 16), y: Math.floor(projectile.y / 16) }
                             if (lastHitPos.x !== projectilePos.x || lastHitPos.y !== projectilePos.y) {
                                 lastHitPos = projectilePos;
                                 let hitEntity = self.getEntityAt(projectilePos.x, projectilePos.y);
                                 if (hitEntity && (
-                                        Types.isMob(hitEntity.kind) ||
-                                        (Types.isPlayer(hitEntity.kind) && hitEntity.id !==shooterId && self.map.isInsidePvpZone(hitEntity.gridX, hitEntity.gridY))
-                                    ) &&
+                                    Types.isMob(hitEntity.kind) ||
+                                    (Types.isPlayer(hitEntity.kind) && hitEntity.id !== shooterId && self.map.isInsidePvpZone(hitEntity.gridX, hitEntity.gridY))
+                                ) &&
                                     !hitEntity.isDead &&
                                     !hitEntity.isFriendly
                                 ) {
@@ -8143,35 +8144,35 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         self.showNotification('I\'m Out of ammo!');
                     });
 
-                    self.client.onNotify(function(text) {
-                        if(text){
+                    self.client.onNotify(function (text) {
+                        if (text) {
                             self.showNotification(text);
                         }
                     });
 
-                    self.client.onBuffInfo(function(stat, percent, duration) {
+                    self.client.onBuffInfo(function (stat, percent, duration) {
                         self.updateBuffInfo(stat, percent, duration);
                     });
 
-                    self.client.onResourceUpdated(function(resource, amount) {
+                    self.client.onResourceUpdated(function (resource, amount) {
                         self.updateResource(resource, amount);
                     });
 
-                    self.client.onAnnouncement(function(message, timeToShow ) {
+                    self.client.onAnnouncement(function (message, timeToShow) {
                         self.app.showAnnouncement(message, timeToShow);
                     });
 
-                    self.client.onIndicatorUpdate(function(entityId, showIndicator) {
+                    self.client.onIndicatorUpdate(function (entityId, showIndicator) {
                         console.log('indicator updated', entityId, showIndicator);
                         let entity = self.getEntityById(entityId);
-                        if(entity instanceof Npc) {
+                        if (entity instanceof Npc) {
                             entity.setShowIndicator(showIndicator)
                         }
                     })
 
                     self.gamestart_callback();
 
-                    if(self.hasNeverStarted) {
+                    if (self.hasNeverStarted) {
                         self.start();
                         started_callback();
                     }
@@ -8185,13 +8186,13 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
              * @param {Entity} attacker The attacker entity
              * @param {Entity} target The target entity
              */
-            createAttackLink: function(attacker, target) {
-                if(attacker.hasTarget()) {
+            createAttackLink: function (attacker, target) {
+                if (attacker.hasTarget()) {
                     attacker.removeTarget();
                 }
                 attacker.engage(target);
 
-                if(attacker.id !== this.playerId) {
+                if (attacker.id !== this.playerId) {
                     target.addAttacker(attacker);
                 }
             },
@@ -8200,7 +8201,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
              * Sends a "hello" message to the server, as a way of initiating the player connection handshake.
              * @see GameClient.sendHello
              */
-            sendHello: function() {
+            sendHello: function () {
                 this.client.sendHello(this.player);
             },
 
@@ -8208,7 +8209,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
              * Converts the current mouse position on the screen to world grid coordinates.
              * @returns {Object} An object containing x and y properties.
              */
-            getMouseGridPosition: function() {
+            getMouseGridPosition: function () {
                 var mx = this.mouse.x,
                     my = this.mouse.y,
                     c = this.renderer.camera,
@@ -8228,8 +8229,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
              * @param {Number} x The x coordinate of the target location.
              * @param {Number} y The y coordinate of the target location.
              */
-            makeCharacterGoTo: function(character, x, y) {
-                if(!this.map.isOutOfBounds(x, y)) {
+            makeCharacterGoTo: function (character, x, y) {
+                if (!this.map.isOutOfBounds(x, y)) {
                     character.go(x, y);
                 }
             },
@@ -8237,8 +8238,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             /**
              *
              */
-            makeCharacterTeleportTo: function(character, x, y) {
-                if(!this.map.isOutOfBounds(x, y)) {
+            makeCharacterTeleportTo: function (character, x, y) {
+                if (!this.map.isOutOfBounds(x, y)) {
                     this.unregisterEntityPosition(character);
 
                     character.setGridPosition(x, y);
@@ -8246,7 +8247,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     this.registerEntityPosition(character);
                     this.assignBubbleTo(character);
                 } else {
-                    console.debug("Teleport out of bounds: "+x+", "+y);
+                    console.debug("Teleport out of bounds: " + x + ", " + y);
                 }
             },
 
@@ -8254,7 +8255,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
              * Moves the current player to a given target location.
              * @see makeCharacterGoTo
              */
-            makePlayerGoTo: function(x, y) {
+            makePlayerGoTo: function (x, y) {
                 this.makeCharacterGoTo(this.player, x, y);
             },
 
@@ -8262,8 +8263,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
              * Moves the current player towards a specific item.
              * @see makeCharacterGoTo
              */
-            makePlayerGoToItem: function(item) {
-                if(item) {
+            makePlayerGoToItem: function (item) {
+                if (item) {
                     if (item.type === "weapon" && this.player.getWeaponName().startsWith("NFT_")) {
                         this.makePlayerGoTo(item.gridX, item.gridY);
                     } else {
@@ -8277,15 +8278,15 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             /**
              *
              */
-            makePlayerTalkTo: function(npc) {
-                if(npc) {
+            makePlayerTalkTo: function (npc) {
+                if (npc) {
                     this.player.setTarget(npc);
                     this.player.follow(npc);
                 }
             },
 
-            makePlayerOpenChest: function(chest) {
-                if(chest) {
+            makePlayerOpenChest: function (chest) {
+                if (chest) {
                     this.player.setTarget(chest);
                     this.player.follow(chest);
                 }
@@ -8294,7 +8295,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             /**
              *
              */
-            makePlayerAttack: function(mob) {
+            makePlayerAttack: function (mob) {
                 this.player.previousTarget = null;
                 this.player.disengage();
                 this.createAttackLink(this.player, mob);
@@ -8304,7 +8305,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             /**
              *
              */
-            makeNpcTalk: function(npc) {
+            makeNpcTalk: function (npc) {
 
                 now = new Date().getTime();
 
@@ -8315,7 +8316,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 }
                 this.lastNPCTalk = now;
 
-                if(npc) {
+                if (npc) {
                     this.checkForQuests(npc);
                     this.checkForPartnerTask(npc);
                 }
@@ -8326,24 +8327,24 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 }, 1000)
             },
 
-            checkForPartnerTask: function(npc) {
+            checkForPartnerTask: function (npc) {
                 let self = this;
                 if (npc.name === "taikoguard") {
-                    axios.get("/session/" + this.sessionId + "/completePartnerTask/taikoguard").then(function(response){
+                    axios.get("/session/" + this.sessionId + "/completePartnerTask/taikoguard").then(function (response) {
                         console.log("PartnerTask Response", response);
                         if (response.data === true) {
                             self.showQuestCompleteNotification("Taiko Midle Task", "You completed the Taiko Midle task", 0, Types.Medals.TREE);
                         }
-                    }).catch(function(error) {
+                    }).catch(function (error) {
                         console.error(error);
                     });
                 }
             },
 
-            checkForQuests: function(npc) {
+            checkForQuests: function (npc) {
                 let self = this;
                 let url = '/session/' + self.sessionId + '/npc/' + npc.kind;
-                if(npc.thoughts.length > 0) {
+                if (npc.thoughts.length > 0) {
                     let message = npc.thoughts.shift()
                     npc.hasTalked();
                     self.createBubble(npc.id, message);
@@ -8351,19 +8352,19 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     self.audioManager.playSound("npc");
 
                     if (npc.thoughts.length === 0 && npc.thoughtsClearedCallback) {
-                        setTimeout(() => { if(npc.thoughtsClearedCallback) {npc.thoughtsClearedCallback();  npc.thoughtsClearedCallback = null }}, 500);
+                        setTimeout(() => { if (npc.thoughtsClearedCallback) { npc.thoughtsClearedCallback(); npc.thoughtsClearedCallback = null } }, 500);
                     }
                     return;
                 }
                 axios.get(url).then(function (response) {
                     if (response.data !== "") {
-                        if(response.data.options) {
+                        if (response.data.options) {
                             self.handleInputOptions(npc.id, response.data);
                             return;
                         }
 
                         let messages;
-                        if(_.isObject(response.data)) {
+                        if (_.isObject(response.data)) {
                             messages = (!_.isArray(response.data.text) ? [response.data.text] : response.data.text);
                         } else {
                             messages = [response.data];
@@ -8372,12 +8373,12 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         let message = messages.shift()
                         if (messages.length > 0) {
                             npc.addThoughts(messages, () => {
-                                if(response.data.quest) {
+                                if (response.data.quest) {
                                     self.showNewQuestPopup(response.data.quest)
                                 }
                             });
                         } else {
-                            if(response.data.quest) {
+                            if (response.data.quest) {
                                 setTimeout(() => {
                                     self.showNewQuestPopup(response.data.quest);
                                 }, 1500);
@@ -8390,7 +8391,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     } else {
                         msg = npc.talk(self.storage.walletId);
                         self.previousClickPosition = {};
-                        if(msg) {
+                        if (msg) {
                             if (msg.startsWith("/openShop")) {
                                 let shop = msg.split(" ");
                                 shop.shift();
@@ -8398,10 +8399,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 let shopName = shop.join(" ");
                                 self.app.openShop(shopId, shopName)
                             } else {
-                            npc.hasTalked();
-                            self.createBubble(npc.id, msg);
-                            self.assignBubbleTo(npc);
-                            self.audioManager.playSound("npc");
+                                npc.hasTalked();
+                                self.createBubble(npc.id, msg);
+                                self.assignBubbleTo(npc);
+                                self.audioManager.playSound("npc");
                             }
                         } else {
                             self.destroyBubble(npc.id);
@@ -8417,8 +8418,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
              * Loops through all the entities currently present in the game.
              * @param {Function} callback The function to call back (must accept one entity argument).
              */
-            forEachEntity: function(callback) {
-                _.each(this.entities, function(entity) {
+            forEachEntity: function (callback) {
+                _.each(this.entities, function (entity) {
                     callback(entity);
                 });
             },
@@ -8427,9 +8428,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
              * Same as forEachEntity but only for instances of the Mob subclass.
              * @see forEachEntity
              */
-            forEachMob: function(callback) {
-                _.each(this.entities, function(entity) {
-                    if(entity instanceof Mob) {
+            forEachMob: function (callback) {
+                _.each(this.entities, function (entity) {
+                    if (entity instanceof Mob) {
                         callback(entity);
                     }
                 });
@@ -8440,12 +8441,12 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
              * Lower 'y' value means higher depth.
              * Note: This is used by the Renderer to know in which order to render entities.
              */
-            forEachVisibleEntityByDepth: function(callback) {
+            forEachVisibleEntityByDepth: function (callback) {
                 var self = this,
                     m = this.map,
                     scene = this.map.getCurrentScene(this.player);
 
-                this.camera.forEachVisiblePosition(function(x, y) {
+                this.camera.forEachVisiblePosition(function (x, y) {
                     if (m.isOutOfBounds(x, y)) {
                         return;
                     }
@@ -8460,11 +8461,11 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         return;
                     }
 
-                    if(scene && scene.isOutOfBounds(x, y)) {
+                    if (scene && scene.isOutOfBounds(x, y)) {
                         return;
                     }
 
-                    _.each(self.renderingGrid[y][x], function(entity) {
+                    _.each(self.renderingGrid[y][x], function (entity) {
                         callback(entity);
                     });
                 }, this.renderer.mobile ? 0 : 2);
@@ -8473,21 +8474,21 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             /**
              *
              */
-            forEachVisibleTileIndex: function(callback, extra) {
-                if(!this.camera) {
+            forEachVisibleTileIndex: function (callback, extra) {
+                if (!this.camera) {
                     return;
                 }
 
-                var self  = this;
+                var self = this;
                 var m = this.map;
                 var scene = this.player.getScene();
 
-                this.camera.forEachVisiblePosition(function(x, y) {
-                    if(m.isOutOfBounds(x, y)) {
+                this.camera.forEachVisiblePosition(function (x, y) {
+                    if (m.isOutOfBounds(x, y)) {
                         return;
                     }
 
-                    if(scene && scene.isOutOfBounds(x, y)) {
+                    if (scene && scene.isOutOfBounds(x, y)) {
                         return;
                     }
 
@@ -8498,38 +8499,38 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             /**
              *
              */
-            forEachVisibleTile: function(callback, extra) {
+            forEachVisibleTile: function (callback, extra) {
                 let self = this,
                     m = this.map;
 
-                if(m.isLoaded) {
-                    this.forEachVisibleTileIndex(function(tileIndex) {
-                        if(_.isArray(m.data[tileIndex])) {
-                            _.each(m.data[tileIndex], function(id) {
-                                callback(id-1, tileIndex);
+                if (m.isLoaded) {
+                    this.forEachVisibleTileIndex(function (tileIndex) {
+                        if (_.isArray(m.data[tileIndex])) {
+                            _.each(m.data[tileIndex], function (id) {
+                                callback(id - 1, tileIndex);
                             });
                         }
                         else {
-                            if(_.isNaN(m.data[tileIndex]-1)) {
+                            if (_.isNaN(m.data[tileIndex] - 1)) {
                                 //throw Error("Tile number for index:"+tileIndex+" is NaN");
                             } else {
-                                callback(m.data[tileIndex]-1, tileIndex);
+                                callback(m.data[tileIndex] - 1, tileIndex);
                             }
                         }
                     }, extra);
                 }
             },
 
-            forEachTileIndex: function(callback, extra) {
+            forEachTileIndex: function (callback, extra) {
                 var m = this.map;
                 var scene = this.map.getCurrentScene();
 
-                this.map.forEachPosition(function(x, y) {
-                    if(m.isOutOfBounds(x, y)) {
+                this.map.forEachPosition(function (x, y) {
+                    if (m.isOutOfBounds(x, y)) {
                         return;
                     }
 
-                    if(scene && scene.isOutOfBounds(x, y)) {
+                    if (scene && scene.isOutOfBounds(x, y)) {
                         return;
                     }
 
@@ -8537,22 +8538,22 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 }, extra);
             },
 
-            forEachTile: function(callback, extra) {
+            forEachTile: function (callback, extra) {
                 var self = this,
                     m = this.map;
 
-                if(m.isLoaded) {
-                    this.forEachTileIndex(function(tileIndex) {
-                        if(_.isArray(m.data[tileIndex])) {
-                            _.each(m.data[tileIndex], function(id) {
-                                callback(id-1, tileIndex);
+                if (m.isLoaded) {
+                    this.forEachTileIndex(function (tileIndex) {
+                        if (_.isArray(m.data[tileIndex])) {
+                            _.each(m.data[tileIndex], function (id) {
+                                callback(id - 1, tileIndex);
                             });
                         }
                         else {
-                            if(_.isNaN(m.data[tileIndex]-1)) {
+                            if (_.isNaN(m.data[tileIndex] - 1)) {
                                 //throw Error("Tile number for index:"+tileIndex+" is NaN");
                             } else {
-                                callback(m.data[tileIndex]-1, tileIndex);
+                                callback(m.data[tileIndex] - 1, tileIndex);
                             }
                         }
                     }, extra);
@@ -8562,41 +8563,41 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             /**
              *
              */
-            forEachAnimatedTile: function(callback) {
-                if(this.animatedTiles) {
-                    _.each(this.animatedTiles, function(tile) {
+            forEachAnimatedTile: function (callback) {
+                if (this.animatedTiles) {
+                    _.each(this.animatedTiles, function (tile) {
                         callback(tile);
                     });
                 }
             },
 
-            forEachHighAnimatedTile: function(callback) {
-                if(this.highAnimatedTiles) {
-                    _.each(this.highAnimatedTiles, function(tile) {
+            forEachHighAnimatedTile: function (callback) {
+                if (this.highAnimatedTiles) {
+                    _.each(this.highAnimatedTiles, function (tile) {
                         callback(tile);
                     });
                 }
             },
 
-            forEachVisibleAnimatedTile: function(callback) {
-                if(this.visibleAnimatedTiles) {
-                    _.each(this.visibleAnimatedTiles, function(tile) {
+            forEachVisibleAnimatedTile: function (callback) {
+                if (this.visibleAnimatedTiles) {
+                    _.each(this.visibleAnimatedTiles, function (tile) {
                         callback(tile);
                     });
                 }
             },
 
-            forEachVisibleHighAnimatedTile: function(callback) {
-                if(this.visibleAnimatedHighTiles) {
-                    _.each(this.visibleAnimatedHighTiles, function(tile) {
+            forEachVisibleHighAnimatedTile: function (callback) {
+                if (this.visibleAnimatedHighTiles) {
+                    _.each(this.visibleAnimatedHighTiles, function (tile) {
                         callback(tile);
                     });
                 }
             },
 
-            forEachFloat: function(callback) {
-                if(this.floats) {
-                    _.each(this.floats, function(float) {
+            forEachFloat: function (callback) {
+                if (this.floats) {
+                    _.each(this.floats, function (float) {
                         callback(float);
                     });
                 }
@@ -8606,14 +8607,14 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
              * Returns the entity located at the given position on the world grid.
              * @returns {Entity} the entity located at (x, y) or null if there is none.
              */
-            getEntityAt: function(x, y) {
-                if(this.map.isOutOfBounds(x, y) || !this.entityGrid) {
+            getEntityAt: function (x, y) {
+                if (this.map.isOutOfBounds(x, y) || !this.entityGrid) {
                     return null;
                 }
 
                 var entities = this.entityGrid[y][x],
                     entity = null;
-                if(_.size(entities) > 0) {
+                if (_.size(entities) > 0) {
                     entity = entities[_.keys(entities)[0]];
                 } else {
                     entity = this.getItemAt(x, y);
@@ -8621,55 +8622,55 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 return entity;
             },
 
-            getMobAt: function(x, y) {
+            getMobAt: function (x, y) {
                 var entity = this.getEntityAt(x, y);
-                if(entity && (entity instanceof Mob) && !entity.isFriendly) {
+                if (entity && (entity instanceof Mob) && !entity.isFriendly) {
                     return entity;
                 }
                 return null;
             },
 
-            getNpcAt: function(x, y) {
+            getNpcAt: function (x, y) {
                 var entity = this.getEntityAt(x, y);
-                if(entity && (entity instanceof Npc)) {
+                if (entity && (entity instanceof Npc)) {
                     return entity;
                 }
                 return null;
             },
 
-            getChestAt: function(x, y) {
+            getChestAt: function (x, y) {
                 var entity = this.getEntityAt(x, y);
-                if(entity && (entity instanceof Chest)) {
+                if (entity && (entity instanceof Chest)) {
                     return entity;
                 }
                 return null;
             },
 
-            getPlayerAt: function(x, y) {
+            getPlayerAt: function (x, y) {
                 var entity = this.getEntityAt(x, y);
-                if(entity && (entity instanceof Player)) {
+                if (entity && (entity instanceof Player)) {
                     return entity;
                 }
                 return null;
             },
 
-            getItemAt: function(x, y) {
-                if(this.map.isOutOfBounds(x, y) || !this.itemGrid) {
+            getItemAt: function (x, y) {
+                if (this.map.isOutOfBounds(x, y) || !this.itemGrid) {
                     return null;
                 }
                 var items = this.itemGrid[y][x],
                     item = null;
 
-                if(_.size(items) > 0) {
+                if (_.size(items) > 0) {
                     // If there are consumables stacked with equipment items on the same tile, always get expendable items first.
-                    _.each(items, function(i) {
-                        if(Types.isExpendableItem(i.kind)) {
+                    _.each(items, function (i) {
+                        if (Types.isExpendableItem(i.kind)) {
                             item = i;
                         };
                     });
 
                     // Else, get the first item of the stack
-                    if(!item) {
+                    if (!item) {
                         item = items[_.keys(items)[0]];
                     }
                 }
@@ -8680,27 +8681,27 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
              * Returns true if an entity is located at the given position on the world grid.
              * @returns {Boolean} Whether an entity is at (x, y).
              */
-            isEntityAt: function(x, y) {
+            isEntityAt: function (x, y) {
                 return !_.isNull(this.getEntityAt(x, y));
             },
 
-            isMobAt: function(x, y) {
+            isMobAt: function (x, y) {
                 return !_.isNull(this.getMobAt(x, y));
             },
 
-            isItemAt: function(x, y) {
+            isItemAt: function (x, y) {
                 return !_.isNull(this.getItemAt(x, y));
             },
 
-            isNpcAt: function(x, y) {
+            isNpcAt: function (x, y) {
                 return !_.isNull(this.getNpcAt(x, y));
             },
 
-            isChestAt: function(x, y) {
+            isChestAt: function (x, y) {
                 return !_.isNull(this.getChestAt(x, y));
             },
 
-            isPlayerAt: function(x, y) {
+            isPlayerAt: function (x, y) {
                 return !_.isNull(this.getPlayerAt(x, y));
             },
 
@@ -8708,24 +8709,24 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
              * Finds a path to a grid position for the specified character.
              * The path will pass through any entity present in the ignore list.
              */
-            findPath: function(character, x, y, ignoreList) {
+            findPath: function (character, x, y, ignoreList) {
                 let self = this;
                 let grid = this.finalPathingGrid;
                 return new Promise((resolve, reject) => {
                     let path = [];
-            
+
                     if (self.map.isColliding(x, y)) {
                         resolve(path);
                         return;
                     }
-            
+
                     if (self.pathfinder && character) {
                         if (ignoreList) {
-                            _.each(ignoreList, function(entity) {
+                            _.each(ignoreList, function (entity) {
                                 self.pathfinder.ignoreEntity(entity);
                             });
                         }
-            
+
                         self.pathfinder.findPath(grid, character, x, y, false)
                             .then(foundPath => {
                                 path = foundPath;
@@ -8750,8 +8751,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             /**
              * Toggles the visibility of the pathing grid for debugging purposes.
              */
-            togglePathingGrid: function() {
-                if(this.debugPathing) {
+            togglePathingGrid: function () {
+                if (this.debugPathing) {
                     this.debugPathing = false;
                 } else {
                     this.debugPathing = true;
@@ -8761,21 +8762,21 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             /**
              * Toggles the visibility of the FPS counter and other debugging info.
              */
-            toggleDebugInfo: function() {
-                if(this.renderer && this.renderer.isDebugInfoVisible) {
+            toggleDebugInfo: function () {
+                if (this.renderer && this.renderer.isDebugInfoVisible) {
                     this.renderer.isDebugInfoVisible = false;
                 } else {
                     this.renderer.isDebugInfoVisible = true;
                 }
             },
 
-            applyToggledLayers: function() {
+            applyToggledLayers: function () {
                 this.finalPathingGrid = _.clone(this.pathingGrid);
                 // Loop over keys of this.hiddenLayers
-                for(var	i = 0; i < Object.keys(this.map.hiddenLayers).length; i++) {
+                for (var i = 0; i < Object.keys(this.map.hiddenLayers).length; i++) {
                     let layerName = Object.keys(this.map.hiddenLayers)[i]
-                    if(this.toggledLayers[layerName]) {
-                        for(var j=0; j < this.map.hiddenLayers[layerName].length; j++) {
+                    if (this.toggledLayers[layerName]) {
+                        for (var j = 0; j < this.map.hiddenLayers[layerName].length; j++) {
                             let tileType = this.map.hiddenLayers[layerName][j];
 
                             if (tileType !== null) {
@@ -8790,12 +8791,12 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             /**
              *
              */
-            movecursor: function() {
+            movecursor: function () {
                 var mouse = this.getMouseGridPosition(),
                     x = mouse.x,
                     y = mouse.y;
 
-                if(this.player && !this.renderer.mobile && !this.renderer.tablet) {
+                if (this.player && !this.renderer.mobile && !this.renderer.tablet) {
                     this.hoveringCollidingTile = this.map.isColliding(x, y);
                     this.hoveringPlateauTile = this.player.isOnPlateau ? !this.map.isPlateau(x, y) : this.map.isPlateau(x, y);
                     this.hoveringFishableTile = this.canFish(x, y, false);
@@ -8804,26 +8805,26 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     this.hoveringNpc = this.isNpcAt(x, y);
                     this.hoveringChest = this.isChestAt(x, y);
 
-                    if(this.hoveringMob || this.hoveringNpc || this.hoveringChest) {
+                    if (this.hoveringMob || this.hoveringNpc || this.hoveringChest) {
                         var entity = this.getEntityAt(x, y);
 
-                        if(!entity.isHighlighted && this.renderer.supportsSilhouettes) {
-                            if(this.highlightedTarget) {
+                        if (!entity.isHighlighted && this.renderer.supportsSilhouettes) {
+                            if (this.highlightedTarget) {
                                 this.highlightedTarget.setHighlight(false);
                             }
                             this.highlightedTarget = entity;
                             entity.setHighlight(true);
                         }
                     }
-                    else if(this.highlightedTarget) {
+                    else if (this.highlightedTarget) {
                         this.highlightedTarget.setHighlight(false);
                         this.highlightedTarget = null;
                     }
                 }
             },
 
-            highlightClosestTarget: function() {
-                if(this.highlightedTarget) {
+            highlightClosestTarget: function () {
+                if (this.highlightedTarget) {
                     this.highlightedTarget.setHighlight(false);
                 }
 
@@ -8836,7 +8837,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 }
             },
 
-            highlightNextTarget: function() {
+            highlightNextTarget: function () {
                 if (!this.highlightedTarget) {
                     return this.highlightClosestTarget();
                 }
@@ -8846,34 +8847,34 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 });
 
                 let highlightNext = false;
-                for(let i = 0; i < mobDistances.length; i++) {
+                for (let i = 0; i < mobDistances.length; i++) {
                     // continue till we find current highlighted mob
-                    if(mobDistances[i].entity.id === this.highlightedTarget.id) {
+                    if (mobDistances[i].entity.id === this.highlightedTarget.id) {
                         highlightNext = true;
                         continue;
                     }
 
                     // Highlight next mob and return
-                    if(highlightNext) {
+                    if (highlightNext) {
                         this.highlightedTarget.setHighlight(false);
                         this.highlightedTarget = mobDistances[i].entity;
                         this.highlightedTarget.setHighlight(true);
                         return;
                     }
-                    }
+                }
 
                 // If no is highlighted (current was furthest away), highlight closest
                 this.highlightClosestTarget();
             },
 
-            getMobDistances: function() {
+            getMobDistances: function () {
                 let mobDistances = [];
                 this.forEachVisibleEntityByDepth((entity) => {
                     if (!Types.isMob(entity.kind) || entity.isFriendly || entity.isDead) {
                         return;
                     }
                     let distance = this.player.getDistanceToEntity(entity);
-                    mobDistances.push({entity: entity, distance: distance});
+                    mobDistances.push({ entity: entity, distance: distance });
                 });
 
                 return mobDistances;
@@ -8882,9 +8883,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             /**
              * Processes game logic when the user triggers a click/touch event during the game.
              */
-            click: function(pos) {
+            click: function (pos) {
 
-                if($('body').hasClass('inventory') 
+                if ($('body').hasClass('inventory')
                     || $('body').hasClass('settings')
                     || $('#dialogue-popup').hasClass("active")
                     || this.minigameLoaded
@@ -8909,25 +8910,25 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                 let now = new Date().getTime();
 
-                if (this.lastClick !== undefined 
+                if (this.lastClick !== undefined
                     && now - self.lastClick < clickThrottle) {
-                        return;
+                    return;
                 }
-    
+
                 self.lastClick = now;
 
-                if(pos.x === this.previousClickPosition.x
+                if (pos.x === this.previousClickPosition.x
                     && pos.y === this.previousClickPosition.y) {
                     this.previousClickPosition = {};
                     return;
                 } else {
                     this.previousClickPosition = pos;
                 }
-                let hoveringPanel = !!$('.panel').filter(function() { return $(this).is(":hover"); }).length;
+                let hoveringPanel = !!$('.panel').filter(function () { return $(this).is(":hover"); }).length;
 
                 var entity;
                 let fishablePos;
-                if(this.started
+                if (this.started
                     && this.player
                     && !this.player.isDead
                     && (!this.hoveringCollidingTile || pos.keyboard || this.hoveringFishableTile)
@@ -8943,7 +8944,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         this.removeFromPathingGrid(pos.x, pos.y);
                     }
 
-                    if(entity instanceof Mob && !entity.isFriendly) {
+                    if (entity instanceof Mob && !entity.isFriendly) {
                         this.makePlayerAttack(entity);
                     } else if (entity instanceof Player && entity.id !== this.player.id) {
                         var inPvpZone = this.map.isInsidePvpZone(entity.gridX, entity.gridY);
@@ -8955,59 +8956,58 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             this.makePlayerGoTo(pos.x, pos.y);
                         }
                     }
-                    else if(entity instanceof Item) {
+                    else if (entity instanceof Item) {
                         this.makePlayerGoToItem(entity);
                     }
-                    else if(entity instanceof Npc && !pos.keyboard) {
-                        if(this.player.isAdjacentNonDiagonal(entity) === false) {
+                    else if (entity instanceof Npc && !pos.keyboard) {
+                        if (this.player.isAdjacentNonDiagonal(entity) === false) {
                             this.makePlayerTalkTo(entity);
                         } else {
                             this.makeNpcTalk(entity);
                         }
                     }
-                    else if(entity instanceof Chest) {
+                    else if (entity instanceof Chest) {
                         this.makePlayerOpenChest(entity);
                     }
-                    else if(fishablePos = this.canFish(pos.x, pos.y, pos.keyboard)) { // this assignment inside a condition is intentional
+                    else if (fishablePos = this.canFish(pos.x, pos.y, pos.keyboard)) { // this assignment inside a condition is intentional
                         if (this.player.isFishing
                             && $('#fishingbar').hasClass('active')
                             && this.floats[this.player.id] !== undefined
                             && this.floats[this.player.id].gridX === fishablePos.gridX
-                            && this.floats[this.player.id].gridY === fishablePos.gridY)
-                        {
+                            && this.floats[this.player.id].gridY === fishablePos.gridY) {
                             this.clickFishingBar();
                         } else {
                             this.startFishing(fishablePos.gridX, fishablePos.gridY);
                         }
                     }
                     else {
-                        if(this.isZoningTile(pos.x, pos.y) && !pos.keyboard) {
+                        if (this.isZoningTile(pos.x, pos.y) && !pos.keyboard) {
                             let z = this.getZoningOrientation(pos.x, pos.y);
                             switch (z) {
                                 case Types.Orientations.LEFT:
-                                    if(!this.map.isColliding(pos.x-1, pos.y)) {
+                                    if (!this.map.isColliding(pos.x - 1, pos.y)) {
                                         this.makePlayerGoTo(pos.x - 1, pos.y);
                                     } else {
                                         this.makePlayerGoTo(pos.x, pos.y);
                                     }
                                     break;
                                 case Types.Orientations.RIGHT:
-                                    if(!this.map.isColliding(pos.x+1, pos.y)) {
+                                    if (!this.map.isColliding(pos.x + 1, pos.y)) {
                                         this.makePlayerGoTo(pos.x + 1, pos.y);
                                     } else {
                                         this.makePlayerGoTo(pos.x, pos.y);
                                     }
                                     break;
                                 case Types.Orientations.UP:
-                                    if(!this.map.isColliding(pos.x, pos.y-1)) {
-                                        this.makePlayerGoTo(pos.x, pos.y-1);
+                                    if (!this.map.isColliding(pos.x, pos.y - 1)) {
+                                        this.makePlayerGoTo(pos.x, pos.y - 1);
                                     } else {
                                         this.makePlayerGoTo(pos.x, pos.y);
                                     }
                                     break;
                                 case Types.Orientations.DOWN:
-                                    if(!this.map.isColliding(pos.x, pos.y+1)) {
-                                        this.makePlayerGoTo(pos.x, pos.y+1);
+                                    if (!this.map.isColliding(pos.x, pos.y + 1)) {
+                                        this.makePlayerGoTo(pos.x, pos.y + 1);
                                     } else {
                                         this.makePlayerGoTo(pos.x, pos.y);
                                     }
@@ -9023,52 +9023,52 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 }
             },
 
-            isMobOnSameTile: function(mob, x, y) {
+            isMobOnSameTile: function (mob, x, y) {
                 var X = x || mob.gridX,
                     Y = y || mob.gridY,
                     list = this.entityGrid[Y][X],
                     result = false;
 
-                _.each(list, function(entity) {
-                    if(entity instanceof Mob && entity.id !== mob.id) {
+                _.each(list, function (entity) {
+                    if (entity instanceof Mob && entity.id !== mob.id) {
                         result = true;
                     }
                 });
                 return result;
             },
 
-            getFreeAdjacentNonDiagonalPosition: function(entity) {
+            getFreeAdjacentNonDiagonalPosition: function (entity) {
                 var self = this,
                     result = null;
 
-                entity.forEachAdjacentNonDiagonalPosition(function(x, y, orientation) {
-                    if(!result && !self.map.isColliding(x, y) && !self.isMobAt(x, y)) {
-                        result = {x: x, y: y, o: orientation};
+                entity.forEachAdjacentNonDiagonalPosition(function (x, y, orientation) {
+                    if (!result && !self.map.isColliding(x, y) && !self.isMobAt(x, y)) {
+                        result = { x: x, y: y, o: orientation };
                     }
                 });
                 return result;
             },
 
-            tryMovingToADifferentTile: function(character) {
+            tryMovingToADifferentTile: function (character) {
                 var attacker = character,
                     target = character.target;
 
-                if(attacker && target && target instanceof Player) {
-                    if(!target.isMoving() && attacker.getDistanceToEntity(target) === 0) {
+                if (attacker && target && target instanceof Player) {
+                    if (!target.isMoving() && attacker.getDistanceToEntity(target) === 0) {
                         var pos;
 
-                        switch(target.orientation) {
+                        switch (target.orientation) {
                             case Types.Orientations.UP:
-                                pos = {x: target.gridX, y: target.gridY - 1, o: target.orientation}; break;
+                                pos = { x: target.gridX, y: target.gridY - 1, o: target.orientation }; break;
                             case Types.Orientations.DOWN:
-                                pos = {x: target.gridX, y: target.gridY + 1, o: target.orientation}; break;
+                                pos = { x: target.gridX, y: target.gridY + 1, o: target.orientation }; break;
                             case Types.Orientations.LEFT:
-                                pos = {x: target.gridX - 1, y: target.gridY, o: target.orientation}; break;
+                                pos = { x: target.gridX - 1, y: target.gridY, o: target.orientation }; break;
                             case Types.Orientations.RIGHT:
-                                pos = {x: target.gridX + 1, y: target.gridY, o: target.orientation}; break;
+                                pos = { x: target.gridX + 1, y: target.gridY, o: target.orientation }; break;
                         }
 
-                        if(pos && !this.map.isColliding(pos.x, pos.y) && !this.map.isPlateau(pos.x, pos.y)) {
+                        if (pos && !this.map.isColliding(pos.x, pos.y) && !this.map.isPlateau(pos.x, pos.y)) {
                             attacker.previousTarget = target;
                             attacker.disengage();
                             attacker.idle();
@@ -9079,13 +9079,13 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         }
                     }
 
-                    if(!target.isMoving() && attacker.isAdjacentNonDiagonal(target) && this.isMobOnSameTile(attacker)) {
+                    if (!target.isMoving() && attacker.isAdjacentNonDiagonal(target) && this.isMobOnSameTile(attacker)) {
                         var pos = this.getFreeAdjacentNonDiagonalPosition(target);
 
                         // avoid stacking mobs on the same tile next to a player
                         // by making them go to adjacent tiles if they are available
-                        if(pos && !target.adjacentTiles[pos.o]) {
-                            if(this.player && this.player.target && attacker.id === this.player.target.id) {
+                        if (pos && !target.adjacentTiles[pos.o]) {
+                            if (this.player && this.player.target && attacker.id === this.player.target.id) {
                                 return false; // never unstack the player's target
                             }
 
@@ -9108,13 +9108,13 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 }
                 const entityScene = entity.getScene();
                 const currentScene = this.map.getCurrentScene(entity);
-                if(entity.getScene() !== currentScene) {
-                    if(currentScene) {
+                if (entity.getScene() !== currentScene) {
+                    if (currentScene) {
                         this.camera.setBoundingBox(currentScene.x, currentScene.y, currentScene.width, currentScene.height);
 
-                        if(currentScene.message) {
+                        if (currentScene.message) {
                             this.showNotification(currentScene.message);
-                        } else if(currentScene.name && (!entityScene || entityScene.name !== currentScene.name)) {
+                        } else if (currentScene.name && (!entityScene || entityScene.name !== currentScene.name)) {
                             this.showNotification("Welcome to " + currentScene.name);
                         }
                     } else {
@@ -9122,7 +9122,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     }
                     entity.setScene(currentScene)
 
-                    if(currentScene && currentScene.bg) {
+                    if (currentScene && currentScene.bg) {
                         this.app.setBackground(currentScene.bg);
                     } else {
                         this.app.setBackground('black');
@@ -9138,30 +9138,30 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             },
 
             handleTrigger(trigger, entity) {
-                if(!entity.triggerArea || entity.triggerArea.id !== trigger.id) {
+                if (!entity.triggerArea || entity.triggerArea.id !== trigger.id) {
                     entity.triggerArea = trigger;
                     if (!self.client) {
                         return;
                     }
                     self.client.sendTrigger(trigger.id, true);
-                    if(entity.id === self.player.id  && trigger.player_message) {
+                    if (entity.id === self.player.id && trigger.player_message) {
                         self.showNotification(trigger.player_message);
-                    } else if(trigger.message) {
+                    } else if (trigger.message) {
                         self.showNotification(trigger.message);
                     }
 
                     if (entity.id === self.player.id && trigger.minigame && !this.minigameLoaded) {
-                        if($("#minigameprompt").hasClass(`active`)){$("#minigameprompt").removeAttr('style').off();} // if walking from one trigger to the next, clear data.                        
+                        if ($("#minigameprompt").hasClass(`active`)) { $("#minigameprompt").removeAttr('style').off(); } // if walking from one trigger to the next, clear data.                        
                         let containerScale = Math.min(($(window).width() / $("#container").width() * 0.95), ($(window).height() / $("#container").height() * 0.95));
                         let [offsetX, offsetY] = (trigger.offset || "0,0").split(',').map(Number);
 
                         const toPercent = (value, offset, dimension) => {
                             if (value.includes("px")) {
-                                value = `${(parseFloat(value) / dimension) * 100}%`; 
+                                value = `${(parseFloat(value) / dimension) * 100}%`;
                             }
                             return (parseFloat(value) + ((offset * this.renderer.tilesize * this.renderer.scale) / (dimension * containerScale)) * 100) + '%';
                         };
-                        
+
                         lastMinigameTrigger = trigger.id;
                         $("#minigameprompt").css({
                             'left': toPercent($("#minigameprompt").css('left'), offsetX, $("#container").width()),
@@ -9182,7 +9182,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             return;
                         }
                         self.client.sendTrigger(trigger.id, false);
-                        if (entity.id === self.player.id && trigger.minigame && lastMinigameTrigger === trigger.id){
+                        if (entity.id === self.player.id && trigger.minigame && lastMinigameTrigger === trigger.id) {
                             $("#minigameprompt").removeClass('active').removeAttr('style').off();
                         }
                     })
@@ -9210,7 +9210,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 let entity = self.getEntityById(entityId);
                 let speed;
 
-                switch(animation.substring(0, 4).toLowerCase()) {
+                switch (animation.substring(0, 4).toLowerCase()) {
                     case 'atk_':
                         speed = entity.atkSpeed;
                         break;
@@ -9231,16 +9231,16 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             /**
              *
              */
-            onCharacterUpdate: function(character) {
+            onCharacterUpdate: function (character) {
                 var time = this.currentTime,
                     self = this;
 
                 character.lastUpdate = time;
                 // If mob has finished moving to a different tile in order to avoid stacking, attack again from the new position.
-                if(character.previousTarget && !character.isMoving() && character instanceof Mob) {
+                if (character.previousTarget && !character.isMoving() && character instanceof Mob) {
                     var t = character.previousTarget;
 
-                    if(this.getEntityById(t.id)) { // does it still exist?
+                    if (this.getEntityById(t.id)) { // does it still exist?
                         character.previousTarget = null;
                         this.createAttackLink(character, t);
                         return;
@@ -9249,7 +9249,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     }
                 }
 
-                if(character.isAttacking() && !character.previousTarget) {
+                if (character.isAttacking() && !character.previousTarget) {
                     var isMoving = this.tryMovingToADifferentTile(character); // Don't let multiple mobs stack on the same tile when attacking a player.
 
                     if (character.canAttack(time)) {
@@ -9299,13 +9299,13 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             /**
              *
              */
-            isZoningTile: function(x, y) {
+            isZoningTile: function (x, y) {
                 var c = this.camera;
 
                 x = x - c.gridX;
                 y = y - c.gridY;
 
-                if(x === 0 || y === 0 || x === c.gridW-1 || y === c.gridH-1) {
+                if (x === 0 || y === 0 || x === c.gridW - 1 || y === c.gridH - 1) {
                     return true;
                 }
                 return false;
@@ -9314,33 +9314,33 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             /**
              *
              */
-            getZoningOrientation: function(x, y) {
+            getZoningOrientation: function (x, y) {
                 var orientation = "",
                     c = this.camera;
 
                 x = x - c.gridX;
                 y = y - c.gridY;
 
-                if(x === 0) {
+                if (x === 0) {
                     orientation = Types.Orientations.LEFT;
                 }
-                else if(y === 0) {
+                else if (y === 0) {
                     orientation = Types.Orientations.UP;
                 }
-                else if(x === c.gridW-1) {
+                else if (x === c.gridW - 1) {
                     orientation = Types.Orientations.RIGHT;
                 }
-                else if(y === c.gridH-1) {
+                else if (y === c.gridH - 1) {
                     orientation = Types.Orientations.DOWN;
                 }
 
                 return orientation;
             },
 
-            startZoningFrom: function(x, y) {
+            startZoningFrom: function (x, y) {
                 this.zoningOrientation = this.getZoningOrientation(x, y);
 
-                if(this.renderer.mobile || this.renderer.tablet) {
+                if (this.renderer.mobile || this.renderer.tablet) {
                     var z = this.zoningOrientation,
                         c = this.camera,
                         ts = this.renderer.tilesize,
@@ -9349,9 +9349,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         xoffset = (c.gridW - 2) * ts,
                         yoffset = (c.gridH - 2) * ts;
 
-                    if(z === Types.Orientations.LEFT || z === Types.Orientations.RIGHT) {
+                    if (z === Types.Orientations.LEFT || z === Types.Orientations.RIGHT) {
                         x = (z === Types.Orientations.LEFT) ? c.x - xoffset : c.x + xoffset;
-                    } else if(z === Types.Orientations.UP || z === Types.Orientations.DOWN) {
+                    } else if (z === Types.Orientations.UP || z === Types.Orientations.DOWN) {
                         y = (z === Types.Orientations.UP) ? c.y - yoffset : c.y + yoffset;
                     }
                     c.setPosition(x, y);
@@ -9360,7 +9360,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     this.endZoning();
 
                     // Force immediate drawing of all visible entities in the new zone
-                    this.forEachVisibleEntityByDepth(function(entity) {
+                    this.forEachVisibleEntityByDepth(function (entity) {
                         entity.setDirty();
                     });
                 }
@@ -9373,77 +9373,83 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.client.sendZone();
             },
 
-            enqueueZoningFrom: function(x, y) {
-                this.zoningQueue.push({x: x, y: y});
+            enqueueZoningFrom: function (x, y) {
+                this.zoningQueue.push({ x: x, y: y });
 
-                if(this.zoningQueue.length === 1) {
+                if (this.zoningQueue.length === 1) {
                     this.startZoningFrom(x, y);
                 }
             },
 
-            endZoning: function() {
+            endZoning: function () {
                 this.currentZoning = null;
                 this.resetZone();
                 this.zoningQueue.shift();
 
-                if(this.zoningQueue.length > 0) {
+                if (this.zoningQueue.length > 0) {
                     var pos = this.zoningQueue[0];
                     this.startZoningFrom(pos.x, pos.y);
                 }
                 //this.pathingGrid = this.pathingGridBackup;
             },
 
-            isZoning: function() {
+            isZoning: function () {
                 return !_.isNull(this.currentZoning);
             },
 
-            resetZone: function() {
+            resetZone: function () {
                 this.bubbleManager.clean();
                 this.initAnimatedTiles();
                 this.renderer.renderStaticCanvases();
             },
 
-            resetCamera: function() {
+            resetCamera: function () {
                 this.focusPlayer();
                 this.resetZone();
             },
 
-            say: function(message) {
+            say: function (message) {
                 this.client.sendChat(message);
             },
 
-            emote: function(emotion) {
+            emote: function (emotion) {
                 this.client.sendEmotion(emotion);
             },
 
-            createBubble: function(id, message, showCheck) {
+            createBubble: function (id, message, showCheck) {
                 this.bubbleManager.create(id, message, this.currentTime, showCheck);
             },
 
-            destroyBubble: function(id) {
+            destroyBubble: function (id) {
                 this.bubbleManager.destroyBubble(id);
             },
 
-            assignBubbleTo: function(character) {
+            assignBubbleTo: function (character) {
                 if (character === undefined) {
                     return;
                 }
                 var bubble = this.bubbleManager.getBubbleById(character.id);
 
-                if(bubble) {
+                if (bubble) {
                     var s = this.renderer.scale,
                         t = 16 * s, // tile size
                         x = ((character.x - this.camera.x) * s),
                         w = parseInt(bubble.element.css('width')) + 24,
-                        offset = (w / 2) - (t / 2),
+                        h = parseInt(bubble.element.css('height')) + 24,
+                        offsetX = (w / 2) - (t / 2),
                         offsetY,
                         y;
 
-                    if(character instanceof Npc) {
-                        offsetY = 0;
+                        console.log(bubble.element);
+
+                    if (character instanceof Npc) {
+                        var charOffsetX = s * character.sprite.bubbleOffsetX || 0;
+                        offsetX = offsetX - charOffsetX;
+                        offsetY = s * character.sprite.bubbleOffsetY || 0;
+                        //offsetY = 0;
                     } else {
-                        if(s === 2) {
-                            if(this.renderer.mobile) {
+                        if (s === 2) {
+                            if (this.renderer.mobile) {
                                 offsetY = 0;
                             } else {
                                 offsetY = 15;
@@ -9455,12 +9461,12 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                     y = ((character.y - this.camera.y) * s) - (t * 2) - offsetY;
 
-                    bubble.element.css('left', x - offset + 'px');
+                    bubble.element.css('left', x - offsetX + 'px');
                     bubble.element.css('top', y + 'px');
                 }
             },
 
-            restart: function() {
+            restart: function () {
                 console.debug("Beginning restart");
 
                 this.entities = {};
@@ -9478,7 +9484,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                 this.storage.incrementRevives();
 
-                if(this.renderer.mobile || this.renderer.tablet) {
+                if (this.renderer.mobile || this.renderer.tablet) {
                     this.renderer.clearScreen(this.renderer.context);
                 }
 
@@ -9489,43 +9495,43 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 console.debug("Finished restart");
             },
 
-            onGameStart: function(callback) {
+            onGameStart: function (callback) {
                 this.gamestart_callback = callback;
             },
 
-            onDisconnect: function(callback) {
+            onDisconnect: function (callback) {
                 this.disconnect_callback = callback;
             },
 
-            onPlayerDeath: function(callback) {
+            onPlayerDeath: function (callback) {
                 this.playerdeath_callback = callback;
             },
 
-            onPlayerHealthChange: function(callback) {
+            onPlayerHealthChange: function (callback) {
                 this.playerhp_callback = callback;
             },
 
-            onPlayerHurt: function(callback) {
+            onPlayerHurt: function (callback) {
                 this.playerhurt_callback = callback;
             },
 
-            onPlayerEquipmentChange: function(callback) {
+            onPlayerEquipmentChange: function (callback) {
                 this.equipment_callback = callback;
             },
 
-            onNbPlayersChange: function(callback) {
+            onNbPlayersChange: function (callback) {
                 this.nbplayers_callback = callback;
             },
 
-            onNotification: function(callback) {
+            onNotification: function (callback) {
                 this.notification_callback = callback;
             },
 
-            onPlayerInvincible: function(callback) {
+            onPlayerInvincible: function (callback) {
                 this.invincible_callback = callback
             },
 
-            resize: function() {
+            resize: function () {
                 var x = this.camera.x,
                     y = this.camera.y,
                     currentScale = this.renderer.scale,
@@ -9539,16 +9545,16 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.app.initEquipmentIcons();
             },
 
-            updateBars: function() {
-                if(this.player && this.playerhp_callback) {
+            updateBars: function () {
+                if (this.player && this.playerhp_callback) {
                     this.playerhp_callback(this.player.hitPoints, this.player.maxHitPoints);
                 }
             },
 
-            getDeadMobPosition: function(mobId) {
+            getDeadMobPosition: function (mobId) {
                 var position;
 
-                if(mobId in this.deathpositions) {
+                if (mobId in this.deathpositions) {
                     position = this.deathpositions[mobId];
                     delete this.deathpositions[mobId];
                 }
@@ -9556,19 +9562,19 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 return position;
             },
 
-            onAchievementUnlock: function(callback) {
+            onAchievementUnlock: function (callback) {
                 this.unlock_callback = callback;
             },
 
-            onQuestHandout: function(callback) {
+            onQuestHandout: function (callback) {
                 this.quest_handout_callback = callback;
             },
 
-            onPlayerChoice: function(callback) {
-              this.player_choice_callback = callback;
+            onPlayerChoice: function (callback) {
+                this.player_choice_callback = callback;
             },
 
-            makeChoice: function(npcId, choice) {
+            makeChoice: function (npcId, choice) {
                 let self = this;
                 let npc = self.getEntityById(npcId);
                 let url = '/session/' + self.sessionId + '/npc/' + npc.kind + '/dialogue/' + choice;
@@ -9579,21 +9585,21 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 })
             },
 
-            showNewQuestPopup: function(quest) {
+            showNewQuestPopup: function (quest) {
                 if (this.quest_handout_callback) {
                     this.quest_handout_callback(quest);
                 }
             },
 
-            showQuestCompleteNotification: function(questName, endText, xpReward, medal) {
-                if(this.unlock_callback) {
+            showQuestCompleteNotification: function (questName, endText, xpReward, medal) {
+                if (this.unlock_callback) {
                     this.unlock_callback(questName, endText, xpReward, medal);
                     this.audioManager.playSound("achievement");
                 }
             },
 
-            showNotification: function(message) {
-                if(this.notification_callback) {
+            showNotification: function (message) {
+                if (this.notification_callback) {
                     this.notification_callback(message);
                 }
             },
@@ -9605,18 +9611,18 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 }
             },
 
-            removeObsoleteEntities: function() {
+            removeObsoleteEntities: function () {
                 var nb = _.size(this.obsoleteEntities),
                     self = this;
 
-                if(nb > 0) {
-                    _.each(this.obsoleteEntities, function(entity) {
-                        if(entity.id != self.player.id) { // never remove yourself
+                if (nb > 0) {
+                    _.each(this.obsoleteEntities, function (entity) {
+                        if (entity.id != self.player.id) { // never remove yourself
                             self.removeEntity(entity);
                             self.removeFromRenderingGrid(entity, entity.gridX, entity.gridY);
                         }
                     });
-                    console.debug("Removed "+nb+" entities: "+_.pluck(_.reject(this.obsoleteEntities, function(id) { return id === self.player.id }), 'id'));
+                    console.debug("Removed " + nb + " entities: " + _.pluck(_.reject(this.obsoleteEntities, function (id) { return id === self.player.id }), 'id'));
                     this.obsoleteEntities = null;
                 }
             },
@@ -9627,7 +9633,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
              * For instance, to get rid of the sword cursor in case the mouse is still hovering over a dying mob.
              * Also useful when the mouse is hovering a tile where an item is appearing.
              */
-            updateCursor: function() {
+            updateCursor: function () {
                 this.movecursor();
                 this.updateCursorLogic();
             },
@@ -9635,28 +9641,28 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             /**
              * Change player plateau mode when necessary
              */
-            updatePlateauMode: function() {
-                if(this.map.isPlateau(this.player.gridX, this.player.gridY)) {
+            updatePlateauMode: function () {
+                if (this.map.isPlateau(this.player.gridX, this.player.gridY)) {
                     this.player.isOnPlateau = true;
                 } else {
                     this.player.isOnPlateau = false;
                 }
             },
 
-            updatePlayerCheckpoint: function() {
+            updatePlayerCheckpoint: function () {
                 var checkpoint = this.map.getCurrentCheckpoint(this.player);
 
-                if(checkpoint) {
+                if (checkpoint) {
                     var lastCheckpoint = this.player.lastCheckpoint;
-                    if(!lastCheckpoint || (lastCheckpoint && lastCheckpoint.id !== checkpoint.id)) {
+                    if (!lastCheckpoint || (lastCheckpoint && lastCheckpoint.id !== checkpoint.id)) {
                         this.player.lastCheckpoint = checkpoint;
                         this.client.sendCheck(checkpoint.id);
                         this.lastCheckpoint = checkpoint;
                     }
                 }
             },
-            
-            newSession: function() {
+
+            newSession: function () {
                 const url = '/session/' + this.sessionId + '/teleport';
                 const dest = this.lastCheckpoint;
                 dest.map = this.mapId;
@@ -9669,16 +9675,16 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     }
                 }).catch(function (error) {
                     console.log(error);
-                }).finally(function(e) {
+                }).finally(function (e) {
 
-                });                
+                });
             },
 
-            forEachEntityAround: function(x, y, r, callback) {
-                for(var i = x-r, max_i = x+r; i <= max_i; i += 1) {
-                    for(var j = y-r, max_j = y+r; j <= max_j; j += 1) {
-                        if(!this.map.isOutOfBounds(i, j)) {
-                            _.each(this.renderingGrid[j][i], function(entity) {
+            forEachEntityAround: function (x, y, r, callback) {
+                for (var i = x - r, max_i = x + r; i <= max_i; i += 1) {
+                    for (var j = y - r, max_j = y + r; j <= max_j; j += 1) {
+                        if (!this.map.isOutOfBounds(i, j)) {
+                            _.each(this.renderingGrid[j][i], function (entity) {
                                 callback(entity);
                             });
                         }
@@ -9686,26 +9692,26 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 }
             },
 
-            checkOtherDirtyRects: function(r1, source, x, y) {
+            checkOtherDirtyRects: function (r1, source, x, y) {
                 var r = this.renderer;
 
-                this.forEachEntityAround(x, y, 2, function(e2) {
-                    if(source && source.id && e2.id === source.id) {
+                this.forEachEntityAround(x, y, 2, function (e2) {
+                    if (source && source.id && e2.id === source.id) {
                         return;
                     }
-                    if(!e2.isDirty) {
+                    if (!e2.isDirty) {
                         var r2 = r.getEntityBoundingRect(e2);
-                        if(r.isIntersecting(r1, r2)) {
+                        if (r.isIntersecting(r1, r2)) {
                             e2.setDirty();
                         }
                     }
                 });
 
-                if(source && !(source.hasOwnProperty("index"))) {
-                    let animatedTileUpdate = function(tile) {
-                        if(!tile.isDirty) {
+                if (source && !(source.hasOwnProperty("index"))) {
+                    let animatedTileUpdate = function (tile) {
+                        if (!tile.isDirty) {
                             var r2 = r.getTileBoundingRect(tile);
-                            if(r.isIntersecting(r1, r2)) {
+                            if (r.isIntersecting(r1, r2)) {
                                 tile.isDirty = true;
                             }
                         }
@@ -9714,9 +9720,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     this.forEachHighAnimatedTile(animatedTileUpdate);
                 }
 
-                if(!this.drawTarget && this.selectedCellVisible) {
+                if (!this.drawTarget && this.selectedCellVisible) {
                     var targetRect = r.getTargetBoundingRect();
-                    if(r.isIntersecting(r1, targetRect)) {
+                    if (r.isIntersecting(r1, targetRect)) {
                         this.drawTarget = true;
                         this.renderer.targetRect = targetRect;
                     }
@@ -9734,7 +9740,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     return !invalid;
                 }
 
-                axios.get("/session/" + this.sessionId + "/statistics").then(function(response){
+                axios.get("/session/" + this.sessionId + "/statistics").then(function (response) {
 
                     if (response.data !== null && response.data !== undefined) {
 
@@ -9768,17 +9774,17 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             weaponLevel = response.data.weaponInfo.weaponLevelInfo.currentLevel;
 
                             $('#weaponLevel').text(weaponLevel);
-                            if(response.data.weaponInfo.weaponLevelInfo.percentage === undefined) {
+                            if (response.data.weaponInfo.weaponLevelInfo.percentage === undefined) {
                                 $('#weaponProgressContainer').hide();
                             } else {
-                            $('#weaponProgress').text(weaponPercentage);
+                                $('#weaponProgress').text(weaponPercentage);
                                 $('#weaponProgressContainer').show();
                             }
 
-                            if(response.data.weaponInfo.trait === undefined) {
+                            if (response.data.weaponInfo.trait === undefined) {
                                 $('#weaponTraitContainer').hide();
                             } else {
-                            $('#weaponTrait').text(response.data.weaponInfo.trait);
+                                $('#weaponTrait').text(response.data.weaponInfo.trait);
                                 $('#weaponTraitContainer').show();
                             }
 
@@ -9859,7 +9865,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                     self.entities[id].stealth = toUpdateEntity.stealth;
                                 }
                                 if (toUpdateEntity.inCombat !== undefined) {
-                                    if (!self.entities[id].inCombat && toUpdateEntity.inCombat){
+                                    if (!self.entities[id].inCombat && toUpdateEntity.inCombat) {
                                         self.entities[id].joinCombat();
                                     } else if (self.entities[id].inCombat && !toUpdateEntity.inCombat) {
                                         self.entities[id].exitCombat();
@@ -9882,15 +9888,14 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             },
 
             canFish: function (gX, gY, keyboard) {
-                if (Types.isFishingRod(Types.getKindFromString(this.player.weaponName))){
+                if (Types.isFishingRod(Types.getKindFromString(this.player.weaponName))) {
                     if (this.player.isOnSameAxis(gX, gY)
-                        && this.player.isNear({gridX: gX, gridY: gY}, 2)
-                        && this.map.getLakeName(gX, gY))
-                    {
-                        return {gridX: gX, gridY: gY};
+                        && this.player.isNear({ gridX: gX, gridY: gY }, 2)
+                        && this.map.getLakeName(gX, gY)) {
+                        return { gridX: gX, gridY: gY };
                     } else if (keyboard) { // let keyboard seek one tile further
                         let tryPos = this.player.getOneStepFurther(gX, gY);
-                        if (this.map.getLakeName(tryPos.gridX, tryPos.gridY) && this.player.isNear(tryPos, 2)){
+                        if (this.map.getLakeName(tryPos.gridX, tryPos.gridY) && this.player.isNear(tryPos, 2)) {
                             return tryPos;
                         }
                     }
@@ -9899,7 +9904,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 return false;
             },
 
-            getFishingTraitProcText: function(text){
+            getFishingTraitProcText: function (text) {
                 switch (text) {
                     case 'upper_hand':
                         return "Upper hand!";
@@ -9912,8 +9917,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 }
             },
 
-            startFishing: function(gX, gY) {
-                if(!this.player.isFishing){
+            startFishing: function (gX, gY) {
+                if (!this.player.isFishing) {
                     let self = this;
 
                     self.player.isFishing = true;
@@ -9932,10 +9937,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             waitMax = 12000;
                         let waitDuration = Math.random() * (waitMax - waitMin) + waitMin;
                         clearTimeout(self.uniFishTimeout);
-                        self.uniFishTimeout = setTimeout(function() {
+                        self.uniFishTimeout = setTimeout(function () {
                             self.playCatchFish(response.data.fish, response.data.difficulty, response.data.speed, response.data.bullseyeSize);
-                            if (traitText){
-                                self.infoManager.addDamageInfo(traitText, float.gridX*16, float.gridY*16 - 5, "fishTrait");
+                            if (traitText) {
+                                self.infoManager.addDamageInfo(traitText, float.gridX * 16, float.gridY * 16 - 5, "fishTrait");
                             }
                         }, waitDuration);
                     }).catch(function (error) {
@@ -9945,13 +9950,13 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 }
             },
 
-            playCatchFish: function(fish, difficulty, speed, bullseyeSize) {
+            playCatchFish: function (fish, difficulty, speed, bullseyeSize) {
                 let self = this;
                 const fishEscapeDuration = 7000;
 
                 let fishName = AltNames.getName(fish);
                 let fishSpriteUrl;
-                if(this.fish[fish]){
+                if (this.fish[fish]) {
                     fishSpriteUrl = this.fish[fish].getUrlByScale(this.renderer.scale);
                 }
 
@@ -9963,14 +9968,14 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.slidingFish = setInterval(self.tickMovingFish.bind(self), 10, speed);
                 this.app.showFishing();
                 clearTimeout(self.uniFishTimeout);
-                this.uniFishTimeout = setTimeout(function() {
+                this.uniFishTimeout = setTimeout(function () {
                     self.showNotification(self.fishingData.fishName + " escaped!");
                     self.stopFishing(false, false, false);
                 }, fishEscapeDuration);
             },
 
-            stopFishing: function(success, barHoldDuration, bullseye) {
-                let self= this;
+            stopFishing: function (success, barHoldDuration, bullseye) {
+                let self = this;
 
                 self.player.isFishing = false;
                 clearTimeout(this.uniFishTimeout);
@@ -9990,18 +9995,18 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.fishingData.fishName = null;
             },
 
-            generateFishingTarget: function(difficulty, bullseyeSize){
+            generateFishingTarget: function (difficulty, bullseyeSize) {
                 const targetMaxHeight = 100, // 150 (bar size) - 2*4 (borders) - 2*21 (21 px gap top/bottom so the target never loads on edge)
                     targetOffset = 25; // same as above - 4+21 offset from the top so the target never loads on the edge
-                this.fishingData.targetHeight = Math.floor(targetMaxHeight * difficulty/100); //difficulty is expressed in %
+                this.fishingData.targetHeight = Math.floor(targetMaxHeight * difficulty / 100); //difficulty is expressed in %
                 this.fishingData.targetPos = targetOffset + Math.round(Math.random() * (targetMaxHeight - this.fishingData.targetHeight));
-                this.fishingData.bullseyeRelPos = (Math.ceil(difficulty/2)) - 1; // -1 cause 0 is the first value
+                this.fishingData.bullseyeRelPos = (Math.ceil(difficulty / 2)) - 1; // -1 cause 0 is the first value
                 this.fishingData.bullseyeHeight = bullseyeSize;
 
                 this.app.setFishingTarget(this.fishingData.targetHeight, this.fishingData.targetPos, this.fishingData.bullseyeHeight, this.fishingData.bullseyeRelPos);
             },
 
-            tickMovingFish: function(gap){
+            tickMovingFish: function (gap) {
                 const maxPos = 126; //150 (bar size) - 16 (fish size) - 2*4 (borders)
                 const cycleTime = maxPos * gap;
                 let currTime = new Date().getTime();
@@ -10010,7 +10015,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 let dir = (Math.floor(timeDiff / cycleTime) % 2); // 0 -> move down, 1 -> move up
                 let posInCycle = Math.round((timeDiff % cycleTime) / gap);
 
-                if(dir){
+                if (dir) {
                     this.fishingData.fishPos = 126 - posInCycle;
                 } else {
                     this.fishingData.fishPos = posInCycle;
@@ -10019,7 +10024,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.app.setFishPos(this.fishingData.fishPos);
             },
 
-            clickFishingBar: function(){
+            clickFishingBar: function () {
                 let self = this;
                 const markerOffset = 12; // 8 from the marker + 4 from the bar border
                 let clickPos = this.fishingData.fishPos + markerOffset;
@@ -10029,9 +10034,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 let maxBullseyePos = minBullseyePos + this.fishingData.bullseyeHeight;
 
                 clearInterval(this.slidingFish);
-                if (clickPos >= minTargetPos && clickPos < maxTargetPos){
+                if (clickPos >= minTargetPos && clickPos < maxTargetPos) {
                     let bullseye = false;
-                    if (clickPos >= minBullseyePos && clickPos < maxBullseyePos){
+                    if (clickPos >= minBullseyePos && clickPos < maxBullseyePos) {
                         bullseye = true;
                     }
                     self.audioManager.playSound("fishingsuccess");
@@ -10045,26 +10050,26 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 }
             },
 
-            msToTime: function(duration) {
-                var seconds = parseInt((duration/1000)%60),
-                    minutes = parseInt((duration/(1000*60))%60);
+            msToTime: function (duration) {
+                var seconds = parseInt((duration / 1000) % 60),
+                    minutes = parseInt((duration / (1000 * 60)) % 60);
 
                 seconds = (seconds < 10) ? "0" + seconds : seconds;
 
                 return minutes + ":" + seconds;
             },
 
-            updateBuffInfo: function(stat, percent, duration){
+            updateBuffInfo: function (stat, percent, duration) {
                 let self = this;
                 clearInterval(self.buffTickInterval);
 
-                if (duration && duration > 0){ //expireTime === 0 means the buff got cancelled by the server
-                    self.showNotification("You have " + percent + "% more "+ stat + " for " + self.msToTime(duration) + " min");
+                if (duration && duration > 0) { //expireTime === 0 means the buff got cancelled by the server
+                    self.showNotification("You have " + percent + "% more " + stat + " for " + self.msToTime(duration) + " min");
                     const buffExpiration = new Date().getTime() + duration;
-                    self.buffTickInterval = setInterval(function() {
+                    self.buffTickInterval = setInterval(function () {
                         let durationLeft = buffExpiration - new Date().getTime();
                         let buffInfo;
-                        if (durationLeft > 0){
+                        if (durationLeft > 0) {
                             buffInfo = "Active buff: <span style='color:#FCE045; padding-right: 5px;'>" + percent + "%</span>" + stat + " (<span style='color:#FCE045;'>" + self.msToTime(durationLeft) + '</span>)';
                         } else {
                             buffInfo = "";
@@ -10090,20 +10095,20 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 } else {
                     $('#resource-' + resource).remove()
                 }
-                if($('#resources').children().length === 0) {
+                if ($('#resources').children().length === 0) {
                     $('#resources').addClass('hidden');
                 } else {
                     $('#resources').removeClass('hidden');
                 }
             },
 
-        
-            garbageCollectEntities: function() {
+
+            garbageCollectEntities: function () {
                 let self = this;
-                this.camera.forEachVisiblePosition(function(x, y) {
-                    if(!self.map.isOutOfBounds(x, y)) {
-                        if(self.renderingGrid[y][x]) {
-                            _.each(self.renderingGrid[y][x], function(entity) {
+                this.camera.forEachVisiblePosition(function (x, y) {
+                    if (!self.map.isOutOfBounds(x, y)) {
+                        if (self.renderingGrid[y][x]) {
+                            _.each(self.renderingGrid[y][x], function (entity) {
                                 if (entity && self.currentTime - entity.lastUpdate > 5000) {
                                     //console.log("Garbage collecting entity " + entity.id);
                                     self.removeFromRenderingGrid(entity, x, y);
@@ -10114,9 +10119,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 }, this.renderer.mobile ? 0 : 2);
             },
 
-            interact: function() {
+            interact: function () {
                 let self = this;
-                this.forEachEntityAround(this.player.gridX, this.player.gridY, 1, function(entity) {
+                this.forEachEntityAround(this.player.gridX, this.player.gridY, 1, function (entity) {
                     if (Types.isNpc(entity.kind) && !$('#dialogue-popup').hasClass('active')) {
                         self.makeNpcTalk(entity);
                     }

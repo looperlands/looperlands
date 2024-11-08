@@ -957,6 +957,7 @@ define(['text!../sprites/agent.json',
 
         // BITCORN NPCS
         'text!../sprites/BITNPC_BITCORN.json',
+        'text!../sprites/BITNPC_THORNBEARD_KNEEL.json',
         'text!../sprites/BITNPC_THORNBEARD.json',
 
         // BITCORN MOBS

@@ -475,6 +475,7 @@ define(['npc'], function(Npc) {
         SIREN: Npc.extend({init: function(id) {this._super(id, Types.Entities.SIREN, 1);}}),
         // BITCORN NPCS
         BITNPC_BITCORN: Npc.extend({init: function(id) {this._super(id, Types.Entities.BITNPC_BITCORN, 1);}}),
+        BITNPC_THORNBEARD_KNEEL: Npc.extend({init: function(id) {this._super(id, Types.Entities.BITNPC_THORNBEARD_KNEEL, 1);}}),
         BITNPC_THORNBEARD: Npc.extend({init: function(id) {this._super(id, Types.Entities.BITNPC_THORNBEARD, 1);}}),
 
         VOYAGER: Npc.extend({init: function(id) {this._super(id, Types.Entities.VOYAGER, 1);}}),
