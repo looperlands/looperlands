@@ -5266,7 +5266,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "NFT_b5893a75b74f9caccd3c23b4a974db5f53b4e9d2",
                     "NFT_d61fbdec9853a9b09956ef8d852ca066a48e5968eb8786aa6ab02fb3b4d30a35",
                     "NFT_ef4dbad11f6944c9ba3222b3e8aa63157178dd1857f0f4fcd7e16d58fcd1b4f1",
-                    
+
                     "NFT_01348c02000000000000000002386f26fc100000000000000000000000000164",
                     "NFT_0b3edc80d7ec92657dfea9026e93747b1321b6d19cf43bef055d6e6860f48834",
                     "NFT_47ba8458600ff9ad1a1b0b491ff0fc194371aa30d74a3267af0d7a3462a18048",
@@ -7030,6 +7030,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     self.audioManager.updateMusic();
                     self.app.timeOffset += serverTimeOffset
                     self.serverTime = serverTimeOffset;
+                    self.lastBubbleToTalkBubbleId = null;
 
                     self.addEntity(self.player);
                     self.player.dirtyRect = self.renderer.getEntityBoundingRect(self.player);
@@ -7147,21 +7148,21 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             self.audioManager.updateMusic();
                         }
 
-                        // Loop over all entities around player
-                        self.forEachEntityAround(self.player.gridX, self.player.gridY, 1, (entity) => {
-                            if (Types.isNpc(entity.kind) && entity.hasInteraction()) {
-                                let msg;
-                                if (self.gamepadListener.isActive()) {
-                                    msg = "Press left stick button to talk"
-                                } else {
-                                    msg = "Press [E] to talk"
-                                }
-                                self.createBubble(entity.id, msg, function () {
-                                    return self.player.isAdjacent(entity)
-                                });
-                                self.assignBubbleTo(entity);
-                            }
-                        })
+                        // Find the nearest entity with interaction capabilities
+                        const condition = (entity) => Types.isNpc(entity.kind) && entity.hasInteraction();
+                        const nearestEntity = self.forNearestEntityAround(self.player.gridX, self.player.gridY, 1, condition);
+
+                        if (nearestEntity) {
+                            let msg = self.gamepadListener.isActive() ? "Press left stick button to talk" : "Press [E] to talk";
+
+                            // Destroy the previous 'to talk' bubble if it exists
+                            if (self.lastBubbleToTalkBubbleId) self.destroyBubble(self.lastBubbleToTalkBubbleId);
+
+                            // Create new bubble for the nearest entity and update the lst bubble ID
+                            self.createBubble(nearestEntity.id, msg, function () { return self.player.isAdjacent(nearestEntity); });
+                            self.assignBubbleTo(nearestEntity);
+                            self.lastBubbleToTalkBubbleId = nearestEntity.id;
+                        }
                     });
 
                     self.player.onStopPathing(function (x, y) {
@@ -9422,6 +9423,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
             destroyBubble: function (id) {
                 this.bubbleManager.destroyBubble(id);
+                if (id === self.lastBubbleToTalkBubbleId) self.lastBubbleToTalkBubbleId = null;
             },
 
             assignBubbleTo: function (character) {
@@ -9431,38 +9433,50 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 var bubble = this.bubbleManager.getBubbleById(character.id);
 
                 if (bubble) {
+
                     var s = this.renderer.scale,
                         t = 16 * s, // tile size
                         x = ((character.x - this.camera.x) * s),
-                        w = parseInt(bubble.element.css('width')) + 24,
-                        h = parseInt(bubble.element.css('height')) + 24,
+                        y = ((character.y - this.camera.y) * s) - (t * 2),
+                        w = bubble.element.outerWidth(true), // true includes margins
                         offsetX = (w / 2) - (t / 2),
-                        offsetY,
-                        y;
+                        offsetY = 0;
 
-                        console.log(bubble.element);
+                    var lineHeight = this.renderer.mobile ? 24 : 35;
+                    var charOffsetX = 0;
+                    var charOffsetY = 0;
 
                     if (character instanceof Npc) {
-                        var charOffsetX = s * character.sprite.bubbleOffsetX || 0;
-                        offsetX = offsetX - charOffsetX;
-                        offsetY = s * character.sprite.bubbleOffsetY || 0;
-                        //offsetY = 0;
+                        charOffsetX = s * (character.normalSprite.bubbleOffsetX) || 0;
+                        charOffsetY = s * (character.normalSprite.bubbleOffsetY) || 0;
                     } else {
                         if (s === 2) {
-                            if (this.renderer.mobile) {
-                                offsetY = 0;
-                            } else {
-                                offsetY = 15;
-                            }
+                            offsetY = this.renderer.mobile ? 0 : 15;
                         } else {
                             offsetY = 12;
                         }
                     }
 
-                    y = ((character.y - this.camera.y) * s) - (t * 2) - offsetY;
+                    var bubbleHeight = bubble.element.outerHeight(true); // true includes margins
 
-                    bubble.element.css('left', x - offsetX + 'px');
-                    bubble.element.css('top', y + 'px');
+                    var xTotalOffset = offsetX + charOffsetX;
+                    var yTotalOffset = offsetY + charOffsetY - lineHeight + bubbleHeight
+
+                    bubble.element.css('left', x - xTotalOffset + 'px');
+                    bubble.element.css('top', Math.max(y - yTotalOffset, 0) + 'px');
+
+                    if (w != bubble.element.outerWidth(true) || bubbleHeight != bubble.element.outerHeight(true)) { //readjust x offset if things changed on move (typically if a line wrap change happened)
+                        w = bubble.element.outerWidth(true);
+                        offsetX = (w / 2) - (t / 2);
+                        xTotalOffset = offsetX + charOffsetX;
+
+                        bubbleHeight = bubble.element.outerHeight(true)
+                        yTotalOffset = offsetY + charOffsetY - lineHeight + bubbleHeight
+
+                        bubble.element.css('left', x - xTotalOffset + 'px');
+                        bubble.element.css('top', Math.max(y - yTotalOffset, 0) + 'px');
+
+                    }
                 }
             },
 
@@ -9690,6 +9704,32 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         }
                     }
                 }
+            },
+
+            forNearestEntityAround: function (x, y, r, condition = null) {
+                let nearestEntity = null;
+                let nearestDistance = r + 1;
+
+                for (let i = x - r, max_i = x + r; i <= max_i; i += 1) {
+                    for (let j = y - r, max_j = y + r; j <= max_j; j += 1) {
+                        if (!this.map.isOutOfBounds(i, j)) {
+                            _.each(this.renderingGrid[j][i], function (entity) {
+                                // Calculate the distance from the center point
+                                const distance = Math.abs(entity.gridX - x) + Math.abs(entity.gridY - y);
+
+                                // Check the optional condition, if provided
+                                const meetsCondition = condition ? condition(entity) : true;
+
+                                if (distance < nearestDistance && meetsCondition) {
+                                    nearestEntity = entity;
+                                    nearestDistance = distance;
+                                }
+                            });
+                        }
+                    }
+                }
+
+                return nearestEntity;
             },
 
             checkOtherDirtyRects: function (r1, source, x, y) {
