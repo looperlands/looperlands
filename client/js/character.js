@@ -66,7 +66,7 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
     	},
 	
     	hasShadow: function() {
-    	    return Types.hasShadow(this.kind);
+    	    return this.sprite.hasShadow !== undefined ? this.sprite.hasShadow : Types.hasShadow(this.kind);
     	},
 
         animate: function(animation, speed, count, onEndCount) {

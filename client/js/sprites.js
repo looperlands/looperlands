@@ -957,6 +957,8 @@ define(['text!../sprites/agent.json',
 
         // BITCORN NPCS
         'text!../sprites/BITNPC_BITCORN.json',
+        'text!../sprites/BITNPC_THORNBEARD_KNEEL.json',
+        'text!../sprites/BITNPC_THORNBEARD.json',
 
         // BITCORN MOBS
         'text!../sprites/SLUDGERAT.json',
@@ -966,6 +968,7 @@ define(['text!../sprites/agent.json',
         'text!../sprites/ZOMBBID.json',
         'text!../sprites/HOPPURP.json',
         'text!../sprites/HOPPINK.json',
+        'text!../sprites/CRAPTOR.json',
 
         'text!../sprites/ZAROTH.json',
         'text!../sprites/INFECTION.json',

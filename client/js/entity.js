@@ -14,6 +14,7 @@ define(function() {
         	this.flipSpriteY = false;
     		this.animations = null;
     		this.currentAnimation = null;
+            this.shadowOffsetX = 0;
             this.shadowOffsetY = 0;
 		
     		// Position

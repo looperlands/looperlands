@@ -56,6 +56,7 @@ class GameSettings {
         document.getElementById('highlightTargetTiles').checked = this.getHighlightTargetTiles();
         document.getElementById('fullscreen').checked = this.getFullscreen();
         document.getElementById('renderText').checked = this.getRenderText();
+        document.getElementById('renderMyText').checked = this.getRenderMyText();
         document.getElementById('cursor').checked = this.getCursor();
         document.getElementById('renderShadows').checked = this.getRenderShadows();
         document.getElementById('renderPlayerShadow').checked = this.getRenderPlayerShadow();
@@ -138,8 +139,16 @@ class GameSettings {
         }
     }
 
+    setRenderMyText(enabled) {
+        localStorage.setItem('renderMyText', enabled ? 'true' : 'false');
+    }
+
     setRenderText(enabled) {
         localStorage.setItem('renderText', enabled ? 'true' : 'false');
+    }
+
+    getRenderMyText() {
+        return localStorage.getItem('renderMyText') === 'true';
     }
 
     getRenderText() {
@@ -186,6 +195,7 @@ class GameSettings {
         this.setHighlightTargetTiles(document.getElementById('highlightTargetTiles').checked);
         this.setCursor(document.getElementById('cursor').checked);
         this.setFullscreen(document.getElementById('fullscreen').checked);
+        this.setRenderMyText(document.getElementById('renderMyText').checked);
         this.setRenderText(document.getElementById('renderText').checked);
         this.setRenderShadows(document.getElementById('renderShadows').checked);
         this.setRenderPlayerShadow(document.getElementById('renderPlayerShadow').checked);

@@ -320,7 +320,7 @@ define(['jquery', 'storage'], function ($, Storage) {
             if(Array.isArray(dialogue.text)) {
                 dialogue.text = dialogue.text[dialogue.text.length - 1];
             }
-            playerChoicePopup.find('#question').text(dialogue.text);
+            playerChoicePopup.find('#question').html(dialogue.text);
             playerChoicePopup.find('#choices').empty();
 
             // add event listener for keyboard input

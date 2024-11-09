@@ -898,6 +898,7 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.ZOMBBID] = function(id) {return new Mobs.ZOMBBID(id);};
     EntityFactory.builders[Types.Entities.HOPPURP] = function(id) {return new Mobs.HOPPURP(id);};
     EntityFactory.builders[Types.Entities.HOPPINK] = function(id) {return new Mobs.HOPPINK(id);};
+    EntityFactory.builders[Types.Entities.CRAPTOR] = function(id) {return new Mobs.CRAPTOR(id);};
 
     EntityFactory.builders[Types.Entities.BURGERBOSS]=function(id){return new Mobs.BURGERBOSS(id);};
     EntityFactory.builders[Types.Entities.FRYGUY]=function(id){return new Mobs.FRYGUY(id);};
@@ -1620,6 +1621,8 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.SIREN]=function(id){return new NPCs.SIREN(id);};
     //BITCORN NPCS
     EntityFactory.builders[Types.Entities.BITNPC_BITCORN]=function(id){return new NPCs.BITNPC_BITCORN(id);};
+    EntityFactory.builders[Types.Entities.BITNPC_THORNBEARD_KNEEL]=function(id){return new NPCs.BITNPC_THORNBEARD_KNEEL(id);};
+    EntityFactory.builders[Types.Entities.BITNPC_THORNBEARD]=function(id){return new NPCs.BITNPC_THORNBEARD(id);};
 
     EntityFactory.builders[Types.Entities.VOYAGER]=function(id){return new NPCs.VOYAGER(id);};
     EntityFactory.builders[Types.Entities.VOYAGERMONKEY]=function(id){return new NPCs.VOYAGERMONKEY(id);};

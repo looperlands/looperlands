@@ -4339,6 +4339,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
         ZOMBBID: Mob.extend({ init: function(id) {this._super(id, Types.Entities.ZOMBBID); this.moveSpeed = 100 + Math.random()*250; this.atkSpeed = 50 + Math.random()*50; this.idleSpeed = 250; this.isAggressive = true; this.aggroRange = 1 + Math.random()*3; this.deathAnimated = true;}}),
         HOPPINK: Mob.extend({ init: function(id) {this._super(id, Types.Entities.HOPPINK); this.moveSpeed = 100 + Math.random()*150; this.atkSpeed = 50 + Math.random()*100; this.idleSpeed = 250; this.isAggressive = true; this.aggroRange = 1 + Math.random()*3; this.deathAnimated = true;}}),
         HOPPURP: Mob.extend({ init: function(id) {this._super(id, Types.Entities.HOPPURP); this.moveSpeed = 100 + Math.random()*150; this.atkSpeed = 50 + Math.random()*100; this.idleSpeed = 250; this.isAggressive = true; this.aggroRange = 1 + Math.random()*5; this.deathAnimated = true;}}),
+        CRAPTOR: Mob.extend({ init: function(id) {this._super(id, Types.Entities.CRAPTOR); this.moveSpeed = 350; this.atkSpeed = 100; this.idleSpeed = 700; this.nameOffsetY = -24}}),
         
         BURGERBOSS: Mob.extend({ init: function(id) { this._super(id, Types.Entities.BURGERBOSS); this.moveSpeed = 200; this.atkSpeed = 250; this.idleSpeed = 800; this.shadowOffsetY = 1; this.setAttackRate(1200);}}),
         FRYGUY: Mob.extend({ init: function(id) { this._super(id, Types.Entities.FRYGUY); this.moveSpeed = 350; this.atkSpeed = 100; this.idleSpeed = 800; this.shadowOffsetY = 1; this.setAttackRate(1200);}}),
