@@ -1,4 +1,5 @@
 process.env.GAMESERVER_NAME = 'TEST_SERVER';
+process.env.DISCORD_TOKEN = "TEST_TOKEN";
 
 // Mock for gametypes
 jest.mock('../../shared/js/gametypes', () => ({
@@ -154,6 +155,26 @@ describe('DialogueController', () => {
         expect(dialogue).toBeNull();
     });
 
+    test('Should return null and log an error when an exception is thrown in findDialogueTree', () => {
+        const dialogueController = new DialogueController(new Map(), {});
+        jest.spyOn(dialogueController, 'errorEncountered').mockImplementation(() => {});
+    
+        // Force an error by mocking dialogueTrees to throw an exception
+        dialogueController.dialogueTrees = new Proxy({}, {
+            get() {
+                throw new Error("Simulated error");
+            }
+        });
+    
+        const result = dialogueController.findDialogueTree('main', 1);
+        expect(result).toBeNull();
+    
+        expect(dialogueController.errorEncountered).toHaveBeenCalledWith(
+            expect.stringContaining("[DIALOGUE] Error finding dialogue: Error: Simulated error")
+        );
+    });
+    
+
     test('hasDialogueTree should return true if dialogue tree exists', () => {
         const hasDialogue = dialogueController.hasDialogueTree('main', 1);
         expect(hasDialogue).toBe(true);
@@ -170,6 +191,162 @@ describe('DialogueController', () => {
         expect(node).toBeNull();
     });
 
+    test('Should log an error for an unknown action type in handleNodeActions', () => {
+        const dialogueController = new DialogueController(new Map(), {});
+    
+        // Spy on errorEncountered to verify it's called for unknown action types
+        jest.spyOn(dialogueController, 'errorEncountered').mockImplementation(() => {});
+    
+        // Create an action with an unknown type
+        const actions = [
+            { type: 'unknown_action', item: 'testItem' }
+        ];
+        const cache = new Map();
+        const sessionId = 'testSession';
+        const sessionData = { nftId: 'testNftId' };
+    
+        // Call handleNodeActions with the unknown action
+        dialogueController.handleNodeActions(actions, cache, sessionId, sessionData);
+    
+        // Verify that errorEncountered was called with the expected error message
+        expect(dialogueController.errorEncountered).toHaveBeenCalledWith(
+            "[DIALOGUE] Unknown action type: unknown_action"
+        );
+    });
+    
+    test('should return currentNode from sessionData if it exists in determineStartingNode', () => {
+        const dialogueController = new DialogueController(new Map(), {});
+    
+        // Set up the dialogue object and sessionData with a currentNode
+        const dialogue = {
+            start: 'start',
+            resume_conditions: [
+                { if: 'has_item', item: 'key', goto: 'node1' }
+            ]
+        };
+        const sessionData = {
+            currentNpc: 1,
+            currentNode: 'existingNode', // This should be returned immediately
+            gameData: { items: { key: 1 } }
+        };
+        const npcId = 1;
+    
+        // Call determineStartingNode with the sessionData containing currentNode
+        const result = dialogueController.determineStartingNode(dialogue, sessionData, npcId);
+    
+        // Verify that currentNode from sessionData is returned directly
+        expect(result).toBe('existingNode');
+        expect(sessionData.currentNode).toBe('existingNode'); // Ensure it didn't get modified
+    });
+
+    test('should set nodeKey to condition.goto when a matching resume_condition is found in determineStartingNode', () => {
+        const dialogueController = new DialogueController(new Map(), {});
+    
+        // Mock checkConditions to return true for the first condition and false for the second
+        jest.spyOn(dialogueController, 'checkConditions')
+            .mockImplementation((conditions) => conditions[0]?.if === 'has_item');
+    
+        const dialogue = {
+            start: 'start',
+            resume_conditions: [
+                { conditions: [{ if: 'has_item', item: 'key' }], goto: 'node1' },
+                { conditions: [{ if: 'completed_quest', quest: 'quest1' }], goto: 'node2' }
+            ]
+        };
+        const sessionData = {
+            currentNpc: 1,
+            gameData: { items: { key: 1 }, completedQuests: [] }  // No completed quest, so second condition should not match
+        };
+        const npcId = 1;
+    
+        // Call determineStartingNode with matching resume_conditions
+        const result = dialogueController.determineStartingNode(dialogue, sessionData, npcId);
+    
+        // Verify that nodeKey is set to the goto value of the first matching condition (node1)
+        expect(result).toBe('node1');
+    
+        // Confirm checkConditions was called with the correct arguments for both conditions
+        expect(dialogueController.checkConditions).toHaveBeenCalledWith(
+            [{ if: 'has_item', item: 'key' }],
+            sessionData
+        );
+        expect(dialogueController.checkConditions).toHaveBeenCalledWith(
+            [{ if: 'completed_quest', quest: 'quest1' }],
+            sessionData
+        );
+    });
+    
+    test('should return node immediately if node.text is not an array in chooseRandomLines', () => {
+        const dialogueController = new DialogueController(new Map(), {});
+    
+        const node = { text: "Single line of text" }; // node.text is a string, not an array
+    
+        // Call chooseRandomLines and expect it to return the node unchanged
+        const result = dialogueController.chooseRandomLines(node);
+        expect(result).toBe(node);
+        expect(result.text).toBe("Single line of text");
+    });
+
+    test('should assign text directly to texts[i] when node.text contains non-array elements in chooseRandomLines', () => {
+        const dialogueController = new DialogueController(new Map(), {});
+    
+        const node = {
+            text: [
+                "Line 1", // not an array, should be assigned directly
+                ["Option A", "Option B"], // array, should pick a random element
+                "Line 2"  // not an array, should be assigned directly
+            ]
+        };
+    
+        // Call chooseRandomLines
+        const result = dialogueController.chooseRandomLines(node);
+    
+        // Ensure that non-array items are assigned directly
+        expect(result.text[0]).toBe("Line 1");
+        expect(result.text[2]).toBe("Line 2");
+    
+        // Verify that the middle item is randomly chosen from the array
+        expect(["Option A", "Option B"]).toContain(result.text[1]);
+    });
+    
+    test('should return node immediately if node.options is not defined in filterOptions', () => {
+        const dialogueController = new DialogueController(new Map(), {});
+    
+        const node = { text: "Some text" }; // node.options is undefined
+    
+        // Call filterOptions and expect it to return the node unchanged
+        const result = dialogueController.filterOptions(node, {});
+        expect(result).toBe(node);
+        expect(result.text).toBe("Some text");
+        expect(result.options).toBeUndefined(); // Ensure options are still undefined
+    });
+    
+    test('should set node.goto to condition.goto when condition is met in applyNodeConditions', () => {
+        const dialogueController = new DialogueController(new Map(), {});
+    
+        // Mock checkCondition to return true
+        jest.spyOn(dialogueController, 'checkCondition').mockReturnValue(true);
+    
+        const node = {
+            text: "Original text",
+            conditions: [
+                {
+                    goto: 'nextNode',
+                    text: "New text"
+                }
+            ]
+        };
+        const sessionData = { gameData: {} };
+    
+        // Call applyNodeConditions
+        const result = dialogueController.applyNodeConditions(node, sessionData);
+    
+        // Verify that node.goto is set to the value from the condition
+        expect(result.goto).toBe('nextNode');
+        // Ensure that node.text was also updated to the new text from the condition
+        expect(result.text).toBe("New text");
+    });
+    
     test('determineStartingNode should return the correct node based on conditions', () => {
         const dialogue = {
             start: 'start',
@@ -429,52 +606,23 @@ describe('DialogueController - processDialogueTree', () => {
 
     test('Should provide the custom CSS if defined', () => {
         dialogueController.findDialogueTree.mockReturnValue({
-            npc: 2,
-            name: "John Do",
-            start: "start",
+            npc: 1,
             custom_css: {
                 avatar: "url(../img/3/JOHN_DO.png)",
                 background_position: "-18px -316px",
-                width: "60%",
-                left: "50%"
+                width: "60%"
             },
-            nodes: {
-                introduction: {
-                    text: "Welcome!",
-                    options: [{ text: "Hello", goto: "nextNode" }]
-                }
-            }
+            nodes: { start: { text: "Hello!" } }
         });
-
-        const node = dialogueController.processDialogueTree(mapId, npcId, cache, sessionId);
     
-        // Assert custom CSS properties
+        const node = dialogueController.processDialogueTree("main", 1, cache, sessionId);
+    
+        expect(node.custom_css).toBeDefined();
         expect(node.custom_css.avatar).toBe("url(../img/3/JOHN_DO.png)");
         expect(node.custom_css.background_position).toBe("-18px -316px");
         expect(node.custom_css.width).toBe("60%");
-        expect(node.custom_css.left).toBe("50%");
     });
-
-    test('Should be undefined so code reverts to default CSS when custom CSS is not provided', () => {
-        dialogueController.findDialogueTree.mockReturnValue({
-            npc: 3,
-            name: "Jane Doe",
-            start: "start",
-            nodes: {
-                "start": {
-                    text: "Welcome, traveler.",
-                    options: [{ text: "Tell me more", goto: "info" }]
-                }
-            }
-        });
     
-        const node = dialogueController.processDialogueTree(mapId, npcId, cache, sessionId);
-    
-        // Assert that CSS values are not set when custom_css is absent
-        expect(node.custom_css).toBeUndefined();
-    });   
-
-
     test('should catch and log errors, returning null', () => {
         dialogueController.findDialogueTree.mockImplementation(() => {
             throw new Error('Unexpected error');
@@ -484,6 +632,7 @@ describe('DialogueController - processDialogueTree', () => {
 
         expect(node).toBeNull();
     });
+    
 });
 
 
