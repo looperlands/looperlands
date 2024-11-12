@@ -207,7 +207,7 @@ describe('DialogueController', () => {
         const sessionId = 'testSession';
         cache.set(sessionId, { currentNode: 'introduction' });
 
-        const node = dialogueController.processDialogueTree('main', 1, cache, sessionId);
+        const dialogue = dialogueController.processDialogueTree('main', 1, cache, sessionId);
     
         // Assert custom CSS properties
         expect(dialogue.custom_css.avatar).toBe("url(../img/3/JOHN_DO.png)");
