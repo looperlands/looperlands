@@ -203,11 +203,28 @@ describe('DialogueController', () => {
         expect(nodeKey).toBe('node1');
     });
     
-    test('showChoicesPopup should apply custom CSS if defined', () => {
+    const customCssDialogue = {
+        npc: 2,
+        name: "John Do",
+        start: "start",
+        custom_css: {
+            avatar: "url(../img/3/JOHN_DO.png)",
+            background_position: "-18px -316px",
+            width: "60%",
+            left: "50%"
+        },
+        nodes: {
+            introduction: {
+                text: "Welcome!",
+                options: [{ text: "Hello", goto: "nextNode" }]
+            }
+        }
+    };
+    
+    test('Should apply custom CSS if defined', () => {
         const sessionId = 'testSession';
         cache.set(sessionId, { currentNode: 'introduction' });
-
-        const dialogue = dialogueController.processDialogueTree('main', 1, cache, sessionId);
+        const dialogue = dialogueController.processDialogueTree('main', customCssDialogue.npc, cache, sessionId);
     
         // Assert custom CSS properties
         expect(dialogue.custom_css.avatar).toBe("url(../img/3/JOHN_DO.png)");
@@ -216,18 +233,15 @@ describe('DialogueController', () => {
         expect(dialogue.custom_css.left).toBe("50%");
     });
 
-    test('showChoicesPopup should revert to default CSS if custom CSS is not provided', () => {
+    test('Should revert to default CSS if custom CSS is not provided', () => {
         const defaultDialogue = {
-            npc: 2,
-            name: "Thornbeard",
+            npc: 3,
+            name: "Jane Doe",
             start: "start",
             nodes: {
                 "start": {
                     text: "Welcome, traveler.",
                     options: [{ text: "Tell me more", goto: "info" }]
-                },
-                "info": {
-                    text: "This is Thornbeard's dialogue."
                 }
             }
         };
