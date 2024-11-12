@@ -315,11 +315,36 @@ define(['jquery', 'storage'], function ($, Storage) {
         },
 
         showChoicesPopup(npcId, dialogue) {
+            console.log(dialogue);
             let self = this;
             let playerChoicePopup = $('#dialogue-popup');
-            if(Array.isArray(dialogue.text)) {
-                dialogue.text = dialogue.text[dialogue.text.length - 1];
+            let avatarDiv = playerChoicePopup.find('#avatar');
+            
+            // Enable avatar if provided otherwise reset
+            if (dialogue.custom_css && dialogue.custom_css.avatar) {
+                avatarDiv.css({
+                    display: 'block',
+                    "background-image": dialogue.custom_css.avatar,
+                    "background-position": dialogue.custom_css.background_position || ''
+                });
+            } else {
+                avatarDiv.css({
+                    display: 'none', 
+                    "background-image": '',
+                    "background-position": ''
+                });
             }
+
+            // Set or Reset inline styles
+            playerChoicePopup.css({
+                width: dialogue.custom_css?.width || '',
+                left: dialogue.custom_css?.left || '',
+                height: dialogue.custom_css?.height || '',
+                top: dialogue.custom_css?.top || ''
+            });
+            
+            if(Array.isArray(dialogue.text)) dialogue.text = dialogue.text[dialogue.text.length - 1];
+
             playerChoicePopup.find('#question').html(dialogue.text);
             playerChoicePopup.find('#choices').empty();
 
@@ -329,7 +354,7 @@ define(['jquery', 'storage'], function ($, Storage) {
             for (let i = 0; i < dialogue.options.length; i++) {
                 let option = dialogue.options[i];
 
-                let choice = $('<div class="choice">' + option.text + "</div>");
+                let choice = $('<div class="choice"></div>').html(option.text);
                 choice.click((e) => {
                     this.closeChoicesPopup();
                     this.game.makeChoice(npcId, option.goto);

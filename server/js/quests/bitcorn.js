@@ -1,6 +1,6 @@
 Types = require("../../../shared/js/gametypes");
 quests = [
-    /*{
+    {
         id: "GOLDEN_KERNEL_QUEST_TALKTOBIT",
         name: "Talk to bitcorn about Golden Kernel", 
         startText: "Go. Talk. bitcorn.",
@@ -9,7 +9,8 @@ quests = [
         eventType: "NPC_TALKED",
         npc: Types.Entities.BITNPC_THORNBEARD_KNEEL,
         target: Types.Entities.BITNPC_BITCORN,
-        level: 1
+        level: 1,
+        showIndicator: false
     },
     {
         id: "GOLDEN_KERNEL_QUEST",
@@ -22,8 +23,9 @@ quests = [
         target: Types.Entities.KINGSLIME,
         amount: 1,
         level: 1,
-        medal: Types.Medals.HEARTH
-    },*/
+        medal: Types.Medals.HEARTH,
+        showIndicator: false
+    },
 //     { //DONE
 //         id: "OA_QUEST_3",
 //         name: "The Slime King's Reign",

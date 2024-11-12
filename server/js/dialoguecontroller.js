@@ -49,15 +49,15 @@ class DialogueController {
         try {
             const dialogue = this.findDialogueTree(mapId, npcId);
 
-            if (!dialogue) {
-                return null;
-            }
+            if (!dialogue) return null;
 
             const sessionData = cache.get(sessionId) || {};
 
             let nodeKey = this.determineStartingNode(dialogue, sessionData, npcId);
             let node = dialogue.nodes[nodeKey];
             node = _.clone(node);
+
+            if(dialogue.custom_css) node.custom_css = dialogue.custom_css;
 
             if (node.conditions) {
                 this.applyNodeConditions(node, sessionData);

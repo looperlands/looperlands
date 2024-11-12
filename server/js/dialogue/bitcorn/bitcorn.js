@@ -4,6 +4,14 @@ const dialogue = {
   "npc": Types.Entities.BITNPC_BITCORN,
   "name": "bitcorn",
   "start": "introduction",
+  "custom_css": {
+    "avatar": "url(../img/3/BITNPC_BITCORN.png)",
+    "background_position": "-18px -316px",
+    "width": "60%",
+    "left": "50%"
+    // "height": 
+    // "top":
+  },
   /* update this to handle responses when quest is open and handle quest being completed.
   "resume_conditions": [
     // `quest_open`, `quest_closed`, `choice_made`, `has_item`, `killed_mob`, `is_level`
@@ -14,7 +22,7 @@ const dialogue = {
     "introduction": {
       "text": "Well now, look who wandered in! Always happy to chat—what brings you my way, friend?",
       "options": [
-        { 
+        {
           "conditions": [{ "if": "quest_open", "quest": "GOLDEN_KERNEL_QUEST_TALKTOBIT" }],
           "text": "I heard something about a golden kernel...", "goto": "kernel_legend" 
         },
