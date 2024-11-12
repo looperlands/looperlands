@@ -201,59 +201,7 @@ describe('DialogueController', () => {
         expect(sessionData.currentNpc).toBe(1);
         // Ensure that the correct nodeKey is returned after resetting sessionData
         expect(nodeKey).toBe('node1');
-    });
-    
-    const customCssDialogue = {
-        npc: 2,
-        name: "John Do",
-        start: "start",
-        custom_css: {
-            avatar: "url(../img/3/JOHN_DO.png)",
-            background_position: "-18px -316px",
-            width: "60%",
-            left: "50%"
-        },
-        nodes: {
-            introduction: {
-                text: "Welcome!",
-                options: [{ text: "Hello", goto: "nextNode" }]
-            }
-        }
-    };
-    
-    test('Should apply custom CSS if defined', () => {
-        const sessionId = 'testSession';
-        cache.set(sessionId, { currentNode: 'introduction' });
-        const dialogue = dialogueController.processDialogueTree('main', customCssDialogue.npc, cache, sessionId);
-    
-        // Assert custom CSS properties
-        expect(dialogue.custom_css.avatar).toBe("url(../img/3/JOHN_DO.png)");
-        expect(dialogue.custom_css.background_position).toBe("-18px -316px");
-        expect(dialogue.custom_css.width).toBe("60%");
-        expect(dialogue.custom_css.left).toBe("50%");
-    });
-
-    test('Should revert to default CSS if custom CSS is not provided', () => {
-        const defaultDialogue = {
-            npc: 3,
-            name: "Jane Doe",
-            start: "start",
-            nodes: {
-                "start": {
-                    text: "Welcome, traveler.",
-                    options: [{ text: "Tell me more", goto: "info" }]
-                }
-            }
-        };
-    
-        const sessionId = 'testSession';
-        cache.set(sessionId, { currentNode: 'start' });
-    
-        const dialogue = dialogueController.processDialogueTree('main', defaultDialogue.npc, cache, sessionId);
-    
-        // Assert that CSS values are not set when custom_css is absent
-        expect(dialogue.custom_css).toBeUndefined();
-    });    
+    }); 
 
     test('applyNodeConditions should modify the node based on conditions', () => {
         const node = {
@@ -478,6 +426,54 @@ describe('DialogueController - processDialogueTree', () => {
         expect(dialogueController.handleNodeActions).toHaveBeenCalled();
         expect(node).not.toBeNull();
     });
+
+    test('Should provide the custom CSS if defined', () => {
+        dialogueController.findDialogueTree.mockReturnValue({
+            npc: 2,
+            name: "John Do",
+            start: "start",
+            custom_css: {
+                avatar: "url(../img/3/JOHN_DO.png)",
+                background_position: "-18px -316px",
+                width: "60%",
+                left: "50%"
+            },
+            nodes: {
+                introduction: {
+                    text: "Welcome!",
+                    options: [{ text: "Hello", goto: "nextNode" }]
+                }
+            }
+        });
+
+        const node = dialogueController.processDialogueTree(mapId, npcId, cache, sessionId);
+    
+        // Assert custom CSS properties
+        expect(node.custom_css.avatar).toBe("url(../img/3/JOHN_DO.png)");
+        expect(node.custom_css.background_position).toBe("-18px -316px");
+        expect(node.custom_css.width).toBe("60%");
+        expect(node.custom_css.left).toBe("50%");
+    });
+
+    test('Should be undefined so code reverts to default CSS when custom CSS is not provided', () => {
+        dialogueController.findDialogueTree.mockReturnValue({
+            npc: 3,
+            name: "Jane Doe",
+            start: "start",
+            nodes: {
+                "start": {
+                    text: "Welcome, traveler.",
+                    options: [{ text: "Tell me more", goto: "info" }]
+                }
+            }
+        });
+    
+        const node = dialogueController.processDialogueTree(mapId, npcId, cache, sessionId);
+    
+        // Assert that CSS values are not set when custom_css is absent
+        expect(node.custom_css).toBeUndefined();
+    });   
+
 
     test('should catch and log errors, returning null', () => {
         dialogueController.findDialogueTree.mockImplementation(() => {
