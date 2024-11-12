@@ -51,6 +51,14 @@ jest.mock('./dialogue/main.js', () => ({
             npc: 1,
             name: "John Do",
             start: "start",
+            custom_css: [
+                {
+                "avatar": "url(..img/3.JOHN_DO.png",
+                "background_position": "-18px -316px",
+                "width": "60%",
+                "left": "50%"
+                }
+            ],
             resume_conditions: [
                 {
                     conditions: [
@@ -193,6 +201,44 @@ describe('DialogueController', () => {
         expect(sessionData.currentNpc).toBe(1);
         // Ensure that the correct nodeKey is returned after resetting sessionData
         expect(nodeKey).toBe('node1');
+    });
+    
+    test('showChoicesPopup should apply custom CSS if defined', () => {
+        const sessionId = 'testSession';
+        cache.set(sessionId, { currentNode: 'introduction' });
+    
+        const dialogue = dialogueController.processDialogueTree('main', customCssDialogue.npc, cache, sessionId);
+    
+        // Assert custom CSS properties
+        expect(dialogue.custom_css.avatar).toBe("url(../img/3/JOHN_DO.png)");
+        expect(dialogue.custom_css.background_position).toBe("-18px -316px");
+        expect(dialogue.custom_css.width).toBe("60%");
+        expect(dialogue.custom_css.left).toBe("50%");
+    });
+
+    test('showChoicesPopup should revert to default CSS if custom CSS is not provided', () => {
+        const defaultDialogue = {
+            npc: 2,
+            name: "Thornbeard",
+            start: "start",
+            nodes: {
+                "start": {
+                    text: "Welcome, traveler.",
+                    options: [{ text: "Tell me more", goto: "info" }]
+                },
+                "info": {
+                    text: "This is Thornbeard's dialogue."
+                }
+            }
+        };
+    
+        const sessionId = 'testSession';
+        cache.set(sessionId, { currentNode: 'start' });
+    
+        const dialogue = dialogueController.processDialogueTree('main', defaultDialogue.npc, cache, sessionId);
+    
+        // Assert that CSS values are not set when custom_css is absent
+        expect(dialogue.custom_css).toBeUndefined();
     });    
 
     test('applyNodeConditions should modify the node based on conditions', () => {
