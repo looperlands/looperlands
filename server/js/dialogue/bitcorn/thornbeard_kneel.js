@@ -4,6 +4,14 @@ const dialogue = {
   "npc": Types.Entities.BITNPC_THORNBEARD_KNEEL,
   "name": "Thornbeard",
   "start": "introduction",
+  "custom_css": {
+    "avatar": "url(../img/3/BITNPC_THORNBEARD_KNEEL.png)",
+    "background_position": "-16px -310px",
+    "width": "85%",
+    "left": "50%",
+    // "height": 
+    // "top":
+  },
   "resume_conditions": [
     {"conditions": [{ "if": "quest_open", "quest": "GOLDEN_KERNEL_QUEST_TALKTOBIT"}], "goto": "quest_status_update"},
     {"conditions": [{ "if": "quest_completed", "quest": "KERNEL_OF_HOPE_QUEST" }],"goto": "quest_complete_response"}
@@ -17,7 +25,7 @@ const dialogue = {
       ]
     },
     "barren_greenhouse": {
-      "text": "This masterpiece, of course! I call it 'The Frustration of Adam'. Real complicated stuff. I plant, they ignore me. Except for one...<br><br><i>(He gestures to a the tiny sprout)</i><br><br>That's Bud. Been stickin' it out with me, poor fella. Ain't much to look at, but he's tryin.<br><br><i>(Leans closer to the plant and mutters:<br>'I know... I'm tryin', Bud. I'll get you a family, one way or another.')</i>",
+      "text": "This masterpiece, of course! I call it 'The Frustration of Adam'. Real complicated stuff. I plant, they ignore me. Except for one... *He gestures to a the tiny sprout* That's Bud. Been stickin' it out with me, poor fella. Ain't much to look at, but he's tryin. *Leans closer to the plant and mutters*: 'I know... I'm tryin', Bud. I'll get you a family, one way or another.'",
       "options": [
 	      { "text": "Why does it matter so much to you?", "goto": "deeper_motivation" },
         { "text": "Why keep trying if nothing grows?", "goto": "mysterious_reason" },
