@@ -31,9 +31,10 @@
 
 #dialogue-popup {
     position: absolute;
-    top: 15%;
-    left: 25%;
-    width: 45%;
+    top: 15%;       /* Overwrite by specifying "top" in your characters dialogue.js  (optional) */
+    left: 25%;      /* Overwrite by specifying "left" in your characters dialogue.js (optional) */
+    width: 45%;     /* Overwrite by specifying "width" in your characters dialogue.js (optional) */
+    height: auto;   /* Overwrite by specifying "height" in your characters dialogue.js (optional) */
     font-family: 'GraphicPixel', arial, sans-serif;
     transition: ease-in-out 600ms;
     opacity: 100;
@@ -57,8 +58,9 @@
     float: left;
     width: 60px;
     aspect-ratio: 1;
-    background-image: url(../img/3/BITNPC_BITCORN.png);
-    background-position: -18px -316px;
+    background-image: url(../img/3/JOHNDOE.png);    /* Overwrite by specifying "avatar" in your characters dialogue.js (required if you want to show an avatar) */
+    background-position: 0px 0px;                   /* Overwrite by specifying "background_position" in your characters dialogue.js (optional, but used to properly position the portion of your avatar image that's shown) */
+    background-size: auto;                          /* Overwrite by specifying "background_size" in your characters dialogue.js (optional, but can help properly position your avatar) */
     margin-top: 25px;
     margin-left: 25px;
 	margin-right: -5px;

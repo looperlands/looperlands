@@ -6,11 +6,9 @@ const dialogue = {
   "start": "introduction",
   "custom_css": {
     "avatar": "url(../img/3/BITNPC_BITCORN.png)",
-    "background_position": "-18px -316px",
-    "width": "60%",
+    "background_position": "-18px -28px",
+    "width": "fit-content",
     "left": "50%"
-    // "height": 
-    // "top":
   },
   /* update this to handle responses when quest is open and handle quest being completed.
   "resume_conditions": [
@@ -24,7 +22,7 @@ const dialogue = {
       "options": [
         {
           "conditions": [{ "if": "quest_open", "quest": "GOLDEN_KERNEL_QUEST_TALKTOBIT" }],
-          "text": "I heard something about a golden kernel...", "goto": "kernel_legend" 
+          "text": "I heard something about a golden kernel...", "goto": "kernel_legend"
         },
         { "text": "Tell me about this cornsino!", "goto": "ask_about_casino" },
         { "text": "I've heard you've got lots of stories. Care to share any?", "goto": "ask_about_bitcorn" },
@@ -34,7 +32,7 @@ const dialogue = {
     "other_questions": {
       "text": "I'm all ears! What else would you like to chat about?",
       "options": [
-        { 
+        {
           "conditions": [{ "if": "quest_open", "quest": "GOLDEN_KERNEL_QUEST_TALKTOBIT" }],
           "text": "What's this I hear about a golden kernel...", "goto": "kernel_legend"
         },
@@ -47,6 +45,9 @@ const dialogue = {
       "text": "Alright, friend. If you want to talk, you know where to find me."
     },
     "ask_about_casino": {
+      "custom_css": {
+        "width": "69%"
+      },
       "text": "Ah, the ol' CORNhole—best entertainment this side of the sludge river! Don't mind that it's the only entertainment.<br><br>Whether you take LuckyFUNKZ for a spin or hit the tables for JackAce, this is the place where fortunes are made—or lost!",
       "options": [
         { "text": "LuckyFUNKZ? What's that about?", "goto": "casino_luckyfunkz" },
@@ -79,6 +80,9 @@ const dialogue = {
       ]
     },
     "enchworm_explanation": {
+      "custom_css": {
+        "width": "69%"
+      },
       "text": "I... I remember it came to me almost like a dream. Like... It slithered into my brain. And... Since then, parts of my brain just feel locked down. Inaccessible...<br><br>Seems like I was just the messenger and the real message is beyond me. Whenever I think about it, I feel I'm chasin' my own tail and get this strange sense I'm somehow droppin' hints while this thing keeps even me in the dark.",
       "options": [
         { "text": "So, what even is this Enchworm thing?", "goto": "enchworm_info" },
@@ -102,6 +106,9 @@ const dialogue = {
       ]
     },
     "enchworm_mystery": {
+      "custom_css": {
+        "width": "69%"
+      },
       "text": "It's all crazy. I can't even tell if enchworm is something I made... or if it found me. It's got a way of makin' me feel like I'm just a piece in its puzzle—like it's way bigger than me.<br><br>Some nights, I wonder if it's even meant to be solved. Or worse... what if solving it isn't the end, but just the beginning of something bigger?",
       "options": [
         { "text": "What makes it so difficult?", "goto": "enchworm_difficulty" },
@@ -121,6 +128,9 @@ const dialogue = {
       ]
     },
     "enchworm_strange_finds": {
+      "custom_css": {
+        "width": "69%"
+      },
       "text": "Oh, the things people've found tryin' to crack it? They're somethin' else entirely. One guy went about it graphically, and I kid you not—he uncovered a tiny movie of a giraffe fallin' down an elevator shaft.<br><br>Mostly though, I see strange, partial messages. Some on the verge of making sense, some... not so much.",
       "options": [
         { "text": "Man, who finds this stuff?", "goto": "enchworm_worminati" },
@@ -129,6 +139,9 @@ const dialogue = {
       ]
     },
     "enchworm_worminati": {
+      "custom_css": {
+        "width": "69%"
+      },
       "text": "Well, rumor has it that a secret society called the worminati has formed to crack the code and defeat the worm. They say it's made up of the best puzzle solvers across the universe, workin' in secret, night and day.<br><br>Some say the worminati is just a myth, nothin' more than a bedtime story made up by some cornspiracy nuts. But me? I feel they're out there... closer to the solution than even they know.",
       "options": [
         { "text": "Worminati, huh? Sounds a bit far-fetched.", "goto": "enchworm_mystery" },

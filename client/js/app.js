@@ -325,13 +325,15 @@ define(['jquery', 'storage'], function ($, Storage) {
                 avatarDiv.css({
                     display: 'block',
                     "background-image": dialogue.custom_css.avatar,
-                    "background-position": dialogue.custom_css.background_position || ''
+                    "background-position": dialogue.custom_css.background_position || '',
+                    "background-size": dialogue.custom_css.background_size || '',
                 });
             } else {
                 avatarDiv.css({
                     display: 'none', 
                     "background-image": '',
-                    "background-position": ''
+                    "background-position": '',
+                    "background-size": ''
                 });
             }
 

@@ -6,11 +6,9 @@ const dialogue = {
   "start": "introduction",
   "custom_css": {
     "avatar": "url(../img/3/BITNPC_THORNBEARD_KNEEL.png)",
-    "background_position": "-16px -310px",
-    "width": "85%",
-    "left": "50%",
-    // "height": 
-    // "top":
+    "background_position": "-16px -20px",
+    "width": "fit-content",
+    "left": "50%"
   },
   "resume_conditions": [
     {"conditions": [{ "if": "quest_open", "quest": "GOLDEN_KERNEL_QUEST_TALKTOBIT"}], "goto": "quest_status_update"},

@@ -57,7 +57,11 @@ class DialogueController {
             let node = dialogue.nodes[nodeKey];
             node = _.clone(node);
 
-            if(dialogue.custom_css) node.custom_css = dialogue.custom_css;
+            // Check if custom_css has been defined
+            if (dialogue.custom_css || node.custom_css) {
+                // using properties in node.custom_css where defined, otherwise falling back on dialogue.custom_css.
+                node.custom_css = { ...dialogue.custom_css, ...node.custom_css };
+            }
 
             if (node.conditions) {
                 this.applyNodeConditions(node, sessionData);
