@@ -375,6 +375,7 @@ define(['item'], function(Item) {
         headstonetrick:Item.extend({init:function(id){this._super(id,Types.Entities.HEADSTONETRICK,"object");this.lootMessage="TRICK or Treat!";}}),
         skullnbonestrick:Item.extend({init:function(id){this._super(id,Types.Entities.SKULLNBONESTRICK,"object");this.lootMessage="TRICK or Treat!";}}),
         spidertrick:Item.extend({init:function(id){this._super(id,Types.Entities.SPIDERTRICK,"object");this.lootMessage="TRICK or Treat!";}}),
+        m88ndufflebag:Item.extend({init:function(id){this._super(id,Types.Entities.M88NDUFFLEBAG,"object");this.lootMessage="You found a duffle bag!";}}),
         //MRMlabs Items
         firstaidkit:Item.extend({init:function(id){this._super(id,Types.Entities.FIRSTAIDKIT,"object");this.lootMessage="You found a first aid kit!";}}),
         bandaid:Item.extend({init:function(id){this._super(id,Types.Entities.BANDAID,"object");this.lootMessage="You found a bandaid!";}}),
