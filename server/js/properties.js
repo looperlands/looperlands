@@ -2987,6 +2987,19 @@ let Properties = {
             player.releaseItem(Types.Entities.M88NGRENADE);
         }
     },
+    m88ndufflebag: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "duffle bag",
+            duration: 60000
+        },
+        inventoryDescription: "Duffle Bag",
+        respawnDelay: 60000,
+        onConsume: function(player) {
+            player.releaseNpc(Types.Entities.M88NMOBILEBARTENDER, 30000);
+        }
+    },
     m88nmimosa: {
         collectable: true,
         consumable: true,
@@ -3126,7 +3139,7 @@ let Properties = {
             group: "superspecialdropPotions",
             duration: 600000
         },
-        inventoryDescription: "DRS'd GME",
+        inventoryDescription: "The Good Whiskey",
         onConsume: function(player){
             player.setDropOverride(Types.Entities.M88NDRSGME, 10000);
         }

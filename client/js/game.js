@@ -183,6 +183,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "m88nmermaidprincess",
                     "kingfroggybw",
                     "m88nape",
+                    "m88nmobilebartender",
                     //m88n Mobs
                     "balloondogb",
                     "balloondogy",
@@ -613,6 +614,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "item-headstonetrick",
                     "item-skullnbonestrick",
                     "item-spidertrick",
+                    "item-m88ndufflebag",
                     //MRMlabs
                     "item-firstaidkit",
                     "item-bandaid",

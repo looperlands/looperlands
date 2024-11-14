@@ -271,6 +271,7 @@ const AltNames = {
     nexan32: "The Greaser",
     nexan10: "Darwin",
     m88nape: "m88n Ape",
+    m88nmobilebartender: "Mobile Bartender",
 
     //m88n Items
     m88nmail: "mail",
