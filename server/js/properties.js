@@ -2995,7 +2995,7 @@ let Properties = {
             duration: 60000
         },
         inventoryDescription: "Duffle Bag",
-        respawnDelay: 60000,
+        respawnDelay: 9900000,
         onConsume: function(player) {
             player.releaseNpc(Types.Entities.M88NMOBILEBARTENDER, 30000);
         }
@@ -3377,6 +3377,55 @@ let Properties = {
         collectable: true,
         inventoryDescription: "m88n dirt",
         respawnDelay: 4000000
+    },
+    m88nplainbanana: {
+        collectable: true,
+        inventoryDescription: "Special Banana",
+        collectItem: Types.Entities.M88NGEM,
+        collectAmount: 10,
+        respawnDelay: 42069741
+    },
+    m88nchocolatebanana: {
+        collectable: true,
+        inventoryDescription: "Special Banana",
+        collectItem: Types.Entities.M88NGEM,
+        collectAmount: 20,
+        respawnDelay: 42069741
+    },
+    m88nchocolatesprinklebanana: {
+        collectable: true,
+        inventoryDescription: "Special Banana",
+        collectItem: Types.Entities.M88NGEM,
+        collectAmount: 50,
+        respawnDelay: 42069741
+    },
+    m88nchocolatewhippedbanana: {
+        collectable: true,
+        inventoryDescription: "Special Banana",
+        collectItem: Types.Entities.M88NGEM,
+        collectAmount: 100,
+        respawnDelay: 42069741
+    },
+    m88nm88nbanana: {
+        collectable: true,
+        inventoryDescription: "Special Banana",
+        collectItem: Types.Entities.M88NGEM,
+        collectAmount: 500,
+        respawnDelay: 42069741
+    },
+    m88nchocolatenutsbanana: {
+        collectable: true,
+        inventoryDescription: "Special Banana",
+        collectItem: Types.Entities.GOLD,
+        collectAmount: 50000,
+        respawnDelay: 42069741
+    },
+    m88npicklebanana: {
+        collectable: true,
+        inventoryDescription: "Special Banana",
+        collectItem: Types.Entities.GOLD,
+        collectAmount: 500000,
+        respawnDelay: 42069741
     },
     m88nmoneybags: {
         //collectable: true,

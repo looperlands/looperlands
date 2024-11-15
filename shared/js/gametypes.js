@@ -583,6 +583,13 @@ Types = {
         SKULLNBONESTRICK: 78010800,
         SPIDERTRICK: 78010900,
         M88NDUFFLEBAG: 78011000,
+        M88NCHOCOLATEBANANA: 78011100,
+        M88NCHOCOLATENUTSBANANA: 78011200,
+        M88NCHOCOLATESPRINKLEBANANA: 78011300,
+        M88NCHOCOLATEWHIPPEDBANANA: 78011400,
+        M88NM88NBANANA: 78011500,
+        M88NPICKLEBANANA: 78011600,
+        M88NPLAINBANANA: 78011700,
         //MRMlabs NPCs
         TYLERDURDEN: 79000000,
         //MRMlabs Items
@@ -6500,6 +6507,13 @@ var kinds = {
     skullnbonestrick: [Types.Entities.SKULLNBONESTRICK, "object"],
     spidertrick: [Types.Entities.SPIDERTRICK, "object"],
     m88ndufflebag: [Types.Entities.M88NDUFFLEBAG, "object"],
+    m88nchocolatebanana: [Types.Entities.M88NCHOCOLATEBANANA, "object"],
+    m88nchocolatenutsbanana: [Types.Entities.M88NCHOCOLATENUTSBANANA, "object"],
+    m88nchocolatesprinklebanana: [Types.Entities.M88NCHOCOLATESPRINKLEBANANA, "object"],
+    m88nchocolatewhippedbanana: [Types.Entities.M88NCHOCOLATEWHIPPEDBANANA, "object"],
+    m88nm88nbanana: [Types.Entities.M88NM88NBANANA, "object"],
+    m88npicklebanana: [Types.Entities.M88NPICKLEBANANA, "object"],
+    m88nplainbanana: [Types.Entities.M88NPLAINBANANA, "object"],
     //MRMlabs Items
     firstaidkit: [Types.Entities.FIRSTAIDKIT, "object"],
     bandaid: [Types.Entities.BANDAID, "object"],
