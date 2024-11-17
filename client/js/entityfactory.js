@@ -1191,6 +1191,13 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.SKULLNBONESTRICK] = function(id) { return new Items.skullnbonestrick(id); };
     EntityFactory.builders[Types.Entities.SPIDERTRICK] = function(id) { return new Items.spidertrick(id); };
     EntityFactory.builders[Types.Entities.M88NDUFFLEBAG] = function(id) { return new Items.m88ndufflebag(id); };
+    EntityFactory.builders[Types.Entities.M88NCHOCOLATEBANANA] = function(id) { return new Items.m88nchocolatebanana(id); };
+    EntityFactory.builders[Types.Entities.M88NCHOCOLATENUTSBANANA] = function(id) { return new Items.m88nchocolatenutsbanana(id); };
+    EntityFactory.builders[Types.Entities.M88NCHOCOLATESPRINKLEBANANA] = function(id) { return new Items.m88nchocolatesprinklebanana(id); };
+    EntityFactory.builders[Types.Entities.M88NCHOCOLATEWHIPPEDBANANA] = function(id) { return new Items.m88nchocolatewhippedbanana(id); };
+    EntityFactory.builders[Types.Entities.M88NM88NBANANA] = function(id) { return new Items.m88nm88nbanana(id); };
+    EntityFactory.builders[Types.Entities.M88NPICKLEBANANA] = function(id) { return new Items.m88npicklebanana(id); };
+    EntityFactory.builders[Types.Entities.M88NPLAINBANANA] = function(id) { return new Items.m88nplainbanana(id); };
     //MRMlabs Items
     EntityFactory.builders[Types.Entities.FIRSTAIDKIT] = function(id) { return new Items.firstaidkit(id); };
     EntityFactory.builders[Types.Entities.BANDAID] = function(id) { return new Items.bandaid(id); };

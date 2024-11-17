@@ -615,6 +615,13 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "item-skullnbonestrick",
                     "item-spidertrick",
                     "item-m88ndufflebag",
+                    "item-m88nchocolatebanana",
+                    "item-m88nchocolatenutsbanana",
+                    "item-m88nchocolatesprinklebanana",
+                    "item-m88nchocolatewhippedbanana",
+                    "item-m88nm88nbanana",
+                    "item-m88npicklebanana",
+                    "item-m88nplainbanana",
                     //MRMlabs
                     "item-firstaidkit",
                     "item-bandaid",

@@ -319,6 +319,13 @@ const AltNames = {
     m88nruck3: "Ruck Sack 3",
     m88ngoldknuckles: "Gold Knuckles",
     m88npieslinger: "a Pie Slinger",
+    m88nchocolatebanana: "Chocolate Banana",
+    m88nchocolatenutsbanana: "Chocolate Banana with Nuts",
+    m88nchocolatesprinklebanana: "Chocolate Banana with Sprinkles",
+    m88nchocolatewhippedbanana: "Chocolate Banana with Whipped",
+    m88nm88nbanana: "m88n banana",
+    m88npicklebanana: "Pickle Banana",
+    m88nplainbanana: "Banana",
 
     //m88n TT Items
     m88nammocan: "ammo can",

@@ -376,6 +376,13 @@ define(['item'], function(Item) {
         skullnbonestrick:Item.extend({init:function(id){this._super(id,Types.Entities.SKULLNBONESTRICK,"object");this.lootMessage="TRICK or Treat!";}}),
         spidertrick:Item.extend({init:function(id){this._super(id,Types.Entities.SPIDERTRICK,"object");this.lootMessage="TRICK or Treat!";}}),
         m88ndufflebag:Item.extend({init:function(id){this._super(id,Types.Entities.M88NDUFFLEBAG,"object");this.lootMessage="You found a duffle bag!";}}),
+        m88nchocolatebanana:Item.extend({init:function(id){this._super(id,Types.Entities.M88NCHOCOLATEBANANA,"object");this.lootMessage="A frozen banana dipped in hot fudge!";}}),
+        m88nchocolatenutsbanana:Item.extend({init:function(id){this._super(id,Types.Entities.M88NCHOCOLATENUTSBANANA,"object");this.lootMessage="A frozen banana dipped in hot fudge covered in nuts!";}}),
+        m88nchocolatesprinklebanana:Item.extend({init:function(id){this._super(id,Types.Entities.M88NCHOCOLATESPRINKLEBANANA,"object");this.lootMessage="A frozen banana dipped in hot fudge covered in sprinkles!";}}),
+        m88nchocolatewhippedbanana:Item.extend({init:function(id){this._super(id,Types.Entities.M88NCHOCOLATEWHIPPEDBANANA,"object");this.lootMessage="A frozen banana dipped in hot fudge topped with whipped cream!";}}),
+        m88nm88nbanana:Item.extend({init:function(id){this._super(id,Types.Entities.M88NM88NBANANA,"object");this.lootMessage="A frozen m88n banana!";}}),
+        m88npicklebanana:Item.extend({init:function(id){this._super(id,Types.Entities.M88NPICKLEBANANA,"object");this.lootMessage="A pickle banana!";}}),
+        m88nplainbanana:Item.extend({init:function(id){this._super(id,Types.Entities.M88NPLAINBANANA,"object");this.lootMessage="A frozen banana!";}}),
         //MRMlabs Items
         firstaidkit:Item.extend({init:function(id){this._super(id,Types.Entities.FIRSTAIDKIT,"object");this.lootMessage="You found a first aid kit!";}}),
         bandaid:Item.extend({init:function(id){this._super(id,Types.Entities.BANDAID,"object");this.lootMessage="You found a bandaid!";}}),
