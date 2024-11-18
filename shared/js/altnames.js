@@ -245,6 +245,7 @@ const AltNames = {
     m88nheadlessonesie: "The Headless Onesie",
     m88nheadlessskeleton: "The Headless Skeleton",
     m88nghostpumpkin: "The OG Ghost Costume",
+    m88nturkey: "Turkey!",
 
     //m88n Mob Nexans
     nexan8: "The Mail Lady",
@@ -326,6 +327,13 @@ const AltNames = {
     m88nm88nbanana: "m88n banana",
     m88npicklebanana: "Pickle Banana",
     m88nplainbanana: "Banana",
+    m88nbananapie: "Banana Cream Pie",
+    m88ncherrypie: "Cherry Cream Pie",
+    m88nlemonpie: "Lemon Cream Pie",
+    m88npumpkinpie: "Pumpkin Cream Pie",
+    m88nturkeydinner: "Turkey Dinner",
+    m88nturkeyfeather: "Turkey Feather",
+    m88nturkeyleg: "Turkey Leg",
 
     //m88n TT Items
     m88nammocan: "ammo can",

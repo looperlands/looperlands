@@ -267,6 +267,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "m88nheadlessonesie",
                     "m88nheadlessskeleton",
                     "m88nghostpumpkin",
+                    "m88nturkey",
                     //m88n's Mob Nexans
                     "nexan1",
                     "nexan2",
@@ -622,6 +623,13 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "item-m88nm88nbanana",
                     "item-m88npicklebanana",
                     "item-m88nplainbanana",
+                    "item-m88nbananapie",
+                    "item-m88ncherrypie",
+                    "item-m88nlemonpie",
+                    "item-m88npumpkinpie",
+                    "item-m88nturkeydinner",
+                    "item-m88nturkeyfeather",
+                    "item-m88nturkeyleg",
                     //MRMlabs
                     "item-firstaidkit",
                     "item-bandaid",

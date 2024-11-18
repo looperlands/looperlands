@@ -2765,6 +2765,19 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
 
+        m88nturkey: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NTURKEY);
+                this.moveSpeed = 200;
+                this.atkSpeed = 100;
+                this.idleSpeed = 750;
+                this.setAttackRate(1000);
+                this.deathAnimated = true;
+                this.isAggressive = true;
+                this.aggroRange = 4;
+            }
+        }),
+
         m88npinataballoons: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.M88NPINATABALLOONS);

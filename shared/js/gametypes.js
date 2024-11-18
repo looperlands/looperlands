@@ -444,6 +444,7 @@ Types = {
         M88NHEADLESSONESIE: 78000110,
         M88NHEADLESSSKELETON: 78000111,
         M88NGHOSTPUMPKIN: 78000112,
+        M88NTURKEY: 78000113,
         //m88n Mob Nexans
         NEXAN1: 78000037,
         NEXAN2: 78000038,
@@ -590,6 +591,13 @@ Types = {
         M88NM88NBANANA: 78011500,
         M88NPICKLEBANANA: 78011600,
         M88NPLAINBANANA: 78011700,
+        M88NBANANAPIE: 78011800,
+        M88NCHERRYPIE: 78011900,
+        M88NLEMONPIE: 78012000,
+        M88NPUMPKINPIE: 78012100,
+        M88NTURKEYDINNER: 78012200,
+        M88NTURKEYFEATHER: 78012300,
+        M88NTURKEYLEG: 78012400,
         //MRMlabs NPCs
         TYLERDURDEN: 79000000,
         //MRMlabs Items
@@ -6268,6 +6276,7 @@ var kinds = {
     m88nheadlessonesie: [Types.Entities.M88NHEADLESSONESIE, "mob"],
     m88nheadlessskeleton: [Types.Entities.M88NHEADLESSSKELETON, "mob"],
     m88nghostpumpkin: [Types.Entities.M88NGHOSTPUMPKIN, "mob"],
+    m88nturkey: [Types.Entities.M88NTURKEY, "mob"],
 
     //m88n Mob Nexans
     nexan1: [Types.Entities.NEXAN1, "mob"],
@@ -6514,6 +6523,13 @@ var kinds = {
     m88nm88nbanana: [Types.Entities.M88NM88NBANANA, "object"],
     m88npicklebanana: [Types.Entities.M88NPICKLEBANANA, "object"],
     m88nplainbanana: [Types.Entities.M88NPLAINBANANA, "object"],
+    m88nbananapie: [Types.Entities.M88NBANANAPIE, "object"],
+    m88ncherrypie: [Types.Entities.M88NCHERRYPIE, "object"],
+    m88nlemonpie: [Types.Entities.M88NLEMONPIE, "object"],
+    m88npumpkinpie: [Types.Entities.M88NPUMPKINPIE, "object"],
+    m88nturkeydinner: [Types.Entities.M88NTURKEYDINNER, "object"],
+    m88nturkeyfeather: [Types.Entities.M88NTURKEYFEATHER, "object"],
+    m88nturkeyleg: [Types.Entities.M88NTURKEYLEG, "object"],
     //MRMlabs Items
     firstaidkit: [Types.Entities.FIRSTAIDKIT, "object"],
     bandaid: [Types.Entities.BANDAID, "object"],

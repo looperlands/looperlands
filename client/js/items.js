@@ -383,6 +383,13 @@ define(['item'], function(Item) {
         m88nm88nbanana:Item.extend({init:function(id){this._super(id,Types.Entities.M88NM88NBANANA,"object");this.lootMessage="A frozen m88n banana!";}}),
         m88npicklebanana:Item.extend({init:function(id){this._super(id,Types.Entities.M88NPICKLEBANANA,"object");this.lootMessage="A pickle banana!";}}),
         m88nplainbanana:Item.extend({init:function(id){this._super(id,Types.Entities.M88NPLAINBANANA,"object");this.lootMessage="A frozen banana!";}}),
+        m88nbananapie:Item.extend({init:function(id){this._super(id,Types.Entities.M88NBANANAPIE,"object");this.lootMessage="A banana cream pie!";}}),
+        m88ncherrypie:Item.extend({init:function(id){this._super(id,Types.Entities.M88NCHERRYPIE,"object");this.lootMessage="A cherry cream pie!";}}),
+        m88nlemonpie:Item.extend({init:function(id){this._super(id,Types.Entities.M88NLEMONPIE,"object");this.lootMessage="A lemon cream pie!";}}),
+        m88npumpkinpie:Item.extend({init:function(id){this._super(id,Types.Entities.M88NPUMPKINPIE,"object");this.lootMessage="A pumpkin cream pie!";}}),
+        m88nturkeydinner:Item.extend({init:function(id){this._super(id,Types.Entities.M88NTURKEYDINNER,"object");this.lootMessage="A turkey dinner!";}}),
+        m88nturkeyleg:Item.extend({init:function(id){this._super(id,Types.Entities.M88NTURKEYLEG,"object");this.lootMessage="A turkey leg!";}}),
+        m88nturkeyfeather:Item.extend({init:function(id){this._super(id,Types.Entities.M88NTURKEYFEATHER,"object");this.lootMessage="A turkey feather!";}}),
         //MRMlabs Items
         firstaidkit:Item.extend({init:function(id){this._super(id,Types.Entities.FIRSTAIDKIT,"object");this.lootMessage="You found a first aid kit!";}}),
         bandaid:Item.extend({init:function(id){this._super(id,Types.Entities.BANDAID,"object");this.lootMessage="You found a bandaid!";}}),
