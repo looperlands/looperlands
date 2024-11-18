@@ -1928,14 +1928,14 @@ let Properties = {
             candycorntreat: 15,
             lollitreat: 10,
             chocolatetreat: 5,
-            candytreat: 5,
+            candytreat: 3,
             headstonetrick: 15,
             spidertrick: 10,
             skullnbonestrick: 5,
             m88ngem: 3,
             candybucket: 1
         },
-        respawnDelay: 20000,
+        respawnDelay: 50000,
     },
 
     m88nheadlessskeleton: {
@@ -1944,18 +1944,18 @@ let Properties = {
             candycorntreat: 15,
             lollitreat: 10,
             chocolatetreat: 5,
-            candytreat: 5,
+            candytreat: 3,
             headstonetrick: 15,
             spidertrick: 10,
             skullnbonestrick: 5,
             m88ndirt: 3,
             candybucket: 1
         },
-        respawnDelay: 20000,
+        respawnDelay: 40000,
     },
 
     m88nghostpumpkin: {
-        level: 2,
+        level: 5,
         drops: {
             candycorntreat: 10,
             lollitreat: 5,
@@ -1964,6 +1964,20 @@ let Properties = {
             headstonetrick: 10,
             spidertrick: 5,
             skullnbonestrick: 1
+        },
+        respawnDelay: 20000,
+    },
+
+    m88nturkey: {
+        level: 5,
+        drops: {
+            m88nturkeyleg: 30,
+            m88nturkeydinner: 10,
+            m88nturkeyfeather: 5,
+            m88nbananapie: 1,
+            m88ncherrypie: 1,
+            m88nlemonpie: 1,
+            m88npumpkinpie: 1
         },
         respawnDelay: 20000,
     },
@@ -3249,7 +3263,7 @@ let Properties = {
         },
         inventoryDescription: "Freaky Fudge",
         onConsume: function(player){
-            player.playerClassModifiers.applyTemporaryModifierWithTimeout('meleeDamageDealt', 10, 20000);
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('meleeDamageDealt', 5, 20000);
         }
     },
     spidertrick: {
@@ -3291,8 +3305,100 @@ let Properties = {
     },
     candybucket: {
         collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "xpTreatttt",
+            duration: 20000
+        },
         inventoryDescription: "Candy Bucket",
-        respawnDelay: 9900000
+        onConsume: function(player){
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('meleeDamageDealt', 10, 20000);
+        }
+    },
+    m88nturkeyleg: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "rangedDamageDealt",
+            duration: 90000
+        },
+        inventoryDescription: "Turkey Leg",
+        onConsume: function(player){
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('rangedDamageDealt', 2, 20000);
+        }
+    },
+    m88nturkeydinner: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "specialdropPotions",
+            duration: 300000
+        },
+        inventoryDescription: "Turkey Dinner",
+        onConsume: function(player){
+            player.setDropOverride(Types.Entities.M88NTURKEYLEG, 10000);
+        }
+    },
+    m88nturkeyfeather: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "mobDrop",
+            duration: 180000
+        },
+        inventoryDescription: "Magical Turkey Feather",
+        respawnDelay: 90000,
+        onConsume: function(player) {
+            player.releaseMob(Types.Entities.M88NTURKEY);
+        }
+    },
+    m88nbananapie: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "rangedDamageDealt",
+            duration: 90000
+        },
+        inventoryDescription: "Banana Cream Pie",
+        onConsume: function(player){
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('rangedDamageDealt', 10, 20000);
+        }
+    },
+    m88ncherrypie: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "rangedDamageDealt",
+            duration: 90000
+        },
+        inventoryDescription: "Cherry Cream Pie",
+        onConsume: function(player){
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('rangedDamageDealt', 10, 20000);
+        }
+    },
+    m88nlemonpie: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "rangedDamageDealt",
+            duration: 90000
+        },
+        inventoryDescription: "Lemon Cream Pie",
+        onConsume: function(player){
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('rangedDamageDealt', 10, 20000);
+        }
+    },
+    m88npumpkinpie: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "rangedDamageDealt",
+            duration: 90000
+        },
+        inventoryDescription: "Pumpkin Cream Pie",
+        onConsume: function(player){
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('rangedDamageDealt', 10, 20000);
+        }
     },
     m88nfastshoes: {
         collectable: true,
