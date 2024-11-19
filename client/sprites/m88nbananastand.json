@@ -1,0 +1,1 @@
+{	"id": "m88nbananastand",	"width": 80,	"height": 96,	"animations": {		"idle_down": {			"length": 6,			"row": 0		}	},	"offset_x": -32,	"offset_y": -64}

@@ -184,6 +184,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "kingfroggybw",
                     "m88nape",
                     "m88nmobilebartender",
+                    "m88nbananastand",
                     //m88n Mobs
                     "balloondogb",
                     "balloondogy",

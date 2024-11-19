@@ -540,6 +540,13 @@ define(['character'], function (Character) {
             "/openShop the_bar The Bar"
         ],
 
+        "m88nbananastand": [
+            "Well hello there! Welcome to The Nexus Exchange.",
+            "There's always money in the banana stand ;)",
+            "What can I get for you today?",
+            "/openShop the_banana_stand The Banana Stand"
+        ],
+
         "thehookup": [
             "Yo! I'm the hookup here in The Nexus...",
             "Whatcha need?",
