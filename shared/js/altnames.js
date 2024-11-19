@@ -273,6 +273,7 @@ const AltNames = {
     nexan10: "Darwin",
     m88nape: "m88n Ape",
     m88nmobilebartender: "Mobile Bartender",
+    m88nbananastand: "Banana Stand",
 
     //m88n Items
     m88nmail: "mail",

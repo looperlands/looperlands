@@ -360,6 +360,7 @@ Types = {
         KINGFROGGYBW: 78500000,
         M88NAPE: 78510000,
         M88NMOBILEBARTENDER: 78520000,
+        M88NBANANASTAND: 78530000,
         //m88n Mobs
         BALLOONDOGB: 78000001,
         BALLOONDOGY: 78000002,
@@ -6766,6 +6767,7 @@ var kinds = {
     kingfroggybw: [Types.Entities.KINGFROGGYBW, "npc"],
     m88nape: [Types.Entities.M88NAPE, "npc"],
     m88nmobilebartender: [Types.Entities.M88NMOBILEBARTENDER, "npc"],
+    m88nbananastand: [Types.Entities.M88NBANANASTAND, "npc"],
     //MRMlabs NPCs
     tylerdurden: [Types.Entities.TYLERDURDEN, "npc"],
     ROBITSE3: [Types.Entities.ROBITSE3, "mob"],

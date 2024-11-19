@@ -1572,6 +1572,7 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.KINGFROGGYBW]=function(id){return new NPCs.kingfroggybw(id);};
     EntityFactory.builders[Types.Entities.M88NAPE]=function(id){return new NPCs.m88nape(id);};
     EntityFactory.builders[Types.Entities.M88NMOBILEBARTENDER]=function(id){return new NPCs.m88nmobilebartender(id);};
+    EntityFactory.builders[Types.Entities.M88NBANANASTAND]=function(id){return new NPCs.m88nbananastand(id);};
 
     //MRMlabs NPCs
     EntityFactory.builders[Types.Entities.TYLERDURDEN]=function(id){return new NPCs.tylerdurden(id);};
