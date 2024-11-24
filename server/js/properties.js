@@ -3486,7 +3486,7 @@ let Properties = {
     },
     m88nplainbanana: {
         collectable: true,
-        consumable: true,
+        //consumable: true,
         inventoryDescription: "Special Banana",
         collectItem: Types.Entities.M88NGEM,
         collectAmount: 10,
@@ -3494,7 +3494,7 @@ let Properties = {
     },
     m88nchocolatebanana: {
         collectable: true,
-        consumable: true,
+        //consumable: true,
         inventoryDescription: "Special Banana",
         collectItem: Types.Entities.M88NGEM,
         collectAmount: 20,
@@ -3502,7 +3502,7 @@ let Properties = {
     },
     m88nchocolatesprinklebanana: {
         collectable: true,
-        consumable: true,
+        //consumable: true,
         inventoryDescription: "Special Banana",
         collectItem: Types.Entities.M88NGEM,
         collectAmount: 50,
@@ -3510,7 +3510,7 @@ let Properties = {
     },
     m88nchocolatewhippedbanana: {
         collectable: true,
-        consumable: true,
+        //consumable: true,
         inventoryDescription: "Special Banana",
         collectItem: Types.Entities.M88NGEM,
         collectAmount: 100,
@@ -3518,7 +3518,7 @@ let Properties = {
     },
     m88nm88nbanana: {
         collectable: true,
-        consumable: true,
+        //consumable: true,
         inventoryDescription: "Special Banana",
         collectItem: Types.Entities.M88NGEM,
         collectAmount: 500,
@@ -3526,7 +3526,7 @@ let Properties = {
     },
     m88nchocolatenutsbanana: {
         collectable: true,
-        consumable: true,
+        //consumable: true,
         inventoryDescription: "Special Banana",
         collectItem: Types.Entities.GOLD,
         collectAmount: 50000,
@@ -3534,7 +3534,7 @@ let Properties = {
     },
     m88npicklebanana: {
         collectable: true,
-        consumable: true,
+        //consumable: true,
         inventoryDescription: "Special Banana",
         collectItem: Types.Entities.GOLD,
         collectAmount: 500000,
