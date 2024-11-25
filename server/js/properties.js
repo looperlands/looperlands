@@ -1925,13 +1925,14 @@ let Properties = {
     m88nheadlessonesie: {
         level: 13,
         drops: {
-            candycorntreat: 15,
-            lollitreat: 10,
-            chocolatetreat: 5,
+            manacrystal: 14,
+            candycorntreat: 11,
+            lollitreat: 7,
+            chocolatetreat: 4,
             candytreat: 3,
-            headstonetrick: 15,
-            spidertrick: 10,
-            skullnbonestrick: 5,
+            headstonetrick: 11,
+            spidertrick: 7,
+            skullnbonestrick: 4,
             m88ngem: 3,
             candybucket: 1
         },
@@ -1939,15 +1940,16 @@ let Properties = {
     },
 
     m88nheadlessskeleton: {
-        level: 6,
+        level: 9,
         drops: {
-            candycorntreat: 15,
-            lollitreat: 10,
-            chocolatetreat: 5,
+            manacrystal: 14,
+            candycorntreat: 11,
+            lollitreat: 7,
+            chocolatetreat: 4,
             candytreat: 3,
-            headstonetrick: 15,
-            spidertrick: 10,
-            skullnbonestrick: 5,
+            headstonetrick: 11,
+            spidertrick: 7,
+            skullnbonestrick: 4,
             m88ndirt: 3,
             candybucket: 1
         },
@@ -1957,23 +1959,25 @@ let Properties = {
     m88nghostpumpkin: {
         level: 5,
         drops: {
-            candycorntreat: 10,
-            lollitreat: 5,
-            chocolatetreat: 3,
+            manacrystal: 12,
+            candycorntreat: 7,
+            lollitreat: 4,
+            chocolatetreat: 2,
             candytreat: 1,
-            headstonetrick: 10,
-            spidertrick: 5,
+            headstonetrick: 7,
+            spidertrick: 4,
             skullnbonestrick: 1
         },
         respawnDelay: 20000,
     },
 
     m88nturkey: {
-        level: 5,
+        level: 8,
         drops: {
-            m88nturkeyleg: 30,
-            m88nturkeydinner: 10,
-            m88nturkeyfeather: 5,
+            wood: 15,
+            m88nturkeyleg: 10,
+            m88nturkeydinner: 7,
+            m88nturkeyfeather: 4,
             m88nbananapie: 1,
             m88ncherrypie: 1,
             m88nlemonpie: 1,
