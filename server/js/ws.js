@@ -1104,13 +1104,15 @@ WS.socketIOServer = Server.extend({
             }
 
             // Add item to player inventory
-            dao.saveConsumable(nftId, item.item, item.amount ?? 1);
+            let providedItem = Collectables.getCollectItem(item.item);
+            let providedAmount = (Collectables.getCollectAmount(item.item)  ?? 1) * item.amount;
+            dao.saveConsumable(nftId, providedItem, providedAmount);
 
-            let itemCount = gameData.items[item.item];
+            let itemCount = gameData.items[providedItem];
             if (itemCount) {
-                gameData.items[item.item] = itemCount + (item.amount ?? 1);
+                gameData.items[providedItem] = itemCount + providedAmount;
             } else {
-                gameData.items[item.item] = (item.amount ?? 1);
+                gameData.items[providedItem] = providedAmount;
             }
 
             // Store changes in session data

@@ -244,8 +244,8 @@ const AltNames = {
     m88nthewarden: "The Warden",
     m88nheadlessonesie: "Headless Onesie",
     m88nheadlessskeleton: "Headless Skeleton",
-    m88nghostpumpkin: "OG Ghost Costume",
-    m88nturkey: "Turkey!",
+    m88nghostpumpkin: "Boo!",
+    m88nturkey: "Gobble Gobble...",
 
     //m88n Mob Nexans
     nexan8: "The Mail Lady",
