@@ -2733,7 +2733,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.atkSpeed = 100;
                 this.idleSpeed = 750;
                 this.setAttackRate(1000);
-                this.deathAnimated = true;
+                //this.deathAnimated = true;
                 this.isAggressive = true;
                 this.aggroRange = 3;
             }
@@ -2746,7 +2746,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.atkSpeed = 100;
                 this.idleSpeed = 750;
                 this.setAttackRate(1000);
-                this.deathAnimated = true;
+                //this.deathAnimated = true;
                 this.isAggressive = true;
                 this.aggroRange = 3;
             }
@@ -2759,7 +2759,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.atkSpeed = 100;
                 this.idleSpeed = 750;
                 this.setAttackRate(1000);
-                this.deathAnimated = true;
+                //this.deathAnimated = true;
                 this.isAggressive = true;
                 this.aggroRange = 3;
             }
