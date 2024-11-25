@@ -23,7 +23,14 @@ let Properties = {
         drops: {
             flask: 40,
             axe: 20,
-            loopring: 5
+            //loopring: 5
+            candycorntreat: 5,
+            candytreat: 3,
+            chocolatetreat: 2,
+            lollitreat: 1,
+            headstonetrick: 5,
+            skullnbonestrick: 1,
+            spidertrick: 3
         },
         weaponMod: 1.5, //bigger mod cause attack rate is 50% slower
         respawnDelay: 45000,
@@ -1358,10 +1365,17 @@ let Properties = {
     GHOST2: {
         level: 10,
         drops: {
-            taikoboost: 50,
-            GOLD: 5,
-            GOLD1: 3,
-            GOLD2: 1
+            //taikoboost: 50,
+            //GOLD: 5,
+            //GOLD1: 3,
+            //GOLD2: 1
+            candycorntreat: 7,
+            lollitreat: 4,
+            chocolatetreat: 2,
+            candytreat: 1,
+            headstonetrick: 7,
+            spidertrick: 4,
+            skullnbonestrick: 1
         },
         messages: ['BOO!'],
         respawnDelay:  60000
@@ -1371,10 +1385,17 @@ let Properties = {
     GHOST3: {
         level: 10,
         drops: {
-            taikoboost: 50,
-            GOLD: 5,
-            GOLD1: 3,
-            GOLD2: 1,
+            //taikoboost: 50,
+            //GOLD: 5,
+            //GOLD1: 3,
+            //GOLD2: 1,
+            candycorntreat: 7,
+            lollitreat: 4,
+            chocolatetreat: 2,
+            candytreat: 1,
+            headstonetrick: 7,
+            spidertrick: 4,
+            skullnbonestrick: 1
         },
         messages: ['BOO!'],
         respawnDelay:  60000
@@ -1384,10 +1405,17 @@ let Properties = {
     HORSEMAN: {
         level: 13,
         drops: {
-            taikoboost: 40,
-            GOLD: 40,
-            GOLD2: 10,
-            GOLD3: 2
+            //taikoboost: 40,
+            //GOLD: 40,
+            //GOLD2: 10,
+            //GOLD3: 2
+            candycorntreat: 5,
+            candytreat: 3,
+            chocolatetreat: 2,
+            lollitreat: 1,
+            headstonetrick: 5,
+            skullnbonestrick: 1,
+            spidertrick: 3
         },
         messages: ['Shinu!'],
         armorMod: 2.2,
@@ -1668,13 +1696,13 @@ let Properties = {
         drops: {
             m88nmap: 10,
             GOLD: 10,
-            candycorntreat: 15,
-            candytreat: 5,
-            chocolatetreat: 5,
-            lollitreat: 10,
-            headstonetrick: 15,
-            skullnbonestrick: 2,
-            spidertrick: 10
+            candycorntreat: 5,
+            lollitreat: 2,
+            chocolatetreat: 1,
+            candytreat: 1,
+            headstonetrick: 5,
+            spidertrick: 2,
+            skullnbonestrick: 1
         },
         respawnDelay: 20000,
     },
@@ -1688,13 +1716,13 @@ let Properties = {
             GOLD2: 25,
             //GOLD3: 10,
             //loopring: 5
-            candycorntreat: 20,
-            lollitreat: 10,
-            chocolatetreat: 5,
-            candytreat: 5,
-            headstonetrick: 20,
-            spidertrick: 10,
-            skullnbonestrick: 2
+            candycorntreat: 7,
+            lollitreat: 4,
+            chocolatetreat: 2,
+            candytreat: 1,
+            headstonetrick: 7,
+            spidertrick: 4,
+            skullnbonestrick: 1
         },
         xp: 22
     },
@@ -1716,8 +1744,8 @@ let Properties = {
             m88nmermaidmojito: 1,
             m88nsunsetdaiquiri: 1,
             m88nnexussangria: 1,
-            candycorntreat: 30,
-            lollitreat: 20,
+            candycorntreat: 25,
+            lollitreat: 15,
             chocolatetreat: 10,
             candytreat: 10,
             headstonetrick: 5,
@@ -1975,15 +2003,15 @@ let Properties = {
         level: 8,
         drops: {
             wood: 15,
-            m88nturkeyleg: 10,
-            m88nturkeydinner: 7,
-            m88nturkeyfeather: 4,
+            m88nturkeyleg: 11,
+            m88nturkeydinner: 8,
+            m88nturkeyfeather: 5,
             m88nbananapie: 1,
             m88ncherrypie: 1,
             m88nlemonpie: 1,
             m88npumpkinpie: 1
         },
-        respawnDelay: 20000,
+        respawnDelay: 30000,
     },
 
     m88nmine: {
