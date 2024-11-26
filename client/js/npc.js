@@ -534,6 +534,20 @@ define(['character'], function (Character) {
             //"You'll need to find a mysterious compass to navigate to that one though..."
         ],
 
+        "m88nmobilebartender": [
+            "Well hello again!",
+            "Can I get you something to drink from the bar?",
+            "/openShop the_bar The Bar"
+        ],
+
+        "m88nbananastand": [
+            "Well hello there, I'm mister manager!",
+            "Welcome to The Nexus Exchange.",
+            "There's always money in the banana stand ;)",
+            "What can I get for you today?",
+            "/openShop the_banana_stand The Banana Stand"
+        ],
+
         "thehookup": [
             "Yo! I'm the hookup here in The Nexus...",
             "Whatcha need?",

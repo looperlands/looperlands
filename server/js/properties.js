@@ -23,7 +23,14 @@ let Properties = {
         drops: {
             flask: 40,
             axe: 20,
-            loopring: 5
+            //loopring: 5
+            candycorntreat: 5,
+            candytreat: 3,
+            chocolatetreat: 2,
+            lollitreat: 1,
+            headstonetrick: 5,
+            skullnbonestrick: 1,
+            spidertrick: 3
         },
         weaponMod: 1.5, //bigger mod cause attack rate is 50% slower
         respawnDelay: 45000,
@@ -1358,10 +1365,17 @@ let Properties = {
     GHOST2: {
         level: 10,
         drops: {
-            taikoboost: 50,
-            GOLD: 5,
-            GOLD1: 3,
-            GOLD2: 1
+            //taikoboost: 50,
+            //GOLD: 5,
+            //GOLD1: 3,
+            //GOLD2: 1
+            candycorntreat: 7,
+            lollitreat: 4,
+            chocolatetreat: 2,
+            candytreat: 1,
+            headstonetrick: 7,
+            spidertrick: 4,
+            skullnbonestrick: 1
         },
         messages: ['BOO!'],
         respawnDelay:  60000
@@ -1371,10 +1385,17 @@ let Properties = {
     GHOST3: {
         level: 10,
         drops: {
-            taikoboost: 50,
-            GOLD: 5,
-            GOLD1: 3,
-            GOLD2: 1,
+            //taikoboost: 50,
+            //GOLD: 5,
+            //GOLD1: 3,
+            //GOLD2: 1,
+            candycorntreat: 7,
+            lollitreat: 4,
+            chocolatetreat: 2,
+            candytreat: 1,
+            headstonetrick: 7,
+            spidertrick: 4,
+            skullnbonestrick: 1
         },
         messages: ['BOO!'],
         respawnDelay:  60000
@@ -1384,10 +1405,17 @@ let Properties = {
     HORSEMAN: {
         level: 13,
         drops: {
-            taikoboost: 40,
-            GOLD: 40,
-            GOLD2: 10,
-            GOLD3: 2
+            //taikoboost: 40,
+            //GOLD: 40,
+            //GOLD2: 10,
+            //GOLD3: 2
+            candycorntreat: 5,
+            candytreat: 3,
+            chocolatetreat: 2,
+            lollitreat: 1,
+            headstonetrick: 5,
+            skullnbonestrick: 1,
+            spidertrick: 3
         },
         messages: ['Shinu!'],
         armorMod: 2.2,
@@ -1668,13 +1696,13 @@ let Properties = {
         drops: {
             m88nmap: 10,
             GOLD: 10,
-            candycorntreat: 15,
-            candytreat: 5,
-            chocolatetreat: 5,
-            lollitreat: 10,
-            headstonetrick: 15,
-            skullnbonestrick: 2,
-            spidertrick: 10
+            candycorntreat: 5,
+            lollitreat: 2,
+            chocolatetreat: 1,
+            candytreat: 1,
+            headstonetrick: 5,
+            spidertrick: 2,
+            skullnbonestrick: 1
         },
         respawnDelay: 20000,
     },
@@ -1688,13 +1716,13 @@ let Properties = {
             GOLD2: 25,
             //GOLD3: 10,
             //loopring: 5
-            candycorntreat: 20,
-            lollitreat: 10,
-            chocolatetreat: 5,
-            candytreat: 5,
-            headstonetrick: 20,
-            spidertrick: 10,
-            skullnbonestrick: 2
+            candycorntreat: 7,
+            lollitreat: 4,
+            chocolatetreat: 2,
+            candytreat: 1,
+            headstonetrick: 7,
+            spidertrick: 4,
+            skullnbonestrick: 1
         },
         xp: 22
     },
@@ -1716,8 +1744,8 @@ let Properties = {
             m88nmermaidmojito: 1,
             m88nsunsetdaiquiri: 1,
             m88nnexussangria: 1,
-            candycorntreat: 30,
-            lollitreat: 20,
+            candycorntreat: 25,
+            lollitreat: 15,
             chocolatetreat: 10,
             candytreat: 10,
             headstonetrick: 5,
@@ -1925,47 +1953,65 @@ let Properties = {
     m88nheadlessonesie: {
         level: 13,
         drops: {
-            candycorntreat: 15,
-            lollitreat: 10,
-            chocolatetreat: 5,
-            candytreat: 5,
-            headstonetrick: 15,
-            spidertrick: 10,
-            skullnbonestrick: 5,
+            manacrystal: 14,
+            candycorntreat: 11,
+            lollitreat: 7,
+            chocolatetreat: 4,
+            candytreat: 3,
+            headstonetrick: 11,
+            spidertrick: 7,
+            skullnbonestrick: 4,
             m88ngem: 3,
             candybucket: 1
         },
-        respawnDelay: 20000,
+        respawnDelay: 50000,
     },
 
     m88nheadlessskeleton: {
-        level: 6,
+        level: 9,
         drops: {
-            candycorntreat: 15,
-            lollitreat: 10,
-            chocolatetreat: 5,
-            candytreat: 5,
-            headstonetrick: 15,
-            spidertrick: 10,
-            skullnbonestrick: 5,
+            manacrystal: 14,
+            candycorntreat: 11,
+            lollitreat: 7,
+            chocolatetreat: 4,
+            candytreat: 3,
+            headstonetrick: 11,
+            spidertrick: 7,
+            skullnbonestrick: 4,
             m88ndirt: 3,
             candybucket: 1
+        },
+        respawnDelay: 40000,
+    },
+
+    m88nghostpumpkin: {
+        level: 5,
+        drops: {
+            manacrystal: 12,
+            candycorntreat: 7,
+            lollitreat: 4,
+            chocolatetreat: 2,
+            candytreat: 1,
+            headstonetrick: 7,
+            spidertrick: 4,
+            skullnbonestrick: 1
         },
         respawnDelay: 20000,
     },
 
-    m88nghostpumpkin: {
-        level: 2,
+    m88nturkey: {
+        level: 8,
         drops: {
-            candycorntreat: 10,
-            lollitreat: 5,
-            chocolatetreat: 3,
-            candytreat: 1,
-            headstonetrick: 10,
-            spidertrick: 5,
-            skullnbonestrick: 1
+            wood: 15,
+            m88nturkeyleg: 11,
+            m88nturkeydinner: 8,
+            m88nturkeyfeather: 5,
+            m88nbananapie: 1,
+            m88ncherrypie: 1,
+            m88nlemonpie: 1,
+            m88npumpkinpie: 1
         },
-        respawnDelay: 20000,
+        respawnDelay: 30000,
     },
 
     m88nmine: {
@@ -2987,6 +3033,19 @@ let Properties = {
             player.releaseItem(Types.Entities.M88NGRENADE);
         }
     },
+    m88ndufflebag: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "duffle bag",
+            duration: 60000
+        },
+        inventoryDescription: "Duffle Bag",
+        respawnDelay: 9900000,
+        onConsume: function(player) {
+            player.releaseNpc(Types.Entities.M88NMOBILEBARTENDER, 30000);
+        }
+    },
     m88nmimosa: {
         collectable: true,
         consumable: true,
@@ -3126,7 +3185,7 @@ let Properties = {
             group: "superspecialdropPotions",
             duration: 600000
         },
-        inventoryDescription: "DRS'd GME",
+        inventoryDescription: "The Good Whiskey",
         onConsume: function(player){
             player.setDropOverride(Types.Entities.M88NDRSGME, 10000);
         }
@@ -3236,7 +3295,7 @@ let Properties = {
         },
         inventoryDescription: "Freaky Fudge",
         onConsume: function(player){
-            player.playerClassModifiers.applyTemporaryModifierWithTimeout('meleeDamageDealt', 10, 20000);
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('meleeDamageDealt', 5, 20000);
         }
     },
     spidertrick: {
@@ -3278,8 +3337,100 @@ let Properties = {
     },
     candybucket: {
         collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "xpTreatttt",
+            duration: 20000
+        },
         inventoryDescription: "Candy Bucket",
-        respawnDelay: 9900000
+        onConsume: function(player){
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('meleeDamageDealt', 10, 20000);
+        }
+    },
+    m88nturkeyleg: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "rangedDamageDealt",
+            duration: 90000
+        },
+        inventoryDescription: "Turkey Leg",
+        onConsume: function(player){
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('rangedDamageDealt', 2, 20000);
+        }
+    },
+    m88nturkeydinner: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "specialdropPotions",
+            duration: 300000
+        },
+        inventoryDescription: "Turkey Dinner",
+        onConsume: function(player){
+            player.setDropOverride(Types.Entities.M88NTURKEYLEG, 10000);
+        }
+    },
+    m88nturkeyfeather: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "mobDrop",
+            duration: 180000
+        },
+        inventoryDescription: "Magical Turkey Feather",
+        respawnDelay: 90000,
+        onConsume: function(player) {
+            player.releaseMob(Types.Entities.M88NTURKEY);
+        }
+    },
+    m88nbananapie: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "rangedDamageDealt",
+            duration: 90000
+        },
+        inventoryDescription: "Banana Cream Pie",
+        onConsume: function(player){
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('rangedDamageDealt', 10, 20000);
+        }
+    },
+    m88ncherrypie: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "rangedDamageDealt",
+            duration: 90000
+        },
+        inventoryDescription: "Cherry Cream Pie",
+        onConsume: function(player){
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('rangedDamageDealt', 10, 20000);
+        }
+    },
+    m88nlemonpie: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "rangedDamageDealt",
+            duration: 90000
+        },
+        inventoryDescription: "Lemon Cream Pie",
+        onConsume: function(player){
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('rangedDamageDealt', 10, 20000);
+        }
+    },
+    m88npumpkinpie: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "rangedDamageDealt",
+            duration: 90000
+        },
+        inventoryDescription: "Pumpkin Cream Pie",
+        onConsume: function(player){
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('rangedDamageDealt', 10, 20000);
+        }
     },
     m88nfastshoes: {
         collectable: true,
@@ -3364,6 +3515,62 @@ let Properties = {
         collectable: true,
         inventoryDescription: "m88n dirt",
         respawnDelay: 4000000
+    },
+    m88nplainbanana: {
+        collectable: true,
+        //consumable: true,
+        inventoryDescription: "Special Banana",
+        collectItem: Types.Entities.M88NGEM,
+        collectAmount: 10,
+        respawnDelay: 42069741
+    },
+    m88nchocolatebanana: {
+        collectable: true,
+        //consumable: true,
+        inventoryDescription: "Special Banana",
+        collectItem: Types.Entities.M88NGEM,
+        collectAmount: 20,
+        respawnDelay: 42069741
+    },
+    m88nchocolatesprinklebanana: {
+        collectable: true,
+        //consumable: true,
+        inventoryDescription: "Special Banana",
+        collectItem: Types.Entities.M88NGEM,
+        collectAmount: 50,
+        respawnDelay: 42069741
+    },
+    m88nchocolatewhippedbanana: {
+        collectable: true,
+        //consumable: true,
+        inventoryDescription: "Special Banana",
+        collectItem: Types.Entities.M88NGEM,
+        collectAmount: 100,
+        respawnDelay: 42069741
+    },
+    m88nm88nbanana: {
+        collectable: true,
+        //consumable: true,
+        inventoryDescription: "Special Banana",
+        collectItem: Types.Entities.M88NGEM,
+        collectAmount: 500,
+        respawnDelay: 42069741
+    },
+    m88nchocolatenutsbanana: {
+        collectable: true,
+        //consumable: true,
+        inventoryDescription: "Special Banana",
+        collectItem: Types.Entities.GOLD,
+        collectAmount: 50000,
+        respawnDelay: 42069741
+    },
+    m88npicklebanana: {
+        collectable: true,
+        //consumable: true,
+        inventoryDescription: "Special Banana",
+        collectItem: Types.Entities.GOLD,
+        collectAmount: 500000,
+        respawnDelay: 42069741
     },
     m88nmoneybags: {
         //collectable: true,

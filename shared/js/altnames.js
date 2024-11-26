@@ -242,9 +242,10 @@ const AltNames = {
     m88nnancyclown: "Nancy The Clown",
     m88njimmyclown: "Jimmy The Clown",
     m88nthewarden: "The Warden",
-    m88nheadlessonesie: "The Headless Onesie",
-    m88nheadlessskeleton: "The Headless Skeleton",
-    m88nghostpumpkin: "The OG Ghost Costume",
+    m88nheadlessonesie: "Headless Onesie",
+    m88nheadlessskeleton: "Headless Skeleton",
+    m88nghostpumpkin: "Boo!",
+    m88nturkey: "Gobble Gobble...",
 
     //m88n Mob Nexans
     nexan8: "The Mail Lady",
@@ -271,6 +272,8 @@ const AltNames = {
     nexan32: "The Greaser",
     nexan10: "Darwin",
     m88nape: "m88n Ape",
+    m88nmobilebartender: "Mobile Bartender",
+    m88nbananastand: "Banana Stand",
 
     //m88n Items
     m88nmail: "mail",
@@ -318,6 +321,20 @@ const AltNames = {
     m88nruck3: "Ruck Sack 3",
     m88ngoldknuckles: "Gold Knuckles",
     m88npieslinger: "a Pie Slinger",
+    m88nchocolatebanana: "Chocolate Banana",
+    m88nchocolatenutsbanana: "Chocolate Banana with Nuts",
+    m88nchocolatesprinklebanana: "Chocolate Banana with Sprinkles",
+    m88nchocolatewhippedbanana: "Chocolate Banana with Whipped",
+    m88nm88nbanana: "m88n banana",
+    m88npicklebanana: "Pickle Banana",
+    m88nplainbanana: "Banana",
+    m88nbananapie: "Banana Cream Pie",
+    m88ncherrypie: "Cherry Cream Pie",
+    m88nlemonpie: "Lemon Cream Pie",
+    m88npumpkinpie: "Pumpkin Cream Pie",
+    m88nturkeydinner: "Turkey Dinner",
+    m88nturkeyfeather: "Turkey Feather",
+    m88nturkeyleg: "Turkey Leg",
 
     //m88n TT Items
     m88nammocan: "ammo can",

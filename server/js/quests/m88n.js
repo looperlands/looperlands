@@ -1328,7 +1328,7 @@ quests = [
         medal: Types.Medals.SKULL,
         reward: {
             item: Types.Entities.M88NGEM,
-            amount: 20
+            amount: 50
         }
     },
     {
