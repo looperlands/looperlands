@@ -1,4 +1,13 @@
-// need to figure out how i want to handle: server/js/properties.js
+// FOR ALL:
+// Add .json in client/sprites
+// Add sprite images:
+//    100% scale ==> client/img/1
+//    200% scale ==> client/img/2
+//    300% scale ==> client/img/3
+
+// For MOBS: Input level, armorMod, weaponMod, hpMod, drops, respawnDelay, etc in server/js/properties
+// For ITEMS: Input collectable, consumable, collectItem, collectAmount, inventoryDescription, cooldown, onConsume, etc in server/js/properties
+// For NPCS: Input basic dialogue in client/js/npc.js or advanced dialogue via files in server/js/dialogue
 
 define(() => {
     return {
