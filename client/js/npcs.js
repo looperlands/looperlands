@@ -492,13 +492,13 @@ define(['npc', 'mapSpecific/mapSprites'], function (Npc, mapSprites) {
         // @nextNPCLine@
     };
 
-    mapSprites.NPCS.forEach((type) => {
-        NPCs[type] = Npc.extend({
+    mapSprites.NPCS.forEach(({ name }) => {
+        NPCs[name] = Npc.extend({
             init: function (entityId) {
-                this._super(entityId, Types.Entities[type], 1);
+                this._super(entityId, Types.Entities[name], 1);
             },
         });
     });
-
+    
     return NPCs;
 });

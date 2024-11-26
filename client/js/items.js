@@ -465,19 +465,19 @@ define(['item', 'mapSpecific/mapSprites'], function (Item, mapSprites) {
 
     // Dynamically add mapSpecific Items
     mapSprites.ITEMS.forEach(item => {
-        const { name, lootMessage } = item; // Destructure to get name and lootMessage
+        const { name, lootMessage, type } = item; // Destructure to get name, lootMessage, and type
 
         if (name) {
-            // Dynamically create the item class
+            // Dynamically create the item class, checking for type ('object' or 'resource')
             Items[name] = Item.extend({
                 init: function(id) {
-                    this._super(id, Types.Entities[name], "object");
+                    this._super(id, Types.Entities[name], type || "object"); // Default to "object" if no type is specified
                     this.lootMessage = lootMessage || "";  // Default to empty string if no lootMessage
                 }
             });
         }
     });
-
+    
     return Items;
 
 });

@@ -6110,6 +6110,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     // @nextSpriteLine@
                 ];
 
+                // Create a flat list of all sprite names (NPCs, Mobs, Fishes, and Items)
                 const dynamicMapSprites = [
                     ...Object.values(mapSprites).flat().filter(item => typeof item === 'string'), // For MOBS, NPCS, FISH (arrays of names)
                     ...mapSprites.ITEMS.map(item => item.name) // For ITEMS (objects with name and lootMessage)
@@ -6255,13 +6256,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                 ];
 
-                // Dynamically add the fish from mapSprites.FISH
-                const allFish = fishGroups.concat(mapSprites.FISH);
-
-                fishGroups.forEach(group => {
-                    group.forEach(key => {
-                        this.fish[key] = this.sprites[key];
-                    });
+                const allFish = fishGroups.flat().concat(Object.keys(mapSprites.FISH));
+                allFish.forEach(key => {
+                    this.fish[key] = this.sprites[key];
                 });
             },
 

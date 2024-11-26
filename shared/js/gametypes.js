@@ -1,3 +1,5 @@
+const mapSprites = require("../client/js/mapSpecific/mapSprites");
+
 Types = {
     Messages: {
         HELLO: 0,
@@ -6315,16 +6317,6 @@ var kinds = {
     m88nmerman4: [Types.Entities.M88NMERMAN4, "mob"],
     m88nmerman5: [Types.Entities.M88NMERMAN5, "mob"],
 
-    //BITCORN MOBS
-    SLUDGERAT: [Types.Entities.SLUDGERAT, "mob"],
-    SPACECRAB: [Types.Entities.SPACECRAB, "mob"],
-    BLACKMAGE: [Types.Entities.BLACKMAGE, "mob"],
-    RABBID: [Types.Entities.RABBID, "mob"],
-    ZOMBBID: [Types.Entities.ZOMBBID, "mob"],
-    HOPPURP: [Types.Entities.HOPPURP, "mob"],
-    HOPPINK: [Types.Entities.HOPPINK, "mob"],
-    CRAPTOR: [Types.Entities.CRAPTOR, "mob"],
-
     sword1: [Types.Entities.SWORD1, "weapon"],
     sword2: [Types.Entities.SWORD2, "weapon"],
     axe: [Types.Entities.AXE, "weapon"],
@@ -6818,10 +6810,6 @@ var kinds = {
     FEDORABIT: [Types.Entities.FEDORABIT, "npc"],
     APEBRAINOG: [Types.Entities.APEBRAINOG, "npc"],
     SIREN: [Types.Entities.SIREN, "npc"],
-    //BITCORN NPCS
-    BITNPC_BITCORN: [Types.Entities.BITNPC_BITCORN, "npc"],
-    BITNPC_THORNBEARD_KNEEL: [Types.Entities.BITNPC_THORNBEARD_KNEEL, "npc"],
-    BITNPC_THORNBEARD: [Types.Entities.BITNPC_THORNBEARD, "npc"],
     //Taiko Town NPCs
     taikotownnpc1: [Types.Entities.TAIKOTOWNNPC1, "npc"],
     taikotownnpc2: [Types.Entities.TAIKOTOWNNPC2, "npc"],
@@ -12012,11 +12000,22 @@ var kinds = {
     NFT_75f8bec880bcaf46ba059dd0022d588ef93a2f01333a0d54f5d4291bdc9b74fa: [Types.Entities.NFT_75f8bec880bcaf46ba059dd0022d588ef93a2f01333a0d54f5d4291bdc9b74fa, "armor"],
     // @nextSpriteLine@
 
+    // Function to retrieve the type (mob, npc, object, resource) for a given kind
     getType: function(kind) {
-        if(!kinds[Types.getKindAsString(kind)]) {
-            return "";
+        const kindAsString = Types.getKindAsString(kind);
+
+        // First, check in the kinds object for predefined types (mob, npc)
+        if (kinds[kindAsString]) return kinds[kindAsString][1];
+
+        // Check dynamically in mapSprites for MOBS, NPCS, and ITEMS categories
+        if (mapSprites) {
+            if (mapSprites.MOBS[kind]) return "mob";
+            if (mapSprites.NPCS[kind]) return "npc";
+            if (mapSprites.ITEMS[kind]) return mapSprites.ITEMS[kind].type || "object"; // Default to "object" for items
         }
-        return kinds[Types.getKindAsString(kind)][1];
+
+        // Return an empty string if no type is found
+        return "";
     }
 };
 
