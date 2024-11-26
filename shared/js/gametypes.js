@@ -830,6 +830,8 @@ Types = {
         CRAPTOR: 34000153,        
         BITNPC_THORNBEARD_KNEEL: 34000154,
         BITNPC_THORNBEARD: 34000155,// @lastidCharacter@
+        BITNPC_RADIO: 34000156,
+        BITNPC_PC: 34000157,
         //@nextIdLineCharacter@
         // Weapons
         SWORD1: 60,

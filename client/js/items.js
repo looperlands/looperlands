@@ -1,5 +1,5 @@
 
-define(['item'], function(Item) {
+define(['item', 'mapSpecific/mapSprites'], function (Item, mapSprites) {
 
     let Items = {
 
@@ -448,5 +448,21 @@ define(['item'], function(Item) {
         // @nextItemLine@
     };
 
+    // Dynamically add mapSpecific Items
+    mapSprites.ITEMS.forEach(item => {
+        const { name, lootMessage } = item; // Destructure to get name and lootMessage
+
+        if (name) {
+            // Dynamically create the item class
+            Items[name] = Item.extend({
+                init: function(id) {
+                    this._super(id, Types.Entities[name], "object");
+                    this.lootMessage = lootMessage || "";  // Default to empty string if no lootMessage
+                }
+            });
+        }
+    });
+
     return Items;
+
 });

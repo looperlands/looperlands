@@ -91,12 +91,14 @@ module.exports = function processMap(json, options) {
                     map.lightTiles[id] = {};
                 }
 
+                map.lightTiles[id].type = "radial"; //set to process as a radial light source
+
                 if (property.name === "light" || property.name === "intensity") {
                     map.lightTiles[id].intensity = parseFloat(String(property.value).replace(',', '.'));
                 } else if (property.name === "color") {
                     // r,g,b as string
                     let colors = property.value.split(',');
-                    map.lightTiles[id].color = {r: parseInt(colors[0]), g: parseInt(colors[1]), b: parseInt(colors[2])};
+                    map.lightTiles[id].color = { r: parseInt(colors[0]), g: parseInt(colors[1]), b: parseInt(colors[2]) };
                 } else if (property.name === "radius") {
                     map.lightTiles[id][property.name] = parseInt(property.value);
                 } else if (property.name === "innerRadius") {
@@ -280,13 +282,35 @@ module.exports = function processMap(json, options) {
         };
 
         if (light.ellipse !== undefined) {
+            newLight.type = "radial";
             console.log("Processing light: " + light.id);
             console.log(light);
             console.log(newLight.x + " + " + light.width + " / 2 = " + (newLight.x + parseInt(light.width) / 2));
             newLight.x += parseInt(light.width) / 2;
             newLight.y += parseInt(light.height) / 2;
             newLight.radius = Math.ceil(parseInt(light.width) / 2 / map.tilesize);
+        } else if (light.polygon !== undefined) {
+            newLight.type = "polygon";
+            console.log("Processing polygon light: " + light.id);
+            // Adjust the polygon points relative to the reference point (x, y)
+            const referenceX = parseInt(light.x);
+            const referenceY = parseInt(light.y);
+
+            const polygonPoints = light.polygon.map(point => {
+                return point.points.split(" ").map(coord => {
+                    const [dx, dy] = coord.split(",").map(Number);
+                    return { x: referenceX + dx, y: referenceY + dy };
+                });
+            });
+            newLight.polygon = polygonPoints;
+
+            // Calculate the centroid of the adjusted polygon
+            const centroid = calculateCentroid(polygonPoints);
+
+            newLight.x = centroid.x;
+            newLight.y = centroid.y;
         } else {
+            newLight.type = "global";
             newLight.w = light.width
             newLight.h = light.height
             newLight.global = true;
@@ -300,41 +324,53 @@ module.exports = function processMap(json, options) {
             }
 
             if (lightProps) {
-                for (var k = 0; k < lightProps.length; k += 1) {
-                    if (lightProps[k].property.name === "light") {
-                        lightProps[k].property.name = "intensity";
-                    }
+                for (let k = 0; k < lightProps.length; k++) {
+                    const properties = Array.isArray(lightProps[k].property)
+                        ? lightProps[k].property
+                        : [lightProps[k].property];
 
-                    switch (lightProps[k].property.name) {
-                        case "intensity":
-                        case "light":
-                            newLight.intensity = parseFloat(String(lightProps[k].property.value).replace(',', '.'));
-                            break;
-                        case "color":
-                            let colors = lightProps[k].property.value.split(',');
-                            newLight.color = {r: parseInt(colors[0]), g: parseInt(colors[1]), b: parseInt(colors[2])};
-                            break;
-                        case "radius":
-                            newLight.radius = parseInt(lightProps[k].property.value);
-                            break;
-                        case "innerRadius":
-                            newLight.innerRadius = parseInt(lightProps[k].property.value);
-                            break;
-                        case "spread":
-                            newLight.spread = parseInt(lightProps[k].property.value);
-                            break;
-                        case "innerSpread":
-                            newLight.innerSpread = parseInt(lightProps[k].property.value);
-                            break;
-                        case "angle":
-                            newLight.angle = parseInt(lightProps[k].property.value);
-                            break;
-                        case "shadow":
-                            newLight.shadow = parseFloat(String(lightProps[k].property.value).replace(',', '.'));
-                            break;
-                        case "animation":
-                            newLight.animation = lightProps[k].property.value;
-                            break;
+                    for (let prop of properties) {
+                        if (prop.name === "light") {
+                            prop.name = "intensity";
+                        }
+
+                        switch (prop.name) {
+                            case "intensity":
+                                newLight.intensity = parseFloat(String(prop.value).replace(',', '.'));
+                                break;
+                            case "color":
+                                const colors = prop.value.split(',');
+                                newLight.color = {
+                                    r: parseInt(colors[0]),
+                                    g: parseInt(colors[1]),
+                                    b: parseInt(colors[2]),
+                                };
+                                break;
+                            case "radius":
+                                newLight.radius = parseInt(prop.value);
+                                break;
+                            case "fadeOffset":
+                                newLight.fadeOffset = parseInt(prop.value);
+                                break;
+                            case "innerRadius":
+                                newLight.innerRadius = parseInt(prop.value);
+                                break;
+                            case "spread":
+                                newLight.spread = parseInt(prop.value);
+                                break;
+                            case "innerSpread":
+                                newLight.innerSpread = parseInt(prop.value);
+                                break;
+                            case "angle":
+                                newLight.angle = parseInt(prop.value);
+                                break;
+                            case "shadow":
+                                newLight.shadow = parseFloat(String(prop.value).replace(',', '.'));
+                                break;
+                            case "animation":
+                                newLight.animation = prop.value;
+                                break;
+                        }
                     }
                 }
             }
@@ -574,3 +610,21 @@ var processLayer = function processLayer(layer) {
         }
     }
 }
+
+function calculateCentroid(polygon) {
+    let sumX = 0;
+    let sumY = 0;
+
+    const flattenedPolygon = polygon.flat();
+
+    flattenedPolygon.forEach(vertex => {
+        sumX += vertex.x;
+        sumY += vertex.y;
+    });
+
+    return {
+        x: sumX / flattenedPolygon.length,
+        y: sumY / flattenedPolygon.length
+    };
+}
+

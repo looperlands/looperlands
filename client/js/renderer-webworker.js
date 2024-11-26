@@ -27,7 +27,7 @@ let playerPosition = null;
 
 function transformObstacles(obstacles) {
     let transformedObstacles = [];
-    if(!obstacles) {
+    if (!obstacles) {
         return transformedObstacles;
     }
 
@@ -35,17 +35,17 @@ function transformObstacles(obstacles) {
         // if we get an object with x, y, width, height, convert it to a polygon
         if (obstacle.width !== undefined && obstacle.height !== undefined) {
             obstacle = [
-                {x: obstacle.x, y: obstacle.y},
-                {x: obstacle.x + obstacle.width, y: obstacle.y},
-                {x: obstacle.x + obstacle.width, y: obstacle.y + obstacle.height},
-                {x: obstacle.x, y: obstacle.y + obstacle.height},
+                { x: obstacle.x, y: obstacle.y },
+                { x: obstacle.x + obstacle.width, y: obstacle.y },
+                { x: obstacle.x + obstacle.width, y: obstacle.y + obstacle.height },
+                { x: obstacle.x, y: obstacle.y + obstacle.height },
             ];
         }
 
         if (obstacle.polygon) {
             obstacle = obstacle.polygon.points.split(" ").map(point => {
                 const [x, y] = point.split(",").map(Number);
-                return {x: parseFloat(obstacle.x) + x, y: parseFloat(obstacle.y) + y};
+                return { x: parseFloat(obstacle.x) + x, y: parseFloat(obstacle.y) + y };
             });
         }
 
@@ -55,24 +55,35 @@ function transformObstacles(obstacles) {
     return transformedObstacles;
 }
 
+function pulseAnimation(lightSource, time, pulseStrength = 0.05, pulseSpeed = 3, radiusVariation = 0.15, intensityVariation = 0.01) {
+    // pulseStrength = Strength of the glow pulsation
+    // pulseSpeed = Speed of the pulse animation
+    // radiusVariation = Variation in light radius
+    // intensityVariation = Variation in light intensity
+
+    // Smooth pulsation effect using sine wave
+    const pulse = Math.sin(time * pulseSpeed) * pulseStrength + Math.random() * pulseStrength;
+
+    // Adjust radius of the pulsating effect
+    lightSource.radius = Math.max(2, lightSource.radius * (1 + pulse * radiusVariation));
+
+    // Adjust intensity of the pulsating glow
+    lightSource.intensity = Math.max(0.3, lightSource.intensity * (1 + pulse * intensityVariation));
+}
+
 function fireAnimation(lightSource, time) {
-    const flickerStrength = 0.05; // Controls how much the light flickers
     const positionVariation = 0.8; // Controls how much the light "jumps" in position
-    const radiusVariation = 0.15; // Controls the variation in light radius
-    const intensityVariation = 0.01; // Controls the variation in light intensity
-
-    // Simulate flickering by adjusting the radius and intensity with sine and random noise
-    const flicker = Math.sin(time * 3) * flickerStrength + Math.random() * flickerStrength;
-
-    // Adjust radius with a slight random flicker
-    lightSource.radius = Math.max(2, lightSource.radius * (1 + flicker * radiusVariation));
-
-    // Adjust intensity to simulate the flickering effect
-    lightSource.intensity = Math.max(0.3, lightSource.intensity * (1 + flicker * intensityVariation));
-
-    // Optional: Add a slight movement to simulate the light source "dancing"
+    // Add a slight movement to simulate the light source "dancing"
     lightSource.x += (Math.random() - 0.5) * positionVariation;
     lightSource.y += (Math.random() - 0.5) * positionVariation;
+    pulseAnimation(lightSource, time)
+}
+
+function radioactiveAnimation(lightSource, time) {
+    const hueShiftSpeed = 0.5; // Speed at which the hue cycles
+    const hueShift = Math.sin(time * hueShiftSpeed) * 30; // +/- 30 degrees shift
+    lightSource.color = `hsl(${120 + hueShift}, 100%, 60%)`; // Greenish hues
+    pulseAnimation(lightSource, time)
 }
 
 class Sprite {
@@ -93,7 +104,6 @@ class Sprite {
         });
     }
 }
-
 
 async function loadImg(src) {
     try {
@@ -205,7 +215,7 @@ function drawScaledImage(ctx, image, x, y, w, h, dx, dy, scale, colorShift = nul
 }
 
 function applyColorShift(imageData, colorShift) {
-    const {colorDifference, progress} = colorShift;
+    const { colorDifference, progress } = colorShift;
     const data = imageData.data;
     for (let i = 0; i < data.length; i += 4) {
         data[i] = Math.min(255, Math.max(0, data[i] + Math.round(colorDifference.r * progress))); // Red
@@ -231,7 +241,7 @@ let tileLights = [];
 
 function render(id, tiles, cameraX, cameraY, scale, clear, serverTime, scene, options) {
     let ctx = contexes[id];
-    if(id !== "lights") {
+    if (id !== "lights") {
         let canvas = canvases[id];
         if (clear === true) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -313,9 +323,10 @@ onmessage = (e) => {
         combinedCtx.drawImage(canvases["highEntities"], 0, 0);
 
         // Render the light overlay on top of everything else
+        let origCompositeOperation = combinedCtx.globalCompositeOperation;
         combinedCtx.globalCompositeOperation = 'multiply';  // Use 'multiply' for lighting effect
         combinedCtx.drawImage(canvases['lighting'], 0, 0, canvases['lighting'].width * scale, canvases['lighting'].height * scale);
-        combinedCtx.globalCompositeOperation = 'source-over';  // Reset the composite operation
+        combinedCtx.globalCompositeOperation = origCompositeOperation;  // Reset the composite operation
 
         combinedCtx.drawImage(canvases["aboveLight"], 0, 0);
 
@@ -323,7 +334,7 @@ onmessage = (e) => {
         combinedCtx.restore();
 
         requestAnimationFrame(() => {
-            postMessage({type: "rendered"});
+            postMessage({ type: "rendered" });
         });
     } else if (e.data.type === "setCanvasSize") {
 
@@ -343,16 +354,16 @@ onmessage = (e) => {
         contexes[id] = ctx;
     } else if (e.data.type === "loadSprite") {
         sprites[e.data.spriteName] = new Sprite(e.data.spriteName, e.data.src, e.data.animationData, e.data.width, e.data.height, e.data.offsetX, e.data.offsetY);
-    }  else if (e.data.type === "setLights") {
+    } else if (e.data.type === "setLights") {
         lights = e.data.lights;
     } else if (e.data.type === "setObstacles") {
         obstacles = e.data.obstacles;
         obstacles = transformObstacles(obstacles);
-    }  else if (e.data.type === "setLightEmittingTiles") {
+    } else if (e.data.type === "setLightEmittingTiles") {
         lightEmittingTiles = e.data.lightEmittingTiles;
     } else if (e.data.type === "idle") {
         requestAnimationFrame(() => {
-            postMessage({type: "rendered"});
+            postMessage({ type: "rendered" });
         });
     }
 };
@@ -398,7 +409,7 @@ async function drawText(renderData) {
     ctx.translate(-cameraX * scale, -cameraY * scale);
     for (let i = 0; i < textDataLength; i++) {
         let textData = renderData.textData[i];
-        let {text, x, y, centered, color, strokeColor, title} = textData;
+        let { text, x, y, centered, color, strokeColor, title } = textData;
 
         let strokeSize;
 
@@ -507,7 +518,7 @@ function drawEntities(drawEntitiesData) {
 
         for (let y = 0; y < drawDataLength; y++) {
             const drawData = entityData.drawData[y];
-            const {id, spriteName, sx, sy, sW, sH, dx, dy, dW, dH, a, renderAbove} = drawData;
+            const { id, spriteName, sx, sy, sW, sH, dx, dy, dW, dH, a, renderAbove } = drawData;
             const origCtx = ctx;
             if (renderAbove) {
                 ctx = highCtx;
@@ -561,7 +572,7 @@ function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime, s
     OPTION_PLAYER_SHADOW = options?.playerShadow ?? true;
     OPTION_DYNAMIC_LIGHTS = options?.dynamicLights ?? true;
 
-    if(scene.dn_cycle && scene.dn_cycle !== "false") {
+    if (scene.dn_cycle && scene.dn_cycle !== "false") {
         const cycleProgress = ((serverTime + performance.now()) % CYCLE_DURATION) / CYCLE_DURATION;
         const cycleAngle = cycleProgress * Math.PI * 2;
         const cycleIntensity = Math.sin(cycleAngle) * 0.5 + 0.5;
@@ -581,7 +592,7 @@ function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime, s
 
     const time = performance.now()
 
-    if(lightSources) {
+    if (lightSources) {
         // Draw each light source on the light canvas
         lightSources.filter((lightSource) => {
             // Light source in camera view
@@ -607,7 +618,7 @@ function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime, s
     }
 
     // Draw tile lights
-    for(let i = 0; i < tileLights.length; i++) {
+    for (let i = 0; i < tileLights.length; i++) {
         let lightSource = tileLights[i];
         lightSource = Object.assign({}, lightSource); // Clone the light source to avoid modifying the original
 
@@ -637,7 +648,7 @@ function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime, s
 }
 
 function updateAnimatedLightSource(lightSource, time) {
-    if(!OPTION_DYNAMIC_LIGHTS) {
+    if (!OPTION_DYNAMIC_LIGHTS) {
         return lightSource
     }
 
@@ -645,156 +656,345 @@ function updateAnimatedLightSource(lightSource, time) {
         lightSource.animation(lightSource, time);
     } else {
         switch (lightSource.animation) {
+            case 'pulse':
+                pulseAnimation(lightSource, time);
+                break;
             case 'fire':
                 fireAnimation(lightSource, time);
                 break;
+            case 'radioactive':
+                radioactiveAnimation(lightSource, time);
+                break;
             default:
+                console.log(`Unsupported Light Source Animation: ${lightSource.animation}`);
                 break
         }
     }
     return lightSource
 }
 
+// Main entry point for light source rendering
 function drawLightSource(ctx, lightSource, cameraX, cameraY) {
-    // Adjust light source position by subtracting the camera's position
-    const lightX = (lightSource.x - cameraX);
-    const lightY = (lightSource.y - cameraY);
-    const innerRadius = (lightSource.innerRadius || 0) * tilesize;
-    const outerRadius = (lightSource.radius || 1) * tilesize;
-    const intensity = lightSource.intensity || 1;
-    const color = lightSource.color || {r: 255, g: 255, b: 255};
-    const spread = parseInt(lightSource.spread || 0);
-    const innerSpread = parseInt(lightSource.innerSpread || 0);
-    const angleDeg = parseInt(lightSource.angle || 0);
+    const commonProps = calculateLightProperties(lightSource, cameraX, cameraY);
 
-    let cacheKey = 'l.' + outerRadius + ',' + innerRadius + '|' + lightSource.intensity + ',' + lightSource.shadow + '|' + lightSource.color + '|' + lightSource.x + ',' + lightSource.y;
+    const cacheKey = createCacheKey(commonProps);
+    if (useCachedLight(ctx, cacheKey, commonProps)) return;
 
-    if (!(lightSource.animation || !OPTION_DYNAMIC_LIGHTS) && imageCache[cacheKey]) {
-        ctx.globalCompositeOperation = "screen";
-        if(lightSource.global) {
-            ctx.drawImage(imageCache[cacheKey], lightX, lightY, lightSource.w, lightSource.h);
-        } else {
-            ctx.drawImage(imageCache[cacheKey], lightX - outerRadius, lightY - outerRadius);
+    let tmpCanvas;
+
+    if (lightSource.type === 'polygon') {
+        tmpCanvas = renderPolygonLight(ctx, cameraX, cameraY, commonProps);
+    } else {
+        tmpCanvas = new OffscreenCanvas(commonProps.outerRadius * 2, commonProps.outerRadius * 2);
+        const tmpCtx = tmpCanvas.getContext('2d');
+        tmpCtx.imageSmoothingEnabled = false;
+
+        if (lightSource.type === 'radial') {
+            renderLightGradients(tmpCtx, commonProps);
+            applyShadows(tmpCtx, commonProps, cameraX, cameraY);
+        } else if (lightSource.type === 'global') {
+            renderLightGradients(tmpCtx, commonProps);
         }
-        return
     }
 
-    const tmpCanvas = new OffscreenCanvas(outerRadius * 2, outerRadius * 2);
+    drawFinalLight(ctx, tmpCanvas, commonProps);
+    cacheLightRendering(cacheKey, tmpCanvas, commonProps);
+}
+
+// Calculate common properties for light sources
+function calculateLightProperties(lightSource, cameraX, cameraY) {
+    return {
+        type: lightSource.type || "unknown",
+        outerRadius: (lightSource.radius || 1) * tilesize,
+        innerRadius: (lightSource.innerRadius || 0) * tilesize,
+        intensity: lightSource.intensity || 1,
+        shadow: lightSource.shadow || 0,
+        color: lightSource.color || { r: 255, g: 255, b: 255 },
+        x: lightSource.x,
+        y: lightSource.y,
+        lightX: lightSource.x - cameraX,
+        lightY: lightSource.y - cameraY,
+        w: lightSource.w || 0,
+        h: lightSource.h || 0,
+        animation: lightSource.animation || null,
+        spread: parseInt(lightSource.spread || 0),
+        innerSpread: parseInt(lightSource.innerSpread || 0),
+        angleDeg: parseInt(lightSource.angle || 0)
+    };
+}
+
+// Create a unique cache key for light rendering
+function createCacheKey(commonProps) {
+    if (commonProps.type === 'polygon') {
+        const polygonHash = commonProps.polygon.map(p => `${p.x},${p.y}`).join('|');
+        return `poly.${polygonHash}|${commonProps.intensity}|${commonProps.color}|${commonProps.x},${commonProps.y}`;
+    }
+    return `l.${commonProps.outerRadius},${commonProps.innerRadius}|${commonProps.intensity},${commonProps.shadow}|${commonProps.color}|${commonProps.x},${commonProps.y}`;
+}
+
+// Check if a light is already cached and render if available
+function useCachedLight(ctx, cacheKey, commonProps) {
+    if (!(commonProps.animation || !OPTION_DYNAMIC_LIGHTS) && imageCache[cacheKey]) {
+        let origCompositeOperation = ctx.globalCompositeOperation;
+        ctx.globalCompositeOperation = "screen";
+
+        if (commonProps.type === 'polygon') {
+            ctx.drawImage(imageCache[cacheKey], 0, 0);
+        } else if (commonProps.type === 'global') {
+            ctx.drawImage(imageCache[cacheKey], commonProps.lightX, commonProps.lightY, commonProps.w, commonProps.h);
+        } else {
+            ctx.drawImage(
+                imageCache[cacheKey],
+                commonProps.lightX - commonProps.outerRadius,
+                commonProps.lightY - commonProps.outerRadius
+            );
+        }
+        ctx.globalCompositeOperation = origCompositeOperation;
+        return true;
+    }
+    return false;
+}
+
+// Cache rendered light for performance
+function cacheLightRendering(cacheKey, tmpCanvas, commonProps) {
+    if (!commonProps.animation || !OPTION_DYNAMIC_LIGHTS) {
+        addToImageCache(cacheKey, tmpCanvas);
+    }
+}
+
+// Render radial gradients for circular or global light sources
+function renderLightGradients(ctx, commonProps) {
+    const { outerRadius, innerRadius, intensity, color, spread, innerSpread, angleDeg } = commonProps;
+    let origCompositeOperation = ctx.globalCompositeOperation;
+
+    if (spread > 0) {
+        const angle = toRad(angleDeg + 90);
+        const arcGradient = ctx.createConicGradient(angle - toRad(spread / 2), outerRadius, outerRadius);
+        arcGradient.addColorStop(0, `rgba(${color.r},${color.g},${color.b}, 0)`);
+        arcGradient.addColorStop(toPerc(spread / 2) - toPerc(innerSpread) / 2, `rgba(${color.r},${color.g},${color.b}, ${intensity})`);
+        arcGradient.addColorStop(toPerc(spread / 2) + toPerc(innerSpread) / 2, `rgba(${color.r},${color.g},${color.b}, ${intensity})`);
+        arcGradient.addColorStop(toPerc(spread), `rgba(${color.r},${color.g},${color.b}, 0)`);
+
+        ctx.fillStyle = arcGradient;
+        ctx.beginPath();
+        ctx.arc(outerRadius, outerRadius, outerRadius, angle, angle + toRad(spread), false);
+        ctx.closePath();
+        ctx.fill();
+        ctx.globalCompositeOperation = 'destination-in';
+    }    
+
+    if(commonProps.type === "global"){
+        ctx.fillStyle = `rgba(${color.r},${color.g},${color.b}, ${intensity})`;
+        ctx.fillRect(0, 0, commonProps.w, commonProps.h);
+    }else {
+        const radialGradient = ctx.createRadialGradient(outerRadius, outerRadius, innerRadius, outerRadius, outerRadius, outerRadius);
+        radialGradient.addColorStop(0, `rgba(${color.r},${color.g},${color.b}, ${intensity})`);
+        radialGradient.addColorStop(1, `rgba(${color.r},${color.g},${color.b}, 0)`);
+        ctx.fillStyle = radialGradient;
+        ctx.fillRect(0, 0, outerRadius * 2, outerRadius * 2);
+    }
+    
+    ctx.globalCompositeOperation = origCompositeOperation;
+}
+
+// Render polygon light with gradient fading
+function renderPolygonLight(ctx, cameraX, cameraY, commonProps) {
+    const expandedPolygon = offsetPolygon(commonProps);
+
+    // Calculate the bounding box of the polygon
+    const polygonPoints = [...commonProps.polygon, ...expandedPolygon];
+    const { minX, minY, maxX, maxY } = calculateBoundingBox(polygonPoints, (commonProps.fadeOffset || 1) * tilesize);
+
+    // Create an optimized OffscreenCanvas for the polygon bounds
+    const tmpCanvasWidth = Math.ceil(maxX - minX);
+    const tmpCanvasHeight = Math.ceil(maxY - minY);
+    const tmpCanvas = new OffscreenCanvas(tmpCanvasWidth, tmpCanvasHeight);
     const tmpCtx = tmpCanvas.getContext('2d');
     tmpCtx.imageSmoothingEnabled = false;
 
-    const temp_cacheKey = 'tl.' + outerRadius + ',' + innerRadius + '|' + intensity + ',' + lightSource.shadow + '|' + color + '|' + lightSource.spread + '|' + lightSource.innerSpread + '|' + lightSource.angle + '|' + lightX + ',' + lightY;
-    if (!imageCache[temp_cacheKey]) {
-        // Create the arc for the spread
-        if (spread > 0) {
-            const angle = toRad(angleDeg + 90);
-            const arcGradient = tmpCtx.createConicGradient(angle - toRad(spread / 2), outerRadius, outerRadius);
-            arcGradient.addColorStop(0, `rgba(${color.r},${color.g},${color.b}, 0)`);
-            arcGradient.addColorStop(toPerc(spread / 2) - toPerc(innerSpread) / 2, `rgba(${color.r},${color.g},${color.b}, ${intensity})`);
-            arcGradient.addColorStop(toPerc(spread / 2) + toPerc(innerSpread) / 2, `rgba(${color.r},${color.g},${color.b}, ${intensity})`);
-            arcGradient.addColorStop(toPerc(spread), `rgba(${color.r},${color.g},${color.b}, 0)`);
+    // Translate context for the polygon's bounding box
+    tmpCtx.translate(-minX, -minY);
 
-            tmpCtx.fillStyle = arcGradient;
+    // Fill the original polygon with full intensity
+    tmpCtx.fillStyle = `rgba(${commonProps.color.r},${commonProps.color.g},${commonProps.color.b}, ${commonProps.intensity})`;
+    tmpCtx.beginPath();
+    commonProps.polygon.forEach((point, index) => {
+        index === 0 ? tmpCtx.moveTo(point.x, point.y) : tmpCtx.lineTo(point.x, point.y);
+    });
+    tmpCtx.closePath();
+    tmpCtx.fill();
+
+    // Handle gradients
+    expandedPolygon.forEach((expandedPoint, index) => {
+        const originalPoint = commonProps.polygon[index];
+        const nextOriginalPoint = commonProps.polygon[(index + 1) % commonProps.polygon.length];
+        const nextExpandedPoint = expandedPolygon[(index + 1) % expandedPolygon.length];
+
+        const isConvex = detectConvexity(originalPoint, nextOriginalPoint, expandedPoint);
+
+        if (isConvex) {
+            // Radial gradient at the vertex
+            const radialGradient = tmpCtx.createRadialGradient(
+                originalPoint.x,
+                originalPoint.y,
+                0, // Inner radius
+                originalPoint.x,
+                originalPoint.y,
+                hypot(expandedPoint.x - originalPoint.x, expandedPoint.y - originalPoint.y) // Outer radius
+            );
+            radialGradient.addColorStop(0, `rgba(${commonProps.color.r},${commonProps.color.g},${commonProps.color.b}, ${commonProps.intensity})`);
+            radialGradient.addColorStop(1, `rgba(${commonProps.color.r},${commonProps.color.g},${commonProps.color.b}, 0)`);
+
+            tmpCtx.fillStyle = radialGradient;
             tmpCtx.beginPath();
-            tmpCtx.arc(outerRadius, outerRadius, outerRadius, angle, spread, false); // Draw an arc
+            tmpCtx.moveTo(originalPoint.x, originalPoint.y);
+            tmpCtx.lineTo(expandedPoint.x, expandedPoint.y);
+            tmpCtx.lineTo(nextExpandedPoint.x, nextExpandedPoint.y);
+            tmpCtx.lineTo(nextOriginalPoint.x, nextOriginalPoint.y);
             tmpCtx.closePath();
             tmpCtx.fill();
-            tmpCtx.globalCompositeOperation = 'destination-in';
-        }
-
-        if (lightSource.global) {
-            tmpCtx.fillStyle = `rgba(${color.r},${color.g},${color.b}, ${intensity})`;
-            tmpCtx.fillRect(0, 0, lightSource.w, lightSource.h);
         } else {
-            const gradient = tmpCtx.createRadialGradient(outerRadius, outerRadius, innerRadius, outerRadius, outerRadius, outerRadius);
+            // Linear gradient along the edge
+            const linearGradient = tmpCtx.createLinearGradient(
+                originalPoint.x,
+                originalPoint.y,
+                expandedPoint.x,
+                expandedPoint.y
+            );
+            linearGradient.addColorStop(0, `rgba(${commonProps.color.r},${commonProps.color.g},${commonProps.color.b}, ${commonProps.intensity})`);
+            linearGradient.addColorStop(1, `rgba(${commonProps.color.r},${commonProps.color.g},${commonProps.color.b}, 0)`);
 
-            // The light starts fully bright at the center and fades to zero at the radius
-            gradient.addColorStop(0, `rgba(${color.r},${color.g},${color.b}, ${intensity})`);
-            gradient.addColorStop(1, `rgba(${color.r},${color.g},${color.b}, 0)`);
-
-            tmpCtx.fillStyle = gradient;
-            tmpCtx.fillRect(0, 0, outerRadius * 2, outerRadius * 2);
+            tmpCtx.fillStyle = linearGradient;
+            tmpCtx.beginPath();
+            tmpCtx.moveTo(originalPoint.x, originalPoint.y);
+            tmpCtx.lineTo(expandedPoint.x, expandedPoint.y);
+            tmpCtx.lineTo(nextExpandedPoint.x, nextExpandedPoint.y);
+            tmpCtx.lineTo(nextOriginalPoint.x, nextOriginalPoint.y);
+            tmpCtx.closePath();
+            tmpCtx.fill();
         }
+    });
 
-        if (!lightSource.animation || !OPTION_DYNAMIC_LIGHTS) {
-           addToImageCache(temp_cacheKey, tmpCanvas);
-        }
-    } else {
-        tmpCtx.drawImage(imageCache[temp_cacheKey], 0, 0);
-    }
+    // Composite the rendered polygon light onto the main canvas
+    let origCompositeOperation = ctx.globalCompositeOperation;
+    ctx.globalCompositeOperation = "screen";
+    ctx.drawImage(tmpCanvas, minX - cameraX, minY - cameraY);
+    ctx.globalCompositeOperation = origCompositeOperation;
 
-    if (lightSource.shadow > 0) {
-        const shadow = tmpCtx.createRadialGradient(outerRadius, outerRadius, innerRadius, outerRadius, outerRadius, outerRadius);
+    return tmpCanvas;
+}
 
-        // The light starts fully bright at the center and fades to zero at the radius
-        shadow.addColorStop(0, `rgba(0, 0, 0, ${intensity * lightSource.shadow})`);
-        shadow.addColorStop(1, `rgba(0, 0, 0, 0)`);
+// Calculate a bounding box for polygon lights to help with performance
+function calculateBoundingBox(points, fadeOffset) {
+    const minX = Math.min(...points.map(p => p.x)) - fadeOffset;
+    const minY = Math.min(...points.map(p => p.y)) - fadeOffset;
+    const maxX = Math.max(...points.map(p => p.x)) + fadeOffset;
+    const maxY = Math.max(...points.map(p => p.y)) + fadeOffset;
 
-        const shadowCanvas = new OffscreenCanvas(outerRadius * 2, outerRadius * 2);
-        const shadowCtx = shadowCanvas.getContext('2d');
-        shadowCtx.imageSmoothingEnabled = false;
+    return { minX, minY, maxX, maxY };
+}
 
-        // clone obstacles
-        let allObstacles = [];
-        if(OPTION_SHADOWS) {
-            allObstacles = obstacles.map(obstacle => obstacle.map(point => ({x: point.x, y: point.y})));
-        }
 
-        // player shadow
-        if (OPTION_PLAYER_SHADOW) {
-            allObstacles.push(
-                {
-                    x: playerPosition.x + 6,
-                    y: playerPosition.y + 6,
-                    width: 6,
-                    height: 6
-                });
-        }
-        allObstacles = transformObstacles(allObstacles);
+// Apply shadows for radial lights
+function applyShadows(ctx, commonProps, cameraX, cameraY) {
 
-        allObstacles.filter((obstacle) => {
-            // Obstacle in light radius
-            return obstacle.filter((point) => {
-                return hypot(point.x - lightSource.x, point.y - lightSource.y) < outerRadius;
-            }).length > 0;
-        }).slice(0, MAX_SHADOWS_TO_RENDER).forEach(obstacle => {
-            const shadowPoly = calculateShadow(lightX, lightY, outerRadius, obstacle, cameraX, cameraY, lightSource.animation);
+    const { lightX, lightY, outerRadius, innerRadius, intensity, shadow } = commonProps
 
-            shadowCtx.globalCompositeOperation = "source-out";
-            shadowCtx.fillStyle = shadow;
-            shadowCtx.beginPath();
-            shadowCtx.moveTo(shadowPoly[0].x - lightX + outerRadius, shadowPoly[0].y - lightY + outerRadius);
-            shadowPoly.forEach(point => shadowCtx.lineTo(point.x - lightX + outerRadius, point.y - lightY + outerRadius));
-            shadowCtx.closePath();
-            shadowCtx.fill();
+    // Skip if shadow isn't required
+    if (shadow <= 0) return;
 
-            // destination out the obstacle
-            shadowCtx.globalCompositeOperation = "destination-out";
+    // Create a radial shadow gradient
+    const shadowGradient = ctx.createRadialGradient(
+        outerRadius, outerRadius, innerRadius,
+        outerRadius, outerRadius, outerRadius
+    );
 
-            shadowCtx.fillStyle = "black";
-            shadowCtx.beginPath();
-            shadowCtx.moveTo(obstacle[0].x - cameraX - lightX + outerRadius, obstacle[0].y - cameraY - lightY + outerRadius);
-            obstacle.forEach(point => shadowCtx.lineTo(point.x - cameraX - lightX + outerRadius, point.y - cameraY - lightY + outerRadius));
-            shadowCtx.closePath();
-            shadowCtx.fill();
+    shadowGradient.addColorStop(0, `rgba(0, 0, 0, ${intensity * shadow})`);
+    shadowGradient.addColorStop(1, `rgba(0, 0, 0, 0)`);
 
-            // Draw the shadow
-            tmpCtx.globalCompositeOperation = "destination-out";
-            tmpCtx.drawImage(shadowCanvas, 0, 0);
+    const shadowCanvas = new OffscreenCanvas(outerRadius * 2, outerRadius * 2);
+    const shadowCtx = shadowCanvas.getContext('2d');
+    shadowCtx.imageSmoothingEnabled = false;
+
+    // Clone and process obstacles
+    const allObstacles = processObstacles();
+
+    // Filter obstacles within the light radius
+    const relevantObstacles = allObstacles.filter(obstacle =>
+        obstacle.some(point => hypot(point.x - commonProps.x, point.y - commonProps.y) < outerRadius)
+    ).slice(0, MAX_SHADOWS_TO_RENDER);
+
+    // Draw shadows for each obstacle
+    relevantObstacles.forEach(obstacle => {
+        const shadowPoly = calculateShadow(lightX, lightY, outerRadius, obstacle, cameraX, cameraY, commonProps.animation);
+
+        // Draw the shadow polygon
+        drawShadowPolygon(shadowCtx, shadowPoly, shadowGradient, lightX, lightY, outerRadius);
+
+        // Remove the obstacle from the shadow
+        clearObstacleShadow(shadowCtx, obstacle, lightX, lightY, outerRadius, cameraX, cameraY);
+    });
+
+    // Composite the shadow onto the light canvas
+    let origCompositeOperation = ctx.globalCompositeOperation;
+    ctx.globalCompositeOperation = "destination-out";
+    ctx.drawImage(shadowCanvas, 0, 0);
+    ctx.globalCompositeOperation = origCompositeOperation;
+}
+
+function processObstacles() {
+    let obstaclesCopy = OPTION_SHADOWS ? obstacles.map(obstacle => obstacle.map(point => ({ x: point.x, y: point.y }))) : [];
+
+    // Add player shadow if enabled
+    if (OPTION_PLAYER_SHADOW) {
+        obstaclesCopy.push({
+            x: playerPosition.x + 6,
+            y: playerPosition.y + 6,
+            width: 6,
+            height: 6
         });
     }
+    return transformObstacles(obstaclesCopy);
+}
 
+function drawShadowPolygon(ctx, shadowPoly, shadowGradient, lightX, lightY, outerRadius) {
+    let origCompositeOperation = ctx.globalCompositeOperation;
+    ctx.globalCompositeOperation = "source-out";
+    ctx.fillStyle = shadowGradient;
+    ctx.beginPath();
+    ctx.moveTo(
+        shadowPoly[0].x - lightX + outerRadius,
+        shadowPoly[0].y - lightY + outerRadius
+    );
+    shadowPoly.forEach(point =>
+        ctx.lineTo(
+            point.x - lightX + outerRadius,
+            point.y - lightY + outerRadius
+        )
+    );
+    ctx.closePath();
+    ctx.fill();
+    ctx.globalCompositeOperation = origCompositeOperation;
+}
 
-    ctx.globalCompositeOperation = "screen";
-    if(lightSource.global) {
-        ctx.drawImage(tmpCanvas, lightX, lightY);
-    } else {
-        ctx.drawImage(tmpCanvas, lightX - outerRadius, lightY - outerRadius);
-    }
-
-    if(!lightSource.animation || !OPTION_DYNAMIC_LIGHTS) {
-        addToImageCache(cacheKey, tmpCanvas);
-    }
+function clearObstacleShadow(ctx, obstacle, lightX, lightY, outerRadius, cameraX, cameraY) {
+    let origCompositeOperation = ctx.globalCompositeOperation;
+    ctx.globalCompositeOperation = "destination-out";
+    ctx.fillStyle = "black";
+    ctx.beginPath();
+    ctx.moveTo(
+        obstacle[0].x - cameraX - lightX + outerRadius,
+        obstacle[0].y - cameraY - lightY + outerRadius
+    );
+    obstacle.forEach(point =>
+        ctx.lineTo(
+            point.x - cameraX - lightX + outerRadius,
+            point.y - cameraY - lightY + outerRadius
+        )
+    );
+    ctx.closePath();
+    ctx.fill();
+    ctx.globalCompositeOperation = origCompositeOperation;
 }
 
 shadowPolygonCache = {};
@@ -875,14 +1075,36 @@ function calculateShadow(lightX, lightY, lightRadius, polygon, cameraX, cameraY,
             y: lightY + directionLastY * lightRadius * 3,
         };
 
-        shadowPolygon.push({x: firstX, y: firstY});
+        shadowPolygon.push({ x: firstX, y: firstY });
         shadowPolygon.push(firstShadowVertex2);
         shadowPolygon.push(lastShadowVertex2);
-        shadowPolygon.push({x: lastX, y: lastY});
+        shadowPolygon.push({ x: lastX, y: lastY });
     }
 
     return shadowPolygon;
 }
+
+// Finalize the light rendering on the main canvas
+function drawFinalLight(ctx, tmpCanvas, commonProps) {
+    let origCompositeOperation = ctx.globalCompositeOperation;
+    ctx.globalCompositeOperation = "screen";
+
+    // Determine the correct position for the light source rendering
+    if (commonProps.type === 'polygon') {
+        // Use the full bounds of the OffscreenCanvas for polygons
+        ctx.drawImage(tmpCanvas, 0, 0);
+    } else {
+        // For radial and global lights, center the rendered light
+        ctx.drawImage(
+            tmpCanvas,
+            commonProps.lightX - (commonProps.outerRadius || 0),
+            commonProps.lightY - (commonProps.outerRadius || 0)
+        );
+    }
+
+    ctx.globalCompositeOperation = origCompositeOperation;
+}
+
 
 function hypot(x, y) {
     return Math.sqrt(x * x + y * y);
@@ -894,4 +1116,26 @@ function toPerc(angle) {
 
 function toRad(angle) {
     return angle * Math.PI / 180;
+}
+
+// Helper function to normalize a vector
+function normalizeVector(x, y) {
+    const length = Math.sqrt(x * x + y * y);
+    return { x: x / length, y: y / length };
+}
+
+// Function to offset a polygon by a specified distance
+function offsetPolygon(lightSource) {
+    return lightSource.polygon.map((vertex) => {
+        const direction = {
+            x: vertex.x - lightSource.x,
+            y: vertex.y - lightSource.y,
+        };
+
+        const normalizedDirection = normalizeVector(direction.x, direction.y);
+        return {
+            x: vertex.x + normalizedDirection.x * (lightSource.fadeOffset || 1) * tilesize,
+            y: vertex.y + normalizedDirection.y * (lightSource.fadeOffset || 1) * tilesize,
+        };
+    });
 }
