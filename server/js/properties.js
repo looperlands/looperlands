@@ -6,14 +6,7 @@ let Properties = {
         drops: {
             flask: 40,
             taikoboost: 10,
-            //loopring: 5
-            candycorntreat: 5,
-            candytreat: 3,
-            chocolatetreat: 2,
-            lollitreat: 1,
-            headstonetrick: 5,
-            skullnbonestrick: 1,
-            spidertrick: 3
+            loopring: 5
         },
         respawnDelay: 10000,
     },
@@ -23,14 +16,7 @@ let Properties = {
         drops: {
             flask: 40,
             axe: 20,
-            //loopring: 5
-            candycorntreat: 5,
-            candytreat: 3,
-            chocolatetreat: 2,
-            lollitreat: 1,
-            headstonetrick: 5,
-            skullnbonestrick: 1,
-            spidertrick: 3
+            loopring: 5
         },
         weaponMod: 1.5, //bigger mod cause attack rate is 50% slower
         respawnDelay: 45000,
@@ -1348,15 +1334,8 @@ let Properties = {
     PUMPKINPUNK: {
         level: 5,
         drops: {
-            //taikoboost: 50,
-            //GOLD: 1
-            candycorntreat: 7,
-            candytreat: 1,
-            chocolatetreat: 3,
-            lollitreat: 5,
-            headstonetrick: 10,
-            skullnbonestrick: 1,
-            spidertrick: 5
+            taikoboost: 50,
+            GOLD: 1
         },
         messages: ['BOO!'],
         respawnDelay:  60000
@@ -1365,17 +1344,10 @@ let Properties = {
     GHOST2: {
         level: 10,
         drops: {
-            //taikoboost: 50,
-            //GOLD: 5,
-            //GOLD1: 3,
-            //GOLD2: 1
-            candycorntreat: 7,
-            lollitreat: 4,
-            chocolatetreat: 2,
-            candytreat: 1,
-            headstonetrick: 7,
-            spidertrick: 4,
-            skullnbonestrick: 1
+            taikoboost: 50,
+            GOLD: 5,
+            GOLD1: 3,
+            GOLD2: 1
         },
         messages: ['BOO!'],
         respawnDelay:  60000
@@ -1385,17 +1357,10 @@ let Properties = {
     GHOST3: {
         level: 10,
         drops: {
-            //taikoboost: 50,
-            //GOLD: 5,
-            //GOLD1: 3,
-            //GOLD2: 1,
-            candycorntreat: 7,
-            lollitreat: 4,
-            chocolatetreat: 2,
-            candytreat: 1,
-            headstonetrick: 7,
-            spidertrick: 4,
-            skullnbonestrick: 1
+            taikoboost: 50,
+            GOLD: 5,
+            GOLD1: 3,
+            GOLD2: 1
         },
         messages: ['BOO!'],
         respawnDelay:  60000
@@ -1405,17 +1370,10 @@ let Properties = {
     HORSEMAN: {
         level: 13,
         drops: {
-            //taikoboost: 40,
-            //GOLD: 40,
-            //GOLD2: 10,
-            //GOLD3: 2
-            candycorntreat: 5,
-            candytreat: 3,
-            chocolatetreat: 2,
-            lollitreat: 1,
-            headstonetrick: 5,
-            skullnbonestrick: 1,
-            spidertrick: 3
+            taikoboost: 40,
+            GOLD: 40,
+            GOLD2: 10,
+            GOLD3: 2
         },
         messages: ['Shinu!'],
         armorMod: 2.2,
@@ -1454,14 +1412,7 @@ let Properties = {
     EVILPUMPKIN: {
         level: 2,
         drops: {
-            //taikoboost: 40,
-            candycorntreat: 5,
-            candytreat: 3,
-            chocolatetreat: 2,
-            lollitreat: 1,
-            headstonetrick: 5,
-            skullnbonestrick: 1,
-            spidertrick: 3
+            taikoboost: 40
         },
         messages: ['Shinu!'],
         armorMod: 2.2,
@@ -1532,14 +1483,8 @@ let Properties = {
             m88nmap: 5,
             taikoboost: 10,
             GOLD: 10,
-            //GOLD2: 5
-            candycorntreat: 5,
-            candytreat: 3,
-            chocolatetreat: 2,
-            lollitreat: 1,
-            headstonetrick: 5,
-            skullnbonestrick: 1,
-            spidertrick: 3
+            GOLD2: 5,
+            lollitreat: 1
         },
     },
 
@@ -1695,14 +1640,7 @@ let Properties = {
         level: 1,
         drops: {
             m88nmap: 10,
-            GOLD: 10,
-            candycorntreat: 5,
-            lollitreat: 2,
-            chocolatetreat: 1,
-            candytreat: 1,
-            headstonetrick: 5,
-            spidertrick: 2,
-            skullnbonestrick: 1
+            GOLD: 10
         },
         respawnDelay: 20000,
     },
@@ -1710,19 +1648,12 @@ let Properties = {
     m88nmrcrab: {
         level: 2,
         drops: {
-            //flask: 20,
+            flask: 20,
             hardwallet: 1,
-            //GOLD: 30,
+            GOLD: 30,
             GOLD2: 25,
-            //GOLD3: 10,
-            //loopring: 5
-            candycorntreat: 7,
-            lollitreat: 4,
-            chocolatetreat: 2,
-            candytreat: 1,
-            headstonetrick: 7,
-            spidertrick: 4,
-            skullnbonestrick: 1
+            GOLD3: 10,
+            loopring: 5
         },
         xp: 22
     },
@@ -1751,8 +1682,7 @@ let Properties = {
             headstonetrick: 5,
             spidertrick: 5,
             skullnbonestrick: 2,
-            m88ngem: 6,
-            candybucket: 1
+            m88ngem: 6
         },
         xp: 222
     },
@@ -1961,8 +1891,7 @@ let Properties = {
             headstonetrick: 11,
             spidertrick: 7,
             skullnbonestrick: 4,
-            m88ngem: 3,
-            candybucket: 1
+            m88ngem: 3
         },
         respawnDelay: 50000,
     },
@@ -1978,8 +1907,7 @@ let Properties = {
             headstonetrick: 11,
             spidertrick: 7,
             skullnbonestrick: 4,
-            m88ndirt: 3,
-            candybucket: 1
+            m88ndirt: 3
         },
         respawnDelay: 40000,
     },
@@ -2002,14 +1930,10 @@ let Properties = {
     m88nturkey: {
         level: 8,
         drops: {
-            wood: 15,
+            wood: 25,
             m88nturkeyleg: 11,
             m88nturkeydinner: 8,
-            m88nturkeyfeather: 5,
-            m88nbananapie: 1,
-            m88ncherrypie: 1,
-            m88nlemonpie: 1,
-            m88npumpkinpie: 1
+            m88nturkeyfeather: 5
         },
         respawnDelay: 30000,
     },
@@ -2540,15 +2464,8 @@ let Properties = {
     lateflea: {
         level: 5,
         drops: {
-            //popcorn: 50,
-            //energydrink: 10,
-            candycorntreat: 15,
-            candytreat: 5,
-            chocolatetreat: 5,
-            lollitreat: 10,
-            headstonetrick: 15,
-            skullnbonestrick: 2,
-            spidertrick: 10
+            popcorn: 50,
+            energydrink: 10,
         }
     },
 
@@ -3271,7 +3188,7 @@ let Properties = {
         },
         inventoryDescription: "Sour Candy",
         onConsume: function(player){
-            player.playerClassModifiers.applyTemporaryModifierWithTimeout('xp', 10, 20000);
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('xp', 4, 20000);
         }
     },
     lollitreat: {
@@ -3281,7 +3198,7 @@ let Properties = {
             group: "xpTreattt",
             duration: 20000
         },
-        inventoryDescription: "Lolli",
+        inventoryDescription: "Protection Pop",
         onConsume: function(player){
             player.playerClassModifiers.applyTemporaryModifierWithTimeout('meleeDamageTaken', 0.5, 20000);
         }
@@ -3295,7 +3212,7 @@ let Properties = {
         },
         inventoryDescription: "Freaky Fudge",
         onConsume: function(player){
-            player.playerClassModifiers.applyTemporaryModifierWithTimeout('meleeDamageDealt', 5, 20000);
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('meleeDamageDealt', 2, 20000);
         }
     },
     spidertrick: {
