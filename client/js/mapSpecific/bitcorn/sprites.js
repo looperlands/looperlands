@@ -1,14 +1,28 @@
-// FOR ALL:
-// Add .json in client/sprites
-// Add sprite images:
-//    100% scale ==> client/img/1
-//    200% scale ==> client/img/2
-//    300% scale ==> client/img/3
+///////////////////////////////////
+// ADD A NPC, MOB, ITEM, OR FISH //
+///////////////////////////////////
+/*
+FOR ANY TYPE:
+    Add .json in client/sprites
+    Add reference to .json in client/js/sprites.js
+    Add .png sprite image:
+       => 100% scale in client/img/1
+       => 200% scale in client/img/2
+       => 300% scale in client/img/3
 
-// For MOBS: Input level, armorMod, weaponMod, hpMod, drops, respawnDelay, etc in server/js/properties
-// For ITEMS: Input collectable, consumable, collectItem, collectAmount, inventoryDescription, cooldown, onConsume, etc in server/js/properties
-// For NPCS: Input basic dialogue in client/js/npc.js or advanced dialogue via files in server/js/dialogue
+FOR MOBS:  
+    server/js/properties.js => Set level, armorMod, weaponMod, hpMod, drops, respawnDelay, etc. 
 
+FOR ITEMS: 
+    server/js/properties.js => Set collectable, consumable, collectItem, collectAmount, inventoryDescription, cooldown, onConsume, etc.
+
+FOR NPCS:  
+    client/js/npc.js => Add any basic dialogue
+    See server/js/dialogue/example.js for adding advanced dialogue
+
+FOR FISH:
+    server/js/lakes.js => Add specified fish into your lakes
+*/
 define(() => {
     return {
         "NPCS": {
@@ -22,7 +36,7 @@ define(() => {
 
         "MOBS": {
             /*
-            setting:      default   Description
+            SETTING:      DEFAULT   DESCRIPTION
             =================================================================================
             altName:         null   Alternate display name for sprite
             moveSpeed:        350   Speed of the mob's movement
@@ -39,36 +53,28 @@ define(() => {
             nameOffsetY:      -10   Adjusts the location of the entity name
             */
             'SLUDGERAT': {
-                altName: 'sludgeRAT', //level: 15, drops: { flask: 34, taikoboost: 5, GOLD: 40, GOLD2: 15, GOLD3: 5, GOLD4: 1 },
-                moveSpeed: 100 + Math.random() * 300, atkSpeed: 50 + Math.random() * 100, shadowOffsetY: -2, aggroRange: 1 + Math.random() * 4, deathAnimated: true,
+                altName: 'sludgeRAT', moveSpeed: 100 + Math.random() * 300, atkSpeed: 50 + Math.random() * 100, shadowOffsetY: -2, aggroRange: 1 + Math.random() * 4, deathAnimated: true,
             },
             'SPACECRAB': {
-                altName: 'spaceCRAB', //level: 20, drops: { flask: 30, taikoboost: 5, GOLD: 15, GOLD2: 35, GOLD4: 2 },
-                moveSpeed: 150 + Math.random() * 100, atkSpeed: 20 + Math.random() * 40, idleSpeed: 500, aggroRange: 1 + Math.random() * 2, deathAnimated: true,
+                altName: 'spaceCRAB', moveSpeed: 150 + Math.random() * 100, atkSpeed: 20 + Math.random() * 40, idleSpeed: 500, aggroRange: 1 + Math.random() * 2, deathAnimated: true,
             },
             'BLACKMAGE': {
-                altName: 'motherFlippin BlackMAGE', //level: 25, drops: { flask: 50 }, armorMod: 2, weaponMod: 1.5, hpMod: 5, messages: ['Etheriumos!', 'Bitcornia!', 'Go-go-gadget magic!', 'BooyahKORNsha!'],
-                moveSpeed: 100 + Math.random() * 100, atkSpeed: 50 + Math.random() * 50, idleSpeed: 150, aggroRange: 1 + Math.random() * 3, deathAnimated: true,
+                altName: 'motherFlippin BlackMAGE', moveSpeed: 100 + Math.random() * 100, atkSpeed: 50 + Math.random() * 50, idleSpeed: 150, aggroRange: 1 + Math.random() * 3, deathAnimated: true,
             },
             'RABBID': {
-                altName: 'Rabbid', //level: 100, drops: { flask: 5, taikoboost: 5, GOLD4: 45, GOLD5: 45 }, weaponMod: 3, hpMod: 2, respawnDelay: 160000,
-                moveSpeed: 100 + Math.random() * 100, atkSpeed: 50 + Math.random() * 50, idleSpeed: 250, aggroRange: 1 + Math.random() * 3, deathAnimated: true,
+                altName: 'Rabbid', moveSpeed: 100 + Math.random() * 100, atkSpeed: 50 + Math.random() * 50, idleSpeed: 250, aggroRange: 1 + Math.random() * 3, deathAnimated: true,
             },
             'ZOMBBID': {
-                altName: 'Zombbid', //level: 42, drops: { flask: 90, taikoboost: 8, loopring: 2 }, respawnDelay: 120000,
-                moveSpeed: 100 + Math.random() * 250, atkSpeed: 50 + Math.random() * 50, idleSpeed: 250, aggroRange: 1 + Math.random() * 3, deathAnimated: true,
+                altName: 'Zombbid', moveSpeed: 100 + Math.random() * 250, atkSpeed: 50 + Math.random() * 50, idleSpeed: 250, aggroRange: 1 + Math.random() * 3, deathAnimated: true,
             },
             'HOPPINK': {
-                altName: 'HOPpink', //level: 35, drops: { flask: 40, taikoboost: 10 },
-                moveSpeed: 100 + Math.random() * 150, atkSpeed: 50 + Math.random() * 50, idleSpeed: 250, aggroRange: 1 + Math.random() * 3, deathAnimated: true,
+                altName: 'HOPpink', moveSpeed: 100 + Math.random() * 150, atkSpeed: 50 + Math.random() * 50, idleSpeed: 250, aggroRange: 1 + Math.random() * 3, deathAnimated: true,
             },
             'HOPPURP': {
-                altName: 'HOPpurp', //level: 30, drops: { flask: 25 }, respawnDelay: 15000,
-                moveSpeed: 100 + Math.random() * 150, atkSpeed: 50 + Math.random() * 50, idleSpeed: 250, aggroRange: 1 + Math.random() * 3, deathAnimated: true,
+                altName: 'HOPpurp', moveSpeed: 100 + Math.random() * 150, atkSpeed: 50 + Math.random() * 50, idleSpeed: 250, aggroRange: 1 + Math.random() * 3, deathAnimated: true,
             },
             'CRAPTOR': {
-                altName: 'CRAPtor', //level: 69,
-                moveSpeed: 300 + Math.random() * 100, atkSpeed: 75 + Math.random() * 50, aggroRange: 1 + Math.random() * 3, deathAnimated: true, nameOffsetY: -24
+                altName: 'CRAPtor', moveSpeed: 300 + Math.random() * 100, atkSpeed: 75 + Math.random() * 50, aggroRange: 1 + Math.random() * 3, deathAnimated: true, nameOffsetY: -24
             },
         },
 
