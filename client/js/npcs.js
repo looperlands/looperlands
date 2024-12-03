@@ -414,6 +414,13 @@ define(['npc'], function(Npc) {
         m88nape: Npc.extend({init: function(id) {this._super(id, Types.Entities.M88NAPE, 1);}}),
         m88nmobilebartender: Npc.extend({init: function(id) {this._super(id, Types.Entities.M88NMOBILEBARTENDER, 1);}}),
         m88nbananastand: Npc.extend({init: function(id) {this._super(id, Types.Entities.M88NBANANASTAND, 1);}}),
+        m88nsage: Npc.extend({init: function(id) {this._super(id, Types.Entities.M88NSAGE, 1);}}),
+        m88nsage2: Npc.extend({init: function(id) {this._super(id, Types.Entities.M88NSAGE2, 1);}}),
+        m88nsage3: Npc.extend({init: function(id) {this._super(id, Types.Entities.M88NSAGE3, 1);}}),
+        m88nsage4: Npc.extend({init: function(id) {this._super(id, Types.Entities.M88NSAGE4, 1);}}),
+        m88nsage5: Npc.extend({init: function(id) {this._super(id, Types.Entities.M88NSAGE5, 1);}}),
+        m88nsage6: Npc.extend({init: function(id) {this._super(id, Types.Entities.M88NSAGE6, 1);}}),
+        m88nsage7: Npc.extend({init: function(id) {this._super(id, Types.Entities.M88NSAGE7, 1);}}),
         //MRMlabs NPCs
         tylerdurden: Npc.extend({init: function(id) {this._super(id, Types.Entities.TYLERDURDEN, 1);}}),
         //Taiko Town NPCs

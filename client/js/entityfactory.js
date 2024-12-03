@@ -1573,6 +1573,13 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.M88NAPE]=function(id){return new NPCs.m88nape(id);};
     EntityFactory.builders[Types.Entities.M88NMOBILEBARTENDER]=function(id){return new NPCs.m88nmobilebartender(id);};
     EntityFactory.builders[Types.Entities.M88NBANANASTAND]=function(id){return new NPCs.m88nbananastand(id);};
+    EntityFactory.builders[Types.Entities.M88NSAGE]=function(id){return new NPCs.m88nsage(id);};
+    EntityFactory.builders[Types.Entities.M88NSAGE2]=function(id){return new NPCs.m88nsage2(id);};
+    EntityFactory.builders[Types.Entities.M88NSAGE3]=function(id){return new NPCs.m88nsage3(id);};
+    EntityFactory.builders[Types.Entities.M88NSAGE4]=function(id){return new NPCs.m88nsage4(id);};
+    EntityFactory.builders[Types.Entities.M88NSAGE5]=function(id){return new NPCs.m88nsage5(id);};
+    EntityFactory.builders[Types.Entities.M88NSAGE6]=function(id){return new NPCs.m88nsage6(id);};
+    EntityFactory.builders[Types.Entities.M88NSAGE7]=function(id){return new NPCs.m88nsage7(id);};
 
     //MRMlabs NPCs
     EntityFactory.builders[Types.Entities.TYLERDURDEN]=function(id){return new NPCs.tylerdurden(id);};
