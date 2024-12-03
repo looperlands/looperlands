@@ -2708,12 +2708,12 @@ let Properties = {
         consumable: true,
         cooldown: {
             group: "easterEggs",
-            duration: 20000
+            duration: 180000
         },
-        inventoryDescription: "Immunity Easter Egg",
+        inventoryDescription: "Special Easter Egg",
         respawnDelay: 42069741,
-        onConsume: function(player){
-            player.startInvincibility();
+        onConsume: function(player) {
+            player.releaseNpc(Types.Entities.M88NSAGE, 20000);
         }
     },
     m88negg2: {
@@ -2721,12 +2721,12 @@ let Properties = {
         consumable: true,
         cooldown: {
             group: "easterEggs",
-            duration: 20000
+            duration: 180000
         },
-        inventoryDescription: "HP Easter Egg",
+        inventoryDescription: "Special Easter Egg",
         respawnDelay: 42069741,
-        onConsume: function(player){
-            player.regenHealthBy(2400);
+        onConsume: function(player) {
+            player.releaseNpc(Types.Entities.M88NSAGE2, 20000);
         }
     },
     m88negg3: {
@@ -2734,12 +2734,12 @@ let Properties = {
         consumable: true,
         cooldown: {
             group: "easterEggs",
-            duration: 10000
+            duration: 180000
         },
         inventoryDescription: "Special Easter Egg",
         respawnDelay: 42069741,
         onConsume: function(player) {
-            player.releaseMob(Types.Entities.M88NHEADLESSONESIE);
+            player.releaseNpc(Types.Entities.M88NSAGE3, 20000);
         }
     },
     m88negg4: {
@@ -2747,12 +2747,12 @@ let Properties = {
         consumable: true,
         cooldown: {
             group: "easterEggs",
-            duration: 10000
+            duration: 180000
         },
         inventoryDescription: "Special Easter Egg",
         respawnDelay: 42069741,
         onConsume: function(player) {
-            player.releaseMob(Types.Entities.M88NGHOSTPUMPKIN);
+            player.releaseNpc(Types.Entities.M88NSAGE4, 20000);
         }
     },
     m88negg5: {
@@ -2760,12 +2760,12 @@ let Properties = {
         consumable: true,
         cooldown: {
             group: "easterEggs",
-            duration: 300000
+            duration: 180000
         },
         inventoryDescription: "Special Easter Egg",
         respawnDelay: 42069741,
         onConsume: function(player) {
-            player.releaseMob(Types.Entities.M88NSHORTSQUEEZE);
+            player.releaseNpc(Types.Entities.M88NSAGE5, 20000);
         }
     },
     m88negg6: {
@@ -2778,7 +2778,20 @@ let Properties = {
         inventoryDescription: "Special Easter Egg",
         respawnDelay: 42069741,
         onConsume: function(player) {
-            player.releaseMob(Types.Entities.M88NBIGCHUNGUS);
+            player.releaseNpc(Types.Entities.M88NSAGE6, 20000);
+        }
+    },
+    m88negg7: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "easterEggs",
+            duration: 180000
+        },
+        inventoryDescription: "Special Easter Egg",
+        respawnDelay: 42069741,
+        onConsume: function(player) {
+            player.releaseNpc(Types.Entities.M88NSAGE7, 20000);
         }
     },
     m88nfabergeegg: {
@@ -2791,7 +2804,7 @@ let Properties = {
         inventoryDescription: "Golden Faberge Egg",
         respawnDelay: 42069741,
         onConsume: function(player) {
-            player.releaseMob(Types.Entities.M88NJIMMYCLOWN);
+            player.releaseNpc(Types.Entities.M88NSAGE7, 20000);
         }
     },
     m88nlamp: {

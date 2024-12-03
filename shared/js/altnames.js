@@ -274,6 +274,13 @@ const AltNames = {
     m88nape: "m88n Ape",
     m88nmobilebartender: "Mobile Bartender",
     m88nbananastand: "Banana Stand",
+    m88nsage: "Sage",
+    m88nsage2: "Sage",
+    m88nsage3: "Sage",
+    m88nsage4: "Sage",
+    m88nsage5: "Sage",
+    m88nsage6: "Sage",
+    m88nsage7: "Sage",
 
     //m88n Items
     m88nmail: "mail",

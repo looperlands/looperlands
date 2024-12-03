@@ -759,6 +759,55 @@ define(['character'], function (Character) {
             "Have fun! They drop more DRS'd shares of GME so you can stock back up!"
         ],
 
+        "m88nsage": [
+            "Greetings! They call me the Sage because I know all the secrets of The Nexus...",
+            "Only the most dedicated or lucky travellers find me, so congratulations.",
+            'As a reward, I will share <a target="_blank" href="https://m88nlabs.com/the-nexus-maps-legend/">a piece of the legend</a> with you. Read carefully...',
+            "Good luck on your journey!"
+        ],
+
+        "m88nsage2": [
+            "Greetings! They call me the Sage because I know all the secrets of The Nexus...",
+            "Only the most dedicated or lucky travellers find me, so congratulations.",
+            'As a reward, I will share <a target="_blank" href="https://m88nlabs.com/the-nexus-compass-legend/">a piece of the legend</a> with you. Read carefully...',
+            "Good luck on your journey!"
+        ],
+
+        "m88nsage3": [
+            "Greetings! They call me the Sage because I know all the secrets of The Nexus...",
+            "Only the most dedicated or lucky travellers find me, so congratulations.",
+            'As a reward, I will share <a target="_blank" href="https://m88nlabs.com/the-nexus-binoculars-legend/">a piece of the legend</a> with you. Read carefully...',
+            "Good luck on your journey!"
+        ],
+
+        "m88nsage4": [
+            "Greetings! They call me the Sage because I know all the secrets of The Nexus...",
+            "Only the most dedicated or lucky travellers find me, so congratulations.",
+            'As a reward, I will share <a target="_blank" href="https://m88nlabs.com/the-nexus-skeleton-key-legend/">a piece of the legend</a> with you. Read carefully...',
+            "Good luck on your journey!"
+        ],
+
+        "m88nsage5": [
+            "Greetings! They call me the Sage because I know all the secrets of The Nexus...",
+            "Only the most dedicated or lucky travellers find me, so congratulations.",
+            'As a reward, I will share <a target="_blank" href="https://m88nlabs.com/the-nexus-mermaid-legend/">a piece of the legend</a> with you. Read carefully...',
+            "Good luck on your journey!"
+        ],
+
+        "m88nsage6": [
+            "Greetings! They call me the Sage because I know all the secrets of The Nexus...",
+            "Only the most dedicated or lucky travellers find me, so congratulations.",
+            'As a reward, I will share <a target="_blank" href="https://m88nlabs.com/the-nexus-undertow-legend/">a piece of the legend</a> with you. Read carefully...',
+            "Good luck on your journey!"
+        ],
+
+        "m88nsage7": [
+            "Greetings! They call me the Sage because I know all the secrets of The Nexus...",
+            "Only the most dedicated or lucky travellers find me, so congratulations.",
+            'As a reward, I will share <a target="_blank" href="https://m88nlabs.com/the-nexus-mirror-legend/">a piece of the legend</a> with you. Read carefully...',
+            "Good luck on your journey!"
+        ],
+
         //MRMlabs NPCs
         "tylerdurden": [
             //"We are all part of the same compost heap.",

@@ -185,6 +185,13 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "m88nape",
                     "m88nmobilebartender",
                     "m88nbananastand",
+                    "m88nsage",
+                    "m88nsage2",
+                    "m88nsage3",
+                    "m88nsage4",
+                    "m88nsage5",
+                    "m88nsage6",
+                    "m88nsage7",
                     //m88n Mobs
                     "balloondogb",
                     "balloondogy",
