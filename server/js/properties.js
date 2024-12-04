@@ -1881,7 +1881,7 @@ let Properties = {
     },
 
     m88nheadlessonesie: {
-        level: 13,
+        level: 40,
         drops: {
             manacrystal: 14,
             candycorntreat: 11,
@@ -1893,11 +1893,11 @@ let Properties = {
             skullnbonestrick: 4,
             m88ngem: 3
         },
-        respawnDelay: 50000,
+        respawnDelay: 500000,
     },
 
     m88nheadlessskeleton: {
-        level: 9,
+        level: 30,
         drops: {
             manacrystal: 14,
             candycorntreat: 11,
@@ -1909,7 +1909,7 @@ let Properties = {
             skullnbonestrick: 4,
             m88ndirt: 3
         },
-        respawnDelay: 40000,
+        respawnDelay: 400000,
     },
 
     m88nghostpumpkin: {
