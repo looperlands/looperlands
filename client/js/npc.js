@@ -711,7 +711,8 @@ define(['character'], function (Character) {
             //"Hey there!",
             "It's been 84 years...",
             "But I did find it once, long ago...",
-            "And it was glorious..."
+            "And it was glorious...",
+            "I'll find it again some day, it feels like it's so close..."
         ],
 
         "nexan48": [
