@@ -811,13 +811,14 @@ define(['character'], function (Character) {
 
         "m88nfrosty": [
             "Happy Birthday!",
-            "Hey! Remember me? I'm m88nwalker's first LooperLands creation!",
-            "It's Christmas time again and I'm back...",
-            "We're decorating the new snowy beach and frozen ocean.",
+            "Hey! Remember me? I'm from m88nwalker's first LooperLands collection!",
+            "There was enough magic left in my hat to stop by and share a little snow.",
+            "It's warm here so I can't stay long, but I had to let you know...",
+            "We're hanging out on Santa's Secret Island, decorating for a party!",
             'If you own a piece from the <a target="_blank" href="https://loopexchange.art/collection/looperlands-christmas">Christmas in LooperLands collection</a> you get early access!',
-            "After Christmas is over I have to go back home where it's cold, but...",
-            'If you own a piece from the <a target="_blank" href="https://loopexchange.art/collection/looperlands-christmas">Christmas in LooperLands collection</a> you get full access, year round!',
-            "Have fun in there!"
+            "After Christmas is over I won't have enough magic to keep the portal open. But...",
+            'If you own a piece from the <a target="_blank" href="https://loopexchange.art/collection/looperlands-christmas">Christmas in LooperLands collection</a> you can come visit anytime!',
+            "Enjoy the holidays! See you in there!"
         ],
 
         //MRMlabs NPCs
