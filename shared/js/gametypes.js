@@ -368,6 +368,7 @@ Types = {
         M88NSAGE5: 78580000,
         M88NSAGE6: 78590000,
         M88NSAGE7: 78600000,
+        M88NFROSTY: 78700000,
         //m88n Mobs
         BALLOONDOGB: 78000001,
         BALLOONDOGY: 78000002,
@@ -6782,6 +6783,7 @@ var kinds = {
     m88nsage5: [Types.Entities.M88NSAGE5, "npc"],
     m88nsage6: [Types.Entities.M88NSAGE6, "npc"],
     m88nsage7: [Types.Entities.M88NSAGE7, "npc"],
+    m88nfrosty: [Types.Entities.M88NFROSTY, "npc"],
     //MRMlabs NPCs
     tylerdurden: [Types.Entities.TYLERDURDEN, "npc"],
     ROBITSE3: [Types.Entities.ROBITSE3, "mob"],

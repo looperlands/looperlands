@@ -1580,6 +1580,7 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.M88NSAGE5]=function(id){return new NPCs.m88nsage5(id);};
     EntityFactory.builders[Types.Entities.M88NSAGE6]=function(id){return new NPCs.m88nsage6(id);};
     EntityFactory.builders[Types.Entities.M88NSAGE7]=function(id){return new NPCs.m88nsage7(id);};
+    EntityFactory.builders[Types.Entities.M88NFROSTY]=function(id){return new NPCs.m88nfrosty(id);};
 
     //MRMlabs NPCs
     EntityFactory.builders[Types.Entities.TYLERDURDEN]=function(id){return new NPCs.tylerdurden(id);};

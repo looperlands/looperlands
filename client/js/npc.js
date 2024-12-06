@@ -809,6 +809,17 @@ define(['character'], function (Character) {
             "Good luck on your journey!"
         ],
 
+        "m88nfrosty": [
+            "Happy Birthday!",
+            "Hey! Remember me? I'm m88nwalker's first LooperLands creation!",
+            "It's Christmas time again and I'm back...",
+            "We're decorating the new snowy beach and frozen ocean.",
+            'If you own a piece from the <a target="_blank" href="https://loopexchange.art/collection/looperlands-christmas">Christmas in LooperLands collection</a> you get early access!',
+            "After Christmas is over I have to go back home where it's cold, but...",
+            'If you own a piece from the <a target="_blank" href="https://loopexchange.art/collection/looperlands-christmas">Christmas in LooperLands collection</a> you get full access, year round!',
+            "Have fun in there!"
+        ],
+
         //MRMlabs NPCs
         "tylerdurden": [
             //"We are all part of the same compost heap.",

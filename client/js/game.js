@@ -192,6 +192,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "m88nsage5",
                     "m88nsage6",
                     "m88nsage7",
+                    "m88nfrosty",
                     //m88n Mobs
                     "balloondogb",
                     "balloondogy",
