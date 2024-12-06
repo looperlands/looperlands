@@ -281,6 +281,7 @@ const AltNames = {
     m88nsage5: "Sage",
     m88nsage6: "Sage",
     m88nsage7: "Sage",
+    m88nfrosty: "Frosty",
 
     //m88n Items
     m88nmail: "mail",

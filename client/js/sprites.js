@@ -598,6 +598,7 @@ define(['text!../sprites/agent.json',
         'text!../sprites/m88nsage5.json',
         'text!../sprites/m88nsage6.json',
         'text!../sprites/m88nsage7.json',
+        'text!../sprites/m88nfrosty.json',
         //m88n Mobs
         'text!../sprites/balloondogb.json',
         'text!../sprites/balloondogy.json',
