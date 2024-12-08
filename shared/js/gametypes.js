@@ -369,6 +369,8 @@ Types = {
         M88NSAGE6: 78590000,
         M88NSAGE7: 78600000,
         M88NFROSTY: 78700000,
+        M88NSANTA: 78800000,
+        M88NRUDOLPH: 78900000,
         //m88n Mobs
         BALLOONDOGB: 78000001,
         BALLOONDOGY: 78000002,
@@ -454,6 +456,10 @@ Types = {
         M88NHEADLESSSKELETON: 78000111,
         M88NGHOSTPUMPKIN: 78000112,
         M88NTURKEY: 78000113,
+        M88NICECRAB: 78000114,
+        M88NELF: 78000115,
+        M88NELF2: 78000116,
+        M88NREINDEER: 78000117,
         //m88n Mob Nexans
         NEXAN1: 78000037,
         NEXAN2: 78000038,
@@ -6286,6 +6292,10 @@ var kinds = {
     m88nheadlessskeleton: [Types.Entities.M88NHEADLESSSKELETON, "mob"],
     m88nghostpumpkin: [Types.Entities.M88NGHOSTPUMPKIN, "mob"],
     m88nturkey: [Types.Entities.M88NTURKEY, "mob"],
+    m88nicecrab: [Types.Entities.M88NICECRAB, "mob"],
+    m88nelf: [Types.Entities.M88NELF, "mob"],
+    m88nelf2: [Types.Entities.M88NELF2, "mob"],
+    m88nreindeer: [Types.Entities.M88NREINDEER, "mob"],
 
     //m88n Mob Nexans
     nexan1: [Types.Entities.NEXAN1, "mob"],
@@ -6784,6 +6794,8 @@ var kinds = {
     m88nsage6: [Types.Entities.M88NSAGE6, "npc"],
     m88nsage7: [Types.Entities.M88NSAGE7, "npc"],
     m88nfrosty: [Types.Entities.M88NFROSTY, "npc"],
+    m88nsanta: [Types.Entities.M88NSANTA, "npc"],
+    m88nrudolph: [Types.Entities.M88NRUDOLPH, "npc"],
     //MRMlabs NPCs
     tylerdurden: [Types.Entities.TYLERDURDEN, "npc"],
     ROBITSE3: [Types.Entities.ROBITSE3, "mob"],

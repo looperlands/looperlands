@@ -821,6 +821,20 @@ define(['character'], function (Character) {
             "Enjoy the holidays! See you in there!"
         ],
 
+        "m88nsanta": [
+            //"Ho ho ho!",
+            //"Only the most dedicated or lucky travellers find me, so congratulations.",
+            //'As a reward, I will share <a target="_blank" href="https://m88nlabs.com/the-nexus-mirror-legend/">a piece of the legend</a> with you. Read carefully...',
+            "Ho ho ho!"
+        ],
+
+        "m88nrudolph": [
+            "Sup ho ho homie!",
+            "Those naughty little elves over there are pestering the reindeer.",
+            //'As a reward, I will share <a target="_blank" href="https://m88nlabs.com/the-nexus-mirror-legend/">a piece of the legend</a> with you. Read carefully...',
+            "Can you go smack them around for me?"
+        ],
+
         //MRMlabs NPCs
         "tylerdurden": [
             //"We are all part of the same compost heap.",

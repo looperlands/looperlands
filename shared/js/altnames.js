@@ -246,6 +246,9 @@ const AltNames = {
     m88nheadlessskeleton: "Headless Skeleton",
     m88nghostpumpkin: "Boo!",
     m88nturkey: "Gobble Gobble...",
+    m88nicecrab: "Ice Crab",
+    m88nelf: "Naughty Elf 1",
+    m88nelf2: "Naughty Elf 2",
 
     //m88n Mob Nexans
     nexan8: "The Mail Lady",
@@ -282,6 +285,9 @@ const AltNames = {
     m88nsage6: "Sage",
     m88nsage7: "Sage",
     m88nfrosty: "Frosty",
+    m88nsanta: "Santa",
+    m88nrudolph: "Rudolph",
+    m88nreindeer: "Reindeer",
 
     //m88n Items
     m88nmail: "mail",
