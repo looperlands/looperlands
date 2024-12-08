@@ -193,6 +193,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "m88nsage6",
                     "m88nsage7",
                     "m88nfrosty",
+                    "m88nsanta",
+                    "m88nrudolph",
                     //m88n Mobs
                     "balloondogb",
                     "balloondogy",
@@ -277,6 +279,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "m88nheadlessskeleton",
                     "m88nghostpumpkin",
                     "m88nturkey",
+                    "m88nicecrab",
+                    "m88nelf",
+                    "m88nelf2",
+                    "m88nreindeer",
                     //m88n's Mob Nexans
                     "nexan1",
                     "nexan2",

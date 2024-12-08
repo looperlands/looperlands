@@ -1938,6 +1938,45 @@ let Properties = {
         respawnDelay: 30000,
     },
 
+    m88nicecrab: {
+        level: 44,
+        drops: {
+            wood: 1,
+            ore: 1,
+            manacrystal: 1,
+            m88ndirt: 1,
+            m88ngem: 1,
+            GOLD4: 1
+        },
+        respawnDelay: 60000,
+    },
+
+    m88nelf: {
+        level: 22,
+        drops: {
+            wood: 1,
+            ore: 1,
+            manacrystal: 1,
+            m88ndirt: 1,
+            m88ngem: 1,
+            GOLD4: 1
+        },
+        respawnDelay: 40000,
+    },
+
+    m88nelf2: {
+        level: 22,
+        drops: {
+            wood: 1,
+            ore: 1,
+            manacrystal: 1,
+            m88ndirt: 1,
+            m88ngem: 1,
+            GOLD4: 1
+        },
+        respawnDelay: 40000,
+    },
+
     m88nmine: {
         level: 69,
         friendly: true, //not actually friendly, just AoE immune
@@ -2224,6 +2263,11 @@ let Properties = {
     },
 
     m88nbabyyoda2: {
+        level: 1,
+        friendly: true
+    },
+
+    m88nreindeer: {
         level: 1,
         friendly: true
     },
