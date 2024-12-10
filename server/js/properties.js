@@ -1939,11 +1939,10 @@ let Properties = {
     },
 
     m88nicecrab: {
-        level: 44,
+        level: 33,
         drops: {
-            wood: 1,
-            ore: 1,
-            manacrystal: 1,
+            manacrystal: 20,
+            GOLD2: 10,
             m88ndirt: 1,
             m88ngem: 1,
             GOLD4: 1
@@ -1954,9 +1953,8 @@ let Properties = {
     m88nelf: {
         level: 22,
         drops: {
-            wood: 1,
-            ore: 1,
-            manacrystal: 1,
+            manacrystal: 10,
+            GOLD2: 10,
             m88ndirt: 1,
             m88ngem: 1,
             GOLD4: 1
@@ -1967,9 +1965,20 @@ let Properties = {
     m88nelf2: {
         level: 22,
         drops: {
-            wood: 1,
-            ore: 1,
-            manacrystal: 1,
+            manacrystal: 10,
+            GOLD2: 10,
+            m88ndirt: 1,
+            m88ngem: 1,
+            GOLD4: 1
+        },
+        respawnDelay: 40000,
+    },
+
+    m88nsnowmobile: {
+        level: 44,
+        drops: {
+            manacrystal: 30,
+            GOLD2: 10,
             m88ndirt: 1,
             m88ngem: 1,
             GOLD4: 1

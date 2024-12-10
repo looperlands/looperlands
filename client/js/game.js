@@ -283,6 +283,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "m88nelf",
                     "m88nelf2",
                     "m88nreindeer",
+                    "m88nsnowmobile",
                     //m88n's Mob Nexans
                     "nexan1",
                     "nexan2",

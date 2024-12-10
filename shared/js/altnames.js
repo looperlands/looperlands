@@ -288,6 +288,7 @@ const AltNames = {
     m88nsanta: "Santa",
     m88nrudolph: "Rudolph",
     m88nreindeer: "Reindeer",
+    m88nsnowmobile: "Henchman",
 
     //m88n Items
     m88nmail: "mail",

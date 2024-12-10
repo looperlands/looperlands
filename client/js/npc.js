@@ -822,10 +822,11 @@ define(['character'], function (Character) {
         ],
 
         "m88nsanta": [
-            //"Ho ho ho!",
-            //"Only the most dedicated or lucky travellers find me, so congratulations.",
+            "Ho ho ho!",
+            "Make sure to be collecting Manacrystals...",
+            "You can use them to craft potions that refill your snowball inventory.", 
             //'As a reward, I will share <a target="_blank" href="https://m88nlabs.com/the-nexus-mirror-legend/">a piece of the legend</a> with you. Read carefully...',
-            "Ho ho ho!"
+            "/openShop potionshop Potion Shop"
         ],
 
         "m88nrudolph": [

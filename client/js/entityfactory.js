@@ -760,6 +760,9 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.M88NREINDEER] = function(id) {
         return new Mobs.m88nreindeer(id);
     };
+    EntityFactory.builders[Types.Entities.M88NSNOWMOBILE] = function(id) {
+        return new Mobs.m88nsnowmobile(id);
+    };
 
     //m88n Mob Nexans
     EntityFactory.builders[Types.Entities.NEXAN1] = function(id) {
