@@ -1941,7 +1941,7 @@ let Properties = {
     m88nicecrab: {
         level: 33,
         drops: {
-            manacrystal: 20,
+            manacrystal: 33,
             GOLD2: 10,
             m88ndirt: 1,
             m88ngem: 1,
@@ -1951,9 +1951,9 @@ let Properties = {
     },
 
     m88nelf: {
-        level: 22,
+        level: 11,
         drops: {
-            manacrystal: 10,
+            manacrystal: 11,
             GOLD2: 10,
             m88ndirt: 1,
             m88ngem: 1,
@@ -1965,7 +1965,7 @@ let Properties = {
     m88nelf2: {
         level: 22,
         drops: {
-            manacrystal: 10,
+            manacrystal: 22,
             GOLD2: 10,
             m88ndirt: 1,
             m88ngem: 1,
@@ -1977,7 +1977,7 @@ let Properties = {
     m88nsnowmobile: {
         level: 44,
         drops: {
-            manacrystal: 30,
+            manacrystal: 44,
             GOLD2: 10,
             m88ndirt: 1,
             m88ngem: 1,
