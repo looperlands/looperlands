@@ -1778,7 +1778,7 @@ let Properties = {
         drops: {
             m88ndrsgme: 1,
             m88nmap: 5,
-            GOLD: 30,
+            wood: 30,
             GOLD2: 20,
             GOLD3: 10,
             GOLD4: 5,
@@ -1791,7 +1791,7 @@ let Properties = {
         drops: {
             m88ngoldenpoo: 1,
             m88nmap: 5,
-            GOLD: 20,
+            wood: 20,
             GOLD2: 10,
             GOLD3: 5,
             loopring: 10
