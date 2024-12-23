@@ -2432,7 +2432,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.setAttackRate(300);
                 this.atkSpeed = 30;                
                 this.isAggressive = true;
-                this.aggroRange = 5;
+                this.aggroRange = 6;
                 this.deathAnimated = true;
                 this.title = "Shark!";
             }

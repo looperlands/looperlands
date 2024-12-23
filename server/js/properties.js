@@ -1611,23 +1611,31 @@ let Properties = {
     m88njaws: {
         level: 369,
         drops: {
-            m88nmap: 25,
             m88ndiamondnecklace: 1,
             m88ndiamondring: 1,
             m88ngoldearrings: 1,
             m88ngoldtiara: 1,
             m88ndinnerbell: 1,
-            m88negg1: 1,
-            m88negg2: 1,
+            m88negg1: 10,
+            m88negg2: 10,
+            m88negg3: 10,
+            m88negg4: 10,
+            m88negg5: 10,
+            m88negg6: 10,
             m88ngem: 5,
+            m88nchampagne: 1,
+            m88nchampagnebottle: 1,
+            m88nmanamaitai: 1,
+            m88nmermaidmojito: 1,
+            m88nnexussangria: 1,
             m88nhelioislandicedtea: 2,
+            m88ndirtymartini: 3,
             m88nsunsetdaiquiri: 3,
             m88nbrassknuckles: 4,
             m88nkevlararmor: 5,
             GOLD3: 1,
             GOLD4: 1,
-            GOLD5: 1,
-            loopring: 10
+            GOLD5: 1
         },
         messages: ['Mmmmm, tasty!', 'Yum!', 'Eww, that was a little tough...', 'Stay on land or come back with friends!'],
         armorMod: 2,
@@ -1661,28 +1669,11 @@ let Properties = {
     roachclip: {
         level: 3,
         drops: {
-            //flask: 10,
-            //GOLD: 20,
-            //GOLD2: 20,
-            //GOLD3: 20,
-            //loopring: 10
-            m88nshine: 1,
-            m88ndirtymartini: 1,
-            m88nchampagne: 1,
-            m88nchampagnebottle: 1,
-            m88nmanamaitai: 1,
-            m88nhelioislandicedtea: 1,
-            m88nmermaidmojito: 1,
-            m88nsunsetdaiquiri: 1,
-            m88nnexussangria: 1,
-            candycorntreat: 25,
-            lollitreat: 15,
-            chocolatetreat: 10,
-            candytreat: 10,
-            headstonetrick: 5,
-            spidertrick: 5,
-            skullnbonestrick: 2,
-            m88ngem: 6
+            flask: 10,
+            GOLD: 20,
+            GOLD2: 20,
+            GOLD3: 20,
+            loopring: 10
         },
         xp: 222
     },
@@ -1939,9 +1930,9 @@ let Properties = {
     },
 
     m88nicecrab: {
-        level: 33,
+        level: 20,
         drops: {
-            manacrystal: 33,
+            manacrystal: 50,
             GOLD2: 10,
             m88ndirt: 1,
             m88ngem: 1,
@@ -1951,9 +1942,9 @@ let Properties = {
     },
 
     m88nelf: {
-        level: 11,
+        level: 4,
         drops: {
-            manacrystal: 11,
+            manacrystal: 25,
             GOLD2: 10,
             m88ndirt: 1,
             m88ngem: 1,
@@ -1963,9 +1954,9 @@ let Properties = {
     },
 
     m88nelf2: {
-        level: 22,
+        level: 5,
         drops: {
-            manacrystal: 22,
+            manacrystal: 25,
             GOLD2: 10,
             m88ndirt: 1,
             m88ngem: 1,
@@ -1975,9 +1966,9 @@ let Properties = {
     },
 
     m88nsnowmobile: {
-        level: 44,
+        level: 40,
         drops: {
-            manacrystal: 44,
+            manacrystal: 75,
             GOLD2: 10,
             m88ndirt: 1,
             m88ngem: 1,
