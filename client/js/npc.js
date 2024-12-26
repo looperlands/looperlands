@@ -836,6 +836,34 @@ define(['character'], function (Character) {
             "Can you go smack them around for me?"
         ],
 
+        "m88ntownie": [
+            "Heyyy! What's up?",
+            "My Name is Ty, I'm a Townie! Are you on Taiko yet?",
+            "A new NFT collection of all my friends and I is getting released on Taiko soon!",
+            'You will be able to <a target="_blank" href="https://on.mintpad.co/townies">mint your Townie NFTs</a> directly on Mintpad.',
+            'If you own anything m88nwalker <a target="_blank" href="https://forms.gle/AMzNqiVJcVtCSuXr5">there is a whitelist</a> you can get on.',
+            //'You can <a target="_blank" href="https://on.mintpad.co/townies">mint your Townie NFTs</a> directly on Mintpad.',
+            "Then just talk to m88nwalker if you want to upgrade and have it integrated like me.",
+            "Wanna know something else cool?...",
+            "If you get lucky and mint a legendary Zombie Townie...",
+            'You get to pick out another one from the <a target="_blank" href="https://loopexchange.art/collection/zombie-townies">Zombie Townies collection</a> on Loopring for free!',
+            "You just pay integration fees"
+        ],
+
+        "m88ntownies": [
+            "Heyyy! What's up?",
+            "My Name is Ty, I'm a Townie! Are you on Taiko yet?",
+            "A new NFT collection of all my friends and I is getting released on Taiko soon!",
+            'You will be able to <a target="_blank" href="https://on.mintpad.co/townies">mint your Townie NFTs</a> directly on Mintpad.',
+            'If you own anything m88nwalker <a target="_blank" href="https://forms.gle/AMzNqiVJcVtCSuXr5">there is a whitelist</a> you can get on.',
+            //'You can <a target="_blank" href="https://on.mintpad.co/townies">mint your Townie NFTs</a> directly on Mintpad.',
+            "Then just talk to m88nwalker if you want to upgrade and have it integrated like me.",
+            "Wanna know something else cool?...",
+            "If you get lucky and mint a legendary Zombie Townie...",
+            'You get to pick out another one from the <a target="_blank" href="https://loopexchange.art/collection/zombie-townies">Zombie Townies collection</a> on Loopring for free!',
+            "You just pay integration fees"
+        ],
+
         //MRMlabs NPCs
         "tylerdurden": [
             //"We are all part of the same compost heap.",

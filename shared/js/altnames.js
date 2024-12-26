@@ -260,6 +260,7 @@ const AltNames = {
     nexan15: "The Mail Man",
     nexan30: "The Bartender",
     m88njeeves: "Jeeves",
+    m88nsnowmobile: "Henchman",
 
     //m88n NPCs
     nexan29: "The Butler",
@@ -288,7 +289,8 @@ const AltNames = {
     m88nsanta: "Santa",
     m88nrudolph: "Rudolph",
     m88nreindeer: "Reindeer",
-    m88nsnowmobile: "Henchman",
+    m88ntownie: "Ty",
+    m88ntownies: "Ty",
 
     //m88n Items
     m88nmail: "mail",
