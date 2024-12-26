@@ -1598,6 +1598,8 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.M88NFROSTY]=function(id){return new NPCs.m88nfrosty(id);};
     EntityFactory.builders[Types.Entities.M88NSANTA]=function(id){return new NPCs.m88nsanta(id);};
     EntityFactory.builders[Types.Entities.M88NRUDOLPH]=function(id){return new NPCs.m88nrudolph(id);};
+    EntityFactory.builders[Types.Entities.M88NTOWNIE]=function(id){return new NPCs.m88ntownie(id);};
+    EntityFactory.builders[Types.Entities.M88NTOWNIES]=function(id){return new NPCs.m88ntownies(id);};
 
     //MRMlabs NPCs
     EntityFactory.builders[Types.Entities.TYLERDURDEN]=function(id){return new NPCs.tylerdurden(id);};
