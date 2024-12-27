@@ -2669,6 +2669,43 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
 
+        m88ncow: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NCOW);
+                this.moveSpeed = 420;
+        		this.walkSpeed = 420;
+        		this.idleSpeed = 420;
+                this.deathAnimated = true;
+                this.isAggressive = false;
+                this.nameless = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
+        m88ntree: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NTREE);
+                this.deathAnimated = true;
+                this.isAggressive = false;
+                this.nameless = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
         m88nthewarden: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.M88NTHEWARDEN);

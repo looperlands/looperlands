@@ -1,0 +1,17 @@
+{
+	"id": "m88ntree",
+	"width": 48,
+	"height": 64,
+	"animations": {
+                "death": {
+			"length": 1,
+			"row": 0
+		},
+		"idle_down": {
+			"length": 1,
+			"row": 1
+		}
+	},
+	"offset_x": -16,
+	"offset_y": -16
+}

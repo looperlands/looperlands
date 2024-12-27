@@ -1988,6 +1988,28 @@ let Properties = {
         respawnDelay: 4000000 //one hour
     },
 
+    m88ncow: {
+        level: 69,
+        friendly: true, //not actually friendly, just AoE immune
+        hp: 10,
+        drops: {
+            MILK1: 75,
+            m88nsteak: 25,
+        },
+        respawnDelay: 900000 //fifteen minutes
+    },
+
+    m88ntree: {
+        level: 69,
+        friendly: true, //not actually friendly, just AoE immune
+        hp: 1,
+        drops: {
+            m88nsticks: 99,
+            wood: 1,
+        },
+        respawnDelay: 900000 //fifteen minutes
+    },
+
     m88npinataballoons: {
         level: 111,
         friendly: true, //not actually friendly, just AoE immune
@@ -3224,6 +3246,18 @@ let Properties = {
             player.playerClassModifiers.applyTemporaryModifierWithTimeout('xp', 2, 180000);
         }
     },
+    m88nsalad: {
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "xpPotions",
+            duration: 360000
+        },
+        inventoryDescription: "Big Salad",
+        onConsume: function(player){
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('xp', 2, 300000);
+        }
+    },
     candycorntreat: {
         collectable: true,
         consumable: true,
@@ -3713,12 +3747,13 @@ let Properties = {
         respawnDelay: 9900000
     },
     m88nsteak: {
+        collectable: true,
+        inventoryDescription: "Steak",
         respawnDelay: 9900000
     },
     m88npotato: {
-        respawnDelay: 9900000
-    },
-    m88nsalad: {
+        collectable: true,
+        inventoryDescription: "Potato",
         respawnDelay: 9900000
     },
     m88nbrewski: {
@@ -3798,6 +3833,48 @@ let Properties = {
         onConsume: function(player){
             player.startInvincibility();
         }
+    },
+
+    m88nsticks: {
+        collectable: true,
+        inventoryDescription: "Sticks",
+        respawnDelay: 300000
+    },
+
+    m88nturnip: {
+        collectable: true,
+        inventoryDescription: "Turnip",
+        respawnDelay: 360000
+    },
+
+    m88ncauliflower: {
+        collectable: true,
+        inventoryDescription: "Cauliflower",
+        respawnDelay: 300000
+    },
+
+    m88nbroccoli: {
+        collectable: true,
+        inventoryDescription: "Broccoli",
+        respawnDelay: 240000
+    },
+
+    m88nlettuce: {
+        collectable: true,
+        inventoryDescription: "Lettuce",
+        respawnDelay: 180000
+    },
+
+    m88ntomato: {
+        collectable: true,
+        inventoryDescription: "Tomato",
+        respawnDelay: 120000
+    },
+
+    m88ncarrot: {
+        collectable: true,
+        inventoryDescription: "Carrot",
+        respawnDelay: 60000
     },
 
     // Projectiles
