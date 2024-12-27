@@ -390,6 +390,12 @@ define(['item'], function(Item) {
         m88nturkeydinner:Item.extend({init:function(id){this._super(id,Types.Entities.M88NTURKEYDINNER,"object");this.lootMessage="A turkey dinner!";}}),
         m88nturkeyleg:Item.extend({init:function(id){this._super(id,Types.Entities.M88NTURKEYLEG,"object");this.lootMessage="A turkey leg!";}}),
         m88nturkeyfeather:Item.extend({init:function(id){this._super(id,Types.Entities.M88NTURKEYFEATHER,"object");this.lootMessage="A turkey feather!";}}),
+        m88nbroccoli:Item.extend({init:function(id){this._super(id,Types.Entities.M88NBROCCOLI,"object");this.lootMessage="A head of broccoli!";}}),
+        m88ncauliflower:Item.extend({init:function(id){this._super(id,Types.Entities.M88NCAULIFLOWER,"object");this.lootMessage="A head of cauliflower!";}}),
+        m88nlettuce:Item.extend({init:function(id){this._super(id,Types.Entities.M88NLETTUCE,"object");this.lootMessage="A head of lettuce!";}}),
+        m88nsticks:Item.extend({init:function(id){this._super(id,Types.Entities.M88NSTICKS,"object");this.lootMessage="Some sticks!";}}),
+        m88ntomato:Item.extend({init:function(id){this._super(id,Types.Entities.M88NTOMATO,"object");this.lootMessage="A tomato!";}}),
+        m88nturnip:Item.extend({init:function(id){this._super(id,Types.Entities.M88NTURNIP,"object");this.lootMessage="A turnip!";}}),
         //MRMlabs Items
         firstaidkit:Item.extend({init:function(id){this._super(id,Types.Entities.FIRSTAIDKIT,"object");this.lootMessage="You found a first aid kit!";}}),
         bandaid:Item.extend({init:function(id){this._super(id,Types.Entities.BANDAID,"object");this.lootMessage="You found a bandaid!";}}),

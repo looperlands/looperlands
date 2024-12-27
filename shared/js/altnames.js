@@ -261,6 +261,8 @@ const AltNames = {
     nexan30: "The Bartender",
     m88njeeves: "Jeeves",
     m88nsnowmobile: "Henchman",
+    m88ncow: "Cow",
+    m88ntree: "Tree",
 
     //m88n NPCs
     nexan29: "The Butler",
@@ -352,6 +354,12 @@ const AltNames = {
     m88nturkeydinner: "Turkey Dinner",
     m88nturkeyfeather: "Turkey Feather",
     m88nturkeyleg: "Turkey Leg",
+    m88nbroccoli: "Broccoli",
+    m88ncauliflower: "Cauliflower",
+    m88nlettuce: "Lettuce",
+    m88nsticks: "Sticks",
+    m88ntomato: "Tomato",
+    m88nturnip: "Turnip",
 
     //m88n TT Items
     m88nammocan: "ammo can",
@@ -360,7 +368,7 @@ const AltNames = {
     m88nblueprint: "blueprint",
     m88nbnote: "beamed note",
     m88nbone: "bone",
-    m88ncarrot: "carrot",
+    m88ncarrot: "Carrot",
     m88ncheese: "cheese",
     m88nchocolate: "chocolate",
     m88ncleanundies: "clean undies",
