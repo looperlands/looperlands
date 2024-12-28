@@ -484,7 +484,8 @@ define(['character'], function (Character) {
 
         "nexan14": [
             "Dig dig dig, all day long, dig dig dig, while I sing this song...",
-            "Wanna play in the dirt with me?"
+            "Wanna play in the dirt with me?",
+            "/openShop the_garden_stand The Garden Stand"
         ],
 
         "nexan15": [
