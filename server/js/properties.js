@@ -3791,6 +3791,11 @@ let Properties = {
         inventoryDescription: "Worm",
         respawnDelay: 9900000
     },
+    m88ngoldworm: {
+        collectable: true,
+        inventoryDescription: "Gold Worm",
+        respawnDelay: 9900000
+    },
     m88nrose: {
         collectable: true,
         inventoryDescription: "Red Rose",

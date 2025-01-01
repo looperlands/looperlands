@@ -293,6 +293,7 @@ const AltNames = {
     m88nreindeer: "Reindeer",
     m88ntownie: "Ty",
     m88ntownies: "Ty",
+    m88ntownie2: "Tito",
 
     //m88n Items
     m88nmail: "mail",
@@ -360,6 +361,7 @@ const AltNames = {
     m88nsticks: "Sticks",
     m88ntomato: "Tomato",
     m88nturnip: "Turnip",
+    m88ngoldworm: "Gold Worm",
 
     //m88n TT Items
     m88nammocan: "ammo can",
