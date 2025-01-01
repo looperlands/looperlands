@@ -990,10 +990,12 @@ WS.socketIOServer = Server.extend({
                     let difficulty = Lakes.getDifficulty(player.getNFTWeapon().getLevel(), lakeName, (activeTrait === "upper_hand"));
                     let speed = Lakes.getFishSpeed(fish, lakeName);
 
+                    const difficultyAdjusted = difficulty?.difficulty * player.playerClassModifiers.fishing;
+
                     let response = {
                         allowed: true,
                         fish: fish,
-                        difficulty: difficulty?.difficulty,
+                        difficulty: difficultyAdjusted,
                         speed: speed,
                         bullseyeSize: difficulty?.bullseye,
                         trait: activeTrait
