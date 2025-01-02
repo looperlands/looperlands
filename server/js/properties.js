@@ -3788,8 +3788,12 @@ let Properties = {
     },
     m88nworm: {
         collectable: true,
+        consumable: true,
         inventoryDescription: "Worm",
-        respawnDelay: 9900000
+        respawnDelay: 9900000,
+        onConsume: function(player){
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('fishing', 10, 60000);
+        }
     },
     m88ngoldworm: {
         collectable: true,
@@ -3797,7 +3801,7 @@ let Properties = {
         inventoryDescription: "Gold Worm",
         respawnDelay: 9900000,
         onConsume: function(player){
-            player.playerClassModifiers.applyTemporaryModifierWithTimeout('fishing', 10, 60000);
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('fishing', 100, 60000);
         }
     },
     m88nrose: {
