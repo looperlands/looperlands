@@ -1,5 +1,3 @@
-const Utils = require("../../server/js/utils");
-
 define(function() {
 
     var Area = Class.extend({
@@ -27,9 +25,10 @@ define(function() {
 
         getRandomPosition() {
             let pos = {};
+            
+            pos.x = this.x + Math.floor(Math.random() * this.width);
+            pos.y = this.y + Math.floor(Math.random() * this.height);
 
-            pos.x = this.x + Utils.randomInt(0, this.width - 1);
-            pos.y = this.y + Utils.randomInt(0, this.height - 1);
             return pos;
         }
     });
