@@ -1,3 +1,4 @@
+const Utils = require("../../server/js/utils");
 
 define(function() {
 
@@ -23,6 +24,14 @@ define(function() {
         isOutOfBounds: function (x, y) {
             return (x < this.x || x >= this.x + this.width || y < this.y || y >= this.y + this.height);
         },
+
+        getRandomPosition() {
+            let pos = {};
+
+            pos.x = this.x + Utils.randomInt(0, this.width - 1);
+            pos.y = this.y + Utils.randomInt(0, this.height - 1);
+            return pos;
+        }
     });
     
     return Area;

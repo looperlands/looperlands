@@ -9734,8 +9734,12 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 let dest = null;
                 if (this.lastCheckpoint) {
                     dest = this.lastCheckpoint;
+                } else if( this.player) {
+                    dest = this.map.getCurrentCheckpoint(this.player);
                 } else {
-                    dest = { id: 1 };
+                    let cp = this.map.checkpoints[0];
+                    let startPos = cp.getRandomPosition();
+                    dest = { x: startPos.x, y: startPos.y, map: this.mapId };
                 }
                 dest.map = this.mapId;
                 axios.post(url, dest).then(function (response) {
