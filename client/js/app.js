@@ -447,6 +447,10 @@ define(['jquery', 'storage'], function ($, Storage) {
         },
 
         initEquipmentIcons: function () {
+            if (!this.game.player) {
+                return;
+            }
+
             const scale = this.game.renderer.getScaleFactor();
             const getIconPath = (spriteName) => {
                     let url = this.dynamicNFTIconURL[spriteName];

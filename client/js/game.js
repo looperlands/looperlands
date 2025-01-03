@@ -8524,6 +8524,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     return;
                 }
 
+                if (!this.player) {
+                    return;
+                }
+
                 var self = this;
                 var m = this.map;
                 var scene = this.player.getScene();
@@ -9151,9 +9155,14 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 if (!this.camera) {
                     return
                 }
+
+                if(!entity) {
+                    return;
+                }
+
                 const entityScene = entity.getScene();
                 const currentScene = this.map.getCurrentScene(entity);
-                if (entity.getScene() !== currentScene) {
+                if (entityScene !== currentScene) {
                     if (currentScene) {
                         this.camera.setBoundingBox(currentScene.x, currentScene.y, currentScene.width, currentScene.height);
 
@@ -9722,7 +9731,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
             newSession: function () {
                 const url = '/session/' + this.sessionId + '/teleport';
-                const dest = this.lastCheckpoint;
+                const dest = this.lastCheckpoint ?? { id: 1 };
                 dest.map = this.mapId;
                 axios.post(url, dest).then(function (response) {
                     if (response.status === 200) {
