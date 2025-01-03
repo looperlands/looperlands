@@ -112,6 +112,10 @@ class PlayerClassModifiers {
         return baseValue;
     }
 
+    isModiferActive(modifierName) {
+        return this._temporaryModifiers[modifierName] !== undefined
+    }
+
     async getAllModifiers() {
         await this.loadModifierData();
         return {

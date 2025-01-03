@@ -992,9 +992,9 @@ WS.socketIOServer = Server.extend({
 
                     let difficultyAdjusted = difficulty?.difficulty
 
-                    if (difficulty?.difficulty !== 1 ) {
-                        const percentDifficulty = difficulty?.difficulty/player.playerClassModifiers.fishing
-                        difficultyAdjusted = player.playerClassModifiers.fishing !== 1 ? difficulty?.difficulty + percentDifficulty : difficulty?.difficulty
+                    if (player.playerClassModifiers.isModiferActive('fishing')) {
+                        const percentDifficulty = player.playerClassModifiers.fishing/100 * difficulty?.difficulty
+                        difficultyAdjusted = difficulty?.difficulty + percentDifficulty
                     }
 
                     //console.log("diff", difficulty?.difficulty, difficultyAdjusted)
