@@ -9731,7 +9731,12 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
             newSession: function () {
                 const url = '/session/' + this.sessionId + '/teleport';
-                const dest = this.lastCheckpoint ?? { id: 1 };
+                let dest = null;
+                if (this.lastCheckpoint) {
+                    dest = this.lastCheckpoint;
+                } else {
+                    dest = { id: 1 };
+                }
                 dest.map = this.mapId;
                 axios.post(url, dest).then(function (response) {
                     if (response.status === 200) {
