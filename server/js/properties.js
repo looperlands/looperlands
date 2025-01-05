@@ -3801,7 +3801,7 @@ let Properties = {
         inventoryDescription: "Gold Worm",
         respawnDelay: 9900000,
         onConsume: function(player){
-            player.playerClassModifiers.applyTemporaryModifierWithTimeout('fishing', 1000, 60000);
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('fishing', 50, 60000);
         }
     },
     m88nrose: {

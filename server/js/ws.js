@@ -987,14 +987,13 @@ WS.socketIOServer = Server.extend({
                     }
                     let fishExp = Lakes.calculateFishExp(fish, lakeName);
                     player.pendingFish = {name: fish, exp: fishExp, double: (activeTrait === "double_catch")};
-                    let difficulty = Lakes.getDifficulty(player.getNFTWeapon().getLevel(), lakeName, (activeTrait === "upper_hand"));
+                    let normalDifficulty = Lakes.getDifficulty(player.getNFTWeapon().getLevel(), lakeName, (activeTrait === "upper_hand"));
                     let speed = Lakes.getFishSpeed(fish, lakeName);
 
-                    let difficultyAdjusted = difficulty?.difficulty
+                    let difficulty = normalDifficulty?.difficulty
 
                     if (player.playerClassModifiers.isModiferActive('fishing')) {
-                        const percentDifficulty = player.playerClassModifiers.fishing/100 * difficulty?.difficulty
-                        difficultyAdjusted = difficulty?.difficulty + percentDifficulty
+                        difficulty = player.playerClassModifiers.fishing
                     }
 
                     //console.log("diff", difficulty?.difficulty, difficultyAdjusted)
@@ -1002,9 +1001,9 @@ WS.socketIOServer = Server.extend({
                     let response = {
                         allowed: true,
                         fish: fish,
-                        difficulty: difficultyAdjusted,
+                        difficulty: difficulty,
                         speed: speed,
-                        bullseyeSize: difficulty?.bullseye,
+                        bullseyeSize: normalDifficulty?.bullseye,
                         trait: activeTrait
                     };
                     self.worldsMap[sessionData.mapId].announceSpawnFloat(player, fx, fy);
