@@ -559,7 +559,7 @@ module.exports = Player = Character.extend({
                     self.incrementNFTSpecialItemExperience(xp);
                     self.playerEventBroker.lootEvent({ kind: self.pendingFish.name }, caughtAmount);
                     self.handleExperience(xp);
-                    self.server.pushToPlayer(self, new Messages.Kill(self, xp));
+                    self.server.pushToPlayer(self, new Messages.Kill(self.pendingFish.name, xp));
                 }
                 self.pendingFish = null;
                 self.server.announceDespawnFloat(self);
