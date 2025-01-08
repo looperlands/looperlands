@@ -3795,10 +3795,37 @@ let Properties = {
             player.playerClassModifiers.applyTemporaryModifierWithTimeout('fishing', 10, 60000);
         }
     },
+    m88nsourworm: {
+        collectable: true,
+        consumable: true,
+        inventoryDescription: "Sour Gummy Worm",
+        respawnDelay: 9900000,
+        onConsume: function(player){
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('fishing', 20, 60000);
+        }
+    },
+    m88nsourworm2: {
+        collectable: true,
+        consumable: true,
+        inventoryDescription: "Sour Gummy Worm",
+        respawnDelay: 9900000,
+        onConsume: function(player){
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('fishing', 30, 60000);
+        }
+    },
     m88ngoldworm: {
         collectable: true,
         consumable: true,
         inventoryDescription: "Gold Worm",
+        respawnDelay: 9900000,
+        onConsume: function(player){
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('fishing', 40, 60000);
+        }
+    },
+    m88ndiamondworm: {
+        collectable: true,
+        consumable: true,
+        inventoryDescription: "Diamond Worm",
         respawnDelay: 9900000,
         onConsume: function(player){
             player.playerClassModifiers.applyTemporaryModifierWithTimeout('fishing', 50, 60000);

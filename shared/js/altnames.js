@@ -362,6 +362,9 @@ const AltNames = {
     m88ntomato: "Tomato",
     m88nturnip: "Turnip",
     m88ngoldworm: "Gold Worm",
+    m88ndiamondworm: "Diamond Worm",
+    m88nsourworm: "Sour Gummy Worm",
+    m88nsourworm2: "Sour Gummy Worm",
 
     //m88n TT Items
     m88nammocan: "ammo can",

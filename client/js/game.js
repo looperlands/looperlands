@@ -658,6 +658,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "item-m88ntomato",
                     "item-m88nturnip",
                     "item-m88ngoldworm",
+                    "item-m88ndiamondworm",
+                    "item-m88nsourworm",
+                    "item-m88nsourworm2",
                     //MRMlabs
                     "item-firstaidkit",
                     "item-bandaid",
