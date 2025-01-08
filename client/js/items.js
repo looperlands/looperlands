@@ -396,6 +396,10 @@ define(['item'], function(Item) {
         m88nsticks:Item.extend({init:function(id){this._super(id,Types.Entities.M88NSTICKS,"object");this.lootMessage="Some sticks!";}}),
         m88ntomato:Item.extend({init:function(id){this._super(id,Types.Entities.M88NTOMATO,"object");this.lootMessage="A tomato!";}}),
         m88nturnip:Item.extend({init:function(id){this._super(id,Types.Entities.M88NTURNIP,"object");this.lootMessage="A turnip!";}}),
+        m88ngoldworm:Item.extend({init:function(id){this._super(id,Types.Entities.M88NGOLDWORM,"object");this.lootMessage="A golden worm!";}}),
+        m88ndiamondworm:Item.extend({init:function(id){this._super(id,Types.Entities.M88NDIAMONDWORM,"object");this.lootMessage="A diamond worm!";}}),
+        m88nsourworm:Item.extend({init:function(id){this._super(id,Types.Entities.M88NSOURWORM,"object");this.lootMessage="A sour gummy worm!";}}),
+        m88nsourworm2:Item.extend({init:function(id){this._super(id,Types.Entities.M88NSOURWORM2,"object");this.lootMessage="A sour gummy worm!";}}),
         //MRMlabs Items
         firstaidkit:Item.extend({init:function(id){this._super(id,Types.Entities.FIRSTAIDKIT,"object");this.lootMessage="You found a first aid kit!";}}),
         bandaid:Item.extend({init:function(id){this._super(id,Types.Entities.BANDAID,"object");this.lootMessage="You found a bandaid!";}}),
