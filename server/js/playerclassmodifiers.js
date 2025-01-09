@@ -15,6 +15,7 @@ class PlayerClassModifiers {
         this._attackRate = 1;
         this._stealth = 1;
         this._xp = 1;
+        this._fishing = 1
 
         this._temporaryModifiers = {};
         this.loadModifierData();
@@ -32,6 +33,7 @@ class PlayerClassModifiers {
         this._attackRate = modifiers.attackRate;
         this._stealth = modifiers.stealth;
         this._xp = modifiers.xp;
+        this._fishing = modifiers.fishing;
     }
 
     get playerClass() {
@@ -84,6 +86,10 @@ class PlayerClassModifiers {
         return this._applyTemporaryModifier(this._xp, 'xp');
     }
 
+    get fishing() {
+        return  this._applyTemporaryModifier(this._fishing, 'fishing');
+    }
+
     get emoji() {
         switch(this.playerClass) {
             case 'fighter':
@@ -106,6 +112,10 @@ class PlayerClassModifiers {
         return baseValue;
     }
 
+    isModiferActive(modifierName) {
+        return this._temporaryModifiers[modifierName] !== undefined
+    }
+
     async getAllModifiers() {
         await this.loadModifierData();
         return {
@@ -120,7 +130,8 @@ class PlayerClassModifiers {
             attackRate: this.attackRate,
             stealth: this.stealth,
             emoji: this.emoji,
-            xp: this.xp
+            xp: this.xp,
+            fishing: this.fishing
         };
     }
 

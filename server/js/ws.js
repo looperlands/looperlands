@@ -987,15 +987,23 @@ WS.socketIOServer = Server.extend({
                     }
                     let fishExp = Lakes.calculateFishExp(fish, lakeName);
                     player.pendingFish = {name: fish, exp: fishExp, double: (activeTrait === "double_catch")};
-                    let difficulty = Lakes.getDifficulty(player.getNFTWeapon().getLevel(), lakeName, (activeTrait === "upper_hand"));
+                    let normalDifficulty = Lakes.getDifficulty(player.getNFTWeapon().getLevel(), lakeName, (activeTrait === "upper_hand"));
                     let speed = Lakes.getFishSpeed(fish, lakeName);
+
+                    let difficulty = normalDifficulty?.difficulty
+
+                    if (player.playerClassModifiers.isModiferActive('fishing')) {
+                        difficulty = player.playerClassModifiers.fishing
+                    }
+
+                    //console.log("diff", difficulty?.difficulty, difficultyAdjusted)
 
                     let response = {
                         allowed: true,
                         fish: fish,
-                        difficulty: difficulty?.difficulty,
+                        difficulty: difficulty,
                         speed: speed,
-                        bullseyeSize: difficulty?.bullseye,
+                        bullseyeSize: normalDifficulty?.bullseye,
                         trait: activeTrait
                     };
                     self.worldsMap[sessionData.mapId].announceSpawnFloat(player, fx, fy);
@@ -1104,13 +1112,15 @@ WS.socketIOServer = Server.extend({
             }
 
             // Add item to player inventory
-            dao.saveConsumable(nftId, item.item, item.amount ?? 1);
+            let providedItem = Collectables.getCollectItem(item.item);
+            let providedAmount = (Collectables.getCollectAmount(item.item)  ?? 1) * item.amount;
+            dao.saveConsumable(nftId, providedItem, providedAmount);
 
-            let itemCount = gameData.items[item.item];
+            let itemCount = gameData.items[providedItem];
             if (itemCount) {
-                gameData.items[item.item] = itemCount + (item.amount ?? 1);
+                gameData.items[providedItem] = itemCount + providedAmount;
             } else {
-                gameData.items[item.item] = (item.amount ?? 1);
+                gameData.items[providedItem] = providedAmount;
             }
 
             // Store changes in session data
@@ -1297,6 +1307,11 @@ WS.socketIOServer = Server.extend({
         app.post("/inventorysync", async (req, res) => {
             const inventorySyncController = new InventorySyncController(dao, cache);
             return inventorySyncController.syncPlayer(req, res);
+        });
+
+        app.post("/music", async (req, res) => {
+            const music = await platformClient.loadMusic(req.body.map);
+            res.status(200).send(music);
         });
 
         self.io.on('connection', function (connection) {

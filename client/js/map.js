@@ -29,17 +29,19 @@ define(['jquery', 'area'], function ($, Area) {
         },
 
         _initStreamCheck: function () {
-            let url = 'https://loopworms.io/DEV/LooperLands/music.php?mapID=' + this.mapId;
+            let url = '/music';
             let song = "";
             let self = this;
             let audio;
+            let mapRequest = { map: this.mapId };
+
             setInterval(function () {
-                axios.get(url).then(function (response) {
+                axios.post(url, mapRequest).then(function (response) {
                     if (response.data === undefined || response.data.length === 0) {
                         return;
                     }
 
-                    let mp3URL = response.data[0]['mp3URL'];
+                    let mp3URL = response.data;
 
                     if (mp3URL === 'null' || self.game.app.settings.getStreamMusicEnabled() === false) {
                         if (audio !== undefined) {

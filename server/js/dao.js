@@ -44,12 +44,12 @@ const updateExperience = async function (nftId, xp, retry) {
 }
 
 const loadMapFlow = async function (mapId) {
-  const options = { headers: { 'X-Api-Key': API_KEY } };
-  let url = `${LOOPWORMS_LOOPERLANDS_BASE_URL}/Maps/selectLooperLands_Quest2.php?map=${mapId}`;
   try {
-    const responseData = await axios.get(url, options);
-    printResponseJSON(url, responseData);
-    return JSON.parse(responseData.data);
+    const flow = await platformClient.loadMapFlow(mapId);
+
+    printResponseJSON('loadMapFlow:' + mapId, flow);
+
+    return flow;
   } catch (error) {
     return undefined;
   }

@@ -325,13 +325,15 @@ define(['jquery', 'storage'], function ($, Storage) {
                 avatarDiv.css({
                     display: 'block',
                     "background-image": dialogue.custom_css.avatar,
-                    "background-position": dialogue.custom_css.background_position || ''
+                    "background-position": dialogue.custom_css.background_position || '',
+                    "background-size": dialogue.custom_css.background_size || '',
                 });
             } else {
                 avatarDiv.css({
                     display: 'none', 
                     "background-image": '',
-                    "background-position": ''
+                    "background-position": '',
+                    "background-size": ''
                 });
             }
 
@@ -445,6 +447,10 @@ define(['jquery', 'storage'], function ($, Storage) {
         },
 
         initEquipmentIcons: function () {
+            if (!this.game.player) {
+                return;
+            }
+
             const scale = this.game.renderer.getScaleFactor();
             const getIconPath = (spriteName) => {
                     let url = this.dynamicNFTIconURL[spriteName];

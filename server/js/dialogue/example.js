@@ -6,6 +6,17 @@ dialogue = {
     "npc": Types.Entities.DIALOGUE_EXAMPLE_NPC,
     "name": "John Do", // The name of the NPC (might be used in UI in the future), free text
     "start": "start", // The first node to start the dialogue (if no resume conditions are met)
+    
+    // "custom_css": {                              // Use "custom_css" if you want to specify a default custom_css for your character's dialogue (you can even override this default on a node by node basis)
+    //    "avatar": "url(../img/3/JOHN_DOE.png)",   required* - [avatar] *if you want an avatar to show
+    //    "background_position": "0px 0px",         optional  - [avatar] helpful to position your avatar image
+    //    "background_size": "cover",               optional  - [avatar] may be helpful positioning your avatar image
+    //    "top": "15%",                             optional  - [dialogue popup] sets top for dialogue popup    (default = 15%)
+    //    "left": "25%",                            optional  - [dialogue popup] sets left for dialogue popup   (default = 25%)
+    //    "width": "45%",                           optional  - [dialogue popup] sets width of dialogue popup   (default = 45%)
+    //    "height": "auto"                          optional  - [dialogue popup] sets height of dialogue popup  (default = auto)
+    //  },
+
     "resume_conditions": [ // The last node that matches the conditions will be the starting node, otherwise it will start from the node defined as `start`-property
         {
             // A list of conditions to check, all must be true
@@ -54,6 +65,9 @@ dialogue = {
     // When no `goto` property is defined, the dialogue will end
     "nodes": {
         "start": {
+            // "custom_css": {     // FYI - You can even specify custom_css that overrides the default on a node by node basis
+            //    "width": "69%"
+            //  },
             // The text to show the player
             // This can be a string, indicating a single message, or an array of strings, indicating multiple messages
             // When you use an array, you can optionally again use an array of strings, to indicate multiple options for the NPC to choose from (randomly)

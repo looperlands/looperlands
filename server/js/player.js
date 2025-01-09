@@ -555,8 +555,11 @@ module.exports = Player = Character.extend({
                     let caughtAmount = self.pendingFish.double ? 2 : 1;
                     let expAward = bullseye ? Math.round(self.pendingFish.exp * 1.5) : self.pendingFish.exp;
 
-                    self.incrementNFTSpecialItemExperience(expAward * caughtAmount);
+                    const xp = expAward * caughtAmount;
+                    self.incrementNFTSpecialItemExperience(xp);
                     self.playerEventBroker.lootEvent({ kind: self.pendingFish.name }, caughtAmount);
+                    self.handleExperience(xp);
+                    self.server.pushToPlayer(self, new Messages.Kill(self.pendingFish.name, xp));
                 }
                 self.pendingFish = null;
                 self.server.announceDespawnFloat(self);
