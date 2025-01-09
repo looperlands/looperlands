@@ -80,6 +80,7 @@ async function loadFlow(mapId, eventBroker, worldserver) {
     }
 
     flows[mapId] = await dao.loadMapFlow(mapId);
+
     if (flows[mapId] === undefined || flows[mapId] === null) {
         return;
     }
@@ -98,7 +99,7 @@ function assignEventHandlers(flow, eventBroker, worldserver) {
     if (!loadedBlocks[eventBroker.player.nftId]) {
         loadedBlocks[eventBroker.player.nftId] = {};
     }
-    
+
     for (const handler of flow.handlers) {
         if (!loadedBlocks[eventBroker.player.nftId][handler.idx]) {
             loadedBlocks[eventBroker.player.nftId][handler.idx] = new events[handler.type](handler.options, worldserver);
@@ -156,7 +157,6 @@ function findAllBlocksOfType(blocks, type) {
 
 function handleBlock(block, event, worldserver, eventBroker, incomingBlock) {
     event.incoming = incomingBlock;
-
     if (!loadedBlocks[eventBroker.player.nftId][block.idx]) {
         let blockClassName = blocks[block.type];
         if (!blockClassName) {

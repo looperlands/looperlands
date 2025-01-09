@@ -25,7 +25,7 @@ define(function() {
 
         getRandomPosition() {
             let pos = {};
-            
+
             pos.x = this.x + Math.floor(Math.random() * this.width);
             pos.y = this.y + Math.floor(Math.random() * this.height);
 

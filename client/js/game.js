@@ -9191,7 +9191,18 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         self.renderer.clearScreen(this.renderer.context);
                         self.renderer.redrawTerrain = true;
                         self.resetZone();
+                    }, 10)
+                    setTimeout(() => {
+                        self.renderer.clearScreen(this.renderer.context);
+                        self.renderer.redrawTerrain = true;
+                        self.resetZone();
                     }, 100)
+                    setTimeout(() => {
+                        self.renderer.clearScreen(this.renderer.context);
+                        self.renderer.redrawTerrain = true;
+                        self.resetZone();
+                    }, 1000)
+
                 }
             },
 
