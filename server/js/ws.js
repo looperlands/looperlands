@@ -1309,6 +1309,11 @@ WS.socketIOServer = Server.extend({
             return inventorySyncController.syncPlayer(req, res);
         });
 
+        app.post("/music", async (req, res) => {
+            const music = await platformClient.loadMusic(req.body.map);
+            res.status(200).send(music);
+        });
+
         self.io.on('connection', function (connection) {
             //console.log('a user connected');
 

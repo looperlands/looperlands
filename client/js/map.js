@@ -29,12 +29,14 @@ define(['jquery', 'area'], function ($, Area) {
         },
 
         _initStreamCheck: function () {
-            let url = 'https://api.looperlands.io/api/maps/' + this.mapId+ '/music';
+            let url = '/music';
             let song = "";
             let self = this;
             let audio;
+            let mapRequest = { map: this.mapId };
+
             setInterval(function () {
-                axios.get(url).then(function (response) {
+                axios.post(url, mapRequest).then(function (response) {
                     if (response.data === undefined || response.data.length === 0) {
                         return;
                     }

@@ -351,7 +351,18 @@ class LooperLandsPlatformClient {
         try {
             const url = `/api/maps/${mapId}/flow`;
             const response = await this.client.get(url);
-            
+
+            return response.data;
+        } catch (error) {
+            this.handleError(error);
+        }
+    }
+
+    async loadMusic(mapId) {
+        try {
+            const url = `/api/maps/${mapId}/music`;
+            const response = await this.client.get(url);
+
             return response.data;
         } catch (error) {
             this.handleError(error);
