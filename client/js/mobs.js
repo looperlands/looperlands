@@ -1,4 +1,122 @@
-define(['mob', 'timer'], function(Mob, Timer) {
+define(['mob', 'timer', 'mapSpecific/mapSprites'], function(Mob, Timer, mapSprites) {
+
+/////////////////////////////////////
+// EXAMPLE OF AVAILABLE PROPERTIES //
+/////////////////////////////////////
+/*  EXAMPLEMOB: Mob.extend({
+    
+    // Initializes mob's properties upon creation.
+    init: function(id) {
+        this._super(id, Types.Entities.EXAMPLEMOB); // Call's the parent class's init function and passes the mob's ID and entity type.
+
+        // Movement and attack speeds
+        this.moveSpeed = 250;               // Default speed of the mob's movement
+        this.idleSpeed = 100;               // Speed of the mob's idle (standby) behavior
+        this.atkSpeed = 100;                // Speed of the mob's attacks
+        this.setAttackRate(800);            // Milliseconds between attacks (sets attack rate)
+
+        // Shadow and appearance settings
+        this.shadowOffsetY = -2;            // Adjust the Y position of the mob's shadow
+        this.isAggressive = true;           // Whether the mob is aggressive (hostile) towards players (default = true)
+        this.aggroRange = 5;                // The distance within which the mob will aggro on players (default = 1)
+        this.deathAnimated = true;          // Whether the mob has a death animation
+        this.title = "LORD OF THUDD";       // Special title for the mob (e.g., "Boss")
+        this.setVisible(false);             // Set the initial visibility of the mob, used for Ghostie (default = true)
+        this.nameless = false;              // Set to true if the mob should not have a name
+        this.nameOffsetY = -5;              // Adjusts the location of the entity name (default = -10)
+    },
+
+    // Makes the mob "appear" (become visible and hostile) -- used for Ghostie
+    appear: function() {
+        this.isFriendly = false;            // Set the mob to hostile (not friendly)
+        this.setVisible(true);              // Make the mob visible in the game world
+        this.fadeIn(new Date().getTime());  // Apply a fade-in effect to the mob
+    },
+
+    // Called when the mob breaks its friendly state (e.g., when it's near a player) -- used for Ghostie
+    breakFriendly: function(player) {
+        if (this.isFriendly && this.isNear(player, this.aggroRange - 1) && !this.exitingCombat) {
+            this.appear(); // Change the mob's state to aggressive and make it appear
+            return true;
+        }
+        return false; // If no change is needed, return false
+    },
+
+    // Called when the mob joins combat (e.g., becoming aggressive towards a player) -- used for Ghostie
+    joinCombat: function() {
+        this._super(); // Call the parent class's joinCombat method
+        if (this.inCombat && this.isFriendly) {
+            this.appear(); // Make the mob appear when it joins combat
+        }
+    },
+
+    // Called when the mob exits combat (e.g., becoming passive again) -- used for Ghostie
+    exitCombat: function() {
+        let self = this;
+        this.isFriendly = true;         // Set the mob back to friendly
+        this.inCombat = false;          // Set the mob to not be in combat
+        this.exitingCombat = setTimeout(function() {
+            self.setVisible(false);     // Make the mob invisible after a delay
+            self.exitingCombat = null;
+        }, 1500);                       // Hide the mob after 1.5 seconds of exiting combat
+    },
+
+    // Restore the mob's default movement settings (e.g., after performing a special move)
+    restoreDefaultMovement: function() {
+        this.moveSpeed = 250;   // Default movement speed
+        this.walkSpeed = 150;   // Default walking speed
+    },
+
+    // Handle idle behavior based on whether the mob has a target
+    idle: function(orientation) {
+        if (!this.hasTarget()) {
+            this._super(Types.Orientations.DOWN);   // If no target, idle facing down
+        } else {
+            this._super(orientation);               // If the mob has a target, idle based on its orientation
+        }
+    },
+
+    // Perform the mob's special move (e.g., an area-of-effect attack)
+    doSpecial: function() {
+        let self = this;
+
+        // Temporarily adjust the mob's movement speed and walking speed for the special move
+        self.moveSpeed = 100;  // Slower movement for charging at the target
+        self.walkSpeed = 75;   // Adjust the walk speed during the special move
+
+        let rootTarget;
+
+        // If the mob has a target, root it (prevent movement) for the special attack
+        if (self.hasTarget()) {
+            rootTarget = self.target;
+            rootTarget.root();          // Root the target to prevent it from moving during the attack
+        }
+
+        // Function to perform the "smash" area-of-effect (AoE) attack
+        function smashAoe(unrootTarget) {
+            if (unrootTarget) {
+                unrootTarget.unroot();  // Unroot the target if it was previously rooted
+            }
+
+            self.root();                // Root the mob to prevent it from moving during the special attack
+            self.animationLock = true;  // Lock the animation to prevent interruptions
+
+            // Play the special attack animation
+            self.animate("special", 150, 1, function() {
+                self.animationLock = false;     // Unlock animation after it finishes
+                self.unroot();                  // Unroot the mob to allow movement again
+                self.restoreDefaultMovement();  // Restore the mob's default movement settings
+                self.idle();                    // Return to idle behavior
+            });
+        }
+
+        // Trigger the AoE smash attack after 2 seconds
+        setTimeout(function() {
+            smashAoe(rootTarget);
+        }, 2000); // Adjust the delay as needed in server/worldserver.js for consistency
+    }
+}),
+*/
 
     var Mobs = {
         Rat: Mob.extend({
@@ -2771,6 +2889,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.idleSpeed = 750;
                 this.setAttackRate(1000);
                 //this.deathAnimated = true;
+                //this.deathAnimated = true;
                 this.isAggressive = true;
                 this.aggroRange = 3;
             }
@@ -4451,16 +4570,7 @@ define(['mob', 'timer'], function(Mob, Timer) {
                 this.setAttackRate(700);
                 this.aggroRange = 3;
             }
-        }),
-        SLUDGERAT: Mob.extend({ init: function(id) {this._super(id, Types.Entities.SLUDGERAT); this.moveSpeed = 100 + Math.random()*300; this.atkSpeed = 50 + Math.random()*100; this.idleSpeed = 700; this.shadowOffsetY = -2; this.isAggressive = true; this.aggroRange = 1 + Math.random()*4; this.deathAnimated = true;}}),
-        SPACECRAB: Mob.extend({ init: function(id) {this._super(id, Types.Entities.SPACECRAB); this.moveSpeed = 150 + Math.random()*100; this.atkSpeed = 20 + Math.random()*40; this.idleSpeed = 500; this.isAggressive = true; this.aggroRange = 1 + Math.random()*3; this.deathAnimated = true;}}),
-        BLACKMAGE: Mob.extend({ init: function(id) {this._super(id, Types.Entities.BLACKMAGE); this.moveSpeed = 100 + Math.random()*100; this.atkSpeed = 50 + Math.random()*50; this.idleSpeed = 150; this.isAggressive = true; this.aggroRange = 1 + Math.random()*3; this.deathAnimated = true;}}),
-        RABBID: Mob.extend({ init: function(id) {this._super(id, Types.Entities.RABBID); this.moveSpeed = 100 + Math.random()*100; this.atkSpeed = 50 + Math.random()*50; this.idleSpeed = 250; this.isAggressive = true; this.aggroRange = 1 + Math.random()*3; this.deathAnimated = true;}}),
-        ZOMBBID: Mob.extend({ init: function(id) {this._super(id, Types.Entities.ZOMBBID); this.moveSpeed = 100 + Math.random()*250; this.atkSpeed = 50 + Math.random()*50; this.idleSpeed = 250; this.isAggressive = true; this.aggroRange = 1 + Math.random()*3; this.deathAnimated = true;}}),
-        HOPPINK: Mob.extend({ init: function(id) {this._super(id, Types.Entities.HOPPINK); this.moveSpeed = 100 + Math.random()*150; this.atkSpeed = 50 + Math.random()*100; this.idleSpeed = 250; this.isAggressive = true; this.aggroRange = 1 + Math.random()*3; this.deathAnimated = true;}}),
-        HOPPURP: Mob.extend({ init: function(id) {this._super(id, Types.Entities.HOPPURP); this.moveSpeed = 100 + Math.random()*150; this.atkSpeed = 50 + Math.random()*100; this.idleSpeed = 250; this.isAggressive = true; this.aggroRange = 1 + Math.random()*5; this.deathAnimated = true;}}),
-        CRAPTOR: Mob.extend({ init: function(id) {this._super(id, Types.Entities.CRAPTOR); this.moveSpeed = 350; this.atkSpeed = 100; this.idleSpeed = 700; this.nameOffsetY = -24}}),
-        
+        }),       
         BURGERBOSS: Mob.extend({ init: function(id) { this._super(id, Types.Entities.BURGERBOSS); this.moveSpeed = 200; this.atkSpeed = 250; this.idleSpeed = 800; this.shadowOffsetY = 1; this.setAttackRate(1200);}}),
         FRYGUY: Mob.extend({ init: function(id) { this._super(id, Types.Entities.FRYGUY); this.moveSpeed = 350; this.atkSpeed = 100; this.idleSpeed = 800; this.shadowOffsetY = 1; this.setAttackRate(1200);}}),
         GHOST1: Mob.extend({ init: function(id) { this._super(id, Types.Entities.GHOST1); this.moveSpeed = 300; this.atkSpeed = 100; this.idleSpeed = 800; this.shadowOffsetY = 1; this.aggroRange = 2; this.setAttackRate(1200);}}),
@@ -4473,5 +4583,29 @@ define(['mob', 'timer'], function(Mob, Timer) {
         EVILPUMPKIN: Mob.extend({ init: function(id) { this._super(id, Types.Entities.EVILPUMPKIN); this.moveSpeed = 350; this.atkSpeed = 100; this.idleSpeed = 800; this.shadowOffsetY = 1; this.setAttackRate(1200);}}),
         // @nextMobLine@
     };
+
+    // Dynamically add mobs from mapSprites
+    mapSprites.MOBS.forEach(mob => {
+        const mobName = mob.name;
+        const mobSettings = mob.settings;
+
+        // Check if the mob exists in the Mobs dictionary (to avoid overwriting static mobs)
+        if (!Mobs[mobName]) {
+            Mobs[mobName] = Mob.extend({
+                init: function(id) {
+                    this._super(id, Types.Entities[mobName]);
+                    
+                    // Apply dynamic settings from mapSprites
+                    Object.keys(mobSettings).forEach(key => {
+                        if (this[key] !== undefined) {
+                            this[key] = mobSettings[key];  // Apply the setting dynamically
+                        }
+                    });
+                }
+            });
+        }
+    });
+
+
     return Mobs;
 });

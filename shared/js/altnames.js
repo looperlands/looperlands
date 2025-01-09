@@ -1,3 +1,5 @@
+const mapSprites = require("../client/js/mapSpecific/mapSprites");
+
 const AltNames = {
     skeleton2: 'greater skeleton',
     eye: 'evil eye',
@@ -415,33 +417,18 @@ const AltNames = {
     dragonclaw: "a dragon claw",
     luckybabydragon: "a lucky baby dragon",
 
-    //BITCORN PHISHIES
-    bit_BoneFish: "a BoneFish",
-    bit_Corn: "RIVER CORN!",
-    bit_FEET: "FEET",
-    bit_freshPrawnce: "The Fresh Prawnce",
-    bit_JEFF: "JEFF",
-    bit_Kickle: "Kickle the Pickle",
-    bit_maCORNtosh: "one of dem' maCORNtosh CORNputers",
-    bit_MrPunchy: "Mr. Punchy",
-    bit_SnaggletoothEel: "a nasty Snaggletooth Eel!",
-    bit_NOPEmato: "a NOPEmato",
-    cornBootFish: "Old Gregg's Shoe",
-    cornCanFish: "an empty can of Mother Shucker",
-    cornWinkyFish: "The Legendary Winky",
-
-    //BITCORN MOBS
-    SLUDGERAT: "sludgeRAT",
-    SPACECRAB: "spaceCRAB",
-    BLACKMAGE: "motherFlippin BlackMAGE",
-    RABBID: "Rabbid",
-    ZOMBBID: "Zombbid",
-    HOPPURP: "HOPpurp",
-    HOPPINK: "HOPpink",
-    CRAPTOR: "CRAPtor",
-
     devon: "Chase", 
 };
+
+// Combine in dynamic sprites
+if (mapSprites) {
+    // Iterate over both NPCs and Mobs categories and add their altNames to AltNames
+    ['NPCS', 'MOBS'].forEach(category => {
+        mapSprites[category].forEach(({ name, altName }) => {
+            AltNames[name] = altName; // Assign altName if it exists
+        });
+    });
+}
 
 AltNames.getAltNameFromKind = function(kind){
     if(kind in AltNames) {

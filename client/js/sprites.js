@@ -1007,6 +1007,8 @@ define(['text!../sprites/agent.json',
         'text!../sprites/BITNPC_BITCORN.json',
         'text!../sprites/BITNPC_THORNBEARD_KNEEL.json',
         'text!../sprites/BITNPC_THORNBEARD.json',
+        'text!../sprites/BITNPC_RADIO.json',
+        'text!../sprites/BITNPC_PC.json',
 
         // BITCORN MOBS
         'text!../sprites/SLUDGERAT.json',

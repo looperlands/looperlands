@@ -16,7 +16,14 @@ let Properties = {
         drops: {
             flask: 40,
             axe: 20,
-            loopring: 5
+            //loopring: 5
+            candycorntreat: 5,
+            candytreat: 3,
+            chocolatetreat: 2,
+            lollitreat: 1,
+            headstonetrick: 5,
+            skullnbonestrick: 1,
+            spidertrick: 3
         },
         weaponMod: 1.5, //bigger mod cause attack rate is 50% slower
         respawnDelay: 45000,
@@ -220,90 +227,56 @@ let Properties = {
             WILDBLADE: 40,
         },
     },
+
+
+    // bitcorn
     SLUDGERAT: {
         level: 15,
-        drops: {
-            flask: 34,
-	    taikoboost: 5,
-	    GOLD: 40,
-            GOLD2: 15,
-            GOLD3: 5,
-	    GOLD4: 1
-        },
+        drops: { flask: 34, taikoboost: 5, GOLD: 40, GOLD2: 15, GOLD3: 5, GOLD4: 1 },
     },
     SPACECRAB: {
         level: 20,
-        drops: {
-            flask: 30,
-	    taikoboost: 5,
-	    GOLD: 15,
-            GOLD2: 35,
-            GOLD3: 8,
-	    GOLD4: 2
-        },
+        drops: { flask: 30, taikoboost: 5, GOLD: 15, GOLD2: 35, GOLD3: 8, GOLD4: 2 },
     },
     BLACKMAGE: {
         level: 25,
-        drops: {
-            flask: 50
-        },
         armorMod: 2,
         weaponMod: 1.5,
         hpMod: 5,
         messages: ['Etheriumos!', 'Bitcornia!', 'Go-go-gadget magic!', 'BooyahKORNsha!'],
+        drops: { flask: 50 },
     },
     HOPPURP: {
         level: 30,
-        drops: {
-            flask: 25
-        },
+        drops: { flask: 40 },
         respawnDelay: 15000
     },
     HOPPINK: {
         level: 35,
-        drops: {
-            flask: 40,
-            taikoboost: 10
-        },
+        drops: { flask: 40, taikoboost: 10 },
         respawnDelay: 30000
     },
     ZOMBBID: {
         level: 42,
-        drops: {
-            flask: 90,
-            taikoboost: 8,
-            loopring: 2
-        },
+        drops: { flask: 90, taikoboost: 10 },
         respawnDelay: 120000
     },
     RABBID: {
         level: 100,
-        drops: {
-            flask: 5,
-            taikoboost: 5,
-            GOLD4: 45,
-            GOLD5: 45
-        },
+        drops: { flask: 90, taikoboost: 10 },
         weaponMod: 3,
         hpMod: 2,
         respawnDelay: 160000
     },
     CRAPTOR: {
         level: 69,
-        drops: {
-            flask: 90,
-            taikoboost: 10
-        },
+        drops: { flask: 90, taikoboost: 10 },
         weaponMod: 3,
         hpMod: 2,
         respawnDelay: 160000
     },
 
-
-
-
-//BOSSES
-
+    //BOSSES
     kingslime: {
         level: 3,
         drops: {
@@ -1127,7 +1100,7 @@ let Properties = {
         level: 30,
         hpMod: 8.25,
         weaponMod: 2.2,
-        xp:10000,
+        xp: 10000,
         redpacket: true,
         respawnDelay: 30000
     },
@@ -1167,8 +1140,8 @@ let Properties = {
         respawnDelay: 30000
     },
 
-     //robits Mobs
-     ROBITSE3: {
+    //robits Mobs
+    ROBITSE3: {
         level: 2,
         drops: {
             HAMSTER1: 100
@@ -1268,7 +1241,7 @@ let Properties = {
         },
         messages: ['I will beepin destroy you!'],
         armorMod: 2.2,
-        respawnDelay:  60000
+        respawnDelay: 60000
     },
 
     FRYGUY: {
@@ -1281,10 +1254,10 @@ let Properties = {
         },
         messages: ['I will beepin destroy you!'],
         armorMod: 2.2,
-        respawnDelay:  60000
+        respawnDelay: 60000
     },
 
-     COLOSSUS: {
+    COLOSSUS: {
         level: 30,
         drops: {
             taikoboost: 50,
@@ -1338,19 +1311,26 @@ let Properties = {
             GOLD: 1
         },
         messages: ['BOO!'],
-        respawnDelay:  60000
+        respawnDelay: 60000
     },
 
     GHOST2: {
         level: 10,
         drops: {
-            taikoboost: 50,
-            GOLD: 5,
-            GOLD1: 3,
-            GOLD2: 1
+            //taikoboost: 50,
+            //GOLD: 5,
+            //GOLD1: 3,
+            //GOLD2: 1
+            candycorntreat: 7,
+            lollitreat: 4,
+            chocolatetreat: 2,
+            candytreat: 1,
+            headstonetrick: 7,
+            spidertrick: 4,
+            skullnbonestrick: 1
         },
         messages: ['BOO!'],
-        respawnDelay:  60000
+        respawnDelay: 60000
 
     },
 
@@ -1363,22 +1343,29 @@ let Properties = {
             GOLD2: 1
         },
         messages: ['BOO!'],
-        respawnDelay:  60000
-    
+        respawnDelay: 60000
+
     },
 
     HORSEMAN: {
         level: 13,
         drops: {
-            taikoboost: 40,
-            GOLD: 40,
-            GOLD2: 10,
-            GOLD3: 2
+            //taikoboost: 40,
+            //GOLD: 40,
+            //GOLD2: 10,
+            //GOLD3: 2
+            candycorntreat: 5,
+            candytreat: 3,
+            chocolatetreat: 2,
+            lollitreat: 1,
+            headstonetrick: 5,
+            skullnbonestrick: 1,
+            spidertrick: 3
         },
         messages: ['Shinu!'],
         armorMod: 2.2,
         respawnDelay: 180000
-    
+
     },
 
     WRAITH: {
@@ -1392,7 +1379,7 @@ let Properties = {
         messages: ['Shinu!'],
         armorMod: 2.2,
         respawnDelay: 120000
-    
+
     },
 
     PUMPKINWARLOCK: {
@@ -1406,7 +1393,7 @@ let Properties = {
         messages: ['Shinu!'],
         armorMod: 2.2,
         respawnDelay: 120000
-    
+
     },
 
     EVILPUMPKIN: {
@@ -1417,7 +1404,7 @@ let Properties = {
         messages: ['Shinu!'],
         armorMod: 2.2,
         respawnDelay: 6000
-    
+
     },
 
     //m88n's Mobs
@@ -2198,7 +2185,7 @@ let Properties = {
         level: 1,
         friendly: true
     },
-    
+
     m88ndinow: {
         level: 1,
         friendly: true
@@ -2263,7 +2250,7 @@ let Properties = {
         level: 1,
         friendly: true
     },
-    
+
     m88nfishyf: {
         level: 1,
         friendly: true
@@ -2538,13 +2525,13 @@ let Properties = {
     wolfboss: {
         level: 25,
         drops: {
-            cagedrat: 100,     
+            cagedrat: 100,
         },
         messages: ['I dont want to grow up!'],
         armorMod: 1.1,
         weaponMod: 1.6,
         hpMod: 2.0,
-        xp: 12000,  
+        xp: 12000,
         respawnDelay: 100000
     },
 
@@ -2600,36 +2587,36 @@ let Properties = {
             flask: 50
         }
     },
-   cobWalkingNpc1: {
-       hp: 10,
-       armor: 1,
-       weapon: 1,
-       friendly: true
-   },
-   cobWalkingNpc2: {
-       hp: 10,
-       armor: 1,
-       weapon: 1,
-       friendly: true
-   },
-   cobWalkingNpc3: {
-       hp: 10,
-       armor: 1,
-       weapon: 1,
-       friendly: true
-   },
-   cobWalkingNpc4: {
-       hp: 10,
-       armor: 1,
-       weapon: 1,
-       friendly: true
-   },
-   cobWalkingNpc5: {
-       hp: 10,
-       armor: 1,
-       weapon: 1,
-       friendly: true
-   },
+    cobWalkingNpc1: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    cobWalkingNpc2: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    cobWalkingNpc3: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    cobWalkingNpc4: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+    cobWalkingNpc5: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
 
     //Field effects
     magcrack: {
@@ -2702,7 +2689,7 @@ let Properties = {
             duration: 60000
         },
         inventoryDescription: "Small healing potion (75)",
-        onConsume: function(player){
+        onConsume: function (player) {
             player.regenHealthBy(75);
         }
     },
@@ -2714,7 +2701,7 @@ let Properties = {
             duration: 60000
         },
         inventoryDescription: "Medium healing potion (150)",
-        onConsume: function(player){
+        onConsume: function (player) {
             player.regenHealthBy(150);
         }
     },
@@ -2726,7 +2713,7 @@ let Properties = {
             duration: 60000
         },
         inventoryDescription: "Large healing potion (300)",
-        onConsume: function(player){
+        onConsume: function (player) {
             player.regenHealthBy(300);
         }
     },
@@ -2738,7 +2725,7 @@ let Properties = {
             duration: 180000
         },
         inventoryDescription: "Liquid loopium",
-        onConsume: function(player){
+        onConsume: function (player) {
             player.startInvincibility();
         }
     },
@@ -2750,7 +2737,7 @@ let Properties = {
             duration: 60000
         },
         inventoryDescription: "Caged rat",
-        onConsume: function(player) {
+        onConsume: function (player) {
             player.releaseMob(Types.Entities.RAT);
         }
     },
@@ -2882,7 +2869,7 @@ let Properties = {
         },
         inventoryDescription: "Mysterious Lamp",
         respawnDelay: 42069741,
-        onConsume: function(player) {
+        onConsume: function (player) {
             player.releaseNpc(Types.Entities.M88NGENIE, 15000);
         }
     },
@@ -2895,7 +2882,7 @@ let Properties = {
         },
         inventoryDescription: "Mysterious Prizes",
         respawnDelay: 60000,
-        onConsume: function(player) {
+        onConsume: function (player) {
             player.releaseMob(Types.Entities.M88NPINATABALLOONS);
         }
     },
@@ -2908,7 +2895,7 @@ let Properties = {
         },
         inventoryDescription: "Brown Bag",
         respawnDelay: 60000,
-        onConsume: function(player) {
+        onConsume: function (player) {
             player.releaseItem(Types.Entities.M88NDIRT);
         }
     },
@@ -2921,7 +2908,7 @@ let Properties = {
         },
         inventoryDescription: "Black Bag",
         respawnDelay: 60000,
-        onConsume: function(player) {
+        onConsume: function (player) {
             player.releaseItem(Types.Entities.M88NTICKET);
         }
     },
@@ -2934,7 +2921,7 @@ let Properties = {
         },
         inventoryDescription: "Golden Bag",
         respawnDelay: 60000,
-        onConsume: function(player) {
+        onConsume: function (player) {
             player.releaseItem(Types.Entities.M88NGOLDENTICKET);
         }
     },
@@ -2947,7 +2934,7 @@ let Properties = {
         },
         inventoryDescription: "Gem Bag",
         respawnDelay: 60000,
-        onConsume: function(player) {
+        onConsume: function (player) {
             player.releaseItem(Types.Entities.M88NGEM);
         }
     },
@@ -2960,7 +2947,7 @@ let Properties = {
         },
         inventoryDescription: "Lucky Bag",
         respawnDelay: 60000,
-        onConsume: function(player) {
+        onConsume: function (player) {
             player.releaseItem(Types.Entities.M88NTACO);
         }
     },
@@ -2973,7 +2960,7 @@ let Properties = {
         },
         inventoryDescription: "Medic Bag",
         respawnDelay: 60000,
-        onConsume: function(player) {
+        onConsume: function (player) {
             player.releaseItem(Types.Entities.FIRSTAIDKIT);
         }
     },
@@ -2986,7 +2973,7 @@ let Properties = {
         },
         inventoryDescription: "Medic Bag 2",
         respawnDelay: 60000,
-        onConsume: function(player) {
+        onConsume: function (player) {
             player.releaseItem(Types.Entities.STRANGEYELLOWLIQUID);
         }
     },
@@ -2999,7 +2986,7 @@ let Properties = {
         },
         inventoryDescription: "Ruck Sack",
         respawnDelay: 60000,
-        onConsume: function(player) {
+        onConsume: function (player) {
             player.releaseItem(Types.Entities.M88NKEVLARARMOR);
         }
     },
@@ -3012,7 +2999,7 @@ let Properties = {
         },
         inventoryDescription: "Ruck Sack 2",
         respawnDelay: 60000,
-        onConsume: function(player) {
+        onConsume: function (player) {
             player.releaseItem(Types.Entities.M88NBRASSKNUCKLES);
         }
     },
@@ -3025,7 +3012,7 @@ let Properties = {
         },
         inventoryDescription: "Ruck Sack 3",
         respawnDelay: 60000,
-        onConsume: function(player) {
+        onConsume: function (player) {
             player.releaseItem(Types.Entities.M88NGRENADE);
         }
     },
@@ -3050,7 +3037,7 @@ let Properties = {
             duration: 60000
         },
         inventoryDescription: "Mimosa",
-        onConsume: function(player){
+        onConsume: function (player) {
             player.setDropOverride(Types.Entities.GOLD, 20000);
         }
     },
@@ -3062,7 +3049,7 @@ let Properties = {
             duration: 60000
         },
         inventoryDescription: "Glass of Champagne",
-        onConsume: function(player){
+        onConsume: function (player) {
             player.setDropOverride(Types.Entities.GOLD2, 20000);
         }
     },
@@ -3074,7 +3061,7 @@ let Properties = {
             duration: 60000
         },
         inventoryDescription: "Bottle of Champagne",
-        onConsume: function(player){
+        onConsume: function (player) {
             player.setDropOverride(Types.Entities.GOLD3, 20000);
         }
     },
@@ -3086,7 +3073,7 @@ let Properties = {
             duration: 300000
         },
         inventoryDescription: "Shot of m88nshine",
-        onConsume: function(player){
+        onConsume: function (player) {
             player.setDropOverride(Types.Entities.M88NGEM, 10000);
         }
     },
@@ -3098,7 +3085,7 @@ let Properties = {
             duration: 300000
         },
         inventoryDescription: "Dirty Martini",
-        onConsume: function(player){
+        onConsume: function (player) {
             player.setDropOverride(Types.Entities.M88NDIRT, 10000);
         }
     },
@@ -3110,7 +3097,7 @@ let Properties = {
             duration: 60000
         },
         inventoryDescription: "Mana Mai Tai",
-        onConsume: function(player){
+        onConsume: function (player) {
             player.setDropOverride(Types.Entities.MANACRYSTAL, 10000);
         }
     },
@@ -3122,7 +3109,7 @@ let Properties = {
             duration: 60000
         },
         inventoryDescription: "Paradise Hurricane",
-        onConsume: function(player){
+        onConsume: function (player) {
             player.setDropOverride(Types.Entities.WOOD, 10000);
         }
     },
@@ -3134,7 +3121,7 @@ let Properties = {
             duration: 60000
         },
         inventoryDescription: "Nexus Sangria",
-        onConsume: function(player){
+        onConsume: function (player) {
             player.setDropOverride(Types.Entities.ORE, 10000);
         }
     },
@@ -3146,7 +3133,7 @@ let Properties = {
             duration: 360000
         },
         inventoryDescription: "Sunset Daiquiri",
-        onConsume: function(player){
+        onConsume: function (player) {
             player.playerClassModifiers.applyTemporaryModifierWithTimeout('xp', 3, 180000);
         }
     },
@@ -3158,7 +3145,7 @@ let Properties = {
             duration: 360000
         },
         inventoryDescription: "Helio Island Iced Tea",
-        onConsume: function(player){
+        onConsume: function (player) {
             player.playerClassModifiers.applyTemporaryModifierWithTimeout('xp', 4, 180000);
         }
     },
@@ -3170,7 +3157,7 @@ let Properties = {
             duration: 180000
         },
         inventoryDescription: "Mermaid Mojito",
-        onConsume: function(player){
+        onConsume: function (player) {
             player.playerClassModifiers.applyTemporaryModifierWithTimeout('xp', 5, 180000);
         }
     },
@@ -3194,7 +3181,7 @@ let Properties = {
             duration: 60000
         },
         inventoryDescription: "French Fries",
-        onConsume: function(player){
+        onConsume: function (player) {
             player.playerClassModifiers.applyTemporaryModifierWithTimeout('xp', 2, 30000);
         }
     },
@@ -3206,7 +3193,7 @@ let Properties = {
             duration: 120000
         },
         inventoryDescription: "Taco Tuesday!",
-        onConsume: function(player){
+        onConsume: function (player) {
             player.playerClassModifiers.applyTemporaryModifierWithTimeout('xp', 2, 60000);
         }
     },
@@ -3218,7 +3205,7 @@ let Properties = {
             duration: 180000
         },
         inventoryDescription: "Loaded Hot Dog",
-        onConsume: function(player){
+        onConsume: function (player) {
             player.playerClassModifiers.applyTemporaryModifierWithTimeout('xp', 2, 90000);
         }
     },
@@ -3230,7 +3217,7 @@ let Properties = {
             duration: 240000
         },
         inventoryDescription: "Double Burger",
-        onConsume: function(player){
+        onConsume: function (player) {
             player.playerClassModifiers.applyTemporaryModifierWithTimeout('xp', 2, 120000);
         }
     },
@@ -3242,7 +3229,7 @@ let Properties = {
             duration: 360000
         },
         inventoryDescription: "Slice of Pizza",
-        onConsume: function(player){
+        onConsume: function (player) {
             player.playerClassModifiers.applyTemporaryModifierWithTimeout('xp', 2, 180000);
         }
     },
@@ -3266,7 +3253,7 @@ let Properties = {
             duration: 20000
         },
         inventoryDescription: "Candy Corn",
-        onConsume: function(player){
+        onConsume: function (player) {
             player.playerClassModifiers.applyTemporaryModifierWithTimeout('xp', 2, 20000);
         }
     },
@@ -3314,7 +3301,7 @@ let Properties = {
             duration: 10000
         },
         inventoryDescription: "Spider!",
-        onConsume: function(player){
+        onConsume: function (player) {
             player.playerClassModifiers.applyTemporaryModifierWithTimeout('moveSpeed', 10, 10000);
         }
     },
@@ -3326,7 +3313,7 @@ let Properties = {
             duration: 10000
         },
         inventoryDescription: "Here Lies You",
-        onConsume: function(player){
+        onConsume: function (player) {
             player.playerClassModifiers.applyTemporaryModifierWithTimeout('moveSpeed', 1, 10000);
         }
     },
@@ -3339,7 +3326,7 @@ let Properties = {
         },
         inventoryDescription: "Do Not Open",
         respawnDelay: 60000,
-        onConsume: function(player) {
+        onConsume: function (player) {
             player.releaseMob(Types.Entities.M88NBONER);
         }
     },
@@ -3448,7 +3435,7 @@ let Properties = {
             duration: 60000
         },
         inventoryDescription: "Fast Shoes",
-        onConsume: function(player){
+        onConsume: function (player) {
             player.playerClassModifiers.applyTemporaryModifierWithTimeout('moveSpeed', 2, 30000);
         }
     },
@@ -3460,7 +3447,7 @@ let Properties = {
             duration: 180000
         },
         inventoryDescription: "Slow Shoes",
-        onConsume: function(player){
+        onConsume: function (player) {
             player.startInvincibility();
         }
     },
@@ -3472,7 +3459,7 @@ let Properties = {
             duration: 60000
         },
         inventoryDescription: "Wizard's Hat",
-        onConsume: function(player){
+        onConsume: function (player) {
             player.playerClassModifiers.applyTemporaryModifierWithTimeout('stealth', 2, 30000);
         }
     },
@@ -3484,7 +3471,7 @@ let Properties = {
             duration: 90000
         },
         inventoryDescription: "Brass Knuckles",
-        onConsume: function(player){
+        onConsume: function (player) {
             player.playerClassModifiers.applyTemporaryModifierWithTimeout('meleeDamageDealt', 5, 30000);
         }
     },
@@ -3496,7 +3483,7 @@ let Properties = {
             duration: 90000
         },
         inventoryDescription: "Kevlar Armor",
-        onConsume: function(player){
+        onConsume: function (player) {
             player.playerClassModifiers.applyTemporaryModifierWithTimeout('meleeDamageTaken', 0.5, 30000);
         }
     },
@@ -3508,7 +3495,7 @@ let Properties = {
             duration: 90000
         },
         inventoryDescription: "Grenade",
-        onConsume: function(player){
+        onConsume: function (player) {
             player.playerClassModifiers.applyTemporaryModifierWithTimeout('rangedDamageDealt', 5, 30000);
         }
     },
@@ -3599,7 +3586,7 @@ let Properties = {
             duration: 60000
         },
         inventoryDescription: "Holy Hand Grenade",
-        onConsume: function(player){
+        onConsume: function (player) {
             player.playerClassModifiers.applyTemporaryModifierWithTimeout('rangedDamageDealt', 20, 60000);
         }
     },
@@ -3612,7 +3599,7 @@ let Properties = {
             duration: 60000
         },
         inventoryDescription: "Gold Knuckles",
-        onConsume: function(player){
+        onConsume: function (player) {
             player.playerClassModifiers.applyTemporaryModifierWithTimeout('meleeDamageDealt', 20, 60000);
         }
     },
@@ -3625,7 +3612,7 @@ let Properties = {
             duration: 60000
         },
         inventoryDescription: "Golden Chalis",
-        onConsume: function(player){
+        onConsume: function (player) {
             player.playerClassModifiers.applyTemporaryModifierWithTimeout('meleeDamageDealt', 30, 60000);
         }
     },
@@ -3648,7 +3635,7 @@ let Properties = {
         },
         inventoryDescription: "For minor cuts and scrapes",
         respawnDelay: 500000,
-        onConsume: function(player){
+        onConsume: function (player) {
             player.regenHealthBy(300);
         }
     },
@@ -3661,7 +3648,7 @@ let Properties = {
         },
         inventoryDescription: "Full first aid kit",
         respawnDelay: 1500000,
-        onConsume: function(player){
+        onConsume: function (player) {
             player.regenHealthBy(2400);
         }
     },
@@ -3870,7 +3857,7 @@ let Properties = {
             duration: 60000
         },
         inventoryDescription: "Strange Yellow Liquid",
-        onConsume: function(player){
+        onConsume: function (player) {
             player.startInvincibility();
         }
     },
@@ -3985,9 +3972,9 @@ let Properties = {
     },
 };
 
-Properties.getArmorLevel = function(kind, levelOffset) {
+Properties.getArmorLevel = function (kind, levelOffset) {
     try {
-        if(Types.isMob(kind)) {
+        if (Types.isMob(kind)) {
             let level = Properties.getLevel(kind);
             if (Properties[Types.getKindAsString(kind)].armor !== undefined) {
                 return Math.round(Properties[Types.getKindAsString(kind)].armor * (level + levelOffset) / level);
@@ -3997,15 +3984,15 @@ Properties.getArmorLevel = function(kind, levelOffset) {
         } else {
             return 1;
         }
-    } catch(e) {
-        console.error("No level found for armor: "+Types.getKindAsString(kind));
+    } catch (e) {
+        console.error("No level found for armor: " + Types.getKindAsString(kind));
     }
     return 1;
 };
 
-Properties.getWeaponLevel = function(kind, levelOffset) {
+Properties.getWeaponLevel = function (kind, levelOffset) {
     try {
-        if(Types.isMob(kind)) {
+        if (Types.isMob(kind)) {
             let level = Properties.getLevel(kind);
             if (Properties[Types.getKindAsString(kind)].weapon !== undefined) {
                 return Math.round(Properties[Types.getKindAsString(kind)].weapon * (level + levelOffset) / level);
@@ -4016,10 +4003,10 @@ Properties.getWeaponLevel = function(kind, levelOffset) {
             if (Properties[Types.getKindAsString(kind)] !== undefined) {
                 let weaponProps = Properties[Types.getKindAsString(kind)];
 
-                if(weaponProps.consumables) {
+                if (weaponProps.consumables) {
                     let levelInfo = [];
-                    for(let consumable in weaponProps.consumables) {
-                        levelInfo.push({ consumable: consumable, level: weaponProps.consumables[consumable].level, range: weaponProps.consumables[consumable].range});
+                    for (let consumable in weaponProps.consumables) {
+                        levelInfo.push({ consumable: consumable, level: weaponProps.consumables[consumable].level, range: weaponProps.consumables[consumable].range });
                     }
 
                     return levelInfo;
@@ -4029,17 +4016,17 @@ Properties.getWeaponLevel = function(kind, levelOffset) {
             }
             return Types.getWeaponRank(kind);
         }
-    } catch(e) {
-        console.error("No level found for weapon: "+Types.getKindAsString(kind), e);
+    } catch (e) {
+        console.error("No level found for weapon: " + Types.getKindAsString(kind), e);
     }
 };
 
-Properties.getWeaponName = function(kind) {
+Properties.getWeaponName = function (kind) {
     let retName = Properties[Types.getKindAsString(kind)]?.name;
     return retName !== undefined ? retName : Types.getKindAsString(kind);
 }
 
-Properties.getHitPoints = function(kind, levelOffset) {
+Properties.getHitPoints = function (kind, levelOffset) {
     let level = Properties.getLevel(kind);
 
     if (Properties[Types.getKindAsString(kind)].hp !== undefined) {
@@ -4049,67 +4036,67 @@ Properties.getHitPoints = function(kind, levelOffset) {
     }
 };
 
-Properties.getLevel = function(kind) {
+Properties.getLevel = function (kind) {
     let retLevel = Properties[Types.getKindAsString(kind)].level;
     return retLevel !== undefined ? retLevel : 1;
 };
 
-Properties.getHpMod = function(kind) {
+Properties.getHpMod = function (kind) {
     let retMod = Properties[Types.getKindAsString(kind)].hpMod;
     return retMod !== undefined ? retMod : 1;
 };
 
-Properties.getArmorMod = function(kind) {
+Properties.getArmorMod = function (kind) {
     let retMod = Properties[Types.getKindAsString(kind)].armorMod;
     return retMod !== undefined ? retMod : 1;
 };
 
-Properties.getWeaponMod = function(kind) {
+Properties.getWeaponMod = function (kind) {
     let retMod = Properties[Types.getKindAsString(kind)].weaponMod;
     return retMod !== undefined ? retMod : 1;
 };
 
-Properties.isCollectable = function(kind) {
+Properties.isCollectable = function (kind) {
     let retCollectable = Properties[Types.getKindAsString(kind)]?.collectable;
     return retCollectable !== undefined ? retCollectable : false;
 }
 
-Properties.isConsumable = function(kind) {
+Properties.isConsumable = function (kind) {
     let retConsumable = Properties[Types.getKindAsString(kind)]?.consumable;
     return retConsumable !== undefined ? retConsumable : false;
 }
 
-Properties.getCollectableImageName = function(kind) {
+Properties.getCollectableImageName = function (kind) {
     return 'item-' + Types.getKindAsString(kind);
 }
 
-Properties.getCollectAmount = function(kind) {
+Properties.getCollectAmount = function (kind) {
     let retCollectableAmount = Properties[Types.getKindAsString(kind)]?.collectAmount;
     return retCollectableAmount !== undefined ? retCollectableAmount : 1;
 }
 
-Properties.getCollectItem = function(kind) {
+Properties.getCollectItem = function (kind) {
     let retCollectableItem = Properties[Types.getKindAsString(kind)]?.collectItem;
     return retCollectableItem !== undefined ? retCollectableItem : kind;
 }
 
-Properties.consume = function(kind, player) {
+Properties.consume = function (kind, player) {
     let onConsume = Properties[Types.getKindAsString(kind)]?.onConsume;
-    if(onConsume !== undefined) {
+    if (onConsume !== undefined) {
         onConsume(player);
     }
 }
 
-Properties.getInventoryDescription = function(kind) {
+Properties.getInventoryDescription = function (kind) {
     let retDescription = Properties[Types.getKindAsString(kind)]?.inventoryDescription;
     return retDescription !== undefined ? retDescription : false;
 }
 
-Properties.getCooldownData = function(kind) {
+Properties.getCooldownData = function (kind) {
     return Properties[Types.getKindAsString(kind)]?.cooldown;
 }
 
-Properties.filterCooldownGroups = function() {
+Properties.filterCooldownGroups = function () {
     let ret = {};
     Object.keys(Properties).forEach(key => {
         let itemGroup = Properties[key].cooldown?.group;
@@ -4126,7 +4113,7 @@ Properties.filterCooldownGroups = function() {
 
 const COOLDOWNGROUP_MAP = Properties.filterCooldownGroups();
 
-Properties.getCdItemsByGroup = function(cdGroup) {
+Properties.getCdItemsByGroup = function (cdGroup) {
     return COOLDOWNGROUP_MAP[cdGroup] !== undefined ? COOLDOWNGROUP_MAP[cdGroup] : [];
 }
 

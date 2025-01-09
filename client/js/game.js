@@ -1,10 +1,11 @@
 define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile',
     'warrior', 'gameclient', 'audio', 'updater', 'transition',
-    'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'fieldeffect', 'config', 'float', 'projectile', '../../shared/js/gametypes', '../../shared/js/altnames'],
+    'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 
+    'fieldeffect', 'config', 'float', 'projectile','mapSpecific/mapSprites', '../../shared/js/gametypes', '../../shared/js/altnames'],
 
     function (InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, AnimatedTile,
         Warrior, GameClient, AudioManager, Updater, Transition,
-        Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, Fieldeffect, Config, Float, Projectile) {
+        Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, Fieldeffect, Config, Float, Projectile, mapSprites) {
         var Game = Class.extend({
             init: function (app) {
                 this.app = app;
@@ -93,7 +94,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
 
                 // sprites
-                this.spriteNames = ["hand", "handclick", "sword", "loot", "target", "talk", "float", "indicator", "sparks", "shadow16", "rat", "skeleton", "skeleton2", "spectre", "boss", "deathknight",
+                const baseSpritenames = ["hand", "handclick", "sword", "loot", "target", "talk", "float", "indicator", "sparks", "shadow16", "rat", "skeleton", "skeleton2", "spectre", "boss", "deathknight",
                     "ogre", "crab", "snake", "eye", "bat", "goblin", "wizard", "guard", "taikoguard", "king", "villagegirl", "villager", "coder", "agent", "rick", "scientist", "nyan", "priest", "coblumberjack", "cobhillsnpc", "cobcobmin", "cobellen", "cobminer", "cobjohnny", "cobashley",
                     "king2", "goose", "tanashi", "slime", "kingslime", "silkshade", "redslime", "villagesign1", "wildgrin", "loomleaf", "gnashling", "arachweave", "spider", "fangwing", "minimag", "miner", "megamag", "seacreature", "tentacle", "tentacle2", "wildwill", "shopowner", "blacksmith",
                     "cobchicken", "alaric", "orlan", "jayce", "cobcow", "cobpig", "cobgoat", "ghostie", "cobslimered", "cobslimeyellow", "cobslimeblue", "cobslimepurple", "cobslimegreen", "cobslimepink", "cobslimecyan", "cobslimemint", "cobslimeking", "cobyorkie", "cobcat", "cobcatblack", "cobcatorange", "cobcatbrown", "cobdirt", "cobhay", "cobhaytwo", "cobincubator", "cobcoblin", "cobcobane", "cobogre",
@@ -717,12 +718,6 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "dragonbreath",
                     "dragonclaw",
                     "luckybabydragon",
-                    //BITCORN PHISHIES
-                    "bit_BoneFish", "bit_Corn", "bit_FEET", "bit_freshPrawnce", "bit_JEFF", "bit_Kickle", "bit_maCORNtosh", "bit_MrPunchy", "bit_SnaggletoothEel", "bit_NOPEmato", "cornBootFish", "cornCanFish", "cornWinkyFish",
-                    //BITCORN NPCS
-                    "BITNPC_BITCORN", "BITNPC_THORNBEARD_KNEEL", "BITNPC_THORNBEARD",
-                    //BITCORN MOBS
-                    "SLUDGERAT", "SPACECRAB", "BLACKMAGE", "RABBID", "ZOMBBID", "HOPPURP", "HOPPINK", "CRAPTOR",
                     //OTHER
                     "item-HAMSTER1",
                     "item-DUCKBIT",
@@ -6144,6 +6139,13 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "NFT_75f8bec880bcaf46ba059dd0022d588ef93a2f01333a0d54f5d4291bdc9b74fa",
                     // @nextSpriteLine@
                 ];
+
+                // Create a flat list of all sprite names (NPCs, Mobs, Fishes, and Items)
+                const dynamicMapSprites = [
+                    ...Object.values(mapSprites).flat().filter(item => typeof item === 'string'), // For MOBS, NPCS, FISH (arrays of names)
+                    ...mapSprites.ITEMS.map(item => item.name) // For ITEMS (objects with name and lootMessage)
+                ];
+                this.spriteNames = [...baseSpritenames, ...dynamicMapSprites];
             },
 
             setup: function ($bubbleContainer, canvas, background, foreground, input) {
@@ -6282,15 +6284,11 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     /* Duckville Fishing*/
                     ["dragonegg", "dragonbreath", "dragonclaw", "luckybabydragon"],
 
-                    /*BITCORN PHISHIES*/
-                    ["bit_BoneFish", "bit_Corn", "bit_FEET", "bit_freshPrawnce", "bit_JEFF", "bit_Kickle", "bit_maCORNtosh", "bit_MrPunchy", "bit_SnaggletoothEel", "bit_NOPEmato", "cornBootFish", "cornCanFish", "cornWinkyFish"],
-
                 ];
 
-                fishGroups.forEach(group => {
-                    group.forEach(key => {
-                        this.fish[key] = this.sprites[key];
-                    });
+                const allFish = fishGroups.flat().concat(Object.keys(mapSprites.FISH));
+                allFish.forEach(key => {
+                    this.fish[key] = this.sprites[key];
                 });
             },
 

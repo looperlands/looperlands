@@ -1,0 +1,14 @@
+{
+    "id": "BITNPC_PC",
+    "width": 16,
+    "height": 32,
+    "animations": {
+      "idle_down": {
+        "length": 6,
+        "row": 0,
+        "speed": [1000, 40, 40, 40, 3000, 40]
+      }
+    },
+    "offset_x": -4,
+    "offset_y": -16
+  }
