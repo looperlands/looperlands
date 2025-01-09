@@ -248,6 +248,9 @@ const AltNames = {
     m88nheadlessskeleton: "Headless Skeleton",
     m88nghostpumpkin: "Boo!",
     m88nturkey: "Gobble Gobble...",
+    m88nicecrab: "Ice Crab",
+    m88nelf: "Naughty Elf 1",
+    m88nelf2: "Naughty Elf 2",
 
     //m88n Mob Nexans
     nexan8: "The Mail Lady",
@@ -259,6 +262,9 @@ const AltNames = {
     nexan15: "The Mail Man",
     nexan30: "The Bartender",
     m88njeeves: "Jeeves",
+    m88nsnowmobile: "Henchman",
+    m88ncow: "Cow",
+    m88ntree: "Tree",
 
     //m88n NPCs
     nexan29: "The Butler",
@@ -276,6 +282,20 @@ const AltNames = {
     m88nape: "m88n Ape",
     m88nmobilebartender: "Mobile Bartender",
     m88nbananastand: "Banana Stand",
+    m88nsage: "Sage",
+    m88nsage2: "Sage",
+    m88nsage3: "Sage",
+    m88nsage4: "Sage",
+    m88nsage5: "Sage",
+    m88nsage6: "Sage",
+    m88nsage7: "Sage",
+    m88nfrosty: "Frosty",
+    m88nsanta: "Santa",
+    m88nrudolph: "Rudolph",
+    m88nreindeer: "Reindeer",
+    m88ntownie: "Ty",
+    m88ntownies: "Ty",
+    m88ntownie2: "Tito",
 
     //m88n Items
     m88nmail: "mail",
@@ -337,6 +357,16 @@ const AltNames = {
     m88nturkeydinner: "Turkey Dinner",
     m88nturkeyfeather: "Turkey Feather",
     m88nturkeyleg: "Turkey Leg",
+    m88nbroccoli: "Broccoli",
+    m88ncauliflower: "Cauliflower",
+    m88nlettuce: "Lettuce",
+    m88nsticks: "Sticks",
+    m88ntomato: "Tomato",
+    m88nturnip: "Turnip",
+    m88ngoldworm: "Gold Worm",
+    m88ndiamondworm: "Diamond Worm",
+    m88nsourworm: "Sour Gummy Worm",
+    m88nsourworm2: "Sour Gummy Worm",
 
     //m88n TT Items
     m88nammocan: "ammo can",
@@ -345,7 +375,7 @@ const AltNames = {
     m88nblueprint: "blueprint",
     m88nbnote: "beamed note",
     m88nbone: "bone",
-    m88ncarrot: "carrot",
+    m88ncarrot: "Carrot",
     m88ncheese: "cheese",
     m88nchocolate: "chocolate",
     m88ncleanundies: "clean undies",

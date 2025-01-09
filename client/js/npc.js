@@ -484,7 +484,8 @@ define(['character'], function (Character) {
 
         "nexan14": [
             "Dig dig dig, all day long, dig dig dig, while I sing this song...",
-            "Wanna play in the dirt with me?"
+            "Wanna play in the dirt with me?",
+            "/openShop the_garden_stand The Garden Stand"
         ],
 
         "nexan15": [
@@ -711,7 +712,8 @@ define(['character'], function (Character) {
             //"Hey there!",
             "It's been 84 years...",
             "But I did find it once, long ago...",
-            "And it was glorious..."
+            "And it was glorious...",
+            "I'll find it again some day, it feels like it's so close..."
         ],
 
         "nexan48": [
@@ -757,6 +759,120 @@ define(['character'], function (Character) {
             'If you want to see the origins of the clowns <a target="_blank" href="https://loopexchange.art/collection/clown-people">check out the Clown People collection</a> and tell us your favorite!',
             'Join us in Discord! <a target="_blank" href="https://discord.gg/bjjNewZegM">Checkout PLANET M88NWALKER</a> for insider details.',
             "Have fun! They drop more DRS'd shares of GME so you can stock back up!"
+        ],
+
+        "m88nsage": [
+            "Greetings! They call me the Sage because I know all the secrets of The Nexus...",
+            "Only the most dedicated or lucky travellers find me, so congratulations.",
+            'As a reward, I will share <a target="_blank" href="https://m88nlabs.com/the-nexus-maps-legend/">a piece of the legend</a> with you. Read carefully...',
+            "Good luck on your journey!"
+        ],
+
+        "m88nsage2": [
+            "Greetings! They call me the Sage because I know all the secrets of The Nexus...",
+            "Only the most dedicated or lucky travellers find me, so congratulations.",
+            'As a reward, I will share <a target="_blank" href="https://m88nlabs.com/the-nexus-compass-legend/">a piece of the legend</a> with you. Read carefully...',
+            "Good luck on your journey!"
+        ],
+
+        "m88nsage3": [
+            "Greetings! They call me the Sage because I know all the secrets of The Nexus...",
+            "Only the most dedicated or lucky travellers find me, so congratulations.",
+            'As a reward, I will share <a target="_blank" href="https://m88nlabs.com/the-nexus-binoculars-legend/">a piece of the legend</a> with you. Read carefully...',
+            "Good luck on your journey!"
+        ],
+
+        "m88nsage4": [
+            "Greetings! They call me the Sage because I know all the secrets of The Nexus...",
+            "Only the most dedicated or lucky travellers find me, so congratulations.",
+            'As a reward, I will share <a target="_blank" href="https://m88nlabs.com/the-nexus-skeleton-key-legend/">a piece of the legend</a> with you. Read carefully...',
+            "Good luck on your journey!"
+        ],
+
+        "m88nsage5": [
+            "Greetings! They call me the Sage because I know all the secrets of The Nexus...",
+            "Only the most dedicated or lucky travellers find me, so congratulations.",
+            'As a reward, I will share <a target="_blank" href="https://m88nlabs.com/the-nexus-mermaid-legend/">a piece of the legend</a> with you. Read carefully...',
+            "Good luck on your journey!"
+        ],
+
+        "m88nsage6": [
+            "Greetings! They call me the Sage because I know all the secrets of The Nexus...",
+            "Only the most dedicated or lucky travellers find me, so congratulations.",
+            'As a reward, I will share <a target="_blank" href="https://m88nlabs.com/the-nexus-undertow-legend/">a piece of the legend</a> with you. Read carefully...',
+            "Good luck on your journey!"
+        ],
+
+        "m88nsage7": [
+            "Greetings! They call me the Sage because I know all the secrets of The Nexus...",
+            "Only the most dedicated or lucky travellers find me, so congratulations.",
+            'As a reward, I will share <a target="_blank" href="https://m88nlabs.com/the-nexus-mirror-legend/">a piece of the legend</a> with you. Read carefully...',
+            "Good luck on your journey!"
+        ],
+
+        "m88nfrosty": [
+            "Happy Birthday!",
+            "Hey! Remember me? I'm from m88nwalker's first LooperLands collection!",
+            "There was enough magic left in my hat to stop by and share a little snow.",
+            "It's warm here so I can't stay long, but I had to let you know...",
+            "We're hanging out on Santa's Secret Island, decorating for a party!",
+            'If you own a piece from the <a target="_blank" href="https://loopexchange.art/collection/looperlands-christmas">Christmas in LooperLands collection</a> you get early access!',
+            "After Christmas is over I won't have enough magic to keep the portal open. But...",
+            'If you own a piece from the <a target="_blank" href="https://loopexchange.art/collection/looperlands-christmas">Christmas in LooperLands collection</a> you can come visit anytime!',
+            "Enjoy the holidays! See you in there!"
+        ],
+
+        "m88nsanta": [
+            "Ho ho ho!",
+            "Make sure to be collecting Manacrystals...",
+            "You can use them to craft potions that refill your snowball inventory.", 
+            //'As a reward, I will share <a target="_blank" href="https://m88nlabs.com/the-nexus-mirror-legend/">a piece of the legend</a> with you. Read carefully...',
+            "/openShop potionshop Potion Shop"
+        ],
+
+        "m88nrudolph": [
+            "Sup ho ho homie!",
+            "Those naughty little elves over there are pestering the reindeer.",
+            //'As a reward, I will share <a target="_blank" href="https://m88nlabs.com/the-nexus-mirror-legend/">a piece of the legend</a> with you. Read carefully...',
+            "Can you go smack them around for me?"
+        ],
+
+        "m88ntownie": [
+            "Heyyy! What's up?",
+            "My Name is Ty, I'm a Townie! Are you on Taiko yet?",
+            "A new NFT collection of all my friends and I is getting released on Taiko soon!",
+            'You will be able to <a target="_blank" href="https://on.mintpad.co/townies">mint your Townie NFTs</a> directly on Mintpad.',
+            'If you own anything m88nwalker <a target="_blank" href="https://forms.gle/AMzNqiVJcVtCSuXr5">there is a whitelist</a> you can get on.',
+            //'You can <a target="_blank" href="https://on.mintpad.co/townies">mint your Townie NFTs</a> directly on Mintpad.',
+            "Then just talk to m88nwalker if you want to upgrade and have it integrated like me.",
+            "Wanna know something else cool?...",
+            "If you get lucky and mint a legendary Zombie Townie...",
+            'You get to pick out another one from the <a target="_blank" href="https://loopexchange.art/collection/zombie-townies">Zombie Townies collection</a> on Loopring for free!',
+            "You just pay integration fees"
+        ],
+
+        "m88ntownie2": [
+            "Hello, welcome to The Nexus Merch Shop!",
+            "Grab a glass of champagne and take a look around.",
+            "Walk up to the computer at the counter to browse our inventory online.",
+            "There will be new fresh designs added periodically.",
+            "Talk to m88nwalker about any custom design ideas you have.",
+            "Thanks for shopping with us!",
+            "Have a great day!"
+        ],
+
+        "m88ntownies": [
+            "Heyyy! What's up?",
+            "My Name is Ty, I'm a Townie! Are you on Taiko yet?",
+            "A new NFT collection of all my friends and I is getting released on Taiko soon!",
+            'You will be able to <a target="_blank" href="https://on.mintpad.co/townies">mint your Townie NFTs</a> directly on Mintpad.',
+            'If you own anything m88nwalker <a target="_blank" href="https://forms.gle/AMzNqiVJcVtCSuXr5">there is a whitelist</a> you can get on.',
+            //'You can <a target="_blank" href="https://on.mintpad.co/townies">mint your Townie NFTs</a> directly on Mintpad.',
+            "Then just talk to m88nwalker if you want to upgrade and have it integrated like me.",
+            "Wanna know something else cool?...",
+            "If you get lucky and mint a legendary Zombie Townie...",
+            'You get to pick out another one from the <a target="_blank" href="https://loopexchange.art/collection/zombie-townies">Zombie Townies collection</a> on Loopring for free!',
+            "You just pay integration fees"
         ],
 
         //MRMlabs NPCs

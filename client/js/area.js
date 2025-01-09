@@ -1,4 +1,3 @@
-
 define(function() {
 
     var Area = Class.extend({
@@ -23,6 +22,15 @@ define(function() {
         isOutOfBounds: function (x, y) {
             return (x < this.x || x >= this.x + this.width || y < this.y || y >= this.y + this.height);
         },
+
+        getRandomPosition() {
+            let pos = {};
+
+            pos.x = this.x + Math.floor(Math.random() * this.width);
+            pos.y = this.y + Math.floor(Math.random() * this.height);
+
+            return pos;
+        }
     });
     
     return Area;

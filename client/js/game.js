@@ -186,6 +186,19 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "m88nape",
                     "m88nmobilebartender",
                     "m88nbananastand",
+                    "m88nsage",
+                    "m88nsage2",
+                    "m88nsage3",
+                    "m88nsage4",
+                    "m88nsage5",
+                    "m88nsage6",
+                    "m88nsage7",
+                    "m88nfrosty",
+                    "m88nsanta",
+                    "m88nrudolph",
+                    "m88ntownie",
+                    "m88ntownies",
+                    "m88ntownie2",
                     //m88n Mobs
                     "balloondogb",
                     "balloondogy",
@@ -270,6 +283,13 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "m88nheadlessskeleton",
                     "m88nghostpumpkin",
                     "m88nturkey",
+                    "m88nicecrab",
+                    "m88nelf",
+                    "m88nelf2",
+                    "m88nreindeer",
+                    "m88nsnowmobile",
+                    "m88ncow",
+                    "m88ntree",
                     //m88n's Mob Nexans
                     "nexan1",
                     "nexan2",
@@ -632,6 +652,16 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "item-m88nturkeydinner",
                     "item-m88nturkeyfeather",
                     "item-m88nturkeyleg",
+                    "item-m88nbroccoli",
+                    "item-m88ncauliflower",
+                    "item-m88nlettuce",
+                    "item-m88nsticks",
+                    "item-m88ntomato",
+                    "item-m88nturnip",
+                    "item-m88ngoldworm",
+                    "item-m88ndiamondworm",
+                    "item-m88nsourworm",
+                    "item-m88nsourworm2",
                     //MRMlabs
                     "item-firstaidkit",
                     "item-bandaid",
@@ -8496,6 +8526,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     return;
                 }
 
+                if (!this.player) {
+                    return;
+                }
+
                 var self = this;
                 var m = this.map;
                 var scene = this.player.getScene();
@@ -9123,9 +9157,14 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 if (!this.camera) {
                     return
                 }
+
+                if(!entity) {
+                    return;
+                }
+
                 const entityScene = entity.getScene();
                 const currentScene = this.map.getCurrentScene(entity);
-                if (entity.getScene() !== currentScene) {
+                if (entityScene !== currentScene) {
                     if (currentScene) {
                         this.camera.setBoundingBox(currentScene.x, currentScene.y, currentScene.width, currentScene.height);
 
@@ -9150,7 +9189,18 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         self.renderer.clearScreen(this.renderer.context);
                         self.renderer.redrawTerrain = true;
                         self.resetZone();
+                    }, 10)
+                    setTimeout(() => {
+                        self.renderer.clearScreen(this.renderer.context);
+                        self.renderer.redrawTerrain = true;
+                        self.resetZone();
                     }, 100)
+                    setTimeout(() => {
+                        self.renderer.clearScreen(this.renderer.context);
+                        self.renderer.redrawTerrain = true;
+                        self.resetZone();
+                    }, 1000)
+
                 }
             },
 
@@ -9694,7 +9744,16 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
             newSession: function () {
                 const url = '/session/' + this.sessionId + '/teleport';
-                const dest = this.lastCheckpoint;
+                let dest = null;
+                if (this.lastCheckpoint) {
+                    dest = this.lastCheckpoint;
+                } else if( this.player) {
+                    dest = this.map.getCurrentCheckpoint(this.player);
+                } else {
+                    let cp = this.map.checkpoints[0];
+                    let startPos = cp.getRandomPosition();
+                    dest = { x: startPos.x, y: startPos.y, map: this.mapId };
+                }
                 dest.map = this.mapId;
                 axios.post(url, dest).then(function (response) {
                     if (response.status === 200) {
