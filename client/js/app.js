@@ -24,6 +24,7 @@ define(['jquery', 'storage'], function ($, Storage) {
             this.dynamicNFTIconURL = {};
             this.dynamicNFTData = {};
             this.timeOffset = 1000 * 60 * 15;
+            this.inventoryToolTips = {};
             this.hideWindows();
             this.calculateTime();
         },
@@ -775,6 +776,7 @@ define(['jquery', 'storage'], function ($, Storage) {
                 botsInventory = [];
 
             axios.get(inventoryQuery).then(function(response) {
+                _this.inventoryToolTips = {};
                 if (response.data){
                     weaponInventory = response.data.inventory;
                     specialInventory = response.data.special;
@@ -810,8 +812,12 @@ define(['jquery', 'storage'], function ($, Storage) {
                     if (item.dynamicNFTData?.assetType === "ranged_weapon") {
                         normalURL = "-1"; //cause error;
                     }
-                    imgTag = "<div class='item panelBorder'>" +
-                        "<div class='tooltiptext pixel-corners-xs'><span class='tooltipHighlight'>Level " + item.level + "</span> " + item.name + " (" + item.trait + ")</div>" +
+                    _this.inventoryToolTips[item.nftId] = {
+                        header: 'Level ' + item.level,
+                        body: item.name,
+                        footer: item.trait,
+                    };
+                    imgTag = "<div class='item panelBorder' id='item_" + item.nftId + "'>" +
                         "<img id='" + item.nftId + "' style='width: 32px; height: 32px; object-fit: none; object-position: 0 4px; cursor: pointer;' src='"+ normalURL +"' onerror='this.onerror=null;this.src=\""+ errorURL + "\"; $(this).css({objectPosition: \"0 -400px\"});' />" +
                         "</div>";
                     inventoryHtml += imgTag;
@@ -825,8 +831,13 @@ define(['jquery', 'storage'], function ($, Storage) {
                 specialInventory.forEach(function(item) {
                     const itemURL = getItemURL(item);
 
-                    inventoryHtml += "<div class='item panelBorder'>" +
-                    "<div class='tooltiptext pixel-corners-xs'><span class='tooltipHighlight'>Level " + item.level + "</span> " + item.name + " (" + item.trait + ")</div>" +
+                    _this.inventoryToolTips[item.nftId] = {
+                        header: 'Level ' + item.level,
+                        body: item.name,
+                        footer: item.trait,
+                    };
+
+                    inventoryHtml += "<div class='item panelBorder' id='item_" + item.nftId + "'>" +
                     "<img id='" + item.nftId + "' style='width: 32px; height: 32px; object-fit: cover; cursor: pointer; object-position: 100% 0;' src='"+itemURL+"' /></div>";
                 });
                 inventoryHtml += "</div></div>";
@@ -848,9 +859,12 @@ define(['jquery', 'storage'], function ($, Storage) {
                     }
 
                     let description = consumablesInventory[item].description;
-                    let tooltipText = "";
-                    if (description){
-                        tooltipText = "<div class='tooltiptext pixel-corners-xs'>" + description + "</div>";
+                    let effectDescription = consumablesInventory[item].effect;
+                    if (description || effectDescription) {
+                        _this.inventoryToolTips[item] = {
+                            header: description,
+                            footer: effectDescription,
+                        }
                     }
 
                     if(consumablesInventory[item].consumable) {
@@ -859,9 +873,10 @@ define(['jquery', 'storage'], function ($, Storage) {
 
                     let cursor = consumablesInventory[item].consumable ? "pointer" : "not-allowed";
                     let draggable = consumablesInventory[item].consumable ? "true" : "false";
-                    itemHtml += "<div class='item panelBorder " + (consumablesInventory[item].consumable ? 'consumable' : '') + "' draggable='" + draggable + "' data-item='" + item + "'>" + tooltipText + "<img id='" + item + "' draggable='false' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0; cursor: " + cursor + ";' src='img/3/" + consumablesInventory[item].image + ".png' />";
+                    itemHtml += "<div id='item_" + item + "' class='item panelBorder " + (consumablesInventory[item].consumable ? 'consumable' : '') + "' draggable='" + draggable + "' data-item='" + item + "'>";
+                    itemHtml += "<img id='" + item + "' draggable='false' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0; cursor: " + cursor + ";' src='img/3/" + consumablesInventory[item].image + ".png' />";
                     itemHtml += "<div class='timer' id='timer_" + item + "'></div>";
-                    itemHtml += "<p id='count_" + item + "'>" + consumablesInventory[item].qty + "</p>"
+                    itemHtml += "<p class='itemCount' id='count_" + item + "'>" + consumablesInventory[item].qty + "</p>"
                     itemHtml += "</div>";
                 });
 
@@ -884,7 +899,13 @@ define(['jquery', 'storage'], function ($, Storage) {
                         } else {
                             url = `img/1/${bot.nftId}.png`;
                         }
-                        imgTag = `<div class='item panelBorder'><div class='tooltiptext pixel-corners-xs'><span class='tooltipHighlight'>Level ${bot.level}</span> ${bot.name}</div><img id=${bot.nftId} style='width: 32px; height: 32px; object-fit: none; cursor: pointer; object-position: 100% 0;' src='` + url + "'/></div>";
+
+                        _this.inventoryToolTips[bot.nftId] = {
+                            header: 'Level ' + bot.level,
+                            body: bot.name,
+                        }
+
+                        imgTag = `<div class='item panelBorder' id="item_${bot.nftId}" data-nftId="${bot.nftId}"><img id=${bot.nftId} style='width: 32px; height: 32px; object-fit: none; cursor: pointer; object-position: 100% 0;' src='` + url + "'/></div>";
                         inventoryHtml += imgTag;
                     }
                 });
@@ -929,7 +950,6 @@ define(['jquery', 'storage'], function ($, Storage) {
 
                 if(hasConsumable) {
                     $(".inventorySectionItems .consumable").on('dragstart', (e) => {
-                        $(e.target).find('.tooltiptext').hide();
                         e.originalEvent.dataTransfer.setData("text/plain", $(e.target).data('item'));
                     });
 
@@ -1062,11 +1082,26 @@ define(['jquery', 'storage'], function ($, Storage) {
                     }
                 });
 
+                // apply tooltip event listeners
+                _.forEach(_this.inventoryToolTips, (tooltip, itemId) => {
+                    const item = document.getElementById('item_' + itemId);
+                    if (item) {
+                        item.addEventListener('mouseover', () => {
+                            _this.showTooltip(tooltip, item);
+                        });
+                        item.addEventListener('mouseout', () => {
+                            _this.hideTooltip();
+                        });
+                    }
+                })
+
+
                 _this.hideWindows();
                 $('body').addClass('inventory');
             }).catch(function(error) {
                 console.error(error);
             });
+
             this.isInventoryVisible = true;
         },
 
@@ -1091,6 +1126,42 @@ define(['jquery', 'storage'], function ($, Storage) {
                 clearInterval(interval);
             });
             this.cooldownIntervals = [];
+        },
+
+        showTooltip: function(tooltip, item) {
+            console.log('showTooltip');
+            let tooltipDiv = document.getElementById('tooltip');
+            if (!tooltipDiv) {
+                tooltipDiv = document.createElement('div');
+                tooltipDiv.id = 'tooltip';
+                tooltipDiv.className = 'tooltip';
+                document.body.appendChild(tooltipDiv);
+            }
+
+            let html = '';
+            if(tooltip.header) {
+                html += `<div class="header">${tooltip.header}</div>`;
+            }
+            if(tooltip.body) {
+                html += `<div class="body">${tooltip.body}</div>`;
+            }
+            if(tooltip.footer) {
+                html += `<div class="footer">${tooltip.footer}</div>`;
+            }
+
+            // Global screen position of item
+            let itemScreenTop = item.getBoundingClientRect().top;
+            let itemScreenLeft = item.getBoundingClientRect().left;
+            tooltipDiv.innerHTML = html;
+            tooltipDiv.style.display = 'block';
+            tooltipDiv.style.left = (itemScreenLeft + (item.offsetWidth/2) - 100) + 'px';
+            tooltipDiv.style.top = (itemScreenTop + item.offsetHeight + 10) + 'px';
+        },
+
+        hideTooltip: function() {
+            console.log('hide tooltip');
+            const tooltipDiv = document.getElementById('tooltip');
+            tooltipDiv.style.display = 'none';
         },
 
         toggleSettings: function () {

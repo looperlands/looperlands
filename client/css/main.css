@@ -1064,7 +1064,7 @@ footer div  {display:inline-block;}
 #inventory .item:hover {
     background-color: #533642 !important;
 }
-#inventory .item p {
+#inventory .item .itemCount {
     color: #d2ba2f;
     background: #533642;
     box-shadow: 1px 1px 1px 0px rgba(0,0,0,1);
@@ -1074,15 +1074,20 @@ footer div  {display:inline-block;}
     min-width: 9px;
     padding: 2px 5px;
     text-align: center;
-    float: left;
+    position: absolute;
+    z-index: 9;
+    top: -3px;
+    right: -3px;
 }
-#inventory .item .timer { 
-    position: relative;
-    top: -50px;
+#inventory .item .timer {
+    position: absolute;
+    bottom: 23px;
     color: silver;
     font-size: 11px;
     margin-bottom: -20px;
     height: 20px;
+    z-index: 999999;
+    width: 43px;
 }
 #inventory .inventorySectionItems {
     height:305px;
@@ -1102,30 +1107,40 @@ footer div  {display:inline-block;}
 #inventory .inventorySectionItems::-webkit-scrollbar-thumb:active {
     background-color: #FCE045;
 }
-#inventory .item:hover .tooltiptext {
-    visibility: visible;
-}
 
-.tooltiptext .tooltipHighlight {
-    color: #610b23;
-    font-size:12px;
-}
-
-#inventory .tooltiptext {
-    visibility: hidden;
-    padding: 0.25em 0.5em;
+.tooltip {
+    padding: 0.5em;
+    width:200px;
     background-color: #dec696;
     color: #000000;
     text-align: center;
     border-radius: 0.25em;
     position: absolute;
-    z-index: 1;
-    translate: -10px 30px;
+    z-index: 999999;
     font-family: "GraphicPixel";
     outline-style: solid;
     outline-color: #a18b61;
     outline-width: thin;
 }
+
+.tooltip .header {
+    color: #610b23;
+    font-size:12px;
+    padding-bottom: 4px;
+}
+
+.tooltip .body {
+    font-size: 12px;
+    padding-bottom: 4px;
+}
+
+.tooltip .footer {
+    color: #352935;
+    font-size:11px;
+    font-style: italic;
+}
+
+
 #inventory .item:hover {
     background: #d9c399;
 }

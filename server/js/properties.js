@@ -2701,7 +2701,8 @@ let Properties = {
             group: "hpPotions",
             duration: 60000
         },
-        inventoryDescription: "Small healing potion (75)",
+        inventoryDescription: "Small healing potion",
+        effectDescription: "Adds 75 HP",
         onConsume: function(player){
             player.regenHealthBy(75);
         }
@@ -2713,7 +2714,8 @@ let Properties = {
             group: "hpPotions",
             duration: 60000
         },
-        inventoryDescription: "Medium healing potion (150)",
+        inventoryDescription: "Medium healing potion",
+        effectDescription: "Adds 150 HP",
         onConsume: function(player){
             player.regenHealthBy(150);
         }
@@ -2725,7 +2727,8 @@ let Properties = {
             group: "hpPotions",
             duration: 60000
         },
-        inventoryDescription: "Large healing potion (300)",
+        inventoryDescription: "Large healing potion",
+        effectDescription: "Adds 300 HP",
         onConsume: function(player){
             player.regenHealthBy(300);
         }
@@ -2738,6 +2741,7 @@ let Properties = {
             duration: 180000
         },
         inventoryDescription: "Liquid loopium",
+        effectDescription: "Immunity for 3 minutes",
         onConsume: function(player){
             player.startInvincibility();
         }
@@ -4102,6 +4106,11 @@ Properties.consume = function(kind, player) {
 
 Properties.getInventoryDescription = function(kind) {
     let retDescription = Properties[Types.getKindAsString(kind)]?.inventoryDescription;
+    return retDescription !== undefined ? retDescription : false;
+}
+
+Properties.getEffectDescription = function(kind) {
+    let retDescription = Properties[Types.getKindAsString(kind)]?.effectDescription;
     return retDescription !== undefined ? retDescription : false;
 }
 

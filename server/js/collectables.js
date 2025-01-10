@@ -76,6 +76,16 @@ const Collectables = {
         return "";
     },
 
+    getEffectDescription: function(item) {
+        for (var i = 0; i < this.providers.length; i++) {
+            let description = this.providers[i].getEffectDescription(item);
+            if (description) {
+                return description;
+            }
+        }
+        return "";
+    },
+
     getCooldownData: function(item) {
         for (var i = 0; i < this.providers.length; i++) {
             let cooldownData = this.providers[i].getCooldownData(item);

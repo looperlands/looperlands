@@ -504,6 +504,7 @@ WS.socketIOServer = Server.extend({
                         consumable: Collectables.isConsumable(item),
                         image: Collectables.getCollectableImageName(item),
                         description: Collectables.getInventoryDescription(item),
+                        effect: Collectables.getEffectDescription(item),
                         cooldown: remainingCooldown, //this is either a date or 0
                         maxCooldown: cooldownData.duration
                     };

@@ -573,6 +573,10 @@ Lakes.getInventoryDescription = function(fishName){
     return description ? description.percent + "% " + description.stat : false;
 };
 
+Lakes.getEffectDescription = function(fishName){
+    return;
+};
+
 Lakes.getCooldownData = function(fishName){
     //not implemented yet - maybe never will?
     return;
