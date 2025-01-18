@@ -2015,46 +2015,52 @@ let Properties = {
         friendly: true, //not actually friendly, just AoE immune
         hp: 1,
         drops: {
-            m88nmap: 5,
-            movieglasses: 1,
-            battery: 1,
-            gameboy: 1,
-            hardwallet: 1,
-            m88npeel: 1,
-            m88ndungbeetle: 1,
-            m88nfly: 1,
-            m88njunebug: 1,
-            m88nstickbug: 1,
-            m88ndiamondnecklace: 1,
-            m88ndiamondring: 1,
-            m88ngoldearrings: 1,
-            m88ngoldtiara: 1,
-            m88ndinnerbell: 1,
-            m88nsteak: 1,
-            m88nclover: 1,
-            m88nmail: 1,
-            m88nshovel: 1,
-            m88nwatercan: 1,
-            m88nseeds: 1,
-            m88npotato: 1,
-            m88npackage: 1,
-            m88nsalad: 1,
-            m88nblueprint: 1,
-            m88nhardhat: 1,
-            m88nrose: 1,
-            m88nworkgloves: 1,
-            m88nbrewski: 1,
-            m88npie: 1,
-            m88nworm: 1,
-            m88nfastshoes: 1,
-            m88nbrassknuckles: 1,
-            m88ngrenade: 1,
-            m88nkevlararmor: 1,
-            m88nwizardshat: 1,
-            m88ndirt: 10,
-            m88ngem: 20,
-            GOLD4: 10,
-            GOLD5: 10,
+            //m88nmap: 5,
+            //movieglasses: 1,
+            //battery: 1,
+            //gameboy: 1,
+            //hardwallet: 1,
+            //m88npeel: 1,
+            //m88ndungbeetle: 1,
+            //m88nfly: 1,
+            //m88njunebug: 1,
+            //m88nstickbug: 1,
+            //m88ndiamondnecklace: 1,
+            //m88ndiamondring: 1,
+            //m88ngoldearrings: 1,
+            //m88ngoldtiara: 1,
+            //m88ndinnerbell: 1,
+            //m88nsteak: 1,
+            //m88nclover: 1,
+            //m88nmail: 1,
+            //m88nshovel: 1,
+            //m88nwatercan: 1,
+            //m88nseeds: 1,
+            //m88npotato: 1,
+            //m88npackage: 1,
+            //m88nsalad: 1,
+            //m88nblueprint: 1,
+            //m88nhardhat: 1,
+            //m88nrose: 1,
+            //m88nworkgloves: 1,
+            //m88nbrewski: 1,
+            //m88npie: 1,
+            //m88nworm: 1,
+            //m88nfastshoes: 1,
+            //m88nbrassknuckles: 1,
+            //m88ngrenade: 1,
+            //m88nkevlararmor: 1,
+            //m88nwizardshat: 1,
+            //m88ndirt: 10,
+            //m88ngem: 20,
+            //GOLD4: 10,
+            //GOLD5: 10,
+            m88ndirt: 34,
+            m88nworm: 30,
+            m88nsourworm: 20,
+            m88nsourworm2: 10,
+            m88ngoldworm: 5,
+            m88ndiamondworm: 1,
         },
         respawnDelay: 4000000 //one hour
     },
@@ -3796,7 +3802,7 @@ let Properties = {
         inventoryDescription: "Worm",
         respawnDelay: 9900000,
         onConsume: function(player){
-            player.playerClassModifiers.applyTemporaryModifierWithTimeout('fishing', 10, 60000);
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('fishing', 10, 30000);
         }
     },
     m88nsourworm: {
@@ -3814,7 +3820,7 @@ let Properties = {
         inventoryDescription: "Sour Gummy Worm",
         respawnDelay: 9900000,
         onConsume: function(player){
-            player.playerClassModifiers.applyTemporaryModifierWithTimeout('fishing', 30, 60000);
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('fishing', 30, 120000);
         }
     },
     m88ngoldworm: {
@@ -3823,7 +3829,7 @@ let Properties = {
         inventoryDescription: "Gold Worm",
         respawnDelay: 9900000,
         onConsume: function(player){
-            player.playerClassModifiers.applyTemporaryModifierWithTimeout('fishing', 40, 60000);
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('fishing', 40, 180000);
         }
     },
     m88ndiamondworm: {
@@ -3832,7 +3838,7 @@ let Properties = {
         inventoryDescription: "Diamond Worm",
         respawnDelay: 9900000,
         onConsume: function(player){
-            player.playerClassModifiers.applyTemporaryModifierWithTimeout('fishing', 50, 60000);
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('fishing', 50, 30000);
         }
     },
     m88nrose: {
