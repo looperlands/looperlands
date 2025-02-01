@@ -1934,8 +1934,6 @@ let Properties = {
         drops: {
             manacrystal: 50,
             GOLD2: 10,
-            m88ndirt: 1,
-            m88ngem: 1,
             GOLD4: 1
         },
         respawnDelay: 60000,
