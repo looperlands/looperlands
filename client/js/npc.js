@@ -417,22 +417,21 @@ define(['character'], function (Character) {
         "patroncora": [
             "This is the best spot in town for a cup of joe and the latest gossip."
         ],
-        "GOFFREY": ["Welcome to Duckville Portal!",
-                    "Mycupbloody sent me.",
-                    "This portal is token gated.",
-                    'Here is where you can <a target="_blank" href="https://loopexchange.art/collection/dsgoinquackers">buy a duck</a>',
+        "GOFFREY": ["Welcome to Duckville!",
+                    'If you like ducks you can <a target="_blank" href="https://loopexchange.art/collection/dsgoinquackers">buy one here</a>',
                     "Please help save Duckville!"
         ],
 
         //m88n's NPCs
         "wenmoon": [
-            "Yo! I'm wenmoon, m88nwalker sent me down here to be your lunar envoy.",
-            "Where Worlds Collide, Secrets Reside: Welcome to the Nexus!",
-            "First stop: Paradise Point!",
+            "Yo! I'm wenmoon, I was sent down here to be your lunar envoy.",
+            "Legend has it there are some pretty epic treasures hidden in The Nexus!",
+            "I'd say check out Paradise Point first and have a good look around!",
+            "This universe is ever expanding and joining the community helps keep you in the loop.",
             //'First stop: Dreamland! Own a piece from the <a target="_blank" href="https://loopexchange.art/collection/onesie-party">Its a Onesie Party! collection</a> for access to the VIP Lounge!',
-            'On X? <a target="_blank" href="https://twitter.com/moonwalker_nfts">Give him a follow</a> to stay updated.',
+            'On X? <a target="_blank" href="https://twitter.com/moonwalker_nfts">Give m88nwalker a follow</a> to stay updated.',
             'How about Discord? <a target="_blank" href="https://discord.gg/bjjNewZegM">Checkout PLANET M88NWALKER</a> for lots more!',
-            "Keep your eyes open and have fun!"
+            "Keep your eyes open, be curious, ask quesions, and have fun!"
             //"Have fun!"
         ],
 
@@ -619,10 +618,10 @@ define(['character'], function (Character) {
             "If you're looking to buy some property in The Nexus, you've come to the right place.",
             "Right now we have several properties available and when you buy from us you get a FREE Lambo!",
             "If you're digging the boardwalk, we have two beach houses avialable in Paradise Point West...",
-            "And if you're looking for something a little more exclusive we have private islands available in the Helio Islands.",
-            //"If you're looking for something exclusive we have private islands available in the Helio Islands.",
+            //"And if you're looking for something a little more exclusive we have private islands available in the Helio Islands.",
+            "If you're looking for something exclusive we have private islands available in the Helio Islands.",
             //"That yacht over there, The Sun Chaser, has a private Captain's Quarters on it that is available to purchse.",
-            //"And if you really want to get out of town, we have 2 m88n pods available in Lunaria",
+            "And if you really want to get out of town, we have a couple m88n pods available in Lunaria",
             'Checkout <a target="_blank" href="https://discord.gg/bjjNewZegM">PLANET M88NWALKER in Discord</a> and DM m88nwalker to inquire.',
             'On X? <a target="_blank" href="https://twitter.com/moonwalker_nfts">Give him a follow</a> to stay updated.',
             "Have fun exploring The Nexus. There are lots of hidden treasures around here!"
@@ -648,8 +647,8 @@ define(['character'], function (Character) {
         ],
 
         "nexan37": [
-            //"Ya dig the drums? So does my cat.",
-            //'Check it... <a target="_blank" href="https://www.youtube.com/watch?v=NUYvbT6vTPs">Cat Digs Polka Drums</a> ...LOL',
+            "Ya dig the drums? So does my cat.",
+            'Check it... <a target="_blank" href="https://www.youtube.com/watch?v=NUYvbT6vTPs">Cat Digs Polka Drums</a> ...LOL',
             "Did you hear about DreamLand?? Something weird happened...",
             "It's more of a NightmareLand now...I think they need your help in there!"
         ],
@@ -815,11 +814,12 @@ define(['character'], function (Character) {
             "Hey! Remember me? I'm from m88nwalker's first LooperLands collection!",
             "There was enough magic left in my hat to stop by and share a little snow.",
             "It's warm here so I can't stay long, but I had to let you know...",
-            "We're hanging out on Santa's Secret Island, decorating for a party!",
-            'If you own a piece from the <a target="_blank" href="https://loopexchange.art/collection/looperlands-christmas">Christmas in LooperLands collection</a> you get early access!',
-            "After Christmas is over I won't have enough magic to keep the portal open. But...",
+            "We're hanging out on Santa's Secret Island, while we wait for next Christmas!",
+            //'If you own a piece from the <a target="_blank" href="https://loopexchange.art/collection/looperlands-christmas">Christmas in LooperLands collection</a> you get early access!',
+            //"After Christmas is over I won't have enough magic to keep the portal open. But...",
             'If you own a piece from the <a target="_blank" href="https://loopexchange.art/collection/looperlands-christmas">Christmas in LooperLands collection</a> you can come visit anytime!',
-            "Enjoy the holidays! See you in there!"
+            "Have fun and stay frosty!"
+            //"Enjoy the holidays! See you in there!"
         ],
 
         "m88nsanta": [
@@ -840,15 +840,13 @@ define(['character'], function (Character) {
         "m88ntownie": [
             "Heyyy! What's up?",
             "My Name is Ty, I'm a Townie! Are you on Taiko yet?",
-            "A new NFT collection of all my friends and I is getting released on Taiko soon!",
-            'You will be able to <a target="_blank" href="https://on.mintpad.co/townies">mint your Townie NFTs</a> directly on Mintpad.',
-            'If you own anything m88nwalker <a target="_blank" href="https://forms.gle/AMzNqiVJcVtCSuXr5">there is a whitelist</a> you can get on.',
-            //'You can <a target="_blank" href="https://on.mintpad.co/townies">mint your Townie NFTs</a> directly on Mintpad.',
+            "A new NFT collection of all my friends are on Taiko!",
+            'You can <a target="_blank" href="https://on.mintpad.co/townies">mint your Townie NFTs</a> directly on Mintpad.',
             "Then just talk to m88nwalker if you want to upgrade and have it integrated like me.",
             "Wanna know something else cool?...",
             "If you get lucky and mint a legendary Zombie Townie...",
             'You get to pick out another one from the <a target="_blank" href="https://loopexchange.art/collection/zombie-townies">Zombie Townies collection</a> on Loopring for free!',
-            "You just pay integration fees"
+            "Join the Townie Clan!"
         ],
 
         "m88ntownie2": [
@@ -863,16 +861,14 @@ define(['character'], function (Character) {
 
         "m88ntownies": [
             "Heyyy! What's up?",
-            "My Name is Ty, I'm a Townie! Are you on Taiko yet?",
-            "A new NFT collection of all my friends and I is getting released on Taiko soon!",
-            'You will be able to <a target="_blank" href="https://on.mintpad.co/townies">mint your Townie NFTs</a> directly on Mintpad.',
-            'If you own anything m88nwalker <a target="_blank" href="https://forms.gle/AMzNqiVJcVtCSuXr5">there is a whitelist</a> you can get on.',
-            //'You can <a target="_blank" href="https://on.mintpad.co/townies">mint your Townie NFTs</a> directly on Mintpad.',
+            "We're The Townies! Are you on Taiko yet?",
+            "A new NFT collection of all my friends are on Taiko!",
+            'You can <a target="_blank" href="https://on.mintpad.co/townies">mint your Townie NFTs</a> directly on Mintpad.',
             "Then just talk to m88nwalker if you want to upgrade and have it integrated like me.",
             "Wanna know something else cool?...",
             "If you get lucky and mint a legendary Zombie Townie...",
             'You get to pick out another one from the <a target="_blank" href="https://loopexchange.art/collection/zombie-townies">Zombie Townies collection</a> on Loopring for free!',
-            "You just pay integration fees"
+            "Join the Townie Clan!"
         ],
 
         //MRMlabs NPCs
@@ -881,8 +877,8 @@ define(['character'], function (Character) {
             //"The things you own end up owning you.",
             //"It's only after we've lost everything that we're free to do anything.",
             //"Sticking feathers up your butt does not make you a chicken!",
-            //"You decide your own level of involvement.",
-            "You wanna make an omelet, you gotta break some eggs.",
+            "You decide your own level of involvement.",
+            //"You wanna make an omelet, you gotta break some eggs.",
             //"His name was Robert Paulson",
             //"I want you to hit me as hard as you can."
         ],
