@@ -230,7 +230,7 @@ module.exports = Player = Character.extend({
             else if (action === Types.Messages.AGGRO) {
                 if (self.move_callback) {
                     const baseHateAggroHate = 5;
-                    const hate = self.playerClassModifiers.hate * baseHateAggroHate; 
+                    const hate = self.playerClassModifiers.hate * baseHateAggroHate;
                     self.server.handleMobHate(message[1], self.id, hate);
 
                     // Handle special attack timeouts on encounter start
@@ -309,7 +309,7 @@ module.exports = Player = Character.extend({
                                 } else {
                                     damageDealtModifier = self.playerClassModifiers.meleeDamageDealt;
                                 }
-                                dmg = Math.round(damageDealtModifier * dmg);          
+                                dmg = Math.round(damageDealtModifier * dmg);
                                 mob.receiveDamage(dmg, self.id);
                                 //console.log("Player "+self.id+" hit mob "+mob.id+" for "+dmg+" damage.", mob.type);
                                 const hate = dmg * self.playerClassModifiers.hate;
@@ -560,6 +560,10 @@ module.exports = Player = Character.extend({
                     self.playerEventBroker.lootEvent({ kind: self.pendingFish.name }, caughtAmount);
                     self.handleExperience(xp);
                     self.server.pushToPlayer(self, new Messages.Kill(self.pendingFish.name, xp));
+
+                    discord.sendMessage(`🐟 **${self.name}** caught *${AltNames.getName(self.pendingFish.name)}*${caughtAmount === 1 ? '' : ' **[x2]**'}*!* (Lake Level ${self.pendingFish.lakeLvl})`);
+
+
                 }
                 self.pendingFish = null;
                 self.server.announceDespawnFloat(self);
@@ -954,7 +958,7 @@ module.exports = Player = Character.extend({
     },
 
     getAttackRate: function () {
-        return Math.round(this.attackRate/this.playerClassModifiers.attackRate);
+        return Math.round(this.attackRate / this.playerClassModifiers.attackRate);
     },
 
     setAttackRate: function (rate) {
@@ -966,7 +970,7 @@ module.exports = Player = Character.extend({
         return Math.round(BASE_SPEED - (adjustedLevel - 1) * 0.33);
     },
 
-    getStealth: function() {
+    getStealth: function () {
         return this.playerClassModifiers.stealth;
     },
 
@@ -1274,11 +1278,11 @@ module.exports = Player = Character.extend({
         }
     },
 
-    sendAnnoucement: function(message, timeToShow) {
+    sendAnnoucement: function (message, timeToShow) {
         this.send(new Messages.Announcement(message, timeToShow).serialize());
     },
 
-    setDropOverride: function(item, timeout) {
+    setDropOverride: function (item, timeout) {
         this.dropOverride = item;
         setTimeout(() => {
             delete this.dropOverride;
@@ -1286,10 +1290,10 @@ module.exports = Player = Character.extend({
     },
 
     //loop over all npcs and check if they need to show an indicator now
-    updateIndicators: function() {
+    updateIndicators: function () {
         for (let id in this.server.entities) {
             let entity = this.server.entities[id];
-            if(entity instanceof Npc) {
+            if (entity instanceof Npc) {
                 let hadIndicator = entity.showIndicator;
                 entity.checkIndicator(this.sessionId, this.server.server.cache);
                 if (hadIndicator !== entity.showIndicator) {
