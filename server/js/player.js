@@ -560,6 +560,7 @@ module.exports = Player = Character.extend({
                     self.playerEventBroker.lootEvent({ kind: self.pendingFish.name }, caughtAmount);
                     self.handleExperience(xp);
                     self.server.pushToPlayer(self, new Messages.Kill(self.pendingFish.name, xp));
+                    discord.sendMessage(`🐟 **${self.name}** caught *${AltNames.getName(self.pendingFish.name)}*${caughtAmount === 1 ? '' : ' *[DOUBLE XP]*'}!`);
                 }
                 self.pendingFish = null;
                 self.server.announceDespawnFloat(self);
