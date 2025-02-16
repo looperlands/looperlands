@@ -561,7 +561,7 @@ module.exports = Player = Character.extend({
                     self.handleExperience(xp);
                     self.server.pushToPlayer(self, new Messages.Kill(self.pendingFish.name, xp));
 
-                    discord.sendMessage(`🐟 **${self.name}** caught *${AltNames.getName(self.pendingFish.name)}*${caughtAmount === 1 ? '' : ' **[DOUBLE XP]**'}*!* (Lake Level ${self.pendingFish.lakeLvl})`);
+                    discord.sendMessage(`🐟 **${self.name}** caught *${AltNames.getName(self.pendingFish.name)}*${caughtAmount === 1 ? '' : ' **[x2]**'}*!* (Lake Level ${self.pendingFish.lakeLvl})`);
 
 
                 }
