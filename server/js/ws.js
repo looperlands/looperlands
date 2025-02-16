@@ -987,7 +987,7 @@ WS.socketIOServer = Server.extend({
                         return;
                     }
                     let fishExp = Lakes.calculateFishExp(fish, lakeName);
-                    player.pendingFish = {name: fish, exp: fishExp, double: (activeTrait === "double_catch")};
+                    player.pendingFish = {name: fish, exp: fishExp, double: (activeTrait === "double_catch"), lakeLvl, lakeName};
                     let normalDifficulty = Lakes.getDifficulty(player.getNFTWeapon().getLevel(), lakeName, (activeTrait === "upper_hand"));
                     let speed = Lakes.getFishSpeed(fish, lakeName);
 
