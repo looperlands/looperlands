@@ -422,3 +422,12 @@ Messages.Indicator = Message.extend({
         return [Types.Messages.INDICATOR, this.entitiyId, this.showIndicator];
     },
 });
+
+Messages.TileStage = Message.extend({
+    init: function(stage) {
+        this.stage = stage;
+    },
+    serialize: function() {
+        return [Types.Messages.TILESTAGE, this.stage];
+    },
+});

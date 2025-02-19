@@ -24,7 +24,7 @@ const quests = require("./quests/quests");
 const WorldEventBroker = require("./flows/worldeventbroker.js");
 const {cache} = require("express/lib/application");
 
-    Lakes = require('./lakes');
+Lakes = require('./lakes');
 
 // ======= GAME SERVER ========
 
@@ -87,7 +87,8 @@ module.exports = World = cls.Class.extend({
             self.updatePopulation();
 
             self.pushRelevantEntityListTo(player);
-            self.pushToggledLayersTo(player)
+            self.pushToggledLayersTo(player);
+            self.pushTileStagesTo(player);
 
             var move_callback = function (x, y) {
                 //console.debug(player.name + " is moving to (" + x + ", " + y + ").");
@@ -125,7 +126,7 @@ module.exports = World = cls.Class.extend({
                 self.pushToAdjacentGroups(player.group, message, ignoreSelf ? player.id : null);
             });
 
-            player.onBroadcastToZone(function(message, ignoreSelf) {
+            player.onBroadcastToZone(function (message, ignoreSelf) {
                 self.pushToGroup(player.group, message, ignoreSelf ? player.id : null);
             });
 
@@ -172,7 +173,7 @@ module.exports = World = cls.Class.extend({
             player.onReleaseNpc(function (kind, timeToLive) {
                 const npc = self.addNpc(kind, player.x, player.y, player);
 
-                setTimeout(()=> {
+                setTimeout(() => {
                     player.broadcast(npc.despawn(), false);
                     self.removeEntity(npc);
                 }, timeToLive)
@@ -203,16 +204,16 @@ module.exports = World = cls.Class.extend({
         });
 
 
-        this.onRegenTick(function() {
-            self.forEachCharacter(function(character) {
-                if(!character.hasFullHealth()) {
+        this.onRegenTick(function () {
+            self.forEachCharacter(function (character) {
+                if (!character.hasFullHealth()) {
                     let regenHealthBy = character.maxHitPoints / 25
                     if (character.type === 'player') {
                         regenHealthBy *= character.playerClassModifiers.hpRegen;
                     }
                     character.regenHealthBy(Math.floor(regenHealthBy));
 
-                    if(character.type === 'player') {
+                    if (character.type === 'player') {
                         self.pushToPlayer(character, character.regen());
                     }
                 }
@@ -221,7 +222,7 @@ module.exports = World = cls.Class.extend({
     },
 
 
-    run: function(mapFilePath) {
+    run: function (mapFilePath) {
         var self = this;
 
         this.map = new Mapx(mapFilePath);
@@ -244,7 +245,7 @@ module.exports = World = cls.Class.extend({
             // Create all chest areas
             _.each(self.map.chestAreas, function (a) {
                 var area = new ChestArea(a.id, a.x, a.y, a.w, a.h, a.tx, a.ty, a.i, self);
-                if(a.c) {
+                if (a.c) {
                     area.setChances(a.c);
                 }
                 self.chestAreas.push(area);
@@ -265,10 +266,10 @@ module.exports = World = cls.Class.extend({
             // Spawn static chests
             _.each(self.map.staticChests, function (chest) {
                 var c = self.createChest(chest.x, chest.y, chest.i);
-                if(chest.c) {
+                if (chest.c) {
                     c.setChances(chest.c);
                 }
-                if(chest.d) {
+                if (chest.d) {
                     c.setDelay(chest.d);
                 }
                 self.addStaticItem(c);
@@ -286,7 +287,7 @@ module.exports = World = cls.Class.extend({
         var regenCount = this.ups * 2;
         var updateCount = 0;
 
-        setInterval(function() {
+        setInterval(function () {
             if (self.getPlayerCount() < 1) {
                 return;
             }
@@ -303,11 +304,11 @@ module.exports = World = cls.Class.extend({
             }
         }, 1000 / this.ups);
 
-        console.log(""+this.id+" created (capacity: "+this.maxPlayers+" players).");
+        console.log("" + this.id + " created (capacity: " + this.maxPlayers + " players).");
     },
 
 
-    onInit: function(callback) {
+    onInit: function (callback) {
         this.init_callback = callback;
     },
 
@@ -319,26 +320,26 @@ module.exports = World = cls.Class.extend({
         this.connect_callback = callback;
     },
 
-    onPlayerEnter: function(callback) {
+    onPlayerEnter: function (callback) {
         this.enter_callback = callback;
     },
 
-    onPlayerAdded: function(callback) {
+    onPlayerAdded: function (callback) {
         this.added_callback = callback;
     },
 
-    onPlayerRemoved: function(callback) {
+    onPlayerRemoved: function (callback) {
         this.removed_callback = callback;
     },
 
-    onRegenTick: function(callback) {
+    onRegenTick: function (callback) {
         this.regen_callback = callback;
     },
 
-    pushRelevantEntityListTo: function(player) {
+    pushRelevantEntityListTo: function (player) {
         var entities;
 
-        if(player && (player.group in this.groups)) {
+        if (player && (player.group in this.groups)) {
             entities = _.keys(this.groups[player.group].entities);
             entities = _.reject(entities, function (id) {
                 return id == player.id;
@@ -346,7 +347,7 @@ module.exports = World = cls.Class.extend({
             entities = _.map(entities, function (id) {
                 return parseInt(id);
             });
-            entities = entities.filter(id=> id != null);
+            entities = entities.filter(id => id != null);
 
             if (entities) {
                 this.pushToPlayer(player, new Messages.List(entities));
@@ -355,13 +356,13 @@ module.exports = World = cls.Class.extend({
     },
 
 
-    pushSpawnsToPlayer: function(player, ids) {
+    pushSpawnsToPlayer: function (player, ids) {
         var self = this;
 
-        _.each(ids, function(id) {
+        _.each(ids, function (id) {
             var entity = self.getEntityById(id);
             if (entity) {
-                if(entity instanceof Npc) {
+                if (entity instanceof Npc) {
                     entity.checkIndicator(player.sessionId, self.server.cache);
                 }
                 self.pushToPlayer(player, new Messages.Spawn(entity));
@@ -371,11 +372,19 @@ module.exports = World = cls.Class.extend({
         //console.debug("Pushed "+_.size(ids)+" new spawns to "+player.id);
     },
 
-    pushToggledLayersTo: function(player) {
+    pushToggledLayersTo: function (player) {
         var self = this;
         _.forEach(Object.keys(this.map.toggledLayers), (layer) => {
             let visible = self.map.toggledLayers[layer];
-            self.pushToPlayer(player, new Messages.Layer(layer, visible ));
+            self.pushToPlayer(player, new Messages.Layer(layer, visible));
+        });
+    },
+
+    pushTileStagesTo: function (player) {
+        var self = this;
+        _.forEach(Object.keys(this.map.tileStages), (tileStage) => {
+            let stage = self.map.tileStages[tileStage];
+            self.pushToPlayer(player, new Messages.TileStage(stage));
         });
     },
 
@@ -469,7 +478,7 @@ module.exports = World = cls.Class.extend({
         }
     },
 
-    addEntity: function(entity) {
+    addEntity: function (entity) {
         this.entities[entity.id] = entity;
         this.handleEntityGroupMembership(entity);
     },
@@ -486,7 +495,7 @@ module.exports = World = cls.Class.extend({
         }
         if (entity.id in this.npcs) {
             delete this.npcs[entity.id];
-        }        
+        }
 
         if (entity.type === "mob") {
             this.clearMobAggroLink(entity);
@@ -532,18 +541,18 @@ module.exports = World = cls.Class.extend({
         return npc;
     },
 
-    getClosestNpcOfKind: function(kind, x, y) {
+    getClosestNpcOfKind: function (kind, x, y) {
         var minDist = 99999,
             closest = null,
             npc,
             dist;
 
-        for(var id in this.npcs) {
-            if(this.npcs.hasOwnProperty(id)) {
+        for (var id in this.npcs) {
+            if (this.npcs.hasOwnProperty(id)) {
                 npc = this.npcs[id];
-                if(parseInt(npc.kind) === parseInt(kind)) {
+                if (parseInt(npc.kind) === parseInt(kind)) {
                     dist = Utils.distanceTo(x, y, npc.x, npc.y);
-                    if(dist < minDist) {
+                    if (dist < minDist) {
                         closest = npc;
                         minDist = dist;
                     }
@@ -553,18 +562,18 @@ module.exports = World = cls.Class.extend({
         return closest;
     },
 
-    getClosestMobOfKind: function(kind, x, y) {
+    getClosestMobOfKind: function (kind, x, y) {
         var minDist = 99999,
             closest = null,
             mob,
             dist;
 
-        for(var id in this.mobs) {
-            if(this.mobs.hasOwnProperty(id)) {
+        for (var id in this.mobs) {
+            if (this.mobs.hasOwnProperty(id)) {
                 mob = this.mobs[id];
-                if(mob.kind === kind && !mob.isDead) {
+                if (mob.kind === kind && !mob.isDead) {
                     dist = Utils.distanceTo(x, y, mob.x, mob.y);
-                    if(dist < minDist) {
+                    if (dist < minDist) {
                         closest = mob;
                         minDist = dist;
                     }
@@ -574,7 +583,7 @@ module.exports = World = cls.Class.extend({
         return closest;
     },
 
-    addItem: function(item) {
+    addItem: function (item) {
         this.addEntity(item);
         this.items[item.id] = item;
 
@@ -598,7 +607,7 @@ module.exports = World = cls.Class.extend({
         var id = Utils.getID(),
             item = null;
 
-        if(kind === Types.Entities.CHEST) {
+        if (kind === Types.Entities.CHEST) {
             item = new Chest(id, x, y);
         } else {
             item = new Item(id, kind, x, y);
@@ -609,7 +618,7 @@ module.exports = World = cls.Class.extend({
     createChest: function (x, y, items, chances) {
         var chest = this.createItem(Types.Entities.CHEST, x, y);
         chest.setItems(items);
-        if(chances) {
+        if (chances) {
             chest.setChances(chances)
         }
         return chest;
@@ -722,6 +731,25 @@ module.exports = World = cls.Class.extend({
         }
     },
 
+    placeStagedTile: function (x, y, tile) {
+        this.map.tileStages[x + '.' + y] = { x: x, y: y, tile: tile, stage: 0 };
+        this.pushBroadcast(new Messages.TileStage(this.map.tileStages[x + '.' + y]));
+    },
+
+    placeStagedTileGroup: function (x, y, groupName) {
+        this.map.tileStages[x + '.' + y] = { x: x, y: y, tileGroup: groupName, stage: 0 };
+        this.pushBroadcast(new Messages.TileStage(this.map.tileStages[x + '.' + y]));
+    },
+
+    progressStage: function (x, y) {
+        if (!this.map.tileStages[x + '.' + y]) {
+            return;
+        }
+
+        this.map.tileStages[x + '.' + y].stage++;
+        this.pushBroadcast(new Messages.TileStage(this.map.tileStages[x + '.' + y]));
+    },
+
     broadcastAttacker: function (character) {
         if (character) {
             this.pushToAdjacentGroups(character.group, character.attack(), character.id);
@@ -781,7 +809,9 @@ module.exports = World = cls.Class.extend({
                     })
                 }
 
-                if(mob.aoeTimer) { clearInterval(mob.aoeTimer);}
+                if (mob.aoeTimer) {
+                    clearInterval(mob.aoeTimer);
+                }
 
                 if (mob.kind === Types.Entities.TENTACLE || mob.kind === Types.Entities.TENTACLE2) {
                     self.handleSeaCreatureDie(mob, attacker);
@@ -791,7 +821,7 @@ module.exports = World = cls.Class.extend({
             if (entity.type === "player") {
                 this.handlePlayerVanish(entity);
                 this.pushToAdjacentGroups(entity.group, entity.despawn());
-                entity.playerEventBroker.deathEvent(entity, {x: entity.x , y: entity.y});
+                entity.playerEventBroker.deathEvent(entity, {x: entity.x, y: entity.y});
             }
 
             this.removeEntity(entity);
@@ -928,21 +958,21 @@ module.exports = World = cls.Class.extend({
     },
 
 
-    moveNpc: function(npc, x, y) {
-        npc.setPosition(x,y);
+    moveNpc: function (npc, x, y) {
+        npc.setPosition(x, y);
         this.pushToAdjacentGroups(npc.group, new Messages.Move(npc));
         this.handleEntityGroupMembership(npc);
     },
 
     findPositionNextTo: function (entity, target) {
-        let positions = ['N','S','W','E'];
+        let positions = ['N', 'S', 'W', 'E'];
 
         while (positions.length > 0) {
             let randArrPos = Utils.random(positions.length);
             let side = positions[randArrPos];
 
             let pos = entity.getPositionNextTo(target, side);
-            if (this.isValidPosition(pos.x, pos.y)){
+            if (this.isValidPosition(pos.x, pos.y)) {
                 return pos;
             }
             positions.splice(randArrPos, 1);
@@ -1217,7 +1247,7 @@ module.exports = World = cls.Class.extend({
         return weaponInfo;
     },
 
-    getItemWeaponStatistics: function(playerId) {
+    getItemWeaponStatistics: function (playerId) {
         const player = this.getEntityById(playerId);
         if (player === undefined) {
             return;
@@ -1279,8 +1309,8 @@ module.exports = World = cls.Class.extend({
                     accompliceShare = Math.round(accompliceShare * Math.max(1 - (accompliceLevel - (mobLevel * 1.25)) * 0.1, 0.5));
                 }
                 let buff = accomplice.getActiveBuff();
-                if (buff && buff.stat === "exp"){
-                    accompliceShare = Math.round(accompliceShare * (100 + buff.percent)/100);
+                if (buff && buff.stat === "exp") {
+                    accompliceShare = Math.round(accompliceShare * (100 + buff.percent) / 100);
                 }
                 accompliceShare = accompliceShare * accomplice.playerClassModifiers.xp;
                 accomplice.handleExperience(accompliceShare);
@@ -1400,12 +1430,12 @@ module.exports = World = cls.Class.extend({
         return triggerState !== undefined ? triggerState : false;
     },
 
-    activateTrigger: function(triggerId) {
+    activateTrigger: function (triggerId) {
         this.doorTriggers[triggerId] = true;
         this.worldEventBroker.triggerActivated(this.id, triggerId);
     },
 
-    deactivateTrigger: function(triggerId) {
+    deactivateTrigger: function (triggerId) {
         this.doorTriggers[triggerId] = false;
         this.worldEventBroker.triggerDeactivated(this.id, triggerId);
     },
@@ -1499,54 +1529,54 @@ module.exports = World = cls.Class.extend({
         let parent = this.getEntityById(parentId);
         if (parent !== undefined) {
             const index = parent.addArray.indexOf(child);
-                if (index > -1) {
-                    parent.addArray.splice(index, 1);
-                }
+            if (index > -1) {
+                parent.addArray.splice(index, 1);
+            }
         }
     },
 
-    nextMobId: function() {
+    nextMobId: function () {
         // return highest key + 1
         return Utils.getID();
     },
 
-    showLayer: function(player, layer) {
+    showLayer: function (player, layer) {
         this.map.toggledLayers[layer] = true;
         this.pushBroadcast(new Messages.Layer(layer, true), false);
     },
 
-    hideLayer: function(player, layer) {
+    hideLayer: function (player, layer) {
         this.map.toggledLayers[layer] = false;
         this.pushBroadcast(new Messages.Layer(layer, false), false);
     },
 
-    toggleLayer: function(player, layer) {
+    toggleLayer: function (player, layer) {
         this.map.toggledLayers[layer] = !this.map.toggledLayers[layer];
         this.pushBroadcast(new Messages.Layer(layer, this.map.toggledLayers[layer]), false);
     },
 
-    triggerAnimation: function(entity, animationId) {
+    triggerAnimation: function (entity, animationId) {
 
         this.pushToAdjacentGroups(entity.group, new Messages.Animate(entity.id, animationId), false);
     },
 
-    newQuest: function(player, questId) {
+    newQuest: function (player, questId) {
         let questText = quests.newQuest(this.server.cache, player.sessionId, questId);
-        if(_.isEmpty(questText)) {
-           return false;
+        if (_.isEmpty(questText)) {
+            return false;
         }
 
         this.sendNotifications(player, questText);
         return true;
     },
 
-    completeQuest: function(player, questId) {
+    completeQuest: function (player, questId) {
         let result = quests.completeQuest(this.server.cache, player.sessionId, questId);
-        if(result === false) {
+        if (result === false) {
             return false;
         }
 
-        if(!_.isEmpty(result)) {
+        if (!_.isEmpty(result)) {
             this.sendNotifications(player, result);
         }
 
@@ -1555,15 +1585,15 @@ module.exports = World = cls.Class.extend({
         return true;
     },
 
-    sendNotifications: function(player, notifications) {
-        if(!_.isArray(notifications)) {
+    sendNotifications: function (player, notifications) {
+        if (!_.isArray(notifications)) {
             notifications = [notifications];
         }
         let self = this;
         let delay = 0;
         const SHOW_MESSAGE_TIME = 2000;
         notifications.forEach((text) => {
-            setTimeout(function() {
+            setTimeout(function () {
                 self.pushToPlayer(player, new Messages.Notify(text), false);
             }, delay * SHOW_MESSAGE_TIME);
             delay++;
@@ -1601,19 +1631,19 @@ module.exports = World = cls.Class.extend({
         }
     },
 
-    announceSpawnFloat: function(player, gX, gY) {
+    announceSpawnFloat: function (player, gX, gY) {
         let playerNftWeapon = player.getNFTWeapon();
-        if (playerNftWeapon !== undefined){
-            let floatName = playerNftWeapon.nftId.replace("0x","NFT_");
-            this.pushToAdjacentGroups(player.group, new Messages.SpawnFloat(player.id, floatName , gX, gY), player.id);
+        if (playerNftWeapon !== undefined) {
+            let floatName = playerNftWeapon.nftId.replace("0x", "NFT_");
+            this.pushToAdjacentGroups(player.group, new Messages.SpawnFloat(player.id, floatName, gX, gY), player.id);
         }
     },
 
-    announceDespawnFloat: function(player) {
+    announceDespawnFloat: function (player) {
         this.pushToAdjacentGroups(player.group, new Messages.DespawnFloat(player.id), player.id);
     },
 
-    getConsumeGroupCooldown: function(nftId, itemGroup) {
+    getConsumeGroupCooldown: function (nftId, itemGroup) {
         let playerCooldowns = this.consumeCooldowns[nftId];
         if (playerCooldowns) {
             let expireDate = playerCooldowns[itemGroup];
@@ -1625,7 +1655,7 @@ module.exports = World = cls.Class.extend({
     },
 
 
-    announceSpawnProjectile: function(player, projectileType, mob) {
+    announceSpawnProjectile: function (player, projectileType, mob) {
         this.pushToAdjacentGroups(player.group, new Messages.SpawnProjectile(player.id, projectileType, mob));
     },
 

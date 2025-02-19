@@ -1,0 +1,142 @@
+{
+  "farm": {
+    "stages": [
+      {
+        "key": "prepare",
+        "name": "Prepare soil",
+        "playAnimation": true,
+        "requirements": {
+          "level": 15,
+          "tool": "hoe"
+        },
+        "duration": 3,
+        "rewards": [
+          {
+            "type": "XP",
+            "receiver": "player",
+            "amount": 20
+          },
+          {
+            "type": "XP",
+            "receiver": "tool",
+            "amount": 10
+          }
+        ],
+        "actions": [
+          {
+            "type": "placeStagedTile",
+            "tile": 17118
+          }
+        ],
+        "nextStage": "plant"
+      },
+      {
+        "key": "plant",
+        "name": "Plant seeds",
+        "requirements": {
+          "items": [
+            "M88NLETTUCE",
+            "M88NTURNIP"
+          ]
+        },
+        "rewards": [
+          {
+            "type": "XP",
+            "amount": 20
+          }
+        ],
+        "actions": {
+          "M88NLETTUCE": {
+            "type": "placeStagedTile",
+            "tile": 18084,
+            "stage": 0
+          },
+          "M88NTURNIP": {
+            "type": "placeStagedTileGroup",
+            "tileGroup": "tree1",
+            "stage": 0
+          }
+        },
+        "nextStage": {
+          "M88NLETTUCE": "water_lettuce",
+          "M88NTURNIP": "water_orange_tree"
+        }
+      },
+      {
+        "key": "water_lettuce",
+        "name": "Water lettuce",
+        "requirements": {
+          "tool": "watering_can"
+        },
+        "duration": 3,
+        "wait": 15,
+        "rewards": [
+          {
+            "type": "XP",
+            "receiver": "player",
+            "amount": 20
+          }
+        ],
+        "actions": [
+          {
+            "type": "progressStage"
+          }
+        ],
+        "nextStage": "grow_lettuce"
+      },
+      {
+        "key": "water_orange_tree",
+        "name": "Water Orange Tree",
+        "requirements": {
+          "tool": "watering_can"
+        },
+        "duration": 5,
+        "wait": 35,
+        "rewards": [
+          {
+            "type": "XP",
+            "receiver": "player",
+            "amount": 50
+          },
+          {
+            "type": "XP",
+            "receiver": "tool",
+            "amount": 10
+          }
+        ],
+        "actions": [
+          {
+            "type": "progressStage"
+          }
+        ],
+        "nextStage": "grow_orange_tree"
+      },
+      {
+        "key": "grow_orange_tree",
+        "name": "Water Orange Tree",
+        "requirements": {
+          "tool": "watering_can"
+        },
+        "duration": 5,
+        "wait": 35,
+        "rewards": [
+          {
+            "type": "XP",
+            "receiver": "player",
+            "amount": 50
+          },
+          {
+            "type": "XP",
+            "receiver": "tool",
+            "amount": 10
+          }
+        ],
+        "actions": [
+          {
+            "type": "progressStage"
+          }
+        ]
+      }
+    ]
+  }
+}

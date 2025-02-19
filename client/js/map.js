@@ -166,6 +166,8 @@ define(['jquery', 'area'], function ($, Area) {
             this.collisions = map.collisions;
             this.high = map.high;
             this.animated = map.animated;
+            this.stagedTiles = map.stagedTiles || {};
+            this.actionTiles = map.actionTiles || {};
             this.hiddenLayers = map.hiddenLayers || {};
             this.collidingTiles = map.collidingTiles || {};
             this.doors = this._getDoors(map);
@@ -215,7 +217,9 @@ define(['jquery', 'area'], function ($, Area) {
                     collection_message: door.tcollection_message,
                     item_message: door.titem_message,
                     quest_message: door.tquest_message,
-                    http_redirect: door.thttp_redirect
+                    http_redirect: door.thttp_redirect,
+                    level: door.tlevel,
+                    weaponLevel: door.tweapon_level
                 };
             });
 
@@ -534,6 +538,42 @@ define(['jquery', 'area'], function ($, Area) {
                     callback(x, y);
                 }
             }
+        },
+
+        findNearestActionTileAround: function (x, y, r) {
+            let nearestAction = null;
+            let nearestDistance = r + 1;
+
+            for (let i = x - r, max_i = x + r; i <= max_i; i += 1) {
+                for (let j = y - r, max_j = y + r; j <= max_j; j += 1) {
+                    if (!this.isOutOfBounds(i, j)) {
+                        let self = this;
+                        _.each(this.data[(j * this.width) + i], function (tileId) {
+                            const tile = {
+                                id: tileId,
+                                x: i * self.tilesize,
+                                gridX: i,
+                                y: j * self.tilesize,
+                                gridY: j
+                            };
+
+                            // Calculate the distance from the center point
+                            const distance = Math.abs(i - x) + Math.abs(j - y);
+
+                            // Is Action tile?
+                            const isActionTile = tile.id in self.actionTiles;
+
+                            if (distance < nearestDistance && isActionTile) {
+                                tile.name = self.actionTiles[tile.id].action;
+                                nearestAction = tile
+                                nearestDistance = distance;
+                            }
+                        });
+                    }
+                }
+            }
+
+            return nearestAction;
         },
 
         getLakeName: function (x, y) {

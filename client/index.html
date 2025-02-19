@@ -41,6 +41,7 @@ LooperLands (https://looperlands.io), initially conceived by BalksHamster and bu
         <link rel="stylesheet" href="css/main.css" type="text/css">
         <link rel="stylesheet" href="css/achievements.css" type="text/css">
 		<link rel="stylesheet" href="css/dialogue.css" type="text/css">
+		<link rel="stylesheet" href="css/selection-popup.css" type="text/css">
         <script src="js/lib/modernizr.js" type="text/javascript"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.1/socket.io.js"></script>
 		<script src="https://unpkg.com/gsap@3.12.5/dist/gsap.min.js"></script> <!--GSAP Animation Tool-->
@@ -527,6 +528,17 @@ LooperLands (https://looperlands.io), initially conceived by BalksHamster and bu
 						<div id="choices"></div>
 					</div>
 					<div id="close-dialogue-popup"></div>
+				</div>
+
+				<div id="selection-popup" class="panel hidden">
+					<div class="header">
+						<div id="selection-header" class="stroke"></div>
+					</div>
+					<div class="body">
+						<div id="selection-choices"></div>
+						<div style="clear: both"></div>
+					</div>
+					<div id="close-selection-popup"></div>
 				</div>
 
 				<div id="shop-confirmation" class="panel hidden">

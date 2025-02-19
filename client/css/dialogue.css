@@ -100,3 +100,8 @@
     background: #FCE04511;
     color: #f7dc44;
 }
+
+#dialogue-popup .choice.disabled {
+    pointer-events: none;
+    opacity: 0.6;
+}
