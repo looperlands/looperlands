@@ -7415,8 +7415,21 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 });
                             } else if (dest.http_redirect !== undefined) {
                                 window.open(dest.http_redirect, '_blank');
-                            }
-                            else {
+                            } else if (dest.level !== undefined ) {
+                                if (_self.player.level >=  dest.level) {
+                                    checkTrigger()
+                                } else {
+                                    _self.showNotification( dest.message ? dest.message : ("You need to be level " + dest.level + " to enter."));
+                                    _self.doorCheck = false;
+                                }
+                            } else if (dest.weaponLevel !== undefined) {
+                                if (_self.player.getWeaponLevel() >= dest.weaponLevel) {
+                                    checkTrigger()
+                                } else {
+                                    _self.showNotification(dest.message ? dest.message : ("You need a weapon level of " + dest.weaponLevel + " to enter."));
+                                    _self.doorCheck = false;
+                                }
+                            } else {
                                 checkTrigger();
                             }
                         }

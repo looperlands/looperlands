@@ -215,7 +215,9 @@ define(['jquery', 'area'], function ($, Area) {
                     collection_message: door.tcollection_message,
                     item_message: door.titem_message,
                     quest_message: door.tquest_message,
-                    http_redirect: door.thttp_redirect
+                    http_redirect: door.thttp_redirect,
+                    level: door.tlevel,
+                    weaponLevel: door.tweapon_level
                 };
             });
 
