@@ -346,7 +346,7 @@ const Lakes = {
     },
 
     m88n24kpool: {
-        level: 1,
+        level: 11,
         fish: {
             m88n24knecklace: "common",
             m88n24kcrown: "common",
