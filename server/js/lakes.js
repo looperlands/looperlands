@@ -345,6 +345,50 @@ const Lakes = {
         }
     },
 
+    m88ncraterlake1: {
+        level: 8,
+        fish: {
+            m88nalien1: "common",
+            m88nalien2: "uncommon",
+            m88nalien3: "rare",
+            m88nalien4: "epic",
+            m88nalien5: "legendary",
+        }
+    },
+
+    m88ncraterlake2: {
+        level: 8,
+        fish: {
+            m88nalien6: "common",
+            m88nalien7: "uncommon",
+            m88nalien8: "rare",
+            m88nalien9: "epic",
+            m88nalien10: "legendary",
+        }
+    },
+
+    m88nmoonlake1: {
+        level: 16,
+        fish: {
+            m88nmoon3: "common",
+            m88nmoon4: "uncommon",
+            m88nmoon1: "rare",
+            m88nmoon2: "epic",
+            m88nmoon5: "legendary",
+        }
+    },
+
+    m88nmoonlake2: {
+        level: 16,
+        fish: {
+            m88nmoon7: "common",
+            m88nmoon6: "uncommon",
+            m88nmoon9: "rare",
+            m88nmoon8: "epic",
+            //m88nmoon10: "legendary",
+        }
+    },
+
     m88n24kpool: {
         level: 11,
         fish: {
@@ -379,7 +423,7 @@ const Lakes = {
     },
 
     lavalake: {
-        level: 9,
+        level: 11,
         fish: {
             dragonegg: "common",
             dragonbreath: "uncommon",
@@ -413,8 +457,8 @@ const Lakes = {
 // only EPIC fish can be a consumable
 const ConsumableFish = {
     hp: ["cobparadisefish","oafish27","m88ndreamcandyr","gingerale", "m88nanglerfish", "m88nbettafish", "m88njellyfish", "m88npiranha"],
-    atk: ["cobbluegill","oafish31","oafish22","m88ndreamduckyp","saltnvinegarchips", "m88naxolotl", "m88nbluelobster", "m88nkoifish", "m88nshrimp"],
-    exp: ["cobgreensunfish","oafish36", "lollipop","m88ndreamgumballa","m88ngoldenbanana", "m88nblobfish", "m88ncharfish", "m88noctopus", "m88nstarfish", "luckybabydragon", "m88nnightmareduckyr", "m88n24kapestatuette"]
+    atk: ["cobbluegill","oafish31","oafish22","m88ndreamduckyp","saltnvinegarchips", "m88naxolotl", "m88nbluelobster", "m88nkoifish", "m88nshrimp", "m88nalien4", "m88nmoon2"],
+    exp: ["cobgreensunfish","oafish36", "lollipop","m88ndreamgumballa","m88ngoldenbanana", "m88nblobfish", "m88ncharfish", "m88noctopus", "m88nstarfish", "luckybabydragon", "m88nnightmareduckyr", "m88n24kapestatuette", "m88nalien9", "m88nmoon8"]
 };
 
 //---END CONFIG---
