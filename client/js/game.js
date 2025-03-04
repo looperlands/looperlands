@@ -290,6 +290,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "m88nsnowmobile",
                     "m88ncow",
                     "m88ntree",
+                    "m88nufo1",
+                    "m88nufo2",
+                    "m88nufo3",
+                    "m88nufo4",
                     //m88n's Mob Nexans
                     "nexan1",
                     "nexan2",

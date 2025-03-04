@@ -1,0 +1,49 @@
+{
+	"id": "m88nufo3",
+	"width": 20,
+	"height": 20,
+	"animations": {
+		"death": {
+			"length": 5,
+			"row": 0
+		},
+		"atk_right": {
+			"length": 5,
+			"row": 1
+		},
+		"walk_right": {
+			"length": 5,
+			"row": 2
+		},
+		"idle_right": {
+			"length": 5,
+			"row": 3
+		},
+		"atk_up": {
+			"length": 5,
+			"row": 4
+		},
+		"walk_up": {
+			"length": 5,
+			"row": 5
+		},
+		"idle_up": {
+			"length": 5,
+			"row": 6
+		},
+		"atk_down": {
+			"length": 5,
+			"row": 7
+		},
+		"walk_down": {
+			"length": 5,
+			"row": 8
+		},
+		"idle_down": {
+			"length": 5,
+			"row": 9
+		}
+	},
+	"offset_x": 0,
+	"offset_y": -10
+}
