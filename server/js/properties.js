@@ -1975,6 +1975,42 @@ let Properties = {
         respawnDelay: 40000,
     },
 
+    m88nufo1: {
+        level: 1,
+        drops: {
+            m88ngem: 100,
+        },
+        messages: ['Greetings two eyes!', 'wen moon?', 'Catch me if you can!', 'Go Team Green!'],
+        respawnDelay: 242000
+    },
+
+    m88nufo2: {
+        level: 1,
+        drops: {
+            m88ngem: 100,
+        },
+        messages: ['Greetings two eyes!', 'wen moon?', 'Catch me if you can!', 'Go Team Blue!'],
+        respawnDelay: 242000
+    },
+
+    m88nufo3: {
+        level: 1,
+        drops: {
+            m88ngem: 100,
+        },
+        messages: ['Greetings two eyes!', 'wen moon?', 'Catch me if you can!', 'Go Team Yellow!'],
+        respawnDelay: 242000
+    },
+
+    m88nufo4: {
+        level: 1,
+        drops: {
+            m88ngem: 100,
+        },
+        messages: ['Greetings two eyes!', 'wen moon?', 'Catch me if you can!', 'Go Team Red!'],
+        respawnDelay: 242000
+    },
+
     m88nmine: {
         level: 69,
         friendly: true, //not actually friendly, just AoE immune

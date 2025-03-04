@@ -466,6 +466,10 @@ Types = {
         M88NSNOWMOBILE: 78000118,
         M88NCOW: 78000119,
         M88NTREE: 78000120,
+        M88NUFO1: 78000121,
+        M88NUFO2: 78000122,
+        M88NUFO3: 78000123,
+        M88NUFO4: 78000124,
         //m88n Mob Nexans
         NEXAN1: 78000037,
         NEXAN2: 78000038,
@@ -6315,6 +6319,10 @@ var kinds = {
     m88nsnowmobile: [Types.Entities.M88NSNOWMOBILE, "mob"],
     m88ncow: [Types.Entities.M88NCOW, "mob"],
     m88ntree: [Types.Entities.M88NTREE, "mob"],
+    m88nufo1: [Types.Entities.M88NUFO1, "mob"],
+    m88nufo2: [Types.Entities.M88NUFO2, "mob"],
+    m88nufo3: [Types.Entities.M88NUFO3, "mob"],
+    m88nufo4: [Types.Entities.M88NUFO4, "mob"],
 
     //m88n Mob Nexans
     nexan1: [Types.Entities.NEXAN1, "mob"],
