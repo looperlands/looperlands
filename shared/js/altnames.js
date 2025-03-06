@@ -313,6 +313,7 @@ const AltNames = {
     m88ntownie: "Ty",
     m88ntownies: "Ty",
     m88ntownie2: "Tito",
+    m88nastronaut: "Astro",
 
     //m88n Items
     m88nmail: "mail",
