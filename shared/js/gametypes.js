@@ -374,6 +374,7 @@ Types = {
         M88NTOWNIE: 79000000,
         M88NTOWNIES: 79100000,
         M88NTOWNIE2: 79200000,
+        M88NASTRONAUT: 79300000,
         //m88n Mobs
         BALLOONDOGB: 78000001,
         BALLOONDOGY: 78000002,
@@ -6836,6 +6837,7 @@ var kinds = {
     m88ntownie: [Types.Entities.M88NTOWNIE, "npc"],
     m88ntownies: [Types.Entities.M88NTOWNIES, "npc"],
     m88ntownie2: [Types.Entities.M88NTOWNIE2, "npc"],
+    m88nastronaut: [Types.Entities.M88NASTRONAUT, "npc"],
     //MRMlabs NPCs
     tylerdurden: [Types.Entities.TYLERDURDEN, "npc"],
     ROBITSE3: [Types.Entities.ROBITSE3, "mob"],
