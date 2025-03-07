@@ -2564,6 +2564,20 @@ let Properties = {
         friendly: true
     },
 
+    m88nastronaut2: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+
+    m88nastronaut3: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+
     //Short Destroyers
     lateflea: {
         level: 5,

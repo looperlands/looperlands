@@ -499,6 +499,8 @@ Types = {
         M88NMERMAN3: 78000077,
         M88NMERMAN4: 78000078,
         M88NMERMAN5: 78000079,
+        M88NASTRONAUT2: 78000125,
+        M88NASTRONAUT3: 78000126,
         
         //m88n Items
         M88NMAP: 78000100,
@@ -6358,6 +6360,8 @@ var kinds = {
     m88nmerman3: [Types.Entities.M88NMERMAN3, "mob"],
     m88nmerman4: [Types.Entities.M88NMERMAN4, "mob"],
     m88nmerman5: [Types.Entities.M88NMERMAN5, "mob"],
+    m88nastronaut2: [Types.Entities.M88NASTRONAUT2, "mob"],
+    m88nastronaut3: [Types.Entities.M88NASTRONAUT3, "mob"],
 
     //BITCORN MOBS
     SLUDGERAT: [Types.Entities.SLUDGERAT, "mob"],

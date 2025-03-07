@@ -4327,6 +4327,42 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
 
+        m88nastronaut2: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NASTRONAUT2);
+                this.idleSpeed = 420;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
+        m88nastronaut3: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NASTRONAUT3);
+                this.idleSpeed = 420;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
         //Short Destroyers
         lateflea: Mob.extend({
             init: function(id) {

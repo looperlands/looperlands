@@ -873,7 +873,8 @@ define(['character'], function (Character) {
 
         "m88nastronaut": [
             "Yooo! Wanna play some laser tag?",
-            "Gather some players and DM m88nwalker for the gear!",
+            //"Gather some players and DM m88nwalker for the gear!",
+            'Gather some players and <a target="_blank" href="https://discord.gg/bjjNewZegM">DM m88nwalker</a> for the gear!',
             "Make sure to be collecting ore and gold...",
             "You can use them to craft potions that refill your laser ammo inventory.", 
             "/openShop blacksmith Blacksmith\'s shop"

@@ -879,6 +879,12 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.M88NMERMAN5] = function(id) {
         return new Mobs.m88nmerman5(id);
     };
+    EntityFactory.builders[Types.Entities.M88NASTRONAUT2] = function(id) {
+        return new Mobs.m88nastronaut2(id);
+    };
+    EntityFactory.builders[Types.Entities.M88NASTRONAUT3] = function(id) {
+        return new Mobs.m88nastronaut3(id);
+    };
     
     
     //Short Destroyers
