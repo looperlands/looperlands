@@ -282,6 +282,8 @@ const AltNames = {
     m88nsnowmobile: "Henchman",
     m88ncow: "Cow",
     m88ntree: "Tree",
+    m88nastronaut2: "Astro",
+    m88nastronaut3: "Astro",
 
     //m88n NPCs
     nexan29: "The Butler",

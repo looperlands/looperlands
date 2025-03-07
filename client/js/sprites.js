@@ -753,6 +753,8 @@ define(['text!../sprites/agent.json',
         'text!../sprites/m88nmerman3.json',
         'text!../sprites/m88nmerman4.json',
         'text!../sprites/m88nmerman5.json',
+        'text!../sprites/m88nastronaut2.json',
+        'text!../sprites/m88nastronaut3.json',
         //m88n Items
         'text!../sprites/item-m88nmap.json',
         'text!../sprites/item-m88negg1.json',

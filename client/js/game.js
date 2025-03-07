@@ -329,6 +329,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "m88nmerman3",
                     "m88nmerman4",
                     "m88nmerman5",
+                    "m88nastronaut2",
+                    "m88nastronaut3",
                     //MRMlabs Fishing
                     "bbqchips",
                     "blackpepperchips",
