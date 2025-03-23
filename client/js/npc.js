@@ -505,11 +505,14 @@ define(['character'], function (Character) {
 
         "nexan18": [
             "It's always sunny in Paradise Point!",
-            "This is my favorite place to catch a tan."
+            "This is my second favorite place to catch a tan.",
+            "There's a hidden island out there, but you need a special compass to find it."
         ],
 
         "nexan19": [
-            "It's a beautiful day for lounging at the beach!"
+            "It's a beautiful day for lounging at the beach!",
+            "Hey, I hear the ocean is worth exploring...",
+            "But first you have to beat up that octopus and take one of his tentacles."
         ],
 
         "nexan20": [
@@ -524,14 +527,14 @@ define(['character'], function (Character) {
 
         "nexan29": [
             "Welcome to the Sun Chaser Champagne Lounge, special guest!",
-            "Can I get you something to drink from the bar?",
-            "/openShop the_bar The Bar"
             //"The bar is closed right now while re-stock, but it will open again soon!",
             //"Hang out and enjoy the luxuious vibes though! The fishing is great off the bow."
-            //"Most of these portals go to the private Helio Islands.",
+            "Most of these portals go to the private Helio Islands.",
             //"If you're interested in becoming an island owner you can DM m88nwalker to inquire.",
-            //"On the far right of the second floor is a portal to a secret hidden island.",
-            //"You'll need to find a mysterious compass to navigate to that one though..."
+            "On the far right of the second floor is a portal to a secret hidden island.",
+            "You'll need to find a mysterious compass to navigate to that one though...",
+            "Can I get you something to drink from the bar?",
+            "/openShop the_bar The Bar"
         ],
 
         "m88nmobilebartender": [
@@ -593,14 +596,14 @@ define(['character'], function (Character) {
 
         "m88ntaikotwin1": [
             "Yo yo! We're the Taiko Twins!",
-            "Head north to visit Taiko Town, and head south to explore Paradise Point...",
-            "We have a new quests on the way for you..."
+            "Head north to visit Taiko Town, and head south to explore Paradise Point..."
+            //"We have a new quests on the way for you..."
         ],
 
         "m88ntaikotwin2": [
             "Yo yo! We're the Taiko Twins!",
-            "Head south to explore Paradise Point, and head north to visit Taiko Town...",
-            "We have a new quests on the way for you..."
+            "Head south to explore Paradise Point, and head north to visit Taiko Town..."
+            //"We have a new quests on the way for you..."
         ],
 
         "m88nstimytimy": [
@@ -619,9 +622,9 @@ define(['character'], function (Character) {
             "Right now we have several properties available and when you buy from us you get a FREE Lambo!",
             "If you're digging the boardwalk, we have two beach houses avialable in Paradise Point West...",
             //"And if you're looking for something a little more exclusive we have private islands available in the Helio Islands.",
-            "If you're looking for something exclusive we have private islands available in the Helio Islands.",
+            "If you're looking for something exclusive we have two private islands available in the Helio Islands.",
             //"That yacht over there, The Sun Chaser, has a private Captain's Quarters on it that is available to purchse.",
-            "And if you really want to get out of town, we have a couple m88n pods available in Lunaria",
+            "And if you really want to get out of town, we have one more m88n pod available in Lunaria",
             'Checkout <a target="_blank" href="https://discord.gg/bjjNewZegM">PLANET M88NWALKER in Discord</a> and DM m88nwalker to inquire.',
             'On X? <a target="_blank" href="https://twitter.com/moonwalker_nfts">Give him a follow</a> to stay updated.',
             "Have fun exploring The Nexus. There are lots of hidden treasures around here!"
@@ -697,8 +700,8 @@ define(['character'], function (Character) {
 
         "nexan45": [
             "Just sweeping up some sand...",
-            "Hey, I hear the ocean is worth exploring...",
-            "But first you have to beat up that octopus and take one of his tentacles."
+            "Hey, I left some little piles of magical sand all around The Nexus...",
+            "If you stand on top of it a portal will bring you back here to the beach."
         ],
 
         "nexan46": [
