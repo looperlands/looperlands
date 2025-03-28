@@ -37,7 +37,7 @@ define(['jquery', 'area'], function ($, Area) {
 
             setInterval(function () {
                 axios.post(url, mapRequest).then(function (response) {
-                    if (response.data === undefined || response.data.length === 0) {
+                    if (response.data === undefined || response.data.length === 0 || response.data.length === undefined) {
                         return;
                     }
 
