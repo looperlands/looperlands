@@ -3,21 +3,23 @@ define(['jquery', 'animation', 'sprites'], function ($, Animation, sprites) {
 	var Sprite = Class.extend({
 		init: function (name, scale, renderWorker, tokenHash, assetType, nftId) {
 			this.name = name;
-			this.scale = scale;
+			this.scale = scale || 1;  // default to scale 1 if not specified
 			this.isLoaded = false;
 			this.offsetX = 0;
 			this.offsetY = 0;
 			this.renderWorker = renderWorker;
+			this.scaledImage = null; // will hold the dynamically scaled image if needed
+
+			// Set base image URL based on environment
+			if (window.location.href.indexOf("127.0.0.1") > -1) {
+				this.baseImageURL = 'img/';
+			} else {
+				this.baseImageURL = 'https://cdn.jsdelivr.net/gh/balkshamster/looperlands@main/client/img/';
+			}
 
 			if (tokenHash !== undefined && assetType !== undefined) {
 				this.loadNFTSprite(tokenHash, assetType, nftId);
 			} else {
-				if (window.location.href.indexOf("127.0.0.1") > -1) {
-					this.baseImageURL = 'img/';
-				}
-				else {
-					this.baseImageURL = 'https://cdn.jsdelivr.net/gh/balkshamster/looperlands@main/client/img/';
-				}
 				this.loadJSON(sprites[name]);
 			}
 		},
@@ -101,15 +103,38 @@ define(['jquery', 'animation', 'sprites'], function ($, Animation, sprites) {
 
 		load: function () {
 			let self = this;
+			let fallback = false; // flag to indicate if we're falling back to img/1
 
 			if (!self.id.startsWith("NFT_") || this.useWebworker === false) {
 				this.image = new Image();
-				this.image.src = this.filepath;
 				this.image.crossOrigin = "Anonymous";
+
+				// onload handler: if we're in fallback mode and scaling is requested, create a scaled version.
 				this.image.onload = function () {
+					if (fallback && self.scale > 1) {
+						var canvas = document.createElement("canvas");
+						canvas.width = self.image.width * self.scale;
+						canvas.height = self.image.height * self.scale;
+						var ctx = canvas.getContext("2d");
+						ctx.imageSmoothingEnabled = false; // ensures a pixelated (nearest-neighbor) scale-up
+						ctx.drawImage(self.image, 0, 0, canvas.width, canvas.height);
+						self.image = canvas;
+						console.log('Dynamically scaled sprite: ', self.filepath);
+					}
 					self.sendToWorker();
 					self.isLoaded = true;
 				};
+
+				// onerror handler: if loading from the requested scale folder fails, fallback to img/1.
+				this.image.onerror = function () {
+					fallback = true;
+					self.image.onerror = null; // remove error handler to prevent loop
+					self.filepath = self.baseImageURL + "1/" + self.id + ".png";
+					self.image.src = self.filepath;
+				};
+
+				this.image.src = this.filepath;
+
 			} else {
 				this.isLoaded = true;
 				self.sendToWorker();
@@ -119,10 +144,17 @@ define(['jquery', 'animation', 'sprites'], function ($, Animation, sprites) {
 		sendToWorker: function () {
 			let self = this;
 			let src;
-			if (!this.dynamicNFT && window.location.href.indexOf("127.0.0.1") > -1) {
-				src = "http://127.0.0.1:8000/" + this.filepath;
-			} else {
-				src = this.filepath;
+
+			// If an image exists and it is a canvas, use its data URL.
+			if (self.image && self.image.tagName && self.image.tagName === "CANVAS") {
+				src = self.image.toDataURL();
+			}
+			else {
+				if (!this.dynamicNFT && window.location.href.indexOf("127.0.0.1") > -1) {
+					src = "http://127.0.0.1:8000/" + this.filepath;
+				} else {
+					src = this.filepath;
+				}
 			}
 
 			self.renderWorker.postMessage({
