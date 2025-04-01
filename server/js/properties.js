@@ -2016,7 +2016,11 @@ let Properties = {
         friendly: true, //not actually friendly, just AoE immune
         hp: 1,
         drops: {
-            m88ndirt: 99,
+            m88ndirt: 95,
+            m88nsourworm: 1,
+            m88nsourworm2: 1,
+            m88ngoldworm: 1,
+            m88ndiamondworm: 1,
             m88ngem: 1,
         },
         respawnDelay: 4000000 //one hour
@@ -3804,19 +3808,55 @@ let Properties = {
     },
     m88nsteak: {
         collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "hpPotions",
+            duration: 60000
+        },
         inventoryDescription: "Steak",
-        respawnDelay: 9900000
+        respawnDelay: 9900000,
+        onConsume: function(player){
+            player.regenHealthBy(450);
+        }
     },
     m88npotato: {
         collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "hpPotions",
+            duration: 60000
+        },
         inventoryDescription: "Potato",
-        respawnDelay: 9900000
+        respawnDelay: 9900000,
+        onConsume: function(player){
+            player.regenHealthBy(300);
+        }
     },
     m88nbrewski: {
-        respawnDelay: 9900000
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "hpPotions",
+            duration: 60000
+        },
+        inventoryDescription: "Brewski",
+        respawnDelay: 9900000,
+        onConsume: function(player){
+            player.regenHealthBy(150);
+        }
     },
     m88npie: {
-        respawnDelay: 9900000
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "hpPotions",
+            duration: 60000
+        },
+        inventoryDescription: "Pie",
+        respawnDelay: 9900000,
+        onConsume: function(player){
+            player.regenHealthBy(600);
+        }
     },
     m88nseeds: {
         collectable: true,
@@ -3824,6 +3864,8 @@ let Properties = {
         respawnDelay: 9900000
     },
     m88nsack: {
+        collectable: true,
+        inventoryDescription: "Sack",
         respawnDelay: 9900000
     },
     m88nshovel: {
@@ -3923,7 +3965,7 @@ let Properties = {
         respawnDelay: 5500000,
         cooldown: {
             group: "immunity",
-            duration: 60000
+            duration: 10000
         },
         inventoryDescription: "Strange Yellow Liquid",
         onConsume: function(player){
