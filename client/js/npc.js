@@ -446,7 +446,7 @@ define(['character'], function (Character) {
         "nexan4": [
             "Pleased to meet you traveler!",
             "Welcome to Paradise Point East.",
-            "This is such a cute little beach town!",
+            "This is a magical little beach town!",
             "Have you been on the yacht yet?"
         ],
 
