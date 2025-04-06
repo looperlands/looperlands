@@ -620,11 +620,11 @@ define(['character'], function (Character) {
             "Howdy! I'm Gary, the real estate agent for Nexus Realty.",
             "If you're looking to buy some property in The Nexus, you've come to the right place.",
             "Right now we have several properties available and when you buy from us you get a FREE Lambo!",
-            "If you're digging the boardwalk, we have two beach houses avialable in Paradise Point West...",
+            "If you're digging the boardwalk, we have beach houses avialable in Paradise Point...",
             //"And if you're looking for something a little more exclusive we have private islands available in the Helio Islands.",
-            "If you're looking for something exclusive we have two private islands available in the Helio Islands.",
+            "If you're looking for something exclusive we have private islands available in the Helio Islands.",
             //"That yacht over there, The Sun Chaser, has a private Captain's Quarters on it that is available to purchse.",
-            "And if you really want to get out of town, we have one more m88n pod available in Lunaria",
+            "And if you really want to get out of town, we have m88n pods available in Lunaria",
             'Checkout <a target="_blank" href="https://discord.gg/bjjNewZegM">PLANET M88NWALKER in Discord</a> and DM m88nwalker to inquire.',
             'On X? <a target="_blank" href="https://twitter.com/moonwalker_nfts">Give him a follow</a> to stay updated.',
             "Have fun exploring The Nexus. There are lots of hidden treasures around here!"
@@ -663,8 +663,8 @@ define(['character'], function (Character) {
 
         "nexan39": [
             "Well hello!",
-            "How do you do?",
-            "Welcome to Paradise Point West."
+            "Welcome to Paradise Point West.",
+            "Make sure to meet the residents and talk with them, they know things..."
         ],
 
         "nexan40": [
@@ -721,7 +721,8 @@ define(['character'], function (Character) {
         "nexan48": [
             //"Hey there!",
             "Mmmmmm, m88nshine!",
-            "This stuff is out of this world!"
+            "This stuff is out of this world!",
+            "You can find more in the Champagne Lounge on the Yacht!"
         ],
 
         "m88nmermanking": [

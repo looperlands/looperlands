@@ -352,6 +352,39 @@ quests = [
         medal: Types.Medals.SKULL
     },
     {
+        id: "WELCOME_QUEST",
+        name: "Meet the Townies",
+        startText: "See that character over there that keeps changing outfits? Go talk with them first!",
+        endText: "They can tell you about the Townies collection and help you get your first premium avatar.",
+        eventType: "NPC_TALKED",
+        npc: Types.Entities.NEXAN39,
+        target: Types.Entities.m88ntownies,
+        npcText: "Welcome to The Nexus!",
+        level: 1,
+        needToReturn: false,
+        reward: {
+            item: Types.Entities.M88NGEM,
+            amount: 1
+        }
+      },
+      {
+        id: "WELCOME_QUEST_2",
+        name: "Meet the m88nshiner",
+        startText: "Okay, now see that guy over there with the m88nshine? Go talk with him next!",
+        endText: "He can tell you about the currency here in The Nexus.",
+        eventType: "NPC_TALKED",
+        npc: Types.Entities.NEXAN39,
+        target: Types.Entities.NEXAN48,
+        requiredQuest: "WELCOME_QUEST",
+        npcText: "Hey! Nice to meet you traveler!",
+        level: 1,
+        needToReturn: false,
+        reward: {
+            item: Types.Entities.M88NGEM,
+            amount: 1
+        }
+      },
+    {
         id: "M88NGEM_QUEST_1",
         name: "The m88nshiner's m88n gem Request",
         startText: ["You see those m88n gems around? There is something special about them...",
