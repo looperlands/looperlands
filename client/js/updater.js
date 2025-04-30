@@ -1,13 +1,12 @@
-
-define(['character', 'projectile', 'timer'], function(Character, Projectile, Timer) {
+define(['character', 'projectile', 'timer'], function (Character, Projectile, Timer) {
 
     var Updater = Class.extend({
-        init: function(game) {
+        init: function (game) {
             this.game = game;
             this.playerAggroTimer = new Timer(1000);
         },
 
-        update: function() {
+        update: function () {
             this.updateZoning();
             this.updateCharacters();
             this.updateProjectiles();
@@ -19,14 +18,14 @@ define(['character', 'projectile', 'timer'], function(Character, Projectile, Tim
             this.updateInfos();
         },
 
-        updateCharacters: function() {
+        updateCharacters: function () {
             var self = this;
 
-            this.game.forEachEntity(function(entity) {
+            this.game.forEachEntity(function (entity) {
                 var isCharacter = entity instanceof Character;
 
-                if(entity.isLoaded) {
-                    if(isCharacter) {
+                if (entity.isLoaded) {
+                    if (isCharacter) {
                         self.updateCharacter(entity);
                         self.game.onCharacterUpdate(entity);
                     }
@@ -35,10 +34,10 @@ define(['character', 'projectile', 'timer'], function(Character, Projectile, Tim
             });
         },
 
-        updateProjectiles: function() {
-          var self = this;
+        updateProjectiles: function () {
+            var self = this;
 
-            this.game.forEachEntity(function(projectile) {
+            this.game.forEachEntity(function (projectile) {
                 var isProjectile = projectile instanceof Projectile;
                 if (isProjectile && projectile.isLoaded) {
                     self.updateProjectile(projectile);
@@ -46,23 +45,23 @@ define(['character', 'projectile', 'timer'], function(Character, Projectile, Tim
             });
         },
 
-        updatePlayerAggro: function() {
+        updatePlayerAggro: function () {
             var t = this.game.currentTime,
                 player = this.game.player;
 
             // Check player aggro every 1s when not moving nor attacking
-            if(player && !player.isMoving() && !player.isAttacking()  && this.playerAggroTimer.isOver(t)) {
+            if (player && !player.isMoving() && !player.isAttacking() && this.playerAggroTimer.isOver(t)) {
                 player.checkAggro();
             }
         },
 
-        updateEntityFading: function(entity) {
-            if(entity && entity.isFading) {
+        updateEntityFading: function (entity) {
+            if (entity && entity.isFading) {
                 var duration = 1000,
                     t = this.game.currentTime,
                     dt = t - entity.startFadingTime;
 
-                if(dt > duration) {
+                if (dt > duration) {
                     this.isFading = false;
                     entity.fadingAlpha = 1;
                 } else {
@@ -71,66 +70,66 @@ define(['character', 'projectile', 'timer'], function(Character, Projectile, Tim
             }
         },
 
-        updateTransitions: function() {
+        updateTransitions: function () {
             var self = this,
                 m = null,
                 z = this.game.currentZoning;
 
-            this.game.forEachEntity(function(entity) {
+            this.game.forEachEntity(function (entity) {
                 if (entity === undefined) {
                     return;
                 }
                 m = entity.movement;
-                if(m) {
-                    if(m.inProgress) {
+                if (m) {
+                    if (m.inProgress) {
                         m.step(self.game.currentTime);
                     }
                 }
             });
 
-            if(z) {
-                if(z.inProgress) {
+            if (z) {
+                if (z.inProgress) {
                     z.step(this.game.currentTime);
                 }
             }
         },
 
-        updateZoning: function() {
+        updateZoning: function () {
             var g = this.game,
                 c = g.camera,
                 z = g.currentZoning,
                 s = 3,
                 ts = 16,
                 speed = 0;
-            if(z && z.inProgress === false) {
+            if (z && z.inProgress === false) {
                 var orientation = this.game.zoningOrientation,
                     startValue = endValue = offset = 0,
                     updateFunc = null,
                     endFunc = null;
 
-                if(orientation === Types.Orientations.LEFT || orientation === Types.Orientations.RIGHT) {
+                if (orientation === Types.Orientations.LEFT || orientation === Types.Orientations.RIGHT) {
                     offset = (c.gridW - 2) * ts;
                     startValue = (orientation === Types.Orientations.LEFT) ? c.x - ts : c.x + ts;
                     endValue = (orientation === Types.Orientations.LEFT) ? c.x - offset : c.x + offset;
-                    updateFunc = function(x) {
+                    updateFunc = function (x) {
                         c.setPosition(x, c.y);
                         g.initAnimatedTiles();
                         g.renderer.renderStaticCanvases();
                     }
-                    endFunc = function() {
+                    endFunc = function () {
                         c.setPosition(z.endValue, c.y);
                         g.endZoning();
                     }
-                } else if(orientation === Types.Orientations.UP || orientation === Types.Orientations.DOWN) {
+                } else if (orientation === Types.Orientations.UP || orientation === Types.Orientations.DOWN) {
                     offset = (c.gridH - 2) * ts;
                     startValue = (orientation === Types.Orientations.UP) ? c.y - ts : c.y + ts;
                     endValue = (orientation === Types.Orientations.UP) ? c.y - offset : c.y + offset;
-                    updateFunc = function(y) {
+                    updateFunc = function (y) {
                         c.setPosition(c.x, y);
                         g.initAnimatedTiles();
                         g.renderer.renderStaticCanvases();
                     }
-                    endFunc = function() {
+                    endFunc = function () {
                         c.setPosition(c.x, z.endValue);
                         g.endZoning();
                     }
@@ -140,89 +139,92 @@ define(['character', 'projectile', 'timer'], function(Character, Projectile, Tim
             }
         },
 
-        updateCharacter: function(c) {
+        updateCharacter: function (c) {
             var self = this;
 
             // Estimate of the movement distance for one update
             var tick = Math.round(16 / Math.round((c.moveSpeed / (1000 / this.game.renderer.FPS))));
-
-            if(c.isMoving() && c.movement.inProgress === false) {
-                if(c.orientation === Types.Orientations.LEFT) {
+            if (tick > 14) {
+                tick = 14;
+            }
+            if (tick < 1) {
+                tick = 1;
+            }
+            
+            if (c.isMoving() && c.movement.inProgress === false) {
+                if (c.orientation === Types.Orientations.LEFT) {
                     c.movement.start(this.game.currentTime,
-                                     function(x) {
-                                        c.x = x;
-                                        c.hasMoved();
-                                     },
-                                     function() {
-                                        c.x = c.movement.endValue;
-                                        c.hasMoved();
-                                        c.nextStep();
-                                     },
-                                     c.x - tick,
-                                     c.x - 16,
-                                     c.moveSpeed);
-                }
-                else if(c.orientation === Types.Orientations.RIGHT) {
+                        function (x) {
+                            c.x = x;
+                            c.hasMoved();
+                        },
+                        function () {
+                            c.x = c.movement.endValue;
+                            c.hasMoved();
+                            c.nextStep();
+                        },
+                        c.x - tick,
+                        c.x - 16,
+                        c.moveSpeed);
+                } else if (c.orientation === Types.Orientations.RIGHT) {
                     c.movement.start(this.game.currentTime,
-                                     function(x) {
-                                        c.x = x;
-                                        c.hasMoved();
-                                     },
-                                     function() {
-                                        c.x = c.movement.endValue;
-                                        c.hasMoved();
-                                        c.nextStep();
-                                     },
-                                     c.x + tick,
-                                     c.x + 16,
-                                     c.moveSpeed);
-                }
-                else if(c.orientation === Types.Orientations.UP) {
+                        function (x) {
+                            c.x = x;
+                            c.hasMoved();
+                        },
+                        function () {
+                            c.x = c.movement.endValue;
+                            c.hasMoved();
+                            c.nextStep();
+                        },
+                        c.x + tick,
+                        c.x + 16,
+                        c.moveSpeed);
+                } else if (c.orientation === Types.Orientations.UP) {
                     c.movement.start(this.game.currentTime,
-                                     function(y) {
-                                        c.y = y;
-                                        c.hasMoved();
-                                     },
-                                     function() {
-                                        c.y = c.movement.endValue;
-                                        c.hasMoved();
-                                        c.nextStep();
-                                     },
-                                     c.y - tick,
-                                     c.y - 16,
-                                     c.moveSpeed);
-                }
-                else if(c.orientation === Types.Orientations.DOWN) {
+                        function (y) {
+                            c.y = y;
+                            c.hasMoved();
+                        },
+                        function () {
+                            c.y = c.movement.endValue;
+                            c.hasMoved();
+                            c.nextStep();
+                        },
+                        c.y - tick,
+                        c.y - 16,
+                        c.moveSpeed);
+                } else if (c.orientation === Types.Orientations.DOWN) {
                     c.movement.start(this.game.currentTime,
-                                     function(y) {
-                                        c.y = y;
-                                        c.hasMoved();
-                                     },
-                                     function() {
-                                        c.y = c.movement.endValue;
-                                        c.hasMoved();
-                                        c.nextStep();
-                                     },
-                                     c.y + tick,
-                                     c.y + 16,
-                                     c.moveSpeed);
+                        function (y) {
+                            c.y = y;
+                            c.hasMoved();
+                        },
+                        function () {
+                            c.y = c.movement.endValue;
+                            c.hasMoved();
+                            c.nextStep();
+                        },
+                        c.y + tick,
+                        c.y + 16,
+                        c.moveSpeed);
                 }
             }
         },
 
-        updateProjectile: function(p) {
-            if(p.isMoving() && p.movement.inProgress === false) {
+        updateProjectile: function (p) {
+            if (p.isMoving() && p.movement.inProgress === false) {
                 // Estimate of the movement distance for one update
                 let tick = 3;
 
                 let dx = Math.abs((p.targetX * 16) - (p.sourceX * 16));
                 let dy = Math.abs((p.targetY * 16) - (p.sourceY * 16));
 
-                if(dx === 0 && dy === 0) {
+                if (dx === 0 && dy === 0) {
                     return;
                 }
 
-                if(dx > dy) {
+                if (dx > dy) {
                     let YXRatio = dy / dx;
                     p.movement.start(this.game.currentTime,
                         function (x) {
@@ -238,7 +240,7 @@ define(['character', 'projectile', 'timer'], function(Character, Projectile, Tim
                             p.hasMoved();
                             p.nextStep();
                         },
-                        p.sourceX < p.targetX ? p.x + tick : p.x - tick ,
+                        p.sourceX < p.targetX ? p.x + tick : p.x - tick,
                         p.sourceX < p.targetX ? p.targetX * 16 : (p.targetX * 16) + 16,
                         p.moveSpeed
                     );
@@ -268,47 +270,47 @@ define(['character', 'projectile', 'timer'], function(Character, Projectile, Tim
             }
         },
 
-        updateAnimations: function() {
+        updateAnimations: function () {
             var t = this.game.currentTime;
 
-            this.game.forEachEntity(function(entity) {
+            this.game.forEachEntity(function (entity) {
                 var anim = entity.currentAnimation;
 
-                if(anim) {
-                    if(anim.update(t)) {
+                if (anim) {
+                    if (anim.update(t)) {
                         entity.setDirty();
                     }
                 }
             });
 
             var sparks = this.game.sparksAnimation;
-            if(sparks) {
+            if (sparks) {
                 sparks.update(t);
             }
 
             var indicator = this.game.indicatorAnimation;
-            if(indicator) {
+            if (indicator) {
                 indicator.update(t);
             }
 
             var target = this.game.targetAnimation;
-            if(target) {
+            if (target) {
                 target.update(t);
             }
 
             var floats = this.game.floatAnimation;
-            if(floats) {
+            if (floats) {
                 floats.update(t);
             }
         },
 
-        updateAnimatedTiles: function() {
+        updateAnimatedTiles: function () {
             var self = this,
                 t = this.game.currentTime;
 
             let animatedTilesEnabled = this.game.app.settings.getAnimatedTiles();
             let updateAnimatedTilesFn = function (tile) {
-                if(animatedTilesEnabled) {
+                if (animatedTilesEnabled) {
                     tile.animate(t)
                 }
             }
@@ -316,13 +318,13 @@ define(['character', 'projectile', 'timer'], function(Character, Projectile, Tim
             this.game.forEachHighAnimatedTile(updateAnimatedTilesFn);
         },
 
-        updateChatBubbles: function() {
+        updateChatBubbles: function () {
             var t = this.game.currentTime;
 
             this.game.bubbleManager.update(t);
         },
 
-        updateInfos: function() {
+        updateInfos: function () {
             var t = this.game.currentTime;
 
             this.game.infoManager.update(t);
