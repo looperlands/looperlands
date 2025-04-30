@@ -150,7 +150,7 @@ define(['character', 'projectile', 'timer'], function (Character, Projectile, Ti
             if (tick < 1) {
                 tick = 1;
             }
-            
+
             if (c.isMoving() && c.movement.inProgress === false) {
                 if (c.orientation === Types.Orientations.LEFT) {
                     c.movement.start(this.game.currentTime,
