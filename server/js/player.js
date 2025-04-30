@@ -967,7 +967,9 @@ module.exports = Player = Character.extend({
 
     getMoveSpeed: function () {
         const adjustedLevel = this.getLevel() * this.playerClassModifiers.moveSpeed;
-        return Math.round(BASE_SPEED - (adjustedLevel - 1) * 0.33);
+        const MIN_SPEED = 24;
+
+        return Math.max(MIN_SPEED, Math.round(BASE_SPEED - (adjustedLevel - 1) * 0.33));
     },
 
     getStealth: function () {
