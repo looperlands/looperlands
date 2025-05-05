@@ -213,7 +213,8 @@ define(['jquery', 'app'], function($, App) {
                 });
             
                 var data = app.storage.data;
-                app.tryStartingGame(data.player.name, data.mapId);
+
+                app.tryStartingGame(data.player.name ?? data.walletId.substring(0,9), data.mapId);
                 if(data.hasAlreadyPlayed) {
                     if(data.player.name && data.player.name !== "") {
                         $('#playername').html(data.player.name);
