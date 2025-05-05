@@ -12,7 +12,7 @@ class DialogueController {
         this.platformClient = platformClient;
         this.dialogueTrees = {
             main: main.dialogues,
-            //bitcorn: bitcorn.dialogues
+            bitcorn: bitcorn.dialogues
         };
     }
 

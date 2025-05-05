@@ -743,7 +743,8 @@ class JackAce {
 
         if (action === 'RESET') { return [player, null]; }
 
-        // Make sure player has access
+        // Check if player owns a bits x bit NFT
+        /*
         try {
             const allowAccess = await this.platformClient.checkOwnershipOfCollection("bits x bit", walletId);
             if (!allowAccess) {
@@ -753,6 +754,7 @@ class JackAce {
         } catch (error) {
             return [player, { status: 500, message: `[JACKACE ERROR] Error validating access: ${error}` }];
         }
+        */
 
         // Make sure player has a gamestate initiated
         if (!this.playerGameStates[player]) {
