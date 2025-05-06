@@ -1,0 +1,17 @@
+{
+    "id": "BITNPC_PC",
+    "width": 16,
+    "height": 32,
+    "animations": {
+      "idle_down": {
+        "length": 6,
+        "row": 0
+      }
+    },
+    "offset_x": 0,
+    "offset_y": -16,
+    "bubble_offset_x": -8,
+    "bubble_offset_y": -16,
+    "hasShadow": false,
+    "engageAction": "operate PC"
+}

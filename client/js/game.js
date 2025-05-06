@@ -728,7 +728,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     //BITCORN PHISHIES
                     "bit_BoneFish", "bit_Corn", "bit_FEET", "bit_freshPrawnce", "bit_JEFF", "bit_Kickle", "bit_maCORNtosh", "bit_MrPunchy", "bit_SnaggletoothEel", "bit_NOPEmato", "cornBootFish", "cornCanFish", "cornWinkyFish",
                     //BITCORN NPCS
-                    "BITNPC_BITCORN", "BITNPC_THORNBEARD_KNEEL", "BITNPC_THORNBEARD",
+                    "BITNPC_BITCORN", "BITNPC_THORNBEARD_KNEEL", "BITNPC_THORNBEARD","BITNPC_RADIO", "BITNPC_PC",
                     //BITCORN MOBS
                     "SLUDGERAT", "SPACECRAB", "BLACKMAGE", "RABBID", "ZOMBBID", "HOPPURP", "HOPPINK", "CRAPTOR",
                     //OTHER
@@ -7210,7 +7210,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         const nearestEntity = self.forNearestEntityAround(self.player.gridX, self.player.gridY, 1, condition);
 
                         if (nearestEntity) {
-                            let msg = self.gamepadListener.isActive() ? "Press left stick button to talk" : "Press [E] to talk";
+                            let engageAction = "talk";
+                            if(nearestEntity.sprite && nearestEntity.sprite.engageAction) engageAction = nearestEntity.sprite.engageAction;
+                            let msg = self.gamepadListener.isActive() ? `Press left stick button to ${engageAction}` : `Press [E] to ${engageAction}`;
 
                             // Destroy the previous 'to talk' bubble if it exists
                             if (self.lastBubbleToTalkBubbleId) self.destroyBubble(self.lastBubbleToTalkBubbleId);

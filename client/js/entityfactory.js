@@ -1706,6 +1706,8 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.BITNPC_BITCORN]=function(id){return new NPCs.BITNPC_BITCORN(id);};
     EntityFactory.builders[Types.Entities.BITNPC_THORNBEARD_KNEEL]=function(id){return new NPCs.BITNPC_THORNBEARD_KNEEL(id);};
     EntityFactory.builders[Types.Entities.BITNPC_THORNBEARD]=function(id){return new NPCs.BITNPC_THORNBEARD(id);};
+    EntityFactory.builders[Types.Entities.BITNPC_RADIO]=function(id){return new NPCs.BITNPC_RADIO(id);};
+    EntityFactory.builders[Types.Entities.BITNPC_PC]=function(id){return new NPCs.BITNPC_PC(id);};
 
     EntityFactory.builders[Types.Entities.VOYAGER]=function(id){return new NPCs.VOYAGER(id);};
     EntityFactory.builders[Types.Entities.VOYAGERMONKEY]=function(id){return new NPCs.VOYAGERMONKEY(id);};

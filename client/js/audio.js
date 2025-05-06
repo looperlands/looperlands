@@ -25,7 +25,7 @@ define(['area'], function (Area) {
                 // MRMLABS MUSIC
                 "battletheme",
                 // BITCORN MUSIC
-                "bitcorncornsino", "bit_sludgeriver", "bit_portal",
+                "bitcorncornsino", "bit_sludgeriver", "bit_portal", "bit_GardenOfLaughter",
                 // ROBITS MUSIC
                 "ROBITSMAIN1", "MOONBASES", "cclobby", "CCSPOOKY", "CCHAUNTEDBOSS", "CCLIBRARY", "CCMANSION",
             ];

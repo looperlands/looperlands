@@ -1231,6 +1231,12 @@ define(['character'], function (Character) {
         "BITNPC_THORNBEARD": [
             "Folks round here call me Thornbeard.<br>Guess that's what happens when your beard's more weed than whisker."
         ],
+        "BITNPC_RADIO":[
+            "Music is the language of the universe, and I'm the DJ spinning the cosmic tunes.",
+        ],
+        "BITNPC_PC":[
+            "bEEp BOoP",
+        ],
         "VOYAGER": [
             "Prepare for the Dark Voyage!",
             "Help us take back our ship and save our crew!",

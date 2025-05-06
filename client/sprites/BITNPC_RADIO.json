@@ -1,0 +1,21 @@
+{
+    "id": "BITNPC_RADIO",
+    "width": 16,
+    "height": 16,
+    "animations": {
+      "idle_down": {
+        "length": 1,
+        "row": 0
+      },
+      "idle_up": {
+        "length": 2,
+        "row": 1
+    }
+    },
+    "offset_x": 0,
+    "offset_y": -6,
+    "bubble_offset_x": -8,
+    "bubble_offset_y": -16,
+    "hasShadow": false,
+    "engageAction": "operate Radio"
+}

@@ -95,6 +95,7 @@ define(['jquery', 'animation', 'sprites'], function ($, Animation, sprites) {
 			this.bubbleOffsetX = (data.bubble_offset_x !== undefined) ? data.bubble_offset_x : 0;
 			this.bubbleOffsetY = (data.bubble_offset_y !== undefined) ? data.bubble_offset_y : 0;
 			this.hasShadow = (data.hasShadow !== undefined) ? data.hasShadow : undefined;
+			this.engageAction = (data.engageAction !== undefined) ? data.engageAction : "talk";
 			if (data.projectiles) { this.projectiles = data.projectiles; }
 			this.load();
 		},
