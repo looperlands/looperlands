@@ -9510,7 +9510,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             },
 
             createBubble: function (id, message, showCheck) {
-                this.bubbleManager.create(id, message, this.currentTime, showCheck);
+                if(message) this.bubbleManager.create(id, message, this.currentTime, showCheck);
             },
 
             destroyBubble: function (id) {

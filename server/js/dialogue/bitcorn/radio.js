@@ -4,9 +4,13 @@ const dialogue = {
     "npc": Types.Entities.BITNPC_RADIO,
     "name": "Radio",
     "start": "radio_hub",
+    "custom_css": {
+        "width": "fit-content",
+        "left": "50%"
+      },
     "nodes": {
         "radio_hub": {
-            "text": "It's a radio. It looks like it might work, but it's not on right now.",
+            "text": "Looks like one of those radio thingamajigs.",
             "options": [
                 {
                     "text": "Turn On",
