@@ -13,9 +13,9 @@
       }
     },
     "offset_x": 0,
-    "offset_y": -6,
-    "bubble_offset_x": -8,
-    "bubble_offset_y": -16,
+    "offset_y": -2,
+    "bubble_offset_x": 0,
+    "bubble_offset_y": -24,
     "hasShadow": false,
     "engageAction": "operate Radio"
   }

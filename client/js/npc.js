@@ -1232,10 +1232,10 @@ define(['character'], function (Character) {
             "Folks round here call me Thornbeard.<br>Guess that's what happens when your beard's more weed than whisker."
         ],
         "BITNPC_RADIO":[
-            "Looks like one of them radio thingamajigs.",
+            "Looks like one of them radio thingamajigs."
         ],
         "BITNPC_PC":[
-            "bEEp BOoP",
+            "bEEp BOoP"
         ],
         "VOYAGER": [
             "Prepare for the Dark Voyage!",

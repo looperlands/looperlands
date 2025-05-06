@@ -493,8 +493,8 @@ define(['npc'], function(Npc) {
         BITNPC_BITCORN: Npc.extend({init: function(id) {this._super(id, Types.Entities.BITNPC_BITCORN, 1);}}),
         BITNPC_THORNBEARD_KNEEL: Npc.extend({init: function(id) {this._super(id, Types.Entities.BITNPC_THORNBEARD_KNEEL, 1);}}),
         BITNPC_THORNBEARD: Npc.extend({init: function(id) {this._super(id, Types.Entities.BITNPC_THORNBEARD, 1);}}),
-        BITNPC_PC: Npc.extend({init: function(id) {this._super(id, Types.Entities.BITNPC_PC, 1);}}),
         BITNPC_RADIO: Npc.extend({init: function(id) {this._super(id, Types.Entities.BITNPC_RADIO, 1);}}),
+        BITNPC_PC: Npc.extend({init: function(id) {this._super(id, Types.Entities.BITNPC_PC, 1);}}),
 
         VOYAGER: Npc.extend({init: function(id) {this._super(id, Types.Entities.VOYAGER, 1);}}),
         VOYAGERMONKEY: Npc.extend({init: function(id) {this._super(id, Types.Entities.VOYAGERMONKEY, 1);}}),

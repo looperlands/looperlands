@@ -10,7 +10,7 @@
     },
     "offset_x": 0,
     "offset_y": -16,
-    "bubble_offset_x": -8,
+    "bubble_offset_x": 0,
     "bubble_offset_y": -16,
     "hasShadow": false,
     "engageAction": "operate PC"
