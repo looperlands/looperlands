@@ -3808,6 +3808,11 @@ let Properties = {
         collectable: true,
         inventoryDescription: "Clover",
         respawnDelay: 10000,
+        consumable: true,
+        cooldown: {
+            group: "xpPotions",
+            duration: 360000
+        },
         onConsume: function(player) {
             const bot = player.getBot()
             if (bot) {
