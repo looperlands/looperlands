@@ -1303,5 +1303,14 @@ module.exports = Player = Character.extend({
                 }
             }
         }
+    },
+
+    getBot: function() {
+        let playerCache = this.server.server.cache.get(this.sessionId);
+        if (playerCache.botSessionId) {
+            let botCache = this.server.server.cache.get(playerCache.botSessionId);
+            let bot = this.server.getPlayerById(botCache.entityId);
+            return bot
+        }
     }
 });
