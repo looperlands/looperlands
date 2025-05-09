@@ -636,6 +636,8 @@ Types = {
         M88NDIAMONDWORM: 78015000,
         M88NSOURWORM: 78016000,
         M88NSOURWORM2: 78017000,
+        M88NBITCOIN: 78018000,
+        M88NBITCOINVIP: 78019000,
         //MRMlabs NPCs
         TYLERDURDEN: 79000000,
         //MRMlabs Items
@@ -6591,6 +6593,8 @@ var kinds = {
     m88ndiamondworm: [Types.Entities.M88NDIAMONDWORM, "object"],
     m88nsourworm: [Types.Entities.M88NSOURWORM, "object"],
     m88nsourworm2: [Types.Entities.M88NSOURWORM2, "object"],
+    m88nbitcoin: [Types.Entities.M88NBITCOIN, "object"],
+    m88nbitcoinvip: [Types.Entities.M88NBITCOINVIP, "object"],
     //MRMlabs Items
     firstaidkit: [Types.Entities.FIRSTAIDKIT, "object"],
     bandaid: [Types.Entities.BANDAID, "object"],

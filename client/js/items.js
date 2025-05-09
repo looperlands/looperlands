@@ -400,6 +400,8 @@ define(['item'], function(Item) {
         m88ndiamondworm:Item.extend({init:function(id){this._super(id,Types.Entities.M88NDIAMONDWORM,"object");this.lootMessage="A diamond worm!";}}),
         m88nsourworm:Item.extend({init:function(id){this._super(id,Types.Entities.M88NSOURWORM,"object");this.lootMessage="A sour gummy worm!";}}),
         m88nsourworm2:Item.extend({init:function(id){this._super(id,Types.Entities.M88NSOURWORM2,"object");this.lootMessage="A sour gummy worm!";}}),
+        m88nbitcoin:Item.extend({init:function(id){this._super(id,Types.Entities.M88NBITCOIN,"object");this.lootMessage="A Bitcoin!";}}),
+        m88nbitcoinvip:Item.extend({init:function(id){this._super(id,Types.Entities.M88NBITCOINVIP,"object");this.lootMessage="A Bitcoin VIP Coin! No way!";}}),
         //MRMlabs Items
         firstaidkit:Item.extend({init:function(id){this._super(id,Types.Entities.FIRSTAIDKIT,"object");this.lootMessage="You found a first aid kit!";}}),
         bandaid:Item.extend({init:function(id){this._super(id,Types.Entities.BANDAID,"object");this.lootMessage="You found a bandaid!";}}),

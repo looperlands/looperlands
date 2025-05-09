@@ -3640,6 +3640,16 @@ let Properties = {
         collectAmount: 500000,
         respawnDelay: 42069741
     },
+    m88nbitcoin: {
+        //collectable: true,
+        //inventoryDescription: "Bitcoin",
+        respawnDelay: 42069741
+    },
+    m88nbitcoinvip: {
+        //collectable: true,
+        //inventoryDescription: "Bitcoin VIP",
+        respawnDelay: 42069741
+    },
     m88nmoneybags: {
         //collectable: true,
         //inventoryDescription: "Money Bags",
@@ -3795,7 +3805,9 @@ let Properties = {
         respawnDelay: 9900000
     },
     m88nclover: {
-        respawnDelay: 9900000
+        collectable: true,
+        inventoryDescription: "Clover",
+        respawnDelay: 10000
     },
     m88nluckyclover: {
         respawnDelay: 9900000
