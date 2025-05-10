@@ -3807,7 +3807,18 @@ let Properties = {
     m88nclover: {
         collectable: true,
         inventoryDescription: "Clover",
-        respawnDelay: 10000
+        respawnDelay: 10000,
+        consumable: true,
+        cooldown: {
+            group: "xpPotions",
+            duration: 360000
+        },
+        onConsume: function(player) {
+            const bot = player.getBot()
+            if (bot) {
+                bot.playerClassModifiers.applyTemporaryModifierWithTimeout('xp', 2, 180000);
+            }
+        }        
     },
     m88nluckyclover: {
         respawnDelay: 9900000
