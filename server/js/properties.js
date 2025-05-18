@@ -3807,21 +3807,34 @@ let Properties = {
     m88nclover: {
         collectable: true,
         inventoryDescription: "Clover",
-        respawnDelay: 10000,
+        respawnDelay: 3000000,
         consumable: true,
         cooldown: {
             group: "xpPotions",
-            duration: 360000
+            duration: 30000
         },
         onConsume: function(player) {
             const bot = player.getBot()
             if (bot) {
-                bot.playerClassModifiers.applyTemporaryModifierWithTimeout('xp', 2, 180000);
+                bot.playerClassModifiers.applyTemporaryModifierWithTimeout('xp', 2, 60000);
             }
         }        
     },
     m88nluckyclover: {
-        respawnDelay: 9900000
+        collectable: true,
+        inventoryDescription: "Clover",
+        respawnDelay: 69420741,
+        consumable: true,
+        cooldown: {
+            group: "xpPotions",
+            duration: 10000
+        },
+        onConsume: function(player) {
+            const bot = player.getBot()
+            if (bot) {
+                bot.playerClassModifiers.applyTemporaryModifierWithTimeout('xp', 5, 180000);
+            }
+        }        
     },
     m88nmail: {
         respawnDelay: 9900000
@@ -3974,7 +3987,7 @@ let Properties = {
     },
     m88ntentacle: {
         collectable: true,
-        inventoryDescription: "Octopussy Tentacle",
+        inventoryDescription: "Octopus Tentacle",
         respawnDelay: 9900000
     },
     m88nskeletonkey: {
