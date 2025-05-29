@@ -3641,8 +3641,8 @@ let Properties = {
         respawnDelay: 42069741
     },
     m88nbitcoin: {
-        collectable: true,
-        inventoryDescription: "Bitcoin",
+        //collectable: true,
+        //inventoryDescription: "Bitcoin",
         respawnDelay: 42069741
     },
     m88nbitcoinvip: {
