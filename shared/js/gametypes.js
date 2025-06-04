@@ -471,6 +471,7 @@ Types = {
         M88NUFO2: 78000122,
         M88NUFO3: 78000123,
         M88NUFO4: 78000124,
+        M88NBTCMINE: 78000125,
         //m88n Mob Nexans
         NEXAN1: 78000037,
         NEXAN2: 78000038,
@@ -501,6 +502,7 @@ Types = {
         M88NMERMAN5: 78000079,
         M88NASTRONAUT2: 78000125,
         M88NASTRONAUT3: 78000126,
+        NEXANZOMBIE1: 78000127,
         
         //m88n Items
         M88NMAP: 78000100,
@@ -6244,6 +6246,7 @@ var kinds = {
     balloongiraffeo: [Types.Entities.BALLOONGIRAFFEO, "mob"],
     sharkboss: [Types.Entities.SHARKBOSS, "mob"],
     m88nmine: [Types.Entities.M88NMINE, "mob"],
+    m88nbtcmine: [Types.Entities.M88NBTCMINE, "mob"],
     m88nbabymonkey: [Types.Entities.M88NBABYMONKEY, "mob"],
     m88nbabychimp: [Types.Entities.M88NBABYCHIMP, "mob"],
     m88nbabyape: [Types.Entities.M88NBABYAPE, "mob"],
@@ -6364,6 +6367,7 @@ var kinds = {
     m88nmerman5: [Types.Entities.M88NMERMAN5, "mob"],
     m88nastronaut2: [Types.Entities.M88NASTRONAUT2, "mob"],
     m88nastronaut3: [Types.Entities.M88NASTRONAUT3, "mob"],
+    nexanzombie1: [Types.Entities.NEXANZOMBIE1, "mob"],
 
     //BITCORN MOBS
     SLUDGERAT: [Types.Entities.SLUDGERAT, "mob"],

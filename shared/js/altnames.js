@@ -234,6 +234,7 @@ const AltNames = {
     m88nhermie: "Hermie",
     m88nmrcrab: "Mr. Crab",
     m88nmine: "m88n mine",
+    m88nbtcmine: "Bitcoin mine",
     m88npinataballoons: "prize balloons!",
     m88ndinor: "Red Dino",
     m88ndinow: "White Dino",
@@ -284,6 +285,7 @@ const AltNames = {
     m88ntree: "Tree",
     m88nastronaut2: "Astro",
     m88nastronaut3: "Astro",
+    nexanzombie1: "Braaaains...",
 
     //m88n NPCs
     nexan29: "The Butler",

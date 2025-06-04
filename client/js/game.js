@@ -211,6 +211,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "balloongiraffeo",
                     "sharkboss",
                     "m88nmine",
+                    "m88nbtcmine",
                     "m88nbabymonkey",
                     "m88nbabyape",
                     "m88nbabychimp",
@@ -331,6 +332,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "m88nmerman5",
                     "m88nastronaut2",
                     "m88nastronaut3",
+                    "nexanzombie1",
                     //MRMlabs Fishing
                     "bbqchips",
                     "blackpepperchips",

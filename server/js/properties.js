@@ -2026,6 +2026,17 @@ let Properties = {
         respawnDelay: 4000000 //one hour
     },
 
+    m88nbtcmine: {
+        level: 69,
+        friendly: true, //not actually friendly, just AoE immune
+        hp: 1,
+        drops: {
+            m88nbitcoin: 1,
+            m88ndirt: 99,
+        },
+        respawnDelay: 600000 //10 minutes
+    },
+
     m88ncow: {
         level: 69,
         friendly: true, //not actually friendly, just AoE immune
@@ -2576,6 +2587,13 @@ let Properties = {
     },
 
     m88nastronaut3: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+
+    nexanzombie1: {
         hp: 10,
         armor: 1,
         weapon: 1,

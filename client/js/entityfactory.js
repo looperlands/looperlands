@@ -529,6 +529,9 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.M88NMINE] = function(id) {
         return new Mobs.m88nmine(id);
     };
+    EntityFactory.builders[Types.Entities.M88NBTCMINE] = function(id) {
+        return new Mobs.m88nbtcmine(id);
+    };
     EntityFactory.builders[Types.Entities.M88NBABYMONKEY] = function(id) {
         return new Mobs.m88nbabymonkey(id);
     };
@@ -884,6 +887,9 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     };
     EntityFactory.builders[Types.Entities.M88NASTRONAUT3] = function(id) {
         return new Mobs.m88nastronaut3(id);
+    };
+    EntityFactory.builders[Types.Entities.NEXANZOMBIE1] = function(id) {
+        return new Mobs.nexanzombie1(id);
     };
     
     
