@@ -2753,6 +2753,23 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
 
+        m88nbtcmine: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NBTCMINE);
+                this.deathAnimated = true;
+                this.isAggressive = false;
+                this.nameless = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
         m88ncow: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.M88NCOW);
@@ -4348,6 +4365,24 @@ define(['mob', 'timer'], function(Mob, Timer) {
         m88nastronaut3: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.M88NASTRONAUT3);
+                this.idleSpeed = 420;
+                this.walkSpeed = 250;
+                this.moveSpeed = 333;
+                this.isFriendly = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
+        nexanzombie1: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.NEXANZOMBIE1);
                 this.idleSpeed = 420;
                 this.walkSpeed = 250;
                 this.moveSpeed = 333;
