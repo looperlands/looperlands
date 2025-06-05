@@ -471,7 +471,7 @@ Types = {
         M88NUFO2: 78000122,
         M88NUFO3: 78000123,
         M88NUFO4: 78000124,
-        M88NBTCMINE: 78000125,
+        M88NBTCMINE: 78000128,
         //m88n Mob Nexans
         NEXAN1: 78000037,
         NEXAN2: 78000038,
