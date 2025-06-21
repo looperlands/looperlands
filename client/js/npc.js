@@ -884,6 +884,11 @@ define(['character'], function (Character) {
             "/openShop blacksmith Blacksmith\'s shop"
         ],
 
+        "nexanzombiecat": [
+            "Mmmmm brains.....",
+            "Just kidding, it's only rotten cat food!"
+        ],
+
         //MRMlabs NPCs
         "tylerdurden": [
             //"We are all part of the same compost heap.",
