@@ -503,6 +503,7 @@ Types = {
         M88NASTRONAUT2: 78000125,
         M88NASTRONAUT3: 78000126,
         NEXANZOMBIE1: 78000127,
+        NEXANZOMBIECAT: 78000129,
         
         //m88n Items
         M88NMAP: 78000100,
@@ -6850,6 +6851,7 @@ var kinds = {
     m88ntownies: [Types.Entities.M88NTOWNIES, "npc"],
     m88ntownie2: [Types.Entities.M88NTOWNIE2, "npc"],
     m88nastronaut: [Types.Entities.M88NASTRONAUT, "npc"],
+    nexanzombiecat: [Types.Entities.NEXANZOMBIECAT, "npc"],
     //MRMlabs NPCs
     tylerdurden: [Types.Entities.TYLERDURDEN, "npc"],
     ROBITSE3: [Types.Entities.ROBITSE3, "mob"],

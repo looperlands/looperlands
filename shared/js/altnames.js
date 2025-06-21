@@ -286,6 +286,7 @@ const AltNames = {
     m88nastronaut2: "Astro",
     m88nastronaut3: "Astro",
     nexanzombie1: "Braaaains...",
+    nexanzombiecat: "Trash Cat",
 
     //m88n NPCs
     nexan29: "The Butler",

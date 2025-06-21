@@ -200,6 +200,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "m88ntownies",
                     "m88ntownie2",
                     "m88nastronaut",
+                    "nexanzombiecat",
                     //m88n Mobs
                     "balloondogb",
                     "balloondogy",
