@@ -607,12 +607,12 @@ define(['character'], function (Character) {
         ],
 
         "m88nstimytimy": [
-            "GM, I'm Stimy Timy!",
+            "GM GM, I'm Stimy Timy!",
             "I spent my stimulus on crypto, nfts, and stonks. I'm gonna be rich soon, living the island life!",
-            "You should check out my new collection!",
-            "You can integrate any of the NFT's from my collection as a LooperLands avatar or a companion!",
-            'Checkout <a target="_blank" href="https://loopexchange.art/collection/stimy-timy">my new collection here</a>...',
-            'Click this link to <a target="_blank" href="https://x.com/stimytimy">follow me on X here</a>...'
+            'Checkout <a target="_blank" href="https://stimy-timy.mintopia.top/">my new collection </a>on Base...',
+            "You can integrate any of those NFT's as an avatar or a companion to use in here!",
+            'Come<a target="_blank" href="https://x.com/stimytimy"> follow me on X</a>, and say hi!',
+            'And come <a target="_blank" href="https://discord.gg/bjjNewZegM">join us in Discord </a>for insider details.'
             //"If you want to buy a private island here in The Nexus checkout Nexus Real Estate, they have some for sale."
         ],
 
@@ -893,9 +893,9 @@ define(['character'], function (Character) {
         "tylerdurden": [
             //"We are all part of the same compost heap.",
             //"The things you own end up owning you.",
-            //"It's only after we've lost everything that we're free to do anything.",
+            "It's only after we've lost everything that we're free to do anything.",
             //"Sticking feathers up your butt does not make you a chicken!",
-            "You decide your own level of involvement.",
+            //"You decide your own level of involvement.",
             //"You wanna make an omelet, you gotta break some eggs.",
             //"His name was Robert Paulson",
             //"I want you to hit me as hard as you can."
