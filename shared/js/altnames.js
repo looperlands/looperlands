@@ -399,6 +399,15 @@ const AltNames = {
     m88nsourworm2: "Sour Gummy Worm",
     m88nbitcoin: "Bitcoin",
     m88nbitcoinvip: "Bitcoin VIP",
+    m88nblunt: "Lucky Blunt",
+    m88ndiamondblunt: "Lucky Diamond Blunt",
+    m88ngoldblunt: "Lucky Gold Blunt",
+    m88ndiamondclover: "Diamond Clover",
+    m88ngoldclover: "Gold Clover",
+    m88nluckydiamondclover: "Lucky Diamond Clover",
+    m88nluckygoldclover: "Lucky Gold Clover",
+    m88njoint: "Joint",
+    m88nzombiefish: "Zombie Fish",
 
     //m88n TT Items
     m88nammocan: "ammo can",
