@@ -2770,6 +2770,126 @@ define(['mob', 'timer'], function(Mob, Timer) {
             }
         }),
 
+        m88nmeathook: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NMEATHOOK);
+                this.deathAnimated = true;
+                this.isAggressive = false;
+                this.nameless = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
+        m88nsaw: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NSAW);
+                this.atkSpeed = 420;
+        		this.moveSpeed = 220;
+        		this.walkSpeed = 100;
+        		this.idleSpeed = 220;
+        		this.setAttackRate(800);
+                this.deathAnimated = true;
+        		this.aggroRange = 8;
+            },
+            
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
+        m88nhotwing: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NHOTWING);
+                this.moveSpeed = 300;
+                this.atkSpeed = 250;
+                this.idleSpeed = 750;
+                this.setAttackRate(800);
+                this.deathAnimated = true;
+                this.isAggressive = true;
+                this.aggroRange = 1;
+                this.title = "Leave me alone!";
+            }
+        }),
+
+        m88ntrainer: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NTRAINER);
+                this.deathAnimated = true;
+                this.isAggressive = false;
+                this.nameless = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
+        m88ntrainer2: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NTRAINER2);
+                this.deathAnimated = true;
+                this.isAggressive = false;
+                this.nameless = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
+        m88ntrainer3: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NTRAINER3);
+                this.deathAnimated = true;
+                this.isAggressive = false;
+                this.nameless = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
+        m88ntrainer4: Mob.extend({
+            init: function(id) {
+                this._super(id, Types.Entities.M88NTRAINER4);
+                this.deathAnimated = true;
+                this.isAggressive = false;
+                this.nameless = true;
+            },
+
+            idle: function(orientation) {
+                if(!this.hasTarget()) {
+                    this._super(Types.Orientations.DOWN);
+                } else {
+                    this._super(orientation);
+                }
+            }
+        }),
+
         m88ncow: Mob.extend({
             init: function(id) {
                 this._super(id, Types.Entities.M88NCOW);
