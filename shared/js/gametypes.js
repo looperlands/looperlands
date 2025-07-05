@@ -472,6 +472,13 @@ Types = {
         M88NUFO3: 78000123,
         M88NUFO4: 78000124,
         M88NBTCMINE: 78000128,
+        M88NHOTWING: 78000130,
+        M88NSAW: 78000131,
+        M88NMEATHOOK: 78000132,
+        M88NTRAINER: 78000133,
+        M88NTRAINER2: 78000134,
+        M88NTRAINER3: 78000135,
+        M88NTRAINER4: 78000136,
         //m88n Mob Nexans
         NEXAN1: 78000037,
         NEXAN2: 78000038,
@@ -6332,6 +6339,13 @@ var kinds = {
     m88nufo2: [Types.Entities.M88NUFO2, "mob"],
     m88nufo3: [Types.Entities.M88NUFO3, "mob"],
     m88nufo4: [Types.Entities.M88NUFO4, "mob"],
+    m88nhotwing: [Types.Entities.M88NHOTWING, "mob"],
+    m88nsaw: [Types.Entities.M88NSAW, "mob"],
+    m88nmeathook: [Types.Entities.M88NMEATHOOK, "mob"],
+    m88ntrainer: [Types.Entities.M88NTRAINER, "mob"],
+    m88ntrainer2: [Types.Entities.M88NTRAINER2, "mob"],
+    m88ntrainer3: [Types.Entities.M88NTRAINER3, "mob"],
+    m88ntrainer4: [Types.Entities.M88NTRAINER4, "mob"],
 
     //m88n Mob Nexans
     nexan1: [Types.Entities.NEXAN1, "mob"],

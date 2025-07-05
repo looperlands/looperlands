@@ -2037,6 +2037,89 @@ let Properties = {
         respawnDelay: 600000 //10 minutes
     },
 
+    m88nmeathook: {
+        level: 5,
+        friendly: true, //not actually friendly, just AoE immune
+        hp: 1,
+        drops: {
+            m88ndirt: 95,
+            m88nsourworm: 5
+        },
+        respawnDelay: 60000 //one minute
+    },
+
+    m88nsaw: {
+        level: 22,
+        drops: {
+            GOLD3: 1,
+            GOLD4: 1,
+            GOLD5: 1
+        },
+        messages: ['Bzzzzzz!', 'Yum!', 'Eww, that was a little tough...', 'You thought you were already dead, huh?'],
+        armorMod: 1.2,
+        hpMod: 20,
+        weaponMod: 1.2,
+        respawnDelay: 180000 //three minutes
+    },
+
+    m88nhotwing: {
+        level: 88,
+        drops: {
+            GOLD3: 1,
+            GOLD4: 1,
+            GOLD5: 1
+        },
+        messages: ['What is this labyrinth?!', 'Yum!', 'You can not handle the hot wing...', 'Stay back or die!'],
+        armorMod: 3,
+        hpMod: 20,
+        weaponMod: 0.2,
+        respawnDelay: 300000 //five minutes
+    },
+
+    m88ntrainer: {
+        level: 5,
+        friendly: true, //not actually friendly, just AoE immune
+        hp: 100,
+        drops: {
+            GOLD2: 95,
+            GOLD3: 5
+        },
+        respawnDelay: 60000 //one minute
+    },
+
+    m88ntrainer2: {
+        level: 5,
+        friendly: true, //not actually friendly, just AoE immune
+        hp: 100,
+        drops: {
+            GOLD2: 95,
+            GOLD3: 5
+        },
+        respawnDelay: 60000 //one minute
+    },
+
+    m88ntrainer3: {
+        level: 5,
+        friendly: true, //not actually friendly, just AoE immune
+        hp: 100,
+        drops: {
+            GOLD2: 95,
+            GOLD3: 5
+        },
+        respawnDelay: 60000 //one minute
+    },
+
+    m88ntrainer4: {
+        level: 5,
+        friendly: true, //not actually friendly, just AoE immune
+        hp: 100,
+        drops: {
+            GOLD2: 95,
+            GOLD3: 5
+        },
+        respawnDelay: 60000 //one minute
+    },
+
     m88ncow: {
         level: 69,
         friendly: true, //not actually friendly, just AoE immune

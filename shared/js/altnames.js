@@ -269,6 +269,13 @@ const AltNames = {
     m88nicecrab: "Ice Crab",
     m88nelf: "Naughty Elf 1",
     m88nelf2: "Naughty Elf 2",
+    m88nmeathook: "Meat Hook",
+    m88nsaw: "Saw",
+    m88nhotwing: "Hot Wing",
+    m88ntrainer: "Trainer",
+    m88ntrainer2: "Trainer",
+    m88ntrainer3: "Trainer",
+    m88ntrainer4: "Trainer",
 
     //m88n Mob Nexans
     nexan8: "The Mail Lady",

@@ -297,6 +297,13 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "m88nufo2",
                     "m88nufo3",
                     "m88nufo4",
+                    "m88nhotwing",
+                    "m88nsaw",
+                    "m88nmeathook",
+                    "m88ntrainer",
+                    "m88ntrainer2",
+                    "m88ntrainer3",
+                    "m88ntrainer4",
                     //m88n's Mob Nexans
                     "nexan1",
                     "nexan2",
