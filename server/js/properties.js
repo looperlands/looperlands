@@ -2042,8 +2042,8 @@ let Properties = {
         friendly: true, //not actually friendly, just AoE immune
         hp: 1,
         drops: {
-            m88ndirt: 95,
-            m88nsourworm: 5
+            m88nzombiefish: 15,
+            m88nclover: 1
         },
         respawnDelay: 60000 //one minute
     },
@@ -2051,9 +2051,9 @@ let Properties = {
     m88nsaw: {
         level: 22,
         drops: {
-            GOLD3: 1,
-            GOLD4: 1,
-            GOLD5: 1
+            m88nclover: 15,
+            m88nluckyclover: 5,
+            m88ngoldclover: 1
         },
         messages: ['Bzzzzzz!', 'Yum!', 'Eww, that was a little tough...', 'You thought you were already dead, huh?'],
         armorMod: 1.2,
@@ -2065,24 +2065,28 @@ let Properties = {
     m88nhotwing: {
         level: 88,
         drops: {
-            GOLD3: 1,
-            GOLD4: 1,
-            GOLD5: 1
+            m88nclover: 44,
+            m88ngoldclover: 25,
+            m88ndiamondclover: 15,
+            m88nluckyclover: 10,
+            m88nluckygoldclover: 5,
+            m88nluckydiamondclover: 1
         },
         messages: ['What is this labyrinth?!', 'Yum!', 'You can not handle the hot wing...', 'Stay back or die!'],
         armorMod: 3,
         hpMod: 20,
-        weaponMod: 0.2,
+        weaponMod: 0.1,
         respawnDelay: 300000 //five minutes
     },
 
     m88ntrainer: {
         level: 5,
         friendly: true, //not actually friendly, just AoE immune
-        hp: 100,
+        hp: 1000,
         drops: {
-            GOLD2: 95,
-            GOLD3: 5
+            GOLD4: 5,
+            GOLD5: 1,
+            m88nluckyclover: 1
         },
         respawnDelay: 60000 //one minute
     },
@@ -2090,10 +2094,11 @@ let Properties = {
     m88ntrainer2: {
         level: 5,
         friendly: true, //not actually friendly, just AoE immune
-        hp: 100,
+        hp: 1000,
         drops: {
-            GOLD2: 95,
-            GOLD3: 5
+            GOLD4: 5,
+            GOLD5: 1,
+            m88nluckyclover: 1
         },
         respawnDelay: 60000 //one minute
     },
@@ -2101,10 +2106,11 @@ let Properties = {
     m88ntrainer3: {
         level: 5,
         friendly: true, //not actually friendly, just AoE immune
-        hp: 100,
+        hp: 1000,
         drops: {
-            GOLD2: 95,
-            GOLD3: 5
+            GOLD4: 5,
+            GOLD5: 1,
+            m88nluckyclover: 1
         },
         respawnDelay: 60000 //one minute
     },
@@ -2112,10 +2118,11 @@ let Properties = {
     m88ntrainer4: {
         level: 5,
         friendly: true, //not actually friendly, just AoE immune
-        hp: 100,
+        hp: 1000,
         drops: {
-            GOLD2: 95,
-            GOLD3: 5
+            GOLD4: 5,
+            GOLD5: 1,
+            m88nluckyclover: 1
         },
         respawnDelay: 60000 //one minute
     },
@@ -3923,17 +3930,145 @@ let Properties = {
     },
     m88nluckyclover: {
         collectable: true,
-        inventoryDescription: "Clover",
+        inventoryDescription: "Lucky Clover",
         respawnDelay: 69420741,
         consumable: true,
         cooldown: {
-            group: "xpPotions",
+            group: "meleeDamageDealt",
             duration: 10000
         },
         onConsume: function(player) {
             const bot = player.getBot()
             if (bot) {
-                bot.playerClassModifiers.applyTemporaryModifierWithTimeout('xp', 5, 180000);
+                bot.playerClassModifiers.applyTemporaryModifierWithTimeout('meleeDamageDealt', 2, 60000);
+            }
+        }        
+    },
+    m88ngoldclover: {
+        collectable: true,
+        inventoryDescription: "Gold Clover",
+        respawnDelay: 3000000,
+        consumable: true,
+        cooldown: {
+            group: "xpPotions",
+            duration: 30000
+        },
+        onConsume: function(player) {
+            const bot = player.getBot()
+            if (bot) {
+                bot.playerClassModifiers.applyTemporaryModifierWithTimeout('xp', 3, 120000);
+            }
+        }        
+    },
+    m88nluckygoldclover: {
+        collectable: true,
+        inventoryDescription: "Lucky Gold Clover",
+        respawnDelay: 69420741,
+        consumable: true,
+        cooldown: {
+            group: "meleeDamageDealt",
+            duration: 10000
+        },
+        onConsume: function(player) {
+            const bot = player.getBot()
+            if (bot) {
+                bot.playerClassModifiers.applyTemporaryModifierWithTimeout('meleeDamageDealt', 3, 120000);
+            }
+        }        
+    },
+    m88ndiamondclover: {
+        collectable: true,
+        inventoryDescription: "Diamond Clover",
+        respawnDelay: 3000000,
+        consumable: true,
+        cooldown: {
+            group: "xpPotions",
+            duration: 30000
+        },
+        onConsume: function(player) {
+            const bot = player.getBot()
+            if (bot) {
+                bot.playerClassModifiers.applyTemporaryModifierWithTimeout('xp', 4, 180000);
+            }
+        }        
+    },
+    m88nluckydiamondclover: {
+        collectable: true,
+        inventoryDescription: "Lucky Diamond Clover",
+        respawnDelay: 69420741,
+        consumable: true,
+        cooldown: {
+            group: "meleeDamageDealt",
+            duration: 10000
+        },
+        onConsume: function(player) {
+            const bot = player.getBot()
+            if (bot) {
+                bot.playerClassModifiers.applyTemporaryModifierWithTimeout('meleeDamageDealt', 4, 180000);
+            }
+        }        
+    },
+    m88njoint: {
+        collectable: true,
+        inventoryDescription: "Joint",
+        respawnDelay: 3000000,
+        consumable: true,
+        cooldown: {
+            group: "xpPotions",
+            duration: 30000
+        },
+        onConsume: function(player) {
+            const bot = player.getBot()
+            if (bot) {
+                bot.playerClassModifiers.applyTemporaryModifierWithTimeout('xp', 5, 300000);
+            }
+        }        
+    },
+    m88nblunt: {
+        collectable: true,
+        inventoryDescription: "Lucky Blunt",
+        respawnDelay: 69420741,
+        consumable: true,
+        cooldown: {
+            group: "meleeDamageDealt",
+            duration: 10000
+        },
+        onConsume: function(player) {
+            const bot = player.getBot()
+            if (bot) {
+                bot.playerClassModifiers.applyTemporaryModifierWithTimeout('meleeDamageDealt', 10, 120000);
+            }
+        }        
+    },
+    m88ngoldblunt: {
+        collectable: true,
+        inventoryDescription: "Lucky Gold Blunt",
+        respawnDelay: 69420741,
+        consumable: true,
+        cooldown: {
+            group: "meleeDamageDealt",
+            duration: 10000
+        },
+        onConsume: function(player) {
+            const bot = player.getBot()
+            if (bot) {
+                bot.playerClassModifiers.applyTemporaryModifierWithTimeout('meleeDamageDealt', 10, 180000);
+            }
+        }        
+    },
+    m88ndiamondblunt: {
+        collectable: true,
+        inventoryDescription: "Lucky Diamond Blunt",
+        respawnDelay: 69420741,
+        consumable: true,
+        cooldown: {
+            group: "meleeDamageDealt",
+            duration: 10000
+        },
+        onConsume: function(player) {
+            const bot = player.getBot()
+            if (bot) {
+                bot.playerClassModifiers.applyTemporaryModifierWithTimeout('meleeDamageDealt', 10, 300000);
             }
         }        
     },
@@ -4108,6 +4243,11 @@ let Properties = {
         onConsume: function(player){
             player.startInvincibility();
         }
+    },
+    m88nzombiefish: {
+        collectable: true,
+        inventoryDescription: "Zombie Fish",
+        respawnDelay: 9900000
     },
 
     m88nsticks: {
