@@ -2690,6 +2690,13 @@ let Properties = {
         friendly: true
     },
 
+    m88ngrimreaper: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+
     //Short Destroyers
     lateflea: {
         level: 5,

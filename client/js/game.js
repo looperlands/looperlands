@@ -201,6 +201,11 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "m88ntownie2",
                     "m88nastronaut",
                     "nexanzombiecat",
+                    "nexanexecutioner",
+                    "nexanzombie2",
+                    "nexanzombie3",
+                    "nexanzombie4",
+                    "nexanzombie5",
                     //m88n Mobs
                     "balloondogb",
                     "balloondogy",
@@ -341,6 +346,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "m88nastronaut2",
                     "m88nastronaut3",
                     "nexanzombie1",
+                    "m88ngrimreaper",
                     //MRMlabs Fishing
                     "bbqchips",
                     "blackpepperchips",

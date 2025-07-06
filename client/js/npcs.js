@@ -429,6 +429,11 @@ define(['npc'], function(Npc) {
         m88ntownie2: Npc.extend({init: function(id) {this._super(id, Types.Entities.M88NTOWNIE2, 1);}}),
         m88nastronaut: Npc.extend({init: function(id) {this._super(id, Types.Entities.M88NASTRONAUT, 1);}}),
         nexanzombiecat: Npc.extend({init: function(id) {this._super(id, Types.Entities.NEXANZOMBIECAT, 1);}}),
+        nexanexecutioner: Npc.extend({init: function(id) {this._super(id, Types.Entities.NEXANEXECUTIONER, 1);}}),
+        nexanzombie2: Npc.extend({init: function(id) {this._super(id, Types.Entities.NEXANZOMBIE2, 1);}}),
+        nexanzombie3: Npc.extend({init: function(id) {this._super(id, Types.Entities.NEXANZOMBIE3, 1);}}),
+        nexanzombie4: Npc.extend({init: function(id) {this._super(id, Types.Entities.NEXANZOMBIE4, 1);}}),
+        nexanzombie5: Npc.extend({init: function(id) {this._super(id, Types.Entities.NEXANZOMBIE5, 1);}}),
         //MRMlabs NPCs
         tylerdurden: Npc.extend({init: function(id) {this._super(id, Types.Entities.TYLERDURDEN, 1);}}),
         //Taiko Town NPCs

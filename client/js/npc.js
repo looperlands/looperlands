@@ -889,6 +889,31 @@ define(['character'], function (Character) {
             "Just kidding, it's only rotten cat food!"
         ],
 
+        "nexanexecutioner": [
+            "Gather round...",
+            "The show is just about to start..."
+        ],
+
+        "nexanzombie2": [
+            //"Mmmmm brains.....",
+            "Arrrr, uhhhhhh, mmmmm!"
+        ],
+
+        "nexanzombie3": [
+            //"Mmmmm brains.....",
+            "Arrrr, uhhhhhh, mmmmm!"
+        ],
+
+        "nexanzombie4": [
+            //"Mmmmm brains.....",
+            "Arrrr, uhhhhhh, mmmmm!"
+        ],
+
+        "nexanzombie5": [
+            //"Mmmmm brains.....",
+            "Arrrr, uhhhhhh, mmmmm!"
+        ],
+
         //MRMlabs NPCs
         "tylerdurden": [
             //"We are all part of the same compost heap.",

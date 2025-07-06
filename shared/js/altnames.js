@@ -294,6 +294,7 @@ const AltNames = {
     m88nastronaut3: "Astro",
     nexanzombie1: "Braaaains...",
     nexanzombiecat: "Trash Cat",
+    m88ngrimreaper: "Grim Reaper",
 
     //m88n NPCs
     nexan29: "The Butler",
@@ -326,6 +327,11 @@ const AltNames = {
     m88ntownies: "Ty",
     m88ntownie2: "Tito",
     m88nastronaut: "Astro",
+    nexanexecutioner: "The Executioner",
+    nexanzombie2: "Zombie",
+    nexanzombie3: "Zombie",
+    nexanzombie4: "Zombie",
+    nexanzombie5: "Zombie",
 
     //m88n Items
     m88nmail: "mail",

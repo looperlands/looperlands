@@ -912,6 +912,9 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.NEXANZOMBIE1] = function(id) {
         return new Mobs.nexanzombie1(id);
     };
+    EntityFactory.builders[Types.Entities.M88NGRIMREAPER] = function(id) {
+        return new Mobs.m88ngrimreaper(id);
+    };
     
     
     //Short Destroyers
@@ -1675,6 +1678,11 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.M88NTOWNIE2]=function(id){return new NPCs.m88ntownie2(id);};
     EntityFactory.builders[Types.Entities.M88NASTRONAUT]=function(id){return new NPCs.m88nastronaut(id);};
     EntityFactory.builders[Types.Entities.NEXANZOMBIECAT]=function(id){return new NPCs.nexanzombiecat(id);};
+    EntityFactory.builders[Types.Entities.NEXANEXECUTIONER]=function(id){return new NPCs.nexanexecutioner(id);};
+    EntityFactory.builders[Types.Entities.NEXANZOMBIE2]=function(id){return new NPCs.nexanzombie2(id);};
+    EntityFactory.builders[Types.Entities.NEXANZOMBIE3]=function(id){return new NPCs.nexanzombie3(id);};
+    EntityFactory.builders[Types.Entities.NEXANZOMBIE4]=function(id){return new NPCs.nexanzombie4(id);};
+    EntityFactory.builders[Types.Entities.NEXANZOMBIE5]=function(id){return new NPCs.nexanzombie5(id);};
 
     //MRMlabs NPCs
     EntityFactory.builders[Types.Entities.TYLERDURDEN]=function(id){return new NPCs.tylerdurden(id);};
