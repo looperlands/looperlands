@@ -375,6 +375,11 @@ Types = {
         M88NTOWNIES: 79100000,
         M88NTOWNIE2: 79200000,
         M88NASTRONAUT: 79300000,
+        NEXANEXECUTIONER: 79400000,
+        NEXANZOMBIE2: 79500000,
+        NEXANZOMBIE3: 79600000,
+        NEXANZOMBIE4: 79700000,
+        NEXANZOMBIE5: 79800000,
         //m88n Mobs
         BALLOONDOGB: 78000001,
         BALLOONDOGY: 78000002,
@@ -511,6 +516,7 @@ Types = {
         M88NASTRONAUT3: 78000126,
         NEXANZOMBIE1: 78000127,
         NEXANZOMBIECAT: 78000129,
+        M88NGRIMREAPER: 78000138,
         
         //m88n Items
         M88NMAP: 78000100,
@@ -6392,6 +6398,7 @@ var kinds = {
     m88nastronaut2: [Types.Entities.M88NASTRONAUT2, "mob"],
     m88nastronaut3: [Types.Entities.M88NASTRONAUT3, "mob"],
     nexanzombie1: [Types.Entities.NEXANZOMBIE1, "mob"],
+    m88ngrimreaper: [Types.Entities.M88NGRIMREAPER, "mob"],
 
     //BITCORN MOBS
     SLUDGERAT: [Types.Entities.SLUDGERAT, "mob"],
@@ -6884,6 +6891,11 @@ var kinds = {
     m88ntownie2: [Types.Entities.M88NTOWNIE2, "npc"],
     m88nastronaut: [Types.Entities.M88NASTRONAUT, "npc"],
     nexanzombiecat: [Types.Entities.NEXANZOMBIECAT, "npc"],
+    nexanexecutioner: [Types.Entities.NEXANEXECUTIONER, "npc"],
+    nexanzombie2: [Types.Entities.NEXANZOMBIE2, "npc"],
+    nexanzombie3: [Types.Entities.NEXANZOMBIE3, "npc"],
+    nexanzombie4: [Types.Entities.NEXANZOMBIE4, "npc"],
+    nexanzombie5: [Types.Entities.NEXANZOMBIE5, "npc"],
     //MRMlabs NPCs
     tylerdurden: [Types.Entities.TYLERDURDEN, "npc"],
     ROBITSE3: [Types.Entities.ROBITSE3, "mob"],
