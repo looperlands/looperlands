@@ -196,6 +196,10 @@ const AltNames = {
     m88nmoon7: "an exomoon!",
     m88nmoon8: "a carbon moon!",
     m88nmoon9: "an icy moon!",
+    m88nzombiefoot: "a bloated zombie foot!",
+    m88nzombiehand: "a bloated zombie hand!",
+    m88nzombieeye: "a bloated zombie eyeball!",
+    m88nweirdglass: "a weird glass! I wonder what's inside...",
 
     //MRMlabs Fishing
     bbqchips: "BBQ chips",  
@@ -276,6 +280,7 @@ const AltNames = {
     m88ntrainer2: "Trainer",
     m88ntrainer3: "Trainer",
     m88ntrainer4: "Trainer",
+    m88nzombietrash: "nasty trash can",
 
     //m88n Mob Nexans
     nexan8: "The Mail Lady",

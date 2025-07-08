@@ -1479,6 +1479,143 @@ quests = [
             item: Types.Entities.M88NGEM,
             amount: 200
         }
+    },
+    {
+        id: "EXECUTIONERS_QUEST_1",
+        name: "The Executioner's Common Request",
+        startText: ["I keep executing the bad zombies and they keep trying to come back.",
+        "Go whack 100 of their hands as soon as you see them pop up before they dig their way out.",
+        "Help me and I'll give you a few lucky clovers that will make your companion stronger!"],
+        inProgressText: ["Kind of fun right?!",
+        "You only have another {{remaining}} to go.",
+        "Keep it up!"],
+        endText: "Nice job. Maybe we should open up a medical waste company.",
+        eventType: "KILL_MOB",
+        npc: Types.Entities.NEXANEXECUTIONER,
+        target: Types.Entities.M88NMEATHOOK,
+        amount: 100,
+        level: 2,
+        medal: Types.Medals.SKULL,
+        needToReturn: true,
+        reward: {
+            item: Types.Entities.M88NLUCKYCLOVER,
+            amount: 3
+        }
+    },
+    {
+        id: "EXECUTIONERS_QUEST_2",
+        name: "The Executioner's Uncommon Request",
+        startText: ["Nice job bashing those little bastardos.",
+        "Wanna really start beefing up your companion?",
+        "Go whack 1000 more zombie hands and I'll hook you up with 10 more lucky clovers!"],
+        inProgressText: ["Nice job, keep it up!",
+        "You only have another {{remaining}} to go.",
+        "Pretty decent gold payout too huh?"],
+        endText: "Haha, thanks. They keep coming back, maybe we should also start a zombie pest control business.",
+        eventType: "KILL_MOB",
+        npc: Types.Entities.NEXANEXECUTIONER,
+        target: Types.Entities.M88NMEATHOOK,
+        amount: 1000,
+        requiredQuest: "EXECUTIONERS_QUEST_1",
+        level: 10,
+        medal: Types.Medals.SKULL,
+        needToReturn: true,
+        reward: {
+            item: Types.Entities.M88NLUCKYCLOVER,
+            amount: 10
+        }
+    },
+    {
+        id: "EXECUTIONERS_QUEST_3",
+        name: "The Executioner's Rare Request",
+        startText: ["Okay, so I landed a contract with the city.",
+        "They said if we keep taking care of these zombie hands they'll pay us handsomly.", 
+        "If you whack 4000 more your cut will be 25 lucky clovers!"],
+        inProgressText: ["Keep going, you can do it!",
+        "You still have another {{remaining}} to go.",
+        "Maybe you should go blow off some steam at the Cornhole Casino."],
+        endText: "Nice job. We should start selling zombie merchandise...",
+        eventType: "KILL_MOB",
+        npc: Types.Entities.NEXANEXECUTIONER,
+        target: Types.Entities.M88NMEATHOOK,
+        amount: 4000,
+        requiredQuest: "EXECUTIONERS_QUEST_2",
+        level: 25,
+        medal: Types.Medals.SKULL,
+        needToReturn: true,
+        reward: {
+            item: Types.Entities.M88NLUCKYCLOVER,
+            amount: 25
+        }
+    },
+    {
+        id: "EXECUTIONERS_QUEST_4",
+        name: "The Executioner's Epic Request",
+        startText: ["The city is very pleased with the service we're providing.",
+        "You up for another tour of duty?",
+        "If you can whack 8888 more zombie hands they're gonna give us a bonus.",
+        "This time your cut will be 50 lucky clovers!"],
+        inProgressText: ["You must be getting pretty tweaked by now huh?",
+        "You still have another {{remaining}} to go.",
+        "Maybe you should take a little PTSD prevention break."],
+        endText: "Nice job. Take a break soldier.",
+        eventType: "KILL_MOB",
+        npc: Types.Entities.NEXANEXECUTIONER,
+        target: Types.Entities.M88NMEATHOOK,
+        amount: 8888,
+        requiredQuest: "EXECUTIONERS_QUEST_3",
+        level: 250,
+        medal: Types.Medals.SKULL,
+        needToReturn: true,
+        reward: {
+            item: Types.Entities.M88NLUCKYCLOVER,
+            amount: 50
+        }
+    },
+    {
+        id: "EXECUTIONERS_QUEST_5",
+        name: "The Executioner's Legendary Request",
+        startText: ["The city is very pleased with the service we're providing.",
+        "You up for another tour of duty?",
+        "If you can bash 88888 more zombie hands they're gonna give us a HUGE bonus.",
+        "This time your cut will be 100 golden lucky clovers, and they are REALLY strong!"],
+        inProgressText: ["You must be getting pretty tweaked by now huh?",
+        "You still have another {{remaining}} to go.",
+        "Maybe you should take a little PTSD prevention break."],
+        endText: "Nice job. Take a break soldier.",
+        eventType: "KILL_MOB",
+        npc: Types.Entities.NEXANEXECUTIONER,
+        target: Types.Entities.M88NMEATHOOK,
+        amount: 88888,
+        requiredQuest: "EXECUTIONERS_QUEST_4",
+        level: 450,
+        medal: Types.Medals.SKULL,
+        needToReturn: true,
+        reward: {
+            item: Types.Entities.M88NLUCKYGOLDCLOVER,
+            amount: 100
+        }
+    },
+    {
+        id: "ZOMBIE_CAT_QUEST_1",
+        name: "The Zombie Fish Request",
+        startText: ["Hey, I could really go for some nice tasty decaying fish.",
+        "Do you think you could help me find some? I haven't had any luck fishing lately.",
+        "I have been collecting these little clovers though, they are magical!",
+        "If you find me 20 zombie fish I'll give you 20 magic clovers. Sound good?"],
+        inProgressText: ["Keep it up, you're doing great!",
+        "You only have {{remaining}} more zombie fish to find..."],
+        endText: ["Have fun friend!!"],
+        eventType: "LOOT_ITEM",
+        npc: Types.Entities.NEXANZOMBIECAT,
+        target: Types.Entities.M88NZOMBIEFISH,
+        amount: 20,
+        level: 100,
+        medal: Types.Medals.SKULL,
+        reward: {
+            item: Types.Entities.M88NCLOVER,
+            amount: 20
+        }
     }
 ]
 

@@ -2042,7 +2042,7 @@ let Properties = {
         friendly: true, //not actually friendly, just AoE immune
         hp: 1,
         drops: {
-            m88nzombiefish: 15,
+            m88ndirt: 15,
             m88nclover: 1
         },
         respawnDelay: 60000 //one minute
@@ -2080,49 +2080,59 @@ let Properties = {
     },
 
     m88ntrainer: {
-        level: 5,
+        level: 1,
         friendly: true, //not actually friendly, just AoE immune
         hp: 1000,
         drops: {
             GOLD4: 5,
             GOLD5: 1,
-            m88nluckyclover: 1
+            m88nclover: 1
         },
-        respawnDelay: 60000 //one minute
+        respawnDelay: 1000 //one second
     },
 
     m88ntrainer2: {
-        level: 5,
+        level: 1,
         friendly: true, //not actually friendly, just AoE immune
         hp: 1000,
         drops: {
             GOLD4: 5,
             GOLD5: 1,
-            m88nluckyclover: 1
+            m88nclover: 1
         },
-        respawnDelay: 60000 //one minute
+        respawnDelay: 1000 //one second
     },
 
     m88ntrainer3: {
-        level: 5,
+        level: 1,
         friendly: true, //not actually friendly, just AoE immune
         hp: 1000,
         drops: {
             GOLD4: 5,
             GOLD5: 1,
-            m88nluckyclover: 1
+            m88nclover: 1
         },
-        respawnDelay: 60000 //one minute
+        respawnDelay: 1000 //one second
     },
 
     m88ntrainer4: {
-        level: 5,
+        level: 1,
         friendly: true, //not actually friendly, just AoE immune
         hp: 1000,
         drops: {
             GOLD4: 5,
             GOLD5: 1,
-            m88nluckyclover: 1
+            m88nclover: 1
+        },
+        respawnDelay: 1000 //one second
+    },
+
+    m88nzombietrash: {
+        level: 1,
+        friendly: true, //not actually friendly, just AoE immune
+        hp: 1,
+        drops: {
+            m88nzombiefish: 10
         },
         respawnDelay: 60000 //one minute
     },
@@ -2132,8 +2142,8 @@ let Properties = {
         friendly: true, //not actually friendly, just AoE immune
         hp: 10,
         drops: {
-            MILK1: 75,
-            m88nsteak: 25,
+            MILK1: 25,
+            m88nsteak: 15,
         },
         respawnDelay: 900000 //fifteen minutes
     },
@@ -3082,9 +3092,9 @@ let Properties = {
             duration: 5000
         },
         inventoryDescription: "Brown Bag",
-        respawnDelay: 60000,
+        respawnDelay: 10000,
         onConsume: function(player) {
-            player.releaseItem(Types.Entities.M88NDIRT);
+            player.releaseItem(Types.Entities.M88NJOINT);
         }
     },
     m88nvipbag: {
@@ -3095,7 +3105,7 @@ let Properties = {
             duration: 5000
         },
         inventoryDescription: "Black Bag",
-        respawnDelay: 60000,
+        respawnDelay: 10000,
         onConsume: function(player) {
             player.releaseItem(Types.Entities.M88NTICKET);
         }
@@ -3108,7 +3118,7 @@ let Properties = {
             duration: 5000
         },
         inventoryDescription: "Golden Bag",
-        respawnDelay: 60000,
+        respawnDelay: 10000,
         onConsume: function(player) {
             player.releaseItem(Types.Entities.M88NGOLDENTICKET);
         }
@@ -3121,7 +3131,7 @@ let Properties = {
             duration: 5000
         },
         inventoryDescription: "Gem Bag",
-        respawnDelay: 60000,
+        respawnDelay: 10000,
         onConsume: function(player) {
             player.releaseItem(Types.Entities.M88NGEM);
         }
@@ -3134,9 +3144,9 @@ let Properties = {
             duration: 5000
         },
         inventoryDescription: "Lucky Bag",
-        respawnDelay: 60000,
+        respawnDelay: 10000,
         onConsume: function(player) {
-            player.releaseItem(Types.Entities.M88NTACO);
+            player.releaseItem(Types.Entities.M88NBLUNT);
         }
     },
     m88nmedic: {

@@ -484,6 +484,7 @@ Types = {
         M88NTRAINER2: 78000134,
         M88NTRAINER3: 78000135,
         M88NTRAINER4: 78000136,
+        M88NZOMBIETRASH: 78000137,
         //m88n Mob Nexans
         NEXAN1: 78000037,
         NEXAN2: 78000038,
@@ -6361,6 +6362,7 @@ var kinds = {
     m88ntrainer2: [Types.Entities.M88NTRAINER2, "mob"],
     m88ntrainer3: [Types.Entities.M88NTRAINER3, "mob"],
     m88ntrainer4: [Types.Entities.M88NTRAINER4, "mob"],
+    m88nzombietrash: [Types.Entities.M88NZOMBIETRASH, "mob"],
 
     //m88n Mob Nexans
     nexan1: [Types.Entities.NEXAN1, "mob"],

@@ -805,6 +805,9 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.M88NTRAINER4] = function(id) {
         return new Mobs.m88ntrainer4(id);
     };
+    EntityFactory.builders[Types.Entities.M88NZOMBIETRASH] = function(id) {
+        return new Mobs.m88nzombietrash(id);
+    };
 
     //m88n Mob Nexans
     EntityFactory.builders[Types.Entities.NEXAN1] = function(id) {

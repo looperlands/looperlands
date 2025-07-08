@@ -389,6 +389,16 @@ const Lakes = {
         }
     },
 
+    m88npoisonpond: {
+        level: 6,
+        fish: {
+            m88nzombiefoot: "common",
+            m88nzombiehand: "uncommon",
+            m88nzombieeye: "rare",
+            m88nweirdglass: "epic",
+        }
+    },
+
     m88n24kpool: {
         level: 11,
         fish: {
@@ -457,7 +467,7 @@ const Lakes = {
 // only EPIC fish can be a consumable
 const ConsumableFish = {
     hp: ["cobparadisefish","oafish27","m88ndreamcandyr","gingerale", "m88nanglerfish", "m88nbettafish", "m88njellyfish", "m88npiranha"],
-    atk: ["cobbluegill","oafish31","oafish22","m88ndreamduckyp","saltnvinegarchips", "m88naxolotl", "m88nbluelobster", "m88nkoifish", "m88nshrimp", "m88nalien4", "m88nmoon2"],
+    atk: ["cobbluegill","oafish31","oafish22","m88ndreamduckyp","saltnvinegarchips", "m88naxolotl", "m88nbluelobster", "m88nkoifish", "m88nshrimp", "m88nalien4", "m88nmoon2", "m88nweirdglass"],
     exp: ["cobgreensunfish","oafish36", "lollipop","m88ndreamgumballa","m88ngoldenbanana", "m88nblobfish", "m88ncharfish", "m88noctopus", "m88nstarfish", "luckybabydragon", "m88nnightmareduckyr", "m88n24kapestatuette", "m88nalien9", "m88nmoon8"]
 };
 
