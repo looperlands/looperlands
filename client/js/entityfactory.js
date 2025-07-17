@@ -808,6 +808,24 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.M88NZOMBIETRASH] = function(id) {
         return new Mobs.m88nzombietrash(id);
     };
+    EntityFactory.builders[Types.Entities.M88NPOISONFROG1] = function(id) {
+        return new Mobs.m88npoisonfrog1(id);
+    };
+    EntityFactory.builders[Types.Entities.M88NPOISONFROG2] = function(id) {
+        return new Mobs.m88npoisonfrog2(id);
+    };
+    EntityFactory.builders[Types.Entities.M88NPOISONFROG3] = function(id) {
+        return new Mobs.m88npoisonfrog3(id);
+    };
+    EntityFactory.builders[Types.Entities.M88NPOISONFROG4] = function(id) {
+        return new Mobs.m88npoisonfrog4(id);
+    };
+    EntityFactory.builders[Types.Entities.M88NPOISONFROG5] = function(id) {
+        return new Mobs.m88npoisonfrog5(id);
+    };
+    EntityFactory.builders[Types.Entities.M88NZOMBIEBOO] = function(id) {
+        return new Mobs.m88nzombieboo(id);
+    };
 
     //m88n Mob Nexans
     EntityFactory.builders[Types.Entities.NEXAN1] = function(id) {
@@ -917,6 +935,9 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     };
     EntityFactory.builders[Types.Entities.M88NGRIMREAPER] = function(id) {
         return new Mobs.m88ngrimreaper(id);
+    };
+    EntityFactory.builders[Types.Entities.NEXANHAZMAT1] = function(id) {
+        return new Mobs.nexanhazmat1(id);
     };
     
     
@@ -1301,6 +1322,10 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.M88NLUCKYGOLDCLOVER] = function(id) { return new Items.m88nluckygoldclover(id); };
     EntityFactory.builders[Types.Entities.M88NJOINT] = function(id) { return new Items.m88njoint(id); };
     EntityFactory.builders[Types.Entities.M88NZOMBIEFISH] = function(id) { return new Items.m88nzombiefish(id); };
+    EntityFactory.builders[Types.Entities.M88NFIAT] = function(id) { return new Items.m88nfiat(id); };
+    EntityFactory.builders[Types.Entities.M88NGRAVESTONE] = function(id) { return new Items.m88ngravestone(id); };
+    EntityFactory.builders[Types.Entities.M88NSKULL] = function(id) { return new Items.m88nskull(id); };
+    EntityFactory.builders[Types.Entities.M88NSPIDERWEB] = function(id) { return new Items.m88nspiderweb(id); };
     //MRMlabs Items
     EntityFactory.builders[Types.Entities.FIRSTAIDKIT] = function(id) { return new Items.firstaidkit(id); };
     EntityFactory.builders[Types.Entities.BANDAID] = function(id) { return new Items.bandaid(id); };
@@ -1686,6 +1711,7 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.NEXANZOMBIE3]=function(id){return new NPCs.nexanzombie3(id);};
     EntityFactory.builders[Types.Entities.NEXANZOMBIE4]=function(id){return new NPCs.nexanzombie4(id);};
     EntityFactory.builders[Types.Entities.NEXANZOMBIE5]=function(id){return new NPCs.nexanzombie5(id);};
+    EntityFactory.builders[Types.Entities.NEXANHAZMAT2]=function(id){return new NPCs.nexanhazmat2(id);};
 
     //MRMlabs NPCs
     EntityFactory.builders[Types.Entities.TYLERDURDEN]=function(id){return new NPCs.tylerdurden(id);};

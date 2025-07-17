@@ -411,6 +411,10 @@ define(['item'], function(Item) {
         m88nluckygoldclover:Item.extend({init:function(id){this._super(id,Types.Entities.M88NLUCKYGOLDCLOVER,"object");this.lootMessage="A lucky gold clover! No way!";}}),
         m88njoint:Item.extend({init:function(id){this._super(id,Types.Entities.M88NJOINT,"object");this.lootMessage="A joint! No way! Puff puff pass!";}}),
         m88nzombiefish:Item.extend({init:function(id){this._super(id,Types.Entities.M88NZOMBIEFISH,"object");this.lootMessage="A decaying zombie fish. Gross!";}}),
+        m88nfiat:Item.extend({init:function(id){this._super(id,Types.Entities.M88NFIAT,"object");this.lootMessage="Some dirty fiat. Might wanna trade it for Bitcoin, NFA...";}}),
+        m88ngravestone:Item.extend({init:function(id){this._super(id,Types.Entities.M88NGRAVESTONE,"object");this.lootMessage="A zombie gravestone. I think that might be bad luck.";}}),
+        m88nskull:Item.extend({init:function(id){this._super(id,Types.Entities.M88NSKULL,"object");this.lootMessage="A zombie skull. I think that might be bad luck.";}}),
+        m88nspiderweb:Item.extend({init:function(id){this._super(id,Types.Entities.M88NSPIDERWEB,"object");this.lootMessage="A spider web, gross!";}}),
         //MRMlabs Items
         firstaidkit:Item.extend({init:function(id){this._super(id,Types.Entities.FIRSTAIDKIT,"object");this.lootMessage="You found a first aid kit!";}}),
         bandaid:Item.extend({init:function(id){this._super(id,Types.Entities.BANDAID,"object");this.lootMessage="You found a bandaid!";}}),
