@@ -281,6 +281,12 @@ const AltNames = {
     m88ntrainer3: "Trainer",
     m88ntrainer4: "Trainer",
     m88nzombietrash: "nasty trash can",
+    m88npoisonfrog1: "Poisonous Frog",
+    m88npoisonfrog2: "Poisonous Frog",
+    m88npoisonfrog3: "Poisonous Frog",
+    m88npoisonfrog4: "Poisonous Frog",
+    m88npoisonfrog5: "Poisonous Frog",
+    m88nzombieboo: "Zombie Blob",
 
     //m88n Mob Nexans
     nexan8: "The Mail Lady",
@@ -300,6 +306,7 @@ const AltNames = {
     nexanzombie1: "Braaaains...",
     nexanzombiecat: "Trash Cat",
     m88ngrimreaper: "Grim Reaper",
+    nexanhazmat1: "Hazmat",
 
     //m88n NPCs
     nexan29: "The Butler",
@@ -337,6 +344,7 @@ const AltNames = {
     nexanzombie3: "Zombie",
     nexanzombie4: "Zombie",
     nexanzombie5: "Zombie",
+    nexanhazmat2: "Hazmat",
 
     //m88n Items
     m88nmail: "mail",
@@ -419,6 +427,7 @@ const AltNames = {
     m88nluckygoldclover: "Lucky Gold Clover",
     m88njoint: "Joint",
     m88nzombiefish: "Zombie Fish",
+    m88nfiat: "Dirty Fiat",
 
     //m88n TT Items
     m88nammocan: "ammo can",

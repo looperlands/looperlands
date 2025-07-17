@@ -2032,7 +2032,11 @@ let Properties = {
         hp: 1,
         drops: {
             m88nbitcoin: 1,
-            m88ndirt: 99,
+            m88nsourworm: 1,
+            m88nsourworm2: 1,
+            m88ngoldworm: 1,
+            m88ndiamondworm: 1,
+            m88ndirt: 95,
         },
         respawnDelay: 600000 //10 minutes
     },
@@ -2042,15 +2046,113 @@ let Properties = {
         friendly: true, //not actually friendly, just AoE immune
         hp: 1,
         drops: {
-            m88ndirt: 15,
+            flask: 35,
+            GOLD4: 30,
+            taikoboost: 5,
+            GOLD5: 10,
+            loopring: 16,
+            m88ngravestone: 1,
+            m88nskull: 1,
+            m88nspiderweb: 1,
             m88nclover: 1
         },
         respawnDelay: 60000 //one minute
+    },
+    
+    m88npoisonfrog1: {
+        level: 10,
+        drops: {
+            flask: 25,
+            loopring: 5,
+            m88ngoldclover: 15,
+            m88nluckyclover: 5,
+            m88nluckygoldclover: 1
+        },
+        messages: ['Ribbit!', 'Touch me, I am definitely not poisonous...', 'I live in the poinsonous pond, does not seem to bother me...'],
+        hpMod: 20,
+        weaponMod: 1.2,
+        respawnDelay: 300000 //five minutes
+    },
+
+    m88npoisonfrog2: {
+        level: 20,
+        drops: {
+            flask: 35,
+            loopring: 5,
+            m88ngoldclover: 15,
+            m88nluckyclover: 5,
+            m88nluckygoldclover: 1
+        },
+        messages: ['Ribbit!', 'Touch me, I am definitely not poisonous...', 'I live in the poinsonous pond, does not seem to bother me...'],
+        hpMod: 20,
+        weaponMod: 1.4,
+        respawnDelay: 300000 //five minutes
+    },
+
+    m88npoisonfrog3: {
+        level: 30,
+        drops: {
+            flask: 45,
+            loopring: 5,
+            m88ngoldclover: 15,
+            m88nluckyclover: 5,
+            m88nluckygoldclover: 1
+        },
+        messages: ['Ribbit!', 'Touch me, I am definitely not poisonous...', 'I live in the poinsonous pond, does not seem to bother me...'],
+        hpMod: 20,
+        weaponMod: 1.6,
+        respawnDelay: 300000 //five minutes
+    },
+
+    m88npoisonfrog4: {
+        level: 40,
+        drops: {
+            flask: 55,
+            loopring: 5,
+            m88ngoldclover: 15,
+            m88nluckyclover: 5,
+            m88nluckygoldclover: 1
+        },
+        messages: ['Ribbit!', 'Touch me, I am definitely not poisonous...', 'I live in the poinsonous pond, does not seem to bother me...'],
+        hpMod: 20,
+        weaponMod: 1.8,
+        respawnDelay: 300000 //five minutes
+    },
+
+    m88npoisonfrog5: {
+        level: 50,
+        drops: {
+            flask: 65,
+            loopring: 5,
+            m88ngoldclover: 15,
+            m88nluckyclover: 5,
+            m88nluckygoldclover: 1
+        },
+        messages: ['Ribbit!', 'Touch me, I am definitely not poisonous...', 'I live in the poinsonous pond, does not seem to bother me...'],
+        hpMod: 20,
+        weaponMod: 2.0,
+        respawnDelay: 600000 //ten minutes
+    },
+
+    m88nzombieboo: {
+        level: 69,
+        drops: {
+            loopring: 75,
+            m88nluckyclover: 15,
+            m88nluckygoldclover: 5,
+            m88nluckydiamondclover: 1
+        },
+        messages: ['Boo!', 'Pet me, I definitely do not bite...', 'Do not trust anything that is alive...'],
+        hpMod: 20,
+        weaponMod: 2.0,
+        respawnDelay: 900000 //fifteen minutes
     },
 
     m88nsaw: {
         level: 22,
         drops: {
+            flask: 45,
+            loopring: 5,
             m88nclover: 15,
             m88nluckyclover: 5,
             m88ngoldclover: 1
@@ -2065,10 +2167,13 @@ let Properties = {
     m88nhotwing: {
         level: 88,
         drops: {
-            m88nclover: 44,
-            m88ngoldclover: 25,
+            m88nclover: 34,
+            m88ngoldclover: 22,
             m88ndiamondclover: 15,
             m88nluckyclover: 10,
+            m88ngravestone: 4,
+            m88nskull: 4,
+            m88nspiderweb: 4,
             m88nluckygoldclover: 5,
             m88nluckydiamondclover: 1
         },
@@ -2084,6 +2189,8 @@ let Properties = {
         friendly: true, //not actually friendly, just AoE immune
         hp: 1000,
         drops: {
+            flask: 5,
+            loopring: 5,
             GOLD4: 5,
             GOLD5: 1,
             m88nclover: 1
@@ -2096,6 +2203,8 @@ let Properties = {
         friendly: true, //not actually friendly, just AoE immune
         hp: 1000,
         drops: {
+            flask: 5,
+            loopring: 5,
             GOLD4: 5,
             GOLD5: 1,
             m88nclover: 1
@@ -2108,6 +2217,8 @@ let Properties = {
         friendly: true, //not actually friendly, just AoE immune
         hp: 1000,
         drops: {
+            flask: 5,
+            loopring: 5,
             GOLD4: 5,
             GOLD5: 1,
             m88nclover: 1
@@ -2120,6 +2231,8 @@ let Properties = {
         friendly: true, //not actually friendly, just AoE immune
         hp: 1000,
         drops: {
+            flask: 5,
+            loopring: 5,
             GOLD4: 5,
             GOLD5: 1,
             m88nclover: 1
@@ -2132,7 +2245,8 @@ let Properties = {
         friendly: true, //not actually friendly, just AoE immune
         hp: 1,
         drops: {
-            m88nzombiefish: 10
+            m88nfiat: 1,
+            m88nzombiefish: 10,
         },
         respawnDelay: 60000 //one minute
     },
@@ -2701,6 +2815,13 @@ let Properties = {
     },
 
     m88ngrimreaper: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+
+    nexanhazmat1: {
         hp: 10,
         armor: 1,
         weapon: 1,
@@ -3861,9 +3982,13 @@ let Properties = {
         }
     },
     cigarette: {
+        collectable: true,
+        inventoryDescription: "Ciggy",
         respawnDelay: 9900000
     },
     cigarettepack: {
+        collectable: true,
+        inventoryDescription: "Ciggy Pack",
         respawnDelay: 9900000,
     },
     soap: {
@@ -4264,6 +4389,30 @@ let Properties = {
     m88nzombiefish: {
         collectable: true,
         inventoryDescription: "Zombie Fish",
+        respawnDelay: 9900000
+    },
+
+    m88nfiat: {
+        collectable: true,
+        inventoryDescription: "Dirty Fiat",
+        respawnDelay: 9900000
+    },
+
+    m88ngravestone: {
+        collectable: true,
+        inventoryDescription: "Gravestone",
+        respawnDelay: 9900000
+    },
+
+    m88nskull: {
+        collectable: true,
+        inventoryDescription: "Skull",
+        respawnDelay: 9900000
+    },
+
+    m88nspiderweb: {
+        collectable: true,
+        inventoryDescription: "Spider Web",
         respawnDelay: 9900000
     },
 

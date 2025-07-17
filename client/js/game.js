@@ -206,6 +206,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "nexanzombie3",
                     "nexanzombie4",
                     "nexanzombie5",
+                    "nexanhazmat2",
                     //m88n Mobs
                     "balloondogb",
                     "balloondogy",
@@ -310,6 +311,12 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "m88ntrainer3",
                     "m88ntrainer4",
                     "m88nzombietrash",
+                    "m88npoisonfrog1",
+                    "m88npoisonfrog2",
+                    "m88npoisonfrog3",
+                    "m88npoisonfrog4",
+                    "m88npoisonfrog5",
+                    "m88nzombieboo",
                     //m88n's Mob Nexans
                     "nexan1",
                     "nexan2",
@@ -348,6 +355,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "m88nastronaut3",
                     "nexanzombie1",
                     "m88ngrimreaper",
+                    "nexanhazmat1",
                     //MRMlabs Fishing
                     "bbqchips",
                     "blackpepperchips",
@@ -697,6 +705,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "item-m88nluckygoldclover",
                     "item-m88njoint",
                     "item-m88nzombiefish",
+                    "item-m88nfiat",
+                    "item-m88ngravestone",
+                    "item-m88nskull",
+                    "item-m88nspiderweb",
                     //MRMlabs
                     "item-firstaidkit",
                     "item-bandaid",

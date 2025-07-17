@@ -914,6 +914,15 @@ define(['character'], function (Character) {
             "Arrrr, uhhhhhh, mmmmm!"
         ],
 
+        "nexanhazmat2": [
+            "Howdy! I'm from the Nexus Hazmat Response Team...",
+            "We'll be bringing in some more supplies soon.",
+            "It's getting hot in here and I'm ready for my lunch break...",
+            "Think I'm gonna go grab some chicken wings.",
+            "Speaking of...can you and your companion go slay hotwing while I'm gone?",
+            "That labyrinth balances out the funky energy in here so we need to keep it clear."
+        ],
+
         //MRMlabs NPCs
         "tylerdurden": [
             //"We are all part of the same compost heap.",

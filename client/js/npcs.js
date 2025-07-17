@@ -434,6 +434,7 @@ define(['npc'], function(Npc) {
         nexanzombie3: Npc.extend({init: function(id) {this._super(id, Types.Entities.NEXANZOMBIE3, 1);}}),
         nexanzombie4: Npc.extend({init: function(id) {this._super(id, Types.Entities.NEXANZOMBIE4, 1);}}),
         nexanzombie5: Npc.extend({init: function(id) {this._super(id, Types.Entities.NEXANZOMBIE5, 1);}}),
+        nexanhazmat2: Npc.extend({init: function(id) {this._super(id, Types.Entities.NEXANHAZMAT2, 1);}}),
         //MRMlabs NPCs
         tylerdurden: Npc.extend({init: function(id) {this._super(id, Types.Entities.TYLERDURDEN, 1);}}),
         //Taiko Town NPCs
