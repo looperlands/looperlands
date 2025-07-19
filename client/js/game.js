@@ -709,6 +709,13 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "item-m88ngravestone",
                     "item-m88nskull",
                     "item-m88nspiderweb",
+                    "item-m88nzombieamc",
+                    "item-m88nzombiebb",
+                    "item-m88nzombiebbby",
+                    "item-m88nzombiegme",
+                    "item-m88nzombieradio",
+                    "item-m88nzombiesears",
+                    "item-m88nzombietoyrf",
                     //MRMlabs
                     "item-firstaidkit",
                     "item-bandaid",
