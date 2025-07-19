@@ -2241,14 +2241,21 @@ let Properties = {
     },
 
     m88nzombietrash: {
-        level: 1,
+        level: 69,
         friendly: true, //not actually friendly, just AoE immune
         hp: 1,
         drops: {
             m88nfiat: 1,
+            m88nzombieamc: 2,
+            m88nzombiebb: 2,
+            m88nzombiebbby: 2,
+            m88nzombiegme: 2,
+            m88nzombieradio: 2,
+            m88nzombiesears: 2,
+            m88nzombietoyrf: 2,
             m88nzombiefish: 10,
         },
-        respawnDelay: 60000 //one minute
+        respawnDelay: 120000 //two minutes
     },
 
     m88ncow: {
@@ -4413,6 +4420,48 @@ let Properties = {
     m88nspiderweb: {
         collectable: true,
         inventoryDescription: "Spider Web",
+        respawnDelay: 9900000
+    },
+
+    m88nzombieamc: {
+        collectable: true,
+        inventoryDescription: "AMC Shares",
+        respawnDelay: 9900000
+    },
+
+    m88nzombiebb: {
+        collectable: true,
+        inventoryDescription: "Blockbuster Shares",
+        respawnDelay: 9900000
+    },
+
+    m88nzombiebbby: {
+        collectable: true,
+        inventoryDescription: "BBBY Shares",
+        respawnDelay: 9900000
+    },
+
+    m88nzombiegme: {
+        collectable: true,
+        inventoryDescription: "GME Shares",
+        respawnDelay: 9900000
+    },
+
+    m88nzombieradio: {
+        collectable: true,
+        inventoryDescription: "Radioshack Shares",
+        respawnDelay: 9900000
+    },
+
+    m88nzombiesears: {
+        collectable: true,
+        inventoryDescription: "Sears Shares",
+        respawnDelay: 9900000
+    },
+
+    m88nzombietoyrf: {
+        collectable: true,
+        inventoryDescription: "ToysRUs Shares",
         respawnDelay: 9900000
     },
 

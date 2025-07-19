@@ -415,6 +415,13 @@ define(['item'], function(Item) {
         m88ngravestone:Item.extend({init:function(id){this._super(id,Types.Entities.M88NGRAVESTONE,"object");this.lootMessage="A zombie gravestone. I think that might be bad luck.";}}),
         m88nskull:Item.extend({init:function(id){this._super(id,Types.Entities.M88NSKULL,"object");this.lootMessage="A zombie skull. I think that might be bad luck.";}}),
         m88nspiderweb:Item.extend({init:function(id){this._super(id,Types.Entities.M88NSPIDERWEB,"object");this.lootMessage="A spider web, gross!";}}),
+        m88nzombieamc:Item.extend({init:function(id){this._super(id,Types.Entities.M88NZOMBIEAMC,"object");this.lootMessage="A share of AMC! It's probably synthetic...";}}),
+        m88nzombiebb:Item.extend({init:function(id){this._super(id,Types.Entities.M88NZOMBIEBB,"object");this.lootMessage="A share of Blockbuster! It's probably synthetic...";}}),
+        m88nzombiebbby:Item.extend({init:function(id){this._super(id,Types.Entities.M88NZOMBIEBBBY,"object");this.lootMessage="A share of BBBY! It's probably synthetic...";}}),
+        m88nzombiegme:Item.extend({init:function(id){this._super(id,Types.Entities.M88NZOMBIEGME,"object");this.lootMessage="A share of GME! It's probably synthetic...";}}),
+        m88nzombieradio:Item.extend({init:function(id){this._super(id,Types.Entities.M88NZOMBIERADIO,"object");this.lootMessage="A share of Radioshack! It's probably synthetic...";}}),
+        m88nzombiesears:Item.extend({init:function(id){this._super(id,Types.Entities.M88NZOMBIESEARS,"object");this.lootMessage="A share of Sears! It's probably synthetic...";}}),
+        m88nzombietoyrf:Item.extend({init:function(id){this._super(id,Types.Entities.M88NZOMBIETOYRF,"object");this.lootMessage="A share of ToyRUs! It's probably synthetic...";}}),
         //MRMlabs Items
         firstaidkit:Item.extend({init:function(id){this._super(id,Types.Entities.FIRSTAIDKIT,"object");this.lootMessage="You found a first aid kit!";}}),
         bandaid:Item.extend({init:function(id){this._super(id,Types.Entities.BANDAID,"object");this.lootMessage="You found a bandaid!";}}),

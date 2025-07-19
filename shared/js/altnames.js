@@ -428,6 +428,13 @@ const AltNames = {
     m88njoint: "Joint",
     m88nzombiefish: "Zombie Fish",
     m88nfiat: "Dirty Fiat",
+    m88nzombieamc: "Synthetic AMC Share",
+    m88nzombiebb: "Synthetic Blockbuster Share",
+    m88nzombiebbby: "Synthetic BBBY Share",
+    m88nzombiegme: "Synthetic GME Share",
+    m88nzombieradio: "Synthetic Radioshack Share",
+    m88nzombiesears: "Synthetic Sears Share",
+    m88nzombietoyrf: "Synthetic ToysRUs Share",
 
     //m88n TT Items
     m88nammocan: "ammo can",
