@@ -683,6 +683,7 @@ Types = {
         M88NZOMBIERADIO: 78039000,
         M88NZOMBIESEARS: 78041000,
         M88NZOMBIETOYRF: 78042000,
+        POSEIDONSTRIDENT: 78043000,
         //MRMlabs NPCs
         TYLERDURDEN: 79000008,
         //MRMlabs Items
@@ -6678,6 +6679,7 @@ var kinds = {
     m88nzombieradio: [Types.Entities.M88NZOMBIERADIO, "object"],
     m88nzombiesears: [Types.Entities.M88NZOMBIESEARS, "object"],
     m88nzombietoyrf: [Types.Entities.M88NZOMBIETOYRF, "object"],
+    poseidonstrident: [Types.Entities.POSEIDONSTRIDENT, "object"],
     //MRMlabs Items
     firstaidkit: [Types.Entities.FIRSTAIDKIT, "object"],
     bandaid: [Types.Entities.BANDAID, "object"],

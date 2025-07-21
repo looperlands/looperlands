@@ -716,6 +716,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "item-m88nzombieradio",
                     "item-m88nzombiesears",
                     "item-m88nzombietoyrf",
+                    "item-poseidonstrident",
                     //MRMlabs
                     "item-firstaidkit",
                     "item-bandaid",

@@ -726,9 +726,12 @@ define(['character'], function (Character) {
         ],
 
         "m88nmermanking": [
-            "Hey there explorer!",
-            "Welcome to my kingdom. Congratulations on finding my treasure!",
-            "If you own a house in The Nexus pick out a couple pieces to take home with you.",
+            "Hey there explorer, welcome to my kingdom!",
+            "Congratulations on finding my hidden treasure!",
+            "You know all about Poseidons Trident right?",
+            'If not you can <a target="_blank" href="https://explorer.loopring.io/nft/0x1e8ab2cc09be581530bb9f3ac94353f6f7412239-0-0x9c501909139284402c5cb7b992f5584ead266e5d-0x040242f718b1846887030ee10304e0887bc6ada30cf58d3a8fe449cbe5067e2b-10">learn about the lore of Poseidons Trident</a> and see it here!',
+            'Make sure to snap a selfie with me and <a target="_blank" href="https://discord.gg/bjjNewZegM">DM m88nwalker in Discord</a> to see if you are one of the first 8.',
+            "And if you own a home in The Nexus pick out a couple pieces to take home with you.",
             "Just let m88nwalker know and he'll move it over for you."
         ],
 

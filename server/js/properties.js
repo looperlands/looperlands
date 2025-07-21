@@ -4465,6 +4465,10 @@ let Properties = {
         respawnDelay: 9900000
     },
 
+    poseidonstrident: {
+        respawnDelay: 9900000
+    },
+
     m88nsticks: {
         collectable: true,
         inventoryDescription: "Sticks",
