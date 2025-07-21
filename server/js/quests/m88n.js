@@ -1365,6 +1365,24 @@ quests = [
         }
     },
     {
+        id: "MERMANKING_QUEST_1",
+        name: "The Merman King's Presents You Poseidons Trident",
+        startText: ["Congratulations explorer, you've made it!",
+        "This was not easy to find. We keep this secret guarded closely.",
+        "Come back and visit us anytime, you are always welcome!",
+        "Grab Poseidons Trident right there and then check your inventory!",
+        "You may wield the power of the Trident for 24 hours..."],
+        endText: ["Happy slaying friend!!"],
+        eventType: "LOOT_ITEM",
+        npc: Types.Entities.M88NMERMANKING,
+        target: Types.Entities.POSEIDONSTRIDENT,
+        amount: 1,
+        level: 10,
+        xp: 100000,
+        medal: Types.Medals.SKULL,
+        rental: "0x040242f718b1846887030ee10304e0887bc6ada30cf58d3a8fe449cbe5067e2b"
+    },
+    {
         id: "MRCRAB_QUEST_1",
         name: "The Crab Basher's Common Request",
         startText: ["Those little crabs on the beach are annoying.",

@@ -435,6 +435,7 @@ const AltNames = {
     m88nzombieradio: "Synthetic Radioshack Share",
     m88nzombiesears: "Synthetic Sears Share",
     m88nzombietoyrf: "Synthetic ToysRUs Share",
+    poseidonstrident: "Poseidons Trident",
 
     //m88n TT Items
     m88nammocan: "ammo can",

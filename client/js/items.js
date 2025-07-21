@@ -422,6 +422,7 @@ define(['item'], function(Item) {
         m88nzombieradio:Item.extend({init:function(id){this._super(id,Types.Entities.M88NZOMBIERADIO,"object");this.lootMessage="A share of Radioshack! It's probably synthetic...";}}),
         m88nzombiesears:Item.extend({init:function(id){this._super(id,Types.Entities.M88NZOMBIESEARS,"object");this.lootMessage="A share of Sears! It's probably synthetic...";}}),
         m88nzombietoyrf:Item.extend({init:function(id){this._super(id,Types.Entities.M88NZOMBIETOYRF,"object");this.lootMessage="A share of ToyRUs! It's probably synthetic...";}}),
+        poseidonstrident:Item.extend({init:function(id){this._super(id,Types.Entities.POSEIDONSTRIDENT,"object");this.lootMessage="Poseidons Trident! WOW!!";}}),
         //MRMlabs Items
         firstaidkit:Item.extend({init:function(id){this._super(id,Types.Entities.FIRSTAIDKIT,"object");this.lootMessage="You found a first aid kit!";}}),
         bandaid:Item.extend({init:function(id){this._super(id,Types.Entities.BANDAID,"object");this.lootMessage="You found a bandaid!";}}),
