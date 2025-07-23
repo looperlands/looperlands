@@ -429,7 +429,7 @@ define(['character'], function (Character) {
             "I'd say check out Paradise Point first and have a good look around!",
             "This universe is ever expanding and joining the community helps keep you in the loop.",
             //'First stop: Dreamland! Own a piece from the <a target="_blank" href="https://loopexchange.art/collection/onesie-party">Its a Onesie Party! collection</a> for access to the VIP Lounge!',
-            'On X? <a target="_blank" href="https://twitter.com/moonwalker_nfts">Give m88nwalker a follow</a> to stay updated.',
+            'On X? <a target="_blank" href="https://x.com/m88nwalker">Give m88nwalker a follow</a> to stay updated.',
             'How about Discord? <a target="_blank" href="https://discord.gg/bjjNewZegM">Checkout PLANET M88NWALKER</a> for lots more!',
             "Keep your eyes open, be curious, ask quesions, and have fun!"
             //"Have fun!"
@@ -596,14 +596,14 @@ define(['character'], function (Character) {
 
         "m88ntaikotwin1": [
             "Yo yo! We're the Taiko Twins!",
-            "Head north to visit Taiko Town, and head south to explore Paradise Point..."
-            //"We have a new quests on the way for you..."
+            "Head north to get to the train station, from there you can visit any of the lands...",
+            "Head south to explore Paradise Point and the rest of The Nexus..."
         ],
 
         "m88ntaikotwin2": [
             "Yo yo! We're the Taiko Twins!",
-            "Head south to explore Paradise Point, and head north to visit Taiko Town..."
-            //"We have a new quests on the way for you..."
+            "Head south to explore Paradise Point and the rest of The Nexus...",
+            "Head north to get to the train station, from there you can visit any of the lands..."
         ],
 
         "m88nstimytimy": [
@@ -626,7 +626,7 @@ define(['character'], function (Character) {
             //"That yacht over there, The Sun Chaser, has a private Captain's Quarters on it that is available to purchse.",
             "And if you really want to get out of town, we have m88n pods available in Lunaria",
             'Checkout <a target="_blank" href="https://discord.gg/bjjNewZegM">PLANET M88NWALKER in Discord</a> and DM m88nwalker to inquire.',
-            'On X? <a target="_blank" href="https://twitter.com/moonwalker_nfts">Give him a follow</a> to stay updated.',
+            'On X? <a target="_blank" href="https://x.com/m88nwalker">Give him a follow</a> to stay updated.',
             "Have fun exploring The Nexus. There are lots of hidden treasures around here!"
         ],
 
@@ -973,6 +973,8 @@ define(['character'], function (Character) {
             "Greetings!",
             "LooperLands is free to play, but F2P assets will not retain their progress or level.",
             'Browse <a target="_blank" href="https://looperlands.io/shop">our shop</a> to purchase assets that can level up.',
+            'You can also <a target="_blank" href="https://on.mintpad.co/townies">mint a Taiko Townie NFT</a> directly on Mintpad.',
+            'Then just <a target="_blank" href="https://discord.gg/zWFKjfS2PA">DM us in Discord</a> to get your asset integrated!',
             "Check your quest log if you're trying to figure out where to go.",
             "If you think you're lost you can pull up a map overview by pressing (M) on your keyboard.",
             'Need help? <a target="_blank" href="https://discord.gg/zWFKjfS2PA">Join us in Discord</a> and ask away!'
