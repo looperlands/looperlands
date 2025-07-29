@@ -2255,7 +2255,7 @@ let Properties = {
             m88nzombietoyrf: 1,
             m88nzombiefish: 10,
         },
-        respawnDelay: 120000 //two minutes
+        respawnDelay: 900000 //fifteen minutes
     },
 
     m88ncow: {
