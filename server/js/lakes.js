@@ -175,7 +175,7 @@ const Lakes = {
     },
 
     m88nDreamPond3: {
-        level: 6,
+        level: 9,
         fish: {
             m88ndreamgumbally: "common",
             m88ndreamgumballp: "common",
