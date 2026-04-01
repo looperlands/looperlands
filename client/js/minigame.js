@@ -1,12 +1,14 @@
 const MINIGAME_FILES = {
     "luckyfunkz": "LuckyFUNKZ.html",
     "JackAce": "jackace.html",
+    "m88ninvaders": "M88NInvaders.html",
     //  "YOUR_MINIGAME_NAME": "INITIAL_FILE_TO_LOAD",
 };
 
 // if module javascript, add js file with init() function
 const MODULE_INIT = {
     //"JackAce": "js/jackace.js"
+    //"m88ninvaders": "js/m88ninvaders.js",
     //  "YOUR_MINIGAME_NAME": "module js file",
 };
 

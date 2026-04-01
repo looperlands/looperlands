@@ -1,0 +1,42 @@
+<div id="m88ninvaders" class="mg-app">
+  <link rel="stylesheet" href="/apps/m88ninvaders/invaders.css">
+
+  <div class="game-container">
+    <canvas id="game" width="960" height="600"></canvas>
+
+    <div id="ui">
+      <div id="score">SCORE: 0</div>
+      <div id="level">LEVEL: 1</div>
+      <div id="lives">LIVES: —</div>
+      <div id="coins">COINS: 0</div>
+      <div id="powerup">POWER: —</div>
+    </div>
+
+    <div id="overlay">
+      <div class="panel">
+        <h1 class="arcade-title">🦉 M88N INVADERS 👾</h1>
+
+        <canvas id="owlPreview" width="160" height="160"></canvas>
+
+        <div class="help">
+          <p>← → MOVE</p>
+          <p>SPACE: SHOOT</p>
+        </div>
+
+        <div class="sub">
+          Entry fee: <span id="entry-fee">10</span> Gold • Your Gold: <span id="current-gold">—</span>
+        </div>
+
+        <button id="startBtn" class="btn">PAY & PLAY</button>
+        <div id="mg-status" class="status"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Owl assets (swap as needed) -->
+  <data id="owl-json" value="/apps/m88ninvaders/assets/owl0.json"></data>
+  <data id="owl-img"  value="/apps/m88ninvaders/assets/owl0.png"></data>
+
+  <!-- Your game code (not the adapter) -->
+  <script src="/apps/m88ninvaders/js/invaders.js"></script>
+</div>

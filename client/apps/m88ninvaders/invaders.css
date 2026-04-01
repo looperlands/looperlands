@@ -1,0 +1,184 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+/* Scope everything to the minigame root */
+#m88ninvaders, 
+#m88ninvaders * { box-sizing: border-box; }
+
+#m88ninvaders {
+  --c-accent: #00ff9f;
+  --c-accent-2: #ff00c8;
+  --c-accent-3: #00ffff;
+  --c-text: #e8ecf1;
+  --c-dim: #b8c0cf;
+
+  font-family: "Press Start 2P", monospace;
+  color: var(--c-text);
+  position: relative;
+
+  /* background previously on body */
+  background: radial-gradient(circle at center, #040404 0%, #000 100%);
+  /* center the game container without touching the global <body> */
+  display: grid;
+  place-items: center;
+  min-height: min(100vh, 900px);
+  padding: 16px;
+  overflow: hidden;
+}
+
+/* CRT scanlines overlay (was body::after) */
+#m88ninvaders::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.15) 0px,
+    rgba(0,0,0,0.15) 2px,
+    transparent 2px,
+    transparent 4px
+  );
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Container around canvas + UI */
+#m88ninvaders .game-container {
+  position: relative;
+  display: inline-block;
+  border: 4px solid var(--c-accent);
+  box-shadow: 0 0 25px #00ff9f88;
+  border-radius: 12px;
+  overflow: clip;
+  z-index: 2; /* above the scanlines overlay */
+}
+
+/* Canvas */
+#m88ninvaders canvas#game {
+  display: block;
+  background: radial-gradient(circle at center, #000010, #000);
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  max-width: 100%;
+  height: auto;
+}
+
+/* HUD */
+#m88ninvaders #ui {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 10px;
+  line-height: 1.4;
+  text-shadow: 0 0 4px var(--c-accent), 0 0 8px var(--c-accent);
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  z-index: 3;
+}
+
+#m88ninvaders #ui > div {
+  background: rgba(0,0,0,.45);
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,.08);
+}
+
+/* Pay overlay */
+#m88ninvaders #overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.75);
+  z-index: 4;
+}
+
+#m88ninvaders .panel {
+  text-align: center;
+  border: 3px solid var(--c-accent);
+  width: min(600px, 92vw);
+  padding: 40px 20px;
+  background: rgba(0, 0, 0, 0.4);
+  animation: glowPulse 3s infinite ease-in-out;
+  box-shadow: 0 0 25px var(--c-accent), inset 0 0 10px var(--c-accent);
+  border-radius: 12px;
+}
+
+#m88ninvaders .arcade-title {
+  font-size: 14px;
+  margin-bottom: 20px;
+  text-shadow: 0 0 4px var(--c-accent),
+               0 0 8px var(--c-accent-2),
+               0 0 12px var(--c-accent-3);
+  animation: titleGlow 4s infinite ease-in-out;
+}
+
+@keyframes glowPulse {
+  0%   { box-shadow: 0 0 20px var(--c-accent),   inset 0 0 6px var(--c-accent);   border-color: var(--c-accent); }
+  25%  { box-shadow: 0 0 25px var(--c-accent-2), inset 0 0 8px var(--c-accent-2); border-color: var(--c-accent-2); }
+  50%  { box-shadow: 0 0 25px var(--c-accent-3), inset 0 0 8px var(--c-accent-3); border-color: var(--c-accent-3); }
+  75%  { box-shadow: 0 0 25px var(--c-accent-2), inset 0 0 8px var(--c-accent-2); border-color: var(--c-accent-2); }
+  100% { box-shadow: 0 0 20px var(--c-accent),   inset 0 0 6px var(--c-accent);   border-color: var(--c-accent); }
+}
+
+@keyframes titleGlow {
+  0%   { color: var(--c-accent);   text-shadow: 0 0 8px var(--c-accent); }
+  33%  { color: var(--c-accent-2); text-shadow: 0 0 8px var(--c-accent-2); }
+  66%  { color: var(--c-accent-3); text-shadow: 0 0 8px var(--c-accent-3); }
+  100% { color: var(--c-accent);   text-shadow: 0 0 8px var(--c-accent); }
+}
+
+/* Preview canvas */
+#m88ninvaders #owlPreview {
+  display: block;
+  margin: 0 auto 20px auto;
+  background: transparent;
+  image-rendering: pixelated;
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.08);
+}
+
+/* Helper text + subline */
+#m88ninvaders .help {
+  font-size: 9px;
+  color: #ffffffbb;
+  margin-bottom: 20px;
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+#m88ninvaders .sub {
+  font-size: 10px;
+  color: #ffffffcc;
+  margin-bottom: 15px;
+}
+
+/* Button */
+#m88ninvaders .btn {
+  background-color: var(--c-accent);
+  color: #000;
+  font-family: "Press Start 2P", monospace;
+  border: none;
+  padding: 8px 16px;
+  font-size: 10px;
+  cursor: pointer;
+  box-shadow: 0 0 12px var(--c-accent);
+  transition: transform 0.15s;
+  border-radius: 10px;
+}
+#m88ninvaders .btn:hover { transform: scale(1.1); }
+
+/* Status line under the button */
+#m88ninvaders #mg-status {
+  margin-top: 8px;
+  font-size: 10px;
+  min-height: 14px;
+}
+
+/* Small screens */
+@media (max-width: 640px) {
+  #m88ninvaders { padding: 12px; }
+  #m88ninvaders .panel { padding: 28px 16px; width: min(520px, 96vw); }
+}

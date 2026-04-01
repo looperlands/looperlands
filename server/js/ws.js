@@ -1255,6 +1255,76 @@ WS.socketIOServer = Server.extend({
             }
         });
 
+        // === M88N INVADERS ENTRY FEE + PAYOUT ===========================
+const GOLD = Types.Entities.GOLD;      // gold resource id
+function m88nPayoutForScore(score) {
+  score = Number(score)||0;
+  if (score < 100)   return 0;
+  if (score < 300)   return 5;
+  if (score < 600)   return 12;
+  if (score < 1000)  return 25;
+  if (score < 1600)  return 40;
+  if (score < 2400)  return 60;
+  return 100;
+}
+
+// POST /apps/m88ninvaders/start  { sessionId, entryFee }
+app.post('/apps/m88ninvaders/start', async (req, res) => {
+  try {
+    const { sessionId, entryFee = 10 } = req.body || {};
+    const sessionData = cache.get(sessionId);
+    if (!sessionData) return res.status(404).json({ ok:false, message:'session not found' });
+
+    // Keep the session ‘alive’ like other endpoints
+    const player = self.worldsMap[sessionData.mapId]?.getPlayerById(sessionData.entityId);
+    if (player) player.resetTimeout();
+
+    // Check DAO balance (authoritative) then transfer fee to house wallet (CORNHOLE)
+    const bal = await dao.getResourceBalance(sessionData.nftId, GOLD);
+    if (bal < entryFee) return res.json({ ok:false, message:'Not enough gold' });
+
+    // Update in-session balance + DAO transfer (mirror LuckyFUNKZ pattern)
+    await player.incrementResourceAmount(GOLD, -entryFee);
+    const ok = await dao.transferResourceFromTo(sessionData.nftId, CORNHOLE, entryFee);
+    if (!ok) return res.status(400).json({ ok:false, message:'DAO transfer failed' });
+
+    return res.json({ ok:true });
+  } catch (e) {
+    console.error('[m88ninvaders/start]', e);
+    return res.status(500).json({ ok:false, message:'Server error' });
+  }
+});
+
+// POST /apps/m88ninvaders/finish  { sessionId, score, coins, level }
+app.post('/apps/m88ninvaders/finish', async (req, res) => {
+  try {
+    const { sessionId, score=0, coins=0, level=1 } = req.body || {};
+    const sessionData = cache.get(sessionId);
+    if (!sessionData) return res.status(404).json({ ok:false, message:'session not found' });
+
+    const player = self.worldsMap[sessionData.mapId]?.getPlayerById(sessionData.entityId);
+    if (player) player.resetTimeout();
+
+    let payout = m88nPayoutForScore(score);
+    payout += Math.floor(Number(level) * 1.5);
+    payout += Math.min(5, Math.floor(Number(coins) / 10));
+
+    if (payout > 0) {
+      // Credit session + DAO (house wallet pays player)
+      await player.incrementResourceAmount(GOLD, payout);
+      const ok = await dao.transferResourceFromTo(CORNHOLE, sessionData.nftId, payout);
+      if (!ok) return res.status(400).json({ ok:false, message:'DAO transfer failed' });
+    }
+
+    return res.json({ ok:true, payout });
+  } catch (e) {
+    console.error('[m88ninvaders/finish]', e);
+    return res.status(500).json({ ok:false, message:'Server error' });
+  }
+});
+// ================================================================
+
+
         app.get('/session/:sessionId/completePartnerTask/:taskId', async (req, res) => {
             const sessionId = req.params.sessionId;
             const taskId = req.params.taskId;
