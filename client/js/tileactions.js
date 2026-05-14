@@ -9,13 +9,35 @@ define(['../../shared/js/gametypes'], function () {
         findCurrentStage: function (tileAction) {
             const url = '/session/' + this.game.sessionId + '/tileStage';
             return axios.post(url, {map: this.game.mapId, tileAction: tileAction})
-                .then(function (response) {
+                .then((response) => {
+                    this.cacheStage(tileAction, response.data);
                     return response.data;
                 })
                 .catch(function (error) {
                     console.error("Error while checking the trigger:", error);
                     throw error; // Ensure the error propagates
                 });
+        },
+
+        getImmediateStage: function (tileAction) {
+            const cachedStage = this.stageDefinitions[this.getTileActionKey(tileAction)];
+            if (cachedStage) {
+                return cachedStage;
+            }
+
+            return {
+                name: this.getDefaultStageName(tileAction),
+                speculative: true,
+            };
+        },
+
+        cacheStage: function (tileAction, stage) {
+            const key = this.getTileActionKey(tileAction);
+            if (stage) {
+                this.stageDefinitions[key] = stage;
+            } else {
+                delete this.stageDefinitions[key];
+            }
         },
 
         executeStage: function (tileAction, stage, selectedItem) {
@@ -51,12 +73,23 @@ define(['../../shared/js/gametypes'], function () {
             } else {
                 const runStage = () => {
                     const url = '/session/' + this.game.sessionId + '/tileStage/execute';
+                    const optimisticState = this.applyOptimisticStage(tileAction, stage, selectedItem);
                     return axios.post(url, {map: this.game.mapId, tileAction: tileAction, item: selectedItem})
                         .then((response) => {
-                            if (!response.data || response.data.success !== false) {
+                            if (response.data && response.data.success === false) {
+                                this.revertOptimisticStage(optimisticState);
+                                if (response.data.message) {
+                                    this.game.showNotification(response.data.message);
+                                }
+                            } else {
+                                this.cacheStage(tileAction, null);
                                 this.refreshInventory();
                             }
                             return response;
+                        })
+                        .catch((error) => {
+                            this.revertOptimisticStage(optimisticState);
+                            throw error;
                         })
                         .finally(() => {
                             stage.inProgress = false;
@@ -104,6 +137,68 @@ define(['../../shared/js/gametypes'], function () {
 
         getTileActionKey: function (tileAction) {
             return tileAction.gridX + '.' + tileAction.gridY;
+        },
+
+        getDefaultStageName: function (tileAction) {
+            if (tileAction.name === "farm" || tileAction.name === "potFarm") {
+                const key = this.getTileActionKey(tileAction);
+                const hasStagedTile = Object.keys(this.game.tileStages || {}).some((stageKey) => {
+                    return stageKey === key || stageKey.startsWith(key + ':');
+                });
+                return hasStagedTile ? "Tend plot" : "Prepare soil";
+            }
+
+            return "Use";
+        },
+
+        applyOptimisticStage: function (tileAction, stage, selectedItem) {
+            const optimisticStage = this.getOptimisticStage(stage, selectedItem);
+            if (!optimisticStage || !this.game.handleTileStage) {
+                return null;
+            }
+
+            const baseKey = this.getTileActionKey(tileAction);
+            const previousStages = {};
+            Object.keys(this.game.tileStages || {}).forEach((key) => {
+                if (key === baseKey || key.startsWith(baseKey + ':')) {
+                    previousStages[key] = this.game.tileStages[key];
+                }
+            });
+
+            this.game.handleTileStage(Object.assign({
+                x: tileAction.gridX,
+                y: tileAction.gridY,
+            }, optimisticStage));
+
+            return {
+                tileAction,
+                previousStages,
+            };
+        },
+
+        revertOptimisticStage: function (optimisticState) {
+            if (!optimisticState || !this.game.handleTileStage) {
+                return;
+            }
+
+            const tileAction = optimisticState.tileAction;
+            this.game.handleTileStage({
+                x: tileAction.gridX,
+                y: tileAction.gridY,
+                clear: true,
+            });
+
+            Object.keys(optimisticState.previousStages).forEach((key) => {
+                this.game.tileStages[key] = optimisticState.previousStages[key];
+            });
+        },
+
+        getOptimisticStage: function (stage, selectedItem) {
+            if (selectedItem && stage.itemChoices && stage.itemChoices[selectedItem]) {
+                return stage.itemChoices[selectedItem].optimisticStage;
+            }
+
+            return stage.optimisticStage;
         },
 
         refreshInventory: function () {

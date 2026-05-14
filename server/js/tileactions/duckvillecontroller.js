@@ -129,6 +129,10 @@ class DuckvilleTileActionsController {
                 name: farmDefinition.prepare.name,
                 playAnimation: true,
                 duration: farmDefinition.prepare.duration,
+                optimisticStage: {
+                    tile: farmDefinition.prepare.tile,
+                    stage: 0,
+                },
                 requirements: {
                     level: this.getRequiredLevel(farmDefinition.minLevel),
                     tool: farmDefinition.prepare.tool,
@@ -163,6 +167,7 @@ class DuckvilleTileActionsController {
                 name: "Water " + this.cropName(crop),
                 playAnimation: true,
                 duration: farmDefinition.water.duration,
+                optimisticStage: this.getOptimisticCropStage(crop, 1),
                 requirements: { tool: farmDefinition.water.tool },
             });
         }
@@ -174,6 +179,7 @@ class DuckvilleTileActionsController {
                     name: "Harvest " + this.cropName(crop),
                     playAnimation: true,
                     duration: 2,
+                    optimisticStage: { clear: true },
                 };
             }
 
@@ -227,6 +233,7 @@ class DuckvilleTileActionsController {
             inProgress: stage.inProgress,
             requirements: stage.requirements,
             hasTool: stage.hasTool,
+            optimisticStage: stage.optimisticStage,
             itemChoiceKeys: stage.itemChoices ? Object.keys(stage.itemChoices) : undefined,
         };
     }
@@ -260,6 +267,7 @@ class DuckvilleTileActionsController {
                 seedItem,
                 yieldItem: this.getYieldItem(cropKey, crop),
                 plantType: this.getCropPlantType(crop),
+                optimisticStage: this.getOptimisticCropStage(crop, 0),
                 disabled: !plantingAllowed || seedCount < crop.seedCost || this.isLevelLocked(playerLevel, crop.level),
                 detail: this.cropDetail(crop, playerLevel, seedCount, plantingAllowed, tileAction, farmDefinition),
             };
@@ -562,6 +570,27 @@ class DuckvilleTileActionsController {
         } else {
             world.placeStagedTile(tileAction.gridX, tileAction.gridY, crop.tile, visualStage);
         }
+    }
+
+    getOptimisticCropStage(crop, visualStage) {
+        if (crop.tileGroup) {
+            const optimisticStage = {
+                tileGroup: crop.tileGroup,
+                stage: visualStage,
+            };
+            if (crop.renderOffset) {
+                optimisticStage.renderOffset = crop.renderOffset;
+            }
+            if (crop.stagedTile || crop.tile) {
+                optimisticStage.stagedTile = crop.stagedTile || crop.tile;
+            }
+            return optimisticStage;
+        }
+
+        return {
+            tile: crop.tile,
+            stage: visualStage,
+        };
     }
 
     async refreshVisualStage(map, tileAction, plot, farmDefinition, world) {

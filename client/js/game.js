@@ -54,6 +54,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.highlightedTarget = null;
                 this.toggledLayers = {};
                 this.tileStages = {};
+                this.tileActionStageRequestId = 0;
 
                 // minigame
                 this.hoveringMinigamePrompt = false;
@@ -7278,25 +7279,24 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         } else {
                             const nearestAction = self.map.findNearestActionTileAround(self.player.gridX, self.player.gridY, 1);
                             if (nearestAction) {
+                                const requestId = ++self.tileActionStageRequestId;
+                                const immediateStage = self.tileActions.getImmediateStage(nearestAction);
+                                self.showTileActionBubble(nearestAction, immediateStage);
+
                                 self.getTileActionStage(nearestAction).then((actionStage) => {
+                                    if (requestId !== self.tileActionStageRequestId || !self.player.isAdjacent(nearestAction)) {
+                                        return;
+                                    }
                                     if (actionStage) {
-                                        let msg = actionStage.name;
-
-                                        if (self.gamepadListener.isActive()) {
-                                            msg += " [Left Stick Button]";
-                                        } else {
-                                            msg += " [E]";
-                                        }
-
-                                        // Destroy the previous 'to talk' bubble if it exists
-                                        if (self.lastActionBubbleId) self.destroyBubble(self.lastActionBubbleId);
-
-                                        // Create new bubble for the nearest entity and update the lst bubble ID
-                                        self.createBubble(nearestAction.id, msg, function () {
-                                            return self.player.isAdjacent(nearestAction);
-                                        });
-                                        self.assignBubbleTo(nearestAction, -24);
-                                        self.lastActionBubbleId = nearestAction.id;
+                                        self.showTileActionBubble(nearestAction, actionStage);
+                                    } else if (self.lastActionBubbleId === nearestAction.id) {
+                                        self.destroyBubble(nearestAction.id);
+                                        self.lastActionBubbleId = null;
+                                    }
+                                }).catch(() => {
+                                    if (requestId === self.tileActionStageRequestId && self.lastActionBubbleId === nearestAction.id) {
+                                        self.destroyBubble(nearestAction.id);
+                                        self.lastActionBubbleId = null;
                                     }
                                 });
                             }
@@ -8491,6 +8491,33 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
             getTileActionStage: function (action) {
                 return this.tileActions.findCurrentStage(action);
+            },
+
+            showTileActionBubble: function (action, stage) {
+                if (!action || !stage) {
+                    return;
+                }
+
+                let msg = stage.name;
+                if (stage.speculative) {
+                    msg += "...";
+                }
+
+                if (this.gamepadListener.isActive()) {
+                    msg += " [Left Stick Button]";
+                } else {
+                    msg += " [E]";
+                }
+
+                if (this.lastActionBubbleId && this.lastActionBubbleId !== action.id) {
+                    this.destroyBubble(this.lastActionBubbleId);
+                }
+
+                this.createBubble(action.id, msg, () => {
+                    return this.player.isAdjacent(action);
+                });
+                this.assignBubbleTo(action, -24);
+                this.lastActionBubbleId = action.id;
             },
 
             runTileAction: function (action) {
