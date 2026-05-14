@@ -221,6 +221,46 @@ class LooperLandsPlatformClient {
         }
     }
 
+    async getFarmPlots(mapId) {
+        try {
+            const url = `/api/game/farming/plots?map=${encodeURIComponent(mapId)}`;
+            const response = await this.client.get(url);
+            return response.data;
+        } catch (error) {
+            this.handleError(error);
+        }
+    }
+
+    async getFarmPlot(mapId, x, y) {
+        try {
+            const url = `/api/game/farming/plot/${encodeURIComponent(mapId)}/${x}/${y}`;
+            const response = await this.client.get(url);
+            return response.data;
+        } catch (error) {
+            this.handleError(error);
+        }
+    }
+
+    async saveFarmPlot(plot) {
+        try {
+            const url = `/api/game/farming/plot`;
+            const response = await this.client.put(url, plot);
+            return response.data;
+        } catch (error) {
+            this.handleError(error);
+        }
+    }
+
+    async deleteFarmPlot(mapId, x, y) {
+        try {
+            const url = `/api/game/farming/plot/${encodeURIComponent(mapId)}/${x}/${y}`;
+            const response = await this.client.delete(url);
+            return response.data;
+        } catch (error) {
+            this.handleError(error);
+        }
+    }
+
     async storeKills(kills) {
         try {
             const url = `/api/game/asset/kill`;

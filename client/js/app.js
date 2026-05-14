@@ -316,7 +316,6 @@ define(['jquery', 'storage'], function ($, Storage) {
         },
 
         showChoicesPopup(npcId, dialogue) {
-            console.log(dialogue);
             let self = this;
             let playerChoicePopup = $('#dialogue-popup');
             let avatarDiv = playerChoicePopup.find('#avatar');
@@ -352,7 +351,7 @@ define(['jquery', 'storage'], function ($, Storage) {
             playerChoicePopup.find('#choices').empty();
 
             // add event listener for keyboard input
-            $(document).off('keydown').on('keydown', this.handleChoiceKeyboardInput.bind(this));
+            //$(document).off('keydown').on('keydown', this.handleChoiceKeyboardInput.bind(this));
 
             for (let i = 0; i < dialogue.options.length; i++) {
                 let option = dialogue.options[i];
@@ -377,6 +376,64 @@ define(['jquery', 'storage'], function ($, Storage) {
                 e.preventDefault();
                 e.stopImmediatePropagation();
             });
+        },
+
+        showSelectionPopup(header, options) {
+            let self = this;
+            let selectionPopup = $('#selection-popup');
+
+            selectionPopup.find('#selection-header').html(header);
+            selectionPopup.find('#selection-choices').empty();
+
+            for (let i = 0; i < options.length; i++) {
+                let option = options[i];
+
+                choiceHtml = '';
+                if (option.image) {
+                    choiceHtml += `<img class="image panelBorder" src="${option.image}" />`;
+                }
+
+                if (option.title) {
+                    choiceHtml += `<div class="body">${option.title}</div>`;
+                }
+
+                if (option.count !== undefined) {
+                    choiceHtml += `<div class="count">${option.count}</div>`;
+                }
+
+                if (option.footer) {
+                    choiceHtml += `<div class="footer">${option.footer}</div>`;
+                }
+
+                let choice = $('<div class="option"></div>').html(choiceHtml);
+
+                if(!option.disabled) {
+                    choice.click((e) => {
+                        this.closeSelectionPopup();
+                        option.callback(option.value)
+
+                        e.stopImmediatePropagation();
+                        e.preventDefault();
+                    });
+                } else {
+                    choice.addClass('disabled');
+                }
+
+                selectionPopup.find('#selection-choices').append(choice);
+            }
+            selectionPopup.scrollTop(0);
+            selectionPopup.removeClass("hidden").addClass('active');
+            selectionPopup.find('#close-selection-popup').click(function(e) {
+                self.closeSelectionPopup();
+                e.preventDefault();
+                e.stopImmediatePropagation();
+            });
+        },
+
+        closeSelectionPopup() {
+            let selectionPopup = $('#selection-popup');
+            selectionPopup.addClass('hidden').removeClass('active');
+            $(document).off('keydown');
         },
 
         closeChoicesPopup() {
@@ -428,6 +485,55 @@ define(['jquery', 'storage'], function ($, Storage) {
             }
 
             $('#choices .selected').removeClass('selected');
+            $(choices[selectedIndex]).addClass('selected');
+
+            event.stopImmediatePropagation();
+            event.preventDefault();
+        },
+
+        handleSelectionKeyboardInput(event) {
+            // on W or up arrow, select the previous choice, on no selected choice, select the last choice
+            // on S or down arrow, select the next choice, on no selected choice, select the first choice
+            // on Enter, make selected choice
+            // on ESC close the dialogue popup
+            let choices = $('#selection-choices').children();
+            let selectedIndex = -1;
+            let selectedChoice = null;
+            for (let i = 0; i < choices.length; i++) {
+                if (choices[i].classList.contains('selected')) {
+                    selectedIndex = i;
+                    selectedChoice = choices[i];
+                    break;
+                }
+            }
+
+            switch (event.key) {
+                case 'w':
+                case 'ArrowUp':
+                    selectedIndex = selectedIndex - 1;
+                    if (selectedIndex < 0) {
+                        selectedIndex = choices.length - 1;
+                    }
+                    break;
+                case 's':
+                case 'ArrowDown':
+                    selectedIndex = selectedIndex + 1;
+                    if (selectedIndex >= choices.length) {
+                        selectedIndex = 0;
+                    }
+                    break;
+                case 'Enter':
+                case 'e':
+                    if(selectedChoice !== null) {
+                        selectedChoice.click();
+                    }
+                    break;
+                case 'Escape':
+                    this.closeChoicesPopup();
+                    break;
+            }
+
+            $('#selection-choices .selected').removeClass('selected');
             $(choices[selectedIndex]).addClass('selected');
 
             event.stopImmediatePropagation();

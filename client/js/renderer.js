@@ -781,7 +781,11 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc'],
             },
     
             drawTerrain: function() {
-                return { "type": "render", id: "background", tiles: this.game.visibleTerrainTiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: true }
+
+                let tiles = this.game.visibleTerrainTiles;
+                tiles = this.drawTileStages(tiles, false, false);
+
+                return { "type": "render", id: "background", tiles: tiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: true }
             },
     
             drawAnimatedTiles: function() {
@@ -789,17 +793,19 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc'],
                     tilesetwidth = this.tileset.width / m.tilesize;
                     tilesetheight = this.tileset.height / m.tilesize;
     
-                let visbileTiles = [];
+                let visibleTiles = [];
                 if (this.game.visibleAnimatedTiles !== undefined) {
                     let visibleAnimatedTiles = this.game.visibleAnimatedTiles;
-                    let visibileAnimatedTilesLength = visibleAnimatedTiles.length;
-                    for (let i = 0; i < visibileAnimatedTilesLength; i++) {
+                    let visibleAnimatedTilesLength = visibleAnimatedTiles.length;
+                    for (let i = 0; i < visibleAnimatedTilesLength; i++) {
                         let tile = visibleAnimatedTiles[i];
                         let slideOffset = tile ? tile.getCurrentOffset() : { x: 0, y: 0 };
                         let colorShift = tile ? tile.getColorShiftForFrame() : null;
-                        visbileTiles.push({tileid: tile.id, setW: tilesetwidth, setH: tilesetheight, gridW: m.width, cellid: tile.index, slideOffsetX: slideOffset.x, slideOffsetY: slideOffset.y, colorShift: colorShift});
+                        visibleTiles.push({tileid: tile.id, setW: tilesetwidth, setH: tilesetheight, gridW: m.width, cellid: tile.index, slideOffsetX: slideOffset.x, slideOffsetY: slideOffset.y, colorShift: colorShift});
                     }
-                    return {"type": "render", id: "background", tiles: visbileTiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: false};
+
+                    visibleTiles = this.drawTileStages(visibleTiles, false, true);
+                    return {"type": "render", id: "background", tiles: visibleTiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: false};
                 }
             },
     
@@ -818,6 +824,8 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc'],
                             let colorShift = tile ? tile.getColorShiftForFrame() : null;
                             visbileTiles.push({tileid: tile.id, setW: tilesetwidth, setH: tilesetheight, gridW: m.width, cellid: tile.index,  slideOffsetX: slideOffset.x, slideOffsetY: slideOffset.y, colorShift: colorShift});
                         }
+
+                        visbileTiles = this.drawTileStages(visbileTiles, true, true);
                         return {"type": "render", id: "high", tiles: visbileTiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: false};
                     }
             },
@@ -828,10 +836,13 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc'],
     
             drawHighTiles: function() {
                 let m = this.game.map;
-    
-                return {"type": "render", id: "high", tiles: this.game.visibleHighTiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: true};
+
+                let tiles = this.game.visibleHighTiles;
+                tiles = this.drawTileStages(tiles, true, false);
+
+                return {"type": "render", id: "high", tiles: tiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: true};
             },
-    
+
             drawToggledLayers: function(ctx, highTile, animated) {
                 if(highTile === undefined) {
                     highTile = false;
@@ -860,7 +871,41 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc'],
                     }
                 });
             },
-    
+
+            drawTileStages: function(tiles, highTile, animated) {
+                var self = this,
+                    m = this.game.map,
+
+                tilesetwidth = this.tileset.width / m.tilesize;
+                tilesetheight = this.tileset.height / m.tilesize;
+
+                _.forEach(Object.keys(self.game.tileStages), function(stageKey) {
+                    let stage = self.game.tileStages[stageKey];
+                    let tileIndex = m.GridPositionToTileIndex(stage.x - 1, stage.y)
+
+                    if(stage.tile === null || stage.tile === undefined) {
+                        return;
+                    }
+
+                    console.log('-------');
+                    console.log({tileid: tileId, setW: tilesetwidth, setH: tilesetheight, gridW: m.width, cellid: tileIndex, slideOffsetX: 0, slideOffsetY: 0, colorShift: 0})
+                    console.log('========');
+                    if(highTile === m.isHighTile(stage.tile) && animated === m.isAnimatedTile(stage.tile)) {
+                        let tileId = stage.tile;
+                        if(stage.animatedTile) {
+                            stage.animatedTile.animate(self.game.currentTime);
+                            tileId += stage.stage * stage.animatedTile.currentFrame;
+                        } else {
+                            tileId += stage.stage;
+                        }
+
+                        tiles.push({tileid: tileId, setW: tilesetwidth, setH: tilesetheight, gridW: m.width, cellid: tileIndex, slideOffsetX: 0, slideOffsetY: 0, colorShift: 0});
+                    }
+                });
+
+                return tiles;
+            },
+
             drawBackground: function(ctx, color) {
                 ctx.fillStyle = color;
                 ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
@@ -1020,7 +1065,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc'],
                 this.renderStaticCanvases();
                 this.drawToggledLayers(this.context, false, false);
                 this.drawToggledLayers(this.context, false, true);
-    
+
                 if(this.game.started && !$("#minigame").hasClass("active")) {
                     this.drawSelectedCell();
                     this.drawTargetCell();
@@ -1060,7 +1105,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc'],
     
                 this.drawToggledLayers(this.context, true, false);
                 this.drawToggledLayers(this.context, true, true);
-    
+
                 this.context.restore();
                 // Overlay UI elements
                 if(!$("#minigame").hasClass("active") && this.game.app.settings.getCursor()){

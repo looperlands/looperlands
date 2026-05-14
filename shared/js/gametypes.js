@@ -51,7 +51,8 @@ Types = {
         OUTOFAMMO: 49,
         SELECTPROJECTILE: 50,
         ANNOUNCEMENT: 51,
-        INDICATOR: 52
+        INDICATOR: 52,
+        TILESTAGE: 53
     },
 
     Entities: {
@@ -12264,6 +12265,15 @@ Types.isProjectile = function(kind) {
 
 Types.isFishingRod = function(kind) {
     return kinds.getType(kind) === "fishingrod";
+};
+
+Types.isToolOfType = function(spriteName, toolType) {
+    if (!kinds.getType(spriteName) === "tool") {
+        return false
+    }
+
+    let kind = kinds[spriteName];
+    return (kind && kind[3] && kind[3].toolType === toolType);
 };
 
 Types.isBot = function(kind) {

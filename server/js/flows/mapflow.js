@@ -100,6 +100,11 @@ function assignEventHandlers(flow, eventBroker, worldserver) {
         loadedBlocks[eventBroker.player.nftId] = {};
     }
 
+    // Test if flow.handlers is iterable
+    if(!flow.handlers) {
+        return
+    }
+
     for (const handler of flow.handlers) {
         if (!loadedBlocks[eventBroker.player.nftId][handler.idx]) {
             loadedBlocks[eventBroker.player.nftId][handler.idx] = new events[handler.type](handler.options, worldserver);

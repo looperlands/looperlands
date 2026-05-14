@@ -549,6 +549,30 @@ const getInventory = async function (walletId, nftId) {
   return rcvInventory;
 }
 
+const loadFarmPlots = async function (mapId) {
+  const plots = await platformClient.getFarmPlots(mapId);
+  printResponseJSON('loadFarmPlots', plots);
+  return plots || [];
+}
+
+const loadFarmPlot = async function (mapId, x, y) {
+  const plot = await platformClient.getFarmPlot(mapId, x, y);
+  printResponseJSON('loadFarmPlot', plot);
+  return plot || null;
+}
+
+const saveFarmPlot = async function (plot) {
+  const result = await platformClient.saveFarmPlot(plot);
+  printResponseJSON('saveFarmPlot', result);
+  return result;
+}
+
+const deleteFarmPlot = async function (mapId, x, y) {
+  const result = await platformClient.deleteFarmPlot(mapId, x, y);
+  printResponseJSON('deleteFarmPlot', result);
+  return result;
+}
+
 module.exports = {
   updateExperience,
   saveWeapon,
@@ -580,6 +604,10 @@ module.exports = {
   completePartnerTask,
   getPartnerTask,
   getInventory,
+  loadFarmPlots,
+  loadFarmPlot,
+  saveFarmPlot,
+  deleteFarmPlot,
   processLootEventQueue,
   registerChoice,
 };

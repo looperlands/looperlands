@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import subprocess
 import sys
+from lxml import etree
 import os
 from threading import Thread
 
@@ -22,7 +23,7 @@ def export_map(tmx_file):
 
     print(f"./tmx2json.py {SRC_FILE} {TEMP_FILE}")
     # Convert the Tiled TMX file to a temporary JSON file
-    print(subprocess.getoutput(f'./tmx2json.py {SRC_FILE} {TEMP_FILE}'))
+    print(subprocess.getoutput(f'python3 ./tmx2json.py {SRC_FILE} {TEMP_FILE}'))
 
     # Map exporting
     print(f'./exportmap.js {TEMP_FILE} {DEST_FILE} {mode}')

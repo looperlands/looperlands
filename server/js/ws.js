@@ -31,6 +31,7 @@ const platform = require('./looperlandsplatformclient.js');
 const minigame = require('../apps/minigame.js');
 const MinigameController = require('./minigamecontroller.js');
 const DialogueController = require('./dialoguecontroller.js');
+const TileActionsController = require('./tileactionscontroller.js');
 const dynamicnft = require('./dynamicnftcontroller.js');
 const announcement = require('./announcementcontroller.js');
 const {InventorySyncController} = require("./inventorysynccontroller.js");
@@ -47,6 +48,8 @@ const platformClient = new platform.LooperLandsPlatformClient(LOOPERLANDS_PLATFO
 const dynamicNFTcontroller = new dynamicnft.DynamicNFTController(cache, platformClient, Types);
 const minigameController = new MinigameController(cache, platformClient);
 const dialogueController = new DialogueController(cache, platformClient);
+const tileActionsController = new TileActionsController(cache, platformClient);
+
 function extractDetails(inputUrl) {
     const parsedUrl = new URL(inputUrl);
     let protocol = parsedUrl.protocol;
@@ -230,7 +233,8 @@ WS.socketIOServer = Server.extend({
                     user: null
                 });
                 return;
-            };
+            }
+            ;
 
             let nftId = body.nftId.replace("0x", "NFT_");
             let bot = Types.isBot(Types.getKindFromString(nftId));
@@ -1114,7 +1118,7 @@ WS.socketIOServer = Server.extend({
 
             // Add item to player inventory
             let providedItem = Collectables.getCollectItem(item.item);
-            let providedAmount = (Collectables.getCollectAmount(item.item)  ?? 1) * item.amount;
+            let providedAmount = (Collectables.getCollectAmount(item.item) ?? 1) * item.amount;
             dao.saveConsumable(nftId, providedItem, providedAmount);
 
             let itemCount = gameData.items[providedItem];
@@ -1303,6 +1307,22 @@ WS.socketIOServer = Server.extend({
         app.post("/session/:sessionId/setclass", async (req, res) => {
             const playerClassController = new PlayerClassController(platformClient, cache, this.worldsMap);
             return playerClassController.setLooperClass(req, res);
+        });
+
+        app.post("/session/:sessionId/tileStage", async (req, res) => {
+            const body = req.body;
+            const sessionId = req.params.sessionId;
+            const sessionData = cache.get(sessionId);
+            const currentStage = await tileActionsController.findCurrentStage(sessionData.nftId, body.map, body.tileAction, self.worldsMap[body.map])
+            res.status(200).send(currentStage);
+        });
+
+        app.post("/session/:sessionId/tileStage/execute", async (req, res) => {
+            const body = req.body;
+            const sessionId = req.params.sessionId;
+            const sessionData = cache.get(sessionId);
+            const result = await tileActionsController.executeStage(sessionData.nftId, body.map, body.tileAction, body.item, self.worldsMap[body.map]);
+            res.status(200).send(result || { success: true });
         });
 
         app.post("/inventorysync", async (req, res) => {

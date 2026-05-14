@@ -1,0 +1,120 @@
+#selection-popup .body::-webkit-scrollbar {
+    width: 10px;
+    background-color: #533643;
+}
+
+#selection-popup .body::-webkit-scrollbar-thumb {
+    background-color: #b86f50;
+}
+
+#selection-popup .body::-webkit-scrollbar-thumb:hover {
+    background-color: #FCE045;
+}
+
+#selection-popup .body::-webkit-scrollbar-thumb:active {
+    background-color: #FCE045;
+}
+
+#close-selection-popup {
+    background-image: url(../img/2/spritesheet.png);
+    position: absolute;
+    cursor: pointer;
+    height: 32px;
+    width: 32px;
+    top: -4px;
+    right: -5px;
+    background-position: -708px -252px;
+}
+
+#close-selection-popup:hover {background-position: -740px -252px;}
+#close-selection-popup:active{background-position:-772px -252px;}
+
+#selection-popup {
+    position: absolute;
+    top: 15%;       /* Override by specifying "top" in your characters dialogue.js  (optional) */
+    left: 25%;      /* Override by specifying "left" in your characters dialogue.js (optional) */
+    width: 45%;     /* Override by specifying "width" in your characters dialogue.js (optional) */
+    height: auto;   /* Override by specifying "height" in your characters dialogue.js (optional) */
+    font-family: 'GraphicPixel', arial, sans-serif;
+    transition: ease-in-out 600ms;
+    opacity: 100;
+    color: #b9b9b9;
+    box-shadow: 0 0 25px rgba(0,0,0,0.5);
+    transform: translateX(-50%)
+}
+
+#selection-popup.hidden {
+    pointer-events: none;
+    opacity: 0;
+    transition: ease-in-out 500ms;
+}
+
+#selection-popup .header {
+    margin-bottom: 10px;
+}
+
+#selection-popup .body {
+    padding: 0px 25px;
+    font-size:14px;
+    margin-bottom: 15px;
+}
+
+#selection-popup .image {
+    padding:10px;
+    margin-bottom: 5px;
+    margin-top:15px;
+}
+
+#selection-popup .header {
+    justify-content: center;
+    line-height: 1.4;
+    min-height: 60px;
+    padding: 10px 35px 0;
+    display: flex;
+    flex-direction: column;
+    color: #FCE045;
+}
+
+#selection-popup .option {
+    cursor: pointer;
+    width: auto;
+    position: relative;
+    background: #00000033;
+    float:left;
+    margin: 4px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+#selection-popup #selection-choices {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+#selection-popup .option .count {
+    color: #d2ba2f;
+    background: #533642;
+    box-shadow: 1px 1px 1px 0px rgba(0, 0, 0, 1);
+    border-radius: 16px;
+    height: 16px;
+    line-height: 16px;
+    min-width: 9px;
+    padding: 2px 5px;
+    text-align: center;
+    position: absolute;
+    z-index: 9;
+    top: 5px;
+    right: 5px;
+    pointer-events: none;
+}
+
+#selection-popup .choice.disabled {
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+#selection-popup .option:hover,
+#selection-popup .option.selected {
+    background: #FCE04511;
+    color: #f7dc44;
+}

@@ -56,6 +56,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             this.handlers[Types.Messages.OUTOFAMMO] = this.receiveOutOfAmmo;
             this.handlers[Types.Messages.ANNOUNCEMENT] = this.receiveAnnouncement;
             this.handlers[Types.Messages.INDICATOR] = this.receiveIndicatorUpdate;
+            this.handlers[Types.Messages.TILESTAGE] = this.receiveTileStage;
 
             this.useBison = false;
             this.enable();
@@ -517,6 +518,14 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             }
         },
 
+        receiveTileStage: function(data) {
+          var stage = data[1];
+
+          if(this.tileStage_callback) {
+              this.tileStage_callback(stage);
+          }
+        },
+
         receiveAnimate: function(data) {
           var entityId = data[1];
           var animation = data[2];
@@ -730,6 +739,10 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
 
         onLayer: function(callback) {
             this.layer_callback = callback;
+        },
+
+        onTileStage: function(callback) {
+            this.tileStage_callback = callback;
         },
 
         onAnimate: function(callback) {

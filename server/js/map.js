@@ -35,7 +35,8 @@ module.exports = class Mapx {
         this.isLoaded = true;
         this.hiddenLayers = map.hiddenLayers || {};
         this.collidingTiles = map.collidingTiles || {};
-        this.toggledLayers = [];
+        this.toggledLayers = {};
+        this.tileStages = {};
         this.getAdjacentGroupPositionsMap = {};
 
         // zone groups

@@ -1,10 +1,11 @@
 define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile',
-    'warrior', 'gameclient', 'audio', 'updater', 'transition',
-    'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'fieldeffect', 'config', 'float', 'projectile', '../../shared/js/gametypes', '../../shared/js/altnames'],
+        'warrior', 'gameclient', 'audio', 'updater', 'transition',
+        'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'fieldeffect', 'config', 'float', 'projectile', 'tileactions',
+        '../../shared/js/gametypes', '../../shared/js/altnames'],
 
     function (InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, AnimatedTile,
-        Warrior, GameClient, AudioManager, Updater, Transition,
-        Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, Fieldeffect, Config, Float, Projectile) {
+              Warrior, GameClient, AudioManager, Updater, Transition,
+              Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, Fieldeffect, Config, Float, Projectile, TileActions) {
         var Game = Class.extend({
             init: function (app) {
                 this.app = app;
@@ -31,7 +32,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.finalPathingGrid = null;
                 this.renderingGrid = null;
                 this.itemGrid = null;
-                this.mouse = { x: 0, y: 0 };
+                this.mouse = {x: 0, y: 0};
                 this.zoningQueue = [];
                 this.previousClickPosition = {};
 
@@ -50,6 +51,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.doorCheck = false;
                 this.highlightedTarget = null;
                 this.toggledLayers = {};
+                this.tileStages = {};
 
                 // minigame
                 this.hoveringMinigamePrompt = false;
@@ -91,6 +93,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 // Projectiles
                 this.lowAmmoThreshold = 10;
 
+                this.tileActions = new TileActions(this);
 
                 // sprites
                 this.spriteNames = ["hand", "handclick", "sword", "loot", "target", "talk", "float", "indicator", "sparks", "shadow16", "rat", "skeleton", "skeleton2", "spectre", "boss", "deathknight",
@@ -6273,7 +6276,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         this.player.dynamicArmorNFTData = nftData;
                         this.player.dyanmicNFTLoaded = true;
                         self = this;
-                        this.player.hasShadow = function () { return Types.hasShadow(spriteName); };
+                        this.player.hasShadow = function () {
+                            return Types.hasShadow(spriteName);
+                        };
                     });
                 } else {
                     this.player.dyanmicNFTLoaded = true;
@@ -6308,7 +6313,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     if (cursor !== undefined) {
                         let isLocal = window.location.href.indexOf("127.0.0.1") > -1;
                         let src = isLocal ? "/" + cursor.filepath : cursor.filepath;
-                        this.renderer.worker.postMessage({ type: "loadCursor", name: name, src: src });
+                        this.renderer.worker.postMessage({type: "loadCursor", name: name, src: src});
                     }
                 }
             },
@@ -6459,7 +6464,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             },
 
             spritesLoaded: function () {
-                if (_.any(this.sprites, function (sprite) { return !sprite.isLoaded; })) {
+                if (_.any(this.sprites, function (sprite) {
+                    return !sprite.isLoaded;
+                })) {
                     return false;
                 }
                 return true;
@@ -6479,11 +6486,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             updateCursorLogic: function () {
                 if (this.hoveringFishableTile && this.started) {
                     this.targetColor = "rgba(90, 90, 200, 0.5)";
-                }
-                else if (this.hoveringCollidingTile && this.started) {
+                } else if (this.hoveringCollidingTile && this.started) {
                     this.targetColor = "rgba(255, 50, 50, 0.5)";
-                }
-                else {
+                } else {
                     this.targetColor = "rgba(255, 255, 255, 0.5)";
                 }
 
@@ -6491,60 +6496,49 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     this.setCursor("sword");
                     this.hoveringTarget = false;
                     this.targetCellVisible = false;
-                }
-                else if (this.hoveringNpc && this.started) {
+                } else if (this.hoveringNpc && this.started) {
                     this.setCursor("talk");
                     this.hoveringTarget = false;
                     this.targetCellVisible = false;
-                }
-                else if ((this.hoveringItem || this.hoveringChest) && this.started) {
+                } else if ((this.hoveringItem || this.hoveringChest) && this.started) {
                     this.setCursor("loot");
                     this.hoveringTarget = false;
                     this.targetCellVisible = true;
-                }
-                else if (this.hoveringFishableTile && this.started) {
+                } else if (this.hoveringFishableTile && this.started) {
                     this.setCursor("float");
                     this.hoveringTarget = false;
                     this.targetCellVisible = true;
-                }
-                else if (this.hoveringMinigamePrompt) {
+                } else if (this.hoveringMinigamePrompt) {
                     this.hoveringMinigamePrompt = $("#minigameprompt").hasClass(`active`) && $(`#minigameprompt:hover`).length;
-                }
-                else if ($("#minigameprompt").hasClass(`active`) && $(`#minigameprompt:hover`).length) {
+                } else if ($("#minigameprompt").hasClass(`active`) && $(`#minigameprompt:hover`).length) {
                     this.hoveringMinigamePrompt = true;
                     this.hoveringTarget = false;
                     this.targetCellVisible = false;
-                }
-                else if ($(`#minigame`).length && $(`#minigame`).hasClass("clickable active")) {
+                } else if ($(`#minigame`).length && $(`#minigame`).hasClass("clickable active")) {
                     this.minigameLoaded = true;
                     this.hoveringTarget = false;
                     this.targetCellVisible = false;
-                }
-                else if (this.minigameLoaded) {
+                } else if (this.minigameLoaded) {
                     let clickThrottle = 500;
                     if (!this.lastMousedown) {
                         this.lastMousedown = new Date().getTime();  //Set last click for use in clickthrottle
-                    }
-                    else if (this.currentTime > this.lastMousedown + clickThrottle) {
+                    } else if (this.currentTime > this.lastMousedown + clickThrottle) {
                         this.minigameLoaded = false;
                         this.lastMousedown = null;
                     }
-                }
-                else if (this.mousedown) {
+                } else if (this.mousedown) {
                     let clickThrottle = 100;   //minimum click duration to show handclick.png cursor
                     if (!this.lastMousedown) {
                         this.setCursor("handclick");
                         this.lastMousedown = new Date().getTime();
-                    }
-                    else if (this.currentCursorName == "handclick" && this.currentTime > this.lastMousedown + clickThrottle) {
+                    } else if (this.currentCursorName == "handclick" && this.currentTime > this.lastMousedown + clickThrottle) {
                         //wait to make sure the cursor was changed, then allow the duration to be checked.     
                         this.lastMousedown = null;
                         this.mousedown = false;
                     }
                     this.hoveringTarget = false;
                     this.targetCellVisible = true;
-                }
-                else {
+                } else {
                     this.setCursor("hand");
                     this.hoveringTarget = false;
                     this.targetCellVisible = true;
@@ -6577,8 +6571,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             }
                         });
                     }
-                }
-                else {
+                } else {
                     //console.error("This entity already exists : " + entity.id + " ("+entity.kind+")");
                 }
             },
@@ -6643,8 +6636,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                 if (this.floats[float.id] === undefined) {
                     this.floats[float.id] = float;
-                }
-                else {
+                } else {
                     console.error("This float already exists : " + float.id);
                 }
             },
@@ -6656,7 +6648,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     let orientationToLake = player.getOrientationTo(float);
                     if (orientationToLake !== player.orientation) {
                         player.turnTo(orientationToLake);
-                    };
+                    }
+                    ;
 
                     if (this.camera.isVisible(player)) {
                         player.animate("atk", 75, 1, function () {
@@ -6674,8 +6667,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 if (floatId in this.floats) {
                     clearTimeout(this.floats[floatId].despawnTimeout);
                     delete this.floats[floatId];
-                }
-                else {
+                } else {
                     console.error("Cannot remove float. Unknown ID : " + floatId);
                 }
             },
@@ -6936,7 +6928,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     if (this.lastFrameTime !== undefined) {
                         let elaspedTime = this.currentTime - this.lastFrameTime;
                         if (elaspedTime < this.renderer.frameTime) {
-                            this.renderer.worker.postMessage({ "type": "idle" });
+                            this.renderer.worker.postMessage({"type": "idle"});
                             return;
                         }
                     }
@@ -6978,16 +6970,12 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 if (id in this.entities) {
                     return this.entities[id];
                 }
-                else {
-                    console.error("Unknown entity id : " + id, true);
-                }
             },
 
             getFloatById: function (id) {
                 if (id in this.floats) {
                     return this.floats[id];
-                }
-                else {
+                } else {
                     console.error("Unknown float id : " + id, true);
                 }
             },
@@ -7027,10 +7015,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     }
 
                     if (!m.isHighTile(id) && !m.isAnimatedTile(id)) {
-                        self.visibleTerrainTiles.push({ tileid: id, setW: tilesetwidth, gridW: m.width, cellid: index });
-                    }
-                    else if (m.isHighTile(id) && !m.isAnimatedTile(id)) {
-                        self.visibleHighTiles.push({ tileid: id, setW: tilesetwidth, gridW: m.width, cellid: index });
+                        self.visibleTerrainTiles.push({tileid: id, setW: tilesetwidth, gridW: m.width, cellid: index});
+                    } else if (m.isHighTile(id) && !m.isAnimatedTile(id)) {
+                        self.visibleHighTiles.push({tileid: id, setW: tilesetwidth, gridW: m.width, cellid: index});
                     }
                 }, 2);
 
@@ -7040,10 +7027,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     }
 
                     if (!m.isHighTile(id) && !m.isAnimatedTile(id)) {
-                        self.visibleTerrainTiles.push({ tileid: id, setW: tilesetwidth, gridW: m.width, cellid: index });
-                    }
-                    else if (m.isHighTile(id) && !m.isAnimatedTile(id)) {
-                        self.visibleHighTiles.push({ tileid: id, setW: tilesetwidth, gridW: m.width, cellid: index });
+                        self.visibleTerrainTiles.push({tileid: id, setW: tilesetwidth, gridW: m.width, cellid: index});
+                    } else if (m.isHighTile(id) && !m.isAnimatedTile(id)) {
+                        self.visibleHighTiles.push({tileid: id, setW: tilesetwidth, gridW: m.width, cellid: index});
                     }
                 }, 20);
             },
@@ -7096,6 +7082,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             setTimeout(sendHello.bind(self), 100);
                         }
                     }
+
                     sendHello();
                 });
 
@@ -7135,7 +7122,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     self.audioManager.updateMusic();
                     self.app.timeOffset += serverTimeOffset
                     self.serverTime = serverTimeOffset;
-                    self.lastBubbleToTalkBubbleId = null;
+                    self.lastActionBubbleId = null;
 
                     self.addEntity(self.player);
                     self.player.dirtyRect = self.renderer.getEntityBoundingRect(self.player);
@@ -7163,8 +7150,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                         if (self.player.isMovingToLoot()) {
                             self.player.isLootMoving = false;
-                        }
-                        else if (!self.player.isAttacking()) {
+                        } else if (!self.player.isAttacking()) {
                             self.client.sendMove(x, y);
                         }
 
@@ -7258,15 +7244,52 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         const nearestEntity = self.forNearestEntityAround(self.player.gridX, self.player.gridY, 1, condition);
 
                         if (nearestEntity) {
-                            let msg = self.gamepadListener.isActive() ? "Press left stick button to talk" : "Press [E] to talk";
+                            let msg = "Talk";
+                            let entityName = AltNames.getAltNameFromKind(Types.getKindAsString(nearestEntity.kind));
+                            if (entityName) {
+                                msg += " to " + entityName;
+                            }
+
+                            if (self.gamepadListener.isActive()) {
+                                msg += " [Left Stick Button]";
+                            } else {
+                                msg += " [E]";
+                            }
 
                             // Destroy the previous 'to talk' bubble if it exists
-                            if (self.lastBubbleToTalkBubbleId) self.destroyBubble(self.lastBubbleToTalkBubbleId);
+                            if (self.lastActionBubbleId) self.destroyBubble(self.lastActionBubbleId);
 
                             // Create new bubble for the nearest entity and update the lst bubble ID
-                            self.createBubble(nearestEntity.id, msg, function () { return self.player.isAdjacent(nearestEntity); });
+                            self.createBubble(nearestEntity.id, msg, function () {
+                                return self.player.isAdjacent(nearestEntity);
+                            });
                             self.assignBubbleTo(nearestEntity);
-                            self.lastBubbleToTalkBubbleId = nearestEntity.id;
+                            self.lastActionBubbleId = nearestEntity.id;
+                        } else {
+                            const nearestAction = self.map.findNearestActionTileAround(self.player.gridX, self.player.gridY, 1);
+                            if (nearestAction) {
+                                self.getTileActionStage(nearestAction).then((actionStage) => {
+                                    if (actionStage) {
+                                        let msg = actionStage.name;
+
+                                        if (self.gamepadListener.isActive()) {
+                                            msg += " [Left Stick Button]";
+                                        } else {
+                                            msg += " [E]";
+                                        }
+
+                                        // Destroy the previous 'to talk' bubble if it exists
+                                        if (self.lastActionBubbleId) self.destroyBubble(self.lastActionBubbleId);
+
+                                        // Create new bubble for the nearest entity and update the lst bubble ID
+                                        self.createBubble(nearestAction.id, msg, function () {
+                                            return self.player.isAdjacent(nearestAction);
+                                        });
+                                        self.assignBubbleTo(nearestAction, -24);
+                                        self.lastActionBubbleId = nearestAction.id;
+                                    }
+                                });
+                            }
                         }
                     });
 
@@ -7558,7 +7581,11 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     self.player.onHasMoved(function (player) {
                         self.bubbleManager.forEachBubble(function (bubble) {
                             let character = self.getEntityById(bubble.id);
-                            self.assignBubbleTo(character);
+                            if (character) {
+                                self.assignBubbleTo(character);
+                            } else if (bubble.assignedTo) {
+                                self.assignBubbleTo(bubble.assignedTo.character, bubble.assignedTo.extraYOffset)
+                            }
                         });
                     });
 
@@ -7790,7 +7817,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                             if (entity instanceof Mob) {
                                                 // Keep track of where mobs die in order to spawn their dropped items
                                                 // at the right position later.
-                                                self.deathpositions[entity.id] = { x: entity.gridX, y: entity.gridY };
+                                                self.deathpositions[entity.id] = {x: entity.gridX, y: entity.gridY};
                                             }
 
                                             entity.isDying = true;
@@ -7846,8 +7873,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 } else {
                                     self.handleScene(entity);
                                 }
-                            }
-                            catch (e) {
+                            } catch (e) {
                                 console.error(e, entity);
                             }
                         } else {
@@ -8107,13 +8133,16 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             let randomXOffset = Math.floor(Math.random() * 40) - 20;
                             let randomYOffset = -1 * (Math.floor(Math.random() * 20) + 5);
 
-                            setTimeout(() => { self.infoManager.addDamageInfo(Types.emotions[emotion], entity.x + randomXOffset, entity.y + randomYOffset, "emote"); }, delay)
+                            setTimeout(() => {
+                                self.infoManager.addDamageInfo(Types.emotions[emotion], entity.x + randomXOffset, entity.y + randomYOffset, "emote");
+                            }, delay)
                         }
                     });
 
                     self.client.onSound(self.handleSound);
                     self.client.onMusic(self.handleMusic);
                     self.client.onLayer(self.handleLayer);
+                    self.client.onTileStage(self.handleTileStage);
                     self.client.onAnimate(self.handleAnimationTrigger);
 
                     self.client.onPopulationChange(function (worldPlayers, totalPlayers) {
@@ -8163,8 +8192,12 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         let cameraX = x - (self.renderer.camera.gridW / 2);
                         let cameraY = y - (self.renderer.camera.gridH / 2);
 
-                        if (cameraX < 0) { cameraX = 0 }
-                        if (cameraY < 0) { cameraY = 0 }
+                        if (cameraX < 0) {
+                            cameraX = 0
+                        }
+                        if (cameraY < 0) {
+                            cameraY = 0
+                        }
 
                         if (cameraX > self.map.width - self.renderer.camera.gridW) {
                             cameraX = self.map.width - self.renderer.camera.gridW
@@ -8201,16 +8234,16 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         if (projectile.shooter.id === self.player.id) {
                             self.player.currentProjectileType = projectileType;
                         }
-                        let lastHitPos = { x: null, y: null };
+                        let lastHitPos = {x: null, y: null};
                         projectile.onMove(() => {
-                            let projectilePos = { x: Math.floor(projectile.x / 16), y: Math.floor(projectile.y / 16) }
+                            let projectilePos = {x: Math.floor(projectile.x / 16), y: Math.floor(projectile.y / 16)}
                             if (lastHitPos.x !== projectilePos.x || lastHitPos.y !== projectilePos.y) {
                                 lastHitPos = projectilePos;
                                 let hitEntity = self.getEntityAt(projectilePos.x, projectilePos.y);
                                 if (hitEntity && (
-                                    Types.isMob(hitEntity.kind) ||
-                                    (Types.isPlayer(hitEntity.kind) && hitEntity.id !== shooterId && self.map.isInsidePvpZone(hitEntity.gridX, hitEntity.gridY))
-                                ) &&
+                                        Types.isMob(hitEntity.kind) ||
+                                        (Types.isPlayer(hitEntity.kind) && hitEntity.id !== shooterId && self.map.isInsidePvpZone(hitEntity.gridX, hitEntity.gridY))
+                                    ) &&
                                     !hitEntity.isDead &&
                                     !hitEntity.isFriendly
                                 ) {
@@ -8339,7 +8372,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     x = ((mx - offsetX) / (ts * s)) + c.gridX,
                     y = ((my - offsetY) / (ts * s)) + c.gridY;
 
-                return { x: x, y: y };
+                return {x: x, y: y};
             },
 
             /**
@@ -8446,6 +8479,19 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 }, 1000)
             },
 
+            getTileActionStage: function (action) {
+                return this.tileActions.findCurrentStage(action);
+            },
+
+            runTileAction: function (action) {
+                const self = this;
+                if (this.lastActionBubbleId) this.destroyBubble(this.lastActionBubbleId);
+                this.getTileActionStage(action)
+                    .then((stage) => {
+                        self.tileActions.executeStage(action, stage);
+                    })
+            },
+
             checkForPartnerTask: function (npc) {
                 let self = this;
                 if (npc.name === "taikoguard") {
@@ -8471,7 +8517,12 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     self.audioManager.playSound("npc");
 
                     if (npc.thoughts.length === 0 && npc.thoughtsClearedCallback) {
-                        setTimeout(() => { if (npc.thoughtsClearedCallback) { npc.thoughtsClearedCallback(); npc.thoughtsClearedCallback = null } }, 500);
+                        setTimeout(() => {
+                            if (npc.thoughtsClearedCallback) {
+                                npc.thoughtsClearedCallback();
+                                npc.thoughtsClearedCallback = null
+                            }
+                        }, 500);
                     }
                     return;
                 }
@@ -8632,8 +8683,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             _.each(m.data[tileIndex], function (id) {
                                 callback(id - 1, tileIndex);
                             });
-                        }
-                        else {
+                        } else {
                             if (_.isNaN(m.data[tileIndex] - 1)) {
                                 //throw Error("Tile number for index:"+tileIndex+" is NaN");
                             } else {
@@ -8671,8 +8721,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             _.each(m.data[tileIndex], function (id) {
                                 callback(id - 1, tileIndex);
                             });
-                        }
-                        else {
+                        } else {
                             if (_.isNaN(m.data[tileIndex] - 1)) {
                                 //throw Error("Tile number for index:"+tileIndex+" is NaN");
                             } else {
@@ -8789,7 +8838,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     _.each(items, function (i) {
                         if (Types.isExpendableItem(i.kind)) {
                             item = i;
-                        };
+                        }
+                        ;
                     });
 
                     // Else, get the first item of the stack
@@ -8938,8 +8988,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             this.highlightedTarget = entity;
                             entity.setHighlight(true);
                         }
-                    }
-                    else if (this.highlightedTarget) {
+                    } else if (this.highlightedTarget) {
                         this.highlightedTarget.setHighlight(false);
                         this.highlightedTarget = null;
                     }
@@ -8997,7 +9046,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         return;
                     }
                     let distance = this.player.getDistanceToEntity(entity);
-                    mobDistances.push({ entity: entity, distance: distance });
+                    mobDistances.push({entity: entity, distance: distance});
                 });
 
                 return mobDistances;
@@ -9047,7 +9096,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 } else {
                     this.previousClickPosition = pos;
                 }
-                let hoveringPanel = !!$('.panel').filter(function () { return $(this).is(":hover"); }).length;
+                let hoveringPanel = !!$('.panel').filter(function () {
+                    return $(this).is(":hover");
+                }).length;
 
                 var entity;
                 let fishablePos;
@@ -9078,21 +9129,17 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             this.removeFromPathingGrid(pos.x, pos.y);
                             this.makePlayerGoTo(pos.x, pos.y);
                         }
-                    }
-                    else if (entity instanceof Item) {
+                    } else if (entity instanceof Item) {
                         this.makePlayerGoToItem(entity);
-                    }
-                    else if (entity instanceof Npc && !pos.keyboard) {
+                    } else if (entity instanceof Npc && !pos.keyboard) {
                         if (this.player.isAdjacentNonDiagonal(entity) === false) {
                             this.makePlayerTalkTo(entity);
                         } else {
                             this.makeNpcTalk(entity);
                         }
-                    }
-                    else if (entity instanceof Chest) {
+                    } else if (entity instanceof Chest) {
                         this.makePlayerOpenChest(entity);
-                    }
-                    else if (fishablePos = this.canFish(pos.x, pos.y, pos.keyboard)) { // this assignment inside a condition is intentional
+                    } else if (fishablePos = this.canFish(pos.x, pos.y, pos.keyboard)) { // this assignment inside a condition is intentional
                         if (this.player.isFishing
                             && $('#fishingbar').hasClass('active')
                             && this.floats[this.player.id] !== undefined
@@ -9102,8 +9149,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         } else {
                             this.startFishing(fishablePos.gridX, fishablePos.gridY);
                         }
-                    }
-                    else {
+                    } else {
                         if (this.isZoningTile(pos.x, pos.y) && !pos.keyboard) {
                             let z = this.getZoningOrientation(pos.x, pos.y);
                             switch (z) {
@@ -9166,7 +9212,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                 entity.forEachAdjacentNonDiagonalPosition(function (x, y, orientation) {
                     if (!result && !self.map.isColliding(x, y) && !self.isMobAt(x, y)) {
-                        result = { x: x, y: y, o: orientation };
+                        result = {x: x, y: y, o: orientation};
                     }
                 });
                 return result;
@@ -9182,13 +9228,17 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                         switch (target.orientation) {
                             case Types.Orientations.UP:
-                                pos = { x: target.gridX, y: target.gridY - 1, o: target.orientation }; break;
+                                pos = {x: target.gridX, y: target.gridY - 1, o: target.orientation};
+                                break;
                             case Types.Orientations.DOWN:
-                                pos = { x: target.gridX, y: target.gridY + 1, o: target.orientation }; break;
+                                pos = {x: target.gridX, y: target.gridY + 1, o: target.orientation};
+                                break;
                             case Types.Orientations.LEFT:
-                                pos = { x: target.gridX - 1, y: target.gridY, o: target.orientation }; break;
+                                pos = {x: target.gridX - 1, y: target.gridY, o: target.orientation};
+                                break;
                             case Types.Orientations.RIGHT:
-                                pos = { x: target.gridX + 1, y: target.gridY, o: target.orientation }; break;
+                                pos = {x: target.gridX + 1, y: target.gridY, o: target.orientation};
+                                break;
                         }
 
                         if (pos && !this.map.isColliding(pos.x, pos.y) && !this.map.isPlateau(pos.x, pos.y)) {
@@ -9230,7 +9280,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     return
                 }
 
-                if(!entity) {
+                if (!entity) {
                     return;
                 }
 
@@ -9290,7 +9340,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     }
 
                     if (entity.id === self.player.id && trigger.minigame && !this.minigameLoaded) {
-                        if ($("#minigameprompt").hasClass(`active`)) { $("#minigameprompt").removeAttr('style').off(); } // if walking from one trigger to the next, clear data.                        
+                        if ($("#minigameprompt").hasClass(`active`)) {
+                            $("#minigameprompt").removeAttr('style').off();
+                        } // if walking from one trigger to the next, clear data.
                         let containerScale = Math.min(($(window).width() / $("#container").width() * 0.95), ($(window).height() / $("#container").height() * 0.95));
                         let [offsetX, offsetY] = (trigger.offset || "0,0").split(',').map(Number);
 
@@ -9343,6 +9395,96 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             handleLayer(layer, show) {
                 self.toggledLayers[layer] = show;
                 self.applyToggledLayers()
+            },
+
+            handleTileStage(stage) {
+                if(stage.clear) {
+                    Object.keys(self.tileStages).forEach((key) => {
+                        const stagedTile = self.tileStages[key];
+                        if(stagedTile.x === stage.x && stagedTile.y === stage.y) {
+                            delete self.tileStages[key];
+                        }
+                        if(key.startsWith(stage.x + '.' + stage.y + ':')) {
+                            delete self.tileStages[key];
+                        }
+                    });
+                    delete self.tileStages[stage.x + '.' + stage.y];
+                    return;
+                }
+
+                if(stage.tile !== null && stage.tile !== undefined) {
+                    if (self.map.isAnimatedTile(stage.tile)) {
+                        stage.animatedTile = self.animatedTiles.find((tile) => {
+                            return tile.id === stage.tile;
+                        });
+                    }
+                    self.tileStages[stage.x + '.' + stage.y] = stage;
+                } else if(stage.tileGroup) {
+                    Object.keys(self.tileStages).forEach((key) => {
+                        if(key.startsWith(stage.x + '.' + stage.y + ':')) {
+                            delete self.tileStages[key];
+                        }
+                    });
+                    // loop over self.map.stagedTiles (object) and find element and key where element.property = stage.tileGroup
+                    let tileIndex = null;
+                    let stagedTile = null;
+                    Object.keys(self.map.stagedTiles).forEach((key) => {
+                       if(stage.stagedTile && parseInt(key) === parseInt(stage.stagedTile)) {
+                           tileIndex = parseInt(key - 1);
+                            stagedTile = self.map.stagedTiles[key];
+                       }
+                    });
+                    Object.keys(self.map.stagedTiles).forEach((key) => {
+                       if(!stagedTile && self.map.stagedTiles[key].groupName === stage.tileGroup) {
+                           tileIndex = parseInt(key - 1);
+                            stagedTile = self.map.stagedTiles[key];
+                       }
+                    });
+                    if(!stagedTile) {
+                        console.error(`Could not find staged tile group ${stage.tileGroup}`);
+                    }
+
+                    if (stage.replaceBaseTile || stagedTile.replaceBaseTile || stagedTile.renderMode === 'replace') {
+                        delete self.tileStages[stage.x + '.' + stage.y];
+                    }
+
+                    let tileSetWidth = self.map.tilesetColumns || (self.renderer.tileset.width / (self.map.tilesize * self.renderer.scale));
+                    let hasExplicitStageTiles = stagedTile.stageTiles && stagedTile.stageTiles.length > 0;
+                    let stageIndex = parseInt(stage.stage || 0);
+                    if (Number.isNaN(stageIndex) || stageIndex < 0) {
+                        stageIndex = 0;
+                    }
+                    if (hasExplicitStageTiles) {
+                        stageIndex = Math.min(stageIndex, stagedTile.stageTiles.length - 1);
+                        tileIndex = stagedTile.stageTiles[stageIndex];
+                    }
+                    for(let x = 0; x < stagedTile.size.w; x++) {
+                        for(let y = 0; y < stagedTile.size.h; y++) {
+                            let tileId = tileIndex + (x + (y * tileSetWidth));
+
+                            let newStage = {
+                                x: stage.x,
+                                y: stage.y,
+                                stage: hasExplicitStageTiles ? 0 : stage.stage,
+                                highTile: stagedTile.highRows !== undefined ? y < stagedTile.highRows : undefined,
+                                stageStride: hasExplicitStageTiles ? undefined : (stagedTile.stageStride || stagedTile.size.w || 1),
+                                tileGroup: stage.tileGroup,
+                                renderOffset: stage.renderOffset
+                            }
+                            if (self.map.isAnimatedTile(tileId)) {
+                                newStage.animatedTile = self.animatedTiles.find((tile) => {
+                                    return tile.id === tileId;
+                                });
+                            }
+
+                            newStage.x += x + stagedTile.offset.x;
+                            newStage.y += y + stagedTile.offset.y;
+                            newStage.tile = tileId;
+
+                            self.tileStages[stage.x + '.' + stage.y + ':' + x + '.' + y] = newStage;
+                        }
+                    }
+                }
             },
 
             handleAnimationTrigger(entityId, animation) {
@@ -9462,14 +9604,11 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                 if (x === 0) {
                     orientation = Types.Orientations.LEFT;
-                }
-                else if (y === 0) {
+                } else if (y === 0) {
                     orientation = Types.Orientations.UP;
-                }
-                else if (x === c.gridW - 1) {
+                } else if (x === c.gridW - 1) {
                     orientation = Types.Orientations.RIGHT;
-                }
-                else if (y === c.gridH - 1) {
+                } else if (y === c.gridH - 1) {
                     orientation = Types.Orientations.DOWN;
                 }
 
@@ -9502,8 +9641,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     this.forEachVisibleEntityByDepth(function (entity) {
                         entity.setDirty();
                     });
-                }
-                else {
+                } else {
 
                     this.currentZoning = new Transition();
                 }
@@ -9513,7 +9651,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             },
 
             enqueueZoningFrom: function (x, y) {
-                this.zoningQueue.push({ x: x, y: y });
+                this.zoningQueue.push({x: x, y: y});
 
                 if (this.zoningQueue.length === 1) {
                     this.startZoningFrom(x, y);
@@ -9564,14 +9702,14 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 if (id === self.lastBubbleToTalkBubbleId) self.lastBubbleToTalkBubbleId = null;
             },
 
-            assignBubbleTo: function (character) {
+            assignBubbleTo: function (character, extraYOffset) {
                 if (character === undefined) {
                     return;
                 }
                 var bubble = this.bubbleManager.getBubbleById(character.id);
 
                 if (bubble) {
-
+                    bubble.assignedTo = {character, extraYOffset};
                     var s = this.renderer.scale,
                         t = 16 * s, // tile size
                         x = ((character.x - this.camera.x) * s),
@@ -9598,7 +9736,12 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     var bubbleHeight = bubble.element.outerHeight(true); // true includes margins
 
                     var xTotalOffset = offsetX + charOffsetX;
-                    var yTotalOffset = offsetY + charOffsetY - lineHeight + bubbleHeight
+                    var yTotalOffset
+                    if (extraYOffset) {
+                        yTotalOffset = offsetY + charOffsetY - lineHeight + bubbleHeight + (extraYOffset * s);
+                    } else {
+                        yTotalOffset = offsetY + charOffsetY - lineHeight + bubbleHeight;
+                    }
 
                     bubble.element.css('left', x - xTotalOffset + 'px');
                     bubble.element.css('top', Math.max(y - yTotalOffset, 0) + 'px');
@@ -9774,7 +9917,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             self.removeFromRenderingGrid(entity, entity.gridX, entity.gridY);
                         }
                     });
-                    console.debug("Removed " + nb + " entities: " + _.pluck(_.reject(this.obsoleteEntities, function (id) { return id === self.player.id }), 'id'));
+                    console.debug("Removed " + nb + " entities: " + _.pluck(_.reject(this.obsoleteEntities, function (id) {
+                        return id === self.player.id
+                    }), 'id'));
                     this.obsoleteEntities = null;
                 }
             },
@@ -9819,12 +9964,12 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 let dest = null;
                 if (this.lastCheckpoint) {
                     dest = this.lastCheckpoint;
-                } else if( this.player) {
+                } else if (this.player) {
                     dest = this.map.getCurrentCheckpoint(this.player);
                 } else {
                     let cp = this.map.checkpoints[0];
                     let startPos = cp.getRandomPosition();
-                    dest = { x: startPos.x, y: startPos.y, map: this.mapId };
+                    dest = {x: startPos.x, y: startPos.y, map: this.mapId};
                 }
                 dest.map = this.mapId;
                 axios.post(url, dest).then(function (response) {
@@ -9987,7 +10132,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                     let dynamic = Types.spriteIsDynamicRangedWeapon(self.player.weaponName);
                                     let url;
                                     if (dynamic) {
-                                        const { tokenHash } = self.player.dynamicWeaponNFTData;
+                                        const {tokenHash} = self.player.dynamicWeaponNFTData;
                                         url = `https://looperlands.sfo3.digitaloceanspaces.com/assets/ranged_weapon/1/${tokenHash}_${projectileType}.png`;
                                     } else {
                                         url = `img/1/${projectile}.png`;
@@ -10031,7 +10176,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 axios.get("/session/" + self.sessionId + "/polling").then(function (response) {
                     if (response.data !== null && response.data !== undefined) {
                         if (response.data.playerInfo !== undefined) {
-                            const { playerClass, level } = response.data.playerInfo;
+                            const {playerClass, level} = response.data.playerInfo;
                             if (!playerClass && level >= 5 && !self.player.playerClassSelectionShown) {
                                 self.app.showPlayerClassSelection();
                                 self.player.playerClassSelectionShown = true;
@@ -10077,9 +10222,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             canFish: function (gX, gY, keyboard) {
                 if (Types.isFishingRod(Types.getKindFromString(this.player.weaponName))) {
                     if (this.player.isOnSameAxis(gX, gY)
-                        && this.player.isNear({ gridX: gX, gridY: gY }, 2)
+                        && this.player.isNear({gridX: gX, gridY: gY}, 2)
                         && this.map.getLakeName(gX, gY)) {
-                        return { gridX: gX, gridY: gY };
+                        return {gridX: gX, gridY: gY};
                     } else if (keyboard) { // let keyboard seek one tile further
                         let tryPos = this.player.getOneStepFurther(gX, gY);
                         if (this.map.getLakeName(tryPos.gridX, tryPos.gridY) && this.player.isNear(tryPos, 2)) {
@@ -10308,11 +10453,22 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
             interact: function () {
                 let self = this;
+                let interacted = false;
                 this.forEachEntityAround(this.player.gridX, this.player.gridY, 1, function (entity) {
                     if (Types.isNpc(entity.kind) && !$('#dialogue-popup').hasClass('active')) {
                         self.makeNpcTalk(entity);
+                        interacted = true;
                     }
                 });
+
+                if (interacted) {
+                    return;
+                }
+
+                const nearestAction = self.map.findNearestActionTileAround(self.player.gridX, self.player.gridY, 1);
+                if (nearestAction) {
+                    self.runTileAction(nearestAction);
+                }
             }
 
         });
