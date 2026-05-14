@@ -741,10 +741,13 @@ module.exports = World = cls.Class.extend({
         this.pushBroadcast(new Messages.TileStage(this.map.tileStages[x + '.' + y]));
     },
 
-    placeStagedTileGroup: function (x, y, groupName, stage, renderOffset) {
+    placeStagedTileGroup: function (x, y, groupName, stage, renderOffset, stagedTile) {
         this.map.tileStages[x + '.' + y] = { x: x, y: y, tileGroup: groupName, stage: stage || 0 };
         if (renderOffset) {
             this.map.tileStages[x + '.' + y].renderOffset = renderOffset;
+        }
+        if (stagedTile) {
+            this.map.tileStages[x + '.' + y].stagedTile = stagedTile;
         }
         this.pushBroadcast(new Messages.TileStage(this.map.tileStages[x + '.' + y]));
     },

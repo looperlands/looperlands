@@ -13,6 +13,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.started = false;
                 this.hasNeverStarted = true;
                 this.buffTickInterval = null;
+                this.sessionKeepaliveInterval = null;
 
                 this.renderer = null;
                 this.updater = null;
@@ -7007,6 +7008,11 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     console.log("Starting client/server handshake");
 
                     function sendHello() {
+                        if (!self.player) {
+                            setTimeout(sendHello.bind(self), 100);
+                            return;
+                        }
+
                         console.log("Dynamic nft loaded", self.player.dyanmicNFTLoaded);
                         if (self.player.dyanmicNFTLoaded) {
                             self.player.name = self.username;
@@ -7016,6 +7022,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             const weaponName = Types.getKindFromString(self.player.getWeaponName());
                             if (weaponName === undefined) {
                                 loadDynamicNFT(self.player.getWeaponName(), self.sessionId, (spriteName, nftData) => {
+                                    if (!self.player) {
+                                        return;
+                                    }
+
                                     console.log("load dynamic weapon", spriteName, nftData);
                                     self.player.setWeaponName(spriteName);
                                     spriteName = loadAssetSprites(nftData, self);
@@ -7114,6 +7124,14 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             self.checkOtherDirtyRects(self.renderer.targetRect, null, self.selectedX, self.selectedY);
                         }
                     });
+
+                    if (!self.sessionKeepaliveInterval) {
+                        self.sessionKeepaliveInterval = setInterval(function () {
+                            if (self.started && self.player && self.client) {
+                                self.client.sendZone();
+                            }
+                        }, 60000);
+                    }
 
                     self.player.onRooted(function (x, y) {
                         self.client.sendMove(x, y);
@@ -9377,7 +9395,13 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     let tileIndex = null;
                     let stagedTile = null;
                     Object.keys(self.map.stagedTiles).forEach((key) => {
-                       if(self.map.stagedTiles[key].groupName === stage.tileGroup) {
+                       if(stage.stagedTile && parseInt(key) === parseInt(stage.stagedTile)) {
+                           tileIndex = parseInt(key - 1);
+                            stagedTile = self.map.stagedTiles[key];
+                       }
+                    });
+                    Object.keys(self.map.stagedTiles).forEach((key) => {
+                       if(!stagedTile && self.map.stagedTiles[key].groupName === stage.tileGroup) {
                            tileIndex = parseInt(key - 1);
                             stagedTile = self.map.stagedTiles[key];
                        }
@@ -9402,8 +9426,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     }
                     for(let x = 0; x < stagedTile.size.w; x++) {
                         for(let y = 0; y < stagedTile.size.h; y++) {
-                            let sourceOffsetY = stagedTile.groupName && stagedTile.groupName.startsWith('tree') ? 0 : stagedTile.offset.y;
-                            let tileId = tileIndex + x + ((y + sourceOffsetY) * tileSetWidth);
+                            let tileId = tileIndex + (x + (y * tileSetWidth));
 
                             let newStage = {
                                 x: stage.x,

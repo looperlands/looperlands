@@ -145,7 +145,14 @@ define(['area'], function (Area) {
             this.load("audio/music/", name, handleLoaded, 1);
             var music = this.sounds[name][0];
             music.loop = true;
-            music.addEventListener('ended', function () { music.play() }, false);
+            music.addEventListener('ended', function () {
+                var play = music.play();
+                if (play && play.catch) {
+                    play.catch(function (error) {
+                        console.log(error);
+                    });
+                }
+            }, false);
         },
 
         getSound: function (name) {
@@ -190,7 +197,12 @@ define(['area'], function (Area) {
                     }
                 }
 
-                sound.play();
+                var soundPlay = sound.play();
+                if (soundPlay && soundPlay.catch) {
+                    soundPlay.catch(function (error) {
+                        console.log(error);
+                    });
+                }
             }
         },
 
@@ -251,7 +263,12 @@ define(['area'], function (Area) {
                     this.fadeInMusic(music);
                 } else {
                     music.sound.volume = 1;
-                    music.sound.play();
+                    var musicPlay = music.sound.play();
+                    if (musicPlay && musicPlay.catch) {
+                        musicPlay.catch(function (error) {
+                            console.log(error);
+                        });
+                    }
                 }
                 this.currentMusic = music;
             }

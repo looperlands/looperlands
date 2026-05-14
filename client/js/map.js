@@ -66,8 +66,18 @@ define(['jquery', 'area'], function ($, Area) {
                                 audio.playing = true;
                                 console.log("playing song", mp3URL);
                                 try {
-                                    audio.play();
-                                    self.game.audioManager.disable();
+                                    let play = audio.play();
+                                    if (play && play.catch) {
+                                        play.then(function () {
+                                            self.game.audioManager.disable();
+                                        }).catch(function (error) {
+                                            song = undefined;
+                                            audio = undefined;
+                                            console.log(error);
+                                        });
+                                    } else {
+                                        self.game.audioManager.disable();
+                                    }
                                 } catch (e) {
                                     song = undefined;
                                     audio = undefined;

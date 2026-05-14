@@ -54,9 +54,7 @@ def build_stage(sheet, start_tile, crop, group, stage, columns, tile_size):
 
     for y in range(height):
         for x in range(width):
-            offset = group.get("offset") or {}
-            offset_y = 0 if crop.get("plantType") == "tree" else offset.get("y", 0)
-            tile_id = start_tile + x + ((y + offset_y) * columns)
+            tile_id = start_tile + x + (y * columns)
             if "stageTiles" not in group and crop.get("plantType") != "tree":
                 tile_id += stage * stage_stride
             canvas.alpha_composite(sheet.crop(tile_box(tile_id, columns, tile_size)), (x * tile_size, y * tile_size))

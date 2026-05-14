@@ -156,32 +156,20 @@ describe("TileActionsController farming", () => {
 
         const stage = await controller.findCurrentStage("avatar", "duckville", tileAction, world);
         expect(stage.key).toBe("water");
-        expect(stage.name).toBe("Water lettuce");
+        expect(stage.name).toBe("Water Lettuce");
     });
 
     test("plant choices respect the action tile plant type", async () => {
-        controller.stageDefinitions.duckville.farm.crops.M88NROSE = {
-            name: "rose",
-            plantType: "potted",
-            level: 5,
-            seedCost: 1,
-            growSeconds: 90,
-            tileGroup: "rose",
-            stages: 4,
-            yieldItem: "M88NROSE",
-            yield: { min: 1, max: 1 },
-            xp: 35,
-            seedReturnChance: 0,
-        };
-        tileAction.allowedPlantTypes = "potted";
+        tileAction.name = "potFarm";
 
         await controller.executeStage("avatar", "duckville", tileAction, null, world);
 
         const stage = await controller.findCurrentStage("avatar", "duckville", tileAction, world);
-        expect(stage.itemChoices.M88NLETTUCE.disabled).toBe(true);
-        expect(stage.itemChoices.M88NLETTUCE.detail).toBe("lettuce needs open farmland.");
-        expect(stage.itemChoices.COBAPPLE.disabled).toBe(true);
+        expect(stage.itemChoices.M88NLETTUCE.disabled).toBe(false);
+        expect(stage.itemChoices.M88NLETTUCE.title).toBe("Potted lettuce");
+        expect(stage.itemChoices.COBAPPLE).toBeUndefined();
         expect(stage.itemChoices.M88NROSE.disabled).toBe(false);
+        expect(stage.itemChoices.M88NROSE.title).toBe("Potted roses");
     });
 
     test("plant validation blocks incompatible seeds", async () => {
@@ -194,7 +182,7 @@ describe("TileActionsController farming", () => {
         expect(plot.state).toBe("prepared");
         expect(plot.crop).toBe(null);
         expect(inventory[Types.Entities.M88NSEEDS]).toBe(5);
-        expect(world.sendNotifications).toHaveBeenCalledWith(world.players[1], "lettuce needs open farmland.");
+        expect(world.sendNotifications).toHaveBeenCalledWith(world.players[1], "Lettuce needs open farmland.");
     });
 
     test("water starts growth and not-ready crop waits", async () => {
@@ -397,32 +385,54 @@ describe("TileActionsController farming", () => {
         });
     });
 
+    test("crop data uses display names, plural rare drops, and staged rose groups", () => {
+        const { farm, potFarm } = controller.stageDefinitions.duckville;
+
+        Object.values(farm.crops).concat(Object.values(potFarm.crops)).forEach((crop) => {
+            expect(crop.displayName).toEqual(expect.any(String));
+            expect(crop.rareDrop).toBeUndefined();
+            expect(crop.rareDrops).toEqual(expect.any(Array));
+        });
+
+        expect(farm.crops.M88NROSE).toMatchObject({
+            displayName: "Roses",
+            tileGroup: "roses",
+            stagedTile: 18249,
+            yieldItem: "M88NROSE",
+            stages: 3,
+        });
+        expect(potFarm.crops.M88NROSE).toMatchObject({
+            displayName: "Potted roses",
+            tileGroup: "pottedRoses",
+            stagedTile: 18246,
+            yieldItem: "M88NROSE",
+            stages: 3,
+        });
+    });
+
     test("baked-base and potted crop groups are defined separately", () => {
         const map = require("../../client/maps/world_client_duckville.json");
 
-        expect(map.stagedTiles["18080"]).toMatchObject({
+        expect(map.stagedTiles["18085"]).toMatchObject({
             groupName: "lettuce",
-            renderMode: "replace",
-            stageTiles: [18084, 18085, 18086, 18087],
         });
-        expect(map.stagedTiles["17827"]).toMatchObject({
+        expect(map.stagedTiles["17689"]).toMatchObject({
             groupName: "carrot",
             size: { w: 1, h: 2 },
         });
-        expect(map.stagedTiles["17266"]).toMatchObject({
+        expect(map.stagedTiles["17128"]).toMatchObject({
             groupName: "cauliflower",
             size: { w: 1, h: 2 },
         });
-        expect(map.stagedTiles["17542"]).toMatchObject({
+        expect(map.stagedTiles["17404"]).toMatchObject({
             groupName: "broccoli",
             size: { w: 1, h: 2 },
         });
-        expect(map.stagedTiles["17818"]).toMatchObject({
+        expect(map.stagedTiles["17680"]).toMatchObject({
             groupName: "potato",
             size: { w: 1, h: 2 },
-            renderMode: "replace",
         });
-        expect(map.stagedTiles["17804"]).toMatchObject({
+        expect(map.stagedTiles["17413"]).toMatchObject({
             groupName: "corn",
             size: { w: 1, h: 2 },
         });
@@ -430,51 +440,50 @@ describe("TileActionsController farming", () => {
             groupName: "turnip",
             renderMode: "replace",
         });
-        expect(map.stagedTiles["17823"]).toMatchObject({
+        expect(map.stagedTiles["17685"]).toMatchObject({
             groupName: "carrotPotted",
             size: { w: 1, h: 2 },
             renderMode: "replace",
         });
-        expect(map.stagedTiles["17262"]).toMatchObject({
+        expect(map.stagedTiles["17124"]).toMatchObject({
             groupName: "cauliflowerPotted",
             size: { w: 1, h: 2 },
             renderMode: "replace",
         });
-        expect(map.stagedTiles["17538"]).toMatchObject({
+        expect(map.stagedTiles["17400"]).toMatchObject({
             groupName: "broccoliPotted",
             size: { w: 1, h: 2 },
             renderMode: "replace",
         });
-        expect(map.stagedTiles["17813"]).toMatchObject({
+        expect(map.stagedTiles["17675"]).toMatchObject({
             groupName: "cornPotted",
             size: { w: 1, h: 2 },
             renderMode: "replace",
-            stageTiles: [17813, 17814, 17815, 17816],
         });
-        expect(map.stagedTiles["17814"]).toMatchObject({
+        expect(map.stagedTiles["17676"]).toMatchObject({
             groupName: "potatoPotted",
             size: { w: 1, h: 2 },
             renderMode: "replace",
         });
-        expect(map.stagedTiles["18090"]).toMatchObject({
+        expect(map.stagedTiles["17952"]).toMatchObject({
             groupName: "strawberryPotted",
             size: { w: 1, h: 2 },
             renderMode: "replace",
         });
-        expect(map.stagedTiles["18094"]).toMatchObject({
+        expect(map.stagedTiles["17956"]).toMatchObject({
             groupName: "strawberry",
             size: { w: 1, h: 2 },
         });
-        expect(map.stagedTiles["18099"]).toMatchObject({
+        expect(map.stagedTiles["17961"]).toMatchObject({
             groupName: "onionPotted",
             size: { w: 1, h: 2 },
             renderMode: "replace",
         });
-        expect(map.stagedTiles["18103"]).toMatchObject({
+        expect(map.stagedTiles["17965"]).toMatchObject({
             groupName: "onion",
             size: { w: 1, h: 2 },
         });
-        expect(map.stagedTiles["18108"]).toMatchObject({
+        expect(map.stagedTiles["17970"]).toMatchObject({
             groupName: "lettucePotted",
             size: { w: 1, h: 2 },
             renderMode: "replace",
@@ -482,35 +491,34 @@ describe("TileActionsController farming", () => {
         expect(map.stagedTiles["18223"]).toMatchObject({
             groupName: "berries",
         });
-        expect(map.stagedTiles["18356"]).toMatchObject({
+        expect(map.stagedTiles["18218"]).toMatchObject({
             groupName: "blueberry",
             size: { w: 1, h: 2 },
         });
-        expect(map.stagedTiles["18375"]).toMatchObject({
+        expect(map.stagedTiles["18237"]).toMatchObject({
             groupName: "tomatoPotted",
             size: { w: 1, h: 2 },
             renderMode: "replace",
         });
-        expect(map.stagedTiles["18379"]).toMatchObject({
+        expect(map.stagedTiles["18241"]).toMatchObject({
             groupName: "tomato",
             size: { w: 1, h: 2 },
-            renderMode: "replace",
         });
-        expect(map.stagedTiles["18384"]).toMatchObject({
+        expect(map.stagedTiles["18246"]).toMatchObject({
             groupName: "pottedRoses",
             size: { w: 1, h: 2 },
             renderMode: "replace",
             stages: 3,
         });
-        expect(map.stagedTiles["18387"]).toMatchObject({
+        expect(map.stagedTiles["18249"]).toMatchObject({
             groupName: "roses",
             size: { w: 1, h: 2 },
             stages: 3,
         });
-        expect(map.stagedTiles["17827"].renderMode).toBeUndefined();
-        expect(map.stagedTiles["17266"].renderMode).toBeUndefined();
-        expect(map.stagedTiles["17542"].renderMode).toBeUndefined();
+        expect(map.stagedTiles["17689"].renderMode).toBeUndefined();
+        expect(map.stagedTiles["17128"].renderMode).toBeUndefined();
+        expect(map.stagedTiles["17404"].renderMode).toBeUndefined();
         expect(map.stagedTiles["18223"].renderMode).toBeUndefined();
-        expect(map.stagedTiles["17804"].renderMode).toBeUndefined();
+        expect(map.stagedTiles["17413"].renderMode).toBeUndefined();
     });
 });
