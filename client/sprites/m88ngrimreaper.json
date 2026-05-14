@@ -1,0 +1,25 @@
+{
+	"id": "m88ngrimreaper",
+	"width": 32,
+	"height": 32,
+	"animations": {
+                "walk_right": {
+			"length": 3,
+			"row": 0
+		},
+		"walk_up": {
+			"length": 3,
+			"row": 1
+		},
+		"walk_down": {
+			"length": 3,
+			"row": 2
+		},
+		"idle_down": {
+			"length": 3,
+			"row": 3
+		}
+	},
+	"offset_x": -8,
+	"offset_y": -8
+}

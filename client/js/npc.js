@@ -417,22 +417,21 @@ define(['character'], function (Character) {
         "patroncora": [
             "This is the best spot in town for a cup of joe and the latest gossip."
         ],
-        "GOFFREY": ["Welcome to Duckville Portal!",
-                    "Mycupbloody sent me.",
-                    "This portal is token gated.",
-                    'Here is where you can <a target="_blank" href="https://loopexchange.art/collection/dsgoinquackers">buy a duck</a>',
+        "GOFFREY": ["Welcome to Duckville!",
+                    'If you like ducks you can <a target="_blank" href="https://loopexchange.art/collection/dsgoinquackers">buy one here</a>',
                     "Please help save Duckville!"
         ],
 
         //m88n's NPCs
         "wenmoon": [
-            "Yo! I'm wenmoon, m88nwalker sent me down here to be your lunar envoy.",
-            "Where Worlds Collide, Secrets Reside: Welcome to the Nexus!",
-            "First stop: Paradise Point!",
+            "Yo! I'm wenmoon, I was sent down here to be your lunar envoy.",
+            "Legend has it there are some pretty epic treasures hidden in The Nexus!",
+            "I'd say check out Paradise Point first and have a good look around!",
+            "This universe is ever expanding and joining the community helps keep you in the loop.",
             //'First stop: Dreamland! Own a piece from the <a target="_blank" href="https://loopexchange.art/collection/onesie-party">Its a Onesie Party! collection</a> for access to the VIP Lounge!',
-            'On X? <a target="_blank" href="https://twitter.com/moonwalker_nfts">Give him a follow</a> to stay updated.',
+            'On X? <a target="_blank" href="https://x.com/m88nwalker">Give m88nwalker a follow</a> to stay updated.',
             'How about Discord? <a target="_blank" href="https://discord.gg/bjjNewZegM">Checkout PLANET M88NWALKER</a> for lots more!',
-            "Keep your eyes open and have fun!"
+            "Keep your eyes open, be curious, ask quesions, and have fun!"
             //"Have fun!"
         ],
 
@@ -447,7 +446,7 @@ define(['character'], function (Character) {
         "nexan4": [
             "Pleased to meet you traveler!",
             "Welcome to Paradise Point East.",
-            "This is such a cute little beach town!",
+            "This is a magical little beach town!",
             "Have you been on the yacht yet?"
         ],
 
@@ -506,11 +505,14 @@ define(['character'], function (Character) {
 
         "nexan18": [
             "It's always sunny in Paradise Point!",
-            "This is my favorite place to catch a tan."
+            "This is my second favorite place to catch a tan.",
+            "There's a hidden island out there, but you need a special compass to find it."
         ],
 
         "nexan19": [
-            "It's a beautiful day for lounging at the beach!"
+            "It's a beautiful day for lounging at the beach!",
+            "Hey, I hear the ocean is worth exploring...",
+            "But first you have to beat up that octopus and take one of his tentacles."
         ],
 
         "nexan20": [
@@ -525,14 +527,14 @@ define(['character'], function (Character) {
 
         "nexan29": [
             "Welcome to the Sun Chaser Champagne Lounge, special guest!",
-            "Can I get you something to drink from the bar?",
-            "/openShop the_bar The Bar"
             //"The bar is closed right now while re-stock, but it will open again soon!",
             //"Hang out and enjoy the luxuious vibes though! The fishing is great off the bow."
-            //"Most of these portals go to the private Helio Islands.",
+            "Most of these portals go to the private Helio Islands.",
             //"If you're interested in becoming an island owner you can DM m88nwalker to inquire.",
-            //"On the far right of the second floor is a portal to a secret hidden island.",
-            //"You'll need to find a mysterious compass to navigate to that one though..."
+            "On the far right of the second floor is a portal to a secret hidden island.",
+            "You'll need to find a mysterious compass to navigate to that one though...",
+            "Can I get you something to drink from the bar?",
+            "/openShop the_bar The Bar"
         ],
 
         "m88nmobilebartender": [
@@ -594,23 +596,23 @@ define(['character'], function (Character) {
 
         "m88ntaikotwin1": [
             "Yo yo! We're the Taiko Twins!",
-            "Head north to visit Taiko Town, and head south to explore Paradise Point...",
-            "We have a new quests on the way for you..."
+            "Head north to get to the train station, from there you can visit any of the lands...",
+            "Head south to explore Paradise Point and the rest of The Nexus..."
         ],
 
         "m88ntaikotwin2": [
             "Yo yo! We're the Taiko Twins!",
-            "Head south to explore Paradise Point, and head north to visit Taiko Town...",
-            "We have a new quests on the way for you..."
+            "Head south to explore Paradise Point and the rest of The Nexus...",
+            "Head north to get to the train station, from there you can visit any of the lands..."
         ],
 
         "m88nstimytimy": [
-            "GM, I'm Stimy Timy!",
+            "GM GM, I'm Stimy Timy!",
             "I spent my stimulus on crypto, nfts, and stonks. I'm gonna be rich soon, living the island life!",
-            "You should check out my new collection!",
-            "You can integrate any of the NFT's from my collection as a LooperLands avatar or a companion!",
-            'Checkout <a target="_blank" href="https://loopexchange.art/collection/stimy-timy">my new collection here</a>...',
-            'Click this link to <a target="_blank" href="https://x.com/stimytimy">follow me on X here</a>...'
+            'Checkout <a target="_blank" href="https://stimy-timy.mintopia.top/">my new collection </a>on Base...',
+            "You can integrate any of those NFT's as an avatar or a companion to use in here!",
+            'Come<a target="_blank" href="https://x.com/stimytimy"> follow me on X</a>, and say hi!',
+            'And come <a target="_blank" href="https://discord.gg/bjjNewZegM">join us in Discord </a>for insider details.'
             //"If you want to buy a private island here in The Nexus checkout Nexus Real Estate, they have some for sale."
         ],
 
@@ -618,13 +620,13 @@ define(['character'], function (Character) {
             "Howdy! I'm Gary, the real estate agent for Nexus Realty.",
             "If you're looking to buy some property in The Nexus, you've come to the right place.",
             "Right now we have several properties available and when you buy from us you get a FREE Lambo!",
-            "If you're digging the boardwalk, we have two beach houses avialable in Paradise Point West...",
-            "And if you're looking for something a little more exclusive we have private islands available in the Helio Islands.",
-            //"If you're looking for something exclusive we have private islands available in the Helio Islands.",
+            "If you're digging the boardwalk, we have beach houses avialable in Paradise Point...",
+            //"And if you're looking for something a little more exclusive we have private islands available in the Helio Islands.",
+            "If you're looking for something exclusive we have private islands available in the Helio Islands.",
             //"That yacht over there, The Sun Chaser, has a private Captain's Quarters on it that is available to purchse.",
-            //"And if you really want to get out of town, we have 2 m88n pods available in Lunaria",
+            "And if you really want to get out of town, we have m88n pods available in Lunaria",
             'Checkout <a target="_blank" href="https://discord.gg/bjjNewZegM">PLANET M88NWALKER in Discord</a> and DM m88nwalker to inquire.',
-            'On X? <a target="_blank" href="https://twitter.com/moonwalker_nfts">Give him a follow</a> to stay updated.',
+            'On X? <a target="_blank" href="https://x.com/m88nwalker">Give him a follow</a> to stay updated.',
             "Have fun exploring The Nexus. There are lots of hidden treasures around here!"
         ],
 
@@ -648,8 +650,8 @@ define(['character'], function (Character) {
         ],
 
         "nexan37": [
-            //"Ya dig the drums? So does my cat.",
-            //'Check it... <a target="_blank" href="https://www.youtube.com/watch?v=NUYvbT6vTPs">Cat Digs Polka Drums</a> ...LOL',
+            "Ya dig the drums? So does my cat.",
+            'Check it... <a target="_blank" href="https://www.youtube.com/watch?v=NUYvbT6vTPs">Cat Digs Polka Drums</a> ...LOL',
             "Did you hear about DreamLand?? Something weird happened...",
             "It's more of a NightmareLand now...I think they need your help in there!"
         ],
@@ -661,8 +663,8 @@ define(['character'], function (Character) {
 
         "nexan39": [
             "Well hello!",
-            "How do you do?",
-            "Welcome to Paradise Point West."
+            "Welcome to Paradise Point West.",
+            "Make sure to meet the residents and talk with them, they know things..."
         ],
 
         "nexan40": [
@@ -698,8 +700,8 @@ define(['character'], function (Character) {
 
         "nexan45": [
             "Just sweeping up some sand...",
-            "Hey, I hear the ocean is worth exploring...",
-            "But first you have to beat up that octopus and take one of his tentacles."
+            "Hey, I left some little piles of magical sand all around The Nexus...",
+            "If you stand on top of it a portal will bring you back here to the beach."
         ],
 
         "nexan46": [
@@ -719,13 +721,17 @@ define(['character'], function (Character) {
         "nexan48": [
             //"Hey there!",
             "Mmmmmm, m88nshine!",
-            "This stuff is out of this world!"
+            "This stuff is out of this world!",
+            "You can find more in the Champagne Lounge on the Yacht!"
         ],
 
         "m88nmermanking": [
-            "Hey there explorer!",
-            "Welcome to my kingdom. Congratulations on finding my treasure!",
-            "If you own a house in The Nexus pick out a couple pieces to take home with you.",
+            "Hey there explorer, welcome to my kingdom!",
+            "Congratulations on finding my hidden treasure!",
+            "You know all about Poseidons Trident right?",
+            'If not you can <a target="_blank" href="https://explorer.loopring.io/nft/0x1e8ab2cc09be581530bb9f3ac94353f6f7412239-0-0x9c501909139284402c5cb7b992f5584ead266e5d-0x040242f718b1846887030ee10304e0887bc6ada30cf58d3a8fe449cbe5067e2b-10">learn about the lore of Poseidons Trident</a> and see it here!',
+            'Make sure to snap a selfie with me and <a target="_blank" href="https://discord.gg/bjjNewZegM">DM m88nwalker in Discord</a> to see if you are one of the first 8.',
+            "And if you own a home in The Nexus pick out a couple pieces to take home with you.",
             "Just let m88nwalker know and he'll move it over for you."
         ],
 
@@ -815,11 +821,12 @@ define(['character'], function (Character) {
             "Hey! Remember me? I'm from m88nwalker's first LooperLands collection!",
             "There was enough magic left in my hat to stop by and share a little snow.",
             "It's warm here so I can't stay long, but I had to let you know...",
-            "We're hanging out on Santa's Secret Island, decorating for a party!",
-            'If you own a piece from the <a target="_blank" href="https://loopexchange.art/collection/looperlands-christmas">Christmas in LooperLands collection</a> you get early access!',
-            "After Christmas is over I won't have enough magic to keep the portal open. But...",
+            "We're hanging out on Santa's Secret Island, while we wait for next Christmas!",
+            //'If you own a piece from the <a target="_blank" href="https://loopexchange.art/collection/looperlands-christmas">Christmas in LooperLands collection</a> you get early access!',
+            //"After Christmas is over I won't have enough magic to keep the portal open. But...",
             'If you own a piece from the <a target="_blank" href="https://loopexchange.art/collection/looperlands-christmas">Christmas in LooperLands collection</a> you can come visit anytime!',
-            "Enjoy the holidays! See you in there!"
+            "Have fun and stay frosty!"
+            //"Enjoy the holidays! See you in there!"
         ],
 
         "m88nsanta": [
@@ -840,15 +847,13 @@ define(['character'], function (Character) {
         "m88ntownie": [
             "Heyyy! What's up?",
             "My Name is Ty, I'm a Townie! Are you on Taiko yet?",
-            "A new NFT collection of all my friends and I is getting released on Taiko soon!",
-            'You will be able to <a target="_blank" href="https://on.mintpad.co/townies">mint your Townie NFTs</a> directly on Mintpad.',
-            'If you own anything m88nwalker <a target="_blank" href="https://forms.gle/AMzNqiVJcVtCSuXr5">there is a whitelist</a> you can get on.',
-            //'You can <a target="_blank" href="https://on.mintpad.co/townies">mint your Townie NFTs</a> directly on Mintpad.',
+            "A new NFT collection of all my friends are on Taiko!",
+            'You can <a target="_blank" href="https://on.mintpad.co/townies">mint your Townie NFTs</a> directly on Mintpad.',
             "Then just talk to m88nwalker if you want to upgrade and have it integrated like me.",
             "Wanna know something else cool?...",
             "If you get lucky and mint a legendary Zombie Townie...",
             'You get to pick out another one from the <a target="_blank" href="https://loopexchange.art/collection/zombie-townies">Zombie Townies collection</a> on Loopring for free!',
-            "You just pay integration fees"
+            "Join the Townie Clan!"
         ],
 
         "m88ntownie2": [
@@ -863,26 +868,72 @@ define(['character'], function (Character) {
 
         "m88ntownies": [
             "Heyyy! What's up?",
-            "My Name is Ty, I'm a Townie! Are you on Taiko yet?",
-            "A new NFT collection of all my friends and I is getting released on Taiko soon!",
-            'You will be able to <a target="_blank" href="https://on.mintpad.co/townies">mint your Townie NFTs</a> directly on Mintpad.',
-            'If you own anything m88nwalker <a target="_blank" href="https://forms.gle/AMzNqiVJcVtCSuXr5">there is a whitelist</a> you can get on.',
-            //'You can <a target="_blank" href="https://on.mintpad.co/townies">mint your Townie NFTs</a> directly on Mintpad.',
+            "We're The Townies! Are you on Taiko yet?",
+            "A new NFT collection of all my friends are on Taiko!",
+            'You can <a target="_blank" href="https://on.mintpad.co/townies">mint your Townie NFTs</a> directly on Mintpad.',
             "Then just talk to m88nwalker if you want to upgrade and have it integrated like me.",
             "Wanna know something else cool?...",
             "If you get lucky and mint a legendary Zombie Townie...",
             'You get to pick out another one from the <a target="_blank" href="https://loopexchange.art/collection/zombie-townies">Zombie Townies collection</a> on Loopring for free!',
-            "You just pay integration fees"
+            "Join the Townie Clan!"
+        ],
+
+        "m88nastronaut": [
+            "Yooo! Wanna play some laser tag?",
+            //"Gather some players and DM m88nwalker for the gear!",
+            'Gather some players and <a target="_blank" href="https://discord.gg/bjjNewZegM">DM m88nwalker</a> for the gear!',
+            "Make sure to be collecting ore and gold...",
+            "You can use them to craft potions that refill your laser ammo inventory.", 
+            "/openShop blacksmith Blacksmith\'s shop"
+        ],
+
+        "nexanzombiecat": [
+            "Mmmmm brains.....",
+            "Just kidding, it's only rotten cat food!"
+        ],
+
+        "nexanexecutioner": [
+            "Gather round...",
+            "The show is just about to start..."
+        ],
+
+        "nexanzombie2": [
+            //"Mmmmm brains.....",
+            "Arrrr, uhhhhhh, mmmmm!"
+        ],
+
+        "nexanzombie3": [
+            //"Mmmmm brains.....",
+            "Arrrr, uhhhhhh, mmmmm!"
+        ],
+
+        "nexanzombie4": [
+            //"Mmmmm brains.....",
+            "Arrrr, uhhhhhh, mmmmm!"
+        ],
+
+        "nexanzombie5": [
+            //"Mmmmm brains.....",
+            "Arrrr, uhhhhhh, mmmmm!"
+        ],
+
+        "nexanhazmat2": [
+            "Howdy! I'm from the Nexus Hazmat Response Team...",
+            "We'll be bringing in some more supplies soon.",
+            "It's getting hot in here and I'm ready for my lunch break...",
+            "Think I'm gonna go grab some chicken wings.",
+            "Speaking of...can you and your companion go slay hotwing while I'm gone?",
+            "That labyrinth balances out the funky energy in here so we need to keep it clear."
         ],
 
         //MRMlabs NPCs
         "tylerdurden": [
             //"We are all part of the same compost heap.",
             //"The things you own end up owning you.",
-            //"It's only after we've lost everything that we're free to do anything.",
+            "It's only after we've lost everything that we're free to do anything.",
             //"Sticking feathers up your butt does not make you a chicken!",
             //"You decide your own level of involvement.",
-            "You wanna make an omelet, you gotta break some eggs.",
+            //"You wanna make an omelet, you gotta break some eggs.",
             //"His name was Robert Paulson",
             //"I want you to hit me as hard as you can."
         ],
@@ -922,6 +973,8 @@ define(['character'], function (Character) {
             "Greetings!",
             "LooperLands is free to play, but F2P assets will not retain their progress or level.",
             'Browse <a target="_blank" href="https://looperlands.io/shop">our shop</a> to purchase assets that can level up.',
+            'You can also <a target="_blank" href="https://on.mintpad.co/townies">mint a Taiko Townie NFT</a> directly on Mintpad.',
+            'Then just <a target="_blank" href="https://discord.gg/zWFKjfS2PA">DM us in Discord</a> to get your asset integrated!',
             "Check your quest log if you're trying to figure out where to go.",
             "If you think you're lost you can pull up a map overview by pressing (M) on your keyboard.",
             'Need help? <a target="_blank" href="https://discord.gg/zWFKjfS2PA">Join us in Discord</a> and ask away!'

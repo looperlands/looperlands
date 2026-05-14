@@ -1934,8 +1934,6 @@ let Properties = {
         drops: {
             manacrystal: 50,
             GOLD2: 10,
-            m88ndirt: 1,
-            m88ngem: 1,
             GOLD4: 1
         },
         respawnDelay: 60000,
@@ -1977,15 +1975,287 @@ let Properties = {
         respawnDelay: 40000,
     },
 
+    m88nufo1: {
+        level: 1,
+        drops: {
+            m88ngem: 100,
+        },
+        messages: ['Greetings two eyes!', 'wen moon?', 'Catch me if you can!', 'Go Team Green!'],
+        respawnDelay: 242000
+    },
+
+    m88nufo2: {
+        level: 1,
+        drops: {
+            m88ngem: 100,
+        },
+        messages: ['Greetings two eyes!', 'wen moon?', 'Catch me if you can!', 'Go Team Blue!'],
+        respawnDelay: 242000
+    },
+
+    m88nufo3: {
+        level: 1,
+        drops: {
+            m88ngem: 100,
+        },
+        messages: ['Greetings two eyes!', 'wen moon?', 'Catch me if you can!', 'Go Team Yellow!'],
+        respawnDelay: 242000
+    },
+
+    m88nufo4: {
+        level: 1,
+        drops: {
+            m88ngem: 100,
+        },
+        messages: ['Greetings two eyes!', 'wen moon?', 'Catch me if you can!', 'Go Team Red!'],
+        respawnDelay: 242000
+    },
+
     m88nmine: {
         level: 69,
         friendly: true, //not actually friendly, just AoE immune
         hp: 1,
         drops: {
-            m88ndirt: 99,
+            m88ndirt: 95,
+            m88nsourworm: 1,
+            m88nsourworm2: 1,
+            m88ngoldworm: 1,
+            m88ndiamondworm: 1,
             m88ngem: 1,
         },
         respawnDelay: 4000000 //one hour
+    },
+
+    m88nbtcmine: {
+        level: 69,
+        friendly: true, //not actually friendly, just AoE immune
+        hp: 1,
+        drops: {
+            m88nbitcoin: 1,
+            m88nsourworm: 1,
+            m88nsourworm2: 1,
+            m88ngoldworm: 1,
+            m88ndiamondworm: 1,
+            m88ndirt: 95,
+        },
+        respawnDelay: 600000 //10 minutes
+    },
+
+    m88nmeathook: {
+        level: 5,
+        friendly: true, //not actually friendly, just AoE immune
+        hp: 1,
+        drops: {
+            flask: 35,
+            GOLD4: 30,
+            taikoboost: 5,
+            GOLD5: 10,
+            loopring: 16,
+            m88ngravestone: 1,
+            m88nskull: 1,
+            m88nspiderweb: 1,
+            m88nclover: 1
+        },
+        respawnDelay: 60000 //one minute
+    },
+    
+    m88npoisonfrog1: {
+        level: 10,
+        drops: {
+            flask: 25,
+            loopring: 5,
+            m88ngoldclover: 15,
+            m88nluckyclover: 5,
+            m88nluckygoldclover: 1
+        },
+        messages: ['Ribbit!', 'Touch me, I am definitely not poisonous...', 'I live in the poinsonous pond, does not seem to bother me...'],
+        hpMod: 20,
+        weaponMod: 1.2,
+        respawnDelay: 300000 //five minutes
+    },
+
+    m88npoisonfrog2: {
+        level: 20,
+        drops: {
+            flask: 35,
+            loopring: 5,
+            m88ngoldclover: 15,
+            m88nluckyclover: 5,
+            m88nluckygoldclover: 1
+        },
+        messages: ['Ribbit!', 'Touch me, I am definitely not poisonous...', 'I live in the poinsonous pond, does not seem to bother me...'],
+        hpMod: 20,
+        weaponMod: 1.4,
+        respawnDelay: 300000 //five minutes
+    },
+
+    m88npoisonfrog3: {
+        level: 30,
+        drops: {
+            flask: 45,
+            loopring: 5,
+            m88ngoldclover: 15,
+            m88nluckyclover: 5,
+            m88nluckygoldclover: 1
+        },
+        messages: ['Ribbit!', 'Touch me, I am definitely not poisonous...', 'I live in the poinsonous pond, does not seem to bother me...'],
+        hpMod: 20,
+        weaponMod: 1.6,
+        respawnDelay: 300000 //five minutes
+    },
+
+    m88npoisonfrog4: {
+        level: 40,
+        drops: {
+            flask: 55,
+            loopring: 5,
+            m88ngoldclover: 15,
+            m88nluckyclover: 5,
+            m88nluckygoldclover: 1
+        },
+        messages: ['Ribbit!', 'Touch me, I am definitely not poisonous...', 'I live in the poinsonous pond, does not seem to bother me...'],
+        hpMod: 20,
+        weaponMod: 1.8,
+        respawnDelay: 300000 //five minutes
+    },
+
+    m88npoisonfrog5: {
+        level: 50,
+        drops: {
+            flask: 65,
+            loopring: 5,
+            m88ngoldclover: 15,
+            m88nluckyclover: 5,
+            m88nluckygoldclover: 1
+        },
+        messages: ['Ribbit!', 'Touch me, I am definitely not poisonous...', 'I live in the poinsonous pond, does not seem to bother me...'],
+        hpMod: 20,
+        weaponMod: 2.0,
+        respawnDelay: 600000 //ten minutes
+    },
+
+    m88nzombieboo: {
+        level: 69,
+        drops: {
+            loopring: 75,
+            m88nluckyclover: 15,
+            m88nluckygoldclover: 5,
+            m88nluckydiamondclover: 1
+        },
+        messages: ['Boo!', 'Pet me, I definitely do not bite...', 'Do not trust anything that is alive...'],
+        hpMod: 20,
+        weaponMod: 2.0,
+        respawnDelay: 900000 //fifteen minutes
+    },
+
+    m88nsaw: {
+        level: 22,
+        drops: {
+            flask: 45,
+            loopring: 5,
+            m88nclover: 15,
+            m88nluckyclover: 5,
+            m88ngoldclover: 1
+        },
+        messages: ['Bzzzzzz!', 'Yum!', 'Eww, that was a little tough...', 'You thought you were already dead, huh?'],
+        armorMod: 1.2,
+        hpMod: 20,
+        weaponMod: 1.2,
+        respawnDelay: 180000 //three minutes
+    },
+
+    m88nhotwing: {
+        level: 88,
+        drops: {
+            m88nclover: 34,
+            m88ngoldclover: 22,
+            m88ndiamondclover: 15,
+            m88nluckyclover: 10,
+            m88ngravestone: 4,
+            m88nskull: 4,
+            m88nspiderweb: 4,
+            m88nluckygoldclover: 5,
+            m88nluckydiamondclover: 1
+        },
+        messages: ['What is this labyrinth?!', 'Yum!', 'You can not handle the hot wing...', 'Stay back or die!'],
+        armorMod: 3,
+        hpMod: 20,
+        weaponMod: 0.1,
+        respawnDelay: 300000 //five minutes
+    },
+
+    m88ntrainer: {
+        level: 1,
+        friendly: true, //not actually friendly, just AoE immune
+        hp: 1000,
+        drops: {
+            flask: 5,
+            loopring: 5,
+            GOLD4: 5,
+            GOLD5: 1,
+            m88nclover: 1
+        },
+        respawnDelay: 1000 //one second
+    },
+
+    m88ntrainer2: {
+        level: 1,
+        friendly: true, //not actually friendly, just AoE immune
+        hp: 1000,
+        drops: {
+            flask: 5,
+            loopring: 5,
+            GOLD4: 5,
+            GOLD5: 1,
+            m88nclover: 1
+        },
+        respawnDelay: 1000 //one second
+    },
+
+    m88ntrainer3: {
+        level: 1,
+        friendly: true, //not actually friendly, just AoE immune
+        hp: 1000,
+        drops: {
+            flask: 5,
+            loopring: 5,
+            GOLD4: 5,
+            GOLD5: 1,
+            m88nclover: 1
+        },
+        respawnDelay: 1000 //one second
+    },
+
+    m88ntrainer4: {
+        level: 1,
+        friendly: true, //not actually friendly, just AoE immune
+        hp: 1000,
+        drops: {
+            flask: 5,
+            loopring: 5,
+            GOLD4: 5,
+            GOLD5: 1,
+            m88nclover: 1
+        },
+        respawnDelay: 1000 //one second
+    },
+
+    m88nzombietrash: {
+        level: 69,
+        friendly: true, //not actually friendly, just AoE immune
+        hp: 1,
+        drops: {
+            m88nfiat: 1,
+            m88nzombieamc: 1,
+            m88nzombiebb: 1,
+            m88nzombiebbby: 1,
+            m88nzombiegme: 1,
+            m88nzombieradio: 1,
+            m88nzombiesears: 1,
+            m88nzombietoyrf: 1,
+            m88nzombiefish: 10,
+        },
+        respawnDelay: 900000 //fifteen minutes
     },
 
     m88ncow: {
@@ -1993,8 +2263,8 @@ let Properties = {
         friendly: true, //not actually friendly, just AoE immune
         hp: 10,
         drops: {
-            MILK1: 75,
-            m88nsteak: 25,
+            MILK1: 25,
+            m88nsteak: 15,
         },
         respawnDelay: 900000 //fifteen minutes
     },
@@ -2052,9 +2322,13 @@ let Properties = {
             m88nkevlararmor: 1,
             m88nwizardshat: 1,
             m88ndirt: 10,
-            m88ngem: 20,
+            m88ngem: 15,
             GOLD4: 10,
             GOLD5: 10,
+            m88nsourworm: 1,
+            m88nsourworm2: 1,
+            m88ngoldworm: 1,
+            m88ndiamondworm: 1,
         },
         respawnDelay: 4000000 //one hour
     },
@@ -2526,6 +2800,41 @@ let Properties = {
         friendly: true
     },
 
+    m88nastronaut2: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+
+    m88nastronaut3: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+
+    nexanzombie1: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+
+    m88ngrimreaper: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+
+    nexanhazmat1: {
+        hp: 10,
+        armor: 1,
+        weapon: 1,
+        friendly: true
+    },
+
     //Short Destroyers
     lateflea: {
         level: 5,
@@ -2911,9 +3220,9 @@ let Properties = {
             duration: 5000
         },
         inventoryDescription: "Brown Bag",
-        respawnDelay: 60000,
+        respawnDelay: 10000,
         onConsume: function(player) {
-            player.releaseItem(Types.Entities.M88NDIRT);
+            player.releaseItem(Types.Entities.M88NJOINT);
         }
     },
     m88nvipbag: {
@@ -2924,7 +3233,7 @@ let Properties = {
             duration: 5000
         },
         inventoryDescription: "Black Bag",
-        respawnDelay: 60000,
+        respawnDelay: 10000,
         onConsume: function(player) {
             player.releaseItem(Types.Entities.M88NTICKET);
         }
@@ -2937,7 +3246,7 @@ let Properties = {
             duration: 5000
         },
         inventoryDescription: "Golden Bag",
-        respawnDelay: 60000,
+        respawnDelay: 10000,
         onConsume: function(player) {
             player.releaseItem(Types.Entities.M88NGOLDENTICKET);
         }
@@ -2950,7 +3259,7 @@ let Properties = {
             duration: 5000
         },
         inventoryDescription: "Gem Bag",
-        respawnDelay: 60000,
+        respawnDelay: 10000,
         onConsume: function(player) {
             player.releaseItem(Types.Entities.M88NGEM);
         }
@@ -2963,9 +3272,9 @@ let Properties = {
             duration: 5000
         },
         inventoryDescription: "Lucky Bag",
-        respawnDelay: 60000,
+        respawnDelay: 10000,
         onConsume: function(player) {
-            player.releaseItem(Types.Entities.M88NTACO);
+            player.releaseItem(Types.Entities.M88NBLUNT);
         }
     },
     m88nmedic: {
@@ -3584,6 +3893,16 @@ let Properties = {
         collectAmount: 500000,
         respawnDelay: 42069741
     },
+    m88nbitcoin: {
+        collectable: true,
+        inventoryDescription: "Bitcoin",
+        respawnDelay: 42069741
+    },
+    m88nbitcoinvip: {
+        //collectable: true,
+        //inventoryDescription: "Bitcoin VIP",
+        respawnDelay: 42069741
+    },
     m88nmoneybags: {
         //collectable: true,
         //inventoryDescription: "Money Bags",
@@ -3670,9 +3989,13 @@ let Properties = {
         }
     },
     cigarette: {
+        collectable: true,
+        inventoryDescription: "Ciggy",
         respawnDelay: 9900000
     },
     cigarettepack: {
+        collectable: true,
+        inventoryDescription: "Ciggy Pack",
         respawnDelay: 9900000,
     },
     soap: {
@@ -3739,10 +4062,164 @@ let Properties = {
         respawnDelay: 9900000
     },
     m88nclover: {
-        respawnDelay: 9900000
+        collectable: true,
+        inventoryDescription: "Clover",
+        respawnDelay: 3000000,
+        consumable: true,
+        cooldown: {
+            group: "xpPotions",
+            duration: 30000
+        },
+        onConsume: function(player) {
+            const bot = player.getBot()
+            if (bot) {
+                bot.playerClassModifiers.applyTemporaryModifierWithTimeout('xp', 2, 60000);
+            }
+        }        
     },
     m88nluckyclover: {
-        respawnDelay: 9900000
+        collectable: true,
+        inventoryDescription: "Lucky Clover",
+        respawnDelay: 69420741,
+        consumable: true,
+        cooldown: {
+            group: "meleeDamageDealt",
+            duration: 10000
+        },
+        onConsume: function(player) {
+            const bot = player.getBot()
+            if (bot) {
+                bot.playerClassModifiers.applyTemporaryModifierWithTimeout('meleeDamageDealt', 2, 60000);
+            }
+        }        
+    },
+    m88ngoldclover: {
+        collectable: true,
+        inventoryDescription: "Gold Clover",
+        respawnDelay: 3000000,
+        consumable: true,
+        cooldown: {
+            group: "xpPotions",
+            duration: 30000
+        },
+        onConsume: function(player) {
+            const bot = player.getBot()
+            if (bot) {
+                bot.playerClassModifiers.applyTemporaryModifierWithTimeout('xp', 3, 120000);
+            }
+        }        
+    },
+    m88nluckygoldclover: {
+        collectable: true,
+        inventoryDescription: "Lucky Gold Clover",
+        respawnDelay: 69420741,
+        consumable: true,
+        cooldown: {
+            group: "meleeDamageDealt",
+            duration: 10000
+        },
+        onConsume: function(player) {
+            const bot = player.getBot()
+            if (bot) {
+                bot.playerClassModifiers.applyTemporaryModifierWithTimeout('meleeDamageDealt', 3, 120000);
+            }
+        }        
+    },
+    m88ndiamondclover: {
+        collectable: true,
+        inventoryDescription: "Diamond Clover",
+        respawnDelay: 3000000,
+        consumable: true,
+        cooldown: {
+            group: "xpPotions",
+            duration: 30000
+        },
+        onConsume: function(player) {
+            const bot = player.getBot()
+            if (bot) {
+                bot.playerClassModifiers.applyTemporaryModifierWithTimeout('xp', 4, 180000);
+            }
+        }        
+    },
+    m88nluckydiamondclover: {
+        collectable: true,
+        inventoryDescription: "Lucky Diamond Clover",
+        respawnDelay: 69420741,
+        consumable: true,
+        cooldown: {
+            group: "meleeDamageDealt",
+            duration: 10000
+        },
+        onConsume: function(player) {
+            const bot = player.getBot()
+            if (bot) {
+                bot.playerClassModifiers.applyTemporaryModifierWithTimeout('meleeDamageDealt', 4, 180000);
+            }
+        }        
+    },
+    m88njoint: {
+        collectable: true,
+        inventoryDescription: "Joint",
+        respawnDelay: 3000000,
+        consumable: true,
+        cooldown: {
+            group: "xpPotions",
+            duration: 30000
+        },
+        onConsume: function(player) {
+            const bot = player.getBot()
+            if (bot) {
+                bot.playerClassModifiers.applyTemporaryModifierWithTimeout('xp', 5, 300000);
+            }
+        }        
+    },
+    m88nblunt: {
+        collectable: true,
+        inventoryDescription: "Lucky Blunt",
+        respawnDelay: 69420741,
+        consumable: true,
+        cooldown: {
+            group: "meleeDamageDealt",
+            duration: 10000
+        },
+        onConsume: function(player) {
+            const bot = player.getBot()
+            if (bot) {
+                bot.playerClassModifiers.applyTemporaryModifierWithTimeout('meleeDamageDealt', 10, 120000);
+            }
+        }        
+    },
+    m88ngoldblunt: {
+        collectable: true,
+        inventoryDescription: "Lucky Gold Blunt",
+        respawnDelay: 69420741,
+        consumable: true,
+        cooldown: {
+            group: "meleeDamageDealt",
+            duration: 10000
+        },
+        onConsume: function(player) {
+            const bot = player.getBot()
+            if (bot) {
+                bot.playerClassModifiers.applyTemporaryModifierWithTimeout('meleeDamageDealt', 10, 180000);
+            }
+        }        
+    },
+    m88ndiamondblunt: {
+        collectable: true,
+        inventoryDescription: "Lucky Diamond Blunt",
+        respawnDelay: 69420741,
+        consumable: true,
+        cooldown: {
+            group: "meleeDamageDealt",
+            duration: 10000
+        },
+        onConsume: function(player) {
+            const bot = player.getBot()
+            if (bot) {
+                bot.playerClassModifiers.applyTemporaryModifierWithTimeout('meleeDamageDealt', 10, 300000);
+            }
+        }        
     },
     m88nmail: {
         respawnDelay: 9900000
@@ -3752,19 +4229,55 @@ let Properties = {
     },
     m88nsteak: {
         collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "hpPotions",
+            duration: 60000
+        },
         inventoryDescription: "Steak",
-        respawnDelay: 9900000
+        respawnDelay: 9900000,
+        onConsume: function(player){
+            player.regenHealthBy(450);
+        }
     },
     m88npotato: {
         collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "hpPotions",
+            duration: 60000
+        },
         inventoryDescription: "Potato",
-        respawnDelay: 9900000
+        respawnDelay: 9900000,
+        onConsume: function(player){
+            player.regenHealthBy(300);
+        }
     },
     m88nbrewski: {
-        respawnDelay: 9900000
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "hpPotions",
+            duration: 60000
+        },
+        inventoryDescription: "Brewski",
+        respawnDelay: 9900000,
+        onConsume: function(player){
+            player.regenHealthBy(150);
+        }
     },
     m88npie: {
-        respawnDelay: 9900000
+        collectable: true,
+        consumable: true,
+        cooldown: {
+            group: "hpPotions",
+            duration: 60000
+        },
+        inventoryDescription: "Pie",
+        respawnDelay: 9900000,
+        onConsume: function(player){
+            player.regenHealthBy(600);
+        }
     },
     m88nseeds: {
         collectable: true,
@@ -3772,6 +4285,8 @@ let Properties = {
         respawnDelay: 9900000
     },
     m88nsack: {
+        collectable: true,
+        inventoryDescription: "Sack",
         respawnDelay: 9900000
     },
     m88nshovel: {
@@ -3796,7 +4311,7 @@ let Properties = {
         inventoryDescription: "Worm",
         respawnDelay: 9900000,
         onConsume: function(player){
-            player.playerClassModifiers.applyTemporaryModifierWithTimeout('fishing', 10, 60000);
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('fishing', 10, 30000);
         }
     },
     m88nsourworm: {
@@ -3814,7 +4329,7 @@ let Properties = {
         inventoryDescription: "Sour Gummy Worm",
         respawnDelay: 9900000,
         onConsume: function(player){
-            player.playerClassModifiers.applyTemporaryModifierWithTimeout('fishing', 30, 60000);
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('fishing', 30, 120000);
         }
     },
     m88ngoldworm: {
@@ -3823,7 +4338,7 @@ let Properties = {
         inventoryDescription: "Gold Worm",
         respawnDelay: 9900000,
         onConsume: function(player){
-            player.playerClassModifiers.applyTemporaryModifierWithTimeout('fishing', 40, 60000);
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('fishing', 40, 180000);
         }
     },
     m88ndiamondworm: {
@@ -3832,7 +4347,7 @@ let Properties = {
         inventoryDescription: "Diamond Worm",
         respawnDelay: 9900000,
         onConsume: function(player){
-            player.playerClassModifiers.applyTemporaryModifierWithTimeout('fishing', 50, 60000);
+            player.playerClassModifiers.applyTemporaryModifierWithTimeout('fishing', 50, 30000);
         }
     },
     m88nrose: {
@@ -3857,7 +4372,7 @@ let Properties = {
     },
     m88ntentacle: {
         collectable: true,
-        inventoryDescription: "Octopussy Tentacle",
+        inventoryDescription: "Octopus Tentacle",
         respawnDelay: 9900000
     },
     m88nskeletonkey: {
@@ -3871,12 +4386,87 @@ let Properties = {
         respawnDelay: 5500000,
         cooldown: {
             group: "immunity",
-            duration: 60000
+            duration: 10000
         },
         inventoryDescription: "Strange Yellow Liquid",
         onConsume: function(player){
             player.startInvincibility();
         }
+    },
+    m88nzombiefish: {
+        collectable: true,
+        inventoryDescription: "Zombie Fish",
+        respawnDelay: 9900000
+    },
+
+    m88nfiat: {
+        collectable: true,
+        inventoryDescription: "Dirty Fiat",
+        respawnDelay: 9900000
+    },
+
+    m88ngravestone: {
+        collectable: true,
+        inventoryDescription: "Gravestone",
+        respawnDelay: 9900000
+    },
+
+    m88nskull: {
+        collectable: true,
+        inventoryDescription: "Skull",
+        respawnDelay: 9900000
+    },
+
+    m88nspiderweb: {
+        collectable: true,
+        inventoryDescription: "Spider Web",
+        respawnDelay: 9900000
+    },
+
+    m88nzombieamc: {
+        collectable: true,
+        inventoryDescription: "AMC Shares",
+        respawnDelay: 9900000
+    },
+
+    m88nzombiebb: {
+        collectable: true,
+        inventoryDescription: "Blockbuster Shares",
+        respawnDelay: 9900000
+    },
+
+    m88nzombiebbby: {
+        collectable: true,
+        inventoryDescription: "BBBY Shares",
+        respawnDelay: 9900000
+    },
+
+    m88nzombiegme: {
+        collectable: true,
+        inventoryDescription: "GME Shares",
+        respawnDelay: 9900000
+    },
+
+    m88nzombieradio: {
+        collectable: true,
+        inventoryDescription: "Radioshack Shares",
+        respawnDelay: 9900000
+    },
+
+    m88nzombiesears: {
+        collectable: true,
+        inventoryDescription: "Sears Shares",
+        respawnDelay: 9900000
+    },
+
+    m88nzombietoyrf: {
+        collectable: true,
+        inventoryDescription: "ToysRUs Shares",
+        respawnDelay: 9900000
+    },
+
+    poseidonstrident: {
+        respawnDelay: 9900000
     },
 
     m88nsticks: {
