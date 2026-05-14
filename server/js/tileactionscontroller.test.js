@@ -147,6 +147,19 @@ describe("TileActionsController farming", () => {
         expect(stage.itemChoices.M88NLETTUCE.disabled).toBe(false);
     });
 
+    test("prepare continues with local state when farm persistence is unavailable", async () => {
+        dao.saveFarmPlot.mockRejectedValueOnce(new Error("HTTP error! status: 404"));
+
+        const result = await controller.executeStage("avatar", "duckville", tileAction, null, world);
+
+        expect(result.success).toBe(true);
+        expect(world.placeStagedTile).toHaveBeenCalledWith(10, 20, 17118, 0);
+        expect(world.sendNotifications).toHaveBeenCalledWith(world.players[1], "The soil is ready.");
+
+        const stage = await controller.findCurrentStage("avatar", "duckville", tileAction, world);
+        expect(stage.key).toBe("plant");
+    });
+
     test("plant consumes seeds and water becomes the next action", async () => {
         await controller.executeStage("avatar", "duckville", tileAction, null, world);
         await controller.executeStage("avatar", "duckville", tileAction, "M88NLETTUCE", world);

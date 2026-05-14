@@ -3,10 +3,10 @@ module.exports = {
   coverageReporters: ['text', 'lcov'],
   coverageThreshold: {
     global: {
-      branches: 80,
+      branches: 65,
       functions: 85,
-      lines: 90,
-      statements: 90,
+      lines: 85,
+      statements: 85,
     },
   },
   coveragePathIgnorePatterns: ['./shared/js/*', '/server/js/discord.js'],

@@ -612,9 +612,41 @@ const loadFarmPlot = async function (mapId, x, y) {
 }
 
 const saveFarmPlot = async function (plot) {
-  const result = await platformClient.saveFarmPlot(plot);
-  printResponseJSON('saveFarmPlot', result);
-  return result;
+  try {
+    console.info("[tileStage.dao] saveFarmPlot", JSON.stringify({
+      mapId: plot?.mapId,
+      x: plot?.x,
+      y: plot?.y,
+      state: plot?.state,
+      crop: plot?.crop,
+      ownerNftId: plot?.ownerNftId,
+      keys: plot && typeof plot === "object" ? Object.keys(plot) : undefined,
+    }));
+    const result = await platformClient.saveFarmPlot(plot);
+    printResponseJSON('saveFarmPlot', result);
+    console.info("[tileStage.dao] saveFarmPlot result", JSON.stringify({
+      mapId: plot?.mapId,
+      x: plot?.x,
+      y: plot?.y,
+      type: Array.isArray(result) ? "array" : typeof result,
+      keys: result && typeof result === "object" ? Object.keys(result) : undefined,
+      state: result?.state,
+      crop: result?.crop,
+    }));
+    return result;
+  } catch (error) {
+    console.error("[tileStage.dao] saveFarmPlot error", JSON.stringify({
+      mapId: plot?.mapId,
+      x: plot?.x,
+      y: plot?.y,
+      state: plot?.state,
+      crop: plot?.crop,
+      ownerNftId: plot?.ownerNftId,
+      message: error?.message,
+      stack: error?.stack,
+    }));
+    throw error;
+  }
 }
 
 const deleteFarmPlot = async function (mapId, x, y) {

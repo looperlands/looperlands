@@ -430,20 +430,21 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc'],
     
     
                         if(entity instanceof Character && !entity.isDead && entity.hasWeapon()) {
-                            let weapon = this.game.sprites[entity.getWeaponName()];
+                            const weaponName = entity.actionToolName || entity.getWeaponName();
+                            let weapon = this.game.sprites[weaponName];
     
-                            if(!Types.alwaysOnTop(entity.getWeaponName()) && entity.orientation === Types.Orientations.UP) {
+                            if(!Types.alwaysOnTop(weaponName) && entity.orientation === Types.Orientations.UP) {
                                 if (weapon) {
-                                    let weaponAnimData = weapon.animationData[anim.name],
+                                    let weaponAnimData = weapon.animationData[anim.name] || weapon.animationData.idle,
                                         index = frame.index < weaponAnimData.length ? frame.index : frame.index % weaponAnimData.length;
                                     wx = weapon.width * index * os,
-                                        wy = weapon.height * anim.row * os,
+                                        wy = weapon.height * weaponAnimData.row * os,
                                         ww = weapon.width * os,
                                         wh = weapon.height * os;
     
                                     entityData.drawData.push({
                                         "id": weapon.id,
-                                        "spriteName": entity.getWeaponName(),
+                                        "spriteName": weaponName,
                                         "sx": wx,
                                         "sy": wy,
                                         "sW": ww,
@@ -496,19 +497,20 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc'],
                     }
     
                     if(entity instanceof Character && !entity.isDead && entity.hasWeapon()) {
-                        let weapon = this.game.sprites[entity.getWeaponName()];
-                        if(Types.alwaysOnTop(entity.getWeaponName()) || entity.orientation !== Types.Orientations.UP) {
+                        const weaponName = entity.actionToolName || entity.getWeaponName();
+                        let weapon = this.game.sprites[weaponName];
+                        if(Types.alwaysOnTop(weaponName) || entity.orientation !== Types.Orientations.UP) {
                             if (weapon) {
-                                let weaponAnimData = weapon.animationData[anim.name],
+                                let weaponAnimData = weapon.animationData[anim.name] || weapon.animationData.idle,
                                     index = frame.index < weaponAnimData.length ? frame.index : frame.index % weaponAnimData.length;
                                 wx = weapon.width * index * os,
-                                    wy = weapon.height * anim.row * os,
+                                    wy = weapon.height * weaponAnimData.row * os,
                                     ww = weapon.width * os,
                                     wh = weapon.height * os;
     
                                 entityData.drawData.push({
                                     "id": weapon.id,
-                                    "spriteName": entity.getWeaponName(),
+                                    "spriteName": weaponName,
                                     "sx": wx,
                                     "sy": wy,
                                     "sW": ww,

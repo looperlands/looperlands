@@ -72,6 +72,14 @@ class DuckvilleTileActionsController {
             const plot = await this.getPlot(map, tileAction);
             await this.refreshVisualStage(map, tileAction, plot, farmDefinition, world);
             const stage = await this.getStageForPlot(nftId, map, tileAction, plot, farmDefinition, world);
+            console.info("[tileStage.duckville] execute stage", JSON.stringify({
+                nftId,
+                map,
+                tileAction,
+                item,
+                plot: this.describePlot(plot),
+                stage: this.describeStage(stage),
+            }));
 
             if (!stage || stage.inProgress || stage.waiting) {
                 if (stage && stage.message) {
@@ -95,7 +103,14 @@ class DuckvilleTileActionsController {
                     return { success: false };
             }
         } catch (error) {
-            console.error("executeStage", error);
+            console.error("[tileStage.duckville] executeStage error", JSON.stringify({
+                nftId,
+                map,
+                tileAction,
+                item,
+                message: error?.message,
+                stack: error?.stack,
+            }));
             this.notifyPlayer(world, nftId, "Something went wrong while tending this plot.");
             return { success: false };
         } finally {
@@ -197,6 +212,22 @@ class DuckvilleTileActionsController {
             crop: plot.crop,
             ownerNftId: plot.ownerNftId,
             isEmptyObject: Object.keys(plot).length === 0,
+        };
+    }
+
+    describeStage(stage) {
+        if (!stage) {
+            return null;
+        }
+
+        return {
+            key: stage.key,
+            name: stage.name,
+            waiting: stage.waiting,
+            inProgress: stage.inProgress,
+            requirements: stage.requirements,
+            hasTool: stage.hasTool,
+            itemChoiceKeys: stage.itemChoices ? Object.keys(stage.itemChoices) : undefined,
         };
     }
 
@@ -466,11 +497,41 @@ class DuckvilleTileActionsController {
     }
 
     async savePlot(plot) {
-        await this.dao.saveFarmPlot(plot);
+        console.info("[tileStage.duckville] save plot", JSON.stringify({
+            plot: this.describePlot(plot),
+        }));
+        try {
+            await this.dao.saveFarmPlot(plot);
+        } catch (error) {
+            if (this.isFarmPersistenceUnavailable(error)) {
+                console.warn("[tileStage.duckville] farm persistence unavailable; continuing with local plot state", JSON.stringify({
+                    plot: this.describePlot(plot),
+                    message: error?.message,
+                }));
+                return;
+            }
+            throw error;
+        }
     }
 
     async deletePlot(map, tileAction) {
-        await this.dao.deleteFarmPlot(map, tileAction.gridX, tileAction.gridY);
+        try {
+            await this.dao.deleteFarmPlot(map, tileAction.gridX, tileAction.gridY);
+        } catch (error) {
+            if (this.isFarmPersistenceUnavailable(error)) {
+                console.warn("[tileStage.duckville] farm persistence unavailable; continuing with local plot delete", JSON.stringify({
+                    map,
+                    tileAction,
+                    message: error?.message,
+                }));
+                return;
+            }
+            throw error;
+        }
+    }
+
+    isFarmPersistenceUnavailable(error) {
+        return error?.message?.includes("status: 404") || error?.message?.includes("status: 405");
     }
 
     setTileActionStage(map, tileAction, plot) {
