@@ -885,9 +885,6 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc'],
                         return;
                     }
 
-                    console.log('-------');
-                    console.log({tileid: tileId, setW: tilesetwidth, setH: tilesetheight, gridW: m.width, cellid: tileIndex, slideOffsetX: 0, slideOffsetY: 0, colorShift: 0})
-                    console.log('========');
                     if(highTile === m.isHighTile(stage.tile) && animated === m.isAnimatedTile(stage.tile)) {
                         let tileId = stage.tile;
                         if(stage.animatedTile) {
