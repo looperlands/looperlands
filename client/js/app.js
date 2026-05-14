@@ -390,7 +390,7 @@ define(['jquery', 'storage'], function ($, Storage) {
 
                 choiceHtml = '';
                 if (option.image) {
-                    choiceHtml += `<img class="image panelBorder" src="${option.image}" />`;
+                    choiceHtml += `<div class="image-frame panelBorder"><img class="image" src="${option.image}" /></div>`;
                 }
 
                 if (option.title) {
@@ -406,6 +406,26 @@ define(['jquery', 'storage'], function ($, Storage) {
                 }
 
                 let choice = $('<div class="option"></div>').html(choiceHtml);
+                const configureSelectionImage = function () {
+                    const image = this;
+                    const frameSize = image.naturalHeight;
+                    const frameCount = frameSize > 0 ? Math.round(image.naturalWidth / frameSize) : 1;
+                    if (frameCount > 1) {
+                        $(image).parent()
+                            .addClass('animated-strip')
+                            .css({
+                                '--selection-frame-count': frameCount,
+                                '--selection-strip-distance': '-' + (48 * (frameCount - 1)) + 'px',
+                                '--selection-strip-steps': frameCount - 1,
+                                '--selection-strip-duration': Math.max(600, frameCount * 220) + 'ms',
+                            });
+                    }
+                };
+                choice.find('.image').on('load', configureSelectionImage).each(function () {
+                    if (this.complete) {
+                        configureSelectionImage.call(this);
+                    }
+                });
 
                 if(!option.disabled) {
                     choice.click((e) => {

@@ -186,6 +186,39 @@ module.exports = function processMap(json, options) {
         }
     }
 
+    var removeStagedTileAnimationTiming = function () {
+        if (mode !== "client" || !map.tilesetColumns) {
+            return;
+        }
+
+        _.each(map.stagedTiles, function (stagedTile, key) {
+            var baseTileId = parseInt(key, 10),
+                width = stagedTile.size?.w || 1,
+                height = stagedTile.size?.h || 1;
+
+            if (Number.isNaN(baseTileId)) {
+                return;
+            }
+
+            for (var x = 0; x < width; x += 1) {
+                for (var y = 0; y < height; y += 1) {
+                    var tileId = baseTileId + x + (y * map.tilesetColumns),
+                        animation = map.animated[tileId];
+
+                    if (!animation) {
+                        continue;
+                    }
+
+                    if (Number(animation.l) > 1) {
+                        animation.l = 1;
+                    }
+
+                    delete animation.d;
+                }
+            }
+        });
+    }
+
     if (Tiled.tileset instanceof Array) {
         _.each(Tiled.tileset, function (tileset) {
             if (tileset.name === "tilesheet") {
@@ -228,6 +261,8 @@ module.exports = function processMap(json, options) {
     } else {
         console.error("A tileset is missing");
     }
+
+    removeStagedTileAnimationTiming();
 
     var processDoor = function (door) {
         let newDoor = {
