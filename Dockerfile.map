@@ -1,18 +1,17 @@
-FROM ubuntu:latest
+FROM ubuntu:22.04
 ENV NEW_RELIC_NO_CONFIG_FILE=true
-ENV DEBIAN_FRONTEND noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
 ARG MAP_FILE
-RUN apt -y update
-RUN apt -q -y install curl
-ENV NVM_DIR /usr/local/nvm
-ENV NODE_VERSION v20.9.0
-RUN mkdir -p /usr/local/nvm && apt-get update && echo "y" | apt-get install curl
+RUN apt-get update -yq && apt-get install -yq curl
+ENV NVM_DIR=/usr/local/nvm
+ENV NODE_VERSION=v20.9.0
+RUN mkdir -p /usr/local/nvm
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
 RUN /bin/bash -c "source $NVM_DIR/nvm.sh && nvm install $NODE_VERSION && nvm use --delete-prefix $NODE_VERSION"
-ENV NODE_PATH $NVM_DIR/versions/node/$NODE_VERSION/bin
-ENV PATH $NODE_PATH:$PATH
+ENV NODE_PATH=$NVM_DIR/versions/node/$NODE_VERSION/bin
+ENV PATH=$NODE_PATH:$PATH
 RUN apt-get update -yq \
-    && apt-get install gnupg python3 python3-pip python3-lxml zip unzip -yq
+    && apt-get install gnupg python3 python3-distutils python3-pip python3-lxml zip unzip -yq
 
 WORKDIR /opt/app
 COPY package*.json /opt/app
