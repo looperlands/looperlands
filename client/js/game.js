@@ -13,6 +13,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.started = false;
                 this.hasNeverStarted = true;
                 this.buffTickInterval = null;
+                this.scenePollingInterval = null;
+                this.playerPositionReady = false;
 
                 this.renderer = null;
                 this.updater = null;
@@ -6253,6 +6255,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             },
 
             initPlayer: function () {
+                this.playerPositionReady = false;
 
                 this.player.setSpriteName(this.storage.data.player.armor);
                 if (this.storage.hasAlreadyPlayed()) {
@@ -7114,6 +7117,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     self.player.name = name;
                     console.log(self.storage);
                     self.player.setGridPosition(x, y);
+                    self.playerPositionReady = true;
                     self.player.setMaxHitPoints(hp);
                     self.player.title = title;
                     self.updateBars();
@@ -7128,6 +7132,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     self.player.dirtyRect = self.renderer.getEntityBoundingRect(self.player);
                     self.player.playerClassSelectionShown = false;
 
+                    self.startScenePolling();
                     setTimeout(() => self.handleScene(self.player), 50);
                     setTimeout(() => self.handleScene(self.player), 500);
 
@@ -8696,7 +8701,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
             forEachTileIndex: function (callback, extra) {
                 var m = this.map;
-                var scene = this.map.getCurrentScene();
+                var scene = this.player ? this.player.getScene() : null;
 
                 this.map.forEachPosition(function (x, y) {
                     if (m.isOutOfBounds(x, y)) {
@@ -9280,7 +9285,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     return
                 }
 
-                if (!entity) {
+                if (!entity || entity !== this.player || !this.playerPositionReady) {
                     return;
                 }
 

@@ -1,14 +1,10 @@
 
 define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc'],
     function(Camera, Item, Character, Player, Timer, Mob, Npc) {
-    
+
         var Renderer = Class.extend({
             init: function(game, canvas, background, foreground) {
                 this.game = game;
-    
-                if(this.game.map && !this.game.map.getCurrentScene()) {
-                    this.camera.removeBoundingBox(this.game.player);
-                }
     
                 this.context = (canvas && canvas.getContext) ? canvas.getContext("2d") : null;
                 //this.background = (background && background.getContext) ? background.getContext("2d") : null;
@@ -1169,7 +1165,6 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc'],
             if (y < 0) y = 0; // Boundary check
             return y;
         };
-    
+
         return Renderer;
     });
-    

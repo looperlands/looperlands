@@ -234,6 +234,7 @@ define(['jquery', 'area'], function ($, Area) {
                 area.id = scene.id;
                 area.name = scene.name;
                 area.bg = scene.bg;
+                area.message = scene.message;
                 area.dn_cycle = scene.dn_cycle;
                 area.darkness = scene.darkness;
                 scenes[scene.id] = area;

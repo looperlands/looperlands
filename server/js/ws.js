@@ -1313,7 +1313,20 @@ WS.socketIOServer = Server.extend({
             const body = req.body;
             const sessionId = req.params.sessionId;
             const sessionData = cache.get(sessionId);
+            console.info("[tileStage] request", JSON.stringify({
+                sessionId,
+                hasSession: sessionData !== undefined,
+                nftId: sessionData?.nftId,
+                map: body.map,
+                tileAction: body.tileAction,
+            }));
             const currentStage = await tileActionsController.findCurrentStage(sessionData.nftId, body.map, body.tileAction, self.worldsMap[body.map])
+            console.info("[tileStage] response", JSON.stringify({
+                sessionId,
+                map: body.map,
+                tileAction: body.tileAction,
+                stage: currentStage,
+            }));
             res.status(200).send(currentStage);
         });
 

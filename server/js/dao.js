@@ -549,16 +549,66 @@ const getInventory = async function (walletId, nftId) {
   return rcvInventory;
 }
 
+const isEmptyObject = function (value) {
+  return value && typeof value === "object" && !Array.isArray(value) && Object.keys(value).length === 0;
+}
+
+const isNotFoundError = function (error) {
+  return error?.message?.includes("status: 404");
+}
+
 const loadFarmPlots = async function (mapId) {
-  const plots = await platformClient.getFarmPlots(mapId);
-  printResponseJSON('loadFarmPlots', plots);
-  return plots || [];
+  try {
+    const plots = await platformClient.getFarmPlots(mapId);
+    printResponseJSON('loadFarmPlots', plots);
+    console.info("[tileStage.dao] loadFarmPlots", JSON.stringify({
+      mapId,
+      type: Array.isArray(plots) ? "array" : typeof plots,
+      count: Array.isArray(plots) ? plots.length : undefined,
+      keys: plots && !Array.isArray(plots) && typeof plots === "object" ? Object.keys(plots) : undefined,
+    }));
+    return Array.isArray(plots) ? plots.filter((plot) => !isEmptyObject(plot)) : [];
+  } catch (error) {
+    console.info("[tileStage.dao] loadFarmPlots error", JSON.stringify({
+      mapId,
+      message: error?.message,
+      treatedAsEmpty: isNotFoundError(error),
+    }));
+    if (isNotFoundError(error)) {
+      return [];
+    }
+    throw error;
+  }
 }
 
 const loadFarmPlot = async function (mapId, x, y) {
-  const plot = await platformClient.getFarmPlot(mapId, x, y);
-  printResponseJSON('loadFarmPlot', plot);
-  return plot || null;
+  try {
+    const plot = await platformClient.getFarmPlot(mapId, x, y);
+    printResponseJSON('loadFarmPlot', plot);
+    console.info("[tileStage.dao] loadFarmPlot", JSON.stringify({
+      mapId,
+      x,
+      y,
+      type: Array.isArray(plot) ? "array" : typeof plot,
+      keys: plot && typeof plot === "object" ? Object.keys(plot) : undefined,
+      isEmptyObject: plot && typeof plot === "object" && !Array.isArray(plot) && Object.keys(plot).length === 0,
+      state: plot?.state,
+      crop: plot?.crop,
+    }));
+    return isEmptyObject(plot) ? null : (plot || null);
+  } catch (error) {
+    console.info("[tileStage.dao] loadFarmPlot error", JSON.stringify({
+      mapId,
+      x,
+      y,
+      message: error?.message,
+      treatedAsMissing: isNotFoundError(error),
+    }));
+    if (isNotFoundError(error)) {
+      return null;
+    }
+    throw error;
+  }
 }
 
 const saveFarmPlot = async function (plot) {
