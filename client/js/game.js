@@ -6289,11 +6289,16 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     this.player.idle();
                 }
 
-                let self = this;
-                setInterval(() => self.handleScene(self.player), 100);
-                setTimeout(() => self.handleScene(self.player), 100);
-
                 console.debug("Finished initPlayer");
+            },
+
+            startScenePolling: function () {
+                if (this.scenePollingInterval) {
+                    return;
+                }
+
+                let self = this;
+                this.scenePollingInterval = setInterval(() => self.handleScene(self.player), 100);
             },
 
             initShadows: function () {
