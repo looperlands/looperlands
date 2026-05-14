@@ -217,12 +217,12 @@ function applyColorShift(imageData, colorShift) {
     return imageData;
 }
 
-function drawTile(ctx, tileid, tileset, setW, setH, gridW, cellid, scale, slideOffsetX, slideOffsetY, colorShift = null) {
+function drawTile(ctx, tileid, tileset, setW, setH, gridW, cellid, scale, slideOffsetX, slideOffsetY, colorShift = null, renderOffsetX = 0, renderOffsetY = 0) {
     if (tileid !== -1) { // -1 when tile is empty in Tiled. Don't attempt to draw it.
         const tileX = getX(tileid + 1, setW, slideOffsetX) * tilesize;
         const tileY = getY(tileid + 1, setW, setH, slideOffsetY) * tilesize;
-        const destX = getX(cellid + 1, gridW) * tilesize;
-        const destY = Math.floor(cellid / gridW) * tilesize;
+        const destX = (getX(cellid + 1, gridW) * tilesize) + renderOffsetX;
+        const destY = (Math.floor(cellid / gridW) * tilesize) + renderOffsetY;
         drawScaledImage(ctx, tileset, tileX, tileY, tilesize, tilesize, destX, destY, scale, colorShift);
     }
 }
@@ -246,7 +246,7 @@ function render(id, tiles, cameraX, cameraY, scale, clear, serverTime, scene, op
             let tile = tiles[i];
             if (tile.id !== -1) {
                 // Render your tile here as usual...
-                drawTile(ctx, tile.tileid, tileset, tile.setW, tile.setH, tile.gridW, tile.cellid, scale, tile.slideOffsetX, tile.slideOffsetY, tile.colorShift);
+                drawTile(ctx, tile.tileid, tileset, tile.setW, tile.setH, tile.gridW, tile.cellid, scale, tile.slideOffsetX, tile.slideOffsetY, tile.colorShift, tile.renderOffsetX, tile.renderOffsetY);
 
                 if (lightEmittingTiles && lightEmittingTiles[String(parseInt(tile.tileid + 1))]) {
                     let lightEmittingTile = Object.assign({}, lightEmittingTiles[tile.tileid + 1]);

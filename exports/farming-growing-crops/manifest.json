@@ -1,0 +1,22 @@
+{
+  "sourceJson": "client/tileActions/duckville.json",
+  "sourceMap": "client/maps/world_client_duckville.json",
+  "sourceTilesheet": "client/img/1/tilesheet_duckville.png",
+  "tileLineColor": "red",
+  "stageLineColor": "yellow",
+  "exports": [
+    "exports/farming-growing-crops/lettuce.png",
+    "exports/farming-growing-crops/carrot.png",
+    "exports/farming-growing-crops/tomato.png",
+    "exports/farming-growing-crops/potato.png",
+    "exports/farming-growing-crops/turnip.png",
+    "exports/farming-growing-crops/tree1.png",
+    "exports/farming-growing-crops/broccoli.png",
+    "exports/farming-growing-crops/cauliflower.png",
+    "exports/farming-growing-crops/corn.png",
+    "exports/farming-growing-crops/treeRed.png",
+    "exports/farming-growing-crops/treePurple.png",
+    "exports/farming-growing-crops/treeYellow.png"
+  ],
+  "contactSheet": "exports/farming-growing-crops/all-farming-growing-crops.png"
+}

@@ -16,6 +16,7 @@ const platformClient = new platform.LooperLandsPlatformClient(LOOPERLANDS_PLATFO
 
 const API_KEY = process.env.LOOPWORMS_API_KEY;
 const MAX_RETRY_COUNT = 1;
+const LOCAL_MODE = process.env.LOOPERLANDS_LOCAL_MODE === "1";
 
 const DEBUG = false;
 const printResponseJSON = function (url, response) {
@@ -93,7 +94,7 @@ const loadWeapon = async function (wallet, nft) {
 
   } catch (error) {
     console.error(error);
-    return { "error": "Error loading weapon" };
+    return 'sword1';
   }
 }
 
@@ -201,6 +202,10 @@ const getSpecialItem = async function (wallet, nft) {
 }
 
 const saveAvatarMapAndCheckpoint = async function (nft, mapId, checkpointId) {
+  if (LOCAL_MODE) {
+    return { ok: true, nft, mapId, checkpointId };
+  }
+
   try {
     const response = await platformClient.updateAssetPosition(nft, mapId, checkpointId);
     printResponseJSON('updateAssetPosition', response);
@@ -215,6 +220,7 @@ let LOOT_EVENTS_QUEUE = []
 let processingQueue = false;
 let pendingQueue = [];
 let LOOT_QUEUE_INTERVAL = undefined;
+const FARM_PLOT_STORE = {};
 
 const processLootEventQueue = async function (retry) {
   if (processingQueue || !LOOT_EVENTS_QUEUE?.length) { return; }
@@ -544,9 +550,70 @@ const getPartnerTask = async function (walletId, taskId) {
 }
 
 const getInventory = async function (walletId, nftId) {
-  let rcvInventory = await platformClient.getInventory(walletId, nftId)
-  printResponseJSON('getInventory', rcvInventory);
-  return rcvInventory;
+  try {
+    let rcvInventory = await platformClient.getInventory(walletId, nftId)
+    printResponseJSON('getInventory', rcvInventory);
+    return rcvInventory;
+  } catch (error) {
+    console.error("getInventory", error);
+    return { weapons: [], tools: [], companions: [], consumables: [] };
+  }
+}
+
+const farmPlotKey = function (mapId, x, y) {
+  return `${mapId}.${x}.${y}`;
+}
+
+const loadFarmPlots = async function (mapId) {
+  if (LOCAL_MODE) {
+    return Object.values(FARM_PLOT_STORE).filter(plot => plot.mapId === mapId);
+  }
+
+  try {
+    const plots = await platformClient.getFarmPlots(mapId);
+    return plots || [];
+  } catch (error) {
+    return Object.values(FARM_PLOT_STORE).filter(plot => plot.mapId === mapId);
+  }
+}
+
+const loadFarmPlot = async function (mapId, x, y) {
+  if (LOCAL_MODE) {
+    return FARM_PLOT_STORE[farmPlotKey(mapId, x, y)] || null;
+  }
+
+  try {
+    const plot = await platformClient.getFarmPlot(mapId, x, y);
+    return plot || null;
+  } catch (error) {
+    return FARM_PLOT_STORE[farmPlotKey(mapId, x, y)] || null;
+  }
+}
+
+const saveFarmPlot = async function (plot) {
+  FARM_PLOT_STORE[farmPlotKey(plot.mapId, plot.x, plot.y)] = plot;
+  if (LOCAL_MODE) {
+    return plot;
+  }
+
+  try {
+    return await platformClient.saveFarmPlot(plot);
+  } catch (error) {
+    return plot;
+  }
+}
+
+const deleteFarmPlot = async function (mapId, x, y) {
+  delete FARM_PLOT_STORE[farmPlotKey(mapId, x, y)];
+  if (LOCAL_MODE) {
+    return true;
+  }
+
+  try {
+    return await platformClient.deleteFarmPlot(mapId, x, y);
+  } catch (error) {
+    return true;
+  }
 }
 
 module.exports = {
@@ -580,6 +647,10 @@ module.exports = {
   completePartnerTask,
   getPartnerTask,
   getInventory,
+  loadFarmPlots,
+  loadFarmPlot,
+  saveFarmPlot,
+  deleteFarmPlot,
   processLootEventQueue,
   registerChoice,
 };

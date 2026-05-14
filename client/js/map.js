@@ -157,6 +157,7 @@ define(['jquery', 'area'], function ($, Area) {
             this.width = map.width;
             this.height = map.height;
             this.tilesize = map.tilesize;
+            this.tilesetColumns = map.tilesetColumns;
             this.data = map.data;
             this.blocking = map.blocking || [];
             this.plateau = map.plateau || [];
@@ -564,6 +565,7 @@ define(['jquery', 'area'], function ($, Area) {
                             const isActionTile = tile.id in self.actionTiles;
 
                             if (distance < nearestDistance && isActionTile) {
+                                Object.assign(tile, self.actionTiles[tile.id]);
                                 tile.name = self.actionTiles[tile.id].action;
                                 nearestAction = tile
                                 nearestDistance = distance;

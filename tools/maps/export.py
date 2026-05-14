@@ -1,9 +1,7 @@
 #!/usr/bin/python3
 import subprocess
 import sys
-from lxml import etree
 import os
-from threading import Thread
 
 files = os.listdir('tmx/')
 map_files = [file for file in files if file.endswith('.tmx')]
@@ -23,14 +21,14 @@ def export_map(tmx_file):
 
     print(f"./tmx2json.py {SRC_FILE} {TEMP_FILE}")
     # Convert the Tiled TMX file to a temporary JSON file
-    print(subprocess.getoutput(f'python3 ./tmx2json.py {SRC_FILE} {TEMP_FILE}'))
+    subprocess.run(['python3', './tmx2json.py', SRC_FILE, TEMP_FILE], check=True)
 
     # Map exporting
     print(f'./exportmap.js {TEMP_FILE} {DEST_FILE} {mode}')
-    print(subprocess.getoutput(f'./exportmap.js {TEMP_FILE} {DEST_FILE} {mode}'))
+    subprocess.run(['./exportmap.js', TEMP_FILE, DEST_FILE, mode], check=True)
 
     # Remove temporary JSON file
-    print(subprocess.getoutput(f'rm {TEMP_FILE}'))
+    os.remove(TEMP_FILE)
 
     # Send a Growl notification when the export process is complete
     print("Map export complete")

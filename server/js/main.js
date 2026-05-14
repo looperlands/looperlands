@@ -116,14 +116,15 @@ function getConfigFile(path, callback) {
 }
 
 var defaultConfigPath = './server/config.json';
+var configPath = defaultConfigPath;
 
 process.argv.forEach(function (val, index, array) {
     if(index === 2) {
-        customConfigPath = val;
+        configPath = val;
     }
 });
 
-getConfigFile(defaultConfigPath, function(defaultConfig) {
+getConfigFile(configPath, function(defaultConfig) {
     main(defaultConfig);
 });
 

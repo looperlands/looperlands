@@ -16,6 +16,7 @@ describe('LooperLandsPlatformClient', () => {
       get: jest.fn().mockResolvedValue({ data: {} }), // Mock implementation if needed
       put: jest.fn().mockResolvedValue({ data: {} }), // Ensure `put` is mocked
       post: jest.fn().mockResolvedValue({ data: {} }), // Ensure `post` is mocked
+      delete: jest.fn().mockResolvedValue({ data: {} }),
     });
 
     client = new LooperLandsPlatformClient(apiKey, baseUrl);
@@ -508,6 +509,49 @@ describe('LooperLandsPlatformClient', () => {
       expect(client.handleError).toHaveBeenCalledWith(error);
     });
   });
+
+  describe('farming plots', () => {
+    it('should fetch farm plots for a map', async () => {
+      const responseData = [{ mapId: 'duckville', x: 1, y: 2 }];
+      client.client.get.mockResolvedValue({ data: responseData });
+
+      const result = await client.getFarmPlots('duckville');
+
+      expect(client.client.get).toHaveBeenCalledWith('/api/game/farming/plots?map=duckville');
+      expect(result).toEqual(responseData);
+    });
+
+    it('should fetch one farm plot', async () => {
+      const responseData = { mapId: 'duckville', x: 1, y: 2 };
+      client.client.get.mockResolvedValue({ data: responseData });
+
+      const result = await client.getFarmPlot('duckville', 1, 2);
+
+      expect(client.client.get).toHaveBeenCalledWith('/api/game/farming/plot/duckville/1/2');
+      expect(result).toEqual(responseData);
+    });
+
+    it('should save a farm plot', async () => {
+      const plot = { mapId: 'duckville', x: 1, y: 2, state: 'prepared' };
+      client.client.put.mockResolvedValue({ data: plot });
+
+      const result = await client.saveFarmPlot(plot);
+
+      expect(client.client.put).toHaveBeenCalledWith('/api/game/farming/plot', plot);
+      expect(result).toEqual(plot);
+    });
+
+    it('should delete a farm plot', async () => {
+      const responseData = { success: true };
+      client.client.delete.mockResolvedValue({ data: responseData });
+
+      const result = await client.deleteFarmPlot('duckville', 1, 2);
+
+      expect(client.client.delete).toHaveBeenCalledWith('/api/game/farming/plot/duckville/1/2');
+      expect(result).toEqual(responseData);
+    });
+  });
+
   describe('storeKills', () => {
     it('should send a POST request to store kills and return response data', async () => {
       const kills = [{ nftId: 'nft123', killCount: 10 }, { nftId: 'nft456', killCount: 20 }];

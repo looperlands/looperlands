@@ -1,0 +1,25 @@
+{
+  "sourceMap": "client/maps/world_client_duckville.json",
+  "sourceTilesheet": "client/img/1/tilesheet_duckville.png",
+  "tileLineColor": "red",
+  "stageLineColor": "yellow",
+  "count": 15,
+  "exports": [
+    "exports/staged-tiles-duckville/broccoli-17542.png",
+    "exports/staged-tiles-duckville/broccoliPotted-17400.png",
+    "exports/staged-tiles-duckville/carrot-17827.png",
+    "exports/staged-tiles-duckville/carrotPotted-17685.png",
+    "exports/staged-tiles-duckville/cauliflower-17266.png",
+    "exports/staged-tiles-duckville/cauliflowerPotted-17124.png",
+    "exports/staged-tiles-duckville/grain-17804.png",
+    "exports/staged-tiles-duckville/lettuce-18080.png",
+    "exports/staged-tiles-duckville/potato-18085.png",
+    "exports/staged-tiles-duckville/tomato-18223.png",
+    "exports/staged-tiles-duckville/tree1-19599.png",
+    "exports/staged-tiles-duckville/treePurple-20703.png",
+    "exports/staged-tiles-duckville/treeRed-20151.png",
+    "exports/staged-tiles-duckville/treeYellow-21255.png",
+    "exports/staged-tiles-duckville/turnip-17533.png"
+  ],
+  "contactSheet": "exports/staged-tiles-duckville/all-staged-tiles-duckville.png"
+}

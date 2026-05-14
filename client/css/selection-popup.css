@@ -35,6 +35,10 @@
     left: 25%;      /* Override by specifying "left" in your characters dialogue.js (optional) */
     width: 45%;     /* Override by specifying "width" in your characters dialogue.js (optional) */
     height: auto;   /* Override by specifying "height" in your characters dialogue.js (optional) */
+    max-height: 75vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    box-sizing: border-box;
     font-family: 'GraphicPixel', arial, sans-serif;
     transition: ease-in-out 600ms;
     opacity: 100;
@@ -60,9 +64,18 @@
 }
 
 #selection-popup .image {
+    display: block;
+    width: 48px;
+    height: 48px;
     padding:10px;
     margin-bottom: 5px;
     margin-top:15px;
+    margin-left: auto;
+    margin-right: auto;
+    object-fit: none;
+    object-position: left top;
+    box-sizing: content-box;
+    image-rendering: pixelated;
 }
 
 #selection-popup .header {
@@ -84,11 +97,13 @@
     margin: 4px;
     border-radius: 8px;
     text-align: center;
+    min-width: 0;
+    overflow: hidden;
 }
 
 #selection-popup #selection-choices {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 #selection-popup .option .count {
@@ -108,7 +123,7 @@
     pointer-events: none;
 }
 
-#selection-popup .choice.disabled {
+#selection-popup .option.disabled {
     pointer-events: none;
     opacity: 0.6;
 }

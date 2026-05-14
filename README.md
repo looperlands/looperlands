@@ -24,6 +24,22 @@ To get a new session run:
 ```
 This will print out a URL and open up the URL in your browser
 
+## No-Docker local debug session
+For local debugging you do not need Docker or the LooperLands platform. This starts a local platform mock on `localhost:3000`, starts the game server on `localhost:8000`, creates a valid session, and prints the playable URL:
+```bash
+./local-dev.sh 0x1e8ab2cc09be581530bb9f3ac94353f6f7412239 0x82cc76a59d06847148704f158b2ba51b5854c5ee3b2e9314fc36c093a919530a duckville 1 10000
+```
+
+By default it serves files directly from `client/`, so most client-side changes only need a browser refresh. Server-side changes need a script restart, but no Docker rebuild. The default map set loads every configured map so doors and portals work across map chains; use `LOCAL_MAPS=duckville,main,cobsfarm ./local-dev.sh ...` only when you deliberately want a smaller boot.
+
+Useful flags:
+```bash
+OPEN_BROWSER=0 ./local-dev.sh ...       # print the URL without opening a browser
+BUILD_CLIENT=1 ./local-dev.sh ...       # build and serve client-build/
+LOOPERLANDS_DISABLE_FARM_LEVEL_GATE=0 ./local-dev.sh ... # keep farming level locks on
+./local-stop.sh                         # stop local services from another terminal
+```
+
 ## Using docker-compose watch
 Docker compose watch automatically will rebuild the gameserver when you make local changes.
 In one terminal run:

@@ -1,11 +1,9 @@
 #!/usr/bin/env node
 
 var util = require('util'),
-    Log = require('log'),
     path = require("path"),
     fs = require("fs"),
-    processMap = require('./processmap'),
-    log = new Log(console.debug);
+    processMap = require('./processmap');
     
 var source = process.argv[2],
     destination = process.argv[3],

@@ -1,6 +1,10 @@
 
 define(['area'], function (Area) {
 
+    function isLocalHost() {
+        return ["localhost", "127.0.0.1", "::1"].indexOf(window.location.hostname) !== -1;
+    }
+
     var AudioManager = Class.extend({
         init: function (game) {
             var self = this;
@@ -102,7 +106,7 @@ define(['area'], function (Area) {
 
         load: function (basePath, name, loaded_callback, channels) {
 
-            if (!(window.location.href.indexOf("127.0.0.1") > -1)) {
+            if (!isLocalHost()) {
                 basePath = 'https://cdn.jsdelivr.net/gh/balkshamster/looperlands@main/client/' + basePath;
             }
 

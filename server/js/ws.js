@@ -16,6 +16,7 @@ module.exports = WS;
 
 const axios = require('axios');
 const crypto = require('crypto');
+const path = require('path');
 const NodeCache = require("node-cache");
 const dao = require('./dao.js');
 const discord = require('./discord.js');
@@ -56,7 +57,9 @@ function extractDetails(inputUrl) {
     let host = parsedUrl.hostname;
     let port;
 
-    if (protocol === 'http:') {
+    if (parsedUrl.port) {
+        port = parseInt(parsedUrl.port, 10);
+    } else if (protocol === 'http:') {
         port = 8000;
     } else if (protocol === 'https:') {
         port = 443;
@@ -164,9 +167,27 @@ WS.socketIOServer = Server.extend({
         const host = self.host;
 
         this.cache = cache;
+        this.tileActionsController = tileActionsController;
         var express = require('express');
         var app = express();
-        app.use("/", express.static(__dirname + "/../../client-build"));
+        const clientStaticDir = process.env.CLIENT_STATIC_DIR
+            ? path.resolve(process.env.CLIENT_STATIC_DIR)
+            : path.resolve(__dirname, "../../client-build");
+        const sharedStaticDir = path.resolve(__dirname, "../../shared");
+        console.log("Serving client from", clientStaticDir);
+        console.log("Serving shared files from", sharedStaticDir);
+        app.use("/shared", express.static(sharedStaticDir));
+        app.use("/", express.static(clientStaticDir));
+        app.get("/config/config_local.json", function (_req, res) {
+            res.status(200).json({});
+        });
+        app.get(["/js/lib/axios.min.js.map", "/js/lib/underscore-min.map"], function (_req, res) {
+            res.status(200).json({
+                version: 3,
+                sources: [],
+                mappings: ""
+            });
+        });
 
         let httpInclude = require('http');
         let http = new httpInclude.Server(app);
@@ -222,6 +243,7 @@ WS.socketIOServer = Server.extend({
                     "error": "invalid api key",
                     user: null
                 });
+                return;
             }
 
             let walletAllowed = await dao.walletHasNFT(body.walletId, body.nftId);
@@ -1321,8 +1343,8 @@ WS.socketIOServer = Server.extend({
             const body = req.body;
             const sessionId = req.params.sessionId;
             const sessionData = cache.get(sessionId);
-            tileActionsController.executeStage(sessionData.nftId, body.map, body.tileAction, body.item, self.worldsMap[body.map]);
-            res.status(200).send('ok');
+            const result = await tileActionsController.executeStage(sessionData.nftId, body.map, body.tileAction, body.item, self.worldsMap[body.map]);
+            res.status(200).send(result || { success: true });
         });
 
         app.post("/inventorysync", async (req, res) => {
@@ -1331,8 +1353,13 @@ WS.socketIOServer = Server.extend({
         });
 
         app.post("/music", async (req, res) => {
-            const music = await platformClient.loadMusic(req.body.map);
-            res.status(200).send(music);
+            try {
+                const music = await platformClient.loadMusic(req.body.map);
+                res.status(200).send(music || []);
+            } catch (error) {
+                console.error("Unable to load map music", req.body.map, error);
+                res.status(200).send([]);
+            }
         });
 
         self.io.on('connection', function (connection) {

@@ -6255,8 +6255,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 for (let name in this.cursors) {
                     let cursor = this.cursors[name];
                     if (cursor !== undefined) {
-                        let isLocal = window.location.href.indexOf("127.0.0.1") > -1;
-                        let src = isLocal ? "/" + cursor.filepath : cursor.filepath;
+                        let isLocal = ["localhost", "127.0.0.1", "::1"].indexOf(window.location.hostname) !== -1;
+                        let src = isLocal ? window.location.origin + "/" + cursor.filepath.replace(/^\//, "") : cursor.filepath;
                         this.renderer.worker.postMessage({type: "loadCursor", name: name, src: src});
                     }
                 }
@@ -6984,9 +6984,14 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.client = new GameClient(this.host, this.port, this.protocol, this.sessionId, this.mapId);
                 this.renderStatistics();
 
+                let isLocalHost = ["localhost", "127.0.0.1", "::1"].indexOf(window.location.hostname) !== -1;
+                let useDispatcher = !(isLocalHost && Config.dev && Config.dev.dispatcher === false);
+
                 //>>includeStart("prodHost", pragmas.prodHost);
-                if (!connecting) {
+                if (!connecting && useDispatcher) {
                     this.client.connect(true); // always use the dispatcher in production
+                } else if (!connecting) {
+                    this.client.connect();
                 }
                 //>>includeEnd("prodHost");
 
@@ -7452,6 +7457,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                     _self.showNotification(dest.message ? dest.message : ("You need a weapon level of " + dest.weaponLevel + " to enter."));
                                     _self.doorCheck = false;
                                 }
+                            } else {
+                                checkTrigger();
                             }
                         }
 
@@ -9339,7 +9346,21 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             },
 
             handleTileStage(stage) {
-                if(stage.tile) {
+                if(stage.clear) {
+                    Object.keys(self.tileStages).forEach((key) => {
+                        const stagedTile = self.tileStages[key];
+                        if(stagedTile.x === stage.x && stagedTile.y === stage.y) {
+                            delete self.tileStages[key];
+                        }
+                        if(key.startsWith(stage.x + '.' + stage.y + ':')) {
+                            delete self.tileStages[key];
+                        }
+                    });
+                    delete self.tileStages[stage.x + '.' + stage.y];
+                    return;
+                }
+
+                if(stage.tile !== null && stage.tile !== undefined) {
                     if (self.map.isAnimatedTile(stage.tile)) {
                         stage.animatedTile = self.animatedTiles.find((tile) => {
                             return tile.id === stage.tile;
@@ -9347,6 +9368,11 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     }
                     self.tileStages[stage.x + '.' + stage.y] = stage;
                 } else if(stage.tileGroup) {
+                    Object.keys(self.tileStages).forEach((key) => {
+                        if(key.startsWith(stage.x + '.' + stage.y + ':')) {
+                            delete self.tileStages[key];
+                        }
+                    });
                     // loop over self.map.stagedTiles (object) and find element and key where element.property = stage.tileGroup
                     let tileIndex = null;
                     let stagedTile = null;
@@ -9360,16 +9386,33 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         console.error(`Could not find staged tile group ${stage.tileGroup}`);
                     }
 
-                    let tileSetWidth = self.renderer.tileset.width / self.map.tilesize;
+                    if (stage.replaceBaseTile || stagedTile.replaceBaseTile || stagedTile.renderMode === 'replace') {
+                        delete self.tileStages[stage.x + '.' + stage.y];
+                    }
+
+                    let tileSetWidth = self.map.tilesetColumns || (self.renderer.tileset.width / (self.map.tilesize * self.renderer.scale));
+                    let hasExplicitStageTiles = stagedTile.stageTiles && stagedTile.stageTiles.length > 0;
+                    let stageIndex = parseInt(stage.stage || 0);
+                    if (Number.isNaN(stageIndex) || stageIndex < 0) {
+                        stageIndex = 0;
+                    }
+                    if (hasExplicitStageTiles) {
+                        stageIndex = Math.min(stageIndex, stagedTile.stageTiles.length - 1);
+                        tileIndex = stagedTile.stageTiles[stageIndex];
+                    }
                     for(let x = 0; x < stagedTile.size.w; x++) {
                         for(let y = 0; y < stagedTile.size.h; y++) {
-                            let tileId = tileIndex + (x + (y * tileSetWidth));
+                            let sourceOffsetY = stagedTile.groupName && stagedTile.groupName.startsWith('tree') ? 0 : stagedTile.offset.y;
+                            let tileId = tileIndex + x + ((y + sourceOffsetY) * tileSetWidth);
 
-                            let newStage = { x: stage.x, y: stage.y, stage: stage.stage, tileGroup: stage.tileGroup }
-                            if (self.map.isAnimatedTile(tileId)) {
-                                newStage.animatedTile = self.animatedTiles.find((tile) => {
-                                    return tile.id === tileId;
-                                });
+                            let newStage = {
+                                x: stage.x,
+                                y: stage.y,
+                                stage: hasExplicitStageTiles ? 0 : stage.stage,
+                                highTile: stagedTile.highRows !== undefined ? y < stagedTile.highRows : undefined,
+                                stageStride: hasExplicitStageTiles ? undefined : (stagedTile.stageStride || stagedTile.size.w || 1),
+                                tileGroup: stage.tileGroup,
+                                renderOffset: stage.renderOffset
                             }
 
                             newStage.x += x + stagedTile.offset.x;

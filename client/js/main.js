@@ -240,6 +240,10 @@ define(['jquery', 'app'], function($, App) {
                 $('#resize-check').bind("oTransitionEnd", app.resizeUi.bind(app));
 
                 document.addEventListener("visibilitychange", () => {
+                    if (!app.game) {
+                        return;
+                    }
+
                     if (document.visibilityState === 'hidden') {
                         app.game.windowHidden = true;
                         setTimeout(app.game.tick.bind(app.game), 60);

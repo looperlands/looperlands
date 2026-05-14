@@ -1,13 +1,13 @@
 #!/usr/bin/python3
 import sys
-from lxml import etree
+from xml.etree import ElementTree
 import json
 
 tmx = open(sys.argv[1])
 dest = open(sys.argv[2], 'w')
 res = {}
 
-root = etree.parse(tmx).getroot()
+root = ElementTree.parse(tmx).getroot()
 el = root
 
 def process(el, tagname):

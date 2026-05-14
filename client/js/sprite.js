@@ -1,5 +1,9 @@
 define(['jquery', 'animation', 'sprites'], function ($, Animation, sprites) {
 
+	function isLocalHost() {
+		return ["localhost", "127.0.0.1", "::1"].indexOf(window.location.hostname) !== -1;
+	}
+
 	var Sprite = Class.extend({
 		init: function (name, scale, renderWorker, tokenHash, assetType, nftId) {
 			this.name = name;
@@ -12,7 +16,7 @@ define(['jquery', 'animation', 'sprites'], function ($, Animation, sprites) {
 			if (tokenHash !== undefined && assetType !== undefined) {
 				this.loadNFTSprite(tokenHash, assetType, nftId);
 			} else {
-				if (window.location.href.indexOf("127.0.0.1") > -1) {
+				if (isLocalHost()) {
 					this.baseImageURL = 'img/';
 				}
 				else {
@@ -119,8 +123,8 @@ define(['jquery', 'animation', 'sprites'], function ($, Animation, sprites) {
 		sendToWorker: function () {
 			let self = this;
 			let src;
-			if (!this.dynamicNFT && window.location.href.indexOf("127.0.0.1") > -1) {
-				src = "http://127.0.0.1:8000/" + this.filepath;
+			if (!this.dynamicNFT && isLocalHost()) {
+				src = window.location.origin + "/" + this.filepath.replace(/^\//, "");
 			} else {
 				src = this.filepath;
 			}

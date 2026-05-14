@@ -77,8 +77,14 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
 
              
             this.connection = io(url, {'force new connection':true, query : "mapId=" + this.mapId});
-            this.connection.on('connection', function(socket){
+            this.connection.on('connect', function(){
                 console.log("Connected to server " + url);
+            });
+            this.connection.on('connect_error', function(error) {
+                console.error("Socket.IO connect error", error);
+            });
+            this.connection.on('error', function(error) {
+                console.error("Socket.IO error", error);
             });
 
             /******

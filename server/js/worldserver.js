@@ -278,6 +278,11 @@ module.exports = World = cls.Class.extend({
             // Spawn static entities
             self.spawnStaticEntities();
 
+            if (self.server.tileActionsController) {
+                self.server.tileActionsController.loadPersistedPlots(self.id.replace(/^world_/, ""), self)
+                    .catch((error) => console.error("Could not load persisted farm plots", error));
+            }
+
             // Set maximum number of entities contained in each chest area
             _.each(self.chestAreas, function (area) {
                 area.setNumberOfEntities(area.entities.length);
@@ -731,14 +736,22 @@ module.exports = World = cls.Class.extend({
         }
     },
 
-    placeStagedTile: function (x, y, tile) {
-        this.map.tileStages[x + '.' + y] = { x: x, y: y, tile: tile, stage: 0 };
+    placeStagedTile: function (x, y, tile, stage) {
+        this.map.tileStages[x + '.' + y] = { x: x, y: y, tile: tile, stage: stage || 0 };
         this.pushBroadcast(new Messages.TileStage(this.map.tileStages[x + '.' + y]));
     },
 
-    placeStagedTileGroup: function (x, y, groupName) {
-        this.map.tileStages[x + '.' + y] = { x: x, y: y, tileGroup: groupName, stage: 0 };
+    placeStagedTileGroup: function (x, y, groupName, stage, renderOffset) {
+        this.map.tileStages[x + '.' + y] = { x: x, y: y, tileGroup: groupName, stage: stage || 0 };
+        if (renderOffset) {
+            this.map.tileStages[x + '.' + y].renderOffset = renderOffset;
+        }
         this.pushBroadcast(new Messages.TileStage(this.map.tileStages[x + '.' + y]));
+    },
+
+    clearStagedTile: function (x, y) {
+        delete this.map.tileStages[x + '.' + y];
+        this.pushBroadcast(new Messages.TileStage({ x: x, y: y, clear: true }));
     },
 
     progressStage: function (x, y) {

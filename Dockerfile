@@ -1,29 +1,38 @@
-FROM ubuntu:latest
+# syntax=docker/dockerfile:1.7
+
+FROM node:22-bookworm@sha256:379c51ac7bbf9bffe16769cfda3eb027d59d9c66ac314383da3fcf71b46d026c
+
 ENV NEW_RELIC_NO_CONFIG_FILE=true
+ENV NODE_ENV=development
+ENV NPM_CONFIG_FETCH_RETRIES=5
+ENV NPM_CONFIG_FETCH_RETRY_MINTIMEOUT=20000
+ENV NPM_CONFIG_FETCH_RETRY_MAXTIMEOUT=120000
+ENV NPM_CONFIG_FETCH_TIMEOUT=300000
+ENV NPM_CONFIG_AUDIT=false
+ENV NPM_CONFIG_FUND=false
+ENV NPM_CONFIG_MAXSOCKETS=6
+
+WORKDIR /opt/app
+
+COPY package.json package-lock.json ./
+COPY node_modules ./node_modules
+RUN npm prune --omit=dev --ignore-scripts --no-audit --fund=false --loglevel=error
+
+COPY bin ./bin
+COPY client ./client
+COPY server ./server
+COPY shared ./shared
+
+RUN mkdir -p /opt/app/client/js \
+    && cp shared/js/gametypes.js client/js/gametypes.js
+
+WORKDIR /opt/app/bin
+RUN ./build.sh
+
+WORKDIR /opt/app
+
 EXPOSE 443
 EXPOSE 8000
 EXPOSE 9229
-ENV DEBIAN_FRONTEND noninteractive
-RUN apt -y update
-RUN apt -q -y install curl
-ENV NVM_DIR /usr/local/nvm
-ENV NODE_VERSION v20.9.0
-RUN mkdir -p /usr/local/nvm && apt-get update && echo "y" | apt-get install curl
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
-RUN /bin/bash -c "source $NVM_DIR/nvm.sh && nvm install $NODE_VERSION && nvm use --delete-prefix $NODE_VERSION"
-ENV NODE_PATH $NVM_DIR/versions/node/$NODE_VERSION/bin
-ENV PATH $NODE_PATH:$PATH
-ENV NODE_ENV development
-RUN apt-get update -yq \
-    && apt-get install build-essential -yq
-WORKDIR /opt/app
-COPY ./package.json ./package-lock.json /opt/app/
-RUN npm ci
-COPY . /opt/app
-RUN mkdir -p /opt/app/client/js
-COPY shared/js/gametypes.js /opt/app/client/js/gametypes.js
-WORKDIR /opt/app/bin
-RUN ./build.sh
-WORKDIR /opt/app
-CMD node server/js/main.js
-# CMD node --inspect=0.0.0.0:9229 server/js/main.js # comment this in to enable debugging
+
+CMD ["node", "server/js/main.js"]

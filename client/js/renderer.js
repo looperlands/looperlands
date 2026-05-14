@@ -341,12 +341,12 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc'],
                 return imageData;
             },
     
-            drawTile: function(ctx, tileid, tileset, setW, setH, gridW, cellid, scale, slideOffsetX, slideOffsetY, colorShift = null) {
+            drawTile: function(ctx, tileid, tileset, setW, setH, gridW, cellid, scale, slideOffsetX, slideOffsetY, colorShift = null, renderOffsetX = 0, renderOffsetY = 0) {
                 if (tileid !== -1) { // -1 when tile is empty in Tiled. Don't attempt to draw it.
                     const tileX = getX(tileid + 1, (setW / scale), slideOffsetX) * this.tilesize;
                     const tileY = getY(tileid + 1, (setW / scale), (setH / scale), slideOffsetY) * this.tilesize;
-                    const destX = getX(cellid + 1, gridW) * this.tilesize;
-                    const destY = Math.floor(cellid / gridW) * this.tilesize;
+                    const destX = (getX(cellid + 1, gridW) * this.tilesize) + renderOffsetX;
+                    const destY = (Math.floor(cellid / gridW) * this.tilesize) + renderOffsetY;
     
                     this.drawScaledImage(ctx, tileset, tileX, tileY, this.tilesize, this.tilesize, destX, destY, colorShift);
                 }
@@ -415,6 +415,49 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc'],
                         entityData.translateX = dx;
                         entityData.translateY = dy;
                     }
+
+                    let actionToolSprite = null,
+                        actionToolOrientation = entity.orientation,
+                        hasActionTool = false;
+
+                    if(entity instanceof Character && !entity.isDead && entity.actionToolName) {
+                        actionToolSprite = this.game.sprites[entity.actionToolName];
+                        hasActionTool = !!actionToolSprite;
+
+                        if(entity.flipSpriteX) {
+                            actionToolOrientation = Types.Orientations.LEFT;
+                        }
+                    }
+
+                    const drawActionTool = () => {
+                        if(!hasActionTool) {
+                            return;
+                        }
+
+                        let offsetX = 8,
+                            offsetY = 14;
+
+                        if(actionToolOrientation === Types.Orientations.UP) {
+                            offsetX = 8;
+                            offsetY = 2;
+                        } else if(actionToolOrientation === Types.Orientations.LEFT || actionToolOrientation === Types.Orientations.RIGHT) {
+                            offsetX = 14;
+                            offsetY = 10;
+                        }
+
+                        entityData.drawData.push({
+                            "id": actionToolSprite.id,
+                            "spriteName": entity.actionToolName,
+                            "sx": 0,
+                            "sy": 0,
+                            "sW": actionToolSprite.width * os,
+                            "sH": actionToolSprite.height * os,
+                            "dx": (actionToolSprite.offsetX + offsetX) * ds,
+                            "dy": (actionToolSprite.offsetY + offsetY) * ds,
+                            "dW": actionToolSprite.width * os * ds,
+                            "dH": actionToolSprite.height * os * ds
+                        });
+                    };
     
                     if(entity.isVisible()) {
                         if(entity.hasShadow()) {
@@ -433,7 +476,11 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc'],
                         }
     
     
-                        if(entity instanceof Character && !entity.isDead && entity.hasWeapon()) {
+                        if(hasActionTool && actionToolOrientation === Types.Orientations.UP) {
+                            drawActionTool();
+                        }
+
+                        if(entity instanceof Character && !entity.isDead && entity.hasWeapon() && !hasActionTool) {
                             let weapon = this.game.sprites[entity.getWeaponName()];
     
                             if(!Types.alwaysOnTop(entity.getWeaponName()) && entity.orientation === Types.Orientations.UP) {
@@ -499,7 +546,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc'],
                         }
                     }
     
-                    if(entity instanceof Character && !entity.isDead && entity.hasWeapon()) {
+                    if(entity instanceof Character && !entity.isDead && entity.hasWeapon() && !hasActionTool) {
                         let weapon = this.game.sprites[entity.getWeaponName()];
                         if(Types.alwaysOnTop(entity.getWeaponName()) || entity.orientation !== Types.Orientations.UP) {
                             if (weapon) {
@@ -524,6 +571,10 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc'],
                                 });
                             }
                         }
+                    }
+
+                    if(entity.isVisible() && hasActionTool && actionToolOrientation !== Types.Orientations.UP) {
+                        drawActionTool();
                     }
     
                     if (entity instanceof Npc) {
@@ -887,19 +938,28 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc'],
                         return;
                     }
 
-                    console.log('-------');
-                    console.log({tileid: tileId, setW: tilesetwidth, setH: tilesetheight, gridW: m.width, cellid: tileIndex, slideOffsetX: 0, slideOffsetY: 0, colorShift: 0})
-                    console.log('========');
-                    if(highTile === m.isHighTile(stage.tile) && animated === m.isAnimatedTile(stage.tile)) {
+                    let isHighTile = stage.highTile !== undefined ? stage.highTile : m.isHighTile(stage.tile);
+                    if(highTile === isHighTile && animated === m.isAnimatedTile(stage.tile)) {
                         let tileId = stage.tile;
+                        let stageStride = stage.stageStride || 1;
                         if(stage.animatedTile) {
                             stage.animatedTile.animate(self.game.currentTime);
-                            tileId += stage.stage * stage.animatedTile.currentFrame;
-                        } else {
-                            tileId += stage.stage;
+                            tileId += stage.animatedTile.currentFrame.index || 0;
                         }
+                        tileId += stage.stage * stageStride;
 
-                        tiles.push({tileid: tileId, setW: tilesetwidth, setH: tilesetheight, gridW: m.width, cellid: tileIndex, slideOffsetX: 0, slideOffsetY: 0, colorShift: 0});
+                        tiles.push({
+                            tileid: tileId,
+                            setW: tilesetwidth,
+                            setH: tilesetheight,
+                            gridW: m.width,
+                            cellid: tileIndex,
+                            slideOffsetX: 0,
+                            slideOffsetY: 0,
+                            renderOffsetX: stage.renderOffset?.x || 0,
+                            renderOffsetY: stage.renderOffset?.y || 0,
+                            colorShift: 0
+                        });
                     }
                 });
 
@@ -1169,7 +1229,6 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc'],
             if (y < 0) y = 0; // Boundary check
             return y;
         };
-    
+
         return Renderer;
     });
-    
