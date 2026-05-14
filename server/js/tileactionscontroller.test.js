@@ -129,6 +129,7 @@ describe("TileActionsController farming", () => {
         expect(stage.key).toBe("prepare");
         expect(stage.name).toBe("Prepare soil");
         expect(stage.hasTool).toBe(true);
+        expect(stage.optimisticStage).toEqual({ tile: 17118, stage: 0 });
     });
 
     test("prepare persists the plot and planting becomes available", async () => {
@@ -145,6 +146,7 @@ describe("TileActionsController farming", () => {
         const stage = await controller.findCurrentStage("avatar", "duckville", tileAction, world);
         expect(stage.key).toBe("plant");
         expect(stage.itemChoices.M88NLETTUCE.disabled).toBe(false);
+        expect(stage.itemChoices.M88NLETTUCE.optimisticStage).toEqual({ tileGroup: "lettuce", stage: 0 });
     });
 
     test("prepare continues with local state when farm persistence is unavailable", async () => {
@@ -170,6 +172,7 @@ describe("TileActionsController farming", () => {
         const stage = await controller.findCurrentStage("avatar", "duckville", tileAction, world);
         expect(stage.key).toBe("water");
         expect(stage.name).toBe("Water Lettuce");
+        expect(stage.optimisticStage).toEqual({ tileGroup: "lettuce", stage: 1 });
     });
 
     test("plant choices respect the action tile plant type", async () => {

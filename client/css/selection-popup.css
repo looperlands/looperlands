@@ -60,6 +60,11 @@
 }
 
 #selection-popup .image {
+    box-sizing: border-box;
+    display: block;
+    max-width: calc(100% - 20px);
+    max-height: 76px;
+    object-fit: contain;
     padding:10px;
     margin-bottom: 5px;
     margin-top:15px;
@@ -78,12 +83,14 @@
 #selection-popup .option {
     cursor: pointer;
     width: auto;
+    min-width: 0;
     position: relative;
     background: #00000033;
     float:left;
     margin: 4px;
     border-radius: 8px;
     text-align: center;
+    overflow: hidden;
 }
 
 #selection-popup #selection-choices {
