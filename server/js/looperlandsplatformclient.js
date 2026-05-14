@@ -245,8 +245,24 @@ class LooperLandsPlatformClient {
         try {
             const url = `/api/game/farming/plot`;
             const response = await this.client.put(url, plot);
+            console.info("[tileStage.platform] saveFarmPlot response", JSON.stringify({
+                status: response.status,
+                mapId: plot?.mapId,
+                x: plot?.x,
+                y: plot?.y,
+                dataType: Array.isArray(response.data) ? "array" : typeof response.data,
+                dataKeys: response.data && typeof response.data === "object" ? Object.keys(response.data) : undefined,
+            }));
             return response.data;
         } catch (error) {
+            console.error("[tileStage.platform] saveFarmPlot error", JSON.stringify({
+                mapId: plot?.mapId,
+                x: plot?.x,
+                y: plot?.y,
+                status: error?.response?.status,
+                data: error?.response?.data,
+                message: error?.message,
+            }));
             this.handleError(error);
         }
     }
