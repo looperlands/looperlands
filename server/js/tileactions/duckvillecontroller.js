@@ -30,6 +30,12 @@ class DuckvilleTileActionsController {
         try {
             const farmDefinition = this.getFarmDefinition(map, tileAction);
             if (!farmDefinition) {
+                console.info("[tileStage.duckville] no farm definition", JSON.stringify({
+                    nftId,
+                    map,
+                    tileAction,
+                    knownActions: Object.keys(this.stageDefinitions[map] || {}),
+                }));
                 return null;
             }
 
@@ -37,7 +43,15 @@ class DuckvilleTileActionsController {
 
             const plot = await this.getPlot(map, tileAction);
             await this.refreshVisualStage(map, tileAction, plot, farmDefinition, world);
-            return await this.getStageForPlot(nftId, map, tileAction, plot, farmDefinition, world);
+            const stage = await this.getStageForPlot(nftId, map, tileAction, plot, farmDefinition, world);
+            console.info("[tileStage.duckville] current stage", JSON.stringify({
+                nftId,
+                map,
+                tileAction,
+                plot: this.describePlot(plot),
+                stage,
+            }));
+            return stage;
         } catch (error) {
             console.error("findCurrentStage", error);
             return null;
@@ -119,6 +133,12 @@ class DuckvilleTileActionsController {
 
         const crop = farmDefinition.crops[plot.crop];
         if (!crop) {
+            console.info("[tileStage.duckville] plot has no matching crop", JSON.stringify({
+                map,
+                tileAction,
+                plot: this.describePlot(plot),
+                cropKeys: Object.keys(farmDefinition.crops || {}),
+            }));
             return null;
         }
 
@@ -161,6 +181,23 @@ class DuckvilleTileActionsController {
         }
 
         return null;
+    }
+
+    describePlot(plot) {
+        if (!plot) {
+            return null;
+        }
+
+        return {
+            keys: Object.keys(plot),
+            mapId: plot.mapId,
+            x: plot.x,
+            y: plot.y,
+            state: plot.state,
+            crop: plot.crop,
+            ownerNftId: plot.ownerNftId,
+            isEmptyObject: Object.keys(plot).length === 0,
+        };
     }
 
     async decorateRequirements(nftId, stage) {
@@ -389,6 +426,11 @@ class DuckvilleTileActionsController {
 
         this.loadedMaps[map] = true;
         const plots = await this.dao.loadFarmPlots(map);
+        console.info("[tileStage.duckville] persisted plots", JSON.stringify({
+            map,
+            type: Array.isArray(plots) ? "array" : typeof plots,
+            count: Array.isArray(plots) ? plots.length : undefined,
+        }));
         for (const plot of plots || []) {
             const tileAction = { gridX: plot.x, gridY: plot.y, name: "farm" };
             this.setTileActionStage(map, tileAction, plot);
@@ -412,6 +454,11 @@ class DuckvilleTileActionsController {
         }
 
         const plot = await this.dao.loadFarmPlot(map, tileAction.gridX, tileAction.gridY);
+        console.info("[tileStage.duckville] loaded plot", JSON.stringify({
+            map,
+            tileAction,
+            plot: this.describePlot(plot),
+        }));
         if (plot) {
             this.setTileActionStage(map, tileAction, plot);
         }
