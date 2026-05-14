@@ -1,142 +1,622 @@
 {
   "farm": {
-    "stages": [
+    "minLevel": 5,
+    "prepare": {
+      "name": "Prepare soil",
+      "tool": "M88NSHOVEL",
+      "duration": 3,
+      "tile": 17118,
+      "xp": 15
+    },
+    "water": {
+      "tool": "M88NWATERCAN",
+      "duration": 3,
+      "xp": 20
+    },
+    "seedItem": "M88NSEEDS",
+    "allowedPlantTypes": [
+      "crop",
+      "tree"
+    ],
+    "careBoosts": [
       {
-        "key": "prepare",
-        "name": "Prepare soil",
-        "playAnimation": true,
-        "requirements": {
-          "level": 15,
-          "tool": "hoe"
-        },
-        "duration": 3,
-        "rewards": [
-          {
-            "type": "XP",
-            "receiver": "player",
-            "amount": 20
-          },
-          {
-            "type": "XP",
-            "receiver": "tool",
-            "amount": 10
-          }
-        ],
-        "actions": [
-          {
-            "type": "placeStagedTile",
-            "tile": 17118
-          }
-        ],
-        "nextStage": "plant"
+        "item": "M88NDIRT",
+        "name": "Add m88n dirt",
+        "quality": 1,
+        "yieldBonus": 0,
+        "maxUses": 1
       },
       {
-        "key": "plant",
-        "name": "Plant seeds",
-        "requirements": {
-          "items": [
-            "M88NLETTUCE",
-            "M88NTURNIP"
-          ]
-        },
-        "rewards": [
-          {
-            "type": "XP",
-            "amount": 20
-          }
-        ],
-        "actions": {
-          "M88NLETTUCE": {
-            "type": "placeStagedTile",
-            "tile": 18084,
-            "stage": 0
-          },
-          "M88NTURNIP": {
-            "type": "placeStagedTileGroup",
-            "tileGroup": "tree1",
-            "stage": 0
-          }
-        },
-        "nextStage": {
-          "M88NLETTUCE": "water_lettuce",
-          "M88NTURNIP": "water_orange_tree"
-        }
+        "item": "M88NWORM",
+        "name": "Add worm",
+        "quality": 0,
+        "yieldBonus": 1,
+        "maxUses": 1
       },
       {
-        "key": "water_lettuce",
-        "name": "Water lettuce",
-        "requirements": {
-          "tool": "watering_can"
+        "item": "M88NSNAIL",
+        "name": "Add snail",
+        "quality": 0,
+        "yieldBonus": 0,
+        "rareChanceBonus": 0.1,
+        "maxUses": 1
+      }
+    ],
+    "crops": {
+      "M88NLETTUCE": {
+        "name": "lettuce",
+        "plantType": "crop",
+        "level": 5,
+        "seedCost": 1,
+        "growSeconds": 90,
+        "tileGroup": "lettuce",
+        "stages": 4,
+        "yieldItem": "M88NLETTUCE",
+        "yield": {
+          "min": 1,
+          "max": 2
         },
-        "duration": 3,
-        "wait": 15,
-        "rewards": [
+        "xp": 35,
+        "seedReturnChance": 0.35,
+        "displayName": "Lettuce",
+        "rareDrops": [
           {
-            "type": "XP",
-            "receiver": "player",
-            "amount": 20
+            "item": "M88NWORM",
+            "chance": 0.05,
+            "amount": 1
           }
-        ],
-        "actions": [
-          {
-            "type": "progressStage"
-          }
-        ],
-        "nextStage": "grow_lettuce"
+        ]
       },
-      {
-        "key": "water_orange_tree",
-        "name": "Water Orange Tree",
-        "requirements": {
-          "tool": "watering_can"
+      "M88NCARROT": {
+        "name": "carrot",
+        "plantType": "crop",
+        "level": 6,
+        "seedCost": 1,
+        "growSeconds": 120,
+        "tileGroup": "carrot",
+        "stages": 4,
+        "yieldItem": "M88NCARROT",
+        "yield": {
+          "min": 1,
+          "max": 3
         },
-        "duration": 5,
-        "wait": 35,
-        "rewards": [
+        "xp": 45,
+        "seedReturnChance": 0.4,
+        "displayName": "Carrot",
+        "rareDrops": [
           {
-            "type": "XP",
-            "receiver": "player",
-            "amount": 50
-          },
-          {
-            "type": "XP",
-            "receiver": "tool",
-            "amount": 10
+            "item": "M88NDIRT",
+            "chance": 0.06,
+            "amount": 1
           }
-        ],
-        "actions": [
-          {
-            "type": "progressStage"
-          }
-        ],
-        "nextStage": "grow_orange_tree"
+        ]
       },
-      {
-        "key": "grow_orange_tree",
-        "name": "Water Orange Tree",
-        "requirements": {
-          "tool": "watering_can"
+      "M88NTOMATO": {
+        "name": "tomato",
+        "plantType": "crop",
+        "level": 8,
+        "seedCost": 1,
+        "growSeconds": 180,
+        "tileGroup": "tomato",
+        "stages": 4,
+        "yieldItem": "M88NTOMATO",
+        "yield": {
+          "min": 2,
+          "max": 4
         },
-        "duration": 5,
-        "wait": 35,
-        "rewards": [
+        "xp": 60,
+        "seedReturnChance": 0.45,
+        "displayName": "Tomato",
+        "rareDrops": [
           {
-            "type": "XP",
-            "receiver": "player",
-            "amount": 50
-          },
-          {
-            "type": "XP",
-            "receiver": "tool",
-            "amount": 10
+            "item": "M88NSNAIL",
+            "chance": 0.06,
+            "amount": 1
           }
-        ],
-        "actions": [
+        ]
+      },
+      "M88NPOTATO": {
+        "name": "potato",
+        "plantType": "crop",
+        "level": 6,
+        "seedCost": 1,
+        "growSeconds": 240,
+        "tileGroup": "potato",
+        "stages": 4,
+        "yieldItem": "M88NPOTATO",
+        "yield": {
+          "min": 2,
+          "max": 5
+        },
+        "xp": 75,
+        "seedReturnChance": 0.5,
+        "displayName": "Potato",
+        "rareDrops": [
           {
-            "type": "progressStage"
+            "item": "M88NDIRT",
+            "chance": 0.08,
+            "amount": 2
+          }
+        ]
+      },
+      "M88NTURNIP": {
+        "name": "turnip",
+        "plantType": "crop",
+        "level": 12,
+        "seedCost": 2,
+        "growSeconds": 300,
+        "tileGroup": "turnip",
+        "stages": 4,
+        "yieldItem": "M88NTURNIP",
+        "yield": {
+          "min": 2,
+          "max": 5
+        },
+        "xp": 90,
+        "seedReturnChance": 0.55,
+        "displayName": "Turnip",
+        "rareDrops": [
+          {
+            "item": "M88NWORM",
+            "chance": 0.08,
+            "amount": 2
+          }
+        ]
+      },
+      "M88NORANGE": {
+        "name": "orange tree",
+        "plantType": "tree",
+        "level": 15,
+        "seedCost": 3,
+        "growSeconds": 540,
+        "tileGroup": "tree1",
+        "stages": 4,
+        "renderOffset": {
+          "x": 8,
+          "y": 0
+        },
+        "yieldItem": "COBAPPLE",
+        "yield": {
+          "min": 3,
+          "max": 6
+        },
+        "xp": 140,
+        "seedReturnChance": 0.65,
+        "displayName": "Orange tree",
+        "rareDrops": [
+          {
+            "item": "M88NSNAIL",
+            "chance": 0.12,
+            "amount": 2
+          }
+        ]
+      },
+      "M88NBROCCOLI": {
+        "name": "broccoli",
+        "plantType": "crop",
+        "level": 6,
+        "seedCost": 1,
+        "growSeconds": 150,
+        "tileGroup": "broccoli",
+        "stages": 4,
+        "yieldItem": "M88NBROCCOLI",
+        "yield": {
+          "min": 1,
+          "max": 3
+        },
+        "xp": 55,
+        "seedReturnChance": 0.4,
+        "displayName": "Broccoli",
+        "rareDrops": [
+          {
+            "item": "M88NWORM",
+            "chance": 0.06,
+            "amount": 1
+          }
+        ]
+      },
+      "M88NCAULIFLOWER": {
+        "name": "cauliflower",
+        "plantType": "crop",
+        "level": 9,
+        "seedCost": 2,
+        "growSeconds": 210,
+        "tileGroup": "cauliflower",
+        "stages": 4,
+        "yieldItem": "M88NCAULIFLOWER",
+        "yield": {
+          "min": 1,
+          "max": 3
+        },
+        "xp": 70,
+        "seedReturnChance": 0.45,
+        "displayName": "Cauliflower",
+        "rareDrops": [
+          {
+            "item": "M88NDIRT",
+            "chance": 0.08,
+            "amount": 1
+          }
+        ]
+      },
+      "COBCORN": {
+        "name": "corn",
+        "plantType": "crop",
+        "level": 11,
+        "seedCost": 2,
+        "growSeconds": 260,
+        "tileGroup": "corn",
+        "stages": 4,
+        "yieldItem": "COBCORN",
+        "yield": {
+          "min": 2,
+          "max": 5
+        },
+        "xp": 85,
+        "seedReturnChance": 0.5,
+        "displayName": "Corn",
+        "rareDrops": [
+          {
+            "item": "M88NWORM",
+            "chance": 0.08,
+            "amount": 1
+          }
+        ]
+      },
+      "COBAPPLE": {
+        "name": "apple tree",
+        "plantType": "tree",
+        "level": 16,
+        "seedCost": 3,
+        "growSeconds": 600,
+        "tileGroup": "treeRed",
+        "stages": 4,
+        "renderOffset": {
+          "x": 8,
+          "y": 0
+        },
+        "yieldItem": "COBAPPLE",
+        "yield": {
+          "min": 2,
+          "max": 5
+        },
+        "xp": 150,
+        "seedReturnChance": 0.65,
+        "displayName": "Apple tree",
+        "rareDrops": [
+          {
+            "item": "M88NSTICKS",
+            "chance": 0.12,
+            "amount": 2
+          }
+        ]
+      },
+      "TREEPURPLE": {
+        "name": "purple fruit tree",
+        "plantType": "tree",
+        "level": 17,
+        "seedCost": 3,
+        "growSeconds": 660,
+        "tileGroup": "treePurple",
+        "stages": 4,
+        "renderOffset": {
+          "x": 8,
+          "y": 0
+        },
+        "yieldItem": "COBAPPLE",
+        "yield": {
+          "min": 2,
+          "max": 5
+        },
+        "xp": 155,
+        "seedReturnChance": 0.65,
+        "displayName": "Purple fruit tree",
+        "rareDrops": [
+          {
+            "item": "M88NSNAIL",
+            "chance": 0.12,
+            "amount": 2
+          }
+        ]
+      },
+      "TREEYELLOW": {
+        "name": "yellow fruit tree",
+        "plantType": "tree",
+        "level": 18,
+        "seedCost": 3,
+        "growSeconds": 660,
+        "tileGroup": "treeYellow",
+        "stages": 4,
+        "renderOffset": {
+          "x": 8,
+          "y": 0
+        },
+        "yieldItem": "COBAPPLE",
+        "yield": {
+          "min": 2,
+          "max": 5
+        },
+        "xp": 155,
+        "seedReturnChance": 0.65,
+        "displayName": "Yellow fruit tree",
+        "rareDrops": [
+          {
+            "item": "M88NWORM",
+            "chance": 0.12,
+            "amount": 2
+          }
+        ]
+      },
+      "M88NROSE": {
+        "name": "roses",
+        "displayName": "Roses",
+        "plantType": "crop",
+        "level": 10,
+        "seedCost": 2,
+        "growSeconds": 240,
+        "tileGroup": "roses",
+        "stagedTile": 18249,
+        "stages": 3,
+        "yieldItem": "M88NROSE",
+        "yield": {
+          "min": 1,
+          "max": 3
+        },
+        "xp": 75,
+        "seedReturnChance": 0.45,
+        "rareDrops": [
+          {
+            "item": "M88NSNAIL",
+            "chance": 0.08,
+            "amount": 1
           }
         ]
       }
-    ]
+    }
+  },
+  "potFarm": {
+    "minLevel": 5,
+    "prepare": {
+      "name": "Prepare soil",
+      "tool": "M88NSHOVEL",
+      "duration": 3,
+      "tile": 18366,
+      "xp": 15
+    },
+    "water": {
+      "tool": "M88NWATERCAN",
+      "duration": 3,
+      "xp": 20
+    },
+    "seedItem": "M88NSEEDS",
+    "allowedPlantTypes": [
+      "pot"
+    ],
+    "careBoosts": [
+      {
+        "item": "M88NDIRT",
+        "name": "Add m88n dirt",
+        "quality": 1,
+        "yieldBonus": 0,
+        "maxUses": 1
+      },
+      {
+        "item": "M88NWORM",
+        "name": "Add worm",
+        "quality": 0,
+        "yieldBonus": 1,
+        "maxUses": 1
+      },
+      {
+        "item": "M88NSNAIL",
+        "name": "Add snail",
+        "quality": 0,
+        "yieldBonus": 0,
+        "rareChanceBonus": 0.1,
+        "maxUses": 1
+      }
+    ],
+    "crops": {
+      "M88NLETTUCE": {
+        "name": "lettucePotted",
+        "plantType": "pot",
+        "level": 5,
+        "seedCost": 1,
+        "growSeconds": 90,
+        "tileGroup": "lettucePotted",
+        "stagedTile": 17970,
+        "stages": 4,
+        "yieldItem": "M88NLETTUCE",
+        "yield": {
+          "min": 1,
+          "max": 2
+        },
+        "xp": 35,
+        "seedReturnChance": 0.35,
+        "displayName": "Potted lettuce",
+        "rareDrops": [
+          {
+            "item": "M88NWORM",
+            "chance": 0.05,
+            "amount": 1
+          }
+        ]
+      },
+      "M88NCARROT": {
+        "name": "carrotPotted",
+        "plantType": "pot",
+        "level": 6,
+        "seedCost": 1,
+        "growSeconds": 120,
+        "tileGroup": "carrotPotted",
+        "stagedTile": 17685,
+        "stages": 4,
+        "yieldItem": "M88NCARROT",
+        "yield": {
+          "min": 1,
+          "max": 3
+        },
+        "xp": 45,
+        "seedReturnChance": 0.4,
+        "displayName": "Potted carrot",
+        "rareDrops": [
+          {
+            "item": "M88NDIRT",
+            "chance": 0.06,
+            "amount": 1
+          }
+        ]
+      },
+      "M88NTOMATO": {
+        "name": "tomatoPotted",
+        "plantType": "pot",
+        "level": 8,
+        "seedCost": 1,
+        "growSeconds": 180,
+        "tileGroup": "tomatoPotted",
+        "stagedTile": 18237,
+        "stages": 4,
+        "yieldItem": "M88NTOMATO",
+        "yield": {
+          "min": 2,
+          "max": 4
+        },
+        "xp": 60,
+        "seedReturnChance": 0.45,
+        "displayName": "Potted tomato",
+        "rareDrops": [
+          {
+            "item": "M88NSNAIL",
+            "chance": 0.06,
+            "amount": 1
+          }
+        ]
+      },
+      "M88NPOTATO": {
+        "name": "potatoPotted",
+        "plantType": "pot",
+        "level": 6,
+        "seedCost": 1,
+        "growSeconds": 240,
+        "tileGroup": "potatoPotted",
+        "stagedTile": 17676,
+        "stages": 4,
+        "yieldItem": "M88NPOTATO",
+        "yield": {
+          "min": 2,
+          "max": 5
+        },
+        "xp": 75,
+        "seedReturnChance": 0.5,
+        "displayName": "Potted potato",
+        "rareDrops": [
+          {
+            "item": "M88NDIRT",
+            "chance": 0.08,
+            "amount": 2
+          }
+        ]
+      },
+      "M88NBROCCOLI": {
+        "name": "broccoliPotted",
+        "plantType": "pot",
+        "level": 6,
+        "seedCost": 1,
+        "growSeconds": 150,
+        "tileGroup": "broccoliPotted",
+        "stagedTile": 17400,
+        "stages": 4,
+        "yieldItem": "M88NBROCCOLI",
+        "yield": {
+          "min": 1,
+          "max": 3
+        },
+        "xp": 55,
+        "seedReturnChance": 0.4,
+        "displayName": "Potted broccoli",
+        "rareDrops": [
+          {
+            "item": "M88NWORM",
+            "chance": 0.06,
+            "amount": 1
+          }
+        ]
+      },
+      "M88NCAULIFLOWER": {
+        "name": "cauliflowerPotted",
+        "plantType": "pot",
+        "level": 9,
+        "seedCost": 2,
+        "growSeconds": 210,
+        "tileGroup": "cauliflowerPotted",
+        "stagedTile": 17124,
+        "stages": 4,
+        "yieldItem": "M88NCAULIFLOWER",
+        "yield": {
+          "min": 1,
+          "max": 3
+        },
+        "xp": 70,
+        "seedReturnChance": 0.45,
+        "displayName": "Potted cauliflower",
+        "rareDrops": [
+          {
+            "item": "M88NDIRT",
+            "chance": 0.08,
+            "amount": 1
+          }
+        ]
+      },
+      "COBCORN": {
+        "name": "cornPotted",
+        "plantType": "pot",
+        "level": 11,
+        "seedCost": 2,
+        "growSeconds": 260,
+        "tileGroup": "cornPotted",
+        "stagedTile": 17675,
+        "stages": 4,
+        "yieldItem": "COBCORN",
+        "yield": {
+          "min": 2,
+          "max": 5
+        },
+        "xp": 85,
+        "seedReturnChance": 0.5,
+        "displayName": "Potted corn",
+        "rareDrops": [
+          {
+            "item": "M88NWORM",
+            "chance": 0.08,
+            "amount": 1
+          }
+        ]
+      },
+      "M88NROSE": {
+        "name": "rosesPotted",
+        "displayName": "Potted roses",
+        "plantType": "pot",
+        "level": 10,
+        "seedCost": 2,
+        "growSeconds": 240,
+        "tileGroup": "pottedRoses",
+        "stagedTile": 18246,
+        "stages": 3,
+        "yieldItem": "M88NROSE",
+        "yield": {
+          "min": 1,
+          "max": 3
+        },
+        "xp": 75,
+        "seedReturnChance": 0.45,
+        "rareDrops": [
+          {
+            "item": "M88NSNAIL",
+            "chance": 0.08,
+            "amount": 1
+          }
+        ]
+      }
+    }
   }
 }

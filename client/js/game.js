@@ -9339,7 +9339,21 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             },
 
             handleTileStage(stage) {
-                if(stage.tile) {
+                if(stage.clear) {
+                    Object.keys(self.tileStages).forEach((key) => {
+                        const stagedTile = self.tileStages[key];
+                        if(stagedTile.x === stage.x && stagedTile.y === stage.y) {
+                            delete self.tileStages[key];
+                        }
+                        if(key.startsWith(stage.x + '.' + stage.y + ':')) {
+                            delete self.tileStages[key];
+                        }
+                    });
+                    delete self.tileStages[stage.x + '.' + stage.y];
+                    return;
+                }
+
+                if(stage.tile !== null && stage.tile !== undefined) {
                     if (self.map.isAnimatedTile(stage.tile)) {
                         stage.animatedTile = self.animatedTiles.find((tile) => {
                             return tile.id === stage.tile;
@@ -9347,11 +9361,22 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     }
                     self.tileStages[stage.x + '.' + stage.y] = stage;
                 } else if(stage.tileGroup) {
+                    Object.keys(self.tileStages).forEach((key) => {
+                        if(key.startsWith(stage.x + '.' + stage.y + ':')) {
+                            delete self.tileStages[key];
+                        }
+                    });
                     // loop over self.map.stagedTiles (object) and find element and key where element.property = stage.tileGroup
                     let tileIndex = null;
                     let stagedTile = null;
                     Object.keys(self.map.stagedTiles).forEach((key) => {
-                       if(self.map.stagedTiles[key].groupName === stage.tileGroup) {
+                       if(stage.stagedTile && parseInt(key) === parseInt(stage.stagedTile)) {
+                           tileIndex = parseInt(key - 1);
+                            stagedTile = self.map.stagedTiles[key];
+                       }
+                    });
+                    Object.keys(self.map.stagedTiles).forEach((key) => {
+                       if(!stagedTile && self.map.stagedTiles[key].groupName === stage.tileGroup) {
                            tileIndex = parseInt(key - 1);
                             stagedTile = self.map.stagedTiles[key];
                        }
@@ -9360,12 +9385,33 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         console.error(`Could not find staged tile group ${stage.tileGroup}`);
                     }
 
-                    let tileSetWidth = self.renderer.tileset.width / self.map.tilesize;
+                    if (stage.replaceBaseTile || stagedTile.replaceBaseTile || stagedTile.renderMode === 'replace') {
+                        delete self.tileStages[stage.x + '.' + stage.y];
+                    }
+
+                    let tileSetWidth = self.map.tilesetColumns || (self.renderer.tileset.width / (self.map.tilesize * self.renderer.scale));
+                    let hasExplicitStageTiles = stagedTile.stageTiles && stagedTile.stageTiles.length > 0;
+                    let stageIndex = parseInt(stage.stage || 0);
+                    if (Number.isNaN(stageIndex) || stageIndex < 0) {
+                        stageIndex = 0;
+                    }
+                    if (hasExplicitStageTiles) {
+                        stageIndex = Math.min(stageIndex, stagedTile.stageTiles.length - 1);
+                        tileIndex = stagedTile.stageTiles[stageIndex];
+                    }
                     for(let x = 0; x < stagedTile.size.w; x++) {
                         for(let y = 0; y < stagedTile.size.h; y++) {
                             let tileId = tileIndex + (x + (y * tileSetWidth));
 
-                            let newStage = { x: stage.x, y: stage.y, stage: stage.stage, tileGroup: stage.tileGroup }
+                            let newStage = {
+                                x: stage.x,
+                                y: stage.y,
+                                stage: hasExplicitStageTiles ? 0 : stage.stage,
+                                highTile: stagedTile.highRows !== undefined ? y < stagedTile.highRows : undefined,
+                                stageStride: hasExplicitStageTiles ? undefined : (stagedTile.stageStride || stagedTile.size.w || 1),
+                                tileGroup: stage.tileGroup,
+                                renderOffset: stage.renderOffset
+                            }
                             if (self.map.isAnimatedTile(tileId)) {
                                 newStage.animatedTile = self.animatedTiles.find((tile) => {
                                     return tile.id === tileId;

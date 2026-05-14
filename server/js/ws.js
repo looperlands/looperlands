@@ -1321,8 +1321,8 @@ WS.socketIOServer = Server.extend({
             const body = req.body;
             const sessionId = req.params.sessionId;
             const sessionData = cache.get(sessionId);
-            tileActionsController.executeStage(sessionData.nftId, body.map, body.tileAction, body.item, self.worldsMap[body.map]);
-            res.status(200).send('ok');
+            const result = await tileActionsController.executeStage(sessionData.nftId, body.map, body.tileAction, body.item, self.worldsMap[body.map]);
+            res.status(200).send(result || { success: true });
         });
 
         app.post("/inventorysync", async (req, res) => {

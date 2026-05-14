@@ -1,6 +1,4 @@
-var Log = require('log'),
-    _ = require('underscore'),
-    log = new Log(console.debug),
+var _ = require('underscore'),
     Types = require("../../shared/js/gametypes");
 
 var map,
@@ -55,6 +53,9 @@ module.exports = function processMap(json, options) {
     map.width = Tiled.width;
     map.height = Tiled.height;
     map.tilesize = Tiled.tilewidth;
+    const tilesets = Tiled.tilesets || Tiled.tileset || [];
+    const firstTileset = Array.isArray(tilesets) ? tilesets[0] : tilesets;
+    map.tilesetColumns = firstTileset?.columns || 0;
 
     // Tile properties (collision, z-index, animation properties...)
     var tileProperties;
@@ -116,7 +117,7 @@ module.exports = function processMap(json, options) {
                 }
             }
 
-            const stageProps = ["groupName", "groupOffset", "groupSize", "stages"];
+            const stageProps = ["groupName", "groupOffset", "groupSize", "highRows", "replaceBaseTile", "renderMode", "stageStride", "stageTiles", "stages"];
             if (stageProps.includes(property.name)) {
                 if (!map.stagedTiles[id]) {
                     map.stagedTiles[id] = { size: { w: 1, h:1}, offset: { x:0, y:0}};
@@ -124,6 +125,17 @@ module.exports = function processMap(json, options) {
 
                 if (property.name === "stages") {
                     map.stagedTiles[id].stages = parseInt(property.value);
+                } else if (property.name === "highRows") {
+                    map.stagedTiles[id].highRows = parseInt(property.value);
+                } else if (property.name === "stageStride") {
+                    map.stagedTiles[id].stageStride = parseInt(property.value);
+                } else if (property.name === "replaceBaseTile") {
+                    map.stagedTiles[id].replaceBaseTile = property.value === true || property.value === "true" || property.value === "1";
+                } else if (property.name === "stageTiles") {
+                    map.stagedTiles[id].stageTiles = property.value
+                        .split(',')
+                        .map((stageTile) => parseInt(stageTile.trim()))
+                        .filter((stageTile) => !Number.isNaN(stageTile));
                 } else if (property.name === "groupOffset") {
                     map.stagedTiles[id].offset = {x: parseInt(property.value.split(',')[0]), y: parseInt(property.value.split(',')[1])};
                 } else if (property.name === "groupSize") {
@@ -133,7 +145,7 @@ module.exports = function processMap(json, options) {
                 }
             }
 
-            const actionProps = ["action"];
+            const actionProps = ["action", "allowedPlantTypes"];
             if(actionProps.includes(property.name)) {
                 if (!map.actionTiles[id]) {
                     map.actionTiles[id] = {};
