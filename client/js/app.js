@@ -390,7 +390,7 @@ define(['jquery', 'storage'], function ($, Storage) {
 
                 choiceHtml = '';
                 if (option.image) {
-                    choiceHtml += `<div class="image-frame panelBorder"><img class="image" src="${option.image}" /></div>`;
+                    choiceHtml += `<div class="image-frame panelBorder"><div class="image-viewport"><img class="image" src="${option.image}" /></div></div>`;
                 }
 
                 if (option.title) {

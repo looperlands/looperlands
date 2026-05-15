@@ -59,6 +59,12 @@
     margin-bottom: 15px;
 }
 
+#selection-popup > .body {
+    max-height: calc((172px + 8px) * 3);
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
 #selection-popup .image-frame {
     box-sizing: content-box;
     display: block;
@@ -66,17 +72,22 @@
     height: 48px;
     padding:10px;
     margin: 15px auto 5px;
+}
+
+#selection-popup .image-viewport {
+    width: 48px;
+    height: 48px;
     overflow: hidden;
 }
 
-#selection-popup .image-frame .image {
+#selection-popup .image-viewport .image {
     display: block;
     width: auto;
     height: 48px;
     max-width: none;
 }
 
-#selection-popup .image-frame.animated-strip .image {
+#selection-popup .image-viewport.animated-strip .image {
     animation: selection-sprite-strip var(--selection-strip-duration, 880ms) steps(var(--selection-strip-steps, 3), end) infinite;
 }
 
@@ -103,6 +114,7 @@
 #selection-popup .option {
     cursor: pointer;
     width: auto;
+    min-height: 172px;
     min-width: 0;
     position: relative;
     background: #00000033;
@@ -116,6 +128,7 @@
 #selection-popup #selection-choices {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
+    grid-auto-rows: minmax(172px, auto);
 }
 
 #selection-popup .option .count {

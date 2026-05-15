@@ -574,7 +574,7 @@
         "seedCost": 2,
         "growSeconds": 260,
         "tileGroup": "cornPotted",
-        "stagedTile": 17675,
+        "stagedTile": 17409,
         "stages": 4,
         "yieldItem": "COBCORN",
         "yield": {

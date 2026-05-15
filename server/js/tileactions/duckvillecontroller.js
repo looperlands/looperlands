@@ -471,19 +471,48 @@ class DuckvilleTileActionsController {
             count: Array.isArray(plots) ? plots.length : undefined,
         }));
         for (const plot of plots || []) {
-            const tileAction = { gridX: plot.x, gridY: plot.y, name: "farm" };
+            const farmDefinitionKey = this.getFarmDefinitionKeyForPlot(map, plot) || "farm";
+            const farmDefinition = this.stageDefinitions[map]?.[farmDefinitionKey];
+            const tileAction = { gridX: plot.x, gridY: plot.y, name: farmDefinitionKey };
             this.setTileActionStage(map, tileAction, plot);
             if (world) {
-                const crop = this.stageDefinitions[map]?.farm?.crops?.[plot.crop];
+                const crop = farmDefinition?.crops?.[plot.crop];
                 if (crop) {
                     const visualStage = this.getVisualStage(plot, crop);
                     this.placeCropStage(world, tileAction, crop, visualStage);
                     this.schedulePlotStageUpdates(map, tileAction, plot, crop, world);
-                } else if (plot.state === "prepared" && this.stageDefinitions[map]?.farm?.prepare?.tile) {
-                    world.placeStagedTile(plot.x, plot.y, this.stageDefinitions[map].farm.prepare.tile, 0);
+                } else if (plot.state === "prepared" && farmDefinition?.prepare?.tile) {
+                    world.placeStagedTile(plot.x, plot.y, farmDefinition.prepare.tile, 0);
                 }
             }
         }
+    }
+
+    getFarmDefinitionKeyForPlot(map, plot) {
+        const definitions = this.stageDefinitions[map] || {};
+        const entries = Object.entries(definitions);
+
+        if (plot?.crop) {
+            const cropMatch = entries.find(([, definition]) => {
+                const crop = definition?.crops?.[plot.crop];
+                return crop && (
+                    (plot.tileGroup && crop.tileGroup === plot.tileGroup)
+                    || (plot.tile && crop.tile === plot.tile)
+                );
+            });
+            if (cropMatch) {
+                return cropMatch[0];
+            }
+        }
+
+        if (plot?.state === "prepared" && plot.tile) {
+            const preparedMatch = entries.find(([, definition]) => definition?.prepare?.tile === plot.tile);
+            if (preparedMatch) {
+                return preparedMatch[0];
+            }
+        }
+
+        return entries.find(([, definition]) => definition?.crops?.[plot?.crop])?.[0] || null;
     }
 
     async getPlot(map, tileAction) {

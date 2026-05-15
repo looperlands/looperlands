@@ -160,8 +160,8 @@ function addToImageCache(cacheKey, offCanvas) {
 
     // Handle cache size limit
     if (cacheKeys.length > MAX_CACHE_SIZE) {
-        cacheKeys.shift();
-        delete imageCache[cacheKeys];
+        const oldestCacheKey = cacheKeys.shift();
+        delete imageCache[oldestCacheKey];
     }
 }
 

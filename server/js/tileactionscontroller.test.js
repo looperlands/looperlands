@@ -188,6 +188,27 @@ describe("TileActionsController farming", () => {
         expect(stage.itemChoices.M88NROSE.title).toBe("Potted roses");
     });
 
+    test("persisted potted rose plots restore with potted crop visuals", async () => {
+        plots["duckville.10.20"] = {
+            mapId: "duckville",
+            x: 10,
+            y: 20,
+            ownerNftId: "avatar",
+            crop: "M88NROSE",
+            state: "growing",
+            stage: 2,
+            tileGroup: "pottedRoses",
+            createdAt: now - 1000,
+            plantedAt: now - 1000,
+            wateredAt: now - 1000,
+            readyAt: now - 1,
+        };
+
+        await controller.loadPersistedPlots("duckville", world);
+
+        expect(world.placeStagedTileGroup).toHaveBeenCalledWith(10, 20, "pottedRoses", 2, null, 18246);
+    });
+
     test("plant validation blocks incompatible seeds", async () => {
         tileAction.allowedPlantTypes = "potted";
 
@@ -424,6 +445,13 @@ describe("TileActionsController farming", () => {
             yieldItem: "M88NROSE",
             stages: 3,
         });
+        expect(potFarm.crops.COBCORN).toMatchObject({
+            displayName: "Potted corn",
+            tileGroup: "cornPotted",
+            stagedTile: 17409,
+            yieldItem: "COBCORN",
+            stages: 4,
+        });
     });
 
     test("baked-base and potted crop groups are defined separately", () => {
@@ -454,8 +482,8 @@ describe("TileActionsController farming", () => {
         });
         expect(map.stagedTiles["17533"]).toMatchObject({
             groupName: "turnip",
-            renderMode: "replace",
         });
+        expect(map.stagedTiles["17533"].renderMode).toBeUndefined();
         expect(map.stagedTiles["17685"]).toMatchObject({
             groupName: "carrotPotted",
             size: { w: 1, h: 2 },
@@ -471,11 +499,12 @@ describe("TileActionsController farming", () => {
             size: { w: 1, h: 2 },
             renderMode: "replace",
         });
-        expect(map.stagedTiles["17675"]).toMatchObject({
+        expect(map.stagedTiles["17409"]).toMatchObject({
             groupName: "cornPotted",
             size: { w: 1, h: 2 },
-            renderMode: "replace",
         });
+        expect(Object.values(map.stagedTiles).filter((tile) => tile.groupName === "cornPotted")).toHaveLength(1);
+        expect(map.stagedTiles["17675"]).toBeUndefined();
         expect(map.stagedTiles["17676"]).toMatchObject({
             groupName: "potatoPotted",
             size: { w: 1, h: 2 },
