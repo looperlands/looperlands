@@ -3222,7 +3222,7 @@ let Properties = {
         inventoryDescription: "Brown Bag",
         respawnDelay: 10000,
         onConsume: function(player) {
-            player.releaseItem(Types.Entities.M88NJOINT);
+            player.releaseItem(Types.Entities.M88NDIRT);
         }
     },
     m88nvipbag: {
@@ -3274,7 +3274,7 @@ let Properties = {
         inventoryDescription: "Lucky Bag",
         respawnDelay: 10000,
         onConsume: function(player) {
-            player.releaseItem(Types.Entities.M88NBLUNT);
+            player.releaseItem(Types.Entities.M88NTACO);
         }
     },
     m88nmedic: {
@@ -3310,7 +3310,7 @@ let Properties = {
             group: "ruck",
             duration: 5000
         },
-        inventoryDescription: "Ruck Sack",
+        inventoryDescription: "Armor Ruck Sack",
         respawnDelay: 60000,
         onConsume: function(player) {
             player.releaseItem(Types.Entities.M88NKEVLARARMOR);
@@ -3323,7 +3323,7 @@ let Properties = {
             group: "ruck",
             duration: 5000
         },
-        inventoryDescription: "Ruck Sack 2",
+        inventoryDescription: "Melee Ruck Sack",
         respawnDelay: 60000,
         onConsume: function(player) {
             player.releaseItem(Types.Entities.M88NBRASSKNUCKLES);
@@ -3336,7 +3336,7 @@ let Properties = {
             group: "ruck",
             duration: 5000
         },
-        inventoryDescription: "Ruck Sack 3",
+        inventoryDescription: "Range Ruck Sack",
         respawnDelay: 60000,
         onConsume: function(player) {
             player.releaseItem(Types.Entities.M88NGRENADE);
@@ -3506,7 +3506,7 @@ let Properties = {
             group: "xpPotions",
             duration: 60000
         },
-        inventoryDescription: "French Fries",
+        inventoryDescription: "French Fries - Double XP 30s",
         onConsume: function(player){
             player.playerClassModifiers.applyTemporaryModifierWithTimeout('xp', 2, 30000);
         }
