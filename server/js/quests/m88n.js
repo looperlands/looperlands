@@ -1003,7 +1003,7 @@ quests = [
         needToReturn: true,
         reward: {
             item: Types.Entities.M88NDIRT,
-            amount: 20
+            amount: 50
         }
     },
     {
@@ -1145,7 +1145,7 @@ quests = [
         needToReturn: true,
         reward: {
             item: Types.Entities.M88NDIRT,
-            amount: 10
+            amount: 50
         }
     },
     {
@@ -1170,7 +1170,7 @@ quests = [
         needToReturn: true,
         reward: {
             item: Types.Entities.M88NDIRT,
-            amount: 10
+            amount: 100
         }
     },
     {
@@ -1265,7 +1265,7 @@ quests = [
         needToReturn: true,
         reward: {
             item: Types.Entities.M88NDIRT,
-            amount: 10
+            amount: 50
         }
     },
     {
@@ -1288,7 +1288,7 @@ quests = [
         needToReturn: true,
         reward: {
             item: Types.Entities.M88NDIRT,
-            amount: 10
+            amount: 100
         }
     },
     {
@@ -1361,7 +1361,7 @@ quests = [
         medal: Types.Medals.SKULL,
         reward: {
             item: Types.Entities.M88NGEM,
-            amount: 50
+            amount: 420
         }
     },
     {
