@@ -3518,7 +3518,7 @@ let Properties = {
             group: "xpPotions",
             duration: 120000
         },
-        inventoryDescription: "Taco Tuesday!",
+        inventoryDescription: "Taco - Double XP 60s",
         onConsume: function(player){
             player.playerClassModifiers.applyTemporaryModifierWithTimeout('xp', 2, 60000);
         }
@@ -3530,7 +3530,7 @@ let Properties = {
             group: "xpPotions",
             duration: 180000
         },
-        inventoryDescription: "Loaded Hot Dog",
+        inventoryDescription: "Loaded Hot Dog - Double XP 90s",
         onConsume: function(player){
             player.playerClassModifiers.applyTemporaryModifierWithTimeout('xp', 2, 90000);
         }
@@ -3542,7 +3542,7 @@ let Properties = {
             group: "xpPotions",
             duration: 240000
         },
-        inventoryDescription: "Double Burger",
+        inventoryDescription: "Double Burger - Double XP 120s",
         onConsume: function(player){
             player.playerClassModifiers.applyTemporaryModifierWithTimeout('xp', 2, 120000);
         }
@@ -3554,7 +3554,7 @@ let Properties = {
             group: "xpPotions",
             duration: 360000
         },
-        inventoryDescription: "Slice of Pizza",
+        inventoryDescription: "Slice of Pizza - Double XP 180s",
         onConsume: function(player){
             player.playerClassModifiers.applyTemporaryModifierWithTimeout('xp', 2, 180000);
         }
@@ -3578,7 +3578,7 @@ let Properties = {
             group: "xpTreat",
             duration: 20000
         },
-        inventoryDescription: "Candy Corn",
+        inventoryDescription: "Candy Corn - Double XP 20s",
         onConsume: function(player){
             player.playerClassModifiers.applyTemporaryModifierWithTimeout('xp', 2, 20000);
         }
@@ -3590,7 +3590,7 @@ let Properties = {
             group: "xpTreatt",
             duration: 20000
         },
-        inventoryDescription: "Sour Candy",
+        inventoryDescription: "Sour Candy - Quadruple XP 20s",
         onConsume: function(player){
             player.playerClassModifiers.applyTemporaryModifierWithTimeout('xp', 4, 20000);
         }
@@ -3675,7 +3675,7 @@ let Properties = {
             group: "rangedDamageDealt",
             duration: 90000
         },
-        inventoryDescription: "Turkey Leg",
+        inventoryDescription: "Turkey Leg - Double Range Damage 20s",
         onConsume: function(player){
             player.playerClassModifiers.applyTemporaryModifierWithTimeout('rangedDamageDealt', 2, 20000);
         }
@@ -3712,7 +3712,7 @@ let Properties = {
             group: "rangedDamageDealt",
             duration: 90000
         },
-        inventoryDescription: "Banana Cream Pie",
+        inventoryDescription: "Banana Cream Pie - 10x Range Damage 20s",
         onConsume: function(player){
             player.playerClassModifiers.applyTemporaryModifierWithTimeout('rangedDamageDealt', 10, 20000);
         }
@@ -3724,7 +3724,7 @@ let Properties = {
             group: "rangedDamageDealt",
             duration: 90000
         },
-        inventoryDescription: "Cherry Cream Pie",
+        inventoryDescription: "Cherry Cream Pie - 10x Range Damage 20s",
         onConsume: function(player){
             player.playerClassModifiers.applyTemporaryModifierWithTimeout('rangedDamageDealt', 10, 20000);
         }
@@ -3736,7 +3736,7 @@ let Properties = {
             group: "rangedDamageDealt",
             duration: 90000
         },
-        inventoryDescription: "Lemon Cream Pie",
+        inventoryDescription: "Lemon Cream Pie - 10x Range Damage 20s",
         onConsume: function(player){
             player.playerClassModifiers.applyTemporaryModifierWithTimeout('rangedDamageDealt', 10, 20000);
         }
@@ -3748,7 +3748,7 @@ let Properties = {
             group: "rangedDamageDealt",
             duration: 90000
         },
-        inventoryDescription: "Pumpkin Cream Pie",
+        inventoryDescription: "Pumpkin Cream Pie - 10x Range Damage 20s",
         onConsume: function(player){
             player.playerClassModifiers.applyTemporaryModifierWithTimeout('rangedDamageDealt', 10, 20000);
         }
@@ -3760,7 +3760,7 @@ let Properties = {
             group: "moveSpeed",
             duration: 60000
         },
-        inventoryDescription: "Fast Shoes",
+        inventoryDescription: "Fast Shoes - Double Movement Speed 30s",
         onConsume: function(player){
             player.playerClassModifiers.applyTemporaryModifierWithTimeout('moveSpeed', 2, 30000);
         }
@@ -3796,7 +3796,7 @@ let Properties = {
             group: "meleeDamageDealt",
             duration: 90000
         },
-        inventoryDescription: "Brass Knuckles",
+        inventoryDescription: "Brass Knuckles - 5x Melee Damage 30s",
         onConsume: function(player){
             player.playerClassModifiers.applyTemporaryModifierWithTimeout('meleeDamageDealt', 5, 30000);
         }
@@ -3820,7 +3820,7 @@ let Properties = {
             group: "rangedDamageDealt",
             duration: 90000
         },
-        inventoryDescription: "Grenade",
+        inventoryDescription: "Grenade - 5x Range Damage 30s",
         onConsume: function(player){
             player.playerClassModifiers.applyTemporaryModifierWithTimeout('rangedDamageDealt', 5, 30000);
         }
@@ -4063,7 +4063,7 @@ let Properties = {
     },
     m88nclover: {
         collectable: true,
-        inventoryDescription: "Clover",
+        inventoryDescription: "Clover - Companion Double XP 60s",
         respawnDelay: 3000000,
         consumable: true,
         cooldown: {
@@ -4079,7 +4079,7 @@ let Properties = {
     },
     m88nluckyclover: {
         collectable: true,
-        inventoryDescription: "Lucky Clover",
+        inventoryDescription: "Lucky Clover - Companion Double Melee Damage 60s",
         respawnDelay: 69420741,
         consumable: true,
         cooldown: {
@@ -4095,7 +4095,7 @@ let Properties = {
     },
     m88ngoldclover: {
         collectable: true,
-        inventoryDescription: "Gold Clover",
+        inventoryDescription: "Gold Clover - Companion Triple XP 120s",
         respawnDelay: 3000000,
         consumable: true,
         cooldown: {
@@ -4111,7 +4111,7 @@ let Properties = {
     },
     m88nluckygoldclover: {
         collectable: true,
-        inventoryDescription: "Lucky Gold Clover",
+        inventoryDescription: "Lucky Gold Clover - Companion Triple Melee Damage 120s",
         respawnDelay: 69420741,
         consumable: true,
         cooldown: {
@@ -4127,7 +4127,7 @@ let Properties = {
     },
     m88ndiamondclover: {
         collectable: true,
-        inventoryDescription: "Diamond Clover",
+        inventoryDescription: "Diamond Clover - Companion Quadruple XP 180s",
         respawnDelay: 3000000,
         consumable: true,
         cooldown: {
@@ -4143,7 +4143,7 @@ let Properties = {
     },
     m88nluckydiamondclover: {
         collectable: true,
-        inventoryDescription: "Lucky Diamond Clover",
+        inventoryDescription: "Lucky Diamond Clover - Companion Quadruple Melee Damage 180s",
         respawnDelay: 69420741,
         consumable: true,
         cooldown: {
@@ -4159,7 +4159,7 @@ let Properties = {
     },
     m88njoint: {
         collectable: true,
-        inventoryDescription: "Joint",
+        inventoryDescription: "Joint - Companion 5x XP 300s",
         respawnDelay: 3000000,
         consumable: true,
         cooldown: {
@@ -4175,7 +4175,7 @@ let Properties = {
     },
     m88nblunt: {
         collectable: true,
-        inventoryDescription: "Lucky Blunt",
+        inventoryDescription: "Lucky Blunt - Companion 10x Melee Damage 120s",
         respawnDelay: 69420741,
         consumable: true,
         cooldown: {
