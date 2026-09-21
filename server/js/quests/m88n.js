@@ -1495,7 +1495,7 @@ quests = [
         needToReturn: true,
         reward: {
             item: Types.Entities.M88NGEM,
-            amount: 200
+            amount: 500
         }
     },
     {
