@@ -21,7 +21,7 @@ define(['area'], function (Area) {
                 // DUCKVILLE MUSIC
                 "duckvilleaoe", "duckvillefly",
                 // M88N MUSIC
-                "pillowfight", "dreamstroll", "steeldrums", "mib", "bitbeats", "elevatormusic", "watertheme", "exploration", "classychristmas", "funkychristmas", "shark", "beesinthegarden", "clowncircus", "minecave", "pixelparty", "pixelplayground", "zombietown",
+                "pillowfight", "dreamstroll", "steeldrums", "mib", "bitbeats", "elevatormusic", "watertheme", "exploration", "classychristmas", "funkychristmas", "shark", "beesinthegarden", "treeforest","clowncircus", "minecave", "pixelparty", "pixelplayground", "zombietown",
                 // MRMLABS MUSIC
                 "battletheme",
                 // BITCORN MUSIC
