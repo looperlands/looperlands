@@ -304,21 +304,24 @@ const avatarHasItem = async function (avatarId, itemId) {
 }
 
 
-MOB_KILL_QUEUE = []
-const processMobKillEventQueue = async function (retry) {
-  if (!MOB_KILL_QUEUE?.length) { return; }
+let MOB_KILL_QUEUE = [];
+let processingMobKillQueue = false;
+
+const processMobKillEventQueue = async function () {
+  if (processingMobKillQueue || !MOB_KILL_QUEUE.length) { return; }
+  processingMobKillQueue = true;
+  const batch = MOB_KILL_QUEUE;
+  MOB_KILL_QUEUE = [];
+
   try {
-    let response = await platformClient.storeKills(MOB_KILL_QUEUE);
+    const response = await platformClient.storeKills(batch);
     printResponseJSON('storeKills', response);
-    MOB_KILL_QUEUE = [];
   } catch (error) {
-    if (retry === undefined) {
-      retry = MAX_RETRY_COUNT;
-    }
-    retry -= 1;
-    if (retry > 0) {
-      processMobKillEventQueue(retry);
-    }
+    // Preserve both the failed batch and kills collected during the request.
+    MOB_KILL_QUEUE = batch.concat(MOB_KILL_QUEUE);
+    console.error("Error saving mob kills", error);
+  } finally {
+    processingMobKillQueue = false;
   }
 }
 

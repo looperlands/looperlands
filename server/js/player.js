@@ -19,6 +19,7 @@ const Lakes = require("./lakes.js");
 const Collectables = require("./collectables.js");
 const platform = require('./looperlandsplatformclient.js');
 const PlayerClassModifiers = require('./playerclassmodifiers.js').PlayerClassModifiers;
+const syncExperience = require('./experiencesync.js');
 
 const LOOPERLANDS_PLATFORM_BASE_URL = process.env.LOOPERLANDS_PLATFORM_BASE_URL;
 const LOOPERLANDS_PLATFORM_API_KEY = process.env.LOOPERLANDS_PLATFORM_API_KEY;
@@ -673,18 +674,26 @@ module.exports = Player = Character.extend({
         }
 
         if (this.accumulatedExperience > XP_BATCH_SIZE) {
-            await this.syncExperience(session);
+            await this.syncExperience();
         }
     },
 
-    syncExperience: async function (session) {
-        let updatedXp = await dao.updateExperience(this.nftId, this.accumulatedExperience);
-        if (!Number.isNaN(updatedXp)) {
-            if (session !== undefined) {
-                session.xp = updatedXp;
-                this.server.server.cache.set(this.sessionId, session);
-            }
-            this.accumulatedExperience = 0;
+    syncExperience: async function () {
+        try {
+            await syncExperience(
+                this,
+                XP_BATCH_SIZE,
+                xp => dao.updateExperience(this.nftId, xp),
+                xp => {
+                    const session = this.server.server.cache.get(this.sessionId);
+                    if (session !== undefined) {
+                        session.xp = xp;
+                        this.server.server.cache.set(this.sessionId, session);
+                    }
+                }
+            );
+        } catch (error) {
+            console.error("Error synching avatar experience", this.nftId, error);
         }
     },
 

@@ -1,5 +1,6 @@
 const Formulas = require('./formulas.js');
 const dao = require('./dao.js');
+const syncExperience = require('./experiencesync.js');
 
 const XP_BATCH_SIZE = 500;
 class NFTWeapon {
@@ -78,17 +79,15 @@ class NFTWeapon {
 
     async syncExperience() {
         try {
-            const updatedExperience = await dao.saveNFTWeaponExperience(this.walletId, this.nftId, this.accumulatedExperience);
-            if (!Number.isNaN(updatedExperience)) {
-                this.experience = updatedExperience;
-                this.accumulatedExperience = 0;
-            } else {
-                console.error("Error synching experience", this.walletId, this.nftId, this.accumulatedExperience, updatedExperience);
-            }
-        } catch(error) {
-            console.error(error);
+            await syncExperience(
+                this,
+                XP_BATCH_SIZE,
+                xp => dao.saveNFTWeaponExperience(this.walletId, this.nftId, xp),
+                xp => { this.experience = xp; }
+            );
+        } catch (error) {
+            console.error("Error synching experience", this.walletId, this.nftId, error);
         }
-
     }
 
     getLevel() {
