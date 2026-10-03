@@ -22,6 +22,7 @@
       {
         "item": "M88NDIRT",
         "name": "Add m88n dirt",
+        "description": "Improves quality: harvest 1 extra item and earn 10 extra XP.",
         "quality": 1,
         "yieldBonus": 0,
         "maxUses": 1
@@ -29,6 +30,7 @@
       {
         "item": "M88NWORM",
         "name": "Add worm",
+        "description": "Harvest 1 extra item.",
         "quality": 0,
         "yieldBonus": 1,
         "maxUses": 1
@@ -36,6 +38,7 @@
       {
         "item": "M88NSNAIL",
         "name": "Add snail",
+        "description": "Adds 10 percentage points to each rare drop chance.",
         "quality": 0,
         "yieldBonus": 0,
         "rareChanceBonus": 0.1,
@@ -396,6 +399,7 @@
       {
         "item": "M88NDIRT",
         "name": "Add m88n dirt",
+        "description": "Improves quality: harvest 1 extra item and earn 10 extra XP.",
         "quality": 1,
         "yieldBonus": 0,
         "maxUses": 1
@@ -403,6 +407,7 @@
       {
         "item": "M88NWORM",
         "name": "Add worm",
+        "description": "Harvest 1 extra item.",
         "quality": 0,
         "yieldBonus": 1,
         "maxUses": 1
@@ -410,6 +415,7 @@
       {
         "item": "M88NSNAIL",
         "name": "Add snail",
+        "description": "Adds 10 percentage points to each rare drop chance.",
         "quality": 0,
         "yieldBonus": 0,
         "rareChanceBonus": 0.1,

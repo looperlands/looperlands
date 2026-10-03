@@ -1,6 +1,6 @@
 const _ = require("underscore");
-
-const duckville = require("../../../client/tileActions/duckville.json");
+const fs = require("fs");
+const path = require("path");
 const defaultDao = require("../dao.js");
 const Formulas = require("../formulas");
 const Types = require("../../../shared/js/gametypes");
@@ -17,17 +17,55 @@ class DuckvilleTileActionsController {
         this.disableLevelGate = options.disableLevelGate !== undefined
             ? options.disableLevelGate
             : (process.env.LOOPERLANDS_DISABLE_FARM_LEVEL_GATE === "1" || process.env.LOOPERLANDS_LOCAL_MODE === "1");
-        this.stageDefinitions = {
-            duckville: duckville,
-        };
+        this.stageDefinitions = options.stageDefinitions || this.loadStageDefinitions();
+        this.mapActionGrids = {};
         this.tileStages = {};
         this.plotLocks = {};
         this.loadedMaps = {};
         this.stageTimers = {};
     }
 
+    loadStageDefinitions() {
+        const directory = path.resolve(__dirname, "../../../client/tileActions");
+        return Object.fromEntries(fs.readdirSync(directory)
+            .filter((file) => file.endsWith(".json"))
+            .map((file) => [path.basename(file, ".json"), JSON.parse(fs.readFileSync(path.join(directory, file), "utf8"))]));
+    }
+
+    getMapActionGrid(map) {
+        if (this.mapActionGrids[map]) {
+            return this.mapActionGrids[map];
+        }
+        const grid = {};
+        const file = path.resolve(__dirname, "../../../client/maps", "world_client_" + map + ".json");
+        // Existing client exports already contain action names and tile positions.
+        if (fs.existsSync(file)) {
+            const mapData = JSON.parse(fs.readFileSync(file, "utf8"));
+            (mapData.data || []).forEach((tiles, index) => {
+                const tile = [].concat(tiles).find((id) => mapData.actionTiles?.[id]?.action);
+                if (tile !== undefined) {
+                    grid[(index % mapData.width) + "." + Math.floor(index / mapData.width)] = mapData.actionTiles[tile];
+                }
+            });
+        }
+        this.mapActionGrids[map] = grid;
+        return grid;
+    }
+
+    resolveTileAction(map, tileAction, world) {
+        if (!tileAction || !world?.map) {
+            return tileAction;
+        }
+        const action = this.getMapActionGrid(map)[this.getPositionKey(tileAction)];
+        return action ? { ...action, name: action.action, gridX: tileAction.gridX, gridY: tileAction.gridY } : null;
+    }
+
     async findCurrentStage(nftId, map, tileAction, world) {
         try {
+            tileAction = this.resolveTileAction(map, tileAction, world);
+            if (!tileAction) {
+                return null;
+            }
             const farmDefinition = this.getFarmDefinition(map, tileAction);
             if (!farmDefinition) {
                 console.info("[tileStage.duckville] no farm definition", JSON.stringify({
@@ -59,6 +97,9 @@ class DuckvilleTileActionsController {
     }
 
     async executeStage(nftId, map, tileAction, item, world) {
+        if (!tileAction) {
+            return { success: false };
+        }
         const lockKey = this.getPlotKey(map, tileAction);
         if (this.plotLocks[lockKey]) {
             this.notifyPlayer(world, nftId, "That plot is already being tended.");
@@ -67,6 +108,10 @@ class DuckvilleTileActionsController {
 
         this.plotLocks[lockKey] = true;
         try {
+            tileAction = this.resolveTileAction(map, tileAction, world);
+            if (!tileAction) {
+                return { success: false };
+            }
             await this.loadPersistedPlots(map, world);
             const farmDefinition = this.getFarmDefinition(map, tileAction);
             const plot = await this.getPlot(map, tileAction);
@@ -142,10 +187,13 @@ class DuckvilleTileActionsController {
 
         if (plot.state === "prepared") {
             const cropChoices = await this.getCropChoices(nftId, farmDefinition, world, tileAction);
+            if (Object.keys(cropChoices).length === 0) {
+                return { key: "wait", name: "Find seeds", waiting: true, message: "Find seeds to plant in this garden." };
+            }
             return {
                 key: "plant",
                 name: "Plant seeds",
-                requirements: { items: Object.keys(farmDefinition.crops) },
+                requirements: { items: Object.keys(cropChoices) },
                 itemChoices: cropChoices,
             };
         }
@@ -174,6 +222,18 @@ class DuckvilleTileActionsController {
 
         if (plot.state === "growing") {
             if (this.isReady(plot)) {
+                if (!this.canHarvest(nftId, plot, farmDefinition)) {
+                    const remaining = farmDefinition.harvestAccess === "owner"
+                        ? null : this.formatRemaining(plot.readyAt + DAY_MS, true);
+                    return {
+                        key: "wait",
+                        name: "Reserved for the planter" + (remaining ? " (" + remaining + " remaining)" : ""),
+                        waiting: true,
+                        message: remaining
+                            ? "Reserved for the planter. Anyone can harvest in " + remaining + "."
+                            : "Reserved for the planter. Only the planter can harvest this crop.",
+                    };
+                }
                 return {
                     key: "harvest",
                     name: "Harvest " + this.cropName(crop),
@@ -260,11 +320,15 @@ class DuckvilleTileActionsController {
                 seedCounts[seedItem] = await this.getCount(nftId, seedKind);
             }
             const seedCount = seedCounts[seedItem];
+            if (crop.hideUntilSeeds === true && seedCount < crop.seedCost) {
+                continue;
+            }
             choices[cropKey] = {
                 title: this.titleForCrop(crop),
                 count: seedCount,
                 imageItem: this.getYieldItem(cropKey, crop),
                 seedItem,
+                description: this.seedDescription(crop, farmDefinition),
                 yieldItem: this.getYieldItem(cropKey, crop),
                 plantType: this.getCropPlantType(crop),
                 optimisticStage: this.getOptimisticCropStage(crop, 0),
@@ -294,6 +358,7 @@ class DuckvilleTileActionsController {
                 title: boost.name,
                 count,
                 imageItem: boost.item,
+                description: boost.description,
                 disabled: false,
             };
         }
@@ -407,7 +472,7 @@ class DuckvilleTileActionsController {
 
     async harvestCrop(nftId, map, tileAction, plot, farmDefinition, world) {
         const crop = farmDefinition.crops[plot.crop];
-        if (!this.canHarvest(nftId, plot)) {
+        if (!this.canHarvest(nftId, plot, farmDefinition)) {
             return this.fail(world, nftId, "Only the planter can harvest this crop right now.");
         }
 
@@ -471,7 +536,7 @@ class DuckvilleTileActionsController {
             count: Array.isArray(plots) ? plots.length : undefined,
         }));
         for (const plot of plots || []) {
-            const farmDefinitionKey = this.getFarmDefinitionKeyForPlot(map, plot) || "farm";
+            const farmDefinitionKey = this.getFarmDefinitionKeyForPlot(map, plot, world) || "farm";
             const farmDefinition = this.stageDefinitions[map]?.[farmDefinitionKey];
             const tileAction = { gridX: plot.x, gridY: plot.y, name: farmDefinitionKey };
             this.setTileActionStage(map, tileAction, plot);
@@ -488,7 +553,11 @@ class DuckvilleTileActionsController {
         }
     }
 
-    getFarmDefinitionKeyForPlot(map, plot) {
+    getFarmDefinitionKeyForPlot(map, plot, world) {
+        const action = world?.map && this.getMapActionGrid(map)[plot.x + "." + plot.y];
+        if (action) {
+            return action.action;
+        }
         const definitions = this.stageDefinitions[map] || {};
         const entries = Object.entries(definitions);
 
@@ -725,7 +794,13 @@ class DuckvilleTileActionsController {
         return plot.readyAt && this.now() >= plot.readyAt;
     }
 
-    canHarvest(nftId, plot) {
+    canHarvest(nftId, plot, farmDefinition = {}) {
+        if (farmDefinition.harvestAccess === "shared" || plot.ownerNftId === nftId) {
+            return true;
+        }
+        if (farmDefinition.harvestAccess === "owner") {
+            return false;
+        }
         return plot.ownerNftId === nftId || (plot.readyAt && this.now() - plot.readyAt >= DAY_MS);
     }
 
@@ -872,6 +947,14 @@ class DuckvilleTileActionsController {
         return crop.seedItem || farmDefinition.seedItem || "M88NSEEDS";
     }
 
+    seedDescription(crop, farmDefinition) {
+        const seedItem = this.getSeedItem(crop, farmDefinition);
+        const defaultSeedItem = farmDefinition.seedItem || "M88NSEEDS";
+        const seedName = crop.seedName || (seedItem === defaultSeedItem && farmDefinition.seedName)
+            || (seedItem === "M88NSEEDS" ? "seeds" : seedItem.replace(/_/g, " ").replace(/seeds$/i, " seeds").toLowerCase().replace(/\s+/g, " ").trim());
+        return "Uses " + crop.seedCost + " bag" + (crop.seedCost === 1 ? "" : "s") + " of " + seedName + ".";
+    }
+
     getYieldItem(cropKey, crop) {
         return crop.yieldItem || cropKey;
     }
@@ -938,9 +1021,12 @@ class DuckvilleTileActionsController {
         return Math.ceil(crop.growSeconds / 60) + " min";
     }
 
-    formatRemaining(readyAt) {
+    formatRemaining(readyAt, includeHours = false) {
         const remaining = Math.max(0, readyAt - this.now());
         const seconds = Math.ceil(remaining / 1000);
+        if (includeHours && seconds >= 3600) {
+            return Math.ceil(seconds / 3600) + "h";
+        }
         if (seconds < 60) {
             return seconds + "s";
         }

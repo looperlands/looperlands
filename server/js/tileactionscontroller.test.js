@@ -18,6 +18,7 @@ jest.mock("../../shared/js/gametypes", () => ({
         M88NBROCCOLI: 78012500,
         M88NCAULIFLOWER: 78012600,
         M88NROSE: 78005100,
+        MOONSEEDS: 99900001,
     },
     getKindAsString: jest.fn((kind) => {
         const names = {
@@ -346,7 +347,7 @@ describe("TileActionsController farming", () => {
         await controller.executeStage("other", "duckville", tileAction, null, world);
 
         expect(dao.deleteFarmPlot).not.toHaveBeenCalled();
-        expect(world.sendNotifications).toHaveBeenCalledWith(world.players[2], "Only the planter can harvest this crop right now.");
+        expect(world.sendNotifications).toHaveBeenCalledWith(world.players[2], expect.stringContaining("Reserved for the planter"));
     });
 
     test("repeated harvest does not duplicate rewards", async () => {
@@ -360,6 +361,246 @@ describe("TileActionsController farming", () => {
         await controller.executeStage("avatar", "duckville", tileAction, null, world);
 
         expect(inventory[Types.Entities.M88NLETTUCE]).toBe(firstHarvest);
+    });
+
+    test.each([
+        [undefined, 0, false], [undefined, 86400000, true],
+        ["protected", 0, false], ["protected", 86400000, true],
+        ["shared", 0, true], ["owner", 86400000, false],
+    ])("harvest access %s after %i ms gives another player access: %s", async (access, overdue, allowed) => {
+        controller.stageDefinitions.duckville.farm.harvestAccess = access;
+        await controller.executeStage("avatar", "duckville", tileAction, null, world);
+        await controller.executeStage("avatar", "duckville", tileAction, "M88NLETTUCE", world);
+        await controller.executeStage("avatar", "duckville", tileAction, null, world);
+        const early = await controller.executeStage("other", "duckville", tileAction, null, world);
+        expect(early.success).toBe(false);
+        now += 90000 + overdue;
+
+        const result = await controller.executeStage("other", "duckville", tileAction, null, world);
+
+        expect(result.success).toBe(allowed);
+        expect(dao.deleteFarmPlot).toHaveBeenCalledTimes(allowed ? 1 : 0);
+        if (allowed) {
+            expect(dao.updateResourceBalance).toHaveBeenLastCalledWith(expect.arrayContaining([
+                expect.objectContaining({ nftId: "other", itemId: Types.Entities.M88NLETTUCE }),
+            ]));
+        }
+    });
+
+    test("special seeds unlock a crop on the same plot and are consumed and returned", async () => {
+        Object.assign(controller.stageDefinitions.duckville.farm.crops.M88NLETTUCE, {
+            seedItem: "MOONSEEDS", hideUntilSeeds: true,
+        });
+        await controller.executeStage("avatar", "duckville", tileAction, null, world);
+        let stage = await controller.findCurrentStage("avatar", "duckville", tileAction, world);
+        expect(stage.requirements.items).not.toContain("M88NLETTUCE");
+        expect(stage.itemChoices.M88NLETTUCE).toBeUndefined();
+        expect(stage.itemChoices.M88NCARROT.disabled).toBe(false);
+        const blocked = await controller.executeStage("avatar", "duckville", tileAction, "M88NLETTUCE", world);
+        expect(blocked.success).toBe(false);
+
+        inventory[Types.Entities.MOONSEEDS] = 1;
+        stage = await controller.findCurrentStage("avatar", "duckville", tileAction, world);
+        expect(stage.itemChoices.M88NLETTUCE.disabled).toBe(false);
+        await controller.executeStage("avatar", "duckville", tileAction, "M88NLETTUCE", world);
+        expect(inventory[Types.Entities.MOONSEEDS]).toBe(0);
+        expect(inventory[Types.Entities.M88NSEEDS]).toBe(5);
+        await controller.executeStage("avatar", "duckville", tileAction, null, world);
+        now += 91000;
+        await controller.executeStage("avatar", "duckville", tileAction, null, world);
+        expect(inventory[Types.Entities.MOONSEEDS]).toBe(1);
+        expect(inventory[Types.Entities.M88NLETTUCE]).toBeGreaterThan(0);
+    });
+
+    test("protected crop explains the countdown before offering any harvest animation", async () => {
+        await controller.executeStage("avatar", "duckville", tileAction, null, world);
+        await controller.executeStage("avatar", "duckville", tileAction, "M88NLETTUCE", world);
+        await controller.executeStage("avatar", "duckville", tileAction, null, world);
+        now += 90000;
+        const stage = await controller.findCurrentStage("other", "duckville", tileAction, world);
+        expect(stage.name).toBe("Reserved for the planter (24h remaining)");
+        expect(stage.waiting).toBe(true);
+        expect(stage.playAnimation).toBeUndefined();
+        expect(stage.optimisticStage).toBeUndefined();
+        expect((await controller.findCurrentStage("avatar", "duckville", tileAction, world)).key).toBe("harvest");
+        now += 86400000 - 30000;
+        expect((await controller.findCurrentStage("other", "duckville", tileAction, world)).name).toBe("Reserved for the planter (30s remaining)");
+        now += 30000;
+        expect((await controller.findCurrentStage("other", "duckville", tileAction, world)).key).toBe("harvest");
+    });
+
+    test.each(["owner", "shared"])("harvest prompt follows %s access", async (access) => {
+        controller.stageDefinitions.duckville.farm.harvestAccess = access;
+        await controller.executeStage("avatar", "duckville", tileAction, null, world);
+        await controller.executeStage("avatar", "duckville", tileAction, "M88NLETTUCE", world);
+        await controller.executeStage("avatar", "duckville", tileAction, null, world);
+        now += 90000 + 86400000;
+        const stage = await controller.findCurrentStage("other", "duckville", tileAction, world);
+        expect(stage.key).toBe(access === "shared" ? "harvest" : "wait");
+        if (access === "owner") {
+            expect(stage.name).toBe("Reserved for the planter");
+            expect(stage.message).not.toContain("Anyone can harvest");
+        }
+    });
+
+    test("planting descriptions identify default seeds, custom labels and plural bags", async () => {
+        const farm = controller.stageDefinitions.duckville.farm;
+        await controller.executeStage("avatar", "duckville", tileAction, null, world);
+        let stage = await controller.findCurrentStage("avatar", "duckville", tileAction, world);
+        expect(stage.itemChoices.M88NLETTUCE.description).toBe("Uses 1 bag of seeds.");
+        farm.seedName = "magical seeds";
+        Object.assign(farm.crops.M88NLETTUCE, { seedItem: "MOONSEEDS", seedCost: 2 });
+        stage = await controller.findCurrentStage("avatar", "duckville", tileAction, world);
+        expect(stage.itemChoices.M88NLETTUCE.description).toBe("Uses 2 bags of moon seeds.");
+        expect(stage.itemChoices.M88NLETTUCE.disabled).toBe(true);
+        expect(stage.itemChoices.M88NCARROT.description).toBe("Uses 1 bag of magical seeds.");
+        farm.crops.M88NLETTUCE.seedName = "Dreamland magical seeds";
+        stage = await controller.findCurrentStage("avatar", "duckville", tileAction, world);
+        expect(stage.itemChoices.M88NLETTUCE.description).toBe("Uses 2 bags of Dreamland magical seeds.");
+    });
+
+    test("seed descriptions and harvest protection work on another map", async () => {
+        const farm = controller.stageDefinitions.duckville.farm;
+        const configured = new TileActionsController(cache, null, {
+            dao, now: () => now, stageDefinitions: { moon: { farm: { ...farm, seedItem: "MOONSEEDS", seedName: "moon seeds" } } },
+        });
+        inventory[Types.Entities.MOONSEEDS] = 1;
+        await configured.executeStage("avatar", "moon", tileAction, null, world);
+        expect((await configured.findCurrentStage("avatar", "moon", tileAction, world)).itemChoices.M88NLETTUCE.description).toBe("Uses 1 bag of moon seeds.");
+        await configured.executeStage("avatar", "moon", tileAction, "M88NLETTUCE", world);
+        expect(inventory[Types.Entities.MOONSEEDS]).toBe(0);
+        await configured.executeStage("avatar", "moon", tileAction, null, world);
+        now += 90000;
+        expect((await configured.findCurrentStage("other", "moon", tileAction, world)).name).toContain("Reserved for the planter");
+        expect((await configured.findCurrentStage("avatar", "moon", tileAction, world)).key).toBe("harvest");
+    });
+
+    test("client explains reserved crops without animation or a request and passes seed labels to the popup", async () => {
+        const post = jest.fn();
+        let actions;
+        require("vm").runInNewContext(require("fs").readFileSync(require("path").resolve(__dirname, "../../client/js/tileactions.js"), "utf8"), {
+            define: (dependencies, factory) => { actions = factory(); },
+            Class: { extend: (definition) => definition }, axios: { post },
+        });
+        actions.game = {
+            showNotification: jest.fn(), player: { setAnimation: jest.fn() },
+            app: { showSelectionPopup: jest.fn() },
+        };
+        actions.activeStages = {};
+        actions.stageDefinitions = { "10.20": { waiting: true } };
+        actions.executeStage(tileAction, { waiting: true, playAnimation: true, message: "Reserved for the planter." });
+        expect(actions.game.showNotification).toHaveBeenCalledWith("Reserved for the planter.");
+        expect(actions.game.player.setAnimation).not.toHaveBeenCalled();
+        expect(post).not.toHaveBeenCalled();
+        expect(actions.stageDefinitions["10.20"]).toBeUndefined();
+
+        await controller.executeStage("avatar", "duckville", tileAction, null, world);
+        const stage = await controller.findCurrentStage("avatar", "duckville", tileAction, world);
+        actions.executeStage(tileAction, stage);
+        expect(actions.game.app.showSelectionPopup).toHaveBeenCalledWith("Plant seeds", expect.arrayContaining([
+            expect.objectContaining({ value: "M88NLETTUCE", description: "Uses 1 bag of seeds." }),
+        ]));
+    });
+
+    test("crops with missing seeds stay visible unless explicitly hidden", async () => {
+        const farm = controller.stageDefinitions.duckville.farm;
+        farm.crops = { M88NLETTUCE: { ...farm.crops.M88NLETTUCE, seedItem: "MOONSEEDS" } };
+        await controller.executeStage("avatar", "duckville", tileAction, null, world);
+        let stage = await controller.findCurrentStage("avatar", "duckville", tileAction, world);
+        expect(stage.itemChoices.M88NLETTUCE.disabled).toBe(true);
+        farm.crops.M88NLETTUCE.hideUntilSeeds = true;
+        stage = await controller.findCurrentStage("avatar", "duckville", tileAction, world);
+        expect(stage.waiting).toBe(true);
+        expect(stage.message).toBe("Find seeds to plant in this garden.");
+        inventory[Types.Entities.MOONSEEDS] = 1;
+        expect((await controller.findCurrentStage("avatar", "duckville", tileAction, world)).key).toBe("plant");
+    });
+
+    test("Care Boost descriptions reach the selection choices", async () => {
+        inventory[Types.Entities.M88NDIRT] = 1;
+        inventory[Types.Entities.M88NWORM] = 1;
+        inventory[Types.Entities.M88NSNAIL] = 1;
+        await controller.executeStage("avatar", "duckville", tileAction, null, world);
+        await controller.executeStage("avatar", "duckville", tileAction, "M88NLETTUCE", world);
+        await controller.executeStage("avatar", "duckville", tileAction, null, world);
+        const stage = await controller.findCurrentStage("avatar", "duckville", tileAction, world);
+        expect(stage.itemChoices.M88NDIRT.description).toContain("10 extra XP");
+        expect(stage.itemChoices.M88NWORM.description).toBe("Harvest 1 extra item.");
+        expect(stage.itemChoices.M88NSNAIL.description).toContain("10 percentage points");
+    });
+
+    test("garden JSON files register new maps without another controller", async () => {
+        const fs = require("fs");
+        const readFileSync = fs.readFileSync;
+        const directorySpy = jest.spyOn(fs, "readdirSync").mockReturnValueOnce(["duckville.json", "moon.json", "README.md"]);
+        const fileSpy = jest.spyOn(fs, "readFileSync").mockImplementation((file, ...args) => {
+            return file.endsWith("/moon.json")
+                ? JSON.stringify({ moonGarden: controller.stageDefinitions.duckville.farm })
+                : readFileSync(file, ...args);
+        });
+        let configured;
+        try {
+            configured = new TileActionsController(cache, null, { dao, now: () => now });
+        } finally {
+            directorySpy.mockRestore();
+            fileSpy.mockRestore();
+        }
+        expect(configured.getController("moon")).toBe(configured.getController("duckville"));
+        expect(configured.getController("README")).toBeNull();
+        const result = await configured.executeStage("avatar", "moon", { ...tileAction, name: "moonGarden" }, null, world);
+        expect(result.success).toBe(true);
+        expect(dao.saveFarmPlot).toHaveBeenCalledWith(expect.objectContaining({ mapId: "moon" }));
+    });
+
+    test("existing client map supplies garden actions without a new server export", async () => {
+        const duckvilleController = controller.getController("duckville");
+        const grid = duckvilleController.getMapActionGrid("duckville");
+        const [position] = Object.entries(grid).find(([, action]) => action.action === "farm");
+        const [gridX, gridY] = position.split(".").map(Number);
+        const readSpy = jest.spyOn(require("fs"), "readFileSync");
+        world.map = {};
+        tileAction = { name: "potFarm", gridX, gridY };
+        try {
+            const stage = await controller.findCurrentStage("avatar", "duckville", tileAction, world);
+            expect(stage.optimisticStage.tile).toBe(controller.stageDefinitions.duckville.farm.prepare.tile);
+            expect(duckvilleController.getMapActionGrid("duckville")).toBe(grid);
+            expect(readSpy).not.toHaveBeenCalled();
+        } finally {
+            readSpy.mockRestore();
+        }
+        expect(await controller.findCurrentStage("avatar", "duckville", { ...tileAction, gridX: -1 }, world)).toBeNull();
+        expect((await controller.executeStage("avatar", "duckville", { ...tileAction, gridX: -1 }, null, world)).success).toBe(false);
+    });
+
+    test("client map action prevents requests from changing harvest access", async () => {
+        controller.stageDefinitions.duckville.communityGarden = {
+            ...controller.stageDefinitions.duckville.farm, harvestAccess: "shared",
+        };
+        controller.getController("duckville").mapActionGrids.duckville = { "10.20": { action: "farm" } };
+        world.map = {};
+        await controller.executeStage("avatar", "duckville", tileAction, null, world);
+        await controller.executeStage("avatar", "duckville", tileAction, "M88NLETTUCE", world);
+        await controller.executeStage("avatar", "duckville", tileAction, null, world);
+        now += 91000;
+        const result = await controller.executeStage("other", "duckville", { ...tileAction, name: "communityGarden" }, null, world);
+        expect(result.success).toBe(false);
+        expect(dao.deleteFarmPlot).not.toHaveBeenCalled();
+    });
+
+    test("persisted plots restore the correct garden even when crop graphics are shared", async () => {
+        const farm = controller.stageDefinitions.duckville.farm;
+        controller.stageDefinitions.duckville.communityGarden = {
+            ...farm, crops: { M88NLETTUCE: { ...farm.crops.M88NLETTUCE, stages: 2 } },
+        };
+        controller.getController("duckville").mapActionGrids.duckville = { "10.20": { action: "communityGarden" } };
+        world.map = {};
+        plots["duckville.10.20"] = {
+            mapId: "duckville", x: 10, y: 20, ownerNftId: "avatar",
+            crop: "M88NLETTUCE", state: "growing", tileGroup: "lettuce",
+            wateredAt: now - 70000, readyAt: now + 20000,
+        };
+        await controller.loadPersistedPlots("duckville", world);
+        expect(world.placeStagedTileGroup).toHaveBeenCalledWith(10, 20, "lettuce", 1);
     });
 
     test("persisted plots hydrate into staged tiles", async () => {

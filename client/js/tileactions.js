@@ -45,6 +45,14 @@ define(['../../shared/js/gametypes'], function () {
                 return;
             }
 
+            if (stage.waiting) {
+                if (stage.message) {
+                    this.game.showNotification(stage.message);
+                }
+                this.cacheStage(tileAction, null);
+                return;
+            }
+
             const activeKey = this.getTileActionKey(tileAction);
             if (this.activeStages[activeKey]) {
                 return;
@@ -62,6 +70,7 @@ define(['../../shared/js/gametypes'], function () {
                     return {
                         value: item,
                         title: choice.detail ? (choice.title + ' (' + choice.detail + ')') : choice.title,
+                        description: choice.description,
                         image: '/img/3/item-' + imageItem + '.png',
                         count: choice.count,
                         disabled: choice.disabled || (choice.count <= 0),

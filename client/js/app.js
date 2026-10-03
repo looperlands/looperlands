@@ -388,7 +388,7 @@ define(['jquery', 'storage'], function ($, Storage) {
             for (let i = 0; i < options.length; i++) {
                 let option = options[i];
 
-                choiceHtml = '';
+                let choiceHtml = '';
                 if (option.image) {
                     choiceHtml += `<div class="image-frame panelBorder"><div class="image-viewport"><img class="image" src="${option.image}" /></div></div>`;
                 }
@@ -406,6 +406,9 @@ define(['jquery', 'storage'], function ($, Storage) {
                 }
 
                 let choice = $('<div class="option"></div>').html(choiceHtml);
+                if (option.description) {
+                    $('<div class="description"></div>').text(option.description).insertAfter(choice.find('.body'));
+                }
                 const configureSelectionImage = function () {
                     const image = this;
                     const frameSize = image.naturalHeight;

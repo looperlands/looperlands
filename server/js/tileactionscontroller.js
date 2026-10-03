@@ -8,6 +8,9 @@ class TileActionsController {
         this.stageDefinitions = {};
 
         this.registerMapController("duckville", duckvilleController);
+        Object.keys(duckvilleController.stageDefinitions || {}).forEach((map) => {
+            this.registerMapController(map, duckvilleController);
+        });
 
         Object.entries(options.controllers || {}).forEach(([map, controller]) => {
             this.registerMapController(map, controller);

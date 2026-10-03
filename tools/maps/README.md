@@ -42,6 +42,88 @@ You must run both commands in order to export the client and server map files. T
 Things to know
 --------------
 
+### Gardens and farming
+
+Keep garden behaviour in `client/tileActions/<mapId>.json`, using the map ID
+without the `world_` prefix. Start by copying the complete `farm` or `potFarm`
+entry from `duckville.json`. The server loads these files automatically at
+startup, so restart it after changing the garden config.
+
+The top-level keys match the tile's existing Tiled `action` value. A tile with
+`action = farm` uses the `farm` entry for that map. Each entry has its own crop
+list, tools, preparation tiles and Care Boosts. New crops and garden configs do
+not need another controller or an entry in the test file.
+
+Changing harvest access, seeds, crop availability, timings, yields or boost
+descriptions for existing plots does **not** require updating map files. The
+server reads action names and plot positions from the existing
+`client/maps/world_client_<mapId>.json`; include this file alongside the garden
+config when deploying the server. Adding physical plot tiles, changing their
+actions or adding growth graphics still requires the usual map edits and export.
+When copying a garden to another map, check that its tile IDs and growth groups
+match that map's tileset.
+
+**Harvest access:** set `harvestAccess` on the garden entry.
+
+| Value | Who can harvest a ready crop? |
+| --- | --- |
+| `"protected"` (default) | The planter for the first 24 hours, then anyone. |
+| `"shared"` | Anyone immediately, useful for community gardens. |
+| `"owner"` | Only the planter, with no public harvest window. |
+
+This only controls harvesting. Players can still help water and tend crops. The
+player who harvests receives the harvested items and harvest XP.
+Ready crops that another player cannot harvest show `Reserved for the planter`
+instead of a harvest action. Protected crops also show the remaining protection
+time. Owner-only crops have no countdown; shared crops are immediately available.
+
+**Seeds:** the garden's `seedItem` is the default for all its crops. A crop can
+override it with its own `seedItem`. Several crops can share a special bag, such
+as moon seeds or spicy seeds, and use the same plots as normal magical seeds.
+For example, add these fields to a copied crop entry:
+
+```json
+"seedItem": "SPICYSEEDS",
+"seedName": "spicy seeds",
+"hideUntilSeeds": true,
+"seedCost": 1
+```
+
+`SPICYSEEDS` is an example item name, not a built-in item. New seeds and harvested
+items still need the usual item definitions and assets. Seed drops and recipes
+are configured separately. A crop's `yieldItem` determines its harvested item;
+`growSeconds`, `level`, `yield`, `xp` and `seedReturnChance` control its growth
+time, required level, base harvest amount, XP and chance to return one seed item.
+The planting menu shows the seed requirement, such as `Uses 1 bag of spicy seeds.`
+Optional `seedName` gives the seed bag a readable label. Set it on the garden for
+its default seeds or on a crop for that crop's seeds. Without it, the label is
+derived from the item name. A crop using another seed item does not inherit the
+garden's default seed label.
+
+`hideUntilSeeds` defaults to `false`: crops with missing seeds stay visible but
+disabled. With `true`, a crop only appears while the player has at least
+`seedCost` seeds. This is not a permanent unlock; already planted crops keep
+growing after their seeds are spent. If all crops are hidden, the plot asks the
+player to find seeds instead of opening an empty menu.
+
+**Different areas:** use different existing garden actions with their own crop
+lists, or add special crops to the home garden so players can bring seeds back
+from other worlds. `action` is a tileset tile property: changing it affects every
+placement of that tile. Different rules within the same map need tiles with
+different action values, but each garden type can accept many seed bags.
+Use `plantType` and `allowedPlantTypes` to distinguish farmland (`"crop"`,
+`"tree"`) from pots (`"pot"`). Copy a potted entry when adding a pot version so
+its graphics and positioning are correct.
+
+**Care Boosts:** each entry in `careBoosts` can have an optional plain-text
+`description`, displayed beneath its name. The numeric fields control the effect:
+`yieldBonus` adds harvested items, `quality` adds items and 10 XP per point, and
+`rareChanceBonus` adds to each configured rare drop chance (`0.1` means 10
+percentage points). `maxUses` limits uses of that boost on one planted crop.
+For example, a worm with `yieldBonus: 1` can have the description
+`"Harvest 1 extra item."`. Boosts consume one item per use and are available
+after watering, while the crop is growing.
+
 The client map export will create two almost identical files: `world_client.js` and `world_client.json`
 These are both required because, depending on the browser, the game will load the map either by using a web worker (loading `world_client.js`), or via Ajax (loading `world_client.json`).
 
@@ -88,4 +170,3 @@ Here are a few ideas for anyone who might want to help make this tool better:
 
 - Tiled editor wiki: https://github.com/bjorn/tiled/wiki
 - TMX map format documentation: https://github.com/bjorn/tiled/wiki/TMX-Map-Format
-

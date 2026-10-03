@@ -65,6 +65,13 @@
     overflow-y: auto;
 }
 
+#selection-popup .option .description {
+    padding: 0 12px 15px;
+    font-size: 12px;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+
 #selection-popup .image-frame {
     box-sizing: content-box;
     display: block;
