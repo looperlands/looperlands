@@ -1875,13 +1875,13 @@ let Properties = {
         level: 40,
         drops: {
             manacrystal: 14,
-            candycorntreat: 11,
-            lollitreat: 7,
-            chocolatetreat: 4,
-            candytreat: 3,
-            headstonetrick: 11,
-            spidertrick: 7,
-            skullnbonestrick: 4,
+            candycorntreat: 4,
+            lollitreat: 3,
+            chocolatetreat: 2,
+            candytreat: 1,
+            headstonetrick: 3,
+            spidertrick: 2,
+            skullnbonestrick: 1,
             m88ngem: 3
         },
         respawnDelay: 500000,
@@ -1891,12 +1891,12 @@ let Properties = {
         level: 30,
         drops: {
             manacrystal: 14,
-            candycorntreat: 11,
-            lollitreat: 7,
-            chocolatetreat: 4,
-            candytreat: 3,
-            headstonetrick: 11,
-            spidertrick: 7,
+            candycorntreat: 4,
+            lollitreat: 3,
+            chocolatetreat: 2,
+            candytreat: 1,
+            headstonetrick: 3,
+            spidertrick: 2,
             skullnbonestrick: 4,
             m88ndirt: 3
         },
@@ -1907,13 +1907,11 @@ let Properties = {
         level: 5,
         drops: {
             manacrystal: 12,
-            candycorntreat: 7,
-            lollitreat: 4,
-            chocolatetreat: 2,
-            candytreat: 1,
-            headstonetrick: 7,
-            spidertrick: 4,
-            skullnbonestrick: 1
+            candycorntreat: 3,
+            lollitreat: 2,
+            chocolatetreat: 1,
+            headstonetrick: 2,
+            spidertrick: 1
         },
         respawnDelay: 20000,
     },
@@ -1922,9 +1920,9 @@ let Properties = {
         level: 8,
         drops: {
             wood: 25,
-            m88nturkeyleg: 11,
-            m88nturkeydinner: 8,
-            m88nturkeyfeather: 5
+            m88nturkeyleg: 10,
+            m88nturkeydinner: 7,
+            m88nturkeyfeather: 4
         },
         respawnDelay: 30000,
     },
@@ -2016,11 +2014,12 @@ let Properties = {
         friendly: true, //not actually friendly, just AoE immune
         hp: 1,
         drops: {
-            m88ndirt: 95,
+            m88ndirt: 94,
             m88nsourworm: 1,
             m88nsourworm2: 1,
             m88ngoldworm: 1,
             m88ndiamondworm: 1,
+            m88ngrub: 1,
             m88ngem: 1,
         },
         respawnDelay: 4000000 //one hour
@@ -2263,8 +2262,10 @@ let Properties = {
         friendly: true, //not actually friendly, just AoE immune
         hp: 10,
         drops: {
-            MILK1: 25,
-            m88nsteak: 15,
+            m88npoo: 50,
+            m88nmilk: 25,
+            m88nmysterymeat: 15,
+            m88nsteak: 10,
         },
         respawnDelay: 900000 //fifteen minutes
     },
@@ -2322,13 +2323,14 @@ let Properties = {
             m88nkevlararmor: 1,
             m88nwizardshat: 1,
             m88ndirt: 10,
-            m88ngem: 15,
+            m88ngem: 14,
             GOLD4: 10,
             GOLD5: 10,
             m88nsourworm: 1,
             m88nsourworm2: 1,
             m88ngoldworm: 1,
             m88ndiamondworm: 1,
+            m88ngrub: 1,
         },
         respawnDelay: 4000000 //one hour
     },
@@ -4509,6 +4511,228 @@ let Properties = {
         collectable: true,
         inventoryDescription: "Carrot",
         respawnDelay: 60000
+    },
+
+    m88nbirdofparadise: {
+        collectable: true,
+        inventoryDescription: "Bird of Paradise",
+        respawnDelay: 9900000
+    },
+
+    m88nbrain: {
+        collectable: true,
+        inventoryDescription: "Brain",
+        respawnDelay: 9900000
+    },
+
+    m88nburgerbun: {
+        collectable: true,
+        inventoryDescription: "Burger Bun",
+        respawnDelay: 9900000
+    },
+
+    m88ncauldron: {
+        collectable: true,
+        inventoryDescription: "Cauldron",
+        respawnDelay: 9900000
+    },
+
+    m88ncherry: {
+        collectable: true,
+        inventoryDescription: "Cherry",
+        respawnDelay: 9900000
+    },
+
+    m88ncocoabeans: {
+        collectable: true,
+        inventoryDescription: "Cocoa Beans",
+        respawnDelay: 9900000
+    },
+
+    m88ncorn: {
+        collectable: true,
+        inventoryDescription: "Corn",
+        respawnDelay: 9900000
+    },
+
+    m88ndaisy: {
+        collectable: true,
+        inventoryDescription: "Daisy",
+        respawnDelay: 9900000
+    },
+
+    m88ndough: {
+        collectable: true,
+        inventoryDescription: "Dough",
+        respawnDelay: 9900000
+    },
+
+    m88ndreamseeds: {
+        collectable: true,
+        inventoryDescription: "Dream Seeds",
+        respawnDelay: 9900000
+    },
+
+    m88negg: {
+        collectable: true,
+        inventoryDescription: "An Egg",
+        respawnDelay: 9900000
+    },
+
+    m88nflour: {
+        collectable: true,
+        inventoryDescription: "Flour",
+        respawnDelay: 9900000
+    },
+
+    m88ngravityseeds: {
+        collectable: true,
+        inventoryDescription: "Gravity Seeds",
+        respawnDelay: 9900000
+    },
+
+    m88ngrub: {
+        collectable: true,
+        inventoryDescription: "Grub",
+        respawnDelay: 9900000
+    },
+
+    m88nhotdogbun: {
+        collectable: true,
+        inventoryDescription: "Hot Dog Bun",
+        respawnDelay: 9900000
+    },
+
+    m88nhotpeppergreen: {
+        collectable: true,
+        inventoryDescription: "Green Hot Pepper",
+        respawnDelay: 9900000
+    },
+
+    m88nhotpepperred: {
+        collectable: true,
+        inventoryDescription: "Red Hot Pepper",
+        respawnDelay: 9900000
+    },
+
+    m88nhydrangea: {
+        collectable: true,
+        inventoryDescription: "Hydrangea",
+        respawnDelay: 9900000
+    },
+
+    m88nlavender: {
+        collectable: true,
+        inventoryDescription: "Lavender",
+        respawnDelay: 9900000
+    },
+
+    m88nlemon: {
+        collectable: true,
+        inventoryDescription: "Lemon",
+        respawnDelay: 9900000
+    },
+
+    m88nlotus: {
+        collectable: true,
+        inventoryDescription: "Lotus",
+        respawnDelay: 9900000
+    },
+
+    m88nmilk: {
+        collectable: true,
+        inventoryDescription: "Milk",
+        respawnDelay: 9900000
+    },
+
+    m88nmushroom: {
+        collectable: true,
+        inventoryDescription: "Mushroom",
+        respawnDelay: 9900000
+    },
+
+    m88nmysterymeat: {
+        collectable: true,
+        inventoryDescription: "Mystery Meat",
+        respawnDelay: 9900000
+    },
+
+    m88nonion: {
+        collectable: true,
+        inventoryDescription: "Onion",
+        respawnDelay: 9900000
+    },
+
+    m88norange: {
+        collectable: true,
+        inventoryDescription: "Orange",
+        respawnDelay: 9900000
+    },
+
+    m88norchid: {
+        collectable: true,
+        inventoryDescription: "Orchid",
+        respawnDelay: 9900000
+    },
+
+    m88npoo: {
+        collectable: true,
+        inventoryDescription: "Poo (Fertilizer)",
+        respawnDelay: 9900000
+    },
+
+    m88npumpkin: {
+        collectable: true,
+        inventoryDescription: "Pumpkin",
+        respawnDelay: 9900000
+    },
+
+    m88nspicyseeds: {
+        collectable: true,
+        inventoryDescription: "Spicy Seeds",
+        respawnDelay: 9900000
+    },
+
+    m88nstrawberry: {
+        collectable: true,
+        inventoryDescription: "Strawberry",
+        respawnDelay: 9900000
+    },
+
+    m88nsugarcane: {
+        collectable: true,
+        inventoryDescription: "Sugar Cane",
+        respawnDelay: 9900000
+    },
+
+    m88nsunflower: {
+        collectable: true,
+        inventoryDescription: "Sunflower",
+        respawnDelay: 9900000
+    },
+
+    m88ntacoshell: {
+        collectable: true,
+        inventoryDescription: "Taco Shell",
+        respawnDelay: 9900000
+    },
+
+    m88ntulip: {
+        collectable: true,
+        inventoryDescription: "Tulip",
+        respawnDelay: 9900000
+    },
+
+    m88nzombieseeds: {
+        collectable: true,
+        inventoryDescription: "Zombie Seeds",
+        respawnDelay: 9900000
+    },
+
+    m88nzombiesushi: {
+        collectable: true,
+        inventoryDescription: "Zombie Sushi",
+        respawnDelay: 9900000
     },
 
     // Projectiles
