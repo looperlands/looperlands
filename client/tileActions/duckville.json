@@ -20,8 +20,8 @@
     ],
     "careBoosts": [
       {
-        "item": "M88NDIRT",
-        "name": "Add m88n dirt",
+        "item": "M88NPOO",
+        "name": "Add fertilizer",
         "description": "Improves quality: harvest 1 extra item and earn 10 extra XP.",
         "quality": 1,
         "yieldBonus": 0,
@@ -30,18 +30,35 @@
       {
         "item": "M88NWORM",
         "name": "Add worm",
-        "description": "Harvest 1 extra item.",
+        "description": "Improves yield: Harvest 1 extra item.",
         "quality": 0,
         "yieldBonus": 1,
         "maxUses": 1
       },
       {
-        "item": "M88NSNAIL",
-        "name": "Add snail",
+        "item": "M88NGRUB",
+        "name": "Add grub",
+        "description": "Improves yield: Harvest 2 extra items.",
+        "quality": 0,
+        "yieldBonus": 2,
+        "maxUses": 1
+      },
+      {
+        "item": "M88NDIRT",
+        "name": "Add m88n dirt",
         "description": "Adds 10 percentage points to each rare drop chance.",
         "quality": 0,
         "yieldBonus": 0,
         "rareChanceBonus": 0.1,
+        "maxUses": 1
+      },
+      {
+        "item": "M88NSNAIL",
+        "name": "Add snail",
+        "description": "Adds 50 percentage points to each rare drop chance.",
+        "quality": 0,
+        "yieldBonus": 0,
+        "rareChanceBonus": 0.5,
         "maxUses": 1
       }
     ],
@@ -397,8 +414,8 @@
     ],
     "careBoosts": [
       {
-        "item": "M88NDIRT",
-        "name": "Add m88n dirt",
+        "item": "M88NPOO",
+        "name": "Add fertilizer",
         "description": "Improves quality: harvest 1 extra item and earn 10 extra XP.",
         "quality": 1,
         "yieldBonus": 0,
@@ -407,18 +424,35 @@
       {
         "item": "M88NWORM",
         "name": "Add worm",
-        "description": "Harvest 1 extra item.",
+        "description": "Improves yield: Harvest 1 extra item.",
         "quality": 0,
         "yieldBonus": 1,
         "maxUses": 1
       },
       {
-        "item": "M88NSNAIL",
-        "name": "Add snail",
+        "item": "M88NGRUB",
+        "name": "Add grub",
+        "description": "Improves yield: Harvest 2 extra items.",
+        "quality": 0,
+        "yieldBonus": 2,
+        "maxUses": 1
+      },
+      {
+        "item": "M88NDIRT",
+        "name": "Add m88n dirt",
         "description": "Adds 10 percentage points to each rare drop chance.",
         "quality": 0,
         "yieldBonus": 0,
         "rareChanceBonus": 0.1,
+        "maxUses": 1
+      },
+      {
+        "item": "M88NSNAIL",
+        "name": "Add snail",
+        "description": "Adds 50 percentage points to each rare drop chance.",
+        "quality": 0,
+        "yieldBonus": 0,
+        "rareChanceBonus": 0.5,
         "maxUses": 1
       }
     ],
@@ -619,6 +653,96 @@
           {
             "item": "M88NSNAIL",
             "chance": 0.08,
+            "amount": 1
+          }
+        ]
+      }
+    }
+  },
+  "waterFarm": {
+    "minLevel": 8,
+    "prepare": {
+      "name": "Prepare soil",
+      "tool": "M88NSHOVEL",
+      "duration": 3,
+      "tile": 19459,
+      "xp": 15
+    },
+    "water": {
+      "tool": "M88NWATERCAN",
+      "duration": 3,
+      "xp": 20
+    },
+    "seedItem": "M88NSEEDS",
+    "allowedPlantTypes": [
+      "waterFlower"
+    ],
+    "careBoosts": [
+      {
+        "item": "M88NPOO",
+        "name": "Add fertilizer",
+        "description": "Improves quality: harvest 1 extra item and earn 10 extra XP.",
+        "quality": 1,
+        "yieldBonus": 0,
+        "maxUses": 1
+      },
+      {
+        "item": "M88NWORM",
+        "name": "Add worm",
+        "description": "Improves yield: Harvest 1 extra item.",
+        "quality": 0,
+        "yieldBonus": 1,
+        "maxUses": 1
+      },
+      {
+        "item": "M88NGRUB",
+        "name": "Add grub",
+        "description": "Improves yield: Harvest 2 extra items.",
+        "quality": 0,
+        "yieldBonus": 2,
+        "maxUses": 1
+      },
+      {
+        "item": "M88NDIRT",
+        "name": "Add m88n dirt",
+        "description": "Adds 10 percentage points to each rare drop chance.",
+        "quality": 0,
+        "yieldBonus": 0,
+        "rareChanceBonus": 0.1,
+        "maxUses": 1
+      },
+      {
+        "item": "M88NSNAIL",
+        "name": "Add snail",
+        "description": "Adds 50 percentage points to each rare drop chance.",
+        "quality": 0,
+        "yieldBonus": 0,
+        "rareChanceBonus": 0.5,
+        "maxUses": 1
+      }
+    ],
+    "crops": {
+      "M88NLOTUS": {
+        "name": "lotusWater",
+        "plantType": "waterFlower",
+        "level": 8,
+        "seedCost": 1,
+        "growSeconds": 90,
+        "tileGroup": "lotusWater",
+        "stagedTile": 20466,
+        "stages": 3,
+        "yieldItem": "M88NLOTUS",
+        "yield": {
+          "min": 1,
+          "max": 2
+        },
+        "xp": 35,
+        "seedReturnChance": 0.35,
+        "displayName": "Water Lotus",
+        "rareDrops": [
+          {
+            "item": "M88NGRUB",
+            "chance": 0.05,
             "amount": 1
           }
         ]

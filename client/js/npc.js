@@ -622,6 +622,7 @@ define(['character'], function (Character) {
             "Right now we have several properties available and when you buy from us you get a FREE Lambo!",
             "If you're digging the boardwalk, we have beach houses avialable in Paradise Point...",
             //"And if you're looking for something a little more exclusive we have private islands available in the Helio Islands.",
+            "We also have some cozy tree houses available in the Butterfly Grove garden.",
             "If you're looking for something exclusive we have private islands available in the Helio Islands.",
             //"That yacht over there, The Sun Chaser, has a private Captain's Quarters on it that is available to purchse.",
             "And if you really want to get out of town, we have m88n pods available in Lunaria",
