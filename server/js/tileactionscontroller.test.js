@@ -6,6 +6,8 @@ jest.mock("../../shared/js/gametypes", () => ({
         M88NSHOVEL: 78004100,
         M88NWATERCAN: 78004200,
         M88NDIRT: 78004700,
+        M88NPOO: 78071000,
+        M88NGRUB: 78057000,
         M88NWORM: 78004900,
         M88NSNAIL: 78005000,
         COBAPPLE: 21300011,
@@ -517,6 +519,8 @@ describe("TileActionsController farming", () => {
     });
 
     test("Care Boost descriptions reach the selection choices", async () => {
+        inventory[Types.Entities.M88NPOO] = 1;
+        inventory[Types.Entities.M88NGRUB] = 1;
         inventory[Types.Entities.M88NDIRT] = 1;
         inventory[Types.Entities.M88NWORM] = 1;
         inventory[Types.Entities.M88NSNAIL] = 1;
@@ -524,9 +528,11 @@ describe("TileActionsController farming", () => {
         await controller.executeStage("avatar", "duckville", tileAction, "M88NLETTUCE", world);
         await controller.executeStage("avatar", "duckville", tileAction, null, world);
         const stage = await controller.findCurrentStage("avatar", "duckville", tileAction, world);
-        expect(stage.itemChoices.M88NDIRT.description).toContain("10 extra XP");
-        expect(stage.itemChoices.M88NWORM.description).toBe("Harvest 1 extra item.");
-        expect(stage.itemChoices.M88NSNAIL.description).toContain("10 percentage points");
+        expect(stage.itemChoices.M88NPOO.description).toContain("10 extra XP");
+        expect(stage.itemChoices.M88NGRUB.description).toContain("Harvest 2 extra items");
+        expect(stage.itemChoices.M88NDIRT.description).toContain("10 percentage points");
+        expect(stage.itemChoices.M88NWORM.description).toBe("Improves yield: Harvest 1 extra item.");
+        expect(stage.itemChoices.M88NSNAIL.description).toContain("50 percentage points");
     });
 
     test("garden JSON files register new maps without another controller", async () => {
