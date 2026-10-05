@@ -14,6 +14,8 @@ let hasLoadedFont = false;
 let GLOBAL_LIGHT_INTENSITY = 0.2;
 const MIN_GLOBAL_LIGHT_INTENSITY = 0.08;
 const MAX_GLOBAL_LIGHT_INTENSITY = 0.90;
+const MAIN_MAP_MIN_LIGHT_INTENSITY = 0.18;
+const MAIN_MAP_MAX_LIGHT_INTENSITY = 0.95;
 const MAX_LIGHTS_TO_RENDER = 100;
 const MAX_SHADOWS_TO_RENDER = 100;
 
@@ -229,7 +231,7 @@ function drawTile(ctx, tileid, tileset, setW, setH, gridW, cellid, scale, slideO
 
 let tileLights = [];
 
-function render(id, tiles, cameraX, cameraY, scale, clear, serverTime, scene, options) {
+function render(id, tiles, cameraX, cameraY, scale, clear, serverTime, scene, options, mapId) {
     let ctx = contexes[id];
     if(id !== "lights") {
         let canvas = canvases[id];
@@ -262,7 +264,7 @@ function render(id, tiles, cameraX, cameraY, scale, clear, serverTime, scene, op
 
         ctx.restore();
     } else {
-        renderLightOverlay(lights, cameraX, cameraY, scale, serverTime, scene, tileLights, options);
+        renderLightOverlay(lights, cameraX, cameraY, scale, serverTime, scene, tileLights, options, mapId);
         tileLights = [];
     }
 }
@@ -296,7 +298,7 @@ onmessage = (e) => {
                 drawEntities(renderData);
             } else {
                 scale = renderData.scale;
-                render(renderData.id, renderData.tiles, renderData.cameraX, renderData.cameraY, 1, renderData.clear, e.data.serverTime, e.data.scene, renderData.options);
+                render(renderData.id, renderData.tiles, renderData.cameraX, renderData.cameraY, 1, renderData.clear, e.data.serverTime, e.data.scene, renderData.options, e.data.mapId);
             }
         }
 
@@ -555,7 +557,24 @@ function drawEntities(drawEntitiesData) {
 
 lastTime = null;
 
-function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime, scene, tileLights, options) {
+function getMainMapCycleIntensity(cycleProgress) {
+    const minute = cycleProgress * 60;
+
+    // 40 minutes of daylight, 5 of dusk, 10 of night, then 5 of dawn.
+    // Cosine transitions meet the day/night plateaus without sudden changes.
+    if (minute < 40) {
+        return 1;
+    }
+    if (minute < 45) {
+        return (Math.cos((minute - 40) / 5 * Math.PI) + 1) / 2;
+    }
+    if (minute < 55) {
+        return 0;
+    }
+    return (1 - Math.cos((minute - 55) / 5 * Math.PI)) / 2;
+}
+
+function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime, scene, tileLights, options, mapId) {
 
     OPTION_SHADOWS = options?.shadows ?? true;
     OPTION_PLAYER_SHADOW = options?.playerShadow ?? true;
@@ -563,9 +582,14 @@ function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime, s
 
     if(scene.dn_cycle && scene.dn_cycle !== "false") {
         const cycleProgress = ((serverTime + performance.now()) % CYCLE_DURATION) / CYCLE_DURATION;
-        const cycleAngle = cycleProgress * Math.PI * 2;
-        const cycleIntensity = Math.sin(cycleAngle) * 0.5 + 0.5;
-        GLOBAL_LIGHT_INTENSITY = cycleIntensity * (MAX_GLOBAL_LIGHT_INTENSITY - MIN_GLOBAL_LIGHT_INTENSITY) + MIN_GLOBAL_LIGHT_INTENSITY;
+        if (mapId === 'main') {
+            const cycleIntensity = getMainMapCycleIntensity(cycleProgress);
+            GLOBAL_LIGHT_INTENSITY = cycleIntensity * (MAIN_MAP_MAX_LIGHT_INTENSITY - MAIN_MAP_MIN_LIGHT_INTENSITY) + MAIN_MAP_MIN_LIGHT_INTENSITY;
+        } else {
+            const cycleAngle = cycleProgress * Math.PI * 2;
+            const cycleIntensity = Math.sin(cycleAngle) * 0.5 + 0.5;
+            GLOBAL_LIGHT_INTENSITY = cycleIntensity * (MAX_GLOBAL_LIGHT_INTENSITY - MIN_GLOBAL_LIGHT_INTENSITY) + MIN_GLOBAL_LIGHT_INTENSITY;
+        }
     } else {
         GLOBAL_LIGHT_INTENSITY = 1 - parseFloat(scene.darkness);
     }

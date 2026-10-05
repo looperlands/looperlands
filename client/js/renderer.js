@@ -1129,6 +1129,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc'],
                         renderData: renderData,
                         player: {x: this.game.player.x, y: this.game.player.y},
                         serverTime: this.game.serverTime,
+                        mapId: this.game.map.mapId,
                         scene: scene
                     });
                 } else {
@@ -1137,6 +1138,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc'],
                         renderData: renderData,
                         player: {x: 0, y: 0},
                         serverTime: this.game.serverTime,
+                        mapId: this.game.map.mapId,
                         scene: scene
                     });
                 }
