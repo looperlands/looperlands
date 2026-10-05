@@ -42,8 +42,10 @@ class Pathfinder {
                 const start = [entity.gridX, entity.gridY],
                       end = [x, y];
 
-                this.grid = grid;
-                this.applyIgnoreList_(true);
+                // Ignored entities only affect this request, never the live game grid.
+                this.grid = grid.map(row => row.slice());
+                this.applyIgnoreList_();
+                this.clearIgnoreList();
 
                 const requestId = this.generateUniqueId();
                 this.pendingRequests[requestId] = resolve;
@@ -66,19 +68,18 @@ class Pathfinder {
         }
     }
 
-    applyIgnoreList_(ignored) {
+    applyIgnoreList_() {
         this.ignored.forEach(entity => {
             const x = entity.isMoving() ? entity.nextGridX : entity.gridX;
             const y = entity.isMoving() ? entity.nextGridY : entity.gridY;
 
             if (x >= 0 && y >= 0) {
-                this.grid[y][x] = ignored ? 0 : 1;
+                this.grid[y][x] = 0;
             }
         });
     }
 
     clearIgnoreList() {
-        this.applyIgnoreList_(false);
         this.ignored = [];
     }
 }
