@@ -195,7 +195,7 @@
           "x": 8,
           "y": 0
         },
-        "yieldItem": "COBAPPLE",
+        "yieldItem": "M88NORANGE",
         "yield": {
           "min": 3,
           "max": 6
@@ -259,7 +259,7 @@
           }
         ]
       },
-      "COBCORN": {
+      "M88NCORN": {
         "name": "corn",
         "plantType": "crop",
         "level": 11,
@@ -267,7 +267,7 @@
         "growSeconds": 260,
         "tileGroup": "corn",
         "stages": 4,
-        "yieldItem": "COBCORN",
+        "yieldItem": "M88NCORN",
         "yield": {
           "min": 2,
           "max": 5
@@ -283,7 +283,7 @@
           }
         ]
       },
-      "COBAPPLE": {
+      "M88NCHERRY": {
         "name": "apple tree",
         "plantType": "tree",
         "level": 16,
@@ -295,7 +295,7 @@
           "x": 8,
           "y": 0
         },
-        "yieldItem": "COBAPPLE",
+        "yieldItem": "M88NCHERRY",
         "yield": {
           "min": 2,
           "max": 5
@@ -323,7 +323,7 @@
           "x": 8,
           "y": 0
         },
-        "yieldItem": "COBAPPLE",
+        "yieldItem": "M88NCHERRY",
         "yield": {
           "min": 2,
           "max": 5
@@ -351,7 +351,7 @@
           "x": 8,
           "y": 0
         },
-        "yieldItem": "COBAPPLE",
+        "yieldItem": "M88NLEMON",
         "yield": {
           "min": 2,
           "max": 5
@@ -607,7 +607,7 @@
           }
         ]
       },
-      "COBCORN": {
+      "M88NCORN": {
         "name": "cornPotted",
         "plantType": "pot",
         "level": 11,
@@ -616,7 +616,7 @@
         "tileGroup": "cornPotted",
         "stagedTile": 17409,
         "stages": 4,
-        "yieldItem": "COBCORN",
+        "yieldItem": "M88NCORN",
         "yield": {
           "min": 2,
           "max": 5

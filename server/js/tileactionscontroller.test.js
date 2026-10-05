@@ -10,8 +10,8 @@ jest.mock("../../shared/js/gametypes", () => ({
         M88NGRUB: 78057000,
         M88NWORM: 78004900,
         M88NSNAIL: 78005000,
-        COBAPPLE: 21300011,
-        COBCORN: 21300010,
+        M88NCHERRY: 78048000,
+        M88NCORN: 78081000,
         M88NPOTATO: 78003800,
         M88NLETTUCE: 78012700,
         M88NTOMATO: 78012900,
@@ -20,13 +20,12 @@ jest.mock("../../shared/js/gametypes", () => ({
         M88NBROCCOLI: 78012500,
         M88NCAULIFLOWER: 78012600,
         M88NROSE: 78005100,
-        MOONSEEDS: 99900001,
     },
     getKindAsString: jest.fn((kind) => {
         const names = {
             78003800: "m88npotato",
-            21300011: "cobapple",
-            21300010: "cobcorn",
+            78048000: "m88ncherry",
+            78081000: "m88ncorn",
             78012700: "m88nlettuce",
             78012900: "m88ntomato",
             78013000: "m88nturnip",
@@ -186,7 +185,7 @@ describe("TileActionsController farming", () => {
         const stage = await controller.findCurrentStage("avatar", "duckville", tileAction, world);
         expect(stage.itemChoices.M88NLETTUCE.disabled).toBe(false);
         expect(stage.itemChoices.M88NLETTUCE.title).toBe("Potted lettuce");
-        expect(stage.itemChoices.COBAPPLE).toBeUndefined();
+        expect(stage.itemChoices.M88NCHERRY).toBeUndefined();
         expect(stage.itemChoices.M88NROSE.disabled).toBe(false);
         expect(stage.itemChoices.M88NROSE.title).toBe("Potted roses");
     });
@@ -259,15 +258,15 @@ describe("TileActionsController farming", () => {
         expect(world.placeStagedTileGroup).toHaveBeenLastCalledWith(10, 20, "tree1", 0, { x: 8, y: 0 });
         expect(inventory[Types.Entities.M88NSEEDS]).toBe(2);
         expect(sessionData.gameData.items[String(Types.Entities.M88NSEEDS)]).toBe(2);
-        expect(inventory[Types.Entities.COBAPPLE] || 0).toBe(0);
-        expect(sessionData.gameData.items[String(Types.Entities.COBAPPLE)] || 0).toBe(0);
+        expect(inventory[Types.Entities.M88NCHERRY] || 0).toBe(0);
+        expect(sessionData.gameData.items[String(Types.Entities.M88NCHERRY)] || 0).toBe(0);
 
         await controller.executeStage("avatar", "duckville", tileAction, null, world);
         now += 541000;
         await controller.executeStage("avatar", "duckville", tileAction, null, world);
 
-        expect(inventory[Types.Entities.COBAPPLE]).toBeGreaterThan(0);
-        expect(sessionData.gameData.items[String(Types.Entities.COBAPPLE)]).toBeGreaterThan(0);
+        expect(inventory[Types.Entities.M88NCHERRY]).toBeGreaterThan(0);
+        expect(sessionData.gameData.items[String(Types.Entities.M88NCHERRY)]).toBeGreaterThan(0);
         expect(inventory[Types.Entities.M88NSEEDS]).toBe(3);
         expect(sessionData.gameData.items[String(Types.Entities.M88NSEEDS)]).toBe(3);
     });
@@ -391,7 +390,7 @@ describe("TileActionsController farming", () => {
 
     test("special seeds unlock a crop on the same plot and are consumed and returned", async () => {
         Object.assign(controller.stageDefinitions.duckville.farm.crops.M88NLETTUCE, {
-            seedItem: "MOONSEEDS", hideUntilSeeds: true,
+            seedItem: "M88NSEEDS", hideUntilSeeds: true,
         });
         await controller.executeStage("avatar", "duckville", tileAction, null, world);
         let stage = await controller.findCurrentStage("avatar", "duckville", tileAction, world);
@@ -401,16 +400,16 @@ describe("TileActionsController farming", () => {
         const blocked = await controller.executeStage("avatar", "duckville", tileAction, "M88NLETTUCE", world);
         expect(blocked.success).toBe(false);
 
-        inventory[Types.Entities.MOONSEEDS] = 1;
+        inventory[Types.Entities.M88NSEEDS] = 1;
         stage = await controller.findCurrentStage("avatar", "duckville", tileAction, world);
         expect(stage.itemChoices.M88NLETTUCE.disabled).toBe(false);
         await controller.executeStage("avatar", "duckville", tileAction, "M88NLETTUCE", world);
-        expect(inventory[Types.Entities.MOONSEEDS]).toBe(0);
+        expect(inventory[Types.Entities.M88NSEEDS]).toBe(0);
         expect(inventory[Types.Entities.M88NSEEDS]).toBe(5);
         await controller.executeStage("avatar", "duckville", tileAction, null, world);
         now += 91000;
         await controller.executeStage("avatar", "duckville", tileAction, null, world);
-        expect(inventory[Types.Entities.MOONSEEDS]).toBe(1);
+        expect(inventory[Types.Entities.M88NSEEDS]).toBe(1);
         expect(inventory[Types.Entities.M88NLETTUCE]).toBeGreaterThan(0);
     });
 
@@ -451,7 +450,7 @@ describe("TileActionsController farming", () => {
         let stage = await controller.findCurrentStage("avatar", "duckville", tileAction, world);
         expect(stage.itemChoices.M88NLETTUCE.description).toBe("Uses 1 bag of seeds.");
         farm.seedName = "magical seeds";
-        Object.assign(farm.crops.M88NLETTUCE, { seedItem: "MOONSEEDS", seedCost: 2 });
+        Object.assign(farm.crops.M88NLETTUCE, { seedItem: "M88NSEEDS", seedCost: 2 });
         stage = await controller.findCurrentStage("avatar", "duckville", tileAction, world);
         expect(stage.itemChoices.M88NLETTUCE.description).toBe("Uses 2 bags of moon seeds.");
         expect(stage.itemChoices.M88NLETTUCE.disabled).toBe(true);
@@ -464,13 +463,13 @@ describe("TileActionsController farming", () => {
     test("seed descriptions and harvest protection work on another map", async () => {
         const farm = controller.stageDefinitions.duckville.farm;
         const configured = new TileActionsController(cache, null, {
-            dao, now: () => now, stageDefinitions: { moon: { farm: { ...farm, seedItem: "MOONSEEDS", seedName: "moon seeds" } } },
+            dao, now: () => now, stageDefinitions: { moon: { farm: { ...farm, seedItem: "M88NSEEDS", seedName: "moon seeds" } } },
         });
-        inventory[Types.Entities.MOONSEEDS] = 1;
+        inventory[Types.Entities.M88NSEEDS] = 1;
         await configured.executeStage("avatar", "moon", tileAction, null, world);
         expect((await configured.findCurrentStage("avatar", "moon", tileAction, world)).itemChoices.M88NLETTUCE.description).toBe("Uses 1 bag of moon seeds.");
         await configured.executeStage("avatar", "moon", tileAction, "M88NLETTUCE", world);
-        expect(inventory[Types.Entities.MOONSEEDS]).toBe(0);
+        expect(inventory[Types.Entities.M88NSEEDS]).toBe(0);
         await configured.executeStage("avatar", "moon", tileAction, null, world);
         now += 90000;
         expect((await configured.findCurrentStage("other", "moon", tileAction, world)).name).toContain("Reserved for the planter");
@@ -506,7 +505,7 @@ describe("TileActionsController farming", () => {
 
     test("crops with missing seeds stay visible unless explicitly hidden", async () => {
         const farm = controller.stageDefinitions.duckville.farm;
-        farm.crops = { M88NLETTUCE: { ...farm.crops.M88NLETTUCE, seedItem: "MOONSEEDS" } };
+        farm.crops = { M88NLETTUCE: { ...farm.crops.M88NLETTUCE, seedItem: "M88NSEEDS" } };
         await controller.executeStage("avatar", "duckville", tileAction, null, world);
         let stage = await controller.findCurrentStage("avatar", "duckville", tileAction, world);
         expect(stage.itemChoices.M88NLETTUCE.disabled).toBe(true);
@@ -514,7 +513,7 @@ describe("TileActionsController farming", () => {
         stage = await controller.findCurrentStage("avatar", "duckville", tileAction, world);
         expect(stage.waiting).toBe(true);
         expect(stage.message).toBe("Find seeds to plant in this garden.");
-        inventory[Types.Entities.MOONSEEDS] = 1;
+        inventory[Types.Entities.M88NSEEDS] = 1;
         expect((await controller.findCurrentStage("avatar", "duckville", tileAction, world)).key).toBe("plant");
     });
 
@@ -636,8 +635,8 @@ describe("TileActionsController farming", () => {
 
         expect(farm.crops.M88NORANGE.stages).toBe(4);
         expect(farm.crops.M88NORANGE.renderOffset).toEqual({ x: 8, y: 0 });
-        expect(farm.crops.COBAPPLE.stages).toBe(4);
-        expect(farm.crops.COBAPPLE.renderOffset).toEqual({ x: 8, y: 0 });
+        expect(farm.crops.M88NCHERRY.stages).toBe(4);
+        expect(farm.crops.M88NCHERRY.renderOffset).toEqual({ x: 8, y: 0 });
         expect(farm.crops.TREEPURPLE.stages).toBe(4);
         expect(farm.crops.TREEPURPLE.renderOffset).toEqual({ x: 8, y: 0 });
         expect(farm.crops.TREEYELLOW.stages).toBe(4);
@@ -692,11 +691,11 @@ describe("TileActionsController farming", () => {
             yieldItem: "M88NROSE",
             stages: 3,
         });
-        expect(potFarm.crops.COBCORN).toMatchObject({
+        expect(potFarm.crops.M88NCORN).toMatchObject({
             displayName: "Potted corn",
             tileGroup: "cornPotted",
             stagedTile: 17409,
-            yieldItem: "COBCORN",
+            yieldItem: "M88NCORN",
             stages: 4,
         });
     });
