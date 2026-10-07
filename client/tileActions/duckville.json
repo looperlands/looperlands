@@ -195,7 +195,7 @@
           "x": 8,
           "y": 0
         },
-        "yieldItem": "COBAPPLE",
+        "yieldItem": "M88NORANGE",
         "yield": {
           "min": 3,
           "max": 6
@@ -259,6 +259,82 @@
           }
         ]
       },
+      "M88NHOTPEPPERGREEN": {
+        "name": "green hot pepper",
+        "plantType": "crop",
+        "seedItem": "M88NSPICYSEEDS",
+        "seedName": "spicy seeds",
+        "level": 10,
+        "seedCost": 1,
+        "growSeconds": 900,
+        "tileGroup": "hotpeppergreen",
+        "stages": 4,
+        "yieldItem": "M88NHOTPEPPERGREEN",
+        "yield": {
+          "min": 2,
+          "max": 4
+        },
+        "xp": 200,
+        "seedReturnChance": 0.25,
+        "displayName": "Green Hot Pepper",
+        "rareDrops": [
+          {
+            "item": "M88NDIRT",
+            "chance": 0.08,
+            "amount": 1
+          }
+        ]
+      },
+      "M88NHOTPEPPERRED": {
+        "name": "red hot pepper",
+        "plantType": "crop",
+        "seedItem": "M88NSPICYSEEDS",
+        "seedName": "spicy seeds",
+        "level": 10,
+        "seedCost": 1,
+        "growSeconds": 900,
+        "tileGroup": "hotpepperred",
+        "stages": 4,
+        "yieldItem": "M88NHOTPEPPERRED",
+        "yield": {
+          "min": 2,
+          "max": 4
+        },
+        "xp": 200,
+        "seedReturnChance": 0.25,
+        "displayName": "Red Hot Pepper",
+        "rareDrops": [
+          {
+            "item": "M88NDIRT",
+            "chance": 0.08,
+            "amount": 1
+          }
+        ]
+      },
+      "M88NGRAIN": {
+        "name": "grain",
+        "plantType": "crop",
+        "level": 1,
+        "seedCost": 2,
+        "growSeconds": 420,
+        "tileGroup": "grain",
+        "stages": 4,
+        "yieldItem": "M88NGRAIN",
+        "yield": {
+          "min": 1,
+          "max": 2
+        },
+        "xp": 85,
+        "seedReturnChance": 0.05,
+        "displayName": "Grain",
+        "rareDrops": [
+          {
+            "item": "M88NWORM",
+            "chance": 0.08,
+            "amount": 1
+          }
+        ]
+      },
       "COBCORN": {
         "name": "corn",
         "plantType": "crop",
@@ -267,7 +343,7 @@
         "growSeconds": 260,
         "tileGroup": "corn",
         "stages": 4,
-        "yieldItem": "COBCORN",
+        "yieldItem": "M88NCORN",
         "yield": {
           "min": 2,
           "max": 5
@@ -295,14 +371,14 @@
           "x": 8,
           "y": 0
         },
-        "yieldItem": "COBAPPLE",
+        "yieldItem": "M88NCHERRY",
         "yield": {
           "min": 2,
           "max": 5
         },
         "xp": 150,
         "seedReturnChance": 0.65,
-        "displayName": "Apple tree",
+        "displayName": "Cherry tree",
         "rareDrops": [
           {
             "item": "M88NSTICKS",
@@ -323,7 +399,7 @@
           "x": 8,
           "y": 0
         },
-        "yieldItem": "COBAPPLE",
+        "yieldItem": "M88NCHERRY",
         "yield": {
           "min": 2,
           "max": 5
@@ -351,14 +427,14 @@
           "x": 8,
           "y": 0
         },
-        "yieldItem": "COBAPPLE",
+        "yieldItem": "M88NLEMON",
         "yield": {
           "min": 2,
           "max": 5
         },
         "xp": 155,
         "seedReturnChance": 0.65,
-        "displayName": "Yellow fruit tree",
+        "displayName": "Lemon tree",
         "rareDrops": [
           {
             "item": "M88NWORM",
@@ -616,7 +692,7 @@
         "tileGroup": "cornPotted",
         "stagedTile": 17409,
         "stages": 4,
-        "yieldItem": "COBCORN",
+        "yieldItem": "M88NCORN",
         "yield": {
           "min": 2,
           "max": 5

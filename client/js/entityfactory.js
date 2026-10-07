@@ -1345,7 +1345,7 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.M88NDOUGH] = function(id) { return new Items.m88ndough(id); };
     EntityFactory.builders[Types.Entities.M88NDREAMSEEDS] = function(id) { return new Items.m88ndreamseeds(id); };
     EntityFactory.builders[Types.Entities.M88NEGG] = function(id) { return new Items.m88negg(id); };
-    EntityFactory.builders[Types.Entities.M88NFLLOUR] = function(id) { return new Items.m88nflour(id); };
+    EntityFactory.builders[Types.Entities.M88NFLOUR] = function(id) { return new Items.m88nflour(id); };
     EntityFactory.builders[Types.Entities.M88NGRAVITYSEEDS] = function(id) { return new Items.m88ngravityseeds(id); };
     EntityFactory.builders[Types.Entities.M88NGRUB] = function(id) { return new Items.m88ngrub(id); };
     EntityFactory.builders[Types.Entities.M88NHOTDOGBUN] = function(id) { return new Items.m88nhotdogbun(id); };
@@ -1371,6 +1371,7 @@ define(['mobs', 'items', 'npcs', 'warrior', 'chest','fieldeffects'], function(Mo
     EntityFactory.builders[Types.Entities.M88NTULIP] = function(id) { return new Items.m88ntulip(id); };
     EntityFactory.builders[Types.Entities.M88NZOMBIESEEDS] = function(id) { return new Items.m88nzombieseeds(id); };
     EntityFactory.builders[Types.Entities.M88NZOMBIESUSHI] = function(id) { return new Items.m88nzombiesushi(id); };
+    EntityFactory.builders[Types.Entities.M88NGRAIN] = function(id) { return new Items.m88ngrain(id); };
     //MRMlabs Items
     EntityFactory.builders[Types.Entities.FIRSTAIDKIT] = function(id) { return new Items.firstaidkit(id); };
     EntityFactory.builders[Types.Entities.BANDAID] = function(id) { return new Items.bandaid(id); };
