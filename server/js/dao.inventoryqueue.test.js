@@ -25,7 +25,7 @@ test('gifts wait for earlier inventory writes, hold later writes, and include pe
     const client = {storeInventoryTransaction: jest.fn().mockReturnValueOnce(earlier).mockResolvedValue(true), transferInventory: jest.fn(() => {started(); return gift;}), getInventoryItem: jest.fn(nft => Promise.resolve({amount: nft === 'sender' ? 8 : 2}))};
     const dao = loadDao(client);
     await dao.saveLootEvent('sender', '333009', 1);
-    const sending = dao.transferConsumables(transfer);
+    const sending = dao.transferItems(transfer);
     expect(client.transferInventory).not.toHaveBeenCalled();
     flush(); await transferring;
     expect(client.transferInventory).toHaveBeenCalledWith(transfer);
@@ -42,7 +42,7 @@ test('failed earlier inventory writes prevent a gift and remain queued for retry
     const client = {storeInventoryTransaction: jest.fn().mockRejectedValueOnce(new Error('offline')).mockResolvedValue(true), transferInventory: jest.fn()};
     const dao = loadDao(client);
     await dao.saveLootEvent('sender', '333009', -1);
-    await expect(dao.transferConsumables(transfer)).rejects.toMatchObject({code: 'inventory_unavailable'});
+    await expect(dao.transferItems(transfer)).rejects.toMatchObject({code: 'inventory_unavailable'});
     expect(client.transferInventory).not.toHaveBeenCalled();
     await dao.processLootEventQueue();
     expect(client.storeInventoryTransaction.mock.calls[1][0]).toEqual([{nftId: 'sender', item: '333009', amount: -1}]);
@@ -51,7 +51,7 @@ test('failed earlier inventory writes prevent a gift and remain queued for retry
 test('a committed transfer with unavailable balance confirmation stays uncertain and releases the writer', async () => {
     const client = {storeInventoryTransaction: jest.fn().mockResolvedValue(true), transferInventory: jest.fn().mockResolvedValue({transferId: 'gift'}), getInventoryItem: jest.fn().mockRejectedValue(new Error('offline'))};
     const dao = loadDao(client);
-    await expect(dao.transferConsumables(transfer)).rejects.toMatchObject({code: 'gift_pending', transferUncertain: true});
+    await expect(dao.transferItems(transfer)).rejects.toMatchObject({code: 'gift_pending', transferUncertain: true});
     await dao.saveLootEvent('recipient', '333009', -1); await dao.processLootEventQueue();
     expect(client.storeInventoryTransaction).toHaveBeenCalledTimes(1);
 });

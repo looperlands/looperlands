@@ -6,6 +6,7 @@ const { SocialChat, identityFromSession } = require('./socialchat');
 const publicChat = require('./chat');
 const discord = require('./discord');
 const Collectables = require('./collectables');
+const Properties = require('./properties');
 
 let cache, service;
 function player(id, mapId = 'main', title = 'Same title') {
@@ -160,13 +161,13 @@ test('a gift reserves goods, commits once and only delivers a private receipt to
     const alice = player(1), bob = player(2), stranger = player(3);
     const item = giveConsumables(alice, 5); giveConsumables(bob, 1);
     let commit;
-    service.inventoryGateway = {transferConsumables: jest.fn(() => new Promise(resolve => {commit = resolve;}))};
+    service.inventoryGateway = {transferItems: jest.fn(() => new Promise(resolve => {commit = resolve;}))};
     const target = service.identity(bob).id;
     const first = service.sendGift(alice, target, '', item, 3, 'gift-request-1');
     const duplicate = service.sendGift(alice, target, '', item, 3, 'gift-request-1');
     expect(cache.get(alice.sessionId).gameData.items[item]).toBe(2);
     expect(events(bob, Types.Messages.CHAT_MESSAGE)).toHaveLength(0);
-    expect(service.inventoryGateway.transferConsumables).toHaveBeenCalledTimes(1);
+    expect(service.inventoryGateway.transferItems).toHaveBeenCalledTimes(1);
     commit({fromQuantity: 2, toQuantity: 4});
     expect(await first).toBe(true); expect(await duplicate).toBe(true);
     expect(cache.get(bob.sessionId).gameData.items[item]).toBe(4);
@@ -176,23 +177,84 @@ test('a gift reserves goods, commits once and only delivers a private receipt to
     expect(discord.sendMessage).not.toHaveBeenCalled();
     expect(service.history.get('world')).toBeUndefined();
     await service.sendGift(alice, target, '', item, 3, 'gift-request-1');
-    expect(service.inventoryGateway.transferConsumables).toHaveBeenCalledTimes(1);
+    expect(service.inventoryGateway.transferItems).toHaveBeenCalledTimes(1);
     expect(service.history.get('inbox:' + alice.walletId)).toHaveLength(1);
 });
 
 test('invalid or excessive gifts never reach the inventory backend', async () => {
     const alice = player(1), bob = player(2); const item = giveConsumables(alice, 2);
-    service.inventoryGateway = {transferConsumables: jest.fn()};
+    service.inventoryGateway = {transferItems: jest.fn()};
     const target = service.identity(bob).id;
     for (const quantity of [0, -1, 1.5, 3, Infinity]) expect(await service.sendGift(alice, target, '', item, quantity, 'gift-request-2')).toBe(false);
-    expect(await service.sendGift(alice, target, '', String(Types.Entities.GOLD), 1, 'gift-request-3')).toBe(false);
-    expect(service.inventoryGateway.transferConsumables).not.toHaveBeenCalled();
+    expect(await service.sendGift(alice, target, '', String(Types.Entities.M88NSKELETONKEY), 1, 'gift-request-3')).toBe(false);
+    expect(service.inventoryGateway.transferItems).not.toHaveBeenCalled();
     expect(cache.get(alice.sessionId).gameData.items[item]).toBe(2);
+});
+
+test.each([Types.Entities.GOLD, Types.Entities.WOOD, Types.Entities.M88NROSE, Types.Entities.BOARHIDE, Types.Entities.SHORT_ARROW, 'cobguppy'])('a non-consumable gift %s uses the atomic transfer and updates both inventories', async kind => {
+    const alice = player(1), bob = player(2);
+    const item = String(kind);
+    const session = cache.get(alice.sessionId); session.gameData.items[item] = 5; cache.set(alice.sessionId, session);
+    expect(Collectables.isConsumable(kind)).toBeFalsy();
+    expect(service.inventory(alice)).toContainEqual(expect.objectContaining({item, quantity: 5}));
+    service.inventoryGateway = {transferItems: jest.fn().mockResolvedValue({fromQuantity: 3, toQuantity: 2})};
+    expect(await service.sendGift(alice, service.identity(bob).id, 'Enjoy', item, 2, 'gift-material-1')).toBe(true);
+    expect(cache.get(alice.sessionId).gameData.items[item]).toBe(3);
+    expect(cache.get(bob.sessionId).gameData.items[item]).toBe(2);
+    expect(events(bob, Types.Messages.CHAT_MESSAGE)[0].attachment).toMatchObject({item, quantity: 2});
+    if (Types.isResource(kind)) {
+        expect(alice.send).toHaveBeenCalledWith([Types.Messages.RESOURCE, kind, 3]);
+        expect(bob.send).toHaveBeenCalledWith([Types.Messages.RESOURCE, kind, 2]);
+    }
+});
+
+test.each([Types.Entities.M88NSKELETONKEY, Types.Entities.M88NVIPBAG, Types.Entities.EVERPEAKMAP1, Types.Entities.ORB, Types.Entities.SWORD1, Types.Entities.RAT, 'unknown-item'])('an owned excluded item %s is hidden and cannot be sent through a forged packet', async kind => {
+    const alice = player(1), bob = player(2);
+    const item = String(kind);
+    const session = cache.get(alice.sessionId); session.gameData.items[item] = 5; cache.set(alice.sessionId, session);
+    service.inventoryGateway = {transferItems: jest.fn()};
+    expect(service.inventory(alice)).toEqual([]);
+    expect(await service.sendGift(alice, service.identity(bob).id, '', item, 1, 'gift-blocked-1')).toBe(false);
+    expect(events(alice, Types.Messages.CHAT_ERROR).at(-1).code).toBe('item_not_transferable');
+    expect(service.inventoryGateway.transferItems).not.toHaveBeenCalled();
+    expect(cache.get(alice.sessionId).gameData.items[item]).toBe(5);
+    expect(events(bob, Types.Messages.CHAT_MESSAGE)).toHaveLength(0);
+});
+
+test('an accepted uncertain gift still confirms after the item is excluded, while new gifts are blocked', async () => {
+    const alice = player(1), bob = player(2); const item = giveConsumables(alice, 5);
+    service.inventoryGateway = {transferItems: jest.fn().mockRejectedValueOnce({transferUncertain: true}).mockResolvedValueOnce({fromQuantity: 2, toQuantity: 3})};
+    const target = service.identity(bob).id;
+    expect(await service.sendGift(alice, target, '', item, 3, 'gift-policy-1')).toBe(false);
+    const previous = Properties.cpotion_s.transferable;
+    Properties.cpotion_s.transferable = false;
+    try {
+        expect(await service.sendGift(alice, target, '', item, 1, 'gift-policy-2')).toBe(false);
+        expect(await service.sendGift(alice, target, '', item, 3, 'gift-policy-1')).toBe(true);
+        expect(service.inventoryGateway.transferItems).toHaveBeenCalledTimes(2);
+        expect(service.inventoryGateway.transferItems.mock.calls[0][0]).toEqual(service.inventoryGateway.transferItems.mock.calls[1][0]);
+    } finally {
+        if (previous === undefined) delete Properties.cpotion_s.transferable;
+        else Properties.cpotion_s.transferable = previous;
+    }
+});
+
+test('a delayed gift balance does not overwrite the HUD after changing avatars', () => {
+    const alice = player(1);
+    const previousNft = alice.nftId;
+    const session = cache.get(alice.sessionId);
+    alice.nftId = session.nftId = 'another-avatar';
+    session.gameData.items[String(Types.Entities.GOLD)] = 100;
+    cache.set(alice.sessionId, session);
+    alice.send.mockClear();
+    service.setQuantity(alice.walletId, previousNft, String(Types.Entities.GOLD), 3);
+    expect(events(alice, Types.Messages.RESOURCE)).toEqual([]);
+    expect(cache.get(alice.sessionId).gameData.items[String(Types.Entities.GOLD)]).toBe(100);
 });
 
 test('a definite transfer rejection releases the reservation and keeps the DM unsent', async () => {
     const alice = player(1), bob = player(2); const item = giveConsumables(alice, 5);
-    service.inventoryGateway = {transferConsumables: jest.fn().mockRejectedValue({code: 'insufficient_items'})};
+    service.inventoryGateway = {transferItems: jest.fn().mockRejectedValue({code: 'insufficient_items'})};
     expect(await service.sendGift(alice, service.identity(bob).id, 'Enjoy', item, 3, 'gift-request-4')).toBe(false);
     expect(cache.get(alice.sessionId).gameData.items[item]).toBe(5);
     expect(events(bob, Types.Messages.CHAT_MESSAGE)).toHaveLength(0);
@@ -200,14 +262,14 @@ test('a definite transfer rejection releases the reservation and keeps the DM un
 
 test('an uncertain transfer retains its reservation and retries the exact same backend request', async () => {
     const alice = player(1), bob = player(2); const item = giveConsumables(alice, 5);
-    service.inventoryGateway = {transferConsumables: jest.fn().mockRejectedValueOnce({transferUncertain: true}).mockResolvedValueOnce({fromQuantity: 2, toQuantity: 3})};
+    service.inventoryGateway = {transferItems: jest.fn().mockRejectedValueOnce({transferUncertain: true}).mockResolvedValueOnce({fromQuantity: 2, toQuantity: 3})};
     const target = service.identity(bob).id;
     expect(await service.sendGift(alice, target, 'Enjoy', item, 3, 'gift-request-5')).toBe(false);
     expect(cache.get(alice.sessionId).gameData.items[item]).toBe(2);
     expect(events(alice, Types.Messages.CHAT_ERROR).at(-1).code).toBe('gift_pending');
     expect(await service.sendGift(alice, target, 'Changed', item, 3, 'gift-request-5')).toBe(false);
     expect(await service.sendGift(alice, target, 'Enjoy', item, 3, 'gift-request-5')).toBe(true);
-    const calls = service.inventoryGateway.transferConsumables.mock.calls;
+    const calls = service.inventoryGateway.transferItems.mock.calls;
     expect(calls[0][0]).toEqual(calls[1][0]);
     expect(events(bob, Types.Messages.CHAT_MESSAGE)).toHaveLength(1);
 });

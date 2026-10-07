@@ -26,7 +26,7 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
             this.drafts = new Map();
             this.attachments = new Map();
             this.giftRetries = new Map();
-            this.consumables = [];
+            this.transferableItems = [];
             this.unread = new Map();
             this.pending = new Map();
             this.avatarSources = new Map();
@@ -106,7 +106,7 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
                 }
                 this.clearError(); this.renderMessages(); this.renderBadges(); this.renderComposerState();
             } else if (type === Types.Messages.CHAT_INVENTORY) {
-                this.consumables = data; this.inventoryLoading = false;
+                this.transferableItems = data; this.inventoryLoading = false;
                 if (this.pickerState) this.renderGiftPicker();
                 this.renderComposerState();
             } else if (type === Types.Messages.CHAT_ERROR) {
@@ -116,6 +116,7 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
                 if (retry && data.code !== 'gift_pending') this.giftRetries.delete(retry[0]);
                 const errors = {
                     player_offline: 'This player is offline. Your message has not been sent.',
+                    item_not_transferable: 'This item cannot be gifted. Remove it and choose another item.',
                     insufficient_items: 'You do not have enough of this item. Adjust or remove the gift.',
                     gift_pending: 'Gift confirmation is pending. Retry to check delivery; it will not send the gift twice.',
                     inventory_unavailable: 'Inventory is unavailable. Your gift has not been sent.',
@@ -353,20 +354,20 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
         renderGiftPicker() {
             const state = this.pickerState;
             const shade = this.node('chat-profile'); shade.replaceChildren(); shade.hidden = false;
-            const card = element('section', 'sc-profile-card sc-gift-card'); card.tabIndex = -1; card.setAttribute('role', 'dialog'); card.setAttribute('aria-modal', 'true'); card.setAttribute('aria-label', 'Attach consumables');
+            const card = element('section', 'sc-profile-card sc-gift-card'); card.tabIndex = -1; card.setAttribute('role', 'dialog'); card.setAttribute('aria-modal', 'true'); card.setAttribute('aria-label', 'Attach a gift');
             const close = element('button', 'sc-profile-close', '×'); close.type = 'button'; close.setAttribute('aria-label', 'Close gift picker'); close.onclick = () => this.closeProfile();
             const recipient = this.people.get(this.target);
-            card.append(close, element('h3', '', 'Share a little adventure'), element('p', 'sc-gift-help', 'Choose a consumable to give to ' + recipient.label + ' (' + recipient.walletShort + ').'));
+            card.append(close, element('h3', '', 'Share a little adventure'), element('p', 'sc-gift-help', 'Choose an item to give to ' + recipient.label + ' (' + recipient.walletShort + ').'));
             const list = element('div', 'sc-gift-list');
             if (this.inventoryLoading) list.append(element('p', 'sc-empty', 'Loading your inventory…'));
-            else if (!this.consumables.length) list.append(element('p', 'sc-empty', 'No consumables in your inventory yet.'));
-            else this.consumables.forEach(item => {
+            else if (!this.transferableItems.length) list.append(element('p', 'sc-empty', 'No transferable items in your inventory yet.'));
+            else this.transferableItems.forEach(item => {
                 const choice = element('button', 'sc-gift-choice'); choice.type = 'button'; choice.setAttribute('aria-pressed', state.selected === item.item);
                 const copy = element('span'); copy.append(element('strong', '', item.name), element('small', '', item.quantity + ' available'));
                 choice.append(this.itemImage(item), copy); choice.onclick = () => { state.selected = item.item; this.renderGiftPicker(); }; list.append(choice);
             });
             card.append(list);
-            const selected = this.consumables.find(item => item.item === state.selected);
+            const selected = this.transferableItems.find(item => item.item === state.selected);
             if (selected && !this.inventoryLoading) {
                 const label = element('label', 'sc-gift-quantity', 'Quantity');
                 const input = element('input'); input.type = 'number'; input.min = 1; input.max = Math.min(selected.quantity, 1000000); input.step = 1; input.value = Math.min(this.attachments.get(state.channel)?.quantity || 1, Number(input.max)); input.setAttribute('aria-label', 'Gift quantity'); label.append(input); card.append(label);

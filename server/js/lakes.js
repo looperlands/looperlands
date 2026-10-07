@@ -507,6 +507,10 @@ generateFishDataMap = function() { // also do config checks
 
 const fishDataMap = generateFishDataMap();
 
+Lakes.isFish = function(item) {
+    return Object.hasOwn(fishDataMap, item);
+};
+
 Lakes.getRandomFish = function(lake, lucky) {
     try{
         if(Object.keys(Lakes[lake].fish).length == 1){

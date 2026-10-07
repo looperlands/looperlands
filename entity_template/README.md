@@ -15,6 +15,21 @@ The following commands require being in the `looperlands/entity_template` direct
 ./add_object.sh template_key_image/ key_example
 ```
 
+### Control gifting
+
+Inventory items are transferable by default. For keys, personal quest relics,
+access tickets or achievement proof, add `transferable: false` to the item's
+definition in `server/js/properties.js` (create an entry if needed):
+
+```js
+KEY_EXAMPLE: {transferable: false},
+```
+
+Use the exact item name registered in `shared/js/gametypes.js`. For fish, use
+the configured fish name. The flag applies across maps and is enforced by the
+game server, independently of `collectable` and `consumable`. Restart the game
+server after changing it. See `docs/social-chat.md` for the current exclusions.
+
 Run this if you are not happy with the output of the above or there was an error.
 ```bash
 git clean -f .. && git checkout ..
