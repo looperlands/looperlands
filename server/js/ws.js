@@ -32,6 +32,8 @@ const minigame = require('../apps/minigame.js');
 const MinigameController = require('./minigamecontroller.js');
 const DialogueController = require('./dialoguecontroller.js');
 const TileActionsController = require('./tileactionscontroller.js');
+const ActivityTracker = require('./activitytracker');
+const {buildActivityCatalog} = require('./activitycatalog');
 const dynamicnft = require('./dynamicnftcontroller.js');
 const announcement = require('./announcementcontroller.js');
 const {InventorySyncController} = require("./inventorysynccontroller.js");
@@ -164,6 +166,12 @@ WS.socketIOServer = Server.extend({
         const host = self.host;
 
         this.cache = cache;
+        this.activity = new ActivityTracker(platformClient);
+        process.once('exit', () => this.activity.close());
+        for (const signal of ['SIGTERM', 'SIGINT']) process.once(signal, () => {
+            this.activity.close();
+            process.kill(process.pid, signal);
+        });
         var express = require('express');
         var app = express();
         app.use("/", express.static(__dirname + "/../../client-build"));
@@ -179,6 +187,7 @@ WS.socketIOServer = Server.extend({
         });
 
         app.use(express.json())
+        app.get('/activity-catalog', (req, res) => res.json(buildActivityCatalog(Types, tileActionsController.stageDefinitions, Object.keys(self.worldsMap || {}))));
 
         platformClient.createOrUpdateGameServer(host, port, GAMESERVER_NAME);
 
@@ -1334,7 +1343,18 @@ WS.socketIOServer = Server.extend({
             const body = req.body;
             const sessionId = req.params.sessionId;
             const sessionData = cache.get(sessionId);
-            const result = await tileActionsController.executeStage(sessionData.nftId, body.map, body.tileAction, body.item, self.worldsMap[body.map]);
+            if (!sessionData || sessionData.mapId !== body.map) return res.status(403).send({success: false, message: 'Invalid active session.'});
+            const world = self.worldsMap[body.map];
+            const player = world?.getPlayerById(sessionData.entityId);
+            const tile = body.tileAction;
+            if (!player?.hasEnteredGame || player.sessionId !== sessionId || !Number.isInteger(tile?.gridX) || !Number.isInteger(tile?.gridY) || Math.max(Math.abs(player.x - tile.gridX), Math.abs(player.y - tile.gridY)) > 1) {
+                return res.status(403).send({success: false, message: 'Move next to the tile to use it.'});
+            }
+            const result = await tileActionsController.executeStage(sessionData.nftId, body.map, body.tileAction, body.item, world);
+            if (result?.success && result.activity) {
+                try { self.activity.record(player, 'tile', result.activity); }
+                catch (error) { console.error('[activity] tile recording failed', error.message); }
+            }
             res.status(200).send(result || { success: true });
         });
 

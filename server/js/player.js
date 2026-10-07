@@ -135,6 +135,7 @@ module.exports = Player = Character.extend({
                 }
                 dao.saveAvatarMapAndCheckpoint(playerCache.nftId, playerCache.mapId, playerCache.checkpointId);
                 self.mapId = playerCache.mapId;
+                self.server.server.activity?.start(self);
                 self.playerEventBroker.setPlayer(self);
 
                 try {
@@ -183,10 +184,12 @@ module.exports = Player = Character.extend({
                         y = message[2];
 
                     if (self.server.isValidPosition(x, y)) {
+                        const changedPosition = self.x !== x || self.y !== y;
                         self.setPosition(x, y);
                         self.clearTarget();
                         self.broadcast(new Messages.Move(self));
                         self.move_callback(self.x, self.y);
+                        if (changedPosition) self.server.server.activity?.meaningful(self);
                         self.zone_callback();
                     }
                 }
@@ -576,6 +579,7 @@ module.exports = Player = Character.extend({
         });
 
         this.connection.onClose(function () {
+            self.server.server.activity?.stop(self.sessionId);
             if (self.loopringTimeout) {
                 clearTimeout(self.loopringTimeout);
             }
@@ -995,6 +999,7 @@ module.exports = Player = Character.extend({
     },
 
     updatePVPStats: async function (playerKiller) {
+        this.server.server.activity?.record(playerKiller, 'pvp', {target: 'kill', quantity: 1});
         await dao.updatePVPStats(this.walletId, this.nftId, 0, 1);
         dao.updatePVPStats(playerKiller.walletId, playerKiller.nftId, 1, 0);
     },

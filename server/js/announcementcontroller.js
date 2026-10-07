@@ -38,6 +38,7 @@ class AnnouncementController {
 
     sendAnnouncementToMap(mapId, message, timeToShow) {
         const world = this.worldsMap[mapId];
+        if (!world) return;
         Object.keys(world.players).forEach(playerId => {
             const player = world.players[playerId];
             player.sendAnnoucement(message, timeToShow);

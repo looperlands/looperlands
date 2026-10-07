@@ -93,11 +93,13 @@ class PlayerEventBroker {
         playerCache.gameData = gameData;
         this.cache.set(sessionId, playerCache);
 
+        this.player.server.server.activity?.record(this.player, 'loot', {target: String(kind), quantity: amount});
         PlayerEventBroker.dispatchEvent(PlayerEventBroker.Events.LOOT_ITEM, sessionId, this.player, playerCache, { item: item });
     }
 
     async killMobEvent(mob) {
         dao.saveMobKillEvent(this.player.nftId, mob.kind);
+        this.player.server.server.activity?.record(this.player, 'kill', {target: String(mob.kind), quantity: 1});
 
         let sessionId = this.player.sessionId;
         let playerCache = this.cache.get(sessionId);

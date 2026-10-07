@@ -380,7 +380,7 @@ class DuckvilleTileActionsController {
         this.setTileActionStage(map, tileAction, plot);
         world.placeStagedTile(tileAction.gridX, tileAction.gridY, farmDefinition.prepare.tile, 0);
         await this.giveAvatarXp(world, nftId, farmDefinition.prepare.xp);
-        return this.success(world, nftId, "The soil is ready.");
+        return { ...this.success(world, nftId, "The soil is ready."), activity: {action: tileAction.name, stage: "prepare", target: '*', quantity: 1, x: tileAction.gridX, y: tileAction.gridY} };
     }
 
     async plantCrop(nftId, map, tileAction, cropKey, farmDefinition, world) {
@@ -419,7 +419,7 @@ class DuckvilleTileActionsController {
         await this.savePlot(plot);
         this.setTileActionStage(map, tileAction, plot);
         this.placeCropStage(world, tileAction, crop, 0);
-        return this.success(world, nftId, "You planted " + this.cropName(crop) + ".");
+        return { ...this.success(world, nftId, "You planted " + this.cropName(crop) + "."), activity: {action: tileAction.name, stage: "plant", target: cropKey, quantity: 1, x: tileAction.gridX, y: tileAction.gridY} };
     }
 
     async waterCrop(nftId, map, tileAction, plot, farmDefinition, world) {
@@ -439,7 +439,7 @@ class DuckvilleTileActionsController {
         this.placeCropStage(world, tileAction, crop, 1);
         this.schedulePlotStageUpdates(map, tileAction, plot, crop, world);
         await this.giveAvatarXp(world, nftId, farmDefinition.water.xp);
-        return this.success(world, nftId, this.cropName(crop) + " is watered.");
+        return { ...this.success(world, nftId, this.cropName(crop) + " is watered."), activity: {action: tileAction.name, stage: "water", target: plot.crop, quantity: 1, x: tileAction.gridX, y: tileAction.gridY} };
     }
 
     async boostCrop(nftId, map, tileAction, boostItem, plot, farmDefinition, world) {
@@ -467,7 +467,7 @@ class DuckvilleTileActionsController {
 
         await this.savePlot(plot);
         this.setTileActionStage(map, tileAction, plot);
-        return this.success(world, nftId, boost.name + " helped the crop along.");
+        return { ...this.success(world, nftId, boost.name + " helped the crop along."), activity: {action: tileAction.name, stage: "boost", target: plot.crop, quantity: 1, x: tileAction.gridX, y: tileAction.gridY} };
     }
 
     async harvestCrop(nftId, map, tileAction, plot, farmDefinition, world) {
@@ -505,7 +505,7 @@ class DuckvilleTileActionsController {
         this.clearTileActionStage(map, tileAction);
         this.clearPlotStageTimers(map, tileAction);
         world.clearStagedTile(tileAction.gridX, tileAction.gridY);
-        return this.success(world, nftId, "Harvested " + yieldAmount + " " + this.cropName(crop) + ".");
+        return { ...this.success(world, nftId, "Harvested " + yieldAmount + " " + this.cropName(crop) + "."), activity: {action: tileAction.name, stage: "harvest", target: plot.crop, quantity: yieldAmount, x: tileAction.gridX, y: tileAction.gridY} };
     }
 
     createPlot(map, tileAction, ownerNftId, state, crop, tile, tileGroup) {

@@ -277,6 +277,11 @@ class LooperLandsPlatformClient {
         }
     }
 
+    async storeActivity(activities) {
+        const response = await this.client.post('/api/game/activity', activities, {timeout: 15000});
+        return response.data;
+    }
+
     async storeKills(kills) {
         try {
             const url = `/api/game/asset/kill`;
