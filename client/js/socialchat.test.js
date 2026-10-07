@@ -51,3 +51,26 @@ test('gift retries preserve the request ID and an acknowledgement clears the loc
     expect(instance.giftRetries.size).toBe(0); expect(instance.pending.size).toBe(0);
     expect(input.value).toBe('');
 });
+
+test('the gift picker accepts the server inventory of transferable items', () => {
+    const {instance} = chat();
+    instance.inventoryLoading = true;
+    const items = [{item: String(Types.Entities.M88NROSE), name: 'Red Rose', quantity: 3}];
+    instance.receive(Types.Messages.CHAT_INVENTORY, items);
+    expect(instance.transferableItems).toEqual(items);
+    expect(instance.inventoryLoading).toBe(false);
+});
+
+test('an excluded attachment keeps the draft and tells the sender to choose another item', () => {
+    const {instance, input} = chat();
+    instance.tab = 'direct'; instance.target = 'bob'; input.value = 'Enjoy';
+    instance.attachments.set('direct:bob', {item: String(Types.Entities.M88NSKELETONKEY), quantity: 1});
+    instance.send();
+    const requestId = instance.app.game.client.sendChatGift.mock.calls[0][4];
+    instance.receive(Types.Messages.CHAT_ERROR, {requestId, code: 'item_not_transferable'});
+    expect(instance.pending.size).toBe(0);
+    expect(instance.giftRetries.size).toBe(0);
+    expect(instance.attachments.has('direct:bob')).toBe(true);
+    expect(input.value).toBe('Enjoy');
+    expect(instance.error).toHaveBeenCalledWith('This item cannot be gifted. Remove it and choose another item.');
+});

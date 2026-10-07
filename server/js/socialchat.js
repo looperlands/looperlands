@@ -115,7 +115,7 @@ class SocialChat {
     inventory(player) {
         if (!this.identity(player)) return [];
         const items = this.sessions.get(player.sessionId)?.gameData?.items || {};
-        return Object.entries(items).filter(([item, quantity]) => Number.isSafeInteger(quantity) && quantity > 0 && Collectables.isConsumable(itemKind(item))).map(([item, quantity]) => ({
+        return Object.entries(items).filter(([item, quantity]) => Number.isSafeInteger(quantity) && quantity > 0 && Collectables.isTransferable(itemKind(item))).map(([item, quantity]) => ({
             ...this.itemDetails(item), quantity, description: Collectables.getInventoryDescription(itemKind(item)) || ''
         }));
     }
@@ -133,13 +133,17 @@ class SocialChat {
             }
         }
         const player = this.players.get(walletKey(wallet));
-        if (player) this.sendInventory(player);
+        if (player) {
+            this.sendInventory(player);
+            const kind = itemKind(item);
+            if (player.nftId === nftId && this.identity(player) && Types.isResource(kind)) player.send([Types.Messages.RESOURCE, kind, Math.max(0, quantity)]);
+        }
     }
 
     async sendGift(player, target, text, item, quantity, requestId) {
         const sender = this.identity(player);
         if (!sender || this.players.get(walletKey(player.walletId)) !== player) return false;
-        if (!/^[a-zA-Z0-9_-]{8,80}$/.test(requestId) || !/^[a-zA-Z0-9_-]{1,64}$/.test(item) || !Number.isSafeInteger(quantity) || quantity < 1 || quantity > 1000000 || !Collectables.isConsumable(itemKind(item))) {
+        if (!/^[a-zA-Z0-9_-]{8,80}$/.test(requestId) || !/^[a-zA-Z0-9_-]{1,64}$/.test(item) || !Number.isSafeInteger(quantity) || quantity < 1 || quantity > 1000000) {
             return this.fail(player, 'invalid_gift', 'direct', target, requestId);
         }
         const transferId = crypto.createHash('sha256').update(walletKey(player.walletId) + '\0' + requestId).digest('hex');
@@ -154,6 +158,7 @@ class SocialChat {
             return true;
         }
         if (!gift) {
+            if (!Collectables.isTransferable(itemKind(item))) return this.fail(player, 'item_not_transferable', 'direct', target, requestId);
             const recipientPlayer = this.players.get(this.walletsById.get(target));
             const recipient = recipientPlayer && this.identity(recipientPlayer);
             if (!recipient || recipient.id === sender.id || recipientPlayer.nftId === player.nftId) return this.fail(player, 'player_offline', 'direct', target, requestId);
@@ -167,7 +172,7 @@ class SocialChat {
         if (!gift.inFlight) {
             gift.inFlight = (async () => {
                 try {
-                    const receipt = await this.inventoryGateway.transferConsumables({requestId: transferId, fromNftId: gift.fromNftId, toNftId: gift.toNftId, item, quantity});
+                    const receipt = await this.inventoryGateway.transferItems({requestId: transferId, fromNftId: gift.fromNftId, toNftId: gift.toNftId, item, quantity});
                     this.setQuantity(gift.senderWallet, gift.fromNftId, item, receipt.fromQuantity);
                     this.setQuantity(gift.recipientWallet, gift.toNftId, item, receipt.toQuantity);
                     gift.message = {

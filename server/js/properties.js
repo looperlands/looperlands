@@ -3233,6 +3233,7 @@ let Properties = {
         }
     },
     m88nvipbag: {
+        transferable: false, // Contains a boarding ticket.
         collectable: true,
         consumable: true,
         cooldown: {
@@ -3246,6 +3247,7 @@ let Properties = {
         }
     },
     m88ngoldbag: {
+        transferable: false, // Contains a golden boarding ticket.
         collectable: true,
         consumable: true,
         cooldown: {
@@ -3965,6 +3967,7 @@ let Properties = {
         respawnDelay: 42069741
     },
     m88ndrsbook: {
+        transferable: false, // Jail access earned through the DRS quest.
         collectable: true,
         inventoryDescription: "DRS Book",
         respawnDelay: 42069741
@@ -4027,11 +4030,13 @@ let Properties = {
         respawnDelay: 9900000
     },
     m88ncompass: {
+        transferable: false, // Unlocks the hidden island.
         collectable: true,
         inventoryDescription: "Mysterious Compass",
         respawnDelay: 9900000
     },
     m88nbinoculars: {
+        transferable: false, // Grants passage through the strong current.
         collectable: true,
         inventoryDescription: "Mysterious Binoculars",
         respawnDelay: 9900000
@@ -4307,9 +4312,11 @@ let Properties = {
         respawnDelay: 9900000
     },
     m88nticket: {
+        transferable: false,
         respawnDelay: 9900000
     },
     m88ngoldenticket: {
+        transferable: false,
         respawnDelay: 9900000
     },
     m88nworm: {
@@ -4378,11 +4385,13 @@ let Properties = {
         respawnDelay: 9900000
     },
     m88ntentacle: {
+        transferable: false, // Proof of defeating Octopussy for door access.
         collectable: true,
         inventoryDescription: "Octopus Tentacle",
         respawnDelay: 9900000
     },
     m88nskeletonkey: {
+        transferable: false,
         collectable: true,
         inventoryDescription: "Skeleton Key",
         respawnDelay: 9900000
@@ -4746,6 +4755,30 @@ let Properties = {
         respawnDelay: 9900000
     },
 
+    // Personal progression and achievement items. This flag applies across maps.
+    KEY_ARACHWEAVE: {transferable: false},
+    THUDKEY: {transferable: false},
+    FOREST_KEY: {transferable: false},
+    ICEKEY1: {transferable: false},
+    ICEKEY2: {transferable: false},
+    ICEKEY3: {transferable: false},
+    ICEKEY4: {transferable: false},
+    ORB: {transferable: false}, // Windweave boss relic.
+    SATCHEL: {transferable: false}, // Lost research notes from Everfrost.
+    HERMITHOME: {transferable: false}, // Proof of discovering the hermit's home.
+    EVERPEAKMAP1: {transferable: false},
+    EVERPEAKMAP2: {transferable: false},
+    EVERPEAKMAP3: {transferable: false},
+    EVERPEAKMAP4: {transferable: false},
+    EVERPEAKMAP5: {transferable: false},
+    PNEUMA_SIGN: {transferable: false},
+    VILLAGESIGN10: {transferable: false},
+    m88ngemticket: {transferable: false}, // Mine access ticket.
+    m88ndinnerbell: {transferable: false}, // Chef quest unlocks the compass room.
+    m88ngoldmedal: {transferable: false},
+    m88nsilvermedal: {transferable: false},
+    m88nbronzemedal: {transferable: false},
+
     // Projectiles
     shortarrow: {
         collectable: true,
@@ -4906,6 +4939,11 @@ Properties.isCollectable = function(kind) {
 Properties.isConsumable = function(kind) {
     let retConsumable = Properties[Types.getKindAsString(kind)]?.consumable;
     return retConsumable !== undefined ? retConsumable : false;
+}
+
+Properties.isTransferAllowed = function(kind) {
+    const name = typeof kind === 'number' ? Types.getKindAsString(kind) : kind;
+    return Properties[name]?.transferable !== false;
 }
 
 Properties.getCollectableImageName = function(kind) {

@@ -246,7 +246,7 @@ const processLootEventQueue = function () {
   return inventoryWritePromise;
 };
 
-const transferConsumables = async function (transfer) {
+const transferItems = async function (transfer) {
   // A gift shares the writer with loot and consumption. Deltas created during
   // its request wait until the atomic transfer has completed.
   while (processingQueue || LOOT_EVENTS_QUEUE.length) {
@@ -722,7 +722,7 @@ module.exports = {
   getResourceBalance,
   updateResourceBalance,
   transferResourceFromTo,
-  transferConsumables,
+  transferItems,
   completePartnerTask,
   getPartnerTask,
   getInventory,
