@@ -16,6 +16,7 @@ const NFTWeapon = require("./nftweapon.js");
 const NFTSpecialItem = require("./nftspecialitem.js");
 const PlayerEventBroker = require("./quests/playereventbroker.js");
 const Lakes = require("./lakes.js");
+const {completeFishingCatch} = require("./fishingresult");
 const Collectables = require("./collectables.js");
 const platform = require('./looperlandsplatformclient.js');
 const PlayerClassModifiers = require('./playerclassmodifiers.js').PlayerClassModifiers;
@@ -552,24 +553,13 @@ module.exports = Player = Character.extend({
                     }
                 }
             } else if (action === Types.Messages.FISHINGRESULT) {
-                let success = message[1],
-                    bullseye = message[2];
-                if (success && self.pendingFish !== null) {
-                    let caughtAmount = self.pendingFish.double ? 2 : 1;
-                    let expAward = bullseye ? Math.round(self.pendingFish.exp * 1.5) : self.pendingFish.exp;
-
-                    const xp = expAward * caughtAmount;
-                    self.incrementNFTSpecialItemExperience(xp);
-                    self.playerEventBroker.lootEvent({ kind: self.pendingFish.name }, caughtAmount);
-                    self.handleExperience(xp);
-                    self.server.pushToPlayer(self, new Messages.Kill(self.pendingFish.name, xp));
-
-                    discord.sendMessage(`🐟 **${self.name}** caught *${AltNames.getName(self.pendingFish.name)}!*${caughtAmount === 1 ? '' : ' **[x2]**'} (Lake Level ${self.pendingFish.lakeLvl})`);
-
-
+                try {
+                    await completeFishingCatch(self, message[1], message[2], {lakes: Lakes, messages: Messages, discord, names: AltNames});
+                } catch (error) {
+                    console.error('[fishing] catch award failed:', error.message);
+                } finally {
+                    self.server.announceDespawnFloat(self);
                 }
-                self.pendingFish = null;
-                self.server.announceDespawnFloat(self);
             }
             else {
                 if (self.message_callback) {

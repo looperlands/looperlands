@@ -15,3 +15,14 @@ test('new registry content appears without changing a separate list',()=>{
  const before=buildActivityCatalog(types,{});registry.push({id:43,name:'new_item',mob:false});
  const after=buildActivityCatalog(types,{});expect(before.items).toEqual([]);expect(after.items[0]).toMatchObject({value:'43',kind:'new_item'});
 });
+
+test('fish and lake options derive from the real lake definitions and display names',()=>{
+ global.generateFishDataMap=undefined;
+ const lakes=require('./lakes');const names=require('../../shared/js/altnames');
+ const catalog=buildActivityCatalog(GameTypes,{},[],lakes,names.getName);
+ expect(catalog.fish.find(fish=>fish.value==='cobguppy')).toMatchObject({lake:'cobFarmLake',label:names.getName('cobguppy'),rarity:lakes.cobFarmLake.fish.cobguppy});
+ expect(catalog.lakes.map(lake=>lake.value)).toEqual(expect.arrayContaining(Object.entries(lakes).filter(([,definition])=>definition?.fish).map(([key])=>key)));
+ expect(catalog.lakes.every(lake=>typeof lakes[lake.value]==='object')).toBe(true);
+ const added=buildActivityCatalog(GameTypes,{},[],{newLake:{fish:{newFish:'rare'}}},value=>'New fish');
+ expect(added.fish).toEqual([{value:'newFish',label:'New fish',lake:'newLake',rarity:'rare'}]);
+});

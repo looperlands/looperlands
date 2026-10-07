@@ -21,7 +21,15 @@ The canonical event configuration, API routes and full rollout order are documen
 Focused validation:
 
 ```sh
-npx jest server/js/activitytracker.test.js server/js/activitycatalog.test.js server/js/tileactionscontroller.test.js --runInBand --coverage=false
+npx jest server/js/activitytracker.test.js server/js/activitycatalog.test.js server/js/fishingresult.test.js server/js/tileactionscontroller.test.js --runInBand --coverage=false
 ```
 
 The tests verify idle/resume boundaries, midnight, overlapping avatar sessions, retry/restart safety, partial receipts, live catalog IDs and Duckville tile mechanics.
+
+## Fishing competitions
+
+A `fishing` activity is recorded after the existing fishing result flow successfully awards inventory. The server-selected pending fish is consumed before awaiting the award so duplicate result messages cannot score twice. Failed attempts, failed awards and ordinary loot/purchases do not emit this activity. Metadata contains fish key `target`, actual `quantity` (including double-catch traits), `lake` and definition-derived `rarity`.
+
+The game catalog includes fish keys/display names and lakes from `Lakes`, not a second fish list. Fishing rules can use `count` (successful catches) or `quantity` (fish awarded) with optional lake and species filters. Maps, dates, caps, sign-ups and teams use the shared event system. Fishing success/bullseye still use the existing client minigame result protocol; this change does not add server-side proof of minigame timing.
+
+The two repository Docker Compose services now mount separate named volumes at `/var/lib/looperlands/activity`, with the spool path set explicitly. Do not remove these volumes when restarting. Custom launchers must supply equivalent unique durable mounts before tracking is enabled.

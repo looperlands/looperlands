@@ -5,9 +5,22 @@ services:
       - "8000:443"
     env_file:
       - /home/looperlands/.env
+    environment:
+      ACTIVITY_SPOOL_PATH: /var/lib/looperlands/activity/activity.jsonl
+    volumes:
+      - activity_spool_1:/var/lib/looperlands/activity
   gameserver2:
     image: balkshamster/looperlands:latest
     ports:
       - "8001:443"
     env_file:
       - /home/looperlands/.env2
+    environment:
+      ACTIVITY_SPOOL_PATH: /var/lib/looperlands/activity/activity.jsonl
+    volumes:
+      - activity_spool_2:/var/lib/looperlands/activity
+
+
+volumes:
+  activity_spool_1:
+  activity_spool_2:

@@ -24,6 +24,7 @@ const ens = require("./ens.js");
 const chat = require("./chat.js");
 const quests = require("./quests/quests.js");
 const Lakes = require("./lakes.js");
+const AltNames = require("../../shared/js/altnames");
 const Collectables = require('./collectables.js');
 const Properties = require('./properties.js')
 const Types = require("../../shared/js/gametypes");
@@ -187,7 +188,7 @@ WS.socketIOServer = Server.extend({
         });
 
         app.use(express.json())
-        app.get('/activity-catalog', (req, res) => res.json(buildActivityCatalog(Types, tileActionsController.stageDefinitions, Object.keys(self.worldsMap || {}))));
+        app.get('/activity-catalog', (req, res) => res.json(buildActivityCatalog(Types, tileActionsController.stageDefinitions, Object.keys(self.worldsMap || {}), Lakes, AltNames.getName)));
 
         platformClient.createOrUpdateGameServer(host, port, GAMESERVER_NAME);
 
