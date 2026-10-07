@@ -213,35 +213,71 @@ const saveAvatarMapAndCheckpoint = async function (nft, mapId, checkpointId) {
 
 let LOOT_EVENTS_QUEUE = []
 let processingQueue = false;
+let inventoryWritePromise;
 let pendingQueue = [];
 let LOOT_QUEUE_INTERVAL = undefined;
 
-const processLootEventQueue = async function (retry) {
-  if (processingQueue || !LOOT_EVENTS_QUEUE?.length) { return; }
+const finishInventoryWrite = function () {
+  processingQueue = false;
+  if (pendingQueue.length) {
+    LOOT_EVENTS_QUEUE.push(...pendingQueue);
+    pendingQueue = [];
+  }
+};
+
+const processLootEventQueue = function () {
+  if (processingQueue) return inventoryWritePromise;
+  if (!LOOT_EVENTS_QUEUE.length) return Promise.resolve(true);
   processingQueue = true;
-
-  try {
-    let response = await platformClient.storeInventoryTransaction(LOOT_EVENTS_QUEUE);
-    printResponseJSON('storeInventoryTransactions', response);
-    LOOT_EVENTS_QUEUE = [];
-
-  } catch (error) {
-    if (retry === undefined) {
-      retry = MAX_RETRY_COUNT;
+  const batch = LOOT_EVENTS_QUEUE;
+  inventoryWritePromise = (async () => {
+    try {
+      await platformClient.storeInventoryTransaction(batch);
+      LOOT_EVENTS_QUEUE = [];
+      return true;
+    } catch (error) {
+      // Keep failed deltas. Gifts cannot proceed while these quantities are unconfirmed.
+      console.error('Inventory batch failed:', error.message);
+      return false;
+    } finally {
+      finishInventoryWrite();
     }
-    retry -= 1;
-    if (retry > 0) {
-      processingQueue = false;
-      processLootEventQueue(retry);
-    }
-  } finally {
-    processingQueue = false;
-    if (pendingQueue?.length) {
-      LOOT_EVENTS_QUEUE = LOOT_EVENTS_QUEUE.concat(pendingQueue);
-      pendingQueue = [];
+  })();
+  return inventoryWritePromise;
+};
+
+const transferItems = async function (transfer) {
+  // A gift shares the writer with loot and consumption. Deltas created during
+  // its request wait until the atomic transfer has completed.
+  while (processingQueue || LOOT_EVENTS_QUEUE.length) {
+    let flushed;
+    try { flushed = await processLootEventQueue(); }
+    catch (cause) { flushed = false; }
+    if (flushed === false) {
+      const error = new Error('inventory_unavailable'); error.code = error.message;
+      throw error;
     }
   }
-}
+  processingQueue = true;
+  inventoryWritePromise = (async () => {
+    const receipt = await platformClient.transferInventory(transfer);
+    try {
+      // Replays may follow later consumption. Refresh quantities while queued
+      // game writes remain held, then include their unflushed deltas.
+      const [from, to] = await Promise.all([
+        platformClient.getInventoryItem(transfer.fromNftId, transfer.item),
+        platformClient.getInventoryItem(transfer.toNftId, transfer.item)
+      ]);
+      if (!Number.isSafeInteger(from?.amount) || !Number.isSafeInteger(to?.amount)) throw new Error('Invalid quantities');
+      const pendingDelta = nft => pendingQueue.filter(event => event.nftId === nft && event.item === transfer.item).reduce((sum, event) => sum + event.amount, 0);
+      return {...receipt, fromQuantity: from.amount + pendingDelta(transfer.fromNftId), toQuantity: to.amount + pendingDelta(transfer.toNftId)};
+    } catch (cause) {
+      const error = new Error('gift_pending'); error.code = error.message; error.transferUncertain = true;
+      throw error;
+    }
+  })().finally(finishInventoryWrite);
+  return inventoryWritePromise;
+};
 
 // Process a single transaction
 const saveLootEvent = async function (nftId, itemId, amount = 1) {          // Default amount to 1 if undefined
@@ -686,6 +722,7 @@ module.exports = {
   getResourceBalance,
   updateResourceBalance,
   transferResourceFromTo,
+  transferItems,
   completePartnerTask,
   getPartnerTask,
   getInventory,

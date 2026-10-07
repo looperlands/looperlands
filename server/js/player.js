@@ -12,6 +12,7 @@ var cls = require("./lib/class"),
 
 const discord = require('./discord.js');
 const chat = require("./chat.js");
+const { identityFromSession } = require('./socialchat');
 const NFTWeapon = require("./nftweapon.js");
 const NFTSpecialItem = require("./nftspecialitem.js");
 const PlayerEventBroker = require("./quests/playereventbroker.js");
@@ -82,18 +83,22 @@ module.exports = Player = Character.extend({
             self.resetTimeout();
 
             if (action === Types.Messages.HELLO) {
-                var name = Utils.sanitize(message[1]);
-
-                // If name was cleared by the sanitizer, give a default name.
-                // Always ensure that the name is not longer than a maximum length.
-                // (also enforced by the maxlength attribute of the name input element).
-                self.name = (name === "") ? "lorem ipsum" : name.substr(0, 15);
                 self.sessionId = message[4];
                 let playerCache = self.server.server.cache.get(self.sessionId);
                 if (playerCache === undefined) {
                     connection.close("Invalid session id: " + self.sessionId);
                     return;
                 }
+                const activePlayer = self.server.server.worldsMap?.[playerCache.mapId]?.getPlayerById(playerCache.entityId);
+                if (activePlayer && activePlayer !== self && activePlayer.hasEnteredGame) {
+                    connection.close('This session already has an active player');
+                    return;
+                }
+                if ('world_' + playerCache.mapId !== self.server.id) {
+                    connection.close('Session map does not match this world');
+                    return;
+                }
+                self.name = Utils.sanitize(identityFromSession(playerCache).label).substr(0, 15);
                 self.walletId = playerCache.walletId;
                 self.nftId = playerCache.nftId;
                 self.playerClassModifiers = new PlayerClassModifiers(platformClient, self.nftId, playerCache.trait);
@@ -137,6 +142,7 @@ module.exports = Player = Character.extend({
                 dao.saveAvatarMapAndCheckpoint(playerCache.nftId, playerCache.mapId, playerCache.checkpointId);
                 self.mapId = playerCache.mapId;
                 self.server.server.activity?.start(self);
+                self.server.server.socialChat?.register(self);
                 self.playerEventBroker.setPlayer(self);
 
                 try {
@@ -170,8 +176,29 @@ module.exports = Player = Character.extend({
                 // Sanitized messages may become empty. No need to broadcast empty chat messages.
                 if (msg && msg !== "") {
                     self.broadcastToZone(new Messages.Chat(self, msg), false);
-                    chat.addMessage(self.name, msg);
+                    if (self.server.server?.socialChat) {
+                        self.server.server.socialChat.send(self, 'world', '', message[1]);
+                    } else {
+                        chat.addMessage(self.name, msg);
+                    }
                 }
+            }
+            else if (action === Types.Messages.CHAT_SYNC) {
+                self.server.server.socialChat.sync(self);
+            }
+            else if (action === Types.Messages.CHAT_SEND) {
+                const [type, channel, target, text, requestId] = message;
+                const sent = self.server.server.socialChat.send(self, channel, target, text, requestId.slice(0, 80));
+                if (sent && channel !== 'direct') {
+                    self.broadcastToZone(new Messages.Chat(self, Utils.sanitize(text.slice(0, Types.MAX_CHAT_LENGTH))), false);
+                }
+            }
+            else if (action === Types.Messages.CHAT_INVENTORY_REQUEST) {
+                self.server.server.socialChat.sendInventory(self);
+            }
+            else if (action === Types.Messages.CHAT_GIFT) {
+                const [type, target, text, item, quantity, requestId] = message;
+                await self.server.server.socialChat.sendGift(self, target, text, item, quantity, requestId);
             }
             else if (action === Types.Messages.EMOTE) {
                 var emotion = Utils.sanitize(message[1]);
@@ -570,6 +597,7 @@ module.exports = Player = Character.extend({
 
         this.connection.onClose(function () {
             self.server.server.activity?.stop(self.sessionId);
+            self.server.server?.socialChat?.unregister(self);
             if (self.loopringTimeout) {
                 clearTimeout(self.loopringTimeout);
             }
@@ -1201,6 +1229,11 @@ module.exports = Player = Character.extend({
 
     getActiveBuff: function () {
         return this.consumableBuff.buff; //can be undefined!
+    },
+
+    setPosition: function (x, y) {
+        this._super(x, y);
+        this.server?.server?.socialChat?.updateLocation(this);
     },
 
     isBot: function () {

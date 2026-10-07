@@ -1,0 +1,75 @@
+{
+  "generated": "2026-10-07T18:40:37.235Z",
+  "sections": [
+    {
+      "id": "mockups",
+      "label": "Mockups",
+      "groups": [
+        {
+          "slug": "social-chat",
+          "files": [
+            {
+              "label": "index.html",
+              "path": "mockups/social-chat/index.html"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "design-systems",
+      "label": "Design Systems",
+      "groups": [
+        {
+          "slug": "looperlands",
+          "files": [
+            {
+              "label": "README.md",
+              "path": "design-systems/looperlands/README.md"
+            },
+            {
+              "label": "SKILL.md",
+              "path": "design-systems/looperlands/SKILL.md"
+            },
+            {
+              "label": "assets/barsheet.png",
+              "path": "design-systems/looperlands/assets/barsheet.png"
+            },
+            {
+              "label": "assets/small-border.png",
+              "path": "design-systems/looperlands/assets/small-border.png"
+            },
+            {
+              "label": "brand/style-notes.md",
+              "path": "design-systems/looperlands/brand/style-notes.md"
+            },
+            {
+              "label": "brand/voice-and-tone.md",
+              "path": "design-systems/looperlands/brand/voice-and-tone.md"
+            },
+            {
+              "label": "fonts/advocut-webfont.woff",
+              "path": "design-systems/looperlands/fonts/advocut-webfont.woff"
+            },
+            {
+              "label": "fonts/graphicpixel-webfont.woff",
+              "path": "design-systems/looperlands/fonts/graphicpixel-webfont.woff"
+            },
+            {
+              "label": "tokens/colors_and_type.css",
+              "path": "design-systems/looperlands/tokens/colors_and_type.css"
+            },
+            {
+              "label": "ui-kit-game/components/ChatComposer.jsx",
+              "path": "design-systems/looperlands/ui-kit-game/components/ChatComposer.jsx"
+            },
+            {
+              "label": "ui-kit-game/index.html",
+              "path": "design-systems/looperlands/ui-kit-game/index.html"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,8 +1,17 @@
 const Lakes = require("./lakes.js");
 const Properties = require("./properties.js");
+const Types = require("../../shared/js/gametypes");
 
 const Collectables = {
     providers: [Lakes, Properties],
+    // Transfers move inventory quantities, not NFT ownership or rental rights.
+    isTransferable: function (item) {
+        const name = typeof item === 'number' ? Types.getKindAsString(item) : item;
+        if (!name || name.startsWith('NFT_') || !Properties.isTransferAllowed(item)) return false;
+        if (typeof item === 'string') return Lakes.isFish(item);
+        return (Types.isObject(item) && !Types.isChest(item)) || Types.isResource(item) || Types.isProjectile(item);
+    },
+
     isCollectable: function (item) {
         for (var i = 0; i < this.providers.length; i++) {
             if (this.providers[i].isCollectable(item)) {

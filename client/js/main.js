@@ -433,7 +433,7 @@ define(['jquery', 'app'], function($, App) {
             $(document).keydown(function(e) {
             	var key = e.which;
 
-                if(key === 13 && e.target.id !== 'chatsend') {
+                if(key === 13 && !$(e.target).closest('#chatbox').length) {
                     if($('#chatbox').hasClass('active')) {
                         app.hideChat();
                     } else {
@@ -443,9 +443,15 @@ define(['jquery', 'app'], function($, App) {
             });
             
             $('#chatinput').attr('maxlength', Types.MAX_CHAT_LENGTH)
-                .keydown(app.handleChatKeyboardInput.bind(app));
+                .keydown(app.handleChatKeyboardInput.bind(app))
+                .on('input', app.resizeChatInput.bind(app));
+            window.addEventListener('resize', app.resizeChatInput.bind(app));
             $('#chatsend').click(app.sendChatMessage.bind(app));
             $('#chatbox').on('click touchstart', function (event) {
+                event.stopPropagation();
+            });
+            $('#chatbox').on('keydown', function (event) {
+                if (event.which === 27) app.hideChat();
                 event.stopPropagation();
             });
             $('#bubbles').on('click touchstart', '.bubbleglobal, .chat-message', function (event) {
@@ -472,40 +478,33 @@ define(['jquery', 'app'], function($, App) {
             $('#emoteMenuToggle').click(function(event) {
                 event.preventDefault();
                 event.stopImmediatePropagation();
+                if (!$('#emoteMenu').hasClass('active')) app.hideChat();
                 $('#emoteMenu').toggleClass('active');
-
-                if($('#emoteMenu').hasClass('active')) {
-                    $('#chatinput').hide();
-                    $('#emoteMenu').children().each(function(index) {
-                        $(this).delay(index * 30).fadeIn(200);
-                    });
-                } else {
-                    $('#chatinput').show();
-                    $('#emoteMenu').children().each(function(index) {
-                        $(this).delay(($('#emoteMenu').children().length - index) * 30).fadeOut(200);
-                    });
-                }
+                $(this).toggleClass('active', $('#emoteMenu').hasClass('active')).attr('aria-expanded', $('#emoteMenu').hasClass('active'));
 
                 return false;
             });
 
-            let emoIdx = 0;
             for (var emotion in Types.emotions) {
-                var emotionDiv = $('<div class="emote pixel-corners-xs" data-emotion="' + emotion + '" style="--n: ' + emoIdx++ + '">' + Types.emotions[emotion] + '</div>');
+                var emotionDiv = $('<button type="button" class="emote" data-emotion="' + emotion + '" aria-label="' + emotion + '">' + Types.emotions[emotion] + '</button>');
                 emotionDiv.click(function(event) {
                     game.emote($(event.target).data('emotion'));
                     $('#emoteMenu').removeClass('active');
-                    $('#emoteMenu').children().each(function(index) {
-                        $(this).delay(($('#emoteMenu').children().length - index) * 20).fadeOut(100);
-                    });
+                    $('#emoteMenuToggle').removeClass('active').attr('aria-expanded', 'false').focus();
 
                     event.preventDefault();
                     event.stopImmediatePropagation();
                     return false;
                 });
                 $('#emoteMenu').append(emotionDiv);
-                emotionDiv.hide();
             }
+            $('#game-emotes, #emoteMenu').on('keydown', function(event) {
+                event.stopPropagation();
+                if (event.key === 'Escape') {
+                    $('#emoteMenu').removeClass('active');
+                    $('#emoteMenuToggle').removeClass('active').attr('aria-expanded', 'false').focus();
+                }
+            });
 
             $('#mutebutton').click(function() {
                 game.app.toggleSettings();
@@ -525,7 +524,7 @@ define(['jquery', 'app'], function($, App) {
             });            
             
             $(document).bind("keydown", function(e) {
-                if (e.target.id === 'chatsend') {
+                if ($(e.target).closest('#chatbox').length) {
                     return;
                 }
                 if ($(e.target).closest('#global').length && [32, 33, 34, 35, 36, 38, 40].indexOf(e.which) !== -1) {

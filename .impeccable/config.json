@@ -1,0 +1,59 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "opendesign/mockups/social-chat/chat.css"
+        ],
+        "createdAt": "2026-10-07T18:41:36.769Z",
+        "reason": "Agent review: this file uses 1px structural dividers, a 2px speech-bubble tail, and a 2px bottom navigation underline. No card has a thick colored side accent. Preserve intentional pixel RPG borders."
+      },
+      {
+        "rule": "bounce-easing",
+        "value": "minigamebounce",
+        "createdAt": "2026-10-07T21:58:46.562Z",
+        "reason": "Agent review: minigamebounce moves the existing minigame prompt vertically by 10 percent with ease-in-out. This is an intentional floating gameplay cue, with no elastic easing."
+      },
+      {
+        "rule": "organic-clip-path",
+        "value": "*",
+        "files": [
+          "client/index.html"
+        ],
+        "createdAt": "2026-10-07T21:58:46.646Z",
+        "reason": "Agent review: all flagged polygons are axis-aligned stepped rectangular pixel corners on the existing RPG frame and panels. Preserve the incumbent pixel art."
+      },
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "client/index.html"
+        ],
+        "createdAt": "2026-10-07T21:58:46.746Z",
+        "reason": "Agent review: the only flagged stripe belongs to the fishing target meter and marks gameplay range boundaries. Preserve the existing fishing mechanic."
+      },
+      {
+        "rule": "broken-image",
+        "value": "*",
+        "files": [
+          "client/index.html"
+        ],
+        "createdAt": "2026-10-07T21:58:46.832Z",
+        "reason": "Agent review: the only empty src belongs to the hidden minimap. client/js/app.js sets miniMap_<mapId>.png before displaying it and installs a load-error handler."
+      },
+      {
+        "rule": "buried-raster",
+        "value": "*",
+        "files": [
+          "client/index.html"
+        ],
+        "createdAt": "2026-10-07T21:58:46.918Z",
+        "reason": "Agent review: the flagged raster surfaces are initially hidden game panels. The population visible class restores opacity to 1; the game class reveals the canvas after loading."
+      }
+    ]
+  }
+}

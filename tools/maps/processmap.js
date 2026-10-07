@@ -21,6 +21,7 @@ module.exports = function processMap(json, options) {
         doors: [],
         checkpoints: [],
         triggers: [],
+        scenes: [],
         hiddenLayers: {},
         collidingTiles: {}
     };
@@ -40,7 +41,6 @@ module.exports = function processMap(json, options) {
         map.musicAreas = [];
         map.pvpZones = [];
         map.fishingTiles = {};
-        map.scenes = [];
     }
     if (mode === "server") {
         map.roamingAreas = [];
@@ -526,6 +526,7 @@ module.exports = function processMap(json, options) {
     // Object layers
     processGroup('doors', processDoor);
     processGroup('triggers', processTriggerArea);
+    processGroup('scenes', processScene);
 
     if (mode === 'server') {
         processGroup('roaming', processRoamingArea);
@@ -536,7 +537,6 @@ module.exports = function processMap(json, options) {
     if (mode === "client") {
         processGroup('music', processMusic);
         processGroup('pvpzones', processPvpZone);
-        processGroup('scenes', processScene);
         processGroup('lights', processLights);
         processGroup('shadows', processShadows);
     }
