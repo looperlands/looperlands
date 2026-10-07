@@ -7086,6 +7086,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     connecting = false; // always in dispatcher mode in the build version
 
                 this.client = new GameClient(this.host, this.port, this.protocol, this.sessionId, this.mapId);
+                this.client.onSocialChat((type, data) => self.app.socialChat.receive(type, data));
                 this.renderStatistics();
 
                 //>>includeStart("prodHost", pragmas.prodHost);
@@ -8201,6 +8202,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     });
 
                     self.client.onDisconnected(function (message) {
+                        self.app.socialChat?.disconnect();
                         if (self.player) {
                             self.player.die();
                         }

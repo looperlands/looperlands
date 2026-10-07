@@ -40,7 +40,7 @@ function createPlayer() {
     player.name = 'Farmer';
     player.broadcastToZone = jest.fn();
     player.resetTimeout = jest.fn();
-    return { player, chat, receive: connection.listen.mock.calls[0][0] };
+    return { player, chat, connection, receive: connection.listen.mock.calls[0][0] };
 }
 
 test('server broadcasts and stores all 4000 characters including newlines', async () => {
@@ -59,4 +59,27 @@ test('server caps oversized input and still sanitizes it', async () => {
     expect(expected).not.toContain('<script>');
     expect(player.broadcastToZone.mock.calls[0][0].message).toBe(expected);
     expect(chat.addMessage).toHaveBeenCalledWith('Farmer', expected);
+});
+
+test('a second connection cannot reuse an active authenticated session', async () => {
+    const { player, connection, receive } = createPlayer();
+    player.hasEnteredGame = false;
+    const session = { mapId: 'main', entityId: 'other-connection' };
+    player.server = { id:'world_main', server: {
+        cache: { get: () => session },
+        worldsMap: { main: { getPlayerById: () => ({hasEnteredGame:true}) } }
+    } };
+    await receive([Types.Messages.HELLO, 'Forged title', 1, 1, 'existing-session']);
+    expect(connection.close).toHaveBeenCalledWith('This session already has an active player');
+    expect(player.hasEnteredGame).toBe(false);
+});
+
+test('a session cannot authenticate in a different map', async () => {
+    const { player, connection, receive } = createPlayer();
+    player.hasEnteredGame = false;
+    player.server = { id:'world_main', server: {
+        cache: { get: () => ({mapId:'taikotown'}) }, worldsMap: {}
+    } };
+    await receive([Types.Messages.HELLO, 'Forged title', 1, 1, 'session-on-another-map']);
+    expect(connection.close).toHaveBeenCalledWith('Session map does not match this world');
 });

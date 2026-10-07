@@ -41,3 +41,27 @@ describe('tile distance', () => {
         expect(Utils.distanceTo(targetX, targetY, x, y)).toBe(expected);
     });
 });
+
+test('random bounds and orientations cover the four valid directions', () => {
+    const random = jest.spyOn(Math, 'random');
+    random.mockReturnValue(0);
+    expect(Utils.randomInt(2, 4)).toBe(2); expect(Utils.randomRange(2, 4)).toBe(2);
+    random.mockReturnValue(0.999999);
+    expect(Utils.randomInt(2, 4)).toBe(4); expect(Utils.random(4)).toBe(3);
+    const Types = require('../../shared/js/gametypes');
+    [Types.Orientations.LEFT, Types.Orientations.RIGHT, Types.Orientations.UP, Types.Orientations.DOWN].forEach((orientation, index) => {
+        random.mockReturnValue(index / 4); expect(Utils.randomOrientation()).toBe(orientation);
+    });
+    random.mockRestore();
+});
+
+test('shuffle preserves input membership and selection does not mutate its source', () => {
+    const source = ['a', 'b', 'c'];
+    expect(Utils.shuffleArray([...source]).sort()).toEqual(source);
+    expect(source).toContain(Utils.shuffleAndGetRandom(source));
+    expect(source).toEqual(['a', 'b', 'c']);
+    expect(Utils.shuffleAndGetRandom('single')).toBe('single');
+    expect(Utils.Mixin({a: 1}, {b: 2})).toEqual({a: 1, b: 2});
+    expect(Utils.Mixin({a: 1}, null)).toEqual({a: 1});
+    const id = Utils.getID(); expect(Utils.getID()).toBe(id + 1);
+});
