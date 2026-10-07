@@ -25,12 +25,18 @@ function createApp() {
         }
         if (!elements.has(selector)) {
             const classes = new Set();
+            let value = '';
             const element = {
                 addClass(name) { classes.add(name); return this; },
                 removeClass(name) { classes.delete(name); return this; },
                 hasClass(name) { return classes.has(name); },
                 show() { return this; },
                 focus: jest.fn(),
+                val(nextValue) {
+                    if (nextValue === undefined) { return value; }
+                    value = nextValue;
+                    return this;
+                },
             };
             elements.set(selector, element);
         }
@@ -77,4 +83,73 @@ test.each([
     expect($('#chatbox').hasClass('active')).toBe(true);
     expect($('#chatinput').focus).toHaveBeenCalledTimes(1);
     expect(otherShortcut).toHaveBeenCalledTimes(1);
+});
+
+function chatEvent(overrides = {}) {
+    return {
+        which: 13,
+        shiftKey: false,
+        stopPropagation: jest.fn(),
+        preventDefault: jest.fn(),
+        ...overrides,
+    };
+}
+
+test('Enter sends a long multiline message intact and clears the composer', () => {
+    const { app, $ } = createApp();
+    app.game.player = {};
+    app.game.say = jest.fn();
+    app.hideChat = jest.fn();
+    const message = 'A'.repeat(1999) + '\n' + 'B'.repeat(2000);
+    $('#chatinput').val(message);
+    const event = chatEvent();
+
+    app.handleChatKeyboardInput(event);
+
+    expect(app.game.say).toHaveBeenCalledWith(message);
+    expect($('#chatinput').val()).toBe('');
+    expect(app.hideChat).toHaveBeenCalledTimes(1);
+    expect(event.preventDefault).toHaveBeenCalledTimes(1);
+    expect(event.stopPropagation).toHaveBeenCalledTimes(1);
+});
+
+test.each([
+    ['Shift+Enter', { shiftKey: true }],
+    ['IME composition', { isComposing: true }],
+    ['jQuery IME composition', { originalEvent: { isComposing: true } }],
+])('%s keeps the draft open and allows text entry', (name, overrides) => {
+    const { app, $ } = createApp();
+    app.game.say = jest.fn();
+    app.hideChat = jest.fn();
+    $('#chatinput').val('draft');
+    const event = chatEvent(overrides);
+
+    app.handleChatKeyboardInput(event);
+
+    expect(app.game.say).not.toHaveBeenCalled();
+    expect(app.hideChat).not.toHaveBeenCalled();
+    expect($('#chatinput').val()).toBe('draft');
+    expect(event.preventDefault).not.toHaveBeenCalled();
+    expect(event.stopPropagation).toHaveBeenCalledTimes(1);
+});
+
+test('Escape closes chat without sending or clearing the draft', () => {
+    const { app, $ } = createApp();
+    app.game.say = jest.fn();
+    app.hideChat = jest.fn();
+    $('#chatinput').val('draft');
+    app.handleChatKeyboardInput(chatEvent({ which: 27 }));
+    expect(app.game.say).not.toHaveBeenCalled();
+    expect(app.hideChat).toHaveBeenCalledTimes(1);
+    expect($('#chatinput').val()).toBe('draft');
+});
+
+test('the Send action ignores whitespace-only multiline drafts', () => {
+    const { app, $ } = createApp();
+    app.game.player = {};
+    app.game.say = jest.fn();
+    app.hideChat = jest.fn();
+    $('#chatinput').val(' \n\t\n');
+    app.sendChatMessage();
+    expect(app.game.say).not.toHaveBeenCalled();
 });

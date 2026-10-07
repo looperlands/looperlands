@@ -8161,6 +8161,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         var entity = self.getEntityById(entityId);
                         if (entity) {
                             self.createBubble(entityId, message);
+                            self.bubbleManager.getBubbleById(entityId).element.addClass('chat-message');
                             self.assignBubbleTo(entity);
                             self.audioManager.playSound("chat");
                         }

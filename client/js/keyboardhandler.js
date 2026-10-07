@@ -36,7 +36,7 @@ class KeyBoardHandler {
 
     handleKeyDown(event) {
         const key = event.key.toLowerCase();
-        if (this.keys.hasOwnProperty(key)) {
+        if (!this.inputHasFocus() && this.keys.hasOwnProperty(key)) {
             this.keys[key] = 1;
             if (!this.interval) {
                 this.handleMovement(); // Execute one instantly so there's no interval delay
@@ -173,7 +173,7 @@ class KeyBoardHandler {
 
     inputHasFocus() {
         const elem = document.activeElement;
-        return elem && (elem.tagName.toLowerCase() === "input" || elem.tagName.toLowerCase() === "textarea");
+        return elem && (elem.tagName.toLowerCase() === "input" || elem.tagName.toLowerCase() === "textarea" || elem.closest('#global'));
     }
 
     hasOpenPanel() {

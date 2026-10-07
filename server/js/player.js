@@ -163,11 +163,10 @@ module.exports = Player = Character.extend({
                 self.zone_callback();
             }
             else if (action === Types.Messages.CHAT) {
-                var msg = Utils.sanitize(message[1]);
+                var msg = Utils.sanitize(message[1].slice(0, Types.MAX_CHAT_LENGTH));
 
                 // Sanitized messages may become empty. No need to broadcast empty chat messages.
                 if (msg && msg !== "") {
-                    msg = msg.substr(0, 60); // Enforce maxlength of chat input
                     self.broadcastToZone(new Messages.Chat(self, msg), false);
                     chat.addMessage(self.name, msg);
                 }
