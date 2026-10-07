@@ -230,6 +230,7 @@ define(['jquery', 'storage'], function ($, Storage) {
             if (this.game.started) {
                 $('#chatbox').addClass('active');
                 $('#chatinput').show().focus();
+                this.resizeChatInput();
                 $('#chatbutton').addClass('active');
                 self = this;
                 axios.get("/chat").then(function (response) {
@@ -272,6 +273,7 @@ define(['jquery', 'storage'], function ($, Storage) {
             if (message.trim().length && this.game.player) {
                 this.game.say(message);
                 chatInput.val('');
+                this.resizeChatInput();
             }
             this.hideChat();
             $('#foreground').focus();
@@ -289,6 +291,26 @@ define(['jquery', 'storage'], function ($, Storage) {
             } else if (event.which === 27) {
                 event.preventDefault();
                 this.hideChat();
+            }
+        },
+
+
+        resizeChatInput: function () {
+            const input = document.getElementById('chatinput');
+            if (!input) {
+                return;
+            }
+            const lineHeight = parseFloat(window.getComputedStyle(input).lineHeight);
+            const maxHeight = Math.max(lineHeight, Math.min(lineHeight * 6, window.innerHeight * 0.28));
+            input.style.height = '0px';
+            const height = Math.min(maxHeight, Math.max(lineHeight, input.scrollHeight));
+            input.style.height = height + 'px';
+            input.style.overflowY = input.scrollHeight > height ? 'auto' : 'hidden';
+
+            const frame = document.getElementById('chatbox');
+            const container = document.getElementById('canvasborder');
+            if (frame && container) {
+                container.style.setProperty('--chat-composer-height', frame.offsetHeight + 'px');
             }
         },
 
