@@ -3,6 +3,8 @@ const cache = new NodeCache();
 const discord = require("./discord.js");
 
 const MAX_MESSAGES = 100;
+let persistentHistory;
+exports.setHistory = history => { persistentHistory = history; };
 exports.addMessage = function(playerName, message, identity) {
     let messages = cache.get("logs");
     if (messages === undefined) {
@@ -26,6 +28,9 @@ exports.addMessage = function(playerName, message, identity) {
 }
 
 exports.getMessages = function() {
+    if (persistentHistory) return (persistentHistory.get('world') || []).map(message => ({
+        playerName: message.sender.label, message: message.message, epoch: message.epoch, identity: message.sender
+    }));
     let messages = cache.get("logs");
     return messages;
 }

@@ -18,6 +18,8 @@ services:
       - "9229:9229"
     stdin_open: true
     tty: true
+    volumes:
+      - local-chat-history:/opt/app/data/chat
     depends_on:
       - jsonserver
     develop:
@@ -37,3 +39,6 @@ services:
       - ./mock/routes.json:/app/routes.json:delegated
     ports:
       - 3000:80
+
+volumes:
+  local-chat-history:

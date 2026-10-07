@@ -8,7 +8,15 @@ Player locations use each map's configured scene rectangles. Server map exports 
 
 Chat resolves map keys with `client/js/mapnames.js`, matching the platform's `src/maps.ts` catalogue, in roster headings, player details and the My map channel. Map keys such as `m88n` and `m88n2` both display as The Nexus, while message filtering still uses their distinct keys. Keep the two catalogues aligned when a map is renamed or added; unknown keys retain a readable fallback.
 
-Private messages target opaque IDs and reach only their participants. Their in-memory history lasts up to 24 hours, with a maximum of 100 messages per stream. Messages are lost when the game server restarts. Public chat keeps the existing Discord bridge; private messages and gifts do not use it.
+Private messages target opaque IDs and reach only their participants. Public messages, private inboxes and confirmed gift receipts persist across server restarts. History retains the latest 100 messages in the public stream and per wallet inbox for up to 30 days. Player IDs persist too, so restored DMs stay in the same conversation. My map filters restored public history by the map at send time. Public chat keeps the existing Discord bridge; private messages and gifts do not use it. Restoring history does not resend messages to Discord.
+
+## Chat storage
+
+The game server writes `data/chat/history.json` before acknowledging or delivering a message. Both DM inboxes are committed together using a flushed temporary file and atomic replacement. A failed write keeps ordinary messages unsent; a confirmed item transfer with a failed receipt write remains pending and retries persistence without refunding or transferring the goods again. Restored gift receipts also acknowledge retries without another transfer. An unreadable or corrupt history file stops startup instead of replacing existing conversations.
+
+`docker-compose.yml` mounts a separate named volume for each game-server instance, and the local Compose file mounts its own volume. Apply these mounts when deploying the updated server so replacing containers retains history. Keep the volume across deployments and back it up; deleting it deletes its chat history. Non-Docker deployments need a persistent, writable directory. The store has one writer per file and history belongs to that server instance; it does not synchronize between regional servers.
+
+`CHAT_HISTORY_FILE` overrides the file path. `CHAT_HISTORY_RETENTION_DAYS` defaults to `30` (`0` disables time expiry but still retains at most 100 messages per stream). Expired messages are filtered on every read and removed from disk on startup, writes, and a daily cleanup. Files use mode `0600`, contain private inboxes and wallet-to-player-ID mappings, and are outside the publicly served client directory. Git and Docker build context exclude the default storage directory. Previously volatile messages cannot be recovered after the old process stops.
 
 Item gifts attach to a direct message. Known inventory objects, materials, currencies, ammunition and all configured fish can be shared, unless their item definition excludes transfers. Weapons, armor, NFT assets, rentals, mobs, chests and unknown item IDs are excluded from this quantity-only transfer path. Numeric items use their game entity ID; fish use their configured fish name. An item being consumable does not determine whether it can be gifted.
 
@@ -54,7 +62,7 @@ Deploy the platform transfer endpoint and `Version20261007090000` migration firs
 Focused verification:
 
 ```sh
-npx jest server/js/collectables.transfer.test.js server/js/socialchat.test.js server/js/map.scenes.test.js server/js/dao.inventoryqueue.test.js server/js/dao.killqueue.test.js server/js/chat.test.js server/js/player.chat.test.js client/js/socialchat.test.js client/js/app.test.js client/js/keyboardhandler.test.js --runInBand --coverage=false
+npx jest server/js/chathistory.test.js server/js/collectables.transfer.test.js server/js/socialchat.test.js server/js/map.scenes.test.js server/js/dao.inventoryqueue.test.js server/js/dao.killqueue.test.js server/js/chat.test.js server/js/player.chat.test.js client/js/socialchat.test.js client/js/app.test.js client/js/keyboardhandler.test.js --runInBand --coverage=false
 node bin/build-client.js
 ```
 

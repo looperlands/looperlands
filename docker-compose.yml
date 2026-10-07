@@ -5,9 +5,17 @@ services:
       - "8000:443"
     env_file:
       - /home/looperlands/.env
+    volumes:
+      - chat-history:/opt/app/data/chat
   gameserver2:
     image: balkshamster/looperlands:latest
     ports:
       - "8001:443"
     env_file:
       - /home/looperlands/.env2
+    volumes:
+      - chat-history-2:/opt/app/data/chat
+
+volumes:
+  chat-history:
+  chat-history-2:
