@@ -350,9 +350,6 @@ define(['jquery', 'storage'], function ($, Storage) {
             playerChoicePopup.find('#question').html(dialogue.text);
             playerChoicePopup.find('#choices').empty();
 
-            // add event listener for keyboard input
-            //$(document).off('keydown').on('keydown', this.handleChoiceKeyboardInput.bind(this));
-
             for (let i = 0; i < dialogue.options.length; i++) {
                 let option = dialogue.options[i];
 
@@ -456,13 +453,11 @@ define(['jquery', 'storage'], function ($, Storage) {
         closeSelectionPopup() {
             let selectionPopup = $('#selection-popup');
             selectionPopup.addClass('hidden').removeClass('active');
-            $(document).off('keydown');
         },
 
         closeChoicesPopup() {
             let playerChoicePopup = $('#dialogue-popup');
             playerChoicePopup.addClass('hidden').removeClass('active');
-            $(document).off('keydown');
         },
 
         handleChoiceKeyboardInput(event) {
