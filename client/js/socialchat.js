@@ -322,6 +322,7 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
 
         itemImage(item) {
             const image = element('img', 'sc-item-image'); image.alt = '';
+            image.onerror = () => { image.style.visibility = 'hidden'; };
             image.src = 'img/1/' + encodeURIComponent(item.image) + '.png';
             return image;
         }

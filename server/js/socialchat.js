@@ -206,8 +206,10 @@ class SocialChat {
     itemDetails(item) {
         const kind = itemKind(item);
         const label = typeof kind === 'number' ? Collectables.getInventoryDescription(kind) || Types.getKindAsString(kind) : item;
-        const image = String(Collectables.getCollectableImageName(kind));
-        return {item, name: String(label).replace(/[_-]/g, ' '), image: image.startsWith('item-') ? image : 'item-' + image};
+        const collectableImage = Collectables.getCollectableImageName(kind);
+        // Non-collectable goods return their numeric kind; fish already return a sprite name.
+        const image = typeof collectableImage === 'number' ? 'item-' + Types.getKindAsString(collectableImage) : String(collectableImage);
+        return {item, name: String(label).replace(/[_-]/g, ' '), image};
     }
 
     append(key, message) {
