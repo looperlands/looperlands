@@ -1125,6 +1125,10 @@ let Properties = {
 
     INFERNOTH: {
         level: 30,
+        drops: {
+            M88NSEEDS: 45,
+            M88NSPICYSEEDS: 5
+        },
         hpMod: 8.25,
         weaponMod: 2.2,
         xp:10000,
@@ -2263,9 +2267,9 @@ let Properties = {
         hp: 10,
         drops: {
             m88npoo: 50,
-            m88nmilk: 25,
-            m88nmysterymeat: 15,
-            m88nsteak: 10,
+            m88nmilk: 15,
+            m88nmysterymeat: 8,
+            m88nsteak: 3,
         },
         respawnDelay: 900000 //fifteen minutes
     },
@@ -2307,6 +2311,7 @@ let Properties = {
             m88nshovel: 1,
             m88nwatercan: 1,
             m88nseeds: 1,
+            m88nspicyseeds: 1,
             m88npotato: 1,
             m88npackage: 1,
             m88nsalad: 1,
@@ -2323,9 +2328,9 @@ let Properties = {
             m88nkevlararmor: 1,
             m88nwizardshat: 1,
             m88ndirt: 10,
-            m88ngem: 14,
-            GOLD4: 10,
-            GOLD5: 10,
+            m88ngem: 15,
+            GOLD4: 9,
+            GOLD5: 9,
             m88nsourworm: 1,
             m88nsourworm2: 1,
             m88ngoldworm: 1,
@@ -4732,6 +4737,12 @@ let Properties = {
     m88nzombiesushi: {
         collectable: true,
         inventoryDescription: "Zombie Sushi",
+        respawnDelay: 9900000
+    },
+
+    m88ngrain: {
+        collectable: true,
+        inventoryDescription: "Grain",
         respawnDelay: 9900000
     },
 

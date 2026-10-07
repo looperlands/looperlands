@@ -696,7 +696,7 @@ Types = {
         M88NDOUGH: 78052000,
         M88NDREAMSEEDS: 78053000,
         M88NEGG: 78054000,
-        M88NFLLOUR: 78055000,
+        M88NFLOUR: 78055000,
         M88NGRAVITYSEEDS: 78056000,
         M88NGRUB: 78057000,
         M88NHOTDOGBUN: 78058000,
@@ -722,6 +722,7 @@ Types = {
         M88NTULIP: 78078000,
         M88NZOMBIESEEDS: 78079000,
         M88NZOMBIESUSHI: 78084000,
+        M88NGRAIN: 78085000,
         //MRMlabs NPCs
         TYLERDURDEN: 79000008,
         //MRMlabs Items
@@ -6729,7 +6730,7 @@ var kinds = {
     m88ndough: [Types.Entities.M88NDOUGH, "object"],
     m88ndreamseeds: [Types.Entities.M88NDREAMSEEDS, "object"],
     m88negg: [Types.Entities.M88NEGG, "object"],
-    m88nflour: [Types.Entities.M88NFLLOUR, "object"],
+    m88nflour: [Types.Entities.M88NFLOUR, "object"],
     m88ngravityseeds: [Types.Entities.M88NGRAVITYSEEDS, "object"],
     m88ngrub: [Types.Entities.M88NGRUB, "object"],
     m88nhotdogbun: [Types.Entities.M88NHOTDOGBUN, "object"],
@@ -6755,6 +6756,7 @@ var kinds = {
     m88ntulip: [Types.Entities.M88NTULIP, "object"],
     m88nzombieseeds: [Types.Entities.M88NZOMBIESEEDS, "object"],
     m88nzombiesushi: [Types.Entities.M88NZOMBIESUSHI, "object"],
+    m88ngrain: [Types.Entities.M88NGRAIN, "object"],
     //MRMlabs Items
     firstaidkit: [Types.Entities.FIRSTAIDKIT, "object"],
     bandaid: [Types.Entities.BANDAID, "object"],

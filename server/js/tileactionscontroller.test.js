@@ -1,43 +1,14 @@
 process.env.GAMESERVER_NAME = process.env.GAMESERVER_NAME || "test";
 
-jest.mock("../../shared/js/gametypes", () => ({
-    Entities: {
-        M88NSEEDS: 78003900,
-        M88NSHOVEL: 78004100,
-        M88NWATERCAN: 78004200,
-        M88NDIRT: 78004700,
-        M88NPOO: 78071000,
-        M88NGRUB: 78057000,
-        M88NWORM: 78004900,
-        M88NSNAIL: 78005000,
-        COBAPPLE: 21300011,
-        COBCORN: 21300010,
-        M88NPOTATO: 78003800,
-        M88NLETTUCE: 78012700,
-        M88NTOMATO: 78012900,
-        M88NTURNIP: 78013000,
-        M88NCARROT: 78015000,
-        M88NBROCCOLI: 78012500,
-        M88NCAULIFLOWER: 78012600,
-        M88NROSE: 78005100,
-        MOONSEEDS: 99900001,
-    },
-    getKindAsString: jest.fn((kind) => {
-        const names = {
-            78003800: "m88npotato",
-            21300011: "cobapple",
-            21300010: "cobcorn",
-            78012700: "m88nlettuce",
-            78012900: "m88ntomato",
-            78013000: "m88nturnip",
-            78015000: "m88ncarrot",
-            78012500: "m88nbroccoli",
-            78012600: "m88ncauliflower",
-            78005100: "m88nrose",
-        };
-        return names[kind];
-    }),
-}));
+jest.mock("../../shared/js/gametypes", () => {
+    // The shared browser/CommonJS module assigns to the global Types binding.
+    global.Types = {};
+    const types = jest.requireActual("../../shared/js/gametypes");
+    return {
+        ...types,
+        Entities: { ...types.Entities, MOONSEEDS: 99900001 },
+    };
+});
 
 jest.mock("./dao.js", () => ({}));
 jest.mock("./formulas", () => ({
@@ -259,17 +230,52 @@ describe("TileActionsController farming", () => {
         expect(world.placeStagedTileGroup).toHaveBeenLastCalledWith(10, 20, "tree1", 0, { x: 8, y: 0 });
         expect(inventory[Types.Entities.M88NSEEDS]).toBe(2);
         expect(sessionData.gameData.items[String(Types.Entities.M88NSEEDS)]).toBe(2);
-        expect(inventory[Types.Entities.COBAPPLE] || 0).toBe(0);
-        expect(sessionData.gameData.items[String(Types.Entities.COBAPPLE)] || 0).toBe(0);
+        expect(inventory[Types.Entities.M88NORANGE] || 0).toBe(0);
+        expect(sessionData.gameData.items[String(Types.Entities.M88NORANGE)] || 0).toBe(0);
 
         await controller.executeStage("avatar", "duckville", tileAction, null, world);
         now += 541000;
         await controller.executeStage("avatar", "duckville", tileAction, null, world);
 
-        expect(inventory[Types.Entities.COBAPPLE]).toBeGreaterThan(0);
-        expect(sessionData.gameData.items[String(Types.Entities.COBAPPLE)]).toBeGreaterThan(0);
+        expect(inventory[Types.Entities.M88NORANGE]).toBeGreaterThan(0);
+        expect(sessionData.gameData.items[String(Types.Entities.M88NORANGE)]).toBeGreaterThan(0);
+        expect(inventory[Types.Entities.COBAPPLE] || 0).toBe(0);
         expect(inventory[Types.Entities.M88NSEEDS]).toBe(3);
         expect(sessionData.gameData.items[String(Types.Entities.M88NSEEDS)]).toBe(3);
+    });
+
+    test.each([
+        ["farm", "COBAPPLE", "M88NCHERRY"],
+        ["farm", "TREEPURPLE", "M88NCHERRY"],
+        ["farm", "TREEYELLOW", "M88NLEMON"],
+        ["farm", "COBCORN", "M88NCORN"],
+        ["potFarm", "COBCORN", "M88NCORN"],
+        ["farm", "M88NGRAIN", "M88NGRAIN"],
+        ["farm", "M88NHOTPEPPERGREEN", "M88NHOTPEPPERGREEN"],
+        ["farm", "M88NHOTPEPPERRED", "M88NHOTPEPPERRED"],
+    ])("%s crop %s harvests %s", async (action, cropKey, yieldItem) => {
+        tileAction.name = action;
+        const farm = controller.stageDefinitions.duckville[action];
+        const crop = farm.crops[cropKey];
+        const seedKind = Types.Entities[crop.seedItem || farm.seedItem || "M88NSEEDS"];
+        inventory[seedKind] = 5;
+        sessionData.gameData.items[String(seedKind)] = 5;
+
+        expect((await controller.executeStage("avatar", "duckville", tileAction, null, world)).success).toBe(true);
+        expect((await controller.executeStage("avatar", "duckville", tileAction, cropKey, world)).success).toBe(true);
+        expect(inventory[seedKind]).toBe(5 - crop.seedCost);
+        expect((await controller.executeStage("avatar", "duckville", tileAction, null, world)).success).toBe(true);
+        now += crop.growSeconds * 1000 + 1000;
+
+        const result = await controller.executeStage("avatar", "duckville", tileAction, null, world);
+
+        expect(result.success).toBe(true);
+        expect(inventory[Types.Entities[yieldItem]]).toBe(crop.yield.min);
+        expect(sessionData.gameData.items[String(Types.Entities[yieldItem])]).toBe(crop.yield.min);
+        expect(dao.deleteFarmPlot).toHaveBeenCalledWith("duckville", 10, 20);
+        if (Types.Entities[cropKey] && cropKey !== yieldItem) {
+            expect(inventory[Types.Entities[cropKey]] || 0).toBe(0);
+        }
     });
 
     test("validation blocks missing shovel", async () => {
@@ -696,7 +702,7 @@ describe("TileActionsController farming", () => {
             displayName: "Potted corn",
             tileGroup: "cornPotted",
             stagedTile: 17409,
-            yieldItem: "COBCORN",
+            yieldItem: "M88NCORN",
             stages: 4,
         });
     });

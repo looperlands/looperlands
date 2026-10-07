@@ -760,6 +760,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     "item-m88ntulip",
                     "item-m88nzombieseeds",
                     "item-m88nzombiesushi",
+                    "item-m88ngrain",
                     //MRMlabs
                     "item-firstaidkit",
                     "item-bandaid",

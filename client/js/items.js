@@ -434,7 +434,7 @@ define(['item'], function(Item) {
         m88ndough:Item.extend({init:function(id){this._super(id,Types.Entities.M88NDOUGH,"object");this.lootMessage="You found some dough!";}}),
         m88ndreamseeds:Item.extend({init:function(id){this._super(id,Types.Entities.M88NDREAMSEEDS,"object");this.lootMessage="You found some dream seeds!";}}),
         m88negg:Item.extend({init:function(id){this._super(id,Types.Entities.M88NEGG,"object");this.lootMessage="You found an egg!";}}),
-        m88nflour:Item.extend({init:function(id){this._super(id,Types.Entities.M88NFLLOUR,"object");this.lootMessage="You found some flour!";}}),
+        m88nflour:Item.extend({init:function(id){this._super(id,Types.Entities.M88NFLOUR,"object");this.lootMessage="You found some flour!";}}),
         m88ngravityseeds:Item.extend({init:function(id){this._super(id,Types.Entities.M88NGRAVITYSEEDS,"object");this.lootMessage="You found some gravity seeds!";}}),
         m88ngrub:Item.extend({init:function(id){this._super(id,Types.Entities.M88NGRUB,"object");this.lootMessage="You found a grub!";}}),
         m88nhotdogbun:Item.extend({init:function(id){this._super(id,Types.Entities.M88NHOTDOGBUN,"object");this.lootMessage="You found a hot dog bun!";}}),
@@ -460,6 +460,7 @@ define(['item'], function(Item) {
         m88ntulip:Item.extend({init:function(id){this._super(id,Types.Entities.M88NTULIP,"object");this.lootMessage="You found a tulip!";}}),
         m88nzombieseeds:Item.extend({init:function(id){this._super(id,Types.Entities.M88NZOMBIESEEDS,"object");this.lootMessage="You found some zombie seeds!";}}),
         m88nzombiesushi:Item.extend({init:function(id){this._super(id,Types.Entities.M88NZOMBIESUSHI,"object");this.lootMessage="You found some zombie sushi!";}}),
+        m88ngrain:Item.extend({init:function(id){this._super(id,Types.Entities.M88NGRAIN,"object");this.lootMessage="You found some grain!";}}),
         //MRMlabs Items
         firstaidkit:Item.extend({init:function(id){this._super(id,Types.Entities.FIRSTAIDKIT,"object");this.lootMessage="You found a first aid kit!";}}),
         bandaid:Item.extend({init:function(id){this._super(id,Types.Entities.BANDAID,"object");this.lootMessage="You found a bandaid!";}}),
