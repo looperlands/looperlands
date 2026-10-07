@@ -443,7 +443,9 @@ define(['jquery', 'app'], function($, App) {
             });
             
             $('#chatinput').attr('maxlength', Types.MAX_CHAT_LENGTH)
-                .keydown(app.handleChatKeyboardInput.bind(app));
+                .keydown(app.handleChatKeyboardInput.bind(app))
+                .on('input', app.resizeChatInput.bind(app));
+            window.addEventListener('resize', app.resizeChatInput.bind(app));
             $('#chatsend').click(app.sendChatMessage.bind(app));
             $('#chatbox').on('click touchstart', function (event) {
                 event.stopPropagation();
