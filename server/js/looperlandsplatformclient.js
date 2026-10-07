@@ -221,6 +221,26 @@ class LooperLandsPlatformClient {
         }
     }
 
+    async transferInventory(transfer) {
+        for (let attempt = 0; attempt < 2; attempt++) {
+            try {
+                const response = await this.client.post('/api/game/inventory/transfer', transfer, {timeout: 15000});
+                if (response.data?.transferId !== transfer.requestId || response.data?.quantity !== transfer.quantity || response.data?.item !== transfer.item) {
+                    throw new Error('Invalid transfer receipt');
+                }
+                return response.data;
+            } catch (error) {
+                const status = error.response?.status;
+                const uncertain = !status || status >= 500;
+                if (uncertain && attempt === 0) continue;
+                const failure = new Error(uncertain ? 'gift_pending' : error.response?.data?.code || 'gift_unavailable');
+                failure.code = failure.message;
+                failure.transferUncertain = uncertain;
+                throw failure;
+            }
+        }
+    }
+
     async getFarmPlots(mapId) {
         try {
             const url = `/api/game/farming/plots?map=${encodeURIComponent(mapId)}`;

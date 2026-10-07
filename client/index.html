@@ -39,6 +39,7 @@ LooperLands (https://looperlands.io), initially conceived by BalksHamster and bu
         <meta property="og:site_name" content="LooperLands">
         <meta property="og:description" content="Play LooperLands, an HTML5 massively multiplayer game demo powered by Loopring!">
         <link rel="stylesheet" href="css/main.css" type="text/css">
+        <link rel="stylesheet" href="css/social-chat.css" type="text/css">
         <link rel="stylesheet" href="css/achievements.css" type="text/css">
 		<link rel="stylesheet" href="css/dialogue.css" type="text/css">
 		<link rel="stylesheet" href="css/selection-popup.css" type="text/css">
@@ -450,12 +451,17 @@ LooperLands (https://looperlands.io), initially conceived by BalksHamster and bu
 					</div>
 					<div id="weapon"></div>
 					<div id="armor"></div>
-					<div id="notifications">
-					    <div>
-					       <span id="message1"></span>
-					       <span id="message2"></span>
-					    </div>
-					</div>
+                    <div id="bar-status">
+                        <div id="notifications">
+                            <div>
+                                <span id="message1"></span>
+                                <span id="message2"></span>
+                            </div>
+                        </div>
+                        <div id="game-emotes" class="clickable">
+                            <button id="emoteMenuToggle" class="clickable" type="button" aria-label="Emotes" aria-expanded="false" aria-controls="emoteMenu" title="Emotes"></button>
+                        </div>
+                    </div>
                     <div id="playercount" class="clickable">
                         <span class="count">0</span> <span>players</span>
                     </div>
@@ -466,17 +472,45 @@ LooperLands (https://looperlands.io), initially conceived by BalksHamster and bu
                         <div id="mutebutton" class="barbutton clickable active"></div>
                     </div>
     			</div>
-				<div id="chatbox">
-				    <form action="none" method="get" accept-charset="utf-8">
-					    <textarea id="chatinput" class="gp" rows="4" maxlength="4000" aria-label="Chat message" aria-describedby="chat-help" placeholder="Write a message..."></textarea>
-						<div class="chat-actions">
-							<span id="chat-help" class="gp">Enter to send · Shift+Enter for a new line</span>
-							<button id="chatsend" class="gp" type="button">Send</button>
-						</div>
-						<div id="emoteMenuToggle"></div>
-						<div id="emoteMenu"></div>
-				    </form>
-				</div>
+                <div id="emoteMenu" class="clickable" role="group" aria-label="Choose an emote"></div>
+                <section id="chatbox" class="social-chat" aria-label="Chat">
+                    <header class="sc-panel-heading">
+                        <strong>Chat</strong><span>Good company. Great adventures.</span>
+                        <div class="sc-panel-controls">
+                            <button id="chat-expand" type="button" aria-label="Expand chat" title="Expand chat">□</button>
+                            <button id="chat-minimize" type="button" aria-label="Minimize chat" title="Minimize chat">−</button>
+                        </div>
+                    </header>
+                    <div class="sc-panel-content">
+                        <div class="sc-conversation">
+                            <nav class="sc-tabs" aria-label="Chat channels">
+                                <button type="button" data-chat-tab="world" class="active">World</button>
+                                <button type="button" data-chat-tab="map">My map</button>
+                                <button type="button" data-chat-tab="direct">Direct messages <span id="chat-unread" hidden></span></button>
+                            </nav>
+                            <div class="sc-channel-heading"><div id="chat-channel-info"></div><button id="chat-players-toggle" type="button" aria-expanded="true">Hide players</button></div>
+                            <div id="chat-messages" role="log" aria-live="polite" aria-label="Chat messages" tabindex="0"></div>
+                            <p id="chat-error" role="status" hidden></p>
+                            <form id="chat-form" class="sc-composer">
+                                <div id="chat-gift-preview" hidden></div>
+                                <div class="sc-input-wrap">
+                                    <textarea id="chatinput" rows="2" maxlength="4000" aria-label="Chat message" aria-describedby="chat-help" placeholder="Write a message..."></textarea>
+                                    <button id="chat-attach" type="button" aria-label="Attach consumables" title="Attach consumables" hidden>Gift</button>
+                                    <button id="chatsend" type="button" disabled>Send</button>
+                                </div>
+                                <div class="sc-composer-help"><span id="chat-help">Enter to send · Shift+Enter for a new line</span><span id="chat-delivery"></span></div>
+                            </form>
+                        </div>
+                        <aside class="sc-roster" aria-label="Online players">
+                            <header><strong>Online players</strong><span id="chat-online-count"></span><button id="chat-players-close" type="button" aria-label="Close players">×</button></header>
+                            <div class="sc-roster-tools"><input id="chat-player-search" type="search" placeholder="Find a player…" aria-label="Find a player"><div class="sc-roster-filter"><button type="button" data-chat-scope="all" class="active">Everywhere</button><button type="button" data-chat-scope="map">My map</button></div></div>
+                            <div id="chat-player-list"></div>
+                            <div class="sc-roster-footer">Select a player to start a conversation.</div>
+                            <button id="chat-self" type="button"></button>
+                        </aside>
+                    </div>
+                    <div id="chat-profile" class="sc-profile-shade" hidden></div>
+                </section>
                 <div id="population" class="pixel-corners-top">
                     <div id="instance-population" class="">
                         <span>0</span> <span>players</span> in this world

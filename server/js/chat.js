@@ -3,7 +3,7 @@ const cache = new NodeCache();
 const discord = require("./discord.js");
 
 const MAX_MESSAGES = 100;
-exports.addMessage = function(playerName, message) {
+exports.addMessage = function(playerName, message, identity) {
     let messages = cache.get("logs");
     if (messages === undefined) {
         messages = [];
@@ -11,7 +11,8 @@ exports.addMessage = function(playerName, message) {
     message = {
         playerName: playerName,
         message: message,
-        epoch: Date.now()
+        epoch: Date.now(),
+        ...(identity ? { identity } : {})
     }
     messages.push(message);
     if (messages.length > MAX_MESSAGES) {

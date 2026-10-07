@@ -6,6 +6,8 @@ const appSource = fs.readFileSync(path.join(__dirname, 'app.js'), 'utf8');
 
 function createApp() {
     const document = new EventTarget();
+    document.getElementById = jest.fn(() => null);
+    const window = { innerHeight: 600, getComputedStyle: () => ({ lineHeight: '20px' }) };
     const elements = new Map();
     const keydownListeners = [];
     const documentEvents = {
@@ -46,13 +48,14 @@ function createApp() {
     let app;
     vm.runInNewContext(appSource, {
         document,
+        window,
         $,
         axios: { get: () => Promise.resolve({ data: undefined }) },
         Class: { extend: methods => methods },
         define: (dependencies, factory) => { app = factory($); },
     });
     app.game = { started: true };
-    return { app, document, $ };
+    return { app, document, window, $ };
 }
 
 test.each([
@@ -152,4 +155,31 @@ test('the Send action ignores whitespace-only multiline drafts', () => {
     $('#chatinput').val(' \n\t\n');
     app.sendChatMessage();
     expect(app.game.say).not.toHaveBeenCalled();
+});
+
+test('the composer grows with text, caps its height, and shrinks when text is removed', () => {
+    const { app, document } = createApp();
+    const input = { style: {}, scrollHeight: 20 };
+    const frame = { offsetHeight: 32 };
+    const container = { style: { setProperty: jest.fn() } };
+    document.getElementById = id => ({ chatinput: input, chatbox: frame, canvasborder: container })[id];
+
+    app.resizeChatInput();
+    expect(input.style.height).toBe('20px');
+    expect(input.style.overflowY).toBe('hidden');
+
+    input.scrollHeight = 80;
+    app.resizeChatInput();
+    expect(input.style.height).toBe('80px');
+
+    input.scrollHeight = 300;
+    app.resizeChatInput();
+    expect(input.style.height).toBe('120px');
+    expect(input.style.overflowY).toBe('auto');
+
+    input.scrollHeight = 20;
+    app.resizeChatInput();
+    expect(input.style.height).toBe('20px');
+    expect(input.style.overflowY).toBe('hidden');
+    expect(container.style.setProperty).toHaveBeenLastCalledWith('--chat-composer-height', '32px');
 });

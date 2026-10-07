@@ -53,7 +53,16 @@ Types = {
         SELECTPROJECTILE: 50,
         ANNOUNCEMENT: 51,
         INDICATOR: 52,
-        TILESTAGE: 53
+        TILESTAGE: 53,
+        CHAT_SEND: 54,
+        CHAT_SYNC: 55,
+        CHAT_STATE: 56,
+        CHAT_MESSAGE: 57,
+        CHAT_PLAYERS: 58,
+        CHAT_ERROR: 59,
+        CHAT_GIFT: 60,
+        CHAT_INVENTORY: 61,
+        CHAT_INVENTORY_REQUEST: 62
     },
 
     Entities: {

@@ -1,5 +1,6 @@
 
 var fs = require('fs'),
+    path = require('path'),
     _ = require('underscore'),
     Utils = require('./utils'),
     Checkpoint = require('./checkpoint');
@@ -12,8 +13,18 @@ module.exports = class Mapx {
     
     	if( fs.lstatSync(filepath).isFile() ) {
      
-            fs.readFile(filepath, function(err, file) {
+            fs.readFile(filepath, async function(err, file) {
                 var json = JSON.parse(file.toString());
+                // Existing server exports omit scenes; their companion client export
+                // contains the configured names and bounds used by the game camera.
+                if (!json.scenes) {
+                    const clientPath = path.resolve(__dirname, '../../client/maps', path.basename(filepath).replace('world_server_', 'world_client_'));
+                    try {
+                        json.scenes = JSON.parse(await fs.promises.readFile(clientPath, 'utf8')).scenes || [];
+                    } catch (error) {
+                        if (error.code !== 'ENOENT') console.warn('Unable to load map scene names:', clientPath);
+                    }
+                }
             
                 self.initMap(json);
             });
@@ -28,6 +39,7 @@ module.exports = class Mapx {
         this.width = map.width;
         this.height = map.height;
         this.collisions = map.collisions;
+        this.scenes = map.scenes || [];
         this.mobAreas = map.roamingAreas;
         this.chestAreas = map.chestAreas;
         this.staticChests = map.staticChests;
@@ -61,6 +73,10 @@ module.exports = class Mapx {
 
     ready(f) {
     	this.ready_func = f;
+    }
+
+    getSceneAt(x, y) {
+        return this.scenes.find(scene => x >= scene.x && y >= scene.y && x < scene.x + scene.w && y < scene.y + scene.h);
     }
 
     tileIndexToGridPosition(tileNum) {

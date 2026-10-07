@@ -22,6 +22,7 @@ const discord = require('./discord.js');
 const Formulas = require('./formulas.js');
 const ens = require("./ens.js");
 const chat = require("./chat.js");
+const { SocialChat } = require('./socialchat');
 const quests = require("./quests/quests.js");
 const Lakes = require("./lakes.js");
 const Collectables = require('./collectables.js');
@@ -164,6 +165,7 @@ WS.socketIOServer = Server.extend({
         const host = self.host;
 
         this.cache = cache;
+        this.socialChat = new SocialChat(cache, dao);
         var express = require('express');
         var app = express();
         app.use("/", express.static(__dirname + "/../../client-build"));
@@ -215,9 +217,9 @@ WS.socketIOServer = Server.extend({
             const body = req.body;
             const apiKey = req.headers['x-api-key'];
 
-            if (apiKey !== process.env.LOOPWORMS_API_KEY) {
+            if (!process.env.LOOPWORMS_API_KEY || apiKey !== process.env.LOOPWORMS_API_KEY) {
                 console.error("Invalid api key");
-                res.status(401).json({
+                return res.status(401).json({
                     status: false,
                     "error": "invalid api key",
                     user: null
@@ -345,6 +347,8 @@ WS.socketIOServer = Server.extend({
             }
 
             let name = await ens.getEns(walletId);
+            sessionData.resolvedName = name;
+            cache.set(sessionId, sessionData);
 
             if (parsedSaveData === undefined) {
                 //console.log("Save data is undefined, creating new save data for " + name);
@@ -817,14 +821,17 @@ WS.socketIOServer = Server.extend({
                 let cachedBody = cache.get(key);
                 let player = self.worldsMap[cachedBody.mapId]?.getPlayerById(cachedBody.entityId);
                 if (cachedBody.isDirty === true && player !== undefined && !player.isBot()) {
-                    let player = {
-                        name: await ens.getEns(cachedBody.walletId),
-                        wallet: cachedBody.walletId,
+                    const identity = self.socialChat.identity(player);
+                    if (!identity) continue;
+                    let publicPlayer = {
+                        id: identity.id,
+                        name: identity.label,
+                        wallet: identity.walletShort,
                         avatar: cachedBody.nftId,
                         mapId: cachedBody.mapId,
                         xp: cachedBody.xp
                     }
-                    players.push(player);
+                    players.push(publicPlayer);
                 }
             }
             res.status(200).json(players);

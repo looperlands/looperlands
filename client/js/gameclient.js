@@ -26,6 +26,9 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             this.handlers[Types.Messages.SPAWN_BATCH] = this.receiveSpawnBatch;
             this.handlers[Types.Messages.HEALTH] = this.receiveHealth;
             this.handlers[Types.Messages.CHAT] = this.receiveChat;
+            [Types.Messages.CHAT_STATE, Types.Messages.CHAT_MESSAGE, Types.Messages.CHAT_PLAYERS, Types.Messages.CHAT_ERROR, Types.Messages.CHAT_INVENTORY].forEach(type => {
+                this.handlers[type] = this.receiveSocialChat;
+            });
             this.handlers[Types.Messages.EMOTE] = this.receiveEmotion;
             this.handlers[Types.Messages.EQUIP] = this.receiveEquipItem;
             this.handlers[Types.Messages.DROP] = this.receiveDrop;
@@ -336,6 +339,10 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             }
         },
     
+        receiveSocialChat: function(data) {
+            if (this.socialChat_callback) this.socialChat_callback(data[0], data[1]);
+        },
+
         receiveChat: function(data) {
             var id = data[1],
                 text = data[2];
@@ -673,6 +680,10 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             this.chat_callback = callback;
         },
 
+        onSocialChat: function(callback) {
+            this.socialChat_callback = callback;
+        },
+
         onEmotion: function(callback) {
             this.emotion_callback = callback;
         },
@@ -834,6 +845,22 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
     
         sendChat: function(text) {
             this.sendMessage([Types.Messages.CHAT, text]);
+        },
+
+        sendSocialChat: function(channel, target, text, requestId) {
+            this.sendMessage([Types.Messages.CHAT_SEND, channel, target, text, requestId]);
+        },
+
+        syncChat: function() {
+            this.sendMessage([Types.Messages.CHAT_SYNC]);
+        },
+
+        requestChatInventory: function() {
+            this.sendMessage([Types.Messages.CHAT_INVENTORY_REQUEST]);
+        },
+
+        sendChatGift: function(target, text, item, quantity, requestId) {
+            this.sendMessage([Types.Messages.CHAT_GIFT, target, text, item, quantity, requestId]);
         },
 
         sendEmotion: function(emotion) {

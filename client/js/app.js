@@ -1,4 +1,4 @@
-define(['jquery', 'storage'], function ($, Storage) {
+define(['jquery', 'storage', 'socialchat'], function ($, Storage, SocialChat) {
 
     var App = Class.extend({
         init: function () {
@@ -56,6 +56,7 @@ define(['jquery', 'storage'], function ($, Storage) {
             this.supportsWorkers = !!window.Worker;
             this.ready = true;
             this.game.sessionId = this.sessionId;
+            this.socialChat = new SocialChat(this);
         },
 
         center: function () {
@@ -230,25 +231,9 @@ define(['jquery', 'storage'], function ($, Storage) {
             if (this.game.started) {
                 $('#chatbox').addClass('active');
                 $('#chatinput').show().focus();
+                this.resizeChatInput();
                 $('#chatbutton').addClass('active');
-                self = this;
-                axios.get("/chat").then(function (response) {
-                    if (response.data === undefined) {
-                        return;
-                    }
-                    self.game.destroyBubble("global");
-                    if (response.data) {
-                        chatHTML = "<div>";
-                        response.data.forEach(function (message) {
-
-                            date = new Date(message.epoch);
-                            time = date.toLocaleTimeString();
-                            chatHTML += `<p><b>${message.playerName}</b>&nbsp;[${time}]:&nbsp;${message.message}</p>`
-                        });
-                        chatHTML += "</div>";
-                        self.game.createBubble("global", chatHTML);
-                    }
-                });
+                this.socialChat?.open();
             }
         },
 
@@ -257,21 +242,25 @@ define(['jquery', 'storage'], function ($, Storage) {
                 $('#chatbox').removeClass('active');
                 $('#chatinput').blur();
                 $('#chatbutton').removeClass('active');
+                this.socialChat?.close();
                 this.game.destroyBubble("global");
 
                 $('#emoteMenu').removeClass('active');
-                $('#emoteMenu').children().each(function(index) {
-                    $(this).delay(($('#emoteMenu').children().length - index) * 20).fadeOut(100);
-                });
+                $('#emoteMenuToggle').removeClass('active').attr('aria-expanded', 'false');
             }
         },
 
         sendChatMessage: function () {
+            if (this.socialChat) {
+                this.socialChat.send();
+                return;
+            }
             const chatInput = $('#chatinput');
             const message = chatInput.val();
             if (message.trim().length && this.game.player) {
                 this.game.say(message);
                 chatInput.val('');
+                this.resizeChatInput();
             }
             this.hideChat();
             $('#foreground').focus();
@@ -289,6 +278,25 @@ define(['jquery', 'storage'], function ($, Storage) {
             } else if (event.which === 27) {
                 event.preventDefault();
                 this.hideChat();
+            }
+        },
+
+        resizeChatInput: function () {
+            const input = document.getElementById('chatinput');
+            if (!input) {
+                return;
+            }
+            const lineHeight = parseFloat(window.getComputedStyle(input).lineHeight);
+            const maxHeight = Math.max(lineHeight, Math.min(lineHeight * 6, window.innerHeight * 0.28));
+            input.style.height = '0px';
+            const height = Math.min(maxHeight, Math.max(lineHeight, input.scrollHeight));
+            input.style.height = height + 'px';
+            input.style.overflowY = input.scrollHeight > height ? 'auto' : 'hidden';
+
+            const frame = document.getElementById('chatbox');
+            const container = document.getElementById('canvasborder');
+            if (frame && container) {
+                container.style.setProperty('--chat-composer-height', frame.offsetHeight + 'px');
             }
         },
 

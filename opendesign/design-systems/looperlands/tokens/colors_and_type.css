@@ -1,0 +1,11 @@
+@font-face{font-family:GraphicPixel;src:url('../fonts/graphicpixel-webfont.woff') format('woff');font-display:swap}
+@font-face{font-family:AdvoCut;src:url('../fonts/advocut-webfont.woff') format('woff');font-display:swap}
+:root{
+  --bg-1:#1e181e;--bg-2:#342433;--bg-3:#533642;
+  --fg-1:#e4d0b6;--fg-2:#d7ab97;--accent-1:#fce045;--accent-2:#b86f50;
+  --font-game:GraphicPixel,sans-serif;--font-heading:AdvoCut,GraphicPixel,sans-serif;
+  --size-sm:14px;--size-body:17px;--size-title:24px;
+  --surface-primary:var(--bg-1);--surface-raised:var(--bg-2);--surface-hover:var(--bg-3);
+  --text-primary:var(--fg-1);--text-secondary:var(--fg-2);--border-subtle:var(--bg-3);
+  --body:var(--size-body);--caption:var(--size-sm);--h2:var(--size-title);
+}
