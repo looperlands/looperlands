@@ -157,6 +157,28 @@ function giveConsumables(person, amount) {
     return item;
 }
 
+test('gift inventory resolves named goods, consumables and fish to existing sprites', () => {
+    const fs = require('fs');
+    const path = require('path');
+    const alice = player(1);
+    const session = cache.get(alice.sessionId);
+    session.gameData.items = {
+        [Types.Entities.FLASK]: 1679,
+        [Types.Entities.LOOPRING]: 590,
+        [Types.Entities.POTION]: 73,
+        [Types.Entities.CPOTION_S]: 2,
+        cobgoldfish: 1
+    };
+    cache.set(alice.sessionId, session);
+    const inventory = service.inventory(alice);
+    expect(inventory.map(item => item.image)).toEqual([
+        'item-flask', 'item-loopring', 'item-potion', 'item-cpotion_s', 'cobgoldfish'
+    ]);
+    for (const item of inventory) {
+        expect(fs.existsSync(path.join(__dirname, '../../client/img/1', item.image + '.png'))).toBe(true);
+    }
+});
+
 test('a gift reserves goods, commits once and only delivers a private receipt to its participants', async () => {
     const alice = player(1), bob = player(2), stranger = player(3);
     const item = giveConsumables(alice, 5); giveConsumables(bob, 1);
@@ -173,7 +195,7 @@ test('a gift reserves goods, commits once and only delivers a private receipt to
     expect(cache.get(bob.sessionId).gameData.items[item]).toBe(4);
     expect(events(bob, Types.Messages.CHAT_MESSAGE)).toHaveLength(1);
     expect(events(stranger, Types.Messages.CHAT_MESSAGE)).toHaveLength(0);
-    expect(events(bob, Types.Messages.CHAT_MESSAGE)[0].attachment).toMatchObject({item, quantity: 3});
+    expect(events(bob, Types.Messages.CHAT_MESSAGE)[0].attachment).toMatchObject({item, quantity: 3, image: 'item-cpotion_s'});
     expect(discord.sendMessage).not.toHaveBeenCalled();
     expect(service.history.get('world')).toBeUndefined();
     await service.sendGift(alice, target, '', item, 3, 'gift-request-1');
