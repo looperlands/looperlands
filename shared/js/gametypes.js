@@ -1,4 +1,5 @@
 Types = {
+    MAX_CHAT_LENGTH: 4000,
     Messages: {
         HELLO: 0,
         WELCOME: 1,

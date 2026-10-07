@@ -266,6 +266,32 @@ define(['jquery', 'storage'], function ($, Storage) {
             }
         },
 
+        sendChatMessage: function () {
+            const chatInput = $('#chatinput');
+            const message = chatInput.val();
+            if (message.trim().length && this.game.player) {
+                this.game.say(message);
+                chatInput.val('');
+            }
+            this.hideChat();
+            $('#foreground').focus();
+        },
+
+        handleChatKeyboardInput: function (event) {
+            // Keep chat keystrokes out of the document's game shortcuts.
+            event.stopPropagation();
+            if (event.isComposing || event.originalEvent?.isComposing || event.which === 229) {
+                return;
+            }
+            if (event.which === 13 && !event.shiftKey) {
+                event.preventDefault();
+                this.sendChatMessage();
+            } else if (event.which === 27) {
+                event.preventDefault();
+                this.hideChat();
+            }
+        },
+
 
         toggleInstructions: function () {
             if ($('#achievements').hasClass('active')) {

@@ -45,16 +45,24 @@ define(['jquery', 'timer'], function($, Timer) {
         create: function(id, message, time, showCheck) {
             if(this.bubbles[id]) {
                 this.bubbles[id].reset(time);
-                $("#"+id+" p").html(message);
+                if (id === "global") {
+                    this.bubbles[id].element.find('.chat-history-content').html(message);
+                } else {
+                    $("#"+id+" p").html(message);
+                }
             }
             else {
                 if (id === "global") {
-                    var el = $("<div id=\""+id+"\" class=\"bubbleglobal\"><p>"+message+"</p></div>"); //.attr('id', id);
+                    var el = $('<div id="global" class="bubbleglobal" role="region" aria-label="Chat history" tabindex="0"><div class="chat-history-content">' + message + '</div></div>');
                 } else {
                     var el = $("<div id=\""+id+"\" class=\"bubble\"><p>"+message+"</p><div class=\"thingy\"></div></div>"); //.attr('id', id);
                 }
                 $(el).appendTo(this.container);
                 this.bubbles[id] = new Bubble(id, el, time, showCheck);
+            }
+            if (id === "global") {
+                const history = this.bubbles[id].element;
+                history.scrollTop(history[0].scrollHeight);
             }
         },
 

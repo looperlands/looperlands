@@ -2765,3 +2765,80 @@ footer div  {display:inline-block;}
 .opera #achievements.active, .opera #instructions.active { z-index: 30000;}
 .opera #coinsparks {display:none;}
 .opera #death, .opera #credits, .opera #error, .opera #confirmation, .opera #loadcharacter, .opera #settings { z-index: -30000; }
+
+/* Keep the multiline composer above the bar at every game scale. */
+#chatbox:not(.active) form {display:none;}
+#chatbox.active {
+    height:auto;
+    background:#2d2d2d;
+    padding:8px 0;
+}
+#chatinput {
+    box-sizing:border-box;
+    display:block;
+    width:calc(90% - 16px);
+    height:5.6em;
+    max-height:28vh;
+    margin:0 5% 0 calc(5% + 16px);
+    padding:4px 0;
+    border:0;
+    resize:none;
+    background:transparent;
+    color:#eee;
+    font-size:clamp(14px, 1.5vw, 20px);
+    line-height:1.4;
+    user-select:text;
+    -webkit-user-select:text;
+    caret-color:#fcda5c;
+    scrollbar-color:#8b7375 #2d2d2d;
+}
+#chatinput::placeholder {color:#bbb;}
+#chatinput:focus-visible {outline:1px solid #fcda5c;outline-offset:2px;}
+.chat-actions {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    width:calc(90% - 16px);
+    margin:4px 5% 0 calc(5% + 16px);
+}
+#chat-help {font-size:12px;line-height:1.4;color:#ccc;}
+#chatsend {
+    min-height:28px;
+    padding:4px 12px;
+    border:1px solid #8b7375;
+    background:#624a4d;
+    color:#fff;
+    font-size:14px;
+    cursor:pointer;
+}
+#chatsend:hover {background:#795c60;}
+#chatsend:focus-visible {outline:2px solid #fcda5c;outline-offset:2px;}
+.bubble.chat-message, .bubbleglobal {
+    box-sizing:border-box;
+    max-width:calc(100% - 24px);
+    max-height:40%;
+    overflow:auto;
+    pointer-events:auto;
+    scrollbar-color:#8b7375 #2d2d2d;
+}
+.bubble.chat-message {width:max-content;max-width:min(65ch, calc(100% - 24px));}
+.bubbleglobal {
+    left:12px;
+    top:12px;
+    width:55%;
+    max-height:calc(100% - 11em);
+    font-size:clamp(14px, 1.5vw, 18px);
+    overflow-x:hidden;
+    overscroll-behavior:contain;
+}
+.bubbleglobal:focus-visible {outline:2px solid #fcda5c;outline-offset:2px;}
+.bubble.chat-message p, .bubbleglobal p {
+    white-space:pre-wrap;
+    overflow-wrap:anywhere;
+    font-size:clamp(14px, 1.5vw, 18px);
+    line-height:1.4;
+}
+@media screen and (max-width:800px) {
+    .bubbleglobal {width:calc(100% - 24px);}
+}

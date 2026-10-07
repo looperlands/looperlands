@@ -433,7 +433,7 @@ define(['jquery', 'app'], function($, App) {
             $(document).keydown(function(e) {
             	var key = e.which;
 
-                if(key === 13) {
+                if(key === 13 && e.target.id !== 'chatsend') {
                     if($('#chatbox').hasClass('active')) {
                         app.hideChat();
                     } else {
@@ -442,30 +442,14 @@ define(['jquery', 'app'], function($, App) {
                 }
             });
             
-            $('#chatinput').keydown(function(e) {
-                var key = e.which,
-                    chat_el = $('#chatinput');
-
-                if(key === 13) {
-                    if(chat_el.val().replace(/\s/g, '').length) {
-                        if(game.player) {
-                            game.say(chat_el.val());
-                            chat_el.val("");
-                        }
-                        app.hideChat();
-                        $('#foreground').focus();
-                        return false;
-                    } else {
-                        app.hideChat();
-                        return false;
-                    }
-                    chat_el.val("");
-                }
-                
-                if(key === 27) {
-                    app.hideChat();
-                    return false;
-                }
+            $('#chatinput').attr('maxlength', Types.MAX_CHAT_LENGTH)
+                .keydown(app.handleChatKeyboardInput.bind(app));
+            $('#chatsend').click(app.sendChatMessage.bind(app));
+            $('#chatbox').on('click touchstart', function (event) {
+                event.stopPropagation();
+            });
+            $('#bubbles').on('click touchstart', '.bubbleglobal, .chat-message', function (event) {
+                event.stopPropagation();
             });
 
             $('#nameinput').keypress(function(event) {
@@ -541,6 +525,12 @@ define(['jquery', 'app'], function($, App) {
             });            
             
             $(document).bind("keydown", function(e) {
+                if (e.target.id === 'chatsend') {
+                    return;
+                }
+                if ($(e.target).closest('#global').length && [32, 33, 34, 35, 36, 38, 40].indexOf(e.which) !== -1) {
+                    return;
+                }
             	var key = e.which,
             	    $chat = $('#chatinput');
 

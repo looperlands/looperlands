@@ -2,7 +2,7 @@ const NodeCache = require( "node-cache" );
 const cache = new NodeCache();
 const discord = require("./discord.js");
 
-const MAX_MESSAGES = 12;
+const MAX_MESSAGES = 100;
 exports.addMessage = function(playerName, message) {
     let messages = cache.get("logs");
     if (messages === undefined) {
@@ -18,7 +18,9 @@ exports.addMessage = function(playerName, message) {
         messages.shift();
     }
     let discordMessage = `💬 **${playerName}:** ${message.message.replace(/@|\//g, "")}`;
-    discord.sendMessage(discordMessage);
+    for (let i = 0; i < discordMessage.length; i += 2000) {
+        discord.sendMessage(discordMessage.slice(i, i + 2000));
+    }
     cache.set("logs", messages);
 }
 
