@@ -25,3 +25,16 @@ test('history retains the latest 100 messages in chronological order', () => {
     expect(history[0].message).toBe('Message 1');
     expect(history[99].message).toBe('Message 100');
 });
+
+test('legacy public history reads the durable world stream without exposing inboxes or replaying Discord', () => {
+    const {ChatHistory} = require('./chathistory');
+    const history = new ChatHistory();
+    const sender = {id: 'opaque', label: 'Farmer'};
+    history.append(['world'], {id: 'public', sender, message: 'Hello', epoch: Date.now()});
+    history.append(['inbox:alice'], {id: 'private', sender, message: 'Secret', epoch: Date.now()});
+    chat.setHistory(history);
+    try {
+        expect(chat.getMessages()).toEqual([{playerName: 'Farmer', identity: sender, message: 'Hello', epoch: history.get('world')[0].epoch}]);
+        expect(discord.sendMessage).not.toHaveBeenCalled();
+    } finally { chat.setHistory(undefined); }
+});

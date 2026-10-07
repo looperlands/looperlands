@@ -173,10 +173,12 @@ module.exports = Player = Character.extend({
 
                 // Sanitized messages may become empty. No need to broadcast empty chat messages.
                 if (msg && msg !== "") {
-                    self.broadcastToZone(new Messages.Chat(self, msg), false);
                     if (self.server.server?.socialChat) {
-                        self.server.server.socialChat.send(self, 'world', '', message[1]);
+                        if (self.server.server.socialChat.send(self, 'world', '', message[1])) {
+                            self.broadcastToZone(new Messages.Chat(self, msg), false);
+                        }
                     } else {
+                        self.broadcastToZone(new Messages.Chat(self, msg), false);
                         chat.addMessage(self.name, msg);
                     }
                 }

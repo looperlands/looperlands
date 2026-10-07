@@ -7,6 +7,10 @@ const publicChat = require('./chat');
 const discord = require('./discord');
 const Collectables = require('./collectables');
 const Properties = require('./properties');
+const {ChatHistory} = require('./chathistory');
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
 
 let cache, service;
 function player(id, mapId = 'main', title = 'Same title') {
@@ -81,6 +85,43 @@ test('private history remains available to the same wallet after changing maps',
     service.send(alice,'direct',service.identity(bob).id,'meet there'); service.unregister(bob);
     const returned = player(2,'taikotown');
     expect(events(returned,Types.Messages.CHAT_STATE).at(-1).direct[0].message).toBe('meet there');
+});
+
+test('restarting chat restores public history and private threads only to their wallet, with stable player IDs', () => {
+    const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'looperlands-social-'));
+    const filename = path.join(directory, 'history.json');
+    try {
+        service.history = new ChatHistory(filename);
+        const alice = player(1), bob = player(2);
+        const bobId = service.identity(bob).id;
+        service.send(alice, 'direct', bobId, 'Private hello');
+        service.send(alice, 'map', '', 'Public hello');
+        service.gifts.close();
+        service = new SocialChat(cache, undefined, new ChatHistory(filename));
+        const returnedAlice = player(1, 'taikotown'), returnedBob = player(2), stranger = player(3);
+        const state = events(returnedAlice, Types.Messages.CHAT_STATE).at(-1);
+        expect(state.world[0].message).toBe('Public hello');
+        expect(state.map).toEqual([]);
+        expect(state.direct[0].recipient.id).toBe(bobId);
+        expect(state.direct[0].sender.id).toBe(state.me.id);
+        expect(service.identity(returnedBob).id).toBe(bobId);
+        expect(events(stranger, Types.Messages.CHAT_STATE).at(-1).direct).toEqual([]);
+        expect(JSON.stringify(returnedAlice.send.mock.calls)).not.toContain(returnedBob.walletId);
+        expect(discord.sendMessage).toHaveBeenCalledTimes(1);
+        expect(service.send(returnedAlice, 'direct', bobId, 'Still the same thread')).toBe(true);
+    } finally { fs.rmSync(directory, {recursive: true, force: true}); }
+});
+
+test('a history write failure never delivers or acknowledges a chat message', () => {
+    const alice = player(1), bob = player(2);
+    jest.spyOn(service.history, 'append').mockImplementation(() => {throw Object.assign(new Error('Disk full'), {code: 'ENOSPC'});});
+    const errorLog = jest.spyOn(console, 'error').mockImplementation(() => {});
+    try {
+        expect(service.send(alice, 'direct', service.identity(bob).id, 'unsaved', 'failed-request')).toBe(false);
+        expect(events(alice, Types.Messages.CHAT_MESSAGE)).toEqual([]);
+        expect(events(bob, Types.Messages.CHAT_MESSAGE)).toEqual([]);
+        expect(events(alice, Types.Messages.CHAT_ERROR).at(-1).code).toBe('history_unavailable');
+    } finally { errorLog.mockRestore(); }
 });
 
 test('history is bounded and retains long multiline text safely', () => {
@@ -294,4 +335,24 @@ test('an uncertain transfer retains its reservation and retries the exact same b
     const calls = service.inventoryGateway.transferItems.mock.calls;
     expect(calls[0][0]).toEqual(calls[1][0]);
     expect(events(bob, Types.Messages.CHAT_MESSAGE)).toHaveLength(1);
+});
+
+test('a confirmed gift with a failed history write is retried without refunding or transferring twice', async () => {
+    const alice = player(1), bob = player(2), item = giveConsumables(alice, 5);
+    service.inventoryGateway = {transferItems: jest.fn().mockResolvedValue({fromQuantity: 2, toQuantity: 3})};
+    const target = service.identity(bob).id;
+    jest.spyOn(service.history, 'append').mockImplementationOnce(() => {throw new Error('Disk full');});
+    expect(await service.sendGift(alice, target, 'Enjoy', item, 3, 'gift-storage-1')).toBe(false);
+    expect(cache.get(alice.sessionId).gameData.items[item]).toBe(2);
+    expect(events(bob, Types.Messages.CHAT_MESSAGE)).toEqual([]);
+    expect(events(alice, Types.Messages.CHAT_ERROR).at(-1).code).toBe('gift_pending');
+    expect(await service.sendGift(alice, target, 'Enjoy', item, 3, 'gift-storage-1')).toBe(true);
+    expect(service.inventoryGateway.transferItems).toHaveBeenCalledTimes(1);
+    const history = service.history;
+    service.gifts.close(); service = new SocialChat(cache, undefined, history);
+    const returnedAlice = player(1), returnedBob = player(2);
+    service.inventoryGateway = {transferItems: jest.fn()};
+    expect(await service.sendGift(returnedAlice, service.identity(returnedBob).id, 'Enjoy', item, 3, 'gift-storage-1')).toBe(true);
+    expect(service.inventoryGateway.transferItems).not.toHaveBeenCalled();
+    expect(await service.sendGift(returnedAlice, service.identity(returnedBob).id, 'Changed', item, 3, 'gift-storage-1')).toBe(false);
 });
