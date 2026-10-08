@@ -1,150 +1,140 @@
 const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
+
+const config = {particles: 'fireflies', particleCount: 12};
 const WorldTime = require('./worldtime-worker');
 
-function setup(reducedMotion = false, clock = Date, getWorldTime = () => 50 * 60000) {
-    const context = {clearRect: jest.fn(), fillRect: jest.fn(),
-        createRadialGradient: jest.fn(() => ({addColorStop: jest.fn()}))};
-    const canvas = {style: {}, setAttribute: jest.fn(), getContext: () => context};
-    const parent = {style: {}, appendChild: jest.fn()};
-    const document = {hidden: false, createElement: () => canvas,
-        getElementById: id => id === 'canvas' ? parent : {width: 960, height: 448}};
-    const requestAnimationFrame = jest.fn(() => 7);
-    const cancelAnimationFrame = jest.fn();
-    const setTimeout = jest.fn(() => 8), clearTimeout = jest.fn();
+function setup(reducedMotion = false) {
     let WorldAmbience;
+    const document = {getElementById: id => id === 'canvas' ? {appendChild: jest.fn()} : null, createElement: jest.fn()};
+    const requestAnimationFrame = jest.fn();
     vm.runInNewContext(fs.readFileSync(path.join(__dirname, 'worldambience.js'), 'utf8'), {
-        document, window: {matchMedia: () => ({matches: reducedMotion})},
-        requestAnimationFrame, cancelAnimationFrame, setTimeout, clearTimeout, Date: clock,
-        define: (dependencies, factory) => { WorldAmbience = factory(WorldTime); }
+        document, window: {matchMedia: () => ({matches: reducedMotion})}, Date,
+        requestAnimationFrame, define: factory => { WorldAmbience = factory(); }
     });
-    return {ambience: new WorldAmbience(undefined, getWorldTime), canvas, context, parent, document, requestAnimationFrame, cancelAnimationFrame, setTimeout, clearTimeout};
+    const worker = {self: {WorldTime}, console, postMessage: jest.fn(), requestAnimationFrame,
+        importScripts: jest.fn(), Date: {now: () => 100000}};
+    vm.runInNewContext(fs.readFileSync(path.join(__dirname, 'renderer-webworker.js'), 'utf8'), worker);
+    const contexts = {};
+    for (const id of ['background', 'entities', 'text', 'high', 'highEntities', 'lighting', 'aboveLight', 'combined']) {
+        const context = {clearRect: jest.fn(), save: jest.fn(), restore: jest.fn(), translate: jest.fn(),
+            fillRect: jest.fn(), drawImage: jest.fn(), createRadialGradient: jest.fn(() => ({addColorStop: jest.fn()}))};
+        contexts[id] = context;
+        worker.onmessage({data: {type: 'setCanvas', id, canvas: {width: 960, height: 448, getContext: () => context}}});
+    }
+    const render = (ambience, cameraX = 32, cameraY = 16, scale = 2, worldTime = 50 * 60000) => worker.onmessage({data: {
+        type: 'render', player: {x: 0, y: 0}, ambience, worldTime,
+        renderData: [{type: 'render', id: 'background', tiles: [], cameraX, cameraY, scale, clear: true},
+            {type: 'entities', id: 'entities', entityData: [], cameraX, cameraY, scale}]
+    }});
+    return {ambience: new WorldAmbience(), document, worker, render, context: contexts.combined, requestAnimationFrame};
 }
 
-const config = {cycleSeconds: 180, nightOpacity: 0.12, particles: 'fireflies', particleCount: 12};
+function core(context, scale) {
+    return context.fillRect.mock.calls.find(([x, y, width, height]) =>
+        width === 2 * scale && height === 2 * scale && x > 100 && y > 100);
+}
 
-test('ambience overlays the game without blocking clicks and clears on disconnect', () => {
-    const {ambience, canvas, parent, cancelAnimationFrame} = setup();
+test('configuration supplies the worker without creating an overlay or animation loop', () => {
+    const {ambience, document, requestAnimationFrame} = setup();
     ambience.setConfig(config);
-    expect(parent.appendChild).toHaveBeenCalledWith(canvas);
-    expect(canvas.style.cssText).toContain('pointer-events:none');
-    expect(canvas.width).toBe(960);
-    expect(canvas.height).toBe(448);
-    expect(canvas.style.display).toBe('block');
-    ambience.setConfig(null);
-    expect(cancelAnimationFrame).toHaveBeenCalledWith(7);
-    expect(canvas.style.display).toBe('none');
-    expect(ambience.config).toBeNull();
-});
-
-test('reduced motion draws neither particles nor an extra lighting overlay', () => {
-    const {ambience, context, requestAnimationFrame} = setup(true);
-    ambience.setConfig(config);
-    expect(context.fillRect).not.toHaveBeenCalled();
+    expect(ambience.getRenderState()).toEqual({...config, reducedMotion: false});
+    expect(document.createElement).not.toHaveBeenCalled();
     expect(requestAnimationFrame).not.toHaveBeenCalled();
+    ambience.clear();
+    expect(ambience.getRenderState()).toBeNull();
 });
 
-test('local preview changes glow without adding a separate tint', () => {
-    const {ambience, context} = setup(false, Date, () => 20 * 60000);
-    ambience.setConfig({...config, previewTimeMode: 'night'});
+test('fireflies are composited after scenery and lighting in the same render frame', () => {
+    const {render, context, requestAnimationFrame} = setup();
+    render({...config, reducedMotion: false});
+    expect(context.createRadialGradient).toHaveBeenCalled();
+    expect(core(context, 2)).toBeDefined();
+    expect(context.fillRect.mock.invocationCallOrder[0]).toBeGreaterThan(
+        context.drawImage.mock.invocationCallOrder.at(-1));
+    expect(requestAnimationFrame).toHaveBeenCalledTimes(1);
+    expect(context.globalCompositeOperation).toBe('source-over');
+});
+
+test('fireflies use the exact terrain camera on scrolling and reversal without settling drift', () => {
+    const {render, context} = setup();
+    const state = {...config, reducedMotion: false};
+    render(state, 0, 0, 2);
+    const first = core(context, 2);
+    for (const [x, y] of [[16, 8], [32, 16], [16, 8], [0, 0], [0, 0]]) {
+        context.fillRect.mockClear();
+        render(state, x, y, 2);
+        const moved = core(context, 2);
+        expect(moved[0]).toBeCloseTo(first[0] - x * 2);
+        expect(moved[1]).toBeCloseTo(first[1] - y * 2);
+    }
+});
+
+test('teleports and rescaling immediately use the new map coordinates', () => {
+    const {render, context, worker} = setup();
+    const view = {cameraX: 300, cameraY: 180, scale: 3};
+    render({...config, reducedMotion: false}, view.cameraX, view.cameraY, view.scale);
+    const expected = worker.ambienceParticlePositions(config, view, 100, 960, 448)
+        .find(point => point.x > 100 && point.y > 100);
+    const drawn = core(context, 3);
+    expect(drawn[0]).toBeCloseTo(expected.x);
+    expect(drawn[1]).toBeCloseTo(expected.y);
+});
+
+test('reduced motion omits particles without adding a lighting overlay', () => {
+    const {ambience, render, context} = setup(true);
+    ambience.setConfig(config);
+    render(ambience.getRenderState());
+    expect(context.fillRect).not.toHaveBeenCalled();
+    expect(context.createRadialGradient).not.toHaveBeenCalled();
+});
+
+test('forced day hides fireflies and leaving the scene clears the previous frame', () => {
+    const {ambience, render, context} = setup();
+    ambience.setConfig(config);
+    render(ambience.getRenderState(), 32, 16, 2, 20 * 60000);
+    expect(context.createRadialGradient).not.toHaveBeenCalled();
+    expect(context.fillRect).not.toHaveBeenCalled();
+    ambience.setConfig(config);
+    render(ambience.getRenderState());
     expect(context.createRadialGradient).toHaveBeenCalled();
     context.fillRect.mockClear();
-    ambience.setConfig({...config, previewTimeMode: 'day'});
+    context.clearRect.mockClear();
+    ambience.setConfig(null);
+    render(ambience.getRenderState());
+    expect(context.clearRect).toHaveBeenCalledWith(0, 0, 960, 448);
     expect(context.fillRect).not.toHaveBeenCalled();
 });
 
-test('hidden tabs skip drawing and replacing the configuration cancels the previous loop', () => {
-    const {ambience, document, context, cancelAnimationFrame} = setup();
-    document.hidden = true;
-    ambience.setConfig(config);
-    expect(context.fillRect).not.toHaveBeenCalled();
-    document.hidden = false;
-    ambience.setConfig({...config, particles: 'leaves'});
-    expect(cancelAnimationFrame).toHaveBeenCalledWith(7);
-    expect(context.fillRect.mock.calls.length).toBeGreaterThan(1);
-});
-
-test('fireflies have luminous halos and stay at the same map position when the camera moves', () => {
-    const {ambience, context} = setup();
-    let view = {x: 32, y: 16, scale: 2};
-    ambience.getView = () => view;
-    ambience.setConfig({...config, previewTimeMode: 'night'});
-    expect(context.createRadialGradient).toHaveBeenCalled();
-    expect(context.globalCompositeOperation).toBe('source-over');
-    const core = context.fillRect.mock.calls.find(([, , width, height]) => width === 4 && height === 4);
-    expect(core[0] % 1).not.toBe(0);
-    const first = ambience.particlePositions(100, 960, 448).find(point => point.index === 1 && point.x > 100 && point.y > 100);
-    view = {x: 42, y: 26, scale: 2};
-    ambience.view = null;
-    const moved = ambience.particlePositions(100, 960, 448).find(point => point.index === 1 && Math.abs(point.x - (first.x - 20)) < 0.001);
-    expect(moved.y).toBeCloseTo(first.y - 20);
-});
-
-test('stepped camera updates interpolate continuously, settle, and snap on teleports', () => {
-    const {ambience} = setup();
-    let camera = {x: 0, y: 0, scale: 2};
-    ambience.getView = () => camera;
-    ambience.view = ambience.updateView(1000);
-    camera = {x: 16, y: 8, scale: 2};
-    ambience.view = ambience.updateView(1016);
-    expect(ambience.view.x).toBeGreaterThan(0);
-    expect(ambience.view.x).toBeLessThan(16);
-    const first = ambience.view.x;
-    ambience.view = ambience.updateView(1032);
-    expect(ambience.view.x).toBeGreaterThan(first);
-    for (let time = 1048; time < 1800; time += 16) ambience.view = ambience.updateView(time);
-    expect(ambience.view.x).toBe(16);
-    camera = {x: 300, y: 8, scale: 2};
-    expect(ambience.updateView(1816).x).toBe(300);
-});
-
-
-test('production story snapshots never create the local preview guide', () => {
-    const {ambience, parent} = setup();
-    ambience.setConfig({...config, story: {title: 'The Lantern Picnic', goal: 'Talk to Adam.'}, previewStory: {goal: 'Preview only.'}});
-    expect(parent.appendChild).toHaveBeenCalledTimes(1);
-    expect(ambience.controls).toBeUndefined();
-    expect(ambience.canvas.style.display).toBe('block');
-});
-
-test('a production snapshot hides controls left over from a local preview', () => {
+test('production snapshots keep preview controls hidden', () => {
     const {ambience} = setup();
     ambience.controls = {style: {display: 'flex'}};
-    ambience.setConfig({...config, previewControls: false, story: {goal: 'Talk to Bstrat.'}});
+    ambience.setConfig({...config, previewControls: false, story: {goal: 'Talk to Adam.'}});
     expect(ambience.controls.style.display).toBe('none');
 });
 
-
-test('firefly brightness follows the renderer clock and scene changes add no tint', () => {
-    let time = 20 * 60000;
-    const {ambience, context} = setup(false, Date, () => time);
+test('glow follows the same world clock as terrain without tinting scene transitions', () => {
+    const {render, context} = setup();
     const glow = () => Number(context.fillStyle.match(/,([^,]+)\)$/)[1]);
-    ambience.setConfig({...config, scene: 'Town'});
-    expect(context.fillRect).not.toHaveBeenCalled();
-    time = 42.5 * 60000;
-    ambience.setConfig({...config, scene: 'Town'});
+    render(config, 32, 16, 2, 42.5 * 60000);
     const duskGlow = glow();
-    time = 50 * 60000;
-    ambience.setConfig({...config, scene: 'Town'});
-    expect(glow()).toBeCloseTo(duskGlow * 2, 2);
+    render(config, 32, 16, 2, 50 * 60000);
+    expect(glow()).toBeCloseTo(duskGlow * 2);
     context.fillRect.mockClear();
-    ambience.setConfig({...config, scene: 'Forest', particles: 'none'});
+    render({...config, particles: 'none'});
     expect(context.fillRect).not.toHaveBeenCalled();
-    ambience.setConfig({...config, scene: 'Town'});
-    expect(glow()).toBeGreaterThan(duskGlow);
-    ambience.clear();
 });
 
-test('preview freezes the world phase while firefly motion remains continuous', () => {
-    let now = 10000;
-    const {ambience, context} = setup(false, {now: () => now}, () => 20 * 60000);
-    ambience.setConfig({...config, previewTimeMode: 'night'});
-    const first = context.fillRect.mock.calls[1];
-    context.fillRect.mockClear(); now += 16; ambience.draw();
-    const next = context.fillRect.mock.calls[1];
+test('a frozen preview phase still lets fireflies wander between render frames', () => {
+    const {render, context, worker} = setup();
+    render(config);
+    const first = core(context, 2);
+    context.fillRect.mockClear();
+    worker.Date.now = () => 100016;
+    render(config);
+    const next = core(context, 2);
     expect(next[0]).not.toBe(first[0]);
     expect(Math.abs(next[0] - first[0])).toBeLessThan(1);
     expect(Math.abs(next[1] - first[1])).toBeLessThan(1);
-    ambience.clear();
 });

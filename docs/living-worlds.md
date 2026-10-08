@@ -48,8 +48,8 @@ Check these behaviours:
 7. Try the Day and Night buttons, then Cycle for Town's three-minute light cycle
    and bright fireflies. Their glowing halos and cores are anchored in map pixels:
    walking moves them with the scenery, while each insect wanders slightly.
-   A short camera interpolation smooths whole-pixel scroll updates; teleports snap
-   directly to the new location. The glow is deliberately softer than the first preview.
+   Fireflies are composited by the render worker in the same frame as the map,
+   using its exact camera and scale. The glow is deliberately softer than the first preview.
    Walk north into Forest:
    the same world lighting continues, while Town fireflies disappear. Reduced-motion
    preferences remove insect animation while lighting follows time on a slower timer.

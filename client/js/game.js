@@ -15,11 +15,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.buffTickInterval = null;
                 this.scenePollingInterval = null;
                 this.playerPositionReady = false;
-                this.worldAmbience = new WorldAmbience(() => ({
-                    x: this.renderer?.camera?.x || 0,
-                    y: this.renderer?.camera?.y || 0,
-                    scale: this.renderer?.scale || 1
-                }), () => this.getWorldTime());
+                this.worldAmbience = new WorldAmbience();
 
                 this.renderer = null;
                 this.updater = null;
