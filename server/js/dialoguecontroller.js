@@ -52,7 +52,7 @@ class DialogueController {
 
             if (!dialogue) return null;
 
-            const sessionData = cache.get(sessionId) || {};
+            let sessionData = cache.get(sessionId) || {};
 
             if (sessionData.currentNpcKey !== npcKey) { sessionData.currentNode = null; sessionData.currentNpcKey = npcKey; }
             let nodeKey = this.determineStartingNode(dialogue, sessionData, npcId);
@@ -94,6 +94,10 @@ class DialogueController {
                 this.handleNodeActions(nodeActions, cache, sessionId, sessionData);
             }
 
+            // NodeCache returns clones. Quest actions may have written a newer
+            // session; merge dialogue transitions into that state rather than
+            // overwriting the saved quest or choice with the pre-action copy.
+            sessionData = cache.get(sessionId) || sessionData;
             node = this.chooseRandomLines(node);
             node = this.filterOptions(node, sessionData);
             sessionData.dialogueTransitions = [...(node.goto ? [node.goto] : []), ...(node.options || []).map(option => option.goto)];
