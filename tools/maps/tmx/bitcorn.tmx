@@ -690219,7 +690219,7 @@
  <objectgroup id="86" name="triggers">
   <object id="601" name="Message" x="192" y="416" width="48" height="16">
    <properties>
-    <property name="player_message" value="JackAce Early Access is open for bitsxbit holders!"/>
+    <property name="player_message" value="Welcome to the CORNhole! Try your luck at LuckyFUNKZ or JackAce."/>
     <property name="trigger" value="WELCOME"/>
    </properties>
   </object>
@@ -690255,13 +690255,13 @@
   </object>
   <object id="616" name="Message" x="240" y="320" width="64" height="80">
    <properties>
-    <property name="player_message" value="RUDELETTE [CORNING IN THE NEAR FUTURE]"/>
+    <property name="player_message" value="RUDELETTE [CLOSED FOR BEING TOO NICE]"/>
     <property name="trigger" value="ROULETTE"/>
    </properties>
   </object>
   <object id="617" name="Message" x="352" y="176" width="64" height="80">
    <properties>
-    <property name="player_message" value="OH CRAPS! [CORNING IN THE NEAR FUTURE]"/>
+    <property name="player_message" value="OH CRAPS! [CLOSED UNTIL WE FIND THE DICE]"/>
     <property name="trigger" value="CRAPS"/>
    </properties>
   </object>
