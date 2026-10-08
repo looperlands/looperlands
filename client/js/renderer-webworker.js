@@ -1,4 +1,3 @@
-importScripts('worldparticles-worker.js');
 let rendererExtensions = null;
 const extensionModules = new Set();
 let tileset = undefined;
@@ -1000,6 +999,7 @@ function drawCombatFeedback(ctx, feedback) {
 // World particles are composited in the same frame and camera as the map.
 function drawWorldAmbience(context, ambience, view, width, height, worldTime) {
     if (!ambience || !view || ambience.reducedMotion) return;
+    if (!self.WorldParticles) importScripts('worldparticles-worker.js');
     const elapsed = (Date.now() - (ambience.epoch || 0)) / 1000;
     const daylight = getMainMapCycleIntensity(worldTime / CYCLE_DURATION);
     context.save();

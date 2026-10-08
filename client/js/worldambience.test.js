@@ -18,7 +18,7 @@ function setup(reducedMotion = false) {
     vm.runInNewContext(fs.readFileSync(path.join(__dirname, 'renderer-webworker.js'), 'utf8'), worker);
     const contexts = {};
     for (const id of ['background', 'entities', 'text', 'high', 'highEntities', 'lighting', 'aboveLight', 'combined']) {
-        const context = {clearRect: jest.fn(), save: jest.fn(), restore: jest.fn(), translate: jest.fn(),
+        const context = {clearRect: jest.fn(), save: jest.fn(), restore: jest.fn(), translate: jest.fn(), rotate: jest.fn(),
             beginPath: jest.fn(), rect: jest.fn(), clip: jest.fn(), fillRect: jest.fn(), drawImage: jest.fn(), createRadialGradient: jest.fn(() => ({addColorStop: jest.fn()}))};
         contexts[id] = context;
         worker.onmessage({data: {type: 'setCanvas', id, canvas: {width: 960, height: 448, getContext: () => context}}});
