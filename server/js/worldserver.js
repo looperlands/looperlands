@@ -282,7 +282,10 @@ module.exports = World = cls.Class.extend({
             const npcBehaviorConfig = loadNpcBehaviorConfig(self.id.replace(/^world_/, ''));
             if (npcBehaviorConfig) {
                 self.npcBehavior = new NpcBehavior(self, npcBehaviorConfig, self.server.npcMemory);
-                if (self.id === 'world_main') self.lanternPicnic = new (require('../npc-behaviors/lantern-picnic-scene'))(self);
+                if (self.id === 'world_main') {
+                    self.lanternPicnic = new (require('../npc-behaviors/lantern-picnic-scene'))(self);
+                    self.lanternRoad = new (require('./lanternroadcontroller').LanternRoadController)(self);
+                }
             }
 
             if (self.server.tileActionsController) {

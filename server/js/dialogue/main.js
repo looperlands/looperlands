@@ -1,2 +1,2 @@
-// Main-map dialogue trees are bound to placed NPC keys, not just sprite kinds.
-exports.dialogues = [...require('../../npc-behaviors/lantern-picnic').dialogues];
+// Main-map characters share sprite kinds but have independent placed dialogue keys.
+exports.dialogues = require('../../npc-behaviors/lantern-road-dialogue').buildDialogues();

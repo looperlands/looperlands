@@ -5,6 +5,8 @@ const main = require("./dialogue/main.js");
 const bitcorn = require("./dialogue/bitcorn.js");
 const quests = require("./quests/quests.js");
 const Formulas = require("./formulas");
+const roadState = require('../npc-behaviors/lantern-road-state');
+const roadContent = require('../npc-behaviors/lantern-road');
 
 class DialogueController {
     constructor(cache, platformClient) {
@@ -58,11 +60,15 @@ class DialogueController {
             let nodeKey = this.determineStartingNode(dialogue, sessionData, npcId);
             let node = dialogue.nodes[nodeKey];
             node = _.clone(node);
+            if (node.requires && !this.checkConditions(node.requires, sessionData)) {
+                sessionData.currentNode = null;
+                return {text: 'This task is not ready yet. Check your journal, then speak to me again.'};
+            }
             if (node.legacyQuests) {
                 sessionData.currentNode = null;
                 sessionData.dialogueTransitions = [];
                 cache.set(sessionId, sessionData);
-                return quests.handleNPCClick(cache, sessionId, Number(npcId)) || {text: 'There are no other jobs ready here today.'};
+                return quests.handleNPCClick(cache, sessionId, Number(npcId)) || '';
             }
 
             // Check if custom_css has been defined
@@ -96,6 +102,7 @@ class DialogueController {
 
             node = this.chooseRandomLines(node);
             node = this.filterOptions(node, sessionData);
+            if (node.storyMenu || node.storyQuest || node.storyConclusion) require('./lanternroadcontroller').LanternRoadController.decorate(node, sessionData);
             sessionData.dialogueTransitions = [...(node.goto ? [node.goto] : []), ...(node.options || []).map(option => option.goto)];
             sessionData.dialogueNpcKey = npcKey;
             cache.set(sessionId, sessionData);
@@ -254,6 +261,9 @@ class DialogueController {
 
         let result;
         switch (condition.if_not || condition.if) {
+            case 'story_objectives_done':
+                result = roadState.ready(sessionData.gameData, roadContent.quests.find(q => q.id === condition.quest));
+                break;
             case 'open_quest':
             case 'quest_open':
                 result = this.checkQuestIsOpen(condition.quest, sessionData);

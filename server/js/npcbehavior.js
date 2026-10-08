@@ -246,12 +246,14 @@ class NpcBehavior {
         if (this.world.lanternPicnic) {
             const picnic = this.world.lanternPicnic;
             const goal = require('../npc-behaviors/lantern-picnic').progress(this.world.server.cache.get(player.sessionId)?.gameData);
-            const snapshot = JSON.stringify([active, goal, picnic.state]);
+            const road = this.world.lanternRoad?.packet(player);
+            const snapshot = JSON.stringify([active, goal, picnic.state, road]);
             if (state.snapshot !== snapshot) {
                 this.world.pushToPlayer(player, new Messages.WorldAmbience({...ambience,
                     particles: active ? ambience.particles : 'none', nightOpacity: active ? ambience.nightOpacity : 0,
                     serverTime: time, epoch: 0, picnic: picnic.state && {...picnic.state, music: (this.world.server.cache.get(player.sessionId)?.gameData?.choices || []).includes('lantern:music-picnic')},
-                    story: {title: 'The Lantern Picnic', goal, event: active ? picnic.state?.message : ''}}));
+                    story: {title: 'The Lantern Picnic', goal, event: active ? picnic.state?.message : ''}, ...road,
+                    picnic: road?.finalePicnic || (picnic.state && {...picnic.state, music: (this.world.server.cache.get(player.sessionId)?.gameData?.choices || []).includes('lantern:music-picnic')})}));
                 state.snapshot = snapshot;
             }
             state.ambience = active;

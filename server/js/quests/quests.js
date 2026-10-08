@@ -12,6 +12,7 @@ const robits = require('./robits.js');
 const taikotown = require('./taikotown.js');
 const bitcorn = require('./bitcorn.js');
 const _ = require('underscore');
+const roadState = require('../../npc-behaviors/lantern-road-state');
 const PlayerQuestEventConsumer = require('./playerquesteventconsumer.js');
 const {PlayerEventBroker} = require("./playereventbroker");
 
@@ -174,6 +175,8 @@ function handoutQuest(questID, sessionData) {
         return "";
     }
 
+    if (newQuest.requiredQuests && !newQuest.requiredQuests.every(id => avatarHasCompletedQuest(id, sessionData.gameData.quests))) return "";
+
     if (newQuest.requiredQuest && !avatarHasCompletedQuest(newQuest.requiredQuest, sessionData.gameData.quests)) {
         return "";
     }
@@ -228,7 +231,9 @@ function completeQuest(questID, sessionData) {
         return;
     }
 
-    eventConsumer.completeQuest(sessionData, questID, questsByID[questID]);
+    const definition = questsByID[questID];
+    if (definition.objectives && !roadState.ready(sessionData.gameData, definition)) return;
+    eventConsumer.completeQuest(sessionData, questID, definition);
 }
 
 

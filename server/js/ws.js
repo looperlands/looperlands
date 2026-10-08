@@ -971,6 +971,15 @@ WS.socketIOServer = Server.extend({
             res.status(200).json({});
         });
 
+        app.post('/session/:sessionId/story/inspect/:objectiveId', async (req, res) => {
+            const session = cache.get(req.params.sessionId);
+            const world = session && self.worldsMap[session.mapId];
+            const player = world?.getPlayerById(session.entityId);
+            if (!player || !world.lanternRoad) return res.sendStatus(404);
+            try { res.json(await world.lanternRoad.inspect(player, req.params.objectiveId)); }
+            catch (error) { res.status(409).json({error: error.message}); }
+        });
+
         app.post('/activateTrigger', async (req, res) => {
             const body = req.body;
             const apiKey = req.headers['x-api-key'];
