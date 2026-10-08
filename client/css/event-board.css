@@ -24,3 +24,9 @@
 .game-events .ev-detail {
     min-width: 0;
 }
+
+.game-events .ev-description {
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+    user-select: text;
+}

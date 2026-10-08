@@ -2,8 +2,13 @@ const fs = require('fs');
 const vm = require('vm');
 const path = require('path');
 let Board;
+function element(tag) {
+    return {tag, children: [], setAttribute() {}, append(...children) {this.children.push(...children);},
+        set textContent(value) {this.value = value;},
+        get textContent() {return (this.value || '')+this.children.map(child => child.textContent).join(' ');}};
+}
 vm.runInNewContext(fs.readFileSync(path.join(__dirname, 'eventboard.js'), 'utf8'), {
-    define: (dependencies, factory) => {Board = factory({}, {duckville: 'The Nexus'});}, URL
+    define: (dependencies, factory) => {Board = factory({}, {duckville: 'The Nexus'});}, URL, document: {createElement: element}
 });
 const start = Date.parse('2026-10-08T12:00:00Z');
 const event = {runId: 'round', status: 'live', maps: ['duckville'], startsAt: '2026-10-08T12:00:00Z', endsAt: '2026-10-08T13:00:00Z'};
@@ -32,4 +37,15 @@ test('scoring descriptions reflect active seconds, quantities, actions and fishi
 test('multiple targets, actions and stages have readable scoring descriptions', () => {
     expect(Board.ruleLabel({type: 'tile', points: 2, target: ['tomato', 'carrot'], stage: ['plant', 'harvest'], action: ['farm', 'garden'], measurement: 'count'})).toBe('plant, harvest · tomato, carrot · farm, garden — 2 points per action');
     expect(Board.ruleLabel({type: 'kill', points: 1, target: ['12', '13'], targetLabel: 'Skeleton, Ogre', measurement: 'count'})).toBe('Defeat · Skeleton, Ogre — 1 point per action');
+});
+
+test('community details show attendance instructions without scoring, sign-up or a broken competition link', () => {
+    const board = {date: value => value, maps: () => 'Main map'};
+    const detail = Board.prototype.renderDetails.call(board, {isCompetition: false, status: 'upcoming', name: 'Raid Alert!', description: 'Meet at Goose', startsAt: 'start', endsAt: 'end', locationDescription: '@ Goose'});
+    expect(detail.textContent).toContain('Meet at Goose');
+    expect(detail.textContent).toContain('Main map · @ Goose');
+    expect(detail.textContent).toContain('RSVP instructions');
+    expect(detail.textContent).not.toContain('How to score');
+    expect(detail.textContent).not.toContain('Full event page');
+    expect(detail.children.at(-1).children.every(child => child.tag === 'small')).toBe(true);
 });

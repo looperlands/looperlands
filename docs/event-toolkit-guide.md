@@ -45,6 +45,8 @@ Targets come from the running game's catalog. An unavailable server can leave op
 
 Choose **action/catch count** when each success should count once. Choose **quantity** when every produced or awarded item should count. A double fishing catch counts as one successful catch or two fish, depending on the measurement. Failed catches, purchases and ordinary fish loot do not earn fishing points.
 
+Select one or several targets per rule, including mobs, items, crops or fish. Tile rules also support several actions and completed stages. Any selected value can match; an activity scores once per rule. Select all targets/actions/stages to remove that filter.
+
 Rules add together when they overlap. For example, one point for every fish plus four bonus points for a selected species gives that species five points per fish. Use distinct targets if you want replacement weights.
 
 An empty scoring-map selection allows all tracked maps. A **daily cap** limits the participant's combined points, resetting at midnight UTC; it applies before team totals. A **milestone** marks a personal target. A **community goal** shows collective progress. Zero disables a cap or goal.
@@ -150,7 +152,7 @@ For required registration, connect your wallet and sign up before the deadline. 
 
 Visit the town notice board on the grass beside the rock near spawn on the main map and use **View events**. Browse **Coming up**, **Live now** or **My events**, review the rules, then confirm sign-up. Team assignment can be immediate or pending, depending on the organizer's setup. **Full event page** opens the website.
 
-During a running round, a compact panel shows a timer, personal score/rank, team totals and the top five. It appears only on linked event maps. If several rounds are active there, select one. With all-map scoring, the panel uses the event's location map; without a scoring or location map, there is no contextual panel. The board remains available between events.
+During a running round, a compact panel shows a timer, personal score/rank, team totals and the top five. It appears only on linked event maps. If several rounds are active there, select one. With all-map scoring, the panel uses the event's location map; without a scoring or location map, there is no contextual panel. The board remains available between events. Approved community events also appear with their description and location; in-game scoring and sign-up controls appear only for configured competitions.
 
 Standings refresh periodically rather than after every action. If points are missing, check the round, map, sign-up/team status, rule target and daily cap, then allow time for activity delivery. Contact the organizer if the score still looks wrong. Do not assume historical hours or idle connected time earn points.
 

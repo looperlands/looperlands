@@ -173,11 +173,11 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
         }
 
         date(value) {return new Date(value).toLocaleString([], {month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'});}
-        maps(event) {return event.maps.map(map => mapNames[map] || map).join(', ') || 'All maps';}
+        maps(event) {return event.maps.map(map => mapNames[map] || map).join(', ') || (event.isCompetition === false ? 'Location to be announced' : 'All maps');}
 
         renderDetails(event) {
             const detail = node('section', 'ev-detail'); const content = node('div', 'ev-content');
-            content.append(node('small', 'ev-gold', event.status === 'live' ? 'LIVE NOW' : 'COMING UP'), node('h3', 'ev-title', event.name), node('p', '', event.description));
+            content.append(node('small', 'ev-gold', event.status === 'live' ? 'LIVE NOW' : 'COMING UP'), node('h3', 'ev-title', event.name), node('p', 'ev-description', event.description));
             const facts = node('div', 'ev-facts');
             for (const [label, value] of [['When', this.date(event.startsAt)+' – '+this.date(event.endsAt)], ['Where', this.maps(event)+(event.locationDescription ? ' · '+event.locationDescription : '')], ['Format', event.isCompetition === false ? 'Community event' : (event.groupBy === 'wallet' ? 'Per player' : 'Per Looper')+' · '+(event.teams.length ? 'Teams' : 'Solo')]]) {const fact = node('div'); fact.append(node('small', '', label), node('strong', '', value)); facts.append(fact);} content.append(facts);
             if (event.isCompetition === false) {
