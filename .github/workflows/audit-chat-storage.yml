@@ -1,0 +1,71 @@
+name: Audit production chat storage
+
+on:
+  push:
+    branches: [codex/chat-storage-audit]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    name: Read-only production mount check
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Inspect storage mounts without reading chat or restarting the server
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          port: 22
+          script: |
+            bash -s <<'CHAT_STORAGE_AUDIT'
+            set -eu
+            if docker ps -q >/dev/null 2>&1; then
+              docker_call() { docker "$@"; }
+            else
+              docker_call() { sudo -n docker "$@"; }
+            fi
+            found=0
+            failed=0
+            for container in $(docker_call ps -q); do
+              image=$(docker_call inspect --format '{{.Config.Image}}' "$container")
+              case "$image" in
+                balkshamster/looperlands|balkshamster/looperlands:*|balkshamster/looperlands@*) ;;
+                *) continue ;;
+              esac
+              found=1
+              docker_call inspect --format 'Container: {{.Name}}; Compose files: {{index .Config.Labels "com.docker.compose.project.config_files"}}; Compose directory: {{index .Config.Labels "com.docker.compose.project.working_dir"}}' "$container"
+              mounts=$(docker_call inspect --format '{{json .Mounts}}' "$container")
+              if ! docker_call exec "$container" node -e '
+                const path = require("path");
+                const filename = path.resolve(process.env.CHAT_HISTORY_FILE || "/opt/app/data/chat/history.json");
+                const mount = JSON.parse(process.argv[1])
+                  .filter(entry => filename === entry.Destination || filename.startsWith(entry.Destination.replace(/\/$/, "") + "/"))
+                  .sort((a, b) => b.Destination.length - a.Destination.length)[0];
+                const report = {
+                  history_path: filename,
+                  durable_mount: !!mount && ["volume", "bind"].includes(mount.Type),
+                  writable_mount: !!mount && mount.RW === true,
+                  mount_type: mount ? mount.Type : null,
+                  mount_destination: mount ? mount.Destination : null
+                };
+                console.log(JSON.stringify(report, null, 2));
+                if (!report.durable_mount || !report.writable_mount) process.exitCode = 1;
+              ' "$mounts"; then
+                failed=1
+              fi
+            done
+            if [ "$found" -eq 0 ]; then
+              echo 'No running LooperLands game container found.' >&2
+              exit 1
+            fi
+            if [ "$failed" -ne 0 ]; then
+              echo 'At least one game container lacks a writable persistent chat mount.' >&2
+              exit 1
+            fi
+            echo 'Each game container has a writable persistent chat mount. History files were not read; restart recovery still requires a game test.'
+            CHAT_STORAGE_AUDIT
