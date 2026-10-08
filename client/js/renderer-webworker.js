@@ -354,6 +354,7 @@ onmessage = (e) => {
         // Restore the default composite operation
         combinedCtx.restore();
         rendererExtensions?.draw('foreground', combinedCtx, e.data.extensions, view);
+        drawWorldAmbience(combinedCtx, e.data.ambience, view, combinedCanvas.width, combinedCanvas.height, e.data.worldTime);
         drawCombatFeedback(combinedCtx, e.data.combatFeedback);
 
         requestAnimationFrame(() => {
@@ -993,4 +994,50 @@ function drawCombatFeedback(ctx, feedback) {
         }
     }
     ctx.restore();
+}
+
+// World particles are composited in the same frame and camera as the map.
+function drawWorldAmbience(context, ambience, view, width, height, worldTime) {
+    if (!ambience || !view || ambience.reducedMotion) return;
+    const config = ambience;
+    const elapsed = (Date.now() - (config.epoch || 0)) / 1000;
+    const night = 1 - getMainMapCycleIntensity(worldTime / CYCLE_DURATION);
+    for (const {index, x, y, scale} of ambienceParticlePositions(config, view, elapsed, width, height)) {
+        const seed = index * 1.618 + 0.5;
+        if (config.particles === 'fireflies') {
+            const glow = night * (0.65 + Math.sin(elapsed * 1.1 + seed) * 0.15);
+            if (glow <= 0) continue;
+            const radius = 8 * scale;
+            const halo = context.createRadialGradient(x, y, 0, x, y, radius);
+            halo.addColorStop(0, 'rgba(236,255,148,' + glow * 0.45 + ')');
+            halo.addColorStop(1, 'rgba(236,255,148,0)');
+            context.globalCompositeOperation = 'lighter';
+            context.fillStyle = halo;
+            context.fillRect(x - radius, y - radius, radius * 2, radius * 2);
+            context.fillStyle = 'rgba(255,255,208,' + glow + ')';
+            context.fillRect(x, y, 2 * scale, 2 * scale);
+            context.globalCompositeOperation = 'source-over';
+        } else if (config.particles === 'leaves') {
+            context.fillStyle = 'rgba(177,153,77,0.35)';
+            context.fillRect(Math.round(x), Math.round((y + elapsed * 3) % height), 4, 2);
+        }
+    }
+}
+
+function ambienceParticlePositions(config, view, elapsed, width, height) {
+    const {cameraX = 0, cameraY = 0, scale = 1} = view;
+    const points = [];
+    for (let patchY = Math.floor((cameraY - 16) / 224); patchY <= Math.floor((cameraY + height / scale + 16) / 224); patchY++) {
+        for (let patchX = Math.floor((cameraX - 16) / 480); patchX <= Math.floor((cameraX + width / scale + 16) / 480); patchX++) {
+            for (let index = 0; index < config.particleCount; index++) {
+                const seed = index * 1.618 + 0.5;
+                const x = (patchX * 480 + (seed * 137 % 480) + Math.sin(elapsed * 0.25 + seed) * 7 - cameraX) * scale;
+                const y = (patchY * 224 + (seed * 83 % 224) + Math.cos(elapsed * 0.3 + seed) * 6 - cameraY) * scale;
+                if (x >= -16 * scale && y >= -16 * scale && x <= width + 16 * scale && y <= height + 16 * scale) {
+                    points.push({index, x, y, scale});
+                }
+            }
+        }
+    }
+    return points;
 }
