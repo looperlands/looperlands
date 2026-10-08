@@ -527,6 +527,10 @@ module.exports = function processMap(json, options) {
     processGroup('doors', processDoor);
     processGroup('triggers', processTriggerArea);
     processGroup('scenes', processScene);
+    map.eventBoards = [];
+    processGroup('eventBoards', board => {
+        map.eventBoards.push({x: board.x / map.tilesize, y: board.y / map.tilesize, w: board.width / map.tilesize, h: board.height / map.tilesize});
+    });
 
     if (mode === 'server') {
         processGroup('roaming', processRoamingArea);

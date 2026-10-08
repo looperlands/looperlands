@@ -24,6 +24,7 @@ const ens = require("./ens.js");
 const chat = require("./chat.js");
 const { SocialChat } = require('./socialchat');
 const {EventEquipment, effectiveLevel} = require('./eventequipment');
+const {EventBoardController} = require('./eventboardcontroller');
 const quests = require("./quests/quests.js");
 const Lakes = require("./lakes.js");
 const AltNames = require("../../shared/js/altnames");
@@ -193,6 +194,19 @@ WS.socketIOServer = Server.extend({
 
         app.use(express.json())
         app.get('/activity-catalog', (req, res) => res.json(buildActivityCatalog(Types, tileActionsController.stageDefinitions, Object.keys(self.worldsMap || {}), Lakes, AltNames.getName, Collectables.isTransferable)));
+
+        const eventBoard = new EventBoardController(cache, () => self.worldsMap, platformClient, data => {
+            for (const event of data.events) {
+                event.rules = event.rules.map(rule => ({...rule, targetLabel: rule.target === '*' ? 'All targets' : AltNames.getName(/^\d+$/.test(rule.target) ? Types.getKindAsString(Number(rule.target)) || rule.target : rule.target) || rule.target}));
+                event.prizes = event.prizes.map(prize => ({...prize, itemLabel: prize.item ? AltNames.getName(/^\d+$/.test(prize.item) ? Types.getKindAsString(Number(prize.item)) || prize.item : prize.item) || prize.item : null}));
+            }
+            const base = process.env.LOOPERLANDS_WEBSITE_BASE_URL || 'https://looperlands.io';
+            data.websiteUrl = /^https?:\/\//.test(base) ? base.replace(/\/$/, '') : 'https://looperlands.io';
+            return data;
+        });
+        app.get('/session/:sessionId/events', (req, res) => eventBoard.list(req, res));
+        app.get('/session/:sessionId/events/live', (req, res) => eventBoard.list(req, res, true));
+        app.post('/session/:sessionId/events/:eventId/:runId/:action', (req, res) => eventBoard.register(req, res));
 
         platformClient.createOrUpdateGameServer(host, port, GAMESERVER_NAME);
 

@@ -11,6 +11,10 @@ root = etree.parse(tmx).getroot()
 el = root
 
 def process(el, tagname):
+    # Normalize Tiled CSV layers to the exporter's tile list.
+    if el.tag == 'data' and el.get('encoding') == 'csv':
+        data = {'tile': [{'gid': int(gid.strip())} for gid in el.text.split(',') if gid.strip()]}
+        return {'data': data} if tagname else data
     attrs = dict(el.attrib)
     for a in attrs.keys():
         if attrs[a].isdigit():

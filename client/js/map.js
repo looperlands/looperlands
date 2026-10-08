@@ -168,6 +168,7 @@ define(['jquery', 'area'], function ($, Area) {
             this.animated = map.animated;
             this.stagedTiles = map.stagedTiles || {};
             this.actionTiles = map.actionTiles || {};
+            this.eventBoards = map.eventBoards || [];
             this.tilesetColumns = map.tilesetColumns;
             this.hiddenLayers = map.hiddenLayers || {};
             this.collidingTiles = map.collidingTiles || {};
