@@ -28,13 +28,20 @@ def finish(code=0):
     (root / 'state.json').write_text(json.dumps(state))
     sys.exit(code)
 if command in ('flock', 'sleep'): pass
+elif command == 'df': print('fixture Docker filesystem: capacity and inode usage')
 elif command == 'systemctl': pass
 elif command == 'sudo':
     assert a == ['-n', 'systemctl', 'restart', 'looperlands']
     if state.get('fail') == 'restart': finish(1)
     state['restarted'] = True
 elif command == 'docker':
-    if a[0] == 'ps': print('old1\nold2')
+    if a[0] == 'info': print(root)
+    elif a[:2] == ['system', 'df']: print('fixture Docker image usage')
+    elif a[:2] == ['image', 'prune']:
+        assert a == ['image', 'prune', '--force', '--filter', 'until=24h']
+        if state.get('fail') == 'prune': finish(1)
+        state['pruned'] = True
+    elif a[0] == 'ps': print('old1\nold2')
     elif a[0] == 'inspect':
         fmt, container = a[2], a[3]
         if '.Config.Image' in fmt: print('balkshamster/looperlands:latest')
@@ -57,7 +64,12 @@ elif command == 'docker':
         operation = a[a.index('-f') + 2:]
         if operation[0] == 'config': print((root / 'config.json').read_text())
         elif operation[0] == 'ps': print(('new' if state['restarted'] else 'old') + ('2' if operation[-1] == 'gameserver2' else '1'))
-        elif operation[0] != 'pull': finish(2)
+        elif operation[0] == 'pull':
+            assert state.get('pruned')
+            if state.get('fail') == 'pull':
+                print('write /var/lib/docker/tmp/GetImageBlob: no space left on device', file=sys.stderr)
+                finish(18)
+        else: finish(2)
     elif a[0] == 'exec' and a[1] == '-i':
         arguments = a[2:]
         environment = dict(os.environ)
@@ -118,7 +130,7 @@ class DeploymentTest(unittest.TestCase):
         (self.root / 'host.yml').write_text('installed persistent compose')
         (self.root / 'backups').mkdir()
         (self.root / 'backups' / 'private-history.json').write_text('private-fixture-do-not-log')
-        for command in ('docker', 'systemctl', 'sudo', 'flock', 'sleep'):
+        for command in ('docker', 'systemctl', 'sudo', 'flock', 'sleep', 'df'):
             filename = self.root / command
             filename.write_text(FAKE)
             filename.chmod(0o755)
@@ -156,6 +168,33 @@ class DeploymentTest(unittest.TestCase):
         self.assertLess(pull, restart)
         self.assertTrue(any(call[:2] == ['docker', 'exec'] and call[2].startswith('old') for call in operations[:pull]))
         self.assertTrue(any(call[:2] == ['docker', 'exec'] and call[2].startswith('new') for call in operations[restart + 1:]))
+
+    def test_prunes_only_old_dangling_images_after_storage_checks_before_pull(self):
+        self.assertEqual(self.run_deploy().returncode, 0)
+        calls = self.state['calls']
+        prune = calls.index(['docker', 'image', 'prune', '--force', '--filter', 'until=24h'])
+        pull = next(i for i, call in enumerate(calls) if 'pull' in call)
+        last_storage_check = max(i for i, call in enumerate(calls[:prune]) if call[:2] == ['docker', 'exec'])
+        self.assertLess(last_storage_check, prune)
+        self.assertLess(prune, pull)
+        self.assertIn(['docker', 'system', 'df'], calls[:prune])
+        self.assertIn(['df', '-h', str(self.root)], calls[:prune])
+        self.assertIn(['df', '-i', str(self.root)], calls[:prune])
+
+    def test_prune_failure_stops_before_pull_announcement_or_restart(self):
+        self.state['fail'] = 'prune'
+        self.assert_stops_before_pull_or_restart()
+        self.assertNotIn('announcements', self.state)
+
+    def test_disk_full_pull_keeps_running_servers_and_reports_storage(self):
+        self.state['fail'] = 'pull'
+        result = self.run_deploy()
+        self.assertEqual(result.returncode, 18)
+        self.assertFalse(self.state['restarted'])
+        self.assertNotIn('announcements', self.state)
+        self.assertIn('no announcements or restart were performed', result.stderr)
+        self.assertIn('no space left on device', result.stderr)
+        self.assertEqual(self.state['calls'].count(['docker', 'system', 'df']), 2)
 
     def test_missing_live_mount_blocks_restart(self):
         self.state['mounts'] = {'gameserver2': ''}
