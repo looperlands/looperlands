@@ -61,6 +61,16 @@ test('server caps oversized input and still sanitizes it', async () => {
     expect(chat.addMessage).toHaveBeenCalledWith('Farmer', expected);
 });
 
+test.each([Types.Messages.CHAT, Types.Messages.CHAT_SEND])('chat packet %s is not broadcast in the game when persistence fails', async type => {
+    const {player, chat, receive} = createPlayer();
+    const send = jest.fn().mockReturnValue(false);
+    player.server = {server: {socialChat: {send}}};
+    await receive(type === Types.Messages.CHAT ? [type, 'unsaved'] : [type, 'world', '', 'unsaved', 'request-id']);
+    expect(send).toHaveBeenCalled();
+    expect(player.broadcastToZone).not.toHaveBeenCalled();
+    expect(chat.addMessage).not.toHaveBeenCalled();
+});
+
 test('a second connection cannot reuse an active authenticated session', async () => {
     const { player, connection, receive } = createPlayer();
     player.hasEnteredGame = false;

@@ -8,16 +8,16 @@ vm.runInNewContext(fs.readFileSync(path.join(__dirname, 'mapnames.js'), 'utf8'),
     define: factory => {mapNames = factory();}
 });
 
-function chat() {
+function chat(globals = {}) {
     let Chat;
     const timers = [];
     vm.runInNewContext(fs.readFileSync(path.join(__dirname, 'socialchat.js'), 'utf8'), {
         define: (dependencies, factory) => {Chat = factory({}, mapNames);}, Types,
-        setTimeout: callback => {timers.push(callback); return timers.length;}, clearTimeout: jest.fn()
+        setTimeout: callback => {timers.push(callback); return timers.length;}, clearTimeout: jest.fn(), ...globals
     });
     const instance = Object.create(Chat.prototype);
     Object.assign(instance, {
-        me: {id: 'alice', mapId: 'main'}, people: new Map(), histories: new Map(), drafts: new Map(), attachments: new Map(), giftRetries: new Map(), pending: new Map(), unread: new Map(),
+        me: {id: 'alice', mapId: 'main'}, people: new Map(), histories: new Map(), drafts: new Map(), attachments: new Map(), giftRetries: new Map(), pending: new Map(), unread: new Map(), avatarSources: new Map(),
         connected: true, tab: 'world', target: '', players: [{id: 'bob'}],
         app: {game: {client: {connection: {connected: true}, sendChatGift: jest.fn(), sendSocialChat: jest.fn()}}},
         renderMessages: jest.fn(), renderBadges: jest.fn(), renderComposerState: jest.fn(), clearError: jest.fn(), error: jest.fn()
@@ -25,6 +25,45 @@ function chat() {
     const input = {value: ''}; instance.node = () => input;
     return {instance, input, timers};
 }
+
+test.each([
+    '_a7757eb05782aa7784d6c25b4b4291da370af19de23d9175613d1efe988ed59ei0',
+    'NFT_B5893a75b74F9cACCd3c23b4A974DB5F53B4E9D2_2107',
+    'NFT_45d40a1f8faafb8c0592cd7a2ed69fca07f1bdd50fe951918aad73b3e07b92f0'
+])('chat resolves dynamic avatar %s when no local sprite is loaded', async avatar => {
+    let image;
+    const get = jest.fn().mockResolvedValue({data: {tokenHash: avatar, assetType: 'armor'}});
+    const {instance} = chat({Image: class {constructor() {image = this;}}, axios: {get}});
+    instance.app.sessionId = 'test-session';
+    const loading = instance.avatarSource(avatar);
+    await image.onerror();
+    expect(get).toHaveBeenCalledWith('/session/test-session/dynamicnft/' + avatar.replace(/^NFT_/, '0x') + '/nftid');
+    expect((await loading).url).toBe('https://looperlands.sfo3.digitaloceanspaces.com/assets/looper/1/' + avatar + '.png');
+});
+
+test('chat retries an avatar lookup after a temporary failure instead of caching the default', async () => {
+    let image;
+    const avatar = '_' + 'a'.repeat(64) + 'i0';
+    const get = jest.fn().mockRejectedValueOnce(new Error('Temporary failure')).mockResolvedValueOnce({data: {tokenHash: avatar}});
+    const {instance} = chat({Image: class {constructor() {image = this;}}, axios: {get}});
+    const first = instance.avatarSource(avatar);
+    await image.onerror();
+    expect((await first).url).toBe('img/1/clotharmor.png');
+    const retry = instance.avatarSource(avatar);
+    await image.onerror();
+    expect((await retry).url).toContain(avatar + '.png');
+    expect(get).toHaveBeenCalledTimes(2);
+});
+
+test('chat crops a loaded dynamic sprite from its 1x sheet at larger game render scales', async () => {
+    let image;
+    const avatar = '_' + 'a'.repeat(64) + 'i0';
+    const {instance} = chat({Image: class {constructor() {image = this;}}});
+    instance.app.game.sprites = {[avatar]: {dynamicNFT: true, scale: 3, filepath: 'https://example.com/avatar.png', width: 32, height: 32, animationData: {idle_down: {row: 8}}}};
+    const loading = instance.avatarSource(avatar);
+    image.onload();
+    expect(await loading).toEqual({url: 'https://example.com/avatar.png', width: 32, height: 32, row: 8});
+});
 
 test('My map is a filtered view of all public messages, regardless of the sending tab', () => {
     const {instance} = chat();

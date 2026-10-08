@@ -4,8 +4,8 @@ const Types = require('../../shared/js/gametypes');
 const Utils = require('./utils');
 const publicChat = require('./chat');
 const Collectables = require('./collectables');
+const { ChatHistory } = require('./chathistory');
 
-const MAX_MESSAGES = 100;
 const HISTORY_TTL = 24 * 60 * 60;
 const walletKey = wallet => String(wallet || '').toLowerCase();
 const itemKind = item => /^\d+$/.test(item) ? Number(item) : item;
@@ -27,7 +27,7 @@ function identityFromSession(session) {
 }
 
 class SocialChat {
-    constructor(sessionCache, inventoryGateway) {
+    constructor(sessionCache, inventoryGateway, history = new ChatHistory()) {
         this.sessions = sessionCache;
         this.players = new Map();
         this.locations = new Map();
@@ -35,7 +35,7 @@ class SocialChat {
         this.walletsById = new Map();
         this.inventoryGateway = inventoryGateway;
         this.gifts = new NodeCache({stdTTL: HISTORY_TTL, checkperiod: 300, useClones: false});
-        this.history = new NodeCache({ stdTTL: HISTORY_TTL, checkperiod: 300 });
+        this.history = history;
     }
 
     identity(player) {
@@ -55,7 +55,7 @@ class SocialChat {
     publicId(wallet) {
         const key = walletKey(wallet);
         if (!this.publicIds.has(key)) {
-            const id = crypto.randomBytes(16).toString('hex');
+            const id = this.history.publicId(key);
             this.publicIds.set(key, id);
             this.walletsById.set(id, key);
         }
@@ -148,6 +148,16 @@ class SocialChat {
         }
         const transferId = crypto.createHash('sha256').update(walletKey(player.walletId) + '\0' + requestId).digest('hex');
         const messageText = Utils.sanitize(text.slice(0, Types.MAX_CHAT_LENGTH));
+        const confirmed = (this.history.get('inbox:' + walletKey(player.walletId)) || []).find(message => message.id === transferId);
+        if (confirmed) {
+            if (confirmed.recipient.id !== target || confirmed.message !== messageText || confirmed.attachment.item !== item ||
+                confirmed.attachment.quantity !== quantity || confirmed.sender.avatar !== sender.avatar) {
+                return this.fail(player, 'request_conflict', 'direct', target, requestId);
+            }
+            player.send([Types.Messages.CHAT_MESSAGE, {...confirmed, requestId}]);
+            this.sendInventory(player);
+            return true;
+        }
         let gift = this.gifts.get(transferId);
         if (gift && (gift.target !== target || gift.text !== messageText || gift.item !== item || gift.quantity !== quantity || gift.fromNftId !== player.nftId)) {
             return this.fail(player, 'request_conflict', 'direct', target, requestId);
@@ -172,22 +182,24 @@ class SocialChat {
         if (!gift.inFlight) {
             gift.inFlight = (async () => {
                 try {
-                    const receipt = await this.inventoryGateway.transferItems({requestId: transferId, fromNftId: gift.fromNftId, toNftId: gift.toNftId, item, quantity});
-                    this.setQuantity(gift.senderWallet, gift.fromNftId, item, receipt.fromQuantity);
-                    this.setQuantity(gift.recipientWallet, gift.toNftId, item, receipt.toQuantity);
-                    gift.message = {
+                    if (!gift.receipt) {
+                        gift.receipt = await this.inventoryGateway.transferItems({requestId: transferId, fromNftId: gift.fromNftId, toNftId: gift.toNftId, item, quantity});
+                        this.setQuantity(gift.senderWallet, gift.fromNftId, item, gift.receipt.fromQuantity);
+                        this.setQuantity(gift.recipientWallet, gift.toNftId, item, gift.receipt.toQuantity);
+                    }
+                    const message = {
                         id: transferId, channel: 'direct', sender: gift.sender, recipient: gift.recipient,
                         message: gift.text, epoch: Date.now(), mapId: gift.sender.mapId,
                         attachment: {...this.itemDetails(item), quantity, transferId}
                     };
-                    this.append('inbox:' + walletKey(gift.senderWallet), gift.message);
-                    this.append('inbox:' + walletKey(gift.recipientWallet), gift.message);
+                    this.history.append(['inbox:' + walletKey(gift.senderWallet), 'inbox:' + walletKey(gift.recipientWallet)], message);
+                    gift.message = message;
                     const receiver = this.players.get(walletKey(gift.recipientWallet));
                     if (receiver && this.identity(receiver)) receiver.send([Types.Messages.CHAT_MESSAGE, gift.message]);
                     return true;
                 } catch (error) {
-                    gift.error = error.transferUncertain ? 'gift_pending' : error.code || 'gift_unavailable';
-                    if (!error.transferUncertain) {
+                    gift.error = gift.receipt || error.transferUncertain ? 'gift_pending' : error.code || 'gift_unavailable';
+                    if (!gift.receipt && !error.transferUncertain) {
                         const session = this.sessions.get(player.sessionId);
                         const current = session?.gameData?.items?.[item] || 0;
                         this.setQuantity(gift.senderWallet, gift.fromNftId, item, current + quantity);
@@ -206,12 +218,10 @@ class SocialChat {
     itemDetails(item) {
         const kind = itemKind(item);
         const label = typeof kind === 'number' ? Collectables.getInventoryDescription(kind) || Types.getKindAsString(kind) : item;
-        const image = String(Collectables.getCollectableImageName(kind));
-        return {item, name: String(label).replace(/[_-]/g, ' '), image: image.startsWith('item-') ? image : 'item-' + image};
-    }
-
-    append(key, message) {
-        this.history.set(key, [...(this.history.get(key) || []), message].slice(-MAX_MESSAGES));
+        const collectableImage = Collectables.getCollectableImageName(kind);
+        // Non-collectable goods return their numeric kind; fish already return a sprite name.
+        const image = typeof collectableImage === 'number' ? 'item-' + Types.getKindAsString(collectableImage) : String(collectableImage);
+        return {item, name: String(label).replace(/[_-]/g, ' '), image};
     }
 
     fail(player, code, channel, target, requestId) {
@@ -242,13 +252,17 @@ class SocialChat {
         const deliver = receiver => receiver.send([Types.Messages.CHAT_MESSAGE, {
             ...message, requestId: receiver === player ? requestId : undefined
         }]);
+        try {
+            this.history.append(channel === 'direct'
+                ? ['inbox:' + walletKey(player.walletId), 'inbox:' + walletKey(recipientPlayer.walletId)] : ['world'], message);
+        } catch (error) {
+            console.error('Chat history could not be saved:', error.code || error.name);
+            return this.fail(player, 'history_unavailable', channel, target, requestId);
+        }
         if (channel === 'direct') {
-            this.append('inbox:' + walletKey(player.walletId), message);
-            this.append('inbox:' + walletKey(recipientPlayer.walletId), message);
             deliver(player);
             deliver(recipientPlayer);
         } else {
-            this.append('world', message);
             for (const receiver of this.players.values()) {
                 if (this.identity(receiver)) deliver(receiver);
             }

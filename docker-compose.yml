@@ -9,6 +9,7 @@ services:
       ACTIVITY_SPOOL_PATH: /var/lib/looperlands/activity/activity.jsonl
     volumes:
       - activity_spool_1:/var/lib/looperlands/activity
+      - chat-history:/opt/app/data/chat
   gameserver2:
     image: balkshamster/looperlands:latest
     ports:
@@ -19,8 +20,10 @@ services:
       ACTIVITY_SPOOL_PATH: /var/lib/looperlands/activity/activity.jsonl
     volumes:
       - activity_spool_2:/var/lib/looperlands/activity
-
+      - chat-history-2:/opt/app/data/chat
 
 volumes:
   activity_spool_1:
   activity_spool_2:
+  chat-history:
+  chat-history-2:

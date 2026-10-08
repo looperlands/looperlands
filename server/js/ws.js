@@ -25,6 +25,8 @@ const chat = require("./chat.js");
 const { SocialChat } = require('./socialchat');
 const {EventEquipment, effectiveLevel} = require('./eventequipment');
 const {EventBoardController} = require('./eventboardcontroller');
+const { ChatHistory, DEFAULT_RETENTION_DAYS } = require('./chathistory');
+const path = require('path');
 const quests = require("./quests/quests.js");
 const Lakes = require("./lakes.js");
 const AltNames = require("../../shared/js/altnames");
@@ -177,7 +179,12 @@ WS.socketIOServer = Server.extend({
             this.activity.close();
             process.kill(process.pid, signal);
         });
-        this.socialChat = new SocialChat(cache, dao);
+        const history = new ChatHistory(
+            process.env.CHAT_HISTORY_FILE || path.resolve(__dirname, '../../data/chat/history.json'),
+            Number(process.env.CHAT_HISTORY_RETENTION_DAYS ?? DEFAULT_RETENTION_DAYS)
+        );
+        this.socialChat = new SocialChat(cache, dao, history);
+        chat.setHistory(history);
         var express = require('express');
         var app = express();
         app.use("/", express.static(__dirname + "/../../client-build"));

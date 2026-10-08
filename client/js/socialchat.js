@@ -115,6 +115,7 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
                 const retry = [...this.giftRetries.entries()].find(([channel, request]) => request.requestId === data.requestId);
                 if (retry && data.code !== 'gift_pending') this.giftRetries.delete(retry[0]);
                 const errors = {
+                    history_unavailable: 'Chat history could not be saved. Your message has not been sent. Please retry.',
                     player_offline: 'This player is offline. Your message has not been sent.',
                     item_not_transferable: 'This item cannot be gifted. Remove it and choose another item.',
                     insufficient_items: 'You do not have enough of this item. Adjust or remove the gift.',
@@ -322,6 +323,7 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
 
         itemImage(item) {
             const image = element('img', 'sc-item-image'); image.alt = '';
+            image.onerror = () => { image.style.visibility = 'hidden'; };
             image.src = 'img/1/' + encodeURIComponent(item.image) + '.png';
             return image;
         }
@@ -416,17 +418,21 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
             if (this.avatarSources.has(avatar)) return this.avatarSources.get(avatar);
             const sprite = this.app.game.sprites?.[avatar];
             const source = new Promise(resolve => {
-                const scale = sprite?.scale || 1;
+                // Dynamic sprites always use the 1x sheet, regardless of game render scale.
+                const scale = sprite?.dynamicNFT ? 1 : sprite?.scale || 1;
                 const url = sprite?.filepath || 'img/1/' + encodeURIComponent(avatar) + '.png';
                 const image = new Image();
                 image.onload = () => resolve({ url, width: (sprite?.width || 32) * scale, height: (sprite?.height || 32) * scale, row: sprite?.animationData?.idle_down?.row ?? 8 });
                 image.onerror = async () => {
                     try {
-                        if (!/^NFT_[a-f0-9]+$/i.test(avatar)) throw new Error('Unknown sprite');
+                        if (!/^(?:NFT_[a-z0-9_-]+|_[a-f0-9]{64}i\d+)$/i.test(avatar)) throw new Error('Unknown sprite');
                         const { data } = await axios.get('/session/' + encodeURIComponent(this.app.sessionId) + '/dynamicnft/' + encodeURIComponent(avatar.replace(/^NFT_/, '0x')) + '/nftid');
                         if (!/^[a-zA-Z0-9_-]+$/.test(data.tokenHash)) throw new Error('Invalid sprite');
                         resolve({ url: 'https://looperlands.sfo3.digitaloceanspaces.com/assets/looper/1/' + data.tokenHash + '.png', width:32, height:32, row:8 });
-                    } catch (error) { resolve({url:'img/1/clotharmor.png',width:32,height:32,row:8}); }
+                    } catch (error) {
+                        this.avatarSources.delete(avatar);
+                        resolve({url:'img/1/clotharmor.png',width:32,height:32,row:8});
+                    }
                 }; image.src = url;
             });
             this.avatarSources.set(avatar, source); return source;
