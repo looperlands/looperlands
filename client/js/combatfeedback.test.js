@@ -25,9 +25,9 @@ test('positive confirmed hits animate independently and expire by elapsed time',
     feedback.addImpact(mob, -5, 1060);
     const frame = feedback.getFrame(1100);
     expect(frame.impacts).toHaveLength(2);
-    expect(frame.impacts[0].progress).toBeCloseTo(100 / 180);
-    expect(frame.impacts[1].progress).toBeCloseTo(50 / 180);
-    expect(feedback.getFrame(1200).impacts).toHaveLength(1);
+    expect(frame.impacts[0].progress).toBeCloseTo(100 / 300);
+    expect(frame.impacts[1].progress).toBeCloseTo(50 / 300);
+    expect(feedback.getFrame(1300).impacts).toHaveLength(1);
     expect(feedback.getFrame(5000).impacts).toHaveLength(0);
 });
 
@@ -36,7 +36,7 @@ test('rapid hits are bounded and retain the most recent impacts', () => {
     for (let i = 0; i < 100; i++) feedback.addImpact(mob, 10, 1000 + i);
     const impacts = feedback.getFrame(1100).impacts;
     expect(impacts).toHaveLength(24);
-    expect(impacts[0].progress).toBeCloseTo(24 / 180);
+    expect(impacts[0].progress).toBeCloseTo(24 / 300);
 });
 
 test.each(['disabled', 'reduced motion'])('%s suppresses bursts while retaining the target', preference => {
