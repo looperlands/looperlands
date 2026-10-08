@@ -2,9 +2,11 @@ const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
 const WorldTime = require('./worldtime-worker');
+const WorldParticles = require('./worldparticles-worker');
 
 function setup(reducedMotion = false, clock = Date, getWorldTime = () => 50 * 60000) {
-    const context = {clearRect: jest.fn(), fillRect: jest.fn(),
+    const context = {clearRect: jest.fn(), fillRect: jest.fn(), save: jest.fn(), restore: jest.fn(),
+        translate: jest.fn(), rotate: jest.fn(), beginPath: jest.fn(), rect: jest.fn(), clip: jest.fn(),
         createRadialGradient: jest.fn(() => ({addColorStop: jest.fn()}))};
     const canvas = {style: {}, setAttribute: jest.fn(), getContext: () => context};
     const parent = {style: {}, appendChild: jest.fn()};
@@ -17,7 +19,7 @@ function setup(reducedMotion = false, clock = Date, getWorldTime = () => 50 * 60
     vm.runInNewContext(fs.readFileSync(path.join(__dirname, 'worldambience.js'), 'utf8'), {
         document, window: {matchMedia: () => ({matches: reducedMotion})},
         requestAnimationFrame, cancelAnimationFrame, setTimeout, clearTimeout, Date: clock,
-        define: (dependencies, factory) => { WorldAmbience = factory(WorldTime); }
+        define: (dependencies, factory) => { WorldAmbience = factory(WorldTime, WorldParticles); }
     });
     return {ambience: new WorldAmbience(undefined, getWorldTime), canvas, context, parent, document, requestAnimationFrame, cancelAnimationFrame, setTimeout, clearTimeout};
 }
@@ -148,3 +150,39 @@ test('preview freezes the world phase while firefly motion remains continuous', 
     expect(Math.abs(next[1] - first[1])).toBeLessThan(1);
     ambience.clear();
 });
+
+test('layered effects draw smoothly at map scale and stay inside their authored area', () => {
+    let now = 10000;
+    const {ambience, context} = setup(false, {now: () => now}, () => 20 * 60000);
+    ambience.getView = () => ({x: 20, y: 100, scale: 2});
+    ambience.setConfig({...config, scene: 'Forest', bounds: {x: 0, y: 80, width: 400, height: 200},
+        effects: [{type: 'leaves', count: 4}, {type: 'pollen', count: 3}]});
+    expect(context.rect).toHaveBeenCalledWith(-40, -40, 800, 400);
+    expect(context.clip).toHaveBeenCalledTimes(1);
+    expect(context.rotate).toHaveBeenCalled();
+    expect(context.fillRect.mock.calls.some(([, , width, height]) => width === 2 && height === 2)).toBe(true);
+    const first = context.translate.mock.calls[0];
+    context.translate.mockClear(); now += 16; ambience.draw();
+    const next = context.translate.mock.calls[0];
+    expect(next[0]).not.toBe(first[0]);
+    expect(Math.abs(next[0] - first[0])).toBeLessThan(1);
+    expect(Math.abs(next[1] - first[1])).toBeLessThan(1);
+});
+
+test.each(['leaves', 'pollen', 'dust', 'gusts', 'spray', 'sand', 'embers', 'ash', 'mist'])(
+    '%s uses continuous map positions through camera movement and global time changes', type => {
+        const view = {x: 32, y: 16, scale: 2};
+        const first = WorldParticles.positions(type, 6, 100, view, 960, 448).find(p => p.x > 150 && p.y > 100);
+        const at = (elapsed, camera) => WorldParticles.positions(type, 6, elapsed, camera, 960, 448)
+            .find(p => p.index === first.index && Math.abs(p.x - first.x) < 30 && Math.abs(p.y - first.y) < 30);
+        const next = at(100.016, view);
+        expect(Math.abs(next.x - first.x)).toBeLessThan(1);
+        expect(Math.abs(next.y - first.y)).toBeLessThan(1);
+        const shifted = at(100, {...view, x: 42, y: 26});
+        expect(shifted.x).toBeCloseTo(first.x - 20);
+        expect(shifted.y).toBeCloseTo(first.y - 20);
+        const {ambience, context} = setup(false, Date, () => 50 * 60000);
+        ambience.setConfig({...config, particles: type, effects: [{type, count: 6}]});
+        expect(context.fillRect).toHaveBeenCalled();
+        expect(context.fillRect.mock.calls.some(([, , width, height]) => width === 960 && height === 448)).toBe(false);
+    });
