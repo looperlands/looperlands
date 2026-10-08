@@ -1191,8 +1191,11 @@ module.exports = World = cls.Class.extend({
         for (let wordId in this.server.worldsMap) {
             totalCount += this.server.worldsMap[wordId].playerCount;
         }
-        //console.log("Updating population: " + this.playerCount + " " + totalPlayers)
-        this.pushBroadcast(new Messages.Population(this.playerCount, totalCount));
+        // A join or exit changes the total for players on every map.
+        for (let worldId in this.server.worldsMap) {
+            const world = this.server.worldsMap[worldId];
+            world.pushBroadcast(new Messages.Population(world.playerCount, totalCount));
+        }
     },
 
 
