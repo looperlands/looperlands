@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
 
-function setup(reducedMotion = false) {
+function setup(reducedMotion = false, clock = Date) {
     const context = {clearRect: jest.fn(), fillRect: jest.fn(),
         createRadialGradient: jest.fn(() => ({addColorStop: jest.fn()}))};
     const canvas = {style: {}, setAttribute: jest.fn(), getContext: () => context};
@@ -11,18 +11,19 @@ function setup(reducedMotion = false) {
         getElementById: id => id === 'canvas' ? parent : {width: 960, height: 448}};
     const requestAnimationFrame = jest.fn(() => 7);
     const cancelAnimationFrame = jest.fn();
+    const setTimeout = jest.fn(() => 8), clearTimeout = jest.fn();
     let WorldAmbience;
     vm.runInNewContext(fs.readFileSync(path.join(__dirname, 'worldambience.js'), 'utf8'), {
         document, window: {matchMedia: () => ({matches: reducedMotion})},
-        requestAnimationFrame, cancelAnimationFrame, Date,
+        requestAnimationFrame, cancelAnimationFrame, setTimeout, clearTimeout, Date: clock,
         define: factory => { WorldAmbience = factory(); }
     });
-    return {ambience: new WorldAmbience(), canvas, context, parent, document, requestAnimationFrame, cancelAnimationFrame};
+    return {ambience: new WorldAmbience(), canvas, context, parent, document, requestAnimationFrame, cancelAnimationFrame, setTimeout, clearTimeout};
 }
 
 const config = {cycleSeconds: 180, nightOpacity: 0.12, particles: 'fireflies', particleCount: 12};
 
-test('ambience overlays the game without blocking clicks and removes itself on leaving the scene', () => {
+test('ambience overlays the game without blocking clicks and clears on disconnect', () => {
     const {ambience, canvas, parent, cancelAnimationFrame} = setup();
     ambience.setConfig(config);
     expect(parent.appendChild).toHaveBeenCalledWith(canvas);
@@ -36,7 +37,7 @@ test('ambience overlays the game without blocking clicks and removes itself on l
     expect(ambience.config).toBeNull();
 });
 
-test('reduced motion renders a static tint without animated particles or an animation loop', () => {
+test('reduced motion removes animated particles and keeps the clock on a slow timer', () => {
     const {ambience, context, requestAnimationFrame} = setup(true);
     ambience.setConfig(config);
     expect(context.fillRect).toHaveBeenCalledTimes(1);
@@ -110,4 +111,36 @@ test('a production snapshot hides controls left over from a local preview', () =
     ambience.controls = {style: {display: 'flex'}};
     ambience.setConfig({...config, previewControls: false, story: {goal: 'Talk to Bstrat.'}});
     expect(ambience.controls.style.display).toBe('none');
+});
+
+
+test('scene changes keep the shared clock phase and fireflies glow only as world night arrives', () => {
+    let now = 180000;
+    const {ambience, context} = setup(false, {now: () => now});
+    const tints = [];
+    context.fillRect.mockImplementation(() => { if (String(context.fillStyle).startsWith('rgba(22,30,68,')) tints.push(context.fillStyle); });
+    ambience.setConfig({...config, scene: 'Town', epoch: 0, serverTime: now});
+    expect(context.createRadialGradient).not.toHaveBeenCalled();
+    now = 225000;
+    ambience.setConfig({...config, scene: 'Town', epoch: 0, serverTime: now});
+    expect(context.createRadialGradient).toHaveBeenCalled();
+    const town = tints.at(-1);
+    ambience.setConfig({...config, scene: 'Town', particles: 'none', epoch: 0, serverTime: now});
+    expect(tints.at(-1)).toBe(town);
+    ambience.setConfig({...config, scene: 'Town', epoch: 0, serverTime: now});
+    expect(tints.at(-1)).toBe(town);
+    ambience.clear();
+});
+
+test('reduced motion lighting follows world time and cancels its timer on disconnect', () => {
+    let now = 180000;
+    const {ambience, context, setTimeout, clearTimeout} = setup(true, {now: () => now});
+    ambience.setConfig({...config, epoch: 0, serverTime: now});
+    expect(context.fillStyle).toBe('rgba(22,30,68,0)');
+    now = 270000;
+    setTimeout.mock.calls.at(-1)[0]();
+    expect(context.fillStyle).toBe('rgba(22,30,68,0.12)');
+    expect(context.createRadialGradient).not.toHaveBeenCalled();
+    ambience.clear();
+    expect(clearTimeout).toHaveBeenCalledWith(8);
 });

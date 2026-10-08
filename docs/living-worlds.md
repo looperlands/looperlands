@@ -51,7 +51,8 @@ Check these behaviours:
    A short camera interpolation smooths whole-pixel scroll updates; teleports snap
    directly to the new location. The glow is deliberately softer than the first preview.
    Walk north into Forest:
-   the Town overlay disappears. Reduced-motion preferences produce a static tint.
+   the same world lighting continues, while Town fireflies disappear. Reduced-motion
+   preferences remove insect animation while lighting follows time on a slower timer.
 
 Visitor recognition lives in the operating system's temporary directory under
 `looperlands-npc-preview/npc-memory.json` and survives preview restarts. Fixture quest
@@ -153,8 +154,10 @@ and quest progression remain owned by the existing dialogue/quest engine.
 
 `ambience` targets one exact scene name. It configures a shared `cycleSeconds`
 (minimum 60), `nightOpacity` (0–0.45), `particles` (`fireflies`, `leaves`, `none`) and
-`particleCount` (0–24). The overlay is visual only and does not alter collisions,
-combat, or game input. Leaving the scene and disconnecting clear it.
+`particleCount` (0–24). World lighting uses the same shared clock throughout main; `ambience.scene` limits
+particles rather than the night tint. Firefly glow follows the world night level.
+The overlay is visual only and does not alter collisions, combat, or game input.
+Disconnecting clears it.
 Optional `mode` chooses `day`, `night` or `cycle`; the pilot defaults to `cycle`.
 The Day/Night/Cycle controls and their API exist only in the local preview launcher.
 

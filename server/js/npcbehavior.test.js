@@ -166,13 +166,13 @@ test('combat reactions are local, throttled and do not overwrite a conversation'
     expect(chatTexts(world)).toEqual(['Well fought']);
 });
 
-test('idle worlds do not move NPCs and leaving Town removes ambience', () => {
+test('idle worlds do not move NPCs and Forest keeps the world clock without Town fireflies', () => {
     const {world, advance, player} = setup();
     world.map.getSceneAt = () => ({name: 'Forest'});
     player.x = 19; player.y = 19;
     advance(2000);
     const messages = world.pushToPlayer.mock.calls.map(([, message]) => message.serialize());
-    expect(messages).toContainEqual([Types.Messages.WORLD_AMBIENCE, null]);
+    expect(messages).toContainEqual([Types.Messages.WORLD_AMBIENCE, expect.objectContaining({epoch: 0, cycleSeconds: 180, nightOpacity: 0.12, particles: 'none'})]);
     delete world.players[1];
     const moves = world.moveNpc.mock.calls.length;
     advance(5000);
@@ -306,4 +306,25 @@ test('all pilot routes are connected on the actual map and avoid doors', async (
             Object.assign(routine.npc, waypoint);
         }
     }
+});
+
+
+test('Town and Forest retain the same clock and tint in a world with the picnic controller', () => {
+    const {controller, world, player, advance} = setup();
+    world.lanternPicnic = {state: null};
+    advance(200);
+    const town = world.pushToPlayer.mock.calls.map(([, message]) => message.serialize()).find(packet => packet[0] === Types.Messages.WORLD_AMBIENCE)[1];
+    world.pushToPlayer.mockClear();
+    world.map.getSceneAt = () => ({name: 'Forest'}); player.y = 8;
+    advance(200);
+    const forest = world.pushToPlayer.mock.calls.map(([, message]) => message.serialize()).find(packet => packet[0] === Types.Messages.WORLD_AMBIENCE)[1];
+    expect(forest.nightOpacity).toBe(town.nightOpacity);
+    expect(forest.epoch).toBe(town.epoch);
+    expect(forest.cycleSeconds).toBe(town.cycleSeconds);
+    expect(forest.serverTime - town.serverTime).toBe(200);
+    expect(town.particles).toBe('fireflies');
+    expect(forest.particles).toBe('none');
+    world.pushToPlayer.mockClear(); advance(200);
+    expect(world.pushToPlayer).not.toHaveBeenCalled();
+    expect(controller.playerStates.get(player.id).ambience).toBe(false);
 });

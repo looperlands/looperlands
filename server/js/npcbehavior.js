@@ -249,14 +249,14 @@ class NpcBehavior {
             const snapshot = JSON.stringify([active, goal, picnic.state]);
             if (state.snapshot !== snapshot) {
                 this.world.pushToPlayer(player, new Messages.WorldAmbience({...ambience,
-                    particles: active ? ambience.particles : 'none', nightOpacity: active ? ambience.nightOpacity : 0,
+                    particles: active ? ambience.particles : 'none',
                     serverTime: time, epoch: 0, picnic: picnic.state && {...picnic.state, music: (this.world.server.cache.get(player.sessionId)?.gameData?.choices || []).includes('lantern:music-picnic')},
                     story: {title: 'The Lantern Picnic', goal, event: active ? picnic.state?.message : ''}}));
                 state.snapshot = snapshot;
             }
             state.ambience = active;
         } else if (state.ambience !== active) {
-            this.world.pushToPlayer(player, new Messages.WorldAmbience(active ? {...ambience, epoch: 0, serverTime: time} : null));
+            this.world.pushToPlayer(player, new Messages.WorldAmbience(ambience ? {...ambience, particles: active ? ambience.particles : 'none', epoch: 0, serverTime: time} : null));
             state.ambience = active;
         }
         for (const [key, routine] of this.routines) {

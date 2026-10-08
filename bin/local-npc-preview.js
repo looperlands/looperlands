@@ -114,7 +114,9 @@ api.listen(fixturePort, '127.0.0.1', () => {
     const world = new World('world_main', 20, server);
     previewWorld = world;
     const Messages = require('../server/js/message');
-    const packetFor = player => ({...world.npcBehavior.config.ambience, serverTime: Date.now(), epoch: 0,
+    const packetFor = player => ({...world.npcBehavior.config.ambience,
+        particles: world.map.getSceneAt(player.x, player.y)?.name === world.npcBehavior.config.ambience.scene ? world.npcBehavior.config.ambience.particles : 'none',
+        serverTime: Date.now(), epoch: 0,
         previewPicnic: picnicScene?.state || null,
         previewStory: {title: 'The Lantern Picnic', goal: picnic.progress(server.cache.get(player.sessionId)?.gameData),
             event: picnicScene?.state?.message || '',
@@ -124,9 +126,7 @@ api.listen(fixturePort, '127.0.0.1', () => {
         const ambience = world.npcBehavior.config.ambience;
         Object.assign(ambience, {mode, previewControls: true});
         for (const player of Object.values(world.players)) {
-            if (world.map.getSceneAt(player.x, player.y)?.name === ambience.scene) {
-                world.pushToPlayer(player, new Messages.WorldAmbience(packetFor(player)));
-            }
+            world.pushToPlayer(player, new Messages.WorldAmbience(packetFor(player)));
         }
     };
     server.app.post('/__npc_preview/ambience', (req, res) => {
