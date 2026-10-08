@@ -76,7 +76,26 @@ has_storage() {
 while IFS=$'\t' read -r service volume; do
     has_storage "$service" "$volume" || { echo 'Chat storage is not persistent; refusing to replace game containers' >&2; exit 1; }
 done < "$work/volumes"
-compose pull
+docker_disk_usage() {
+    local docker_root
+    docker_root=$(docker info --format '{{.DockerRootDir}}') || return 0
+    df -h "$docker_root" || true
+    df -i "$docker_root" || true
+    docker system df || true
+}
+echo 'Checking Docker storage before downloading the game update.'
+docker_disk_usage
+# Default image prune removes dangling, unused images only. Keep the last 24h
+# for investigation/rollback; never prune containers, tagged images or volumes.
+docker image prune --force --filter 'until=24h'
+if compose pull; then
+    :
+else
+    pull_status=$?
+    echo 'Game image pull failed; no announcements or restart were performed. Docker storage:' >&2
+    docker_disk_usage
+    exit "$pull_status"
+fi
 failed=0
 for container in "${game_containers[@]}"; do
     echo "Sending reboot announcement to game-server container $container."
