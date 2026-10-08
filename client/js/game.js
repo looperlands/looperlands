@@ -1,11 +1,11 @@
 define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile',
         'warrior', 'gameclient', 'audio', 'updater', 'transition', 'combatfeedback',
         'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'fieldeffect', 'config', 'float', 'projectile', 'tileactions',
-        'worldambience', 'worldscenery', 'worldtime-worker', '../../shared/js/gametypes', '../../shared/js/altnames'],
+        'worldambience', 'worldscenery', 'conversationhold', 'worldtime-worker', '../../shared/js/gametypes', '../../shared/js/altnames'],
 
     function (InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, AnimatedTile,
               Warrior, GameClient, AudioManager, Updater, Transition, CombatFeedback,
-              Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, Fieldeffect, Config, Float, Projectile, TileActions, WorldAmbience, WorldScenery, WorldTime) {
+              Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, Fieldeffect, Config, Float, Projectile, TileActions, WorldAmbience, WorldScenery, ConversationHold, WorldTime) {
         var Game = Class.extend({
             init: function (app) {
                 this.app = app;
@@ -23,6 +23,20 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.chatinput = null;
                 this.bubbleManager = null;
                 this.audioManager = null;
+
+                this.conversationHold = new ConversationHold({
+                    nearby: id => {
+                        const npc = this.getEntityById(id);
+                        return this.started && !this.player.isDead && npc && Math.abs(npc.gridX - this.player.gridX) + Math.abs(npc.gridY - this.player.gridY) <= 5;
+                    },
+                    listen: (id, active) => {
+                        const npc = this.getEntityById(id);
+                        if (!npc) return;
+                        fetch('/session/' + this.sessionId + '/npc/' + npc.kind + '/listen?entityId=' + npc.id,
+                            {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({active})}).catch(() => {});
+                    },
+                    leave: () => this.app.closeChoicesPopup()
+                });
 
                 // Player
                 this.player = new Warrior("player", "");
@@ -8156,6 +8170,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         if (entity) {
                             currentOrientation = entity.orientation;
 
+                            if (id === self.playerId || entity instanceof Npc) entity.stop();
                             self.makeCharacterTeleportTo(entity, x, y);
                             entity.setOrientation(currentOrientation);
 
@@ -8256,6 +8271,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         self.infoManager.clear();
                         self.app.socialChat?.disconnect();
                         self.app.eventBoard?.disconnect();
+                        self.conversationHold.stop(); self.app.closeChoicesPopup();
                         self.worldAmbience.clear();
                         WorldScenery.update(self.renderer, null);
                         if (self.player) {
@@ -8672,6 +8688,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             return;
                         }
 
+                        self.conversationHold.stop();
                         let messages;
                         if (_.isObject(response.data)) {
                             messages = (!_.isArray(response.data.text) ? [response.data.text] : response.data.text);
@@ -8698,6 +8715,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         self.assignBubbleTo(npc);
                         self.audioManager.playSound("npc");
                     } else {
+                        self.conversationHold.stop();
                         msg = npc.talk(self.storage.walletId);
                         self.previousClickPosition = {};
                         if (msg) {
@@ -9783,6 +9801,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     });
                 } else {
 
+                    this.conversationHold.stop(); this.app.closeChoicesPopup();
                     this.currentZoning = new Transition();
                 }
 
@@ -10012,12 +10031,14 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             makeChoice: function (npcId, choice) {
                 let self = this;
                 let npc = self.getEntityById(npcId);
+                if (!npc) return;
+                this.conversationHold.start(npcId);
                 let url = '/session/' + self.sessionId + '/npc/' + npc.kind + '/dialogue/' + choice + '?entityId=' + npc.id;
                 axios.get(url).then(function (response) {
                     setTimeout(() => {
                         self.makeNpcTalk(npc);
                     }, 500);
-                })
+                }).catch(() => { self.conversationHold.stop(); });
             },
 
             showNewQuestPopup: function (quest) {
@@ -10041,6 +10062,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
             handleInputOptions(npcId, dialogueNode) {
                 if (this.player_choice_callback) {
+                    this.conversationHold.start(npcId);
                     this.destroyBubble(npcId);
                     this.player_choice_callback(npcId, dialogueNode)
                 }

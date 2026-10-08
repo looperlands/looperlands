@@ -328,3 +328,75 @@ test('Town and Forest retain the same clock and tint in a world with the picnic 
     expect(world.pushToPlayer).not.toHaveBeenCalled();
     expect(controller.playerStates.get(player.id).ambience).toBe(false);
 });
+
+test('a renewed conversation holds an NPC for long reading and resumes after the last reader leaves', () => {
+    const {controller, world, player, npc, advance} = setup();
+    player.x = 2; player.y = 3;
+    world.players[2] = {...player, id: 2};
+    controller.interact(player, npc.kind, npc.id);
+    expect(controller.listen(player, npc.id)).toBe(true);
+    for (let i = 0; i < 20; i++) {advance(4000); controller.listen(player, npc.id);}
+    expect(world.moveNpc).not.toHaveBeenCalled();
+    expect(chatTexts(world)).toEqual([]);
+    controller.listen(world.players[2], npc.id);
+    controller.listen(player, npc.id, false); advance(2000);
+    expect(world.moveNpc).not.toHaveBeenCalled();
+    expect(npc.behaviorState.activity).toBe('talking');
+    controller.listen(world.players[2], npc.id, false); advance(200); advance(6200);
+    expect(world.moveNpc).toHaveBeenCalledTimes(1);
+});
+
+test.each(['expired', 'walked away', 'dead', 'disconnected', 'not entered', 'bot'])('a reader who is %s cannot keep an NPC held', reason => {
+    const {controller, world, player, npc, advance} = setup();
+    player.x = 2; player.y = 3;
+    controller.listen(player, npc.id); advance(1000);
+    if (reason === 'walked away') player.x = 18;
+    if (reason === 'dead') player.isDead = true;
+    if (reason === 'disconnected') delete world.players[player.id];
+    if (reason === 'not entered') player.hasEnteredGame = false;
+    if (reason === 'bot') player.isBot = () => true;
+    advance(reason === 'expired' ? 15000 : 200);
+    expect(controller.routines.get('watch').listeners.size).toBe(0);
+    expect(npc.behaviorState.activity).not.toBe('talking');
+});
+
+test('distant, dead or stale readers cannot start holds, and other NPC identities are rejected', () => {
+    const {controller, player, npc} = setup();
+    expect(controller.listen(player, npc.id)).toBe(false);
+    player.x = 2; player.y = 3;
+    expect(controller.listen({...player}, npc.id)).toBe(false);
+    expect(controller.listen(player, 999)).toBe(false);
+    player.isDead = true; expect(controller.listen(player, npc.id)).toBe(false);
+    player.isDead = false; expect(controller.listen(player, npc.id)).toBe(true);
+});
+
+test('regional exchanges happen only during their authored part of the shared day', () => {
+    const base = setup().controller.config.npcs[0];
+    const {controller, world, player} = setup({npcs: [base,
+        {...base, key: 'friend', kind: 'villager', origin: {x: 4, y: 2}}],
+        conversations: [{cooldownSeconds: 60, hours: [16, 19], steps: [{npc: 'watch', text: 'Time for a rest.'}]}]});
+    player.x = 3; player.y = 3;
+    controller.worldTime = () => 14 / 24 * 3600000;
+    controller.nextConversation = 0; controller.tickConversation(1000000);
+    expect(controller.conversation).toBeNull();
+    controller.worldTime = () => 16.5 / 24 * 3600000;
+    controller.nextConversation = 0; controller.tickConversation(1000000); controller.tickConversation(1000200);
+    expect(chatTexts(world)).toContain('Time for a rest.');
+    controller.worldTime = () => 19 / 24 * 3600000;
+    controller.nextConversation = 0; controller.tickConversation(1020000);
+    expect(controller.conversation).toBeNull();
+});
+
+
+test.each([[23, true], [1, true], [2, false], [22, true], [21, false]])('overnight conversations respect configured window at hour %s', (hour, permitted) => {
+    const base = setup().controller.config.npcs[0];
+    const {controller, player} = setup({npcs: [base], conversations: [{cooldownSeconds: 60, hours: [22, 2], steps: [{npc: 'watch', text: 'Night watch.'}]}]});
+    player.x = 3; player.y = 3; controller.worldTime = () => hour / 24 * 3600000;
+    controller.nextConversation = 0; controller.tickConversation(1000000);
+    expect(Boolean(controller.conversation)).toBe(permitted);
+});
+test.each([[[0, 0]], [[0, 24]], [[3]], [['night', 7]]])('invalid conversation hours are rejected: %j', hours => {
+    const config = setup().controller.config;
+    config.conversations = [{cooldownSeconds: 60, hours, steps: [{npc: 'watch', text: 'Hello'}]}];
+    expect(() => validateConfig(config)).toThrow('Invalid NPC conversation');
+});

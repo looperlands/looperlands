@@ -1,6 +1,10 @@
 {
   "enabled": true,
-  "speech": {"radius": 14, "cooldownSeconds": 20, "greetingCooldownSeconds": 180},
+  "speech": {
+    "radius": 14,
+    "cooldownSeconds": 20,
+    "greetingCooldownSeconds": 180
+  },
   "ambience": {
     "scene": "Town",
     "cycleSeconds": 180,
@@ -15,21 +19,200 @@
       "kind": "villager",
       "label": "Ordinary Adam",
       "preset": "work",
-      "origin": {"x": 37, "y": 200},
-      "area": {"x": 10, "y": 193, "width": 69, "height": 45},
+      "origin": {
+        "x": 37,
+        "y": 200
+      },
+      "area": {
+        "x": 10,
+        "y": 193,
+        "width": 69,
+        "height": 45
+      },
       "stepMs": 600,
       "route": [
-        {"x": 40, "y": 210, "waitSeconds": 30, "activity": "checking the market"},
-        {"x": 44, "y": 215, "waitSeconds": 12, "activity": "watering", "line": "A little water, a little patience.", "sound": "watersplash"},
-        {"x": 36, "y": 213, "waitSeconds": 15, "activity": "resting"},
-        {"x": 37, "y": 200, "waitSeconds": 12, "activity": "checking supplies"}
+        {
+          "x": 40,
+          "y": 210,
+          "waitSeconds": 30,
+          "activity": "checking the market"
+        },
+        {
+          "x": 44,
+          "y": 215,
+          "waitSeconds": 12,
+          "activity": "watering",
+          "line": "A little water, a little patience.",
+          "sound": "watersplash"
+        },
+        {
+          "x": 36,
+          "y": 213,
+          "waitSeconds": 15,
+          "activity": "resting"
+        },
+        {
+          "x": 37,
+          "y": 200,
+          "waitSeconds": 12,
+          "activity": "checking supplies"
+        }
       ],
-      "mobKinds": ["rat", "goblin"],
+      "mobKinds": [
+        "rat",
+        "goblin"
+      ],
       "lines": {
-        "greeting": ["Hello, traveller! I'm doing my rounds. The market is just down here."],
-        "return": ["Back again! Good to see a familiar face.", "Hello again. The village has been keeping me busy."],
-        "talk": ["I check the supplies, water the plants, then sneak in a little rest. Come walk with me.", "There's always something to do around here. But there's always time for a chat."],
-        "kill": ["That's one less pest to worry about. Thank you!", "Good work! I'll keep these supplies out of their reach."]
+        "greeting": [
+          "Hello, traveller! I'm doing my rounds. The market is just down here."
+        ],
+        "return": [
+          "Back again! Good to see a familiar face.",
+          "Hello again. The village has been keeping me busy."
+        ],
+        "talk": [
+          "I check the supplies, water the plants, then sneak in a little rest. Come walk with me.",
+          "There's always something to do around here. But there's always time for a chat."
+        ],
+        "kill": [
+          "That's one less pest to worry about. Thank you!",
+          "Good work! I'll keep these supplies out of their reach."
+        ]
+      },
+      "schedule": {
+        "buildings": [
+          {
+            "key": "guesthouse",
+            "label": "the guesthouse east of the market",
+            "entrance": {
+              "x": 51,
+              "y": 205
+            },
+            "exit": {
+              "x": 154,
+              "y": 143
+            },
+            "area": {
+              "x": 147,
+              "y": 132,
+              "width": 15,
+              "height": 14
+            }
+          }
+        ],
+        "phases": [
+          {
+            "at": 0,
+            "key": "sleep",
+            "activity": "sleeping",
+            "label": "the guesthouse east of the market",
+            "location": "guesthouse",
+            "explanation": "The market can wait. I was just getting some sleep.",
+            "travelling": "going home to sleep",
+            "route": [
+              {
+                "x": 151,
+                "y": 137,
+                "waitSeconds": 30
+              }
+            ]
+          },
+          {
+            "at": 6,
+            "key": "home",
+            "activity": "having breakfast",
+            "label": "the guesthouse east of the market",
+            "location": "guesthouse",
+            "explanation": "I have not finished my bread yet. Sit a moment if you like.",
+            "travelling": "going home for breakfast",
+            "route": [
+              {
+                "x": 151,
+                "y": 141,
+                "waitSeconds": 20
+              }
+            ]
+          },
+          {
+            "at": 8,
+            "key": "work",
+            "activity": "checking market supplies",
+            "label": "the Town market",
+            "location": "outside",
+            "explanation": "The plants were thirsty today. I am checking the baskets while they soak.",
+            "travelling": "walking to work at the market",
+            "route": [
+              {
+                "x": 40,
+                "y": 210,
+                "waitSeconds": 30
+              },
+              {
+                "x": 44,
+                "y": 215,
+                "waitSeconds": 12
+              },
+              {
+                "x": 37,
+                "y": 200,
+                "waitSeconds": 12
+              }
+            ]
+          },
+          {
+            "at": 16,
+            "key": "free-time",
+            "activity": "resting with neighbours",
+            "label": "the path south of the market",
+            "location": "outside",
+            "explanation": "Bstrat and I were catching up. There is room on the bench.",
+            "travelling": "walking to meet the neighbours",
+            "route": [
+              {
+                "x": 40,
+                "y": 215,
+                "waitSeconds": 30
+              },
+              {
+                "x": 36,
+                "y": 213,
+                "waitSeconds": 20
+              }
+            ]
+          },
+          {
+            "at": 18,
+            "key": "home",
+            "activity": "having supper",
+            "label": "the guesthouse east of the market",
+            "location": "guesthouse",
+            "explanation": "I saved some supper. A quiet meal feels good after all those baskets.",
+            "travelling": "going home for supper",
+            "route": [
+              {
+                "x": 151,
+                "y": 141,
+                "waitSeconds": 30
+              }
+            ]
+          },
+          {
+            "at": 20,
+            "key": "sleep",
+            "activity": "sleeping",
+            "label": "the guesthouse east of the market",
+            "location": "guesthouse",
+            "explanation": "I was dreaming about tomorrow\u2019s bread. What is on your mind?",
+            "travelling": "going home to sleep",
+            "route": [
+              {
+                "x": 151,
+                "y": 137,
+                "waitSeconds": 30
+              }
+            ]
+          }
+        ]
       }
     },
     {
@@ -37,20 +220,214 @@
       "kind": "guard",
       "label": "Town Watch",
       "preset": "patrol",
-      "origin": {"x": 73, "y": 197},
-      "area": {"x": 10, "y": 193, "width": 69, "height": 45},
+      "origin": {
+        "x": 73,
+        "y": 197
+      },
+      "area": {
+        "x": 10,
+        "y": 193,
+        "width": 69,
+        "height": 45
+      },
       "stepMs": 550,
       "route": [
-        {"x": 43, "y": 210, "waitSeconds": 18, "activity": "watching the market"},
-        {"x": 43, "y": 220, "waitSeconds": 10, "activity": "on watch"},
-        {"x": 58, "y": 215, "waitSeconds": 10, "activity": "checking the road"},
-        {"x": 73, "y": 197, "waitSeconds": 12, "activity": "watching the gate"}
+        {
+          "x": 43,
+          "y": 210,
+          "waitSeconds": 18,
+          "activity": "watching the market"
+        },
+        {
+          "x": 43,
+          "y": 220,
+          "waitSeconds": 10,
+          "activity": "on watch"
+        },
+        {
+          "x": 58,
+          "y": 215,
+          "waitSeconds": 10,
+          "activity": "checking the road"
+        },
+        {
+          "x": 73,
+          "y": 197,
+          "waitSeconds": 12,
+          "activity": "watching the gate"
+        }
       ],
       "lines": {
-        "greeting": ["Welcome to Town. I'm on patrol, but I can spare a moment."],
-        "return": ["You again! Staying out of trouble, I hope.", "Welcome back. Roads are looking quiet today."],
-        "talk": ["I make a circuit of the gate, the road and the market. Shout if you need me.", "The best patrol is an uneventful one. Mind the monsters outside town."],
-        "kill": ["Nicely handled! Keep your eyes on the road.", "I'll take watch from here. Catch your breath."]
+        "greeting": [
+          "Welcome to Town. I'm on patrol, but I can spare a moment."
+        ],
+        "return": [
+          "You again! Staying out of trouble, I hope.",
+          "Welcome back. Roads are looking quiet today."
+        ],
+        "talk": [
+          "I make a circuit of the gate, the road and the market. Shout if you need me.",
+          "The best patrol is an uneventful one. Mind the monsters outside town."
+        ],
+        "kill": [
+          "Nicely handled! Keep your eyes on the road.",
+          "I'll take watch from here. Catch your breath."
+        ]
+      },
+      "schedule": {
+        "buildings": [
+          {
+            "key": "town-hall",
+            "label": "the town hall beside the eastern gate",
+            "entrance": {
+              "x": 77,
+              "y": 206
+            },
+            "exit": {
+              "x": 126,
+              "y": 143
+            },
+            "area": {
+              "x": 119,
+              "y": 132,
+              "width": 15,
+              "height": 14
+            }
+          }
+        ],
+        "phases": [
+          {
+            "at": 0,
+            "key": "work",
+            "activity": "keeping the night watch",
+            "label": "the eastern gate and market road",
+            "location": "outside",
+            "explanation": "Quiet streets tonight. I can hear the gate from here.",
+            "travelling": "walking the night patrol",
+            "route": [
+              {
+                "x": 73,
+                "y": 197,
+                "waitSeconds": 12
+              },
+              {
+                "x": 58,
+                "y": 215,
+                "waitSeconds": 12
+              },
+              {
+                "x": 43,
+                "y": 210,
+                "waitSeconds": 18
+              }
+            ]
+          },
+          {
+            "at": 6,
+            "key": "home",
+            "activity": "finishing the watch report",
+            "label": "the town hall beside the eastern gate",
+            "location": "town-hall",
+            "explanation": "I have ink on my hands from the patrol report. Has anything happened outside?",
+            "travelling": "returning to the town hall after my shift",
+            "route": [
+              {
+                "x": 123,
+                "y": 141,
+                "waitSeconds": 30
+              }
+            ]
+          },
+          {
+            "at": 8,
+            "key": "sleep",
+            "activity": "sleeping after the night watch",
+            "label": "the town hall beside the eastern gate",
+            "location": "town-hall",
+            "explanation": "My relief has the gate. I was getting some rest after the long patrol.",
+            "travelling": "returning to the town hall to rest",
+            "route": [
+              {
+                "x": 129,
+                "y": 139,
+                "waitSeconds": 30
+              }
+            ]
+          },
+          {
+            "at": 12,
+            "key": "work",
+            "activity": "checking the gate and market",
+            "label": "the eastern gate and Town market",
+            "location": "outside",
+            "explanation": "I am checking the market path. It gets busy when everyone comes for supplies.",
+            "travelling": "walking to the afternoon patrol",
+            "route": [
+              {
+                "x": 43,
+                "y": 210,
+                "waitSeconds": 18
+              },
+              {
+                "x": 43,
+                "y": 220,
+                "waitSeconds": 10
+              },
+              {
+                "x": 58,
+                "y": 215,
+                "waitSeconds": 10
+              },
+              {
+                "x": 73,
+                "y": 197,
+                "waitSeconds": 12
+              }
+            ]
+          },
+          {
+            "at": 16,
+            "key": "free-time",
+            "activity": "taking a break",
+            "label": "the path south of the market",
+            "location": "outside",
+            "explanation": "A little company is welcome between rounds. How are the neighbours?",
+            "travelling": "walking to my break by the market",
+            "route": [
+              {
+                "x": 42,
+                "y": 218,
+                "waitSeconds": 30
+              }
+            ]
+          },
+          {
+            "at": 18,
+            "key": "work",
+            "activity": "keeping the evening watch",
+            "label": "the eastern gate and market road",
+            "location": "outside",
+            "explanation": "Adam packed supper for me. It helps when the streets get quiet.",
+            "travelling": "walking to the evening patrol",
+            "route": [
+              {
+                "x": 73,
+                "y": 197,
+                "waitSeconds": 12
+              },
+              {
+                "x": 58,
+                "y": 215,
+                "waitSeconds": 12
+              },
+              {
+                "x": 43,
+                "y": 210,
+                "waitSeconds": 18
+              }
+            ]
+          }
+        ]
       }
     },
     {
@@ -58,20 +435,185 @@
       "kind": "villagegirl",
       "label": "Bstrat515",
       "preset": "socialise",
-      "origin": {"x": 15, "y": 222},
-      "area": {"x": 10, "y": 193, "width": 69, "height": 45},
+      "origin": {
+        "x": 15,
+        "y": 222
+      },
+      "area": {
+        "x": 10,
+        "y": 193,
+        "width": 69,
+        "height": 45
+      },
       "stepMs": 650,
       "route": [
-        {"x": 39, "y": 214, "waitSeconds": 30, "activity": "meeting neighbours"},
-        {"x": 30, "y": 215, "waitSeconds": 12, "activity": "taking a stroll"},
-        {"x": 15, "y": 222, "waitSeconds": 15, "activity": "resting"}
+        {
+          "x": 39,
+          "y": 214,
+          "waitSeconds": 30,
+          "activity": "meeting neighbours"
+        },
+        {
+          "x": 30,
+          "y": 215,
+          "waitSeconds": 12,
+          "activity": "taking a stroll"
+        },
+        {
+          "x": 15,
+          "y": 222,
+          "waitSeconds": 15,
+          "activity": "resting"
+        }
       ],
-      "questIds": ["TEST_DIALOG_QUEST", "TEST_DIALOG_QUEST_2"],
+      "questIds": [
+        "TEST_DIALOG_QUEST",
+        "TEST_DIALOG_QUEST_2"
+      ],
       "lines": {
-        "greeting": ["Oh, a new face! Welcome. I was just going to see my neighbours."],
-        "return": ["Hello again! It's nice having you around.", "There you are! Fancy another stroll?"],
-        "talk": ["I like to stop by the market and catch up with everyone. Town is full of little stories."],
-        "quest": ["I remember your help with those rats. Thank you for looking out for us!"]
+        "greeting": [
+          "Oh, a new face! Welcome. I was just going to see my neighbours."
+        ],
+        "return": [
+          "Hello again! It's nice having you around.",
+          "There you are! Fancy another stroll?"
+        ],
+        "talk": [
+          "I like to stop by the market and catch up with everyone. Town is full of little stories."
+        ],
+        "quest": [
+          "I remember your help with those rats. Thank you for looking out for us!"
+        ]
+      },
+      "schedule": {
+        "buildings": [
+          {
+            "key": "guesthouse",
+            "label": "the guesthouse east of the market",
+            "entrance": {
+              "x": 51,
+              "y": 205
+            },
+            "exit": {
+              "x": 154,
+              "y": 143
+            },
+            "area": {
+              "x": 147,
+              "y": 132,
+              "width": 15,
+              "height": 14
+            }
+          }
+        ],
+        "phases": [
+          {
+            "at": 0,
+            "key": "sleep",
+            "activity": "sleeping",
+            "label": "the guesthouse east of the market",
+            "location": "guesthouse",
+            "explanation": "I had only just settled down. Is something on your mind?",
+            "travelling": "going home to sleep",
+            "route": [
+              {
+                "x": 157,
+                "y": 137,
+                "waitSeconds": 30
+              }
+            ]
+          },
+          {
+            "at": 7,
+            "key": "home",
+            "activity": "having breakfast",
+            "label": "the guesthouse east of the market",
+            "location": "guesthouse",
+            "explanation": "Adam always leaves crumbs on the table. I was hoping to finish breakfast before he notices.",
+            "travelling": "going home for breakfast",
+            "route": [
+              {
+                "x": 157,
+                "y": 141,
+                "waitSeconds": 20
+              }
+            ]
+          },
+          {
+            "at": 9,
+            "key": "work",
+            "activity": "helping the neighbours",
+            "label": "the Town market and western path",
+            "location": "outside",
+            "explanation": "Everyone seems to need a basket today. I keep stopping so they can find me.",
+            "travelling": "walking to the market",
+            "route": [
+              {
+                "x": 39,
+                "y": 214,
+                "waitSeconds": 30
+              },
+              {
+                "x": 15,
+                "y": 222,
+                "waitSeconds": 20
+              }
+            ]
+          },
+          {
+            "at": 16,
+            "key": "free-time",
+            "activity": "taking a stroll",
+            "label": "the path south of the market",
+            "location": "outside",
+            "explanation": "I was asking Adam whether he ever sits down. He says he does, between baskets.",
+            "travelling": "walking to meet the neighbours",
+            "route": [
+              {
+                "x": 43,
+                "y": 215,
+                "waitSeconds": 30
+              },
+              {
+                "x": 30,
+                "y": 215,
+                "waitSeconds": 20
+              }
+            ]
+          },
+          {
+            "at": 19,
+            "key": "home",
+            "activity": "having supper",
+            "label": "the guesthouse east of the market",
+            "location": "guesthouse",
+            "explanation": "I am glad to put my feet up. The neighbours kept me busy.",
+            "travelling": "going home for supper",
+            "route": [
+              {
+                "x": 157,
+                "y": 141,
+                "waitSeconds": 30
+              }
+            ]
+          },
+          {
+            "at": 21,
+            "key": "sleep",
+            "activity": "sleeping",
+            "label": "the guesthouse east of the market",
+            "location": "guesthouse",
+            "explanation": "The guesthouse is quiet at last. I can spare a moment if you need me.",
+            "travelling": "going home to sleep",
+            "route": [
+              {
+                "x": 157,
+                "y": 137,
+                "waitSeconds": 30
+              }
+            ]
+          }
+        ]
       }
     }
   ],
@@ -79,9 +621,18 @@
     {
       "cooldownSeconds": 120,
       "steps": [
-        {"npc": "town-gardener", "text": "Does anyone know who keeps borrowing my basket?"},
-        {"npc": "town-neighbour", "text": "Borrowing? I thought it was the village picnic basket!"},
-        {"npc": "town-gardener", "text": "Well... save me something from the picnic, then."}
+        {
+          "npc": "town-gardener",
+          "text": "Does anyone know who keeps borrowing my basket?"
+        },
+        {
+          "npc": "town-neighbour",
+          "text": "Borrowing? I thought it was the village picnic basket!"
+        },
+        {
+          "npc": "town-gardener",
+          "text": "Well... save me something from the picnic, then."
+        }
       ]
     }
   ]

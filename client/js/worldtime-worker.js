@@ -12,7 +12,8 @@
         if (minute < 55) return 0;
         return (1 - Math.cos((minute - 55) / 5 * Math.PI)) / 2;
     }
-    function previewTime(mode, time) {
+    function previewTime(mode, time, hour) {
+        if (Number.isFinite(hour) && hour >= 0 && hour < 24) return hour / 24 * duration;
         return mode === 'day' ? 20 * 60000 : mode === 'night' ? 50 * 60000 : time;
     }
     return {duration, mainDaylight, previewTime};

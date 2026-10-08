@@ -996,9 +996,9 @@ module.exports = World = cls.Class.extend({
     },
 
 
-    moveNpc: function (npc, x, y) {
+    moveNpc: function (npc, x, y, teleport = false) {
         npc.setPosition(x, y);
-        this.pushToAdjacentGroups(npc.group, new Messages.Move(npc));
+        this.pushToAdjacentGroups(npc.group, teleport ? new Messages.Teleport(npc) : new Messages.Move(npc));
         this.handleEntityGroupMembership(npc);
     },
 

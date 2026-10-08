@@ -219,3 +219,22 @@ test.each([{keys: ['d']}, {keys: ['d', 's']}])('held movement with $keys uses th
     for (let i = 0; i < 20; i++) frame();
     expect(player.isMoving()).toBe(false);
 });
+
+
+test('dialogue captures Enter and arrows before chat or movement, while typing retains input', () => {
+    const {game, handler, document, panels} = createMovementGame();
+    handler.app.handleChoiceKeyboardInput = jest.fn(); panels.add('#dialogue-popup');
+    const event = key => ({key, preventDefault: jest.fn(), stopImmediatePropagation: jest.fn()});
+    const enter = event('Enter'); handler.handleConversationKey(enter);
+    expect(handler.app.handleChoiceKeyboardInput).toHaveBeenCalledWith(enter);
+    expect(enter.stopImmediatePropagation).toHaveBeenCalled();
+    const down = event('ArrowDown'); handler.handleConversationKey(down);
+    expect(down.preventDefault).toHaveBeenCalled(); expect(game.click).not.toHaveBeenCalled();
+    handler.handleConversationKey({...event('Enter'), repeat: true});
+    expect(handler.app.handleChoiceKeyboardInput).toHaveBeenCalledTimes(2);
+    document.activeElement = {tagName: 'TEXTAREA'}; handler.handleConversationKey(event('Enter'));
+    document.activeElement = {tagName: 'DIV', isContentEditable: true}; handler.handleConversationKey(event('Enter'));
+    expect(handler.app.handleChoiceKeyboardInput).toHaveBeenCalledTimes(2);
+    document.activeElement = null; panels.clear(); handler.handleConversationKey(event('Enter'));
+    expect(handler.app.handleChoiceKeyboardInput).toHaveBeenCalledTimes(2);
+});

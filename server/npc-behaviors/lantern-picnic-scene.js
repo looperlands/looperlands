@@ -24,7 +24,7 @@ class LanternPicnicScene {
                 for (let x = preferred.x - radius; x <= preferred.x + radius; x++) {
                     const point = {x, y};
                     if (reserved.has(x + ',' + y) || !behavior.walkable(point) || behavior.occupied(point, actor.npc)) continue;
-                    if ((actor.npc.x === x && actor.npc.y === y) || behavior.findPath(actor, point).length) return point;
+                    if (behavior.canReach ? behavior.canReach(actor, point) : (actor.npc.x === x && actor.npc.y === y) || behavior.findPath(actor, point).length) return point;
                 }
             }
         }
@@ -57,6 +57,8 @@ class LanternPicnicScene {
         behavior.conversation = null;
         behavior.nextConversation = Infinity;
         for (const {actor, seat} of this.actors) {
+            actor.scheduleOverride = {activity: 'picnic', location: 'the picnic south of the market', travelling: 'walking to the picnic',
+                explanation: 'I am taking a break with the neighbours. There is room for you beside the baskets.'};
             actor.definition.route = [{...seat, waitSeconds: 600, activity: 'joining the picnic'}];
             actor.waypoint = 0;
             actor.path = [];
@@ -141,6 +143,7 @@ class LanternPicnicScene {
     finish(time, celebrated) {
         const behavior = this.world.npcBehavior;
         for (const {actor, originalRoute, originalWaypoint} of this.actors) {
+            actor.scheduleOverride = null;
             actor.definition.route = originalRoute;
             actor.waypoint = originalWaypoint;
             actor.path = [];
