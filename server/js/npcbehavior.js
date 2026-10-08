@@ -53,6 +53,11 @@ function validateConfig(config) {
         !Number.isInteger(ambience.particleCount) || ambience.particleCount < 0 || ambience.particleCount > 24 ||
         (ambience.mode && !['day', 'night', 'cycle'].includes(ambience.mode)) ||
         !['fireflies', 'leaves', 'none'].includes(ambience.particles))) throw new Error('Invalid world ambience');
+    if (ambience?.areas && (typeof ambience.areas !== 'object' || Array.isArray(ambience.areas) ||
+        Object.entries(ambience.areas).some(([scene, effects]) => !scene || !Array.isArray(effects) ||
+            effects.length > 3 || effects.some(effect => !['fireflies', 'leaves', 'pollen', 'dust', 'gusts', 'spray', 'sand', 'embers', 'ash', 'mist'].includes(effect.type) ||
+                !Number.isInteger(effect.count) || effect.count < 1 || effect.count > 24) ||
+            effects.reduce((total, effect) => total + effect.count, 0) > 24))) throw new Error('Invalid area ambience');
     if (config.speech && (!Number.isFinite(config.speech.cooldownSeconds) || config.speech.cooldownSeconds < 10 ||
         !Number.isFinite(config.speech.radius) || config.speech.radius < 8 ||
         !Number.isFinite(config.speech.greetingCooldownSeconds) || config.speech.greetingCooldownSeconds < 90)) {
@@ -271,28 +276,40 @@ class NpcBehavior {
             distance(routine.npc, destination) === 0 || this.findPath(routine, destination).length > 0;
     }
 
+    ambienceFor(player) {
+        const config = this.config.ambience;
+        if (!config) return null;
+        const scene = this.world.map.getSceneAt?.(player.x, player.y);
+        const {areas, ...common} = config;
+        const effects = areas ? areas[scene?.name] || [] : scene?.name === config.scene ? [{type: config.particles, count: config.particleCount}] : [];
+        const bounds = scene && ['x', 'y', 'w', 'h'].every(key => Number.isFinite(scene[key])) ?
+            {x: scene.x * 16, y: scene.y * 16, width: scene.w * 16, height: scene.h * 16} : null;
+        return {...common, scene: scene?.name || '', sceneId: scene?.id, effects, bounds,
+            particles: effects[0]?.type || 'none', particleCount: effects[0]?.count || 0};
+    }
+
     observePlayer(player, time) {
         let state = this.playerStates.get(player.id);
         if (!state) { state = {near: new Set(), greeted: new Map(), ambience: undefined}; this.playerStates.set(player.id, state); }
-        const ambience = this.config.ambience;
-        const scene = this.world.map.getSceneAt?.(player.x, player.y)?.name;
-        const active = Boolean(ambience && scene === ambience.scene);
+        const ambience = this.ambienceFor(player);
+        const active = Boolean(ambience?.effects.length);
+        const ambienceKey = JSON.stringify(ambience);
         if (this.world.lanternPicnic) {
             const picnic = this.world.lanternPicnic;
             const goal = require('../npc-behaviors/lantern-picnic').progress(this.world.server.cache.get(player.sessionId)?.gameData);
-            const snapshot = JSON.stringify([active, goal, picnic.state]);
+            const snapshot = JSON.stringify([ambienceKey, goal, picnic.state]);
             if (state.snapshot !== snapshot) {
                 this.world.pushToPlayer(player, new Messages.WorldAmbience({...ambience,
-                    particles: active ? ambience.particles : 'none',
                     serverTime: time, epoch: 0, picnic: picnic.state && {...picnic.state, music: (this.world.server.cache.get(player.sessionId)?.gameData?.choices || []).includes('lantern:music-picnic')},
                     story: {title: 'The Lantern Picnic', goal, event: active ? picnic.state?.message : ''}}));
                 state.snapshot = snapshot;
             }
             state.ambience = active;
-        } else if (state.ambience !== active) {
-            this.world.pushToPlayer(player, new Messages.WorldAmbience(ambience ? {...ambience, particles: active ? ambience.particles : 'none', epoch: 0, serverTime: time} : null));
+        } else if (state.ambienceKey !== ambienceKey) {
+            this.world.pushToPlayer(player, new Messages.WorldAmbience(ambience ? {...ambience, epoch: 0, serverTime: time} : null));
             state.ambience = active;
         }
+        state.ambienceKey = ambienceKey;
         for (const [key, routine] of this.routines) {
             if (this.world.entities[routine.npc.id] !== routine.npc || routine.schedule?.sleeping()) continue;
             if (distance(player, routine.npc) > 3) { state.near.delete(key); continue; }
