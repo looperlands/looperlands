@@ -10,7 +10,7 @@ const event = {runId: 'round', status: 'live', maps: ['duckville'], startsAt: '2
 test('event panel appears only during the round on an explicitly linked map', () => {
     expect(Board.visibleEvents([event], 'duckville', start).length).toBe(1);
     for (const [map, now] of [['main', start], ['duckville', start - 1], ['duckville', start + 3600000]]) expect(Board.visibleEvents([event], map, now).length).toBe(0);
-    expect(Board.visibleEvents([{...event, maps: []}, {...event, status: 'upcoming'}], 'duckville', start).length).toBe(0);
+    expect(Board.visibleEvents([{...event, maps: []}, {...event, status: 'upcoming'}, {...event, isCompetition: false}], 'duckville', start).length).toBe(0);
 });
 test('multiple simultaneous events stay independently visible', () => {
     expect(Board.visibleEvents([event, {...event, runId: 'other'}], 'duckville', start).map(row => row.runId)).toEqual(['round', 'other']);
@@ -27,4 +27,9 @@ test('scoring descriptions reflect active seconds, quantities, actions and fishi
     expect(Board.ruleLabel({type: 'fishing', points: 3, target: 'guppy', targetLabel: 'Guppy', lake: 'townLake', measurement: 'quantity'})).toBe('Catch fish · Guppy · townLake — 3 points per item');
     expect(Board.ruleLabel({type: 'tile', points: 1, target: '*', stage: 'plant', action: 'farm', measurement: 'count'})).toContain('plant · All targets · farm — 1 point per action');
     expect(Board.ruleLabel({type: 'activeDays', points: 5})).toContain('per active day');
+});
+
+test('multiple targets, actions and stages have readable scoring descriptions', () => {
+    expect(Board.ruleLabel({type: 'tile', points: 2, target: ['tomato', 'carrot'], stage: ['plant', 'harvest'], action: ['farm', 'garden'], measurement: 'count'})).toBe('plant, harvest · tomato, carrot · farm, garden — 2 points per action');
+    expect(Board.ruleLabel({type: 'kill', points: 1, target: ['12', '13'], targetLabel: 'Skeleton, Ogre', measurement: 'count'})).toBe('Defeat · Skeleton, Ogre — 1 point per action');
 });

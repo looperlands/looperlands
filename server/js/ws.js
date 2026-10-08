@@ -204,7 +204,7 @@ WS.socketIOServer = Server.extend({
 
         const eventBoard = new EventBoardController(cache, () => self.worldsMap, platformClient, data => {
             for (const event of data.events) {
-                event.rules = event.rules.map(rule => ({...rule, targetLabel: rule.target === '*' ? 'All targets' : AltNames.getName(/^\d+$/.test(rule.target) ? Types.getKindAsString(Number(rule.target)) || rule.target : rule.target) || rule.target}));
+                event.rules = event.rules.map(rule => ({...rule, targetLabel: (Array.isArray(rule.target) ? rule.target : [rule.target]).map(target => target === '*' ? 'All targets' : AltNames.getName(/^\d+$/.test(target) ? Types.getKindAsString(Number(target)) || target : target) || target).join(', ')}));
                 event.prizes = event.prizes.map(prize => ({...prize, itemLabel: prize.item ? AltNames.getName(/^\d+$/.test(prize.item) ? Types.getKindAsString(Number(prize.item)) || prize.item : prize.item) || prize.item : null}));
             }
             const base = process.env.LOOPERLANDS_WEBSITE_BASE_URL || 'https://looperlands.io';

@@ -11,7 +11,7 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
         return element;
     }
     function visibleEvents(events, map, now) {
-        return events.filter(event => event.status === 'live' && Array.isArray(event.maps) && event.maps.includes(map) && Date.parse(event.startsAt) <= now && Date.parse(event.endsAt) > now);
+        return events.filter(event => event.isCompetition !== false && event.status === 'live' && Array.isArray(event.maps) && event.maps.includes(map) && Date.parse(event.startsAt) <= now && Date.parse(event.endsAt) > now);
     }
     function safeDetailsUrl(base, path) {
         try {
@@ -21,11 +21,14 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
             return url.href;
         } catch (error) {return null;}
     }
+    function selectionLabel(value, all) {
+        return (Array.isArray(value) ? value : [value]).map(entry => entry === '*' ? all : entry).join(', ');
+    }
     function ruleLabel(rule) {
-        const target = rule.target === '*' ? 'All targets' : rule.targetLabel || rule.target;
-        const activity = {kill: 'Defeat', loot: 'Collect', pvp: 'PvP victories', fishing: 'Catch fish', playtime: 'Active playtime', activeDays: 'Active days', tile: rule.stage === '*' ? 'Tile actions' : rule.stage || 'Tile action'}[rule.type] || rule.type;
+        const target = rule.targetLabel || selectionLabel(rule.target, 'All targets');
+        const activity = {kill: 'Defeat', loot: 'Collect', pvp: 'PvP victories', fishing: 'Catch fish', playtime: 'Active playtime', activeDays: 'Active days', tile: selectionLabel(rule.stage || '*', 'Tile actions')}[rule.type] || rule.type;
         const unit = rule.type === 'activeDays' ? 'active day' : rule.measurement === 'activeSeconds' ? 'active second' : rule.measurement === 'quantity' ? 'item' : 'action';
-        return activity + (rule.type === 'playtime' || rule.type === 'activeDays' ? '' : ' · ' + target) + (rule.lake && rule.lake !== '*' ? ' · ' + rule.lake : '') + (rule.action && rule.action !== '*' ? ' · ' + rule.action : '') + ' — ' + rule.points + (rule.points === 1 ? ' point per ' : ' points per ') + unit;
+        return activity + (rule.type === 'playtime' || rule.type === 'activeDays' ? '' : ' · ' + target) + (rule.lake && rule.lake !== '*' ? ' · ' + rule.lake : '') + (rule.action && rule.action !== '*' ? ' · ' + selectionLabel(rule.action, 'Any tile action') : '') + ' — ' + rule.points + (rule.points === 1 ? ' point per ' : ' points per ') + unit;
     }
 
     class EventBoard {
@@ -159,7 +162,7 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
                 const choice = button('', () => {this.selected = event.runId; this.confirming = null; this.notice = null; this.renderBoard(); this.board.querySelector('[data-focus="event-'+event.runId+'"]')?.focus();});
                 choice.className = 'ev-event'+(event === selected ? ' ev-selected' : ''); choice.dataset.focus = 'event-'+event.runId;
                 choice.setAttribute('aria-pressed', String(event === selected));
-                choice.append(node('small', 'ev-gold', event.signedUp ? 'SIGNED UP' : event.status === 'live' ? 'LIVE NOW' : this.date(event.startsAt)), node('strong', '', event.name), node('small', '', this.maps(event) + ' · ' + (event.teams.length ? 'Teams' : 'Solo'))); list.append(choice);
+                choice.append(node('small', 'ev-gold', event.signedUp ? 'SIGNED UP' : event.status === 'live' ? 'LIVE NOW' : this.date(event.startsAt)), node('strong', '', event.name), node('small', '', this.maps(event) + ' · ' + (event.isCompetition === false ? 'Community event' : event.teams.length ? 'Teams' : 'Solo'))); list.append(choice);
             }
             if (!events.length) list.append(node('p', 'ev-empty', this.tab === 'mine' ? 'No sign-ups yet.' : 'No events to show here.'));
             body.append(list); this.board.append(body);
@@ -176,7 +179,15 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
             const detail = node('section', 'ev-detail'); const content = node('div', 'ev-content');
             content.append(node('small', 'ev-gold', event.status === 'live' ? 'LIVE NOW' : 'COMING UP'), node('h3', 'ev-title', event.name), node('p', '', event.description));
             const facts = node('div', 'ev-facts');
-            for (const [label, value] of [['When', this.date(event.startsAt)+' – '+this.date(event.endsAt)], ['Where', this.maps(event)], ['Format', (event.groupBy === 'wallet' ? 'Per player' : 'Per Looper')+' · '+(event.teams.length ? 'Teams' : 'Solo')]]) {const fact = node('div'); fact.append(node('small', '', label), node('strong', '', value)); facts.append(fact);} content.append(facts);
+            for (const [label, value] of [['When', this.date(event.startsAt)+' – '+this.date(event.endsAt)], ['Where', this.maps(event)+(event.locationDescription ? ' · '+event.locationDescription : '')], ['Format', event.isCompetition === false ? 'Community event' : (event.groupBy === 'wallet' ? 'Per player' : 'Per Looper')+' · '+(event.teams.length ? 'Teams' : 'Solo')]]) {const fact = node('div'); fact.append(node('small', '', label), node('strong', '', value)); facts.append(fact);} content.append(facts);
+            if (event.isCompetition === false) {
+                content.append(node('p', 'ev-muted', 'See the event description for attendance, prizes and RSVP instructions.'));
+                detail.append(content);
+                const footer = node('footer', 'ev-footer');
+                footer.append(node('small', '', 'Community event · In-game scoring and sign-up are not configured.'));
+                detail.append(footer);
+                return detail;
+            }
             if (event.signedUp) {const team = event.teams.find(team => team.id === event.teamId); content.append(node('p', 'ev-success', 'You’re signed up.'+(team ? ' Team: '+team.name+'.' : event.teams.length ? ' Your organizer will assign your team.' : '')));}
             content.append(node('h4', '', 'How to score')); for (const rule of event.rules) content.append(node('p', 'ev-rule', ruleLabel(rule)));
             content.append(node('p', 'ev-muted', event.scoringMaps.length ? 'Only activity on these maps counts: '+event.scoringMaps.map(map => mapNames[map] || map).join(', ')+'.' : 'Qualifying activity counts across all maps.'));

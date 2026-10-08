@@ -28,7 +28,7 @@ test('confirmation, round identity and supported actions are required', async ()
 });
 test('live results discard upcoming, ended and other-map rounds even if upstream sends them', async () => {
     const f = fixture(); const valid = {status: 'live', maps: ['main'], startsAt: new Date(Date.now()-1000).toISOString(), endsAt: new Date(Date.now()+10000).toISOString()};
-    f.player.x = 100; f.platform.getEventBoard.mockResolvedValue({events: [valid, {...valid, maps: ['forest']}, {...valid, status: 'upcoming'}, {...valid, endsAt: new Date(Date.now()-1).toISOString()}]});
+    f.player.x = 100; f.platform.getEventBoard.mockResolvedValue({events: [valid, {...valid, isCompetition: false}, {...valid, maps: ['forest']}, {...valid, status: 'upcoming'}, {...valid, endsAt: new Date(Date.now()-1).toISOString()}]});
     await f.controller.list(f.req, f.res, true);
     expect(f.platform.getEventBoard).toHaveBeenCalledWith('wallet:1', 'avatar', 'main');
     expect(f.res.json).toHaveBeenCalledWith({events: [valid]});
@@ -45,4 +45,16 @@ test('unavailable and rejected registrations give actionable failures', async ()
 test('leaving the board while the request is pending discards its result', async () => {
     const f = fixture(); f.platform.getEventBoard.mockImplementation(async () => {f.player.x = 200; return {events: []};});
     await f.controller.list(f.req, f.res); expect(f.res.status).toHaveBeenCalledWith(409);
+});
+
+test('town board passes through community events without enabling competition registration', async () => {
+    const f = fixture();
+    const event = {id, runId: id+':1791374430', isCompetition: false, canJoin: false, canWithdraw: false};
+    f.platform.getEventBoard.mockResolvedValue({events: [event]});
+    await f.controller.list(f.req, f.res);
+    expect(f.res.json).toHaveBeenCalledWith({events: [event]});
+    f.req.params.runId = event.runId;
+    await f.controller.register(f.req, f.res);
+    expect(f.res.status).toHaveBeenCalledWith(400);
+    expect(f.platform.registerEvent).not.toHaveBeenCalled();
 });

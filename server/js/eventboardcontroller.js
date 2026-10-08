@@ -37,7 +37,7 @@ class EventBoardController {
                 return res.status(409).json({error: 'Your location changed. Please reopen the event board.'});
             }
             const now = Date.now();
-            if (live) data.events = data.events.filter(event => event.status === 'live' && event.maps.includes(current.player.mapId) && Date.parse(event.startsAt) <= now && Date.parse(event.endsAt) > now);
+            if (live) data.events = data.events.filter(event => event.isCompetition !== false && event.status === 'live' && event.maps.includes(current.player.mapId) && Date.parse(event.startsAt) <= now && Date.parse(event.endsAt) > now);
             return res.json(this.decorate(data));
         } catch (error) {
             return res.status(503).json({error: 'Events are temporarily unavailable. Please try again.'});
