@@ -36,11 +36,12 @@ function saveGameData() {
 const picnic = require('../server/npc-behaviors/lantern-picnic');
 
 const previewControls = process.env.NPC_PREVIEW_CONTROLS !== 'off';
+const healthMultiplier = Number(process.env.NPC_PREVIEW_HEALTH_MULTIPLIER || 1);
 let previewWorld;
 let picnicScene;
 api.get('/preview/state', (req, res) => res.json({
     players: previewWorld?.playerCount || 0,
-    playerPositions: Object.values(previewWorld?.players || {}).map(p => ({index: avatars.indexOf(p.nftId) + 1, x: p.x, y: p.y})),
+    playerPositions: Object.values(previewWorld?.players || {}).map(p => ({index: avatars.indexOf(p.nftId) + 1, x: p.x, y: p.y, hp: p.hitPoints, maxHp: p.maxHitPoints})),
     picnic: picnicScene?.state || null,
     npcs: [...(previewWorld?.npcBehavior?.routines.values() || [])].map(({npc, definition}) => ({
         key: definition.key, id: npc.id, kind: npc.kind, x: npc.x, y: npc.y, ...npc.behaviorState
@@ -77,7 +78,7 @@ api.get('/api/maps/:map/music', (req, res) => res.json([]));
 api.get('/api/game/asset/modifiers/:server/:nft', (req, res) => res.json(Object.fromEntries([
     'meleeDamageDealt', 'meleeDamageTaken', 'moveSpeed', 'rangedDamageDealt', 'hpRegen', 'maxHp',
     'hate', 'attackRate', 'stealth', 'xp', 'fishing'
-].map(key => [key, key === 'maxHp' ? Number(process.env.NPC_PREVIEW_HEALTH_MULTIPLIER || 1) : 1]))));
+].map(key => [key, 1]))));
 api.get('/api/game/asset/:nft/stats', (req, res) => res.json({}));
 api.post('/api/game/asset/quest', (req, res) => {
     const data = gameData.get(req.body.nftId);
@@ -176,6 +177,13 @@ api.listen(fixturePort, '127.0.0.1', () => {
     setInterval(() => {
 
         for (const player of Object.values(world.players)) {
+            if (healthMultiplier > 1 && player.hasEnteredGame && !player.previewHealthBoosted) {
+                // Apply after HELLO; the asynchronous modifier load can finish
+                // after the initial health calculation. This is fixture-only.
+                player.playerClassModifiers.applyTemporaryModifierWithTimeout('maxHp', healthMultiplier, 3600000);
+                player.updateHitPoints();
+                player.previewHealthBoosted = true;
+            }
             const packet = packetFor(player);
             const goal = JSON.stringify([packet.story, packet.picnic, packet.previewStory]);
             if (storyGoals.get(player.id) !== goal) {
