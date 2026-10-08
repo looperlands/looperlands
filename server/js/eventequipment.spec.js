@@ -41,4 +41,3 @@ test('statistics show event levels while retaining the original progress outside
     expect(original).toEqual({currentLevel:75,percentage:'42.00'});
     expect(effectiveLevelInfo({...player,mapId:'main'},'avatarLevel',original,now)).toBe(original);
 });
-
