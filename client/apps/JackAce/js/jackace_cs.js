@@ -28,7 +28,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 DEALINGS IN THE SOFTWARE.
 
 CASINO AMBIENCE [License: Attribution NonCommercial 4.0]
-nona.aaa -- https://freesound.org/s/654362 
+nona.aaa -- https://freesound.org/s/654362
 YeshniGounden -- https://freesound.org/s/654199
 
 ART >> by bitcorn (2024)
@@ -45,7 +45,7 @@ const sounds = {
             dealCard2: [3500, 500],         // Cards Sounds by uEffects -- https://freesound.org/s/208790 -- License: Creative Commons 0
             dealCard3: [4000, 700],         // Cards Sounds by uEffects -- https://freesound.org/s/208790 -- License: Creative Commons 0
             dealCard4: [4700, 550],         // Cards Sounds by uEffects -- https://freesound.org/s/208790 -- License: Creative Commons 0
-            singleCard: [6000, 500],        // Cards Sounds by uEffects -- https://freesound.org/s/208790 -- License: Creative Commons 0    
+            singleCard: [6000, 500],        // Cards Sounds by uEffects -- https://freesound.org/s/208790 -- License: Creative Commons 0
             flipCard: [7000, 500],          // Cards Sounds by uEffects -- https://freesound.org/s/208790 -- License: Creative Commons 0
             noMonies: [8000, 250],
             win: [8500, 2000],              // Jingle_Win_Synth_05.wav by LittleRobotSoundFactory -- https://freesound.org/s/274182 -- License: Attribution 4.0
@@ -311,7 +311,14 @@ async function setUpButtonEvents() {
     for (const { id, hoverState, defaultState, clickFunction } of buttons) {
         $(id).on('click', () => {
             playSound('click');
-            clickFunction();
+            Promise.resolve().then(clickFunction).catch(error => {
+                $("#uiWindow").removeClass("processing");
+				// Server/request errors are already handled by makeRequest().
+				// Still surface unexpected client-side failures.
+				if (!error || !error.response) {
+					console.error('JackAce action failed:', error);
+				}
+			});
         });
         $(id).hover(
             async function () {
@@ -370,7 +377,7 @@ function setupHelpPanel() {
                         <li>A winning hand that is not a blackjack pays 1:1.</li>
                     </ul>
                     <h3>DOUBLE</h3>
-                    <p>After being dealt the initial two cards, players have the option to "double down". This means doubling the bet and receiving only one additional card. Doubling is offered when the player's initial hand value is 9, 10, or 11. However, if the hand is an Ace and a 10 (which can be counted as 11), doubling is not allowed since it is already a blackjack.</p>
+					<p>After being dealt the initial two cards, players may choose to "double down" when the hand has a hard total of 9, 10, or 11. This doubles the wager and gives the player exactly one additional card, after which the hand automatically stands.</p>
                     <h3>SPLIT</h3>
                     <p>If a player is dealt two cards of the same rank, they can choose to "split" them into two separate hands. Each hand gets an additional card, and the player plays each hand independently. A player can split up to a total of four hands if the cards allow. The cost to split is equal to the player's initial bet for each new hand created.</p>
                     <h3>INSURANCE</h3>
@@ -397,59 +404,39 @@ function showHelpPanel() {
 /////////////////////////////
 
 async function makeRequest(action, additionalData = {}) {
-    return new Promise((resolve, reject) => {
-        const sessionId = new URLSearchParams(window.location.search).get('sessionId');
-        const minigameQuery = `/session/${sessionId}/minigame`;
-
-        axios.post(minigameQuery, {
-            minigame: 'jackace',
-            action,
-            ...additionalData
-        })
-            .then(response => {
-                resolve(response.data);
-            })
-            .catch(async error => {
-                const errorResponse = error.response && error.response.data ? error.response.data : null;
-                if (errorResponse && errorResponse.message) {
-                    // Handling specific error messages from the server
-                    switch (errorResponse.message) {
-                        case '[DEAL] Invalid action >> hand in progress.':
-                        case '[HIT] Invalid action >> no hand in progress.':
-                        case '[SPLIT] Invalid action >> Cannot split.':
-                        case '[DOUBLE] Invalid action >> Cannot double.':
-                        case '[INSURANCE] Invalid action >> Cannot buy insurance.':
-                            console.log(`Invalid action: ${errorResponse.message}`);
-                            $("#uiWindow").removeClass('processing');
-                            await animateText(errorResponse.message);
-                            await resetGame();  // need to make sure we don't kill a game in progress without returning $$
-                            break;
-                        case 'Not Enough Gold.':
-                            console.log('You do not have enough gold to place this bet.');
-                            await setPlayerMoney(false);
-                            await flashCredits();
-                            $("#uiWindow").removeClass('processing');
-                            break;
-                        case `Early Access Limited to bits x bit holders.`:
-                            $("#uiWindow").removeClass('processing');
-                            console.log('access limited to holders: ', errorResponse.message);
-                            await animateText(errorResponse.message);
-                            $('#mgClose')[0].click();
-                            break;
-                        default:
-                            console.log('somethings borked: ', errorResponse.message);
-                            alert(`${errorResponse.message}`);
-                            $('#mgClose')[0].click();
-                            break;
-                    }
-                } else {
-                    alert('An unexpected error occurred. Please try again later.');
-                    console.log(error);
-                    $('#mgClose')[0].click();
-                }
-                reject(error);
-            });
-    });
+    const sessionId = new URLSearchParams(window.location.search).get('sessionId');
+    try {
+        const response = await axios.post(`/session/${sessionId}/minigame`, {
+            minigame: 'jackace', action, ...additionalData
+        });
+        return response.data;
+    } catch (error) {
+        const data = error.response?.data;
+        const message = typeof data?.message === 'string' ? data.message : '';
+        try {
+            if (data?.recoverable || !error.response || error.response.status >= 500) {
+                if (data?.playerHands) await showGameWindow(data);
+                await animateText(message || 'Connection interrupted. Please retry your action.');
+            } else if (message.endsWith('Invalid action >> no hand in progress.')) {
+                await animateText(message);
+                await resetGame();
+            } else if (message.includes('Invalid action >>')) {
+                // Sequence and eligibility rejections leave the active hand intact.
+                await animateText(message);
+            } else if (message === 'Not Enough Gold.') {
+                await setPlayerMoney(false);
+                await flashCredits();
+            } else {
+                alert(message || 'An unexpected error occurred. Please try again later.');
+                $('#mgClose')[0].click();
+            }
+        } catch (displayError) {
+            console.error('JackAce error display failed:', displayError);
+        } finally {
+            $('#uiWindow').removeClass('processing');
+        }
+        throw error;
+    }
 }
 
 async function resetGame(hideUIWindow = false) {
@@ -553,12 +540,12 @@ async function handleInsurance(boughtInsurance) {
         const data = await makeRequest('INSURANCE', { boughtInsurance: boughtInsurance });
 
         if (boughtInsurance) {
-            if (playerBet > 0 && playerMoney >= parseInt(BET_AMOUNTS[playerBet] / 2)) {
-                isUpdatingPlayerMoney ? await updatePlayerMoney(data, parseInt(-data.playerBet / 2)) : updatePlayerMoney(data, parseInt(-data.playerBet / 2));
-            } else {
-                await flashCredits();
-                await handleInsurance(false);
-            }
+			const insuranceBet = Math.round(data.playerBet / 2);
+			if(isUpdatingPlayerMoney){
+				await updatePlayerMoney(data, -insuranceBet);
+			} else {
+				updatePlayerMoney(data, -insuranceBet);
+			}
         }
 
         if (data.dealerHand.total === 21) {
@@ -780,7 +767,7 @@ function calculateCardValue(currentTotal, aceCount, newCard) {
             cardValue = 10;
         }
     } else {
-        cardValue = parseInt(cardValue, 10);
+		cardValue = cardValue === '0' ? 10 : parseInt(cardValue, 10);
     }
 
     currentTotal += cardValue;
@@ -896,7 +883,14 @@ async function animateSplit(data) {
     await drawNewCards(data, originalHandIndex, newHandIndex);
     await dimNewHand(newHandIndex);
     await updateScores(data);
-    await showGameWindow(data);
+
+	if (data.dealerHand.total !== 'hidden') {
+		await new Promise(resolve => setTimeout(resolve, 200));
+		await animateDealersTurn(data);
+		await showRewards(data);
+	} else {
+		await showGameWindow(data);
+	}
 }
 
 async function createNewHandDiv(newHandIndex) {
@@ -1363,7 +1357,7 @@ async function updatePlayerMoney(data, adjustBy = null, showRewards = false) {
                 }
             }, 0);
 
-            if (data.boughtInsurance && data.dealerHandTotal === 21 && data.dealerHand.length === 2) {
+            if (data.boughtInsurance && data.dealerHand.total === 21 && data.dealerHand.hand.length === 2) {
                 const insuranceTextElementId = await createInsuranceTextElement();
                 minDisplayTime = Math.max(minDisplayTime, getSpriteDuration('dealerIsJackAce'));
 
@@ -1443,7 +1437,7 @@ async function updatePlayerMoney(data, adjustBy = null, showRewards = false) {
                 }
             });
 
-            if (data.boughtInsurance && data.dealerHandTotal === 21 && data.dealerHand.length === 2) {
+            if (data.boughtInsurance && data.dealerHand.total === 21 && data.dealerHand.hand.length === 2) {
                 const insuranceTextElementId = 'insurance-text';
 
                 tl.to(`#${insuranceTextElementId}`, {
