@@ -99,7 +99,8 @@ const loadWeapon = async function (wallet, nft) {
 
 const walletHasNFT = async function (wallet, nft, retry) {
   let cached = daoCache.get(`${wallet}_${nft}`);
-  if (cached !== undefined) {
+  // Event loans can end between reconnects, even within the ordinary ownership TTL.
+  if (cached !== undefined && process.env.EVENT_EQUIPMENT_ENABLED !== 'true') {
     return cached;
   }
 

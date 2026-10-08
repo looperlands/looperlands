@@ -23,7 +23,7 @@ const Formulas = require('./formulas.js');
 const ens = require("./ens.js");
 const chat = require("./chat.js");
 const { SocialChat } = require('./socialchat');
-const {EventEquipment, effectiveLevel} = require('./eventequipment');
+const {EventEquipment, effectiveLevel, effectiveLevelInfo} = require('./eventequipment');
 const {EventBoardController} = require('./eventboardcontroller');
 const { ChatHistory, DEFAULT_RETENTION_DAYS } = require('./chathistory');
 const path = require('path');
@@ -771,7 +771,8 @@ WS.socketIOServer = Server.extend({
                     user: null
                 });
             } else {
-                let avatarLevelInfo = Formulas.calculatePercentageToNextLevel(sessionData.xp);
+                const player = self.worldsMap[sessionData.mapId].getPlayerById(sessionData.entityId);
+                let avatarLevelInfo = effectiveLevelInfo(player || {}, 'avatarLevel', Formulas.calculatePercentageToNextLevel(sessionData.xp));
                 let maxHp = Formulas.hp(avatarLevelInfo.currentLevel);
                 let weaponInfo = self.worldsMap[sessionData.mapId].getNFTWeaponStatistics(sessionData.entityId);
                 if (weaponInfo !== undefined) {
@@ -783,6 +784,10 @@ WS.socketIOServer = Server.extend({
                 } else {
                     weaponInfo = {};
                     weaponInfo['weaponLevelInfo'] = self.worldsMap[sessionData.mapId].getItemWeaponStatistics(sessionData.entityId);
+                }
+
+                if (weaponInfo.weaponLevelInfo && weaponInfo.constructor === 'NFTWeapon') {
+                    weaponInfo.weaponLevelInfo = effectiveLevelInfo(player || {}, 'weaponLevel', weaponInfo.weaponLevelInfo);
                 }
 
                 let botInfo = {};

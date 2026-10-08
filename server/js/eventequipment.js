@@ -62,4 +62,8 @@ function effectiveLevel(player, field, original, now = Date.now()) {
     }
     return grants[0]?.[field] ?? original;
 }
-module.exports = {EventEquipment, effectiveLevel, activeGrants};
+function effectiveLevelInfo(player, field, original, now = Date.now()) {
+    const currentLevel = effectiveLevel(player, field, original.currentLevel, now);
+    return currentLevel === original.currentLevel ? original : {...original, currentLevel, percentage: '0.00', normalLevel: original.currentLevel};
+}
+module.exports = {EventEquipment, effectiveLevel, effectiveLevelInfo, activeGrants};

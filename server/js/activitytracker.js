@@ -57,6 +57,8 @@ class ActivityTracker {
     }
     record(player, type, data) {
         if (!this.enabled || !this.sessions.has(player.sessionId)) return;
+        // Inventory removal uses the same broker as loot; it must not poison an activity batch.
+        if (type === 'loot' && data.quantity <= 0) return;
         this.meaningful(player);
         this.enqueue({...this.identity(player), type, data, occurredAt: new Date(this.now()).toISOString()});
     }

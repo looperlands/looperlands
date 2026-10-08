@@ -1,4 +1,4 @@
-const {EventEquipment, effectiveLevel} = require('./eventequipment');
+const {EventEquipment, effectiveLevel, effectiveLevelInfo} = require('./eventequipment');
 describe('event equipment', () => {
     const grant = {runId:'round',startsAt:'2026-10-08T10:00:00Z',endsAt:'2026-10-08T11:00:00Z',maps:['arena'],avatarLevel:20,weaponLevel:10,borrowedNftIds:['loan']};
     const now = Date.parse('2026-10-08T10:30:00Z');
@@ -31,3 +31,14 @@ describe('event equipment', () => {
         jest.useRealTimers();
     });
 });
+
+test('statistics show event levels while retaining the original progress outside the round', () => {
+    const original={currentLevel:75,percentage:'42.00'};
+    const player={mapId:'arena',eventGrants:[{startsAt:'2026-10-08T10:00:00Z',endsAt:'2026-10-08T11:00:00Z',maps:['arena'],avatarLevel:20,weaponLevel:10}]};
+    const now=Date.parse('2026-10-08T10:30:00Z');
+    expect(effectiveLevelInfo(player,'avatarLevel',original,now)).toEqual({currentLevel:20,percentage:'0.00',normalLevel:75});
+    expect(effectiveLevelInfo(player,'weaponLevel',original,now).currentLevel).toBe(10);
+    expect(original).toEqual({currentLevel:75,percentage:'42.00'});
+    expect(effectiveLevelInfo({...player,mapId:'main'},'avatarLevel',original,now)).toBe(original);
+});
+

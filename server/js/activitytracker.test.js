@@ -52,3 +52,10 @@ test('spool write errors do not fail a successful game action',()=>{
  tracker.start(player);const log=jest.spyOn(console,'error').mockImplementation(()=>{});const append=jest.spyOn(fs,'appendFileSync').mockImplementation(()=>{throw new Error('disk full');});
  try{expect(()=>tracker.record(player,'kill',{target:'13',quantity:1})).not.toThrow();expect(tracker.enabled).toBe(false);expect(tracker.pending).toEqual([]);}finally{append.mockRestore();log.mockRestore();}
 });
+
+test('inventory consumption is not queued as loot and cannot block later scoring', async () => {
+ tracker.start(player); tracker.record(player,'loot',{target:'22',quantity:-2}); tracker.record(player,'loot',{target:'22',quantity:0});
+ tracker.record(player,'loot',{target:'22',quantity:3}); tracker.record(player,'kill',{target:'13',quantity:1});
+ expect(tracker.pending.map(row=>[row.type,row.data.quantity])).toEqual([['loot',3],['kill',1]]);
+ await tracker.flush(); expect(tracker.pending).toEqual([]);
+});
