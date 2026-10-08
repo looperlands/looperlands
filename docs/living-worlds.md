@@ -94,8 +94,9 @@ as their entry condition, with no reset or dependency on attendance files.
    Use **Replay picnic** in the expanded local guide to watch it again with the
    same recorded choice; replaying does not reset quests or personal memory.
 
-The expandable "your next step" guide at the top right updates from that player's
-quest and choice state. Player 2 has independent progress: player 1's completed
+The expandable "your next step" guide exists only in the local preview and updates
+from that player's quest and choice state. Production uses the normal NPC dialogue
+and quest log; it does not show preview controls or the guide. Player 2 has independent progress: player 1's completed
 quests never unlock player 2's options. NPC-to-NPC exchanges discuss their shared
 roles and preparations, without assuming every visitor has completed the story.
 Adam explains his supply rounds, Bstrat explains her market visits, and Town Watch

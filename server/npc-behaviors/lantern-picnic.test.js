@@ -122,3 +122,30 @@ test('one player returning a quest never mutates a shared definition or another 
     expect(registry.questsByID[picnic.SAFETY].completed).toBeUndefined();
     expect(registry.questsByID[picnic.SAFETY].done).toBeUndefined();
 });
+
+test('the production cloning cache preserves all picnic progress across dialogue transitions and reconnects', () => {
+    const NodeCache = require('node-cache');
+    const cache = new NodeCache();
+    cache.set('saved', {nftId: 'saved-avatar', xp: 100, gameData: {quests: {}, choices: [], mobKills: {}, items: {}}});
+    const controller = new DialogueController(cache, {});
+    const talk = (kind, key) => controller.processDialogueTree('main', kind, cache, 'saved', key);
+    const choose = (kind, key, node) => {
+        expect(controller.goto('main', kind, node, cache, 'saved', key)).toBe(true);
+        return talk(kind, key);
+    };
+    const adam = Types.Entities.VILLAGER, girl = Types.Entities.VILLAGEGIRL, guard = Types.Entities.GUARD;
+    talk(adam, 'town-gardener'); choose(adam, 'town-gardener', 'accept');
+    expect(registry.hasQuest(picnic.BASKET, cache.get('saved'))).toBe(true);
+    talk(girl, 'town-neighbour'); choose(girl, 'town-neighbour', 'share');
+    talk(adam, 'town-gardener'); choose(adam, 'town-gardener', 'shared');
+    talk(guard, 'town-watch'); choose(guard, 'town-watch', 'accept');
+    const session = cache.get('saved'); session.gameData.mobKills[Types.Entities.RAT] = 3; cache.set('saved', session);
+    talk(guard, 'town-watch'); choose(guard, 'town-watch', 'finish');
+    talk(girl, 'town-neighbour'); choose(girl, 'town-neighbour', 'quiet');
+    const saved = cache.get('saved');
+    expect(saved.gameData.quests.COMPLETED.map(q => q.questKey)).toEqual([picnic.BASKET, picnic.SAFETY, picnic.INVITE]);
+    expect(saved.gameData.quests.IN_PROGRESS).toEqual([]);
+    expect(saved.gameData.choices).toEqual(expect.arrayContaining([picnic.SHARE, picnic.FOUND, picnic.QUIET]));
+    saved.currentNpc = null; saved.currentNode = null; cache.set('saved', saved);
+    expect(talk(guard, 'town-watch').text).toContain('quiet picnic');
+});
