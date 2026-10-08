@@ -57,7 +57,8 @@ class LanternPicnicScene {
         behavior.conversation = null;
         behavior.nextConversation = Infinity;
         for (const {actor, seat} of this.actors) {
-            actor.scheduleOverride = 'picnic';
+            actor.scheduleOverride = {activity: 'picnic', location: 'the picnic south of the market', travelling: 'walking to the picnic',
+                explanation: 'I am taking a break with the neighbours. There is room for you beside the baskets.'};
             actor.definition.route = [{...seat, waitSeconds: 600, activity: 'joining the picnic'}];
             actor.waypoint = 0;
             actor.path = [];

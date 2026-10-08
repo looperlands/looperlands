@@ -1,11 +1,11 @@
 define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile',
         'warrior', 'gameclient', 'audio', 'updater', 'transition', 'combatfeedback',
         'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'fieldeffect', 'config', 'float', 'projectile', 'tileactions',
-        'worldambience', 'worldscenery', 'worldtime-worker', '../../shared/js/gametypes', '../../shared/js/altnames'],
+        'worldambience', 'worldscenery', 'worldconversation', 'worldtime-worker', '../../shared/js/gametypes', '../../shared/js/altnames'],
 
     function (InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, AnimatedTile,
               Warrior, GameClient, AudioManager, Updater, Transition, CombatFeedback,
-              Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, Fieldeffect, Config, Float, Projectile, TileActions, WorldAmbience, WorldScenery, WorldTime) {
+              Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, Fieldeffect, Config, Float, Projectile, TileActions, WorldAmbience, WorldScenery, WorldConversation, WorldTime) {
         var Game = Class.extend({
             init: function (app) {
                 this.app = app;
@@ -27,6 +27,34 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.chatinput = null;
                 this.bubbleManager = null;
                 this.audioManager = null;
+
+                this.worldConversation = new WorldConversation.Conversation({
+                    nearby: id => {
+                        const npc = this.getEntityById(id);
+                        return !this.player.isDead && npc && Math.abs(npc.gridX - this.player.gridX) + Math.abs(npc.gridY - this.player.gridY) <= 5;
+                    },
+                    listen: id => this.conversationHold.start(id),
+                    speech: (id, beat, advance) => this.showConversationBubble(id, beat, advance),
+                    replies: (id, text, options, choose) => this.showConversationReplies(id, text, options, choose),
+                    highlight: index => this.highlightConversationReply(index),
+                    decision: (id, node) => this.handleInputOptions(id, {...node, playerLine: null}),
+                    choose: (id, choice) => this.makeChoice(id, choice),
+                    close: id => {
+                        this.conversationHold.stop(); $('#conversation-replies').remove();
+                        this.destroyBubble(id); this.destroyBubble(this.player.id);
+                    }
+                });
+                this.conversationHold = new WorldConversation.ListeningHold({
+                    nearby: id => this.worldConversation.view.nearby(id),
+                    listen: (id, active) => {
+                        const npc = this.getEntityById(id);
+                        if (!npc) return;
+                        npc.dialogueUntil = active ? Date.now() + 15000 : 0;
+                        fetch('/session/' + this.sessionId + '/npc/' + npc.kind + '/listen?entityId=' + npc.id,
+                            {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({active})}).catch(() => {});
+                    },
+                    leave: () => {this.worldConversation.cancel(); this.app.closeChoicesPopup();}
+                });
 
                 // Player
                 this.player = new Warrior("player", "");
@@ -8195,23 +8223,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         self.previewTimeMode = config?.previewTimeMode;
                         self.previewHour = config?.previewHour;
                         self.worldAmbience.setConfig(config);
-                        WorldScenery.update(self.renderer, config);
+                        WorldScenery.update(self.renderer, config, self);
                         WorldScenery.prompt(self);
-                        const audio = self.audioManager;
-                        if (!audio) return;
-                        const picnic = config?.picnic || config?.previewPicnic;
-                        const playPicnicMusic = picnic?.phase === 'celebrating' && picnic.music;
-                        if (self.picnicMusicArea && !playPicnicMusic) {
-                            audio.areas = audio.areas.filter(area => area !== self.picnicMusicArea);
-                            self.picnicMusicArea = null;
-                            audio.updateMusic();
-                        }
-                        if (playPicnicMusic && !self.picnicMusicArea) {
-                            audio.addArea(picnic.center.x - 8, picnic.center.y - 6, 16, 12, 'fluteguitar');
-                            self.picnicMusicArea = audio.areas.pop();
-                            audio.areas.unshift(self.picnicMusicArea);
-                            audio.updateMusic();
-                        }
                     });
 
                     self.client.onChatMessage(function (entityId, message, options) {
@@ -8264,7 +8277,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         self.app.socialChat?.disconnect();
                         self.app.eventBoard?.disconnect();
                         self.worldAmbience.clear();
-                        WorldScenery.update(self.renderer, null);
+                        self.worldConversation.cancel(); self.conversationHold.stop(); self.app.closeChoicesPopup();
+                        WorldScenery.update(self.renderer, null, self);
                         if (self.player) {
                             self.player.die();
                         }
@@ -8655,6 +8669,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
             checkForQuests: function (npc) {
                 let self = this;
+                if (this.worldConversation.advance(npc.id)) return;
                 npc.dialogueUntil = Date.now() + 20000;
                 let url = '/session/' + self.sessionId + '/npc/' + npc.kind + '?entityId=' + npc.id;
                 if (npc.thoughts.length > 0) {
@@ -8676,6 +8691,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 }
                 axios.get(url).then(function (response) {
                     if (response.data !== "") {
+                        if (response.data.presentation === 'world') {
+                            self.worldConversation.start(npc.id, response.data);
+                            return;
+                        }
                         if (response.data.options) {
                             self.handleInputOptions(npc.id, response.data);
                             return;
@@ -9801,6 +9820,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     this.currentZoning = new Transition();
                 }
 
+                this.worldConversation.cancel(); this.conversationHold.stop(); this.app.closeChoicesPopup();
                 this.bubbleManager.clean();
                 this.client.sendZone();
             },
@@ -9830,6 +9850,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             },
 
             resetZone: function () {
+                this.worldConversation.cancel(); this.conversationHold.stop(); this.app.closeChoicesPopup();
                 this.bubbleManager.clean();
                 this.initAnimatedTiles();
                 this.renderer.renderStaticCanvases();
@@ -10027,12 +10048,14 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             makeChoice: function (npcId, choice) {
                 let self = this;
                 let npc = self.getEntityById(npcId);
+                if (!npc || this.player.isDead) return;
+                this.conversationHold.start(npcId);
                 let url = '/session/' + self.sessionId + '/npc/' + npc.kind + '/dialogue/' + choice + '?entityId=' + npc.id;
                 axios.get(url).then(function (response) {
                     setTimeout(() => {
                         self.makeNpcTalk(npc);
                     }, 500);
-                })
+                }).catch(() => {self.conversationHold.stop(); self.showNotification('Move closer and talk again.');});
             },
 
             showNewQuestPopup: function (quest) {
@@ -10054,8 +10077,60 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 }
             },
 
+            showConversationBubble(npcId, beat, advance) {
+                $('#conversation-replies').remove();
+                const npc = this.getEntityById(npcId);
+                if (!npc) return this.worldConversation.cancel();
+                const speaker = beat.speaker === 'player' ? this.player : npc;
+                this.destroyBubble(npcId);
+                this.destroyBubble(this.player.id);
+                // Authored speech is written as text nodes, never interpolated HTML.
+                this.createBubble(speaker.id, '');
+                const bubble = this.bubbleManager.getBubbleById(speaker.id);
+                bubble.keepAlive = () => this.worldConversation.active(npcId);
+                bubble.element.addClass('world-conversation').attr('role', 'region').attr('aria-label', beat.speaker === 'player' ? 'Your reply' : (npc.name || 'NPC conversation'));
+                const body = bubble.element.find('p').empty();
+                body.append($('<span class="conversation-line"></span>').text(beat.text));
+                const button = (label, callback) => $('<button type="button"></button>').text(label).on('click', event => {
+                    event.preventDefault(); event.stopPropagation(); callback();
+                });
+                if (advance) body.append(button('Continue · E', advance).addClass('conversation-continue'));
+
+                if (advance) body.append(button('Leave · Esc', () => this.worldConversation.cancel()).addClass('conversation-end'));
+                npc.dialogueUntil = Date.now() + 20000;
+                this.assignBubbleTo(speaker);
+                this.audioManager.playSound('npc');
+            },
+
+            showConversationReplies(npcId, text, options, choose) {
+                this.showConversationBubble(npcId, {speaker: 'npc', text});
+                const npc = this.getEntityById(npcId);
+                if (!npc) return;
+                const tray = $('<div id="conversation-replies" role="region" aria-label="Your replies"></div>');
+                const header = $('<div class="conversation-reply-header"></div>');
+                header.append($('<span></span>').text('Talking with ' + npc.name));
+                header.append($('<button type="button" class="conversation-end">Leave · Esc</button>').on('click', () => this.worldConversation.cancel()));
+                tray.append(header);
+                const choices = $('<div class="conversation-reply-list"></div>');
+                options.forEach((option, index) => {
+                    choices.append($('<button type="button" class="conversation-reply"></button>').text(option.text).on('click', () => choose(option.goto))
+                        .on('mouseenter focus', () => {if (this.worldConversation.current) this.worldConversation.current.selected = index; this.highlightConversationReply(index);}));
+                });
+                tray.append(choices, $('<p class="conversation-keys">Arrow keys to select · Enter to reply</p>'));
+                tray.on('click touchstart', event => event.stopPropagation());
+                $('#bubbles').append(tray);
+            },
+
+            highlightConversationReply(index) {
+                const choices = $('#conversation-replies .conversation-reply');
+                choices.removeClass('selected').removeAttr('aria-current');
+                choices.eq(index).addClass('selected').attr('aria-current', 'true');
+                choices[index]?.scrollIntoView({block: 'nearest', inline: 'nearest'});
+            },
+
             handleInputOptions(npcId, dialogueNode) {
                 if (this.player_choice_callback) {
+                    this.conversationHold.start(npcId);
                     this.destroyBubble(npcId);
                     this.player_choice_callback(npcId, dialogueNode)
                 }
@@ -10608,6 +10683,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
             interact: function () {
                 if ($('#dialogue-popup').hasClass('active') || this.player.isDead) return;
+                if (this.worldConversation.advance()) return;
                 const storyAction = WorldScenery.nearestAction(this.player.gridX, this.player.gridY);
                 if (storyAction) return WorldScenery.execute(this, storyAction);
                 const nearestNpc = this.forNearestEntityAround(this.player.gridX, this.player.gridY, 1,

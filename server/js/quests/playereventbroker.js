@@ -120,6 +120,9 @@ class PlayerEventBroker {
         this.cache.set(sessionId, playerCache);
         PlayerEventBroker.dispatchEvent(PlayerEventBroker.Events.KILL_MOB, sessionId, this.player, playerCache, { mob: mob });
         this.player.server.npcBehavior?.react('kill', this.player, {mob});
+        await this.player.server.extensions?.kill(this.player, mob).catch(error => {
+            this.player.server.pushToPlayer(this.player, new Messages.Chat(this.player, error.message, true));
+        });
     }
 
     async questCompleteEvent(quest, xpGained) {

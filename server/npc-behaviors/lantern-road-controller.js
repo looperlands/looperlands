@@ -1,17 +1,11 @@
-const content = require('../npc-behaviors/lantern-road');
-const state = require('../npc-behaviors/lantern-road-state');
+const content = require('./lantern-road');
+const state = require('./lantern-road-state');
 const Types = require('../../shared/js/gametypes');
-const dao = require('./dao');
-const Messages = require('./message');
-
-// Only server-observed positions and active objectives can create story facts.
-// Quest and choice persistence stays in the normal backend for cross-server saves.
-class LanternRoadController {
+const {StoryObjectives} = require('../js/storyobjectives');
+// Custom content and presentation are registered by world-definitions/main.js.
+class LanternRoadController extends StoryObjectives {
     constructor(world) {
-        this.world = world;
-        this.pending = new Map();
-        this.snapshots = new Map();
-        this.discoveries = new Map();
+        super(world, content, state);
         for (const definition of content.npcs) {
             let npc = Object.values(world.npcs).find(npc => npc.kind === Types.getKindFromString(definition.kind) &&
                 npc.x === definition.x && npc.y === definition.y);
@@ -23,7 +17,7 @@ class LanternRoadController {
             }
             if (!npc) throw new Error('Missing story NPC: ' + definition.key);
             npc.behaviorState = {...npc.behaviorState, key: definition.key, label: definition.label,
-                activity: npc.behaviorState?.activity || 'waiting with news from the lantern road', orientation: Types.Orientations.DOWN};
+                activity: npc.behaviorState?.activity || 'waiting with news from the neighbours', orientation: Types.Orientations.DOWN};
         }
         if (world.npcBehavior) {
             for (const routine of content.gatheringRoutines) world.npcBehavior.registerRoutine(routine);
@@ -42,59 +36,9 @@ class LanternRoadController {
                     when: {questCompleted: q.id}, lines: {return: [q.dialogue.reply], quest: [q.dialogue.reply]}
                 }))];
             }
-            world.npcBehavior.config.conversations.push(content.gatheringConversation);
+            world.npcBehavior.config.conversations.push(content.gatheringConversation, ...content.regionalConversations);
         }
     }
-
-    data(player) { return this.world.server.cache.get(player.sessionId)?.gameData || {}; }
-
-    async record(player, flag) {
-        const session = this.world.server.cache.get(player.sessionId);
-        if (!session || state.has(session.gameData, flag)) return;
-        const response = await dao.registerChoice(session.nftId, flag);
-        if (response === undefined) throw new Error('Could not save this discovery. Please try again.');
-        const latest = this.world.server.cache.get(player.sessionId);
-        if (!latest || latest.nftId !== session.nftId) return;
-        latest.gameData.choices = [...new Set([...(latest.gameData.choices || []), flag])];
-        this.world.server.cache.set(player.sessionId, latest);
-    }
-
-    async inspect(player, id) {
-        const previous = this.pending.get(player.nftId) || Promise.resolve();
-        const operation = previous.catch(() => {}).then(async () => {
-            if (!player.hasEnteredGame || player.isDead || this.world.players[player.id] !== player) throw new Error('Enter the world before inspecting a story location.');
-            const q = content.quests.find(q => q.objectives.some(o => q.id + ':' + o.key === id));
-            const objective = q?.objectives.find(o => q.id + ':' + o.key === id);
-            const data = this.data(player);
-            if (!q || !objective || objective.type !== 'inspect' || !state.active(data, q.id) || !state.applicable(data, objective) ||
-                Math.abs(player.x - objective.x) + Math.abs(player.y - objective.y) > 3) throw new Error('This objective is not available here.');
-            await this.record(player, content.objectiveFlag(q, objective));
-            this.discoveries.set(player.id, {text: objective.result, until: Date.now() + 120000});
-            this.snapshots.delete(player.id);
-            return {text: objective.result, quest: q.id, objective: objective.key};
-        });
-        this.pending.set(player.nftId, operation);
-        try { return await operation; }
-        finally { if (this.pending.get(player.nftId) === operation) this.pending.delete(player.nftId); }
-    }
-
-    travel(player, id) {
-        const passage = content.passages.find(p => p.id === id);
-        if (!player.hasEnteredGame || player.isDead || this.world.players[player.id] !== player || !passage ||
-            !state.done(this.data(player), passage.requires) ||
-            Math.abs(player.x - passage.x) + Math.abs(player.y - passage.y) > 3 ||
-            !this.world.isValidPosition(passage.tx, passage.ty)) throw new Error('This passage is not available here.');
-        player.setPosition(passage.tx, passage.ty);
-        player.clearTarget();
-        player.broadcast(new Messages.Teleport(player));
-        this.world.pushToPlayer(player, new Messages.Teleport(player));
-        this.world.handlePlayerVanish(player);
-        this.world.pushRelevantEntityListTo(player);
-        return {text: 'You follow the passage. ' + passage.label + '.'};
-    }
-
-    forget(player) { this.snapshots.delete(player.id); this.discoveries.delete(player.id); }
-
     packet(player) {
         const data = this.data(player);
         const snapshot = JSON.stringify([data.quests, data.choices, player.x, player.y, this.discoveries.get(player.id)?.until > Date.now()]);
@@ -102,21 +46,21 @@ class LanternRoadController {
         if (cached?.snapshot === snapshot) return cached.packet;
         const journal = state.journal(data);
         const active = content.quests.filter(q => state.active(data, q.id));
-        journal.inspect = active.flatMap(q => state.progress(data, q).filter(o => !o.done && o.type === 'inspect' &&
+        journal.inspect = active.flatMap(q => state.progress(data, q).filter(o => !o.done && ['inspect', 'collect', 'deliver'].includes(o.type) &&
             Math.abs(player.x - o.x) + Math.abs(player.y - o.y) <= 3).map(o => ({id: q.id + ':' + o.key, label: o.label})));
-        const markers = active.flatMap(q => state.progress(data, q).filter(o => !o.done && o.type === 'inspect').map(o => ({
-            id: q.id + ':' + o.key, x: o.x, y: o.y, kind: 'marker', label: o.label
+        const markers = active.flatMap(q => state.progress(data, q).filter(o => !o.done && ['inspect', 'collect', 'deliver', 'visit'].includes(o.type)).map(o => ({
+            id: q.id + ':' + o.key, x: o.x, y: o.y, kind: o.type === 'collect' ? 'parcel' : 'marker', label: o.label, action: o.type === 'visit' ? false : 'inspect', objectiveType: o.type
         })));
         const passages = content.passages.filter(p => state.done(data, p.requires));
         journal.passages = passages.filter(p => Math.abs(player.x - p.x) + Math.abs(player.y - p.y) <= 3).map(p => ({id: p.id, label: p.label}));
         markers.push(...passages.map(p => ({id: p.id, x: p.x, y: p.y, kind: 'passage', label: p.label})));
         const lights = [];
         const add = (quest, x, y, label, kind = 'lantern') => {if (state.done(data, quest)) lights.push({x, y, label, kind});};
-        add('LANTERN_COAST_SIGNAL', 57, 260, 'Coastal signal restored');
+        add('LANTERN_COAST_SIGNAL', 57, 260, 'Bread for the travellers');
         add('LANTERN_STILL_WAITING', 43, 176, 'Mara\'s trail lantern');
         add('LANTERN_MISSING_LIGHT', 47, 128, state.has(data, 'lantern:public-memorial') ? 'A memorial for the missing' : 'A quiet remembrance', 'memorial');
         add('LANTERN_ROAD_WE_TAKE', state.has(data, 'lantern:caravan-detour') ? 64 : 44, 77, 'Nessa\'s chosen caravan route');
-        add('LANTERN_MISSING_REGULATOR', 91, 28, 'Northern regulator fitted');
+        add('LANTERN_MISSING_REGULATOR', 91, 28, 'Rowan’s satchel recovered');
         if (state.done(data, 'LANTERN_LIGHT_SHARED')) {
             lights.push({x: 68, y: 378, kind: 'lantern', label: 'The lantern road is open'});
             journal.event = state.has(data, 'lantern:rowan-keeper') ? 'Rowan is sharing the keeper\'s watch.' : 'Orin and Mara are taking over while Rowan rests.';
@@ -150,11 +94,11 @@ class LanternRoadController {
         }
         if (['desert-courier', 'party-wildwill'].includes(key)) {
             if (state.has(data, 'lantern:caravan-detour')) lines.push('I remember you choosing shelter for the tired travellers. The eastern detour meant lantern oil could come with them.');
-            if (state.has(data, 'lantern:caravan-direct')) lines.push('I remember you choosing the direct road for the heavy parts. The repair tools could travel along the central road.');
+            if (state.has(data, 'lantern:caravan-direct')) lines.push('I remember you choosing the direct road for the loaded packs. The caravan could travel together.');
         }
         if (['lantern-keeper', 'party-wildwill'].includes(key)) {
             if (state.has(data, 'lantern:rowan-keeper')) lines.push(key === 'lantern-keeper' ?
-                'You asked me to share the watch. I can keep the flame without keeping everyone away.' : 'I heard Rowan chose to share the watch. I saved a place for a keeper who can finally have company.');
+                'You asked me to share the watch. I can guide the paths without keeping everyone away.' : 'I heard Rowan chose to share the watch. I saved a place for a keeper who can finally have company.');
             if (state.has(data, 'lantern:rowan-handover')) lines.push(key === 'lantern-keeper' ?
                 'You gave me room to teach new keepers and rest. I did not know how much I needed that choice.' : 'I heard Rowan chose to teach new keepers and rest. I saved him a quiet place beside us.');
         }
@@ -174,9 +118,9 @@ class LanternRoadController {
             const completedHere = content.quests.filter(q => q.npcKey === key && state.done(data, q.id));
             const local = content.quests.filter(q => q.npcKey === key && !state.done(data, q.id));
             const current = local.find(q => state.active(data, q.id));
-            node.text = current ? (state.ready(data, current) ? current.dialogue.ready : current.dialogue.waiting) :
+            node.text = current ? (!state.unlocked(data, current) ? state.nextStep(data, current) : state.ready(data, current) ? current.dialogue.ready : current.dialogue.waiting) :
                 completedHere.length ? completedHere.at(-1).dialogue.reply : npc.presence;
-            if (!current && !completedHere.length && key === 'town-priest') node.text = state.npcStatus(data, key);
+            if (!current && !completedHere.length) node.text = state.npcStatus(data, key) || npc.presence;
             if (['town-gardener', 'town-neighbour', 'town-watch', 'desert-courier', 'town-priest'].includes(key)) {
                 node.text += '<br><br>' + LanternRoadController.memories(data, key).slice(0, 1).join('');
             }
@@ -185,13 +129,12 @@ class LanternRoadController {
         if (node.storyMemory) node.text = LanternRoadController.memories(data, key).join('<br><br>') ||
             'We have not shared that much of the road yet. Tell me what you learn; I would like to hear it.';
         if (node.storyLead) {
-            const q = content.quests.find(q => state.active(data, q.id) && !q.optional) ||
-                content.quests.find(q => state.unlocked(data, q) && !state.done(data, q.id) && !q.optional);
+            const q = state.currentMain(data);
             const target = q && content.npcs.find(npc => npc.key === q.npcKey);
             if (!state.done(data, 'LANTERN_INVITATION')) {
                 node.text = 'Ask Ordinary Adam on his Town market rounds about the first picnic. Help him and Bstrat prepare it, then we can follow the invitations along the road.';
-            } else if (!state.done(data, 'LANTERN_WRECK_LETTERS') && !state.done(data, 'LANTERN_FOREST_MARKERS')) {
-                node.text = 'Jimi last saw Rowan on the coast. Mara keeps the old forest markers. Ask Jimi at his Beach landing or Mara on the southern Forest trail. You can follow either lead first.';
+            } else if (!state.done(data, 'LANTERN_WRECK_LETTERS')) {
+                node.text = 'Start with Jimi at his Beach landing. He last saw Rowan on the coast. We should recover the letters and help his visitors before asking Mara about the forest path.';
             } else if (q && target.key === key) {
                 node.text = state.active(data, q.id) ? (state.ready(data, q) ? q.dialogue.ready : q.dialogue.waiting) : q.dialogue.offer;
             } else if (q) {
@@ -202,13 +145,13 @@ class LanternRoadController {
         }
         if (node.storyQuest) {
             const q = content.quests.find(q => q.id === node.storyQuest);
-            node.text = state.ready(data, q) ? q.dialogue.ready : q.dialogue.waiting;
+            node.text = !state.unlocked(data, q) ? state.nextStep(data, q) : state.ready(data, q) ? q.dialogue.ready : q.dialogue.waiting;
         }
         if (node.storyDirections) {
             const q = content.quests.find(q => q.id === node.storyDirections);
             const pending = state.progress(data, q).find(o => !o.done);
             node.text = pending ? pending.where + '<br><br>Look for the marker called “' + pending.label +
-                '”. Walk beside it, then click it or press E.' : 'You have checked everything I asked for. Tell me what you found when you are ready.';
+                '”. ' + state.instruction(pending) : 'You have checked everything I asked for. Tell me what you found when you are ready.';
         }
         return node;
     }

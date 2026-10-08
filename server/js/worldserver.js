@@ -21,6 +21,7 @@ var cls = require("./lib/class"),
     Fieldeffect = require('./fieldeffect');
 const quests = require("./quests/quests");
 const {NpcBehavior, loadConfig: loadNpcBehaviorConfig} = require('./npcbehavior');
+const {registry: definitions} = require('./worldextensions');
 
 const WorldEventBroker = require("./flows/worldeventbroker.js");
 const {cache} = require("express/lib/application");
@@ -282,11 +283,8 @@ module.exports = World = cls.Class.extend({
             const npcBehaviorConfig = loadNpcBehaviorConfig(self.id.replace(/^world_/, ''));
             if (npcBehaviorConfig) {
                 self.npcBehavior = new NpcBehavior(self, npcBehaviorConfig, self.server.npcMemory);
-                if (self.id === 'world_main') {
-                    self.lanternPicnic = new (require('../npc-behaviors/lantern-picnic-scene'))(self);
-                    self.lanternRoad = new (require('./lanternroadcontroller').LanternRoadController)(self);
-                }
             }
+            self.extensions = definitions.create(self);
 
             if (self.server.tileActionsController) {
                 self.server.tileActionsController.loadPersistedPlots(self.id.replace(/^world_/, ""), self)
@@ -307,7 +305,7 @@ module.exports = World = cls.Class.extend({
                 return;
             }
             if (self.npcBehavior) self.npcBehavior.tick();
-            self.lanternPicnic?.tick();
+            self.extensions?.tick();
             self.processGroups();
             self.processQueues();
 
@@ -538,7 +536,7 @@ module.exports = World = cls.Class.extend({
         this.server.cache.del(player.sessionId);
         player.broadcast(player.despawn());
         this.removeEntity(player);
-        this.lanternRoad?.forget(player);
+        this.extensions?.forget(player);
         delete this.players[player.id];
         delete this.outgoingQueues[player.id];
         player.playerEventBroker.destroy();

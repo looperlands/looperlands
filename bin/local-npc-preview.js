@@ -167,6 +167,7 @@ async function createSession(index) {
 }
 
 api.listen(fixturePort, '127.0.0.1', () => {
+    require('../server/world-definitions').register();
     const WS = require('../server/js/ws');
     const server = new WS.socketIOServer();
     const World = require('../server/js/worldserver');
@@ -175,14 +176,14 @@ api.listen(fixturePort, '127.0.0.1', () => {
     previewWorld = world;
     const Messages = require('../server/js/message');
     const packetFor = player => {
-        const road = world.lanternRoad.packet(player);
+        const road = world.extensions.packet(player);
         const choices = server.cache.get(player.sessionId)?.gameData?.choices || [];
         return ({...world.npcBehavior.ambienceFor(player),
         serverTime: Date.now(), epoch: 0,
         ...road,
         picnic: road.finalePicnic || (picnicScene?.state && {...picnicScene.state, music: choices.includes(picnic.MUSIC)}) || null,
         previewPicnic: picnicScene?.state || null,
-        previewStory: {title: 'The Lantern Picnic', goal: picnic.progress(server.cache.get(player.sessionId)?.gameData),
+        previewStory: {title: 'The Lantern Picnic', replay: {label: 'Replay picnic', path: '/__npc_preview/picnic'}, goal: picnic.progress(server.cache.get(player.sessionId)?.gameData),
             event: picnicScene?.state?.message || '',
             canReplay: picnicScene?.completed(player) && (!picnicScene.state || picnicScene.state.phase === 'finished')}});
     };
@@ -217,9 +218,9 @@ api.listen(fixturePort, '127.0.0.1', () => {
     const initializeMap = world.map.ready_func;
     world.map.ready(() => {
         initializeMap();
-        picnicScene = world.lanternPicnic;
+        picnicScene = world.extensions.get('lantern-road').picnicScene;
         Object.assign(world.npcBehavior.config.ambience, {mode: 'night', previewTimeMode: 'night', previewControls,
-            previewStory: {title: 'The Lantern Picnic', goal: picnic.progress()}});
+            previewStory: {title: 'The Lantern Picnic', replay: {label: 'Replay picnic', path: '/__npc_preview/picnic'}, goal: picnic.progress()}});
     });
     const storyGoals = new Map();
     setInterval(() => {

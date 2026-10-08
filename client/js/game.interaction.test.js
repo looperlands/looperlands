@@ -14,7 +14,7 @@ function setup() {
     game.player = {gridX: 5, gridY: 5}; game.renderingGrid = Array.from({length: 11}, () => Array.from({length: 11}, () => ({})));
     game.renderingGrid[5][4][adam.id] = adam; game.renderingGrid[6][5][bstrat.id] = bstrat;
     game.map = {isOutOfBounds: () => false, findNearestActionTileAround: jest.fn()};
-    game.makeNpcTalk = jest.fn(); game.runTileAction = jest.fn();
+    game.worldConversation = {advance: jest.fn(() => false)}; game.makeNpcTalk = jest.fn(); game.runTileAction = jest.fn();
     return {game, adam, bstrat, scenery, modal: value => {modal = value;}};
 }
 
@@ -40,4 +40,9 @@ test('active story markers use E before nearby dialogue and ordinary tile action
     adam.kind = bstrat.kind = 2; const eventBoard = {action: 'event_board'};
     game.map.findNearestActionTileAround.mockReturnValue(eventBoard); game.interact();
     expect(game.runTileAction).toHaveBeenCalledWith(eventBoard);
+});
+
+test('E advances the current conversation before any scenery or nearby actor', () => {
+ const {game, scenery} = setup(); game.worldConversation.advance.mockReturnValue(true); game.interact();
+ expect(scenery.nearestAction).not.toHaveBeenCalled(); expect(game.makeNpcTalk).not.toHaveBeenCalled();
 });

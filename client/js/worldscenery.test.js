@@ -5,9 +5,9 @@ function setup() {
     const renderer = {registerExtension: jest.fn(), setExtensionData: jest.fn()};
     const game = {sessionId: 'one', started: true, player: {gridX: 53, gridY: 285}, showNotification: jest.fn(),
         destroyBubble: jest.fn(), showNewQuestPopup: jest.fn(), showTileActionBubble: jest.fn()};
-    const packet = {storyScenery: [{kind: 'marker', id: 'LANTERN_WRECK_LETTERS:letters', label: 'Recover the invitation pouch', x: 53, y: 285},
-        {kind: 'passage', id: 'old-mill', label: 'Enter the old windmill', x: 39, y: 243},
-        {kind: 'lantern', x: 57, y: 260}]};
+    const packet = {rendererExtensions: [{id: 'test-story', script: 'test-story-worker.js', data: [{x: 57, y: 260}]}],
+        worldActions: [{type: 'inspect', id: 'test-letters', label: 'Recover the invitation pouch', x: 53, y: 285},
+            {type: 'travel', id: 'old-mill', label: 'Enter the old windmill', x: 39, y: 243}]};
     scenery.update(renderer, packet);
     return {scenery, renderer, game, fetch, packet};
 }
@@ -15,14 +15,14 @@ function setup() {
 test('ground markers and passages use normal world interaction coordinates and clear on disconnect', () => {
     const {scenery, renderer} = setup();
     scenery.attach(renderer);
-    expect(renderer.registerExtension).toHaveBeenCalledWith('lantern-road-renderer-worker.js');
+    expect(renderer.registerExtension).toHaveBeenCalledWith('test-story-worker.js');
     expect(scenery.nearestAction(53, 285)).toMatchObject({gridX: 53, gridY: 285, x: 848, y: 4560, storyType: 'inspect'});
     expect(scenery.nearestAction(39, 243).storyType).toBe('travel');
     expect(scenery.nearestAction(57, 260)).toBeUndefined();
     expect(scenery.nearestAction(55, 285)).toBeUndefined();
     scenery.update(renderer, null);
     expect(scenery.actionAt(53, 285)).toBeUndefined();
-    expect(renderer.setExtensionData).toHaveBeenCalledWith('lantern-road', null);
+    expect(renderer.setExtensionData).toHaveBeenCalledWith('test-story', null);
 });
 
 test('clicks and E share a single authenticated inspection request and display its discovery once', async () => {
@@ -30,7 +30,7 @@ test('clicks and E share a single authenticated inspection request and display i
     let resolve; fetch.mockReturnValue(new Promise(done => {resolve = done;}));
     const first = scenery.execute(game, action), duplicate = scenery.execute(game, action);
     expect(fetch).toHaveBeenCalledTimes(1);
-    expect(fetch).toHaveBeenCalledWith('/session/one/story/inspect/LANTERN_WRECK_LETTERS%3Aletters', {method: 'POST'});
+    expect(fetch).toHaveBeenCalledWith('/session/one/story/inspect/test-letters', {method: 'POST'});
     resolve({ok: true, json: async () => ({text: 'The letters never arrived.'})});
     await Promise.all([first, duplicate]);
     expect(game.showNewQuestPopup).toHaveBeenCalledWith({heading: 'Discovery', name: action.label, startText: 'The letters never arrived.'});

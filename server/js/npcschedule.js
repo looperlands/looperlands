@@ -71,8 +71,8 @@ class NpcSchedule {
             this.routine.nextStep = time;
             this.routine.blockedSince = 0;
         }
-        const activity = override ? 'picnic' : phase.key;
-        const location = override ? 'the picnic south of the market' : phase.label;
+        const activity = override ? override.activity : phase.key;
+        const location = override ? override.location : phase.label;
         this.behavior.state(this.routine, {schedule: activity, scheduleLocation: location});
     }
 
@@ -98,7 +98,7 @@ class NpcSchedule {
 
     routeLength() { return (this.override ? this.routine.definition.route : this.phase.route).length; }
     sleeping() { return !this.override && this.phase?.key === 'sleep' && this.room === this.phase.location; }
-    travelActivity() { return this.override ? 'walking to the picnic' : this.phase.travelling; }
+    travelActivity() { return this.override ? this.override.travelling : this.phase.travelling; }
 
     canReachOutside(destination) {
         if (this.room === 'outside') return this.behavior.findPath(this.routine, destination).length > 0 || same(this.routine.npc, destination);
@@ -109,10 +109,9 @@ class NpcSchedule {
 
     describe() {
         const phase = this.phase || phaseAt(this.definition, this.behavior.worldTime());
-        const plan = this.definition.phases.map(p => String(p.at).padStart(2, '0') + ':00 — ' + p.activity + ' at ' + p.label).join('<br>');
-        const current = this.override ? 'I am taking a break for our picnic. Afterwards I will return to my usual day.' :
+        const current = this.override ? this.override.explanation :
             this.sleeping() ? 'You woke me, but I can spare a moment. ' + phase.explanation : phase.explanation;
-        return current + '<br><br>' + plan + '<br><br>If you need me for a quest, you can still talk to me indoors. I will stop to listen, then carry on.';
+        return current;
     }
 }
 module.exports = {NpcSchedule, validateSchedule, phaseAt};

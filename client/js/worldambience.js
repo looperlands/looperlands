@@ -72,7 +72,7 @@ define(['worldtime-worker', 'worldparticles-worker'], function (WorldTime, World
                     this.story = document.createElement('details');
                     this.story.style.cssText = 'width:100%;color:#ffe3a1;background:#382632;padding:8px;font-size:12px;line-height:1.5;';
                     const summary = document.createElement('summary');
-                    summary.textContent = 'The Lantern Picnic — your next step';
+                    summary.textContent = 'Your next step';
                     summary.style.cursor = 'pointer';
                     this.story.appendChild(summary);
                     this.storyGoal = document.createElement('p');
@@ -84,21 +84,21 @@ define(['worldtime-worker', 'worldparticles-worker'], function (WorldTime, World
                     explanation.textContent = 'Local playtest guide. Click NPCs to talk and walk to ground markers to inspect them. The normal quest log keeps your objectives. Dialogue explains what each neighbour knows and why they need your help. Each player has their own progress.';
                     this.story.appendChild(explanation);
                     this.replay = document.createElement('button');
-                    this.replay.textContent = 'Replay picnic';
+                    this.replay.textContent = config.previewStory?.replay?.label || 'Replay scene';
                     this.replay.style.cssText = 'font:inherit;color:#ffe3a1;background:#6b4953;border:1px solid #b99761;padding:5px 8px;cursor:pointer;';
                     this.replay.addEventListener('click', () => {
                         this.replay.disabled = true;
                         const sessionId = new URLSearchParams(window.location.search).get('sessionId');
-                        fetch('/__npc_preview/picnic', {method: 'POST', headers: {'Content-Type': 'application/json'},
+                        fetch(this.config.previewStory.replay.path, {method: 'POST', headers: {'Content-Type': 'application/json'},
                             body: JSON.stringify({sessionId})}).then(response => {
-                            if (!response.ok) throw new Error('The picnic is already underway, or this story is not complete.');
+                            if (!response.ok) throw new Error('This scene cannot be replayed yet.');
                         }).catch(error => { this.storyEvent.textContent = error.message; })
                             .finally(() => { this.replay.disabled = false; });
                     });
                     this.story.appendChild(this.replay);
                     this.controls.appendChild(this.story);
                 }
-                this.story.firstChild.textContent = (story.title || 'The Lantern Picnic') + ' — your next step';
+                this.story.firstChild.textContent = (story.title || 'Your story') + ' — your next step';
                 this.storyGoal.textContent = story.goal;
                 this.storyEvent.textContent = story.event || '';
                 if (story.quests) {

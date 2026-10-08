@@ -131,10 +131,10 @@ test('sleeping NPCs stay quiet but answer routine and quest conversations withou
     const before = structuredClone(saves); tick(100);
     expect(chats(world)).toHaveLength(0);
     expect(behavior.interact(player, adam.npc.kind, adam.npc.id)).toBeTruthy();
-    const reply = behavior.decorateDialogue(adam.npc, {npcSchedule: adam.definition.key});
-    expect(reply.text).toContain('You woke me'); expect(reply.text).toContain('08:00'); expect(reply.text).toContain('guesthouse east');
+    const reply = behavior.decorateDialogue(adam.npc, {npcContext: true});
+    expect(reply.text).toContain('You woke me'); expect(reply.text).not.toMatch(/\d{2}:00/); expect(reply.text).toContain('dreaming');
     expect(reply.text).not.toMatch(/\b\d+\s*,\s*\d+\b/);
-    expect(behavior.decorateDialogue(adam.npc, {storyPresence: adam.definition.key}).text).toBe(reply.text);
+    expect(behavior.decorateDialogue(adam.npc, {npcContext: true}).text).toBe(reply.text);
     expect(behavior.decorateDialogue(adam.npc, {text: 'A quest reply'})).toEqual({text: 'A quest reply'});
     expect(behavior.decorateDialogue({behaviorState: {key: 'missing'}}, {text: 'Hello'})).toEqual({text: 'Hello'});
     expect(saves).toEqual(before); expect(saves.two.gameData.choices).not.toContain(picnic.SHARE);
@@ -152,7 +152,7 @@ test('a picnic invites sleeping neighbours out through their doors and schedules
     player.x = 41; player.y = 216;
     const scene = new LanternPicnicScene(world, () => behavior.now());
     scene.tick(); expect(scene.state.phase).toBe('gathering');
-    expect(actor('town-gardener').scheduleOverride).toBe('picnic');
+    expect(actor('town-gardener').scheduleOverride.activity).toBe('picnic');
     for (let i = 0; i < 1600 && scene.state.phase !== 'finished'; i++) { tick(); scene.tick(); }
     expect(scene.state.phase).toBe('finished');
     expect(behavior.memory.has('main', 'lantern-picnic', player, 'celebrated')).toBe(true);

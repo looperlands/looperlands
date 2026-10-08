@@ -713,10 +713,12 @@ WS.socketIOServer = Server.extend({
                     user: null
                 });
             } else {
-                const player = self.worldsMap[sessionData.mapId].getPlayerById(sessionData.entityId);
+                const world = self.worldsMap[sessionData.mapId];
+                if (!world) return res.status(409).json({error: 'Enter the world before requesting statistics.'});
+                const player = world.getPlayerById(sessionData.entityId);
                 let avatarLevelInfo = effectiveLevelInfo(player || {}, 'avatarLevel', Formulas.calculatePercentageToNextLevel(sessionData.xp));
                 let maxHp = Formulas.hp(avatarLevelInfo.currentLevel);
-                let weaponInfo = self.worldsMap[sessionData.mapId].getNFTWeaponStatistics(sessionData.entityId);
+                let weaponInfo = world.getNFTWeaponStatistics(sessionData.entityId);
                 if (weaponInfo !== undefined) {
                     if (weaponInfo.constructor === "NFTWeapon") {
                         weaponInfo['weaponLevelInfo'] = Formulas.calculatePercentageToNextLevel(weaponInfo.experience);
@@ -725,7 +727,7 @@ WS.socketIOServer = Server.extend({
                     }
                 } else {
                     weaponInfo = {};
-                    weaponInfo['weaponLevelInfo'] = self.worldsMap[sessionData.mapId].getItemWeaponStatistics(sessionData.entityId);
+                    weaponInfo['weaponLevelInfo'] = world.getItemWeaponStatistics(sessionData.entityId);
                 }
 
                 if (weaponInfo.weaponLevelInfo && weaponInfo.constructor === 'NFTWeapon') {
@@ -868,6 +870,11 @@ WS.socketIOServer = Server.extend({
             const npcKey = npc.behaviorState?.key || 'placed:' + npc.id;
             const behaviorDialogue = world.npcBehavior?.interact(player, npcId, npc.id);
 
+            try {
+                const exchange = await world.extensions?.talk(player, npc);
+                if (exchange) return res.status(202).json(exchange);
+            } catch (error) { return res.status(409).json({error: error.message}); }
+
             if (dialogueController.hasDialogueTree(sessionData.mapId, npcId, npcKey)) {
                 let node = dialogueController.processDialogueTree(sessionData.mapId, npcId, cache, sessionId, npcKey)
                 if (node) {
@@ -882,6 +889,16 @@ WS.socketIOServer = Server.extend({
                 self.worldsMap[sessionData.mapId].npcTalked(npcId, questData.text, sessionData)
             }
             res.status(202).json(questData || behaviorDialogue || "");
+        });
+
+        app.post('/session/:sessionId/npc/:npcId/listen', (req, res) => {
+            const session = cache.get(req.params.sessionId);
+            const world = session && self.worldsMap[session.mapId];
+            const player = world?.getPlayerById(session.entityId);
+            const npc = npcForPlayer(world, player, req.params.npcId, req.query.entityId);
+            if (!npc) return res.sendStatus(409);
+            world.npcBehavior?.listen(player, npc.id, req.body?.active !== false);
+            return res.sendStatus(204);
         });
 
         app.get("/session/:sessionId/npc/:npcId/dialogue/:gotoNode", async (req, res) => {
@@ -909,12 +926,12 @@ WS.socketIOServer = Server.extend({
             res.status(200).json({});
         });
 
-        app.post('/session/:sessionId/story/travel/:passageId', (req, res) => {
+        app.post('/session/:sessionId/story/travel/:passageId', async (req, res) => {
             const session = cache.get(req.params.sessionId);
             const world = session && self.worldsMap[session.mapId];
             const player = world?.getPlayerById(session.entityId);
-            if (!player || !world.lanternRoad) return res.sendStatus(404);
-            try { res.json(world.lanternRoad.travel(player, req.params.passageId)); }
+            if (!player || !world.extensions) return res.sendStatus(404);
+            try { res.json(await world.extensions.action(player, 'travel', req.params.passageId, req.query.extension)); }
             catch (error) { res.status(409).json({error: error.message}); }
         });
 
@@ -922,8 +939,8 @@ WS.socketIOServer = Server.extend({
             const session = cache.get(req.params.sessionId);
             const world = session && self.worldsMap[session.mapId];
             const player = world?.getPlayerById(session.entityId);
-            if (!player || !world.lanternRoad) return res.sendStatus(404);
-            try { res.json(await world.lanternRoad.inspect(player, req.params.objectiveId)); }
+            if (!player || !world.extensions) return res.sendStatus(404);
+            try { res.json(await world.extensions.action(player, 'inspect', req.params.objectiveId, req.query.extension)); }
             catch (error) { res.status(409).json({error: error.message}); }
         });
 

@@ -1,9 +1,8 @@
-const fs = require('fs');
-const path = require('path');
 const Types = require('../../shared/js/gametypes');
 const Messages = require('./message');
 const WorldTime = require('../../client/js/worldtime-worker');
 const {NpcSchedule, validateSchedule} = require('./npcschedule');
+const {registry: definitions} = require('./worldextensions');
 
 const distance = (a, b) => Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
 const inside = (point, area) => !area || (point.x >= area.x && point.y >= area.y &&
@@ -68,9 +67,9 @@ function validateConfig(config) {
 
 function loadConfig(mapId) {
     if (process.env.NPC_BEHAVIORS === 'off') return null;
-    const filename = path.join(__dirname, '../npc-behaviors', mapId + '.json');
     try {
-        const source = mapId === 'main' ? require('../npc-behaviors/lantern-picnic').behavior : JSON.parse(fs.readFileSync(filename, 'utf8'));
+        const source = definitions.behavior(mapId);
+        if (!source) return null;
         const config = validateConfig(JSON.parse(JSON.stringify(source)));
         return config.enabled ? config : null;
     } catch (error) {
@@ -107,7 +106,7 @@ class NpcBehavior {
             return false;
         }
         const routine = {definition, npc, waypoint: 0, path: [], nextStep: this.now() + 2000,
-            pauseUntil: 0, speechUntil: 0, lastReaction: 0, lineIndexes: {}, blockedSince: 0};
+            pauseUntil: 0, speechUntil: 0, lastReaction: 0, lineIndexes: {}, blockedSince: 0, listeners: new Map()};
         npc.behaviorState = {key: definition.key, label: definition.label, preset: definition.preset,
             activity: 'resting', orientation: Types.Orientations.DOWN, moveSpeed: definition.stepMs - 100};
         if (definition.schedule) {
@@ -251,6 +250,7 @@ class NpcBehavior {
         const ids = new Set(players.map(player => player.id));
         for (const id of this.playerStates.keys()) if (!ids.has(id)) this.playerStates.delete(id);
         for (const routine of this.routines.values()) {
+            this.maintainListeners(routine, time);
             if (routine.schedule && players.length && time >= routine.pauseUntil) routine.schedule.prepare(time);
         }
         this.tickConversation(time);
@@ -269,7 +269,7 @@ class NpcBehavior {
 
     decorateDialogue(npc, node) {
         const schedule = this.routines.get(npc.behaviorState?.key)?.schedule;
-        if (schedule && (node.npcSchedule || node.storyPresence)) node.text = schedule.describe();
+        if (schedule && node.npcContext) node.text = schedule.describe() + (node.text ? '<br><br>' + node.text : '');
         return node;
     }
 
@@ -296,23 +296,14 @@ class NpcBehavior {
         const ambience = this.ambienceFor(player);
         const active = Boolean(ambience?.effects.length);
         const ambienceKey = JSON.stringify(ambience);
-        if (this.world.lanternPicnic) {
-            const picnic = this.world.lanternPicnic;
-            const goal = require('../npc-behaviors/lantern-picnic').progress(this.world.server.cache.get(player.sessionId)?.gameData);
-            const road = this.world.lanternRoad?.packet(player);
-            const snapshot = JSON.stringify([ambienceKey, goal, picnic.state, road]);
-            if (state.snapshot !== snapshot) {
-                this.world.pushToPlayer(player, new Messages.WorldAmbience({...ambience,
-                    serverTime: time, epoch: 0,
-                    story: {title: 'The Lantern Picnic', goal, event: active ? picnic.state?.message : ''}, ...road,
-                    picnic: road?.finalePicnic || (picnic.state && {...picnic.state, music: (this.world.server.cache.get(player.sessionId)?.gameData?.choices || []).includes('lantern:music-picnic')})}));
-                state.snapshot = snapshot;
-            }
-            state.ambience = active;
-        } else if (state.ambienceKey !== ambienceKey) {
-            this.world.pushToPlayer(player, new Messages.WorldAmbience(ambience ? {...ambience, epoch: 0, serverTime: time} : null));
-            state.ambience = active;
+        const features = this.world.extensions?.packet(player) || {};
+        const snapshot = JSON.stringify([ambienceKey, features]);
+        if (state.snapshot !== snapshot) {
+            this.world.pushToPlayer(player, new Messages.WorldAmbience(ambience || Object.keys(features).length ?
+                {...ambience, ...features, epoch: 0, serverTime: time} : null));
+            state.snapshot = snapshot;
         }
+        state.ambience = active;
         state.ambienceKey = ambienceKey;
         for (const [key, routine] of this.routines) {
             if (this.world.entities[routine.npc.id] !== routine.npc) continue;
@@ -378,6 +369,39 @@ class NpcBehavior {
             this.world.pushToGroup(group, new Messages.Destroy(routine.npc));
         }
         routine.npc.recentlyLeftGroups = [];
+    }
+
+    listen(player, entityId, active = true) {
+        const routine = [...this.routines.values()].find(entry => entry.npc.id === Number(entityId) &&
+            this.world.entities[entry.npc.id] === entry.npc);
+        if (!routine || this.world.players[player.id] !== player) return false;
+        if (active && (!player.hasEnteredGame || player.isDead || player.isBot() || distance(player, routine.npc) > 5)) return false;
+        if (active) {
+            routine.listeners.set(player.id, this.now() + 15000);
+            this.face(routine, player);
+        } else routine.listeners.delete(player.id);
+        this.maintainListeners(routine, this.now());
+        return true;
+    }
+
+    maintainListeners(routine, time) {
+        for (const [id, expires] of routine.listeners) {
+            const player = this.world.players[id];
+            if (expires <= time || !player?.hasEnteredGame || player.isDead || player.isBot() || distance(player, routine.npc) > 5) {
+                routine.listeners.delete(id);
+            }
+        }
+        if (routine.listeners.size) {
+            routine.listening = true;
+            routine.pauseUntil = Math.max(routine.pauseUntil, time + 1000);
+            routine.speechUntil = routine.pauseUntil;
+            this.state(routine, {activity: 'talking'});
+        } else if (routine.listening) {
+            routine.listening = false;
+            routine.pauseUntil = Math.min(routine.pauseUntil, time);
+            routine.speechUntil = Math.min(routine.speechUntil, time);
+            this.state(routine, {activity: 'resting'});
+        }
     }
 
     interact(player, kind, entityId) {
@@ -463,6 +487,7 @@ class NpcBehavior {
         for (let offset = 0; offset < definitions.length; offset++) {
             const index = (this.conversationCursor + offset) % definitions.length;
             const definition = definitions[index];
+            if (definition.hours && ((this.worldTime() % 3600000 / 3600000 * 24) < definition.hours[0] || (this.worldTime() % 3600000 / 3600000 * 24) >= definition.hours[1])) continue;
             const actors = [...new Set(definition.steps.map(step => this.routines.get(step.npc)))];
             if (actors.some(actor => !actor || actor.schedule?.sleeping() || this.world.entities[actor.npc.id] !== actor.npc ||
                 time < actor.pauseUntil || !this.nearbyPlayers(actor.npc, 12).length) ||

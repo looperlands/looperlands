@@ -355,6 +355,7 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
             $('#new-achievement-popup').addClass('hidden');
             let self = this;
             let playerChoicePopup = $('#dialogue-popup');
+            playerChoicePopup.toggleClass('world-decision', dialogue.presentation === 'world');
             let avatarDiv = playerChoicePopup.find('#avatar');
             
             // Enable avatar if provided otherwise reset
@@ -405,6 +406,7 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
                 });
                 playerChoicePopup.find('#choices').append(choice);
             }
+            playerChoicePopup.find('.choice').first().addClass('selected');
             playerChoicePopup.scrollTop(0);
             playerChoicePopup.removeClass("hidden").addClass('active');
             playerChoicePopup.find('#close-dialogue-popup').click(function(e) {
@@ -497,6 +499,7 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
         closeChoicesPopup() {
             let playerChoicePopup = $('#dialogue-popup');
             playerChoicePopup.addClass('hidden').removeClass('active');
+            this.game?.conversationHold?.stop();
         },
 
         handleChoiceKeyboardInput(event) {
@@ -518,6 +521,7 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
             switch (event.key) {
                 case 'w':
                 case 'ArrowUp':
+                case 'ArrowLeft':
                     selectedIndex = selectedIndex - 1;
                     if (selectedIndex < 0) {
                         selectedIndex = choices.length - 1;
@@ -525,6 +529,7 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
                     break;
                 case 's':
                 case 'ArrowDown':
+                case 'ArrowRight':
                     selectedIndex = selectedIndex + 1;
                     if (selectedIndex >= choices.length) {
                         selectedIndex = 0;
@@ -543,6 +548,7 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
 
             $('#choices .selected').removeClass('selected');
             $(choices[selectedIndex]).addClass('selected');
+            choices[selectedIndex]?.scrollIntoView({block: 'nearest'});
 
             event.stopImmediatePropagation();
             event.preventDefault();

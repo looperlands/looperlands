@@ -11,6 +11,7 @@ jest.mock('../message.js', () => ({}));
 global.Types = {};
 global.quests = [];
 const Types = require('../../../shared/js/gametypes');
+require('../../world-definitions').register();
 const quests = require('./quests');
 const dao = require('../dao');
 const {PlayerEventBroker} = require('./playereventbroker');

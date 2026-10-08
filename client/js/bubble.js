@@ -14,6 +14,7 @@ define(['jquery', 'timer'], function($, Timer) {
         },
 
         isOver: function(time) {
+            if (this.keepAlive && this.keepAlive()) return false;
             if(this.timer.isOver(time)) {
                 return true;
             }

@@ -9,11 +9,11 @@ const Formulas = require('../server/js/formulas');
 const Properties = require('../server/js/properties');
 const Types = require('../shared/js/gametypes');
 
-test('the local test avatar has a true level 100 and a level 100 built-in weapon without changing production properties', () => {
+test('the local test avatar has a true level 40 and a level 40 built-in weapon without changing production properties', () => {
     const before = structuredClone(Properties.goldensword);
     const profile = createTestPlayer(Formulas);
-    expect(Formulas.level(profile.xp)).toBe(100);
-    expect(profile.weapon).toEqual({kind: 'goldensword', level: 100});
+    expect(Formulas.level(profile.xp)).toBe(40);
+    expect(profile.weapon).toEqual({kind: 'goldensword', level: 40});
     expect(Types.isWeapon(Types.getKindFromString(profile.weapon.kind))).toBe(true);
     expect(profile.modifiers.moveSpeed).toBeGreaterThan(1);
     expect(profile.modifiers.maxHp).toBeGreaterThan(1);

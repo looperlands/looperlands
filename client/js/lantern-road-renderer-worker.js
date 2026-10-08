@@ -13,6 +13,11 @@
                 context.fillStyle = object.kind === 'passage' ? '#c2bdde' : '#ffd38b';
                 context.fillRect(x + 4*s, y + 11*s, 8*s, 2*s);
                 context.fillRect(x + 6*s, y + 9*s, 4*s, 6*s);
+            } else if (object.kind === 'parcel') {
+                context.fillStyle = '#946840';
+                context.fillRect(x + 3*s, y + 9*s, 10*s, 6*s);
+                context.fillStyle = '#efce88';
+                context.fillRect(x + 7*s, y + 9*s, 2*s, 6*s);
             } else {
                 context.fillStyle = object.kind === 'memorial' ? '#8c929d' : '#694b35';
                 context.fillRect(x + 3*s, y + 3*s, 10*s, 12*s);

@@ -1,8 +1,7 @@
 const discord = require("../js/discord");
 const _ = require("underscore");
 const dao = require('./dao.js');
-const main = require("./dialogue/main.js");
-const bitcorn = require("./dialogue/bitcorn.js");
+const {registry: definitions} = require('./worldextensions');
 const quests = require("./quests/quests.js");
 const Formulas = require("./formulas");
 
@@ -10,10 +9,7 @@ class DialogueController {
     constructor(cache, platformClient) {
         this.cache = cache;
         this.platformClient = platformClient;
-        this.dialogueTrees = {
-            main: main.dialogues,
-            //bitcorn: bitcorn.dialogues
-        };
+        this.dialogueTrees = Object.fromEntries([...definitions.maps.keys()].map(mapId => [mapId, definitions.dialogues(mapId)]));
     }
 
     findDialogueTree(mapId, npcId, npcKey) {
@@ -104,7 +100,7 @@ class DialogueController {
             sessionData = cache.get(sessionId) || sessionData;
             node = this.chooseRandomLines(node);
             node = this.filterOptions(node, sessionData);
-            if (node.storyMenu || node.storyQuest || node.storyConclusion || node.storyDirections || node.storyPresence || node.storyMemory || node.storyLead) require('./lanternroadcontroller').LanternRoadController.decorate(node, sessionData);
+            definitions.decorate(mapId, node, sessionData);
             if (dialogue.key) {
                 node.speaker = dialogue.name;
                 node.playerLine = sessionData.dialoguePlayerLine;
@@ -270,11 +266,6 @@ class DialogueController {
 
         let result;
         switch (condition.if_not || condition.if) {
-            case 'story_objectives_done': {
-                const definition = require('../npc-behaviors/lantern-road').quests.find(q => q.id === condition.quest);
-                result = !!definition && require('../npc-behaviors/lantern-road-state').ready(sessionData.gameData, definition);
-                break;
-            }
             case 'open_quest':
             case 'quest_open':
                 result = this.checkQuestIsOpen(condition.quest, sessionData);
@@ -298,7 +289,7 @@ class DialogueController {
                 result = this.checkPlayerIsLevel(condition.level, sessionData);
                 break;
             default:
-                result = false;
+                result = definitions.checkCondition(condition.if_not || condition.if, condition, sessionData);
         }
 
         if (invert) {

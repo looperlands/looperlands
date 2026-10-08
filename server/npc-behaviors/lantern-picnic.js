@@ -170,12 +170,10 @@ dialogues[0].key = 'town-gardener';
 dialogues[1].key = 'town-neighbour';
 dialogues[2].key = 'town-watch';
 for (const tree of dialogues) {
-    tree.nodes['daily-routine'] = {npcSchedule: tree.key, text: 'I keep a regular day in Town.',
+    tree.nodes['daily-routine'] = {npcContext: true, text: '',
         options: [option('I wanted to ask about the picnic.', tree.start), option('Sleep well. I will see you later.', 'routine-later')]};
     tree.nodes['routine-later'] = {text: 'Take care. We can talk whenever you find me.'};
-    for (const node of Object.values(tree.nodes)) {
-        if (node.options && node !== tree.nodes['daily-routine']) node.options.push(option('What does your day usually look like?', 'daily-routine'));
-    }
+
 }
 for (const quest of quests) {
     quest.dialogueOnly = true;

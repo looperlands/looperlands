@@ -1,4 +1,5 @@
 global.Types = {};
+require('../../world-definitions/main').register(require('../worldextensions').registry);
 const {buildQuestLog} = require('./questlog');
 const content = require('../../npc-behaviors/lantern-road');
 const picnic = require('../../npc-behaviors/lantern-picnic');
@@ -15,15 +16,15 @@ test('the existing quest log recognises old finished picnic IDs and explains the
 
 test('the quest log shows only this character\'s caravan branch, discovered facts and remaining objectives', () => {
     const q = content.quests.find(q => q.id === 'LANTERN_ROAD_WE_TAKE');
-    const data = {quests: {IN_PROGRESS: [{questKey: q.id}]}, choices: ['lantern:caravan-detour', picnic.SHARE]};
-    const before = buildQuestLog(registry, data)[0];
+    const data = {quests: {COMPLETED: q.requiredQuests.map(questKey => ({questKey})), IN_PROGRESS: [{questKey: q.id}]}, choices: ['lantern:caravan-detour', picnic.SHARE]};
+    const before = buildQuestLog(registry, data).find(entry => entry.id === q.id);
     expect(before.amount).toBe(1);
     expect(before.progressCount).toBe(0);
     expect(before.longDesc).toContain('sheltered');
     expect(before.longDesc).not.toContain(q.objectives[1].label);
     expect(before.longDesc).toContain('Adam remembers');
     data.choices.push(content.objectiveFlag(q, q.objectives[0]));
-    const after = buildQuestLog(registry, data)[0];
+    const after = buildQuestLog(registry, data).find(entry => entry.id === q.id);
     expect(after.progressCount).toBe(1);
     expect(after.desc).toContain('Report to Nessa');
     expect(buildQuestLog(registry, {}).length).toBe(0);
@@ -39,8 +40,8 @@ test('legacy loot and kill quests retain their bounded progress and display text
 });
 
 test('completed story entries keep a useful onward lead in the normal quest log', () => {
-    const data = {quests: {COMPLETED: [{questKey: 'LANTERN_WRECK_LETTERS'}]}};
-    const entry = buildQuestLog(registry, data)[0];
+    const data = {quests: {COMPLETED: [...picnic.quests, content.quests[0]].map(q => ({questKey: q.id}))}};
+    const entry = buildQuestLog(registry, data).find(entry => entry.id === 'LANTERN_WRECK_LETTERS');
     expect(entry.desc).toContain('Where this leads');
     expect(entry.longDesc).toContain('Windmill Scientist');
     expect(entry.longDesc).toContain('The Mill Without a Light');

@@ -11,6 +11,7 @@ global.Types = {};
 global.dialogues = [];
 global.quests = [];
 const Types = require('../../shared/js/gametypes');
+require('../world-definitions').register();
 const DialogueController = require('../js/dialoguecontroller');
 const registry = require('../js/quests/quests');
 const picnic = require('./lantern-picnic');
@@ -148,4 +149,12 @@ test('the production cloning cache preserves all picnic progress across dialogue
     expect(saved.gameData.choices).toEqual(expect.arrayContaining([picnic.SHARE, picnic.FOUND, picnic.QUIET]));
     saved.currentNpc = null; saved.currentNode = null; cache.set('saved', saved);
     expect(talk(guard, 'town-watch').text).toContain('quiet picnic');
+});
+
+test('town dialogue contains no direct schedule question or timetable', () => {
+    for (const tree of picnic.dialogues) {
+        const options = Object.values(tree.nodes).flatMap(node => node.options || []);
+        expect(options.some(option => option.goto === 'daily-routine')).toBe(false);
+        expect(options.map(option => option.text).join(' ')).not.toContain('day usually look');
+    }
 });

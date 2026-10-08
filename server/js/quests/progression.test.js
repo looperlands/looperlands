@@ -18,6 +18,7 @@ jest.mock('./main', () => ({quests: [
         startText: 'Senior patrol.', endText: 'Senior report.'}
 ]}));
 const Types = require('../../../shared/js/gametypes');
+require('../../world-definitions').register();
 const registry = require('./quests'), dao = require('../dao');
 const {PlayerEventBroker} = require('./playereventbroker');
 const {PlayerQuestEventConsumer} = require('./playerquesteventconsumer');

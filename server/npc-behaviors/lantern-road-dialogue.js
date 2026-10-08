@@ -19,11 +19,11 @@ function buildDialogues() {
             {text: 'I will see you later.', goto: 'road-later'}];
         tree.nodes['road-menu'] = {storyMenu: npc.key,
             options: local.flatMap(q => [
-                {text: q.dialogue.topic, goto: q.id + ':offer', conditions: [...q.requiredQuests.map(done), notOpen(q.id)]},
+                {text: q.dialogue.topic, goto: q.id + ':offer', conditions: [...q.requiredQuests.map(done), notOpen(q.id), ...(q.archived ? [open(q.id)] : [])]},
                 {text: 'About ' + q.name + '...', goto: q.id + ':progress', conditions: [open(q.id), notDone(q.id)]}
             ]).concat([
                 {text: 'Where should I go from here?', goto: 'road-lead'},
-                {text: ['town-gardener', 'town-neighbour', 'town-watch'].includes(npc.key) ? 'What does your day usually look like?' : 'What keeps you at this post?', goto: 'road-presence'},
+                ...(!['town-gardener', 'town-neighbour', 'town-watch'].includes(npc.key) ? [{text: 'What keeps you at this post?', goto: 'road-presence'}] : []),
                 {text: 'Do you remember how we got here?', goto: 'road-memory'},
                 {text: 'Is there other local work I can help with?', goto: 'road-local'},
                 {text: 'I will see you later.', goto: 'road-later'}])};
@@ -35,17 +35,21 @@ function buildDialogues() {
         tree.nodes['road-later'] = {text: 'All right. Take care on the road.'};
         for (const q of local) {
             const d = q.dialogue;
-            const prerequisites = [...q.requiredQuests.map(done), notOpen(q.id)];
+            const prerequisites = [...q.requiredQuests.map(done), notOpen(q.id), ...(q.archived ? [open(q.id)] : [])];
             const offerOptions = [{text: d.question, goto: q.id + ':context', conditions: prerequisites},
                 {text: 'Where should I look?', goto: q.id + ':offer-directions', conditions: prerequisites},
-                {text: d.accept, goto: q.id + ':accept', conditions: prerequisites},
+                ...(q.startChoices ? q.startChoices.map((choice, i) => ({text: choice.label, goto: q.id + ':accept:' + i, conditions: prerequisites})) : [{text: d.accept, goto: q.id + ':accept', conditions: prerequisites}]),
                 {text: 'I need a little time.', goto: 'road-later'}];
             tree.nodes[q.id + ':offer'] = {text: d.offer, requires: prerequisites, options: offerOptions};
             tree.nodes[q.id + ':context'] = {text: d.answer, requires: prerequisites, options: offerOptions.filter(o => o.goto !== q.id + ':context')};
             tree.nodes[q.id + ':offer-directions'] = {storyDirections: q.id, requires: prerequisites,
                 options: offerOptions.filter(o => o.goto !== q.id + ':offer-directions')};
             tree.nodes[q.id + ':accept'] = {text: 'Thank you. Come back and tell me what you find.', requires: prerequisites,
-                actions: [handout(q.id)], goto: 'road-menu', options: [{text: 'Remind me where to start.', goto: q.id + ':directions'}, ...returnToMenu]};
+                actions: [...(q.startChoices ? [{type: 'record_choice', choice: q.startChoices[0].flag}] : []), handout(q.id)], goto: 'road-menu', options: [{text: 'Remind me where to start.', goto: q.id + ':directions'}, ...returnToMenu]};
+            q.startChoices?.forEach((choice, i) => {
+                tree.nodes[q.id + ':accept:' + i] = {...tree.nodes[q.id + ':accept'], text: choice.response,
+                    actions: [{type: 'record_choice', choice: choice.flag}, handout(q.id)]};
+            });
             const progressOptions = (q.choices || [{label: d.report}]).map((choice, index) => ({text: choice.label,
                 goto: q.id + ':finish:' + index, conditions: [ready(q.id)]})).concat([
                 {text: 'Where should I look next?', goto: q.id + ':directions'},
@@ -64,6 +68,12 @@ function buildDialogues() {
                         ...(q.id === 'LANTERN_LONG_TABLE' ? [{text: 'Do you remember how we got here?', goto: 'road-memory'}] : []),
                         ...returnToMenu]};
             });
+        }
+        for (const [id, node] of Object.entries(tree.nodes)) {
+            node.presentation = 'world';
+            node.decision = id.endsWith(':offer') || id.endsWith(':context') || id.endsWith(':offer-directions') ||
+                (id.endsWith(':progress') && local.some(q => id.startsWith(q.id) && q.choices)) ||
+                ['welcome', 'basket', 'invite', 'report', 'offer', 'ready'].includes(id) && !!node.options;
         }
         return tree;
     });
