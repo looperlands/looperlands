@@ -1,5 +1,7 @@
 # Event tracking and game catalog
 
+For event organizers and players, use the [Event Toolkit guide](event-toolkit-guide.md) or its [shareable PDF](event-toolkit-guide.pdf).
+
 Tracking defaults to disabled. Deploy the platform event toolkit migration and add `game_data_write_activity` to the existing game API token before enabling it.
 
 ```env
@@ -16,7 +18,7 @@ Every activity has a UUID. A durable append precedes upload, 30-second flushes s
 
 Public `GET /activity-catalog` works even with tracking disabled. It derives mobs/items from the actual `Types` runtime registry, including content registered dynamically, and crops/tile actions from `TileActionsController.stageDefinitions`. Mob/item values are the same stringified kind IDs recorded by gameplay; crops use the actual definition keys. The platform merges online server catalogs through `GET /api/events/activity-catalog`, and frontend selectors use those values. A new enemy/item/crop requires no separate platform/frontend content list. Different game server versions can temporarily supply different options until all are deployed.
 
-The canonical event configuration, API routes and full rollout order are documented in `looperlands-platform/docs/event-toolkit.md`. Rules include map/target/action/stage filters, weights, daily caps, milestones, active days/time, recurrence, sign-ups and configurable teams. Finalization and reward records are organizer actions; they do not transfer prizes.
+The canonical event configuration, API routes and full rollout order are documented in `looperlands-platform/docs/event-toolkit.md`. Rules include map/target/action/stage filters, weights, daily caps, milestones, active days/time, recurrence, sign-ups and configurable teams. Finalization may be manual or performed by the scheduled event service. Configured in-game item awards support automatic delivery; tree houses, NFTs and other external prizes use manual delivery records. Generic reward records do not send prizes. The organizer guide explains rental loadouts, level overrides and scheduled announcements.
 
 Focused validation:
 
