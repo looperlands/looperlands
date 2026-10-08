@@ -1,5 +1,13 @@
 ## LooperLands
 
+## Event toolkit documentation
+
+- [Organizer and player guide](docs/event-toolkit-guide.md): templates, scoring, teams, rentals, prizes and announcements.
+- [Shareable PDF](docs/event-toolkit-guide.pdf).
+- [Game tracking and catalog reference](docs/event-tracking.md).
+
+To rebuild the PDF, install the optional documentation dependency `reportlab` and run `python3 tools/docs/build_event_toolkit_guide.py`. The output is written to `output/pdf/looperlands-event-toolkit-guide.pdf`; copy the reviewed PDF to `docs/event-toolkit-guide.pdf` when updating the guide.
+
 # Local development
 Install some dependencies.
 ```bash
