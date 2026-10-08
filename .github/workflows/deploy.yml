@@ -15,7 +15,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Validate storage migration
+      - name: Validate deployment safeguards
         run: |
           bash -n bin/deploy-game-server.sh
           PYTHONDONTWRITEBYTECODE=1 python3 bin/deploy-game-server.test.py
@@ -29,15 +29,15 @@ jobs:
       - name: Push Docker Image to Docker Hub
         run: docker push balkshamster/looperlands:latest
 
-      - name: Upload deployment configuration and storage migration
+      - name: Upload deployment safeguards
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           port: 22
-          source: "docker-compose.yml,bin/deploy-game-server.sh,bin/chat-storage-plan.py"
-          target: "/tmp/looperlands-deploy-${{ github.sha }}"
+          source: "bin/deploy-game-server.sh"
+          target: "/tmp/looperlands-deploy-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}"
 
       - name: Deploy with persistent chat storage
         uses: appleboy/ssh-action@v0.1.7
@@ -47,6 +47,31 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           port: 22
           script: |
-            bash /tmp/looperlands-deploy-${{ github.sha }}/bin/deploy-game-server.sh /tmp/looperlands-deploy-${{ github.sha }}/docker-compose.yml ${{ github.sha }}
+            bash /tmp/looperlands-deploy-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}/bin/deploy-game-server.sh
 
-
+      - name: Clean deployment uploads
+        if: always()
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          port: 22
+          script: |
+            python3 - "looperlands-deploy-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}" <<'PY'
+            import os, re, shutil, stat, sys, time
+            current = sys.argv[1]
+            if not re.fullmatch(r'looperlands-deploy-[a-f0-9]{40}-[0-9]+-[0-9]+', current):
+                sys.exit('Invalid deployment staging directory')
+            for entry in os.scandir('/tmp'):
+                legacy = re.fullmatch(r'looperlands-(deploy|preflight)-[a-f0-9]{40}', entry.name)
+                other_run = re.fullmatch(r'looperlands-deploy-[a-f0-9]{40}-[0-9]+-[0-9]+', entry.name)
+                if entry.name != current and not legacy and not other_run:
+                    continue
+                info = entry.stat(follow_symlinks=False)
+                if info.st_uid != os.getuid() or not stat.S_ISDIR(info.st_mode):
+                    continue
+                expired = (legacy and info.st_mtime < time.time() - 900) or (other_run and info.st_mtime < time.time() - 86400)
+                if entry.name == current or expired:
+                    shutil.rmtree(entry.path)
+            PY
