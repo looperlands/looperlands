@@ -62,7 +62,9 @@ Types = {
         CHAT_ERROR: 59,
         CHAT_GIFT: 60,
         CHAT_INVENTORY: 61,
-        CHAT_INVENTORY_REQUEST: 62
+        CHAT_INVENTORY_REQUEST: 62,
+        NPC_STATE: 63,
+        WORLD_AMBIENCE: 64
     },
 
     Entities: {

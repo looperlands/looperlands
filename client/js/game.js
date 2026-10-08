@@ -1,11 +1,11 @@
 define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile',
         'warrior', 'gameclient', 'audio', 'updater', 'transition', 'combatfeedback',
         'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'fieldeffect', 'config', 'float', 'projectile', 'tileactions',
-        '../../shared/js/gametypes', '../../shared/js/altnames'],
+        'worldambience', 'worldscenery', '../../shared/js/gametypes', '../../shared/js/altnames'],
 
     function (InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, AnimatedTile,
               Warrior, GameClient, AudioManager, Updater, Transition, CombatFeedback,
-              Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, Fieldeffect, Config, Float, Projectile, TileActions) {
+              Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, Fieldeffect, Config, Float, Projectile, TileActions, WorldAmbience, WorldScenery) {
         var Game = Class.extend({
             init: function (app) {
                 this.app = app;
@@ -15,6 +15,11 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.buffTickInterval = null;
                 this.scenePollingInterval = null;
                 this.playerPositionReady = false;
+                this.worldAmbience = new WorldAmbience(() => ({
+                    x: this.renderer?.camera?.x || 0,
+                    y: this.renderer?.camera?.y || 0,
+                    scale: this.renderer?.scale || 1
+                }));
 
                 this.renderer = null;
                 this.updater = null;
@@ -6250,6 +6255,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             setup: function ($bubbleContainer, canvas, background, foreground, input) {
                 this.setBubbleManager(new BubbleManager($bubbleContainer));
                 this.setRenderer(new Renderer(this, canvas, background, foreground));
+                WorldScenery.attach(this.renderer);
                 this.setChatInput(input);
             },
 
@@ -7836,6 +7842,12 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                         });
 
                                         entity.onRequestPath(function (x, y) {
+                                            if (entity instanceof Npc && entity.behaviorControlled &&
+                                                Math.abs(entity.gridX - x) + Math.abs(entity.gridY - y) === 1) {
+                                                // The server has already validated this one-tile step.
+                                                // A transient client occupancy must not send it on a detour.
+                                                return Promise.resolve([[entity.gridX, entity.gridY], [x, y]]);
+                                            }
                                             return new Promise((resolve, reject) => {
                                                 try {
                                                     var ignored = [entity]; // Always ignore self
@@ -8165,13 +8177,38 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         }
                     });
 
-                    self.client.onChatMessage(function (entityId, message) {
+                    self.client.onNpcState(function (entityId, state) {
+                        const npc = self.getEntityById(entityId);
+                        if (npc instanceof Npc) npc.applyBehaviorState(state);
+                    });
+                    self.client.onWorldAmbience(config => {
+                        self.worldAmbience.setConfig(config);
+                        WorldScenery.update(self.renderer, config);
+                        const audio = self.audioManager;
+                        if (!audio) return;
+                        const picnic = config?.picnic || config?.previewPicnic;
+                        const playPicnicMusic = picnic?.phase === 'celebrating' && picnic.music;
+                        if (self.picnicMusicArea && !playPicnicMusic) {
+                            audio.areas = audio.areas.filter(area => area !== self.picnicMusicArea);
+                            self.picnicMusicArea = null;
+                            audio.updateMusic();
+                        }
+                        if (playPicnicMusic && !self.picnicMusicArea) {
+                            audio.addArea(picnic.center.x - 8, picnic.center.y - 6, 16, 12, 'fluteguitar');
+                            self.picnicMusicArea = audio.areas.pop();
+                            audio.areas.unshift(self.picnicMusicArea);
+                            audio.updateMusic();
+                        }
+                    });
+
+                    self.client.onChatMessage(function (entityId, message, options) {
                         var entity = self.getEntityById(entityId);
                         if (entity) {
+                            if (options?.ambient && Date.now() < (entity.dialogueUntil || 0)) return;
                             self.createBubble(entityId, message);
                             self.bubbleManager.getBubbleById(entityId).element.addClass('chat-message');
                             self.assignBubbleTo(entity);
-                            self.audioManager.playSound("chat");
+                            if (!options?.ambient) self.audioManager.playSound("chat");
                         }
                     });
 
@@ -8213,6 +8250,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         self.infoManager.clear();
                         self.app.socialChat?.disconnect();
                         self.app.eventBoard?.disconnect();
+                        self.worldAmbience.clear();
+                        WorldScenery.update(self.renderer, null);
                         if (self.player) {
                             self.player.die();
                         }
@@ -8601,7 +8640,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
             checkForQuests: function (npc) {
                 let self = this;
-                let url = '/session/' + self.sessionId + '/npc/' + npc.kind;
+                npc.dialogueUntil = Date.now() + 20000;
+                let url = '/session/' + self.sessionId + '/npc/' + npc.kind + '?entityId=' + npc.id;
                 if (npc.thoughts.length > 0) {
                     let message = npc.thoughts.shift()
                     npc.hasTalked();
@@ -9420,6 +9460,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             },
 
             handleTrigger(trigger, entity) {
+                if (entity instanceof Npc && entity.behaviorControlled) return;
                 if (!entity.triggerArea || entity.triggerArea.id !== trigger.id) {
                     entity.triggerArea = trigger;
                     if (!self.client) {
@@ -9965,7 +10006,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             makeChoice: function (npcId, choice) {
                 let self = this;
                 let npc = self.getEntityById(npcId);
-                let url = '/session/' + self.sessionId + '/npc/' + npc.kind + '/dialogue/' + choice;
+                let url = '/session/' + self.sessionId + '/npc/' + npc.kind + '/dialogue/' + choice + '?entityId=' + npc.id;
                 axios.get(url).then(function (response) {
                     setTimeout(() => {
                         self.makeNpcTalk(npc);

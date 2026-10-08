@@ -569,7 +569,7 @@ describe('DialogueController - processDialogueTree', () => {
     test('should process dialogue tree and return the correct node', () => {
         const node = dialogueController.processDialogueTree(mapId, npcId, cache, sessionId);
 
-        expect(dialogueController.findDialogueTree).toHaveBeenCalledWith(mapId, npcId);
+        expect(dialogueController.findDialogueTree).toHaveBeenCalledWith(mapId, npcId, undefined);
         expect(dialogueController.determineStartingNode).toHaveBeenCalledWith(dialogueController.findDialogueTree(), sessionData, npcId);
         expect(node).not.toBeNull();
         expect(node.text).toBe('Hello, adventurer!');

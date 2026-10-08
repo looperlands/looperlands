@@ -1,3 +1,5 @@
+let rendererExtensions = null;
+const extensionModules = new Set();
 let tileset = undefined;
 let tilesize = 16;
 let canvases = {};
@@ -278,7 +280,20 @@ function render(id, tiles, cameraX, cameraY, scale, clear, serverTime, scene, op
     }
 }
 
+
 onmessage = (e) => {
+    if (e.data.type === 'registerExtension') {
+        const name = e.data.module;
+        if (!/^[a-z][a-z0-9-]*-worker\.js$/.test(name) || extensionModules.has(name)) return;
+        if (!rendererExtensions) {
+            importScripts('render-extensions-worker.js');
+            rendererExtensions = self.RendererExtensions;
+        }
+        importScripts(name);
+        extensionModules.add(name);
+        return;
+    }
+
     if (!hasLoadedFont && !fontLoadPromise) {
         fontLoadPromise = loadFont().catch((error) => {
             console.log('Unable to load renderer font', error);
@@ -322,6 +337,8 @@ onmessage = (e) => {
         combinedCtx.clearRect(0, 0, combinedCanvas.width, combinedCanvas.height);
         combinedCtx.save();
         combinedCtx.drawImage(canvases["background"], 0, 0, canvases["background"].width * scale, canvases["background"].height * scale);
+        const view = e.data.renderData.find(data => data.type === "entities");
+        rendererExtensions?.draw('ground', combinedCtx, e.data.extensions, view);
         combinedCtx.drawImage(canvases["entities"], 0, 0);
         combinedCtx.drawImage(canvases["text"], 0, 0);
         combinedCtx.drawImage(canvases["high"], 0, 0, canvases["high"].width * scale, canvases["high"].height * scale);
@@ -336,6 +353,7 @@ onmessage = (e) => {
 
         // Restore the default composite operation
         combinedCtx.restore();
+        rendererExtensions?.draw('foreground', combinedCtx, e.data.extensions, view);
         drawCombatFeedback(combinedCtx, e.data.combatFeedback);
 
         requestAnimationFrame(() => {

@@ -1355,6 +1355,32 @@ define(['character'], function (Character) {
             this.showIndicator = false;
         },
 
+        applyBehaviorState: function (state) {
+            if (!state || !state.key) return;
+            this.behaviorControlled = true;
+            this.behaviorActivity = state.activity;
+            this.name = state.label || this.name;
+            this.moveSpeed = Math.max(200, Math.min(1900, state.moveSpeed || 450));
+            this.setOrientation(state.orientation);
+            if (this.isLoaded && !this.isMoving()) this.idle();
+        },
+
+        animate: function (animation, speed, count, onEndCount) {
+            const direction = Types.getOrientationAsString(this.orientation);
+            const supported = this.hasAnimation(animation + '_' + direction) ||
+                (direction === 'left' && this.hasAnimation(animation + '_right')) || this.hasAnimation(animation);
+            if (supported) {
+                this._super(animation, speed, count, onEndCount);
+                if (['idle', 'walk'].includes(animation) && this.currentAnimation) this.currentAnimation.setSpeed(speed);
+            } else if (this.hasAnimation('idle_down')) {
+                // Older NPC sheets only have a front-facing idle strip. Reuse it
+                // rather than requesting missing directional or walking frames.
+                this.flipSpriteX = direction === 'left';
+                this.setAnimation('idle_down', animation === 'walk' ? 180 : this.idleSpeed, count, onEndCount);
+                if (this.currentAnimation) this.currentAnimation.setSpeed(animation === 'walk' ? 180 : this.idleSpeed);
+            }
+        },
+
         talk: function (walletId) {
             let msg = null;
 
@@ -1366,7 +1392,7 @@ define(['character'], function (Character) {
             }
             this.talkIndex += 1;
 
-            msg = msg.replace("{walletId}", walletId);
+            if (msg) msg = msg.replace("{walletId}", walletId);
 
             return msg;
         },

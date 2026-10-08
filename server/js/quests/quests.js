@@ -58,13 +58,13 @@ const questsByID = groupBy(quests, 'id', true);
 
 exports.handleNPCClick = function (cache, sessionId, npcId) {
     const sessionData = cache.get(sessionId);
-    const npcQuests = questsByNPC[npcId];
+    const npcQuests = questsByNPC[npcId]?.filter(quest => !quest.dialogueOnly);
     const broker = PlayerEventBroker.playerEventBrokers[sessionId];
 
     let response = handleHandoutQuests(npcQuests, sessionData, cache, sessionId) ||
         handleInProgressQuests(npcQuests, sessionData, broker, cache, sessionId) ||
-        handleNpcTargetQuests(quests, sessionData, npcId) ||
-        handleReturnToNpcQuests(quests, sessionData, npcId, cache, sessionId, broker);
+        handleNpcTargetQuests(quests.filter(quest => !quest.dialogueOnly), sessionData, npcId) ||
+        handleReturnToNpcQuests(quests.filter(quest => !quest.dialogueOnly), sessionData, npcId, cache, sessionId, broker);
 
     cache.set(sessionId, sessionData);
 
@@ -94,7 +94,7 @@ exports.completeQuest = function (cache, sessionId, questID) {
 
 function handleHandoutQuests(npcQuests, sessionData, cache, sessionId) {
     if (!npcQuests) return null;
-    for (const questID of npcQuests.map(quest => quest.id)) {
+    for (const questID of npcQuests.filter(quest => !quest.dialogueOnly).map(quest => quest.id)) {
         const msgText = handoutQuest(questID, sessionData);
         if (msgText) {
             cache.set(sessionId, sessionData);
@@ -108,7 +108,7 @@ function handleInProgressQuests(npcQuests, sessionData, broker, cache, sessionId
     if (!npcQuests) return null;
 
     for (const questID of npcQuests.map(quest => quest.id)) {
-        const quest = questsByID[questID];
+        const quest = {...questsByID[questID]};
         if (avatarHasQuest(questID, sessionData.gameData.quests) && !avatarHasCompletedQuest(questID, sessionData.gameData.quests)) {
             const isCompleted = eventConsumer.completionCheckers[quest.eventType](quest, sessionData);
             if (isCompleted && !quest.returnToNpc) {
@@ -139,7 +139,7 @@ function handleNpcTargetQuests(quests, sessionData, npcId) {
     const npcTargetQuests = quests.filter(quest => quest.eventType === "NPC_TALKED" && quest.target === npcId);
     if (npcTargetQuests) {
         for (const questID of npcTargetQuests.map(quest => quest.id)) {
-            const quest = questsByID[questID];
+            const quest = {...questsByID[questID]};
             if (avatarHasQuest(questID, sessionData.gameData.quests) && !avatarHasCompletedQuest(questID, sessionData.gameData.quests)) {
                 return { text: quest.npcText };
             }
@@ -152,7 +152,7 @@ function handleReturnToNpcQuests(quests, sessionData, npcId, cache, sessionId, b
     const returnToNpcQuests = quests.filter(quest => quest.returnToNpc === npcId);
     if (returnToNpcQuests) {
         for (const questID of returnToNpcQuests.map(quest => quest.id)) {
-            const quest = questsByID[questID];
+            const quest = {...questsByID[questID]};
             if (avatarHasQuest(questID, sessionData.gameData.quests) && !avatarHasCompletedQuest(questID, sessionData.gameData.quests)) {
                 const isCompleted = eventConsumer.completionCheckers[quest.eventType](quest, sessionData);
                 if (isCompleted) {
@@ -200,11 +200,12 @@ exports.hasCompletedQuest = function (questID, sessionData) {
 
 function avatarHasQuest(questId, avatarQuests) {
     if (_.isEmpty(avatarQuests)) return false;
-    return Object.values(avatarQuests).flat().some(quest => quest.questKey === questId);
+    return Object.values(avatarQuests).flat().some(quest => (quest.questKey || quest.id) === questId);
 }
 
 function avatarHasCompletedQuest(questId, avatarQuests) {
-    return (avatarQuests[STATES.COMPLETED] || []).some(quest => quest.questKey === questId);
+    return [STATES.COMPLETED, STATES.FINISHED].some(status =>
+        (avatarQuests?.[status] || []).some(quest => (quest.questKey || quest.id) === questId));
 }
 
 function startQuest(sessionData, questID) {
@@ -228,16 +229,6 @@ function completeQuest(questID, sessionData) {
     }
 
     eventConsumer.completeQuest(sessionData, questID, questsByID[questID]);
-
-    let completedQuests = sessionData.gameData.quests[STATES.COMPLETED];
-    let questInCacheFormat = {questKey: questID, status: STATES.COMPLETED};
-    if (!completedQuests) {
-        sessionData.gameData.quests[STATES.COMPLETED] = [questInCacheFormat];
-    } else {
-        sessionData.gameData.quests[STATES.COMPLETED].push(questInCacheFormat);
-    }
-
-    sessionData.gameData.quests[STATES.IN_PROGRESS] = sessionData.gameData.quests[STATES.IN_PROGRESS].filter(q => q.id !== questID);
 }
 
 

@@ -35,6 +35,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc'],
                 this.upscaledRendering = true;
                 this.supportsSilhouettes = true;
                 this.worker = new Worker("js/renderer-webworker.js");
+                this.extensionData = {};
     
                 this.lastTime = new Date();
                 this.frameCount = 0;
@@ -71,6 +72,17 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc'],
                 });
             },
     
+            // Features register worker modules and send their own serialisable data.
+            registerExtension: function(module) {
+                if (!/^[a-z][a-z0-9-]*-worker\.js$/.test(module)) throw new Error('Invalid renderer extension module');
+                this.worker.postMessage({type: 'registerExtension', module});
+            },
+
+            setExtensionData: function(id, data) {
+                if (data == null) delete this.extensionData[id];
+                else this.extensionData[id] = data;
+            },
+
             getWidth: function() {
                 return this.canvas.width;
             },
@@ -1137,7 +1149,8 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc'],
                         player: {x: this.game.player.x, y: this.game.player.y},
                         serverTime: this.game.serverTime,
                         mapId: this.game.map.mapId,
-                        scene: scene
+                        scene: scene,
+                        extensions: this.extensionData
                     });
                 } else {
                     this.worker.postMessage({
@@ -1147,7 +1160,8 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc'],
                         player: {x: 0, y: 0},
                         serverTime: this.game.serverTime,
                         mapId: this.game.map.mapId,
-                        scene: scene
+                        scene: scene,
+                        extensions: this.extensionData
                     });
                 }
             }

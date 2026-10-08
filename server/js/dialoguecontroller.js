@@ -16,7 +16,7 @@ class DialogueController {
         };
     }
 
-    findDialogueTree(mapId, npcId) {
+    findDialogueTree(mapId, npcId, npcKey) {
         try {
             const dialogues = this.dialogueTrees[mapId];
             if (dialogues === null || dialogues === undefined) {
@@ -25,19 +25,20 @@ class DialogueController {
 
             for (let i = 0; i < dialogues.length; i++) {
                 const dialogue = dialogues[i];
-                if (parseInt(dialogue.npc) === parseInt(npcId)) {
+                if (parseInt(dialogue.npc) === parseInt(npcId) && (!npcKey || !dialogue.key || dialogue.key === npcKey)) {
                     return dialogue;
                 }
             }
+            return null;
         } catch (error) {
             this.errorEncountered(`[DIALOGUE] Error finding dialogue: ${error}`);
             return null;
         }
     }
 
-    hasDialogueTree(mapId, npcId) {
+    hasDialogueTree(mapId, npcId, npcKey) {
         try {
-            const dialogue = this.findDialogueTree(mapId, npcId);
+            const dialogue = this.findDialogueTree(mapId, npcId, npcKey);
             return dialogue !== null;
         } catch (error) {
             this.errorEncountered(`[DIALOGUE] Error with Dialogue: ${error}`);
@@ -45,17 +46,24 @@ class DialogueController {
         }
     }
 
-    processDialogueTree(mapId, npcId, cache, sessionId) {
+    processDialogueTree(mapId, npcId, cache, sessionId, npcKey) {
         try {
-            const dialogue = this.findDialogueTree(mapId, npcId);
+            const dialogue = this.findDialogueTree(mapId, npcId, npcKey);
 
             if (!dialogue) return null;
 
             const sessionData = cache.get(sessionId) || {};
 
+            if (sessionData.currentNpcKey !== npcKey) { sessionData.currentNode = null; sessionData.currentNpcKey = npcKey; }
             let nodeKey = this.determineStartingNode(dialogue, sessionData, npcId);
             let node = dialogue.nodes[nodeKey];
             node = _.clone(node);
+            if (node.legacyQuests) {
+                sessionData.currentNode = null;
+                sessionData.dialogueTransitions = [];
+                cache.set(sessionId, sessionData);
+                return quests.handleNPCClick(cache, sessionId, Number(npcId)) || {text: 'There are no other jobs ready here today.'};
+            }
 
             // Check if custom_css has been defined
             if (dialogue.custom_css || node.custom_css) {
@@ -88,6 +96,9 @@ class DialogueController {
 
             node = this.chooseRandomLines(node);
             node = this.filterOptions(node, sessionData);
+            sessionData.dialogueTransitions = [...(node.goto ? [node.goto] : []), ...(node.options || []).map(option => option.goto)];
+            sessionData.dialogueNpcKey = npcKey;
+            cache.set(sessionId, sessionData);
 
             return node;
         } catch (error) {
@@ -162,8 +173,8 @@ class DialogueController {
         }
     }
 
-    goto(mapId, npcId, nodeKey, cache, sessionId) {
-        const dialogue = this.findDialogueTree(mapId, npcId);
+    goto(mapId, npcId, nodeKey, cache, sessionId, npcKey) {
+        const dialogue = this.findDialogueTree(mapId, npcId, npcKey);
         if (!dialogue) {
             return;
         }
@@ -172,8 +183,12 @@ class DialogueController {
         }
 
         const sessionData = cache.get(sessionId) || {};
+        if (dialogue.key && (sessionData.dialogueNpcKey !== npcKey ||
+            !sessionData.dialogueTransitions?.includes(nodeKey))) return false;
         sessionData.currentNode = nodeKey;
+        sessionData.dialogueTransitions = [];
         cache.set(sessionId, sessionData);
+        return true;
     }
 
     determineStartingNode(dialogue, sessionData, npcId) {
@@ -235,14 +250,10 @@ class DialogueController {
             return false
         }
 
-        let invert = false;
-        if (condition.if_not) {
-            condition.if = condition.if_not;
-            invert = true;
-        }
+        const invert = Boolean(condition.if_not);
 
         let result;
-        switch (condition.if) {
+        switch (condition.if_not || condition.if) {
             case 'open_quest':
             case 'quest_open':
                 result = this.checkQuestIsOpen(condition.quest, sessionData);

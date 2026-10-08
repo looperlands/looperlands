@@ -45,6 +45,7 @@ module.exports = class Mapx {
         this.chestAreas = map.chestAreas;
         this.staticChests = map.staticChests;
         this.staticEntities = map.staticEntities;
+        this.doors = map.doors || [];
         this.isLoaded = true;
         this.hiddenLayers = map.hiddenLayers || {};
         this.collidingTiles = map.collidingTiles || {};

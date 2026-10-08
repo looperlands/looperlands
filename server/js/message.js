@@ -41,6 +41,16 @@ Messages.Move = Message.extend({
     }
 });
 
+Messages.NpcState = Message.extend({
+    init: function(npc) { this.npc = npc; },
+    serialize: function() { return [Types.Messages.NPC_STATE, this.npc.id, this.npc.behaviorState]; }
+});
+
+Messages.WorldAmbience = Message.extend({
+    init: function(config) { this.config = config; },
+    serialize: function() { return [Types.Messages.WORLD_AMBIENCE, this.config]; }
+});
+
 Messages.LootMove = Message.extend({
     init: function(entity, item) {
         this.entity = entity;
@@ -132,14 +142,17 @@ Messages.Drop = Message.extend({
 });
 
 Messages.Chat = Message.extend({
-    init: function(player, message) {
+    init: function(player, message, ambient) {
         this.playerId = player.id;
         this.message = message;
+        this.ambient = ambient;
     },
     serialize: function() {
-        return [Types.Messages.CHAT,
+        const message = [Types.Messages.CHAT,
                 this.playerId,
                 this.message];
+        if (this.ambient) message.push({ambient: true});
+        return message;
     }
 });
 

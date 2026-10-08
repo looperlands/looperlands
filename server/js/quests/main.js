@@ -92,4 +92,4 @@ quests = [
     // },
 ]
 
-exports.quests = quests;
+exports.quests = [...quests, ...require('../../npc-behaviors/lantern-picnic').quests];
