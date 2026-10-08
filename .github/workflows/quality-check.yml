@@ -10,7 +10,7 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-    - name: Validate storage migration
+    - name: Validate deployment safeguards
       run: |
         bash -n bin/deploy-game-server.sh
         PYTHONDONTWRITEBYTECODE=1 python3 bin/deploy-game-server.test.py
