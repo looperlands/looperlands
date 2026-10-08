@@ -79,6 +79,36 @@ The gameserver accepts announcements per map. Not including `maps` will send to 
  curl -X POST http://localhost:8000/announce      -H "Content-Type: application/json"      -d '{"message": "Server maintenance will start at 8 PM.", "maps" : ["taikotown"], "timeToShow": 5}' -H "x-api-key: placeholder"
 ```
 
+# Deployment reboot notices
+
+The `deploy` GitHub Actions workflow announces the reboot to every running
+game-server Docker Compose container in the production project on the configured SSH
+host(s), waits 60 seconds, then restarts the `looperlands` service. Each container
+receives the announcement on all its maps through its local `/announce` endpoint,
+using its own `LOOPWORMS_API_KEY`. No additional GitHub secret is needed.
+
+To explain a deployment, open **Actions → deploy → Run workflow**, select `main`,
+and enter `reboot_reason`, for example `Fixing combat lag and improving chat.`
+The announcement always includes the restart countdown and asks players to
+reconnect afterwards. `reboot_notice_seconds` lets you change the warning period
+from 1 to 600 seconds. Reasons are rendered as plain text.
+
+For automatic deployments on pushes to `main`, set the repository Actions variable
+`GAME_SERVER_REBOOT_REASON` to customize the reason. Without a custom reason,
+players see `We are deploying a game update.` Manual reasons override the variable;
+blank manual reasons use the variable or the default. Push deployments always use
+the 60-second warning period.
+
+Announcements run only after the image has built and pushed successfully. If any
+container rejects the announcement, or no running game-server container is found,
+the workflow fails before restarting. Deployments are serialized so a later push
+does not cancel a reboot that players have already been warned about.
+The notice runs after the existing chat-storage checks and image pull, while
+the deployment lock is held. The existing checks for persistent chat storage
+also run after the restart. The SSH user uses the existing Docker permissions;
+no extra sudo permissions are required. Containers must include Node.js with
+`fetch` support (the production image uses Node.js 20).
+
 # Add a mob
 
 * Add each scale image to client/img/n
