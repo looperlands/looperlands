@@ -4,12 +4,15 @@ jest.mock('../dao', () => ({setQuestStatus: jest.fn(), updateResourceBalance: je
 jest.mock('../formulas', () => ({level: xp => xp}));
 jest.mock('../looperlandsplatformclient', () => ({LooperLandsPlatformClient: class {getFreeRental = jest.fn();}}));
 jest.mock('../collectables', () => ({isCollectable: kind => kind === 999, getCollectItem: () => 5, getCollectAmount: () => 2}));
-jest.mock('./main', () => ({quests: [{id: 'meeting', name: 'Meeting', npc: 40, startText: 'Help a friend.', endText: 'Thank you.',
+const mockQuestDefinitions = {quests: [{id: 'meeting', name: 'Meeting', npc: 40, startText: 'Help a friend.', endText: 'Thank you.',
     objectives: [{id: 'talk', label: 'Talk to a friend', eventType: 'NPC_TALKED', target: 41, npcKey: 'friend'},
         {id: 'visit', label: 'Visit Forest', eventType: 'AREA_ENTERED', target: 'Forest'},
         {id: 'kill', label: 'Defeat two rats here', eventType: 'KILL_MOB', target: 2, amount: 2, area: {x: 5, y: 5, width: 5, height: 5}},
         {id: 'collect', label: 'Collect supplies', eventType: 'LOOT_ITEM', target: 5, amount: 3},
-        {id: 'deliver', label: 'Bring supplies to your friend', eventType: 'DELIVER_ITEM', target: 5, amount: 3, recipient: {npc: 41, npcKey: 'friend'}}]}]}));
+        {id: 'deliver', label: 'Bring supplies to your friend', eventType: 'DELIVER_ITEM', target: 5, amount: 3, recipient: {npc: 41, npcKey: 'friend'}}]}]};
+jest.mock('./main', () => mockQuestDefinitions);
+// Support both direct legacy loading and the independently registered engine.
+jest.mock('../worlddefinitions', () => ({definitions: {quests: mockQuestDefinitions.quests, subscribe: jest.fn()}}), {virtual: true});
 const quests = require('./quests'), objective = require('./objectives'), dao = require('../dao');
 const {PlayerEventBroker} = require('./playereventbroker');
 const {PlayerQuestEventConsumer} = require('./playerquesteventconsumer');
