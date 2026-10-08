@@ -9,6 +9,14 @@ define(function() {
             this.gridX = 0;
             this.gridY = 0;
             this.offset = 0.5;
+            // Quick feel test: average only the last 40 ms; ?cameraSmooth=0 restores direct follow.
+            var smoothing = typeof window !== 'undefined'
+                ? new URLSearchParams(window.location.search).get('cameraSmooth') : null;
+            this.followWindow = smoothing === null || !isFinite(Number(smoothing)) ? 40 : Math.max(0, Number(smoothing));
+            var easing = typeof window !== 'undefined'
+                ? new URLSearchParams(window.location.search).get('cameraEase') : null;
+            this.followHalfLife = easing === null || !isFinite(Number(easing)) ? 35 : Math.max(0, Number(easing));
+            this.followSamples = [];
             this.rescale();
             this.checkBounds();
         },
@@ -88,13 +96,46 @@ define(function() {
             }
         },
 
-        lookAt: function(entity) {
+        lookAt: function(entity, smooth) {
             if (entity) {
                 var r = this.renderer,
                     x = Math.round( entity.x - (Math.floor(this.gridW / 2) * r.tilesize) ),
                     y = Math.round( entity.y - (Math.floor(this.gridH / 2) * r.tilesize) );
         
+                var now = Date.now(),
+                    previousX = this.x,
+                    previousY = this.y;
+
+                // Clamp the target first so room edges do not accumulate follow lag.
                 this.setPosition(x, y);
+                x = this.x;
+                y = this.y;
+
+                if (smooth && this.followWindow > 0 && this.followSamples.length > 0
+                    && Math.abs(x - previousX) < this.gridW * r.tilesize / 2
+                    && Math.abs(y - previousY) < this.gridH * r.tilesize / 2) {
+                    this.followSamples.push({x: x, y: y, time: now});
+                    this.followSamples = this.followSamples.filter(function(sample) {
+                        return sample.time >= now - this.followWindow;
+                    }, this);
+                    var sumX = 0, sumY = 0;
+                    this.followSamples.forEach(function(sample) {
+                        sumX += sample.x;
+                        sumY += sample.y;
+                    });
+                    var targetX = sumX / this.followSamples.length,
+                        targetY = sumY / this.followSamples.length,
+                        amount = this.followHalfLife > 0
+                            ? 1 - Math.pow(0.5, Math.max(0, now - this.lastFollowTime) / this.followHalfLife) : 1;
+                    this.followX += (targetX - this.followX) * amount;
+                    this.followY += (targetY - this.followY) * amount;
+                    this.setPosition(Math.round(this.followX), Math.round(this.followY));
+                } else {
+                    this.followSamples = [{x: x, y: y, time: now}];
+                    this.followX = x;
+                    this.followY = y;
+                }
+                this.lastFollowTime = now;
             }
         },
 

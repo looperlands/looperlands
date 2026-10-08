@@ -6601,8 +6601,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 }
             },
 
-            focusPlayer: function () {
-                this.renderer.camera.lookAt(this.player);
+            focusPlayer: function (smooth) {
+                this.renderer.camera.lookAt(this.player, smooth);
             },
 
             addEntity: function (entity) {
@@ -6993,7 +6993,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     this.updateCursorLogic();
                     this.updater.update();
                     if (this.canUseCenteredCamera()) {
-                        this.focusPlayer();
+                        this.focusPlayer(true);
                     }
                     this.renderer.renderFrame();
                     if (this.gamepadListener) {
