@@ -114,6 +114,7 @@
 }
 
 #dialogue-popup .dialogue-player-line {
+    font: inherit;
     margin: 0 0 18px;
     padding-bottom: 12px;
     border-bottom: 1px solid #ffffff30;

@@ -352,6 +352,7 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
         },
 
         showChoicesPopup(npcId, dialogue) {
+            $('#new-achievement-popup').addClass('hidden');
             let self = this;
             let playerChoicePopup = $('#dialogue-popup');
             let avatarDiv = playerChoicePopup.find('#avatar');
