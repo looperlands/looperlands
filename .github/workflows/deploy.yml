@@ -15,6 +15,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Validate storage migration
+        run: |
+          bash -n bin/deploy-game-server.sh
+          PYTHONDONTWRITEBYTECODE=1 python3 bin/deploy-game-server.test.py
+
       - name: Log in to Docker Hub
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
@@ -24,7 +29,17 @@ jobs:
       - name: Push Docker Image to Docker Hub
         run: docker push balkshamster/looperlands:latest
 
-      - name: executing remote ssh commands using password
+      - name: Upload deployment configuration and storage migration
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          port: 22
+          source: "docker-compose.yml,bin/deploy-game-server.sh,bin/chat-storage-plan.py"
+          target: "/tmp/looperlands-deploy-${{ github.sha }}"
+
+      - name: Deploy with persistent chat storage
         uses: appleboy/ssh-action@v0.1.7
         with:
           host: ${{ secrets.HOST }}
@@ -32,6 +47,6 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           port: 22
           script: |
-            sudo systemctl restart looperlands
+            bash /tmp/looperlands-deploy-${{ github.sha }}/bin/deploy-game-server.sh /tmp/looperlands-deploy-${{ github.sha }}/docker-compose.yml ${{ github.sha }}
 
 
