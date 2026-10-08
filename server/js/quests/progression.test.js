@@ -11,6 +11,9 @@ jest.mock('./main', () => ({quests: [
         startText: 'Bring supplies.', endText: 'Supplies received.', reward: {item: 6, amount: 4}},
     {id: 'fixture-return', name: 'Road report', npc: 41, returnToNpc: 42, eventType: 'KILL_MOB', target: 2, amount: 3,
         startText: 'Report to the watcher.', inProgressText: '{{remaining}} remain.', endText: 'Report received.'},
+    {id: 'fixture-keyed', name: 'Keeper report', npc: 44, npcKey: 'keeper', dialogueOnly: true,
+        requiredQuest: 'fixture-kill', requiredQuests: ['fixture-kill', 'fixture-item'], eventType: 'NPC_TALKED', target: 'FLOW', amount: 1,
+        startText: 'Bring both reports.', endText: 'Both reports received.'},
     {id: 'fixture-level', name: 'Senior patrol', npc: 43, eventType: 'KILL_MOB', target: 2, amount: 8, requiredLevel: 7,
         startText: 'Senior patrol.', endText: 'Senior report.'}
 ]}));
@@ -88,4 +91,27 @@ test('collectables, area transitions and recognition use the correct character a
     expect(one.player.server.npcBehavior.react).toHaveBeenCalledWith('quest', one.player, {quest: {id: 'fixture-item'}});
     one.broker.destroy();
     expect(PlayerEventBroker.playerEventBrokers.one).toBeUndefined();
+});
+
+test('keyed NPC quest indicators require every linked quest and belong to the correct placed actor', () => {
+    const one = setup();
+    one.session.gameData.quests.COMPLETED = [{questKey: 'fixture-kill'}];
+    expect(registry.npcHasQuest(one.cache, 'one', 44, 'keeper')).toBe(false);
+    one.session.gameData.quests.COMPLETED.push({questKey: 'fixture-item'});
+    expect(registry.npcHasQuest(one.cache, 'one', 44, 'keeper')).toBe(true);
+    expect(registry.npcHasQuest(one.cache, 'one', 44, 'other-villager')).toBe(false);
+    registry.newQuest(one.cache, 'one', 'fixture-keyed');
+    expect(registry.npcHasOpenQuest(one.cache, 'one', 44, 'keeper')).toBe(true);
+    expect(registry.npcHasOpenQuest(one.cache, 'one', 44, 'other-villager')).toBe(false);
+
+    let npcMethods;
+    require('vm').runInNewContext(require('fs').readFileSync(require.resolve('../npc'), 'utf8'), {
+        require: () => registry, module: {}, Entity: {extend: methods => {npcMethods = methods; return methods;}}
+    });
+    const keeper = {kind: 44, behaviorState: {key: 'keeper'}};
+    npcMethods.checkIndicator.call(keeper, 'one', one.cache);
+    expect(keeper.showIndicator).toBe(true);
+    keeper.behaviorState.key = 'other-villager';
+    npcMethods.checkIndicator.call(keeper, 'one', one.cache);
+    expect(keeper.showIndicator).toBe(false);
 });

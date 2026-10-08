@@ -6,7 +6,8 @@ module.exports = Npc = Entity.extend({
     },
 
     checkIndicator: function(sessionId, cache) {
-        this.showIndicator = quests.npcHasQuest(cache, sessionId, this.kind) || quests.npcHasOpenQuest(cache, sessionId, this.kind);
+        const npcKey = this.behaviorState?.key;
+        this.showIndicator = quests.npcHasQuest(cache, sessionId, this.kind, npcKey) || quests.npcHasOpenQuest(cache, sessionId, this.kind, npcKey);
     },
 
     getState: function() {

@@ -75,7 +75,8 @@ Build the client with `node bin/build-client.js`, then run
 `node bin/local-npc-preview.js`. The launcher uses loopback fixture APIs and saves
 local game data under the OS temporary directory. It prints two session URLs.
 Player 2 can continue an earlier completed picnic; Player 1 keeps their own progress.
-The launcher starts at night. Local Day/Night/Cycle and guide controls can be hidden
+The launcher starts at night. Set `NPC_PREVIEW_HEALTH_MULTIPLIER=20` for longer
+conversations around hostile mobs. Local Day/Night/Cycle and guide controls can be hidden
 with `NPC_PREVIEW_CONTROLS=off` to exercise the production interface.
 
 Override `NPC_PREVIEW_PORT`, `NPC_PREVIEW_FIXTURE_PORT` and `NPC_PREVIEW_DATA_DIR`

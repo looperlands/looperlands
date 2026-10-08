@@ -169,7 +169,10 @@ neighbour.nodes['local-jobs'] = {legacyQuests: true};
 dialogues[0].key = 'town-gardener';
 dialogues[1].key = 'town-neighbour';
 dialogues[2].key = 'town-watch';
-for (const quest of quests) quest.dialogueOnly = true;
+for (const quest of quests) {
+    quest.dialogueOnly = true;
+    quest.npcKey = dialogues.find(tree => tree.npc === quest.npc)?.key;
+}
 
 function install() {
     const registry = require('../js/quests/quests').questsByID;

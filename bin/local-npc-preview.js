@@ -77,7 +77,7 @@ api.get('/api/maps/:map/music', (req, res) => res.json([]));
 api.get('/api/game/asset/modifiers/:server/:nft', (req, res) => res.json(Object.fromEntries([
     'meleeDamageDealt', 'meleeDamageTaken', 'moveSpeed', 'rangedDamageDealt', 'hpRegen', 'maxHp',
     'hate', 'attackRate', 'stealth', 'xp', 'fishing'
-].map(key => [key, 1]))));
+].map(key => [key, key === 'maxHp' ? Number(process.env.NPC_PREVIEW_HEALTH_MULTIPLIER || 1) : 1]))));
 api.get('/api/game/asset/:nft/stats', (req, res) => res.json({}));
 api.post('/api/game/asset/quest', (req, res) => {
     const data = gameData.get(req.body.nftId);
