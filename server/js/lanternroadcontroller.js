@@ -142,10 +142,10 @@ class LanternRoadController {
             if (completedHere.length) node.text += '<br><br>' + completedHere.at(-1).conclusion;
             const status = state.npcStatus(data, node.storyMenu);
             if (status) node.text += '<br><br>' + status;
-            if (node.storyMenu === 'town-gardener' && !state.done(data, 'LANTERN_LONG_TABLE')) {
+            if (['town-gardener', 'town-neighbour'].includes(node.storyMenu) && !state.done(data, 'LANTERN_LONG_TABLE')) {
                 const journal = state.journal(data);
                 node.text += '<br><br>Next on your road: ' + journal.goal;
-                if (!state.done(data, 'LANTERN_WRECK_LETTERS') && !state.done(data, 'LANTERN_FOREST_MARKERS')) {
+                if (node.storyMenu === 'town-gardener' && !state.done(data, 'LANTERN_WRECK_LETTERS') && !state.done(data, 'LANTERN_FOREST_MARKERS')) {
                     node.text += '<br>Rowan used to bring invitations from across the island. Jimi has news from the coast, and Mara keeps the old forest markers. You can follow either lead first.';
                 }
             }

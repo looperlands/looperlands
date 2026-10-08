@@ -55,8 +55,10 @@ function npcStatus(data, key) {
         return 'Your current task: ' + current.name + '. ' + (ready(data, current) ?
             'You have checked every objective. Tell me what you found when you are ready.' : nextStep(data, current));
     }
-    const waiting = local.find(q => !q.optional) || local[0];
-    if (!waiting) return '';
+    const waiting = local.sort((a, b) => a.chapter - b.chapter)[0];
+    // Town hosts should point to the current search, not request a finale
+    // invitation before the road has even been repaired.
+    if (!waiting || (waiting.chapter === 8 && !done(data, 'LANTERN_LIGHT_SHARED'))) return '';
     const missing = waiting.requiredQuests.filter(id => !done(data, id));
     if (missing.includes(picnic.INVITE)) return 'First help Adam and Bstrat finish the Lantern Picnic in Town. Their invitation starts the search along the road.';
     return 'I am waiting for ' + missing.map(id => {

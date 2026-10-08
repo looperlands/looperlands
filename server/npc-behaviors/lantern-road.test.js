@@ -208,6 +208,10 @@ test('Adam gives returning picnic players both onward leads, alongside their rem
     expect(node.text).toContain('Mara');
     expect(node.text).toContain('either lead first');
     expect(node.text).toContain('Adam remembers your sharing idea');
+    expect(node.text).not.toContain('I am waiting for The Invitations Returned');
+    const bstrat = talk({npc: Types.Entities.VILLAGEGIRL, npcKey: 'town-neighbour'});
+    expect(bstrat.text).toContain('Next on your road');
+    expect(bstrat.text).not.toContain('I am waiting for Light Shared Again');
 });
 
 test('coastal handoffs explain the next contact and the missing parallel forest report', () => {
@@ -288,4 +292,12 @@ test('regional NPCs greet from saved evidence even on a server with no recogniti
     const response = LanternRoadController.decorate({storyMenu: 'forest-caretaker'}, cache.get('one'));
     expect(response.text).toContain('lantern you placed');
     expect(response.text).not.toContain('stopped sending invitations');
+});
+
+
+test('Wild Will offers the available shoreline story before mentioning the finale', () => {
+    const {talk} = setup();
+    const node = talk({npc: Types.getKindFromString('wildwill'), npcKey: 'party-wildwill'});
+    expect(node.text).toContain("I can help with: Wild Will's Place: The Shore");
+    expect(node.text).not.toContain('I am waiting for What We Bring With Us');
 });
