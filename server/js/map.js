@@ -40,6 +40,7 @@ module.exports = class Mapx {
         this.height = map.height;
         this.collisions = map.collisions;
         this.scenes = map.scenes || [];
+        this.eventBoards = map.eventBoards || [];
         this.mobAreas = map.roamingAreas;
         this.chestAreas = map.chestAreas;
         this.staticChests = map.staticChests;

@@ -211,6 +211,23 @@ class LooperLandsPlatformClient {
         }
     }
 
+    async getEventBoard(wallet, nft, map = null) {
+        const params = {nft};
+        if (map !== null) params.map = map;
+        const response = await this.client.get('/api/game/events/board/' + encodeURIComponent(wallet), {params, timeout: 10000});
+        return response.data;
+    }
+
+    async registerEvent(wallet, eventId, runId, action) {
+        const response = await this.client.post('/api/game/events/board/' + encodeURIComponent(wallet) + '/' + eventId + '/' + runId + '/' + action, {}, {timeout: 10000});
+        return response.data;
+    }
+
+    async getEventEquipment(wallet) {
+        const response = await this.client.get('/api/game/events/equipment/' + encodeURIComponent(wallet), {timeout: 5000});
+        return response.data;
+    }
+
     async getInventoryItem(nftId, itemId) {
         try {
             const url = `/api/game/asset/inventory/${nftId}/${itemId}`;
@@ -295,6 +312,11 @@ class LooperLandsPlatformClient {
         } catch (error) {
             this.handleError(error);
         }
+    }
+
+    async storeActivity(activities) {
+        const response = await this.client.post('/api/game/activity', activities, {timeout: 15000});
+        return response.data;
     }
 
     async storeKills(kills) {

@@ -96,3 +96,15 @@ describe('AnnouncementController', () => {
         });
     });
 });
+
+describe('event announcement retries', () => {
+    test('the same round announcement reaches players once per server process', () => {
+        process.env.LOOPWORMS_API_KEY='key';
+        const player={sendAnnoucement:jest.fn()};
+        const controller=new AnnouncementController({arena:{players:{one:player}}});
+        const req={headers:{'x-api-key':'key'},body:{announcementId:'a'.repeat(64),message:'Event starts',maps:[],timeToShow:10000}};
+        const res={status:jest.fn().mockReturnThis(),send:jest.fn(),json:jest.fn()};
+        controller.sendAnnouncement(req,res);controller.sendAnnouncement(req,res);
+        expect(player.sendAnnoucement).toHaveBeenCalledTimes(1);
+    });
+});

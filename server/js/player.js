@@ -1,3 +1,4 @@
+const {effectiveLevel} = require('./eventequipment');
 
 var cls = require("./lib/class"),
     _ = require("underscore"),
@@ -17,6 +18,7 @@ const NFTWeapon = require("./nftweapon.js");
 const NFTSpecialItem = require("./nftspecialitem.js");
 const PlayerEventBroker = require("./quests/playereventbroker.js");
 const Lakes = require("./lakes.js");
+const {completeFishingCatch} = require("./fishingresult");
 const Collectables = require("./collectables.js");
 const platform = require('./looperlandsplatformclient.js');
 const PlayerClassModifiers = require('./playerclassmodifiers.js').PlayerClassModifiers;
@@ -101,6 +103,9 @@ module.exports = Player = Character.extend({
                 self.walletId = playerCache.walletId;
                 self.nftId = playerCache.nftId;
                 self.playerClassModifiers = new PlayerClassModifiers(platformClient, self.nftId, playerCache.trait);
+                self.mapId = playerCache.mapId;
+                try { await self.server.server.eventEquipment?.register(self); }
+                catch (error) { self.connection.close('Event equipment service unavailable. Please reconnect.'); return; }
 
                 self.kind = Types.Entities.WARRIOR;
                 self.equipArmor(message[2]);
@@ -140,6 +145,7 @@ module.exports = Player = Character.extend({
                 }
                 dao.saveAvatarMapAndCheckpoint(playerCache.nftId, playerCache.mapId, playerCache.checkpointId);
                 self.mapId = playerCache.mapId;
+                self.server.server.activity?.start(self);
                 self.server.server.socialChat?.register(self);
                 self.playerEventBroker.setPlayer(self);
 
@@ -212,10 +218,12 @@ module.exports = Player = Character.extend({
                         y = message[2];
 
                     if (self.server.isValidPosition(x, y)) {
+                        const changedPosition = self.x !== x || self.y !== y;
                         self.setPosition(x, y);
                         self.clearTarget();
                         self.broadcast(new Messages.Move(self));
                         self.move_callback(self.x, self.y);
+                        if (changedPosition) self.server.server.activity?.meaningful(self);
                         self.zone_callback();
                     }
                 }
@@ -578,24 +586,13 @@ module.exports = Player = Character.extend({
                     }
                 }
             } else if (action === Types.Messages.FISHINGRESULT) {
-                let success = message[1],
-                    bullseye = message[2];
-                if (success && self.pendingFish !== null) {
-                    let caughtAmount = self.pendingFish.double ? 2 : 1;
-                    let expAward = bullseye ? Math.round(self.pendingFish.exp * 1.5) : self.pendingFish.exp;
-
-                    const xp = expAward * caughtAmount;
-                    self.incrementNFTSpecialItemExperience(xp);
-                    self.playerEventBroker.lootEvent({ kind: self.pendingFish.name }, caughtAmount);
-                    self.handleExperience(xp);
-                    self.server.pushToPlayer(self, new Messages.Kill(self.pendingFish.name, xp));
-
-                    discord.sendMessage(`🐟 **${self.name}** caught *${AltNames.getName(self.pendingFish.name)}!*${caughtAmount === 1 ? '' : ' **[x2]**'} (Lake Level ${self.pendingFish.lakeLvl})`);
-
-
+                try {
+                    await completeFishingCatch(self, message[1], message[2], {lakes: Lakes, messages: Messages, discord, names: AltNames});
+                } catch (error) {
+                    console.error('[fishing] catch award failed:', error.message);
+                } finally {
+                    self.server.announceDespawnFloat(self);
                 }
-                self.pendingFish = null;
-                self.server.announceDespawnFloat(self);
             }
             else {
                 if (self.message_callback) {
@@ -605,6 +602,8 @@ module.exports = Player = Character.extend({
         });
 
         this.connection.onClose(function () {
+            self.server.server.activity?.stop(self.sessionId);
+            self.server.server.eventEquipment?.unregister(self);
             self.server.server?.socialChat?.unregister(self);
             if (self.loopringTimeout) {
                 clearTimeout(self.loopringTimeout);
@@ -758,7 +757,7 @@ module.exports = Player = Character.extend({
 
     getState: function () {
         var basestate = this._getBaseState(),
-            state = [this.name, this.orientation, this.armor, this.weapon, this.title, this.level];
+            state = [this.name, this.orientation, this.armor, this.weapon, this.title, this.getLevel()];
 
         if (this.target) {
             state.push(this.target);
@@ -988,7 +987,7 @@ module.exports = Player = Character.extend({
     },
 
     getLevel: function () {
-        return this.level;
+        return effectiveLevel(this, 'avatarLevel', this.level);
     },
 
     getPowerUpActive: function () {
@@ -1025,6 +1024,7 @@ module.exports = Player = Character.extend({
     },
 
     updatePVPStats: async function (playerKiller) {
+        this.server.server.activity?.record(playerKiller, 'pvp', {target: 'kill', quantity: 1});
         await dao.updatePVPStats(this.walletId, this.nftId, 0, 1);
         dao.updatePVPStats(playerKiller.walletId, playerKiller.nftId, 1, 0);
     },
@@ -1064,7 +1064,7 @@ module.exports = Player = Character.extend({
             weaponLevel = levelInfo;
         }
 
-        return weaponLevel;
+        return effectiveLevel(this, 'weaponLevel', weaponLevel);
 
     },
 

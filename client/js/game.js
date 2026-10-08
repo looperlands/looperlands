@@ -7319,7 +7319,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             const nearestAction = self.map.findNearestActionTileAround(self.player.gridX, self.player.gridY, 1);
                             if (nearestAction) {
                                 const requestId = ++self.tileActionStageRequestId;
-                                const immediateStage = self.tileActions.getImmediateStage(nearestAction);
+                                const immediateStage = nearestAction.action === 'event_board' ? {name: 'View events'} : self.tileActions.getImmediateStage(nearestAction);
                                 self.showTileActionBubble(nearestAction, immediateStage);
 
                                 self.getTileActionStage(nearestAction).then((actionStage) => {
@@ -8203,6 +8203,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                     self.client.onDisconnected(function (message) {
                         self.app.socialChat?.disconnect();
+                        self.app.eventBoard?.disconnect();
                         if (self.player) {
                             self.player.die();
                         }
@@ -8531,6 +8532,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             },
 
             getTileActionStage: function (action) {
+                if (action?.action === 'event_board') return Promise.resolve({name: 'View events'});
                 return this.tileActions.findCurrentStage(action);
             },
 
@@ -8562,6 +8564,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             },
 
             runTileAction: function (action) {
+                if (action?.action === 'event_board') {
+                    this.app.eventBoard?.open();
+                    return;
+                }
                 const self = this;
                 if (this.lastActionBubbleId) this.destroyBubble(this.lastActionBubbleId);
                 this.getTileActionStage(action)

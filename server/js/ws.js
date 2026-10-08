@@ -23,10 +23,13 @@ const Formulas = require('./formulas.js');
 const ens = require("./ens.js");
 const chat = require("./chat.js");
 const { SocialChat } = require('./socialchat');
+const {EventEquipment, effectiveLevel, effectiveLevelInfo} = require('./eventequipment');
+const {EventBoardController} = require('./eventboardcontroller');
 const { ChatHistory, DEFAULT_RETENTION_DAYS } = require('./chathistory');
 const path = require('path');
 const quests = require("./quests/quests.js");
 const Lakes = require("./lakes.js");
+const AltNames = require("../../shared/js/altnames");
 const Collectables = require('./collectables.js');
 const Properties = require('./properties.js')
 const Types = require("../../shared/js/gametypes");
@@ -35,6 +38,8 @@ const minigame = require('../apps/minigame.js');
 const MinigameController = require('./minigamecontroller.js');
 const DialogueController = require('./dialoguecontroller.js');
 const TileActionsController = require('./tileactionscontroller.js');
+const ActivityTracker = require('./activitytracker');
+const {buildActivityCatalog} = require('./activitycatalog');
 const dynamicnft = require('./dynamicnftcontroller.js');
 const announcement = require('./announcementcontroller.js');
 const {InventorySyncController} = require("./inventorysynccontroller.js");
@@ -167,6 +172,13 @@ WS.socketIOServer = Server.extend({
         const host = self.host;
 
         this.cache = cache;
+        this.activity = new ActivityTracker(platformClient);
+        this.eventEquipment = new EventEquipment(platformClient);
+        process.once('exit', () => this.activity.close());
+        for (const signal of ['SIGTERM', 'SIGINT']) process.once(signal, () => {
+            this.activity.close();
+            process.kill(process.pid, signal);
+        });
         const history = new ChatHistory(
             process.env.CHAT_HISTORY_FILE || path.resolve(__dirname, '../../data/chat/history.json'),
             Number(process.env.CHAT_HISTORY_RETENTION_DAYS ?? DEFAULT_RETENTION_DAYS)
@@ -188,6 +200,20 @@ WS.socketIOServer = Server.extend({
         });
 
         app.use(express.json())
+        app.get('/activity-catalog', (req, res) => res.json(buildActivityCatalog(Types, tileActionsController.stageDefinitions, Object.keys(self.worldsMap || {}), Lakes, AltNames.getName, Collectables.isTransferable)));
+
+        const eventBoard = new EventBoardController(cache, () => self.worldsMap, platformClient, data => {
+            for (const event of data.events) {
+                event.rules = event.rules.map(rule => ({...rule, targetLabel: rule.target === '*' ? 'All targets' : AltNames.getName(/^\d+$/.test(rule.target) ? Types.getKindAsString(Number(rule.target)) || rule.target : rule.target) || rule.target}));
+                event.prizes = event.prizes.map(prize => ({...prize, itemLabel: prize.item ? AltNames.getName(/^\d+$/.test(prize.item) ? Types.getKindAsString(Number(prize.item)) || prize.item : prize.item) || prize.item : null}));
+            }
+            const base = process.env.LOOPERLANDS_WEBSITE_BASE_URL || 'https://looperlands.io';
+            data.websiteUrl = /^https?:\/\//.test(base) ? base.replace(/\/$/, '') : 'https://looperlands.io';
+            return data;
+        });
+        app.get('/session/:sessionId/events', (req, res) => eventBoard.list(req, res));
+        app.get('/session/:sessionId/events/live', (req, res) => eventBoard.list(req, res, true));
+        app.post('/session/:sessionId/events/:eventId/:runId/:action', (req, res) => eventBoard.register(req, res));
 
         platformClient.createOrUpdateGameServer(host, port, GAMESERVER_NAME);
 
@@ -436,6 +462,12 @@ WS.socketIOServer = Server.extend({
                             item.level = Formulas.calculateToolPercentageToNextLevel(item.xp).currentLevel;
                         } else {
                             item.level = Formulas.calculatePercentageToNextLevel(item.xp).currentLevel;
+                        }
+
+                        const eventPlayer = this.worldsMap?.[sessionData.mapId]?.getPlayerById(sessionData.entityId);
+                        if (eventPlayer && Types.isWeapon(Types.getKindFromString(item.nftId))) {
+                            item.normalLevel = item.level;
+                            item.level = effectiveLevel(eventPlayer, 'weaponLevel', item.level);
                         }
 
                         return item;
@@ -739,7 +771,8 @@ WS.socketIOServer = Server.extend({
                     user: null
                 });
             } else {
-                let avatarLevelInfo = Formulas.calculatePercentageToNextLevel(sessionData.xp);
+                const player = self.worldsMap[sessionData.mapId].getPlayerById(sessionData.entityId);
+                let avatarLevelInfo = effectiveLevelInfo(player || {}, 'avatarLevel', Formulas.calculatePercentageToNextLevel(sessionData.xp));
                 let maxHp = Formulas.hp(avatarLevelInfo.currentLevel);
                 let weaponInfo = self.worldsMap[sessionData.mapId].getNFTWeaponStatistics(sessionData.entityId);
                 if (weaponInfo !== undefined) {
@@ -751,6 +784,10 @@ WS.socketIOServer = Server.extend({
                 } else {
                     weaponInfo = {};
                     weaponInfo['weaponLevelInfo'] = self.worldsMap[sessionData.mapId].getItemWeaponStatistics(sessionData.entityId);
+                }
+
+                if (weaponInfo.weaponLevelInfo && weaponInfo.constructor === 'NFTWeapon') {
+                    weaponInfo.weaponLevelInfo = effectiveLevelInfo(player || {}, 'weaponLevel', weaponInfo.weaponLevelInfo);
                 }
 
                 let botInfo = {};
@@ -1300,6 +1337,22 @@ WS.socketIOServer = Server.extend({
         app.get("/session/:sessionId/dynamicnft/:kindId/kindid", dynamicNFTcontroller.getNFTDataByKindId);
 
         let announcementController;
+        app.post('/inventory/refresh', async (req, res) => {
+            if (!process.env.LOOPWORMS_API_KEY || req.headers['x-api-key'] !== process.env.LOOPWORMS_API_KEY) return res.status(401).json({success:false});
+            const items = req.body.items;
+            if (!Array.isArray(items) || !items.length || items.length > 40 || items.some(item => typeof item.nftId !== 'string' || typeof item.item !== 'string')) return res.status(400).json({success:false});
+            try {
+                const refreshed = await dao.refreshInventoryItems(items);
+                for (const item of refreshed) {
+                    for (const sessionId of cache.keys()) {
+                        const session = cache.get(sessionId);
+                        if (session?.nftId === item.nftId) this.socialChat.setQuantity(session.walletId, item.nftId, item.item, item.quantity);
+                    }
+                }
+                return res.json({success:true});
+            } catch (error) { return res.status(503).json({success:false,error:'Inventory refresh pending'}); }
+        });
+
         app.post("/announce", async (req, res) => {
             if (announcementController === undefined) {
                 announcementController = new announcement.AnnouncementController(self.worldsMap);
@@ -1348,7 +1401,18 @@ WS.socketIOServer = Server.extend({
             const body = req.body;
             const sessionId = req.params.sessionId;
             const sessionData = cache.get(sessionId);
-            const result = await tileActionsController.executeStage(sessionData.nftId, body.map, body.tileAction, body.item, self.worldsMap[body.map]);
+            if (!sessionData || sessionData.mapId !== body.map) return res.status(403).send({success: false, message: 'Invalid active session.'});
+            const world = self.worldsMap[body.map];
+            const player = world?.getPlayerById(sessionData.entityId);
+            const tile = body.tileAction;
+            if (!player?.hasEnteredGame || player.sessionId !== sessionId || !Number.isInteger(tile?.gridX) || !Number.isInteger(tile?.gridY) || Math.max(Math.abs(player.x - tile.gridX), Math.abs(player.y - tile.gridY)) > 1) {
+                return res.status(403).send({success: false, message: 'Move next to the tile to use it.'});
+            }
+            const result = await tileActionsController.executeStage(sessionData.nftId, body.map, body.tileAction, body.item, world);
+            if (result?.success && result.activity) {
+                try { self.activity.record(player, 'tile', result.activity); }
+                catch (error) { console.error('[activity] tile recording failed', error.message); }
+            }
             res.status(200).send(result || { success: true });
         });
 

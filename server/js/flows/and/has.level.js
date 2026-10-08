@@ -10,6 +10,6 @@ module.exports = Block = cls.Class.extend({
     },
 
     handle(event) {
-        return (Formulas.level(event.data.playerData.xp) >= this.level);
+        return ((event.data.player?.getLevel?.() ?? Formulas.level(event.data.playerData.xp)) >= this.level);
     }
 })

@@ -1,3 +1,4 @@
+const {effectiveLevel} = require('./eventequipment');
 const Formulas = require('./formulas.js');
 const dao = require('./dao.js');
 const syncExperience = require('./experiencesync.js');
@@ -53,7 +54,7 @@ class NFTWeapon {
             return true;
         }
         let chance = Math.floor(Math.random() * 100);
-        chance += this.level * 0.5;
+        chance += this.getLevel() * 0.5;
         return chance >= 89; // base level is 1, so base chance of trait is 10%
     }
 
@@ -91,7 +92,7 @@ class NFTWeapon {
     }
 
     getLevel() {
-        return this.level;
+        return effectiveLevel(this.player, 'weaponLevel', this.level);
     }
     
     getTrait() {

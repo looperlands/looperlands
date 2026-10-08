@@ -99,7 +99,8 @@ const loadWeapon = async function (wallet, nft) {
 
 const walletHasNFT = async function (wallet, nft, retry) {
   let cached = daoCache.get(`${wallet}_${nft}`);
-  if (cached !== undefined) {
+  // Event loans can end between reconnects, even within the ordinary ownership TTL.
+  if (cached !== undefined && process.env.EVENT_EQUIPMENT_ENABLED !== 'true') {
     return cached;
   }
 
@@ -275,6 +276,25 @@ const transferItems = async function (transfer) {
       const error = new Error('gift_pending'); error.code = error.message; error.transferUncertain = true;
       throw error;
     }
+  })().finally(finishInventoryWrite);
+  return inventoryWritePromise;
+};
+
+// Read authoritative item counts under the same writer used by loot and gifts.
+const refreshInventoryItems = async function (items) {
+  while (processingQueue || LOOT_EVENTS_QUEUE.length) {
+    if (await processLootEventQueue() === false) throw new Error('inventory_unavailable');
+  }
+  processingQueue = true;
+  inventoryWritePromise = (async () => {
+    const result = [];
+    for (const item of items) {
+      const response = await platformClient.getInventoryItem(item.nftId, item.item);
+      if (!Number.isSafeInteger(response?.amount)) throw new Error('Invalid inventory count');
+      const pending = pendingQueue.filter(event => event.nftId === item.nftId && event.item === item.item).reduce((sum, event) => sum + event.amount, 0);
+      result.push({...item, quantity:response.amount + pending});
+    }
+    return result;
   })().finally(finishInventoryWrite);
   return inventoryWritePromise;
 };
@@ -723,6 +743,7 @@ module.exports = {
   updateResourceBalance,
   transferResourceFromTo,
   transferItems,
+  refreshInventoryItems,
   completePartnerTask,
   getPartnerTask,
   getInventory,

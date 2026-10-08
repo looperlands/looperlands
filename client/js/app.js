@@ -1,4 +1,4 @@
-define(['jquery', 'storage', 'socialchat'], function ($, Storage, SocialChat) {
+define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, SocialChat, EventBoard) {
 
     var App = Class.extend({
         init: function () {
@@ -57,6 +57,7 @@ define(['jquery', 'storage', 'socialchat'], function ($, Storage, SocialChat) {
             this.ready = true;
             this.game.sessionId = this.sessionId;
             this.socialChat = new SocialChat(this);
+            this.eventBoard = new EventBoard(this);
         },
 
         center: function () {
