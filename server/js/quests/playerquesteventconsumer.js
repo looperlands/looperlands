@@ -96,7 +96,7 @@ class PlayerQuestEventConsumer extends PlayerEventConsumer {
             playerCache.gameData.quests[quests.STATES.COMPLETED].push(questInCacheFormat);
         }
 
-        playerCache.gameData.quests[quests.STATES.IN_PROGRESS] = playerCache.gameData.quests[quests.STATES.IN_PROGRESS].filter(q => q.id !== questKey);
+        playerCache.gameData.quests[quests.STATES.IN_PROGRESS] = playerCache.gameData.quests[quests.STATES.IN_PROGRESS].filter(q => (q.questKey || q.id) !== questKey);
 
         if (quest.rental) {
             platformClient.getFreeRental(quest.rental, playerCache.walletId);

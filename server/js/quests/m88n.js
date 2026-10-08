@@ -358,7 +358,7 @@ quests = [
         endText: "They can tell you about the Townies collection and help you get your first premium avatar.",
         eventType: "NPC_TALKED",
         npc: Types.Entities.NEXAN39,
-        target: Types.Entities.m88ntownies,
+        target: Types.Entities.M88NTOWNIES,
         npcText: "Welcome to The Nexus!",
         level: 1,
         needToReturn: false,
