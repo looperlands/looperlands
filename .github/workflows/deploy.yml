@@ -41,12 +41,15 @@ jobs:
 
       - name: Deploy with persistent chat storage
         uses: appleboy/ssh-action@v0.1.7
+        env:
+          CHAT_DEPLOY_PASSWORD: ${{ secrets.PASSWORD }}
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           port: 22
+          envs: CHAT_DEPLOY_PASSWORD
           script: |
-            sudo bash /tmp/looperlands-deploy-${{ github.sha }}/bin/deploy-game-server.sh /tmp/looperlands-deploy-${{ github.sha }}/docker-compose.yml ${{ github.sha }}
+            printf '%s\n' "$CHAT_DEPLOY_PASSWORD" | sudo -S -p '' bash /tmp/looperlands-deploy-${{ github.sha }}/bin/deploy-game-server.sh /tmp/looperlands-deploy-${{ github.sha }}/docker-compose.yml ${{ github.sha }}
 
 

@@ -10,9 +10,11 @@ fi
 candidate=$(realpath "${1:?Compose file required}")
 release=${2:?Release ID required}
 [[ "$release" =~ ^[a-f0-9]{40}$ ]] || { echo 'Invalid release ID' >&2; exit 1; }
-[[ $(id -u) -eq 0 ]] || { echo 'Run this deployment as root' >&2; exit 1; }
-exec 9>/run/lock/looperlands-chat-deploy.lock
-flock -n 9 || { echo 'Another game deployment is running' >&2; exit 1; }
+if [[ "$check_only" -ne 1 ]]; then
+    [[ $(id -u) -eq 0 ]] || { echo 'Run this deployment as root' >&2; exit 1; }
+    exec 9>/run/lock/looperlands-chat-deploy.lock
+    flock -n 9 || { echo 'Another game deployment is running' >&2; exit 1; }
+fi
 command -v python3 >/dev/null
 docker compose version >/dev/null
 systemctl is-active --quiet looperlands
