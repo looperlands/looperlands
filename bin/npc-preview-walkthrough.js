@@ -4,6 +4,7 @@ const state = require('../server/npc-behaviors/lantern-road-state');
 const escape = text => String(text).replace(/[&<>"']/g, char => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[char]));
 const npcKeys = ['town-gardener', 'town-watch', 'town-neighbour'];
 const targets = new Map([
+    ...picnic.behavior.npcs.flatMap(npc => npc.schedule?.buildings.map(b => ['building:' + b.key, b.entrance]) || []),
     ...content.npcs.map(npc => ['npc:' + npc.key, {x: npc.x, y: npc.y, npcKey: npc.key}]),
     ...content.quests.flatMap(q => q.objectives.map(o => ['objective:' + q.id + ':' + o.key,
         {x: o.x, y: o.y, quest: q.id, when: o.when}]))
@@ -60,6 +61,13 @@ function render(saved, index) {
         '<p>Keep this page beside the game. Travel buttons move your connected player to a named NPC or active marker. They do not accept, inspect or complete quests. ' +
         'After accepting a quest or choosing a route, refresh this page to enable its markers. The coast and forest leads can be played in either order; Vince needs both reports.</p>' +
         '<p>Shared world time: <button data-mode="day">Day</button><button data-mode="night">Night</button><button data-mode="cycle">Cycle</button></p>' +
+        '<details><summary>Test daily NPC routines</summary><p>Everyone shares the same clock and NPC positions. Changing the time changes lighting and schedules together. ' +
+        'Allow the neighbours time to walk; conversations and the picnic finish before they resume their day.</p><p>' +
+        '<button data-hour="8">08:00 · breakfast and shift change</button><button data-hour="14">14:00 · work</button>' +
+        '<button data-hour="16.5">16:30 · free time</button><button data-hour="19">19:00 · home</button><button data-hour="22">22:00 · sleep and night watch</button></p>' +
+        button('Go to the guesthouse entrance', 'building:guesthouse') + button('Go to the town hall entrance', 'building:town-hall') +
+        '<p>Follow an NPC through the door, or use a Visit button to find them indoors. Ask “What does your day usually look like?” to hear their routine. Sleeping neighbours stay quiet until you speak to them.</p>' +
+        '<ul id="routines"></ul></details>' +
         '<div id="feedback" role="status" aria-live="polite">Travel requires the selected player to be connected.</div>' +
         '<h2>1. The Lantern Picnic</h2><ol>' + prologue + '</ol>' + main + '<h2>Optional stories</h2>' +
         content.quests.map((q, i) => q.optional ? quests[i] : '').join('') +
@@ -72,6 +80,13 @@ function render(saved, index) {
         'const feedback=document.getElementById("feedback");try{const response=await fetch("/preview/ambience",' +
         '{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({mode:button.dataset.mode})});' +
         'feedback.textContent=response.ok?"World time: "+button.textContent:"Time could not be changed.";' +
-        '}catch(error){feedback.textContent="The local test server is unavailable.";}}));</script></html>';
+        '}catch(error){feedback.textContent="The local test server is unavailable.";}}));' +
+        'document.querySelectorAll("button[data-hour]").forEach(button=>button.addEventListener("click",async()=>{' +
+        'const response=await fetch("/preview/time",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({hour:Number(button.dataset.hour)})});' +
+        'document.getElementById("feedback").textContent=response.ok?"Clock changed. Watch the NPCs walk to their next activity.":"Time could not be changed.";refreshRoutines();}));' +
+        'async function refreshRoutines(){try{const response=await fetch("/preview/state");const state=await response.json();' +
+        'const list=document.getElementById("routines");list.replaceChildren();state.npcs.filter(npc=>npc.schedule).forEach(npc=>{' +
+        'const row=document.createElement("li");row.textContent=npc.label+": "+npc.activity+" · "+npc.scheduleLocation;list.append(row);});}catch(error){}}' +
+        'refreshRoutines();setInterval(refreshRoutines,5000);</script></html>';
 }
 module.exports = {targets, storyData, targetFor, render};

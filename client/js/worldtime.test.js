@@ -75,3 +75,13 @@ test('Town and Forest use identical renderer lighting at dusk and night, while i
     api.renderLightOverlay([], 0, 0, 1, 0, scenes.find(scene => scene.name === 'Windmill'), [], {}, 'main', 50 * minute);
     expect(api.intensity()).toBe(0.5);
 });
+
+test('custom local hours freeze the same HUD, lighting and schedule clock, then cycle resumes', () => {
+    const game = gameClock({now: 1000}); game.syncWorldTime(42.5 * minute);
+    game.previewTimeMode = 'cycle'; game.previewHour = 22;
+    expect(game.getWorldTime()).toBe(22 / 24 * WorldTime.duration);
+    expect(WorldTime.mainDaylight(game.getWorldTime())).toBe(0);
+    game.previewHour = null;
+    expect(game.getWorldTime()).toBe(42.5 * minute);
+    for (const hour of [-1, 24, NaN, '22']) expect(WorldTime.previewTime('cycle', 100, hour)).toBe(100);
+});

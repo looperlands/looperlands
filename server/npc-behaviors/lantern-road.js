@@ -40,9 +40,9 @@ const presenceAfter = {
 for (const npc of npcs) npc.presenceAfter = presenceAfter[npc.key];
 
 const npcLocations = {
-    "town-gardener": "the market or his supply rounds in northern Town",
-    "town-neighbour": "the Town market and western streets",
-    "town-watch": "the eastern Town gate or the market patrol",
+    "town-gardener": "the Town market by day, or the guesthouse east of the market after supper",
+    "town-neighbour": "the Town market and western streets by day, or the guesthouse east of the market after supper",
+    "town-watch": "the eastern Town gate and market, or the town hall beside the gate in the morning",
     "coastal-jimi": "the Beach landing on the eastern shore",
     "mill-scientist": "the old windmill, through the passage beside Town’s southern windmill",
     "forest-caretaker": "the southern Forest trail",

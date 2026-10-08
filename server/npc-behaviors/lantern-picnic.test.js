@@ -37,10 +37,10 @@ test.each([[picnic.SHARE, 'share', 'shared', picnic.QUIET, 'quiet'],
         expect(talk(watch).text.join(' ')).toContain('Help Adam first');
         talk(adam); choose(adam, 'accept');
         expect(registry.hasQuest(picnic.BASKET, data)).toBe(true);
-        expect(talk(bstrat).options).toHaveLength(2);
+        expect(talk(bstrat).options.filter(o => o.goto !== 'daily-routine')).toHaveLength(2);
         choose(bstrat, basketNode);
         expect(data.gameData.choices).toContain(basketChoice);
-        expect(talk(adam).options).toHaveLength(1);
+        expect(talk(adam).options.filter(o => o.goto !== 'daily-routine')).toHaveLength(1);
         choose(adam, reportNode);
         expect(registry.hasCompletedQuest(picnic.BASKET, data)).toBe(true);
         expect(data.gameData.quests.IN_PROGRESS).toHaveLength(0);
@@ -53,7 +53,7 @@ test.each([[picnic.SHARE, 'share', 'shared', picnic.QUIET, 'quiet'],
         expect(talk(watch).options[0].goto).toBe('finish');
         choose(watch, 'finish');
         expect(registry.hasCompletedQuest(picnic.SAFETY, data)).toBe(true);
-        expect(talk(bstrat).options).toHaveLength(2);
+        expect(talk(bstrat).options.filter(o => o.goto !== 'daily-routine')).toHaveLength(2);
         choose(bstrat, inviteNode);
         expect(registry.hasCompletedQuest(picnic.INVITE, data)).toBe(true);
         expect(data.gameData.choices).toContain(picnicChoice);

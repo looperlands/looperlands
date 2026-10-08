@@ -2,6 +2,8 @@ const fs = require('fs');
 const path = require('path');
 const Types = require('../../shared/js/gametypes');
 const Messages = require('./message');
+const WorldTime = require('../../client/js/worldtime-worker');
+const {NpcSchedule, validateSchedule} = require('./npcschedule');
 
 const distance = (a, b) => Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
 const inside = (point, area) => !area || (point.x >= area.x && point.y >= area.y &&
@@ -25,6 +27,7 @@ function validateConfig(config) {
             !['patrol', 'work', 'socialise'].includes(npc.preset)) {
             throw new Error('Invalid NPC routine: ' + npc.key);
         }
+        validateSchedule(npc);
         keys.add(npc.key);
         for (const rule of npc.reactions || []) {
             if (!rule.when || !Object.keys(rule.when).length ||
@@ -77,11 +80,12 @@ function loadConfig(mapId) {
 }
 
 class NpcBehavior {
-    constructor(world, config, memory, now = Date.now) {
+    constructor(world, config, memory, now = Date.now, clock = () => performance.now()) {
         this.world = world;
         this.config = validateConfig(config);
         this.memory = memory;
         this.now = now;
+        this.clock = clock;
         this.mapId = world.id.replace(/^world_/, '');
         this.routines = new Map();
         this.playerStates = new Map();
@@ -106,14 +110,18 @@ class NpcBehavior {
             pauseUntil: 0, speechUntil: 0, lastReaction: 0, lineIndexes: {}, blockedSince: 0};
         npc.behaviorState = {key: definition.key, label: definition.label, preset: definition.preset,
             activity: 'resting', orientation: Types.Orientations.DOWN, moveSpeed: definition.stepMs - 100};
+        if (definition.schedule) {
+            try { routine.schedule = new NpcSchedule(this, routine); }
+            catch (error) { console.warn(error.message); return false; }
+        }
         this.routines.set(definition.key, routine);
         return true;
     }
 
-    walkable(point) {
+    walkable(point, allowDoor = false) {
         const map = this.world.map;
         return !map.isOutOfBounds(point.x, point.y) && !map.isColliding(point.x, point.y) &&
-            !Object.values(map.doors || {}).some(door => door.x === point.x && door.y === point.y);
+            (allowDoor || !Object.values(map.doors || {}).some(door => door.x === point.x && door.y === point.y));
     }
 
     occupied(point, npc) {
@@ -121,8 +129,9 @@ class NpcBehavior {
             ['npc', 'player', 'mob', 'chest'].includes(entity.type) && entity.x === point.x && entity.y === point.y);
     }
 
-    findPath(routine, destination) {
-        const start = routine.npc;
+    findPath(routine, destination, options = {}) {
+        const start = options.start || routine.npc;
+        const area = options.area || routine.schedule?.area() || routine.definition.area;
         const occupied = new Set(Object.values(this.world.entities).filter(entity => entity !== start &&
             ['npc', 'player', 'mob', 'chest'].includes(entity.type)).map(pointKey));
         const queue = [{x: start.x, y: start.y}];
@@ -140,8 +149,8 @@ class NpcBehavior {
             }
             for (const [dx, dy] of [[0, -1], [1, 0], [0, 1], [-1, 0]]) {
                 const next = {x: current.x + dx, y: current.y + dy};
-                if (parents.has(pointKey(next)) || !inside(next, routine.definition.area) ||
-                    !this.walkable(next) || occupied.has(pointKey(next))) continue;
+                if (parents.has(pointKey(next)) || !inside(next, area) ||
+                    !this.walkable(next, Boolean(destination.portal) && distance(next, destination) === 0) || occupied.has(pointKey(next))) continue;
                 parents.set(pointKey(next), current);
                 queue.push(next);
             }
@@ -241,13 +250,32 @@ class NpcBehavior {
         const players = Object.values(this.world.players).filter(player => player.hasEnteredGame && !player.isBot());
         const ids = new Set(players.map(player => player.id));
         for (const id of this.playerStates.keys()) if (!ids.has(id)) this.playerStates.delete(id);
+        for (const routine of this.routines.values()) {
+            if (routine.schedule && players.length && time >= routine.pauseUntil) routine.schedule.prepare(time);
+        }
         this.tickConversation(time);
         for (const player of players) this.observePlayer(player, time);
         for (const routine of this.routines.values()) {
             if (this.world.entities[routine.npc.id] !== routine.npc) continue;
-            if (!players.some(player => inside(player, routine.definition.area)) || time < routine.pauseUntil || time < routine.nextStep) continue;
+            if (time < routine.pauseUntil) continue;
+            if (!(routine.schedule ? players.length : players.some(player => inside(player, routine.definition.area))) || time < routine.nextStep) continue;
             this.advance(routine, time);
         }
+    }
+
+    worldTime() {
+        return WorldTime.previewTime(this.config.ambience?.previewTimeMode, this.clock(), this.config.ambience?.previewHour);
+    }
+
+    decorateDialogue(npc, node) {
+        const schedule = this.routines.get(npc.behaviorState?.key)?.schedule;
+        if (schedule && (node.npcSchedule || node.storyPresence)) node.text = schedule.describe();
+        return node;
+    }
+
+    canReach(routine, destination) {
+        return routine.schedule ? routine.schedule.canReachOutside(destination) :
+            distance(routine.npc, destination) === 0 || this.findPath(routine, destination).length > 0;
     }
 
     ambienceFor(player) {
@@ -288,6 +316,7 @@ class NpcBehavior {
         state.ambienceKey = ambienceKey;
         for (const [key, routine] of this.routines) {
             if (this.world.entities[routine.npc.id] !== routine.npc) continue;
+            if (routine.schedule?.sleeping()) continue;
             if (distance(player, routine.npc) > 3) { state.near.delete(key); continue; }
             if (state.near.has(key)) continue;
             if (time < routine.speechUntil || time < routine.pauseUntil || !this.canSpeak(routine, time) ||
@@ -304,11 +333,16 @@ class NpcBehavior {
     }
 
     advance(routine, time) {
-        const destination = routine.definition.route[routine.waypoint];
+        const destination = routine.schedule?.destination() || routine.definition.route[routine.waypoint];
         if (distance(routine.npc, destination) === 0) {
-            this.state(routine, {activity: destination.activity || 'resting'});
+            if (destination.portal) {
+                if (routine.schedule.cross(destination)) routine.path = [];
+                routine.nextStep = time + 1000;
+                return;
+            }
+            this.state(routine, {activity: routine.schedule && !routine.schedule.override ? routine.schedule.phase.activity : destination.activity || 'resting'});
             routine.nextStep = time + destination.waitSeconds * 1000;
-            routine.waypoint = (routine.waypoint + 1) % routine.definition.route.length;
+            routine.waypoint = (routine.waypoint + 1) % (routine.schedule?.routeLength() || routine.definition.route.length);
             routine.path = [];
             routine.blockedSince = 0;
             if (destination.line) this.speak(routine, destination.line);
@@ -319,27 +353,31 @@ class NpcBehavior {
         }
         if (!routine.path.length) routine.path = this.findPath(routine, destination);
         const next = routine.path[0];
-        if (!next || distance(routine.npc, next) !== 1 || !this.walkable(next) || this.occupied(next, routine.npc)) {
+        if (!next || distance(routine.npc, next) !== 1 || !this.walkable(next, Boolean(destination.portal) && distance(next, destination) === 0) || this.occupied(next, routine.npc)) {
             routine.path = [];
             routine.nextStep = time + 2000;
             routine.blockedSince ||= time;
-            if (time - routine.blockedSince > 20000) {
-                routine.waypoint = (routine.waypoint + 1) % routine.definition.route.length;
+            if (!routine.schedule && time - routine.blockedSince > 20000) {
+                routine.waypoint = (routine.waypoint + 1) % (routine.schedule?.routeLength() || routine.definition.route.length);
                 routine.blockedSince = 0;
             }
             return;
         }
         this.face(routine, next);
-        this.state(routine, {activity: 'walking'});
-        this.world.moveNpc(routine.npc, next.x, next.y);
+        this.state(routine, {activity: routine.schedule?.travelActivity() || 'walking'});
+        this.move(routine, next);
+        routine.path.shift();
+        routine.nextStep = time + routine.definition.stepMs;
+        routine.blockedSince = 0;
+    }
+
+    move(routine, next, teleport = false) {
+        this.world.moveNpc(routine.npc, next.x, next.y, teleport);
         // Remove the moving NPC for clients that can no longer see its new group.
         for (const group of routine.npc.recentlyLeftGroups || []) {
             this.world.pushToGroup(group, new Messages.Destroy(routine.npc));
         }
         routine.npc.recentlyLeftGroups = [];
-        routine.path.shift();
-        routine.nextStep = time + routine.definition.stepMs;
-        routine.blockedSince = 0;
     }
 
     interact(player, kind, entityId) {
@@ -378,6 +416,7 @@ class NpcBehavior {
                 this.remember(routine, player, 'helped');
                 this.remember(routine, player, 'questCompleted:' + data.quest.id);
             }
+            if (routine.schedule?.sleeping()) continue;
             if (distance(routine.npc, player) > 12 || distance(routine.npc, position) > 12 || time < routine.pauseUntil || time - routine.lastReaction < 30000 ||
                 !this.canSpeak(routine, time)) continue;
             if (type === 'kill' && routine.definition.mobKinds?.length && !routine.definition.mobKinds.includes(Types.getKindAsString(data.mob.kind))) continue;
@@ -394,7 +433,7 @@ class NpcBehavior {
             const conversation = this.conversation;
             if (time < conversation.nextLine) return;
             const actors = [...new Set(conversation.definition.steps.map(step => this.routines.get(step.npc)))];
-            if (actors.some(actor => !actor || this.world.entities[actor.npc.id] !== actor.npc ||
+            if (actors.some(actor => !actor || actor.schedule?.sleeping() || this.world.entities[actor.npc.id] !== actor.npc ||
                 (actor.npc.behaviorState.activity === 'talking' && time < actor.pauseUntil))) {
                 this.conversation = null;
                 for (const actor of actors) {
@@ -425,7 +464,7 @@ class NpcBehavior {
             const index = (this.conversationCursor + offset) % definitions.length;
             const definition = definitions[index];
             const actors = [...new Set(definition.steps.map(step => this.routines.get(step.npc)))];
-            if (actors.some(actor => !actor || this.world.entities[actor.npc.id] !== actor.npc ||
+            if (actors.some(actor => !actor || actor.schedule?.sleeping() || this.world.entities[actor.npc.id] !== actor.npc ||
                 time < actor.pauseUntil || !this.nearbyPlayers(actor.npc, 12).length) ||
                 actors.some(actor => distance(actor.npc, actors[0].npc) > 8) || !this.canSpeak(actors[0], time)) continue;
             this.conversation = {definition, index: 0, nextLine: time};

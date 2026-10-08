@@ -85,7 +85,15 @@ api.post('/preview/ambience', async (req, res) => {
         res.status(response.status).json(await response.json());
     } catch (error) { res.sendStatus(503); }
 });
-api.post('/preview/player/:index/travel', (req, res) => {
+api.post('/preview/time', async (req, res) => {
+    if (!Number.isFinite(req.body.hour) || req.body.hour < 0 || req.body.hour >= 24) return res.sendStatus(400);
+    try {
+        const response = await fetch(process.env.APP_URL + '/__npc_preview/time', {method: 'POST',
+            headers: {'Content-Type': 'application/json'}, body: JSON.stringify({hour: req.body.hour})});
+        res.status(response.status).json(await response.json());
+    } catch (error) { res.sendStatus(503); }
+});
+api.post('/preview/player/:index/travel' , (req, res) => {
     const nft = avatars[Number(req.params.index) - 1];
     const player = Object.values(previewWorld?.players || {}).find(p => p.nftId === nft);
     if (!player || player.isDead || !player.hasEnteredGame) return res.sendStatus(409);
@@ -178,10 +186,10 @@ api.listen(fixturePort, '127.0.0.1', () => {
             event: picnicScene?.state?.message || '',
             canReplay: picnicScene?.completed(player) && (!picnicScene.state || picnicScene.state.phase === 'finished')}});
     };
-    const configureAmbience = (mode = 'night') => {
+    const configureAmbience = (mode = 'night', hour = null) => {
         if (!world.npcBehavior) return;
         const ambience = world.npcBehavior.config.ambience;
-        Object.assign(ambience, {mode, previewTimeMode: mode, previewControls});
+        Object.assign(ambience, {mode, previewTimeMode: mode, previewHour: hour, previewControls});
         for (const player of Object.values(world.players)) {
             world.pushToPlayer(player, new Messages.WorldAmbience(packetFor(player)));
         }
@@ -191,7 +199,12 @@ api.listen(fixturePort, '127.0.0.1', () => {
         configureAmbience(req.body.mode);
         res.json({mode: req.body.mode});
     });
-    server.app.post('/__npc_preview/picnic', (req, res) => {
+    server.app.post('/__npc_preview/time', (req, res) => {
+        if (!Number.isFinite(req.body.hour) || req.body.hour < 0 || req.body.hour >= 24) return res.sendStatus(400);
+        configureAmbience('cycle', req.body.hour);
+        res.json({hour: req.body.hour});
+    });
+    server.app.post('/__npc_preview/picnic' , (req, res) => {
         const session = server.cache.get(req.body.sessionId);
         const player = session && world.getPlayerById(session.entityId);
         if (!player || !avatars.includes(player.nftId) || !picnicScene?.completed(player)) return res.sendStatus(400);

@@ -47,9 +47,9 @@ const dialogues = [
             rounds: {text: ['First I check the market, then water the plants, then rest by the path.',
                 'The picnic gives me a reason to make these rounds. When you click me, I stop because I am listening to you.'], goto: 'welcome'},
             later: {text: 'No hurry. I will keep checking the supplies. Come back when you feel like helping.'},
-            accept: {text: ['Thank you. Find Bstrat515 near the market or along the western path.',
+            accept: {text: ['Thank you. Find Bstrat515 near the market or along the western path by day. After supper, she is in the guesthouse east of the market.',
                 'Ask about the basket. You can ask her to return it, or suggest we share it. Then come back and tell me what you agreed.'], actions: [handout(BASKET)]},
-            waiting: {text: 'You offered to ask Bstrat about my basket. I have not heard her answer yet. She visits the market and the western path.'},
+            waiting: {text: 'You offered to ask Bstrat about my basket. I have not heard her answer yet. She visits the market and the western path by day. After supper, look in the guesthouse east of the market.'},
             report: {text: 'You found Bstrat! What did you agree?', options: [
                 option('She will return your basket after unpacking the blankets.', 'returned', choice(RETURN)),
                 option('Share the basket: blankets first, bread afterwards.', 'shared', choice(SHARE))]},
@@ -169,6 +169,14 @@ neighbour.nodes['local-jobs'] = {legacyQuests: true};
 dialogues[0].key = 'town-gardener';
 dialogues[1].key = 'town-neighbour';
 dialogues[2].key = 'town-watch';
+for (const tree of dialogues) {
+    tree.nodes['daily-routine'] = {npcSchedule: tree.key, text: 'I keep a regular day in Town.',
+        options: [option('I wanted to ask about the picnic.', tree.start), option('Sleep well. I will see you later.', 'routine-later')]};
+    tree.nodes['routine-later'] = {text: 'Take care. We can talk whenever you find me.'};
+    for (const node of Object.values(tree.nodes)) {
+        if (node.options && node !== tree.nodes['daily-routine']) node.options.push(option('What does your day usually look like?', 'daily-routine'));
+    }
+}
 for (const quest of quests) {
     quest.dialogueOnly = true;
     quest.npcKey = dialogues.find(tree => tree.npc === quest.npc)?.key;
@@ -189,8 +197,8 @@ function progress(data = {}) {
     if (active(SAFETY)) return 'Defeat rats: ' + Math.min(3, data.mobKills?.[Types.Entities.RAT] || 0) + '/3. Then report to Town Watch.';
     if (done(BASKET)) return 'Talk to Town Watch about clearing the picnic path.';
     if ((data.choices || []).includes(FOUND)) return 'Return to Ordinary Adam and confirm your basket plan.';
-    if (active(BASKET)) return 'Find Bstrat515 near the market or western path. Ask about the basket and choose a plan.';
-    return 'Start with Ordinary Adam near the market. Ask to help with his missing basket.';
+    if (active(BASKET)) return 'Find Bstrat515 at the market by day, or in the guesthouse east of the market after supper. Ask about the basket and choose a plan.';
+    return 'Start with Ordinary Adam at the market by day, or in the guesthouse east of the market after supper. Ask to help with his missing basket.';
 }
 
 module.exports = {install, behavior, dialogues, quests, progress, BASKET, SAFETY, INVITE, SHARE, RETURN, QUIET, MUSIC, FOUND};

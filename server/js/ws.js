@@ -871,7 +871,7 @@ WS.socketIOServer = Server.extend({
             if (dialogueController.hasDialogueTree(sessionData.mapId, npcId, npcKey)) {
                 let node = dialogueController.processDialogueTree(sessionData.mapId, npcId, cache, sessionId, npcKey)
                 if (node) {
-                    res.status(202).json(node)
+                    res.status(202).json(world.npcBehavior?.decorateDialogue(npc, node) || node)
                     return
                 }
             }

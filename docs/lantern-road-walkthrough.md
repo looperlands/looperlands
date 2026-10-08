@@ -199,3 +199,24 @@ These never block the main road. The walkthrough shows their prerequisites and e
 - Arranging relief lets the watch stay all evening. Family messages stay private. Carrying Will's personal invitation makes room for Jimi. The optional precision tool adds a golden lantern.
 - Repairs, markers and choices remain personal to the avatar. Another player does not receive your quest completions or private reactions.
 - No story conversation, quest direction or walkthrough exposes map coordinates. Normal map rendering can draw players and objects over the picnic scenery.
+
+
+## Test NPC schedules and buildings
+
+Open the local walkthrough and expand **Test daily NPC routines**. Time buttons freeze the shared world clock, so the HUD, lighting, ambient effects and NPCs all use the selected time. **Cycle** resumes normal time. **Visit** follows the NPC's current position, including indoors; the entrance buttons place you outside a named building so you can follow someone through the door yourself.
+
+| Time | Adam | Bstrat515 | Town Watch |
+| --- | --- | --- | --- |
+| 08:00 | Leaves for market work | Breakfast in the guesthouse | Sleeps after the night shift in the town hall |
+| 14:00 | Market and supply rounds | Market and western path | Gate and market patrol |
+| 16:30 | Meets neighbours south of the market | Strolls south of the market | Takes a break beside the picnic path |
+| 19:00 | Supper in the guesthouse | Heads home for supper | Evening patrol |
+| 22:00 | Sleeps in the guesthouse | Sleeps in the guesthouse | Night watch |
+
+1. Set **14:00**, visit Adam and watch his market rounds.
+2. Set **19:00**, go to the guesthouse entrance east of the market, and watch Adam or Bstrat walk through the door. Walk through it yourself to find them inside.
+3. Set **22:00**. Sleeping neighbours stop greeting passersby. Talk to one and ask **What does your day usually look like?**; they explain being woken and their daily routine. Quest conversations still work indoors.
+4. Set **08:00** to watch Adam leave and the watch return to the town hall. Set **14:00** to bring all three back outside.
+5. Finish or replay the picnic while they are indoors. They come outside through their doors, join the picnic, then resume the activity for the current time.
+
+Allow time for walking after changing the clock. A conversation can pause an NPC for twenty seconds, and an active picnic takes priority until it finishes. Everyone sees the same NPC schedule and positions; quest progress and choices remain personal. No normal quest requires waiting for opening hours.

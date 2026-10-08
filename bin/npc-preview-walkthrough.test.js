@@ -50,3 +50,15 @@ test('the walkthrough includes every quest and question while keeping coordinate
     expect(separate).toContain('selected>1 · Separate test save');
     expect(separate).toContain('disabled');
 });
+
+test('routine testing uses named public entrances and clock controls without exposing tile coordinates', () => {
+    const html = render({quests: [], choices: []}, 2);
+    expect(html).toContain('Test daily NPC routines');
+    expect(html).toContain('data-hour="22"');
+    expect(html).toContain('What does your day usually look like?');
+    expect(html).not.toMatch(/\b\d+\s*,\s*\d+\b/);
+    expect(targetFor('building:guesthouse', {}, {})).toEqual({x: 51, y: 205});
+    expect(targetFor('building:town-hall', {}, {})).toEqual({x: 77, y: 206});
+    const world = {npcs: {adam: {x: 151, y: 137, behaviorState: {key: 'town-gardener'}}}};
+    expect(targetFor('npc:town-gardener', {}, world)).toEqual({x: 151, y: 137});
+});

@@ -1,0 +1,11 @@
+# Clock-based NPC schedules
+
+The main-map pilot gives Ordinary Adam, Bstrat515 and Town Watch daily routines. The configuration lives alongside their existing routines in `server/npc-behaviors/main.json`. Each ordered phase starts at an hour of the shared one-hour world cycle, and defines its activity, landmark, explanation and route. Adam and Bstrat share the existing public guesthouse east of the market. Town Watch uses the existing public town hall beside the eastern gate between shifts. Other NPCs keep their existing routines.
+
+`NpcSchedule` uses the same `worldtime-worker` clock curve as the HUD, lighting and atmosphere, reading server uptime rather than wall-clock time. Preview-only time controls go through that helper too. No schedule state is written to a player's quest save. One world controller owns the actors, so all players see the same locations and activities. Empty worlds stop movement; the current clock phase selects their destination when somebody joins again.
+
+Buildings declare a room area and an explicit entrance/return pair already present in the map. Validation refuses blocked waypoints, missing return doors, cross-map travel, NFT/collection gates, trigger doors and redirect doors. NPCs pathfind to an entrance, cross to its authored landing with a teleport packet, then walk to their indoor waypoint. Leaving follows the reverse route. Walls, occupied tiles and occupied door landings delay movement and trigger another path attempt. The group transition removes old sightings and spawns the same entity in its destination groups. The client stops the old walking path before applying a door teleport.
+
+Player conversations pause walking. Sleeping NPCs suppress greetings, combat comments and spontaneous conversations, but remain visible and available for quest dialogue. The routine question explains their current activity and hours using landmarks. The picnic temporarily overrides schedules, including door-connected travel out of a room, and releases the override when it finishes. The current clock then selects what each attendee does next.
+
+Use the **Test daily NPC routines** section of the local walkthrough to freeze breakfast, work, free time, supper or sleep. These controls are fixture-only and do not add a production overlay. See `lantern-road-walkthrough.md` for the quick test route.

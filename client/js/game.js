@@ -6447,7 +6447,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             },
 
             getWorldTime: function () {
-                return WorldTime.previewTime(this.previewTimeMode, (this.serverTime || 0) + performance.now());
+                return WorldTime.previewTime(this.previewTimeMode, (this.serverTime || 0) + performance.now(), this.previewHour);
             },
 
             initAchievements: function () {
@@ -8160,7 +8160,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         if (entity) {
                             currentOrientation = entity.orientation;
 
-                            if (id === self.playerId) entity.stop();
+                            if (id === self.playerId || entity instanceof Npc) entity.stop();
                             self.makeCharacterTeleportTo(entity, x, y);
                             entity.setOrientation(currentOrientation);
 
@@ -8193,6 +8193,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     });
                     self.client.onWorldAmbience(config => {
                         self.previewTimeMode = config?.previewTimeMode;
+                        self.previewHour = config?.previewHour;
                         self.worldAmbience.setConfig(config);
                         WorldScenery.update(self.renderer, config);
                         WorldScenery.prompt(self);

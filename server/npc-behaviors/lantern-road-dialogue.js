@@ -23,7 +23,7 @@ function buildDialogues() {
                 {text: 'About ' + q.name + '...', goto: q.id + ':progress', conditions: [open(q.id), notDone(q.id)]}
             ]).concat([
                 {text: 'Where should I go from here?', goto: 'road-lead'},
-                {text: 'What keeps you at this post?', goto: 'road-presence'},
+                {text: ['town-gardener', 'town-neighbour', 'town-watch'].includes(npc.key) ? 'What does your day usually look like?' : 'What keeps you at this post?', goto: 'road-presence'},
                 {text: 'Do you remember how we got here?', goto: 'road-memory'},
                 {text: 'Is there other local work I can help with?', goto: 'road-local'},
                 {text: 'I will see you later.', goto: 'road-later'}])};
