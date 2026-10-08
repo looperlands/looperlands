@@ -936,7 +936,6 @@ function toRad(angle) {
 
 const IMPACT_RAYS = [
     [1, 0], [-1, 0], [0, 1], [0, -1],
-    [0.7, 0.7], [-0.7, 0.7], [0.7, -0.7], [-0.7, -0.7],
 ];
 
 // Short pixel bursts and steady target brackets, composed above scene lighting.
@@ -965,31 +964,22 @@ function drawCombatFeedback(ctx, feedback) {
     }
     for (const impact of feedback.impacts) {
         const progress = impact.progress;
-        const distance = 3 + Math.round((1 - Math.pow(1 - progress, 2)) * 10);
-        const size = progress < 0.6 ? 3 : 2;
-        // Hold the initial punch briefly, then let the fragments fade out.
-        ctx.globalAlpha = Math.min(1, (1 - progress) / 0.8);
+        const distance = 3 + Math.round((1 - Math.pow(1 - progress, 2)) * 7);
+        const size = progress < 0.5 ? 2 : 1;
+        ctx.globalAlpha = 1 - progress;
         for (const [dx, dy] of IMPACT_RAYS) {
             const x = impact.x + Math.round(dx * distance) - 1;
             const y = impact.y + Math.round(dy * distance) - 1;
-            ctx.fillStyle = '#5b281f';
-            rect(x - 1, y - 1, size + 2, size + 2);
             ctx.fillStyle = '#ffb13b';
             rect(x, y, size, size);
             ctx.fillStyle = '#fff2bf';
-            rect(x, y, Math.max(1, size - 1), Math.max(1, size - 1));
-            ctx.fillStyle = '#f58232';
-            rect(x - Math.round(dx * 3), y - Math.round(dy * 3), 2, 2);
+            rect(x, y, 1, 1);
         }
-        if (progress < 0.4) {
-            ctx.globalAlpha = 1 - progress / 0.4;
-            ctx.fillStyle = '#f58232';
-            rect(impact.x - 6, impact.y - 2, 13, 5);
-            rect(impact.x - 2, impact.y - 6, 5, 13);
-            ctx.fillStyle = '#fff4d4';
-            rect(impact.x - 5, impact.y - 1, 11, 3);
-            rect(impact.x - 1, impact.y - 5, 3, 11);
-            rect(impact.x - 3, impact.y - 3, 7, 7);
+        if (progress < 0.25) {
+            ctx.globalAlpha = 0.85 * (1 - progress / 0.25);
+            ctx.fillStyle = '#fff2bf';
+            rect(impact.x - 3, impact.y - 1, 7, 3);
+            rect(impact.x - 1, impact.y - 3, 3, 7);
         }
     }
     ctx.restore();

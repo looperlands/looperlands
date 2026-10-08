@@ -1,5 +1,5 @@
 define(['mob'], function (Mob) {
-    const IMPACT_DURATION = 300;
+    const IMPACT_DURATION = 220;
     const MAX_IMPACTS = 24;
 
     class CombatFeedback {
