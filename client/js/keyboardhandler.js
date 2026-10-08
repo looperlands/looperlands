@@ -30,9 +30,21 @@ class KeyBoardHandler {
 
         console.log("Created keyboard handler");
 
+        document.addEventListener('keydown', event => this.handleConversationKey(event), true);
         document.addEventListener('keydown', (event) => this.handleKeyDown(event));
         document.addEventListener('keyup', (event) => this.handleKeyUp(event));
         window.addEventListener('blur', this.handleBlur.bind(this));
+    }
+
+    handleConversationKey(event) {
+        if (!this.game.started || this.game.player.isDead || this.inputHasFocus() || this.hasOpenPanel() || event.ctrlKey || event.metaKey || event.altKey) return;
+        if ($('#dialogue-popup').hasClass('active')) {
+            if (!['w', 's', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter', 'e', 'Escape'].includes(event.key)) return;
+            this.handleBlur();
+            if (!event.repeat) this.app.handleChoiceKeyboardInput(event);
+        }
+        else return;
+        event.preventDefault(); event.stopImmediatePropagation();
     }
 
     handleKeyDown(event) {
@@ -219,7 +231,7 @@ class KeyBoardHandler {
 
     inputHasFocus() {
         const elem = document.activeElement;
-        return elem && (elem.tagName.toLowerCase() === "input" || elem.tagName.toLowerCase() === "textarea" || elem.closest('#global'));
+        return elem && (elem.tagName.toLowerCase() === "input" || elem.tagName.toLowerCase() === "textarea" || elem.isContentEditable || elem.closest('#global'));
     }
 
     hasOpenPanel() {

@@ -399,6 +399,7 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
                     e.stopImmediatePropagation();
                     e.preventDefault();
                 });
+                if (i === 0) choice.addClass('selected');
                 playerChoicePopup.find('#choices').append(choice);
             }
             playerChoicePopup.scrollTop(0);
@@ -491,6 +492,7 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
         },
 
         closeChoicesPopup() {
+            this.game?.conversationHold?.stop();
             let playerChoicePopup = $('#dialogue-popup');
             playerChoicePopup.addClass('hidden').removeClass('active');
         },
@@ -514,6 +516,7 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
             switch (event.key) {
                 case 'w':
                 case 'ArrowUp':
+                case 'ArrowLeft':
                     selectedIndex = selectedIndex - 1;
                     if (selectedIndex < 0) {
                         selectedIndex = choices.length - 1;
@@ -521,6 +524,7 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
                     break;
                 case 's':
                 case 'ArrowDown':
+                case 'ArrowRight':
                     selectedIndex = selectedIndex + 1;
                     if (selectedIndex >= choices.length) {
                         selectedIndex = 0;
@@ -563,6 +567,7 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
             switch (event.key) {
                 case 'w':
                 case 'ArrowUp':
+                case 'ArrowLeft':
                     selectedIndex = selectedIndex - 1;
                     if (selectedIndex < 0) {
                         selectedIndex = choices.length - 1;
@@ -570,6 +575,7 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
                     break;
                 case 's':
                 case 'ArrowDown':
+                case 'ArrowRight':
                     selectedIndex = selectedIndex + 1;
                     if (selectedIndex >= choices.length) {
                         selectedIndex = 0;
