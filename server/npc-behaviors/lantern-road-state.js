@@ -23,12 +23,59 @@ function memories(data) {
     if (has(data, 'lantern:rowan-handover')) lines.push('Rowan taught new keepers and chose to rest.');
     return lines;
 }
+function npcLocation(npc) {
+    return npc.label + ' — ' + npc.area + (npc.key.startsWith('town-') && npc.key !== 'town-priest' ?
+        ' (look for their rounds near the market or gate)' : ' (' + npc.x + ', ' + npc.y + ')');
+}
 function nextStep(data, q) {
     const npc = content.npcs.find(n => n.key === q.npcKey);
-    if (!active(data, q.id)) return 'Speak to ' + npc.label + ' (' + npc.x + ', ' + npc.y + ') to begin.';
+    if (!active(data, q.id)) return 'Speak to ' + npcLocation(npc) + ' to begin.';
     const pending = progress(data, q).find(o => !o.done);
     if (pending) return pending.label + ' — ' + pending.scene + (pending.x ? ' (' + pending.x + ', ' + pending.y + '). Walk to the marker and click it or press E to inspect it.' : '.');
-    return 'Report to ' + npc.label + ' (' + npc.x + ', ' + npc.y + ').';
+    return 'Report to ' + npcLocation(npc) + '.';
+}
+// Link only discoveries the player has actually made. Unfinished parallel
+// reports explain why a later conversation is still waiting.
+function handoff(data, q) {
+    const next = content.quests.filter(candidate => candidate.optional === q.optional &&
+        candidate.requiredQuests.includes(q.id) && !done(data, candidate.id));
+    const available = next.filter(candidate => unlocked(data, candidate));
+    if (available.length) return available.map(candidate => candidate.name + ': ' + nextStep(data, candidate)).join('<br>');
+    const waiting = next[0];
+    if (!waiting) return '';
+    const missing = waiting.requiredQuests.filter(id => !done(data, id)).map(id => content.quests.find(candidate => candidate.id === id)).filter(Boolean);
+    return 'Before ' + waiting.name + ', we still need ' + missing.map(candidate => candidate.name + ' from ' +
+        npcLocation(content.npcs.find(npc => npc.key === candidate.npcKey))).join(' and ') + '.';
+}
+function npcStatus(data, key) {
+    const local = content.quests.filter(q => q.npcKey === key && !done(data, q.id));
+    const current = local.find(q => active(data, q.id)) || local.find(q => unlocked(data, q));
+    if (current) {
+        if (!active(data, current.id)) return 'I can help with: ' + current.name + '. ' + current.reason;
+        return 'Your current task: ' + current.name + '. ' + (ready(data, current) ?
+            'You have checked every objective. Tell me what you found when you are ready.' : nextStep(data, current));
+    }
+    const waiting = local.find(q => !q.optional) || local[0];
+    if (!waiting) return '';
+    const missing = waiting.requiredQuests.filter(id => !done(data, id));
+    if (missing.includes(picnic.INVITE)) return 'First help Adam and Bstrat finish the Lantern Picnic in Town. Their invitation starts the search along the road.';
+    return 'I am waiting for ' + missing.map(id => {
+        const q = content.quests.find(q => q.id === id);
+        return q ? q.name + ' from ' + npcLocation(content.npcs.find(npc => npc.key === q.npcKey)) : 'news from Town';
+    }).join(' and ') + '. Those reports explain why we can take the next step.';
+}
+function knowledge(data) {
+    if (done(data, 'LANTERN_LONG_TABLE')) return 'The restored road brought the communities to one table. Remembering the missing did not mean leaving the living alone.';
+    if (done(data, 'LANTERN_LIGHT_SHARED')) return 'The safe regulator and shared watch let every community keep its light. The road is open; the invitations can finally reach their neighbours.';
+    if (done(data, 'LANTERN_KEEPER_CHOICE')) return has(data, 'lantern:rowan-handover') ?
+        'Rowan read Elian\'s letter and chose to teach new keepers, then rest. Orin and Mara can share the controls.' :
+        'Rowan read Elian\'s letter and chose to return with a shared watch. He no longer has to keep the flame alone.';
+    if (done(data, 'LANTERN_ROWAN_PROTECTED')) return 'Rowan stayed alone in the Gauntlet after the rescue. Orin\'s regulator now makes it safe to share the flame; carry that evidence and Elian\'s letter to him.';
+    if (done(data, 'LANTERN_MISSING_REGULATOR')) return 'The missing regulator was left in the northern store. Fitting it made the flame safe; Rowan\'s solitary watch is no longer necessary.';
+    if (done(data, 'LANTERN_LAST_DELIVERY')) return 'Nessa\'s dispatch confirmed Rowan ordered the north closed. The undelivered regulator can make the route safe again.';
+    if (done(data, 'LANTERN_UNDELIVERED_LETTER')) return 'Elian wanted the road kept open. Rowan shut it down after a failed rescue, trying to protect the neighbours.';
+    if (done(data, 'LANTERN_KEEPER_KNOTS')) return 'Rowan deliberately disconnected the forest relay. The ledger and coastal letters can explain why.';
+    return 'Rowan used to carry invitations between the regions. His empty place at the picnic starts the search.';
 }
 function journal(data = {}) {
     const prologueDone = done(data, picnic.INVITE);
@@ -41,12 +88,9 @@ function journal(data = {}) {
             current.chapter + ' · ' + content.chapters[current.chapter - 1].name : 'The Lantern Road',
         goal: !prologueDone ? picnic.progress(data) : finished && !current ? 'Revisit your neighbours. They remember your choices.' : current ? nextStep(data, current) : 'Speak to the neighbours in Town.',
         why: current?.reason || 'Every character keeps their own progress. Shared gatherings do not complete another player\'s story.',
-        known: !prologueDone ? 'Adam needs a basket for bread. Bstrat borrowed it for blankets. The watch needs a safe path.' :
-            done(data, 'LANTERN_UNDELIVERED_LETTER') ? 'Elian wanted the road kept open. Rowan shut it down after a failed rescue, trying to protect the neighbours.' :
-            done(data, 'LANTERN_KEEPER_KNOTS') ? 'Rowan deliberately disconnected the forest relay. The ledger and coastal letters can explain why.' :
-            'Rowan used to carry invitations between the regions. His empty place at the picnic starts the search.',
+        known: !prologueDone ? 'Adam needs a basket for bread. Bstrat borrowed it for blankets. The watch needs a safe path.' : knowledge(data),
         memories: memories(data),
         quests: available.map(q => ({id: q.id, name: q.name, optional: !!q.optional, active: active(data, q.id), next: nextStep(data, q)}))
     };
 }
-module.exports = {has, done, active, unlocked, applicable, objectiveDone, ready, progress, memories, nextStep, journal};
+module.exports = {has, done, active, unlocked, applicable, objectiveDone, ready, progress, memories, npcLocation, nextStep, handoff, npcStatus, knowledge, journal};

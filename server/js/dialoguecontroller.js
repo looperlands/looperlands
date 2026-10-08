@@ -104,7 +104,7 @@ class DialogueController {
             sessionData = cache.get(sessionId) || sessionData;
             node = this.chooseRandomLines(node);
             node = this.filterOptions(node, sessionData);
-            if (node.storyMenu || node.storyQuest || node.storyConclusion) require('./lanternroadcontroller').LanternRoadController.decorate(node, sessionData);
+            if (node.storyMenu || node.storyOffer || node.storyQuest || node.storyConclusion) require('./lanternroadcontroller').LanternRoadController.decorate(node, sessionData);
             sessionData.dialogueTransitions = [...(node.goto ? [node.goto] : []), ...(node.options || []).map(option => option.goto)];
             sessionData.dialogueNpcKey = npcKey;
             cache.set(sessionId, sessionData);

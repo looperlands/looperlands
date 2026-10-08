@@ -10,22 +10,33 @@ const quest = (id, chapter, name, npcKey, requiredQuests, reason, objectives, co
     eventType: 'NPC_TALKED', target: 'FLOW', amount: 1, level: 1, medal: Types.Medals.TALK, dialogueOnly: true, ...extra
 });
 const npcs = [
-    {key: 'town-gardener', kind: 'villager', label: 'Ordinary Adam', x: 37, y: 200},
-    {key: 'town-neighbour', kind: 'villagegirl', label: 'Bstrat515', x: 15, y: 222},
-    {key: 'town-watch', kind: 'guard', label: 'Town Watch', x: 73, y: 197},
-    {key: 'coastal-jimi', kind: 'beachnpc', label: 'Jimi', x: 76, y: 293},
-    {key: 'mill-scientist', kind: 'scientist', label: 'Windmill Scientist', x: 127, y: 293},
-    {key: 'forest-caretaker', kind: 'forestnpc', label: 'Mara, Trail Caretaker', x: 58, y: 176, spawn: true},
-    {key: 'town-priest', kind: 'priest', label: 'Vince', x: 18, y: 209},
-    {key: 'desert-courier', kind: 'villagegirl', label: 'Nessa, Caravan Courier', x: 47, y: 94, spawn: true},
-    {key: 'north-miner', kind: 'miner', label: 'Northern Miner', x: 106, y: 6},
-    {key: 'north-technician', kind: 'lavanpc', label: 'Orin, Relay Technician', x: 97, y: 29, spawn: true},
-    {key: 'lantern-keeper', kind: 'villager', label: 'Rowan, Lantern Keeper', x: 67, y: 378, spawn: true},
-    {key: 'party-baker', kind: 'villager', label: 'Coastal Baker', x: 37, y: 449, spawn: true},
-    {key: 'party-trailguest', kind: 'villagegirl', label: 'Forest Neighbour', x: 43, y: 451, spawn: true},
-    {key: 'party-lanternhand', kind: 'guard', label: 'Lantern Hand', x: 40, y: 453, spawn: true},
-    {key: 'party-wildwill', kind: 'wildwill', label: 'Wild Will', x: 35, y: 463}
+    {key: 'town-gardener', kind: 'villager', label: 'Ordinary Adam', x: 37, y: 200, area: 'Town market and supply rounds', presence: 'I keep the bread and supplies ready while you carry news between the neighbours.'},
+    {key: 'town-neighbour', kind: 'villagegirl', label: 'Bstrat515', x: 15, y: 222, area: 'Town market and neighbouring streets', presence: 'I keep in touch with the neighbours. An invitation only helps when people know it is meant for them.'},
+    {key: 'town-watch', kind: 'guard', label: 'Town Watch', x: 73, y: 197, area: 'Town gate and market patrol', presence: 'I still have a gate to watch. A safe path helps, but I need a relief patrol before I can stay for a whole evening.'},
+    {key: 'coastal-jimi', kind: 'beachnpc', label: 'Jimi', x: 76, y: 293, area: 'Beach', presence: 'I stay by the landing to guide the next boat. Without a working signal, another courier could miss the shore.'},
+    {key: 'mill-scientist', kind: 'scientist', label: 'Windmill Scientist', x: 127, y: 293, area: 'Windmill', presence: 'The mill gears are sound. I stay with the receiver until we know why its signal stopped.'},
+    {key: 'forest-caretaker', kind: 'forestnpc', label: 'Mara, Trail Caretaker', x: 58, y: 176, area: 'Forest', presence: 'I stay on the trail because walkers still need a guide. I stopped sending invitations when no replies came back.', spawn: true},
+    {key: 'town-priest', kind: 'priest', label: 'Vince', x: 18, y: 209, area: 'Town', presence: 'I keep the letters and memorial records here. We need evidence from both the coast and the forest before we can understand the loss.'},
+    {key: 'desert-courier', kind: 'villagegirl', label: 'Nessa, Caravan Courier', x: 47, y: 94, area: 'Desert', presence: 'I am staying with the stranded caravan. I will not leave tired travellers or their supplies behind to chase a rumour.', spawn: true},
+    {key: 'north-miner', kind: 'miner', label: 'Northern Miner', x: 106, y: 6, area: 'Lavaland', presence: 'I watch the relay pressure here. The flame is still burning, but we need a safe way to share it.'},
+    {key: 'north-technician', kind: 'lavanpc', label: 'Orin, Relay Technician', x: 97, y: 29, area: 'Lavaland', presence: 'I stay beside the vent so nobody has to handle the northern relay alone.', spawn: true},
+    {key: 'lantern-keeper', kind: 'villager', label: 'Rowan, Lantern Keeper', x: 67, y: 378, area: 'Gauntlet', presence: 'I kept the flame burning after the rescue. I thought closing the road was the only way to keep everyone else safe.', spawn: true},
+    {key: 'party-baker', kind: 'villager', label: 'Coastal Baker', x: 37, y: 449, area: 'Party beach', presence: 'I keep bread ready for visitors. The coast, forest and caravan all have something different to bring.', spawn: true},
+    {key: 'party-trailguest', kind: 'villagegirl', label: 'Forest Neighbour', x: 43, y: 451, area: 'Party beach', presence: 'I leave room for the forest baskets. We used to miss each other because the invitations never arrived.', spawn: true},
+    {key: 'party-lanternhand', kind: 'guard', label: 'Lantern Hand', x: 40, y: 453, area: 'Party beach', presence: 'I tend the landing lantern so visitors can find the table when they arrive.', spawn: true},
+    {key: 'party-wildwill', kind: 'wildwill', label: 'Wild Will', x: 35, y: 463, area: 'Party beach', presence: 'I stay beside this shore because it reminds me of my crew. New company can matter without replacing the people we lost.'}
 ];
+
+const presenceAfter = {
+    'town-watch': {quest: 'LANTERN_WATCH_INVITED', text: 'Your relief volunteer covers the gate for the gathering, so I can stay for the evening. I still make my normal rounds between visits.'},
+    'coastal-jimi': {quest: 'LANTERN_COAST_SIGNAL', text: 'Since you restored the signal, I can guide the next landing safely. I keep watch here so another invitation does not get stranded.'},
+    'mill-scientist': {quest: 'LANTERN_MILL_LIGHT', text: 'The receiver is working with the connector we repaired. I stay beside the gears to keep the mill ready for the signal.'},
+    'forest-caretaker': {quest: 'LANTERN_STILL_WAITING', text: 'The lantern you placed lets me guide walkers safely. I keep the trail open while the news travels onward.'},
+    'desert-courier': {quest: 'LANTERN_ROAD_WE_TAKE', text: 'You checked our chosen route, so I can keep the caravan supplies together for the next leg. Nobody has to be left behind.'},
+    'north-technician': {quest: 'LANTERN_MISSING_REGULATOR', text: 'The regulator you fitted shares the heat safely. I keep it in service so the keeper does not have to hold the flame alone.'},
+    'lantern-keeper': {quest: 'LANTERN_LIGHT_SHARED', text: 'You showed me how the communities can share the flame. I keep these controls ready for the other keepers; the road no longer depends on one person.'}
+};
+for (const npc of npcs) npc.presenceAfter = presenceAfter[npc.key];
 
 const chapters = [
     {number: 1, name: 'The Lantern Picnic'},

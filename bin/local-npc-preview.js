@@ -133,8 +133,7 @@ api.listen(fixturePort, '127.0.0.1', () => {
     const packetFor = player => {
         const road = world.lanternRoad.packet(player);
         const choices = server.cache.get(player.sessionId)?.gameData?.choices || [];
-        return ({...world.npcBehavior.config.ambience,
-        particles: world.map.getSceneAt(player.x, player.y)?.name === world.npcBehavior.config.ambience.scene ? world.npcBehavior.config.ambience.particles : 'none',
+        return ({...world.npcBehavior.ambienceFor(player),
         serverTime: Date.now(), epoch: 0,
         ...road,
         picnic: road.finalePicnic || (picnicScene?.state && {...picnicScene.state, music: choices.includes(picnic.MUSIC)}) || null,

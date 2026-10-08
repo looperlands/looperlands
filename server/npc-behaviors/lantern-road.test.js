@@ -209,3 +209,83 @@ test('Adam gives returning picnic players both onward leads, alongside their rem
     expect(node.text).toContain('either lead first');
     expect(node.text).toContain('Adam remembers your sharing idea');
 });
+
+test('coastal handoffs explain the next contact and the missing parallel forest report', () => {
+    const {cache, talk} = setup();
+    const first = content.quests[0];
+    const data = cache.get('one').gameData;
+    data.quests.COMPLETED.push({questKey: first.id});
+    expect(state.handoff(data, first)).toContain('Windmill Scientist');
+    expect(state.handoff(data, first)).toContain('The Mill Without a Light');
+    const coast = content.quests.find(q => q.id === 'LANTERN_COAST_SIGNAL');
+    data.quests.COMPLETED.push({questKey: coast.id});
+    expect(state.handoff(data, coast)).toContain('Someone Is Still Waiting');
+    expect(state.handoff(data, coast)).toContain('Mara');
+    const session = cache.get('one'); session.gameData = data; cache.set('one', session);
+    const vince = talk({npc: Types.Entities.PRIEST, npcKey: 'town-priest'});
+    expect(vince.text).toContain('I am waiting for Someone Is Still Waiting');
+    expect(vince.text).not.toContain('I am waiting for A Signal Across the Water');
+    expect(vince.options.some(o => o.goto === 'LANTERN_STONE_NAMES:offer')).toBe(false);
+    data.quests.COMPLETED.push({questKey: 'LANTERN_STILL_WAITING'});
+    expect(state.handoff(data, coast)).toContain('Speak to Vince');
+});
+
+test('offers and remembered reactions respect each character\'s route and memorial choices', () => {
+    const {cache, talk, choose} = setup();
+    const q = content.quests.find(q => q.id === 'LANTERN_ROAD_WE_TAKE');
+    const session = cache.get('one');
+    session.gameData.quests.COMPLETED.push({questKey: 'LANTERN_LAST_DELIVERY'});
+    session.gameData.choices.push('lantern:caravan-detour', 'lantern:private-memorial');
+    cache.set('one', session);
+    const menu = talk(q);
+    expect(menu.text).toContain('choosing shelter');
+    const offer = choose(q, q.id + ':offer');
+    expect(offer.text).toContain(q.objectives[0].label);
+    expect(offer.text).not.toContain(q.objectives[1].label);
+    const vince = talk({npc: Types.Entities.PRIEST, npcKey: 'town-priest'});
+    expect(vince.text).toContain('keep Elian\'s personal words private');
+    expect(vince.text).not.toContain('explain the memorial names to visitors');
+    const other = talk(q, 'two');
+    expect(other.text).not.toContain('choosing shelter');
+    expect(other.text).toContain('I am waiting for');
+});
+
+test('journal knowledge progresses without revealing the keeper\'s future early', () => {
+    const data = prologue();
+    expect(state.journal(data).known).not.toContain('regulator');
+    const steps = [
+        ['LANTERN_LAST_DELIVERY', 'dispatch'],
+        ['LANTERN_MISSING_REGULATOR', 'Fitting it'],
+        ['LANTERN_ROWAN_PROTECTED', 'Gauntlet'],
+        ['LANTERN_KEEPER_CHOICE', 'shared watch'],
+        ['LANTERN_LIGHT_SHARED', 'invitations'],
+        ['LANTERN_LONG_TABLE', 'one table']
+    ];
+    for (const [id, fact] of steps) {
+        data.quests.COMPLETED.push({questKey: id});
+        expect(state.journal(data).known).toContain(fact);
+    }
+    data.quests.COMPLETED = data.quests.COMPLETED.filter(q => !['LANTERN_LIGHT_SHARED', 'LANTERN_LONG_TABLE'].includes(q.questKey));
+    data.choices.push('lantern:rowan-handover');
+    expect(state.journal(data).known).toContain('teach new keepers');
+});
+
+
+test('regional NPCs greet from saved evidence even on a server with no recognition memory', () => {
+    const {world, cache, player, other} = setup();
+    const q = content.quests.find(q => q.id === 'LANTERN_STILL_WAITING');
+    const session = cache.get('one');
+    session.gameData.quests.COMPLETED.push(...['LANTERN_FOREST_MARKERS', 'LANTERN_KEEPER_KNOTS', q.id].map(questKey => ({questKey})));
+    cache.set('one', session);
+    const mara = world.npcBehavior.routines.get('forest-caretaker');
+    expect(mara).toBeDefined();
+    expect(world.npcBehavior.memory.has('main', mara.definition.key, player, 'met')).toBe(false);
+    expect(world.npcBehavior.line(mara, 'greeting', player)).toBe(q.conclusion);
+    expect(world.npcBehavior.line(mara, 'greeting', other)).toContain('stopped sending invitations');
+    const adam = world.npcBehavior.routines.get('town-gardener');
+    expect(world.npcBehavior.line(adam, 'greeting', player)).toContain('quiet picnic');
+    expect(world.npcBehavior.line(adam, 'greeting', other)).toContain('music');
+    const response = LanternRoadController.decorate({storyMenu: 'forest-caretaker'}, cache.get('one'));
+    expect(response.text).toContain('lantern you placed');
+    expect(response.text).not.toContain('stopped sending invitations');
+});

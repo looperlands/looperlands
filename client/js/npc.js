@@ -1411,16 +1411,12 @@ define(['character'], function (Character) {
         },
 
         hasTalked: function() {
-          this.hasTalkedRecently = true;
+            this.lastTalkTime = Date.now();
         },
 
-        hasInteraction : function () {
-            if ((this.showIndicator || this.thoughts.length > 0 || NpcTalk[this.itemKind].length > 0) && !this.hasTalkedRecently) {
-                return true;
-            }
-
-            setTimeout(() => this.hasTalkedRecently = false, 500);
-            return false;
+        hasInteraction: function () {
+            const ready = this.lastTalkTime === undefined || Date.now() - this.lastTalkTime >= 500;
+            return ready && (this.behaviorControlled || this.showIndicator || this.thoughts.length > 0 || NpcTalk[this.itemKind].length > 0);
         }
     });
 

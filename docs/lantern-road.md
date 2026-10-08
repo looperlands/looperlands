@@ -30,7 +30,11 @@ The dialogues use the existing choice popup and quest engine. Ground objectives
 are server-validated inspections; discoveries are saved before showing their
 result. Some objectives appear only for the chosen branch. The existing quest log
 shows the reason, applicable objectives, progress, report destination and remembered
-choices. There is no production guide overlay.
+choices. Quest endings link to the next contact; when a parallel report is missing,
+the NPC explains which report is needed and who can help. Offers only show objectives
+for the player's chosen route. NPCs explain why they stay at their posts, and their
+explanations change after the player repairs a relay or arranges relief. There is no
+production guide overlay.
 
 ## Main-map entrances
 
@@ -61,6 +65,8 @@ NPC routes, neutral conversations and the first picnic gathering are shared on a
 server. The Party Beach hosts make small shared rounds and chat about welcoming
 visitors. Public dialogue never asserts that another player finished a quest or
 made a particular choice. Individual conversations refer to that player's evidence.
+Regional NPCs give private, throttled greetings from the character's saved quest
+history, including after joining a server that has never met that character.
 
 Never rename `LANTERN_BASKET`, `LANTERN_PATH` or `LANTERN_INVITATION`, or clear their
 choices. Chapter 2 and chapter 3 unlock from invitation completion alone. Both
@@ -68,6 +74,27 @@ choices. Chapter 2 and chapter 3 unlock from invitation completion alone. Both
 Picnic attendance files and replays are not prerequisites. Players who completed
 the picnic before this release can speak to Adam for the coastal and forest leads
 and continue immediately.
+
+## Regional ambience
+
+The outdoor areas use layered, map-anchored effects configured in
+`server/npc-behaviors/main.json`:
+
+| Area | Effects |
+| --- | --- |
+| Town | Fireflies and a few floating seeds |
+| Forest | Tumbling leaves and pollen |
+| Desert | Dust motes and faint wind streaks |
+| Beach / Party beach | Sea spray and windblown sand |
+| Lavaland | Rising embers and falling ash |
+| Graveyard | Low mist and sparse fireflies |
+
+All layers use the existing global world clock for visibility. Fireflies appear
+at dusk; nonluminous particles become subtler at night. Particles follow the map
+smoothly, remain within their scene boundaries and keep moving in a forced day or
+night preview. Interiors receive no outdoor particles. Reduced motion disables
+the animated layers. Area presets allow up to three layers and 24 particles per
+repeating map patch, keeping the cost bounded without adding lighting tints.
 
 ## Local playtest
 

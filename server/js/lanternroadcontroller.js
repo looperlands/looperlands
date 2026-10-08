@@ -27,6 +27,21 @@ class LanternRoadController {
         }
         if (world.npcBehavior) {
             for (const routine of content.gatheringRoutines) world.npcBehavior.registerRoutine(routine);
+            for (const npc of content.npcs) {
+                const quests = content.quests.filter(q => q.npcKey === npc.key);
+                if (!world.npcBehavior.routines.has(npc.key)) {
+                    world.npcBehavior.registerRoutine({key: npc.key, kind: npc.kind, label: npc.label, preset: 'work',
+                        origin: {x: npc.x, y: npc.y}, area: {x: npc.x - 8, y: npc.y - 8, width: 17, height: 17}, stepMs: 650,
+                        route: [{x: npc.x, y: npc.y, waitSeconds: 30, activity: 'keeping watch over the local road'}],
+                        lines: {greeting: [npc.presence], return: [npc.presence]}});
+                }
+                const routine = world.npcBehavior.routines.get(npc.key);
+                if (!routine) continue;
+                routine.definition.questIds = [...(routine.definition.questIds || []), ...quests.map(q => q.id)];
+                routine.definition.reactions = [...(routine.definition.reactions || []), ...quests.map(q => ({
+                    when: {questCompleted: q.id}, lines: {return: [q.conclusion], quest: [q.conclusion]}
+                }))];
+            }
             world.npcBehavior.config.conversations.push(content.gatheringConversation);
         }
     }
@@ -122,7 +137,11 @@ class LanternRoadController {
         if (node.storyMenu) {
             const npc = content.npcs.find(npc => npc.key === node.storyMenu);
             const completedHere = content.quests.filter(q => q.npcKey === node.storyMenu && state.done(data, q.id));
-            node.text = npc.label + ': ' + (completedHere.length ? completedHere.at(-1).conclusion : node.text);
+            const presence = npc.presenceAfter && state.done(data, npc.presenceAfter.quest) ? npc.presenceAfter.text : npc.presence;
+            node.text = npc.label + ': ' + presence;
+            if (completedHere.length) node.text += '<br><br>' + completedHere.at(-1).conclusion;
+            const status = state.npcStatus(data, node.storyMenu);
+            if (status) node.text += '<br><br>' + status;
             if (node.storyMenu === 'town-gardener' && !state.done(data, 'LANTERN_LONG_TABLE')) {
                 const journal = state.journal(data);
                 node.text += '<br><br>Next on your road: ' + journal.goal;
@@ -130,16 +149,29 @@ class LanternRoadController {
                     node.text += '<br>Rowan used to bring invitations from across the island. Jimi has news from the coast, and Mara keeps the old forest markers. You can follow either lead first.';
                 }
             }
+            if (node.storyMenu === 'desert-courier') {
+                if (state.has(data, 'lantern:caravan-detour')) node.text += '<br><br>I remember you choosing shelter for the tired travellers. We are taking the eastern detour and bringing lantern oil.';
+                if (state.has(data, 'lantern:caravan-direct')) node.text += '<br><br>I remember you choosing the direct road for the heavy parts. We are bringing repair tools along the western route.';
+            }
+            if (node.storyMenu === 'town-priest') {
+                if (state.has(data, 'lantern:public-memorial')) node.text += '<br><br>Because you chose to remember together, I explain the memorial names to visitors with care.';
+                if (state.has(data, 'lantern:private-memorial')) node.text += '<br><br>Because you asked for quiet remembrance, I keep Elian\'s personal words private. The lantern still marks the loss.';
+            }
             const memories = state.memories(data);
             if (node.storyMenu === 'town-gardener' && state.has(data, 'lantern:return-basket')) memories.unshift('I remember you asking Bstrat to return my basket. It left room for the bread after the blankets.');
             if (['town-gardener', 'town-neighbour', 'town-watch', 'lantern-keeper', 'party-wildwill'].includes(node.storyMenu)) node.text += '<br><br>' + memories.join('<br>');
         }
-        if (node.storyQuest) {
-            const q = content.quests.find(q => q.id === node.storyQuest);
+        if (node.storyQuest || node.storyOffer) {
+            const q = content.quests.find(q => q.id === (node.storyQuest || node.storyOffer));
             node.text = q.reason + '<br><br>' + state.progress(data, q).map(o => (o.done ? 'Done: ' : 'Next: ') + o.label + ' — ' + o.scene).join('<br>') +
                 '<br><br>' + state.nextStep(data, q);
         }
-        if (node.storyConclusion && node.storyConclusion === 'LANTERN_LONG_TABLE') {
+        if (node.storyConclusion) {
+            const q = content.quests.find(q => q.id === node.storyConclusion);
+            const next = state.handoff(data, q);
+            if (next) node.text += '<br><br>Where this leads: ' + next;
+        }
+        if (node.storyConclusion === 'LANTERN_LONG_TABLE') {
             node.text += '<br><br>' + state.memories(data).join('<br>');
             if (state.done(data, 'LANTERN_WATCH_INVITED')) node.text += '<br>The watch stays for the whole evening because you arranged a relief patrol.';
             if (state.done(data, 'LANTERN_MISSING_PLACES')) node.text += '<br>The keepsake lantern keeps a place for the absent families. Their private messages stay private because they asked for that.';

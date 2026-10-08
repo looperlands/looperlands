@@ -1,4 +1,4 @@
-define(['worldtime-worker'], function (WorldTime) {
+define(['worldtime-worker', 'worldparticles-worker'], function (WorldTime, WorldParticles) {
     class WorldAmbience {
         constructor(getView = () => ({x: 0, y: 0, scale: 1}), getWorldTime = () => Date.now()) {
             this.getView = getView;
@@ -161,52 +161,30 @@ define(['worldtime-worker'], function (WorldTime) {
             context.clearRect(0, 0, width, height);
             const elapsed = (now - (this.config.epoch || 0)) / 1000;
             const worldTime = WorldTime.previewTime(this.config.previewTimeMode, this.getWorldTime());
-            const night = 1 - WorldTime.mainDaylight(worldTime);
-            // The scene renderer owns day/night lighting. This canvas draws
-            // local particles only, avoiding a second tint and a second clock.
+            const daylight = WorldTime.mainDaylight(worldTime);
+            // Area effects share the renderer clock and never add a lighting tint.
             if (!this.reducedMotion) {
-                for (const {index, x, y, scale} of this.particlePositions(elapsed, width, height)) {
-                    const seed = index * 1.618 + 0.5;
-                    if (this.config.particles === 'fireflies') {
-                        const glow = night * (0.65 + Math.sin(elapsed * 1.1 + seed) * 0.15);
-                        if (glow <= 0) continue;
-                        const radius = 8 * scale;
-                        const halo = context.createRadialGradient(x, y, 0, x, y, radius);
-                        halo.addColorStop(0, 'rgba(236,255,148,' + glow * 0.45 + ')');
-                        halo.addColorStop(1, 'rgba(236,255,148,0)');
-                        context.globalCompositeOperation = 'lighter';
-                        context.fillStyle = halo;
-                        context.fillRect(x - radius, y - radius, radius * 2, radius * 2);
-                        context.fillStyle = 'rgba(255,255,208,' + glow + ')';
-                        context.fillRect(x, y, 2 * scale, 2 * scale);
-                        context.globalCompositeOperation = 'source-over';
-                    } else if (this.config.particles === 'leaves') {
-                        context.fillStyle = 'rgba(177,153,77,0.35)';
-                        context.fillRect(Math.round(x), Math.round((y + elapsed * 3) % height), 4, 2);
+                context.save();
+                if (this.config.bounds) {
+                    const {x, y, width: areaWidth, height: areaHeight} = this.config.bounds;
+                    const {x: cameraX, y: cameraY, scale} = this.view;
+                    context.beginPath();
+                    context.rect((x - cameraX) * scale, (y - cameraY) * scale, areaWidth * scale, areaHeight * scale);
+                    context.clip();
+                }
+                const effects = this.config.effects || [{type: this.config.particles, count: this.config.particleCount}];
+                for (const effect of effects) {
+                    for (const point of this.particlePositions(elapsed, width, height, effect.type, effect.count)) {
+                        WorldParticles.draw(context, point, effect.type, elapsed, daylight);
                     }
                 }
+                context.restore();
             }
             if (!this.reducedMotion) this.frame = requestAnimationFrame(() => this.draw());
         }
 
-        particlePositions(elapsed, width, height) {
-            // Repeating patches live in map pixels. Camera movement changes their
-            // screen position, while their small wandering motion stays independent.
-            const {x: cameraX = 0, y: cameraY = 0, scale = 1} = this.view || this.getView() || {};
-            const points = [];
-            for (let patchY = Math.floor((cameraY - 16) / 224); patchY <= Math.floor((cameraY + height / scale + 16) / 224); patchY++) {
-                for (let patchX = Math.floor((cameraX - 16) / 480); patchX <= Math.floor((cameraX + width / scale + 16) / 480); patchX++) {
-                    for (let index = 0; index < this.config.particleCount; index++) {
-                        const seed = index * 1.618 + 0.5;
-                        const x = (patchX * 480 + (seed * 137 % 480) + Math.sin(elapsed * 0.25 + seed) * 7 - cameraX) * scale;
-                        const y = (patchY * 224 + (seed * 83 % 224) + Math.cos(elapsed * 0.3 + seed) * 6 - cameraY) * scale;
-                        if (x >= -16 * scale && y >= -16 * scale && x <= width + 16 * scale && y <= height + 16 * scale) {
-                            points.push({index, x, y, scale});
-                        }
-                    }
-                }
-            }
-            return points;
+        particlePositions(elapsed, width, height, type = this.config.particles, count = this.config.particleCount) {
+            return WorldParticles.positions(type, count, elapsed, this.view || this.getView(), width, height);
         }
 
         updateView(time) {

@@ -328,3 +328,43 @@ test('Town and Forest retain the same clock and tint in a world with the picnic 
     expect(world.pushToPlayer).not.toHaveBeenCalled();
     expect(controller.playerStates.get(player.id).ambience).toBe(false);
 });
+
+test('production areas have distinct layered effects, preserved clocks and no indoor particles', () => {
+    const {controller, world, player, advance} = setup();
+    controller.config.ambience = loadConfig('main').ambience;
+    const scenes = require('../maps/world_server_main.json').scenes;
+    const expected = {Town: ['fireflies', 'pollen'], Forest: ['leaves', 'pollen'], Desert: ['dust', 'gusts'],
+        Beach: ['spray', 'sand'], 'Party beach': ['spray', 'sand'], Lavaland: ['embers', 'ash'], Graveyard: ['mist', 'fireflies']};
+    for (const [name, types] of Object.entries(expected)) {
+        const scene = scenes.find(scene => scene.name === name);
+        world.map.getSceneAt = () => scene;
+        world.pushToPlayer.mockClear(); advance(200);
+        const packet = world.pushToPlayer.mock.calls.map(([, message]) => message.serialize()).find(p => p[0] === Types.Messages.WORLD_AMBIENCE)[1];
+        expect(packet.effects.map(effect => effect.type)).toEqual(types);
+        expect(packet.bounds).toEqual({x: scene.x * 16, y: scene.y * 16, width: scene.w * 16, height: scene.h * 16});
+        expect(packet.effects.reduce((count, effect) => count + effect.count, 0)).toBeLessThanOrEqual(24);
+        expect(packet.epoch).toBe(0);
+        expect(packet.mode).toBe('cycle');
+        expect(packet.areas).toBeUndefined();
+        world.pushToPlayer.mockClear(); advance(200);
+        expect(world.pushToPlayer).not.toHaveBeenCalled();
+    }
+    for (const scene of [scenes.find(scene => scene.name === 'Windmill'), scenes.find(scene => scene.name === 'Gauntlet'), undefined]) {
+        world.map.getSceneAt = () => scene;
+        expect(controller.ambienceFor(player).effects).toEqual([]);
+    }
+    delete controller.config.ambience;
+    expect(controller.ambienceFor(player)).toBeNull();
+});
+
+test.each([
+    {Forest: [{type: 'invented', count: 1}]},
+    {Desert: [{type: 'dust', count: 25}]},
+    {Beach: [{type: 'spray', count: 1.5}]},
+    {Town: [{type: 'fireflies', count: 20}, {type: 'pollen', count: 8}]},
+    {Forest: 'leaves'},
+    []
+])('area presets reject unsupported or excessive particle workloads: %j', areas => {
+    const config = loadConfig('main'); config.ambience.areas = areas;
+    expect(() => validateConfig(config)).toThrow('Invalid area ambience');
+});

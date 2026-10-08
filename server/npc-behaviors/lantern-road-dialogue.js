@@ -26,7 +26,7 @@ function buildDialogues() {
         tree.nodes['road-later'] = {text: 'Take your time. Your journal keeps the next step and what you have learned.'};
         for (const q of local) {
             const prerequisites = [...q.requiredQuests.map(done), notOpen(q.id)];
-            tree.nodes[q.id + ':offer'] = {text: q.reason + '<br><br>' + q.objectives.map(o => o.label + ' — ' + o.scene).join('<br>'),
+            tree.nodes[q.id + ':offer'] = {storyOffer: q.id, text: q.reason + '<br><br>' + q.objectives.map(o => o.label + ' — ' + o.scene).join('<br>'),
                 requires: prerequisites, options: [{text: 'I will help.', goto: q.id + ':accept', conditions: prerequisites},
                     {text: 'I need time to think.', goto: 'road-later'}]};
             tree.nodes[q.id + ':accept'] = {text: q.reason + ' Your journal will show the next objective.', requires: prerequisites, actions: [handout(q.id)], storyQuest: q.id};
@@ -36,7 +36,7 @@ function buildDialogues() {
             (q.choices || [{}]).forEach((choice, index) => {
                 tree.nodes[q.id + ':finish:' + index] = {text: q.conclusion + (choice.response ? ' ' + choice.response : ''),
                     requires: [ready(q.id)], actions: [...(choice.flag ? [{type: 'record_choice', choice: choice.flag}] : []), finish(q.id)],
-                    storyConclusion: q.id};
+                    storyConclusion: q.id, goto: 'road-menu', options: [{text: 'What can I do next?', goto: 'road-menu'}]};
             });
         }
         return tree;

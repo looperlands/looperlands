@@ -17,6 +17,8 @@ function buildQuestLog(registry, data = {}) {
             amount = objectives.length;
             progressCount = completed ? amount : objectives.filter(o => o.done).length;
             desc = completed ? quest.conclusion : road.nextStep(data, quest);
+            const handoff = completed ? road.handoff(data, quest) : '';
+            if (handoff) desc += '<br><br>Where this leads: ' + handoff;
             longDesc = quest.reason + '<br><br>' + objectives.map(o => (o.done ? 'Done: ' : 'Next: ') + o.label + ' — ' + o.scene).join('<br>') +
                 '<br><br>' + desc + '<br><br>' + road.memories(data).join('<br>');
         } else if (!completed) {

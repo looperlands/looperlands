@@ -37,3 +37,11 @@ test('legacy loot and kill quests retain their bounded progress and display text
     expect(entries.map(q => q.progressCount)).toEqual([3, 2]);
     expect(entries.map(q => q.desc)).toEqual(['Collect apples.', 'Clear rats.']);
 });
+
+test('completed story entries keep a useful onward lead in the normal quest log', () => {
+    const data = {quests: {COMPLETED: [{questKey: 'LANTERN_WRECK_LETTERS'}]}};
+    const entry = buildQuestLog(registry, data)[0];
+    expect(entry.desc).toContain('Where this leads');
+    expect(entry.longDesc).toContain('Windmill Scientist');
+    expect(entry.longDesc).toContain('The Mill Without a Light');
+});

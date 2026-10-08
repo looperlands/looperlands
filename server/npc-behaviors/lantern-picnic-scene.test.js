@@ -26,8 +26,9 @@ test.each([true, false])('completed preparations lead to an actual gathering and
     const player = {id: 1, type: 'player', nftId: 'local-avatar-one', sessionId: 'one', hasEnteredGame: true,
         x: 40, y: 215, isBot: () => false}; // Occupy Adam's preferred seat.
     const data = {quests: {COMPLETED: [{questKey: picnic.INVITE}]}, choices: [picnic.SHARE, music ? picnic.MUSIC : picnic.QUIET]};
-    const world = {id: 'world_main', map, npcs, entities: {...npcs, 1: player}, players: {1: player},
-        server: {cache: {get: () => ({gameData: data})}}, pushToPlayer: jest.fn(),
+    const observer = {...player, id: 2, nftId: 'local-avatar-two', sessionId: 'two', x: 39};
+    const world = {id: 'world_main', map, npcs, entities: {...npcs, 1: player, 2: observer}, players: {1: player, 2: observer},
+        server: {cache: {get: id => ({gameData: id === 'one' ? data : {quests: {}, choices: []}})}}, pushToPlayer: jest.fn(),
         pushToAdjacentGroups: jest.fn(), pushToGroup: jest.fn(), moveNpc: jest.fn((npc, x, y) => {
             expect(Math.abs(npc.x - x) + Math.abs(npc.y - y)).toBe(1);
             npc.x = x; npc.y = y;
@@ -51,7 +52,11 @@ test.each([true, false])('completed preparations lead to an actual gathering and
     const messages = world.pushToPlayer.mock.calls.map(([, message]) => message.serialize())
         .filter(message => message[0] === Types.Messages.CHAT).map(message => message[2]);
     expect(messages).toContain('One place is still empty. Rowan used to bring invitations from the other parts of the island.');
-    expect(messages.some(text => text.includes('You chose'))).toBe(false);
+    expect(messages.some(text => text.includes(music ? 'You chose music' : 'You chose a quiet picnic'))).toBe(true);
+    const observerMessages = world.pushToPlayer.mock.calls.filter(([listener]) => listener === observer)
+        .map(([, message]) => message.serialize()).filter(message => message[0] === Types.Messages.CHAT).map(message => message[2]);
+    expect(observerMessages).toContain('One place is still empty. Rowan used to bring invitations from the other parts of the island.');
+    expect(observerMessages.some(text => text.includes('You chose'))).toBe(false);
     expect(memory.has('main', 'lantern-picnic', player, 'celebrated')).toBe(true);
     const returning = new LanternPicnicScene(world, () => time);
     returning.tick();

@@ -4,10 +4,10 @@ const vm = require('vm');
 global.Types = {};
 const Types = require('../../shared/js/gametypes');
 
-function createNpc(animations = ['idle_down']) {
+function createNpc(animations = ['idle_down'], clock = Date) {
     let methods;
     vm.runInNewContext(fs.readFileSync(path.join(__dirname, 'npc.js'), 'utf8'), {
-        Types, define: (dependencies, factory) => { methods = factory({extend: value => value}); }, setTimeout
+        Types, Date: clock, define: (dependencies, factory) => { methods = factory({extend: value => value}); }, setTimeout
     });
     return {...methods, orientation: Types.Orientations.DOWN, idleSpeed: 450, isLoaded: true,
         _super: jest.fn(), hasAnimation: name => animations.includes(name), setAnimation: jest.fn(),
@@ -59,4 +59,28 @@ test('finishing legacy dialogue returns a blank step and can start again', () =>
     for (let index = 0; index < npc.talkCount; index++) expect(npc.talk('wallet')).toBeTruthy();
     expect(npc.talk('wallet')).toBeNull();
     expect(npc.talk('wallet')).toBeTruthy();
+});
+
+
+test('the first interaction after returning to an NPC works without a second key press', () => {
+    let now = 1000;
+    const npc = createNpc(undefined, {now: () => now});
+    npc._super = (id, kind) => {npc.kind = kind;};
+    npc.init(1, Types.Entities.VILLAGER);
+    expect(npc.hasInteraction()).toBe(true);
+    npc.hasTalked();
+    expect(npc.hasInteraction()).toBe(false);
+    now += 499;
+    expect(npc.hasInteraction()).toBe(false);
+    now += 1;
+    expect(npc.hasInteraction()).toBe(true);
+    npc.hasTalked(); now += 10000;
+    expect(npc.hasInteraction()).toBe(true);
+});
+
+test('placed story NPCs remain available for remembered conversations without a quest indicator', () => {
+    const npc = createNpc();
+    npc.thoughts = []; npc.itemKind = 'villagegirl'; npc.showIndicator = false;
+    npc.applyBehaviorState({key: 'desert-courier', label: 'Nessa'});
+    expect(npc.hasInteraction()).toBe(true);
 });
