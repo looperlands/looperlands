@@ -1,5 +1,5 @@
-Types = require("../../../shared/js/gametypes");
-quests = [
+const Types = require("../../../shared/js/gametypes");
+const quests = [
     {
         id: "KING_QUEST_1",
         name: "The King's Kill Request",
@@ -92,4 +92,4 @@ quests = [
     // },
 ]
 
-exports.quests = [...quests, ...require('../../npc-behaviors/lantern-picnic').quests];
+exports.quests = quests;

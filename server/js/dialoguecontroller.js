@@ -1,8 +1,7 @@
 const discord = require("../js/discord");
 const _ = require("underscore");
 const dao = require('./dao.js');
-const main = require("./dialogue/main.js");
-const bitcorn = require("./dialogue/bitcorn.js");
+const {definitions} = require('./worlddefinitions');
 const quests = require("./quests/quests.js");
 const Formulas = require("./formulas");
 
@@ -10,15 +9,13 @@ class DialogueController {
     constructor(cache, platformClient) {
         this.cache = cache;
         this.platformClient = platformClient;
-        this.dialogueTrees = {
-            main: main.dialogues,
-            //bitcorn: bitcorn.dialogues
-        };
+        this.dialogueTrees = {}; // Optional explicit overrides for tests/tools.
+
     }
 
     findDialogueTree(mapId, npcId, npcKey) {
         try {
-            const dialogues = this.dialogueTrees[mapId];
+            const dialogues = this.dialogueTrees[mapId] || definitions.dialogues(mapId);
             if (dialogues === null || dialogues === undefined) {
                 return null;
             }

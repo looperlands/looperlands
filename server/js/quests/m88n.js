@@ -1,5 +1,5 @@
-Types = require("../../../shared/js/gametypes");
-quests = [
+const Types = require("../../../shared/js/gametypes");
+const quests = [
     {
         id: "KINGFROGGY_QUEST_1",
         name: "The King's Blue Pop Request",

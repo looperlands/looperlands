@@ -7,6 +7,7 @@ var fs = require('fs'),
 const discord = require("./discord.js");
 
 function main(config) {
+    require('../world-definitions').register();
     console.log(config);
     var ws = require("./ws"),
         WorldServer = require("./worldserver"),

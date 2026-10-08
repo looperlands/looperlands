@@ -8204,22 +8204,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     self.client.onWorldAmbience(config => {
                         self.previewTimeMode = config?.previewTimeMode;
                         self.worldAmbience.setConfig(config);
-                        WorldScenery.update(self.renderer, config);
-                        const audio = self.audioManager;
-                        if (!audio) return;
-                        const picnic = config?.picnic || config?.previewPicnic;
-                        const playPicnicMusic = picnic?.phase === 'celebrating' && picnic.music;
-                        if (self.picnicMusicArea && !playPicnicMusic) {
-                            audio.areas = audio.areas.filter(area => area !== self.picnicMusicArea);
-                            self.picnicMusicArea = null;
-                            audio.updateMusic();
-                        }
-                        if (playPicnicMusic && !self.picnicMusicArea) {
-                            audio.addArea(picnic.center.x - 8, picnic.center.y - 6, 16, 12, 'fluteguitar');
-                            self.picnicMusicArea = audio.areas.pop();
-                            audio.areas.unshift(self.picnicMusicArea);
-                            audio.updateMusic();
-                        }
+                        WorldScenery.update(self.renderer, config, self);
                     });
 
                     self.client.onChatMessage(function (entityId, message, options) {
@@ -8273,7 +8258,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         self.app.eventBoard?.disconnect();
                         self.conversationHold.stop(); self.app.closeChoicesPopup();
                         self.worldAmbience.clear();
-                        WorldScenery.update(self.renderer, null);
+                        WorldScenery.update(self.renderer, null, self);
                         if (self.player) {
                             self.player.die();
                         }

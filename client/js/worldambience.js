@@ -14,8 +14,8 @@ define(function () {
 
         getRenderState() {
             if (!this.config) return null;
-            const {particles, particleCount, epoch} = this.config;
-            return {particles, particleCount, epoch, reducedMotion: this.reducedMotion};
+            const {particles, particleCount, epoch, effects, bounds} = this.config;
+            return {particles, particleCount, epoch, reducedMotion: this.reducedMotion, ...(effects ? {effects} : {}), ...(bounds ? {bounds} : {})};
         }
 
         updatePreviewControls(config) {

@@ -1,8 +1,8 @@
-Types = require("../../../shared/js/gametypes");
+const Types = require("../../../shared/js/gametypes");
 
 
 ///MAIN QUESTS///
-quests = [
+const quests = [
     {
         id: "OA_QUEST_1",
         name: "Hushwind's Slimy Problem",

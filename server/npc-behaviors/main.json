@@ -11,7 +11,79 @@
     "nightOpacity": 0.3,
     "mode": "cycle",
     "particles": "fireflies",
-    "particleCount": 12
+    "particleCount": 12,
+    "areas": {
+      "Town": [
+        {
+          "type": "fireflies",
+          "count": 18
+        },
+        {
+          "type": "pollen",
+          "count": 3
+        }
+      ],
+      "Forest": [
+        {
+          "type": "leaves",
+          "count": 9
+        },
+        {
+          "type": "pollen",
+          "count": 8
+        }
+      ],
+      "Desert": [
+        {
+          "type": "dust",
+          "count": 16
+        },
+        {
+          "type": "gusts",
+          "count": 5
+        }
+      ],
+      "Beach": [
+        {
+          "type": "spray",
+          "count": 11
+        },
+        {
+          "type": "sand",
+          "count": 6
+        }
+      ],
+      "Party beach": [
+        {
+          "type": "spray",
+          "count": 11
+        },
+        {
+          "type": "sand",
+          "count": 6
+        }
+      ],
+      "Lavaland": [
+        {
+          "type": "embers",
+          "count": 10
+        },
+        {
+          "type": "ash",
+          "count": 6
+        }
+      ],
+      "Graveyard": [
+        {
+          "type": "mist",
+          "count": 4
+        },
+        {
+          "type": "fireflies",
+          "count": 5
+        }
+      ]
+    }
   },
   "npcs": [
     {

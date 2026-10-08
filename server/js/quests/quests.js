@@ -1,16 +1,8 @@
 const dao = require('../dao.js');
+const questState = require('./queststate');
 const Formulas = require('../formulas.js');
 
-const main = require('./main.js');
-const oa = require('./oa.js');
-const cobsfarm = require('./cobsfarm.js');
-const cobsfarmcity = require('./cobsfarmcity.js');
-const sdu = require('./shortdestroyers.js');
-const m88n = require('./m88n.js');
-const MRMlabs = require('./MRMlabs.js');
-const robits = require('./robits.js');
-const taikotown = require('./taikotown.js');
-const bitcorn = require('./bitcorn.js');
+const {definitions} = require('../worlddefinitions');
 const _ = require('underscore');
 const objectives = require('./objectives');
 const PlayerQuestEventConsumer = require('./playerquesteventconsumer.js');
@@ -22,40 +14,17 @@ const STATES = {
     FINISHED: "FINISHED" // completed and turned in
 }
 
-// Put new quests from other files here
-let maps = [main.quests, oa.quests, cobsfarm.quests, cobsfarmcity.quests, m88n.quests, MRMlabs.quests, sdu.quests, robits.quests, taikotown.quests, bitcorn.quests]
-const eventConsumer = new PlayerQuestEventConsumer.PlayerQuestEventConsumer()
-
-function findDuplicateValues(arr) {
-    const frequencyMap = {};
-    const duplicates = [];
-
-    for (const item of arr) {
-        if (!frequencyMap[item]) {
-            frequencyMap[item] = 1;
-        } else {
-            if (frequencyMap[item] === 1) {
-                duplicates.push(item);
-            }
-            frequencyMap[item]++;
-        }
-    }
-
-    return duplicates;
+const eventConsumer = new PlayerQuestEventConsumer.PlayerQuestEventConsumer();
+const quests = definitions.quests;
+const questsByNPC = {}, questsByID = {};
+function indexDefinitions() {
+    quests.forEach(quest => validateQuest(quest));
+    for (const key of Object.keys(questsByNPC)) delete questsByNPC[key];
+    for (const key of Object.keys(questsByID)) delete questsByID[key];
+    Object.assign(questsByNPC, groupBy(quests, 'npc'));
+    Object.assign(questsByID, groupBy(quests, 'id', true));
 }
-
-const quests = maps.flat();
-let ids = quests.map(quest => quest.id);
-let duplicateIds = findDuplicateValues(ids);
-
-if (duplicateIds.length !== 0) {
-    console.error("Duplicate quest IDs found so exiting: ", duplicateIds)
-    process.exit(1);
-}
-
-quests.forEach(quest => validateQuest(quest));
-const questsByNPC = groupBy(quests, 'npc');
-const questsByID = groupBy(quests, 'id', true);
+indexDefinitions(); definitions.subscribe(indexDefinitions);
 
 exports.handleNPCClick = function (cache, sessionId, npcId) {
     const sessionData = cache.get(sessionId);
@@ -214,8 +183,7 @@ function avatarHasQuest(questId, avatarQuests) {
 }
 
 function avatarHasCompletedQuest(questId, avatarQuests) {
-    return [STATES.COMPLETED, STATES.FINISHED].some(status =>
-        (avatarQuests?.[status] || []).some(quest => (quest.questKey || quest.id) === questId));
+    return questState.completed({quests: avatarQuests}, questId);
 }
 
 function startQuest(sessionData, questID) {

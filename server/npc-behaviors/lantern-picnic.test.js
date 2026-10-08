@@ -12,6 +12,7 @@ global.dialogues = [];
 global.quests = [];
 const Types = require('../../shared/js/gametypes');
 const DialogueController = require('../js/dialoguecontroller');
+require('../world-definitions').register();
 const registry = require('../js/quests/quests');
 const picnic = require('./lantern-picnic');
 picnic.install();
