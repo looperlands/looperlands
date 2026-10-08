@@ -82,12 +82,13 @@ docker_disk_usage() {
     df -h "$docker_root" || true
     df -i "$docker_root" || true
     docker system df || true
+    docker image ls --digests || true
 }
 echo 'Checking Docker storage before downloading the game update.'
 docker_disk_usage
-# Default image prune removes dangling, unused images only. Keep the last 24h
-# for investigation/rollback; never prune containers, tagged images or volumes.
-docker image prune --force --filter 'until=24h'
+# Default image prune removes dangling, unused images only. Recent releases
+# can fill the host too; never prune containers, tagged images or volumes.
+docker image prune --force
 if compose pull; then
     :
 else
