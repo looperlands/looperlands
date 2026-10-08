@@ -14,6 +14,26 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+      - name: Checkout the reviewed configuration
+        uses: actions/checkout@v3
+      - name: Upload the check-only deployment preflight
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          port: 22
+          source: "docker-compose.yml,bin/deploy-game-server.sh,bin/chat-storage-plan.py"
+          target: "/tmp/looperlands-preflight-${{ github.sha }}"
+      - name: Check rollout compatibility without changing containers or storage
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          port: 22
+          script: |
+            sudo bash /tmp/looperlands-preflight-${{ github.sha }}/bin/deploy-game-server.sh --check /tmp/looperlands-preflight-${{ github.sha }}/docker-compose.yml ${{ github.sha }}
       - name: Inspect storage mounts without reading chat or restarting the server
         uses: appleboy/ssh-action@v0.1.7
         with:
