@@ -4,7 +4,6 @@ const Types = require('../../shared/js/gametypes');
 const picnic = require('./lantern-picnic');
 const I = picnic.INVITE;
 const at = (key, label, x, y, scene, result, extra = {}) => ({key, label, x, y, scene, result, type: 'inspect', ...extra});
-const kill = (key, label, kinds, amount, scene, result) => ({key, label, kinds, amount, scene, result, type: 'kill'});
 const pick = (label, flag, response) => ({label, flag, response});
 const quest = (id, chapter, name, npcKey, requiredQuests, reason, objectives, conclusion, extra = {}) => ({
     id: 'LANTERN_' + id, chapter, name, npcKey, requiredQuests, reason, objectives, conclusion,
@@ -22,6 +21,9 @@ const npcs = [
     {key: 'north-miner', kind: 'miner', label: 'Northern Miner', x: 106, y: 6},
     {key: 'north-technician', kind: 'lavanpc', label: 'Orin, Relay Technician', x: 97, y: 29, spawn: true},
     {key: 'lantern-keeper', kind: 'villager', label: 'Rowan, Lantern Keeper', x: 67, y: 378, spawn: true},
+    {key: 'party-baker', kind: 'villager', label: 'Coastal Baker', x: 37, y: 449, spawn: true},
+    {key: 'party-trailguest', kind: 'villagegirl', label: 'Forest Neighbour', x: 43, y: 451, spawn: true},
+    {key: 'party-lanternhand', kind: 'guard', label: 'Lantern Hand', x: 40, y: 453, spawn: true},
     {key: 'party-wildwill', kind: 'wildwill', label: 'Wild Will', x: 35, y: 463}
 ];
 
@@ -45,12 +47,12 @@ const quests = [
         {choices: [pick('Repair the coastal signal first.', 'lantern:coast-first', 'Jimi will keep the recovered letters dry while you make the crossing safe.'),
             pick('Check on the stranded travellers first.', 'lantern:travellers-first', 'Jimi points out the waiting place east of the signal. Their safety comes before the repair.')]}),
     quest('MILL_LIGHT', 2, 'The Mill Without a Light', 'mill-scientist', ['LANTERN_WRECK_LETTERS'],
-        'The scientist stayed at the mill because its lantern no longer receives a signal. Enter the windmill from southern Town to inspect the receiver.',
+        'The scientist stayed at the mill because its lantern no longer receives a signal. Use the old-mill passage beside the southern Town windmill, then inspect the receiver.',
         [at('receiver', 'Inspect the mill receiver', 127, 295, 'Windmill', 'The gears still turn. The disconnected receiver, not the mill itself, stopped the light.')],
         'The scientist gives you a repaired connector and a map of the coastal relay. The fault continues inland into the forest.'),
     quest('COAST_SIGNAL', 2, 'A Signal Across the Water', 'coastal-jimi', ['LANTERN_MILL_LIGHT'],
         'The mill connector can restore the coastal relay. Your earlier decision explains which task the travellers expect you to do first.',
-        [at('travellers', 'Check the stranded travellers\' waiting place', 62, 264, 'Beach', 'The travellers have water and a safe waiting place. They ask you to pass their invitations onward.',
+        [at('travellers', 'Check the stranded travellers\' waiting place', 61, 263, 'Beach', 'The travellers have water and a safe waiting place. They ask you to pass their invitations onward.',
             {when: 'lantern:travellers-first'}),
          at('relay', 'Fit the connector to the coastal relay', 57, 260, 'Beach', 'The coastal lantern glows again. Its next marker points north to Mara in the forest.')],
         'Jimi can guide the next landing because you repaired the signal. He promises to bring a basket of sea-salt bread when the road opens.'),
@@ -111,7 +113,7 @@ const quests = [
     quest('ROWAN_PROTECTED', 6, 'What Rowan Was Protecting', 'north-technician', ['LANTERN_MISSING_REGULATOR'],
         'Orin asks you to recover the keeper\'s service record before confronting Rowan. The north was dangerous, but the shutdown became its own danger.',
         [at('record', 'Read the northern service record', 101, 16, 'Lavaland', 'Rowan kept the flame running alone after the rescue. The record names the Gauntlet control room as his refuge.')],
-        'Carry Elian\'s letter and the regulator report to the Gauntlet. Enter from northern Town; Rowan waits beside the old controls.'),
+        'Carry Elian\'s letter and the regulator report to the Gauntlet. Use the keeper\'s passage beside Adam in northern Town; Rowan waits beside the old controls.'),
     quest('OLD_DEFENCES', 7, 'Through the Old Defences', 'lantern-keeper', ['LANTERN_ROWAN_PROTECTED'],
         'Rowan will listen after the old emergency controls are secured. You may use the isolation switches rather than fight your way through.',
         [at('switch', 'Secure the Gauntlet isolation switch', 67, 373, 'Gauntlet', 'The isolation switch is locked safely. The defences cannot disrupt the restored regulator.'),
@@ -182,7 +184,7 @@ const quests = [
         'Will and Jimi will share a place at the gathering because you carried that invitation.', {optional: true}),
     quest('SPARK_TRAINING', 6, 'The Last Sparks: Control Practice', 'north-technician', ['LANTERN_MISSING_REGULATOR'],
         'Orin has an optional precision tool in Megamag. Practise the control sequence at the Fight Night practice post first; PvP is not required.',
-        [at('practice', 'Practise the relay control sequence', 20, 330, 'Fight night', 'The practice controls click safely into place. You can now identify the precision tool.')],
+        [at('practice', 'Practise the relay control sequence', 78, 248, 'Town · Fight Night practice post', 'The practice controls click safely into place. You can now identify the precision tool.')],
         'Orin trusts you with the optional Megamag tool recovery. It improves the lanterns but is not required to finish the story.', {optional: true}),
     quest('SPARK_TOOL', 7, 'The Last Sparks: A Golden Light', 'north-technician', ['LANTERN_SPARK_TRAINING'],
         'The precision tool is in Megamag, reached through the existing northern Lavaland door. Its guarded route is optional.',
@@ -197,4 +199,30 @@ for (const q of quests) {
     q.endText = q.conclusion;
 }
 const objectiveFlag = (q, objective, count) => 'lantern:objective:' + q.id + ':' + objective.key + (count ? ':' + count : '');
-module.exports = {version: 1, chapters, npcs, quests, objectiveFlag};
+// Personal, server-authorised passages into otherwise inaccessible main-map rooms.
+// Existing cross-map and event portals are left intact.
+const passages = [
+    {id: 'old-mill', label: 'Enter the old windmill', x: 39, y: 243, tx: 127, ty: 298, requires: I},
+    {id: 'mill-return', label: 'Return from the old windmill to Town', x: 127, y: 298, tx: 39, ty: 243, requires: I},
+    {id: 'crypt-archive', label: 'Enter the crypt archive', x: 64, y: 126, tx: 127, ty: 119, requires: 'LANTERN_STONE_NAMES'},
+    {id: 'crypt-return', label: 'Return from the archive to the graveyard', x: 127, y: 119, tx: 64, ty: 126, requires: 'LANTERN_STONE_NAMES'},
+    {id: 'keeper-room', label: 'Enter the keeper\'s Gauntlet passage', x: 35, y: 200, tx: 71, ty: 372, requires: 'LANTERN_ROWAN_PROTECTED'},
+    {id: 'keeper-return', label: 'Return from the keeper\'s passage to Town', x: 71, y: 372, tx: 35, ty: 200, requires: 'LANTERN_ROWAN_PROTECTED'}
+];
+const gatheringRoutines = npcs.filter(n => n.key.startsWith('party-') && n.spawn).map((n, index) => ({
+    key: n.key, kind: n.kind, label: n.label, origin: {x: n.x, y: n.y},
+    preset: 'socialise', area: {x: 5, y: 429, width: 94, height: 49}, stepMs: 650 + index * 50,
+    route: [{x: n.x, y: n.y, waitSeconds: 15, activity: 'making room for the neighbours'},
+        {x: n.x, y: n.y + 1, waitSeconds: 20, activity: 'checking the gathering supplies'}],
+    lines: {greeting: ['Welcome. We are making room for anyone who comes along the lantern road.'],
+        talk: ['We gather here so neighbours from different parts of the island can find each other.']}
+}));
+const gatheringConversation = {cooldownSeconds: 120, steps: [
+    {npc: 'party-baker', text: 'The bread is ready. Leave a little room for the forest baskets too.'},
+    {npc: 'party-trailguest', text: 'I brought berries. We never used to know when the coastal neighbours were coming.'},
+    {npc: 'party-lanternhand', text: 'I will keep a lantern by the landing so visitors can find us.'},
+    {npc: 'party-baker', text: 'A long table is useful when people can actually reach it.'},
+    {npc: 'party-trailguest', text: 'And when they know they are invited.'},
+    {npc: 'party-lanternhand', text: 'Then let us keep a place open for the next neighbour.'}
+]};
+module.exports = {version: 1, chapters, npcs, quests, objectiveFlag, passages, gatheringRoutines, gatheringConversation};

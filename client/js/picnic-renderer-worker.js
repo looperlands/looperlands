@@ -10,6 +10,24 @@ function draw(context, picnic, view) {
     const y = (picnic.center.y * 16 - view.cameraY) * scale;
     // A small checkered blanket, bread, cake and two lanterns. These are
     // feature scenery, anchored to the same world coordinates as NPCs.
+    if (picnic.longTable) {
+        for (const offset of [-3, 0, 3]) {
+            draw(context, {...picnic, longTable: false, center: {x: picnic.center.x + offset, y: picnic.center.y}}, view);
+        }
+        context.fillStyle = '#5d3944';
+        context.fillRect(x - 42 * scale, y + 3 * scale, 84 * scale, 3 * scale);
+        context.fillStyle = picnic.golden ? '#ffe299' : '#d3b38c';
+        context.fillRect(x + 30 * scale, y - 5 * scale, 6 * scale, 6 * scale);
+        if (picnic.keepsake) {
+            context.fillStyle = '#b7d4d0';
+            context.fillRect(x + 19 * scale, y - 3 * scale, 4 * scale, 9 * scale);
+        }
+        if (picnic.watchRelief) {
+            context.fillStyle = '#9eb995';
+            context.fillRect(x - 36 * scale, y + 15 * scale, 10 * scale, 5 * scale);
+        }
+        return;
+    }
     context.fillStyle = '#673c50';
     context.fillRect(x - 20 * scale, y - 8 * scale, 40 * scale, 24 * scale);
     for (let row = 0; row < 3; row++) {

@@ -8151,6 +8151,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         if (entity) {
                             currentOrientation = entity.orientation;
 
+                            if (id === self.playerId) entity.stop();
                             self.makeCharacterTeleportTo(entity, x, y);
                             entity.setOrientation(currentOrientation);
 

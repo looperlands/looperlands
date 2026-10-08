@@ -11,10 +11,10 @@ const ready = (data, q) => active(data, q.id) && q.objectives.filter(o => applic
 const progress = (data, q) => q.objectives.filter(o => applicable(data, o)).map(o => ({...o, done: objectiveDone(data, q, o)}));
 function memories(data) {
     const lines = [];
-    if (has(data, picnic.SHARE)) lines.push('You shared the basket: blankets first, bread next.');
-    else if (has(data, picnic.RETURN)) lines.push('You arranged the basket\'s return before Adam packed the bread.');
-    if (has(data, picnic.QUIET)) lines.push('You chose a quiet invitation so the watch could rest.');
-    else if (has(data, picnic.MUSIC)) lines.push('You chose music to bring the neighbours together.');
+    if (has(data, picnic.SHARE)) lines.push('I remember your sharing idea: blankets first, bread next.');
+    else if (has(data, picnic.RETURN)) lines.push('I remember you asking Bstrat to return my basket before Adam packed the bread.');
+    if (has(data, picnic.QUIET)) lines.push('You chose a quiet picnic so the watch could rest.');
+    else if (has(data, picnic.MUSIC)) lines.push('You chose music and invited the watch to join the songs.');
     if (has(data, 'lantern:public-memorial')) lines.push('Vince explains the memorial publicly because you chose to remember together.');
     if (has(data, 'lantern:private-memorial')) lines.push('Vince keeps Elian\'s personal letter private because you asked for a quiet memorial.');
     if (has(data, 'lantern:caravan-detour')) lines.push('Nessa took the sheltered detour and brings lantern oil.');

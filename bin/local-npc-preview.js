@@ -115,6 +115,8 @@ api.listen(fixturePort, '127.0.0.1', () => {
     previewWorld = world;
     const Messages = require('../server/js/message');
     const packetFor = player => ({...world.npcBehavior.config.ambience, serverTime: Date.now(), epoch: 0,
+        ...world.lanternRoad.packet(player),
+        picnic: world.lanternRoad.packet(player).finalePicnic || picnicScene?.state || null,
         previewPicnic: picnicScene?.state || null,
         previewStory: {title: 'The Lantern Picnic', goal: picnic.progress(server.cache.get(player.sessionId)?.gameData),
             event: picnicScene?.state?.message || '',
@@ -156,7 +158,7 @@ api.listen(fixturePort, '127.0.0.1', () => {
 
         for (const player of Object.values(world.players)) {
             const packet = packetFor(player);
-            const goal = packet.previewStory.goal + packet.previewStory.event;
+            const goal = JSON.stringify([packet.story, packet.picnic, packet.previewStory]);
             if (world.map.getSceneAt(player.x, player.y)?.name !== packet.scene) {
                 storyGoals.delete(player.id);
                 continue;

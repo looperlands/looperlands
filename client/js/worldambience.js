@@ -98,6 +98,43 @@ define(function () {
                 this.story.firstChild.textContent = (story.title || 'The Lantern Picnic') + ' — your next step';
                 this.storyGoal.textContent = story.goal;
                 this.storyEvent.textContent = story.event || '';
+                if (story.quests) {
+                    if (!this.journalContent) {
+                        this.journalContent = document.createElement('div');
+                        this.journalContent.style.cssText = 'max-height:45vh;overflow:auto;';
+                        this.story.appendChild(this.journalContent);
+                    }
+                    this.journalContent.replaceChildren();
+                    const line = (text, strong = false) => {
+                        const element = document.createElement(strong ? 'strong' : 'p');
+                        element.textContent = text;
+                        this.journalContent.appendChild(element);
+                    };
+                    line(story.chapter || '', true);
+                    line('Why: ' + story.why);
+                    line('What you know: ' + story.known);
+                    for (const memory of story.memories || []) line(memory);
+                    for (const quest of story.quests) line((quest.optional ? 'Optional · ' : '') + quest.name + ': ' + quest.next);
+                    const action = (item, type) => {
+                        const button = document.createElement('button');
+                        button.textContent = item.label;
+                        button.style.cssText = 'display:block;margin:6px 0;font:inherit;color:#ffe3a1;background:#6b4953;border:1px solid #b99761;padding:5px 8px;cursor:pointer;';
+                        button.addEventListener('click', async event => {
+                            event.stopPropagation(); button.disabled = true;
+                            try {
+                                const sessionId = new URLSearchParams(window.location.search).get('sessionId');
+                                const response = await fetch('/session/' + sessionId + '/story/' + type + '/' + encodeURIComponent(item.id), {method: 'POST'});
+                                const result = await response.json();
+                                if (!response.ok) throw new Error(result.error || 'Please try again.');
+                                this.storyEvent.textContent = result.text;
+                            } catch (error) { this.storyEvent.textContent = error.message; }
+                            finally { button.disabled = false; }
+                        });
+                        this.journalContent.appendChild(button);
+                    };
+                    for (const item of story.inspect || []) action({...item, label: 'Inspect: ' + item.label}, 'inspect');
+                    for (const item of story.passages || []) action(item, 'travel');
+                }
                 this.replay.style.display = config.previewControls && story.canReplay ? 'inline-block' : 'none';
             }
         }

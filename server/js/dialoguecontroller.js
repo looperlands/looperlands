@@ -5,8 +5,6 @@ const main = require("./dialogue/main.js");
 const bitcorn = require("./dialogue/bitcorn.js");
 const quests = require("./quests/quests.js");
 const Formulas = require("./formulas");
-const roadState = require('../npc-behaviors/lantern-road-state');
-const roadContent = require('../npc-behaviors/lantern-road');
 
 class DialogueController {
     constructor(cache, platformClient) {
@@ -261,9 +259,11 @@ class DialogueController {
 
         let result;
         switch (condition.if_not || condition.if) {
-            case 'story_objectives_done':
-                result = roadState.ready(sessionData.gameData, roadContent.quests.find(q => q.id === condition.quest));
+            case 'story_objectives_done': {
+                const definition = require('../npc-behaviors/lantern-road').quests.find(q => q.id === condition.quest);
+                result = !!definition && require('../npc-behaviors/lantern-road-state').ready(sessionData.gameData, definition);
                 break;
+            }
             case 'open_quest':
             case 'quest_open':
                 result = this.checkQuestIsOpen(condition.quest, sessionData);

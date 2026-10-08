@@ -85,19 +85,24 @@ class NpcBehavior {
         this.conversationCursor = 0;
         this.nextConversation = now() + 20000;
         this.recentSpeech = [];
-        for (const definition of config.npcs) {
-            const npc = Object.values(world.npcs).find(entity => entity.kind === Types.getKindFromString(definition.kind) &&
-                entity.x === definition.origin.x && entity.y === definition.origin.y);
-            if (!npc || definition.route.some(p => !this.walkable(p))) {
-                console.warn('Skipping NPC routine with missing NPC or blocked waypoint: ' + definition.key);
-                continue;
-            }
-            const routine = {definition, npc, waypoint: 0, path: [], nextStep: now() + 2000,
-                pauseUntil: 0, speechUntil: 0, lastReaction: 0, lineIndexes: {}, blockedSince: 0};
-            npc.behaviorState = {key: definition.key, label: definition.label, preset: definition.preset,
-                activity: 'resting', orientation: Types.Orientations.DOWN, moveSpeed: definition.stepMs - 100};
-            this.routines.set(definition.key, routine);
+        for (const definition of config.npcs) this.registerRoutine(definition);
+    }
+
+    registerRoutine(definition) {
+        validateConfig({enabled: true, npcs: [definition]});
+        if (this.routines.has(definition.key)) return false;
+        const npc = Object.values(this.world.npcs).find(entity => entity.kind === Types.getKindFromString(definition.kind) &&
+            entity.x === definition.origin.x && entity.y === definition.origin.y);
+        if (!npc || definition.route.some(p => !this.walkable(p))) {
+            console.warn('Skipping NPC routine with missing NPC or blocked waypoint: ' + definition.key);
+            return false;
         }
+        const routine = {definition, npc, waypoint: 0, path: [], nextStep: this.now() + 2000,
+            pauseUntil: 0, speechUntil: 0, lastReaction: 0, lineIndexes: {}, blockedSince: 0};
+        npc.behaviorState = {key: definition.key, label: definition.label, preset: definition.preset,
+            activity: 'resting', orientation: Types.Orientations.DOWN, moveSpeed: definition.stepMs - 100};
+        this.routines.set(definition.key, routine);
+        return true;
     }
 
     walkable(point) {
@@ -251,7 +256,7 @@ class NpcBehavior {
             if (state.snapshot !== snapshot) {
                 this.world.pushToPlayer(player, new Messages.WorldAmbience({...ambience,
                     particles: active ? ambience.particles : 'none', nightOpacity: active ? ambience.nightOpacity : 0,
-                    serverTime: time, epoch: 0, picnic: picnic.state && {...picnic.state, music: (this.world.server.cache.get(player.sessionId)?.gameData?.choices || []).includes('lantern:music-picnic')},
+                    serverTime: time, epoch: 0,
                     story: {title: 'The Lantern Picnic', goal, event: active ? picnic.state?.message : ''}, ...road,
                     picnic: road?.finalePicnic || (picnic.state && {...picnic.state, music: (this.world.server.cache.get(player.sessionId)?.gameData?.choices || []).includes('lantern:music-picnic')})}));
                 state.snapshot = snapshot;

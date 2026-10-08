@@ -538,6 +538,7 @@ module.exports = World = cls.Class.extend({
         this.server.cache.del(player.sessionId);
         player.broadcast(player.despawn());
         this.removeEntity(player);
+        this.lanternRoad?.forget(player);
         delete this.players[player.id];
         delete this.outgoingQueues[player.id];
         player.playerEventBroker.destroy();
