@@ -142,7 +142,7 @@ Started rounds retain their rules. Use a new submission or **Duplicate setup** f
 
 ### On the website
 
-Go to [LooperLands leaderboards](https://looperlands.io/leaderboards?tab=events) and choose **Event competitions**. Event cards have **View standings** and **Competition rules** or **Rules & sign-up** buttons. On an approved event's page, select the correct round and use **Standings**, **Rules & prizes** and **My playtime**. Eligible organizers also see **Organizer tools**.
+Go to [LooperLands leaderboards](https://looperlands.io/leaderboards?tab=events) and choose the **Events** tab. Event cards have **View standings** and **Competition rules** or **Rules & sign-up** buttons. On an approved event's page, select the correct round and use **Standings**, **Rules & prizes** and **My playtime**. Eligible organizers also see **Organizer tools**.
 
 For required registration, connect your wallet and sign up before the deadline. Open participation needs no sign-up. Your registration belongs to a particular round, not every future edition of the event.
 
