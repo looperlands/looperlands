@@ -336,6 +336,7 @@ onmessage = (e) => {
 
         // Restore the default composite operation
         combinedCtx.restore();
+        drawCombatFeedback(combinedCtx, e.data.combatFeedback);
 
         requestAnimationFrame(() => {
             postMessage({type: "rendered"});
@@ -931,4 +932,55 @@ function toPerc(angle) {
 
 function toRad(angle) {
     return angle * Math.PI / 180;
+}
+
+const IMPACT_RAYS = [
+    [1, 0], [-1, 0], [0, 1], [0, -1],
+];
+
+// Short pixel bursts and steady target brackets, composed above scene lighting.
+function drawCombatFeedback(ctx, feedback) {
+    if (!feedback) return;
+    ctx.save();
+    ctx.translate(-Math.round(feedback.cameraX * feedback.scale), -Math.round(feedback.cameraY * feedback.scale));
+    const scale = feedback.scale;
+    const rect = (x, y, width, height) => ctx.fillRect(
+        Math.round(x * scale), Math.round(y * scale), width * scale, height * scale);
+    const corners = (target, thickness, extension) => {
+        const {x, y, width, height} = target;
+        for (const [cx, cy, dx, dy] of [
+            [x, y, 1, 1], [x + width, y, -1, 1],
+            [x, y + height, 1, -1], [x + width, y + height, -1, -1],
+        ]) {
+            rect(cx - extension + (dx < 0 ? -4 : 0), cy - extension, 4 + extension * 2, thickness);
+            rect(cx - extension, cy - extension + (dy < 0 ? -4 : 0), thickness, 4 + extension * 2);
+        }
+    };
+    if (feedback.target) {
+        ctx.fillStyle = '#231b24';
+        corners(feedback.target, 3, 1);
+        ctx.fillStyle = '#ffd66b';
+        corners(feedback.target, 1, 0);
+    }
+    for (const impact of feedback.impacts) {
+        const progress = impact.progress;
+        const distance = 3 + Math.round((1 - Math.pow(1 - progress, 2)) * 7);
+        const size = progress < 0.5 ? 2 : 1;
+        ctx.globalAlpha = 1 - progress;
+        for (const [dx, dy] of IMPACT_RAYS) {
+            const x = impact.x + Math.round(dx * distance) - 1;
+            const y = impact.y + Math.round(dy * distance) - 1;
+            ctx.fillStyle = '#ffb13b';
+            rect(x, y, size, size);
+            ctx.fillStyle = '#fff2bf';
+            rect(x, y, 1, 1);
+        }
+        if (progress < 0.25) {
+            ctx.globalAlpha = 0.85 * (1 - progress / 0.25);
+            ctx.fillStyle = '#fff2bf';
+            rect(impact.x - 3, impact.y - 1, 7, 3);
+            rect(impact.x - 1, impact.y - 3, 3, 7);
+        }
+    }
+    ctx.restore();
 }

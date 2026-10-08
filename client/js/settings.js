@@ -1,6 +1,8 @@
 class GameSettings {
     constructor(app) {
         this.app = app;
+        this.reducedMotionQuery = typeof window.matchMedia === 'function'
+            ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
         // Check if localStorage is available in the browser
         if (typeof localStorage === 'undefined') {
             console.error('LocalStorage is not available in this browser.');
@@ -48,7 +50,12 @@ class GameSettings {
             localStorage.setItem('enableDynamicLights', 'true');
         }
 
+        if (localStorage.getItem('combatEffectsEnabled') === null) {
+            localStorage.setItem('combatEffectsEnabled', 'true');
+        }
+
         // Initialize checkbox states based on localStorage
+        document.getElementById('combatEffectsEnabled').checked = this.getCombatEffectsEnabled();
         document.getElementById('musicEnabled').checked = this.getMusicEnabled();
         document.getElementById('streamMusicEnabled').checked = this.getStreamMusicEnabled();
         document.getElementById('centeredCamera').checked = this.getCenteredCamera();
@@ -187,7 +194,23 @@ class GameSettings {
         localStorage.setItem('enableDynamicLights', enabled ? 'true' : 'false');
     }
 
+    getCombatEffectsEnabled() {
+        return localStorage.getItem('combatEffectsEnabled') === 'true';
+    }
+
+    setCombatEffectsEnabled(enabled) {
+        localStorage.setItem('combatEffectsEnabled', enabled ? 'true' : 'false');
+        if (!enabled && this.app.game && this.app.game.combatFeedback) {
+            this.app.game.combatFeedback.clear();
+        }
+    }
+
+    getReducedMotion() {
+        return !!(this.reducedMotionQuery && this.reducedMotionQuery.matches);
+    }
+
     setSettings() {
+        this.setCombatEffectsEnabled(document.getElementById('combatEffectsEnabled').checked);
         this.setMusicEnabled(document.getElementById('musicEnabled').checked);
         this.setStreamMusicEnabled(document.getElementById('streamMusicEnabled').checked);
         this.setCenteredCamera(document.getElementById('centeredCamera').checked);
