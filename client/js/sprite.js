@@ -120,7 +120,7 @@ define(['jquery', 'animation', 'sprites'], function ($, Animation, sprites) {
 			let self = this;
 			let src;
 			if (!this.dynamicNFT && window.location.href.indexOf("127.0.0.1") > -1) {
-				src = "http://127.0.0.1:8000/" + this.filepath;
+				src = new URL(this.filepath, window.location.href).href;
 			} else {
 				src = this.filepath;
 			}

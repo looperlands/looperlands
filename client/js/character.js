@@ -187,6 +187,10 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
             this.stop_pathing_callback = callback;
         },
 
+        onPathContinuation: function(callback) {
+            this.path_continuation_callback = callback;
+        },
+
         onLeave(area, callback) {
             this.leave_callback = callback;
             this.leave_callback_area = area;
@@ -251,6 +255,19 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
                     this.interrupted = false;
                 }
                 else {
+                    // Held movement input can supply the next tile without an idle frame
+                    // or another asynchronous pathfinding request between steps.
+                    if(!this.hasNextStep() && !this.hasChangedItsPath() && !this.followingMode && this.path_continuation_callback) {
+                        var continuation = this.path_continuation_callback();
+                        if(continuation && continuation.length > 1) {
+                            this.path = continuation;
+                            this.step = 0;
+                            if(this.start_pathing_callback) {
+                                this.start_pathing_callback(continuation);
+                            }
+                        }
+                    }
+
                     if(this.hasNextStep()) {
                         this.nextGridX = this.path[this.step+1][0];
                         this.nextGridY = this.path[this.step+1][1];

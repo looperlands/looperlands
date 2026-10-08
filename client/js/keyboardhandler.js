@@ -26,6 +26,7 @@ class KeyBoardHandler {
         };
         this.game = game;
         this.interval = false;
+        this.game.player.onPathContinuation(() => this.getContinuationPath());
 
         console.log("Created keyboard handler");
 
@@ -119,14 +120,59 @@ class KeyBoardHandler {
     }
 
     handleMovement() {
-        if (this.game.player.path != null || $('#chatbox').hasClass("active")  || $(`#minigame`).hasClass("active") || $(`#dialogue-popup`).hasClass("active")) {
+        if (this.game.player.path != null || this.movementIsBlocked()) {
+            return;
+        }
+        const { dx, dy } = this.getMovementDirection();
+        if (dx === 0 && dy === 0) {
             return;
         }
         var x = this.game.player.gridX;
         var y = this.game.player.gridY;
-        this.game.click({x: x + this.keys.d + this.keys.arrowright - this.keys.a - this.keys.arrowleft,
-                         y: y + this.keys.s + this.keys.arrowdown - this.keys.w - this.keys.arrowup,
+        this.game.click({x: x + dx,
+                         y: y + dy,
                           keyboard: true});
+    }
+
+    getMovementDirection() {
+        return {
+            dx: Math.sign(this.keys.d + this.keys.arrowright - this.keys.a - this.keys.arrowleft),
+            dy: Math.sign(this.keys.s + this.keys.arrowdown - this.keys.w - this.keys.arrowup),
+        };
+    }
+
+    movementIsBlocked() {
+        return !this.game.started || this.game.player.isDead || this.game.player.isRooted
+            || this.inputHasFocus() || this.hasOpenPanel()
+            || $('#dialogue-popup').hasClass('active')
+            || this.game.minigameLoaded || this.game.hoveringMinigamePrompt || this.game.doorCheck
+            || !!$('.panel').filter(function () { return $(this).is(':hover'); }).length;
+    }
+
+    getContinuationPath() {
+        const player = this.game.player;
+        if (!this.game.keyboardMovement || this.movementIsBlocked() || player.hasTarget()
+            || this.game.map.isDoor(player.gridX, player.gridY) || this.game.isItemAt(player.gridX, player.gridY)) {
+            return null;
+        }
+
+        const { dx, dy } = this.getMovementDirection();
+        if ((dx === 0 && dy === 0) || this.game.canFish(player.gridX + dx, player.gridY + dy, true)) {
+            return null;
+        }
+
+        const start = [player.gridX, player.gridY];
+        const end = [player.gridX + dx, player.gridY + dy];
+        // Diagonal input still travels along two cardinal tiles, just like pathfinding.
+        const paths = dx && dy
+            ? [[start, [end[0], start[1]], end], [start, [start[0], end[1]], end]]
+            : [[start, end]];
+        return paths.find(path => path.slice(1).every(([x, y]) => {
+            const row = this.game.finalPathingGrid[y];
+            return row && (row[x] === 0 || row[x] === false) && !this.game.map.isColliding(x, y)
+                && !this.game.getEntityAt(x, y)
+                && !this.game.map.isDoor(x, y);
+        })) || null;
     }
 
     handleBlur() {
