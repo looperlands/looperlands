@@ -305,15 +305,14 @@ define(['character', 'projectile', 'timer'], function (Character, Projectile, Ti
         },
 
         updateAnimatedTiles: function () {
-            var self = this,
-                t = this.game.currentTime;
-
-            let animatedTilesEnabled = this.game.app.settings.getAnimatedTiles();
-            let updateAnimatedTilesFn = function (tile) {
-                if (animatedTilesEnabled) {
-                    tile.animate(t)
-                }
+            if (!this.game.app.settings.getAnimatedTiles()) {
+                return;
             }
+
+            var t = this.game.currentTime;
+            let updateAnimatedTilesFn = function (tile) {
+                tile.animate(t);
+            };
             this.game.forEachAnimatedTile(updateAnimatedTilesFn);
             this.game.forEachHighAnimatedTile(updateAnimatedTilesFn);
         },
