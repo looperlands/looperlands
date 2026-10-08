@@ -11,6 +11,7 @@ let lights = [];
 let obstacles = [];
 
 let hasLoadedFont = false;
+let fontLoadPromise = null;
 let GLOBAL_LIGHT_INTENSITY = 0.2;
 const MIN_GLOBAL_LIGHT_INTENSITY = 0.08;
 const MAX_GLOBAL_LIGHT_INTENSITY = 0.90;
@@ -88,11 +89,19 @@ class Sprite {
         this.offsetY = offsetY;
     }
 
-    async load() {
-        let self = this;
-        loadImg(this.src).then((img) => {
-            self.image = img;
-        });
+    load() {
+        if (this.image !== undefined) {
+            return Promise.resolve(this.image);
+        }
+        if (!this.loadPromise) {
+            this.loadPromise = loadImg(this.src).then((img) => {
+                this.image = img;
+                return img;
+            }).finally(() => {
+                this.loadPromise = null;
+            });
+        }
+        return this.loadPromise;
     }
 }
 
@@ -270,8 +279,12 @@ function render(id, tiles, cameraX, cameraY, scale, clear, serverTime, scene, op
 }
 
 onmessage = (e) => {
-    if (!hasLoadedFont) {
-        loadFont();
+    if (!hasLoadedFont && !fontLoadPromise) {
+        fontLoadPromise = loadFont().catch((error) => {
+            console.log('Unable to load renderer font', error);
+        }).finally(() => {
+            fontLoadPromise = null;
+        });
     }
 
     if (e.data.type === "setTileset") {
@@ -517,6 +530,11 @@ function drawEntities(drawEntitiesData) {
             let sprite = sprites[spriteName];
 
             if (sprite) {
+                if (sprite.image === undefined) {
+                    sprite.load();
+                    ctx = origCtx;
+                    continue;
+                }
                 try {
                     if (a) {
                         let centerX = dW / 2;
@@ -536,11 +554,6 @@ function drawEntities(drawEntitiesData) {
                     }
                 } catch (e) {
                     console.log('exception', e);
-                    if (sprite.image === undefined) {
-                        sprite.load();
-                    } else {
-                        console.log(e);
-                    }
                 }
             } else {
                 console.log('no sprite', spriteName);
