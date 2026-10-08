@@ -95,4 +95,3 @@ test('stepped camera updates interpolate continuously, settle, and snap on telep
     camera = {x: 300, y: 8, scale: 2};
     expect(ambience.updateView(1816).x).toBe(300);
 });
-

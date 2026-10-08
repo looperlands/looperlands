@@ -58,13 +58,13 @@ const questsByID = groupBy(quests, 'id', true);
 
 exports.handleNPCClick = function (cache, sessionId, npcId) {
     const sessionData = cache.get(sessionId);
-    const npcQuests = questsByNPC[npcId];
+    const npcQuests = questsByNPC[npcId]?.filter(quest => !quest.dialogueOnly);
     const broker = PlayerEventBroker.playerEventBrokers[sessionId];
 
     let response = handleHandoutQuests(npcQuests, sessionData, cache, sessionId) ||
         handleInProgressQuests(npcQuests, sessionData, broker, cache, sessionId) ||
-        handleNpcTargetQuests(quests, sessionData, npcId) ||
-        handleReturnToNpcQuests(quests, sessionData, npcId, cache, sessionId, broker);
+        handleNpcTargetQuests(quests.filter(quest => !quest.dialogueOnly), sessionData, npcId) ||
+        handleReturnToNpcQuests(quests.filter(quest => !quest.dialogueOnly), sessionData, npcId, cache, sessionId, broker);
 
     cache.set(sessionId, sessionData);
 

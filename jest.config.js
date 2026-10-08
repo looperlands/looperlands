@@ -1,5 +1,6 @@
 module.exports = {
   collectCoverage: true,
+  testPathIgnorePatterns: ['/node_modules/', '/client-build/'],
   coverageReporters: ['text', 'lcov'],
   coverageThreshold: {
     global: {
