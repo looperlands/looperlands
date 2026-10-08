@@ -9,11 +9,6 @@ define(function() {
             this.gridX = 0;
             this.gridY = 0;
             this.offset = 0.5;
-            // Quick feel test: average only the last 40 ms; ?cameraSmooth=0 restores direct follow.
-            var smoothing = typeof window !== 'undefined'
-                ? new URLSearchParams(window.location.search).get('cameraSmooth') : null;
-            this.followWindow = smoothing === null || !isFinite(Number(smoothing)) ? 40 : Math.max(0, Number(smoothing));
-            this.followSamples = [];
             this.rescale();
             this.checkBounds();
         },
@@ -93,38 +88,13 @@ define(function() {
             }
         },
 
-        lookAt: function(entity, smooth) {
+        lookAt: function(entity) {
             if (entity) {
                 var r = this.renderer,
                     x = Math.round( entity.x - (Math.floor(this.gridW / 2) * r.tilesize) ),
                     y = Math.round( entity.y - (Math.floor(this.gridH / 2) * r.tilesize) );
         
-                var now = Date.now(),
-                    previousX = this.x,
-                    previousY = this.y;
-
-                // Clamp the target first so room edges do not accumulate follow lag.
                 this.setPosition(x, y);
-                x = this.x;
-                y = this.y;
-
-                if (smooth && this.followWindow > 0 && this.followSamples.length > 0
-                    && Math.abs(x - previousX) < this.gridW * r.tilesize / 2
-                    && Math.abs(y - previousY) < this.gridH * r.tilesize / 2) {
-                    this.followSamples.push({x: x, y: y, time: now});
-                    this.followSamples = this.followSamples.filter(function(sample) {
-                        return sample.time >= now - this.followWindow;
-                    }, this);
-                    var sumX = 0, sumY = 0;
-                    this.followSamples.forEach(function(sample) {
-                        sumX += sample.x;
-                        sumY += sample.y;
-                    });
-                    this.setPosition(Math.round(sumX / this.followSamples.length),
-                        Math.round(sumY / this.followSamples.length));
-                } else {
-                    this.followSamples = [{x: x, y: y, time: now}];
-                }
             }
         },
 
