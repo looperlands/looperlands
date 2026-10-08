@@ -482,6 +482,7 @@ LooperLands (https://looperlands.io), initially conceived by BalksHamster and bu
                     <header class="sc-panel-heading">
                         <strong>Chat</strong><span>Good company. Great adventures.</span>
                         <div class="sc-panel-controls">
+                            <button id="chat-overlay" type="button" title="Show incoming messages over the map">Map overlay</button>
                             <button id="chat-expand" type="button" aria-label="Expand chat" title="Expand chat">□</button>
                             <button id="chat-minimize" type="button" aria-label="Minimize chat" title="Minimize chat">−</button>
                         </div>
@@ -515,6 +516,10 @@ LooperLands (https://looperlands.io), initially conceived by BalksHamster and bu
                         </aside>
                     </div>
                     <div id="chat-profile" class="sc-profile-shade" hidden></div>
+                </section>
+                <section id="chat-mini" aria-label="Chat message overlay" hidden>
+                    <header><button id="chat-mini-open" type="button">Open chat</button><button id="chat-mini-hide" type="button">Hide</button></header>
+                    <div id="chat-mini-messages" role="log" aria-live="polite" aria-label="Incoming world messages" tabindex="0"></div>
                 </section>
                 <div id="population" class="pixel-corners-top">
                     <div id="instance-population" class="">
@@ -587,6 +592,7 @@ LooperLands (https://looperlands.io), initially conceived by BalksHamster and bu
 				<div id="shop-confirmation" class="panel hidden">
 					<div id="shop-confirmation-longtext"></div>
 					<div id="shop-confirmation-text"></div>
+					<div id="shop-quantity-controls" hidden><label for="shop-quantity">Quantity</label><input id="shop-quantity" type="number" min="1" max="99" step="1" value="1" inputmode="numeric"><p id="shop-total" aria-live="polite"></p></div>
 					<div id="cancel-shop-purchase">Cancel</div>
 					<div id="confirm-shop-purchase">Buy</div>
 				</div>

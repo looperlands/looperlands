@@ -17,7 +17,7 @@ function chat(globals = {}) {
     });
     const instance = Object.create(Chat.prototype);
     Object.assign(instance, {
-        me: {id: 'alice', mapId: 'main'}, people: new Map(), histories: new Map(), drafts: new Map(), attachments: new Map(), giftRetries: new Map(), pending: new Map(), unread: new Map(), avatarSources: new Map(),
+        overlayMessages: [], me: {id: 'alice', mapId: 'main'}, people: new Map(), histories: new Map(), drafts: new Map(), attachments: new Map(), giftRetries: new Map(), pending: new Map(), unread: new Map(), avatarSources: new Map(),
         connected: true, tab: 'world', target: '', players: [{id: 'bob'}],
         app: {game: {client: {connection: {connected: true}, sendChatGift: jest.fn(), sendSocialChat: jest.fn()}}},
         renderMessages: jest.fn(), renderBadges: jest.fn(), renderComposerState: jest.fn(), clearError: jest.fn(), error: jest.fn()
@@ -112,4 +112,64 @@ test('an excluded attachment keeps the draft and tells the sender to choose anot
     expect(instance.attachments.has('direct:bob')).toBe(true);
     expect(input.value).toBe('Enjoy');
     expect(instance.error).toHaveBeenCalledWith('This item cannot be gifted. Remove it and choose another item.');
+});
+
+function hudChat() {
+    const makeNode = () => ({
+        childNodes: [], hidden: false, scrollTop: 0, scrollHeight: 100, clientHeight: 100,
+        classList: {toggle: jest.fn(), contains: jest.fn().mockReturnValue(false)},
+        setAttribute: jest.fn(), append(...nodes) {this.childNodes.push(...nodes);}, replaceChildren() {this.childNodes = [];}
+    });
+    const document = {createElement: tag => {
+        const node = makeNode();
+        if (tag === 'template') node.content = {textContent: 'Hello from world chat'};
+        return node;
+    }};
+    const localStorage = {setItem: jest.fn()};
+    const {instance} = chat({document, localStorage});
+    const nodes = new Map(['chat-mini', 'chat-mini-messages'].map(id => [id, makeNode()]));
+    instance.node = id => nodes.get(id); instance.panel = makeNode(); instance.hudMode = 'compact';
+    return {instance, nodes, localStorage};
+}
+
+test('overlay shows incoming public messages without restoring chat history', () => {
+    const {instance, nodes} = hudChat();
+    instance.histories.set('world', [{sender: {label: 'Old history'}, message: 'Old'}]);
+    instance.recordOverlayMessage({id: 'new', channel: 'world', sender: {label: 'Bob'}, message: 'Hello'});
+    instance.recordOverlayMessage({id: 'private', channel: 'direct', sender: {label: 'Bob'}, message: 'Private'});
+    instance.histories.set('direct:bob', [{sender: {label: 'Bob'}, message: 'Private'}]);
+    instance.renderHud();
+    expect(nodes.get('chat-mini').hidden).toBe(false);
+    expect(nodes.get('chat-mini-messages').childNodes).toHaveLength(1);
+    expect(nodes.get('chat-mini-messages').childNodes[0].childNodes[0].textContent).toBe('Bob: ');
+});
+test('hiding the mini log persists the preference and opening the panel suppresses the mini log', () => {
+    const {instance, nodes, localStorage} = hudChat();
+    instance.setHudMode('hidden');
+    expect(localStorage.setItem).toHaveBeenCalledWith('chat-hud-mode', 'hidden');
+    expect(nodes.get('chat-mini').hidden).toBe(true);
+    instance.panel.classList.contains.mockReturnValue(true);
+    instance.setHudMode('compact');
+    expect(nodes.get('chat-mini').hidden).toBe(true);
+});
+test('overlay keeps six live messages and preserves a scrolled position', () => {
+    const {instance, nodes} = hudChat();
+    Array.from({length: 30}, (_, n) => ({id: String(n), channel: 'world', sender: {label: String(n)}, message: 'Hello'})).forEach(message => instance.recordOverlayMessage(message));
+    const log = nodes.get('chat-mini-messages'); log.scrollHeight = 1000; log.scrollTop = 50;
+    instance.renderHud();
+    expect(log.childNodes).toHaveLength(6);
+    expect(log.childNodes[0].childNodes[0].textContent).toBe('24: ');
+    expect(log.scrollTop).toBe(50);
+});
+
+test('opening the overlay stops the map click handler and preserves the previous conversation draft', () => {
+    const {instance, input} = chat();
+    instance.tab = 'direct'; instance.target = 'bob'; input.value = 'Unsent message';
+    instance.render = jest.fn(); instance.app.showChat = jest.fn();
+    const event = {preventDefault: jest.fn(), stopPropagation: jest.fn()};
+    instance.openFromOverlay(event);
+    expect(instance.drafts.get('direct:bob')).toBe('Unsent message');
+    expect(event.stopPropagation).toHaveBeenCalled();
+    expect(instance.tab).toBe('world');
+    expect(instance.app.showChat).toHaveBeenCalled();
 });
