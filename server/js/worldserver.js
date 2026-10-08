@@ -523,6 +523,19 @@ module.exports = World = cls.Class.extend({
     },
 
     addPlayer: function (player) {
+        // A map switch opens a new connection before the old socket necessarily closes.
+        // Retire the previous player before registering the destination-map player.
+        if (!player.isBot() && player.walletId) {
+            const walletId = player.walletId.toLowerCase();
+            for (const world of Object.values(this.server.worldsMap)) {
+                world.forEachPlayer(function (previousPlayer) {
+                    if (previousPlayer !== player && !previousPlayer.isBot() &&
+                        previousPlayer.walletId?.toLowerCase() === walletId) {
+                        previousPlayer.connection.close('Player moved to a new session');
+                    }
+                });
+            }
+        }
         this.addEntity(player);
 
         this.players[player.id] = player;
