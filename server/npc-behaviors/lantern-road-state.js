@@ -24,14 +24,13 @@ function memories(data) {
     return lines;
 }
 function npcLocation(npc) {
-    return npc.label + ' — ' + npc.area + (npc.key.startsWith('town-') && npc.key !== 'town-priest' ?
-        ' (look for their rounds near the market or gate)' : ' (' + npc.x + ', ' + npc.y + ')');
+    return npc.label + ' at ' + npc.location;
 }
 function nextStep(data, q) {
     const npc = content.npcs.find(n => n.key === q.npcKey);
     if (!active(data, q.id)) return 'Speak to ' + npcLocation(npc) + ' to begin.';
     const pending = progress(data, q).find(o => !o.done);
-    if (pending) return pending.label + ' — ' + pending.scene + (pending.x ? ' (' + pending.x + ', ' + pending.y + '). Walk to the marker and click it or press E to inspect it.' : '.');
+    if (pending) return pending.label + '. ' + pending.where + ' Walk beside its marker and click it or press E.';
     return 'Report to ' + npcLocation(npc) + '.';
 }
 // Link only discoveries the player has actually made. Unfinished parallel
@@ -50,21 +49,18 @@ function handoff(data, q) {
 function npcStatus(data, key) {
     const local = content.quests.filter(q => q.npcKey === key && !done(data, q.id));
     const current = local.find(q => active(data, q.id)) || local.find(q => unlocked(data, q));
-    if (current) {
-        if (!active(data, current.id)) return 'I can help with: ' + current.name + '. ' + current.reason;
-        return 'Your current task: ' + current.name + '. ' + (ready(data, current) ?
-            'You have checked every objective. Tell me what you found when you are ready.' : nextStep(data, current));
-    }
+    if (current) return active(data, current.id) ?
+        (ready(data, current) ? current.dialogue.ready : current.dialogue.waiting) : current.dialogue.offer;
     const waiting = local.sort((a, b) => a.chapter - b.chapter)[0];
     // Town hosts should point to the current search, not request a finale
     // invitation before the road has even been repaired.
     if (!waiting || (waiting.chapter === 8 && !done(data, 'LANTERN_LIGHT_SHARED'))) return '';
     const missing = waiting.requiredQuests.filter(id => !done(data, id));
-    if (missing.includes(picnic.INVITE)) return 'First help Adam and Bstrat finish the Lantern Picnic in Town. Their invitation starts the search along the road.';
-    return 'I am waiting for ' + missing.map(id => {
+    if (missing.includes(picnic.INVITE)) return 'Have you spoken to Adam and Bstrat in Town? They are still preparing the first picnic. I would like to hear from them before we set out.';
+    return 'I still need news from ' + missing.map(id => {
         const q = content.quests.find(q => q.id === id);
-        return q ? q.name + ' from ' + npcLocation(content.npcs.find(npc => npc.key === q.npcKey)) : 'news from Town';
-    }).join(' and ') + '. Those reports explain why we can take the next step.';
+        return q ? npcLocation(content.npcs.find(npc => npc.key === q.npcKey)) : 'our neighbours in Town';
+    }).join(' and ') + '. Will you ask them what they found?';
 }
 function knowledge(data) {
     if (done(data, 'LANTERN_LONG_TABLE')) return 'The restored road brought the communities to one table. Remembering the missing did not mean leaving the living alone.';

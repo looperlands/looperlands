@@ -19,7 +19,7 @@ function buildQuestLog(registry, data = {}) {
             desc = completed ? quest.conclusion : road.nextStep(data, quest);
             const handoff = completed ? road.handoff(data, quest) : '';
             if (handoff) desc += '<br><br>Where this leads: ' + handoff;
-            longDesc = quest.reason + '<br><br>' + objectives.map(o => (o.done ? 'Done: ' : 'Next: ') + o.label + ' — ' + o.scene).join('<br>') +
+            longDesc = quest.reason + '<br><br>' + objectives.map(o => (o.done ? 'Done: ' : 'Next: ') + o.label + '. ' + o.where).join('<br>') +
                 '<br><br>' + desc + '<br><br>' + road.memories(data).join('<br>');
         } else if (!completed) {
             if (quest.eventType === 'LOOT_ITEM') progressCount = data.items?.[quest.target] || 0;

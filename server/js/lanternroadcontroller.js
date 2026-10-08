@@ -39,7 +39,7 @@ class LanternRoadController {
                 if (!routine) continue;
                 routine.definition.questIds = [...(routine.definition.questIds || []), ...quests.map(q => q.id)];
                 routine.definition.reactions = [...(routine.definition.reactions || []), ...quests.map(q => ({
-                    when: {questCompleted: q.id}, lines: {return: [q.conclusion], quest: [q.conclusion]}
+                    when: {questCompleted: q.id}, lines: {return: [q.dialogue.reply], quest: [q.dialogue.reply]}
                 }))];
             }
             world.npcBehavior.config.conversations.push(content.gatheringConversation);
@@ -90,7 +90,7 @@ class LanternRoadController {
         this.world.pushToPlayer(player, new Messages.Teleport(player));
         this.world.handlePlayerVanish(player);
         this.world.pushRelevantEntityListTo(player);
-        return {text: passage.label + '. You are still on the main map.'};
+        return {text: 'You follow the passage. ' + passage.label + '.'};
     }
 
     forget(player) { this.snapshots.delete(player.id); this.discoveries.delete(player.id); }
@@ -132,50 +132,83 @@ class LanternRoadController {
         return packet;
     }
 
+    static memories(data, key) {
+        const lines = [];
+        if (['town-gardener', 'town-neighbour', 'party-wildwill'].includes(key)) {
+            if (state.has(data, 'lantern:share-basket')) lines.push('I remember your sharing idea: blankets first, bread next. One basket brought us together.');
+            if (state.has(data, 'lantern:return-basket')) lines.push(key === 'town-gardener' ?
+                'I remember you asking Bstrat to return my basket. I could pack the bread as soon as the blankets were out.' :
+                'I remember you asking Bstrat to return the basket. Adam could pack the bread as soon as the blankets were out.');
+        }
+        if (['town-gardener', 'town-neighbour', 'town-watch', 'party-wildwill'].includes(key)) {
+            if (state.has(data, 'lantern:quiet-picnic')) lines.push('You chose a quiet picnic so the watch could rest. I kept that invitation in mind.');
+            if (state.has(data, 'lantern:music-picnic')) lines.push('You chose music and invited the watch to join the songs. I remember that welcome.');
+        }
+        if (['town-priest', 'lantern-keeper', 'party-wildwill'].includes(key)) {
+            if (state.has(data, 'lantern:public-memorial')) lines.push('Because you chose to remember together, I can speak of the memorial names with care.');
+            if (state.has(data, 'lantern:private-memorial')) lines.push("I remember your quiet memorial. I keep Elian's personal words private.");
+        }
+        if (['desert-courier', 'party-wildwill'].includes(key)) {
+            if (state.has(data, 'lantern:caravan-detour')) lines.push('I remember you choosing shelter for the tired travellers. The eastern detour meant lantern oil could come with them.');
+            if (state.has(data, 'lantern:caravan-direct')) lines.push('I remember you choosing the direct road for the heavy parts. The repair tools could travel along the central road.');
+        }
+        if (['lantern-keeper', 'party-wildwill'].includes(key)) {
+            if (state.has(data, 'lantern:rowan-keeper')) lines.push(key === 'lantern-keeper' ?
+                'You asked me to share the watch. I can keep the flame without keeping everyone away.' : 'I heard Rowan chose to share the watch. I saved a place for a keeper who can finally have company.');
+            if (state.has(data, 'lantern:rowan-handover')) lines.push(key === 'lantern-keeper' ?
+                'You gave me room to teach new keepers and rest. I did not know how much I needed that choice.' : 'I heard Rowan chose to teach new keepers and rest. I saved him a quiet place beside us.');
+        }
+        if (key === 'party-wildwill' && state.done(data, 'LANTERN_LONG_TABLE')) {
+            if (state.done(data, 'LANTERN_WATCH_INVITED')) lines.push('The watch can stay all evening because you arranged a relief patrol. I kept a chair free.');
+            if (state.done(data, 'LANTERN_MISSING_PLACES')) lines.push('I left the keepsake lantern beside the table. Those families asked for their private messages to stay private.');
+            if (state.done(data, 'LANTERN_WILL_NEIGHBOUR')) lines.push('Jimi is welcome beside me because you carried my personal invitation. I am glad I finally asked.');
+        }
+        return lines;
+    }
+
     static decorate(node, session) {
         const data = session.gameData || {};
+        const key = node.storyMenu || node.storyPresence || node.storyMemory || node.storyLead;
+        const npc = content.npcs.find(npc => npc.key === key);
         if (node.storyMenu) {
-            const npc = content.npcs.find(npc => npc.key === node.storyMenu);
-            const completedHere = content.quests.filter(q => q.npcKey === node.storyMenu && state.done(data, q.id));
-            const presence = npc.presenceAfter && state.done(data, npc.presenceAfter.quest) ? npc.presenceAfter.text : npc.presence;
-            node.text = npc.label + ': ' + presence;
-            if (completedHere.length) node.text += '<br><br>' + completedHere.at(-1).conclusion;
-            const status = state.npcStatus(data, node.storyMenu);
-            if (status) node.text += '<br><br>' + status;
-            if (['town-gardener', 'town-neighbour'].includes(node.storyMenu) && !state.done(data, 'LANTERN_LONG_TABLE')) {
-                const journal = state.journal(data);
-                node.text += '<br><br>Next on your road: ' + journal.goal;
-                if (node.storyMenu === 'town-gardener' && !state.done(data, 'LANTERN_WRECK_LETTERS') && !state.done(data, 'LANTERN_FOREST_MARKERS')) {
-                    node.text += '<br>Rowan used to bring invitations from across the island. Jimi has news from the coast, and Mara keeps the old forest markers. You can follow either lead first.';
-                }
+            const completedHere = content.quests.filter(q => q.npcKey === key && state.done(data, q.id));
+            const local = content.quests.filter(q => q.npcKey === key && !state.done(data, q.id));
+            const current = local.find(q => state.active(data, q.id));
+            node.text = current ? (state.ready(data, current) ? current.dialogue.ready : current.dialogue.waiting) :
+                completedHere.length ? completedHere.at(-1).dialogue.reply : npc.presence;
+            if (!current && !completedHere.length && key === 'town-priest') node.text = state.npcStatus(data, key);
+            if (['town-gardener', 'town-neighbour', 'town-watch', 'desert-courier', 'town-priest'].includes(key)) {
+                node.text += '<br><br>' + LanternRoadController.memories(data, key).slice(0, 1).join('');
             }
-            if (node.storyMenu === 'desert-courier') {
-                if (state.has(data, 'lantern:caravan-detour')) node.text += '<br><br>I remember you choosing shelter for the tired travellers. We are taking the eastern detour and bringing lantern oil.';
-                if (state.has(data, 'lantern:caravan-direct')) node.text += '<br><br>I remember you choosing the direct road for the heavy parts. We are bringing repair tools along the western route.';
+        }
+        if (node.storyPresence) node.text = npc.presenceAfter && state.done(data, npc.presenceAfter.quest) ? npc.presenceAfter.text : npc.presence;
+        if (node.storyMemory) node.text = LanternRoadController.memories(data, key).join('<br><br>') ||
+            'We have not shared that much of the road yet. Tell me what you learn; I would like to hear it.';
+        if (node.storyLead) {
+            const q = content.quests.find(q => state.active(data, q.id) && !q.optional) ||
+                content.quests.find(q => state.unlocked(data, q) && !state.done(data, q.id) && !q.optional);
+            const target = q && content.npcs.find(npc => npc.key === q.npcKey);
+            if (!state.done(data, 'LANTERN_INVITATION')) {
+                node.text = 'Ask Ordinary Adam on his Town market rounds about the first picnic. Help him and Bstrat prepare it, then we can follow the invitations along the road.';
+            } else if (!state.done(data, 'LANTERN_WRECK_LETTERS') && !state.done(data, 'LANTERN_FOREST_MARKERS')) {
+                node.text = 'Jimi last saw Rowan on the coast. Mara keeps the old forest markers. Ask Jimi at his Beach landing or Mara on the southern Forest trail. You can follow either lead first.';
+            } else if (q && target.key === key) {
+                node.text = state.active(data, q.id) ? (state.ready(data, q) ? q.dialogue.ready : q.dialogue.waiting) : q.dialogue.offer;
+            } else if (q) {
+                node.text = 'Ask ' + state.npcLocation(target) + ' about what you have learned. They can help you with ' + q.name + '.';
+            } else {
+                node.text = 'The road is open. Stay for a while, or ask our neighbours about the things they still need help with. You have a place here.';
             }
-            if (node.storyMenu === 'town-priest') {
-                if (state.has(data, 'lantern:public-memorial')) node.text += '<br><br>Because you chose to remember together, I explain the memorial names to visitors with care.';
-                if (state.has(data, 'lantern:private-memorial')) node.text += '<br><br>Because you asked for quiet remembrance, I keep Elian\'s personal words private. The lantern still marks the loss.';
-            }
-            const memories = state.memories(data);
-            if (node.storyMenu === 'town-gardener' && state.has(data, 'lantern:return-basket')) memories.unshift('I remember you asking Bstrat to return my basket. It left room for the bread after the blankets.');
-            if (['town-gardener', 'town-neighbour', 'town-watch', 'lantern-keeper', 'party-wildwill'].includes(node.storyMenu)) node.text += '<br><br>' + memories.join('<br>');
         }
-        if (node.storyQuest || node.storyOffer) {
-            const q = content.quests.find(q => q.id === (node.storyQuest || node.storyOffer));
-            node.text = q.reason + '<br><br>' + state.progress(data, q).map(o => (o.done ? 'Done: ' : 'Next: ') + o.label + ' — ' + o.scene).join('<br>') +
-                '<br><br>' + state.nextStep(data, q);
+        if (node.storyQuest) {
+            const q = content.quests.find(q => q.id === node.storyQuest);
+            node.text = state.ready(data, q) ? q.dialogue.ready : q.dialogue.waiting;
         }
-        if (node.storyConclusion) {
-            const q = content.quests.find(q => q.id === node.storyConclusion);
-            const next = state.handoff(data, q);
-            if (next) node.text += '<br><br>Where this leads: ' + next;
-        }
-        if (node.storyConclusion === 'LANTERN_LONG_TABLE') {
-            node.text += '<br><br>' + state.memories(data).join('<br>');
-            if (state.done(data, 'LANTERN_WATCH_INVITED')) node.text += '<br>The watch stays for the whole evening because you arranged a relief patrol.';
-            if (state.done(data, 'LANTERN_MISSING_PLACES')) node.text += '<br>The keepsake lantern keeps a place for the absent families. Their private messages stay private because they asked for that.';
-            if (state.done(data, 'LANTERN_WILL_NEIGHBOUR')) node.text += '<br>Jimi has a place beside Wild Will because you carried a personal invitation.';
+        if (node.storyDirections) {
+            const q = content.quests.find(q => q.id === node.storyDirections);
+            const pending = state.progress(data, q).find(o => !o.done);
+            node.text = pending ? pending.where + '<br><br>Look for the marker called “' + pending.label +
+                '”. Walk beside it, then click it or press E.' : 'You have checked everything I asked for. Tell me what you found when you are ready.';
         }
         return node;
     }

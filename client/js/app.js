@@ -383,7 +383,9 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
             
             if(Array.isArray(dialogue.text)) dialogue.text = dialogue.text[dialogue.text.length - 1];
 
-            playerChoicePopup.find('#question').html(dialogue.text);
+            const question = playerChoicePopup.find('#question').html(dialogue.text);
+            if (dialogue.speaker) question.prepend($('<span class="dialogue-speaker"></span>').text(dialogue.speaker));
+            if (dialogue.playerLine) question.prepend($('<p class="dialogue-player-line"></p>').text('You: ' + dialogue.playerLine));
             playerChoicePopup.find('#choices').empty();
 
             for (let i = 0; i < dialogue.options.length; i++) {

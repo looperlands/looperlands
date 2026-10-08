@@ -97,8 +97,8 @@ test.each([0, 1])('the complete campaign and optional stories resume from old pi
     expect(state.journal(data).chapter).toBe('The road is open');
     expect(state.journal(data).quests).toEqual([]);
     expect(road.packet(player).finalePicnic).toMatchObject({longTable: true, golden: true, keepsake: true, watchRelief: true, music: !!branch});
-    const callback = LanternRoadController.decorate({storyConclusion: 'LANTERN_LONG_TABLE', text: 'The table is ready.'}, cache.get('one'));
-    expect(callback.text).toContain(branch ? 'Rowan taught new keepers' : 'Rowan returned as a keeper');
+    const callback = LanternRoadController.decorate({storyMemory: 'party-wildwill'}, cache.get('one'));
+    expect(callback.text).toContain(branch ? 'Rowan chose to teach new keepers' : 'Rowan chose to share the watch');
     expect(callback.text).toContain('relief patrol');
     expect(callback.text).toContain('private messages');
     expect(callback.text).toContain('personal invitation');
@@ -157,7 +157,7 @@ test('main-map passages validate personal progress and server position, and upda
     expect(() => road.travel(player, gate.id)).toThrow('not available');
     player.x = gate.x; player.y = gate.y;
     expect(road.packet(player).story.passages.some(p => p.id === gate.id)).toBe(true);
-    expect(road.travel(player, gate.id).text).toContain('main map');
+    expect(road.travel(player, gate.id).text).toContain('follow the passage');
     expect([player.x, player.y]).toEqual([gate.tx, gate.ty]);
     expect(world.pushToPlayer).toHaveBeenCalledWith(player, expect.anything());
     expect(player.broadcast).toHaveBeenCalled(); expect(world.handlePlayerVanish).toHaveBeenCalledWith(player);
@@ -202,15 +202,18 @@ test('every authored objective and NPC is reachable on main without cross-map, e
 
 
 test('Adam gives returning picnic players both onward leads, alongside their remembered choices', () => {
-    const {talk} = setup();
-    const node = talk({npc: Types.Entities.VILLAGER, npcKey: 'town-gardener'});
+    const {talk, choose} = setup();
+    const adam = {npc: Types.Entities.VILLAGER, npcKey: 'town-gardener'};
+    const greeting = talk(adam);
+    expect(greeting.text).toContain('I remember your sharing idea');
+    const node = choose(adam, 'road-lead');
     expect(node.text).toContain('Jimi');
     expect(node.text).toContain('Mara');
     expect(node.text).toContain('either lead first');
-    expect(node.text).toContain('Adam remembers your sharing idea');
+    expect(node.playerLine).toBe('Where should I go from here?');
     expect(node.text).not.toContain('I am waiting for The Invitations Returned');
     const bstrat = talk({npc: Types.Entities.VILLAGEGIRL, npcKey: 'town-neighbour'});
-    expect(bstrat.text).toContain('Next on your road');
+    expect(bstrat.options).toEqual(expect.arrayContaining([expect.objectContaining({text: 'Where should I go from here?'})]));
     expect(bstrat.text).not.toContain('I am waiting for Light Shared Again');
 });
 
@@ -227,7 +230,7 @@ test('coastal handoffs explain the next contact and the missing parallel forest 
     expect(state.handoff(data, coast)).toContain('Mara');
     const session = cache.get('one'); session.gameData = data; cache.set('one', session);
     const vince = talk({npc: Types.Entities.PRIEST, npcKey: 'town-priest'});
-    expect(vince.text).toContain('I am waiting for Someone Is Still Waiting');
+    expect(vince.text).toContain('I still need news from Mara');
     expect(vince.text).not.toContain('I am waiting for A Signal Across the Water');
     expect(vince.options.some(o => o.goto === 'LANTERN_STONE_NAMES:offer')).toBe(false);
     data.quests.COMPLETED.push({questKey: 'LANTERN_STILL_WAITING'});
@@ -244,14 +247,16 @@ test('offers and remembered reactions respect each character\'s route and memori
     const menu = talk(q);
     expect(menu.text).toContain('choosing shelter');
     const offer = choose(q, q.id + ':offer');
-    expect(offer.text).toContain(q.objectives[0].label);
-    expect(offer.text).not.toContain(q.objectives[1].label);
+    expect(offer.text).toBe(q.dialogue.offer);
+    const directions = choose(q, q.id + ':offer-directions');
+    expect(directions.text).toContain(q.objectives[0].label);
+    expect(directions.text).not.toContain(q.objectives[1].label);
     const vince = talk({npc: Types.Entities.PRIEST, npcKey: 'town-priest'});
     expect(vince.text).toContain('keep Elian\'s personal words private');
     expect(vince.text).not.toContain('explain the memorial names to visitors');
     const other = talk(q, 'two');
     expect(other.text).not.toContain('choosing shelter');
-    expect(other.text).toContain('I am waiting for');
+    expect(other.text).not.toContain('I remember');
 });
 
 test('journal knowledge progresses without revealing the keeper\'s future early', () => {
@@ -284,12 +289,12 @@ test('regional NPCs greet from saved evidence even on a server with no recogniti
     const mara = world.npcBehavior.routines.get('forest-caretaker');
     expect(mara).toBeDefined();
     expect(world.npcBehavior.memory.has('main', mara.definition.key, player, 'met')).toBe(false);
-    expect(world.npcBehavior.line(mara, 'greeting', player)).toBe(q.conclusion);
+    expect(world.npcBehavior.line(mara, 'greeting', player)).toBe(q.dialogue.reply);
     expect(world.npcBehavior.line(mara, 'greeting', other)).toContain('stopped sending invitations');
     const adam = world.npcBehavior.routines.get('town-gardener');
     expect(world.npcBehavior.line(adam, 'greeting', player)).toContain('quiet picnic');
     expect(world.npcBehavior.line(adam, 'greeting', other)).toContain('music');
-    const response = LanternRoadController.decorate({storyMenu: 'forest-caretaker'}, cache.get('one'));
+    const response = LanternRoadController.decorate({storyPresence: 'forest-caretaker'}, cache.get('one'));
     expect(response.text).toContain('lantern you placed');
     expect(response.text).not.toContain('stopped sending invitations');
 });
@@ -298,6 +303,88 @@ test('regional NPCs greet from saved evidence even on a server with no recogniti
 test('Wild Will offers the available shoreline story before mentioning the finale', () => {
     const {talk} = setup();
     const node = talk({npc: Types.getKindFromString('wildwill'), npcKey: 'party-wildwill'});
-    expect(node.text).toContain("I can help with: Wild Will's Place: The Shore");
+    expect(node.options).toEqual(expect.arrayContaining([expect.objectContaining({text: 'Adam is inviting neighbours. Would you like to come?', goto: 'LANTERN_WILL_SHORE:offer'})]));
     expect(node.text).not.toContain('I am waiting for What We Bring With Us');
+});
+
+
+test('player questions get named NPC replies, with optional directions and reports only after discovery', async () => {
+    const {cache, talk, choose, road, player} = setup();
+    const q = content.quests.find(q => q.id === 'LANTERN_FOREST_MARKERS');
+    const menu = talk(q);
+    expect(menu.speaker).toBe('Mara, Trail Caretaker');
+    expect(menu.playerLine).toBeUndefined();
+    const offer = choose(q, q.id + ':offer');
+    expect(offer.playerLine).toBe(q.dialogue.topic);
+    expect(offer.text).toBe(q.dialogue.offer);
+    const answer = choose(q, q.id + ':context');
+    expect(answer.playerLine).toBe(q.dialogue.question);
+    expect(answer.text).toBe(q.dialogue.answer);
+    const directions = choose(q, q.id + ':offer-directions');
+    expect(directions.text).toContain(q.objectives[0].where);
+    expect(directions.playerLine).toBe('Where should I look?');
+    choose(q, q.id + ':accept');
+    talk(q);
+    const waiting = choose(q, q.id + ':progress');
+    expect(waiting.text).toBe(q.dialogue.waiting);
+    expect(waiting.options.some(o => o.goto.includes(':finish:'))).toBe(false);
+    choose(q, q.id + ':directions');
+    let objective = q.objectives[0]; player.x = objective.x; player.y = objective.y;
+    await road.inspect(player, q.id + ':' + objective.key);
+    expect(talk(q).text).toContain(q.objectives[1].where);
+    choose(q, q.id + ':progress');
+    objective = q.objectives[1]; player.x = objective.x; player.y = objective.y;
+    await road.inspect(player, q.id + ':' + objective.key);
+    const ready = talk(q);
+    expect(ready.text).toBe(q.dialogue.ready);
+    expect(ready.options).toEqual(expect.arrayContaining([expect.objectContaining({text: q.dialogue.report})]));
+    const reply = choose(q, q.id + ':finish:0');
+    expect(reply.playerLine).toBe(q.dialogue.report);
+    expect(reply.text).toBe(q.dialogue.reply);
+    expect(reply.text).not.toContain(q.reason);
+    expect(state.done(cache.get('one').gameData, q.id)).toBe(true);
+    // A new interaction cannot repeat the last player line or completion action.
+    expect(talk(q).playerLine).toBeUndefined();
+});
+
+test('all story dialogue and journal directions use landmarks, with no visible coordinate pairs', () => {
+    const {buildDialogues} = require('./lantern-road-dialogue');
+    const {buildQuestLog} = require('../js/quests/questlog');
+    const registry = Object.fromEntries([...picnic.quests, ...content.quests].map(q => [q.id, q]));
+    const data = prologue();
+    data.quests.IN_PROGRESS = content.quests.map(q => ({questKey: q.id}));
+    data.choices.push('lantern:caravan-direct', 'lantern:travellers-first');
+    const visible = [state.journal(data), buildQuestLog(registry, data)];
+    for (const tree of buildDialogues()) {
+        for (const node of Object.values(tree.nodes)) {
+            const decorated = LanternRoadController.decorate({...node}, {gameData: data});
+            visible.push(decorated.text, decorated.options?.map(o => o.text));
+        }
+    }
+    for (const q of content.quests) {
+        expect(q.dialogue.topic).toBeTruthy(); expect(q.dialogue.report).toBeTruthy();
+        for (const objective of q.objectives) expect(objective.where).toBeTruthy();
+        visible.push(state.nextStep(data, q), state.handoff(data, q));
+    }
+    expect(JSON.stringify(visible)).not.toMatch(/\b\d+\s*,\s*\d+\b/);
+});
+
+
+test('asking where to go respects the picnic start, the current investigation and the ending', () => {
+    const mara = {npc: Types.getKindFromString('forestnpc'), npcKey: 'forest-caretaker'};
+    const fresh = setup({quests: {}, choices: []});
+    fresh.talk(mara);
+    expect(fresh.choose(mara, 'road-lead').text).toContain('first picnic');
+    expect(fresh.choose(mara, 'road-menu').options.some(o => o.goto === 'LANTERN_FOREST_MARKERS:offer')).toBe(false);
+    const data = prologue();
+    data.quests.COMPLETED.push({questKey: 'LANTERN_WRECK_LETTERS'});
+    data.quests.IN_PROGRESS = [{questKey: 'LANTERN_FOREST_MARKERS'}];
+    const following = setup(data);
+    following.talk(mara);
+    expect(following.choose(mara, 'road-lead').text).toBe(content.quests.find(q => q.id === 'LANTERN_FOREST_MARKERS').dialogue.waiting);
+    const ending = prologue();
+    ending.quests.COMPLETED.push(...content.quests.map(q => ({questKey: q.id})));
+    const finished = setup(ending);
+    finished.talk(mara);
+    expect(finished.choose(mara, 'road-lead').text).toContain('The road is open');
 });

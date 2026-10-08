@@ -104,7 +104,13 @@ class DialogueController {
             sessionData = cache.get(sessionId) || sessionData;
             node = this.chooseRandomLines(node);
             node = this.filterOptions(node, sessionData);
-            if (node.storyMenu || node.storyOffer || node.storyQuest || node.storyConclusion) require('./lanternroadcontroller').LanternRoadController.decorate(node, sessionData);
+            if (node.storyMenu || node.storyQuest || node.storyConclusion || node.storyDirections || node.storyPresence || node.storyMemory || node.storyLead) require('./lanternroadcontroller').LanternRoadController.decorate(node, sessionData);
+            if (dialogue.key) {
+                node.speaker = dialogue.name;
+                node.playerLine = sessionData.dialoguePlayerLine;
+                delete sessionData.dialoguePlayerLine;
+                sessionData.dialogueReplies = Object.fromEntries((node.options || []).map(option => [option.goto, option.text]));
+            }
             sessionData.dialogueTransitions = [...(node.goto ? [node.goto] : []), ...(node.options || []).map(option => option.goto)];
             sessionData.dialogueNpcKey = npcKey;
             cache.set(sessionId, sessionData);
@@ -194,6 +200,7 @@ class DialogueController {
         const sessionData = cache.get(sessionId) || {};
         if (dialogue.key && (sessionData.dialogueNpcKey !== npcKey ||
             !sessionData.dialogueTransitions?.includes(nodeKey))) return false;
+        sessionData.dialoguePlayerLine = sessionData.dialogueReplies?.[nodeKey];
         sessionData.currentNode = nodeKey;
         sessionData.dialogueTransitions = [];
         cache.set(sessionId, sessionData);

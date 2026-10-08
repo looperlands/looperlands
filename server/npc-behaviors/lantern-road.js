@@ -2,6 +2,7 @@
 // Every location is on main, including the existing door-connected interiors.
 const Types = require('../../shared/js/gametypes');
 const picnic = require('./lantern-picnic');
+const conversations = require('./lantern-road-conversations');
 const I = picnic.INVITE;
 const at = (key, label, x, y, scene, result, extra = {}) => ({key, label, x, y, scene, result, type: 'inspect', ...extra});
 const pick = (label, flag, response) => ({label, flag, response});
@@ -38,6 +39,25 @@ const presenceAfter = {
 };
 for (const npc of npcs) npc.presenceAfter = presenceAfter[npc.key];
 
+const npcLocations = {
+    "town-gardener": "the market or his supply rounds in northern Town",
+    "town-neighbour": "the Town market and western streets",
+    "town-watch": "the eastern Town gate or the market patrol",
+    "coastal-jimi": "the Beach landing on the eastern shore",
+    "mill-scientist": "the old windmill, through the passage beside Town’s southern windmill",
+    "forest-caretaker": "the southern Forest trail",
+    "town-priest": "the western side of the Town market",
+    "desert-courier": "the caravan camp in southern Desert",
+    "north-miner": "the northern workings in Lavaland",
+    "north-technician": "the relay vent in southern Lavaland",
+    "lantern-keeper": "the Gauntlet controls, through the keeper’s passage in northern Town",
+    "party-baker": "the western end of the Party Beach long table",
+    "party-trailguest": "the eastern end of the Party Beach long table",
+    "party-lanternhand": "the lanterns at the Party Beach long table",
+    "party-wildwill": "the southern Party Beach shore"
+};
+for (const npc of npcs) npc.location = npcLocations[npc.key];
+
 const chapters = [
     {number: 1, name: 'The Lantern Picnic'},
     {number: 2, name: 'Letters from the Coast'},
@@ -55,8 +75,8 @@ const quests = [
         [at('letters', 'Recover the weathered invitation pouch', 53, 285, 'Beach',
             'The letters were addressed to the forest, desert and northern works. Nobody chose to abandon Town: the delivery never arrived.')],
         'Jimi recognises Rowan\'s handwriting. A broken coastal signal kept the courier from finding a safe landing.',
-        {choices: [pick('Repair the coastal signal first.', 'lantern:coast-first', 'Jimi will keep the recovered letters dry while you make the crossing safe.'),
-            pick('Check on the stranded travellers first.', 'lantern:travellers-first', 'Jimi points out the waiting place east of the signal. Their safety comes before the repair.')]}),
+        {choices: [pick('Let us repair the signal first.', 'lantern:coast-first', 'I will keep these letters dry. Let us get the mill connector working first.'),
+            pick('Let us check the stranded travellers before fitting the connector.', 'lantern:travellers-first', 'I agree. After the scientist prepares the connector, check the waiting place east of the signal before fitting it.')]}),
     quest('MILL_LIGHT', 2, 'The Mill Without a Light', 'mill-scientist', ['LANTERN_WRECK_LETTERS'],
         'The scientist stayed at the mill because its lantern no longer receives a signal. Use the old-mill passage beside the southern Town windmill, then inspect the receiver.',
         [at('receiver', 'Inspect the mill receiver', 127, 295, 'Windmill', 'The gears still turn. The disconnected receiver, not the mill itself, stopped the light.')],
@@ -90,8 +110,8 @@ const quests = [
         [at('letter', 'Find Elian\'s letter in the crypt archive', 124, 112, 'Crypt archive',
             'Elian wrote: "If I do not return, let the road stay open. A light is useful because someone else can find it." The letter never reached Rowan.')],
         'Vince entrusts the letter to you. Decide how the neighbours should remember the rescue.',
-        {choices: [pick('Light a public memorial so the loss is remembered together.', 'lantern:public-memorial', 'Vince will explain the names to visitors, with care rather than blame.'),
-            pick('Keep the memorial quiet and carry the letter privately.', 'lantern:private-memorial', 'Vince keeps the personal words private. A small lantern still marks the loss.')]}),
+        {choices: [pick('Let us remember them together. Explain the names to visitors.', 'lantern:public-memorial', 'I will explain the memorial names with care. Their loss deserves company, not blame.'),
+            pick('Let us keep the memorial quiet. I will carry the letter privately.', 'lantern:private-memorial', 'I will keep Elian\'s personal words private. A small lantern can still mark the loss.')]}),
     quest('MISSING_LIGHT', 4, 'A Light for the Missing', 'town-priest', ['LANTERN_UNDELIVERED_LETTER'],
         'The memorial is for the people who did not return. It is not a promise that restoring the road will undo their loss.',
         [at('memorial', 'Light the memorial lantern', 47, 128, 'Graveyard', 'A steady lantern marks the names. You can carry Elian\'s wish onward without making the memorial a spectacle.')],
@@ -105,8 +125,8 @@ const quests = [
         'The caravan\'s dispatch box holds a regulator consignment and Rowan\'s final instruction. Nessa needs the box checked before she can safely send you north.',
         [at('dispatch', 'Recover the caravan dispatch box', 57, 88, 'Desert', 'The instruction reads: "Do not send anyone north. I will keep the flame myself." The regulator was left in a sealed northern store.')],
         'Nessa offers two ways to move the caravan\'s relay parts. Your choice changes the route you must inspect.',
-        {choices: [pick('Take the sheltered detour for the tired travellers.', 'lantern:caravan-detour', 'Nessa chooses the eastern shelter and brings spare lantern oil.'),
-            pick('Clear and mark the direct road.', 'lantern:caravan-direct', 'Nessa follows the central road and brings the heavier repair tools.')]}),
+        {choices: [pick('Let us take the sheltered detour so the tired travellers can rest.', 'lantern:caravan-detour', 'I will prepare the eastern shelter and bring spare lantern oil. Please mark that detour before we travel.'),
+            pick('Let us take the direct road for the heavier repair tools.', 'lantern:caravan-direct', 'I will pack the heavier repair tools for the central road. Please mark that direct route before we travel.')]}),
     quest('ROAD_WE_TAKE', 5, 'The Road We Take', 'desert-courier', ['LANTERN_LAST_DELIVERY'],
         'Nessa\'s caravan will follow the route you chose, so she needs your report from that route rather than a different marker.',
         [at('detour', 'Mark the sheltered eastern detour', 64, 77, 'Desert', 'The sheltered route is marked. Tired travellers can rest while their supplies continue north.', {when: 'lantern:caravan-detour'}),
@@ -134,18 +154,18 @@ const quests = [
         'Elian\'s letter asks Rowan to keep the road open. Show him the evidence from the communities before asking what he wants his life to become.',
         [at('letter', 'Place Elian\'s letter beside the keeper\'s controls', 68, 378, 'Gauntlet', 'Rowan reads the words slowly: "A light is useful because someone else can find it." He finally understands why you came.')],
         'Rowan asks whether to return as a keeper with help, or teach the next keepers and step away.',
-        {choices: [pick('Return as keeper, with the communities sharing the watch.', 'lantern:rowan-keeper', 'Rowan agrees to keep the road with other people. He will send a place-setting to the long table.'),
-            pick('Teach new keepers, then rest and choose your own future.', 'lantern:rowan-handover', 'Rowan entrusts the controls to Orin and Mara. He asks for a quiet place at the long table.')]}),
+        {choices: [pick('You could keep the road with the communities sharing your watch.', 'lantern:rowan-keeper', 'I would like that. I can keep the light without keeping everyone away. Save me a place at the long table.'),
+            pick('You could teach new keepers, then rest and choose your own future.', 'lantern:rowan-handover', 'Then I will teach Orin and Mara. After that... I would like to rest. Could you save me a quiet place at the table?')]}),
     quest('LIGHT_SHARED', 7, 'Light Shared Again', 'lantern-keeper', ['LANTERN_KEEPER_CHOICE'],
         'The controls are ready, the regulator is fitted, and Rowan has chosen a future. Restore the network while keeping every community\'s lantern in service.',
         [at('controls', 'Reconnect the lantern road', 69, 378, 'Gauntlet', 'The lamps answer from the coast, forest, memorial and desert. Each community has a share of the flame now.')],
         'The road is open because you carried evidence between people who had stopped hearing from each other. Return to Bstrat in Town to send new invitations.'),
     quest('RETURNED_INVITATIONS', 8, 'The Invitations Returned', 'town-neighbour', ['LANTERN_LIGHT_SHARED'],
         'Bstrat has prepared invitations along the restored road. Deliver them to the communities that helped you, so they know this invitation is meant for them.',
-        [at('coast', 'Deliver the coastal invitation to Jimi', 76, 293, 'Beach', 'Jimi recognises your repaired signal and promises sea-salt bread.'),
-         at('forest', 'Deliver the forest invitation to Mara', 58, 176, 'Forest', 'Mara recognises the relit trail and promises berries from the forest.'),
-         at('desert', 'Deliver the caravan invitation to Nessa', 47, 94, 'Desert', 'Nessa will bring the oil or tools from the route you chose.'),
-         at('north', 'Deliver the northern invitation to Orin', 97, 29, 'Lavaland', 'Orin can leave the relay for a while because the regulator now shares its load.')],
+        [at('coast', 'Deliver the coastal invitation to Jimi', 76, 293, 'Beach', 'Jimi: I can guide the landing now, thanks to your repair. Tell Bstrat I will bring sea-salt bread.'),
+         at('forest', 'Deliver the forest invitation to Mara', 58, 176, 'Forest', 'Mara: You kept our path open. I would like to come. Tell Bstrat I will bring forest berries.'),
+         at('desert', 'Deliver the caravan invitation to Nessa', 47, 94, 'Desert', 'Nessa: Our route is ready because of your choice. I will come with the caravan supplies we agreed on.'),
+         at('north', 'Deliver the northern invitation to Orin', 97, 29, 'Lavaland', 'Orin: With your regulator fitted, I can leave this vent for a while. Please save me a place.')],
         'Bstrat has replies from every region. Adam is gathering the contributions at the Party Beach long table.'),
     quest('BRING_WITH_US', 8, 'What We Bring With Us', 'town-gardener', ['LANTERN_RETURNED_INVITATIONS'],
         'Adam remembers how you solved the basket problem. This time each region has something to share at the Party Beach gathering.',
@@ -191,7 +211,7 @@ const quests = [
         'Will agrees to save a place for new company while remembering his crew.', {optional: true}),
     quest('WILL_NEIGHBOUR', 8, 'Wild Will\'s Place: A New Neighbour', 'party-wildwill', ['LANTERN_WILL_KEEPSAKE', 'LANTERN_LIGHT_SHARED'],
         'Will wants Jimi to know that the long table has room for him too. Carry a personal invitation back along the coast.',
-        [at('invite', 'Deliver Wild Will\'s invitation to Jimi', 76, 293, 'Beach', 'Jimi accepts the invitation. Will asked him directly, rather than waiting for him to guess.')],
+        [at('invite', 'Deliver Wild Will\'s invitation to Jimi', 76, 293, 'Beach', 'Jimi: Will saved a chair for me? Tell him yes. I am glad he asked.')],
         'Will and Jimi will share a place at the gathering because you carried that invitation.', {optional: true}),
     quest('SPARK_TRAINING', 6, 'The Last Sparks: Control Practice', 'north-technician', ['LANTERN_MISSING_REGULATOR'],
         'Orin has an optional precision tool in Megamag. Practise the control sequence at the Fight Night practice post first; PvP is not required.',
@@ -204,6 +224,8 @@ const quests = [
 ];
 for (const q of quests) {
     const npc = npcs.find(npc => npc.key === q.npcKey);
+    q.dialogue = conversations[q.id];
+    for (const objective of q.objectives) objective.where = q.dialogue.where[objective.key];
     q.npc = Types.getKindFromString(npc.kind);
     q.requiredQuest = q.requiredQuests[0];
     q.startText = q.reason;

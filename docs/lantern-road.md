@@ -4,7 +4,7 @@ This campaign continues the production Lantern Picnic on the `main` LooperLands
 map. An empty seat starts a search for Rowan, the keeper who closed the lantern
 network after a failed rescue. Players carry evidence between neighbours, repair
 the relays, help Rowan choose a future and bring the communities to a larger
-picnic at Party Beach. NPCs explain the evidence they have, what is missing and
+picnic at Party Beach. NPCs answer player questions about the evidence they have, what is missing and
 why they stay at their posts.
 
 ## Chapters and routes
@@ -26,7 +26,7 @@ for absent families, help Wild Will invite Jimi, and recover Orin's precision to
 for a golden lantern. They can be finished after the main ending.
 
 The authored quests and stable IDs live in `server/npc-behaviors/lantern-road.js`.
-The dialogues use the existing choice popup and quest engine. Ground objectives
+The authored player questions and first-person NPC replies live in `server/npc-behaviors/lantern-road-conversations.js`. The dialogues use the existing choice popup and quest engine. The popup labels both speakers and repeats the chosen player line, with optional questions for context, directions and remembered choices. Reports become available only after the required discoveries. Ground objectives
 are server-validated inspections; discoveries are saved before showing their
 result. Some objectives appear only for the chosen branch. The existing quest log
 shows the reason, applicable objectives, progress, report destination and remembered
@@ -44,9 +44,9 @@ personal passages for rooms without a usable main-map entrance:
 
 | Entrance | Destination | Unlocked by |
 | --- | --- | --- |
-| Old-mill passage beside the southern Town windmill, 39,243 | Windmill, 127,298 | Completed picnic invitation |
-| Graveyard archive marker, 64,126 | Crypt archive, 127,119 | Three Names on the Stone |
-| Keeper's passage beside Adam in northern Town, 35,200 | Gauntlet, 71,372 | What Rowan Was Protecting |
+| Old-mill passage beside the southern Town windmill | Windmill | Completed picnic invitation |
+| Graveyard archive marker on the eastern side of Graveyard | Crypt archive | Three Names on the Stone |
+| Keeper's passage beside Adam in northern Town | Gauntlet | What Rowan Was Protecting |
 
 Each room has a return passage. Walk beside a marker and click it, click its
 interaction bubble, or press E. The server checks the character's progress and
@@ -102,7 +102,7 @@ Build the client with `node bin/build-client.js`, then run
 `node bin/local-npc-preview.js`. The launcher uses loopback fixture APIs and saves
 local game data under the OS temporary directory. It prints two session URLs.
 Player 2 can continue an earlier completed picnic; Player 1 keeps their own progress.
-The launcher starts at night. Set `NPC_PREVIEW_HEALTH_MULTIPLIER=20` for longer
+The launcher starts at night. Each session has a level 100 avatar and level 100 golden sword, faster movement, more health and reduced incoming damage, all confined to the fixture. Open `/preview/walkthrough` on the fixture port for named travel buttons and Day/Night/Cycle controls; the buttons preserve normal quest and discovery checks. The [quick walkthrough](lantern-road-walkthrough.md) includes every quest, its player prompts and expected replies. Set `NPC_PREVIEW_HEALTH_MULTIPLIER=20` for longer
 conversations around hostile mobs. Local Day/Night/Cycle and guide controls can be hidden
 with `NPC_PREVIEW_CONTROLS=off` to exercise the production interface.
 

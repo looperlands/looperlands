@@ -34,6 +34,12 @@ function saveGameData() {
     fs.renameSync(temporary, gameDataFile);
 }
 const picnic = require('../server/npc-behaviors/lantern-picnic');
+const walkthrough = require('./npc-preview-walkthrough');
+const testPlayer = require('./npc-preview-player').createTestPlayer(require('../server/js/formulas'));
+const properties = require('../server/js/properties');
+// Give the fixture's built-in sword a real level through the normal weapon API.
+properties[testPlayer.weapon.kind] = {...properties[testPlayer.weapon.kind], level: testPlayer.weapon.level};
+const avatarXp = new Map(avatars.map(nft => [nft, testPlayer.xp]));
 
 const previewControls = process.env.NPC_PREVIEW_CONTROLS !== 'off';
 const healthMultiplier = Number(process.env.NPC_PREVIEW_HEALTH_MULTIPLIER || 1);
@@ -41,7 +47,7 @@ let previewWorld;
 let picnicScene;
 api.get('/preview/state', (req, res) => res.json({
     players: previewWorld?.playerCount || 0,
-    playerPositions: Object.values(previewWorld?.players || {}).map(p => ({index: avatars.indexOf(p.nftId) + 1, x: p.x, y: p.y, hp: p.hitPoints, maxHp: p.maxHitPoints})),
+    playerPositions: Object.values(previewWorld?.players || {}).map(p => ({index: avatars.indexOf(p.nftId) + 1, x: p.x, y: p.y, hp: p.hitPoints, maxHp: p.maxHitPoints, level: p.getLevel(), weaponLevel: p.getWeaponLevel(), moveSpeed: p.getMoveSpeed()})),
     picnic: picnicScene?.state || null,
     npcs: [...(previewWorld?.npcBehavior?.routines.values() || [])].map(({npc, definition}) => ({
         key: definition.key, id: npc.id, kind: npc.kind, x: npc.x, y: npc.y, ...npc.behaviorState
@@ -66,19 +72,49 @@ api.post('/preview/player/:index/location', (req, res) => {
     previewWorld.handlePlayerVanish(player); previewWorld.pushRelevantEntityListTo(player);
     res.json({x: player.x, y: player.y});
 });
+api.get('/preview/walkthrough', (req, res) => {
+    const index = Number(req.query.player || 2);
+    if (![1, 2].includes(index)) return res.sendStatus(404);
+    res.type('html').send(walkthrough.render(gameData.get(avatars[index - 1]), index));
+});
+api.post('/preview/ambience', async (req, res) => {
+    if (!['day', 'night', 'cycle'].includes(req.body.mode)) return res.sendStatus(400);
+    try {
+        const response = await fetch(process.env.APP_URL + '/__npc_preview/ambience', {method: 'POST',
+            headers: {'Content-Type': 'application/json'}, body: JSON.stringify({mode: req.body.mode})});
+        res.status(response.status).json(await response.json());
+    } catch (error) { res.sendStatus(503); }
+});
+api.post('/preview/player/:index/travel', (req, res) => {
+    const nft = avatars[Number(req.params.index) - 1];
+    const player = Object.values(previewWorld?.players || {}).find(p => p.nftId === nft);
+    if (!player || player.isDead || !player.hasEnteredGame) return res.sendStatus(409);
+    const target = walkthrough.targetFor(req.body.target, previewWorld.server.cache.get(player.sessionId)?.gameData || {}, previewWorld);
+    if (!target || !previewWorld.isValidPosition(target.x, target.y)) return res.sendStatus(400);
+    const Messages = require('../server/js/message');
+    const nearby = [[target.x, target.y + 1], [target.x + 1, target.y], [target.x, target.y]].find(([x, y]) => previewWorld.isValidPosition(x, y));
+    player.setPosition(nearby[0], nearby[1]); player.clearTarget();
+    player.broadcast(new Messages.Teleport(player));
+    previewWorld.pushToPlayer(player, new Messages.Teleport(player));
+    previewWorld.handlePlayerVanish(player); previewWorld.pushRelevantEntityListTo(player);
+    res.json({arrived: true});
+});
+api.post('/api/game/asset/xp', (req, res) => {
+    if (!avatarXp.has(req.body.nftId) || !Number.isFinite(req.body.xp) || req.body.xp < 0) return res.sendStatus(400);
+    const xp = avatarXp.get(req.body.nftId) + req.body.xp;
+    avatarXp.set(req.body.nftId, xp);
+    res.json({success: true, xp});
+});
 api.get('/api/asset/nft/:nft/owns', (req, res) => res.json(avatars.some((nft, index) =>
     nft === req.params.nft && wallets[index] === String(req.query.wallet).toLowerCase())));
 api.get('/api/asset/nft/:nft', (req, res) => res.json({
     name: 'Local Looper', assetType: 'looper', token: {tokenHash: req.params.nft, tokenId: req.params.nft}
 }));
-api.get('/api/game/asset/equipped/:nft', (req, res) => res.json({weapon: 'sword1'}));
+api.get('/api/game/asset/equipped/:nft', (req, res) => res.json({weapon: testPlayer.weapon.kind}));
 api.get('/api/game/asset/data/:nft', (req, res) => res.json(gameData.get(req.params.nft) || {}));
 api.get('/api/maps/:map/flow', (req, res) => res.json([]));
 api.get('/api/maps/:map/music', (req, res) => res.json([]));
-api.get('/api/game/asset/modifiers/:server/:nft', (req, res) => res.json(Object.fromEntries([
-    'meleeDamageDealt', 'meleeDamageTaken', 'moveSpeed', 'rangedDamageDealt', 'hpRegen', 'maxHp',
-    'hate', 'attackRate', 'stealth', 'xp', 'fishing'
-].map(key => [key, 1]))));
+api.get('/api/game/asset/modifiers/:server/:nft', (req, res) => res.json(testPlayer.modifiers));
 api.get('/api/game/asset/:nft/stats', (req, res) => res.json({}));
 api.post('/api/game/asset/quest', (req, res) => {
     const data = gameData.get(req.body.nftId);
@@ -115,7 +151,7 @@ async function createSession(index) {
     const response = await fetch(process.env.APP_URL + '/session', {
         method: 'POST', headers: {'Content-Type': 'application/json', 'x-api-key': process.env.LOOPWORMS_API_KEY},
         body: JSON.stringify({walletId: wallets[index], nftId: avatars[index], title: 'Local Looper ' + (index + 1),
-            xp: 100, mapId: 'main', checkpointId: '2', f2p: false, trait: 'rogue'})
+            xp: avatarXp.get(avatars[index]), mapId: 'main', checkpointId: '2', f2p: false, trait: 'rogue'})
     });
     const session = await response.json();
     if (!response.ok || !session.sessionId) throw new Error('Could not create local NPC session');
