@@ -64,7 +64,7 @@ define(function () {
                 button.setAttribute('aria-pressed', String(button.dataset.mode === (config.mode || 'cycle')));
                 button.style.background = button.dataset.mode === (config.mode || 'cycle') ? '#6b4953' : '#382632';
             }
-            const story = config.story || config.previewStory;
+            const story = config.story ? {...config.story, canReplay: config.previewStory?.canReplay} : config.previewStory;
             if (story) {
                 if (!this.story) {
                     this.controls.style.flexWrap = 'wrap';
@@ -81,7 +81,7 @@ define(function () {
                     this.storyEvent.style.color = '#c9edb0';
                     this.story.appendChild(this.storyEvent);
                     const explanation = document.createElement('p');
-                    explanation.textContent = 'Click NPCs to talk. Adam checks supplies, Bstrat gathers neighbours, and Town Watch patrols the gate. Your choices and completed quests change their later dialogue and greetings. Each player has their own progress.';
+                    explanation.textContent = 'Local playtest guide. Click NPCs to talk and walk to ground markers to inspect them. The normal quest log keeps your objectives. Dialogue explains what each neighbour knows and why they need your help. Each player has their own progress.';
                     this.story.appendChild(explanation);
                     this.replay = document.createElement('button');
                     this.replay.textContent = 'Replay picnic';

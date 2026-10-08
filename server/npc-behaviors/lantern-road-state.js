@@ -11,8 +11,8 @@ const ready = (data, q) => active(data, q.id) && q.objectives.filter(o => applic
 const progress = (data, q) => q.objectives.filter(o => applicable(data, o)).map(o => ({...o, done: objectiveDone(data, q, o)}));
 function memories(data) {
     const lines = [];
-    if (has(data, picnic.SHARE)) lines.push('I remember your sharing idea: blankets first, bread next.');
-    else if (has(data, picnic.RETURN)) lines.push('I remember you asking Bstrat to return my basket before Adam packed the bread.');
+    if (has(data, picnic.SHARE)) lines.push('Adam remembers your sharing idea: blankets first, bread next.');
+    else if (has(data, picnic.RETURN)) lines.push('You asked Bstrat to return Adam\'s basket before he packed the bread.');
     if (has(data, picnic.QUIET)) lines.push('You chose a quiet picnic so the watch could rest.');
     else if (has(data, picnic.MUSIC)) lines.push('You chose music and invited the watch to join the songs.');
     if (has(data, 'lantern:public-memorial')) lines.push('Vince explains the memorial publicly because you chose to remember together.');
@@ -27,7 +27,7 @@ function nextStep(data, q) {
     const npc = content.npcs.find(n => n.key === q.npcKey);
     if (!active(data, q.id)) return 'Speak to ' + npc.label + ' (' + npc.x + ', ' + npc.y + ') to begin.';
     const pending = progress(data, q).find(o => !o.done);
-    if (pending) return pending.label + ' — ' + pending.scene + (pending.x ? ' (' + pending.x + ', ' + pending.y + '). Walk nearby and choose Inspect in the journal.' : '.');
+    if (pending) return pending.label + ' — ' + pending.scene + (pending.x ? ' (' + pending.x + ', ' + pending.y + '). Walk to the marker and click it or press E to inspect it.' : '.');
     return 'Report to ' + npc.label + ' (' + npc.x + ', ' + npc.y + ').';
 }
 function journal(data = {}) {

@@ -90,11 +90,11 @@ class LanternRoadController {
         journal.inspect = active.flatMap(q => state.progress(data, q).filter(o => !o.done && o.type === 'inspect' &&
             Math.abs(player.x - o.x) + Math.abs(player.y - o.y) <= 3).map(o => ({id: q.id + ':' + o.key, label: o.label})));
         const markers = active.flatMap(q => state.progress(data, q).filter(o => !o.done && o.type === 'inspect').map(o => ({
-            x: o.x, y: o.y, kind: 'marker', label: o.label
+            id: q.id + ':' + o.key, x: o.x, y: o.y, kind: 'marker', label: o.label
         })));
         const passages = content.passages.filter(p => state.done(data, p.requires));
         journal.passages = passages.filter(p => Math.abs(player.x - p.x) + Math.abs(player.y - p.y) <= 3).map(p => ({id: p.id, label: p.label}));
-        markers.push(...passages.map(p => ({x: p.x, y: p.y, kind: 'passage', label: p.label})));
+        markers.push(...passages.map(p => ({id: p.id, x: p.x, y: p.y, kind: 'passage', label: p.label})));
         const lights = [];
         const add = (quest, x, y, label, kind = 'lantern') => {if (state.done(data, quest)) lights.push({x, y, label, kind});};
         add('LANTERN_COAST_SIGNAL', 57, 260, 'Coastal signal restored');
@@ -123,7 +123,15 @@ class LanternRoadController {
             const npc = content.npcs.find(npc => npc.key === node.storyMenu);
             const completedHere = content.quests.filter(q => q.npcKey === node.storyMenu && state.done(data, q.id));
             node.text = npc.label + ': ' + (completedHere.length ? completedHere.at(-1).conclusion : node.text);
+            if (node.storyMenu === 'town-gardener' && !state.done(data, 'LANTERN_LONG_TABLE')) {
+                const journal = state.journal(data);
+                node.text += '<br><br>Next on your road: ' + journal.goal;
+                if (!state.done(data, 'LANTERN_WRECK_LETTERS') && !state.done(data, 'LANTERN_FOREST_MARKERS')) {
+                    node.text += '<br>Rowan used to bring invitations from across the island. Jimi has news from the coast, and Mara keeps the old forest markers. You can follow either lead first.';
+                }
+            }
             const memories = state.memories(data);
+            if (node.storyMenu === 'town-gardener' && state.has(data, 'lantern:return-basket')) memories.unshift('I remember you asking Bstrat to return my basket. It left room for the bread after the blankets.');
             if (['town-gardener', 'town-neighbour', 'town-watch', 'lantern-keeper', 'party-wildwill'].includes(node.storyMenu)) node.text += '<br><br>' + memories.join('<br>');
         }
         if (node.storyQuest) {
@@ -134,7 +142,7 @@ class LanternRoadController {
         if (node.storyConclusion && node.storyConclusion === 'LANTERN_LONG_TABLE') {
             node.text += '<br><br>' + state.memories(data).join('<br>');
             if (state.done(data, 'LANTERN_WATCH_INVITED')) node.text += '<br>The watch stays for the whole evening because you arranged a relief patrol.';
-            if (state.done(data, 'LANTERN_MISSING_PLACES')) node.text += '<br>The keepsake lantern respects the families who chose to stay home.';
+            if (state.done(data, 'LANTERN_MISSING_PLACES')) node.text += '<br>The keepsake lantern keeps a place for the absent families. Their private messages stay private because they asked for that.';
             if (state.done(data, 'LANTERN_WILL_NEIGHBOUR')) node.text += '<br>Jimi has a place beside Wild Will because you carried a personal invitation.';
         }
         return node;

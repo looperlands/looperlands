@@ -7,7 +7,7 @@ const root = path.resolve(__dirname, '..');
 process.chdir(root);
 const port = Number(process.env.NPC_PREVIEW_PORT || 8013);
 const fixturePort = Number(process.env.NPC_PREVIEW_FIXTURE_PORT || 3013);
-const data = path.join(os.tmpdir(), 'looperlands-npc-preview');
+const data = process.env.NPC_PREVIEW_DATA_DIR || path.join(os.tmpdir(), 'looperlands-npc-preview');
 fs.mkdirSync(data, {recursive: true});
 Object.assign(process.env, {
     NODE_ENV: 'development', APP_URL: 'http://127.0.0.1:' + port, GAMESERVER_NAME: 'local-npc-preview',
@@ -35,10 +35,12 @@ function saveGameData() {
 }
 const picnic = require('../server/npc-behaviors/lantern-picnic');
 
+const previewControls = process.env.NPC_PREVIEW_CONTROLS !== 'off';
 let previewWorld;
 let picnicScene;
 api.get('/preview/state', (req, res) => res.json({
     players: previewWorld?.playerCount || 0,
+    playerPositions: Object.values(previewWorld?.players || {}).map(p => ({index: avatars.indexOf(p.nftId) + 1, x: p.x, y: p.y})),
     picnic: picnicScene?.state || null,
     npcs: [...(previewWorld?.npcBehavior?.routines.values() || [])].map(({npc, definition}) => ({
         key: definition.key, id: npc.id, kind: npc.kind, x: npc.x, y: npc.y, ...npc.behaviorState
@@ -49,6 +51,19 @@ api.get('/preview/player/:index', async (req, res) => {
     if (![0, 1].includes(index)) return res.sendStatus(404);
     try { res.redirect(await createSession(index)); }
     catch (error) { res.status(500).send(error.message); }
+});
+// Local-fixture travel only, for exercising distant main-map chapters quickly.
+api.post('/preview/player/:index/location', (req, res) => {
+    const nft = avatars[Number(req.params.index) - 1];
+    const player = Object.values(previewWorld?.players || {}).find(p => p.nftId === nft);
+    const {x, y} = req.body;
+    if (!player || !Number.isInteger(x) || !Number.isInteger(y) || !previewWorld.isValidPosition(x, y)) return res.sendStatus(400);
+    const Messages = require('../server/js/message');
+    player.setPosition(x, y); player.clearTarget();
+    player.broadcast(new Messages.Teleport(player));
+    previewWorld.pushToPlayer(player, new Messages.Teleport(player));
+    previewWorld.handlePlayerVanish(player); previewWorld.pushRelevantEntityListTo(player);
+    res.json({x: player.x, y: player.y});
 });
 api.get('/api/asset/nft/:nft/owns', (req, res) => res.json(avatars.some((nft, index) =>
     nft === req.params.nft && wallets[index] === String(req.query.wallet).toLowerCase())));
@@ -114,17 +129,21 @@ api.listen(fixturePort, '127.0.0.1', () => {
     const world = new World('world_main', 20, server);
     previewWorld = world;
     const Messages = require('../server/js/message');
-    const packetFor = player => ({...world.npcBehavior.config.ambience, serverTime: Date.now(), epoch: 0,
-        ...world.lanternRoad.packet(player),
-        picnic: world.lanternRoad.packet(player).finalePicnic || picnicScene?.state || null,
+    const packetFor = player => {
+        const road = world.lanternRoad.packet(player);
+        const choices = server.cache.get(player.sessionId)?.gameData?.choices || [];
+        return ({...world.npcBehavior.config.ambience, serverTime: Date.now(), epoch: 0,
+        ...road,
+        picnic: road.finalePicnic || (picnicScene?.state && {...picnicScene.state, music: choices.includes(picnic.MUSIC)}) || null,
         previewPicnic: picnicScene?.state || null,
         previewStory: {title: 'The Lantern Picnic', goal: picnic.progress(server.cache.get(player.sessionId)?.gameData),
             event: picnicScene?.state?.message || '',
             canReplay: picnicScene?.completed(player) && (!picnicScene.state || picnicScene.state.phase === 'finished')}});
+    };
     const configureAmbience = (mode = 'night') => {
         if (!world.npcBehavior) return;
         const ambience = world.npcBehavior.config.ambience;
-        Object.assign(ambience, {mode, previewControls: true});
+        Object.assign(ambience, {mode, previewControls});
         for (const player of Object.values(world.players)) {
             if (world.map.getSceneAt(player.x, player.y)?.name === ambience.scene) {
                 world.pushToPlayer(player, new Messages.WorldAmbience(packetFor(player)));
@@ -150,7 +169,7 @@ api.listen(fixturePort, '127.0.0.1', () => {
     world.map.ready(() => {
         initializeMap();
         picnicScene = world.lanternPicnic;
-        Object.assign(world.npcBehavior.config.ambience, {mode: 'night', previewControls: true,
+        Object.assign(world.npcBehavior.config.ambience, {mode: 'night', previewControls,
             previewStory: {title: 'The Lantern Picnic', goal: picnic.progress()}});
     });
     const storyGoals = new Map();

@@ -196,3 +196,8 @@ saved canvas context. A throwing extension is disabled while other rendering
 continues. Feature modules use the `*-worker.js` naming convention so production
 builds retain them. The renderer owns hooks and serialisable data only; picnic
 geometry and colours live in `picnic-renderer-worker.js`.
+
+
+The linked continuation is documented in [The Lantern Road](lantern-road.md).
+The production campaign uses the existing Quests panel and nearby world interactions.
+The guide remains a local playtest aid only.

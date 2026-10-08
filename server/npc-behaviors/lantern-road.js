@@ -7,7 +7,7 @@ const at = (key, label, x, y, scene, result, extra = {}) => ({key, label, x, y, 
 const pick = (label, flag, response) => ({label, flag, response});
 const quest = (id, chapter, name, npcKey, requiredQuests, reason, objectives, conclusion, extra = {}) => ({
     id: 'LANTERN_' + id, chapter, name, npcKey, requiredQuests, reason, objectives, conclusion,
-    eventType: 'NPC_TALKED', target: 'FLOW', amount: 1, level: 1, dialogueOnly: true, ...extra
+    eventType: 'NPC_TALKED', target: 'FLOW', amount: 1, level: 1, medal: Types.Medals.TALK, dialogueOnly: true, ...extra
 });
 const npcs = [
     {key: 'town-gardener', kind: 'villager', label: 'Ordinary Adam', x: 37, y: 200},
@@ -184,7 +184,7 @@ const quests = [
         'Will and Jimi will share a place at the gathering because you carried that invitation.', {optional: true}),
     quest('SPARK_TRAINING', 6, 'The Last Sparks: Control Practice', 'north-technician', ['LANTERN_MISSING_REGULATOR'],
         'Orin has an optional precision tool in Megamag. Practise the control sequence at the Fight Night practice post first; PvP is not required.',
-        [at('practice', 'Practise the relay control sequence', 78, 248, 'Town · Fight Night practice post', 'The practice controls click safely into place. You can now identify the precision tool.')],
+        [at('practice', 'Practise the relay control sequence', 79, 250, 'Town · Fight Night practice post', 'The practice controls click safely into place. You can now identify the precision tool.')],
         'Orin trusts you with the optional Megamag tool recovery. It improves the lanterns but is not required to finish the story.', {optional: true}),
     quest('SPARK_TOOL', 7, 'The Last Sparks: A Golden Light', 'north-technician', ['LANTERN_SPARK_TRAINING'],
         'The precision tool is in Megamag, reached through the existing northern Lavaland door. Its guarded route is optional.',

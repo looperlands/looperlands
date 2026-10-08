@@ -586,69 +586,7 @@ WS.socketIOServer = Server.extend({
                 return;
             }
 
-            // Loop over this.quests and check if they are completed / available by lookup at session game quest data
-            let availableQuests = [];
-            let questStatus = sessionData?.gameData?.quests;
-
-            if (quests && questStatus) {
-                _.each(quests?.questsByID, function (quest) {
-                    if (_.findIndex(questStatus.COMPLETED, {questKey: quest.id}) !== -1) {
-
-                        availableQuests.push({
-                            id: quest.id,
-                            name: quest.name,
-                            desc: quest.questLogText ?? quest.startText,
-                            longDesc: quest.longText ?? quest.startText,
-                            type: quest.eventType,
-                            target: quest.target,
-                            medal: quest.medal,
-                            amount: quest.amount,
-                            level: quest.level,
-                            status: "COMPLETED"
-                        });
-                    }
-                });
-                _.each(quests?.questsByID, function (quest) {
-                    if (_.findIndex(questStatus.COMPLETED, {questKey: quest.id}) !== -1) {
-                        return;
-                    }
-                    if (_.findIndex(questStatus.IN_PROGRESS, {questKey: quest.id}) !== -1) {
-
-                        let progressCount = 0;
-                        if (quest.eventType === "LOOT_ITEM") {
-                            let itemCount = sessionData.gameData.items[quest.target];
-                            if (itemCount !== undefined) {
-                                progressCount = itemCount;
-                            }
-                        } else if (quest.eventType === "KILL_MOB") {
-                            let mobCount = sessionData.gameData.mobKills[quest.target];
-                            if (mobCount !== undefined) {
-                                progressCount = mobCount;
-                            }
-                        }
-
-                        if (progressCount >= quest.amount) {
-                            progressCount = quest.amount;
-                        }
-
-                        availableQuests.push({
-                            id: quest.id,
-                            name: quest.name,
-                            desc: quest.questLogText ?? quest.startText,
-                            longDesc: quest.longText ?? quest.startText,
-                            type: quest.eventType,
-                            target: quest.target,
-                            medal: quest.medal,
-                            level: quest.level,
-                            progressCount: progressCount,
-                            amount: quest.amount,
-                            status: "IN_PROGRESS"
-                        });
-                    }
-                });
-            }
-
-            res.status(200).json(availableQuests);
+            res.status(200).json(require('./quests/questlog').buildQuestLog(quests.questsByID, sessionData.gameData));
         });
 
         app.get("/session/:sessionId/owns/:nftId", async (req, res) => {

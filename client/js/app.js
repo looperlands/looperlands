@@ -333,6 +333,7 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
 
         showNewQuestPopup(quest) {
             let newQuestPopup = $('#new-achievement-popup');
+            newQuestPopup.find('.panelTitle').text(quest.heading || 'New Quest Received');
             newQuestPopup.find('#new-achievement-name').text(quest.name);
 
             let questText = quest.longText ?? (_.isArray(quest.startText) ? quest.startText.join("<br/>") : quest.startText)

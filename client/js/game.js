@@ -7307,7 +7307,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                         if (nearestEntity) {
                             let msg = "Talk";
-                            let entityName = AltNames.getAltNameFromKind(Types.getKindAsString(nearestEntity.kind));
+                            let entityName = nearestEntity.name || AltNames.getAltNameFromKind(Types.getKindAsString(nearestEntity.kind));
                             if (entityName) {
                                 msg += " to " + entityName;
                             }
@@ -7328,10 +7328,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             self.assignBubbleTo(nearestEntity);
                             self.lastActionBubbleId = nearestEntity.id;
                         } else {
-                            const nearestAction = self.map.findNearestActionTileAround(self.player.gridX, self.player.gridY, 1);
+                            const nearestAction = WorldScenery.nearestAction(self.player.gridX, self.player.gridY) || self.map.findNearestActionTileAround(self.player.gridX, self.player.gridY, 1);
                             if (nearestAction) {
                                 const requestId = ++self.tileActionStageRequestId;
-                                const immediateStage = nearestAction.action === 'event_board' ? {name: 'View events'} : self.tileActions.getImmediateStage(nearestAction);
+                                const immediateStage = nearestAction.storyType ? {name: nearestAction.label} : nearestAction.action === 'event_board' ? {name: 'View events'} : self.tileActions.getImmediateStage(nearestAction);
                                 self.showTileActionBubble(nearestAction, immediateStage);
 
                                 self.getTileActionStage(nearestAction).then((actionStage) => {
@@ -8185,6 +8185,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     self.client.onWorldAmbience(config => {
                         self.worldAmbience.setConfig(config);
                         WorldScenery.update(self.renderer, config);
+                        WorldScenery.prompt(self);
                         const audio = self.audioManager;
                         if (!audio) return;
                         const picnic = config?.picnic || config?.previewPicnic;
@@ -8581,6 +8582,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             },
 
             getTileActionStage: function (action) {
+                if (action?.storyType) return Promise.resolve({name: action.label});
                 if (action?.action === 'event_board') return Promise.resolve({name: 'View events'});
                 return this.tileActions.findCurrentStage(action);
             },
@@ -8613,6 +8615,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             },
 
             runTileAction: function (action) {
+                if (action?.storyType) return WorldScenery.execute(this, action);
                 if (action?.action === 'event_board') {
                     this.app.eventBoard?.open();
                     return;
@@ -9243,6 +9246,12 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     && (!this.hoveringPlateauTile || pos.keyboard)
                     && !hoveringPanel
                     && !(this.doorCheck)) {
+
+                    const storyAction = !pos.keyboard && WorldScenery.actionAt(pos.x, pos.y);
+                    if (storyAction && this.player.isAdjacent(storyAction)) {
+                        WorldScenery.execute(this, storyAction);
+                        return;
+                    }
 
                     entity = this.getEntityAt(pos.x, pos.y);
 
@@ -10587,20 +10596,18 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             },
 
             interact: function () {
-                let self = this;
-                let interacted = false;
-                this.forEachEntityAround(this.player.gridX, this.player.gridY, 1, function (entity) {
-                    if (Types.isNpc(entity.kind) && !$('#dialogue-popup').hasClass('active')) {
-                        self.makeNpcTalk(entity);
-                        interacted = true;
-                    }
-                });
-
-                if (interacted) {
+                if ($('#dialogue-popup').hasClass('active') || this.player.isDead) return;
+                const storyAction = WorldScenery.nearestAction(this.player.gridX, this.player.gridY);
+                if (storyAction) return WorldScenery.execute(this, storyAction);
+                const nearestNpc = this.forNearestEntityAround(this.player.gridX, this.player.gridY, 1,
+                    entity => Types.isNpc(entity.kind) && entity.hasInteraction());
+                if (nearestNpc) {
+                    this.makeNpcTalk(nearestNpc);
                     return;
                 }
 
-                const nearestAction = self.map.findNearestActionTileAround(self.player.gridX, self.player.gridY, 1);
+                const self = this;
+                const nearestAction = WorldScenery.nearestAction(self.player.gridX, self.player.gridY) || self.map.findNearestActionTileAround(self.player.gridX, self.player.gridY, 1);
                 if (nearestAction) {
                     self.runTileAction(nearestAction);
                 }
