@@ -26,3 +26,12 @@ test('fish and lake options derive from the real lake definitions and display na
  const added=buildActivityCatalog(GameTypes,{},[],{newLake:{fish:{newFish:'rare'}}},value=>'New fish');
  expect(added.fish).toEqual([{value:'newFish',label:'New fish',lake:'newLake',rarity:'rare'}]);
 });
+
+ test('automatic prize catalog only includes transferable item quantities, not NFT ownership',()=>{
+  global.generateFishDataMap=undefined;
+  const lakes=require('./lakes'), collectables=require('./collectables');
+  const catalog=buildActivityCatalog(GameTypes,{},[],lakes,value=>value,collectables.isTransferable);
+  expect(catalog.prizeItems.length).toBeGreaterThan(0);
+  expect(catalog.prizeItems.some(entry=>entry.kind?.startsWith('NFT_'))).toBe(false);
+  expect(catalog.prizeItems.some(entry=>entry.value==='cobguppy')).toBe(true);
+ });

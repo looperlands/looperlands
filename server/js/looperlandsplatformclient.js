@@ -211,6 +211,11 @@ class LooperLandsPlatformClient {
         }
     }
 
+    async getEventEquipment(wallet) {
+        const response = await this.client.get('/api/game/events/equipment/' + encodeURIComponent(wallet), {timeout: 5000});
+        return response.data;
+    }
+
     async getInventoryItem(nftId, itemId) {
         try {
             const url = `/api/game/asset/inventory/${nftId}/${itemId}`;

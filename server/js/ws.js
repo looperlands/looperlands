@@ -23,6 +23,7 @@ const Formulas = require('./formulas.js');
 const ens = require("./ens.js");
 const chat = require("./chat.js");
 const { SocialChat } = require('./socialchat');
+const {EventEquipment, effectiveLevel} = require('./eventequipment');
 const quests = require("./quests/quests.js");
 const Lakes = require("./lakes.js");
 const AltNames = require("../../shared/js/altnames");
@@ -169,6 +170,7 @@ WS.socketIOServer = Server.extend({
 
         this.cache = cache;
         this.activity = new ActivityTracker(platformClient);
+        this.eventEquipment = new EventEquipment(platformClient);
         process.once('exit', () => this.activity.close());
         for (const signal of ['SIGTERM', 'SIGINT']) process.once(signal, () => {
             this.activity.close();
@@ -190,7 +192,7 @@ WS.socketIOServer = Server.extend({
         });
 
         app.use(express.json())
-        app.get('/activity-catalog', (req, res) => res.json(buildActivityCatalog(Types, tileActionsController.stageDefinitions, Object.keys(self.worldsMap || {}), Lakes, AltNames.getName)));
+        app.get('/activity-catalog', (req, res) => res.json(buildActivityCatalog(Types, tileActionsController.stageDefinitions, Object.keys(self.worldsMap || {}), Lakes, AltNames.getName, Collectables.isTransferable)));
 
         platformClient.createOrUpdateGameServer(host, port, GAMESERVER_NAME);
 
@@ -439,6 +441,12 @@ WS.socketIOServer = Server.extend({
                             item.level = Formulas.calculateToolPercentageToNextLevel(item.xp).currentLevel;
                         } else {
                             item.level = Formulas.calculatePercentageToNextLevel(item.xp).currentLevel;
+                        }
+
+                        const eventPlayer = this.worldsMap?.[sessionData.mapId]?.getPlayerById(sessionData.entityId);
+                        if (eventPlayer && Types.isWeapon(Types.getKindFromString(item.nftId))) {
+                            item.normalLevel = item.level;
+                            item.level = effectiveLevel(eventPlayer, 'weaponLevel', item.level);
                         }
 
                         return item;
@@ -1303,6 +1311,22 @@ WS.socketIOServer = Server.extend({
         app.get("/session/:sessionId/dynamicnft/:kindId/kindid", dynamicNFTcontroller.getNFTDataByKindId);
 
         let announcementController;
+        app.post('/inventory/refresh', async (req, res) => {
+            if (!process.env.LOOPWORMS_API_KEY || req.headers['x-api-key'] !== process.env.LOOPWORMS_API_KEY) return res.status(401).json({success:false});
+            const items = req.body.items;
+            if (!Array.isArray(items) || !items.length || items.length > 40 || items.some(item => typeof item.nftId !== 'string' || typeof item.item !== 'string')) return res.status(400).json({success:false});
+            try {
+                const refreshed = await dao.refreshInventoryItems(items);
+                for (const item of refreshed) {
+                    for (const sessionId of cache.keys()) {
+                        const session = cache.get(sessionId);
+                        if (session?.nftId === item.nftId) this.socialChat.setQuantity(session.walletId, item.nftId, item.item, item.quantity);
+                    }
+                }
+                return res.json({success:true});
+            } catch (error) { return res.status(503).json({success:false,error:'Inventory refresh pending'}); }
+        });
+
         app.post("/announce", async (req, res) => {
             if (announcementController === undefined) {
                 announcementController = new announcement.AnnouncementController(self.worldsMap);

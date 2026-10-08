@@ -279,6 +279,25 @@ const transferItems = async function (transfer) {
   return inventoryWritePromise;
 };
 
+// Read authoritative item counts under the same writer used by loot and gifts.
+const refreshInventoryItems = async function (items) {
+  while (processingQueue || LOOT_EVENTS_QUEUE.length) {
+    if (await processLootEventQueue() === false) throw new Error('inventory_unavailable');
+  }
+  processingQueue = true;
+  inventoryWritePromise = (async () => {
+    const result = [];
+    for (const item of items) {
+      const response = await platformClient.getInventoryItem(item.nftId, item.item);
+      if (!Number.isSafeInteger(response?.amount)) throw new Error('Invalid inventory count');
+      const pending = pendingQueue.filter(event => event.nftId === item.nftId && event.item === item.item).reduce((sum, event) => sum + event.amount, 0);
+      result.push({...item, quantity:response.amount + pending});
+    }
+    return result;
+  })().finally(finishInventoryWrite);
+  return inventoryWritePromise;
+};
+
 // Process a single transaction
 const saveLootEvent = async function (nftId, itemId, amount = 1) {          // Default amount to 1 if undefined
   if (processingQueue) {
@@ -723,6 +742,7 @@ module.exports = {
   updateResourceBalance,
   transferResourceFromTo,
   transferItems,
+  refreshInventoryItems,
   completePartnerTask,
   getPartnerTask,
   getInventory,

@@ -1,3 +1,4 @@
+const {effectiveLevel} = require('./eventequipment');
 
 var cls = require("./lib/class"),
     _ = require("underscore"),
@@ -102,6 +103,9 @@ module.exports = Player = Character.extend({
                 self.walletId = playerCache.walletId;
                 self.nftId = playerCache.nftId;
                 self.playerClassModifiers = new PlayerClassModifiers(platformClient, self.nftId, playerCache.trait);
+                self.mapId = playerCache.mapId;
+                try { await self.server.server.eventEquipment?.register(self); }
+                catch (error) { self.connection.close('Event equipment service unavailable. Please reconnect.'); return; }
 
                 self.kind = Types.Entities.WARRIOR;
                 self.equipArmor(message[2]);
@@ -597,6 +601,7 @@ module.exports = Player = Character.extend({
 
         this.connection.onClose(function () {
             self.server.server.activity?.stop(self.sessionId);
+            self.server.server.eventEquipment?.unregister(self);
             self.server.server?.socialChat?.unregister(self);
             if (self.loopringTimeout) {
                 clearTimeout(self.loopringTimeout);
@@ -750,7 +755,7 @@ module.exports = Player = Character.extend({
 
     getState: function () {
         var basestate = this._getBaseState(),
-            state = [this.name, this.orientation, this.armor, this.weapon, this.title, this.level];
+            state = [this.name, this.orientation, this.armor, this.weapon, this.title, this.getLevel()];
 
         if (this.target) {
             state.push(this.target);
@@ -980,7 +985,7 @@ module.exports = Player = Character.extend({
     },
 
     getLevel: function () {
-        return this.level;
+        return effectiveLevel(this, 'avatarLevel', this.level);
     },
 
     getPowerUpActive: function () {
@@ -1057,7 +1062,7 @@ module.exports = Player = Character.extend({
             weaponLevel = levelInfo;
         }
 
-        return weaponLevel;
+        return effectiveLevel(this, 'weaponLevel', weaponLevel);
 
     },
 
