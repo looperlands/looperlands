@@ -1,5 +1,5 @@
-Types = require("../../../shared/js/gametypes");
-quests = [        
+const Types = require("../../../shared/js/gametypes");
+const quests = [
     {
         id: "COB_COLLECT_LOGS",
         name: "Maintaining the campfire",

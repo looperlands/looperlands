@@ -1,5 +1,5 @@
-Types = require("../../../shared/js/gametypes");
-quests = [
+const Types = require("../../../shared/js/gametypes");
+const quests = [
     {
         id: "Save the Hamsters Part 1",
         name: "Save the Hamsters Part 1",

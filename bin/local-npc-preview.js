@@ -107,6 +107,7 @@ async function createSession(index) {
 }
 
 api.listen(fixturePort, '127.0.0.1', () => {
+    require('../server/world-definitions').register();
     const WS = require('../server/js/ws');
     const server = new WS.socketIOServer();
     const World = require('../server/js/worldserver');
@@ -114,7 +115,7 @@ api.listen(fixturePort, '127.0.0.1', () => {
     const world = new World('world_main', 20, server);
     previewWorld = world;
     const Messages = require('../server/js/message');
-    const packetFor = player => ({...world.npcBehavior.config.ambience,
+    const packetFor = player => ({...world.npcBehavior.ambienceFor(player), ...world.scenes.packet(player),
         particles: world.map.getSceneAt(player.x, player.y)?.name === world.npcBehavior.config.ambience.scene ? world.npcBehavior.config.ambience.particles : 'none',
         serverTime: Date.now(), epoch: 0,
         previewPicnic: picnicScene?.state || null,
@@ -147,7 +148,7 @@ api.listen(fixturePort, '127.0.0.1', () => {
     const initializeMap = world.map.ready_func;
     world.map.ready(() => {
         initializeMap();
-        picnicScene = world.lanternPicnic;
+        picnicScene = world.scenes.get('lantern-picnic');
         Object.assign(world.npcBehavior.config.ambience, {mode: 'night', previewTimeMode: 'night', previewControls: true,
             previewStory: {title: 'The Lantern Picnic', goal: picnic.progress()}});
     });

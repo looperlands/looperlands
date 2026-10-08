@@ -1,5 +1,5 @@
-Types = require("../../../shared/js/gametypes");
-quests = [
+const Types = require("../../../shared/js/gametypes");
+const quests = [
     {
         id: "TRAILBLAZER_QUEST_1",
         name: "Trailblazer's Rat Bashing Request",

@@ -1,0 +1,11 @@
+# Registered world content and cutscenes
+
+Application startup calls `server/world-definitions/index.js` before constructing the quest, dialogue, NPC and world engines. New map/story modules register definitions at this composition root; engines never import a story. Existing legacy map quests and the shipped picnic are registered here.
+
+A definition has `id`, `quests`, `dialogues`, `npcBehavior` and optional `createScene(world)`. Quests use the existing quest/event consumer; dialogue uses existing conditions/actions/choice memory. Registering later updates the exported quest index and dialogue lookup; duplicate quest/definition/NPC IDs are rejected. Scene runtimes expose `tick()`, optional `forget(player)` and `packet(player)` for presentation. They do not supply alternative quest completion, inventory or inspection engines.
+
+The generic `Cutscene` runner accepts configured participants and destinations, a quest-completion trigger, timing, public text and ordered steps. `speech` uses the existing NPC behavior speech channel; `wait` delays the next step; `cue` invokes an externally registered animation script. Scenery and music are provided by registered packet descriptors. The picnic is the first configured example in `server/npc-behaviors/lantern-picnic-cutscene.js`.
+
+Participants walk through the normal collision-aware NPC routes and validated schedule doors. A scene reserves its actors, reroutes occupied destinations, waits for all arrivals, pauses speech for player conversations and restores their routine afterwards. Arrival timeout, owner disconnect and animation-script errors release actors. Other scenes cannot borrow reserved actors. Only eligible attendees receive a durable scene-viewed memory; watching a shared scene never completes another character's quest. Quest progress remains separate from playback.
+
+WorldScenery accepts renderer descriptors `{id, script, data}` and music rectangles. Worker scripts live outside Renderer and register their draw layers through its existing extension API. In-game animation scripts can handle a `cue` without changing the quest or cutscene engines. Camera control/player locking and a script editor are not included in this playback subsystem.

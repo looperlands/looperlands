@@ -1,0 +1,20 @@
+global.Types = {}; global.quests = [];
+jest.mock('./dao', () => ({setQuestStatus: jest.fn()}));
+jest.mock('./formulas', () => ({level: () => 1}));
+jest.mock('./discord', () => ({}));
+jest.mock('./message', () => ({}));
+jest.mock('./looperlandsplatformclient', () => ({LooperLandsPlatformClient: class {}}));
+const {definitions} = require('./worlddefinitions');
+const questEngine = require('./quests/quests');
+const DialogueController = require('./dialoguecontroller');
+test('engines constructed before registration receive new quest/dialogue definitions', () => {
+    const cache = new Map([['player', {nftId: 'avatar', xp: 1, gameData: {quests: {}}}]]);
+    const controller = new DialogueController(cache), exportedIndex = questEngine.questsByID;
+    const npc = require('../../shared/js/gametypes').Entities.GUARD;
+    const quest = {id: 'registered-late', npc, eventType: 'NPC_TALKED', target: npc, startText: 'Hello', endText: 'Thanks'};
+    definitions.register('example', {id: 'test-scene', quests: [quest], dialogues: [{npc, name: 'Neighbour', nodes: {hello: {text: 'Hi'}}}]});
+    expect(questEngine.questsByID).toBe(exportedIndex); expect(exportedIndex[quest.id]).toEqual(quest);
+    expect(questEngine.newQuest(cache, 'player', quest.id)).toBe('Hello');
+    expect(controller.findDialogueTree('example', npc).name).toBe('Neighbour');
+    expect(controller.findDialogueTree('other-map', npc)).toBeNull();
+});

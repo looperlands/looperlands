@@ -1,5 +1,5 @@
-Types = require("../../../shared/js/gametypes");
-quests = [
+const Types = require("../../../shared/js/gametypes");
+const quests = [
     {
         id: "GOLDEN_KERNEL_QUEST_TALKTOBIT",
         name: "Talk to bitcorn about Golden Kernel", 

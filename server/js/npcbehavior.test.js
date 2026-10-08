@@ -10,6 +10,7 @@ jest.mock('./lib/class', () => {
 });
 global.Types = {};
 const Types = require('../../shared/js/gametypes');
+require('../world-definitions').register();
 const {NpcBehavior, validateConfig, loadConfig} = require('./npcbehavior');
 const {NpcMemory} = require('./npcmemory');
 
@@ -311,7 +312,7 @@ test('all pilot routes are connected on the actual map and avoid doors', async (
 
 test('Town and Forest retain the same clock and tint in a world with the picnic controller', () => {
     const {controller, world, player, advance} = setup();
-    world.lanternPicnic = {state: null};
+    world.scenes = {packet: () => ({story: {goal: "Preparing"}})};
     advance(200);
     const town = world.pushToPlayer.mock.calls.map(([, message]) => message.serialize()).find(packet => packet[0] === Types.Messages.WORLD_AMBIENCE)[1];
     world.pushToPlayer.mockClear();

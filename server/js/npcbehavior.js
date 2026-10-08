@@ -2,8 +2,7 @@ const Types = require('../../shared/js/gametypes');
 const Messages = require('./message');
 const WorldTime = require('../../client/js/worldtime-worker');
 const {NpcSchedule, validateSchedule} = require('./npcschedule');
-const fs = require('fs');
-const path = require('path');
+const {definitions} = require('./worlddefinitions');
 
 const distance = (a, b) => Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
 const inside = (point, area) => !area || (point.x >= area.x && point.y >= area.y &&
@@ -68,9 +67,9 @@ function validateConfig(config) {
 
 function loadConfig(mapId) {
     if (process.env.NPC_BEHAVIORS === 'off') return null;
-    const filename = path.join(__dirname, '../npc-behaviors', mapId + '.json');
     try {
-        const source = mapId === 'main' ? require('../npc-behaviors/lantern-picnic').behavior : JSON.parse(fs.readFileSync(filename, 'utf8'));
+        const source = definitions.behavior(mapId);
+        if (!source) return null;
         const config = validateConfig(JSON.parse(JSON.stringify(source)));
         return config.enabled ? config : null;
     } catch (error) {
@@ -294,21 +293,14 @@ class NpcBehavior {
         const ambience = this.ambienceFor(player);
         const active = Boolean(ambience?.effects.length);
         const ambienceKey = JSON.stringify(ambience);
-        if (this.world.lanternPicnic) {
-            const picnic = this.world.lanternPicnic;
-            const goal = require('../npc-behaviors/lantern-picnic').progress(this.world.server.cache.get(player.sessionId)?.gameData);
-            const snapshot = JSON.stringify([ambienceKey, goal, picnic.state]);
-            if (state.snapshot !== snapshot) {
-                this.world.pushToPlayer(player, new Messages.WorldAmbience({...ambience,
-                    serverTime: time, epoch: 0, picnic: picnic.state && {...picnic.state, music: (this.world.server.cache.get(player.sessionId)?.gameData?.choices || []).includes('lantern:music-picnic')},
-                    story: {title: 'The Lantern Picnic', goal, event: active ? picnic.state?.message : ''}}));
-                state.snapshot = snapshot;
-            }
-            state.ambience = active;
-        } else if (state.ambienceKey !== ambienceKey) {
-            this.world.pushToPlayer(player, new Messages.WorldAmbience(ambience ? {...ambience, epoch: 0, serverTime: time} : null));
-            state.ambience = active;
+        const features = this.world.scenes?.packet(player) || {};
+        const snapshot = JSON.stringify([ambienceKey, features]);
+        if (state.snapshot !== snapshot) {
+            this.world.pushToPlayer(player, new Messages.WorldAmbience(ambience || Object.keys(features).length ?
+                {...ambience, ...features, epoch: 0, serverTime: time} : null));
+            state.snapshot = snapshot;
         }
+        state.ambience = active;
         state.ambienceKey = ambienceKey;
         for (const [key, routine] of this.routines) {
             if (this.world.entities[routine.npc.id] !== routine.npc || routine.schedule?.sleeping()) continue;

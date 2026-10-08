@@ -133,6 +133,7 @@ jest.mock('./dialogue/main.js', () => ({
 }
 ));
 
+require('./worlddefinitions').definitions.register('main', {id: 'fixture', dialogues: require('./dialogue/main').dialogues});
 const DialogueController = require('./dialoguecontroller.js');
 
 describe('DialogueController', () => {

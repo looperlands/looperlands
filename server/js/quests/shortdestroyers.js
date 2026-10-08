@@ -1,5 +1,5 @@
-Types = require("../../../shared/js/gametypes");
-quests = [
+const Types = require("../../../shared/js/gametypes");
+const quests = [
     {
         id: "SDU_QUEST_1",
         name: "Concert in The Cellar", 
