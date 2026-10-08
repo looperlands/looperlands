@@ -4,16 +4,41 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      reboot_reason:
+        description: Reason shown to players before the reboot (blank uses the repository default)
+        required: false
+        type: string
+      reboot_notice_seconds:
+        description: Seconds between the announcement and restart (1-600)
+        required: false
+        type: string
+        default: '60'
 concurrency:
-  group: environment-${{ github.ref }}
-  cancel-in-progress: true
+  group: game-server-production
+  cancel-in-progress: false
 jobs:
   build:
     name: Build and Deploy
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+
+      - name: Prepare reboot announcement
+        id: reboot
+        env:
+          REBOOT_REASON: ${{ inputs.reboot_reason || vars.GAME_SERVER_REBOOT_REASON || 'We are deploying a game update.' }}
+          REBOOT_NOTICE_SECONDS: ${{ inputs.reboot_notice_seconds || 60 }}
+        run: |
+          if ! [[ "$REBOOT_NOTICE_SECONDS" =~ ^[1-9][0-9]{0,2}$ ]] || (( REBOOT_NOTICE_SECONDS > 600 )); then
+            echo "Reboot notice must be between 1 and 600 seconds." >&2
+            exit 1
+          fi
+          echo "reason_base64=$(printf '%s' "$REBOOT_REASON" | base64 -w 0)" >> "$GITHUB_OUTPUT"
+          echo "notice_seconds=$REBOOT_NOTICE_SECONDS" >> "$GITHUB_OUTPUT"
 
       - name: Validate deployment safeguards
         run: |
@@ -39,13 +64,18 @@ jobs:
           source: "bin/deploy-game-server.sh"
           target: "/tmp/looperlands-deploy-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}"
 
-      - name: Deploy with persistent chat storage
+      - name: Announce reboot and deploy with persistent chat storage
         uses: appleboy/ssh-action@v0.1.7
+        env:
+          REBOOT_REASON_BASE64: ${{ steps.reboot.outputs.reason_base64 }}
+          REBOOT_NOTICE_SECONDS: ${{ steps.reboot.outputs.notice_seconds }}
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           port: 22
+          command_timeout: 20m
+          envs: REBOOT_REASON_BASE64,REBOOT_NOTICE_SECONDS
           script: |
             bash /tmp/looperlands-deploy-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}/bin/deploy-game-server.sh
 

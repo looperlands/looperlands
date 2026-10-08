@@ -31,7 +31,10 @@ define(function () {
         }
 
         updatePreviewControls(config) {
-            if (!config.previewControls && !config.story) return;
+            if (config.previewControls !== true) {
+                if (this.controls) this.controls.style.display = 'none';
+                return;
+            }
             if (!this.controls) {
                 this.controls = document.createElement('div');
                 this.controls.style.cssText = 'position:absolute;right:8px;top:8px;display:flex;gap:4px;z-index:5;';
