@@ -280,7 +280,7 @@ test('ambient reactions use quest and choice memory, survive a new session, and 
 
 test('pilot configuration is valid and rejects duplicate keys, invalid routes and markup', () => {
     const config = loadConfig('main');
-    expect(config.npcs).toHaveLength(3);
+    expect(config.npcs).toHaveLength(5);
     expect(() => validateConfig({...config, npcs: [config.npcs[0], config.npcs[0]]})).toThrow();
     expect(() => validateConfig({...config, npcs: [{...config.npcs[0], stepMs: 10}]})).toThrow();
     expect(() => validateConfig({...config, npcs: [{...config.npcs[0], lines: {greeting: ['<script>']}}]})).toThrow();
@@ -298,12 +298,19 @@ test('all pilot routes are connected on the actual map and avoid doors', async (
         id: index + 100, type: 'npc', kind: Types.getKindFromString(definition.kind), ...definition.origin
     }]));
     const controller = new NpcBehavior({id: 'world_main', map, npcs, entities: npcs}, config, new NpcMemory());
-    expect(controller.routines.size).toBe(3);
+    expect(controller.routines.size).toBe(5);
+    for (const actor of config.npcs) {
+        expect(Object.entries(map.staticEntities).some(([index, kind]) => {
+            const decoded = map.tileIndexToGridPosition(Number(index));
+            return kind === actor.kind && decoded.x + 1 === actor.origin.x && decoded.y === actor.origin.y;
+        })).toBe(true);
+    }
     for (const routine of controller.routines.values()) {
         for (const waypoint of routine.definition.route) {
             const route = controller.findPath(routine, waypoint);
-            expect(route.length).toBeGreaterThan(0);
-            expect(route.at(-1)).toEqual({x: waypoint.x, y: waypoint.y});
+            const alreadyThere = routine.npc.x === waypoint.x && routine.npc.y === waypoint.y;
+            expect(route.length).toBeGreaterThanOrEqual(alreadyThere ? 0 : 1);
+            if (!alreadyThere) expect(route.at(-1)).toEqual({x: waypoint.x, y: waypoint.y});
             Object.assign(routine.npc, waypoint);
         }
     }

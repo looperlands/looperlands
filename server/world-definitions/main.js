@@ -1,8 +1,12 @@
 const picnic = require('../npc-behaviors/lantern-picnic');
 const {Cutscene} = require('../js/cutscene');
+const friendship = require('../npc-behaviors/lantern-friendship');
+const {dialogues} = require('../npc-behaviors/lantern-friendship-dialogue');
+const {behavior} = require('../npc-behaviors/lantern-friendship-behavior');
+const {ComparisonScene} = require('../npc-behaviors/lantern-friendship-scenes');
 const picnicScene = require('../npc-behaviors/lantern-picnic-cutscene');
 function register(target) {
-    target.register('main', {id: 'lantern-picnic', quests: picnic.quests, dialogues: picnic.dialogues, npcBehavior: picnic.behavior,
+    target.register('main', {id: 'lantern-picnic', quests: picnic.quests, dialogues, npcBehavior: behavior,
         createScene(world) {
             if (!world.npcBehavior) return null;
             const scene = new Cutscene(world, picnicScene);
@@ -17,5 +21,7 @@ function register(target) {
             return scene;
         }
     });
+    target.register('main', {id: 'lantern-friendship', quests: friendship.quests,
+        createScene: world => world.npcBehavior ? new ComparisonScene(world) : null});
 }
 module.exports = {register};

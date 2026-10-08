@@ -7,7 +7,8 @@ const root = path.resolve(__dirname, '..');
 process.chdir(root);
 const port = Number(process.env.NPC_PREVIEW_PORT || 8013);
 const fixturePort = Number(process.env.NPC_PREVIEW_FIXTURE_PORT || 3013);
-const data = path.join(os.tmpdir(), 'looperlands-npc-preview');
+const friendshipPreview = process.env.NPC_PREVIEW_STORY === 'friendship';
+const data = process.env.NPC_PREVIEW_DATA_DIR || path.join(os.tmpdir(), friendshipPreview ? 'looperlands-rowan-preview' : 'looperlands-npc-preview');
 fs.mkdirSync(data, {recursive: true});
 Object.assign(process.env, {
     NODE_ENV: 'development', APP_URL: 'http://127.0.0.1:' + port, GAMESERVER_NAME: 'local-npc-preview',
@@ -23,30 +24,40 @@ delete process.env.DISCORD_TOKEN;
 const express = require('express');
 const api = express();
 api.use(express.json());
-const avatars = [1, 2].map(id => '0x' + String(id).padStart(64, '0'));
-const wallets = [1, 2].map(id => '0x' + String(id).padStart(40, '0'));
+const indices = friendshipPreview ? [1, 2, 3] : [1, 2];
+const avatars = indices.map(id => '0x' + String(id).padStart(64, '0'));
+const wallets = indices.map(id => '0x' + String(id).padStart(40, '0'));
 const gameDataFile = path.join(data, 'lantern-game-data.json');
 const savedGameData = fs.existsSync(gameDataFile) ? JSON.parse(fs.readFileSync(gameDataFile, 'utf8')) : {};
-const gameData = new Map(avatars.map(nft => [nft, savedGameData[nft] || {kills: {}, items: [], quests: [], choices: []}]));
+function initialData(index) {
+    const returning = friendshipPreview && index < 2;
+    return {kills: {}, items: [], quests: returning ? ['LANTERN_BASKET', 'LANTERN_PATH', 'LANTERN_INVITATION'].map(questKey => ({questKey, status: 'COMPLETED'})) : [],
+        choices: returning ? index === 0 ? ['lantern:return-basket', 'lantern:quiet-picnic'] : ['lantern:share-basket', 'lantern:music-picnic'] : []};
+}
+const gameData = new Map(avatars.map(nft => [nft, savedGameData[nft] || initialData(avatars.indexOf(nft))]));
 function saveGameData() {
     const temporary = gameDataFile + '.tmp';
     fs.writeFileSync(temporary, JSON.stringify(Object.fromEntries(gameData), null, 2));
     fs.renameSync(temporary, gameDataFile);
 }
 const picnic = require('../server/npc-behaviors/lantern-picnic');
+const story = friendshipPreview ? require('../server/npc-behaviors/lantern-friendship') : picnic;
+const storyTitle = friendshipPreview ? 'A Place for Rowan' : 'The Lantern Picnic';
 
 let previewWorld;
 let picnicScene;
 api.get('/preview/state', (req, res) => res.json({
     players: previewWorld?.playerCount || 0,
     picnic: picnicScene?.state || null,
+    comparison: previewWorld?.scenes.get('lantern-friendship')?.state || null,
+    avatars: [...gameData].map(([nftId, saved]) => ({nftId, ...saved})),
     npcs: [...(previewWorld?.npcBehavior?.routines.values() || [])].map(({npc, definition}) => ({
         key: definition.key, id: npc.id, kind: npc.kind, x: npc.x, y: npc.y, ...npc.behaviorState
     }))
 }));
 api.get('/preview/player/:index', async (req, res) => {
     const index = Number(req.params.index) - 1;
-    if (![0, 1].includes(index)) return res.sendStatus(404);
+    if (!avatars[index]) return res.sendStatus(404);
     try { res.redirect(await createSession(index)); }
     catch (error) { res.status(500).send(error.message); }
 });
@@ -63,6 +74,7 @@ api.get('/api/game/asset/modifiers/:server/:nft', (req, res) => res.json(Object.
     'meleeDamageDealt', 'meleeDamageTaken', 'moveSpeed', 'rangedDamageDealt', 'hpRegen', 'maxHp',
     'hate', 'attackRate', 'stealth', 'xp', 'fishing'
 ].map(key => [key, 1]))));
+api.get('/api/game/events/board/:wallet', (req, res) => res.json({events: [], serverTime: new Date().toISOString()}));
 api.get('/api/game/asset/:nft/stats', (req, res) => res.json({}));
 api.post('/api/game/asset/quest', (req, res) => {
     const data = gameData.get(req.body.nftId);
@@ -87,6 +99,20 @@ api.post('/api/game/asset/kill', (req, res) => {
     saveGameData();
     res.json({success: true});
 });
+api.post('/api/game/inventory/transactions', (req, res) => {
+    for (const event of req.body) {
+        const saved = gameData.get(event.nftId);
+        if (!saved) return res.sendStatus(404);
+        let item = saved.items.find(item => String(item.item) === String(event.item));
+        if (!item) {item = {item: String(event.item), quantity: 0}; saved.items.push(item);}
+        item.quantity += event.amount;
+    }
+    saveGameData(); res.json({success: true});
+});
+api.get('/api/game/asset/inventory/:nft/:item', (req, res) => {
+    const item = gameData.get(req.params.nft)?.items.find(item => String(item.item) === req.params.item);
+    res.json({amount: item?.quantity || 0});
+});
 api.get(/.*/, (req, res) => res.json([]));
 api.post(/.*/, (req, res) => res.json({success: true, xp: 0}));
 api.put(/.*/, (req, res) => res.json({success: true}));
@@ -99,7 +125,7 @@ async function createSession(index) {
     const response = await fetch(process.env.APP_URL + '/session', {
         method: 'POST', headers: {'Content-Type': 'application/json', 'x-api-key': process.env.LOOPWORMS_API_KEY},
         body: JSON.stringify({walletId: wallets[index], nftId: avatars[index], title: 'Local Looper ' + (index + 1),
-            xp: 100, mapId: 'main', checkpointId: '2', f2p: false, trait: 'rogue'})
+            xp: friendshipPreview ? 49933201 : 100, mapId: 'main', checkpointId: '2', f2p: false, trait: 'rogue'})
     });
     const session = await response.json();
     if (!response.ok || !session.sessionId) throw new Error('Could not create local NPC session');
@@ -119,8 +145,8 @@ api.listen(fixturePort, '127.0.0.1', () => {
         particles: world.map.getSceneAt(player.x, player.y)?.name === world.npcBehavior.config.ambience.scene ? world.npcBehavior.config.ambience.particles : 'none',
         serverTime: Date.now(), epoch: 0,
         previewPicnic: picnicScene?.state || null,
-        previewStory: {title: 'The Lantern Picnic', goal: picnic.progress(server.cache.get(player.sessionId)?.gameData),
-            event: picnicScene?.state?.message || '',
+        previewStory: {title: storyTitle, goal: story.progress(server.cache.get(player.sessionId)?.gameData),
+            event: friendshipPreview ? world.scenes.get('lantern-friendship')?.state?.message || '' : picnicScene?.state?.message || '',
             canReplay: picnicScene?.completed(player) && (!picnicScene.state || picnicScene.state.phase === 'finished')}});
     const configureAmbience = (mode = 'night') => {
         if (!world.npcBehavior) return;
@@ -149,8 +175,16 @@ api.listen(fixturePort, '127.0.0.1', () => {
     world.map.ready(() => {
         initializeMap();
         picnicScene = world.scenes.get('lantern-picnic');
+        if (friendshipPreview) {
+            // Keep the existing preview panel on this story, including normal ambience refreshes.
+            const scenePacket = world.scenes.packet.bind(world.scenes);
+            world.scenes.packet = player => ({...scenePacket(player), story: {
+                title: storyTitle, goal: story.progress(server.cache.get(player.sessionId)?.gameData),
+                event: world.scenes.get('lantern-friendship')?.state?.message || ''
+            }});
+        }
         Object.assign(world.npcBehavior.config.ambience, {mode: 'night', previewTimeMode: 'night', previewControls: true,
-            previewStory: {title: 'The Lantern Picnic', goal: picnic.progress()}});
+            previewStory: {title: storyTitle, goal: story.progress()}});
     });
     const storyGoals = new Map();
     setInterval(() => {
@@ -175,8 +209,8 @@ api.listen(fixturePort, '127.0.0.1', () => {
     // The server's handlers wait for the map; sessions are printed after setup.
     setTimeout(async () => {
         try {
-            configureAmbience();
-            const urls = await Promise.all([createSession(0), createSession(1)]);
+            configureAmbience(friendshipPreview ? 'cycle' : 'night');
+            const urls = await Promise.all(avatars.map((_, index) => createSession(index)));
             fs.writeFileSync(path.join(data, 'sessions.json'), JSON.stringify(urls, null, 2));
             urls.forEach((url, index) => console.log('NPC PREVIEW PLAYER ' + (index + 1) + ': ' + url));
         } catch (error) { console.error(error); }
