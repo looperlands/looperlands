@@ -19,6 +19,7 @@ class PlayerEventBroker {
     static playerEventBrokers = {};
     static playerEventConsumers = [];
     static cache;
+    static pending = new Map();
 
     constructor(player) {
         this.player = player;
@@ -38,15 +39,31 @@ class PlayerEventBroker {
 
         eventData.player = player;
         eventData.playerData = playerCache;
+        eventData.cache = PlayerEventBroker.cache;
+        const registry = require('./quests');
+        const objective = require('./objectives');
+        eventData.allowedObjectives = {};
+        for (const saved of playerCache?.gameData?.quests?.IN_PROGRESS || []) {
+            const definition = registry.questsByID[saved.questKey || saved.id];
+            if (!definition?.objectives) continue;
+            const pending = objective.progress(playerCache.gameData, definition).filter(o => !o.done);
+            eventData.allowedObjectives[definition.id] = (definition.ordered === false ? pending : pending.slice(0, 1)).map(o => o.id);
+        }
 
         let eventId = eventType + ',' + sessionId;
-        PlayerEventBroker.processEvent(eventId, eventData);
+        const key = eventData.playerData?.nftId || sessionId;
+        const previous = PlayerEventBroker.pending.get(key) || Promise.resolve();
+        const next = previous.catch(() => {}).then(() => PlayerEventBroker.processEvent(eventId, eventData));
+        PlayerEventBroker.pending.set(key, next);
+        return next.finally(() => {if (PlayerEventBroker.pending.get(key) === next) PlayerEventBroker.pending.delete(key);});
     }
     
     static async processEvent(eventId, eventData) {
-        PlayerEventBroker.playerEventConsumers.forEach(consumer => {
+        for (const consumer of PlayerEventBroker.playerEventConsumers) {
             let [eventType, sessionId] = eventId.split(',');
-            let consumed = consumer.consume({eventType: eventType, playerCache: eventData.playerData, data: eventData});
+            eventData.playerData = PlayerEventBroker.cache.get(sessionId);
+            if (!eventData.playerData) return;
+            let consumed = await consumer.consume({eventType: eventType, playerCache: eventData.playerData, data: eventData});
             if (consumed.changedQuests !== undefined && consumed.changedQuests.length > 0) {
                 let playerCache = PlayerEventBroker.cache.get(sessionId);
                 if (playerCache === undefined) {
@@ -57,7 +74,11 @@ class PlayerEventBroker {
                 let broker = PlayerEventBroker.playerEventBrokers[sessionId];
                 broker.player.handleCompletedQuests(consumed.changedQuests);
             }
-        })
+            if (consumed.objectiveProgress) {
+                const latest = PlayerEventBroker.cache.get(sessionId);
+                if (latest) PlayerEventBroker.cache.set(sessionId, {...latest, gameData: eventData.playerData.gameData});
+            }
+        }
     }
 
     async lootEvent(item, amount) {
@@ -94,7 +115,7 @@ class PlayerEventBroker {
         this.cache.set(sessionId, playerCache);
 
         this.player.server.server.activity?.record(this.player, 'loot', {target: String(kind), quantity: amount});
-        PlayerEventBroker.dispatchEvent(PlayerEventBroker.Events.LOOT_ITEM, sessionId, this.player, playerCache, { item: item });
+        return PlayerEventBroker.dispatchEvent(PlayerEventBroker.Events.LOOT_ITEM, sessionId, this.player, playerCache, { item: item, kind, amount });
     }
 
     async killMobEvent(mob) {
@@ -118,7 +139,7 @@ class PlayerEventBroker {
 
         playerCache.gameData = gameData;
         this.cache.set(sessionId, playerCache);
-        PlayerEventBroker.dispatchEvent(PlayerEventBroker.Events.KILL_MOB, sessionId, this.player, playerCache, { mob: mob });
+        await PlayerEventBroker.dispatchEvent(PlayerEventBroker.Events.KILL_MOB, sessionId, this.player, playerCache, { mob: mob });
         this.player.server.npcBehavior?.react('kill', this.player, {mob});
     }
 
@@ -132,31 +153,41 @@ class PlayerEventBroker {
     async spawnEvent(self, checkpointId) {
         let sessionId = this.player.sessionId;
         let playerCache = this.cache.get(sessionId);
-        PlayerEventBroker.dispatchEvent(PlayerEventBroker.Events.SPAWNED, sessionId, this.player, playerCache, { checkpoint: checkpointId });
+        return PlayerEventBroker.dispatchEvent(PlayerEventBroker.Events.SPAWNED, sessionId, this.player, playerCache, { checkpoint: checkpointId });
     }
 
     async deathEvent(self, position) {
         let sessionId = this.player.sessionId;
         let playerCache = this.cache.get(sessionId);
-        PlayerEventBroker.dispatchEvent(PlayerEventBroker.Events.DIED, sessionId, this.player, playerCache, { position: position.x + ',' + position.y});
+        return PlayerEventBroker.dispatchEvent(PlayerEventBroker.Events.DIED, sessionId, this.player, playerCache, { position: position.x + ',' + position.y});
     }
 
-    async npcTalked(npc, message ) {
+    async npcTalked(npc, message, npcKey) {
         let sessionId = this.player.sessionId;
         let playerCache = this.cache.get(sessionId);
-        PlayerEventBroker.dispatchEvent(PlayerEventBroker.Events.NPC_TALKED, sessionId, this.player, playerCache, { npc: npc, message: message });
+        return PlayerEventBroker.dispatchEvent(PlayerEventBroker.Events.NPC_TALKED, sessionId, this.player, playerCache, { npc: npc, message: message, npcKey });
+    }
+
+    observePlace() {
+        const area = this.player.server.map?.getSceneAt(this.player.x, this.player.y);
+        const key = area && String(area.id ?? area.name);
+        if (key === this.place) return Promise.resolve();
+        this.place = key;
+        return area ? this.enteredArea(area) : Promise.resolve();
     }
 
     async enteredArea(area) {
+        const width = area.width ?? area.w, height = area.height ?? area.h;
+        if (Number.isFinite(width) && Number.isFinite(height) && !(this.player.x >= area.x && this.player.y >= area.y && this.player.x < area.x + width && this.player.y < area.y + height)) return;
         let sessionId = this.player.sessionId;
         let playerCache = this.cache.get(sessionId);
-        PlayerEventBroker.dispatchEvent(PlayerEventBroker.Events.AREA_ENTERED, sessionId, this.player, playerCache, { area: area });
+        return PlayerEventBroker.dispatchEvent(PlayerEventBroker.Events.AREA_ENTERED, sessionId, this.player, playerCache, { area: area });
     }
 
     async leftArea(area) {
         let sessionId = this.player.sessionId;
         let playerCache = this.cache.get(sessionId);
-        PlayerEventBroker.dispatchEvent(PlayerEventBroker.Events.AREA_LEFT, sessionId, this.player, playerCache, { area: area });
+        return PlayerEventBroker.dispatchEvent(PlayerEventBroker.Events.AREA_LEFT, sessionId, this.player, playerCache, { area: area });
     }
 
     destroy() {

@@ -1,5 +1,6 @@
 const quests = require('./quests.js');
 const dao = require('../dao.js');
+const objectives = require('./objectives');
 
 const PlayerEventConsumer = require('./playereventconsumer.js').PlayerEventConsumer;
 const platform = require('../looperlandsplatformclient.js');
@@ -54,6 +55,8 @@ class PlayerQuestEventConsumer extends PlayerEventConsumer {
             return { change: false };
         }
 
+        if (inProgressQuests.some(saved => quests.questsByID[saved.questKey || saved.id]?.objectives)) return this.consumeObjectives(event);
+
         let completionCheckerFN = this.completionCheckers[event.eventType];
         if (completionCheckerFN === undefined) {
             return { change: false };
@@ -83,10 +86,30 @@ class PlayerQuestEventConsumer extends PlayerEventConsumer {
         return { changedQuests: changedQuests, quests: event.playerCache.gameData.quests };
     }
 
+    async consumeObjectives(event) {
+        const changedQuests = [];
+        for (const saved of [...event.playerCache.gameData.quests[quests.STATES.IN_PROGRESS]]) {
+            const key = saved.questKey || saved.id, quest = quests.questsByID[key];
+            if (!quest) continue;
+            const checker = this.completionCheckers[event.eventType];
+            const done = quest.objectives ? await objectives.consume(quest, event) :
+                quest.eventType === event.eventType && checker?.({...quest}, event.playerCache, event);
+            if (!done) continue;
+            if (quest.needToReturn || quest.returnToNpc) {
+                const active = event.playerCache.gameData.quests[quests.STATES.IN_PROGRESS].find(row => (row.questKey || row.id) === key);
+                if (active) active.completed = true;
+            }
+            else {this.completeQuest(event.playerCache, key, quest); changedQuests.push(quest);}
+        }
+        return {changedQuests, quests: event.playerCache.gameData.quests, objectiveProgress: true};
+    }
+
     completeQuest(playerCache, questKey, quest) {
         if(quests.hasCompletedQuest(questKey, playerCache)) {
             return;
         }
+
+        if (quest.objectives && !objectives.ready(playerCache.gameData, quest)) return;
 
         dao.setQuestStatus(playerCache.nftId, questKey, quests.STATES.COMPLETED);
         let completedQuests = playerCache.gameData.quests[quests.STATES.COMPLETED];
@@ -117,6 +140,11 @@ class PlayerQuestEventConsumer extends PlayerEventConsumer {
 
             let itemCount = gameData.items[quest.target] ?? quest.amount;
             gameData.items[quest.target] = itemCount - quest.amount;
+        }
+
+        for (const delivery of (quest.objectives || []).filter(o => o.eventType === 'DELIVER_ITEM')) {
+            dao.updateResourceBalance(playerCache.nftId, delivery.target, -(delivery.amount || 1));
+            gameData.items[delivery.target] -= (delivery.amount || 1);
         }
 
         if (quest.reward) {

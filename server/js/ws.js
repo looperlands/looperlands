@@ -648,6 +648,14 @@ WS.socketIOServer = Server.extend({
                 });
             }
 
+            for (const entry of availableQuests) {
+                const definition = quests.questsByID[entry.id];
+                if (!definition.objectives) continue;
+                const progress = require('./quests/objectives').progress(sessionData.gameData, definition);
+                entry.objectives = progress.map(o => ({id: o.id, label: o.label || o.id, count: o.count, amount: o.amount || 1, done: o.done}));
+                entry.amount = progress.length; entry.progressCount = progress.filter(o => o.done).length;
+                entry.desc = progress.find(o => !o.done)?.label || definition.endText || definition.startText;
+            }
             res.status(200).json(availableQuests);
         });
 
@@ -929,6 +937,8 @@ WS.socketIOServer = Server.extend({
             if (!npc) return res.status(409).json({error: 'Move closer to this NPC to talk.'});
             const npcKey = npc.behaviorState?.key || 'placed:' + npc.id;
             const behaviorDialogue = world.npcBehavior?.interact(player, npcId, npc.id);
+            try {await player.playerEventBroker.npcTalked(npcId, '', npcKey);}
+            catch (error) {return res.status(409).json({error: error.message});}
 
             if (dialogueController.hasDialogueTree(sessionData.mapId, npcId, npcKey)) {
                 let node = dialogueController.processDialogueTree(sessionData.mapId, npcId, cache, sessionId, npcKey)
@@ -941,7 +951,7 @@ WS.socketIOServer = Server.extend({
             let questData = quests.handleNPCClick(cache, sessionId, parseInt(npcId));
 
             if (questData) {
-                self.worldsMap[sessionData.mapId].npcTalked(npcId, questData.text, sessionData)
+                // The authoritative interaction already emitted NPC_TALKED above.
             }
             res.status(202).json(questData || behaviorDialogue || "");
         });
