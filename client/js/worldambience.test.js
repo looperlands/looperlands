@@ -95,3 +95,19 @@ test('stepped camera updates interpolate continuously, settle, and snap on telep
     camera = {x: 300, y: 8, scale: 2};
     expect(ambience.updateView(1816).x).toBe(300);
 });
+
+
+test('production story snapshots never create the local preview guide', () => {
+    const {ambience, parent} = setup();
+    ambience.setConfig({...config, story: {title: 'The Lantern Picnic', goal: 'Talk to Adam.'}, previewStory: {goal: 'Preview only.'}});
+    expect(parent.appendChild).toHaveBeenCalledTimes(1);
+    expect(ambience.controls).toBeUndefined();
+    expect(ambience.canvas.style.display).toBe('block');
+});
+
+test('a production snapshot hides controls left over from a local preview', () => {
+    const {ambience} = setup();
+    ambience.controls = {style: {display: 'flex'}};
+    ambience.setConfig({...config, previewControls: false, story: {goal: 'Talk to Bstrat.'}});
+    expect(ambience.controls.style.display).toBe('none');
+});
