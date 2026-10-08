@@ -188,3 +188,34 @@ test('mouse paths retain normal multi-tile movement and stop at their destinatio
     expect(player.isMoving()).toBe(false);
     expect(stopped).toHaveBeenCalledTimes(1);
 });
+
+test.each([{keys: ['d']}, {keys: ['d', 's']}])('held movement with $keys uses the real pathfinder without worker requests', async ({keys}) => {
+    const {game, player, handler, requestPath, sendMove, stopped, frame} = createMovementGame();
+    const postMessage = jest.fn();
+    class Worker {
+        postMessage(data) { postMessage(data); }
+    }
+    const Pathfinder = vm.runInNewContext(`${fs.readFileSync(path.join(__dirname, 'pathfinder.js'), 'utf8')}\nPathfinder;`, {Worker});
+    const pathfinder = new Pathfinder(20, 20);
+    requestPath.mockImplementation((x, y) => {
+        pathfinder.ignoreEntity(player);
+        return pathfinder.findPath(game.finalPathingGrid, player, x, y);
+    });
+    keys.forEach(key => { handler.keys[key] = 1; });
+    handler.handleMovement();
+    await Promise.resolve();
+    for (let i = 0; i < 40; i++) {
+        frame();
+        expect(player.isMoving()).toBe(true);
+        expect(player.currentAnimation.name).toMatch(/^walk_/);
+    }
+    expect(player.gridX).toBeGreaterThan(2);
+    if (keys.includes('s')) expect(player.gridY).toBeGreaterThan(2);
+    expect(requestPath).toHaveBeenCalledTimes(1);
+    expect(postMessage).not.toHaveBeenCalled();
+    expect(sendMove.mock.calls.length).toBeGreaterThan(1);
+    expect(stopped).not.toHaveBeenCalled();
+    keys.forEach(key => handler.handleKeyUp({key}));
+    for (let i = 0; i < 20; i++) frame();
+    expect(player.isMoving()).toBe(false);
+});

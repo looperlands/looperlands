@@ -139,9 +139,14 @@ function AStar(grid, start, end, f) {
 }
 
 self.onmessage = async function(e) {
-    const { requestId, grid, start, end } = e.data;
+    const { requestId, grid, start, end, ignoredPositions = [] } = e.data;
 
     try {
+        ignoredPositions.forEach(([x, y]) => {
+            if (y >= 0 && y < grid.length && x >= 0 && x < grid[y].length) {
+                grid[y][x] = 0;
+            }
+        });
         const path = AStar(grid, start, end);
         self.postMessage({ requestId, path });
     } catch (error) {
