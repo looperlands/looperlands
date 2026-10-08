@@ -1,10 +1,10 @@
-define(function () {
+define(['worldtime-worker'], function (WorldTime) {
     class WorldAmbience {
-        constructor(getView = () => ({x: 0, y: 0, scale: 1})) {
+        constructor(getView = () => ({x: 0, y: 0, scale: 1}), getWorldTime = () => Date.now()) {
             this.getView = getView;
+            this.getWorldTime = getWorldTime;
             this.canvas = null;
             this.frame = null;
-            this.timer = null;
             this.config = null;
             this.lastFrame = 0;
         }
@@ -15,7 +15,6 @@ define(function () {
             if (!config) return;
             this.config = config;
             this.view = previousView;
-            this.clockOffset = (config.serverTime || Date.now()) - Date.now();
             this.reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches || false;
             const parent = document.getElementById('canvas');
             if (!parent) return;
@@ -110,7 +109,7 @@ define(function () {
             if (!this.config) return;
             const now = Date.now();
             if (document.hidden || now - this.lastFrame < 16) {
-                this.scheduleDraw();
+                if (!this.reducedMotion) this.frame = requestAnimationFrame(() => this.draw());
                 return;
             }
             this.lastFrame = now;
@@ -123,12 +122,11 @@ define(function () {
             }
             const context = this.canvas.getContext('2d');
             context.clearRect(0, 0, width, height);
-            const elapsed = (now + this.clockOffset - (this.config.epoch || 0)) / 1000;
-            const phase = (elapsed % this.config.cycleSeconds) / this.config.cycleSeconds;
-            const night = this.config.mode === 'night' ? 1 : this.config.mode === 'day' ? 0 :
-                (1 - Math.cos(phase * Math.PI * 2)) / 2;
-            context.fillStyle = 'rgba(22,30,68,' + (night * this.config.nightOpacity) + ')';
-            context.fillRect(0, 0, width, height);
+            const elapsed = (now - (this.config.epoch || 0)) / 1000;
+            const worldTime = WorldTime.previewTime(this.config.previewTimeMode, this.getWorldTime());
+            const night = 1 - WorldTime.mainDaylight(worldTime);
+            // The scene renderer owns day/night lighting. This canvas draws
+            // local particles only, avoiding a second tint and a second clock.
             if (!this.reducedMotion) {
                 for (const {index, x, y, scale} of this.particlePositions(elapsed, width, height)) {
                     const seed = index * 1.618 + 0.5;
@@ -151,13 +149,7 @@ define(function () {
                     }
                 }
             }
-            this.scheduleDraw();
-        }
-
-        scheduleDraw() {
-            // Reduced motion removes insect animation while keeping world time.
-            if (this.reducedMotion) this.timer = setTimeout(() => this.draw(), 1000);
-            else this.frame = requestAnimationFrame(() => this.draw());
+            if (!this.reducedMotion) this.frame = requestAnimationFrame(() => this.draw());
         }
 
         particlePositions(elapsed, width, height) {
@@ -198,8 +190,6 @@ define(function () {
         clear() {
             if (this.frame !== null) cancelAnimationFrame(this.frame);
             this.frame = null;
-            if (this.timer !== null) clearTimeout(this.timer);
-            this.timer = null;
             this.config = null;
             this.view = null;
             this.lastFrame = 0;

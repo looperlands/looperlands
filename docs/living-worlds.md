@@ -152,14 +152,21 @@ rule wins, so place later story stages last. Quest IDs accept either `questKey` 
 allowing personal ambient recognition after a session change. Dialogue options
 and quest progression remain owned by the existing dialogue/quest engine.
 
-`ambience` targets one exact scene name. It configures a shared `cycleSeconds`
-(minimum 60), `nightOpacity` (0–0.45), `particles` (`fireflies`, `leaves`, `none`) and
-`particleCount` (0–24). World lighting uses the same shared clock throughout main; `ambience.scene` limits
-particles rather than the night tint. Firefly glow follows the world night level.
-The overlay is visual only and does not alter collisions, combat, or game input.
+`ambience.scene` selects the area for local `particles` (`fireflies`, `leaves`,
+`none`) and `particleCount` (0–24). It does not change world lighting. The main
+map renderer and firefly brightness share the existing one-hour world cycle:
+40 minutes of daylight, five of dusk, ten of night and five of dawn. Fireflies
+fade in at dusk and fade out at dawn. Entering another outdoor scene does not
+add or remove a tint; interiors retain their authored lighting. The time display
+reads the same clock, synchronised to server uptime at WELCOME.
+
+Legacy `cycleSeconds`, `nightOpacity` and `mode` fields remain accepted in behaviour
+configuration, but do not override the renderer's world lighting. The local
+preview launcher alone supplies `previewTimeMode` (`day`, `night`, `cycle`), which
+sets both lighting and glow to the same phase without freezing insect motion.
+Day/Night/Cycle controls and their API exist only in that launcher. The particle
+canvas is visual only and does not alter collisions, combat, or game input.
 Disconnecting clears it.
-Optional `mode` chooses `day`, `night` or `cycle`; the pilot defaults to `cycle`.
-The Day/Night/Cycle controls and their API exist only in the local preview launcher.
 
 Restart the server after changing configuration. Maps without an enabled file keep
 their existing NPC behaviour. Set `NPC_BEHAVIORS=off` to disable all routines.

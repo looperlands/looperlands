@@ -1,8 +1,9 @@
 const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
+const WorldTime = require('./worldtime-worker');
 
-function setup(reducedMotion = false, clock = Date) {
+function setup(reducedMotion = false, clock = Date, getWorldTime = () => 50 * 60000) {
     const context = {clearRect: jest.fn(), fillRect: jest.fn(),
         createRadialGradient: jest.fn(() => ({addColorStop: jest.fn()}))};
     const canvas = {style: {}, setAttribute: jest.fn(), getContext: () => context};
@@ -16,9 +17,9 @@ function setup(reducedMotion = false, clock = Date) {
     vm.runInNewContext(fs.readFileSync(path.join(__dirname, 'worldambience.js'), 'utf8'), {
         document, window: {matchMedia: () => ({matches: reducedMotion})},
         requestAnimationFrame, cancelAnimationFrame, setTimeout, clearTimeout, Date: clock,
-        define: factory => { WorldAmbience = factory(); }
+        define: (dependencies, factory) => { WorldAmbience = factory(WorldTime); }
     });
-    return {ambience: new WorldAmbience(), canvas, context, parent, document, requestAnimationFrame, cancelAnimationFrame, setTimeout, clearTimeout};
+    return {ambience: new WorldAmbience(undefined, getWorldTime), canvas, context, parent, document, requestAnimationFrame, cancelAnimationFrame, setTimeout, clearTimeout};
 }
 
 const config = {cycleSeconds: 180, nightOpacity: 0.12, particles: 'fireflies', particleCount: 12};
@@ -37,19 +38,20 @@ test('ambience overlays the game without blocking clicks and clears on disconnec
     expect(ambience.config).toBeNull();
 });
 
-test('reduced motion removes animated particles and keeps the clock on a slow timer', () => {
+test('reduced motion draws neither particles nor an extra lighting overlay', () => {
     const {ambience, context, requestAnimationFrame} = setup(true);
     ambience.setConfig(config);
-    expect(context.fillRect).toHaveBeenCalledTimes(1);
+    expect(context.fillRect).not.toHaveBeenCalled();
     expect(requestAnimationFrame).not.toHaveBeenCalled();
 });
 
-test('forced night and day ignore the cycle phase, including reduced motion', () => {
-    const {ambience, context} = setup(true);
-    ambience.setConfig({...config, mode: 'night', nightOpacity: 0.3});
-    expect(context.fillStyle).toBe('rgba(22,30,68,0.3)');
-    ambience.setConfig({...config, mode: 'day', nightOpacity: 0.3});
-    expect(context.fillStyle).toBe('rgba(22,30,68,0)');
+test('local preview changes glow without adding a separate tint', () => {
+    const {ambience, context} = setup(false, Date, () => 20 * 60000);
+    ambience.setConfig({...config, previewTimeMode: 'night'});
+    expect(context.createRadialGradient).toHaveBeenCalled();
+    context.fillRect.mockClear();
+    ambience.setConfig({...config, previewTimeMode: 'day'});
+    expect(context.fillRect).not.toHaveBeenCalled();
 });
 
 test('hidden tabs skip drawing and replacing the configuration cancels the previous loop', () => {
@@ -67,7 +69,7 @@ test('fireflies have luminous halos and stay at the same map position when the c
     const {ambience, context} = setup();
     let view = {x: 32, y: 16, scale: 2};
     ambience.getView = () => view;
-    ambience.setConfig({...config, mode: 'night'});
+    ambience.setConfig({...config, previewTimeMode: 'night'});
     expect(context.createRadialGradient).toHaveBeenCalled();
     expect(context.globalCompositeOperation).toBe('source-over');
     const core = context.fillRect.mock.calls.find(([, , width, height]) => width === 4 && height === 4);
@@ -114,33 +116,35 @@ test('a production snapshot hides controls left over from a local preview', () =
 });
 
 
-test('scene changes keep the shared clock phase and fireflies glow only as world night arrives', () => {
-    let now = 180000;
-    const {ambience, context} = setup(false, {now: () => now});
-    const tints = [];
-    context.fillRect.mockImplementation(() => { if (String(context.fillStyle).startsWith('rgba(22,30,68,')) tints.push(context.fillStyle); });
-    ambience.setConfig({...config, scene: 'Town', epoch: 0, serverTime: now});
-    expect(context.createRadialGradient).not.toHaveBeenCalled();
-    now = 225000;
-    ambience.setConfig({...config, scene: 'Town', epoch: 0, serverTime: now});
-    expect(context.createRadialGradient).toHaveBeenCalled();
-    const town = tints.at(-1);
-    ambience.setConfig({...config, scene: 'Town', particles: 'none', epoch: 0, serverTime: now});
-    expect(tints.at(-1)).toBe(town);
-    ambience.setConfig({...config, scene: 'Town', epoch: 0, serverTime: now});
-    expect(tints.at(-1)).toBe(town);
+test('firefly brightness follows the renderer clock and scene changes add no tint', () => {
+    let time = 20 * 60000;
+    const {ambience, context} = setup(false, Date, () => time);
+    const glow = () => Number(context.fillStyle.match(/,([^,]+)\)$/)[1]);
+    ambience.setConfig({...config, scene: 'Town'});
+    expect(context.fillRect).not.toHaveBeenCalled();
+    time = 42.5 * 60000;
+    ambience.setConfig({...config, scene: 'Town'});
+    const duskGlow = glow();
+    time = 50 * 60000;
+    ambience.setConfig({...config, scene: 'Town'});
+    expect(glow()).toBeCloseTo(duskGlow * 2, 2);
+    context.fillRect.mockClear();
+    ambience.setConfig({...config, scene: 'Forest', particles: 'none'});
+    expect(context.fillRect).not.toHaveBeenCalled();
+    ambience.setConfig({...config, scene: 'Town'});
+    expect(glow()).toBeGreaterThan(duskGlow);
     ambience.clear();
 });
 
-test('reduced motion lighting follows world time and cancels its timer on disconnect', () => {
-    let now = 180000;
-    const {ambience, context, setTimeout, clearTimeout} = setup(true, {now: () => now});
-    ambience.setConfig({...config, epoch: 0, serverTime: now});
-    expect(context.fillStyle).toBe('rgba(22,30,68,0)');
-    now = 270000;
-    setTimeout.mock.calls.at(-1)[0]();
-    expect(context.fillStyle).toBe('rgba(22,30,68,0.12)');
-    expect(context.createRadialGradient).not.toHaveBeenCalled();
+test('preview freezes the world phase while firefly motion remains continuous', () => {
+    let now = 10000;
+    const {ambience, context} = setup(false, {now: () => now}, () => 20 * 60000);
+    ambience.setConfig({...config, previewTimeMode: 'night'});
+    const first = context.fillRect.mock.calls[1];
+    context.fillRect.mockClear(); now += 16; ambience.draw();
+    const next = context.fillRect.mock.calls[1];
+    expect(next[0]).not.toBe(first[0]);
+    expect(Math.abs(next[0] - first[0])).toBeLessThan(1);
+    expect(Math.abs(next[1] - first[1])).toBeLessThan(1);
     ambience.clear();
-    expect(clearTimeout).toHaveBeenCalledWith(8);
 });

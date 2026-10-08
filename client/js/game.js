@@ -1,11 +1,11 @@
 define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile',
         'warrior', 'gameclient', 'audio', 'updater', 'transition', 'combatfeedback',
         'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'fieldeffect', 'config', 'float', 'projectile', 'tileactions',
-        'worldambience', 'worldscenery', '../../shared/js/gametypes', '../../shared/js/altnames'],
+        'worldambience', 'worldscenery', 'worldtime-worker', '../../shared/js/gametypes', '../../shared/js/altnames'],
 
     function (InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, AnimatedTile,
               Warrior, GameClient, AudioManager, Updater, Transition, CombatFeedback,
-              Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, Fieldeffect, Config, Float, Projectile, TileActions, WorldAmbience, WorldScenery) {
+              Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, Fieldeffect, Config, Float, Projectile, TileActions, WorldAmbience, WorldScenery, WorldTime) {
         var Game = Class.extend({
             init: function (app) {
                 this.app = app;
@@ -19,7 +19,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     x: this.renderer?.camera?.x || 0,
                     y: this.renderer?.camera?.y || 0,
                     scale: this.renderer?.scale || 1
-                }));
+                }), () => this.getWorldTime());
 
                 this.renderer = null;
                 this.updater = null;
@@ -6440,6 +6440,16 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 self.sprites["item-cake"].createSilhouette();
             },
 
+            syncWorldTime: function (serverTime) {
+                // WELCOME contains the server's current uptime, not a client offset.
+                this.serverTime = serverTime - performance.now();
+                this.app.timeOffset = this.serverTime;
+            },
+
+            getWorldTime: function () {
+                return WorldTime.previewTime(this.previewTimeMode, (this.serverTime || 0) + performance.now());
+            },
+
             initAchievements: function () {
                 var self = this;
                 var questLogUrl = "/session/" + self.sessionId + "/quests";
@@ -7181,8 +7191,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     self.resetCamera();
                     self.updatePlateauMode();
                     self.audioManager.updateMusic();
-                    self.app.timeOffset += serverTimeOffset
-                    self.serverTime = serverTimeOffset;
+                    self.syncWorldTime(serverTimeOffset);
                     self.lastActionBubbleId = null;
 
                     self.addEntity(self.player);
@@ -8182,6 +8191,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         if (npc instanceof Npc) npc.applyBehaviorState(state);
                     });
                     self.client.onWorldAmbience(config => {
+                        self.previewTimeMode = config?.previewTimeMode;
                         self.worldAmbience.setConfig(config);
                         WorldScenery.update(self.renderer, config);
                         const audio = self.audioManager;
