@@ -179,3 +179,19 @@ Ship server, shared protocol definitions, the built client and behaviour configs
 together. NPC movement and picnic gatherings are shared. Dialogue, quiet/music playback,
 quests, choices and future story scenery belong to the individual character.
 Public conversation lines never assert the choices of nearby players.
+
+## Renderer extensions
+
+Feature scenery lives outside `Renderer` and its worker. The composition root in
+`client/js/worldscenery.js` registers feature-owned worker modules through
+`renderer.registerExtension('picnic-renderer-worker.js')` and supplies snapshots
+with `renderer.setExtensionData('picnic', state)`. Passing `null` clears that feature.
+A module registers `{layer: 'ground', draw(context, state, view)}` under its stable ID
+in `self.RendererExtensions`. A `foreground` layer is available too.
+
+Ground extensions run after terrain and before characters and upper tiles. Every
+extension receives the exact current `cameraX`, `cameraY` and `scale`, and gets a
+saved canvas context. A throwing extension is disabled while other rendering
+continues. Feature modules use the `*-worker.js` naming convention so production
+builds retain them. The renderer owns hooks and serialisable data only; picnic
+geometry and colours live in `picnic-renderer-worker.js`.

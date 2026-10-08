@@ -4,7 +4,9 @@ const vm = require('vm');
 
 function setup() {
     const worker = {self: {}, console, postMessage: jest.fn(), requestAnimationFrame: jest.fn()};
+    worker.importScripts = file => vm.runInNewContext(fs.readFileSync(path.join(__dirname, file), 'utf8'), worker);
     vm.runInNewContext(fs.readFileSync(path.join(__dirname, 'renderer-webworker.js'), 'utf8'), worker);
+    worker.onmessage({data: {type: 'registerExtension', module: 'picnic-renderer-worker.js'}});
     const canvases = {};
     for (const id of ['background', 'entities', 'text', 'high', 'highEntities', 'lighting', 'aboveLight', 'combined']) {
         const context = {clearRect: jest.fn(), save: jest.fn(), restore: jest.fn(), translate: jest.fn(),
@@ -15,7 +17,7 @@ function setup() {
     const context = canvases.combined.getContext();
     const picnic = {phase: 'celebrating', center: {x: 42, y: 216}};
     const render = (cameraX, cameraY, scale, state = picnic) => worker.onmessage({data: {
-        type: 'render', player: {x: 0, y: 0}, picnic: state,
+        type: 'render', player: {x: 0, y: 0}, extensions: {picnic: state},
         renderData: [{type: 'render', id: 'background', tiles: [], cameraX, cameraY, scale, clear: true},
             {type: 'entities', id: 'entities', entityData: [], cameraX, cameraY, scale}]
     }});

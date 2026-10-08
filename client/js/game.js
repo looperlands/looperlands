@@ -1,11 +1,11 @@
 define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile',
         'warrior', 'gameclient', 'audio', 'updater', 'transition', 'combatfeedback',
         'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'fieldeffect', 'config', 'float', 'projectile', 'tileactions',
-        'worldambience', '../../shared/js/gametypes', '../../shared/js/altnames'],
+        'worldambience', 'worldscenery', '../../shared/js/gametypes', '../../shared/js/altnames'],
 
     function (InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, AnimatedTile,
               Warrior, GameClient, AudioManager, Updater, Transition, CombatFeedback,
-              Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, Fieldeffect, Config, Float, Projectile, TileActions, WorldAmbience) {
+              Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, Fieldeffect, Config, Float, Projectile, TileActions, WorldAmbience, WorldScenery) {
         var Game = Class.extend({
             init: function (app) {
                 this.app = app;
@@ -6255,6 +6255,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             setup: function ($bubbleContainer, canvas, background, foreground, input) {
                 this.setBubbleManager(new BubbleManager($bubbleContainer));
                 this.setRenderer(new Renderer(this, canvas, background, foreground));
+                WorldScenery.attach(this.renderer);
                 this.setChatInput(input);
             },
 
@@ -8182,6 +8183,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     });
                     self.client.onWorldAmbience(config => {
                         self.worldAmbience.setConfig(config);
+                        WorldScenery.update(self.renderer, config);
                         const audio = self.audioManager;
                         if (!audio) return;
                         const picnic = config?.picnic || config?.previewPicnic;
@@ -8249,6 +8251,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         self.app.socialChat?.disconnect();
                         self.app.eventBoard?.disconnect();
                         self.worldAmbience.clear();
+                        WorldScenery.update(self.renderer, null);
                         if (self.player) {
                             self.player.die();
                         }
