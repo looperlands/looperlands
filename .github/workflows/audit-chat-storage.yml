@@ -27,16 +27,13 @@ jobs:
           target: "/tmp/looperlands-preflight-${{ github.sha }}"
       - name: Check rollout compatibility without changing containers or storage
         uses: appleboy/ssh-action@v0.1.7
-        env:
-          CHAT_DEPLOY_PASSWORD: ${{ secrets.PASSWORD }}
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           port: 22
-          envs: CHAT_DEPLOY_PASSWORD
           script: |
-            printf '%s\n' "$CHAT_DEPLOY_PASSWORD" | sudo -S -p '' bash /tmp/looperlands-preflight-${{ github.sha }}/bin/deploy-game-server.sh --check /tmp/looperlands-preflight-${{ github.sha }}/docker-compose.yml ${{ github.sha }}
+            bash /tmp/looperlands-preflight-${{ github.sha }}/bin/deploy-game-server.sh --check /tmp/looperlands-preflight-${{ github.sha }}/docker-compose.yml ${{ github.sha }}
       - name: Inspect storage mounts without reading chat or restarting the server
         uses: appleboy/ssh-action@v0.1.7
         with:

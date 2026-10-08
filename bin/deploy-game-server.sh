@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Invoked as root by the existing deployment workflow. Private files stay on the host.
+# Invoked by the existing deployment account. Private files stay on the host.
 set -euo pipefail
 umask 077
 check_only=0
@@ -10,9 +10,10 @@ fi
 candidate=$(realpath "${1:?Compose file required}")
 release=${2:?Release ID required}
 [[ "$release" =~ ^[a-f0-9]{40}$ ]] || { echo 'Invalid release ID' >&2; exit 1; }
+state_dir="${HOME:?}/.looperlands-chat"
 if [[ "$check_only" -ne 1 ]]; then
-    [[ $(id -u) -eq 0 ]] || { echo 'Run this deployment as root' >&2; exit 1; }
-    exec 9>/run/lock/looperlands-chat-deploy.lock
+    install -d -m 700 "$state_dir"
+    exec 9>"$state_dir/deploy.lock"
     flock -n 9 || { echo 'Another game deployment is running' >&2; exit 1; }
 fi
 command -v python3 >/dev/null
@@ -49,6 +50,7 @@ for container in $(docker ps -q); do
     project=$owner
 done
 [[ -n "$compose_file" ]] || { echo 'No running game Compose project found' >&2; exit 1; }
+[[ -w "$(dirname "$compose_file")" ]] || { echo 'Production Compose directory is not writable by the deployment account' >&2; exit 1; }
 compose() { docker compose --project-directory "$(dirname "$compose_file")" -p "$project" -f "$1" "${@:2}"; }
 compose "$compose_file" config --format json > "$work/current.json"
 compose "$candidate" config --format json > "$work/proposed.json"
@@ -84,25 +86,23 @@ else:
     driver=$(docker volume inspect --format '{{.Driver}}' "$volume")
     options=$(docker volume inspect --format '{{json .Options}}' "$volume")
     [[ "$driver" == local && ( "$options" == null || "$options" == '{}' ) ]] || { echo 'Unsupported volume driver or options' >&2; exit 1; }
-    destination=$(docker volume inspect --format '{{.Mountpoint}}' "$volume")
-    [[ -d "$destination" ]] || { echo 'Chat volume directory is unavailable' >&2; exit 1; }
-    if [[ "$existing" == migrate && -e "$destination/history.json" ]]; then
+    if [[ "$existing" == migrate ]] && ! docker run --rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges --mount "type=volume,src=$volume,dst=/chat,readonly" --entrypoint node balkshamster/looperlands:latest -e 'if (require("fs").existsSync("/chat/history.json")) process.exit(1)'; then
         echo 'An unmounted chat volume already contains history; refusing to overwrite it' >&2
         exit 1
     fi
-    printf '%s\t%s\t%s\t%s\t%s\n' "$service" "$container" "$volume" "$destination" "$existing" >> "$work/containers"
+    printf '%s\t%s\t%s\t%s\n' "$service" "$container" "$volume" "$existing" >> "$work/containers"
 done < "$work/plan"
 
-backup="/var/backups/looperlands-chat/$release-$(date -u +%Y%m%dT%H%M%S)"
+backup="$state_dir/backups/$release-$(date -u +%Y%m%dT%H%M%S)"
 install -d -m 700 "$backup"
-cp -p "$compose_file" "$backup/docker-compose.yml"
+cp "$compose_file" "$backup/docker-compose.yml"
 chmod 600 "$backup/docker-compose.yml"
 # Pause both writers before taking any snapshots. Resume originals on pre-restart failure.
-while IFS=$'\t' read -r service container volume destination existing; do
+while IFS=$'\t' read -r service container volume existing; do
     docker pause "$container" >/dev/null
     paused+=("$container")
 done < "$work/containers"
-while IFS=$'\t' read -r service container volume destination existing; do
+while IFS=$'\t' read -r service container volume existing; do
     docker cp "$container:/opt/app/data/chat/history.json" "$backup/$service.json" >/dev/null
     chmod 600 "$backup/$service.json"
     # Validate privately; malformed history must never be replaced with an empty store.
@@ -119,17 +119,31 @@ except Exception:
     sys.exit('Invalid chat history; migration aborted and original containers will resume')
 PY
 done < "$work/containers"
-while IFS=$'\t' read -r service container volume destination existing; do
+while IFS=$'\t' read -r service container volume existing; do
     if [[ "$existing" == migrate ]]; then
-        install -m 600 "$backup/$service.json" "$destination/history.json"
-        sync -f "$destination/history.json"
+        # Only the named volume is mounted; no host filesystem or Docker socket is exposed.
+        # The private snapshot enters through stdin and is never printed.
+        docker run --rm -i --network none --read-only --cap-drop ALL --security-opt no-new-privileges --mount "type=volume,src=$volume,dst=/chat" --entrypoint node balkshamster/looperlands:latest -e '
+            const fs = require("fs");
+            const temporary = "/chat/.history-" + process.argv[1] + ".tmp";
+            const descriptor = fs.openSync(temporary, "wx", 0o600);
+            fs.writeFileSync(descriptor, fs.readFileSync(0));
+            fs.fsyncSync(descriptor);
+            fs.closeSync(descriptor);
+            // Link exclusively, refusing to overwrite a file created after preflight.
+            fs.linkSync(temporary, "/chat/history.json");
+            fs.unlinkSync(temporary);
+            const directory = fs.openSync("/chat", "r");
+            fs.fsyncSync(directory);
+            fs.closeSync(directory);
+        ' "$release" < "$backup/$service.json"
     fi
 done < "$work/containers"
 # Keep the service's existing host path so its unit uses the updated mount configuration.
 install -m 644 "$candidate" "$compose_file.chat-storage-new"
 mv -f "$compose_file.chat-storage-new" "$compose_file"
 sync -f "$compose_file"
-systemctl restart looperlands
+sudo -n systemctl restart looperlands
 
 # Require every service to return with the expected volume, not merely a successful restart command.
 while IFS=$'\t' read -r service alias volume; do

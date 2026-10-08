@@ -28,7 +28,7 @@ def configurations():
 
 
 FAKE = r'''#!/usr/bin/env python3
-import json, os, pathlib, sys
+import json, os, pathlib, subprocess, sys
 root = pathlib.Path(os.environ['DEPLOY_FIXTURE'])
 a = sys.argv[1:]
 state = json.loads((root / 'state.json').read_text())
@@ -41,7 +41,8 @@ def service(container):
     return 'gameserver2' if container.endswith('2') else 'gameserver'
 if command == 'id': print('0')
 elif command in ('flock', 'sync'): pass
-elif command == 'systemctl':
+elif command in ('systemctl', 'sudo'):
+    if command == 'sudo': a = a[2:]
     if a[0] == 'restart':
         assert all(state['paused'].values()), 'Writers must remain paused until restart'
         assert (root / 'host.yml').read_text() == 'new compose', 'Host Compose was not updated'
@@ -76,6 +77,14 @@ elif command == 'docker':
         if a[1] == 'create': destination.mkdir(exist_ok=True)
         elif a[1] == 'inspect':
             print('local' if '.Driver' in a[3] else 'null' if '.Options' in a[3] else destination)
+    elif a[0] == 'run':
+        mount = a[a.index('--mount') + 1]
+        volume = next(entry[4:] for entry in mount.split(',') if entry.startswith('src='))
+        destination = root / volume
+        code = a[a.index('-e') + 1].replace('/chat', str(destination))
+        args = a[a.index('-e') + 2:]
+        result = subprocess.run(['node', '-e', code] + args)
+        if result.returncode: finish(result.returncode)
     elif a[0] == 'exec':
         if 'path' in a[4]: print(state.get('history_path', '/opt/app/data/chat/history.json'))
     elif a[0] == 'pause': state['paused'][a[1]] = True
@@ -99,14 +108,13 @@ class DeploymentTest(unittest.TestCase):
         self.state = {'calls': [], 'paused': {'old1': False, 'old2': False}, 'restarted': False, 'epoch': int(time.time() * 1000)}
         (self.root / 'host.yml').write_text('old compose')
         (self.root / 'candidate.yml').write_text('new compose')
-        for command in ('docker', 'systemctl', 'id', 'flock', 'sync'):
+        for command in ('docker', 'systemctl', 'sudo', 'id', 'flock', 'sync'):
             filename = self.root / command
             filename.write_text(FAKE)
             filename.chmod(0o755)
         script = (ROOT / 'deploy-game-server.sh').read_text()
-        # Redirect only the host lock and backup locations to the isolated fixture.
-        script = script.replace('/run/lock/looperlands-chat-deploy.lock', str(self.root / 'lock'))
-        script = script.replace('/var/backups/looperlands-chat', str(self.root / 'backups'))
+        # Redirect only the deployment account state directory to the isolated fixture.
+        script = script.replace('${HOME:?}/.looperlands-chat', str(self.root))
         (self.root / 'deploy-game-server.sh').write_text(script)
         (self.root / 'chat-storage-plan.py').write_text((ROOT / 'chat-storage-plan.py').read_text())
 
@@ -127,6 +135,14 @@ class DeploymentTest(unittest.TestCase):
         result = self.run_deploy()
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertTrue(self.state['restarted'])
+        self.assertEqual([call for call in self.state['calls'] if call[0] == 'sudo'], [['sudo', '-n', 'systemctl', 'restart', 'looperlands']])
+        for call in self.state['calls']:
+            if call[:2] == ['docker', 'run']:
+                self.assertEqual(call[call.index('--network') + 1], 'none')
+                self.assertIn('--read-only', call)
+                self.assertNotIn('--privileged', call)
+                self.assertIn('type=volume,', call[call.index('--mount') + 1])
+                self.assertNotIn('type=bind', call[call.index('--mount') + 1])
         self.assertEqual((self.root / 'host.yml').read_text(), 'new compose')
         for service, _, volume in module.storage_plan(self.old, self.new):
             filename = self.root / volume / 'history.json'
@@ -187,7 +203,7 @@ class DeploymentTest(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertFalse(self.state['restarted'])
         self.assertEqual((self.root / 'host.yml').read_text(), 'old compose')
-        self.assertFalse(any(call[:2] in (['docker', 'pause'], ['docker', 'volume']) or 'pull' in call for call in self.state['calls']))
+        self.assertFalse(any(call[:2] in (['docker', 'pause'], ['docker', 'volume'], ['docker', 'run']) or 'pull' in call for call in self.state['calls']))
 
     def test_shared_volume_is_rejected(self):
         self.new['volumes']['chat-history-2']['name'] = 'production_chat-history'
