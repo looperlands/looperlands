@@ -28,6 +28,7 @@ class LooperLandsPlatformClient {
         process.on('SIGINT', takeOffLine);
 
         this.nftDataCache = {};
+        this.nftDataRequests = new Map();
     }
 
     async createOrUpdateGameServer(hostname, port, name) {
@@ -88,15 +89,22 @@ class LooperLandsPlatformClient {
             if (cached !== undefined) {
                 return cached;
             }
-            const nftData = await this.getNFT(nftId);
-            const extractedData = {
-                tokenHash: nftData.token.tokenHash,
-                assetType: nftData.assetType,
-                nftId: nftId,
-                options: nftData.options,
-            };
-            this.nftDataCache[nftId] = extractedData;
-            return extractedData;
+            if (!this.nftDataRequests.has(nftId)) {
+                const request = Promise.resolve().then(() => this.getNFT(nftId)).then((nftData) => {
+                    const extractedData = {
+                        tokenHash: nftData.token.tokenHash,
+                        assetType: nftData.assetType,
+                        nftId: nftId,
+                        options: nftData.options,
+                    };
+                    this.nftDataCache[nftId] = extractedData;
+                    return extractedData;
+                }).finally(() => {
+                    this.nftDataRequests.delete(nftId);
+                });
+                this.nftDataRequests.set(nftId, request);
+            }
+            return await this.nftDataRequests.get(nftId);
         } catch (error) {
             this.handleError(error);
         }

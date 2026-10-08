@@ -98,6 +98,99 @@ describe('LooperLandsPlatformClient', () => {
   });
 
   describe('getNFTDataForGame', () => {
+    function deferred() {
+      let resolve, reject;
+      const promise = new Promise((yes, no) => { resolve = yes; reject = no; });
+      return {promise, resolve, reject};
+    }
+
+    function metadata(tokenHash) {
+      return {token: {tokenHash}, assetType: 'weapon', options: {sprite: tokenHash}};
+    }
+
+    it('shares one backend request across simultaneous lookups and retains the successful cache', async () => {
+      const response = deferred();
+      client.client.get.mockReturnValue(response.promise);
+      const lookups = Array.from({length: 60}, () => client.getNFTDataForGame('shared'));
+      await Promise.resolve();
+      expect(client.client.get).toHaveBeenCalledTimes(1);
+      expect(client.client.get).toHaveBeenCalledWith('/api/asset/nft/shared');
+
+      response.resolve({data: metadata('shared-token')});
+      const results = await Promise.all(lookups);
+      expect(results[0]).toEqual({tokenHash: 'shared-token', assetType: 'weapon', nftId: 'shared', options: {sprite: 'shared-token'}});
+      expect(results.every(result => result === results[0])).toBe(true);
+      expect(await client.getNFTDataForGame('shared')).toBe(results[0]);
+      expect(client.client.get).toHaveBeenCalledTimes(1);
+    });
+
+    it('loads different NFTs concurrently and allows them to complete out of order', async () => {
+      const first = deferred(), second = deferred();
+      client.client.get.mockImplementation(url => url.endsWith('/first') ? first.promise : second.promise);
+      const firstLookup = client.getNFTDataForGame('first');
+      const secondLookup = client.getNFTDataForGame('second');
+      await Promise.resolve();
+      expect(client.client.get).toHaveBeenCalledTimes(2);
+
+      second.resolve({data: metadata('second-token')});
+      expect((await secondLookup).tokenHash).toBe('second-token');
+      expect(client.nftDataCache.first).toBeUndefined();
+      first.resolve({data: metadata('first-token')});
+      expect((await firstLookup).tokenHash).toBe('first-token');
+    });
+
+    it('rejects all callers on a shared HTTP failure and retries on a later lookup', async () => {
+      const response = deferred();
+      client.client.get.mockReturnValue(response.promise);
+      const results = Promise.allSettled([client.getNFTDataForGame('retry'), client.getNFTDataForGame('retry')]);
+      await Promise.resolve();
+      response.reject({response: {status: 503}});
+      for (const result of await results) {
+        expect(result.status).toBe('rejected');
+        expect(result.reason.message).toBe('HTTP error! status: 503');
+      }
+      expect(client.nftDataCache.retry).toBeUndefined();
+      client.client.get.mockResolvedValue({data: metadata('recovered')});
+      expect((await client.getNFTDataForGame('retry')).tokenHash).toBe('recovered');
+      expect(client.client.get).toHaveBeenCalledTimes(2);
+    });
+
+    it('does not cache malformed metadata and allows a subsequent retry', async () => {
+      client.client.get.mockResolvedValueOnce({data: {assetType: 'weapon'}});
+      const results = await Promise.allSettled([client.getNFTDataForGame('malformed'), client.getNFTDataForGame('malformed')]);
+      expect(results.every(result => result.status === 'rejected')).toBe(true);
+      expect(client.nftDataCache.malformed).toBeUndefined();
+      client.client.get.mockResolvedValue({data: metadata('valid')});
+      expect((await client.getNFTDataForGame('malformed')).tokenHash).toBe('valid');
+      expect(client.client.get).toHaveBeenCalledTimes(2);
+    });
+
+    it('releases a failed pending lookup even when getNFT throws synchronously', async () => {
+      const getNFT = jest.spyOn(client, 'getNFT').mockImplementationOnce(() => { throw new Error('sync failure'); });
+      const results = await Promise.allSettled([client.getNFTDataForGame('sync'), client.getNFTDataForGame('sync')]);
+      expect(results.every(result => result.status === 'rejected' && result.reason.message === 'sync failure')).toBe(true);
+      getNFT.mockResolvedValue(metadata('valid'));
+      expect((await client.getNFTDataForGame('sync')).tokenHash).toBe('valid');
+      expect(getNFT).toHaveBeenCalledTimes(2);
+    });
+
+    it('keeps requests and cached metadata isolated between platform clients', async () => {
+      const other = new LooperLandsPlatformClient('other-key', 'http://other-platform');
+      const first = deferred(), second = deferred();
+      jest.spyOn(client, 'getNFT').mockReturnValue(first.promise);
+      jest.spyOn(other, 'getNFT').mockReturnValue(second.promise);
+      const firstLookup = client.getNFTDataForGame('same-id');
+      const secondLookup = other.getNFTDataForGame('same-id');
+      await Promise.resolve();
+      expect(client.getNFT).toHaveBeenCalledTimes(1);
+      expect(other.getNFT).toHaveBeenCalledTimes(1);
+      second.resolve(metadata('other-platform-token'));
+      first.resolve(metadata('first-platform-token'));
+      expect((await firstLookup).tokenHash).toBe('first-platform-token');
+      expect((await secondLookup).tokenHash).toBe('other-platform-token');
+      expect((await client.getNFTDataForGame('same-id')).tokenHash).toBe('first-platform-token');
+      expect((await other.getNFTDataForGame('same-id')).tokenHash).toBe('other-platform-token');
+    });
     it('should return cached data if available', async () => {
       const nftId = 'nft123';
       const cachedData = { tokenHash: 'abc123', assetType: 'Art', nftId };
