@@ -1,8 +1,6 @@
 name: Audit production chat storage
 
 on:
-  push:
-    branches: [codex/chat-storage-audit]
   workflow_dispatch:
 
 permissions:
