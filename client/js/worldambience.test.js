@@ -13,13 +13,13 @@ function setup(reducedMotion = false) {
         document, window: {matchMedia: () => ({matches: reducedMotion})}, Date,
         requestAnimationFrame, define: factory => { WorldAmbience = factory(); }
     });
-    const worker = {self: {WorldTime}, console, postMessage: jest.fn(), requestAnimationFrame,
+    const worker = {self: {WorldTime, WorldParticles: require('./worldparticles-worker')}, console, postMessage: jest.fn(), requestAnimationFrame,
         importScripts: jest.fn(), Date: {now: () => 100000}};
     vm.runInNewContext(fs.readFileSync(path.join(__dirname, 'renderer-webworker.js'), 'utf8'), worker);
     const contexts = {};
     for (const id of ['background', 'entities', 'text', 'high', 'highEntities', 'lighting', 'aboveLight', 'combined']) {
         const context = {clearRect: jest.fn(), save: jest.fn(), restore: jest.fn(), translate: jest.fn(),
-            fillRect: jest.fn(), drawImage: jest.fn(), createRadialGradient: jest.fn(() => ({addColorStop: jest.fn()}))};
+            beginPath: jest.fn(), rect: jest.fn(), clip: jest.fn(), fillRect: jest.fn(), drawImage: jest.fn(), createRadialGradient: jest.fn(() => ({addColorStop: jest.fn()}))};
         contexts[id] = context;
         worker.onmessage({data: {type: 'setCanvas', id, canvas: {width: 960, height: 448, getContext: () => context}}});
     }
@@ -137,4 +137,13 @@ test('a frozen preview phase still lets fireflies wander between render frames',
     expect(next[0]).not.toBe(first[0]);
     expect(Math.abs(next[0] - first[0])).toBeLessThan(1);
     expect(Math.abs(next[1] - first[1])).toBeLessThan(1);
+});
+
+
+test('area effect layers stay in the map worker and clip to scene bounds', () => {
+    const {ambience, render, context, document} = setup();
+    const state = {effects: [{type: 'leaves', count: 4}, {type: 'pollen', count: 3}], bounds: {x: 0, y: 0, width: 480, height: 224}};
+    ambience.setConfig(state); render(ambience.getRenderState()); expect(context.clip).toHaveBeenCalledTimes(1);
+    expect(context.rect).toHaveBeenCalledWith(-64, -32, 960, 448); expect(context.fillRect).toHaveBeenCalled();
+    expect(document.createElement).not.toHaveBeenCalled();
 });
