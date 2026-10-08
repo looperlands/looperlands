@@ -132,7 +132,9 @@ api.listen(fixturePort, '127.0.0.1', () => {
     const packetFor = player => {
         const road = world.lanternRoad.packet(player);
         const choices = server.cache.get(player.sessionId)?.gameData?.choices || [];
-        return ({...world.npcBehavior.config.ambience, serverTime: Date.now(), epoch: 0,
+        return ({...world.npcBehavior.config.ambience,
+        particles: world.map.getSceneAt(player.x, player.y)?.name === world.npcBehavior.config.ambience.scene ? world.npcBehavior.config.ambience.particles : 'none',
+        serverTime: Date.now(), epoch: 0,
         ...road,
         picnic: road.finalePicnic || (picnicScene?.state && {...picnicScene.state, music: choices.includes(picnic.MUSIC)}) || null,
         previewPicnic: picnicScene?.state || null,
@@ -143,11 +145,9 @@ api.listen(fixturePort, '127.0.0.1', () => {
     const configureAmbience = (mode = 'night') => {
         if (!world.npcBehavior) return;
         const ambience = world.npcBehavior.config.ambience;
-        Object.assign(ambience, {mode, previewControls});
+        Object.assign(ambience, {mode, previewTimeMode: mode, previewControls});
         for (const player of Object.values(world.players)) {
-            if (world.map.getSceneAt(player.x, player.y)?.name === ambience.scene) {
-                world.pushToPlayer(player, new Messages.WorldAmbience(packetFor(player)));
-            }
+            world.pushToPlayer(player, new Messages.WorldAmbience(packetFor(player)));
         }
     };
     server.app.post('/__npc_preview/ambience', (req, res) => {
@@ -169,7 +169,7 @@ api.listen(fixturePort, '127.0.0.1', () => {
     world.map.ready(() => {
         initializeMap();
         picnicScene = world.lanternPicnic;
-        Object.assign(world.npcBehavior.config.ambience, {mode: 'night', previewControls,
+        Object.assign(world.npcBehavior.config.ambience, {mode: 'night', previewTimeMode: 'night', previewControls,
             previewStory: {title: 'The Lantern Picnic', goal: picnic.progress()}});
     });
     const storyGoals = new Map();
@@ -178,10 +178,6 @@ api.listen(fixturePort, '127.0.0.1', () => {
         for (const player of Object.values(world.players)) {
             const packet = packetFor(player);
             const goal = JSON.stringify([packet.story, packet.picnic, packet.previewStory]);
-            if (world.map.getSceneAt(player.x, player.y)?.name !== packet.scene) {
-                storyGoals.delete(player.id);
-                continue;
-            }
             if (storyGoals.get(player.id) !== goal) {
                 world.pushToPlayer(player, new Messages.WorldAmbience(packet));
                 storyGoals.set(player.id, goal);

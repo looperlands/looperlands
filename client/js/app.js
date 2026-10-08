@@ -34,7 +34,7 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
             setInterval(function() {
 
                 const cycleTime = 1000 * 60 * 60 // 1 hour
-                const cycleProgress = ((self.timeOffset + performance.now()) % cycleTime) / cycleTime;
+                const cycleProgress = ((self.game?.getWorldTime() ?? self.timeOffset + performance.now()) % cycleTime) / cycleTime;
                 const cycleAngle = cycleProgress * Math.PI * 2;
                 const cycleIntensity = Math.sin(cycleAngle) * 0.5 + 0.5;
 
