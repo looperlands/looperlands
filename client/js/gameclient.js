@@ -9,6 +9,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             this.protocol = protocol;
             this.sessionId = sessionId;
             this.mapId = mapId;
+            this.debugMessages = false;
 
             console.log("Game client", this.host, this.port, this.protocol);
     
@@ -151,7 +152,9 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
         
             if(this.isListening) {
        
-                console.debug("data: " + message);
+                if (this.debugMessages) {
+                    console.debug("data:", message);
+                }
 
                 if(message instanceof Array) {
                     if(message[0] instanceof Array) {

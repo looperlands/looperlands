@@ -14,6 +14,7 @@ class DuckvilleTileActionsController {
         this.dao = options.dao || defaultDao;
         this.now = options.now || (() => Date.now());
         this.random = options.random || Math.random;
+        this.debugLogging = options.debugLogging ?? (process.env.LOOPERLANDS_DEBUG_FARM === "1");
         this.disableLevelGate = options.disableLevelGate !== undefined
             ? options.disableLevelGate
             : (process.env.LOOPERLANDS_DISABLE_FARM_LEVEL_GATE === "1" || process.env.LOOPERLANDS_LOCAL_MODE === "1");
@@ -82,13 +83,15 @@ class DuckvilleTileActionsController {
             const plot = await this.getPlot(map, tileAction);
             await this.refreshVisualStage(map, tileAction, plot, farmDefinition, world);
             const stage = await this.getStageForPlot(nftId, map, tileAction, plot, farmDefinition, world);
-            console.info("[tileStage.duckville] current stage", JSON.stringify({
-                nftId,
-                map,
-                tileAction,
-                plot: this.describePlot(plot),
-                stage,
-            }));
+            if (this.debugLogging) {
+                console.info("[tileStage.duckville] current stage", JSON.stringify({
+                    nftId,
+                    map,
+                    tileAction,
+                    plot: this.describePlot(plot),
+                    stage,
+                }));
+            }
             return stage;
         } catch (error) {
             console.error("findCurrentStage", error);
@@ -117,14 +120,16 @@ class DuckvilleTileActionsController {
             const plot = await this.getPlot(map, tileAction);
             await this.refreshVisualStage(map, tileAction, plot, farmDefinition, world);
             const stage = await this.getStageForPlot(nftId, map, tileAction, plot, farmDefinition, world);
-            console.info("[tileStage.duckville] execute stage", JSON.stringify({
-                nftId,
-                map,
-                tileAction,
-                item,
-                plot: this.describePlot(plot),
-                stage: this.describeStage(stage),
-            }));
+            if (this.debugLogging) {
+                console.info("[tileStage.duckville] execute stage", JSON.stringify({
+                    nftId,
+                    map,
+                    tileAction,
+                    item,
+                    plot: this.describePlot(plot),
+                    stage: this.describeStage(stage),
+                }));
+            }
 
             if (!stage || stage.inProgress || stage.waiting) {
                 if (stage && stage.message) {
@@ -530,11 +535,13 @@ class DuckvilleTileActionsController {
 
         this.loadedMaps[map] = true;
         const plots = await this.dao.loadFarmPlots(map);
-        console.info("[tileStage.duckville] persisted plots", JSON.stringify({
-            map,
-            type: Array.isArray(plots) ? "array" : typeof plots,
-            count: Array.isArray(plots) ? plots.length : undefined,
-        }));
+        if (this.debugLogging) {
+            console.info("[tileStage.duckville] persisted plots", JSON.stringify({
+                map,
+                type: Array.isArray(plots) ? "array" : typeof plots,
+                count: Array.isArray(plots) ? plots.length : undefined,
+            }));
+        }
         for (const plot of plots || []) {
             const farmDefinitionKey = this.getFarmDefinitionKeyForPlot(map, plot, world) || "farm";
             const farmDefinition = this.stageDefinitions[map]?.[farmDefinitionKey];
@@ -591,11 +598,13 @@ class DuckvilleTileActionsController {
         }
 
         const plot = await this.dao.loadFarmPlot(map, tileAction.gridX, tileAction.gridY);
-        console.info("[tileStage.duckville] loaded plot", JSON.stringify({
-            map,
-            tileAction,
-            plot: this.describePlot(plot),
-        }));
+        if (this.debugLogging) {
+            console.info("[tileStage.duckville] loaded plot", JSON.stringify({
+                map,
+                tileAction,
+                plot: this.describePlot(plot),
+            }));
+        }
         if (plot) {
             this.setTileActionStage(map, tileAction, plot);
         }
@@ -603,9 +612,11 @@ class DuckvilleTileActionsController {
     }
 
     async savePlot(plot) {
-        console.info("[tileStage.duckville] save plot", JSON.stringify({
-            plot: this.describePlot(plot),
-        }));
+        if (this.debugLogging) {
+            console.info("[tileStage.duckville] save plot", JSON.stringify({
+                plot: this.describePlot(plot),
+            }));
+        }
         try {
             await this.dao.saveFarmPlot(plot);
         } catch (error) {
