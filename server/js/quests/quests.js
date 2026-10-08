@@ -1,5 +1,4 @@
 const dao = require('../dao.js');
-const objectives = require('./objectives');
 const Formulas = require('../formulas.js');
 
 const main = require('./main.js');
@@ -13,6 +12,7 @@ const robits = require('./robits.js');
 const taikotown = require('./taikotown.js');
 const bitcorn = require('./bitcorn.js');
 const _ = require('underscore');
+const objectives = require('./objectives');
 const PlayerQuestEventConsumer = require('./playerquesteventconsumer.js');
 const {PlayerEventBroker} = require("./playereventbroker");
 
