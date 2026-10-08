@@ -32,7 +32,13 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
             this.avatarSources = new Map();
             this.connected = false;
             this.showPeople = window.innerWidth > 780;
+            this.hudMode = 'hidden';
+            this.overlayMessages = [];
+            try {
+                this.hudMode = localStorage.getItem('chat-hud-mode') === 'compact' ? 'compact' : 'hidden';
+            } catch (_) { /* Storage is optional. */ }
             this.bind();
+            this.renderHud();
             this.render();
         }
 
@@ -51,7 +57,12 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
             this.node('chat-player-search').addEventListener('input', () => this.renderRoster());
             this.node('chat-players-toggle').addEventListener('click', () => { this.showPeople = !this.showPeople; this.renderPeopleVisibility(); });
             this.node('chat-players-close').addEventListener('click', () => { this.showPeople = false; this.renderPeopleVisibility(); this.node('chat-players-toggle').focus(); });
-            this.node('chat-minimize').addEventListener('click', () => this.app.hideChat());
+            this.node('chat-minimize').addEventListener('click', () => { this.setHudMode('hidden'); this.app.hideChat(); });
+            this.node('chat-overlay').addEventListener('click', () => { this.setHudMode('compact'); this.app.hideChat(); });
+            // Keep overlay controls from reaching the map's click-to-move handler.
+            ['click', 'touchstart', 'keydown'].forEach(type => this.node('chat-mini').addEventListener(type, event => event.stopPropagation()));
+            this.node('chat-mini-hide').addEventListener('click', () => this.setHudMode('hidden'));
+            this.node('chat-mini-open').addEventListener('click', event => this.openFromOverlay(event));
             this.node('chat-expand').addEventListener('click', () => {
                 const expanded = this.panel.classList.toggle('sc-expanded');
                 this.node('chat-expand').setAttribute('aria-label', expanded ? 'Compact chat' : 'Expand chat');
@@ -64,12 +75,47 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
         }
 
         saveDraft() { this.drafts.set(this.channelKey(), this.node('chatinput').value); }
-        open() { this.markRead(); this.renderBadges(); if (this.connected) this.app.game.client.syncChat(); }
-        close() { this.saveDraft(); this.closeProfile(); }
+        open() { this.renderHud(); this.markRead(); this.renderBadges(); if (this.connected) this.app.game.client.syncChat(); }
+        close() { this.saveDraft(); this.closeProfile(); this.renderHud(); }
+
+        openFromOverlay(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            this.saveDraft();
+            this.tab = 'world'; this.target = '';
+            this.render(); this.app.showChat();
+        }
+
+        recordOverlayMessage(message) {
+            if (message.channel === 'direct' || this.overlayMessages.some(item => item.id === message.id)) return;
+            this.overlayMessages = [...this.overlayMessages, message].slice(-6);
+        }
+
+        setHudMode(mode) {
+            this.hudMode = mode;
+            try { localStorage.setItem('chat-hud-mode', mode); } catch (_) {}
+            this.renderHud();
+        }
+
+        renderHud() {
+            const mini = this.node('chat-mini');
+            mini.hidden = this.isOpen() || this.hudMode === 'hidden' || !this.connected;
+            const list = this.node('chat-mini-messages');
+            const atBottom = list.scrollHeight - list.scrollTop - list.clientHeight < 35;
+            const scrollTop = list.scrollTop;
+            list.replaceChildren();
+            this.overlayMessages.forEach(message => {
+                const row = element('p');
+                row.append(element('strong', '', message.sender.label + ': '), element('span', '', plainMessage(message.message || '')));
+                list.append(row);
+            });
+            list.scrollTop = atBottom ? list.scrollHeight : scrollTop;
+        }
         markRead() { if (this.isReading(this.channelKey()) && this.target) this.unread.delete(this.target); }
 
         disconnect() {
             this.connected = false;
+            this.renderHud();
             this.players = [];
             for (const request of this.pending.values()) clearTimeout(request.timer);
             this.pending.clear();
@@ -91,6 +137,7 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
                 this.setRoster(data); this.renderRoster(); this.renderHeader(); this.renderComposerState();
             } else if (type === Types.Messages.CHAT_MESSAGE) {
                 const channel = this.storeMessage(data);
+                this.recordOverlayMessage(data);
                 const retry = [...this.giftRetries.entries()].find(([channel, request]) => request.requestId === data.requestId);
                 if (data.requestId && (this.pending.has(data.requestId) || retry)) {
                     const request = this.pending.get(data.requestId) || {...retry[1], channel: retry[0]};
@@ -308,6 +355,7 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
         }
 
         renderBadges() {
+            this.renderHud();
             this.markRead();
             const count = [...this.unread.values()].reduce((a, b) => a + b, 0);
             const badge = this.node('chat-unread'); badge.hidden = !count; badge.textContent = count;

@@ -2869,3 +2869,13 @@ footer div  {display:inline-block;}
     #chatsend {display:block;}
     .bubbleglobal {width:calc(100% - 24px);}
 }
+
+#shop-quantity-controls[hidden] {display:none;}
+#shop-quantity-controls label {display:block;margin-bottom:6px;}
+#shop-quantity {box-sizing:border-box;width:100%;min-height:44px;padding:6px 10px;border:1px solid #987453;border-radius:3px;background:#241b24;color:#fce045;font:inherit;}
+#shop-quantity:focus-visible {outline:2px solid #fce045;outline-offset:2px;}
+#shop-total {font-size:14px;line-height:1.4;margin:8px 0;overflow-wrap:anywhere;}
+
+@media(max-width:780px) {
+    #shop-confirmation:not(.hidden) {left:50%;transform:translateX(-50%);width:min(200px,calc(100% - 80px));padding:24px;}
+}

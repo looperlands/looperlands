@@ -10,6 +10,10 @@ Chat resolves map keys with `client/js/mapnames.js`, matching the platform's `sr
 
 Private messages target opaque IDs and reach only their participants. Public messages, private inboxes and confirmed gift receipts persist across server restarts. History retains the latest 100 messages in the public stream and per wallet inbox for up to 30 days. Player IDs persist too, so restored DMs stay in the same conversation. My map filters restored public history by the map at send time. Public chat keeps the existing Discord bridge; private messages and gifts do not use it. Restoring history does not resend messages to Discord.
 
+## Chat display
+
+Map overlay closes the panel and shows the latest six incoming public messages directly above the health bar, with no background or border. History synchronization does not populate this live feed, and private messages remain in the main panel. Open chat restores the World panel without passing the click to the map; Hide removes the overlay. The original minus control hides chat. Overlay visibility persists in local browser storage and is off by default. The expand control keeps the existing full-size panel.
+
 ## Chat storage
 
 The game server writes `data/chat/history.json` before acknowledging or delivering a message. Both DM inboxes are committed together using a flushed temporary file and atomic replacement. A failed write keeps ordinary messages unsent; a confirmed item transfer with a failed receipt write remains pending and retries persistence without refunding or transferring the goods again. Restored gift receipts also acknowledge retries without another transfer. An unreadable or corrupt history file stops startup instead of replacing existing conversations.

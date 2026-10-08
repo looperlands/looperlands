@@ -1126,8 +1126,6 @@ WS.socketIOServer = Server.extend({
         app.get("/session/:sessionId/shop/:shopId/buy/:itemId", async (req, res) => {
             const sessionId = req.params.sessionId;
             const sessionData = cache.get(sessionId);
-            let player = self.worldsMap[sessionData.mapId].getPlayerById(sessionData.entityId);
-            let gameData = sessionData.gameData;
             if (sessionData === undefined) {
                 res.status(404).json({
                     status: false,
@@ -1137,9 +1135,24 @@ WS.socketIOServer = Server.extend({
                 return;
             }
 
+            const quantity = req.query.quantity === undefined ? 1 : Number(req.query.quantity);
+            if (!Number.isInteger(quantity) || quantity < 1 || quantity > 99) {
+                res.status(400).json({status: false, error: 'Quantity must be a whole number from 1 to 99.'});
+                return;
+            }
+            const player = self.worldsMap[sessionData.mapId]?.getPlayerById(sessionData.entityId);
+            if (!player) {
+                res.status(404).json({status: false, error: 'Player is no longer connected.'});
+                return;
+            }
+            const gameData = sessionData.gameData;
             const nftId = sessionData.nftId;
             const shopInventory = await dao.getShopInventory(req.params.shopId);
-            const item = shopInventory.find(item => item.id === req.params.itemId);
+            const item = shopInventory.find(item => String(item.id) === req.params.itemId);
+            if (!item) {
+                res.status(404).json({status: false, error: 'Shop item not found.'});
+                return;
+            }
 
             if (gameData.items === undefined) {
                 gameData.items = {};
@@ -1160,7 +1173,7 @@ WS.socketIOServer = Server.extend({
             // Loop over all keys of price and check if player has enough of that resource
             for (const [key, value] of Object.entries(item.price)) {
                 let resourceId = Types.getKindFromString(key);
-                let cost = parseInt(value);
+                let cost = parseInt(value) * quantity;
                 let resource = parseInt(gameData.items[resourceId]);
                 if (_.isNaN(resource) || !_.isNumber(resource) || (resource < cost)) {
                     res.status(400).json({
@@ -1176,14 +1189,14 @@ WS.socketIOServer = Server.extend({
             // Loop over all keys of price again and remove that amount of resource from player
             for (const [key, value] of Object.entries(item.price)) {
                 let resourceId = Types.getKindFromString(key);
-                let cost = parseInt(value);
+                let cost = parseInt(value) * quantity;
                 dao.saveConsumable(nftId, resourceId, -1 * cost);
                 gameData.items[resourceId] = gameData.items[resourceId] - cost;
             }
 
             // Add item to player inventory
             let providedItem = Collectables.getCollectItem(item.item);
-            let providedAmount = (Collectables.getCollectAmount(item.item) ?? 1) * item.amount;
+            let providedAmount = (Collectables.getCollectAmount(item.item) ?? 1) * item.amount * quantity;
             dao.saveConsumable(nftId, providedItem, providedAmount);
 
             let itemCount = gameData.items[providedItem];

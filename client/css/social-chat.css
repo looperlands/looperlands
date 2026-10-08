@@ -179,3 +179,16 @@
 @media(prefers-reduced-motion:reduce) {
     #chatbox.social-chat,#chatbox.social-chat button {transition:none;}
 }
+
+/* Incoming chat floats directly over the map, above the health bar. */
+#chat-mini {position:absolute;left:12px;bottom:calc(17px * var(--hud-scale, 2) + 14px);z-index:89;width:min(360px,calc(100% - 24px));color:#fff1dc;background:none;border:0;box-shadow:none;font:14px/1.4 GraphicPixel,sans-serif;text-align:left;text-shadow:0 1px 3px #000,0 1px 3px #000;pointer-events:none;}
+#chat-mini[hidden] {display:none;}
+#chat-mini header {display:flex;align-items:center;gap:12px;padding:0 8px;}
+#chat-mini button {min-height:32px;border:0;background:none;color:#fff1dc;font:inherit;text-shadow:inherit;padding:4px 0;cursor:pointer;pointer-events:auto;}
+#chat-mini button:hover {text-decoration:underline;}
+#chat-mini button:focus-visible,#chat-mini-messages:focus-visible {outline:2px solid #fce045;outline-offset:2px;}
+#chat-mini-messages {max-height:125px;overflow:auto;padding:0 8px;scrollbar-width:none;pointer-events:auto;user-select:text;}
+#chat-mini-messages p {margin:4px 0;padding:0;font:inherit;overflow-wrap:anywhere;white-space:pre-wrap;}
+#chat-mini-messages strong {color:#f2d99f;}
+#chatbox.social-chat .sc-panel-controls #chat-overlay {width:auto;padding:0 8px;font-size:14px;}
+@media(max-width:780px) {#chat-mini {left:8px;width:min(320px,calc(100% - 16px));} #chat-mini button {min-height:44px;} #chat-mini-messages {max-height:95px;}}

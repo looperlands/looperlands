@@ -1590,15 +1590,32 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
                             e.stopImmediatePropagation();
                         });
 
+                        const quantityEnabled = shopId === 'potionshop' || Types.getKindAsString(item.item).includes('potion');
+                        const quantityInput = $('#shop-quantity').val(1);
+                        $('#shop-quantity-controls').prop('hidden', !quantityEnabled);
+                        const updateTotal = () => {
+                            const quantity = quantityEnabled ? Number(quantityInput.val()) : 1;
+                            const valid = Number.isInteger(quantity) && quantity >= 1 && quantity <= 99;
+                            const affordable = valid && Object.entries(item.price).every(([resource, price]) => {
+                                const available = Number($('#resources').find('#resource-' + Types.getKindFromString(resource)).find('.amount').text()) || 0;
+                                return available >= Number(price) * quantity;
+                            });
+                            $('#shop-total').text(valid ? 'Total: ' + Object.entries(item.price).map(([resource, price]) => (Number(price) * quantity) + ' ' + resource).join(', ') : 'Choose a whole quantity from 1 to 99.');
+                            $('#confirm-shop-purchase').toggleClass('disabled', !affordable || !playerHasMinimumLevel).attr('aria-disabled', !affordable || !playerHasMinimumLevel);
+                            return affordable && playerHasMinimumLevel ? quantity : 0;
+                        };
+                        quantityInput.off('input change').on('input change', updateTotal);
                         let itemId = item.id;
                         $('#confirm-shop-purchase').off('click');
                         if(playerHasEnoughResources && playerHasMinimumLevel) {
                             $('#confirm-shop-purchase').click(function (e) {
+                                const quantity = updateTotal();
+                                if (!quantity) return;
                                 $('#shop-confirmation').addClass('hidden');
                                 itemEl.removeClass('selected');
                                 e.preventDefault();
                                 e.stopImmediatePropagation();
-                                self.purchaseShopItem(shopId, itemId);
+                                self.purchaseShopItem(shopId, itemId, quantity);
                             });
 
                             $('#shop-confirmation-text').show();
@@ -1611,6 +1628,7 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
                             $('#cancel-shop-purchase').hide();
                             $('#confirm-shop-purchase').addClass('disabled');
                         }
+                        updateTotal();
                     })
 
                     shopPopup.find('#shop-popup-items').append(itemEl);
@@ -1631,9 +1649,9 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
             });
         },
 
-        purchaseShopItem: function(shopId, itemId) {
+        purchaseShopItem: function(shopId, itemId, quantity = 1) {
             let self = this;
-            let shopInventoryQuery = "/session/" + _this.storage.sessionId + "/shop/" + shopId + "/buy/" + itemId;
+            let shopInventoryQuery = "/session/" + self.storage.sessionId + "/shop/" + shopId + "/buy/" + itemId + "?quantity=" + quantity;
             axios.get(shopInventoryQuery)
                 .then(function(response) {
                     self.initResourcesDisplay();
