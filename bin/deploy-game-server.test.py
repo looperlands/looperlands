@@ -37,8 +37,9 @@ elif command == 'sudo':
 elif command == 'docker':
     if a[0] == 'info': print(root)
     elif a[:2] == ['system', 'df']: print('fixture Docker image usage')
+    elif a == ['image', 'ls', '--digests']: print('fixture Docker image inventory')
     elif a[:2] == ['image', 'prune']:
-        assert a == ['image', 'prune', '--force', '--filter', 'until=24h']
+        assert a == ['image', 'prune', '--force']
         if state.get('fail') == 'prune': finish(1)
         state['pruned'] = True
     elif a[0] == 'ps': print('old1\nold2')
@@ -169,15 +170,16 @@ class DeploymentTest(unittest.TestCase):
         self.assertTrue(any(call[:2] == ['docker', 'exec'] and call[2].startswith('old') for call in operations[:pull]))
         self.assertTrue(any(call[:2] == ['docker', 'exec'] and call[2].startswith('new') for call in operations[restart + 1:]))
 
-    def test_prunes_only_old_dangling_images_after_storage_checks_before_pull(self):
+    def test_prunes_only_dangling_images_after_storage_checks_before_pull(self):
         self.assertEqual(self.run_deploy().returncode, 0)
         calls = self.state['calls']
-        prune = calls.index(['docker', 'image', 'prune', '--force', '--filter', 'until=24h'])
+        prune = calls.index(['docker', 'image', 'prune', '--force'])
         pull = next(i for i, call in enumerate(calls) if 'pull' in call)
         last_storage_check = max(i for i, call in enumerate(calls[:prune]) if call[:2] == ['docker', 'exec'])
         self.assertLess(last_storage_check, prune)
         self.assertLess(prune, pull)
         self.assertIn(['docker', 'system', 'df'], calls[:prune])
+        self.assertIn(['docker', 'image', 'ls', '--digests'], calls[:prune])
         self.assertIn(['df', '-h', str(self.root)], calls[:prune])
         self.assertIn(['df', '-i', str(self.root)], calls[:prune])
 
