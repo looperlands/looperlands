@@ -12,6 +12,7 @@ const robits = require('./robits.js');
 const taikotown = require('./taikotown.js');
 const bitcorn = require('./bitcorn.js');
 const _ = require('underscore');
+const objectives = require('./objectives');
 const PlayerQuestEventConsumer = require('./playerquesteventconsumer.js');
 const {PlayerEventBroker} = require("./playereventbroker");
 
@@ -85,6 +86,7 @@ exports.completeQuest = function (cache, sessionId, questID) {
     }
 
     let sessionData = cache.get(sessionId);
+    if (questsByID[questID]?.objectives && !objectives.ready(sessionData.gameData, questsByID[questID])) return false;
     completeQuest(questID, sessionData);
     cache.set(sessionId, sessionData);
 
@@ -110,7 +112,11 @@ function handleInProgressQuests(npcQuests, sessionData, broker, cache, sessionId
     for (const questID of npcQuests.map(quest => quest.id)) {
         const quest = {...questsByID[questID]};
         if (avatarHasQuest(questID, sessionData.gameData.quests) && !avatarHasCompletedQuest(questID, sessionData.gameData.quests)) {
-            const isCompleted = eventConsumer.completionCheckers[quest.eventType](quest, sessionData);
+            if (quest.objectives) {
+                const progress = objectives.progress(sessionData.gameData, quest);
+                quest.amount = progress.length; quest.done = progress.filter(o => o.done).length; quest.remaining = quest.amount - quest.done;
+            }
+            const isCompleted = quest.objectives ? objectives.ready(sessionData.gameData, quest) : eventConsumer.completionCheckers[quest.eventType](quest, sessionData);
             if (isCompleted && !quest.returnToNpc) {
                 completeQuest(questID, sessionData);
                 broker.player.handleCompletedQuests([quest]);
@@ -154,7 +160,11 @@ function handleReturnToNpcQuests(quests, sessionData, npcId, cache, sessionId, b
         for (const questID of returnToNpcQuests.map(quest => quest.id)) {
             const quest = {...questsByID[questID]};
             if (avatarHasQuest(questID, sessionData.gameData.quests) && !avatarHasCompletedQuest(questID, sessionData.gameData.quests)) {
-                const isCompleted = eventConsumer.completionCheckers[quest.eventType](quest, sessionData);
+                if (quest.objectives) {
+                const progress = objectives.progress(sessionData.gameData, quest);
+                quest.amount = progress.length; quest.done = progress.filter(o => o.done).length; quest.remaining = quest.amount - quest.done;
+            }
+            const isCompleted = quest.objectives ? objectives.ready(sessionData.gameData, quest) : eventConsumer.completionCheckers[quest.eventType](quest, sessionData);
                 if (isCompleted) {
                     completeQuest(questID, sessionData);
                     broker.player.handleCompletedQuests([quest]);
@@ -228,7 +238,9 @@ function completeQuest(questID, sessionData) {
         return;
     }
 
-    eventConsumer.completeQuest(sessionData, questID, questsByID[questID]);
+    const definition = questsByID[questID];
+    if (definition.objectives && !objectives.ready(sessionData.gameData, definition)) return;
+    eventConsumer.completeQuest(sessionData, questID, definition);
 }
 
 
@@ -247,10 +259,12 @@ function groupBy(array, key, isSingleValue = false) {
 }
 
 function validateQuest(quest) {
+    objectives.validate(quest);
     if (quest.id.length > 100) {
         console.error("Quest ID is too long: ", quest);
         process.exit(1);
     }
+    if (quest.objectives) return;
     let target = quest.target;
     if (target !== "FLOW") {
         if (Types.isMob(target) && quest.eventType !== "KILL_MOB") {

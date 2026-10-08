@@ -465,7 +465,7 @@ const saveConsumable = async function (nft, item, qty) {
 }
 
 const registerChoice = function (nft, choice) {
-  platformClient.registerChoice(nft, choice);
+  return platformClient.registerChoice(nft, choice);
 }
 
 const getBots = async function (walletId) {

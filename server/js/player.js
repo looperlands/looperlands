@@ -562,14 +562,14 @@ module.exports = Player = Character.extend({
 
                         if (!self.area || self.area.id !== trigger.id) {
                             trigger.addToArea(self);
-                            self.playerEventBroker.enteredArea(trigger);
+                            self.playerEventBroker.enteredArea(trigger).catch(error => self.server.pushToPlayer(self, new Messages.Chat(self, error.message, true)));
                             if (trigger.trigger) {
                                 self.server.activateTrigger(trigger.trigger);
                             }
                         }
                     } else {
                         trigger.removeFromArea(self);
-                        self.playerEventBroker.leftArea(trigger);
+                        self.playerEventBroker.leftArea(trigger).catch(error => self.server.pushToPlayer(self, new Messages.Chat(self, error.message, true)));
                         if (trigger.trigger) {
                             if (trigger.delay) {
                                 self.triggerDeactivationTimer = setTimeout(() => {

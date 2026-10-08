@@ -92,6 +92,7 @@ module.exports = World = cls.Class.extend({
             self.pushTileStagesTo(player);
 
             var move_callback = function (x, y) {
+                player.playerEventBroker.observePlace().catch(error => self.pushToPlayer(player, new Messages.Chat(player, error.message, true)));
                 //console.debug(player.name + " is moving to (" + x + ", " + y + ").");
 
                 player.forEachAttacker(function (mob) {
@@ -842,7 +843,7 @@ module.exports = World = cls.Class.extend({
                     mob.dmgTakenArray.forEach(function (arrElem) {
                         let accomplice = self.getEntityById(arrElem.id);
                         if (accomplice !== undefined && accomplice.type === 'player' && !accomplice.isBot()) {
-                            accomplice.playerEventBroker.killMobEvent(mob);
+                            accomplice.playerEventBroker.killMobEvent(mob).catch(error => self.pushToPlayer(accomplice, new Messages.Chat(accomplice, error.message, true)));
                         }
                     })
                 }
@@ -1643,13 +1644,13 @@ module.exports = World = cls.Class.extend({
 
     addToInventory(player, itemKind, amount) {
         let item = this.createItem(itemKind, 0, 0);
-        player.playerEventBroker.lootEvent(item, amount);
+        player.playerEventBroker.lootEvent(item, amount).catch(error => this.pushToPlayer(player, new Messages.Chat(player, error.message, true)));
 
     },
 
     removeFromInventory(player, itemKind, amount) {
         let item = this.createItem(itemKind, 0, 0);
-        player.playerEventBroker.lootEvent(item, amount * -1);
+        player.playerEventBroker.lootEvent(item, amount * -1).catch(error => this.pushToPlayer(player, new Messages.Chat(player, error.message, true)));
     },
 
     npcTalked(npcId, message, sessionData) {
