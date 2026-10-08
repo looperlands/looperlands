@@ -5,6 +5,7 @@ const _ = require('underscore');
 
 const AltNames = require('../../../shared/js/altnames.js');
 let flows = {}
+const pendingFlowRequests = new Map();
 
 let loadedFlow = {};
 let loadedBlocks = {};
@@ -74,12 +75,23 @@ const worldEventConsumer = new WorldMapFlowEventConsumer.WorldMapFlowEventConsum
 PlayerEventBroker.PlayerEventBroker.playerEventConsumers.push(playerEventConsumer);
 WorldEventBroker.WorldEventBroker.worldEventConsumers.push(worldEventConsumer);
 
+async function loadFlowDefinition(mapId) {
+    if (!pendingFlowRequests.has(mapId)) {
+        const request = Promise.resolve().then(() => dao.loadMapFlow(mapId)).finally(() => {
+            pendingFlowRequests.delete(mapId);
+        });
+        pendingFlowRequests.set(mapId, request);
+    }
+    // Each player previously received its own parsed backend response.
+    return structuredClone(await pendingFlowRequests.get(mapId));
+}
+
 async function loadFlow(mapId, eventBroker, worldserver) {
     if (loadedFlow[eventBroker.player.nftId] != null) {
         unloadFlow(eventBroker, mapId)
     }
 
-    flows[mapId] = await dao.loadMapFlow(mapId);
+    flows[mapId] = await loadFlowDefinition(mapId);
 
     if (flows[mapId] === undefined || flows[mapId] === null) {
         return;
