@@ -2,8 +2,6 @@ class Pathfinder {
     constructor(width, height, workerCount = 2) {
         this.width = width;
         this.height = height;
-        this.grid = null;
-        this.blankGrid = [];
         this.ignored = [];
         this.pendingRequests = {};
         this.workers = [];
@@ -38,25 +36,56 @@ class Pathfinder {
 
     findPath(grid, entity, x, y) {
         return new Promise((resolve, reject) => {
+            let requestId;
             try {
                 const start = [entity.gridX, entity.gridY],
                       end = [x, y];
-
-                // Ignored entities only affect this request, never the live game grid.
-                this.grid = grid.map(row => row.slice());
-                this.applyIgnoreList_();
+                const inBounds = ([x, y]) => Number.isInteger(x) && Number.isInteger(y)
+                    && y >= 0 && y < grid.length && x >= 0 && x < grid[y].length;
+                const ignoredPositions = this.ignored.map(entity => {
+                    const moving = entity.isMoving();
+                    return moving ? [entity.nextGridX, entity.nextGridY] : [entity.gridX, entity.gridY];
+                }).filter(inBounds);
                 this.clearIgnoreList();
 
-                const requestId = this.generateUniqueId();
+                if (!inBounds(start) || !inBounds(end)) {
+                    resolve([]);
+                    return;
+                }
+                const dx = x - start[0], dy = y - start[1];
+                if (dx === 0 && dy === 0) {
+                    resolve([start]);
+                    return;
+                }
+                const walkable = position => inBounds(position) && (!grid[position[1]][position[0]]
+                    || ignoredPositions.some(([x, y]) => position[0] === x && position[1] === y));
+                if (!walkable(end)) {
+                    resolve([]);
+                    return;
+                }
+                if (Math.abs(dx) + Math.abs(dy) === 1) {
+                    resolve([start, end]);
+                    return;
+                }
+                if (Math.abs(dx) === 1 && Math.abs(dy) === 1) {
+                    const horizontal = [x, start[1]], vertical = [start[0], y];
+                    // Match A*'s north, east, south, west ordering for equal-length routes.
+                    const corners = dy < 0 || dx < 0 ? [vertical, horizontal] : [horizontal, vertical];
+                    const corner = corners.find(walkable);
+                    if (corner) {
+                        resolve([start, corner, end]);
+                        return;
+                    }
+                }
+
+                requestId = this.generateUniqueId();
                 this.pendingRequests[requestId] = resolve;
                 const worker = this.getNextWorker();
-                worker.postMessage({
-                    requestId: requestId,
-                    grid: this.grid,
-                    start: start,
-                    end: end
-                });
+                // postMessage snapshots the grid; ignored cells are cleared only in that worker copy.
+                worker.postMessage({requestId, grid, start, end, ignoredPositions});
             } catch (error) {
+                delete this.pendingRequests[requestId];
+                this.clearIgnoreList();
                 reject(error);
             }
         });
@@ -66,17 +95,6 @@ class Pathfinder {
         if (entity) {
             this.ignored.push(entity);
         }
-    }
-
-    applyIgnoreList_() {
-        this.ignored.forEach(entity => {
-            const x = entity.isMoving() ? entity.nextGridX : entity.gridX;
-            const y = entity.isMoving() ? entity.nextGridY : entity.gridY;
-
-            if (x >= 0 && y >= 0) {
-                this.grid[y][x] = 0;
-            }
-        });
     }
 
     clearIgnoreList() {
