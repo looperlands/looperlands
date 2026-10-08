@@ -29,6 +29,9 @@ jobs:
             else
               docker_call() { sudo -n docker "$@"; }
             fi
+            systemctl show looperlands --property=Type,RemainAfterExit,Restart --no-pager
+            docker_call compose version --short
+            python3 --version
             found=0
             failed=0
             for container in $(docker_call ps -q); do
