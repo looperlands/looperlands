@@ -1,10 +1,10 @@
 define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile',
-        'warrior', 'gameclient', 'audio', 'updater', 'transition',
+        'warrior', 'gameclient', 'audio', 'updater', 'transition', 'combatfeedback',
         'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'fieldeffect', 'config', 'float', 'projectile', 'tileactions',
         '../../shared/js/gametypes', '../../shared/js/altnames'],
 
     function (InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, AnimatedTile,
-              Warrior, GameClient, AudioManager, Updater, Transition,
+              Warrior, GameClient, AudioManager, Updater, Transition, CombatFeedback,
               Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, Fieldeffect, Config, Float, Projectile, TileActions) {
         var Game = Class.extend({
             init: function (app) {
@@ -63,6 +63,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                 // combat
                 this.infoManager = new InfoManager(this);
+                this.combatFeedback = new CombatFeedback(this);
 
                 // zoning
                 this.currentZoning = null;
@@ -6280,6 +6281,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             loadMap: function (mapId) {
                 var self = this;
                 this.mapId = mapId;
+                this.combatFeedback.clear();
+                this.infoManager.clear();
 
                 this.map = new Mapx(!this.renderer.upscaledRendering, this, mapId);
 
@@ -6996,6 +6999,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             },
 
             start: function () {
+                this.isStopped = false;
                 this.tick();
                 this.hasNeverStarted = false;
                 $("#background").css('background', 'none');
@@ -7007,6 +7011,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             stop: function () {
                 console.log("Game stopped.");
                 this.isStopped = true;
+                this.combatFeedback.clear();
+                this.infoManager.clear();
             },
 
             entityIdExists: function (id) {
@@ -8026,8 +8032,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                     self.client.onPlayerDamageMob(function (mobId, points) {
                         var mob = self.getEntityById(mobId);
-                        if (mob && points) {
-                            self.infoManager.addDamageInfo(points, mob.x, mob.y - 15, "inflicted");
+                        if (mob && points > 0) {
+                            self.infoManager.addDamageInfo(points, mob.x, mob.y - 15, "inflicted", mob.id);
+                            self.combatFeedback.addImpact(mob, points, self.currentTime);
                         }
                     });
 
@@ -8069,7 +8076,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             isHurt;
 
                         if (player && !player.isDead) {
-                            isHurt = points <= player.hitPoints;
+                            isHurt = points < player.hitPoints;
                             diff = points - player.hitPoints;
                             player.hitPoints = points;
 
@@ -8078,14 +8085,14 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             }
                             if (isHurt) {
                                 player.hurt();
-                                self.infoManager.addDamageInfo(diff, player.x, player.y - 15, "received");
+                                self.infoManager.addDamageInfo(diff, player.x, player.y - 15, "received", player.id);
                                 self.audioManager.playSound("hurt");
                                 self.storage.addDamage(-diff);
                                 if (self.playerhurt_callback) {
                                     self.playerhurt_callback();
                                 }
-                            } else if (!isRegen) {
-                                self.infoManager.addDamageInfo("+" + diff, player.x, player.y - 15, "healed");
+                            } else if (diff > 0 && !isRegen) {
+                                self.infoManager.addDamageInfo("+" + diff, player.x, player.y - 15, "healed", player.id);
                             }
                             self.updateBars();
                         }
@@ -8202,6 +8209,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     });
 
                     self.client.onDisconnected(function (message) {
+                        self.combatFeedback.clear();
+                        self.infoManager.clear();
                         self.app.socialChat?.disconnect();
                         self.app.eventBoard?.disconnect();
                         if (self.player) {

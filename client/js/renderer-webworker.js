@@ -336,6 +336,7 @@ onmessage = (e) => {
 
         // Restore the default composite operation
         combinedCtx.restore();
+        drawCombatFeedback(combinedCtx, e.data.combatFeedback);
 
         requestAnimationFrame(() => {
             postMessage({type: "rendered"});
@@ -931,4 +932,46 @@ function toPerc(angle) {
 
 function toRad(angle) {
     return angle * Math.PI / 180;
+}
+
+// Short pixel bursts and steady target brackets, composed above scene lighting.
+function drawCombatFeedback(ctx, feedback) {
+    if (!feedback) return;
+    ctx.save();
+    ctx.translate(-Math.round(feedback.cameraX * feedback.scale), -Math.round(feedback.cameraY * feedback.scale));
+    const scale = feedback.scale;
+    const rect = (x, y, width, height) => ctx.fillRect(
+        Math.round(x * scale), Math.round(y * scale), width * scale, height * scale);
+    const corners = (target, thickness, extension) => {
+        const {x, y, width, height} = target;
+        for (const [cx, cy, dx, dy] of [
+            [x, y, 1, 1], [x + width, y, -1, 1],
+            [x, y + height, 1, -1], [x + width, y + height, -1, -1],
+        ]) {
+            rect(cx - extension + (dx < 0 ? -4 : 0), cy - extension, 4 + extension * 2, thickness);
+            rect(cx - extension, cy - extension + (dy < 0 ? -4 : 0), thickness, 4 + extension * 2);
+        }
+    };
+    if (feedback.target) {
+        ctx.fillStyle = '#231b24';
+        corners(feedback.target, 3, 1);
+        ctx.fillStyle = '#ffd66b';
+        corners(feedback.target, 1, 0);
+    }
+    for (const impact of feedback.impacts) {
+        const progress = impact.progress;
+        const distance = 2 + Math.round(progress * 5);
+        ctx.globalAlpha = (1 - progress) * 0.85;
+        ctx.fillStyle = '#ffd66b';
+        rect(impact.x - distance - 2, impact.y, 2, 1);
+        rect(impact.x + distance, impact.y, 2, 1);
+        rect(impact.x, impact.y - distance - 2, 1, 2);
+        rect(impact.x, impact.y + distance, 1, 2);
+        if (progress < 0.35) {
+            ctx.fillStyle = '#fff2cc';
+            rect(impact.x - 1, impact.y, 3, 1);
+            rect(impact.x, impact.y - 1, 1, 3);
+        }
+    }
+    ctx.restore();
 }

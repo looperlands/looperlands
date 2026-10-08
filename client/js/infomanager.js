@@ -1,19 +1,34 @@
 
 define(function() {
+    const COMBAT_TEXT_DURATION = 1000;
 
     var InfoManager = Class.extend({
         init: function(game) {
             this.game = game;
             this.infos = {};
             this.destroyQueue = [];
+            this.nextId = 0;
+            this.damageLanes = {};
         },
     
-        addDamageInfo: function(value, x, y, type) {
+        addDamageInfo: function(value, x, y, type, entityId) {
             var time = this.game.currentTime,
-                id = time+""+Math.abs(value)+""+x+""+y,
+                id = ++this.nextId,
                 self = this,
-                info = new DamageInfo(id, value, x, y, DamageInfo.DURATION, type);
+                info = new DamageInfo(id, value, x, y, COMBAT_TEXT_DURATION, type);
         
+            if (['inflicted', 'received', 'healed'].includes(type)) {
+                const key = type + ':' + (entityId === undefined ? x + ':' + y : entityId);
+                const previous = this.damageLanes[key];
+                const lane = previous && time - previous.time < COMBAT_TEXT_DURATION ? previous.lane + 1 : 0;
+                this.damageLanes[key] = {lane: lane, time: time};
+                info.x += [-4, 4, -8, 8][lane % 4];
+                info.combat = true;
+                info.startedAt = time;
+                info.initialY = y;
+                info.reducedMotion = this.game.app.settings.getReducedMotion();
+            }
+
             info.onDestroy(function(id) {
                 self.destroyQueue.push(id);
             });
@@ -28,8 +43,17 @@ define(function() {
             });
         },
     
+        clear: function() {
+            this.infos = {};
+            this.destroyQueue = [];
+            this.damageLanes = {};
+        },
+
         update: function(time) {
             var self = this;
+            Object.keys(this.damageLanes).forEach(key => {
+                if (time - this.damageLanes[key].time >= COMBAT_TEXT_DURATION) delete this.damageLanes[key];
+            });
         
             this.forEachInfo(function(info) {
                 info.update(time);
@@ -92,6 +116,13 @@ define(function() {
         },
     
         update: function(time) {
+            if (this.combat) {
+                const progress = Math.min(1, Math.max(0, (time - this.startedAt) / this.duration));
+                this.y = this.initialY - (this.reducedMotion ? 0 : Math.round(progress * 12));
+                this.opacity = 1 - progress;
+                if (progress >= 1) this.destroy();
+                return;
+            }
             if(this.isTimeToAnimate(time)) {
                 this.lastTime = time;
                 this.tick();

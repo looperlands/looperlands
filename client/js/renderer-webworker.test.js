@@ -151,3 +151,26 @@ test('continues handling messages when worker fonts are unsupported', () => {
     expect(worker.FontFace).not.toHaveBeenCalled();
     expect(worker.log).not.toHaveBeenCalled();
 });
+
+function combatRenderer() {
+    return vm.runInNewContext(`${source}\n(drawCombatFeedback);`, {});
+}
+
+test.each([1, 2, 3])('combat overlays use pixel-aligned world coordinates and restore context at scale %s', scale => {
+    const draw = combatRenderer();
+    const ctx = {save: jest.fn(), restore: jest.fn(), translate: jest.fn(), fillRect: jest.fn()};
+    draw(ctx, {cameraX: 20.25, cameraY: 40.25, scale,
+        target: {x: 32, y: 64, width: 20, height: 20},
+        impacts: [{x: 40, y: 72, progress: 0.5}]});
+    expect(ctx.translate).toHaveBeenCalledWith(-Math.round(20.25 * scale), -Math.round(40.25 * scale));
+    expect(ctx.fillRect).toHaveBeenCalled();
+    for (const call of ctx.fillRect.mock.calls) expect(call.every(Number.isInteger)).toBe(true);
+    expect(ctx.save).toHaveBeenCalledTimes(1);
+    expect(ctx.restore).toHaveBeenCalledTimes(1);
+});
+
+test('combat renderer accepts absent feedback from older clients', () => {
+    const ctx = {save: jest.fn()};
+    expect(() => combatRenderer()(ctx, undefined)).not.toThrow();
+    expect(ctx.save).not.toHaveBeenCalled();
+});

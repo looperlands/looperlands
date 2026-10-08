@@ -1123,10 +1123,17 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc'],
                     scene.darkness = 0;
                 }
     
+                const combatFeedback = {
+                    ...(!$("#minigame").hasClass("active")
+                        ? this.game.combatFeedback.getFrame(this.game.currentTime)
+                        : {target: null, impacts: []}),
+                    cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale
+                };
                 if(this.game.player) {
                     this.worker.postMessage({
                         type: "render",
                         renderData: renderData,
+                        combatFeedback: combatFeedback,
                         player: {x: this.game.player.x, y: this.game.player.y},
                         serverTime: this.game.serverTime,
                         mapId: this.game.map.mapId,
@@ -1136,6 +1143,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc'],
                     this.worker.postMessage({
                         type: "render",
                         renderData: renderData,
+                        combatFeedback: combatFeedback,
                         player: {x: 0, y: 0},
                         serverTime: this.game.serverTime,
                         mapId: this.game.map.mapId,
