@@ -13,9 +13,6 @@ define(function() {
             var smoothing = typeof window !== 'undefined'
                 ? new URLSearchParams(window.location.search).get('cameraSmooth') : null;
             this.followWindow = smoothing === null || !isFinite(Number(smoothing)) ? 40 : Math.max(0, Number(smoothing));
-            var easing = typeof window !== 'undefined'
-                ? new URLSearchParams(window.location.search).get('cameraEase') : null;
-            this.followHalfLife = easing === null || !isFinite(Number(easing)) ? 35 : Math.max(0, Number(easing));
             this.followSamples = [];
             this.rescale();
             this.checkBounds();
@@ -123,19 +120,11 @@ define(function() {
                         sumX += sample.x;
                         sumY += sample.y;
                     });
-                    var targetX = sumX / this.followSamples.length,
-                        targetY = sumY / this.followSamples.length,
-                        amount = this.followHalfLife > 0
-                            ? 1 - Math.pow(0.5, Math.max(0, now - this.lastFollowTime) / this.followHalfLife) : 1;
-                    this.followX += (targetX - this.followX) * amount;
-                    this.followY += (targetY - this.followY) * amount;
-                    this.setPosition(Math.round(this.followX), Math.round(this.followY));
+                    this.setPosition(Math.round(sumX / this.followSamples.length),
+                        Math.round(sumY / this.followSamples.length));
                 } else {
                     this.followSamples = [{x: x, y: y, time: now}];
-                    this.followX = x;
-                    this.followY = y;
                 }
-                this.lastFollowTime = now;
             }
         },
 
