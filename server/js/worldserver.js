@@ -20,6 +20,7 @@ var cls = require("./lib/class"),
     discord = require("./discord.js"),
     Fieldeffect = require('./fieldeffect');
 const quests = require("./quests/quests");
+const {NpcBehavior, loadConfig: loadNpcBehaviorConfig} = require('./npcbehavior');
 
 const WorldEventBroker = require("./flows/worldeventbroker.js");
 const {cache} = require("express/lib/application");
@@ -278,6 +279,12 @@ module.exports = World = cls.Class.extend({
             // Spawn static entities
             self.spawnStaticEntities();
 
+            const npcBehaviorConfig = loadNpcBehaviorConfig(self.id.replace(/^world_/, ''));
+            if (npcBehaviorConfig) {
+                self.npcBehavior = new NpcBehavior(self, npcBehaviorConfig, self.server.npcMemory);
+                if (self.id === 'world_main') self.lanternPicnic = new (require('../npc-behaviors/lantern-picnic-scene'))(self);
+            }
+
             if (self.server.tileActionsController) {
                 self.server.tileActionsController.loadPersistedPlots(self.id.replace(/^world_/, ""), self)
                     .catch((error) => console.error("Could not load persisted farm plots", error));
@@ -296,6 +303,8 @@ module.exports = World = cls.Class.extend({
             if (self.getPlayerCount() < 1) {
                 return;
             }
+            if (self.npcBehavior) self.npcBehavior.tick();
+            self.lanternPicnic?.tick();
             self.processGroups();
             self.processQueues();
 

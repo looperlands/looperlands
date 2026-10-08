@@ -1137,7 +1137,8 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc'],
                         player: {x: this.game.player.x, y: this.game.player.y},
                         serverTime: this.game.serverTime,
                         mapId: this.game.map.mapId,
-                        scene: scene
+                        scene: scene,
+                        picnic: this.game.worldAmbience?.config?.picnic || this.game.worldAmbience?.config?.previewPicnic || null
                     });
                 } else {
                     this.worker.postMessage({
@@ -1147,7 +1148,8 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc'],
                         player: {x: 0, y: 0},
                         serverTime: this.game.serverTime,
                         mapId: this.game.map.mapId,
-                        scene: scene
+                        scene: scene,
+                        picnic: this.game.worldAmbience?.config?.picnic || this.game.worldAmbience?.config?.previewPicnic || null
                     });
                 }
             }

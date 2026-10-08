@@ -61,6 +61,8 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             this.handlers[Types.Messages.ANNOUNCEMENT] = this.receiveAnnouncement;
             this.handlers[Types.Messages.INDICATOR] = this.receiveIndicatorUpdate;
             this.handlers[Types.Messages.TILESTAGE] = this.receiveTileStage;
+            this.handlers[Types.Messages.NPC_STATE] = this.receiveNpcState;
+            this.handlers[Types.Messages.WORLD_AMBIENCE] = this.receiveWorldAmbience;
 
             this.useBison = false;
             this.enable();
@@ -287,6 +289,8 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
 
                 if(Types.isNpc(kind)) {
                     character.setShowIndicator(data[5]);
+                    character.applyBehaviorState(data[6]);
+                    orientation = data[6]?.orientation;
                 }
 
                 if(this.spawn_character_callback) {
@@ -351,7 +355,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
                 text = data[2];
         
             if(this.chat_callback) {
-                this.chat_callback(id, text);
+                this.chat_callback(id, text, data[3]);
             }
         },
 
@@ -544,6 +548,17 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
               this.animate_callback(entityId, animation);
           }
         },
+
+        receiveNpcState: function(data) {
+            if (this.npcState_callback) this.npcState_callback(data[1], data[2]);
+        },
+
+        receiveWorldAmbience: function(data) {
+            if (this.worldAmbience_callback) this.worldAmbience_callback(data[1]);
+        },
+
+        onNpcState: function(callback) { this.npcState_callback = callback; },
+        onWorldAmbience: function(callback) { this.worldAmbience_callback = callback; },
 
         receiveSpawnFloat: function(data) {
             let id = data[1],

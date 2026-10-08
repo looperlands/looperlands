@@ -14,6 +14,7 @@ module.exports = Npc = Entity.extend({
             state = [];
 
         state.push(this.showIndicator);
+        if (this.behaviorState) state.push(this.behaviorState);
 
         return basestate.concat(state);
     },

@@ -60,9 +60,10 @@ class PlayerQuestEventConsumer extends PlayerEventConsumer {
         }
         let changedQuests = []
 
-        for (let quest of inProgressQuests) {
-            let questKey = quest.id || quest.questKey;
-            quest = quests.questsByID[questKey];
+        for (const saved of inProgressQuests) {
+            const questKey = saved.questKey || saved.id;
+            const definition = quests.questsByID[questKey];
+            const quest = definition && {...definition, ...(saved.completed === true ? {completed: true} : {})};
             if(!quest) {
                 continue;
             }
@@ -75,7 +76,7 @@ class PlayerQuestEventConsumer extends PlayerEventConsumer {
                     this.completeQuest(event.playerCache, questKey, quest);
                     changedQuests.push(quest);
                 } else {
-                    quest.completed = true;
+                    saved.completed = true;
                 }
             }
         }
@@ -96,7 +97,8 @@ class PlayerQuestEventConsumer extends PlayerEventConsumer {
             playerCache.gameData.quests[quests.STATES.COMPLETED].push(questInCacheFormat);
         }
 
-        playerCache.gameData.quests[quests.STATES.IN_PROGRESS] = playerCache.gameData.quests[quests.STATES.IN_PROGRESS].filter(q => (q.questKey || q.id) !== questKey);
+        playerCache.gameData.quests[quests.STATES.IN_PROGRESS] = (playerCache.gameData.quests[quests.STATES.IN_PROGRESS] || [])
+            .filter(q => (q.questKey || q.id) !== questKey);
 
         if (quest.rental) {
             platformClient.getFreeRental(quest.rental, playerCache.walletId);

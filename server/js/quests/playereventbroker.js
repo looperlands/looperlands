@@ -119,12 +119,14 @@ class PlayerEventBroker {
         playerCache.gameData = gameData;
         this.cache.set(sessionId, playerCache);
         PlayerEventBroker.dispatchEvent(PlayerEventBroker.Events.KILL_MOB, sessionId, this.player, playerCache, { mob: mob });
+        this.player.server.npcBehavior?.react('kill', this.player, {mob});
     }
 
     async questCompleteEvent(quest, xpGained) {
       let sessionId = this.player.sessionId;
       let playerCache = this.cache.get(sessionId);
       PlayerEventBroker.dispatchEvent(PlayerEventBroker.Events.QUEST_COMPLETED, sessionId, this.player, playerCache, { quest: quest, xp: xpGained });
+      this.player.server.npcBehavior?.react('quest', this.player, {quest});
     }
 
     async spawnEvent(self, checkpointId) {

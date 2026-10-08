@@ -26,6 +26,7 @@ const { SocialChat } = require('./socialchat');
 const {EventEquipment, effectiveLevel, effectiveLevelInfo} = require('./eventequipment');
 const {EventBoardController} = require('./eventboardcontroller');
 const { ChatHistory, DEFAULT_RETENTION_DAYS } = require('./chathistory');
+const { NpcMemory } = require('./npcmemory');
 const path = require('path');
 const quests = require("./quests/quests.js");
 const Lakes = require("./lakes.js");
@@ -37,6 +38,7 @@ const platform = require('./looperlandsplatformclient.js');
 const minigame = require('../apps/minigame.js');
 const MinigameController = require('./minigamecontroller.js');
 const DialogueController = require('./dialoguecontroller.js');
+const {npcForPlayer} = require('./npcinteraction');
 const TileActionsController = require('./tileactionscontroller.js');
 const ActivityTracker = require('./activitytracker');
 const {buildActivityCatalog} = require('./activitycatalog');
@@ -65,9 +67,9 @@ function extractDetails(inputUrl) {
     let port;
 
     if (protocol === 'http:') {
-        port = 8000;
+        port = Number(parsedUrl.port) || 8000;
     } else if (protocol === 'https:') {
-        port = 443;
+        port = Number(parsedUrl.port) || 443;
     }
 
     protocol = protocol.replace(':', '');
@@ -179,6 +181,7 @@ WS.socketIOServer = Server.extend({
             this.activity.close();
             process.kill(process.pid, signal);
         });
+        this.npcMemory = new NpcMemory(process.env.NPC_MEMORY_FILE || path.resolve(__dirname, '../../data/chat/npcs/memory.json'));
         const history = new ChatHistory(
             process.env.CHAT_HISTORY_FILE || path.resolve(__dirname, '../../data/chat/history.json'),
             Number(process.env.CHAT_HISTORY_RETENTION_DAYS ?? DEFAULT_RETENTION_DAYS)
@@ -187,6 +190,7 @@ WS.socketIOServer = Server.extend({
         chat.setHistory(history);
         var express = require('express');
         var app = express();
+        this.app = app;
         app.use("/", express.static(__dirname + "/../../client-build"));
 
         let httpInclude = require('http');
@@ -919,8 +923,15 @@ WS.socketIOServer = Server.extend({
                 return;
             }
 
-            if (dialogueController.hasDialogueTree(sessionData.mapId, npcId)) {
-                let node = dialogueController.processDialogueTree(sessionData.mapId, npcId, cache, sessionId)
+            const world = self.worldsMap[sessionData.mapId];
+            const player = world?.getPlayerById(sessionData.entityId);
+            const npc = npcForPlayer(world, player, npcId, req.query.entityId);
+            if (!npc) return res.status(409).json({error: 'Move closer to this NPC to talk.'});
+            const npcKey = npc.behaviorState?.key || 'placed:' + npc.id;
+            const behaviorDialogue = world.npcBehavior?.interact(player, npcId, npc.id);
+
+            if (dialogueController.hasDialogueTree(sessionData.mapId, npcId, npcKey)) {
+                let node = dialogueController.processDialogueTree(sessionData.mapId, npcId, cache, sessionId, npcKey)
                 if (node) {
                     res.status(202).json(node)
                     return
@@ -932,7 +943,7 @@ WS.socketIOServer = Server.extend({
             if (questData) {
                 self.worldsMap[sessionData.mapId].npcTalked(npcId, questData.text, sessionData)
             }
-            res.status(202).json(questData);
+            res.status(202).json(questData || behaviorDialogue || "");
         });
 
         app.get("/session/:sessionId/npc/:npcId/dialogue/:gotoNode", async (req, res) => {
@@ -950,9 +961,12 @@ WS.socketIOServer = Server.extend({
                 return;
             }
 
-            if (dialogueController.hasDialogueTree(sessionData.mapId, npcId)) {
-                dialogueController.goto(sessionData.mapId, npcId, gotoNode, cache, sessionId)
-            }
+            const world = self.worldsMap[sessionData.mapId];
+            const player = world?.getPlayerById(sessionData.entityId);
+            const npc = npcForPlayer(world, player, npcId, req.query.entityId);
+            if (!npc) return res.sendStatus(409);
+            const npcKey = npc.behaviorState?.key || 'placed:' + npc.id;
+            if (!dialogueController.goto(sessionData.mapId, npcId, gotoNode, cache, sessionId, npcKey)) return res.sendStatus(409);
 
             res.status(200).json({});
         });
