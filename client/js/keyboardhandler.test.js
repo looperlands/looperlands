@@ -238,3 +238,23 @@ test('dialogue captures Enter and arrows before chat or movement, while typing r
     document.activeElement = null; panels.clear(); handler.handleConversationKey(event('Enter'));
     expect(handler.app.handleChoiceKeyboardInput).toHaveBeenCalledTimes(2);
 });
+
+
+test('touch drag continues across tiles without restarting the path and stops after release', async () => {
+    const {game, player, handler, requestPath, stopped, frame} = createMovementGame();
+    game.touchListener = {direction: {dx: 1, dy: 0}};
+    handler.handleMovement();
+    await Promise.resolve();
+    for (let i = 0; i < 40; i++) {
+        handler.handleMovement();
+        frame();
+        expect(player.isMoving()).toBe(true);
+        expect(player.currentAnimation.name).toBe('walk_right');
+    }
+    expect(player.gridX).toBeGreaterThanOrEqual(6);
+    expect(requestPath).toHaveBeenCalledTimes(1);
+    game.touchListener.direction = {dx: 0, dy: 0};
+    for (let i = 0; i < 10; i++) frame();
+    expect(player.isMoving()).toBe(false);
+    expect(stopped).toHaveBeenCalledTimes(1);
+});

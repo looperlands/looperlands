@@ -7338,11 +7338,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 msg += " to " + entityName;
                             }
 
-                            if (self.gamepadListener.isActive()) {
-                                msg += " [Left Stick Button]";
-                            } else {
-                                msg += " [E]";
-                            }
+                            msg = self.getInteractionPrompt(msg);
 
                             // Destroy the previous 'to talk' bubble if it exists
                             if (self.lastActionBubbleId) self.destroyBubble(self.lastActionBubbleId);
@@ -8598,6 +8594,12 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 return this.tileActions.findCurrentStage(action);
             },
 
+            getInteractionPrompt: function (label) {
+                const touch = this.renderer.mobile || this.renderer.tablet || this.touchListener?.hasTouchInput;
+                const hint = this.gamepadListener.isActive() ? 'Left Stick Button' : touch ? 'Tap' : 'E';
+                return '<button type="button" class="interaction-prompt">' + label + ' [' + hint + ']</button>';
+            },
+
             showTileActionBubble: function (action, stage) {
                 if (!action || !stage) {
                     return;
@@ -8608,11 +8610,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     msg += "...";
                 }
 
-                if (this.gamepadListener.isActive()) {
-                    msg += " [Left Stick Button]";
-                } else {
-                    msg += " [E]";
-                }
+                msg = this.getInteractionPrompt(msg);
 
                 if (this.lastActionBubbleId && this.lastActionBubbleId !== action.id) {
                     this.destroyBubble(this.lastActionBubbleId);

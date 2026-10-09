@@ -115,6 +115,7 @@ body {
 #canvas, #bar-container, #bubbles, #chatbox, #canvasborder, #foreground, #background, #high-tiles, footer, #container, #achievement-notification {user-select:none;-moz-user-select:none;-webkit-user-select:none;-o-user-select:none;-ms-user-select:none;}
 
 .started #canvas {cursor:none;}
+#canvas {touch-action:none;}
 
 #foreground {
     -webkit-tap-highlight-color:rgba(0,0,0,0);
@@ -983,6 +984,9 @@ body.inventory .inventorySidebar {
     border-radius: 12px;
     image-rendering: pixelated;
 }
+
+#bubbles .interaction-prompt {pointer-events:auto;cursor:pointer;touch-action:manipulation;min-height:44px;padding:4px 8px;border:0;background:none;color:inherit;font:inherit;}
+#bubbles .interaction-prompt:focus-visible {outline:2px solid #fcda5c;}
 
 #bubbles a {pointer-events:auto;text-decoration:none;color:#fcda5c;}
 

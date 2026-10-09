@@ -287,7 +287,7 @@ define(['jquery', 'app'], function($, App) {
                 app.initEquipmentIcons();
                 keyboardHandler = new KeyBoardHandler(game, app);
                 game.keyboardHandler = keyboardHandler;
-                touchListener = new TouchListener(game);
+                game.touchListener = new TouchListener(game);
                 game.gamepadListener = new GamePadListener(game);
     		});
     		
@@ -369,25 +369,21 @@ define(['jquery', 'app'], function($, App) {
             $('#nameinput').val('');
     		$('#chatbox').attr('value', '');
     		
-        	if(game.renderer.mobile || game.renderer.tablet) {
-                $('#foreground').bind('touchstart', function(event) {
-                    app.center();
-                    app.setMouseCoordinates(event.originalEvent.touches[0]);
-                	game.click();
-                	app.hideWindows();
-                });
-            } else {
+            app.hideWindows();
+            $('#foreground').click(function(event) {
+                app.center();
+                app.setMouseCoordinates(event);
+                game.click();
                 app.hideWindows();
-                $('#foreground').click(function(event) {
-                    app.center();
-                    app.setMouseCoordinates(event);
-                    if(game) {
-                	    game.click();
-                	}
-                	app.hideWindows();
-                    // $('#chatinput').focus();
-                });
-            }
+            });
+
+            $('#bubbles').on('click', '.interaction-prompt', function(event) {
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                if (game.keyboardHandler.movementIsBlocked()) return;
+                game.touchListener.reset();
+                game.interact();
+            });
 
             // Zoom game area to fill 95% of window size.
             window.onresize = () => {

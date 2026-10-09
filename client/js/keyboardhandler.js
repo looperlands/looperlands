@@ -147,9 +147,10 @@ class KeyBoardHandler {
     }
 
     getMovementDirection() {
+        const touch = this.game.touchListener?.direction || { dx: 0, dy: 0 };
         return {
-            dx: Math.sign(this.keys.d + this.keys.arrowright - this.keys.a - this.keys.arrowleft),
-            dy: Math.sign(this.keys.s + this.keys.arrowdown - this.keys.w - this.keys.arrowup),
+            dx: Math.sign(touch.dx + this.keys.d + this.keys.arrowright - this.keys.a - this.keys.arrowleft),
+            dy: Math.sign(touch.dy + this.keys.s + this.keys.arrowdown - this.keys.w - this.keys.arrowup),
         };
     }
 
