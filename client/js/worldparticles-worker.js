@@ -38,6 +38,17 @@
         context.fillRect(x - radius, y - radius, radius * 2, radius * 2);
     }
 
+    // A small shaded underside keeps pale pixels readable on sunlit terrain.
+    // Fade it with daylight so night effects retain their softer appearance.
+    function particleCore(context, x, y, width, height, scale, color, opacity, shade, daylight) {
+        if (daylight > 0) {
+            context.fillStyle = 'rgba(' + shade + ',' + daylight * 0.55 + ')';
+            context.fillRect(x - scale / 2, y, width + scale, height + scale / 2);
+        }
+        context.fillStyle = 'rgba(' + color + ',' + opacity + ')';
+        context.fillRect(x, y, width, height);
+    }
+
     function draw(context, point, type, elapsed, daylight) {
         const {x, y, scale, seed} = point;
         const visibility = 0.35 + daylight * 0.65;
@@ -57,36 +68,46 @@
                 context.save();
                 context.translate(x, y);
                 context.rotate(Math.sin(elapsed * 0.9 + seed) * 0.8 + seed);
-                context.fillStyle = 'rgba(171,158,72,' + visibility * 0.5 + ')';
+                if (daylight > 0) {
+                    context.fillStyle = 'rgba(65,70,34,' + daylight * 0.55 + ')';
+                    context.fillRect(-2 * scale, 0, 4 * scale, scale);
+                    context.fillRect(-scale, -scale / 2, 2 * scale, 2 * scale);
+                }
+                context.fillStyle = 'rgba(171,158,72,' + (visibility * 0.5 + daylight * 0.3) + ')';
                 context.fillRect(-2 * scale, -scale / 2, 4 * scale, scale);
                 context.fillRect(-scale, -scale, 2 * scale, 2 * scale);
                 context.restore();
                 break;
             case 'dust':
                 halo(context, x, y, 10 * scale, '205,169,111', visibility * flutter * 0.13);
-                context.fillStyle = 'rgba(223,192,135,' + visibility * 0.27 + ')';
-                context.fillRect(x, y, scale, scale);
+                particleCore(context, x, y, scale, scale, scale, '223,192,135',
+                    visibility * 0.27 + daylight * 0.35, '104,76,43', daylight);
                 break;
             case 'gusts':
                 context.save();
                 context.translate(x, y);
                 context.rotate(0.15);
-                context.fillStyle = 'rgba(225,199,155,' + visibility * flutter * 0.14 + ')';
+                if (daylight > 0) {
+                    context.fillStyle = 'rgba(104,76,43,' + daylight * flutter * 0.18 + ')';
+                    context.fillRect(-8 * scale, scale / 2, 16 * scale, scale / 2);
+                }
+                context.fillStyle = 'rgba(225,199,155,' + (visibility * flutter * 0.14 + daylight * 0.16) + ')';
                 context.fillRect(-8 * scale, 0, 16 * scale, scale / 2);
                 context.restore();
                 break;
             case 'spray':
                 halo(context, x, y, 5 * scale, '184,226,236', visibility * flutter * 0.1);
-                context.fillStyle = 'rgba(207,239,246,' + visibility * flutter * 0.4 + ')';
-                context.fillRect(x, y, 2 * scale, scale);
+                particleCore(context, x, y, 2 * scale, scale, scale, '207,239,246',
+                    visibility * flutter * 0.4 + daylight * 0.35, '48,102,125', daylight);
                 break;
             case 'embers': {
                 const glow = flutter * (0.25 + (1 - daylight) * 0.45);
                 context.globalCompositeOperation = 'lighter';
                 halo(context, x, y, 6 * scale, '255,132,57', glow * 0.25);
-                context.fillStyle = 'rgba(255,186,91,' + glow + ')';
-                context.fillRect(x, y, scale, 2 * scale);
                 context.globalCompositeOperation = 'source-over';
+                // Additive glow washes out on bright ground; keep a solid ember core.
+                particleCore(context, x, y, scale, 2 * scale, scale, '255,186,91',
+                    flutter * (0.7 + daylight * 0.3), '127,48,27', daylight);
                 break;
             }
             case 'mist':
@@ -96,8 +117,9 @@
             case 'sand':
             case 'ash': {
                 const color = {pollen: '222,218,169', sand: '235,211,160', ash: '183,172,159'}[type];
-                context.fillStyle = 'rgba(' + color + ',' + visibility * flutter * 0.35 + ')';
-                context.fillRect(x, y, scale, scale);
+                const shade = {pollen: '88,91,48', sand: '104,76,43', ash: '73,61,58'}[type];
+                particleCore(context, x, y, scale, scale, scale, color,
+                    visibility * flutter * 0.35 + daylight * 0.38, shade, daylight);
                 break;
             }
         }
