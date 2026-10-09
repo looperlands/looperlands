@@ -79,3 +79,35 @@ test('atomic farming requires a revision and never falls back to legacy writes o
     expect(s.dao.saveFarmPlot).not.toHaveBeenCalled();
     expect(s.dao.updateResourceBalance).not.toHaveBeenCalled();
 });
+test('planting reports missing seeds and logs the upstream rejection without credentials', async () => {
+    const s = setup();
+    await s.execute();
+    const error = Object.assign(new Error('insufficient_items'), {code: 'insufficient_items',
+        cause: {response: {status: 409, data: {code: 'insufficient_items'}},
+            config: {headers: {'X-Api-Key': 'secret'}}}});
+    s.dao.commitFarmTransaction.mockRejectedValue(error);
+    const log = jest.spyOn(console, 'error').mockImplementation(() => {});
+    try {
+        expect((await s.execute('M88NLETTUCE')).success).toBe(false);
+        const details = JSON.parse(log.mock.calls[0][1]);
+        expect(details).toMatchObject({status: 409, platformCode: 'insufficient_items'});
+        expect(log.mock.calls[0][1]).not.toContain('secret');
+        expect(JSON.stringify(s.world.sendNotifications.mock.calls)).toContain('enough seeds');
+        expect(s.durable.plot.state).toBe('prepared');
+        expect(s.inventory[Types.Entities.M88NSEEDS]).toBe(5);
+    } finally {log.mockRestore();}
+});
+test('a failed local XP refresh cannot reject a durably committed planting', async () => {
+    const s = setup();
+    await s.execute();
+    s.world.players[1].applyPersistedExperience.mockRejectedValueOnce(new Error('session disconnected'));
+    const log = jest.spyOn(console, 'error').mockImplementation(() => {});
+    try {
+        expect((await s.execute('M88NLETTUCE')).success).toBe(true);
+        expect(s.durable.plot.state).toBe('planted');
+        expect(s.inventory[Types.Entities.M88NSEEDS]).toBe(4);
+        expect(s.session.gameData.items[Types.Entities.M88NSEEDS]).toBe(4);
+        expect(log).toHaveBeenCalledWith('[tileStage.duckville] committed farming XP refresh failed', expect.any(String));
+        expect(JSON.stringify(s.world.sendNotifications.mock.calls)).not.toContain('Could not');
+    } finally {log.mockRestore();}
+});

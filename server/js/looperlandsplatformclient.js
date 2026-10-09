@@ -301,6 +301,7 @@ class LooperLandsPlatformClient {
                 if (status >= 400 && status < 500) {
                     const error = new Error(cause.response?.data?.code || 'farm_transaction_rejected');
                     error.code = error.message;
+                    error.cause = cause;
                     throw error;
                 }
                 if (attempt === 1) {

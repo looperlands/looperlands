@@ -13,6 +13,14 @@ test('definite conflicts do not retry or become a legacy inventory write', async
     await expect(client(post).commitFarmTransaction(request)).rejects.toMatchObject({code: 'plot_changed'});
     expect(post).toHaveBeenCalledTimes(1);
 });
+test('validation failures retain safe upstream diagnostics through the wrapped error', async () => {
+    const cause = {response: {status: 400, data: {code: 'invalid_farm_transaction', message: 'Invalid items entry'}}};
+    const post = jest.fn().mockRejectedValue(cause);
+    await expect(client(post).commitFarmTransaction(request)).rejects.toMatchObject({
+        code: 'invalid_farm_transaction', cause,
+    });
+    expect(post).toHaveBeenCalledTimes(1);
+});
 test.each([{requestId: 'wrong'}, {revision: 5}, {quantities: {'123': -1}}, {plot: {mapId: 'other'}}])('malformed receipts remain unconfirmed (%s)', async invalid => {
     const post = jest.fn().mockResolvedValue({data: {...receipt, ...invalid}});
     await expect(client(post).commitFarmTransaction(request)).rejects.toMatchObject({code: 'farm_transaction_pending'});

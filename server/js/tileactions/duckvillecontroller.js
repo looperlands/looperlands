@@ -182,9 +182,23 @@ class DuckvilleTileActionsController {
                 tileAction,
                 item,
                 message: error?.message,
+                status: error?.cause?.response?.status || error?.response?.status,
+                platformCode: error?.cause?.response?.data?.code || error?.response?.data?.code,
+                platformMessage: error?.cause?.response?.data?.message || error?.response?.data?.message,
                 stack: error?.stack,
             }));
-            this.notifyPlayer(world, nftId, "Something went wrong while tending this plot.");
+            const messages = {
+                insufficient_items: "You no longer have enough seeds or supplies for this action. Refresh your inventory and try again.",
+                missing_tool: "You no longer have the required tool for this action.",
+                plot_changed: "This plot changed. Check its current action and try again.",
+                crop_not_ready: "This crop is not ready to harvest yet.",
+                not_plot_owner: "Only the planter can harvest this crop right now.",
+                farm_transaction_pending: "Could not confirm this farming action. Check the plot before trying again.",
+                inventory_unavailable: "Your inventory could not be saved. Please try again shortly.",
+            };
+            this.notifyPlayer(world, nftId, messages[error?.code || error?.message] ||
+                (expectedStage === "plant" ? "Could not save the planted seed. Please try again shortly." :
+                    "Could not save this farming action. Please try again shortly."));
             return { success: false };
         } finally {
             delete this.plotLocks[lockKey];
@@ -611,7 +625,16 @@ class DuckvilleTileActionsController {
             this.cache.set(key, session);
         }
         const player = this.getPlayer(world, nftId);
-        if (player?.applyPersistedExperience) await player.applyPersistedExperience(receipt.xp);
+        if (player?.applyPersistedExperience) {
+            try {
+                await player.applyPersistedExperience(receipt.xp);
+            } catch (error) {
+                // The receipt already committed the plot and inventory. A local XP refresh cannot undo it.
+                console.error("[tileStage.duckville] committed farming XP refresh failed", JSON.stringify({
+                    nftId, map, action, requestId, message: error?.message,
+                }));
+            }
+        }
         return {...this.success(world, nftId, message), activity: {action: tileAction.name, stage: action,
             target: context.crop || receipt.plot?.crop || '*', quantity: context.quantity || 1, x: tileAction.gridX, y: tileAction.gridY}};
     }
