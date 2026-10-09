@@ -174,3 +174,23 @@ test('combat renderer accepts absent feedback from older clients', () => {
     expect(() => combatRenderer()(ctx, undefined)).not.toThrow();
     expect(ctx.save).not.toHaveBeenCalled();
 });
+
+test.each([0, 0.5, 0.9])('impacts keep a contrasting border while fading at progress %s', progress => {
+    const pixels = [];
+    const ctx = {save() {}, restore() {}, translate() {},
+        fillRect(x, y, width, height) {
+            pixels.push({x, y, width, height, color: this.fillStyle, alpha: this.globalAlpha});
+        }};
+    combatRenderer()(ctx, {cameraX: 0, cameraY: 0, scale: 2,
+        impacts: [{x: 40, y: 72, progress}]});
+    for (const core of pixels.filter(pixel => pixel.color === '#ffb13b')) {
+        const border = pixels.find(pixel => pixel.color === '#593526' &&
+            pixel.x < core.x && pixel.y < core.y &&
+            pixel.x + pixel.width > core.x + core.width &&
+            pixel.y + pixel.height > core.y + core.height);
+        expect(border).toBeDefined();
+        expect(border.alpha).toBeCloseTo(1 - progress);
+        expect(core.alpha).toBe(border.alpha);
+    }
+    expect(pixels.filter(pixel => pixel.color === '#ffb13b')).toHaveLength(4);
+});

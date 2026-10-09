@@ -981,6 +981,8 @@ function drawCombatFeedback(ctx, feedback) {
         for (const [dx, dy] of IMPACT_RAYS) {
             const x = impact.x + Math.round(dx * distance) - 1;
             const y = impact.y + Math.round(dy * distance) - 1;
+            ctx.fillStyle = '#593526';
+            rect(x - 1, y - 1, size + 2, size + 2);
             ctx.fillStyle = '#ffb13b';
             rect(x, y, size, size);
             ctx.fillStyle = '#fff2bf';
@@ -988,6 +990,9 @@ function drawCombatFeedback(ctx, feedback) {
         }
         if (progress < 0.25) {
             ctx.globalAlpha = 0.85 * (1 - progress / 0.25);
+            ctx.fillStyle = '#593526';
+            rect(impact.x - 4, impact.y - 2, 9, 5);
+            rect(impact.x - 2, impact.y - 4, 5, 9);
             ctx.fillStyle = '#fff2bf';
             rect(impact.x - 3, impact.y - 1, 7, 3);
             rect(impact.x - 1, impact.y - 3, 3, 7);

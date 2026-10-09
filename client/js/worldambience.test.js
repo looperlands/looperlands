@@ -147,3 +147,15 @@ test('area effect layers stay in the map worker and clip to scene bounds', () =>
     expect(context.rect).toHaveBeenCalledWith(-64, -32, 960, 448); expect(context.fillRect).toHaveBeenCalled();
     expect(document.createElement).not.toHaveBeenCalled();
 });
+
+test.each(['leaves', 'dust', 'spray', 'embers', 'pollen', 'sand', 'ash', 'gusts'])(
+    '%s remains visible in full daylight and respects reduced motion', type => {
+        const {render, context} = setup();
+        const state = {effects: [{type, count: 4}], bounds: {x: 0, y: 0, width: 480, height: 224}};
+        render(state, 0, 0, 2, 20 * 60000);
+        expect(context.fillRect).toHaveBeenCalled();
+        expect(context.clip).toHaveBeenCalledTimes(1);
+        context.fillRect.mockClear();
+        render({...state, reducedMotion: true}, 0, 0, 2, 20 * 60000);
+        expect(context.fillRect).not.toHaveBeenCalled();
+    });
