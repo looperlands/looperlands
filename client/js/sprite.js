@@ -16,7 +16,8 @@ define(['jquery', 'animation', 'sprites'], function ($, Animation, sprites) {
 					this.baseImageURL = 'img/';
 				}
 				else {
-					this.baseImageURL = 'https://cdn.jsdelivr.net/gh/balkshamster/looperlands@main/client/img/';
+					// Avoid the jsDelivr GitHub proxy: denied downloads block game startup.
+					this.baseImageURL = 'https://raw.githubusercontent.com/looperlands/looperlands/main/client/img/';
 				}
 				this.loadJSON(sprites[name]);
 			}
@@ -104,12 +105,12 @@ define(['jquery', 'animation', 'sprites'], function ($, Animation, sprites) {
 
 			if (!self.id.startsWith("NFT_") || this.useWebworker === false) {
 				this.image = new Image();
-				this.image.src = this.filepath;
 				this.image.crossOrigin = "Anonymous";
 				this.image.onload = function () {
 					self.sendToWorker();
 					self.isLoaded = true;
 				};
+				this.image.src = this.filepath;
 			} else {
 				this.isLoaded = true;
 				self.sendToWorker();
