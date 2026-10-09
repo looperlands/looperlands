@@ -706,6 +706,15 @@ module.exports = Player = Character.extend({
         }
     },
 
+    // Farming XP is already committed by the platform; never enqueue it again.
+    applyPersistedExperience: async function (xp) {
+        const session = this.server.server.cache.get(this.sessionId);
+        if (!session || !Number.isSafeInteger(xp)) return;
+        session.xp = Math.max(session.xp, xp + this.accumulatedExperience);
+        this.server.server.cache.set(this.sessionId, session);
+        await this.handleExperience(0);
+    },
+
     syncExperience: async function () {
         try {
             await syncExperience(
@@ -715,7 +724,7 @@ module.exports = Player = Character.extend({
                 xp => {
                     const session = this.server.server.cache.get(this.sessionId);
                     if (session !== undefined) {
-                        session.xp = xp;
+                        session.xp = Math.max(session.xp, xp);
                         this.server.server.cache.set(this.sessionId, session);
                     }
                 }

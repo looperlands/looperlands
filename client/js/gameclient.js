@@ -61,6 +61,7 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
             this.handlers[Types.Messages.ANNOUNCEMENT] = this.receiveAnnouncement;
             this.handlers[Types.Messages.INDICATOR] = this.receiveIndicatorUpdate;
             this.handlers[Types.Messages.TILESTAGE] = this.receiveTileStage;
+            this.handlers[Types.Messages.TILE_ACTION] = this.receiveTileAction;
             this.handlers[Types.Messages.NPC_STATE] = this.receiveNpcState;
             this.handlers[Types.Messages.WORLD_AMBIENCE] = this.receiveWorldAmbience;
 
@@ -548,6 +549,12 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
               this.animate_callback(entityId, animation);
           }
         },
+
+        receiveTileAction: function(data) {
+            if (this.tileAction_callback) this.tileAction_callback(data[1]);
+        },
+
+        onTileAction: function(callback) { this.tileAction_callback = callback; },
 
         receiveNpcState: function(data) {
             if (this.npcState_callback) this.npcState_callback(data[1], data[2]);

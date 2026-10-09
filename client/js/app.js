@@ -963,6 +963,34 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
                     return url;
                 }
 
+                let hasConsumable = false;
+                const getInventoryItemHTML = (item) => {
+                    let html = "";
+                    if (consumablesInventory[item].cooldown) {
+                        _this.cooldownMap[item] = consumablesInventory[item].cooldown;
+                    }
+
+                    let description = consumablesInventory[item].description;
+                    let effectDescription = consumablesInventory[item].effect;
+                    if (description || effectDescription) {
+                        _this.inventoryToolTips[item] = {
+                            header: description,
+                            footer: effectDescription,
+                        }
+                    }
+
+                    if (consumablesInventory[item].consumable) hasConsumable = true;
+                    let cursor = consumablesInventory[item].consumable ? "pointer"
+                        : Types.isTool(Number(item)) ? "default" : "not-allowed";
+                    let draggable = consumablesInventory[item].consumable ? "true" : "false";
+                    html += "<div id='item_" + item + "' class='item panelBorder " + (consumablesInventory[item].consumable ? 'consumable' : '') + "' draggable='" + draggable + "' data-item='" + item + "'>";
+                    html += "<img id='" + item + "' draggable='false' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0; cursor: " + cursor + ";' src='img/3/" + consumablesInventory[item].image + ".png' />";
+                    html += "<div class='timer' id='timer_" + item + "'></div>";
+                    html += "<p class='itemCount' id='count_" + item + "'>" + consumablesInventory[item].qty + "</p>"
+                    html += "</div>";
+                    return html;
+                };
+
                 let inventoryHtml = "";
                 let columns = 0;
 
@@ -1005,44 +1033,25 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
                     inventoryHtml += "<div class='item panelBorder' id='item_" + item.nftId + "'>" +
                     "<img id='" + item.nftId + "' style='width: 32px; height: 32px; object-fit: cover; cursor: pointer; object-position: 100% 0;' src='"+itemURL+"' /></div>";
                 });
+                Object.keys(consumablesInventory).forEach(item => {
+                    if (Types.isTool(Number(item)) && consumablesInventory[item].qty > 0) {
+                        inventoryHtml += getInventoryItemHTML(item);
+                    }
+                });
                 inventoryHtml += "</div></div>";
 
 
-                let hasConsumable = false;
-                let itemHtml = "<div class='inventorySection' id='inventory-tools'><div class='inventoryTitle'>Items</div>";
+                let itemHtml = "<div class='inventorySection' id='inventory-items'><div class='inventoryTitle'>Items</div>";
                 itemHtml += "<div class='inventorySectionItems'>"
                 let hasItem = false;
 
                 Object.keys(consumablesInventory).forEach(item => {
-                    if (Types.isResource(item)) {
+                    if (Types.isResource(Number(item)) || Types.isTool(Number(item))) {
                         return;
                     }
                     hasItem = true;
 
-                    if (consumablesInventory[item].cooldown) {
-                        _this.cooldownMap[item] = consumablesInventory[item].cooldown;
-                    }
-
-                    let description = consumablesInventory[item].description;
-                    let effectDescription = consumablesInventory[item].effect;
-                    if (description || effectDescription) {
-                        _this.inventoryToolTips[item] = {
-                            header: description,
-                            footer: effectDescription,
-                        }
-                    }
-
-                    if(consumablesInventory[item].consumable) {
-                        hasConsumable = true;
-                    }
-
-                    let cursor = consumablesInventory[item].consumable ? "pointer" : "not-allowed";
-                    let draggable = consumablesInventory[item].consumable ? "true" : "false";
-                    itemHtml += "<div id='item_" + item + "' class='item panelBorder " + (consumablesInventory[item].consumable ? 'consumable' : '') + "' draggable='" + draggable + "' data-item='" + item + "'>";
-                    itemHtml += "<img id='" + item + "' draggable='false' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0; cursor: " + cursor + ";' src='img/3/" + consumablesInventory[item].image + ".png' />";
-                    itemHtml += "<div class='timer' id='timer_" + item + "'></div>";
-                    itemHtml += "<p class='itemCount' id='count_" + item + "'>" + consumablesInventory[item].qty + "</p>"
-                    itemHtml += "</div>";
+                    itemHtml += getInventoryItemHTML(item);
                 });
 
                 itemHtml += "</div></div>";

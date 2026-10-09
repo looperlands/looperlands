@@ -55,3 +55,22 @@ test('a committed transfer with unavailable balance confirmation stays uncertain
     await dao.saveLootEvent('recipient', '333009', -1); await dao.processLootEventQueue();
     expect(client.storeInventoryTransaction).toHaveBeenCalledTimes(1);
 });
+
+test('atomic farming shares the writer, holds later consumption and returns current quantities', async () => {
+    let finish, started;
+    const pending = new Promise(resolve => {finish = resolve;});
+    const running = new Promise(resolve => {started = resolve;});
+    const client = {storeInventoryTransaction: jest.fn().mockResolvedValue(true),
+        commitFarmTransaction: jest.fn(() => {started(); return pending;})};
+    const dao = loadDao(client);
+    await dao.saveLootEvent('avatar', '123', 1);
+    const transaction = {nftId: 'avatar', requestId: 'farm'};
+    const farm = dao.commitFarmTransaction(transaction);
+    await running;
+    await dao.saveLootEvent('avatar', '123', -1);
+    finish({requestId: 'farm', quantities: {'123': 2}});
+    expect((await farm).quantities).toEqual({'123': 1});
+    await dao.processLootEventQueue();
+    expect(client.commitFarmTransaction).toHaveBeenCalledWith(transaction);
+    expect(client.storeInventoryTransaction.mock.calls.flat().flat().map(event => event.amount)).toEqual([1, -1]);
+});

@@ -12,7 +12,7 @@ const mockQuestDefinitions = {quests: [{id: 'meeting', name: 'Meeting', npc: 40,
         {id: 'deliver', label: 'Bring supplies to your friend', eventType: 'DELIVER_ITEM', target: 5, amount: 3, recipient: {npc: 41, npcKey: 'friend'}}]}]};
 jest.mock('./main', () => mockQuestDefinitions);
 // Support both direct legacy loading and the independently registered engine.
-jest.mock('../worlddefinitions', () => ({definitions: {quests: mockQuestDefinitions.quests, subscribe: jest.fn()}}), {virtual: true});
+jest.mock('../worlddefinitions', () => ({definitions: {quests: mockQuestDefinitions.quests, subscribe: jest.fn()}}));
 const quests = require('./quests'), objective = require('./objectives'), dao = require('../dao');
 const {PlayerEventBroker} = require('./playereventbroker');
 const {PlayerQuestEventConsumer} = require('./playerquesteventconsumer');

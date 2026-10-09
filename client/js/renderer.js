@@ -441,7 +441,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc'],
                         }
     
     
-                        if(entity instanceof Character && !entity.isDead && entity.hasWeapon()) {
+                        if(entity instanceof Character && !entity.isDead && (entity.actionToolName || entity.hasWeapon())) {
                             const weaponName = entity.actionToolName || entity.getWeaponName();
                             let weapon = this.game.sprites[weaponName];
     
@@ -508,7 +508,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc'],
                         }
                     }
     
-                    if(entity instanceof Character && !entity.isDead && entity.hasWeapon()) {
+                    if(entity instanceof Character && !entity.isDead && (entity.actionToolName || entity.hasWeapon())) {
                         const weaponName = entity.actionToolName || entity.getWeaponName();
                         let weapon = this.game.sprites[weaponName];
                         if(Types.alwaysOnTop(weaponName) || entity.orientation !== Types.Orientations.UP) {

@@ -69,13 +69,14 @@ test.each(['dead', 'friendly', 'despawned', 'invisible'])('marker clears for a %
     expect(feedback.getFrame(1000).target).toBeNull();
 });
 
-test.each(['map', 'disconnect', 'death', 'stop'])('%s clears old bursts', transition => {
+test.each(['map', 'disconnect', 'death', 'stop', 'removed player'])('%s clears old bursts', transition => {
     const {feedback, game, mob} = setup();
     feedback.addImpact(mob, 10, 1000);
     if (transition === 'map') game.mapId = 'cobsfarm';
     if (transition === 'disconnect') game.started = false;
     if (transition === 'death') game.player.isDead = true;
     if (transition === 'stop') game.isStopped = true;
+    if (transition === 'removed player') game.player = null;
     expect(feedback.getFrame(1050).impacts).toHaveLength(0);
 });
 

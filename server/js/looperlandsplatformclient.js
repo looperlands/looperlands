@@ -266,6 +266,53 @@ class LooperLandsPlatformClient {
         }
     }
 
+    async getFarmState(mapId, x, y) {
+        const response = await this.client.get('/api/game/farming/state/' + encodeURIComponent(mapId) + '/' + x + '/' + y, {timeout: 15000});
+        const state = response.data;
+        if (!Number.isSafeInteger(state?.revision) || state.revision < 0 || !Object.prototype.hasOwnProperty.call(state, 'plot')) {
+            throw new Error('Invalid farm state response');
+        }
+        return state;
+    }
+
+    async commitFarmTransaction(transaction) {
+        for (let attempt = 0; attempt < 2; attempt++) {
+            try {
+                const response = await this.client.post('/api/game/farming/transaction', transaction, {timeout: 15000});
+                const receipt = response.data;
+                if (receipt?.requestId !== transaction.requestId || receipt.revision !== transaction.expectedRevision + 1 ||
+                    !Number.isSafeInteger(receipt.xp) || receipt.xp < 0 || !receipt.quantities ||
+                    !Object.prototype.hasOwnProperty.call(receipt, 'plot') ||
+                    (receipt.plot !== null && (receipt.plot.mapId !== transaction.mapId || receipt.plot.x !== transaction.x || receipt.plot.y !== transaction.y))) {
+                    throw new Error('Invalid farm transaction receipt');
+                }
+                if (Array.isArray(transaction.items) && transaction.items.some(({item}) => !Object.prototype.hasOwnProperty.call(receipt.quantities, item))) {
+                    throw new Error('Incomplete farm inventory receipt');
+                }
+                if (transaction.action && ((transaction.action === 'harvest') !== (receipt.plot === null))) {
+                    throw new Error('Invalid farm plot transition receipt');
+                }
+                if (Object.entries(receipt.quantities).some(([item, quantity]) => !/^\d+$/.test(item) || !Number.isSafeInteger(quantity) || quantity < 0)) {
+                    throw new Error('Invalid farm inventory receipt');
+                }
+                return receipt;
+            } catch (cause) {
+                const status = cause.response?.status;
+                if (status >= 400 && status < 500) {
+                    const error = new Error(cause.response?.data?.code || 'farm_transaction_rejected');
+                    error.code = error.message;
+                    throw error;
+                }
+                if (attempt === 1) {
+                    const error = new Error('farm_transaction_pending');
+                    error.code = error.message;
+                    error.cause = cause;
+                    throw error;
+                }
+            }
+        }
+    }
+
     async getFarmPlots(mapId) {
         try {
             const url = `/api/game/farming/plots?map=${encodeURIComponent(mapId)}`;

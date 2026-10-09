@@ -1426,22 +1426,42 @@ WS.socketIOServer = Server.extend({
         app.post("/session/:sessionId/tileStage", async (req, res) => {
             const body = req.body;
             const sessionId = req.params.sessionId;
-            const sessionData = cache.get(sessionId);
-            console.info("[tileStage] request", JSON.stringify({
-                sessionId,
-                hasSession: sessionData !== undefined,
-                nftId: sessionData?.nftId,
-                map: body.map,
-                tileAction: body.tileAction,
-            }));
-            const currentStage = await tileActionsController.findCurrentStage(sessionData.nftId, body.map, body.tileAction, self.worldsMap[body.map])
-            console.info("[tileStage] response", JSON.stringify({
-                sessionId,
-                map: body.map,
-                tileAction: body.tileAction,
-                stage: currentStage,
-            }));
-            res.status(200).send(currentStage);
+            const session = cache.get(sessionId);
+            if (!session || session.mapId !== body.map) return res.status(403).send({success: false, message: 'Invalid active session.'});
+            const world = self.worldsMap[body.map];
+            const player = world?.getPlayerById(session.entityId);
+            if (!player?.hasEnteredGame || player.sessionId !== sessionId ||
+                !Number.isInteger(body.tileAction?.gridX) || !Number.isInteger(body.tileAction?.gridY)) {
+                return res.status(403).send({success: false, message: 'Invalid tile action.'});
+            }
+            try {
+                const stage = await tileActionsController.findCurrentStage(session.nftId, body.map, body.tileAction, world);
+                res.status(200).send(stage);
+            } catch (error) {
+                console.error('[tileStage] stage lookup failed', error.message);
+                res.status(500).send({success: false, message: 'Unable to check this plot.'});
+            }
+        });
+
+        app.post("/session/:sessionId/tileStage/start", async (req, res) => {
+            const body = req.body;
+            const sessionId = req.params.sessionId;
+            const session = cache.get(sessionId);
+            if (!session || session.mapId !== body.map) return res.status(403).send({success: false, message: 'Invalid active session.'});
+            const world = self.worldsMap[body.map];
+            const player = world?.getPlayerById(session.entityId);
+            const tile = body.tileAction;
+            if (!player?.hasEnteredGame || player.sessionId !== sessionId ||
+                !Number.isInteger(tile?.gridX) || !Number.isInteger(tile?.gridY) ||
+                Math.max(Math.abs(player.x - tile.gridX), Math.abs(player.y - tile.gridY)) > 1) {
+                return res.status(403).send({success: false, message: 'Move next to the tile to use it.'});
+            }
+            try {
+                res.status(200).send(await tileActionsController.startStage(player, body.map, tile, world, body.expectedStage, body.expectedRevision));
+            } catch (error) {
+                console.error('[tileStage] animation start failed', error.message);
+                res.status(500).send({success: false, message: 'Unable to start this action.'});
+            }
         });
 
         app.post("/session/:sessionId/tileStage/execute", async (req, res) => {
@@ -1455,7 +1475,7 @@ WS.socketIOServer = Server.extend({
             if (!player?.hasEnteredGame || player.sessionId !== sessionId || !Number.isInteger(tile?.gridX) || !Number.isInteger(tile?.gridY) || Math.max(Math.abs(player.x - tile.gridX), Math.abs(player.y - tile.gridY)) > 1) {
                 return res.status(403).send({success: false, message: 'Move next to the tile to use it.'});
             }
-            const result = await tileActionsController.executeStage(sessionData.nftId, body.map, body.tileAction, body.item, world);
+            const result = await tileActionsController.executeStage(sessionData.nftId, body.map, body.tileAction, body.item, world, body.expectedStage, body.expectedRevision);
             if (result?.success && result.activity) {
                 try { self.activity.record(player, 'tile', result.activity); }
                 catch (error) { console.error('[activity] tile recording failed', error.message); }

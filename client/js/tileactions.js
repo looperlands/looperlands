@@ -4,6 +4,7 @@ define(['../../shared/js/gametypes'], function () {
             this.game = game;
             this.stageDefinitions = {};
             this.activeStages = {};
+            this.actionAnimations = {};
         },
 
         findCurrentStage: function (tileAction) {
@@ -53,6 +54,8 @@ define(['../../shared/js/gametypes'], function () {
                 return;
             }
 
+            if (this.localActionInProgress) return;
+
             const activeKey = this.getTileActionKey(tileAction);
             if (this.activeStages[activeKey]) {
                 return;
@@ -64,6 +67,8 @@ define(['../../shared/js/gametypes'], function () {
             }
 
             if (selectedItem === undefined && stage.requirements && stage.requirements.items) {
+                const selectionMap = this.game.mapId;
+                const selectionSession = this.game.sessionId;
                 this.game.app.showSelectionPopup(stage.name, stage.requirements.items.map((item) => {
                     const choice = stage.itemChoices[item];
                     const imageItem = (choice.imageItem || item).toLowerCase();
@@ -75,7 +80,11 @@ define(['../../shared/js/gametypes'], function () {
                         count: choice.count,
                         disabled: choice.disabled || (choice.count <= 0),
                         callback: (selectedItem) => {
-                            this.executeStage(tileAction, stage, item);
+                            if (this.game.mapId !== selectionMap || this.game.sessionId !== selectionSession) return;
+                            return Promise.resolve(this.executeStage(tileAction, stage, item)).catch((error) => {
+                                console.error("Tile action failed", error);
+                                this.game.showNotification("Could not complete this action. Please try again.");
+                            });
                         }
                     };
                 }));
@@ -83,8 +92,9 @@ define(['../../shared/js/gametypes'], function () {
                 const runStage = () => {
                     const url = '/session/' + this.game.sessionId + '/tileStage/execute';
                     const optimisticState = this.applyOptimisticStage(tileAction, stage, selectedItem);
-                    return axios.post(url, {map: this.game.mapId, tileAction: tileAction, item: selectedItem})
+                    return axios.post(url, {map: this.game.mapId, tileAction: tileAction, item: selectedItem, expectedStage: stage.key, expectedRevision: stage.revision})
                         .then((response) => {
+                            this.cacheStage(tileAction, null);
                             if (response.data && response.data.success === false) {
                                 this.revertOptimisticStage(optimisticState);
                                 if (response.data.message) {
@@ -98,6 +108,7 @@ define(['../../shared/js/gametypes'], function () {
                         })
                         .catch((error) => {
                             this.revertOptimisticStage(optimisticState);
+                            this.cacheStage(tileAction, null);
                             throw error;
                         })
                         .finally(() => {
@@ -109,33 +120,28 @@ define(['../../shared/js/gametypes'], function () {
                 if (stage.playAnimation) {
                     stage.inProgress = true;
                     this.activeStages[activeKey] = true;
-                    const actionToolName = this.getStageToolSpriteName(stage);
-                    if (actionToolName && this.game.sprites[actionToolName]) {
-                        this.game.player.actionToolName = actionToolName;
-                    }
-                    let o = this.getTileOrientation(tileAction);
-                    if(o === 'left') {
-                        o = 'right';
-                        this.game.player.flipSpriteX = true;
-                    }
-                    this.game.player.setAnimation('atk_' + o, this.game.player.atkSpeed);
-                    const duration = (stage.duration) ? (stage.duration * 1000) : 1000;
-                    const clearActionTool = () => {
-                        if (this.game.player.actionToolName === actionToolName) {
-                            delete this.game.player.actionToolName;
+                    this.localActionInProgress = true;
+                    const player = this.game.player;
+                    const mapId = this.game.mapId;
+                    const sessionId = this.game.sessionId;
+                    return axios.post('/session/' + this.game.sessionId + '/tileStage/start', {
+                        map: mapId, tileAction, expectedStage: stage.key, expectedRevision: stage.revision,
+                    }).then(async (response) => {
+                        const result = response.data;
+                        if (!result?.success) {
+                            if (result?.message) this.game.showNotification(result.message);
+                            return result;
                         }
-                    };
-                    setTimeout(() => {
-                        clearActionTool();
-                        this.game.player.idle();
-                    }, duration);
-                    return new Promise((resolve, reject) => {
-                        setTimeout(() => {
-                            runStage()
-                                .then(resolve)
-                                .catch(reject)
-                                .finally(clearActionTool);
-                        }, duration);
+                        if (this.game.player !== player || this.game.mapId !== mapId || this.game.sessionId !== sessionId || player.isDead || this.game.isStopped) return;
+                        const completed = await this.showActionAnimation(result.animation);
+                        if (!completed) return;
+                        // Execute only after the approved animation; the server checks inventory again.
+                        Object.assign(stage, result.stage);
+                        return runStage();
+                    }).finally(() => {
+                        stage.inProgress = false;
+                        delete this.activeStages[activeKey];
+                        this.localActionInProgress = false;
                     });
                 }
 
@@ -182,6 +188,9 @@ define(['../../shared/js/gametypes'], function () {
             return {
                 tileAction,
                 previousStages,
+                mapId: this.game.mapId,
+                sessionId: this.game.sessionId,
+                revision: this.game.tileStageRevisions?.[baseKey] || 0,
             };
         },
 
@@ -190,7 +199,10 @@ define(['../../shared/js/gametypes'], function () {
                 return;
             }
 
+            if (this.game.mapId !== optimisticState.mapId || this.game.sessionId !== optimisticState.sessionId) return;
             const tileAction = optimisticState.tileAction;
+            const baseKey = this.getTileActionKey(tileAction);
+            if ((this.game.tileStageRevisions?.[baseKey] || 0) !== optimisticState.revision) return;
             this.game.handleTileStage({
                 x: tileAction.gridX,
                 y: tileAction.gridY,
@@ -224,12 +236,55 @@ define(['../../shared/js/gametypes'], function () {
             }
         },
 
-        getStageToolSpriteName: function (stage) {
-            if (!stage || !stage.requirements || !stage.requirements.tool) {
-                return null;
+        showActionAnimation: function (state) {
+            if (!state) return Promise.resolve(false);
+            const entity = this.game.getEntityById(state.entityId);
+            if (!entity || entity.isDead || !Number.isFinite(state.duration) || state.duration <= 0 || state.duration > 30000) {
+                return Promise.resolve(false);
             }
-
-            return 'item-' + stage.requirements.tool.toLowerCase();
+            if (this.actionAnimations[entity.id]) this.actionAnimations[entity.id]();
+            const mapId = this.game.mapId;
+            const sessionId = this.game.sessionId;
+            const previousOrientation = entity.orientation;
+            const previousTool = entity.actionToolName;
+            const sprite = this.game.sprites[state.animationSprite];
+            const animation = 'atk_' + (state.orientation === Types.Orientations.LEFT
+                ? 'right' : Types.getOrientationAsString(state.orientation));
+            // Missing/incompatible art falls back to the equipped weapon.
+            if (sprite?.animationData?.[animation]) entity.actionToolName = state.animationSprite;
+            entity.orientation = state.orientation;
+            entity.flipSpriteX = state.orientation === Types.Orientations.LEFT;
+            entity.flipSpriteY = false;
+            const previousSpeed = entity.getAnimationByName?.(animation)?.speed;
+            entity.setAnimation(animation, 140);
+            const actionAnimation = entity.currentAnimation;
+            actionAnimation?.setSpeed?.(140);
+            actionAnimation?.reset?.();
+            this.game.toolImpactFeedback?.startAction(entity, state, actionAnimation);
+            const isCurrent = () => this.game.mapId === mapId && this.game.sessionId === sessionId && !this.game.isStopped && !entity.isDead &&
+                this.game.getEntityById(entity.id) === entity && !entity.isMoving() &&
+                entity.currentAnimation === actionAnimation;
+            return new Promise((resolve) => {
+                const cleanup = (completed = false) => {
+                    clearTimeout(timeout);
+                    clearInterval(watch);
+                    if (this.actionAnimations[entity.id] !== cleanup) return;
+                    delete this.actionAnimations[entity.id];
+                    this.game.toolImpactFeedback?.stopAction(entity, !completed);
+                    actionAnimation?.setSpeed?.(previousSpeed || entity.atkSpeed);
+                    if (previousTool === undefined) delete entity.actionToolName;
+                    else entity.actionToolName = previousTool;
+                    if (entity.currentAnimation === actionAnimation && !entity.isDead && !entity.isMoving()) {
+                        entity.idle(previousOrientation);
+                    }
+                    resolve(completed);
+                };
+                const timeout = setTimeout(() => cleanup(isCurrent()), state.duration);
+                const watch = setInterval(() => {
+                    if (!isCurrent()) cleanup();
+                }, 50);
+                this.actionAnimations[entity.id] = cleanup;
+            });
         },
 
         getToolDisplayName: function (tool) {
