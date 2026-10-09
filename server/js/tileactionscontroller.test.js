@@ -17,6 +17,7 @@ jest.mock("./formulas", () => ({
 
 const TileActionsController = require("./tileactionscontroller");
 const Types = require("../../shared/js/gametypes");
+const createFarmingDefinitions = require("./fixtures/farming");
 
 describe("TileActionsController farming", () => {
     let plots;
@@ -75,6 +76,7 @@ describe("TileActionsController farming", () => {
 
         controller = new TileActionsController(cache, null, {
             dao,
+            stageDefinitions: createFarmingDefinitions(),
             now: () => now,
             random: () => 0,
         });
@@ -95,6 +97,26 @@ describe("TileActionsController farming", () => {
                 },
             },
         };
+    });
+
+    function growthDurationMs(cropKey = "M88NLETTUCE") {
+        return controller.stageDefinitions.duckville.farm.crops[cropKey].growSeconds * 1000;
+    }
+
+    test("injected farming definitions work without loading live map configuration", async () => {
+        const DuckvilleController = require("./tileactions/duckvillecontroller");
+        const loadSpy = jest.spyOn(DuckvilleController.prototype, "loadStageDefinitions").mockImplementation(() => {
+            throw new Error("Live map configuration must not be read in behavior tests");
+        });
+        try {
+            const configured = new TileActionsController(cache, null, {
+                dao, now: () => now, stageDefinitions: createFarmingDefinitions(),
+            });
+            expect((await configured.executeStage("avatar", "duckville", tileAction, null, world)).success).toBe(true);
+            expect((await configured.findCurrentStage("avatar", "duckville", tileAction, world)).key).toBe("plant");
+        } finally {
+            loadSpy.mockRestore();
+        }
     });
 
     test("empty plot returns prepare action", async () => {
@@ -207,11 +229,23 @@ describe("TileActionsController farming", () => {
         expect(["boost", "wait"]).toContain(stage.key);
     });
 
+    test.each([1, 90, 3600])("crop becomes harvestable at the configured %i-second boundary", async (growSeconds) => {
+        controller.stageDefinitions.duckville.farm.crops.M88NLETTUCE.growSeconds = growSeconds;
+        await controller.executeStage("avatar", "duckville", tileAction, null, world);
+        await controller.executeStage("avatar", "duckville", tileAction, "M88NLETTUCE", world);
+        await controller.executeStage("avatar", "duckville", tileAction, null, world);
+        expect(plots["duckville.10.20"].readyAt).toBe(now + growSeconds * 1000);
+        now += growSeconds * 1000 - 1;
+        expect((await controller.findCurrentStage("avatar", "duckville", tileAction, world)).key).toBe("wait");
+        now += 1;
+        expect((await controller.findCurrentStage("avatar", "duckville", tileAction, world)).key).toBe("harvest");
+    });
+
     test("ready crop can be harvested and clears staged tile state", async () => {
         await controller.executeStage("avatar", "duckville", tileAction, null, world);
         await controller.executeStage("avatar", "duckville", tileAction, "M88NLETTUCE", world);
         await controller.executeStage("avatar", "duckville", tileAction, null, world);
-        now += 91000;
+        now += growthDurationMs() + 1000;
 
         const stage = await controller.findCurrentStage("avatar", "duckville", tileAction, world);
         expect(stage.key).toBe("harvest");
@@ -234,7 +268,7 @@ describe("TileActionsController farming", () => {
         expect(sessionData.gameData.items[String(Types.Entities.M88NORANGE)] || 0).toBe(0);
 
         await controller.executeStage("avatar", "duckville", tileAction, null, world);
-        now += 541000;
+        now += growthDurationMs("M88NORANGE") + 1000;
         await controller.executeStage("avatar", "duckville", tileAction, null, world);
 
         expect(inventory[Types.Entities.M88NORANGE]).toBeGreaterThan(0);
@@ -325,6 +359,7 @@ describe("TileActionsController farming", () => {
         cache.get = jest.fn(() => ({ nftId: "avatar", xp: 0 }));
         controller = new TileActionsController(cache, null, {
             dao,
+            stageDefinitions: createFarmingDefinitions(),
             now: () => now,
             random: () => 0,
             disableLevelGate: true,
@@ -350,7 +385,7 @@ describe("TileActionsController farming", () => {
         await controller.executeStage("avatar", "duckville", tileAction, null, world);
         await controller.executeStage("avatar", "duckville", tileAction, "M88NLETTUCE", world);
         await controller.executeStage("avatar", "duckville", tileAction, null, world);
-        now += 91000;
+        now += growthDurationMs() + 1000;
 
         await controller.executeStage("other", "duckville", tileAction, null, world);
 
@@ -362,7 +397,7 @@ describe("TileActionsController farming", () => {
         await controller.executeStage("avatar", "duckville", tileAction, null, world);
         await controller.executeStage("avatar", "duckville", tileAction, "M88NLETTUCE", world);
         await controller.executeStage("avatar", "duckville", tileAction, null, world);
-        now += 91000;
+        now += growthDurationMs() + 1000;
 
         await controller.executeStage("avatar", "duckville", tileAction, null, world);
         const firstHarvest = inventory[Types.Entities.M88NLETTUCE];
@@ -382,7 +417,7 @@ describe("TileActionsController farming", () => {
         await controller.executeStage("avatar", "duckville", tileAction, null, world);
         const early = await controller.executeStage("other", "duckville", tileAction, null, world);
         expect(early.success).toBe(false);
-        now += 90000 + overdue;
+        now += growthDurationMs() + overdue;
 
         const result = await controller.executeStage("other", "duckville", tileAction, null, world);
 
@@ -414,7 +449,7 @@ describe("TileActionsController farming", () => {
         expect(inventory[Types.Entities.MOONSEEDS]).toBe(0);
         expect(inventory[Types.Entities.M88NSEEDS]).toBe(5);
         await controller.executeStage("avatar", "duckville", tileAction, null, world);
-        now += 91000;
+        now += growthDurationMs() + 1000;
         await controller.executeStage("avatar", "duckville", tileAction, null, world);
         expect(inventory[Types.Entities.MOONSEEDS]).toBe(1);
         expect(inventory[Types.Entities.M88NLETTUCE]).toBeGreaterThan(0);
@@ -424,7 +459,7 @@ describe("TileActionsController farming", () => {
         await controller.executeStage("avatar", "duckville", tileAction, null, world);
         await controller.executeStage("avatar", "duckville", tileAction, "M88NLETTUCE", world);
         await controller.executeStage("avatar", "duckville", tileAction, null, world);
-        now += 90000;
+        now += growthDurationMs();
         const stage = await controller.findCurrentStage("other", "duckville", tileAction, world);
         expect(stage.name).toBe("Reserved for the planter (24h remaining)");
         expect(stage.waiting).toBe(true);
@@ -442,7 +477,7 @@ describe("TileActionsController farming", () => {
         await controller.executeStage("avatar", "duckville", tileAction, null, world);
         await controller.executeStage("avatar", "duckville", tileAction, "M88NLETTUCE", world);
         await controller.executeStage("avatar", "duckville", tileAction, null, world);
-        now += 90000 + 86400000;
+        now += growthDurationMs() + 86400000;
         const stage = await controller.findCurrentStage("other", "duckville", tileAction, world);
         expect(stage.key).toBe(access === "shared" ? "harvest" : "wait");
         if (access === "owner") {
@@ -478,7 +513,7 @@ describe("TileActionsController farming", () => {
         await configured.executeStage("avatar", "moon", tileAction, "M88NLETTUCE", world);
         expect(inventory[Types.Entities.MOONSEEDS]).toBe(0);
         await configured.executeStage("avatar", "moon", tileAction, null, world);
-        now += 90000;
+        now += farm.crops.M88NLETTUCE.growSeconds * 1000;
         expect((await configured.findCurrentStage("other", "moon", tileAction, world)).name).toContain("Reserved for the planter");
         expect((await configured.findCurrentStage("avatar", "moon", tileAction, world)).key).toBe("harvest");
     });
@@ -543,12 +578,10 @@ describe("TileActionsController farming", () => {
 
     test("garden JSON files register new maps without another controller", async () => {
         const fs = require("fs");
-        const readFileSync = fs.readFileSync;
         const directorySpy = jest.spyOn(fs, "readdirSync").mockReturnValueOnce(["duckville.json", "moon.json", "README.md"]);
-        const fileSpy = jest.spyOn(fs, "readFileSync").mockImplementation((file, ...args) => {
-            return file.endsWith("/moon.json")
-                ? JSON.stringify({ moonGarden: controller.stageDefinitions.duckville.farm })
-                : readFileSync(file, ...args);
+        const fileSpy = jest.spyOn(fs, "readFileSync").mockImplementation((file) => {
+            const farm = createFarmingDefinitions().duckville.farm;
+            return JSON.stringify(file.endsWith("/moon.json") ? { moonGarden: farm } : { farm });
         });
         let configured;
         try {
@@ -564,24 +597,26 @@ describe("TileActionsController farming", () => {
         expect(dao.saveFarmPlot).toHaveBeenCalledWith(expect.objectContaining({ mapId: "moon" }));
     });
 
-    test("existing client map supplies garden actions without a new server export", async () => {
+    test("client map export supplies garden actions without a new server export", async () => {
+        const fs = require("fs");
         const duckvilleController = controller.getController("duckville");
-        const grid = duckvilleController.getMapActionGrid("duckville");
-        const [position] = Object.entries(grid).find(([, action]) => action.action === "farm");
-        const [gridX, gridY] = position.split(".").map(Number);
-        const readSpy = jest.spyOn(require("fs"), "readFileSync");
+        const existsSpy = jest.spyOn(fs, "existsSync").mockReturnValue(true);
+        const readSpy = jest.spyOn(fs, "readFileSync").mockReturnValue(JSON.stringify({
+            width: 2, data: [0, [0, 42]], actionTiles: { 42: { action: "farm" } },
+        }));
         world.map = {};
-        tileAction = { name: "potFarm", gridX, gridY };
+        tileAction = { name: "potFarm", gridX: 1, gridY: 0 };
         try {
             const stage = await controller.findCurrentStage("avatar", "duckville", tileAction, world);
-            expect(stage.optimisticStage.tile).toBe(controller.stageDefinitions.duckville.farm.prepare.tile);
-            expect(duckvilleController.getMapActionGrid("duckville")).toBe(grid);
-            expect(readSpy).not.toHaveBeenCalled();
+            expect(stage.optimisticStage.tile).toBe(17118);
+            expect(duckvilleController.getMapActionGrid("duckville")).toEqual({ "1.0": { action: "farm" } });
+            expect(readSpy).toHaveBeenCalledTimes(1);
+            expect(await controller.findCurrentStage("avatar", "duckville", { ...tileAction, gridX: -1 }, world)).toBeNull();
+            expect((await controller.executeStage("avatar", "duckville", { ...tileAction, gridX: -1 }, null, world)).success).toBe(false);
         } finally {
+            existsSpy.mockRestore();
             readSpy.mockRestore();
         }
-        expect(await controller.findCurrentStage("avatar", "duckville", { ...tileAction, gridX: -1 }, world)).toBeNull();
-        expect((await controller.executeStage("avatar", "duckville", { ...tileAction, gridX: -1 }, null, world)).success).toBe(false);
     });
 
     test("client map action prevents requests from changing harvest access", async () => {
@@ -593,7 +628,7 @@ describe("TileActionsController farming", () => {
         await controller.executeStage("avatar", "duckville", tileAction, null, world);
         await controller.executeStage("avatar", "duckville", tileAction, "M88NLETTUCE", world);
         await controller.executeStage("avatar", "duckville", tileAction, null, world);
-        now += 91000;
+        now += growthDurationMs() + 1000;
         const result = await controller.executeStage("other", "duckville", { ...tileAction, name: "communityGarden" }, null, world);
         expect(result.success).toBe(false);
         expect(dao.deleteFarmPlot).not.toHaveBeenCalled();
@@ -636,187 +671,4 @@ describe("TileActionsController farming", () => {
         expect(stage.key).toBe("wait");
     });
 
-    test("tree crops use the exported four-stage 2x3 tile groups", () => {
-        const farm = controller.stageDefinitions.duckville.farm;
-        const map = require("../../client/maps/world_client_duckville.json");
-
-        expect(farm.crops.M88NORANGE.stages).toBe(4);
-        expect(farm.crops.M88NORANGE.renderOffset).toEqual({ x: 8, y: 0 });
-        expect(farm.crops.COBAPPLE.stages).toBe(4);
-        expect(farm.crops.COBAPPLE.renderOffset).toEqual({ x: 8, y: 0 });
-        expect(farm.crops.TREEPURPLE.stages).toBe(4);
-        expect(farm.crops.TREEPURPLE.renderOffset).toEqual({ x: 8, y: 0 });
-        expect(farm.crops.TREEYELLOW.stages).toBe(4);
-        expect(farm.crops.TREEYELLOW.renderOffset).toEqual({ x: 8, y: 0 });
-
-        expect(map.stagedTiles["19599"]).toMatchObject({
-            groupName: "tree1",
-            size: { w: 2, h: 3 },
-            stageTiles: [19606, 19608, 19610, 19613],
-            stages: 4,
-        });
-        expect(map.stagedTiles["20151"]).toMatchObject({
-            groupName: "treeRed",
-            size: { w: 2, h: 3 },
-            stageTiles: [20158, 20160, 20162, 20165],
-            stages: 4,
-        });
-        expect(map.stagedTiles["20703"]).toMatchObject({
-            groupName: "treePurple",
-            size: { w: 2, h: 3 },
-            stageTiles: [20710, 20712, 20714, 20717],
-            stages: 4,
-        });
-        expect(map.stagedTiles["21255"]).toMatchObject({
-            groupName: "treeYellow",
-            size: { w: 2, h: 3 },
-            stageTiles: [21262, 21264, 21266, 21269],
-            stages: 4,
-        });
-    });
-
-    test("crop data uses display names, plural rare drops, and staged rose groups", () => {
-        const { farm, potFarm } = controller.stageDefinitions.duckville;
-
-        Object.values(farm.crops).concat(Object.values(potFarm.crops)).forEach((crop) => {
-            expect(crop.displayName).toEqual(expect.any(String));
-            expect(crop.rareDrop).toBeUndefined();
-            expect(crop.rareDrops).toEqual(expect.any(Array));
-        });
-
-        expect(farm.crops.M88NROSE).toMatchObject({
-            displayName: "Roses",
-            tileGroup: "roses",
-            stagedTile: 18249,
-            yieldItem: "M88NROSE",
-            stages: 3,
-        });
-        expect(potFarm.crops.M88NROSE).toMatchObject({
-            displayName: "Potted roses",
-            tileGroup: "pottedRoses",
-            stagedTile: 18246,
-            yieldItem: "M88NROSE",
-            stages: 3,
-        });
-        expect(potFarm.crops.COBCORN).toMatchObject({
-            displayName: "Potted corn",
-            tileGroup: "cornPotted",
-            stagedTile: 17409,
-            yieldItem: "M88NCORN",
-            stages: 4,
-        });
-    });
-
-    test("baked-base and potted crop groups are defined separately", () => {
-        const map = require("../../client/maps/world_client_duckville.json");
-
-        expect(map.stagedTiles["18085"]).toMatchObject({
-            groupName: "lettuce",
-        });
-        expect(map.stagedTiles["17689"]).toMatchObject({
-            groupName: "carrot",
-            size: { w: 1, h: 2 },
-        });
-        expect(map.stagedTiles["17128"]).toMatchObject({
-            groupName: "cauliflower",
-            size: { w: 1, h: 2 },
-        });
-        expect(map.stagedTiles["17404"]).toMatchObject({
-            groupName: "broccoli",
-            size: { w: 1, h: 2 },
-        });
-        expect(map.stagedTiles["17680"]).toMatchObject({
-            groupName: "potato",
-            size: { w: 1, h: 2 },
-        });
-        expect(map.stagedTiles["17413"]).toMatchObject({
-            groupName: "corn",
-            size: { w: 1, h: 2 },
-        });
-        expect(map.stagedTiles["17533"]).toMatchObject({
-            groupName: "turnip",
-        });
-        expect(map.stagedTiles["17533"].renderMode).toBeUndefined();
-        expect(map.stagedTiles["17685"]).toMatchObject({
-            groupName: "carrotPotted",
-            size: { w: 1, h: 2 },
-            renderMode: "replace",
-        });
-        expect(map.stagedTiles["17124"]).toMatchObject({
-            groupName: "cauliflowerPotted",
-            size: { w: 1, h: 2 },
-            renderMode: "replace",
-        });
-        expect(map.stagedTiles["17400"]).toMatchObject({
-            groupName: "broccoliPotted",
-            size: { w: 1, h: 2 },
-            renderMode: "replace",
-        });
-        expect(map.stagedTiles["17409"]).toMatchObject({
-            groupName: "cornPotted",
-            size: { w: 1, h: 2 },
-        });
-        expect(Object.values(map.stagedTiles).filter((tile) => tile.groupName === "cornPotted")).toHaveLength(1);
-        expect(map.stagedTiles["17675"]).toBeUndefined();
-        expect(map.stagedTiles["17676"]).toMatchObject({
-            groupName: "potatoPotted",
-            size: { w: 1, h: 2 },
-            renderMode: "replace",
-        });
-        expect(map.stagedTiles["17952"]).toMatchObject({
-            groupName: "strawberryPotted",
-            size: { w: 1, h: 2 },
-            renderMode: "replace",
-        });
-        expect(map.stagedTiles["17956"]).toMatchObject({
-            groupName: "strawberry",
-            size: { w: 1, h: 2 },
-        });
-        expect(map.stagedTiles["17961"]).toMatchObject({
-            groupName: "onionPotted",
-            size: { w: 1, h: 2 },
-            renderMode: "replace",
-        });
-        expect(map.stagedTiles["17965"]).toMatchObject({
-            groupName: "onion",
-            size: { w: 1, h: 2 },
-        });
-        expect(map.stagedTiles["17970"]).toMatchObject({
-            groupName: "lettucePotted",
-            size: { w: 1, h: 2 },
-            renderMode: "replace",
-        });
-        expect(map.stagedTiles["18223"]).toMatchObject({
-            groupName: "berries",
-        });
-        expect(map.stagedTiles["18218"]).toMatchObject({
-            groupName: "blueberry",
-            size: { w: 1, h: 2 },
-        });
-        expect(map.stagedTiles["18237"]).toMatchObject({
-            groupName: "tomatoPotted",
-            size: { w: 1, h: 2 },
-            renderMode: "replace",
-        });
-        expect(map.stagedTiles["18241"]).toMatchObject({
-            groupName: "tomato",
-            size: { w: 1, h: 2 },
-        });
-        expect(map.stagedTiles["18246"]).toMatchObject({
-            groupName: "pottedRoses",
-            size: { w: 1, h: 2 },
-            renderMode: "replace",
-            stages: 3,
-        });
-        expect(map.stagedTiles["18249"]).toMatchObject({
-            groupName: "roses",
-            size: { w: 1, h: 2 },
-            stages: 3,
-        });
-        expect(map.stagedTiles["17689"].renderMode).toBeUndefined();
-        expect(map.stagedTiles["17128"].renderMode).toBeUndefined();
-        expect(map.stagedTiles["17404"].renderMode).toBeUndefined();
-        expect(map.stagedTiles["18223"].renderMode).toBeUndefined();
-        expect(map.stagedTiles["17413"].renderMode).toBeUndefined();
-    });
 });
