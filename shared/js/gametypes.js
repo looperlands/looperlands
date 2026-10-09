@@ -64,7 +64,8 @@ Types = {
         CHAT_INVENTORY: 61,
         CHAT_INVENTORY_REQUEST: 62,
         NPC_STATE: 63,
-        WORLD_AMBIENCE: 64
+        WORLD_AMBIENCE: 64,
+        TILE_ACTION: 65
     },
 
     Entities: {
@@ -6615,8 +6616,8 @@ var kinds = {
     m88npie: [Types.Entities.M88NPIE, "object"],
     m88nseeds: [Types.Entities.M88NSEEDS, "object"],
     m88nsack: [Types.Entities.M88NSACK, "object"],
-    m88nshovel: [Types.Entities.M88NSHOVEL, "object"],
-    m88nwatercan: [Types.Entities.M88NWATERCAN, "object"],
+    m88nshovel: [Types.Entities.M88NSHOVEL, "object", false, {tags: ["tool"], toolType: "shovel", animationSprite: "tool-shovel", impactFeedback: {impactFrame: 3, colors: ["#895737", "#b37b4e", "#d5ad75"], count: 8, lifetimeMs: 450, speed: 22, gravity: 95}}],
+    m88nwatercan: [Types.Entities.M88NWATERCAN, "object", false, {tags: ["tool"], toolType: "wateringcan", animationSprite: "tool-watering-can", impactFeedback: {impactFrame: 3, colors: ["#359edb", "#79cff2", "#c0edff"], count: 7, lifetimeMs: 350, speed: 18, gravity: 80}}],
     m88nticket: [Types.Entities.M88NTICKET, "object"],
     m88ngoldenticket: [Types.Entities.M88NGOLDENTICKET, "object"],
     m88ndrsbook: [Types.Entities.M88NDRSBOOK, "object"],
@@ -12355,13 +12356,28 @@ Types.isFishingRod = function(kind) {
     return kinds.getType(kind) === "fishingrod";
 };
 
-Types.isToolOfType = function(spriteName, toolType) {
-    if (!kinds.getType(spriteName) === "tool") {
-        return false
-    }
+Types.getKindOptions = function(kind) {
+    if (kind === undefined || kind === null) return {};
+    const name = typeof kind === "string" && kinds[kind] ? kind : Types.getKindAsString(Number(kind));
+    return kinds[name]?.[3] || {};
+};
 
-    let kind = kinds[spriteName];
-    return (kind && kind[3] && kind[3].toolType === toolType);
+Types.hasTag = function(kind, tag) {
+    return Types.getKindOptions(kind).tags?.includes(tag) === true;
+};
+
+Types.isTool = function(kind) {
+    const id = typeof kind === "string" && kinds[kind] ? kinds[kind][0] : Number(kind);
+    if (!Number.isFinite(id)) return false;
+    return Types.isFishingRod(id) || kinds.getType(id) === "tool" || Types.hasTag(id, "tool");
+};
+
+Types.isToolOfType = function(kind, toolType) {
+    return Types.isTool(kind) && Types.getKindOptions(kind).toolType === toolType;
+};
+
+Types.getToolAnimationSprite = function(kind) {
+    return Types.isTool(kind) ? Types.getKindOptions(kind).animationSprite : undefined;
 };
 
 Types.isBot = function(kind) {

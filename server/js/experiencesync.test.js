@@ -161,3 +161,23 @@ test('different assets can persist independently', async () => {
     expect(a.readXp()).toBe(10600);
     expect(b.readXp()).toBe(10700);
 });
+
+test('persisted farming XP updates the avatar without entering its XP write queue', async () => {
+    const save = jest.fn();
+    const asset = createAsset('avatar', save);
+    await asset.addXp(100);
+    await asset.owner.applyPersistedExperience(10030);
+    expect(asset.readXp()).toBe(10130);
+    expect(asset.owner.accumulatedExperience).toBe(100);
+    expect(save).not.toHaveBeenCalled();
+});
+test('an older combat XP response cannot erase already committed farming XP', async () => {
+    const pending = deferred();
+    const asset = createAsset('avatar', jest.fn(() => pending.promise));
+    const combat = asset.addXp(600);
+    await Promise.resolve();
+    await asset.owner.applyPersistedExperience(10630);
+    pending.resolve(10600);
+    await combat;
+    expect(asset.readXp()).toBe(10630);
+});

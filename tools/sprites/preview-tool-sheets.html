@@ -1,0 +1,69 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Tile-action tool preview</title>
+<style>
+body {background:#262d35;color:#eef2ed;font:16px system-ui;margin:32px} canvas {image-rendering:pixelated;background:#526347;border:1px solid #75886e} label {display:inline-block;margin:0 24px 16px 0} select {font:inherit} p {max-width:760px;line-height:1.5}
+</style>
+<h1>Tile-action tool preview</h1>
+<p>Existing character frames with linked tool sheets, using the game’s frame sizes, offsets, facing and layer order. This preview checks artwork alignment; server interaction is covered separately by tests.</p>
+<label>Tool <select id="tool"><option>tool-shovel</option><option>tool-watering-can</option><option>axe</option></select></label>
+<label>Facing <select id="facing"><option>right</option><option>left</option><option>up</option><option>down</option></select></label>
+<label><input type="checkbox" id="animate" checked> Animate</label>
+<label>Frame <select id="frame"><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option></select></label>
+<label><input type="checkbox" id="particles" checked> Impact particles</label>
+<label><input type="checkbox" id="freezeImpact"> Freeze impact preview</label>
+<br><canvas id="preview" width="640" height="400"></canvas>
+<script src="../../shared/js/gametypes.js"></script>
+<script>
+let Feedback, particleExtension;
+function define(factory) { Feedback = factory(); }
+self.RendererExtensions = {register(id, extension) { particleExtension = extension; }};
+</script>
+<script src="../../client/js/toolimpactfeedback.js"></script>
+<script src="../../client/js/tool-impact-renderer-worker.js"></script>
+<script>
+(async () => {
+ const names=['clotharmor','tool-shovel','tool-watering-can','axe'];
+ const assets={};
+ for(const name of names){
+  const metadata=await fetch('../../client/sprites/'+name+'.json').then(r=>r.json());
+  const image=new Image(); image.src='../../client/img/1/'+name+'.png'; await image.decode();
+  assets[name]={metadata,image};
+ }
+ const canvas=document.getElementById('preview'),ctx=canvas.getContext('2d');ctx.imageSmoothingEnabled=false;
+ const animation={length:5,currentFrame:{index:0}};
+ const actor={id:1,currentAnimation:animation,isMoving:()=>false};
+ const game={started:true,mapId:'preview',sessionId:'preview',player:actor,
+  getEntityById:()=>actor,app:{settings:{getCombatEffectsEnabled:()=>document.getElementById('particles').checked}}};
+ const feedback=new Feedback(game); let signature;
+
+ function render(time){
+  ctx.clearRect(0,0,640,400);
+  const facing=document.getElementById('facing').value;
+  const direction=facing==='left'?'right':facing;
+  const frozen=document.getElementById('freezeImpact').checked;
+  const index=frozen?3:document.getElementById('animate').checked?Math.floor(time/140)%5:Number(document.getElementById('frame').value);
+  animation.currentFrame.index=index;
+
+  ctx.save();ctx.translate(320,200);ctx.scale(facing==='left'?-6:6,6);
+  const draw=name=>{const {metadata:d,image}=assets[name];const a=d.animations['atk_'+direction];ctx.drawImage(image,index*d.width,a.row*d.height,d.width,d.height,d.offset_x,d.offset_y,d.width,d.height);};
+  const tool=document.getElementById('tool').value;
+  if(facing==='up')draw(tool);
+  draw('clotharmor');
+  if(facing!=='up')draw(tool);
+  ctx.restore();
+  const nextSignature=tool+facing+frozen+document.getElementById('particles').checked;
+  if(signature!==nextSignature){
+   signature=nextSignature; feedback.clear();
+   const kind=tool==='tool-shovel'?Types.Entities.M88NSHOVEL:tool==='tool-watering-can'?Types.Entities.M88NWATERCAN:null;
+   const target=facing==='left'?[-1,0]:facing==='up'?[0,-1]:facing==='down'?[0,1]:[1,0];
+   feedback.startAction(actor,{tileX:target[0],tileY:target[1],impactFeedback:Types.getKindOptions(kind).impactFeedback},animation);
+   if(frozen)feedback.getFrame(0);
+  }
+  const particles=feedback.getFrame(frozen?120:time);
+  ctx.save();particleExtension.draw(ctx,particles,{cameraX:-320/6,cameraY:-200/6,scale:6});ctx.restore();
+  requestAnimationFrame(render);
+ }
+ requestAnimationFrame(render);
+})();
+</script>

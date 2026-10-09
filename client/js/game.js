@@ -1,10 +1,10 @@
 define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile',
-        'warrior', 'gameclient', 'audio', 'updater', 'transition', 'combatfeedback',
+        'warrior', 'gameclient', 'audio', 'updater', 'transition', 'combatfeedback', 'toolimpactfeedback',
         'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'fieldeffect', 'config', 'float', 'projectile', 'tileactions',
         'worldambience', 'worldscenery', 'conversationhold', 'worldtime-worker', '../../shared/js/gametypes', '../../shared/js/altnames'],
 
     function (InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, AnimatedTile,
-              Warrior, GameClient, AudioManager, Updater, Transition, CombatFeedback,
+              Warrior, GameClient, AudioManager, Updater, Transition, CombatFeedback, ToolImpactFeedback,
               Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, Fieldeffect, Config, Float, Projectile, TileActions, WorldAmbience, WorldScenery, ConversationHold, WorldTime) {
         var Game = Class.extend({
             init: function (app) {
@@ -79,6 +79,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 // combat
                 this.infoManager = new InfoManager(this);
                 this.combatFeedback = new CombatFeedback(this);
+                this.toolImpactFeedback = new ToolImpactFeedback(this);
 
                 // zoning
                 this.currentZoning = null;
@@ -115,7 +116,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.tileActions = new TileActions(this);
 
                 // sprites
-                this.spriteNames = ["hand", "handclick", "sword", "loot", "target", "talk", "float", "indicator", "sparks", "shadow16", "rat", "skeleton", "skeleton2", "spectre", "boss", "deathknight",
+                this.spriteNames = ["tool-shovel", "tool-watering-can", "hand", "handclick", "sword", "loot", "target", "talk", "float", "indicator", "sparks", "shadow16", "rat", "skeleton", "skeleton2", "spectre", "boss", "deathknight",
                     "ogre", "crab", "snake", "eye", "bat", "goblin", "wizard", "guard", "taikoguard", "king", "villagegirl", "villager", "coder", "agent", "rick", "scientist", "nyan", "priest", "coblumberjack", "cobhillsnpc", "cobcobmin", "cobellen", "cobminer", "cobjohnny", "cobashley",
                     "king2", "goose", "tanashi", "slime", "kingslime", "silkshade", "redslime", "villagesign1", "wildgrin", "loomleaf", "gnashling", "arachweave", "spider", "fangwing", "minimag", "miner", "megamag", "seacreature", "tentacle", "tentacle2", "wildwill", "shopowner", "blacksmith",
                     "cobchicken", "alaric", "orlan", "jayce", "cobcow", "cobpig", "cobgoat", "ghostie", "cobslimered", "cobslimeyellow", "cobslimeblue", "cobslimepurple", "cobslimegreen", "cobslimepink", "cobslimecyan", "cobslimemint", "cobslimeking", "cobyorkie", "cobcat", "cobcatblack", "cobcatorange", "cobcatbrown", "cobdirt", "cobhay", "cobhaytwo", "cobincubator", "cobcoblin", "cobcobane", "cobogre",
@@ -6297,7 +6298,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             loadMap: function (mapId) {
                 var self = this;
                 this.mapId = mapId;
+                this.tileStageRevisions = {};
                 this.combatFeedback.clear();
+                this.toolImpactFeedback.clear();
                 this.infoManager.clear();
 
                 this.map = new Mapx(!this.renderer.upscaledRendering, this, mapId);
@@ -7015,6 +7018,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     if (this.canUseCenteredCamera()) {
                         this.focusPlayer();
                     }
+                    this.toolImpactFeedback.render(this.renderer, this.currentTime);
                     this.renderer.renderFrame();
                     if (this.gamepadListener) {
                         this.gamepadListener.update();
@@ -7038,6 +7042,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 console.log("Game stopped.");
                 this.isStopped = true;
                 this.combatFeedback.clear();
+                this.toolImpactFeedback.clear();
                 this.infoManager.clear();
             },
 
@@ -7118,6 +7123,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     connecting = false; // always in dispatcher mode in the build version
 
                 this.client = new GameClient(this.host, this.port, this.protocol, this.sessionId, this.mapId);
+                this.bindTileActionCallbacks();
                 this.client.onSocialChat((type, data) => self.app.socialChat.receive(type, data));
                 this.renderStatistics();
 
@@ -7139,6 +7145,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     console.log("Starting client/server handshake");
 
                     function sendHello() {
+                        if (!self.player || self.isStopped) return;
                         console.log("Dynamic nft loaded", self.player.dyanmicNFTLoaded);
                         if (self.player.dyanmicNFTLoaded) {
                             self.player.name = self.username;
@@ -8242,7 +8249,6 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     self.client.onSound(self.handleSound);
                     self.client.onMusic(self.handleMusic);
                     self.client.onLayer(self.handleLayer);
-                    self.client.onTileStage(self.handleTileStage);
                     self.client.onAnimate(self.handleAnimationTrigger);
 
                     self.client.onPopulationChange(function (worldPlayers, totalPlayers) {
@@ -8253,6 +8259,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                     self.client.onDisconnected(function (message) {
                         self.combatFeedback.clear();
+                        self.toolImpactFeedback.clear();
                         self.infoManager.clear();
                         self.app.socialChat?.disconnect();
                         self.app.eventBoard?.disconnect();
@@ -8627,8 +8634,11 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 if (this.lastActionBubbleId) this.destroyBubble(this.lastActionBubbleId);
                 this.getTileActionStage(action)
                     .then((stage) => {
-                        self.tileActions.executeStage(action, stage);
-                    })
+                        return self.tileActions.executeStage(action, stage);
+                    }).catch((error) => {
+                        console.error("Tile action failed", error);
+                        self.showNotification("Could not complete this action. Please try again.");
+                    });
             },
 
             checkForPartnerTask: function (npc) {
@@ -9540,7 +9550,16 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 self.applyToggledLayers()
             },
 
+            bindTileActionCallbacks() {
+                this.client.onTileStage((stage) => this.handleTileStage(stage));
+                this.client.onTileAction((state) => this.tileActions.showActionAnimation(state));
+            },
+
             handleTileStage(stage) {
+                const self = this;
+                const baseKey = stage.x + '.' + stage.y;
+                if (!self.tileStageRevisions) self.tileStageRevisions = {};
+                self.tileStageRevisions[baseKey] = (self.tileStageRevisions[baseKey] || 0) + 1;
                 if(stage.clear) {
                     Object.keys(self.tileStages).forEach((key) => {
                         const stagedTile = self.tileStages[key];
@@ -9585,6 +9604,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     });
                     if(!stagedTile) {
                         console.error(`Could not find staged tile group ${stage.tileGroup}`);
+                        return;
                     }
 
                     if (stage.replaceBaseTile || stagedTile.replaceBaseTile || stagedTile.renderMode === 'replace') {

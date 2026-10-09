@@ -444,3 +444,8 @@ Messages.TileStage = Message.extend({
         return [Types.Messages.TILESTAGE, this.stage];
     },
 });
+
+Messages.TileAction = Message.extend({
+    init: function(state) { this.state = state; },
+    serialize: function() { return [Types.Messages.TILE_ACTION, this.state]; }
+});

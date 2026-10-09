@@ -616,6 +616,23 @@ const isNotFoundError = function (error) {
   return error?.message?.includes("status: 404");
 }
 
+// Atomic farming bypasses the non-idempotent loot batch and shares its writer.
+const loadFarmState = (mapId, x, y) => platformClient.getFarmState(mapId, x, y);
+const commitFarmTransaction = async function (transaction) {
+  while (processingQueue || LOOT_EVENTS_QUEUE.length) {
+    if (await processLootEventQueue() === false) throw new Error('inventory_unavailable');
+  }
+  processingQueue = true;
+  inventoryWritePromise = (async () => {
+    const receipt = await platformClient.commitFarmTransaction(transaction);
+    const quantities = Object.fromEntries(Object.entries(receipt.quantities).map(([item, quantity]) => [item,
+      quantity + pendingQueue.filter(event => event.nftId === transaction.nftId && event.item === item).reduce((sum, event) => sum + event.amount, 0)
+    ]));
+    return {...receipt, quantities};
+  })().finally(finishInventoryWrite);
+  return inventoryWritePromise;
+};
+
 const loadFarmPlots = async function (mapId) {
   try {
     const plots = await platformClient.getFarmPlots(mapId);
@@ -747,6 +764,8 @@ module.exports = {
   completePartnerTask,
   getPartnerTask,
   getInventory,
+  loadFarmState,
+  commitFarmTransaction,
   loadFarmPlots,
   loadFarmPlot,
   saveFarmPlot,

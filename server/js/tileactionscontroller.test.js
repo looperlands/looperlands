@@ -671,4 +671,129 @@ describe("TileActionsController farming", () => {
         expect(stage.key).toBe("wait");
     });
 
+    test("stale stage requests cannot execute the plot's new action", async () => {
+        await controller.executeStage("avatar", "duckville", tileAction, null, world, "prepare");
+        const result = await controller.executeStage("avatar", "duckville", tileAction, "M88NLETTUCE", world, "prepare");
+        expect(result.success).toBe(false);
+        expect(dao.updateResourceBalance).not.toHaveBeenCalled();
+        expect((await controller.findCurrentStage("avatar", "duckville", tileAction, world)).key).toBe("plant");
+    });
+
+    test("failed map hydration can retry and concurrent requests share the load", async () => {
+        dao.loadFarmPlots.mockRejectedValueOnce(new Error("offline"));
+        await expect(controller.loadPersistedPlots("duckville", world)).rejects.toThrow("offline");
+        await Promise.all([
+            controller.loadPersistedPlots("duckville", world),
+            controller.loadPersistedPlots("duckville", world),
+        ]);
+        expect(dao.loadFarmPlots).toHaveBeenCalledTimes(2);
+    });
+
+    test("failed watering persistence leaves the cached plot planted for a retry", async () => {
+        await controller.executeStage("avatar", "duckville", tileAction, null, world);
+        await controller.executeStage("avatar", "duckville", tileAction, "M88NLETTUCE", world);
+        dao.saveFarmPlot.mockRejectedValueOnce(new Error("offline"));
+        const log = jest.spyOn(console, "error").mockImplementation(() => {});
+        try {
+            expect((await controller.executeStage("avatar", "duckville", tileAction, null, world)).success).toBe(false);
+            expect((await controller.findCurrentStage("avatar", "duckville", tileAction, world)).key).toBe("water");
+            expect((await controller.executeStage("avatar", "duckville", tileAction, null, world)).success).toBe(true);
+        } finally { log.mockRestore(); }
+    });
+
+    test("growth visuals never write an old plot back to persistence", async () => {
+        jest.useFakeTimers();
+        try {
+            await controller.executeStage("avatar", "duckville", tileAction, null, world);
+            await controller.executeStage("avatar", "duckville", tileAction, "M88NLETTUCE", world);
+            await controller.executeStage("avatar", "duckville", tileAction, null, world);
+            dao.saveFarmPlot.mockClear();
+            world.placeStagedTileGroup.mockClear();
+            now += growthDurationMs();
+            await jest.advanceTimersByTimeAsync(growthDurationMs());
+            await controller.findCurrentStage("avatar", "duckville", tileAction, world);
+            expect(world.placeStagedTileGroup).toHaveBeenCalled();
+            expect(dao.saveFarmPlot).not.toHaveBeenCalled();
+        } finally { jest.useRealTimers(); }
+    });
+
+    test("retrying a failed harvest delete does not pay out twice", async () => {
+        await controller.executeStage("avatar", "duckville", tileAction, null, world);
+        await controller.executeStage("avatar", "duckville", tileAction, "M88NLETTUCE", world);
+        await controller.executeStage("avatar", "duckville", tileAction, null, world);
+        now += growthDurationMs() + 1000;
+        dao.updateResourceBalance.mockClear();
+        dao.deleteFarmPlot.mockRejectedValueOnce(new Error("offline"));
+        const log = jest.spyOn(console, "error").mockImplementation(() => {});
+        try {
+            expect((await controller.executeStage("avatar", "duckville", tileAction, null, world, "harvest")).success).toBe(false);
+            expect((await controller.executeStage("avatar", "duckville", tileAction, null, world, "harvest")).success).toBe(true);
+            expect(dao.updateResourceBalance).toHaveBeenCalledTimes(1);
+            expect(dao.deleteFarmPlot).toHaveBeenCalledTimes(2);
+        } finally { log.mockRestore(); }
+    });
+
+    test("XP failure cannot leave a paid harvest available for another payout", async () => {
+        await controller.executeStage("avatar", "duckville", tileAction, null, world);
+        await controller.executeStage("avatar", "duckville", tileAction, "M88NLETTUCE", world);
+        await controller.executeStage("avatar", "duckville", tileAction, null, world);
+        now += growthDurationMs() + 1000;
+        world.players[1].handleExperience.mockRejectedValueOnce(new Error("offline"));
+        const log = jest.spyOn(console, "error").mockImplementation(() => {});
+        try {
+            expect((await controller.executeStage("avatar", "duckville", tileAction, null, world, "harvest")).success).toBe(true);
+            expect((await controller.findCurrentStage("avatar", "duckville", tileAction, world)).key).toBe("prepare");
+            expect((await controller.executeStage("avatar", "duckville", tileAction, null, world, "harvest")).success).toBe(false);
+        } finally { log.mockRestore(); }
+    });
+
+    test.each(["plant", "boost"])("failed %s save offers a free completion action even with no items left", async stageKey => {
+        inventory[Types.Entities.M88NSEEDS] = 1;
+        await controller.executeStage("avatar", "duckville", tileAction, null, world);
+        if (stageKey === "boost") {
+            await controller.executeStage("avatar", "duckville", tileAction, "M88NLETTUCE", world);
+            await controller.executeStage("avatar", "duckville", tileAction, null, world);
+            inventory[Types.Entities.M88NPOO] = 1;
+        }
+        dao.updateResourceBalance.mockClear();
+        dao.saveFarmPlot.mockRejectedValueOnce(new Error("offline"));
+        const log = jest.spyOn(console, "error").mockImplementation(() => {});
+        const item = stageKey === "plant" ? "M88NLETTUCE" : "M88NPOO";
+        try {
+            expect((await controller.executeStage("avatar", "duckville", tileAction, item, world, stageKey)).success).toBe(false);
+            expect((await controller.findCurrentStage("avatar", "duckville", tileAction, world)).key).toBe("recover");
+            expect((await controller.findCurrentStage("other", "duckville", tileAction, world)).waiting).toBe(true);
+            expect((await controller.executeStage("other", "duckville", tileAction, null, world, "recover")).success).toBe(false);
+            expect((await controller.executeStage("avatar", "duckville", tileAction, null, world, "recover")).success).toBe(true);
+            expect(dao.updateResourceBalance).toHaveBeenCalledTimes(1);
+            expect(plots["duckville.10.20"].state).toBe(stageKey === "plant" ? "planted" : "growing");
+            if (stageKey === "boost") expect(plots["duckville.10.20"].boosts.M88NPOO).toBe(1);
+        } finally { log.mockRestore(); }
+    });
+
+    test("simultaneous requests cannot spend the same last seed on two plots", async () => {
+        const otherTile = {...tileAction, gridX: 11};
+        await controller.executeStage("avatar", "duckville", tileAction, null, world);
+        await controller.executeStage("avatar", "duckville", otherTile, null, world);
+        inventory[Types.Entities.M88NSEEDS] = 1;
+        dao.updateResourceBalance.mockClear();
+        const results = await Promise.all([
+            controller.executeStage("avatar", "duckville", tileAction, "M88NLETTUCE", world, "plant"),
+            controller.executeStage("avatar", "duckville", otherTile, "M88NLETTUCE", world, "plant"),
+        ]);
+        expect(results.filter(result => result.success)).toHaveLength(1);
+        expect(dao.updateResourceBalance).toHaveBeenCalledTimes(1);
+        expect(inventory[Types.Entities.M88NSEEDS]).toBe(0);
+    });
+
+    test("farming reads quantities through the shared inventory writer when available", async () => {
+        dao.refreshInventoryItems = jest.fn(async items => items.map(item => ({...item, quantity: 0})));
+        const stage = await controller.findCurrentStage("avatar", "duckville", tileAction, world);
+        expect(stage.hasTool).toBe(false);
+        expect(dao.refreshInventoryItems).toHaveBeenCalledWith([
+            {nftId: "avatar", item: String(Types.Entities.M88NSHOVEL)},
+        ]);
+        expect(dao.getItemCount).not.toHaveBeenCalled();
+    });
+
 });

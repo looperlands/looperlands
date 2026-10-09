@@ -1,4 +1,5 @@
 const _ = require("underscore");
+const {createHash} = require("crypto");
 const fs = require("fs");
 const path = require("path");
 const defaultDao = require("../dao.js");
@@ -22,8 +23,15 @@ class DuckvilleTileActionsController {
         this.mapActionGrids = {};
         this.tileStages = {};
         this.plotLocks = {};
+        this.actorLocks = new Set();
         this.loadedMaps = {};
+        this.loadingMaps = {};
         this.stageTimers = {};
+        this.harvestReceipts = new WeakMap();
+        this.pendingCropWrites = new Map();
+        this.atomicFarming = (options.atomicFarming ?? process.env.LOOPERLANDS_ATOMIC_FARMING !== "0") &&
+            !!this.dao.loadFarmState && !!this.dao.commitFarmTransaction;
+        this.plotRevisions = new Map();
     }
 
     loadStageDefinitions() {
@@ -80,7 +88,7 @@ class DuckvilleTileActionsController {
 
             await this.loadPersistedPlots(map, world);
 
-            const plot = await this.getPlot(map, tileAction);
+            const plot = await this.getPlot(map, tileAction, world);
             await this.refreshVisualStage(map, tileAction, plot, farmDefinition, world);
             const stage = await this.getStageForPlot(nftId, map, tileAction, plot, farmDefinition, world);
             if (this.debugLogging) {
@@ -92,24 +100,28 @@ class DuckvilleTileActionsController {
                     stage,
                 }));
             }
-            return stage;
+            return stage && this.atomicFarming ? {...stage, revision: this.plotRevisions.get(this.getPlotKey(map, tileAction))} : stage;
         } catch (error) {
             console.error("findCurrentStage", error);
             return null;
         }
     }
 
-    async executeStage(nftId, map, tileAction, item, world) {
+    async executeStage(nftId, map, tileAction, item, world, expectedStage, expectedRevision) {
         if (!tileAction) {
             return { success: false };
         }
         const lockKey = this.getPlotKey(map, tileAction);
+        if (this.actorLocks.has(nftId)) {
+            return this.fail(world, nftId, "Finish your current farming action first.");
+        }
         if (this.plotLocks[lockKey]) {
             this.notifyPlayer(world, nftId, "That plot is already being tended.");
             return { success: false };
         }
 
         this.plotLocks[lockKey] = true;
+        this.actorLocks.add(nftId);
         try {
             tileAction = this.resolveTileAction(map, tileAction, world);
             if (!tileAction) {
@@ -117,7 +129,7 @@ class DuckvilleTileActionsController {
             }
             await this.loadPersistedPlots(map, world);
             const farmDefinition = this.getFarmDefinition(map, tileAction);
-            const plot = await this.getPlot(map, tileAction);
+            const plot = await this.getPlot(map, tileAction, world);
             await this.refreshVisualStage(map, tileAction, plot, farmDefinition, world);
             const stage = await this.getStageForPlot(nftId, map, tileAction, plot, farmDefinition, world);
             if (this.debugLogging) {
@@ -138,17 +150,28 @@ class DuckvilleTileActionsController {
                 return { success: false };
             }
 
+            if (expectedStage !== undefined && stage.key !== expectedStage) {
+                return this.fail(world, nftId, "This plot changed. Check its current action and try again.");
+            }
+
+            if (stage.key === "recover") {
+                return await this.completeCropWrite(map, tileAction, world);
+            }
+            if (this.atomicFarming && (!Number.isSafeInteger(expectedRevision) || expectedRevision !== this.plotRevisions.get(lockKey))) {
+                return this.fail(world, nftId, "This plot changed. Check its current action and try again.");
+            }
+            const context = this.atomicFarming ? {revision: expectedRevision, item: item ?? null} : null;
             switch (stage.key) {
                 case "prepare":
-                    return await this.preparePlot(nftId, map, tileAction, farmDefinition, world);
+                    return await this.preparePlot(nftId, map, tileAction, farmDefinition, world, context);
                 case "plant":
-                    return await this.plantCrop(nftId, map, tileAction, item, farmDefinition, world);
+                    return await this.plantCrop(nftId, map, tileAction, item, farmDefinition, world, context);
                 case "water":
-                    return await this.waterCrop(nftId, map, tileAction, plot, farmDefinition, world);
+                    return await this.waterCrop(nftId, map, tileAction, plot, farmDefinition, world, context);
                 case "boost":
-                    return await this.boostCrop(nftId, map, tileAction, item, plot, farmDefinition, world);
+                    return await this.boostCrop(nftId, map, tileAction, item, plot, farmDefinition, world, context);
                 case "harvest":
-                    return await this.harvestCrop(nftId, map, tileAction, plot, farmDefinition, world);
+                    return await this.harvestCrop(nftId, map, tileAction, plot, farmDefinition, world, context);
                 default:
                     return { success: false };
             }
@@ -165,6 +188,7 @@ class DuckvilleTileActionsController {
             return { success: false };
         } finally {
             delete this.plotLocks[lockKey];
+            this.actorLocks.delete(nftId);
         }
     }
 
@@ -173,6 +197,13 @@ class DuckvilleTileActionsController {
     }
 
     async getStageForPlot(nftId, map, tileAction, plot, farmDefinition, world) {
+        const pending = this.pendingCropWrites.get(this.getPlotKey(map, tileAction));
+        if (pending) {
+            return pending.nftId === nftId
+                ? { key: "recover", name: "Complete " + pending.stage + " action" }
+                : { key: "wait", name: "Plot is being tended", waiting: true,
+                    message: "The previous action must finish before this plot can be tended." };
+        }
         if (!plot) {
             return this.decorateRequirements(nftId, {
                 key: "prepare",
@@ -370,7 +401,7 @@ class DuckvilleTileActionsController {
         return choices;
     }
 
-    async preparePlot(nftId, map, tileAction, farmDefinition, world) {
+    async preparePlot(nftId, map, tileAction, farmDefinition, world, context) {
         const playerLevel = await this.getPlayerLevel(nftId, world);
         if (this.isLevelLocked(playerLevel, farmDefinition.minLevel)) {
             return this.fail(world, nftId, "You need level " + farmDefinition.minLevel + " to prepare this land.");
@@ -381,6 +412,8 @@ class DuckvilleTileActionsController {
         }
 
         const plot = this.createPlot(map, tileAction, nftId, "prepared", null, farmDefinition.prepare.tile);
+        if (context) return this.commitAtomicAction(nftId, map, tileAction, plot, "prepare", [], farmDefinition.prepare.xp,
+            [{item: String(Types.Entities[farmDefinition.prepare.tool]), quantity: 1}], "The soil is ready.", world, context);
         await this.savePlot(plot);
         this.setTileActionStage(map, tileAction, plot);
         world.placeStagedTile(tileAction.gridX, tileAction.gridY, farmDefinition.prepare.tile, 0);
@@ -388,7 +421,7 @@ class DuckvilleTileActionsController {
         return { ...this.success(world, nftId, "The soil is ready."), activity: {action: tileAction.name, stage: "prepare", target: '*', quantity: 1, x: tileAction.gridX, y: tileAction.gridY} };
     }
 
-    async plantCrop(nftId, map, tileAction, cropKey, farmDefinition, world) {
+    async plantCrop(nftId, map, tileAction, cropKey, farmDefinition, world, context) {
         const crop = farmDefinition.crops[cropKey];
         if (!crop) {
             return this.fail(world, nftId, "Choose a crop to plant.");
@@ -413,31 +446,32 @@ class DuckvilleTileActionsController {
             return this.fail(world, nftId, "You need " + crop.seedCost + " seed packet" + (crop.seedCost === 1 ? "" : "s") + ".");
         }
 
-        await this.dao.updateResourceBalance(nftId, seedKind, -crop.seedCost);
-        this.applyInventoryTransactions([{ nftId, itemId: seedKind, quantity: -crop.seedCost }]);
         const now = this.now();
         const plot = this.createPlot(map, tileAction, nftId, "planted", cropKey, crop.tile, crop.tileGroup);
         plot.plantedAt = now;
         plot.quality = 0;
         plot.boosts = {};
 
-        await this.savePlot(plot);
-        this.setTileActionStage(map, tileAction, plot);
-        this.placeCropStage(world, tileAction, crop, 0);
-        return { ...this.success(world, nftId, "You planted " + this.cropName(crop) + "."), activity: {action: tileAction.name, stage: "plant", target: cropKey, quantity: 1, x: tileAction.gridX, y: tileAction.gridY} };
+        if (context) return this.commitAtomicAction(nftId, map, tileAction, plot, "plant",
+            [{nftId, itemId: seedKind, quantity: -crop.seedCost}], 0, [], "You planted " + this.cropName(crop) + ".", world, context);
+        return this.commitCropWrite(nftId, map, tileAction, plot, "plant",
+            [{ nftId, itemId: seedKind, quantity: -crop.seedCost }],
+            "You planted " + this.cropName(crop) + ".", world);
     }
 
-    async waterCrop(nftId, map, tileAction, plot, farmDefinition, world) {
+    async waterCrop(nftId, map, tileAction, plot, farmDefinition, world, context) {
         const crop = farmDefinition.crops[plot.crop];
         if (!await this.hasItem(nftId, Types.Entities[farmDefinition.water.tool])) {
             return this.fail(world, nftId, "You need a watering can.");
         }
 
         const now = this.now();
-        plot.state = "growing";
+        plot = { ...plot, state: "growing" };
         plot.wateredAt = now;
         plot.readyAt = now + crop.growSeconds * 1000;
         plot.stage = 1;
+        if (context) return this.commitAtomicAction(nftId, map, tileAction, plot, "water", [], farmDefinition.water.xp,
+            [{item: String(Types.Entities[farmDefinition.water.tool]), quantity: 1}], this.cropName(crop) + " is watered.", world, context);
 
         await this.savePlot(plot);
         this.setTileActionStage(map, tileAction, plot);
@@ -447,13 +481,13 @@ class DuckvilleTileActionsController {
         return { ...this.success(world, nftId, this.cropName(crop) + " is watered."), activity: {action: tileAction.name, stage: "water", target: plot.crop, quantity: 1, x: tileAction.gridX, y: tileAction.gridY} };
     }
 
-    async boostCrop(nftId, map, tileAction, boostItem, plot, farmDefinition, world) {
+    async boostCrop(nftId, map, tileAction, boostItem, plot, farmDefinition, world, context) {
         const boost = (farmDefinition.careBoosts || []).find((candidate) => candidate.item === boostItem);
         if (!boost) {
             return this.fail(world, nftId, "Choose something useful for this crop.");
         }
 
-        plot.boosts = plot.boosts || {};
+        plot = { ...plot, boosts: { ...plot.boosts } };
         if ((plot.boosts[boost.item] || 0) >= boost.maxUses) {
             return this.fail(world, nftId, "This plot already has enough " + boost.name.toLowerCase() + ".");
         }
@@ -463,19 +497,41 @@ class DuckvilleTileActionsController {
             return this.fail(world, nftId, "You do not have " + boost.name.toLowerCase() + ".");
         }
 
-        await this.dao.updateResourceBalance(nftId, itemKind, -1);
-        this.applyInventoryTransactions([{ nftId, itemId: itemKind, quantity: -1 }]);
         plot.boosts[boost.item] = (plot.boosts[boost.item] || 0) + 1;
         plot.quality = (plot.quality || 0) + (boost.quality || 0);
         plot.yieldBonus = (plot.yieldBonus || 0) + (boost.yieldBonus || 0);
         plot.rareChanceBonus = (plot.rareChanceBonus || 0) + (boost.rareChanceBonus || 0);
 
-        await this.savePlot(plot);
-        this.setTileActionStage(map, tileAction, plot);
-        return { ...this.success(world, nftId, boost.name + " helped the crop along."), activity: {action: tileAction.name, stage: "boost", target: plot.crop, quantity: 1, x: tileAction.gridX, y: tileAction.gridY} };
+        if (context) return this.commitAtomicAction(nftId, map, tileAction, plot, "boost",
+            [{nftId, itemId: itemKind, quantity: -1}], 0, [], boost.name + " helped the crop along.", world, context);
+        return this.commitCropWrite(nftId, map, tileAction, plot, "boost",
+            [{ nftId, itemId: itemKind, quantity: -1 }],
+            boost.name + " helped the crop along.", world);
     }
 
-    async harvestCrop(nftId, map, tileAction, plot, farmDefinition, world) {
+    async commitCropWrite(nftId, map, tileAction, plot, stage, transactions, message, world) {
+        await this.dao.updateResourceBalance(transactions);
+        // Keep the already-paid transition until persistence succeeds, so retrying costs nothing.
+        this.pendingCropWrites.set(this.getPlotKey(map, tileAction), { nftId, plot, stage, message });
+        this.applyInventoryTransactions(transactions);
+        return this.completeCropWrite(map, tileAction, world);
+    }
+
+    async completeCropWrite(map, tileAction, world) {
+        const key = this.getPlotKey(map, tileAction);
+        const pending = this.pendingCropWrites.get(key);
+        await this.savePlot(pending.plot);
+        this.setTileActionStage(map, tileAction, pending.plot);
+        this.pendingCropWrites.delete(key);
+        const crop = this.getFarmDefinition(map, tileAction).crops[pending.plot.crop];
+        this.placeCropStage(world, tileAction, crop, this.getVisualStage(pending.plot, crop));
+        return { ...this.success(world, pending.nftId, pending.message), activity: {
+            action: tileAction.name, stage: pending.stage, target: pending.plot.crop,
+            quantity: 1, x: tileAction.gridX, y: tileAction.gridY,
+        } };
+    }
+
+    async harvestCrop(nftId, map, tileAction, plot, farmDefinition, world, context) {
         const crop = farmDefinition.crops[plot.crop];
         if (!this.canHarvest(nftId, plot, farmDefinition)) {
             return this.fail(world, nftId, "Only the planter can harvest this crop right now.");
@@ -489,6 +545,35 @@ class DuckvilleTileActionsController {
         if (!harvestItem) {
             return this.fail(world, nftId, "This crop has no valid harvest item.");
         }
+        if (context) {
+            const {yieldAmount, transactions} = this.rollHarvest(nftId, plot, crop, farmDefinition);
+            return this.commitAtomicAction(nftId, map, tileAction, null, "harvest", transactions,
+                crop.xp + (plot.quality || 0) * 10, [], "Harvested " + yieldAmount + " " + this.cropName(crop) + ".", world,
+                {...context, crop: plot.crop, quantity: yieldAmount, harvestAccess: farmDefinition.harvestAccess || "owner"});
+        }
+        let receipt = this.harvestReceipts.get(plot);
+        if (receipt && receipt.nftId !== nftId) {
+            return this.fail(world, nftId, "This harvest is being completed by another player.");
+        }
+        if (!receipt) {
+            const {yieldAmount, transactions} = this.rollHarvest(nftId, plot, crop, farmDefinition);
+            await this.dao.updateResourceBalance(transactions);
+            receipt = { nftId, yieldAmount };
+            this.harvestReceipts.set(plot, receipt);
+            this.applyInventoryTransactions(transactions);
+        }
+        await this.deletePlot(map, tileAction);
+        this.clearTileActionStage(map, tileAction);
+        this.clearPlotStageTimers(map, tileAction);
+        world.clearStagedTile(tileAction.gridX, tileAction.gridY);
+        this.harvestReceipts.delete(plot);
+        await this.giveAvatarXp(world, nftId, crop.xp + (plot.quality || 0) * 10);
+        const yieldAmount = receipt.yieldAmount;
+        return { ...this.success(world, nftId, "Harvested " + yieldAmount + " " + this.cropName(crop) + "."), activity: {action: tileAction.name, stage: "harvest", target: plot.crop, quantity: yieldAmount, x: tileAction.gridX, y: tileAction.gridY} };
+    }
+
+    rollHarvest(nftId, plot, crop, farmDefinition) {
+        const harvestItem = Types.Entities[this.getYieldItem(plot.crop, crop)];
         const seedItem = Types.Entities[this.getSeedItem(crop, farmDefinition)];
         const yieldAmount = this.rollYield(crop, plot);
         const transactions = [
@@ -503,14 +588,47 @@ class DuckvilleTileActionsController {
             transactions.push({ nftId, itemId: rareDrop.itemId, quantity: rareDrop.quantity });
         });
 
-        await this.dao.updateResourceBalance(transactions);
-        this.applyInventoryTransactions(transactions);
-        await this.giveAvatarXp(world, nftId, crop.xp + (plot.quality || 0) * 10);
-        await this.deletePlot(map, tileAction);
-        this.clearTileActionStage(map, tileAction);
+        return {yieldAmount, transactions};
+    }
+
+    async commitAtomicAction(nftId, map, tileAction, plot, action, transactions, xp, requiredItems, message, world, context) {
+        const requestId = createHash('sha256').update(JSON.stringify([nftId, map, tileAction.gridX, tileAction.gridY,
+            context.revision, action, context.item])).digest('hex');
+        const receipt = await this.dao.commitFarmTransaction({requestId, nftId, mapId: map, x: tileAction.gridX, y: tileAction.gridY,
+            expectedRevision: context.revision, action, item: context.item, plot,
+            items: transactions.map(({itemId, quantity}) => ({item: String(itemId), amount: quantity})),
+            xp, requiredItems, harvestAccess: context.harvestAccess || "owner"});
+        this.plotRevisions.set(this.getPlotKey(map, tileAction), receipt.revision);
+        if (receipt.plot) this.setTileActionStage(map, tileAction, receipt.plot);
+        else this.clearTileActionStage(map, tileAction);
+        this.publishPlot(map, tileAction, receipt.plot, world);
+        for (const key of this.cache?.keys?.() || []) {
+            const session = this.cache.get(key);
+            if (session?.nftId !== nftId) continue;
+            if (!session.gameData) session.gameData = {};
+            if (!session.gameData.items) session.gameData.items = {};
+            Object.assign(session.gameData.items, receipt.quantities);
+            this.cache.set(key, session);
+        }
+        const player = this.getPlayer(world, nftId);
+        if (player?.applyPersistedExperience) await player.applyPersistedExperience(receipt.xp);
+        return {...this.success(world, nftId, message), activity: {action: tileAction.name, stage: action,
+            target: context.crop || receipt.plot?.crop || '*', quantity: context.quantity || 1, x: tileAction.gridX, y: tileAction.gridY}};
+    }
+
+    publishPlot(map, tileAction, plot, world) {
+        if (!world) return;
         this.clearPlotStageTimers(map, tileAction);
-        world.clearStagedTile(tileAction.gridX, tileAction.gridY);
-        return { ...this.success(world, nftId, "Harvested " + yieldAmount + " " + this.cropName(crop) + "."), activity: {action: tileAction.name, stage: "harvest", target: plot.crop, quantity: yieldAmount, x: tileAction.gridX, y: tileAction.gridY} };
+        if (!plot) {world.clearStagedTile(tileAction.gridX, tileAction.gridY); return;}
+        if (plot.state === "prepared") {
+            world.clearStagedTile(tileAction.gridX, tileAction.gridY);
+            world.placeStagedTile(tileAction.gridX, tileAction.gridY, plot.tile, 0);
+        } else {
+            const crop = this.getFarmDefinition(map, tileAction).crops[plot.crop];
+            if (!crop) return;
+            this.placeCropStage(world, tileAction, crop, this.getVisualStage(plot, crop));
+            this.schedulePlotStageUpdates(map, tileAction, plot, crop, world);
+        }
     }
 
     createPlot(map, tileAction, ownerNftId, state, crop, tile, tileGroup) {
@@ -529,11 +647,16 @@ class DuckvilleTileActionsController {
     }
 
     async loadPersistedPlots(map, world) {
-        if (this.loadedMaps[map]) {
-            return;
+        if (this.loadedMaps[map]) return;
+        if (!this.loadingMaps[map]) {
+            this.loadingMaps[map] = this.hydratePersistedPlots(map, world)
+                .then(() => { this.loadedMaps[map] = true; })
+                .finally(() => { delete this.loadingMaps[map]; });
         }
+        return this.loadingMaps[map];
+    }
 
-        this.loadedMaps[map] = true;
+    async hydratePersistedPlots(map, world) {
         const plots = await this.dao.loadFarmPlots(map);
         if (this.debugLogging) {
             console.info("[tileStage.duckville] persisted plots", JSON.stringify({
@@ -591,7 +714,16 @@ class DuckvilleTileActionsController {
         return entries.find(([, definition]) => definition?.crops?.[plot?.crop])?.[0] || null;
     }
 
-    async getPlot(map, tileAction) {
+    async getPlot(map, tileAction, world) {
+        if (this.atomicFarming) {
+            const previousRevision = this.plotRevisions.get(this.getPlotKey(map, tileAction));
+            const state = await this.dao.loadFarmState(map, tileAction.gridX, tileAction.gridY);
+            this.plotRevisions.set(this.getPlotKey(map, tileAction), state.revision);
+            if (state.plot) this.setTileActionStage(map, tileAction, state.plot);
+            else this.clearTileActionStage(map, tileAction);
+            if (previousRevision !== state.revision) this.publishPlot(map, tileAction, state.plot, world);
+            return state.plot;
+        }
         const cached = this.tileStages[map]?.[this.getPositionKey(tileAction)];
         if (cached) {
             return cached;
@@ -718,7 +850,7 @@ class DuckvilleTileActionsController {
         }
 
         plot.stage = visualStage;
-        await this.savePlot(plot);
+        // Growth visuals are derived from timestamps; never rewrite persisted gameplay state here.
         this.setTileActionStage(map, tileAction, plot);
         this.placeCropStage(world, tileAction, crop, visualStage);
         this.schedulePlotStageUpdates(map, tileAction, plot, crop, world);
@@ -746,7 +878,7 @@ class DuckvilleTileActionsController {
             const timerKey = this.getStageTimerKey(map, tileAction, visualStage);
             const timer = setTimeout(async () => {
                 try {
-                    const currentPlot = await this.getPlot(map, tileAction);
+                    const currentPlot = await this.getPlot(map, tileAction, world);
                     if (!currentPlot || currentPlot.state !== "growing" || currentPlot.crop !== plot.crop) {
                         return;
                     }
@@ -756,8 +888,9 @@ class DuckvilleTileActionsController {
                         return;
                     }
 
+                    if (this.plotLocks[this.getPlotKey(map, tileAction)]) return;
                     currentPlot.stage = nextStage;
-                    await this.savePlot(currentPlot);
+                    // A visual timer must not save an old crop over a harvested/replanted plot.
                     this.setTileActionStage(map, tileAction, currentPlot);
                     this.placeCropStage(world, tileAction, crop, nextStage);
                 } catch (error) {
@@ -839,7 +972,10 @@ class DuckvilleTileActionsController {
         if (!itemKind) {
             return 0;
         }
-        const count = await this.dao.getItemCount(nftId, itemKind);
+        // Drain the shared inventory writer before reading, including queued loot/consumption.
+        const count = this.dao.refreshInventoryItems
+            ? (await this.dao.refreshInventoryItems([{ nftId, item: String(itemKind) }]))[0].quantity
+            : await this.dao.getItemCount(nftId, itemKind);
         return parseInt(count || 0);
     }
 
@@ -862,7 +998,12 @@ class DuckvilleTileActionsController {
     async giveAvatarXp(world, nftId, xp) {
         const player = this.getPlayer(world, nftId);
         if (player?.handleExperience) {
-            await player.handleExperience(xp);
+            try {
+                await player.handleExperience(xp);
+            } catch (error) {
+                // The plot transition is already committed; XP failure must not invite another payout.
+                console.error("[tileStage.duckville] experience update failed", error);
+            }
         }
     }
 

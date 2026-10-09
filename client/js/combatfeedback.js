@@ -32,7 +32,7 @@ define(['mob'], function (Mob) {
 
         getFrame(time) {
             this.syncMap();
-            if (!this.game.started || this.game.isStopped || this.game.player.isDead) {
+            if (!this.game.started || this.game.isStopped || !this.game.player || this.game.player.isDead) {
                 this.clear();
                 return {target: null, impacts: []};
             }

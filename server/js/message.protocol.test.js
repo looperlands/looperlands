@@ -49,6 +49,7 @@ const cases = [
     ['WorldAmbience', [{scene: 'Town', picnic: {phase: 'celebrating', center: {x: 42, y: 216}}}], 'worldAmbience_callback', [{scene: 'Town', picnic: {phase: 'celebrating', center: {x: 42, y: 216}}}]],
     ['WorldAmbience', [null], 'worldAmbience_callback', [null]],
     ['Indicator', [81, false], 'on_indicator_update_callback', [81, false]],
+    ['TileAction', [{entityId: 81, animationSprite: 'tool-shovel', orientation: Types.Orientations.LEFT, duration: 3000, tileX: 9, tileY: 20, impactFeedback: {impactFrame: 3, colors: ['#895737'], count: 8}}], 'tileAction_callback', [{entityId: 81, animationSprite: 'tool-shovel', orientation: Types.Orientations.LEFT, duration: 3000, tileX: 9, tileY: 20, impactFeedback: {impactFrame: 3, colors: ['#895737'], count: 8}}]],
     ['TileStage', [{id: 'lantern', stage: 2}], 'tileStage_callback', [{id: 'lantern', stage: 2}]]
 ];
 test.each(cases)('%s survives server serialization and client dispatch', (name, args, callback, expected) => {
