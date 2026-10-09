@@ -18,3 +18,24 @@ The generated artwork was reduced to fit the existing character, with transparen
 python3 tools/sprites/pack-tool-sheets.py SOURCE_SHOVEL tool-shovel 40 '[[5,2],[6,-6],[0,3]]'
 python3 tools/sprites/pack-tool-sheets.py SOURCE_CAN tool-watering-can 32 '[[10,3],[8,-6],[0,5]]'
 ```
+
+## Shovel grip alignment
+
+The initial generated shovel poses did not maintain a fixed grip and did not
+follow the existing weapon swing in every direction. The original native packed
+sheet is retained at `tools/sprites/sources/tool-shovel.png`. Rebuild the corrected
+runtime sheets with:
+
+```sh
+python3 tools/sprites/align-shovel-sheet.py
+```
+
+This packer rotates each attack pose around its handle grip and places it at the
+corresponding `sword1` grip position. It also matches the walking/idle hand movement
+and held-tool direction rather than duplicating attack frame zero. Faint remnants
+outside the generated pixel outlines are removed. The existing 48x48 frame size,
+sprite offsets, nine animation rows and five attack frames stay the same, so the
+renderer uses the character's frame index and the existing 140 ms tile-action
+timing. Left-facing actions use the game's normal horizontal mirror. All three
+runtime scales are generated from the corrected native sheet with nearest-neighbor
+resampling; rerunning the script does not apply the transforms cumulatively.
