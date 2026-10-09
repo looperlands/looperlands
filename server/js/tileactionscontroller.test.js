@@ -97,6 +97,10 @@ describe("TileActionsController farming", () => {
         };
     });
 
+    function growthDurationMs(cropKey = "M88NLETTUCE") {
+        return controller.stageDefinitions.duckville.farm.crops[cropKey].growSeconds * 1000;
+    }
+
     test("empty plot returns prepare action", async () => {
         const stage = await controller.findCurrentStage("avatar", "duckville", tileAction, world);
 
@@ -211,7 +215,7 @@ describe("TileActionsController farming", () => {
         await controller.executeStage("avatar", "duckville", tileAction, null, world);
         await controller.executeStage("avatar", "duckville", tileAction, "M88NLETTUCE", world);
         await controller.executeStage("avatar", "duckville", tileAction, null, world);
-        now += 91000;
+        now += growthDurationMs() + 1000;
 
         const stage = await controller.findCurrentStage("avatar", "duckville", tileAction, world);
         expect(stage.key).toBe("harvest");
@@ -234,7 +238,7 @@ describe("TileActionsController farming", () => {
         expect(sessionData.gameData.items[String(Types.Entities.M88NORANGE)] || 0).toBe(0);
 
         await controller.executeStage("avatar", "duckville", tileAction, null, world);
-        now += 541000;
+        now += growthDurationMs("M88NORANGE") + 1000;
         await controller.executeStage("avatar", "duckville", tileAction, null, world);
 
         expect(inventory[Types.Entities.M88NORANGE]).toBeGreaterThan(0);
@@ -350,7 +354,7 @@ describe("TileActionsController farming", () => {
         await controller.executeStage("avatar", "duckville", tileAction, null, world);
         await controller.executeStage("avatar", "duckville", tileAction, "M88NLETTUCE", world);
         await controller.executeStage("avatar", "duckville", tileAction, null, world);
-        now += 91000;
+        now += growthDurationMs() + 1000;
 
         await controller.executeStage("other", "duckville", tileAction, null, world);
 
@@ -362,7 +366,7 @@ describe("TileActionsController farming", () => {
         await controller.executeStage("avatar", "duckville", tileAction, null, world);
         await controller.executeStage("avatar", "duckville", tileAction, "M88NLETTUCE", world);
         await controller.executeStage("avatar", "duckville", tileAction, null, world);
-        now += 91000;
+        now += growthDurationMs() + 1000;
 
         await controller.executeStage("avatar", "duckville", tileAction, null, world);
         const firstHarvest = inventory[Types.Entities.M88NLETTUCE];
@@ -382,7 +386,7 @@ describe("TileActionsController farming", () => {
         await controller.executeStage("avatar", "duckville", tileAction, null, world);
         const early = await controller.executeStage("other", "duckville", tileAction, null, world);
         expect(early.success).toBe(false);
-        now += 90000 + overdue;
+        now += growthDurationMs() + overdue;
 
         const result = await controller.executeStage("other", "duckville", tileAction, null, world);
 
@@ -414,7 +418,7 @@ describe("TileActionsController farming", () => {
         expect(inventory[Types.Entities.MOONSEEDS]).toBe(0);
         expect(inventory[Types.Entities.M88NSEEDS]).toBe(5);
         await controller.executeStage("avatar", "duckville", tileAction, null, world);
-        now += 91000;
+        now += growthDurationMs() + 1000;
         await controller.executeStage("avatar", "duckville", tileAction, null, world);
         expect(inventory[Types.Entities.MOONSEEDS]).toBe(1);
         expect(inventory[Types.Entities.M88NLETTUCE]).toBeGreaterThan(0);
@@ -424,7 +428,7 @@ describe("TileActionsController farming", () => {
         await controller.executeStage("avatar", "duckville", tileAction, null, world);
         await controller.executeStage("avatar", "duckville", tileAction, "M88NLETTUCE", world);
         await controller.executeStage("avatar", "duckville", tileAction, null, world);
-        now += 90000;
+        now += growthDurationMs();
         const stage = await controller.findCurrentStage("other", "duckville", tileAction, world);
         expect(stage.name).toBe("Reserved for the planter (24h remaining)");
         expect(stage.waiting).toBe(true);
@@ -442,7 +446,7 @@ describe("TileActionsController farming", () => {
         await controller.executeStage("avatar", "duckville", tileAction, null, world);
         await controller.executeStage("avatar", "duckville", tileAction, "M88NLETTUCE", world);
         await controller.executeStage("avatar", "duckville", tileAction, null, world);
-        now += 90000 + 86400000;
+        now += growthDurationMs() + 86400000;
         const stage = await controller.findCurrentStage("other", "duckville", tileAction, world);
         expect(stage.key).toBe(access === "shared" ? "harvest" : "wait");
         if (access === "owner") {
@@ -478,7 +482,7 @@ describe("TileActionsController farming", () => {
         await configured.executeStage("avatar", "moon", tileAction, "M88NLETTUCE", world);
         expect(inventory[Types.Entities.MOONSEEDS]).toBe(0);
         await configured.executeStage("avatar", "moon", tileAction, null, world);
-        now += 90000;
+        now += farm.crops.M88NLETTUCE.growSeconds * 1000;
         expect((await configured.findCurrentStage("other", "moon", tileAction, world)).name).toContain("Reserved for the planter");
         expect((await configured.findCurrentStage("avatar", "moon", tileAction, world)).key).toBe("harvest");
     });
@@ -593,7 +597,7 @@ describe("TileActionsController farming", () => {
         await controller.executeStage("avatar", "duckville", tileAction, null, world);
         await controller.executeStage("avatar", "duckville", tileAction, "M88NLETTUCE", world);
         await controller.executeStage("avatar", "duckville", tileAction, null, world);
-        now += 91000;
+        now += growthDurationMs() + 1000;
         const result = await controller.executeStage("other", "duckville", { ...tileAction, name: "communityGarden" }, null, world);
         expect(result.success).toBe(false);
         expect(dao.deleteFarmPlot).not.toHaveBeenCalled();
