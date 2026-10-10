@@ -6,7 +6,7 @@ const crypto = require('crypto');
 class ActivityTracker {
     constructor(platformClient, options = {}) {
         this.client = platformClient;
-        this.enabled = options.enabled ?? process.env.ACTIVITY_TRACKING_ENABLED === 'true';
+        this.enabled = options.enabled ?? process.env.ACTIVITY_TRACKING_ENABLED !== 'false';
         this.now = options.now || Date.now;
         this.id = options.id || crypto.randomUUID;
         this.sessions = new Map();

@@ -43,6 +43,33 @@ test('disabled tracking creates neither sessions nor spool files',()=>{
  const disabled=new ActivityTracker(client,{enabled:false,spool:path.join(directory,'disabled')});disabled.start(player);disabled.record(player,'kill',{});expect(disabled.sessions.size).toBe(0);expect(fs.existsSync(disabled.spool)).toBe(false);
 });
 
+test.each([undefined, 'true', 'false'])('runtime tracking flag %s controls tile uploads', async flag => {
+ const original = process.env.ACTIVITY_TRACKING_ENABLED;
+ let runtime;
+ try {
+  if (flag === undefined) delete process.env.ACTIVITY_TRACKING_ENABLED;
+  else process.env.ACTIVITY_TRACKING_ENABLED = flag;
+  const spool = path.join(directory, 'runtime.jsonl');
+  runtime = new ActivityTracker(client, {timer:false, spool});
+  runtime.start(player);
+  runtime.record(player, 'tile', {action:'farm', stage:'prepare', target:'*', quantity:1});
+  await runtime.flush();
+  if (flag === 'false') {
+   expect(client.storeActivity).not.toHaveBeenCalled();
+   expect(fs.existsSync(spool)).toBe(false);
+  } else {
+   expect(client.storeActivity).toHaveBeenCalledWith([
+    expect.objectContaining({type:'tile', data:{action:'farm', stage:'prepare', target:'*', quantity:1}})
+   ]);
+   expect(runtime.pending).toEqual([]);
+  }
+ } finally {
+  runtime?.close();
+  if (original === undefined) delete process.env.ACTIVITY_TRACKING_ENABLED;
+  else process.env.ACTIVITY_TRACKING_ENABLED = original;
+ }
+});
+
 test('corrupt spools disable telemetry without stopping gameplay or erasing the file',()=>{
  const spool=path.join(directory,'broken.jsonl');fs.writeFileSync(spool,'partial json');
  const log=jest.spyOn(console,'error').mockImplementation(()=>{});

@@ -2,7 +2,7 @@
 
 For event organizers and players, use the [Event Toolkit guide](event-toolkit-guide.md) or its [shareable PDF](event-toolkit-guide.pdf).
 
-Tracking defaults to disabled. Deploy the platform event toolkit migration and add `game_data_write_activity` to the existing game API token before enabling it.
+Tracking defaults to enabled. Deploy the platform event toolkit migration and add `game_data_write_activity` to the existing game API token before deploying the game server. Set `ACTIVITY_TRACKING_ENABLED=false` to explicitly disable tracking in an environment that is not ready. An absent flag enables tracking; `ACTIVITY_TRACKING_ENABLED=true` is optional.
 
 ```env
 ACTIVITY_TRACKING_ENABLED=true
