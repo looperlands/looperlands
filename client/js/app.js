@@ -1599,11 +1599,10 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
                             e.stopImmediatePropagation();
                         });
 
-                        const quantityEnabled = shopId === 'potionshop' || Types.getKindAsString(item.item).includes('potion');
                         const quantityInput = $('#shop-quantity').val(1);
-                        $('#shop-quantity-controls').prop('hidden', !quantityEnabled);
+                        $('#shop-quantity-controls').prop('hidden', false);
                         const updateTotal = () => {
-                            const quantity = quantityEnabled ? Number(quantityInput.val()) : 1;
+                            const quantity = Number(quantityInput.val());
                             const valid = Number.isInteger(quantity) && quantity >= 1 && quantity <= 99;
                             const affordable = valid && Object.entries(item.price).every(([resource, price]) => {
                                 const available = Number($('#resources').find('#resource-' + Types.getKindFromString(resource)).find('.amount').text()) || 0;
