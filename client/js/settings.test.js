@@ -44,3 +44,14 @@ test('reduced motion follows OS preference changes during the session', () => {
     reducedMotion.matches = true;
     expect(settings.getReducedMotion()).toBe(true);
 });
+
+test('saving the stream setting refreshes playback immediately without changing game audio', () => {
+    const {settings, values, app} = setup();
+    app.game.map = {updateStreamMusic: jest.fn()};
+    settings.setStreamMusicEnabled(false);
+    expect(values.get('streamMusicEnabled')).toBe('false');
+    expect(app.game.map.updateStreamMusic).toHaveBeenCalledTimes(1);
+    expect(app.game.audioManager.disable).not.toHaveBeenCalled();
+    settings.setStreamMusicEnabled(true);
+    expect(app.game.map.updateStreamMusic).toHaveBeenCalledTimes(2);
+});

@@ -29,61 +29,41 @@ define(['jquery', 'area'], function ($, Area) {
         },
 
         _initStreamCheck: function () {
-            let url = '/music';
-            let song = "";
-            let self = this;
-            let audio;
-            let mapRequest = { map: this.mapId };
-
-            setInterval(function () {
-                axios.post(url, mapRequest).then(function (response) {
-                    if (response.data === undefined || response.data.length === 0 || response.data.length === undefined) {
-                        return;
-                    }
-
-                    let mp3URL = response.data;
-
-                    if (mp3URL === 'null' || self.game.app.settings.getStreamMusicEnabled() === false) {
-                        if (audio !== undefined) {
-                            audio.pause();
-                            delete audio;
-                            song = "";
-                        }
-                        return;
-                    }
-
-
-                    if (song !== mp3URL) {
-
-                        if (audio !== undefined) {
-                            audio.pause();
-                        }
-                        audio = new Audio(mp3URL);
-                        audio.loop = true;
-
-                        document.body.addEventListener("mousemove", function () {
-                            if (audio.playing === undefined) {
-                                audio.playing = true;
-                                console.log("playing song", mp3URL);
-                                try {
-                                    audio.play();
-                                    self.game.audioManager.disable();
-                                } catch (e) {
-                                    song = undefined;
-                                    audio = undefined;
-                                    console.log(e);
-                                }
-                            }
-                        });
-
-                        song = mp3URL;
-                    }
-
+            var self = this;
+            this.stopStreamCheck();
+            var check = function () {
+                if (self.streamRequestPending) return;
+                self.streamRequestPending = true;
+                var version = self.streamRequestVersion = (self.streamRequestVersion || 0) + 1;
+                axios.post('/music', {map: self.mapId}, {timeout: 10000}).then(function (response) {
+                    // Old maps and out-of-order requests must not replace the current song.
+                    if (self.game.map !== self || self.streamRequestVersion !== version) return;
+                    var url = typeof response.data === 'string' ? response.data.trim() : '';
+                    self.streamMusicURL = url && url !== 'null' ? url : null;
+                    self.updateStreamMusic();
                 }).catch(function (error) {
                     console.log(error);
+                }).finally(function () {
+                    if (self.streamRequestVersion === version) self.streamRequestPending = false;
                 });
+            };
+            check();
+            this.streamCheckId = setInterval(check, 5000);
+        },
 
-            }, 5000);
+        updateStreamMusic: function () {
+            if (this.game.map !== this || !this.game.audioManager) return;
+            var enabled = this.game.app.settings.getStreamMusicEnabled();
+            this.game.audioManager.playStreamMusic(enabled ? this.streamMusicURL : null);
+        },
+
+        stopStreamCheck: function () {
+            this.streamRequestPending = false;
+            this.streamRequestVersion = (this.streamRequestVersion || 0) + 1;
+            if (this.streamCheckId !== undefined) {
+                clearInterval(this.streamCheckId);
+                this.streamCheckId = undefined;
+            }
         },
 
         _loadMap: function (useWorker) {

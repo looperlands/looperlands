@@ -1,6 +1,6 @@
 # Safari mob-kill audio comparison
 
-The client uses Howler's decoded Web Audio buffers for short sound effects on Safari. If Web Audio or Howler is unavailable, or an effect fails to load, it uses the existing HTML audio path. Music keeps its existing loading and playback behavior.
+The client uses Howler's decoded Web Audio buffers for short sound effects on Safari. If Web Audio or Howler is unavailable, or an effect fails to load, it uses the existing HTML audio path. Background and streamed music use reusable HTML audio elements with playback recovery; see [Safari music playback](safari-music.md).
 
 A manual Safari retest confirmed that Web Audio works. The optional comparison probe can record visible frame timings during real kills for further diagnosis; short `playSound()` calls alone do not measure delayed frame stalls.
 

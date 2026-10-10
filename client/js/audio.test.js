@@ -1,14 +1,18 @@
 const fs = require('fs');
 const vm = require('vm');
 
-function setup({safari = true, webAudio = true, howler = true, local = true, mp3 = true} = {}) {
+function setup({safari = true, webAudio = true, howler = true, local = true, mp3 = true, mobile = true} = {}) {
     const media = [], effects = [], timers = [];
+    const documentListeners = new Map();
+    const intervals = new Set();
     function element() {
         const listeners = {};
         const sound = {
-            paused: true, ended: false, duration: 3, readyState: 4, currentTime: 0,
+            paused: true, ended: false, duration: 3, readyState: 4, currentTime: 0, volume: 1,
             addEventListener: jest.fn((event, callback) => {listeners[event] = callback;}),
-            removeEventListener: jest.fn(), load: jest.fn(), play: jest.fn(), pause: jest.fn(),
+            removeEventListener: jest.fn(), removeAttribute: jest.fn(), load: jest.fn(),
+            play: jest.fn(() => {sound.paused = false; return Promise.resolve();}),
+            pause: jest.fn(() => {sound.paused = true;}),
             cloneNode: jest.fn(element), listeners,
         };
         media.push(sound);
@@ -29,7 +33,14 @@ function setup({safari = true, webAudio = true, howler = true, local = true, mp3
             ...(howler ? {Howl, Howler: {usingWebAudio: webAudio}} : {}),
         },
         Detect: {canPlayMP3: () => mp3, isSafari: () => safari, isWindows: () => false},
-        document: {createElement: jest.fn(element)},
+        document: {
+            createElement: jest.fn(element), hidden: false,
+            addEventListener: (event, callback) => {
+                if (!documentListeners.has(event)) documentListeners.set(event, new Set());
+                documentListeners.get(event).add(callback);
+            },
+            removeEventListener: (event, callback) => documentListeners.get(event)?.delete(callback),
+        },
         _: {
             size: value => value.length,
             each: (values, callback) => Object.values(values).forEach(callback),
@@ -38,13 +49,24 @@ function setup({safari = true, webAudio = true, howler = true, local = true, mp3
         },
         console: {log: jest.fn(), debug: jest.fn(), error: jest.fn()},
         setTimeout: (callback, delay) => timers.push({callback, delay}),
-        define: (dependencies, factory) => {sandbox.AudioManager = factory(function () {});},
+        setInterval: (callback, delay) => {
+            const interval = {callback, delay};
+            intervals.add(interval);
+            return interval;
+        },
+        clearInterval: interval => intervals.delete(interval),
     };
     vm.createContext(sandbox);
     vm.runInContext(fs.readFileSync(require.resolve('./lib/class'), 'utf8'), sandbox);
+    sandbox.define = factory => {sandbox.Area = factory();};
+    vm.runInContext(fs.readFileSync(require.resolve('./area'), 'utf8'), sandbox);
+    sandbox.define = factory => {sandbox.MusicPlayer = factory();};
+    vm.runInContext(fs.readFileSync(require.resolve('./musicplayer'), 'utf8'), sandbox);
+    sandbox.define = (dependencies, factory) => {sandbox.AudioManager = factory(sandbox.Area, sandbox.MusicPlayer);};
     vm.runInContext(fs.readFileSync(require.resolve('./audio'), 'utf8'), sandbox);
-    const manager = new sandbox.AudioManager({renderer: {mobile: true}});
-    return {manager, media, effects, timers, sandbox};
+    const manager = new sandbox.AudioManager({renderer: {mobile}, player: {gridX: 1, gridY: 1}});
+    const dispatch = event => documentListeners.get(event)?.forEach(callback => callback());
+    return {manager, media, effects, timers, intervals, sandbox, dispatch};
 }
 
 test('Safari combat effects reuse decoded sound objects without querying or playing HTML media', () => {
@@ -81,11 +103,15 @@ test('disabling audio stops current effects and prevents playback until enabled 
     expect(manager.soundEffects.kill1.play).toHaveBeenCalledTimes(2);
 });
 
-test('Safari effect loading preserves the existing decision to leave music disabled', () => {
-    const {manager, effects} = setup();
-    const loadMusic = jest.spyOn(manager, 'loadMusic');
-    for (const sound of effects) sound.options.onload();
-    expect(loadMusic).not.toHaveBeenCalled();
+test.each([true, false])('Safari area music starts without waiting for sound effects (mobile: %s)', mobile => {
+    const {manager, media} = setup({mobile});
+    expect(media).toHaveLength(0);
+    manager.addArea(0, 0, 10, 10, 'village');
+    manager.updateMusic();
+    expect(media).toHaveLength(1);
+    expect(media[0].src).toBe('audio/music/village.mp3');
+    expect(media[0].loop).toBe(true);
+    expect(media[0].play).toHaveBeenCalledTimes(1);
 });
 
 test.each([
@@ -123,11 +149,148 @@ test('music ducking uses Web Audio duration and restores volume at the existing 
     expect(raise).toHaveBeenCalledTimes(1);
 });
 
-test('music stays on HTML media when Safari loads it explicitly', () => {
+test('area changes reuse the permitted media element and cancel an old fade', async () => {
+    const {manager, media, intervals} = setup();
+    manager.addArea(0, 0, 10, 10, 'village');
+    manager.addArea(10, 0, 10, 10, 'forest');
+    manager.updateMusic();
+    await Promise.resolve();
+    manager.fadeOutCurrentMusic();
+    expect(intervals.size).toBe(1);
+    manager.game.player.gridX = 11;
+    manager.updateMusic();
+    expect(media).toHaveLength(1);
+    expect(media[0].src).toBe('audio/music/forest.mp3');
+    expect(media[0].play).toHaveBeenCalledTimes(2);
+    expect(intervals.size).toBe(0);
+    expect(media[0].volume).toBe(1);
+});
+
+test('a blocked area track retries on interaction without requiring player movement', async () => {
+    const {manager, dispatch} = setup();
+    const sound = manager.musicPlayer.getSound();
+    sound.play.mockRejectedValueOnce(new Error('NotAllowedError'));
+    manager.addArea(0, 0, 10, 10, 'village');
+    manager.updateMusic();
+    await Promise.resolve();
+    dispatch('click');
+    expect(sound.play).toHaveBeenCalledTimes(2);
+    expect(manager.currentMusic.name).toBe('village');
+});
+
+test('disabling game audio cancels fades and blocked retries, then enabling restarts the area', async () => {
+    const {manager, intervals, dispatch} = setup();
+    manager.addArea(0, 0, 10, 10, 'village');
+    const sound = manager.musicPlayer.getSound();
+    sound.play.mockRejectedValueOnce(new Error('NotAllowedError'));
+    manager.updateMusic();
+    manager.lowerCurrentMusicVolume();
+    manager.disable();
+    await Promise.resolve();
+    dispatch('keydown');
+    expect(sound.play).toHaveBeenCalledTimes(1);
+    expect(intervals.size).toBe(0);
+    manager.enable();
+    expect(sound.play).toHaveBeenCalledTimes(2);
+});
+
+test('server music selections accept names and stable zero-based indices', () => {
     const {manager} = setup();
-    manager.loadMusic('village');
-    manager.playMusic({name: 'village', sound: manager.sounds.village[0]});
-    expect(manager.sounds.village[0].loop).toBe(true);
-    expect(manager.sounds.village[0].play).toHaveBeenCalledTimes(1);
-    expect(manager.soundEffects.village).toBeUndefined();
+    manager.playMusicByName('0');
+    expect(manager.musicPlayer.source).toBe('audio/music/village.mp3');
+    manager.playMusicByName('forest');
+    expect(manager.musicPlayer.source).toBe('audio/music/forest.mp3');
+    manager.playMusicByName('missing');
+    expect(manager.musicPlayer.source).toBe('audio/music/forest.mp3');
+});
+
+test('streams replace area music while effects remain enabled and area music returns when the stream ends', async () => {
+    const {manager, media} = setup();
+    manager.addArea(0, 0, 10, 10, 'village');
+    manager.updateMusic();
+    await Promise.resolve();
+    manager.playStreamMusic('https://example.com/radio.mp3');
+    expect(media[0].paused).toBe(true);
+    expect(media[1].play).toHaveBeenCalledTimes(1);
+    expect(manager.enabled).toBe(true);
+    manager.playSound('kill1');
+    expect(manager.soundEffects.kill1.play).toHaveBeenCalledTimes(1);
+    manager.updateMusic();
+    expect(media[0].play).toHaveBeenCalledTimes(1);
+    manager.playStreamMusic(null);
+    expect(media[1].paused).toBe(true);
+    expect(media[0].play).toHaveBeenCalledTimes(2);
+});
+
+test('repeated stream polling does not restart a track and stream changes reuse its element', async () => {
+    const {manager, media} = setup();
+    manager.playStreamMusic('https://example.com/first.mp3');
+    await Promise.resolve();
+    manager.playStreamMusic('https://example.com/first.mp3');
+    expect(media[0].play).toHaveBeenCalledTimes(1);
+    manager.playStreamMusic('https://example.com/second.mp3');
+    expect(media).toHaveLength(1);
+    expect(media[0].src).toBe('https://example.com/second.mp3');
+    expect(media[0].play).toHaveBeenCalledTimes(2);
+});
+
+test('stream and game-audio settings remain independent', async () => {
+    const {manager, dispatch} = setup();
+    manager.disable();
+    manager.playStreamMusic('https://example.com/radio.mp3');
+    const sound = manager.streamMusic.sound;
+    await Promise.resolve();
+    manager.disable();
+    expect(sound.paused).toBe(false);
+    manager.playStreamMusic(null);
+    dispatch('click');
+    expect(sound.paused).toBe(true);
+    expect(sound.play).toHaveBeenCalledTimes(1);
+});
+
+test('replacing the audio manager removes gesture listeners and unloads active effects', () => {
+    const {manager, effects, dispatch} = setup();
+    manager.playStreamMusic('https://example.com/radio.mp3');
+    const sound = manager.streamMusic.sound;
+    manager.destroy();
+    dispatch('click');
+    expect(sound.play).toHaveBeenCalledTimes(1);
+    expect(sound.removeAttribute).toHaveBeenCalledWith('src');
+    for (const effect of effects) expect(effect.unload).toHaveBeenCalledTimes(1);
+});
+
+test('leaving a music area during dialogue ducking still fades out and stops the track', async () => {
+    const {manager, intervals} = setup();
+    manager.addArea(0, 0, 10, 10, 'village');
+    manager.updateMusic();
+    await Promise.resolve();
+    manager.lowerCurrentMusicVolume();
+    manager.game.player.gridX = 30;
+    manager.updateMusic();
+    expect(intervals.size).toBe(1);
+    const fade = [...intervals][0];
+    for (let index = 0; index < 60; index++) {
+        if (intervals.has(fade)) fade.callback();
+    }
+    expect(manager.musicPlayer.sound.paused).toBe(true);
+    expect(manager.musicPlayer.active).toBe(false);
+    expect(intervals.size).toBe(0);
+});
+
+test('empty stream polls cannot restart a track deliberately faded out for death or a minigame', async () => {
+    const {manager, intervals} = setup();
+    manager.addArea(0, 0, 10, 10, 'village');
+    manager.updateMusic();
+    await Promise.resolve();
+    manager.fadeOutCurrentMusic();
+    manager.playStreamMusic(null);
+    const sound = manager.musicPlayer.sound;
+    expect(sound.play).toHaveBeenCalledTimes(1);
+    const fade = [...intervals][0];
+    for (let index = 0; index < 60; index++) {
+        if (intervals.has(fade)) fade.callback();
+    }
+    manager.playStreamMusic(null);
+    expect(sound.paused).toBe(true);
+    expect(sound.play).toHaveBeenCalledTimes(1);
 });

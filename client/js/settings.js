@@ -131,6 +131,7 @@ class GameSettings {
 
     setStreamMusicEnabled(enabled) {
         localStorage.setItem('streamMusicEnabled', enabled ? 'true' : 'false');
+        if (this.app.game.map) this.app.game.map.updateStreamMusic();
     }
 
     getFullscreen() {

@@ -1,5 +1,5 @@
 
-define(['area'], function (Area) {
+define(['area', 'musicplayer'], function (Area, MusicPlayer) {
 
     var AudioManager = Class.extend({
         init: function (game) {
@@ -11,6 +11,8 @@ define(['area'], function (Area) {
             this.soundEffects = {};
             this.game = game;
             this.currentMusic = null;
+            this.musicPlayer = new MusicPlayer();
+            this.streamMusic = new MusicPlayer();
             this.areas = [];
             this.musicNames = [
                 // MAIN MUSIC    
@@ -42,31 +44,10 @@ define(['area'], function (Area) {
 
 
             var loadSoundFiles = function () {
-                var counter = _.size(self.soundNames);
                 console.log("Loading sound files...");
                 _.each(self.soundNames, function (name) {
-                    self.loadSound(name, function () {
-                        counter -= 1;
-                        if (counter === 0) {
-                            if (!Detect.isSafari()) { // Disable music on Safari - See bug 738008
-                                loadMusicFiles();
-                            }
-                        }
-                    });
+                    self.loadSound(name);
                 });
-            };
-
-            var loadMusicFiles = function () {
-                if (!self.game.renderer.mobile) { // disable music on mobile devices
-                    console.log("Loading music files...");
-                    // Load the village music first, as players always start here
-                    self.loadMusic(self.musicNames.shift(), function () {
-                        // Then, load all the other music files
-                        _.each(self.musicNames, function (name) {
-                            self.loadMusic(name);
-                        });
-                    });
-                }
             };
 
             if (!(Detect.isSafari() && Detect.isWindows())) {
@@ -83,9 +64,17 @@ define(['area'], function (Area) {
                 sound.stop();
             });
 
-            if (this.currentMusic) {
-                this.resetMusic(this.currentMusic);
-            }
+            this.resetMusic({sound: this.musicPlayer.sound});
+            this.currentMusic = null;
+        },
+
+        destroy: function () {
+            this.disable();
+            this.musicPlayer.destroy();
+            this.streamMusic.destroy();
+            _.each(this.soundEffects, function (sound) {
+                sound.unload();
+            });
         },
 
         enable: function () {
@@ -165,11 +154,22 @@ define(['area'], function (Area) {
             this.load("audio/sounds/", name, handleLoaded, 4);
         },
 
-        loadMusic: function (name, handleLoaded) {
-            this.load("audio/music/", name, handleLoaded, 1);
-            var music = this.sounds[name][0];
-            music.loop = true;
-            music.addEventListener('ended', function () { music.play() }, false);
+        getMusic: function (name) {
+            if (this.musicNames.indexOf(name) === -1) return null;
+            return {name: name, src: this.getAudioPath("audio/music/", name)};
+        },
+
+        playStreamMusic: function (url) {
+            if (!url) {
+                var wasActive = this.streamMusic.active;
+                this.streamMusic.stop();
+                if (wasActive) this.updateMusic();
+                return;
+            }
+            if (this.streamMusic.active && this.streamMusic.source === url) return;
+            this.resetMusic({sound: this.musicPlayer.sound});
+            this.currentMusic = null;
+            this.streamMusic.play(url);
         },
 
         getSound: function (name) {
@@ -233,20 +233,17 @@ define(['area'], function (Area) {
                 });
 
             if (area) {
-                music = { sound: this.getSound(area.musicName), name: area.musicName };
+                music = this.getMusic(area.musicName);
             }
             return music;
         },
 
         updateMusic: function () {
-            if (this.enabled) {
+            if (this.enabled && !this.streamMusic.active) {
                 var music = this.getSurroundingMusic(this.game.player);
 
                 if (music) {
                     if (!this.isCurrentMusic(music)) {
-                        if (this.currentMusic) {
-                            this.fadeOutCurrentMusic();
-                        }
                         this.playMusic(music);
                     }
                 } else {
@@ -260,42 +257,39 @@ define(['area'], function (Area) {
         },
 
         playMusicByName: function (name) {
-            let music = { sound: this.getSound(parseInt(name)), name: name };
-            if (music) {
-                if (!this.isCurrentMusic(music)) {
-                    if (this.currentMusic) {
-                        this.fadeOutCurrentMusic();
-                    }
-                    this.playMusic(music);
-                }
-            }
+            if (/^\d+$/.test(String(name))) name = this.musicNames[Number(name)];
+            var music = this.getMusic(name);
+            if (music && !this.isCurrentMusic(music)) this.playMusic(music);
         },
 
         playMusic: function (music) {
-            if (this.enabled && music && music.sound) {
-                if (music.sound.fadingOut) {
-                    this.fadeInMusic(music);
-                } else {
-                    music.sound.volume = 1;
-                    music.sound.play();
-                }
+            if (this.enabled && !this.streamMusic.active && music) {
+                music.sound = this.musicPlayer.getSound();
+                var fadeIn = music.sound.fadingOut && this.musicPlayer.source === music.src;
+                this.clearFadeIn(music);
+                this.clearFadeOut(music);
+                if (!fadeIn) music.sound.volume = 1;
                 this.currentMusic = music;
+                this.musicPlayer.play(music.src);
+                if (fadeIn) this.fadeInMusic(music);
             }
         },
 
         resetMusic: function (music) {
-            if (music && music.sound && music.sound.readyState > 0) {
-                music.sound.pause();
-                music.sound.currentTime = 0;
+            if (music && music.sound) {
+                this.clearFadeIn(music);
+                this.clearFadeOut(music);
+                this.musicPlayer.stop();
             }
         },
 
         fadeOutMusic: function (music, ended_callback, step) {
             var self = this;
-            if (music && !music.sound.fadingOut) {
+            if (music) {
+                this.clearFadeOut(music);
                 this.clearFadeIn(music);
                 music.sound.fadingOut = setInterval(function () {
-                    volume = music.sound.volume - step;
+                    var volume = music.sound.volume - step;
 
                     if (self.enabled && volume >= step) {
                         music.sound.volume = volume;
@@ -314,7 +308,7 @@ define(['area'], function (Area) {
                 this.clearFadeOut(music);
                 music.sound.fadingIn = setInterval(function () {
                     var step = 0.01;
-                    volume = music.sound.volume + step;
+                    var volume = music.sound.volume + step;
 
                     if (self.enabled && volume < 1 - step) {
                         music.sound.volume = volume;
@@ -352,31 +346,34 @@ define(['area'], function (Area) {
 
         lowerCurrentMusicVolume: function () {
             var self = this;
-            if (this.currentMusic) {
-                var end = 0.25;
-                self.currentMusic.sound.fadingOut = setInterval(function () {
-                    var step = 0.02;
-                    volume = self.currentMusic.sound.volume - step;
-
-                    if (self.enabled && volume >= end) {
-                        self.currentMusic.sound.volume = volume;
+            var music = this.currentMusic;
+            if (music) {
+                this.clearFadeIn(music);
+                this.clearFadeOut(music);
+                music.sound.fadingOut = setInterval(function () {
+                    var volume = music.sound.volume - 0.02;
+                    if (self.enabled && volume >= 0.25) {
+                        music.sound.volume = volume;
                     } else {
-                        self.clearFadeOut(self.currentMusic);
+                        self.clearFadeOut(music);
                     }
                 }, 20);
             }
         },
+
         raiseCurrentMusicVolume: function () {
             var self = this;
-            if (this.currentMusic) {
-                var end = 1;
-                self.currentMusic.sound.fadingIn = setInterval(function () {
-                    var step = 0.02;
-                    volume = self.currentMusic.sound.volume + step;
-                    if (self.enabled && volume < end) {
-                        self.currentMusic.sound.volume = volume;
+            var music = this.currentMusic;
+            if (music) {
+                this.clearFadeOut(music);
+                this.clearFadeIn(music);
+                music.sound.fadingIn = setInterval(function () {
+                    var volume = music.sound.volume + 0.02;
+                    if (self.enabled && volume < 1) {
+                        music.sound.volume = volume;
                     } else {
-                        self.clearFadeIn(self.currentMusic);
+                        music.sound.volume = 1;
+                        self.clearFadeIn(music);
                     }
                 }, 50);
             }
