@@ -21,7 +21,6 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                 let entitiesCanvas = new OffscreenCanvas(width, height);
                 let highEntitiesCanvas = new OffscreenCanvas(width, height);
                 let lightCanvas = new OffscreenCanvas(width, height);
-                let aboveLight = new OffscreenCanvas(width, height);
     
                 this.background = background;
     
@@ -61,7 +60,6 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                 this.worker.postMessage({"canvas":  highEntitiesCanvas, "type": "setCanvas", "id": "highEntities"}, [highEntitiesCanvas]);
                 this.worker.postMessage({"canvas":  combinedCanvas, "type": "setCanvas", "id": "combined"}, [combinedCanvas]);
                 this.worker.postMessage({"canvas":  lightCanvas, "type": "setCanvas", "id": "lighting"}, [lightCanvas]);
-                this.worker.postMessage({"canvas":  aboveLight, "type": "setCanvas", "id": "aboveLight"}, [aboveLight]);
     
                 this.rescale(this.getScaleFactor());
     
@@ -139,14 +137,22 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
             },
     
             createCamera: function() {
-                this.camera = new Camera(this);
-                this.camera.rescale();
+                if (this.camera) {
+                    this.camera.rescale();
+                } else {
+                    this.camera = new Camera(this);
+                }
     
-                this.canvas.width = this.camera.gridW * this.tilesize * this.scale;
-                this.canvas.height = this.camera.gridH * this.tilesize * this.scale;
+                var width = this.camera.gridW * this.tilesize * this.scale,
+                    height = this.camera.gridH * this.tilesize * this.scale;
+                // Setting canvas dimensions clears every layer, even when unchanged.
+                if (this.canvasSizeInitialized && this.canvas.width === width && this.canvas.height === height) return;
+                this.canvas.width = width;
+                this.canvas.height = height;
                 console.debug("#entities set to "+this.canvas.width+" x "+this.canvas.height);
     
                 this.worker.postMessage({type: "setCanvasSize", width: this.canvas.width, height: this.canvas.height});
+                this.canvasSizeInitialized = true;
                 console.debug("#background set to "+this.backcanvas.width+" x "+this.backcanvas.height);
     
                 this.forecanvas.width = this.canvas.width;
@@ -155,7 +161,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
             },
     
             initFPS: function() {
-                this.FPS = 50;
+                this.FPS = 60;
             },
     
             initFont: function() {
@@ -792,11 +798,23 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
             },
     
             drawTerrain: function() {
+                return this.staticTileCommand('background', this.game.visibleTerrainTiles, false);
+            },
 
-                let tiles = this.game.visibleTerrainTiles;
-                tiles = this.drawTileStages(tiles, false, false);
-
-                return { "type": "render", id: "background", tiles: tiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: true }
+            staticTileCommand: function(id, visibleTiles, high) {
+                if (!this.staticTileData) this.staticTileData = {};
+                let cached = this.staticTileData[id];
+                const revision = this.game.terrainRevision || 0;
+                if (!cached || cached.visibleTiles !== visibleTiles || cached.revision !== revision
+                    || cached.map !== this.game.map || cached.tileset !== this.tileset) {
+                    cached = this.staticTileData[id] = {
+                        visibleTiles, revision, map: this.game.map, tileset: this.tileset,
+                        tiles: this.drawTileStages(visibleTiles || [], high, false),
+                        version: this.staticTileVersion = (this.staticTileVersion || 0) + 1
+                    };
+                }
+                return {type: 'render', id, tiles: cached.tiles, revision: cached.version,
+                    cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: true};
             },
     
             drawAnimatedTiles: function() {
@@ -846,12 +864,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
             },
     
             drawHighTiles: function() {
-                let m = this.game.map;
-
-                let tiles = this.game.visibleHighTiles;
-                tiles = this.drawTileStages(tiles, true, false);
-
-                return {"type": "render", id: "high", tiles: tiles, cameraX: this.camera.x, cameraY: this.camera.y, scale: this.scale, clear: true};
+                return this.staticTileCommand('high', this.game.visibleHighTiles, true);
             },
 
             drawToggledLayers: function(ctx, highTile, animated) {
@@ -884,6 +897,8 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
             },
 
             drawTileStages: function(tiles, highTile, animated) {
+                // Visible static tiles survive between frames. Never append stages to them.
+                tiles = tiles.slice();
                 var self = this,
                     m = this.game.map,
 
@@ -1031,6 +1046,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
     
             renderStaticCanvases: function() {
                 this.redrawTerrain = true;
+                this.staticTileData = null;
             },
     
             renderFrame: function() {
@@ -1042,20 +1058,14 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                     this.syncedLights = true;
                 }
     
-                let centeredCamera = !this.game.canUseCenteredCamera();
                 let renderText = this.game.app.settings.getRenderText();
                 let renderData = [];
     
                 let terrain = [];
                 let highTiles = []
-                if (centeredCamera && this.redrawTerrain) {
-                    terrain = this.drawTerrain();
-                    highTiles = this.drawHighTiles();
-                    this.redrawTerrain = false;
-                } else {
-                    terrain = this.drawTerrain();
-                    highTiles = this.drawHighTiles();
-                }
+                terrain = this.drawTerrain();
+                highTiles = this.drawHighTiles();
+                this.redrawTerrain = false;
                 renderData.push(highTiles);
                 renderData.push(terrain);
     
@@ -1070,7 +1080,6 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
     
                 this.setCameraView(this.context);
     
-                this.renderStaticCanvases();
                 this.drawToggledLayers(this.context, false, false);
                 this.drawToggledLayers(this.context, false, true);
 
