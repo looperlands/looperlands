@@ -8,6 +8,7 @@ define(['area'], function (Area) {
             this.enabled = true;
             this.extension = Detect.canPlayMP3() ? "mp3" : "ogg";
             this.sounds = {};
+            this.soundEffects = {};
             this.game = game;
             this.currentMusic = null;
             this.areas = [];
@@ -78,6 +79,10 @@ define(['area'], function (Area) {
         disable: function () {
             this.enabled = false;
 
+            _.each(this.soundEffects, function (sound) {
+                sound.stop();
+            });
+
             if (this.currentMusic) {
                 this.resetMusic(this.currentMusic);
             }
@@ -100,13 +105,17 @@ define(['area'], function (Area) {
             }
         },
 
-        load: function (basePath, name, loaded_callback, channels) {
-
+        getAudioPath: function (basePath, name) {
             if (!(window.location.href.indexOf("127.0.0.1") > -1)) {
                 basePath = 'https://cdn.jsdelivr.net/gh/balkshamster/looperlands@main/client/' + basePath;
             }
 
-            var path = basePath + name + "." + this.extension,
+            return basePath + name + "." + this.extension;
+        },
+
+        load: function (basePath, name, loaded_callback, channels) {
+
+            var path = this.getAudioPath(basePath, name),
                 sound = document.createElement('audio'),
                 self = this;
 
@@ -134,6 +143,25 @@ define(['area'], function (Area) {
         },
 
         loadSound: function (name, handleLoaded) {
+            // Use decoded buffers for short effects on Safari instead of starting
+            // and seeking HTML media elements during combat. Howler is loaded by index.html.
+            if (Detect.isSafari() && window.Howl && window.Howler && window.Howler.usingWebAudio) {
+                var self = this;
+                var effect = new window.Howl({
+                    src: [this.getAudioPath("audio/sounds/", name)],
+                    preload: false,
+                    pool: 4,
+                    onload: handleLoaded,
+                    onloaderror: function () {
+                        effect.unload();
+                        delete self.soundEffects[name];
+                        self.load("audio/sounds/", name, handleLoaded, 4);
+                    }
+                });
+                this.soundEffects[name] = effect;
+                effect.load();
+                return;
+            }
             this.load("audio/sounds/", name, handleLoaded, 4);
         },
 
@@ -169,7 +197,8 @@ define(['area'], function (Area) {
                 name = this.soundNames[parseInt(name)];
             }
 
-            var sound = this.enabled && this.getSound(name);
+            var effect = this.soundEffects[name];
+            var sound = this.enabled && (effect || this.getSound(name));
 
             if (sound) {
 
@@ -179,8 +208,9 @@ define(['area'], function (Area) {
 
                 let self = this;
                 if (lowerMusicVolume) {
-                    if (sound.duration > 2) {
-                        setTimeout(() => { self.raiseCurrentMusicVolume() }, Math.round(sound.duration * 1000) - 1000)
+                    var duration = effect ? effect.duration() : sound.duration;
+                    if (duration > 2) {
+                        setTimeout(() => { self.raiseCurrentMusicVolume() }, Math.round(duration * 1000) - 1000)
                     } else {
                         self.raiseCurrentMusicVolume();
                     }
