@@ -30,3 +30,6 @@
     overflow-wrap: anywhere;
     user-select: text;
 }
+
+.game-events .ev-identity {min-width:0;overflow-wrap:anywhere;}
+.game-events .ev-player-title {display:block;color:#c3acb7;font-size:12px;line-height:1.5;}

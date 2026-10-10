@@ -7973,6 +7973,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     self.client.onDespawnEntity(function (entityId) {
                         var entity = self.getEntityById(entityId);
 
+                        // A dying character remains in the scene until its animation finishes.
+                        if (entity instanceof Character && entity.isDead) return;
+
                         if (entity) {
                             console.log("Despawning " + Types.getKindAsString(entity.kind) + " (" + entity.id + ")");
 

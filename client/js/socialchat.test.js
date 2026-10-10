@@ -173,3 +173,12 @@ test('opening the overlay stops the map click handler and preserves the previous
     expect(instance.tab).toBe('world');
     expect(instance.app.showChat).toHaveBeenCalled();
 });
+
+test('chat identity keeps the title below ENS and avoids repeating a title used as the name', () => {
+    const {instance} = chat({document: {createElement: tag => ({tag, children: [], append(...children) {this.children.push(...children);}})}});
+    const identity = instance.identity({label: 'andre.eth', title: 'Knight', walletShort: '0xaaaa…aaaa'}, true);
+    expect(identity.children.map(child => [child.tag, child.textContent])).toEqual([
+        ['strong', 'andre.eth'], ['small', 'Knight'], ['small', '(0xaaaa…aaaa)']
+    ]);
+    expect(instance.identity({label: 'Knight', title: 'Knight', walletShort: '0xaaaa…aaaa'}).children).toHaveLength(2);
+});

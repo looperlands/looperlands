@@ -175,10 +175,12 @@ WS.socketIOServer = Server.extend({
 
         this.cache = cache;
         this.activity = new ActivityTracker(platformClient);
+        platformClient.beforeShutdown = () => this.activity.close();
         this.eventEquipment = new EventEquipment(platformClient);
-        process.once('exit', () => this.activity.close());
-        for (const signal of ['SIGTERM', 'SIGINT']) process.once(signal, () => {
-            this.activity.close();
+        process.once('beforeExit', () => this.activity.close());
+        // Configured platform clients own shutdown and await beforeShutdown above.
+        if (!platformClient.platformDefined) for (const signal of ['SIGTERM', 'SIGINT']) process.once(signal, async () => {
+            await this.activity.close();
             process.kill(process.pid, signal);
         });
         this.npcMemory = new NpcMemory(process.env.NPC_MEMORY_FILE || path.resolve(__dirname, '../../data/chat/npcs/memory.json'));
@@ -383,6 +385,7 @@ WS.socketIOServer = Server.extend({
                 cache.set(sessionId, sessionData);
             }
 
+            sessionData.ensName = await ens.getEnsName(walletId);
             let name = await ens.getEns(walletId);
             sessionData.resolvedName = name;
             cache.set(sessionId, sessionData);

@@ -220,7 +220,13 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
         standings(container, event) {
             if (event.teams.length) for (const team of event.teams) {const row = node('div', 'ev-row'); row.append(node('strong', '', team.name), node('span', '', team.score+' points')); container.append(row);}
             if (!event.leaderboard.length) container.append(node('p', 'ev-muted', 'No scores yet. Be the first to take part.'));
-            for (const player of event.leaderboard) {const row = node('div', 'ev-row'+(player.isYou ? ' ev-you' : '')); row.append(node('span', '', '#'+player.rank+' '+player.label), node('strong', '', player.score)); container.append(row);}
+            for (const player of event.leaderboard) {
+                const row = node('div', 'ev-row'+(player.isYou ? ' ev-you' : ''));
+                const identity = node('span', 'ev-identity');
+                identity.append(node('span', '', '#'+player.rank+' '+(player.ens || player.label)+(player.ens && player.isYou ? ' (You)' : '')));
+                if (player.ens && player.title && player.title !== player.ens) identity.append(node('small', 'ev-player-title', player.title));
+                row.append(identity, node('strong', '', player.score)); container.append(row);
+            }
         }
 
         renderPanel() {

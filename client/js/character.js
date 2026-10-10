@@ -598,6 +598,7 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
          * 
          */
     	die: function() {
+            if (this.isDead) return;
     	    this.removeTarget();
     	    this.isDead = true;
 

@@ -2,7 +2,7 @@
 
 World is the shared public stream across maps. My map filters that stream by the map on which each message was sent. Scene names are descriptive locations within a map and do not change the My map filter.
 
-Titles, avatar IDs and wallet fingerprints come from authenticated server sessions. Chat and player-population responses contain shortened wallets and opaque player IDs. Names and wallets are inline in message headers; consecutive messages from the same identity within five minutes share a header. Names with different player IDs are never grouped together.
+ENS names, titles, avatar IDs and wallet fingerprints come from authenticated server sessions. Newly loaded game sessions retain the full resolved ENS name as the primary chat name, with the title as a smaller subtitle. Without ENS, the title remains the primary name, falling back to a shortened wallet. Chat and player-population responses contain shortened wallets and opaque player IDs. Names and wallets are inline in message headers; consecutive messages from the same identity within five minutes share a header. Names with different player IDs are never grouped together.
 
 Player locations use each map's configured scene rectangles. Server map exports now include scenes; existing exports fall back to their companion client map. Presence updates when a player enters or leaves a named scene. Unnamed areas show the map name.
 

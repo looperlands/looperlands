@@ -15,6 +15,8 @@ class ActivityTracker {
         this.spool = options.spool || process.env.ACTIVITY_SPOOL_PATH || path.resolve('data/activity.jsonl');
         this.pending = [];
         this.flushing = false;
+        this.storageQueue = Promise.resolve();
+        this.closed = false;
         if (!this.enabled) return;
         try {
         fs.mkdirSync(path.dirname(this.spool), {recursive: true});
@@ -63,17 +65,25 @@ class ActivityTracker {
         this.enqueue({...this.identity(player), type, data, occurredAt: new Date(this.now()).toISOString()});
     }
     enqueue(row) {
-        if (!this.enabled) return;
+        if (!this.enabled || this.closed) return;
         const event = {...row, id: this.id()};
-        try {
-            fs.appendFileSync(this.spool, JSON.stringify(event) + '\n');
+        // Keep disk I/O off the combat/movement event loop. Upload only durable rows.
+        this.queueStorage(async () => {
+            if (!this.enabled) return;
+            await fs.promises.appendFile(this.spool, JSON.stringify(event) + '\n');
             this.pending.push(event);
-        } catch (error) {
+        }).catch(error => {
             // Telemetry must never prevent a successful gameplay action.
             console.error('[activity] storage unavailable; tracking disabled:', error.message);
             this.enabled = false;
             clearInterval(this.timer);
-        }
+        });
+    }
+    queueStorage(operation) {
+        // Appends and spool replacement must share one queue to avoid losing new rows.
+        const result = this.storageQueue.then(operation);
+        this.storageQueue = result.catch(() => {});
+        return result;
     }
     sample(session, now) {
         if (!this.enabled) return;
@@ -94,19 +104,32 @@ class ActivityTracker {
         if (session) { this.sample(session, this.now()); this.sessions.delete(sessionId); }
     }
     async flush() {
-        if (!this.enabled || this.flushing || !this.pending.length) return;
+        if (!this.enabled || this.flushing || this.closed) return;
         this.flushing = true;
-        const batch = this.pending.slice(0, 500);
         try {
+            await this.storageQueue;
+            if (!this.enabled || !this.pending.length) return;
+            const batch = this.pending.slice(0, 500);
             const receipt = await this.client.storeActivity(batch);
             const accepted = new Set(receipt?.accepted || []);
             if (!batch.every(row => accepted.has(row.id))) throw new Error('Incomplete activity receipt');
-            this.pending = this.pending.filter(row => !accepted.has(row.id));
-            const temp = this.spool + '.tmp';
-            fs.writeFileSync(temp, this.pending.map(row => JSON.stringify(row) + '\n').join(''));
-            fs.renameSync(temp, this.spool);
+            await this.queueStorage(async () => {
+                const remaining = this.pending.filter(row => !accepted.has(row.id));
+                const temp = this.spool + '.tmp';
+                await fs.promises.writeFile(temp, remaining.map(row => JSON.stringify(row) + '\n').join(''));
+                await fs.promises.rename(temp, this.spool);
+                this.pending = remaining;
+            });
         } finally { this.flushing = false; }
     }
-    close() { clearInterval(this.timer); this.tick(); }
+    close() {
+        if (!this.closing) {
+            clearInterval(this.timer);
+            this.tick();
+            this.closed = true;
+            this.closing = this.storageQueue;
+        }
+        return this.closing;
+    }
 }
 module.exports = ActivityTracker;

@@ -265,7 +265,7 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
             });
             const query = this.node('chat-player-search').value.toLowerCase();
             const players = this.players.filter(p => key(p.id) !== key(this.me?.id) &&
-                (this.scope === 'all' || p.mapId === this.me?.mapId) && (p.label + ' ' + p.walletShort).toLowerCase().includes(query));
+                (this.scope === 'all' || p.mapId === this.me?.mapId) && (p.label + ' ' + (p.title || '') + ' ' + p.walletShort).toLowerCase().includes(query));
             const list = this.node('chat-player-list'); list.replaceChildren();
             if (!players.length) list.append(element('p', 'sc-empty', this.connected ? (query ? 'No players found.' : 'No other players online here yet.') : 'Connecting to chat…'));
             const maps = [...new Set(players.map(p => p.mapId))].sort((a, b) => a === this.me.mapId ? -1 : b === this.me.mapId ? 1 : a.localeCompare(b));
@@ -333,7 +333,7 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
         continues(previous, message) {
             return !!previous && key(previous.sender.id) === key(message.sender.id) &&
                 previous.sender.avatar === message.sender.avatar && previous.sender.label === message.sender.label &&
-                previous.sender.walletShort === message.sender.walletShort && previous.mapId === message.mapId &&
+                previous.sender.title === message.sender.title && previous.sender.walletShort === message.sender.walletShort && previous.mapId === message.mapId &&
                 message.epoch >= previous.epoch && message.epoch - previous.epoch < 5 * 60 * 1000 &&
                 new Date(previous.epoch).toDateString() === new Date(message.epoch).toDateString();
         }
@@ -365,7 +365,9 @@ define(['jquery', 'mapnames'], function ($, mapNames) {
 
         identity(player, inline = false) {
             const copy = element('span', 'sc-identity');
-            copy.append(element('strong', '', player.label), element('small', 'sc-wallet', inline ? '(' + player.walletShort + ')' : player.walletShort));
+            copy.append(element('strong', '', player.label));
+            if (player.title && player.title !== player.label) copy.append(element('small', 'sc-title', player.title));
+            copy.append(element('small', 'sc-wallet', inline ? '(' + player.walletShort + ')' : player.walletShort));
             return copy;
         }
 

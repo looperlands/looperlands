@@ -20,6 +20,7 @@ class LooperLandsPlatformClient {
 
         let self = this;
         const takeOffLine = async (code) => {
+            await self.beforeShutdown?.();
             await self.takeGameServerOffline();
             process.exit(0);
         }

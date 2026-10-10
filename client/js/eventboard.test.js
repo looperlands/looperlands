@@ -49,3 +49,15 @@ test('community details show attendance instructions without scoring, sign-up or
     expect(detail.textContent).not.toContain('Full event page');
     expect(detail.children.at(-1).children.every(child => child.tag === 'small')).toBe(true);
 });
+
+test('standings show ENS first with a subtitle and retain legacy labels and your marker', () => {
+    const container = element('div');
+    Board.prototype.standings.call({}, container, {teams: [], leaderboard: [
+        {rank: 1, ens: 'andre.eth', title: 'Knight', label: 'andre.eth', score: 10, isYou: true},
+        {rank: 2, label: 'MossKnight', score: 5}
+    ]});
+    expect(container.children[0].children[0].children[0].textContent).toBe('#1 andre.eth (You)');
+    expect(container.children[0].children[0].children[1].tag).toBe('small');
+    expect(container.children[0].children[0].children[1].textContent).toBe('Knight');
+    expect(container.children[1].textContent).toContain('#2 MossKnight');
+});

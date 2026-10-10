@@ -18,9 +18,15 @@ function shortWallet(wallet) {
 function identityFromSession(session) {
     const wallet = String(session.walletId || '');
     const title = typeof session.title === 'string' ? session.title.trim() : '';
+    const resolved = typeof session.resolvedName === 'string' ? session.resolvedName.trim() : '';
+    const fallback = wallet.replace(/^0x/, '').substring(0, 6);
+    // Sessions created before the full ENS field may still have a resolved name.
+    const legacyName = resolved && ![fallback, wallet, shortWallet(wallet)].includes(resolved) ? resolved : '';
+    const ensName = session.ensName === undefined ? legacyName : session.ensName;
     return {
+        title: title.replace(/0x[a-f0-9]{40}\b/gi, shortWallet),
         walletShort: shortWallet(wallet),
-        label: String(title || session.resolvedName || shortWallet(wallet)).replace(/0x[a-f0-9]{40}\b/gi, shortWallet),
+        label: String(ensName || title || shortWallet(wallet)).replace(/0x[a-f0-9]{40}\b/gi, shortWallet),
         avatar: String(session.nftId || '').replace(/^0x/, 'NFT_'),
         mapId: session.mapId
     };

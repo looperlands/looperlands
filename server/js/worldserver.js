@@ -827,7 +827,6 @@ module.exports = World = cls.Class.extend({
                 let kind = Types.getKindAsString(mob.kind);
                 this.handleRedPacket(mob, kind);
                 this.pushToAdjacentGroups(mob.group, mob.despawn());
-                this.pushToGroup(mob.group, mob.despawn());
                 //On death AoE handling
                 let aoeProps = Properties[kind].aoe;
                 if (aoeProps !== undefined && aoeProps.onDeath) {

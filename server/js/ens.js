@@ -40,37 +40,30 @@ getDotTaikoName = async function (walletId) {
     }
 }
 
-getEns = async function (walletId) {
-    let cached = cache.get(walletId);
-    if (cached !== undefined) {
-        return cached;
-    }
-    const shortEthAddressName = walletId.replace("0x", "").substring(0, 6);
-    let name = shortEthAddressName;
+// Full resolved name, or null when no name is available. Keep wallet fallbacks separate.
+const getEnsName = async function (walletId) {
+    const key = walletId.toLowerCase();
+    const cached = cache.get(key);
+    if (cached !== undefined) return cached;
+    let name = '';
     try {
-        // first, try the loopring API
-        let ensLookup = await axios.get(`https://api3.loopring.io/api/wallet/v3/resolveName?owner=${walletId}`);
-        name = ensLookup.data.data;
-        if (name === "") {
-            // try alchemy next
-            //name = await getEnsAlchemy(walletId);
-        }
-
-        if (name === "") {
-            // try dotTaiko-name
-            name = await getDotTaikoName(walletId);
-        }
-
-        if (name === "") {
-            name = shortEthAddressName;
-        }
-        // display the sub domain
-        name = name.split(".")[0];
+        const response = await axios.get(`https://api3.loopring.io/api/wallet/v3/resolveName?owner=${walletId}`);
+        name = typeof response.data.data === 'string' ? response.data.data.trim() : '';
     } catch (e) {
-        //console.error("Error while looking up ENS name", e);
+        // A failed provider should still allow the secondary resolver.
     }
-    cache.set(walletId, name, 60 * 60 * 24);
-    return name;
-}
+    if (!name) name = await getDotTaikoName(walletId);
+    name = typeof name === 'string' ? name.trim() : '';
+    const resolved = name && !/^0x[a-f0-9]{40}$/i.test(name) ? name : null;
+    cache.set(key, resolved, 60 * 60 * 24);
+    return resolved;
+};
+
+// Existing gameplay names retain their compact format.
+const getEns = async function (walletId) {
+    const name = await getEnsName(walletId);
+    return name ? name.split('.')[0] : walletId.replace('0x', '').substring(0, 6);
+};
 
 exports.getEns = getEns;
+exports.getEnsName = getEnsName;
