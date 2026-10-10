@@ -7291,6 +7291,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     });
 
                     self.player.onStep(function () {
+                        if (self.keyboardMovement) self.lootItemAt(self.player.gridX, self.player.gridY);
+
                         self.handleScene(self.player)
                         self.findVisibleTiles();
 
@@ -7384,40 +7386,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                         self.selectedCellVisible = false;
 
-                        if (self.isItemAt(x, y)) {
-                            var item = self.getItemAt(x, y);
-
-                            if (!item.unlootable) {
-                                try {
-                                    let aboutToEquipWeaponButHasNFTWeapon = item.type === "weapon" && self.player.getWeaponName().startsWith("NFT_");
-                                    if (!aboutToEquipWeaponButHasNFTWeapon) {
-                                        self.player.loot(item);
-                                        self.client.sendLoot(item); // Notify the server that this item has been looted
-                                        self.removeItem(item);
-                                        self.showNotification(item.getLootMessage());
-
-                                        if (item.kind === Types.Entities.LOOPRING) {
-                                            self.audioManager.playSound("firefox");
-                                        }
-
-                                        if (Types.isHealingItem(item.kind)) {
-                                            self.audioManager.playSound("heal");
-                                        } else {
-                                            self.audioManager.playSound("loot");
-                                        }
-                                    } else {
-                                        console.log("You can't loot weapons because you have a NFT weapon equipped.");
-                                    }
-                                } catch (e) {
-                                    if (e instanceof Exceptions.LootException) {
-                                        self.showNotification(e.message);
-                                        self.audioManager.playSound("noloot");
-                                    } else {
-                                        throw e;
-                                    }
-                                }
-                            }
-                        }
+                        if (!self.keyboardMovement) self.lootItemAt(x, y);
 
                         if (!self.player.hasTarget() && self.map.isDoor(x, y)) {
                             var dest = self.map.getDoorDestination(x, y);
@@ -8523,6 +8492,44 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
              */
             makePlayerGoTo: function (x, y) {
                 this.makeCharacterGoTo(this.player, x, y);
+            },
+
+            // Pick up an item without ending a held movement path.
+            lootItemAt: function (x, y) {
+                if (this.isItemAt(x, y)) {
+                    var item = this.getItemAt(x, y);
+
+                    if (!item.unlootable) {
+                        try {
+                            let aboutToEquipWeaponButHasNFTWeapon = item.type === "weapon" && this.player.getWeaponName().startsWith("NFT_");
+                            if (!aboutToEquipWeaponButHasNFTWeapon) {
+                                this.player.loot(item);
+                                this.client.sendLoot(item); // Notify the server that this item has been looted
+                                this.removeItem(item);
+                                this.showNotification(item.getLootMessage());
+
+                                if (item.kind === Types.Entities.LOOPRING) {
+                                    this.audioManager.playSound("firefox");
+                                }
+
+                                if (Types.isHealingItem(item.kind)) {
+                                    this.audioManager.playSound("heal");
+                                } else {
+                                    this.audioManager.playSound("loot");
+                                }
+                            } else {
+                                console.log("You can't loot weapons because you have a NFT weapon equipped.");
+                            }
+                        } catch (e) {
+                            if (e instanceof Exceptions.LootException) {
+                                this.showNotification(e.message);
+                                this.audioManager.playSound("noloot");
+                            } else {
+                                throw e;
+                            }
+                        }
+                    }
+                }
             },
 
             /**
