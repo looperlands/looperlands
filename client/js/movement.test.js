@@ -211,3 +211,40 @@ test('mouse targeting uses floor for negative camera positions in small scenes',
     });
     expect(game.getMouseGridPosition()).toEqual({x: -1, y: 0});
 });
+
+test.each([60, 120, 144])('manual acceleration follows elapsed time at %i Hz and reaches full speed', hz => {
+    const {character, game, frame} = walking(Array.from({length: 30}, (_, i) => [i, 0]));
+    character.moveSpeed = 87;
+    game.player = character;
+    game.keyboardMovement = true;
+    for (let time = 0; time < 1000; time += 1000 / hz) {
+        frame(time);
+        const distance = time < 200 ? time * time / 400 : time - 100;
+        expect(character.x).toBe(Math.round(distance * 16 / 87));
+    }
+    expect(character.movement.duration).toBeCloseTo(87);
+});
+
+test('manual acceleration preserves normalized diagonal speed', () => {
+    const {character, game, frame} = walking(Array.from({length: 20}, (_, i) => [i, i]));
+    character.moveSpeed = 87;
+    game.player = character;
+    game.keyboardMovement = true;
+    for (let time = 0; time < 1000; time += 1000 / 60) {
+        frame(time);
+        const distance = time < 200 ? time * time / 400 : time - 100;
+        expect(character.x).toBe(character.y);
+        expect(character.x).toBe(Math.round(distance * 16 / (87 * Math.SQRT2)));
+    }
+});
+
+test('click-to-move remains at constant speed and clears manual acceleration', () => {
+    const {character, game, frame} = walking([[0, 0], [1, 0], [2, 0]]);
+    game.player = character;
+    game.keyboardMovement = false;
+    character.manualMovementTime = 30;
+    frame(0);
+    frame(60);
+    expect(character.x).toBe(8);
+    expect(character.manualMovementTime).toBeUndefined();
+});
