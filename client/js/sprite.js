@@ -105,10 +105,19 @@ define(['jquery', 'animation', 'sprites'], function ($, Animation, sprites) {
 
 			if (!self.id.startsWith("NFT_") || this.useWebworker === false) {
 				this.image = new Image();
+				let attempts = 0;
 				this.image.crossOrigin = "Anonymous";
 				this.image.onload = function () {
 					self.sendToWorker();
 					self.isLoaded = true;
+				};
+				this.image.onerror = function () {
+					if (attempts < 2) {
+						attempts += 1;
+						setTimeout(function () { self.image.src = self.filepath; }, 500 * attempts);
+					} else {
+						console.error("Unable to load sprite: " + self.filepath);
+					}
 				};
 				this.image.src = this.filepath;
 			} else {

@@ -261,16 +261,18 @@ define(['jquery', 'area'], function ($, Area) {
         _loadTileset: function (filepath) {
             var self = this;
             var tileset = new Image();
-
-            tileset.src = filepath;
+            var attempts = 0;
+            var loaded = false;
 
             console.log("Loading tileset: " + filepath);
 
             tileset.onload = function () {
+                if (loaded) return;
                 if (tileset.width % self.tilesize > 0) {
                     throw Error("Tileset size should be a multiple of " + self.tilesize);
                 }
                 console.log("Map tileset loaded.");
+                loaded = true;
 
                 self.tilesetCount -= 1;
                 if (self.tilesetCount === 0) {
@@ -281,11 +283,23 @@ define(['jquery', 'area'], function ($, Area) {
                 }
             };
 
+            tileset.onerror = function () {
+                if (loaded) return;
+                if (attempts < 2) {
+                    attempts += 1;
+                    setTimeout(function () { tileset.src = filepath; }, 500 * attempts);
+                } else {
+                    console.error("Unable to load tileset: " + filepath);
+                }
+            };
+            tileset.src = filepath;
+
             return tileset;
         },
 
         ready: function (f) {
             this.ready_func = f;
+            if (this.isLoaded) f();
         },
 
         tileIndexToGridPosition: function (tileNum) {

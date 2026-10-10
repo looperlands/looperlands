@@ -66,6 +66,9 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc'],
     
                 let self = this;
                 this.worker.addEventListener("message", (e) => {
+                    if (e.data.type === "tilesetLoaded") {
+                        self.redrawTerrain = true;
+                    }
                     if (e.data.type === "rendered") {
                         self.game.tick();
                     }

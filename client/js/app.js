@@ -917,6 +917,37 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
 
         isInventoryVisible: false,
 
+        loadInventoryImages: function (root) {
+            if (!root) return;
+            root.querySelectorAll('img[data-src]').forEach(image => {
+                let source = image.dataset.src;
+                let fallback = image.dataset.fallbackSrc;
+                let attempts = 0;
+                image.removeAttribute('data-src');
+                image.onload = function () { image.onerror = null; };
+                image.onerror = function () {
+                    if (attempts < 2) {
+                        attempts += 1;
+                        const retry = new URL(source, window.location.href);
+                        retry.searchParams.set('imageRetry', attempts);
+                        setTimeout(function () {
+                            if (image.isConnected) image.src = retry.href;
+                        }, 500 * attempts);
+                    } else if (fallback) {
+                        source = fallback;
+                        fallback = null;
+                        attempts = 0;
+                        image.style.objectPosition = '0 -400px';
+                        image.src = source;
+                    } else {
+                        image.onerror = null;
+                        console.error('Unable to load inventory image: ' + source);
+                    }
+                };
+                image.src = source;
+            });
+        },
+
         toggleInventory: function () {
             if (this.isInventoryVisible) {
                 this.hideInventory();
@@ -978,7 +1009,7 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
                         : Types.isTool(Number(item)) ? "default" : "not-allowed";
                     let draggable = consumablesInventory[item].consumable ? "true" : "false";
                     html += "<div id='item_" + item + "' class='item panelBorder " + (consumablesInventory[item].consumable ? 'consumable' : '') + "' draggable='" + draggable + "' data-item='" + item + "'>";
-                    html += "<img id='" + item + "' draggable='false' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0; cursor: " + cursor + ";' src='img/3/" + consumablesInventory[item].image + ".png' />";
+                    html += "<img id='" + item + "' draggable='false' style='width: 32px; height: 32px; object-fit: cover; object-position: 100% 0; cursor: " + cursor + ";' data-src='img/3/" + consumablesInventory[item].image + ".png' />";
                     html += "<div class='timer' id='timer_" + item + "'></div>";
                     html += "<p class='itemCount' id='count_" + item + "'>" + consumablesInventory[item].qty + "</p>"
                     html += "</div>";
@@ -996,16 +1027,17 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
                     let normalURL = url.replace("/3/", "/2/");
                     // error url is used to display ranged weapons
                     let errorURL = url.replace("/3/", "/1/").replace("item-", "");
-                    if (item.dynamicNFTData?.assetType === "ranged_weapon") {
-                        normalURL = "-1"; //cause error;
-                    }
+                    const rangedWeapon = item.dynamicNFTData?.assetType === "ranged_weapon";
+                    const imageSource = rangedWeapon ? errorURL : normalURL;
+                    const imagePosition = rangedWeapon ? '0 -400px' : '0 4px';
+                    const fallbackAttribute = rangedWeapon ? '' : " data-fallback-src='" + errorURL + "'";
                     _this.inventoryToolTips[item.nftId] = {
                         header: 'Level ' + item.level,
                         body: item.name,
                         footer: item.trait,
                     };
                     imgTag = "<div class='item panelBorder' id='item_" + item.nftId + "'>" +
-                        "<img id='" + item.nftId + "' style='width: 32px; height: 32px; object-fit: none; object-position: 0 4px; cursor: pointer;' src='"+ normalURL +"' onerror='this.onerror=null;this.src=\""+ errorURL + "\"; $(this).css({objectPosition: \"0 -400px\"});' />" +
+                        "<img id='" + item.nftId + "' style='width: 32px; height: 32px; object-fit: none; object-position: " + imagePosition + "; cursor: pointer;' data-src='" + imageSource + "'" + fallbackAttribute + " />" +
                         "</div>";
                     inventoryHtml += imgTag;
                 });
@@ -1025,7 +1057,7 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
                     };
 
                     inventoryHtml += "<div class='item panelBorder' id='item_" + item.nftId + "'>" +
-                    "<img id='" + item.nftId + "' style='width: 32px; height: 32px; object-fit: cover; cursor: pointer; object-position: 100% 0;' src='"+itemURL+"' /></div>";
+                    "<img id='" + item.nftId + "' style='width: 32px; height: 32px; object-fit: cover; cursor: pointer; object-position: 100% 0;' data-src='"+itemURL+"' /></div>";
                 });
                 Object.keys(consumablesInventory).forEach(item => {
                     if (Types.isTool(Number(item)) && consumablesInventory[item].qty > 0) {
@@ -1073,7 +1105,7 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
                             body: bot.name,
                         }
 
-                        imgTag = `<div class='item panelBorder' id="item_${bot.nftId}" data-nftId="${bot.nftId}"><img id=${bot.nftId} style='width: 32px; height: 32px; object-fit: none; cursor: pointer; object-position: 100% 0;' src='` + url + "'/></div>";
+                        imgTag = `<div class='item panelBorder' id="item_${bot.nftId}" data-nftId="${bot.nftId}"><img id=${bot.nftId} style='width: 32px; height: 32px; object-fit: none; cursor: pointer; object-position: 100% 0;' data-src='` + url + "'/></div>";
                         inventoryHtml += imgTag;
                     }
                 });
@@ -1089,6 +1121,7 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
                 }
 
                 $("#inventorycontent").html(inventoryHtml);
+                _this.loadInventoryImages(document.getElementById('inventorycontent'));
                 let inventorySlots = _this.settings.getInventorySlots();
 
                 if (inventorySlots) {
@@ -1103,7 +1136,10 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
                             let url = "img/3/" + consumablesInventory[item].image + ".png";
                             let slotID = "consumableSlot" + (parseInt(slot) + 1);
 
-                            setTimeout(() => $('#' + slotID + ' .itemContainer').append('<img src="' + url + '" />'), 50);
+                            setTimeout(() => {
+                                $('#' + slotID + ' .itemContainer').append('<img data-src="' + url + '" />');
+                                _this.loadInventoryImages(document.getElementById(slotID));
+                            }, 50);
                         }
                     });
                 }
@@ -1133,7 +1169,8 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
                             inventorySlots[i] = dropItem;
                             _this.settings.setInventorySlots(inventorySlots);
                             let url = "img/3/" + consumablesInventory[dropItem].image + ".png";
-                            $('#' + slotEl.id + ' .itemContainer').html('<img style="width: 32px; height: 32px; object-fit: cover; object-position: 100% 0; cursor: pointer;" src="' + url + '" />');
+                            $('#' + slotEl.id + ' .itemContainer').html('<img style="width: 32px; height: 32px; object-fit: cover; object-position: 100% 0; cursor: pointer;" data-src="' + url + '" />');
+                            _this.loadInventoryImages(slotEl);
                         });
                     }
                 }

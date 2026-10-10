@@ -1,6 +1,7 @@
 let rendererExtensions = null;
 const extensionModules = new Set();
 let tileset = undefined;
+let tilesetRequest = 0;
 let tilesize = 16;
 let canvases = {};
 let contexes = {};
@@ -109,12 +110,18 @@ class Sprite {
 
 
 async function loadImg(src) {
-    try {
-        const imgblob = await fetch(src)
-            .then(r => r.blob());
-        return await createImageBitmap(imgblob);
-    } catch (e) {
-        console.log(e, src);
+    for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+            const response = await (attempt === 0 ? fetch(src) : fetch(src, {cache: 'reload'}));
+            if (response.ok === false) throw new Error(`Image request failed: ${response.status}`);
+            return await createImageBitmap(await response.blob());
+        } catch (e) {
+            if (attempt === 2) {
+                console.log(e, src);
+                return;
+            }
+            await new Promise(resolve => setTimeout(resolve, 500 * (attempt + 1)));
+        }
     }
 }
 
@@ -303,8 +310,12 @@ onmessage = (e) => {
     }
 
     if (e.data.type === "setTileset") {
+        const request = ++tilesetRequest;
+        tileset = undefined;
         loadImg(e.data.src).then((img) => {
+            if (request !== tilesetRequest || !img) return;
             tileset = img;
+            postMessage({type: 'tilesetLoaded'});
         });
     } else if (e.data.type === "loadCursor") {
         loadImg(e.data.src).then((img) => {
@@ -312,6 +323,10 @@ onmessage = (e) => {
             console.log("loaded cursor", e.data.name);
         });
     } else if (e.data.type === "render") {
+        if (!tileset) {
+            requestAnimationFrame(() => postMessage({type: 'rendered'}));
+            return;
+        }
         const renderDataLength = e.data.renderData.length;
         let scale = 1;
         for (let i = 0; i < renderDataLength; i++) {

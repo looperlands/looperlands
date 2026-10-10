@@ -19,9 +19,11 @@ function createWorker({supportsFonts = true} = {}) {
     const createImageBitmap = jest.fn();
     const log = jest.fn();
     const self = {FontFace: supportsFonts ? FontFace : undefined, fonts: {add: jest.fn()}};
-    const sandbox = {self, FontFace, fetch, createImageBitmap, console: {log}};
-    const api = vm.runInNewContext(`${source}\n({Sprite, drawEntities, getSprite: name => sprites[name]});`, sandbox);
-    return {...api, send: data => sandbox.onmessage({data}), font, FontFace, fetch, createImageBitmap, log, self};
+    const postMessage = jest.fn();
+    const sandbox = {self, FontFace, fetch, createImageBitmap, console: {log}, postMessage,
+        setTimeout: resolve => resolve(), requestAnimationFrame: callback => callback()};
+    const api = vm.runInNewContext(`${source}\n({Sprite, drawEntities, getSprite: name => sprites[name], getTileset: () => tileset});`, sandbox);
+    return {...api, send: data => sandbox.onmessage({data}), font, FontFace, fetch, createImageBitmap, log, self, postMessage};
 }
 
 function mockImage(worker, image = {bitmap: true}) {
@@ -81,9 +83,50 @@ test.each(['fetch', 'decode'])('retries a sprite after a failed %s', async failu
     if (failure === 'fetch') worker.fetch.mockRejectedValueOnce(new Error('offline'));
     else worker.createImageBitmap.mockRejectedValueOnce(new Error('bad image'));
     const sprite = new worker.Sprite('avatar', 'avatar.png');
-    expect(await sprite.load()).toBeUndefined();
     expect(await sprite.load()).toBe(image);
     expect(worker.fetch).toHaveBeenCalledTimes(2);
+});
+
+test('stops after three failed image attempts and allows a later sprite load', async () => {
+    const worker = createWorker();
+    const image = mockImage(worker);
+    worker.fetch.mockRejectedValue(new Error('offline'));
+    const sprite = new worker.Sprite('item', 'item.png');
+    expect(await sprite.load()).toBeUndefined();
+    expect(worker.fetch).toHaveBeenCalledTimes(3);
+    expect(worker.log).toHaveBeenCalledTimes(1);
+    mockImage(worker, image);
+    expect(await sprite.load()).toBe(image);
+});
+
+test('retries failed HTTP responses before decoding the tilesheet', async () => {
+    const worker = createWorker();
+    const image = mockImage(worker);
+    worker.fetch.mockResolvedValueOnce({ok: false, status: 503});
+    worker.send({type: 'setTileset', src: 'tiles.png'});
+    worker.send({type: 'render'}); // No canvas access while the tilesheet is pending.
+    expect(worker.postMessage).toHaveBeenCalledWith({type: 'rendered'});
+    await flushPromises();
+    expect(worker.getTileset()).toBe(image);
+    expect(worker.createImageBitmap).toHaveBeenCalledTimes(1);
+    expect(worker.fetch).toHaveBeenLastCalledWith('tiles.png', {cache: 'reload'});
+    expect(worker.postMessage).toHaveBeenCalledWith({type: 'tilesetLoaded'});
+});
+
+test('a previous map download cannot replace the current tilesheet', async () => {
+    const worker = createWorker();
+    const previous = deferred();
+    mockImage(worker);
+    worker.fetch.mockReturnValueOnce(previous.promise);
+    worker.createImageBitmap.mockImplementation(async blob => ({blob}));
+    worker.send({type: 'setTileset', src: 'old.png'});
+    worker.send({type: 'setTileset', src: 'new.png'});
+    await flushPromises();
+    const current = worker.getTileset();
+    previous.resolve({blob: async () => 'old image'});
+    await flushPromises();
+    expect(worker.getTileset()).toBe(current);
+    expect(worker.postMessage).toHaveBeenCalledTimes(1);
 });
 
 function context() {
