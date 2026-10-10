@@ -194,3 +194,26 @@ test.each([0, 0.5, 0.9])('impacts keep a contrasting border while fading at prog
     }
     expect(pixels.filter(pixel => pixel.color === '#ffb13b')).toHaveLength(4);
 });
+
+test('clears the cursor layer on the first frame without a cursor, and skips pending cursor assets', () => {
+    const sandbox = {self: {}, console, requestAnimationFrame: jest.fn(), postMessage: jest.fn()};
+    const api = vm.runInNewContext(`${source}\n({setCursorImage: image => {cursors.hand = image;}});`, sandbox);
+    const contexts = {};
+    for (const id of ['background', 'entities', 'text', 'high', 'highEntities', 'lighting', 'aboveLight', 'combined']) {
+        contexts[id] = context();
+        sandbox.onmessage({data: {type: 'setCanvas', id,
+            canvas: {width: 960, height: 448, getContext: () => contexts[id]}}});
+    }
+    const render = renderData => sandbox.onmessage({data: {type: 'render', renderData}});
+    const cursor = {cursor: true, id: 'aboveLight', name: 'hand', mx: 10, my: 20, s: 2, os: 1};
+    expect(() => render([cursor])).not.toThrow();
+    expect(contexts.aboveLight.drawImage).not.toHaveBeenCalled();
+    api.setCursorImage({loaded: true});
+    render([cursor]);
+    expect(contexts.aboveLight.drawImage).toHaveBeenCalledTimes(1);
+    contexts.aboveLight.clearRect.mockClear();
+    contexts.aboveLight.drawImage.mockClear();
+    render([]);
+    expect(contexts.aboveLight.clearRect).toHaveBeenCalledWith(0, 0, 960, 448);
+    expect(contexts.aboveLight.drawImage).not.toHaveBeenCalled();
+});
