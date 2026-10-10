@@ -150,6 +150,16 @@ define(['character', 'projectile', 'timer'], function (Character, Projectile, Ti
             }
         },
 
+        // Distance expressed as equivalent milliseconds at full walking speed.
+        // Accelerate from rest to full speed over 200 ms, then keep that speed.
+        manualMovementDistance: function(time) {
+            return time < 200 ? time * time / 400 : time - 100;
+        },
+
+        manualMovementTime: function(distance) {
+            return distance < 100 ? Math.sqrt(distance * 400) : distance + 100;
+        },
+
         updateCharacter: function (c, startTime) {
             if (c.isMoving() && c.movement.inProgress === false) {
                 var startX = c.x, startY = c.y,
@@ -159,9 +169,24 @@ define(['character', 'projectile', 'timer'], function (Character, Projectile, Ti
                 if (dx === 0 && dy === 0) return;
                 // Interpolate both axes together. Diagonals cover sqrt(2) times
                 // the distance, so take proportionally longer at the same speed.
-                var duration = c.moveSpeed * Math.hypot(dx, dy) / 16;
+                var self = this,
+                    travelTime = c.moveSpeed * Math.hypot(dx, dy) / 16,
+                    duration = travelTime,
+                    manual = c === this.game.player && this.game.keyboardMovement,
+                    elapsed = 0, distance = 0, endTime = 0;
+                if (manual) {
+                    elapsed = c.manualMovementTime || 0;
+                    distance = this.manualMovementDistance(elapsed);
+                    endTime = this.manualMovementTime(distance + travelTime);
+                    duration = endTime - elapsed;
+                } else {
+                    c.manualMovementTime = undefined;
+                }
                 c.movement.start(startTime === undefined ? this.game.currentTime : startTime,
                     function (progress) {
+                        if (manual) {
+                            progress = (self.manualMovementDistance(elapsed + progress * duration) - distance) / travelTime;
+                        }
                         c.x = Math.round(startX + dx * progress);
                         c.y = Math.round(startY + dy * progress);
                         c.hasMoved();
@@ -171,6 +196,8 @@ define(['character', 'projectile', 'timer'], function (Character, Projectile, Ti
                         c.y = endY;
                         c.hasMoved();
                         c.nextStep();
+                        c.manualMovementTime = manual && c.isMoving() && self.game.keyboardMovement
+                            ? endTime : undefined;
                     },
                     0, 1, duration, false);
             }

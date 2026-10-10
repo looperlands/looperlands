@@ -87,7 +87,7 @@ function createMovementGame() {
     function frame() {
         game.currentTime += 16;
         updater.updateCharacter(player);
-        player.movement.step(game.currentTime);
+        updater.updateTransitions();
         updater.updateAnimations();
     }
     return { game, player, handler, document, panels, requestPath, sendMove, stopped, frame };
@@ -125,7 +125,7 @@ test('direction changes take effect at the next tile boundary', async () => {
     frame();
     handler.handleKeyUp({ key: 'd' });
     handler.handleKeyDown({ key: 'w', code: 'KeyW' });
-    for (let i = 0; i < 10; i++) { frame(); }
+    for (let i = 0; i < 15; i++) { frame(); }
     expect(player.gridX).toBe(3);
     expect(player.currentAnimation.name).toBe('walk_up');
     expect(player.nextGridY).toBe(1);
@@ -155,7 +155,7 @@ test.each([
     await Promise.resolve();
     state.frame();
     change(state);
-    for (let i = 0; i < 10; i++) { state.frame(); }
+    for (let i = 0; i < 20; i++) { state.frame(); }
     expect(state.player.gridX).toBe(3);
     expect(state.player.isMoving()).toBe(false);
     expect(state.stopped).toHaveBeenCalledTimes(1);
@@ -277,4 +277,33 @@ test('held diagonal movement keeps its walk animation across tile boundaries', (
     expect(player.gridX).toBeGreaterThan(5);
     expect(reset).not.toHaveBeenCalled();
     expect(frames.size).toBe(4);
+});
+
+test.each([60, 100, 150])('a level 100 key press lasting %i ms moves exactly one tile', async pressTime => {
+    const {player, handler, frame, sendMove, stopped} = createMovementGame();
+    player.moveSpeed = 87;
+    handler.handleKeyDown({key: 'd', code: 'KeyD'});
+    await Promise.resolve();
+    for (let time = 0; time < pressTime; time += 16) frame();
+    handler.handleKeyUp({key: 'd'});
+    for (let i = 0; i < 30; i++) frame();
+    expect(player.gridX).toBe(3);
+    expect(player.x).toBe(48);
+    expect(player.isMoving()).toBe(false);
+    expect(sendMove).toHaveBeenCalledTimes(1);
+    expect(stopped).toHaveBeenCalledTimes(1);
+    expect(player.manualMovementTime).toBeUndefined();
+});
+
+test('separate taps reset acceleration after stopping', async () => {
+    const {player, handler, frame} = createMovementGame();
+    player.moveSpeed = 87;
+    for (let tap = 0; tap < 2; tap++) {
+        handler.handleKeyDown({key: 'd', code: 'KeyD'});
+        await Promise.resolve();
+        for (let i = 0; i < 7; i++) frame();
+        handler.handleKeyUp({key: 'd'});
+        for (let i = 0; i < 20; i++) frame();
+        expect(player.gridX).toBe(3 + tap);
+    }
 });
