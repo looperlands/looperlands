@@ -86,6 +86,29 @@ test('interaction pauses movement and resumes without teleporting when the playe
     expect(world.moveNpc).toHaveBeenCalledTimes(1);
 });
 
+test('preserving original dialogue keeps ambient greetings and pauses the routine on every click', () => {
+    const definition = {...loadConfig('main').npcs.find(npc => npc.key === 'town-tanashi'),
+        origin: {x: 2, y: 2}, area: {x: 1, y: 1, width: 18, height: 18},
+        route: [{x: 5, y: 2, waitSeconds: 3, activity: 'walking'}]};
+    const {controller, world, player, advance, npc} = setup({npcs: [definition]});
+    player.x = 2; player.y = 3;
+    advance(200);
+    expect(chatTexts(world)).toEqual([definition.lines.greeting[0]]);
+    for (let click = 0; click < 4; click++) {
+        // A null routine reply allows the existing server quest/dialogue path
+        // to fall back to the client's original conversation sequence.
+        expect(controller.interact(player, npc.kind, npc.id)).toBeNull();
+        advance(1000);
+    }
+    expect(npc.behaviorState.activity).toBe('talking');
+    player.x = 12; player.y = 12;
+    advance(18000);
+    expect(world.moveNpc).not.toHaveBeenCalled();
+    advance(2000);
+    expect(world.moveNpc).toHaveBeenCalledTimes(1);
+    expect(() => validateConfig({enabled: true, npcs: [{...definition, preserveDialogue: 'true'}]})).toThrow();
+});
+
 test('greetings stay private, are throttled, and remember the avatar in a new session', () => {
     const {controller, world, player, advance, memory} = setup();
     player.x = 2; player.y = 3;

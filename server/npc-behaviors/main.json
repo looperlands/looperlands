@@ -693,6 +693,7 @@
       "kind": "tanashi",
       "label": "Tanashi",
       "preset": "socialise",
+      "preserveDialogue": true,
       "origin": {
         "x": 27,
         "y": 231
