@@ -6463,6 +6463,12 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 return WorldTime.previewTime(this.previewTimeMode, (this.serverTime || 0) + performance.now());
             },
 
+            canEnterDoorByTime: function (dest) {
+                if (WorldTime.isInRange(this.getWorldTime(), dest.timeRange)) return true;
+                this.showNotification(dest.time_message || dest.message || "This entrance is closed at this time of day.");
+                return false;
+            },
+
             initAchievements: function () {
                 var self = this;
                 var questLogUrl = "/session/" + self.sessionId + "/quests";
@@ -7418,6 +7424,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             var _self = self;
 
                             function goInside() {
+                                // Ownership/trigger requests may finish after the opening window ends.
+                                if (!_self.canEnterDoorByTime(dest)) return;
                                 if (dest.map !== undefined) {
                                     let url = '/session/' + self.sessionId + '/teleport';
                                     axios.post(url, dest).then(function (response) {
@@ -7508,7 +7516,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                 }
                             }
 
-                            if (dest.nft !== undefined) {
+                            if (!_self.canEnterDoorByTime(dest)) {
+                                _self.doorCheck = false;
+                            } else if (dest.nft !== undefined) {
                                 var url = '/session/' + self.sessionId + '/owns/' + dest.nft;
                                 _self.doorCheck = true;
                                 axios.get(url).then(function (response) {
