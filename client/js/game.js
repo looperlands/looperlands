@@ -6303,15 +6303,18 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.toolImpactFeedback.clear();
                 this.infoManager.clear();
 
-                this.map = new Mapx(!this.renderer.upscaledRendering, this, mapId);
+                if (this.map) this.map.stopStreamCheck();
+                if (this.audioManager) this.audioManager.playStreamMusic(null);
+                var map = this.map = new Mapx(!this.renderer.upscaledRendering, this, mapId);
 
                 this.storage.setMapId(mapId);
 
-                this.map.ready(function () {
+                map.ready(function () {
+                    if (self.map !== map) return;
                     console.log("Map loaded.");
                     var tilesetIndex = self.renderer.upscaledRendering ? 0 : self.renderer.scale - 1;
-                    self.renderer.setTileset(self.map.tilesets[tilesetIndex]);
-                    self.map._initStreamCheck();
+                    self.renderer.setTileset(map.tilesets[tilesetIndex]);
+                    map._initStreamCheck();
                 });
             },
 
@@ -6942,7 +6945,9 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             },
 
             loadAudio: function () {
+                if (this.audioManager) this.audioManager.destroy();
                 this.audioManager = new AudioManager(this);
+                this.map.updateStreamMusic();
                 this.app.settings.setSettings();
             },
 
