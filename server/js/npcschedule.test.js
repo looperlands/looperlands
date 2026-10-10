@@ -53,6 +53,27 @@ function setup(initialHour = 14, changeConfig = () => {}) {
 }
 const chats = world => world.pushToPlayer.mock.calls.filter(([, message]) => message.serialize()[0] === Types.Messages.CHAT);
 
+test('Tanashi matches his map spawn and walks a complete loop clear of entrances', () => {
+    const {actor, world, tick, player} = setup();
+    Object.assign(player, {x: 35, y: 237});
+    const tanashi = actor('town-tanashi');
+    const spawnIndex = Object.keys(mainMap.staticEntities).find(index => mainMap.staticEntities[index] === 'tanashi');
+    const spawn = mainMap.tileIndexToGridPosition(Number(spawnIndex));
+    expect(tanashi.definition.origin).toEqual({x: spawn.x + 1, y: spawn.y});
+    expect(tanashi.definition.questIds).toBeUndefined();
+    tick(1000);
+    const moves = world.moveNpc.mock.calls.filter(([npc]) => npc === tanashi.npc);
+    expect(moves.length).toBeGreaterThan(0);
+    for (const waypoint of tanashi.definition.route) {
+        expect(moves.filter(([, x, y]) => x === waypoint.x && y === waypoint.y).length).toBeGreaterThan(1);
+    }
+    for (const [, x, y, teleport] of moves) {
+        expect(teleport).toBeFalsy();
+        expect(mainMap.isColliding(x, y)).toBe(false);
+        expect(mainMap.doors.some(door => Math.abs(door.x - x) + Math.abs(door.y - y) <= 1)).toBe(false);
+    }
+});
+
 test.each([[0, 'sleep'], [5.99, 'sleep'], [6, 'home'], [8, 'work'], [15.99, 'work'], [16, 'free-time'], [18, 'home'], [20, 'sleep'], [24, 'sleep'], [-1, 'sleep']])(
     'Adam follows clock boundaries including midnight at %s', (hour, activity) => {
         expect(phaseAt(picnic.behavior.npcs[0].schedule, hour / 24 * WorldTime.duration).key).toBe(activity);
@@ -83,7 +104,7 @@ test('night routes walk through public doors, stay on main and share one positio
     expect(crossings.every(([, x, y]) => x === 154 && y === 143)).toBe(true);
     expect(world.pushToGroup.mock.calls.some(([, message]) => message.serialize()[0] === Types.Messages.DESTROY)).toBe(true);
     expect(chats(world)).toHaveLength(0);
-    expect(behavior.routines.size).toBe(3);
+    expect(behavior.routines.size).toBe(4);
 });
 
 test('morning sends neighbours back outside and the watch inside, then free time gathers all three', () => {
@@ -94,9 +115,9 @@ test('morning sends neighbours back outside and the watch inside, then free time
     expect(actor('town-watch').schedule.room).toBe('town-hall');
     expect(actor('town-watch').schedule.sleeping()).toBe(true);
     hour(14); tick(1000);
-    expect([...world.npcBehavior.routines.values()].every(a => a.schedule.room === 'outside' && a.schedule.phase.key === 'work')).toBe(true);
+    expect([...world.npcBehavior.routines.values()].filter(a => a.schedule).every(a => a.schedule.room === 'outside' && a.schedule.phase.key === 'work')).toBe(true);
     hour(16.5); tick(1000);
-    expect([...world.npcBehavior.routines.values()].every(a => a.schedule.phase.key === 'free-time')).toBe(true);
+    expect([...world.npcBehavior.routines.values()].filter(a => a.schedule).every(a => a.schedule.phase.key === 'free-time')).toBe(true);
     expect(actor('town-watch').npc).toMatchObject({x: 42, y: 218});
 });
 

@@ -687,6 +687,62 @@
           }
         ]
       }
+    },
+    {
+      "key": "town-tanashi",
+      "kind": "tanashi",
+      "label": "Tanashi",
+      "preset": "socialise",
+      "preserveDialogue": true,
+      "origin": {
+        "x": 27,
+        "y": 231
+      },
+      "area": {
+        "x": 23,
+        "y": 225,
+        "width": 17,
+        "height": 13
+      },
+      "stepMs": 650,
+      "route": [
+        {
+          "x": 30,
+          "y": 232,
+          "waitSeconds": 8,
+          "activity": "greeting travellers"
+        },
+        {
+          "x": 35,
+          "y": 233,
+          "waitSeconds": 12,
+          "activity": "taking a stroll"
+        },
+        {
+          "x": 31,
+          "y": 237,
+          "waitSeconds": 15,
+          "activity": "taking a break"
+        },
+        {
+          "x": 28,
+          "y": 233,
+          "waitSeconds": 8,
+          "activity": "catching up with neighbours"
+        }
+      ],
+      "lines": {
+        "greeting": [
+          "Hi, I'm Tanashi! Come say hello while I make my rounds."
+        ],
+        "return": [
+          "Good to see you again! Join me for a stroll."
+        ],
+        "talk": [
+          "I walk around town, catch up with travellers, then take a little break.",
+          "There is always someone new to meet around here."
+        ]
+      }
     }
   ],
   "conversations": [

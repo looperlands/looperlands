@@ -23,6 +23,7 @@ function validateConfig(config) {
                 (p.line && (typeof p.line !== 'string' || p.line.length > 240 || /[<>]/.test(p.line))) ||
                 (p.sound && !['watersplash', 'honk', 'npc'].includes(p.sound))) ||
             !Number.isFinite(npc.stepMs) || npc.stepMs < 300 || npc.stepMs > 2000 ||
+            (npc.preserveDialogue !== undefined && typeof npc.preserveDialogue !== 'boolean') ||
             !['patrol', 'work', 'socialise'].includes(npc.preset)) {
             throw new Error('Invalid NPC routine: ' + npc.key);
         }
@@ -418,6 +419,7 @@ class NpcBehavior {
             state.near.add(routine.definition.key);
             state.greeted.set(routine.definition.key, time);
         }
+        if (routine.definition.preserveDialogue) return null;
         const quests = this.world.server.cache.get(player.sessionId)?.gameData?.quests || {};
         const helped = this.memory.has(this.mapId, routine.definition.key, player, 'helped') ||
             ['COMPLETED', 'FINISHED'].some(status => (quests[status] || []).some(quest =>

@@ -86,6 +86,29 @@ test('interaction pauses movement and resumes without teleporting when the playe
     expect(world.moveNpc).toHaveBeenCalledTimes(1);
 });
 
+test('preserving original dialogue keeps ambient greetings and pauses the routine on every click', () => {
+    const definition = {...loadConfig('main').npcs.find(npc => npc.key === 'town-tanashi'),
+        origin: {x: 2, y: 2}, area: {x: 1, y: 1, width: 18, height: 18},
+        route: [{x: 5, y: 2, waitSeconds: 3, activity: 'walking'}]};
+    const {controller, world, player, advance, npc} = setup({npcs: [definition]});
+    player.x = 2; player.y = 3;
+    advance(200);
+    expect(chatTexts(world)).toEqual([definition.lines.greeting[0]]);
+    for (let click = 0; click < 4; click++) {
+        // A null routine reply allows the existing server quest/dialogue path
+        // to fall back to the client's original conversation sequence.
+        expect(controller.interact(player, npc.kind, npc.id)).toBeNull();
+        advance(1000);
+    }
+    expect(npc.behaviorState.activity).toBe('talking');
+    player.x = 12; player.y = 12;
+    advance(18000);
+    expect(world.moveNpc).not.toHaveBeenCalled();
+    advance(2000);
+    expect(world.moveNpc).toHaveBeenCalledTimes(1);
+    expect(() => validateConfig({enabled: true, npcs: [{...definition, preserveDialogue: 'true'}]})).toThrow();
+});
+
 test('greetings stay private, are throttled, and remember the avatar in a new session', () => {
     const {controller, world, player, advance, memory} = setup();
     player.x = 2; player.y = 3;
@@ -280,7 +303,7 @@ test('ambient reactions use quest and choice memory, survive a new session, and 
 
 test('pilot configuration is valid and rejects duplicate keys, invalid routes and markup', () => {
     const config = loadConfig('main');
-    expect(config.npcs).toHaveLength(3);
+    expect(config.npcs).toHaveLength(4);
     expect(() => validateConfig({...config, npcs: [config.npcs[0], config.npcs[0]]})).toThrow();
     expect(() => validateConfig({...config, npcs: [{...config.npcs[0], stepMs: 10}]})).toThrow();
     expect(() => validateConfig({...config, npcs: [{...config.npcs[0], lines: {greeting: ['<script>']}}]})).toThrow();
@@ -298,7 +321,7 @@ test('all pilot routes are connected on the actual map and avoid doors', async (
         id: index + 100, type: 'npc', kind: Types.getKindFromString(definition.kind), ...definition.origin
     }]));
     const controller = new NpcBehavior({id: 'world_main', map, npcs, entities: npcs}, config, new NpcMemory());
-    expect(controller.routines.size).toBe(3);
+    expect(controller.routines.size).toBe(4);
     for (const routine of controller.routines.values()) {
         for (const waypoint of routine.definition.route) {
             const route = controller.findPath(routine, waypoint);

@@ -122,7 +122,7 @@ for (const dialogue of dialogues) {
 
 const behavior = JSON.parse(JSON.stringify(base));
 behavior.ambience.particleCount = 18;
-for (const npc of behavior.npcs) {
+for (const npc of behavior.npcs.filter(npc => ['town-gardener', 'town-watch', 'town-neighbour'].includes(npc.key))) {
     npc.questIds = [BASKET, SAFETY, INVITE];
     npc.lines.quest = ['I heard about your help with the picnic. Click me if you want to talk about what we still need.'];
     npc.reactions = [
