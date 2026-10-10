@@ -1,6 +1,6 @@
 
-define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc'],
-    function(Camera, Item, Character, Player, Timer, Mob, Npc) {
+define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorcontroller'],
+    function(Camera, Item, Character, Player, Timer, Mob, Npc, CursorController) {
 
         var Renderer = Class.extend({
             init: function(game, canvas, background, foreground) {
@@ -28,6 +28,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc'],
                 this.canvas = canvas;
                 this.backcanvas = background;
                 this.forecanvas = foreground;
+                this.cursorController = new CursorController(document.getElementById('canvas'));
     
                 this.initFPS();
                 this.tilesize = 16;
@@ -1115,7 +1116,8 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc'],
 
                 this.context.restore();
                 // Overlay UI elements
-                if(!$("#minigame").hasClass("active") && this.game.app.settings.getCursor()){
+                if(this.cursorController.update(this.game.started && !this.mobile && !this.tablet
+                    && !$("#minigame").hasClass("active") && this.game.app.settings.getCursor())){
                     let cursorData = this.drawCursor();
                     renderData.push(cursorData);
                 }

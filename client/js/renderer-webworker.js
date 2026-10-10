@@ -312,6 +312,8 @@ onmessage = (e) => {
             console.log("loaded cursor", e.data.name);
         });
     } else if (e.data.type === "render") {
+        // Clear even when this frame has no cursor command (UI, blur or setting).
+        contexes.aboveLight.clearRect(0, 0, canvases.aboveLight.width, canvases.aboveLight.height);
         const renderDataLength = e.data.renderData.length;
         let scale = 1;
         for (let i = 0; i < renderDataLength; i++) {
@@ -400,6 +402,7 @@ function renderCursor(renderData) {
     let cursorImg = cursors[renderData.name];
     let ctx = contexes[renderData.id];
     ctx.clearRect(0, 0, canvases[renderData.id].width, canvases[renderData.id].height);
+    if (!cursorImg) return;
     ctx.save();
     ctx.drawImage(cursorImg, 0, 0, 14 * os, 14 * os, mx, my, 14 * s, 14 * s);
     ctx.restore();
