@@ -155,22 +155,16 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
         },
 
         setMouseCoordinates: function (event) {
-            var gamePos = $('#container').offset(),
-                width = this.game.renderer.getWidth(),
+            var width = this.game.renderer.getWidth(),
                 height = this.game.renderer.getHeight(),
-                mouse = this.game.mouse;
+                mouse = this.game.mouse,
+                bounds = this.game.renderer.canvas.getBoundingClientRect();
 
-            var scale;
-
-            if(this.settings.getFullscreen()) {
-                scale = $('#container').css("transform").split("(")[1].split(")")[0].split(",");
-                mouse.x = (event.pageX - gamePos.left) / parseFloat(scale[0])
-                mouse.y = (event.pageY - gamePos.top) / parseFloat(scale[3])
-            } else {
-                scale = this.game.renderer.getScaleFactor();
-                mouse.x = event.pageX - gamePos.left - (this.isMobile ? 0 : 5 * scale);
-                mouse.y = event.pageY - gamePos.top - (this.isMobile ? 0 : 7 * scale);
-            }
+            // Map viewport coordinates to canvas pixels, including CSS scaling and
+            // borders. This also works when fullscreen has no transform applied.
+            if (!bounds.width || !bounds.height) return;
+            mouse.x = (event.clientX - bounds.left) * width / bounds.width;
+            mouse.y = (event.clientY - bounds.top) * height / bounds.height;
 
             if (mouse.x <= 0) {
                 mouse.x = 0;
