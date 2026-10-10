@@ -289,6 +289,11 @@ define(['jquery', 'app'], function($, App) {
                 game.keyboardHandler = keyboardHandler;
                 game.touchListener = new TouchListener(game);
                 game.gamepadListener = new GamePadListener(game);
+                if (new URLSearchParams(window.location.search).get('profileKills') === '1') {
+                    require(['kill-audio-probe'], function (probe) {
+                        window.__killAudioProbe = probe.install(game);
+                    });
+                }
     		});
     		
     		game.onDisconnect(function(message) {
