@@ -74,7 +74,7 @@ function createMovementGame() {
         currentTime: 1000, renderer: { FPS: 60 },
         finalPathingGrid: Array.from({ length: 20 }, () => Array(20).fill(0)),
         map: { isDoor: jest.fn(() => false), isColliding: jest.fn(() => false) },
-        isItemAt: jest.fn(() => false), getEntityAt: jest.fn(() => null), canFish: jest.fn(() => false),
+        isItemAt: jest.fn(() => false), getItemAt: jest.fn(() => null), getEntityAt: jest.fn(() => null), canFish: jest.fn(() => false),
         forEachEntity: callback => callback(player),
         click: jest.fn(pos => {
             game.keyboardMovement = !!pos.keyboard;
@@ -146,7 +146,6 @@ test.each([
     ['map collision', state => state.game.map.isColliding.mockReturnValue(true)],
     ['entity on next tile', state => state.game.getEntityAt.mockReturnValue({ id: 2 })],
     ['door', state => state.game.map.isDoor.mockReturnValue(true)],
-    ['loot', state => state.game.isItemAt.mockReturnValue(true)],
     ['fishing', state => state.game.canFish.mockReturnValue({ gridX: 4, gridY: 2 })],
     ['mouse navigation', state => { state.game.keyboardMovement = false; }],
 ])('%s ends keyboard continuation at the tile boundary', async (name, change) => {
@@ -306,4 +305,74 @@ test('separate taps reset acceleration after stopping', async () => {
         for (let i = 0; i < 20; i++) frame();
         expect(player.gridX).toBe(3 + tap);
     }
+});
+
+function addGroundLoot(state, mode = 'normal') {
+    const items = new Map([3, 4, 5, 6].map(x => [x, {
+        id: x, kind: 1, type: mode === 'nft-weapon' ? 'weapon' : 'object',
+        unlootable: mode === 'unlootable', getLootMessage: () => 'Picked up',
+    }]));
+    class LootException extends Error {}
+    let definition;
+    vm.runInNewContext(fs.readFileSync(path.join(__dirname, 'game.js'), 'utf8'), {
+        Class: { extend: methods => methods },
+        define: (dependencies, factory) => {
+            definition = factory(...dependencies.map(name => name === 'exceptions' ? { LootException } : {}));
+        },
+        Types: { Entities: { LOOPRING: 99 }, isHealingItem: () => false },
+        console: { log: jest.fn() },
+    });
+    const { game, player } = state;
+    game.getItemAt.mockImplementation((x, y) => y === 2 ? items.get(x) || null : null);
+    game.isItemAt.mockImplementation((x, y) => !!game.getItemAt(x, y));
+    game.getEntityAt.mockImplementation((x, y) => game.getItemAt(x, y));
+    game.client = { sendLoot: jest.fn() };
+    game.removeItem = jest.fn(item => items.delete(item.id));
+    game.showNotification = jest.fn();
+    game.audioManager = { playSound: jest.fn() };
+    game.lootItemAt = definition.lootItemAt;
+    player.getWeaponName = () => 'NFT_test';
+    player.loot = jest.fn(() => {
+        if (mode === 'rejected') throw new LootException('Inventory full');
+    });
+    player.onStep(() => { if (game.keyboardMovement) game.lootItemAt(player.gridX, player.gridY); });
+    return items;
+}
+
+test.each(['normal', 'unlootable', 'nft-weapon', 'rejected'])(
+    'held movement keeps the same pace across %s items', async mode => {
+        const empty = createMovementGame();
+        const loot = createMovementGame();
+        empty.player.moveSpeed = loot.player.moveSpeed = 87;
+        addGroundLoot(loot, mode);
+        for (const state of [empty, loot]) {
+            state.handler.handleKeyDown({ key: 'd', code: 'KeyD' });
+            await Promise.resolve();
+        }
+        for (let i = 0; i < 40; i++) {
+            empty.frame(); loot.frame();
+            expect(loot.player.x).toBe(empty.player.x);
+            expect(loot.player.manualMovementTime).toBe(empty.player.manualMovementTime);
+            expect(loot.player.isMoving()).toBe(true);
+        }
+        expect(loot.stopped).not.toHaveBeenCalled();
+        expect(loot.requestPath).toHaveBeenCalledTimes(1);
+        expect(loot.game.client.sendLoot).toHaveBeenCalledTimes(mode === 'normal' ? 4 : 0);
+        expect(loot.game.removeItem).toHaveBeenCalledTimes(mode === 'normal' ? 4 : 0);
+        if (mode === 'rejected') expect(loot.game.showNotification).toHaveBeenCalledWith('Inventory full');
+        loot.handler.handleKeyUp({ key: 'd' });
+        const destination = loot.player.path[loot.player.step][0];
+        for (let i = 0; i < 10; i++) loot.frame();
+        expect(loot.player.gridX).toBe(destination);
+        expect(loot.player.isMoving()).toBe(false);
+    }
+);
+
+test('an entity sharing an item tile still blocks keyboard continuation', () => {
+    const state = createMovementGame();
+    addGroundLoot(state);
+    state.game.keyboardMovement = true;
+    state.handler.keys.d = 1;
+    state.game.getEntityAt.mockReturnValue({ id: 'mob' });
+    expect(state.handler.getContinuationPath()).toBeNull();
 });

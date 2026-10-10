@@ -165,7 +165,7 @@ class KeyBoardHandler {
     getContinuationPath() {
         const player = this.game.player;
         if (!this.game.keyboardMovement || this.movementIsBlocked() || player.hasTarget()
-            || this.game.map.isDoor(player.gridX, player.gridY) || this.game.isItemAt(player.gridX, player.gridY)) {
+            || this.game.map.isDoor(player.gridX, player.gridY)) {
             return null;
         }
 
@@ -178,8 +178,9 @@ class KeyBoardHandler {
         const end = [player.gridX + dx, player.gridY + dy];
         const walkable = ([x, y]) => {
             const row = this.game.finalPathingGrid[y];
+            const entity = this.game.getEntityAt(x, y);
             return row && (row[x] === 0 || row[x] === false) && !this.game.map.isColliding(x, y)
-                && !this.game.getEntityAt(x, y) && !this.game.map.isDoor(x, y);
+                && (!entity || entity === this.game.getItemAt(x, y)) && !this.game.map.isDoor(x, y);
         };
         if (dx && dy && [end, [end[0], start[1]], [start[0], end[1]]].every(walkable)) {
             return [start, end];
