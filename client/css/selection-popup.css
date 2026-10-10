@@ -31,16 +31,20 @@
 
 #selection-popup {
     position: absolute;
-    top: 15%;       /* Override by specifying "top" in your characters dialogue.js  (optional) */
-    left: 25%;      /* Override by specifying "left" in your characters dialogue.js (optional) */
-    width: 45%;     /* Override by specifying "width" in your characters dialogue.js (optional) */
-    height: auto;   /* Override by specifying "height" in your characters dialogue.js (optional) */
+    box-sizing: border-box;
+    /* Reserve the bottom of the game container for its HUD bar. */
+    top: calc(50% - 32px);
+    left: 50%;
+    width: min(600px, calc(100% - 32px));
+    max-height: calc(100% - 96px);
+    display: flex;
+    flex-direction: column;
     font-family: 'GraphicPixel', arial, sans-serif;
     transition: ease-in-out 600ms;
     opacity: 100;
     color: #b9b9b9;
     box-shadow: 0 0 25px rgba(0,0,0,0.5);
-    transform: translateX(-50%)
+    transform: translate(-50%, -50%);
 }
 
 #selection-popup.hidden {
@@ -60,9 +64,15 @@
 }
 
 #selection-popup > .body {
+    min-height: 0;
     max-height: calc((172px + 8px) * 3);
     overflow-x: hidden;
     overflow-y: auto;
+}
+
+#selection-popup .option .body {
+    padding: 0 12px;
+    overflow-wrap: anywhere;
 }
 
 #selection-popup .option .description {
@@ -134,7 +144,7 @@
 
 #selection-popup #selection-choices {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(min(140px, 100%), 1fr));
     grid-auto-rows: minmax(172px, auto);
 }
 
