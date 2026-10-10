@@ -280,7 +280,7 @@ test('ambient reactions use quest and choice memory, survive a new session, and 
 
 test('pilot configuration is valid and rejects duplicate keys, invalid routes and markup', () => {
     const config = loadConfig('main');
-    expect(config.npcs).toHaveLength(3);
+    expect(config.npcs).toHaveLength(4);
     expect(() => validateConfig({...config, npcs: [config.npcs[0], config.npcs[0]]})).toThrow();
     expect(() => validateConfig({...config, npcs: [{...config.npcs[0], stepMs: 10}]})).toThrow();
     expect(() => validateConfig({...config, npcs: [{...config.npcs[0], lines: {greeting: ['<script>']}}]})).toThrow();
@@ -298,7 +298,7 @@ test('all pilot routes are connected on the actual map and avoid doors', async (
         id: index + 100, type: 'npc', kind: Types.getKindFromString(definition.kind), ...definition.origin
     }]));
     const controller = new NpcBehavior({id: 'world_main', map, npcs, entities: npcs}, config, new NpcMemory());
-    expect(controller.routines.size).toBe(3);
+    expect(controller.routines.size).toBe(4);
     for (const routine of controller.routines.values()) {
         for (const waypoint of routine.definition.route) {
             const route = controller.findPath(routine, waypoint);
