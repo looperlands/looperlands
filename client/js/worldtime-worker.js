@@ -16,5 +16,16 @@
         if (Number.isFinite(hour) && hour >= 0 && hour < 24) return hour / 24 * duration;
         return mode === 'day' ? 20 * 60000 : mode === 'night' ? 50 * 60000 : time;
     }
-    return {duration, mainDaylight, previewTime};
+    function isInRange(time, range) {
+        if (range === undefined) return true;
+        if (typeof range !== 'string' || !Number.isFinite(time)) return false;
+        const match = range.trim().match(/^(\d{1,2}):([0-5]\d)\s*-\s*(\d{1,2}):([0-5]\d)$/);
+        if (!match || Number(match[1]) > 23 || Number(match[3]) > 23) return false;
+        const start = Number(match[1]) * 60 + Number(match[2]);
+        const end = Number(match[3]) * 60 + Number(match[4]);
+        const minute = ((time % duration) + duration) % duration / duration * 1440;
+        // Equal endpoints mean all day. Overnight windows wrap through midnight.
+        return start === end || (start < end ? minute >= start && minute < end : minute >= start || minute < end);
+    }
+    return {duration, mainDaylight, previewTime, isInRange};
 });
