@@ -221,7 +221,9 @@ define(['jquery', 'area'], function ($, Area) {
                     quest_message: door.tquest_message,
                     http_redirect: door.thttp_redirect,
                     level: door.tlevel,
-                    weaponLevel: door.tweapon_level
+                    weaponLevel: door.tweapon_level,
+                    timeRange: door.ttime_range,
+                    time_message: door.ttime_message
                 };
             });
 

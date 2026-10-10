@@ -42,6 +42,34 @@ You must run both commands in order to export the client and server map files. T
 Things to know
 --------------
 
+### Door and portal opening hours
+
+Add a string custom property `time_range` to an object in Tiled's `doors` layer
+to allow entry only during that in-game time range, for example `08:00-18:00`.
+Both doors and portals support this, including portals to another map and HTTP
+redirects. The range uses the same 24-hour clock as the HUD, rather than real
+local time; a full game day currently lasts one real hour.
+
+The start is inclusive and the end is exclusive. `22:00-06:00` stays open
+overnight. Equal endpoints (for example `00:00-00:00`) allow entry all day.
+Omit `time_range` for unrestricted hours. Invalid ranges keep the entrance closed.
+Add the optional string property `time_message` to customize the closed message;
+otherwise the existing `message` property or a default closed message is used.
+Time restrictions apply alongside the existing NFT, item, quest, collection,
+trigger and level gates, and are checked again after asynchronous gate requests.
+
+Export the map as usual. The exporter writes `ttime_range` and `ttime_message`
+into the map JSON. For example, an exported door can include:
+
+```json
+{"x": 10, "y": 20, "tx": 30, "ty": 40, "p": 1,
+ "ttime_range": "22:00-06:00", "ttime_message": "The portal opens at 22:00."}
+```
+
+Opening hours are checked by the game client, like the existing item, quest and
+level gates. They use the client's synchronized world clock, including its preview
+time mode when previewing a map.
+
 ### Gardens and farming
 
 Keep garden behaviour in `client/tileActions/<mapId>.json`, using the map ID
