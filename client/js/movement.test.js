@@ -188,3 +188,26 @@ test('level 100 diagonal movement stays straight across tile boundaries', () => 
         expect(character.x).toBe(Math.round(time * 16 / (87 * Math.SQRT2)));
     }
 });
+
+
+test.each([1, 2, 3])('mouse targeting includes the camera offset inside a tile at scale %i', scale => {
+    const {modules} = loadMovement();
+    const game = Object.assign(Object.create(modules.game.prototype), {
+        renderer: {scale, tilesize: 16, camera: {x: 175, y: 335, gridX: 10, gridY: 20}},
+        mouse: {x: 2 * scale, y: 2 * scale},
+    });
+    expect(game.getMouseGridPosition()).toEqual({x: 11, y: 21});
+    game.mouse = {x: scale, y: scale};
+    expect(game.getMouseGridPosition()).toEqual({x: 11, y: 21});
+    game.mouse = {x: 0, y: 0};
+    expect(game.getMouseGridPosition()).toEqual({x: 10, y: 20});
+});
+
+test('mouse targeting uses floor for negative camera positions in small scenes', () => {
+    const {modules} = loadMovement();
+    const game = Object.assign(Object.create(modules.game.prototype), {
+        renderer: {scale: 2, tilesize: 16, camera: {x: -17, y: -1, gridX: -2, gridY: -1}},
+        mouse: {x: 4, y: 4},
+    });
+    expect(game.getMouseGridPosition()).toEqual({x: -1, y: 0});
+});

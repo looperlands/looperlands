@@ -8468,15 +8468,13 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
              * @returns {Object} An object containing x and y properties.
              */
             getMouseGridPosition: function () {
-                var mx = this.mouse.x,
-                    my = this.mouse.y,
-                    c = this.renderer.camera,
+                var c = this.renderer.camera,
                     s = this.renderer.scale,
                     ts = this.renderer.tilesize,
-                    offsetX = mx % (ts * s),
-                    offsetY = my % (ts * s),
-                    x = ((mx - offsetX) / (ts * s)) + c.gridX,
-                    y = ((my - offsetY) / (ts * s)) + c.gridY;
+                    // Camera easing leaves an offset within the current tile.
+                    // Convert through its full pixel position before snapping to the grid.
+                    x = Math.floor((this.mouse.x / s + c.x) / ts),
+                    y = Math.floor((this.mouse.y / s + c.y) / ts);
 
                 return {x: x, y: y};
             },

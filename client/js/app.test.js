@@ -183,3 +183,21 @@ test('the composer grows with text, caps its height, and shrinks when text is re
     expect(input.style.overflowY).toBe('hidden');
     expect(container.style.setProperty).toHaveBeenLastCalledWith('--chat-composer-height', '32px');
 });
+
+
+test.each([1, 1.5, 2])('mouse coordinates match the canvas at CSS scale %s without parsing transforms', scale => {
+    const {app} = createApp();
+    app.game = {
+        mouse: {},
+        renderer: {
+            getWidth: () => 960, getHeight: () => 448,
+            canvas: {getBoundingClientRect: () => ({left: 50, top: 70, width: 960 * scale, height: 448 * scale})},
+        },
+    };
+    app.setMouseCoordinates({clientX: 50 + 320 * scale, clientY: 70 + 160 * scale});
+    expect(app.game.mouse).toEqual({x: 320, y: 160});
+    app.setMouseCoordinates({clientX: -10, clientY: -10});
+    expect(app.game.mouse).toEqual({x: 0, y: 0});
+    app.setMouseCoordinates({clientX: 3000, clientY: 3000});
+    expect(app.game.mouse).toEqual({x: 959, y: 447});
+});
