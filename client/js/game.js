@@ -9566,6 +9566,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
             handleTileStage(stage) {
                 const self = this;
+                self.terrainRevision = (self.terrainRevision || 0) + 1;
                 const baseKey = stage.x + '.' + stage.y;
                 if (!self.tileStageRevisions) self.tileStageRevisions = {};
                 self.tileStageRevisions[baseKey] = (self.tileStageRevisions[baseKey] || 0) + 1;
@@ -10000,14 +10001,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             },
 
             resize: function () {
-                var x = this.camera.x,
-                    y = this.camera.y,
-                    currentScale = this.renderer.scale,
-                    newScale = this.renderer.getScaleFactor();
+                var newScale = this.renderer.getScaleFactor();
 
                 this.renderer.rescale(newScale);
                 this.camera = this.renderer.camera;
-                this.camera.setPosition(x, y);
 
                 this.renderer.renderStaticCanvases();
                 this.app.initEquipmentIcons();

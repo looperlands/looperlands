@@ -131,6 +131,7 @@ async function loadFont() {
     }
 
     hasLoadedFont = true;
+    clearTextCache();
 }
 
 var getX = function (id, w, slideOffsetX = 0) {
@@ -158,7 +159,11 @@ var getY = function (id, w, h, slideOffsetY = 0) {
 // Cache object to store scaled images
 const imageCache = {};
 const cacheKeys = [];
-const MAX_CACHE_SIZE = 4096; // Adjust as needed
+const MAX_CACHE_SIZE = 4096;
+const MAX_CACHE_BYTES = 8 * 1024 * 1024;
+let cacheBytes = 0;
+const imageIds = new WeakMap();
+let nextImageId = 0;
 
 // Function to generate a unique cache key
 function getCacheKey(x, y, w, h, scale, colorShift) {
@@ -168,18 +173,35 @@ function getCacheKey(x, y, w, h, scale, colorShift) {
 }
 
 function addToImageCache(cacheKey, offCanvas) {
+    const bytes = offCanvas.width * offCanvas.height * 4;
+    if (bytes > MAX_CACHE_BYTES) return;
+    if (imageCache[cacheKey]) {
+        const previous = imageCache[cacheKey];
+        cacheBytes -= previous.width * previous.height * 4;
+        if (previous !== offCanvas) previous.width = previous.height = 0;
+        cacheKeys.splice(cacheKeys.indexOf(cacheKey), 1);
+    }
     imageCache[cacheKey] = offCanvas;
+    cacheBytes += bytes;
     cacheKeys.push(cacheKey);
-
-    // Handle cache size limit
-    if (cacheKeys.length > MAX_CACHE_SIZE) {
-        const oldestCacheKey = cacheKeys.shift();
-        delete imageCache[oldestCacheKey];
+    while (cacheKeys.length > MAX_CACHE_SIZE || cacheBytes > MAX_CACHE_BYTES) {
+        const oldest = cacheKeys.shift(), canvas = imageCache[oldest];
+        cacheBytes -= canvas.width * canvas.height * 4;
+        delete imageCache[oldest];
+        canvas.width = canvas.height = 0;
     }
 }
 
+function clearImageCache() {
+    for (const key of cacheKeys) imageCache[key].width = imageCache[key].height = 0;
+    for (const key of cacheKeys) delete imageCache[key];
+    cacheKeys.length = 0;
+    cacheBytes = 0;
+}
+
 function drawScaledImage(ctx, image, x, y, w, h, dx, dy, scale, colorShift = null) {
-    const cacheKey = getCacheKey(x, y, w, h, scale, colorShift);
+    if (!imageIds.has(image)) imageIds.set(image, ++nextImageId);
+    const cacheKey = imageIds.get(image) + ':' + getCacheKey(x, y, w, h, scale, colorShift);
 
     let dxs = dx * scale;
     let dys = dy * scale;
@@ -240,10 +262,85 @@ function drawTile(ctx, tileid, tileset, setW, setH, gridW, cellid, scale, slideO
     }
 }
 
+const terrainCache = new Map();
+let renderScale = 1;
+let composingWorld = false;
+let frameExtensions;
+let framePending = false, nextFrameTime;
+const FRAME_INTERVAL = 1000 / 60;
+function scheduleNextFrame() {
+    if (framePending) return;
+    framePending = true;
+    function ready(time) {
+        // RAF supplies a monotonic timestamp; a deadline prevents a second 50 FPS gate.
+        if (Number.isFinite(time) && nextFrameTime !== undefined && time < nextFrameTime - 0.5) {
+            requestAnimationFrame(ready);
+            return;
+        }
+        framePending = false;
+        if (Number.isFinite(time)) {
+            if (nextFrameTime === undefined || time - nextFrameTime > 250) nextFrameTime = time;
+            do { nextFrameTime += FRAME_INTERVAL; } while (nextFrameTime <= time + 0.5);
+        }
+        postMessage({type: 'rendered'});
+    }
+    requestAnimationFrame(ready);
+}
+
+function resizeWorkerLayers(scale) {
+    renderScale = scale;
+    const output = canvases.combined;
+    for (const id of ['background', 'high', 'entities', 'highEntities', 'lighting']) {
+        const canvas = canvases[id];
+        const width = Math.ceil(output.width / scale), height = Math.ceil(output.height / scale);
+        if (canvas.width !== width || canvas.height !== height) {
+            canvas.width = width; canvas.height = height;
+            contexes[id].imageSmoothingEnabled = false;
+            terrainCache.delete(id);
+        }
+    }
+}
+
+function drawStaticTerrain(id, tiles, cameraX, cameraY, revision) {
+    const ctx = contexes[id], canvas = canvases[id];
+    const key = revision === undefined ? JSON.stringify(tiles) : revision;
+    let cached = terrainCache.get(id);
+    if (!cached || cached.key !== key || cached.tileset !== tileset ||
+        cached.width !== canvas.width || cached.height !== canvas.height ||
+        cameraX < cached.x || cameraY < cached.y ||
+        cameraX + canvas.width > cached.x + cached.canvas.width ||
+        cameraY + canvas.height > cached.y + cached.canvas.height) {
+        const x = Math.floor(cameraX / 16) * 16 - 32, y = Math.floor(cameraY / 16) * 16 - 32;
+        const buffer = new OffscreenCanvas(canvas.width + 80, canvas.height + 80);
+        const bufferCtx = buffer.getContext('2d');
+        bufferCtx.imageSmoothingEnabled = false;
+        bufferCtx.translate(-x, -y);
+        const tileSources = [];
+        for (const tile of tiles) {
+            const tx = getX(tile.cellid + 1, tile.gridW) * tilesize;
+            const ty = Math.floor(tile.cellid / tile.gridW) * tilesize;
+            if (lightEmittingTiles?.[tile.tileid + 1]) tileSources.push({...lightEmittingTiles[tile.tileid + 1], x: tx, y: ty});
+            if (tx + 16 > x && ty + 16 > y && tx < x + buffer.width && ty < y + buffer.height) {
+                drawTile(bufferCtx, tile.tileid, tileset, tile.setW, tile.setH, tile.gridW, tile.cellid, 1, tile.slideOffsetX, tile.slideOffsetY, tile.colorShift);
+            }
+        }
+        if (cached) cached.canvas.width = cached.canvas.height = 0;
+        cached = {key, tileset, x, y, width: canvas.width, height: canvas.height, canvas: buffer, lights: tileSources};
+        terrainCache.set(id, cached);
+    }
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(cached.canvas, cached.x - cameraX, cached.y - cameraY);
+    tileLights.push(...cached.lights);
+}
+
 let tileLights = [];
 
-function render(id, tiles, cameraX, cameraY, scale, clear, serverTime, scene, options, mapId, worldTime) {
+function render(id, tiles, cameraX, cameraY, scale, clear, serverTime, scene, options, mapId, worldTime, revision) {
     let ctx = contexes[id];
+    if (id !== 'lights' && clear) {
+        drawStaticTerrain(id, tiles, cameraX, cameraY, revision);
+        return;
+    }
     if(id !== "lights") {
         let canvas = canvases[id];
         if (clear === true) {
@@ -303,6 +400,9 @@ onmessage = (e) => {
     }
 
     if (e.data.type === "setTileset") {
+        tileset = undefined;
+        clearImageCache();
+        terrainCache.clear();
         loadImg(e.data.src).then((img) => {
             tileset = img;
         });
@@ -312,70 +412,69 @@ onmessage = (e) => {
             console.log("loaded cursor", e.data.name);
         });
     } else if (e.data.type === "render") {
-        // Clear even when this frame has no cursor command (UI, blur or setting).
-        contexes.aboveLight.clearRect(0, 0, canvases.aboveLight.width, canvases.aboveLight.height);
+        if (!tileset) {
+            scheduleNextFrame();
+            return;
+        }
+        const view = e.data.renderData.find(data => data.type === 'entities');
+        const scale = view?.scale || 1;
+        resizeWorkerLayers(scale);
+        composingWorld = true;
+        frameExtensions = e.data.extensions;
         const renderDataLength = e.data.renderData.length;
-        let scale = 1;
+        let cursorCommand;
         for (let i = 0; i < renderDataLength; i++) {
             let renderData = e.data.renderData[i];
+            if (!renderData) continue;
             playerPosition = e.data.player;
 
             if (renderData.cursor !== undefined) {
-                renderCursor(renderData);
+                cursorCommand = renderData;
             } else if (renderData.type === "text") {
                 drawText(renderData);
             } else if (renderData.type === "entities") {
                 drawEntities(renderData);
             } else {
-                scale = renderData.scale;
-                render(renderData.id, renderData.tiles, renderData.cameraX, renderData.cameraY, 1, renderData.clear, e.data.serverTime, e.data.scene, renderData.options, e.data.mapId, e.data.worldTime);
+                render(renderData.id, renderData.tiles, renderData.cameraX, renderData.cameraY, 1, renderData.clear, e.data.serverTime, e.data.scene, renderData.options, e.data.mapId, e.data.worldTime, renderData.revision);
             }
         }
 
         let combinedCanvas = canvases["combined"];
         let combinedCtx = contexes["combined"];
 
-        // Perform double buffering by drawing all canvases to a single canvas
+        // World buffers are native pixel art resolution. Text keeps its display resolution.
         combinedCtx.clearRect(0, 0, combinedCanvas.width, combinedCanvas.height);
         combinedCtx.save();
-        combinedCtx.drawImage(canvases["background"], 0, 0, canvases["background"].width * scale, canvases["background"].height * scale);
-        const view = e.data.renderData.find(data => data.type === "entities");
-        rendererExtensions?.draw('ground', combinedCtx, e.data.extensions, view);
-        combinedCtx.drawImage(canvases["entities"], 0, 0);
-        combinedCtx.drawImage(canvases["text"], 0, 0);
-        combinedCtx.drawImage(canvases["high"], 0, 0, canvases["high"].width * scale, canvases["high"].height * scale);
-        combinedCtx.drawImage(canvases["highEntities"], 0, 0);
-
-        // Render the light overlay on top of everything else
-        combinedCtx.globalCompositeOperation = 'multiply';  // Use 'multiply' for lighting effect
-        combinedCtx.drawImage(canvases['lighting'], 0, 0, canvases['lighting'].width * scale, canvases['lighting'].height * scale);
-        combinedCtx.globalCompositeOperation = 'source-over';  // Reset the composite operation
-
-        combinedCtx.drawImage(canvases["aboveLight"], 0, 0);
-
-        // Restore the default composite operation
+        combinedCtx.drawImage(canvases.entities, 0, 0, combinedCanvas.width, combinedCanvas.height);
+        combinedCtx.drawImage(canvases.text, 0, 0);
+        combinedCtx.drawImage(canvases.highEntities, 0, 0, combinedCanvas.width, combinedCanvas.height);
+        combinedCtx.globalCompositeOperation = 'multiply';
+        combinedCtx.drawImage(canvases.lighting, 0, 0, combinedCanvas.width, combinedCanvas.height);
+        combinedCtx.globalCompositeOperation = 'source-over';
+        if (cursorCommand) renderCursor({...cursorCommand, id: 'combined'}, false);
         combinedCtx.restore();
+        composingWorld = false;
         rendererExtensions?.draw('foreground', combinedCtx, e.data.extensions, view);
         drawWorldAmbience(combinedCtx, e.data.ambience, view, combinedCanvas.width, combinedCanvas.height, e.data.worldTime);
         drawCombatFeedback(combinedCtx, e.data.combatFeedback);
 
-        requestAnimationFrame(() => {
-            postMessage({type: "rendered"});
-        });
+        scheduleNextFrame();
     } else if (e.data.type === "setCanvasSize") {
 
-        for (let id in canvases) {
-            let canvas = canvases[id];
-            let ctx = contexes[id];
-            canvas.width = e.data.width;
-            canvas.height = e.data.height;
-            ctx.imageSmoothingEnabled = false;
+        for (const id of ['combined', 'text']) {
+            const canvas = canvases[id];
+            if (canvas.width !== e.data.width) canvas.width = e.data.width;
+            if (canvas.height !== e.data.height) canvas.height = e.data.height;
+            contexes[id].imageSmoothingEnabled = false;
         }
+        terrainCache.clear();
+        textFrameKey = undefined;
+        resizeWorkerLayers(renderScale);
     } else if (e.data.type === "setCanvas") {
         let id = e.data.id;
         let canvas = e.data.canvas;
         canvases[id] = canvas;
-        ctx = canvas.getContext('2d');
+        const ctx = canvas.getContext('2d');
         ctx.imageSmoothingEnabled = false;
         contexes[id] = ctx;
     } else if (e.data.type === "loadSprite") {
@@ -385,124 +484,87 @@ onmessage = (e) => {
     } else if (e.data.type === "setObstacles") {
         obstacles = e.data.obstacles;
         obstacles = transformObstacles(obstacles);
+        obstacleRevision++;
     }  else if (e.data.type === "setLightEmittingTiles") {
-        lightEmittingTiles = e.data.lightEmittingTiles;
+        lightEmittingTiles = e.data.lightEmittingTiles || {};
+        terrainCache.clear();
     } else if (e.data.type === "idle") {
-        requestAnimationFrame(() => {
-            postMessage({type: "rendered"});
-        });
+        scheduleNextFrame();
     }
 };
 
-function renderCursor(renderData) {
+function renderCursor(renderData, clear = true) {
     let mx = renderData.mx;
     let my = renderData.my;
     let s = renderData.s;
     let os = renderData.os;
     let cursorImg = cursors[renderData.name];
     let ctx = contexes[renderData.id];
-    ctx.clearRect(0, 0, canvases[renderData.id].width, canvases[renderData.id].height);
+    if (clear) ctx.clearRect(0, 0, canvases[renderData.id].width, canvases[renderData.id].height);
     if (!cursorImg) return;
     ctx.save();
     ctx.drawImage(cursorImg, 0, 0, 14 * os, 14 * os, mx, my, 14 * s, 14 * s);
     ctx.restore();
 }
 
-let lastRenderLength = 0;
+const labelCache = new Map();
+const MAX_LABEL_BYTES = 2 * 1024 * 1024;
+let labelBytes = 0, textFrameKey;
+function clearTextCache() {
+    for (const label of labelCache.values()) label.canvas.width = label.canvas.height = 0;
+    labelCache.clear(); labelBytes = 0; textFrameKey = undefined;
+}
 
-async function drawText(renderData) {
-    const textDataLength = renderData.textData.length;
-
-    /*
-        Don't render if there is no text to render the second time
-        which allows for clearing the screen once
-        after the user disables the text rendering
-    */
-    let disabled = textDataLength === lastRenderLength && textDataLength === 0;
-    if (disabled) {
-        return;
+function cachedLabel(text, fontSize, strokeSize, color, strokeColor) {
+    const key = JSON.stringify([text, fontSize, strokeSize, color, strokeColor, hasLoadedFont]);
+    let label = labelCache.get(key);
+    if (label) return label;
+    const metricsCtx = contexes.text;
+    metricsCtx.font = `${fontSize}px GraphicPixel`;
+    const metrics = metricsCtx.measureText(text);
+    const left = Math.max(0, metrics.actualBoundingBoxLeft || 0);
+    const right = Math.max(metrics.width, metrics.actualBoundingBoxRight || 0);
+    const ascent = Math.ceil(metrics.actualBoundingBoxAscent || fontSize);
+    const descent = Math.ceil(metrics.actualBoundingBoxDescent || fontSize * 0.3);
+    const pad = Math.ceil(strokeSize / 2) + 2;
+    const canvas = new OffscreenCanvas(Math.max(1, Math.ceil(left + right + pad * 2)), Math.max(1, ascent + descent + pad * 2));
+    const ctx = canvas.getContext('2d');
+    ctx.font = metricsCtx.font; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+    ctx.strokeStyle = strokeColor; ctx.lineWidth = strokeSize;
+    ctx.strokeText(text, left + pad, ascent + pad);
+    ctx.fillStyle = color; ctx.fillText(text, left + pad, ascent + pad);
+    label = {canvas, x: left + pad, y: ascent + pad, advance: metrics.width};
+    const bytes = canvas.width * canvas.height * 4;
+    if (bytes <= MAX_LABEL_BYTES) {
+        labelCache.set(key, label); labelBytes += bytes;
+        while (labelCache.size > 256 || labelBytes > MAX_LABEL_BYTES) {
+            const oldest = labelCache.keys().next().value, value = labelCache.get(oldest);
+            labelBytes -= value.canvas.width * value.canvas.height * 4;
+            labelCache.delete(oldest);
+            value.canvas.width = value.canvas.height = 0;
+        }
     }
+    return label;
+}
 
-    let id = renderData.id;
-    let ctx = contexes[id];
-    let canvas = canvases[id];
-
-    const cameraX = renderData.cameraX;
-    const cameraY = renderData.cameraY;
-    const scale = renderData.scale;
-
+function drawText(renderData) {
+    const ctx = contexes[renderData.id], canvas = canvases[renderData.id];
+    const {cameraX, cameraY, scale, textData} = renderData;
+    const key = JSON.stringify([cameraX, cameraY, scale, textData, canvas.width, canvas.height, hasLoadedFont]);
+    if (key === textFrameKey) return;
+    textFrameKey = key;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.save();
-    ctx.translate(-cameraX * scale, -cameraY * scale);
-    for (let i = 0; i < textDataLength; i++) {
-        let textData = renderData.textData[i];
-        let {text, x, y, centered, color, strokeColor, title} = textData;
-
-        let strokeSize;
-
-        switch (scale) {
-            case 1:
-                strokeSize = 3;
-                break;
-            case 2:
-                strokeSize = 3;
-                break;
-            case 3:
-                strokeSize = 5;
-        }
-
-        if (text && x && y) {
-            if (centered) {
-                ctx.textAlign = "center";
-            }
-            let fontSize;
-            if (title) {
-                switch (scale) {
-                    case 1:
-                        fontSize = 5;
-                        break;
-                    case 2:
-                        fontSize = 10;
-                        break;
-                    case 3:
-                        fontSize = 15;
-                        break;
-                }
-            } else {
-                if (textData.fontSize) {
-                    fontSize = textData.fontSize;
-                } else {
-                    switch (scale) {
-                        case 1:
-                            fontSize = 10;
-                            break;
-                        case 2:
-                            fontSize = 13;
-                            break;
-                        case 3:
-                            fontSize = 20;
-                            break;
-                    }
-                }
-            }
-
-            let font = `${fontSize}px GraphicPixel`;
-            ctx.font = font;
-
-            if (textData.globalAlpha !== undefined) {
-                ctx.globalAlpha = textData.globalAlpha;
-            }
-
-            ctx.strokeStyle = strokeColor || "#373737";
-            ctx.lineWidth = strokeSize;
-            ctx.strokeText(text, x, y);
-            ctx.fillStyle = color || "white";
-            ctx.fillText(text, x, y);
-
-        }
+    ctx.save(); ctx.translate(-cameraX * scale, -cameraY * scale);
+    for (const entry of textData) {
+        const {text, x, y} = entry;
+        if (!text || !Number.isFinite(x) || !Number.isFinite(y)) continue;
+        const fontSize = entry.title ? [0, 5, 10, 15][scale]
+            : entry.fontSize || [0, 10, 13, 20][scale];
+        const label = cachedLabel(text, fontSize, scale === 3 ? 5 : 3, entry.color || 'white', entry.strokeColor || '#373737');
+        ctx.globalAlpha = entry.globalAlpha ?? 1;
+        ctx.drawImage(label.canvas, x - label.x - (entry.centered ? label.advance / 2 : 0), y - label.y);
     }
     ctx.restore();
-    lastRenderLength = textDataLength;
 }
 
 function drawEntities(drawEntitiesData) {
@@ -518,9 +580,18 @@ function drawEntities(drawEntitiesData) {
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.save();
+    if (composingWorld) {
+        ctx.drawImage(canvases.background, 0, 0);
+        rendererExtensions?.draw('ground', ctx, frameExtensions, {...drawEntitiesData, scale: 1});
+        ctx.scale(1 / scale, 1 / scale);
+    }
     ctx.translate(-cameraX * scale, -cameraY * scale);
     highCtx.clearRect(0, 0, highCanvas.width, highCanvas.height);
     highCtx.save();
+    if (composingWorld) {
+        highCtx.drawImage(canvases.high, 0, 0);
+        highCtx.scale(1 / scale, 1 / scale);
+    }
     highCtx.translate(-cameraX * scale, -cameraY * scale);
 
     const entityCount = drawEntitiesData.entityData.length;
@@ -602,6 +673,15 @@ function getMainMapCycleIntensity(cycleProgress) {
     return worldClock.mainDaylight(cycleProgress * CYCLE_DURATION);
 }
 
+function lightIntersectsView(light, cameraX, cameraY, width, height) {
+    const dx = light.x - cameraX, dy = light.y - cameraY;
+    // Leave a pixel of room for the small positional/radius flicker at viewport edges.
+    const radius = (light.radius || 1) * tilesize * (light.animation ? 1.02 : 1) + 1;
+    return light.global
+        ? dx + light.w >= 0 && dy + light.h >= 0 && dx <= width && dy <= height
+        : dx + radius >= 0 && dy + radius >= 0 && dx - radius <= width && dy - radius <= height;
+}
+
 function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime, scene, tileLights, options, mapId, worldTime) {
 
     OPTION_SHADOWS = options?.shadows ?? true;
@@ -637,19 +717,9 @@ function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime, s
         // Draw each light source on the light canvas
         lightSources.filter((lightSource) => {
             // Light source in camera view
-            let dx = lightSource.x - cameraX;
-            let dy = lightSource.y - cameraY;
-            let distance = hypot(dx, dy);
-
-            // Light is within scene
-            let lightIsInScene = lightSource.x >= (scene.x * tilesize) && lightSource.x <= (scene.x + scene.width) * tilesize && lightSource.y >= scene.y * tilesize && lightSource.y <= (scene.y + scene.height) * tilesize;
-            // let lightIsInScene = true;
-
-            if (lightSource.global) {
-                return distance < canvas.width + lightSource.w && lightIsInScene;
-            }
-
-            return distance < canvas.width + (lightSource.radius * tilesize) && lightIsInScene;
+            const inScene = lightSource.x >= scene.x * tilesize && lightSource.x <= (scene.x + scene.width) * tilesize &&
+                lightSource.y >= scene.y * tilesize && lightSource.y <= (scene.y + scene.height) * tilesize;
+            return inScene && lightIntersectsView(lightSource, cameraX, cameraY, canvas.width, canvas.height);
         }).slice(0, MAX_LIGHTS_TO_RENDER).forEach(lightSource => {
             if (lightSource.animation && OPTION_DYNAMIC_LIGHTS) {
                 lightSource = updateAnimatedLightSource(lightSource, time);
@@ -661,6 +731,7 @@ function renderLightOverlay(lightSources, cameraX, cameraY, scale, serverTime, s
     // Draw tile lights
     for(let i = 0; i < tileLights.length; i++) {
         let lightSource = tileLights[i];
+        if (!lightIntersectsView(lightSource, cameraX, cameraY, canvas.width, canvas.height)) continue;
         lightSource = Object.assign({}, lightSource); // Clone the light source to avoid modifying the original
 
         if (lightSource.animation && OPTION_DYNAMIC_LIGHTS) {
@@ -693,6 +764,8 @@ function updateAnimatedLightSource(lightSource, time) {
         return lightSource
     }
 
+    // Animation must not mutate the map light; repeated frames stay near its base size.
+    lightSource = {...lightSource};
     if (lightSource.animation instanceof Function) {
         lightSource.animation(lightSource, time);
     } else {
@@ -707,149 +780,134 @@ function updateAnimatedLightSource(lightSource, time) {
     return lightSource
 }
 
-function drawLightSource(ctx, lightSource, cameraX, cameraY) {
-    // Adjust light source position by subtracting the camera's position
-    const lightX = (lightSource.x - cameraX);
-    const lightY = (lightSource.y - cameraY);
-    const innerRadius = (lightSource.innerRadius || 0) * tilesize;
-    const outerRadius = (lightSource.radius || 1) * tilesize;
-    const intensity = lightSource.intensity || 1;
-    const color = lightSource.color || {r: 255, g: 255, b: 255};
-    const spread = parseInt(lightSource.spread || 0);
-    const innerSpread = parseInt(lightSource.innerSpread || 0);
-    const angleDeg = parseInt(lightSource.angle || 0);
+const lightScratch = {}, shadowScratch = {}, gradientScratch = {};
+let obstacleRevision = 0;
+function scratchCanvas(scratch, width, height) {
+    if (!scratch.canvas) scratch.canvas = new OffscreenCanvas(width, height);
+    if (scratch.canvas.width < width) scratch.canvas.width = width;
+    if (scratch.canvas.height < height) scratch.canvas.height = height;
+    const ctx = scratch.canvas.getContext('2d');
+    ctx.imageSmoothingEnabled = false;
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.clearRect(0, 0, scratch.canvas.width, scratch.canvas.height);
+    return {canvas: scratch.canvas, ctx};
+}
 
-    let cacheKey = 'l.' + outerRadius + ',' + innerRadius + '|' + lightSource.intensity + ',' + lightSource.shadow + '|' + lightSource.color + '|' + lightSource.x + ',' + lightSource.y;
-
-    if (!(lightSource.animation || !OPTION_DYNAMIC_LIGHTS) && imageCache[cacheKey]) {
-        ctx.globalCompositeOperation = "screen";
-        if(lightSource.global) {
-            ctx.drawImage(imageCache[cacheKey], lightX, lightY, lightSource.w, lightSource.h);
-        } else {
-            ctx.drawImage(imageCache[cacheKey], lightX - outerRadius, lightY - outerRadius);
-        }
-        return
-    }
-
-    const tmpCanvas = new OffscreenCanvas(outerRadius * 2, outerRadius * 2);
-    const tmpCtx = tmpCanvas.getContext('2d');
-    tmpCtx.imageSmoothingEnabled = false;
-
-    const temp_cacheKey = 'tl.' + outerRadius + ',' + innerRadius + '|' + intensity + ',' + lightSource.shadow + '|' + color + '|' + lightSource.spread + '|' + lightSource.innerSpread + '|' + lightSource.angle + '|' + lightX + ',' + lightY;
-    if (!imageCache[temp_cacheKey]) {
-        // Create the arc for the spread
+function drawLightSource(ctx, light, cameraX, cameraY) {
+    const lightX = light.x - cameraX, lightY = light.y - cameraY;
+    const innerRadius = (light.innerRadius || 0) * tilesize;
+    const outerRadius = (light.radius || 1) * tilesize;
+    const intensity = light.intensity ?? 1;
+    const color = light.color || {r: 255, g: 255, b: 255};
+    const spread = parseInt(light.spread || 0), innerSpread = parseInt(light.innerSpread || 0);
+    const angle = parseInt(light.angle || 0);
+    const width = Math.max(1, Math.ceil(light.global ? light.w : outerRadius * 2));
+    const height = Math.max(1, Math.ceil(light.global ? light.h : outerRadius * 2));
+    const gradientKey = ['gradient', width, height, outerRadius, innerRadius, intensity,
+        color.r, color.g, color.b, spread, innerSpread, angle, !!light.global].join(',');
+    let gradientCanvas = imageCache[gradientKey];
+    if (!gradientCanvas) {
+        // Animated lights use one growing scratch surface instead of retaining each flicker.
+        const scratch = light.animation && OPTION_DYNAMIC_LIGHTS
+            ? scratchCanvas(gradientScratch, width, height)
+            : {canvas: new OffscreenCanvas(width, height)};
+        gradientCanvas = scratch.canvas;
+        const gradientCtx = scratch.ctx || gradientCanvas.getContext('2d');
+        gradientCtx.imageSmoothingEnabled = false;
         if (spread > 0) {
-            const angle = toRad(angleDeg + 90);
-            const arcGradient = tmpCtx.createConicGradient(angle - toRad(spread / 2), outerRadius, outerRadius);
-            arcGradient.addColorStop(0, `rgba(${color.r},${color.g},${color.b}, 0)`);
-            arcGradient.addColorStop(toPerc(spread / 2) - toPerc(innerSpread) / 2, `rgba(${color.r},${color.g},${color.b}, ${intensity})`);
-            arcGradient.addColorStop(toPerc(spread / 2) + toPerc(innerSpread) / 2, `rgba(${color.r},${color.g},${color.b}, ${intensity})`);
-            arcGradient.addColorStop(toPerc(spread), `rgba(${color.r},${color.g},${color.b}, 0)`);
-
-            tmpCtx.fillStyle = arcGradient;
-            tmpCtx.beginPath();
-            tmpCtx.arc(outerRadius, outerRadius, outerRadius, angle, spread, false); // Draw an arc
-            tmpCtx.closePath();
-            tmpCtx.fill();
-            tmpCtx.globalCompositeOperation = 'destination-in';
+            const radians = toRad(angle + 90);
+            const arc = gradientCtx.createConicGradient(radians - toRad(spread / 2), outerRadius, outerRadius);
+            arc.addColorStop(0, `rgba(${color.r},${color.g},${color.b},0)`);
+            arc.addColorStop(toPerc(spread / 2) - toPerc(innerSpread) / 2, `rgba(${color.r},${color.g},${color.b},${intensity})`);
+            arc.addColorStop(toPerc(spread / 2) + toPerc(innerSpread) / 2, `rgba(${color.r},${color.g},${color.b},${intensity})`);
+            arc.addColorStop(toPerc(spread), `rgba(${color.r},${color.g},${color.b},0)`);
+            gradientCtx.fillStyle = arc;
+            gradientCtx.beginPath();
+            gradientCtx.arc(outerRadius, outerRadius, outerRadius, radians, spread, false);
+            gradientCtx.closePath(); gradientCtx.fill();
+            gradientCtx.globalCompositeOperation = 'destination-in';
         }
-
-        if (lightSource.global) {
-            tmpCtx.fillStyle = `rgba(${color.r},${color.g},${color.b}, ${intensity})`;
-            tmpCtx.fillRect(0, 0, lightSource.w, lightSource.h);
+        if (light.global) {
+            gradientCtx.fillStyle = `rgba(${color.r},${color.g},${color.b},${intensity})`;
         } else {
-            const gradient = tmpCtx.createRadialGradient(outerRadius, outerRadius, innerRadius, outerRadius, outerRadius, outerRadius);
-
-            // The light starts fully bright at the center and fades to zero at the radius
-            gradient.addColorStop(0, `rgba(${color.r},${color.g},${color.b}, ${intensity})`);
-            gradient.addColorStop(1, `rgba(${color.r},${color.g},${color.b}, 0)`);
-
-            tmpCtx.fillStyle = gradient;
-            tmpCtx.fillRect(0, 0, outerRadius * 2, outerRadius * 2);
+            const gradient = gradientCtx.createRadialGradient(outerRadius, outerRadius, innerRadius, outerRadius, outerRadius, outerRadius);
+            gradient.addColorStop(0, `rgba(${color.r},${color.g},${color.b},${intensity})`);
+            gradient.addColorStop(1, `rgba(${color.r},${color.g},${color.b},0)`);
+            gradientCtx.fillStyle = gradient;
         }
-
-        if (!lightSource.animation || !OPTION_DYNAMIC_LIGHTS) {
-           addToImageCache(temp_cacheKey, tmpCanvas);
-        }
-    } else {
-        tmpCtx.drawImage(imageCache[temp_cacheKey], 0, 0);
+        gradientCtx.fillRect(0, 0, width, height);
+        gradientCtx.globalCompositeOperation = 'source-over';
+        if (!light.animation || !OPTION_DYNAMIC_LIGHTS) addToImageCache(gradientKey, gradientCanvas);
     }
 
-    if (lightSource.shadow > 0) {
-        const shadow = tmpCtx.createRadialGradient(outerRadius, outerRadius, innerRadius, outerRadius, outerRadius, outerRadius);
-
-        // The light starts fully bright at the center and fades to zero at the radius
-        shadow.addColorStop(0, `rgba(0, 0, 0, ${intensity * lightSource.shadow})`);
-        shadow.addColorStop(1, `rgba(0, 0, 0, 0)`);
-
-        const shadowCanvas = new OffscreenCanvas(outerRadius * 2, outerRadius * 2);
-        const shadowCtx = shadowCanvas.getContext('2d');
-        shadowCtx.imageSmoothingEnabled = false;
-
-        // clone obstacles
-        let allObstacles = [];
-        if(OPTION_SHADOWS) {
-            allObstacles = obstacles.map(obstacle => obstacle.map(point => ({x: point.x, y: point.y})));
+    let output = gradientCanvas;
+    if (light.shadow > 0 && (OPTION_SHADOWS || OPTION_PLAYER_SHADOW)) {
+        const staticShadow = !light.animation || !OPTION_DYNAMIC_LIGHTS;
+        const shadowKey = [gradientKey, 'shadow', light.x, light.y, light.shadow, OPTION_SHADOWS, obstacleRevision].join(',');
+        if (staticShadow && OPTION_SHADOWS && obstacles.length) {
+            output = imageCache[shadowKey];
+            if (!output) {
+                const scratch = scratchCanvas(lightScratch, width, height);
+                scratch.ctx.drawImage(gradientCanvas, 0, 0, width, height, 0, 0, width, height);
+                subtractShadows(scratch.ctx, light, obstacles, width, height);
+                output = new OffscreenCanvas(width, height);
+                output.getContext('2d').drawImage(scratch.canvas, 0, 0, width, height, 0, 0, width, height);
+                addToImageCache(shadowKey, output);
+            }
         }
-
-        // player shadow
-        if (OPTION_PLAYER_SHADOW) {
-            allObstacles.push(
-                {
-                    x: playerPosition.x + 6,
-                    y: playerPosition.y + 6,
-                    width: 6,
-                    height: 6
-                });
+        // Buildings stay cached even while the player's shadow moves.
+        const movingPolygons = !staticShadow && OPTION_SHADOWS ? obstacles.slice() : [];
+        if (OPTION_PLAYER_SHADOW && playerPosition) {
+            const playerPolygon = transformObstacles([{
+                x: playerPosition.x + 6, y: playerPosition.y + 6, width: 6, height: 6
+            }])[0];
+            if (polygonIntersectsLight(playerPolygon, light, outerRadius)) movingPolygons.push(playerPolygon);
         }
-        allObstacles = transformObstacles(allObstacles);
-
-        allObstacles.filter((obstacle) => {
-            // Obstacle in light radius
-            return obstacle.filter((point) => {
-                return hypot(point.x - lightSource.x, point.y - lightSource.y) < outerRadius;
-            }).length > 0;
-        }).slice(0, MAX_SHADOWS_TO_RENDER).forEach(obstacle => {
-            const shadowPoly = calculateShadow(lightX, lightY, outerRadius, obstacle, cameraX, cameraY, lightSource.animation);
-
-            shadowCtx.globalCompositeOperation = "source-out";
-            shadowCtx.fillStyle = shadow;
-            shadowCtx.beginPath();
-            shadowCtx.moveTo(shadowPoly[0].x - lightX + outerRadius, shadowPoly[0].y - lightY + outerRadius);
-            shadowPoly.forEach(point => shadowCtx.lineTo(point.x - lightX + outerRadius, point.y - lightY + outerRadius));
-            shadowCtx.closePath();
-            shadowCtx.fill();
-
-            // destination out the obstacle
-            shadowCtx.globalCompositeOperation = "destination-out";
-
-            shadowCtx.fillStyle = "black";
-            shadowCtx.beginPath();
-            shadowCtx.moveTo(obstacle[0].x - cameraX - lightX + outerRadius, obstacle[0].y - cameraY - lightY + outerRadius);
-            obstacle.forEach(point => shadowCtx.lineTo(point.x - cameraX - lightX + outerRadius, point.y - cameraY - lightY + outerRadius));
-            shadowCtx.closePath();
-            shadowCtx.fill();
-
-            // Draw the shadow
-            tmpCtx.globalCompositeOperation = "destination-out";
-            tmpCtx.drawImage(shadowCanvas, 0, 0);
-        });
+        if (movingPolygons.length) {
+            const scratch = scratchCanvas(lightScratch, width, height);
+            scratch.ctx.drawImage(output, 0, 0, width, height, 0, 0, width, height);
+            subtractShadows(scratch.ctx, light, movingPolygons, width, height);
+            output = scratch.canvas;
+        }
     }
+    ctx.globalCompositeOperation = 'screen';
+    ctx.drawImage(output, 0, 0, width, height,
+        light.global ? lightX : lightX - outerRadius,
+        light.global ? lightY : lightY - outerRadius, width, height);
+}
 
+function polygonIntersectsLight(polygon, light, radius) {
+    return polygon.some(point => hypot(point.x - light.x, point.y - light.y) < radius);
+}
 
-    ctx.globalCompositeOperation = "screen";
-    if(lightSource.global) {
-        ctx.drawImage(tmpCanvas, lightX, lightY);
-    } else {
-        ctx.drawImage(tmpCanvas, lightX - outerRadius, lightY - outerRadius);
-    }
-
-    if(!lightSource.animation || !OPTION_DYNAMIC_LIGHTS) {
-        addToImageCache(cacheKey, tmpCanvas);
+function subtractShadows(ctx, light, polygons, width, height) {
+    const outerRadius = (light.radius || 1) * tilesize, innerRadius = (light.innerRadius || 0) * tilesize;
+    const mask = scratchCanvas(shadowScratch, width, height);
+    const shade = mask.ctx.createRadialGradient(outerRadius, outerRadius, innerRadius, outerRadius, outerRadius, outerRadius);
+    shade.addColorStop(0, `rgba(0,0,0,${(light.intensity ?? 1) * light.shadow})`);
+    shade.addColorStop(1, 'rgba(0,0,0,0)');
+    let drawn = 0;
+    for (const polygon of polygons) {
+        if (!polygonIntersectsLight(polygon, light, outerRadius)) continue;
+        if (drawn++ >= MAX_SHADOWS_TO_RENDER) break;
+        const shadow = calculateShadow(light.x, light.y, outerRadius, polygon, 0, 0, light.animation);
+        if (!shadow.length) continue;
+        mask.ctx.globalCompositeOperation = 'source-out';
+        mask.ctx.fillStyle = shade;
+        mask.ctx.beginPath();
+        mask.ctx.moveTo(shadow[0].x - light.x + outerRadius, shadow[0].y - light.y + outerRadius);
+        for (const point of shadow) mask.ctx.lineTo(point.x - light.x + outerRadius, point.y - light.y + outerRadius);
+        mask.ctx.closePath(); mask.ctx.fill();
+        mask.ctx.globalCompositeOperation = 'destination-out';
+        mask.ctx.fillStyle = 'black'; mask.ctx.beginPath();
+        mask.ctx.moveTo(polygon[0].x - light.x + outerRadius, polygon[0].y - light.y + outerRadius);
+        for (const point of polygon) mask.ctx.lineTo(point.x - light.x + outerRadius, point.y - light.y + outerRadius);
+        mask.ctx.closePath(); mask.ctx.fill();
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.drawImage(mask.canvas, 0, 0, width, height, 0, 0, width, height);
     }
 }
 
-shadowPolygonCache = {};
 function calculateShadow(lightX, lightY, lightRadius, polygon, cameraX, cameraY, animation) {
     const shadowPolygon = [];
 
