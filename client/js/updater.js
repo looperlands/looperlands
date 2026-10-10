@@ -83,6 +83,17 @@ define(['character', 'projectile', 'timer'], function (Character, Projectile, Ti
                 if (m) {
                     if (m.inProgress) {
                         m.step(self.game.currentTime);
+                        if (entity instanceof Character && !m.inProgress && entity.isMoving()) {
+                            // Carry the remainder into the next tile in this same frame.
+                            // Limit catch-up after a suspended tab to one extra tile.
+                            var startTime = Math.max(m.startTime + m.duration,
+                                self.game.currentTime - entity.moveSpeed);
+                            self.updateCharacter(entity, startTime);
+                            m.step(self.game.currentTime);
+                            if (!m.inProgress && entity.isMoving()) {
+                                self.updateCharacter(entity, self.game.currentTime);
+                            }
+                        }
                     }
                 }
             });
@@ -139,76 +150,29 @@ define(['character', 'projectile', 'timer'], function (Character, Projectile, Ti
             }
         },
 
-        updateCharacter: function (c) {
-            var self = this;
-
-            // Estimate of the movement distance for one update
-            var tick = Math.round(16 / Math.round((c.moveSpeed / (1000 / this.game.renderer.FPS))));
-            if (tick > 14) {
-                tick = 14;
-            }
-            if (tick < 1) {
-                tick = 1;
-            }
-
+        updateCharacter: function (c, startTime) {
             if (c.isMoving() && c.movement.inProgress === false) {
-                if (c.orientation === Types.Orientations.LEFT) {
-                    c.movement.start(this.game.currentTime,
-                        function (x) {
-                            c.x = x;
-                            c.hasMoved();
-                        },
-                        function () {
-                            c.x = c.movement.endValue;
-                            c.hasMoved();
-                            c.nextStep();
-                        },
-                        c.x - tick,
-                        c.x - 16,
-                        c.moveSpeed);
-                } else if (c.orientation === Types.Orientations.RIGHT) {
-                    c.movement.start(this.game.currentTime,
-                        function (x) {
-                            c.x = x;
-                            c.hasMoved();
-                        },
-                        function () {
-                            c.x = c.movement.endValue;
-                            c.hasMoved();
-                            c.nextStep();
-                        },
-                        c.x + tick,
-                        c.x + 16,
-                        c.moveSpeed);
-                } else if (c.orientation === Types.Orientations.UP) {
-                    c.movement.start(this.game.currentTime,
-                        function (y) {
-                            c.y = y;
-                            c.hasMoved();
-                        },
-                        function () {
-                            c.y = c.movement.endValue;
-                            c.hasMoved();
-                            c.nextStep();
-                        },
-                        c.y - tick,
-                        c.y - 16,
-                        c.moveSpeed);
-                } else if (c.orientation === Types.Orientations.DOWN) {
-                    c.movement.start(this.game.currentTime,
-                        function (y) {
-                            c.y = y;
-                            c.hasMoved();
-                        },
-                        function () {
-                            c.y = c.movement.endValue;
-                            c.hasMoved();
-                            c.nextStep();
-                        },
-                        c.y + tick,
-                        c.y + 16,
-                        c.moveSpeed);
-                }
+                var startX = c.x, startY = c.y,
+                    endX = c.path[c.step][0] * 16,
+                    endY = c.path[c.step][1] * 16,
+                    dx = endX - startX, dy = endY - startY;
+                if (dx === 0 && dy === 0) return;
+                // Interpolate both axes together. Diagonals cover sqrt(2) times
+                // the distance, so take proportionally longer at the same speed.
+                var duration = c.moveSpeed * Math.hypot(dx, dy) / 16;
+                c.movement.start(startTime === undefined ? this.game.currentTime : startTime,
+                    function (progress) {
+                        c.x = Math.round(startX + dx * progress);
+                        c.y = Math.round(startY + dy * progress);
+                        c.hasMoved();
+                    },
+                    function () {
+                        c.x = endX;
+                        c.y = endY;
+                        c.hasMoved();
+                        c.nextStep();
+                    },
+                    0, 1, duration, false);
             }
         },
 

@@ -216,23 +216,18 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
     		this.newDestination = { x: x, y: y };
     	},
 	
-    	updateMovement: function() {
-    		var p = this.path,
-    			i = this.step;
-		
-    		if(p[i][0] < p[i-1][0]) {
-    			this.walk(Types.Orientations.LEFT);
-    		}
-    		if(p[i][0] > p[i-1][0]) {
-    			this.walk(Types.Orientations.RIGHT);
-    		}
-    		if(p[i][1] < p[i-1][1]) {
-    			this.walk(Types.Orientations.UP);
-    		}
-    		if(p[i][1] > p[i-1][1]) {
-    			this.walk(Types.Orientations.DOWN);
-    		}
-    	},
+        updateMovement: function() {
+            var p = this.path, i = this.step,
+                dx = p[i][0] - p[i - 1][0],
+                dy = p[i][1] - p[i - 1][1];
+            // Four-direction sprites face vertically on a diagonal. Choose once
+            // so each tile does not flip direction and restart the walk animation.
+            if (dy !== 0) {
+                this.walk(dy < 0 ? Types.Orientations.UP : Types.Orientations.DOWN);
+            } else if (dx !== 0) {
+                this.walk(dx < 0 ? Types.Orientations.LEFT : Types.Orientations.RIGHT);
+            }
+        },
 
     	updatePositionOnGrid: function() {
     		this.setGridPosition(this.path[this.step][0], this.path[this.step][1]);

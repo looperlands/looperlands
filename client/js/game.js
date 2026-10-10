@@ -7004,19 +7004,12 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
                 if (this.started) {
 
-                    if (this.lastFrameTime !== undefined) {
-                        let elaspedTime = this.currentTime - this.lastFrameTime;
-                        if (elaspedTime < this.renderer.frameTime) {
-                            this.renderer.worker.postMessage({"type": "idle"});
-                            return;
-                        }
-                    }
-                    this.lastFrameTime = this.currentTime;
-
+                    // The renderer worker already schedules ticks with requestAnimationFrame.
+                    // A second FPS gate skips alternate frames on 60 Hz displays.
                     this.updateCursorLogic();
                     this.updater.update();
                     if (this.canUseCenteredCamera()) {
-                        this.focusPlayer();
+                        this.renderer.camera.follow(this.player, this.currentTime);
                     }
                     this.toolImpactFeedback.render(this.renderer, this.currentTime);
                     this.renderer.renderFrame();

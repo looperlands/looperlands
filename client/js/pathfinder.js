@@ -69,7 +69,12 @@ class Pathfinder {
                 }
                 if (Math.abs(dx) === 1 && Math.abs(dy) === 1) {
                     const horizontal = [x, start[1]], vertical = [start[0], y];
-                    // Match A*'s north, east, south, west ordering for equal-length routes.
+                    // A diagonal needs both adjacent tiles clear to avoid cutting corners.
+                    if (walkable(horizontal) && walkable(vertical)) {
+                        resolve([start, end]);
+                        return;
+                    }
+                    // Route around a blocked corner using cardinal steps.
                     const corners = dy < 0 || dx < 0 ? [vertical, horizontal] : [horizontal, vertical];
                     const corner = corners.find(walkable);
                     if (corner) {

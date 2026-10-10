@@ -147,7 +147,7 @@ self.onmessage = async function(e) {
                 grid[y][x] = 0;
             }
         });
-        const path = AStar(grid, start, end);
+        const path = AStar(grid, start, end, 'Euclidean');
         self.postMessage({ requestId, path });
     } catch (error) {
         console.error(error);
