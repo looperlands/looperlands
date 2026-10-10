@@ -9,13 +9,14 @@ define(function() {
             this.inProgress = false;
         },
 
-        start: function(currentTime, updateFunction, stopFunction, startValue, endValue, duration) {
+        start: function(currentTime, updateFunction, stopFunction, startValue, endValue, duration, roundValues) {
             this.startTime = currentTime;
             this.updateFunction = updateFunction;
             this.stopFunction = stopFunction;
             this.startValue = startValue;
             this.endValue = endValue;
             this.duration = duration;
+            this.roundValues = roundValues !== false;
             this.inProgress = true;
             this.count = 0;
         },
@@ -36,9 +37,9 @@ define(function() {
                     var diff = this.endValue - this.startValue;
                     var i = this.startValue + ((diff / this.duration) * elapsed);
             
-                    i = Math.round(i);
+                    if (this.roundValues) i = Math.round(i);
             
-                    if(elapsed === this.duration || i === this.endValue) {
+                    if(elapsed === this.duration) {
                         this.stop();
                         if(this.stopFunction) {
                             this.stopFunction();
@@ -52,7 +53,7 @@ define(function() {
         },
 
         restart: function(currentTime, startValue, endValue) {
-            this.start(currentTime, this.updateFunction, this.stopFunction, startValue, endValue, this.duration);
+            this.start(currentTime, this.updateFunction, this.stopFunction, startValue, endValue, this.duration, this.roundValues);
             this.step(currentTime);
         },
 

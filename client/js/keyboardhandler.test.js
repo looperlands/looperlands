@@ -161,11 +161,11 @@ test.each([
     expect(state.stopped).toHaveBeenCalledTimes(1);
 });
 
-test('diagonal continuation uses clear cardinal tiles and avoids blocked corners', () => {
+test('diagonal continuation moves directly in open space and avoids blocked corners', () => {
     const { game, handler } = createMovementGame();
     game.keyboardMovement = true;
     handler.keys.d = handler.keys.s = 1;
-    expect(handler.getContinuationPath()).toEqual([[2, 2], [3, 2], [3, 3]]);
+    expect(handler.getContinuationPath()).toEqual([[2, 2], [3, 3]]);
     game.finalPathingGrid[2][3] = 1;
     expect(handler.getContinuationPath()).toEqual([[2, 2], [2, 3], [3, 3]]);
     game.finalPathingGrid[3][2] = 1;
@@ -257,4 +257,24 @@ test('touch drag continues across tiles without restarting the path and stops af
     for (let i = 0; i < 10; i++) frame();
     expect(player.isMoving()).toBe(false);
     expect(stopped).toHaveBeenCalledTimes(1);
+});
+
+
+test('held diagonal movement keeps its walk animation across tile boundaries', () => {
+    const {game, player, handler, frame} = createMovementGame();
+    game.keyboardMovement = true;
+    handler.keys.d = handler.keys.s = 1;
+    player.followPath([[2, 2], [3, 3]]);
+    const animation = player.currentAnimation;
+    const reset = jest.spyOn(animation, 'reset');
+    const frames = new Set();
+    for (let i = 0; i < 60; i++) {
+        frame();
+        expect(player.x - 32).toBe(player.y - 32);
+        expect(player.currentAnimation).toBe(animation);
+        frames.add(animation.currentFrame.index);
+    }
+    expect(player.gridX).toBeGreaterThan(5);
+    expect(reset).not.toHaveBeenCalled();
+    expect(frames.size).toBe(4);
 });

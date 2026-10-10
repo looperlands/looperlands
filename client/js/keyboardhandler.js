@@ -176,16 +176,19 @@ class KeyBoardHandler {
 
         const start = [player.gridX, player.gridY];
         const end = [player.gridX + dx, player.gridY + dy];
-        // Diagonal input still travels along two cardinal tiles, just like pathfinding.
+        const walkable = ([x, y]) => {
+            const row = this.game.finalPathingGrid[y];
+            return row && (row[x] === 0 || row[x] === false) && !this.game.map.isColliding(x, y)
+                && !this.game.getEntityAt(x, y) && !this.game.map.isDoor(x, y);
+        };
+        if (dx && dy && [end, [end[0], start[1]], [start[0], end[1]]].every(walkable)) {
+            return [start, end];
+        }
+        // Fall back to cardinal steps when a diagonal would cut a blocked corner.
         const paths = dx && dy
             ? [[start, [end[0], start[1]], end], [start, [start[0], end[1]], end]]
             : [[start, end]];
-        return paths.find(path => path.slice(1).every(([x, y]) => {
-            const row = this.game.finalPathingGrid[y];
-            return row && (row[x] === 0 || row[x] === false) && !this.game.map.isColliding(x, y)
-                && !this.game.getEntityAt(x, y)
-                && !this.game.map.isDoor(x, y);
-        })) || null;
+        return paths.find(path => path.slice(1).every(walkable)) || null;
     }
 
     handleBlur() {

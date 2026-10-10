@@ -132,7 +132,7 @@ test.each([[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, 1], [1, -1], [-1, -1]]
 
     expect(path[0]).toEqual([1, 1]);
     expect(path.at(-1)).toEqual([1 + dx, 1 + dy]);
-    expect(path).toHaveLength(1 + Math.abs(dx) + Math.abs(dy));
+    expect(path).toHaveLength(2);
     expect(workers.every(worker => worker.requests.length === 0)).toBe(true);
     copies.forEach(copy => expect(copy).not.toHaveBeenCalled());
 });
@@ -213,18 +213,55 @@ test('a failed worker post releases its pending resolver and a later request sti
     expect((await next).at(-1)).toEqual([3, 0]);
 });
 
-test('nearby paths match unchanged A* for all 512 collision layouts of a 3x3 grid', async () => {
+test('nearby paths match diagonal A* distance for all 512 collision layouts of a 3x3 grid', async () => {
     const {pathfinder, workers} = createPathfinder();
     const AStar = vm.runInNewContext(`${workerSource}\nAStar;`, {self: {}, console});
     for (let mask = 0; mask < 512; mask++) {
         const grid = Array.from({length: 3}, (_, y) => Array.from({length: 3}, (_, x) => (mask >> (y * 3 + x)) & 1));
         for (let y = 0; y < 3; y++) {
             for (let x = 0; x < 3; x++) {
-                const expected = AStar(grid, [1, 1], [x, y]);
+                const expected = AStar(grid, [1, 1], [x, y], 'Euclidean');
                 const pending = pathfinder.findPath(grid, entity(7, 1, 1), x, y);
                 for (const worker of workers) if (worker.requests.length) await worker.complete();
-                expect(await pending).toEqual(expected);
+                const actual = await pending;
+                const distance = path => path.slice(1).reduce((sum, point, i) =>
+                    sum + Math.hypot(point[0] - path[i][0], point[1] - path[i][1]), 0);
+                expect(actual.length === 0).toBe(expected.length === 0);
+                expect(distance(actual)).toBeCloseTo(distance(expected));
+                if (actual.length) expect(actual.at(-1)).toEqual([x, y]);
             }
+        }
+    }
+});
+
+
+test('worker paths use straight diagonal steps across an open field', async () => {
+    const {pathfinder, workers} = createPathfinder();
+    const grid = Array.from({length: 6}, () => Array(6).fill(0));
+    const pending = pathfinder.findPath(grid, entity(7, 0, 0), 5, 5);
+    await workers[0].complete();
+    expect(await pending).toEqual(Array.from({length: 6}, (_, i) => [i, i]));
+});
+
+test.each([[[[0, 1], [0, 0]]], [[[0, 0], [1, 0]]]])('a short diagonal routes around a blocked side tile', async grid => {
+    const {pathfinder} = createPathfinder();
+    const path = await pathfinder.findPath(grid, entity(7, 0, 0), 1, 1);
+    expect(path).toHaveLength(3);
+    expect(path[1]).toEqual(grid[0][1] ? [0, 1] : [1, 0]);
+});
+
+test('worker diagonal steps never cut corners beside walls', async () => {
+    const {pathfinder, workers} = createPathfinder();
+    const grid = [[0, 0, 0, 0], [0, 1, 1, 0], [0, 0, 1, 0], [0, 0, 0, 0]];
+    const pending = pathfinder.findPath(grid, entity(7, 0, 0), 3, 3);
+    await workers[0].complete();
+    const path = await pending;
+    expect(path.at(-1)).toEqual([3, 3]);
+    for (let i = 1; i < path.length; i++) {
+        const [x, y] = path[i], [previousX, previousY] = path[i - 1];
+        if (x !== previousX && y !== previousY) {
+            expect(grid[previousY][x]).toBe(0);
+            expect(grid[y][previousX]).toBe(0);
         }
     }
 });
