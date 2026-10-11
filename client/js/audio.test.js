@@ -5,6 +5,7 @@ function setup({safari = true, webAudio = true, howler = true, local = true, mp3
     const media = [], effects = [], timers = [];
     const documentListeners = new Map();
     const intervals = new Set();
+    const playbackChecks = new Set();
     function element() {
         const listeners = {};
         const sound = {
@@ -51,10 +52,13 @@ function setup({safari = true, webAudio = true, howler = true, local = true, mp3
         setTimeout: (callback, delay) => timers.push({callback, delay}),
         setInterval: (callback, delay) => {
             const interval = {callback, delay};
-            intervals.add(interval);
+            (delay < 5000 ? intervals : playbackChecks).add(interval);
             return interval;
         },
-        clearInterval: interval => intervals.delete(interval),
+        clearInterval: interval => {
+            intervals.delete(interval);
+            playbackChecks.delete(interval);
+        },
     };
     vm.createContext(sandbox);
     vm.runInContext(fs.readFileSync(require.resolve('./lib/class'), 'utf8'), sandbox);
@@ -66,7 +70,7 @@ function setup({safari = true, webAudio = true, howler = true, local = true, mp3
     vm.runInContext(fs.readFileSync(require.resolve('./audio'), 'utf8'), sandbox);
     const manager = new sandbox.AudioManager({renderer: {mobile}, player: {gridX: 1, gridY: 1}});
     const dispatch = event => documentListeners.get(event)?.forEach(callback => callback());
-    return {manager, media, effects, timers, intervals, sandbox, dispatch};
+    return {manager, media, effects, timers, intervals, playbackChecks, sandbox, dispatch};
 }
 
 test('Safari combat effects reuse decoded sound objects without querying or playing HTML media', () => {
@@ -110,7 +114,7 @@ test.each([true, false])('Safari area music starts without waiting for sound eff
     manager.updateMusic();
     expect(media).toHaveLength(1);
     expect(media[0].src).toBe('audio/music/village.mp3');
-    expect(media[0].loop).toBe(true);
+    expect(media[0].loop).toBe(false);
     expect(media[0].play).toHaveBeenCalledTimes(1);
 });
 
@@ -293,4 +297,42 @@ test('empty stream polls cannot restart a track deliberately faded out for death
     manager.playStreamMusic(null);
     expect(sound.paused).toBe(true);
     expect(sound.play).toHaveBeenCalledTimes(1);
+});
+
+
+test('an unchanged stream URL poll resumes a paused track without reloading it', async () => {
+    const {manager} = setup();
+    const url = 'https://example.com/radio.mp3';
+    manager.playStreamMusic(url);
+    await Promise.resolve();
+    const sound = manager.streamMusic.sound;
+    sound.currentTime = 12;
+    sound.paused = true;
+    manager.playStreamMusic(url);
+    expect(sound.play).toHaveBeenCalledTimes(2);
+    expect(sound.currentTime).toBe(12);
+    expect(sound.load).toHaveBeenCalledTimes(1);
+});
+
+test('Duckville garden music continues through successive song completions', async () => {
+    const {manager} = setup();
+    const garden = JSON.parse(fs.readFileSync(require.resolve('../maps/world_client_duckville.json'), 'utf8'))
+        .musicAreas.find(area => area.id === 'beesinthegarden');
+    manager.game.player = {gridX: garden.x + 1, gridY: garden.y + 1};
+    manager.addArea(garden.x, garden.y, garden.w, garden.h, garden.id);
+    manager.updateMusic();
+    const sound = manager.musicPlayer.sound;
+    expect(sound.src).toBe('audio/music/beesinthegarden.mp3');
+    expect(sound.listeners.ended).toEqual(expect.any(Function));
+    for (let song = 0; song < 2; song++) {
+        await Promise.resolve();
+        sound.currentTime = sound.duration;
+        sound.paused = true;
+        sound.ended = true;
+        sound.listeners.ended();
+    }
+    expect(sound.play).toHaveBeenCalledTimes(3);
+    manager.disable();
+    sound.listeners.ended();
+    expect(sound.play).toHaveBeenCalledTimes(3);
 });

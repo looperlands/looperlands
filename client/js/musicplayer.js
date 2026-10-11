@@ -9,8 +9,18 @@ define(function () {
             this.active = false;
             this.pending = null;
             this.attempt = 0;
+            this.watchdog = null;
+            this.lastTime = 0;
+            this.lastProgress = Date.now();
             this.retryPlayback = function () {
                 if (!document.hidden) self.resume();
+            };
+            this.repeatPlayback = function () {
+                if (!self.active || !self.sound || !self.sound.ended) return;
+                self.pending = null;
+                self.attempt += 1;
+                self.recordProgress();
+                self.resume(true);
             };
             this.gestures = ['click', 'touchend', 'keydown'];
             this.gestures.forEach(function (event) {
@@ -23,8 +33,11 @@ define(function () {
             if (!this.sound) {
                 this.sound = document.createElement('audio');
                 this.sound.preload = 'auto';
-                this.sound.loop = true;
+                // Explicit completion handling keeps the requested track going at EOF.
+                // Handle completion ourselves on the already-unlocked element.
+                this.sound.loop = false;
                 this.sound.addEventListener('canplay', this.retryPlayback);
+                this.sound.addEventListener('ended', this.repeatPlayback);
             }
             return this.sound;
         },
@@ -38,16 +51,53 @@ define(function () {
                 sound.load();
             }
             this.active = true;
+            this.recordProgress();
+            if (this.watchdog === null) {
+                var self = this;
+                this.watchdog = setInterval(function () {self.checkPlayback();}, 5000);
+            }
             this.resume();
         },
 
-        resume: function () {
+        recordProgress: function () {
+            this.lastTime = this.sound ? this.sound.currentTime : 0;
+            this.lastProgress = Date.now();
+        },
+
+        checkPlayback: function () {
+            var sound = this.sound;
+            if (!this.active || !sound) return;
+            if (document.hidden || sound.currentTime !== this.lastTime) {
+                this.recordProgress();
+                return;
+            }
+            if (Date.now() - this.lastProgress >= 15000) {
+                // A stalled element or never-settled play promise can still claim
+                // to be playing. Reload only after sustained lack of progress.
+                var wasPending = this.pending !== null;
+                this.pending = null;
+                this.attempt += 1;
+                if (wasPending || (!sound.paused && !sound.ended && !sound.error)) sound.load();
+                this.recordProgress();
+                this.resume(true);
+            } else {
+                this.resume();
+            }
+        },
+
+        resume: function (force) {
             var self = this;
             var sound = this.sound;
-            if (!this.active || !sound || this.pending !== null || (!sound.paused && !sound.ended)) return;
+            if (!this.active || !sound || this.pending !== null) return;
+            if (!force && !sound.paused && !sound.ended && !sound.error) return;
 
-            // A network/media error may be recoverable on the next interaction.
-            if (sound.error) sound.load();
+            // Finite songs repeat; live sources reconnect at EOF to get fresh data.
+            if (sound.error || (sound.ended && !isFinite(sound.duration))) {
+                sound.load();
+            } else if (sound.ended && sound.readyState > 0) {
+                sound.currentTime = 0;
+            }
+            this.recordProgress();
             var attempt = ++this.attempt;
             this.pending = attempt;
             var settled = function () {
@@ -70,6 +120,10 @@ define(function () {
             this.active = false;
             this.pending = null;
             this.attempt += 1;
+            if (this.watchdog !== null) {
+                clearInterval(this.watchdog);
+                this.watchdog = null;
+            }
             if (this.sound) {
                 this.sound.pause();
                 if (this.sound.readyState > 0) this.sound.currentTime = 0;
@@ -85,6 +139,7 @@ define(function () {
             document.removeEventListener('visibilitychange', this.retryPlayback);
             if (this.sound) {
                 this.sound.removeEventListener('canplay', this.retryPlayback);
+                this.sound.removeEventListener('ended', this.repeatPlayback);
                 this.sound.removeAttribute('src');
                 this.sound.load();
             }

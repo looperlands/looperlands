@@ -166,7 +166,10 @@ define(['area', 'musicplayer'], function (Area, MusicPlayer) {
                 if (wasActive) this.updateMusic();
                 return;
             }
-            if (this.streamMusic.active && this.streamMusic.source === url) return;
+            if (this.streamMusic.active && this.streamMusic.source === url) {
+                this.streamMusic.resume();
+                return;
+            }
             this.resetMusic({sound: this.musicPlayer.sound});
             this.currentMusic = null;
             this.streamMusic.play(url);

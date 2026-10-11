@@ -4,6 +4,8 @@ const vm = require('vm');
 function setup() {
     const listeners = new Map();
     const media = [];
+    const intervals = new Set();
+    let now = 0;
     const document = {
         hidden: false,
         addEventListener: (event, callback) => {
@@ -13,26 +15,41 @@ function setup() {
         removeEventListener: (event, callback) => listeners.get(event)?.delete(callback),
         createElement: () => {
             const sound = {
-                paused: true, ended: false, readyState: 4, currentTime: 0, error: null,
-                listeners: {}, load: jest.fn(), removeAttribute: jest.fn(),
+                paused: true, ended: false, readyState: 4, currentTime: 0, duration: 180, error: null,
+                listeners: {},
+                load: jest.fn(() => {sound.paused = true; sound.ended = false; sound.error = null;}),
+                removeAttribute: jest.fn(),
                 addEventListener: (event, callback) => {sound.listeners[event] = callback;},
                 removeEventListener: (event, callback) => {
                     if (sound.listeners[event] === callback) delete sound.listeners[event];
                 },
-                play: jest.fn(() => {sound.paused = false; return Promise.resolve();}),
+                play: jest.fn(() => {sound.paused = false; sound.ended = false; return Promise.resolve();}),
                 pause: jest.fn(() => {sound.paused = true;}),
             };
             media.push(sound);
             return sound;
         },
     };
-    const sandbox = {document, define: factory => {sandbox.MusicPlayer = factory();}};
+    const sandbox = {
+        document, Date: {now: () => now},
+        setInterval: (callback, delay) => {
+            const interval = {callback, delay};
+            intervals.add(interval);
+            return interval;
+        },
+        clearInterval: interval => intervals.delete(interval),
+        define: factory => {sandbox.MusicPlayer = factory();},
+    };
     vm.createContext(sandbox);
     vm.runInContext(fs.readFileSync(require.resolve('./lib/class'), 'utf8'), sandbox);
     vm.runInContext(fs.readFileSync(require.resolve('./musicplayer'), 'utf8'), sandbox);
     const player = new sandbox.MusicPlayer();
     const dispatch = event => listeners.get(event)?.forEach(callback => callback());
-    return {player, document, media, listeners, dispatch};
+    const advance = milliseconds => {
+        now += milliseconds;
+        for (const interval of [...intervals]) interval.callback();
+    };
+    return {player, document, media, listeners, dispatch, intervals, advance};
 }
 
 function deferred() {
@@ -163,4 +180,140 @@ test('media becoming ready can retry an earlier failed playback attempt', async 
     sound.listeners.canplay();
     expect(sound.play).toHaveBeenCalledTimes(2);
     expect(sound.paused).toBe(false);
+});
+
+
+test('finite music repeats after each song without another gesture or a new media element', async () => {
+    const {player, media} = setup();
+    player.play('beesinthegarden.mp3');
+    const sound = player.sound;
+    expect(sound.loop).toBe(false);
+    expect(sound.listeners.ended).toEqual(expect.any(Function));
+    for (let song = 0; song < 3; song++) {
+        await Promise.resolve();
+        sound.currentTime = sound.duration;
+        sound.paused = true;
+        sound.ended = true;
+        sound.listeners.ended();
+        expect(sound.currentTime).toBe(0);
+        expect(sound.paused).toBe(false);
+    }
+    expect(sound.play).toHaveBeenCalledTimes(4);
+    expect(sound.load).toHaveBeenCalledTimes(1);
+    expect(media).toHaveLength(1);
+});
+
+test('a live stream reconnects at EOF instead of replaying its old buffer', async () => {
+    const {player} = setup();
+    player.play('live-radio');
+    await Promise.resolve();
+    const sound = player.sound;
+    sound.duration = Infinity;
+    sound.paused = true;
+    sound.ended = true;
+    expect(sound.listeners.ended).toEqual(expect.any(Function));
+    sound.listeners.ended();
+    expect(sound.load).toHaveBeenCalledTimes(2);
+    expect(sound.play).toHaveBeenCalledTimes(2);
+});
+
+test('a frozen playback position recovers even when Safari still reports playing', async () => {
+    const {player, advance} = setup();
+    player.play('beesinthegarden.mp3');
+    await Promise.resolve();
+    const sound = player.sound;
+    sound.currentTime = 15;
+    advance(5000);
+    advance(10000);
+    expect(sound.load).toHaveBeenCalledTimes(1);
+    advance(5000);
+    expect(sound.load).toHaveBeenCalledTimes(2);
+    expect(sound.play).toHaveBeenCalledTimes(2);
+    expect(sound.paused).toBe(false);
+});
+
+test('healthy playback is not reloaded and hidden pages do not trigger stall recovery', async () => {
+    const {player, advance, document} = setup();
+    player.play('radio.mp3');
+    await Promise.resolve();
+    const sound = player.sound;
+    for (let step = 0; step < 6; step++) {
+        sound.currentTime += 5;
+        advance(5000);
+    }
+    document.hidden = true;
+    advance(30000);
+    document.hidden = false;
+    advance(5000);
+    expect(sound.play).toHaveBeenCalledTimes(1);
+    expect(sound.load).toHaveBeenCalledTimes(1);
+});
+
+test('a pending play that never settles cannot permanently prevent recovery', async () => {
+    const {player, advance} = setup();
+    const sound = player.getSound();
+    const first = deferred(), second = deferred();
+    sound.play.mockReturnValueOnce(first.promise).mockReturnValueOnce(second.promise);
+    player.play('radio.mp3');
+    advance(10000);
+    expect(sound.play).toHaveBeenCalledTimes(1);
+    advance(5000);
+    expect(sound.play).toHaveBeenCalledTimes(2);
+    const pending = player.pending;
+    first.reject(new Error('AbortError'));
+    await Promise.resolve();
+    expect(player.pending).toBe(pending);
+    second.resolve();
+    await Promise.resolve();
+    expect(player.pending).toBeNull();
+});
+
+test('stopping or destroying music cancels completion and timer recovery', async () => {
+    const {player, advance, intervals} = setup();
+    player.play('radio.mp3');
+    await Promise.resolve();
+    const sound = player.sound;
+    expect(intervals.size).toBe(1);
+    const lateCheck = [...intervals][0].callback;
+    player.stop();
+    sound.ended = true;
+    sound.listeners.ended();
+    lateCheck();
+    advance(30000);
+    expect(intervals.size).toBe(0);
+    expect(sound.play).toHaveBeenCalledTimes(1);
+    player.play('radio.mp3');
+    expect(intervals.size).toBe(1);
+    player.destroy();
+    expect(intervals.size).toBe(0);
+    expect(sound.listeners.ended).toBeUndefined();
+});
+
+
+test('a queued completion from the previous source cannot interrupt the new track', async () => {
+    const {player} = setup();
+    player.play('first.mp3');
+    await Promise.resolve();
+    const sound = player.sound;
+    const next = deferred();
+    sound.play.mockReturnValueOnce(next.promise);
+    player.play('second.mp3');
+    const pending = player.pending;
+    sound.listeners.ended();
+    expect(sound.play).toHaveBeenCalledTimes(2);
+    expect(player.pending).toBe(pending);
+    expect(sound.src).toBe('second.mp3');
+    next.resolve();
+    await Promise.resolve();
+});
+
+test('a media error recovers even if the browser still reports unpaused playback', async () => {
+    const {player, advance} = setup();
+    player.play('radio.mp3');
+    await Promise.resolve();
+    const sound = player.sound;
+    sound.error = {code: 2};
+    advance(5000);
+    expect(sound.load).toHaveBeenCalledTimes(2);
+    expect(sound.play).toHaveBeenCalledTimes(2);
 });
