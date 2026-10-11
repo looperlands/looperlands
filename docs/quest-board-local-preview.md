@@ -23,12 +23,13 @@ The preview adds a board near the existing town event board, and a hand-in crate
 
 ## Things to try
 
-1. Accept **Supplies for the road**. Its basket needs 3 boar hide and 2 ore. Both test characters start with 10 of each; any source of these goods qualifies.
-2. Follow the pinned destination to the town supply crate. Stand beside it, press **E**, and confirm the whole basket. The reward is 120 XP and 2 seeds. Inventory becomes 7 hide, 8 ore, and 2 seeds.
-3. Accept **Keep the roads clear**, then defeat one nearby rat. Open **J** and claim the 60 XP reward. Earlier kills do not count toward a newly accepted quest.
-4. Accept **A breath of sea air** and walk south to the Beach scene. Claim its 80 XP from the journal.
-5. Look at **Schedule** to see the next daily occurrences. Use **My quests** to inspect accepted and completed work; try withdrawing and reaccepting an unfinished challenge.
-6. Try the second player. They can complete the same daily request independently.
+1. The board starts with one adventure, one challenge and one request. Both players receive the same starting offers; each player's completions advance their own board.
+2. Select **Supplies for the road** (or another generated material request). Inspect the exact current basket, reward and boar-hide/ore icons; quantities are generated from the example JSON rules. Both characters initially have 10 hide and 10 ore; retained test sessions may have spent some stock.
+3. Accept, walk to the town supply crate, press **E** and confirm the full basket. Inventory and XP reflect the displayed promise. Return to **Available** to find the replacement request, while **My quests** retains the completed one.
+4. Accept the rat challenge. Its generated name shows how many *additional* rats you need; kills before acceptance do not count. Defeat that many nearby rats, open **J**, claim the reward and inspect the next challenge.
+5. Accept **A breath of sea air**, visit the Beach scene and claim its reward. **Schedule** shows the starting offers of future daily windows, with different generated quantities and requests.
+6. Try withdrawing/reaccepting: it does not skip forward in the sequence. The example allows six total offers per category each day. Changing `counts`, weights, generation ranges or the work budget changes future unpublished windows.
+7. Try the second player: the first player's completion has no effect on their starting slots or goods.
 
 For retry testing, `POST http://127.0.0.1:3318/__fixture/drop-next-response` with `{}` before confirming a hand-in. The fixture commits the transaction but loses that response. **Retry** must return the same completed result without consuming or rewarding twice. `GET /__fixture/state` gives database readback for attempts, receipts, inventory, XP, and funding.
 

@@ -318,7 +318,7 @@ Load board details on interaction and refresh on relevant changes. Cache shared 
 
 ## Delivery plan
 
-**First release:** a validated per-map quests JSON format and loader, map-scoped boards, opt-in discovery of existing quests, curated daily challenges, generic tile-action objectives, scheduled individual item requests with multi-item baskets, fixed hand-in locations, configurable previews, journal tracking, XP and approved item rewards, configuration validation, and durable acceptance and settlement. All supported feature configuration must be possible by editing that one JSON file. A graphical editor is optional later work.
+**First release:** a validated per-map quests JSON format and loader, map-scoped boards, opt-in discovery of existing quests, rule-generated daily challenges and per-player refill slots, generic tile-action objectives, scheduled individual item requests with multi-item baskets, fixed hand-in locations, configurable previews, journal tracking, XP and approved item rewards, configuration validation, and durable acceptance and settlement. All supported feature configuration must be possible by editing that one JSON file. A graphical editor is optional later work.
 
 Use one mixed-activity map board as the pilot: an existing story quest, a combat challenge, a registered tile-action challenge, and requests for items available through different sources. Include a farming example as one configuration. Test with two real player identities and separate inventories, including existing stock and gifted items. The pilot should demonstrate that creators can operate the board through JSON alone and that acquisition source does not affect an unrestricted hand-in.
 

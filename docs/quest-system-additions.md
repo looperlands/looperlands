@@ -10,7 +10,7 @@ The change keeps the two kinds of quest progress separate:
 | --- | --- | --- |
 | Definition | Existing story fields, in JavaScript or the map JSON | A quest with `scheduleId`, objectives, rewards and policy in map JSON |
 | Progress | Existing quest flags and objective storage | A persistent attempt for one published occurrence |
-| Repeat behavior | Original story engine behavior | Permanent, daily, weekly or fixed windows; optional rotation |
+| Repeat behavior | Original story engine behavior | Permanent, daily, weekly or fixed windows; optional weighted rotation, generated terms and refill slots |
 | Acceptance | Existing quest giver; optionally a board advertising that story | Explicit acceptance at a configured board |
 | Item hand-in | Existing singular `DELIVER_ITEM` and reporting behavior | New plural `DELIVER_ITEMS` for a complete basket at a configured recipient |
 | Completion writes | Existing separate backend calls | Basket debit, XP, item rewards, completion and receipt in one transaction |
@@ -25,7 +25,7 @@ The versioned file is `server/js/quests/<mapId>.json`. Its top-level sections ar
 | --- | --- |
 | boards | IDs, tile bounds, additional placements, labels, description, categories, offered quest IDs, enablement and schedule visibility |
 | `handInLocations` | A fixed object or a reference to a board on the same map |
-| schedules | Recurrence, timezone, opening time, acceptance and completion windows, preview horizon and rotation |
+| schedules | Recurrence, timezone, opening time, acceptance and completion windows, preview horizon, rotation and per-category refill slots |
 | quests | Existing story definitions and new assignment templates, objectives, requirements and rewards |
 | defaults | Assignment policy defaults, overridden by individual quest policy |
 
@@ -64,6 +64,10 @@ Each occurrence allows one completion per configured wallet or Looper scope. The
 Schedules support permanent availability, daily or weekly recurrence with intervals, and explicit dated windows. Calendar schedules use an IANA timezone and account for daylight saving changes. Opening, the last acceptance time, and the completion deadline are separate concepts. Completion can use an elapsed window or the next calendar opening.
 
 The board can preview upcoming occurrences. Optional weighted rotation selects a fixed number of quests from a pool, avoids recently selected entries where possible, and uses a configured fallback when the pool is too small. Selection is deterministic across players, replicas and restarts.
+
+Templates can now draw target choices, quantities, distinct item baskets and funded reward amounts from JSON rules. XP can scale by the generated work with a cap, and plain-text lore can use the selected quantities and target labels. The shared sequence is deterministic for everyone.
+
+A schedule can configure unfinished slot counts for adventures, challenges and requests. Each player's committed completion reveals the next offer from that shared sequence independently; acceptance, ready rewards and withdrawal keep occupying their slot. `limitPerCategory` bounds work per window. The categories are presentation labels over the same assignment engine; existing lifetime stories are not part of refill. See [Generated quests and refill slots](quest-board-config.md#generated-quests-and-refill-slots) for all fields and examples.
 
 Publication freezes the occurrence's objectives, reward, windows, destination and policy, including upcoming previews. JSON edits affect unpublished occurrences. Editing a reward does not grant another completion of the same opening. Disabling a quest or board stops new acceptances; accepted promises remain available. Keep old recipient positions reachable until those attempts finish.
 

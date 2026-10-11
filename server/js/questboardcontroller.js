@@ -104,7 +104,7 @@ class QuestBoardController {
         const state=await this.service.state(context.identity,context.session.mapId);
         const occurrence=state.occurrences.find(o=>o.id===req.body.occurrenceId);
         this.check(context,[board.bounds,...(board.placements || [])]);
-        if (!occurrence || !occurrence.snapshot.boardIds.includes(board.id) || !board.questIds.includes(occurrence.questId)) fail(404,'This quest is not offered by this board.');
+        if (!occurrence || !occurrence.snapshot.boardIds.includes(board.id) || !board.questIds.includes(occurrence.snapshot.templateId || occurrence.questId)) fail(404,'This quest is not offered by this board.');
         const reason=this.locked(occurrence.snapshot,context); if(reason) fail(403,reason);
         return this.service.platform.questBoard('accept',{...context.identity,occurrenceId:occurrence.id,requestId:this.requestId(req)});
     });}

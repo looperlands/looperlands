@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const {validateGeneration,validateRefill} = require('./generation');
 const DEFAULTS = Object.freeze({participation: 'personal', completionScope: 'wallet', completionsPerOccurrence: 1,
     maxActiveRecurring: 3, reconciliationGraceHours: 24, eligibleLoopers: ['owned'], progressStart: 'acceptance', actionClaimMode: 'journal',
     withdrawal: {allowed: true, retainProgress: true, allowReaccept: true}});
@@ -41,8 +42,45 @@ function items(list, catalog, reward = false) {
         const result = {item,amount:number(entry.amount,1,1000000,'item amount')};
         if (reward) result.fundingRef = id(entry.fundingRef, 'reward fundingRef'); return result;});
 }
+function validateObjectives(list,locations,catalog,mapId) {
+    const objectives = unique(list,'objective').map((o,index) => {
+        keys(o,['id','label','eventType','action','stage','target','measurement','amount','area','tiles','recipientId','items'],'objective');
+        if (!EVENTS.includes(o.eventType)) fail('unsupported objective event ' + o.eventType);
+        if (o.label !== undefined) text(o.label,'objective label',200);
+        const result = {...o};
+        if (o.eventType === 'DELIVER_ITEMS') {
+            if (index !== list.length - 1 || list.filter(v=>v.eventType==='DELIVER_ITEMS').length!==1) fail('hand-in must be the final objective');
+            if (!locations.some(r=>r.id===o.recipientId)) fail('unknown recipient ' + o.recipientId);
+            if (['action','stage','target','measurement','area','tiles'].some(k=>o[k]!==undefined)) fail('hand-in must not restrict acquisition source');
+            result.items=items(o.items,catalog); result.amount=1;
+        } else {
+            if (o.items || o.recipientId) fail('only hand-in objectives define items/recipient');
+            result.amount=number(o.amount ?? 1,1,1000000,'objective amount'); result.measurement=o.measurement || 'count';
+            if (!['count','quantity'].includes(result.measurement)) fail('unknown measurement');
+            if (o.area) result.area=bounds(o.area,'objective area');
+            if (o.tiles) {if (!Array.isArray(o.tiles) || !o.tiles.length || o.tiles.length>200) fail('invalid objective tiles'); result.tiles=o.tiles.map(t=>{keys(t,['x','y'],'tile'); number(t.x,0,100000,'tile x'); number(t.y,0,100000,'tile y'); return t;});}
+            if (o.eventType === 'TILE_ACTION') {
+                text(o.action,'tile action',100); text(o.stage,'tile stage',100);
+                const action = catalog.tileActions?.find(a=>a.map===mapId && a.action===o.action);
+                if (catalog.tileActions && (!action || !action.stages.includes(o.stage))) fail('unregistered successful tile action/stage ' + o.action + '/' + o.stage);
+                if (o.target !== undefined && o.target !== '*' && action && !action.targets.some(t=>t.value===o.target)) fail('unknown tile-action target ' + o.target);
+                if (result.measurement==='quantity' && (!o.target || o.target==='*' || (action && !(action.quantityStages || []).includes(o.stage)))) fail('quantity needs a specific output target and a producing stage');
+            } else {
+                if (o.action || o.stage) fail('action/stage only apply to tile actions');
+                if (o.eventType==='AREA_ENTERED') {
+                    text(o.target,'area target',100);
+                    if (catalog.resolveArea && !catalog.resolveArea(o.target,mapId)) fail('unknown named map scene ' + o.target);
+                }
+                else result.target=resolveEntity(o.target,catalog,o.eventType==='KILL_MOB'?'mob':o.eventType==='NPC_TALKED'?'npc':o.eventType==='FISHING'?'fish':'loot');
+            }
+        }
+        return result;
+    });
+    if (!objectives.length || objectives.length > 12) fail('quests need 1-12 objectives');
+    return objectives;
+}
 function schedule(raw) {
-    keys(raw, ['id','timezone','repeat','opensAtLocalTime','acceptanceWindowHours','completionWindowHours','completeAt','previewHours','dates','rotation'], 'schedule');
+    keys(raw, ['id','timezone','repeat','opensAtLocalTime','acceptanceWindowHours','completionWindowHours','completeAt','previewHours','dates','rotation','refill'], 'schedule');
     const s = {...raw, timezone:raw.timezone || 'UTC', previewHours:raw.previewHours ?? 72};
     try {new Intl.DateTimeFormat('en', {timeZone:s.timezone}).format();} catch {fail('unknown timezone ' + s.timezone);}
     number(s.previewHours,0,24*31,'previewHours');
@@ -68,8 +106,11 @@ function schedule(raw) {
             if (s.completionWindowHours && s.acceptanceWindowHours > s.completionWindowHours) fail('acceptance cannot end after completion');
         } else if (s.repeat.interval || s.repeat.dayOfWeek !== undefined || s.repeat.anchorDate || raw.acceptanceWindowHours || raw.completionWindowHours || raw.completeAt || raw.opensAtLocalTime || raw.rotation) fail('permanent schedule cannot define windows or rotation');
     }
+    if (raw.rotation && raw.refill) fail('schedule must choose rotation or refill');
+    if (raw.refill) s.refill=validateRefill(raw.refill,{keys,id,number,fail});
     if (raw.rotation) {
-        keys(raw.rotation,['pool','count','avoidLast','fallback'],'rotation');
+        if (raw.rotation.seed !== undefined) id(raw.rotation.seed,'rotation seed');
+        keys(raw.rotation,['pool','count','avoidLast','fallback','seed'],'rotation');
         if (!Array.isArray(raw.rotation.pool) || !raw.rotation.pool.length || raw.rotation.pool.length > 100) fail('rotation pool must have 1-100 entries');
         unique(raw.rotation.pool,'rotation quest');
         s.rotation = {...raw.rotation,count:raw.rotation.count ?? 1,avoidLast:raw.rotation.avoidLast ?? 0,fallback:raw.rotation.fallback || 'allow-repeats',
@@ -107,60 +148,46 @@ function validateConfig(raw, mapId, catalog = {}) {
     const quests = unique(raw.quests || [],'quest'), stories = [], assignments = [];
     for (const q of quests) {
         if (!q.scheduleId) {
-            if (q.category || q.rewards || q.policy || q.objectives?.some(o=>['TILE_ACTION','DELIVER_ITEMS','FISHING'].includes(o.eventType))) fail('board assignment requires scheduleId: ' + q.id);
+            if (q.category || q.rewards || q.policy || q.generation || q.objectives?.some(o=>['TILE_ACTION','DELIVER_ITEMS','FISHING'].includes(o.eventType))) fail('board assignment requires scheduleId: ' + q.id);
             stories.push(q); continue;
         }
-        keys(q,['id','enabled','name','description','category','scheduleId','requiredLevel','requiredQuest','secret','ordered','objectives','rewards','policy','estimatedMinutes'],'quest');
+        keys(q,['id','enabled','name','description','category','scheduleId','requiredLevel','requiredQuest','secret','ordered','objectives','rewards','policy','estimatedMinutes','generation'],'quest');
         text(q.name,'quest name',150); if (q.description !== undefined) text(q.description,'quest description');
         if (!schedules.some(s=>s.id===q.scheduleId)) fail('unknown schedule ' + q.scheduleId);
         if (!['adventures','challenges','requests'].includes(q.category)) fail('unknown quest category');
-        const objectives = unique(q.objectives,'objective').map((o,index) => {
-            keys(o,['id','label','eventType','action','stage','target','measurement','amount','area','tiles','recipientId','items'],'objective');
-            if (!EVENTS.includes(o.eventType)) fail('unsupported objective event ' + o.eventType);
-            if (o.label !== undefined) text(o.label,'objective label',200);
-            const result = {...o};
-            if (o.eventType === 'DELIVER_ITEMS') {
-                if (index !== q.objectives.length - 1 || q.objectives.filter(v=>v.eventType==='DELIVER_ITEMS').length!==1) fail('hand-in must be the final objective');
-                if (!locations.some(r=>r.id===o.recipientId)) fail('unknown recipient ' + o.recipientId);
-                if (['action','stage','target','measurement','area','tiles'].some(k=>o[k]!==undefined)) fail('hand-in must not restrict acquisition source');
-                result.items=items(o.items,catalog); result.amount=1;
-            } else {
-                if (o.items || o.recipientId) fail('only hand-in objectives define items/recipient');
-                result.amount=number(o.amount ?? 1,1,1000000,'objective amount'); result.measurement=o.measurement || 'count';
-                if (!['count','quantity'].includes(result.measurement)) fail('unknown measurement');
-                if (o.area) result.area=bounds(o.area,'objective area');
-                if (o.tiles) {if (!Array.isArray(o.tiles) || !o.tiles.length || o.tiles.length>200) fail('invalid objective tiles'); result.tiles=o.tiles.map(t=>{keys(t,['x','y'],'tile'); number(t.x,0,100000,'tile x'); number(t.y,0,100000,'tile y'); return t;});}
-                if (o.eventType === 'TILE_ACTION') {
-                    text(o.action,'tile action',100); text(o.stage,'tile stage',100);
-                    const action = catalog.tileActions?.find(a=>a.map===mapId && a.action===o.action);
-                    if (catalog.tileActions && (!action || !action.stages.includes(o.stage))) fail('unregistered successful tile action/stage ' + o.action + '/' + o.stage);
-                    if (o.target !== undefined && o.target !== '*' && action && !action.targets.some(t=>t.value===o.target)) fail('unknown tile-action target ' + o.target);
-                    if (result.measurement==='quantity' && (!o.target || o.target==='*' || (action && !(action.quantityStages || []).includes(o.stage)))) fail('quantity needs a specific output target and a producing stage');
-                } else {
-                    if (o.action || o.stage) fail('action/stage only apply to tile actions');
-                    if (o.eventType==='AREA_ENTERED') {
-                        text(o.target,'area target',100);
-                        if (catalog.resolveArea && !catalog.resolveArea(o.target,mapId)) fail('unknown named map scene ' + o.target);
-                    }
-                    else result.target=resolveEntity(o.target,catalog,o.eventType==='KILL_MOB'?'mob':o.eventType==='NPC_TALKED'?'npc':o.eventType==='FISHING'?'fish':'loot');
-                }
-            }
-            return result;
-        });
-        if (!objectives.length || objectives.length > 12) fail('quests need 1-12 objectives');
+        const objectives = validateObjectives(q.objectives,locations,catalog,mapId);
         keys(q.rewards || {},['xp','items'],'rewards');
         const rewards = {xp:number(q.rewards?.xp ?? 0,0,1000,'reward XP')};
         if (q.rewards?.items) rewards.items=items(q.rewards.items,catalog,true);
         const resolved = {...q,enabled:q.enabled ?? true,secret:q.secret ?? false,ordered:q.ordered ?? false,requiredLevel:number(q.requiredLevel ?? 1,1,100000,'requiredLevel'),objectives,rewards,policy:policy({...defaults,...q.policy,withdrawal:{...defaults.withdrawal,...q.policy?.withdrawal}})};
         for (const key of ['enabled','secret','ordered']) boolean(resolved[key],key);
         if (q.requiredQuest) id(q.requiredQuest,'requiredQuest'); if (q.estimatedMinutes!==undefined) number(q.estimatedMinutes,1,100000,'estimatedMinutes');
+        if (q.generation) resolved.generation=validateGeneration(q.generation,resolved,{keys,id,number,text,fail,resolveItem:value=>resolveEntity(value,catalog,'item'),resolveTarget:(objective,target)=>validateObjectives([{...objective,target}],locations,catalog,mapId)[0].target});
         assignments.push(resolved);
     }
-    for (const s of schedules) for (const entry of s.rotation?.pool || []) if (!assignments.some(q=>q.id===entry.id && q.scheduleId===s.id)) fail('rotation references a quest outside its schedule: ' + entry.id);
+    for (const s of schedules) {
+        for (const entry of (s.rotation || s.refill)?.pool || []) if (!assignments.some(q=>q.id===entry.id && q.scheduleId===s.id)) fail('pool references a quest outside its schedule: ' + entry.id);
+        if (s.refill) {
+            for (const [category,count] of Object.entries(s.refill.counts)) if (count && !s.refill.pool.some(entry=>assignments.some(q=>q.id===entry.id && q.category===category && q.enabled))) fail('refill needs an enabled template for ' + category);
+            for (const b of boards.filter(b=>b.questIds.some(q=>s.refill.pool.some(entry=>entry.id===q)))) {
+                if (s.refill.pool.some(entry=>!b.questIds.includes(entry.id))) fail('a refill board must advertise the full schedule pool');
+            }
+        }
+    }
     const known = new Set([...quests.map(q=>q.id),...(catalog.storyIds || [])]);
     const storyIds = new Set([...stories.map(q=>q.id),...(catalog.storyIds || [])]);
     for (const b of boards) for (const q of b.questIds) if (!known.has(q)) fail('board references unknown quest ' + q);
     for (const q of assignments) if (q.requiredQuest && !storyIds.has(q.requiredQuest)) fail('unknown story prerequisite ' + q.requiredQuest);
+    if (schedules.some(s=>s.refill)) {
+        // Reserve enough room for DST, overlapping windows and the platform's bounded catalog.
+        const maximum=schedules.reduce((total,s)=>{
+            const perWindow=s.refill?Object.values(s.refill.counts).filter(Boolean).length*s.refill.limitPerCategory:s.rotation?.count ?? assignments.filter(q=>q.scheduleId===s.id).length;
+            const stride=s.repeat?.frequency==='weekly'?s.repeat.interval*168:s.repeat?.interval*24;
+            const windowCount=s.dates?s.dates.length:s.repeat.frequency==='permanent'?1:Math.ceil((s.previewHours+(s.completionWindowHours || stride+1))/(stride-1))+2;
+            return total+perWindow*windowCount;
+        },0);
+        if (maximum>500) fail('refill catalog exceeds 500 offers; reduce previewHours, limitPerCategory or overlapping windows');
+    }
     const config={schemaVersion:1,mapId,defaults,boards,handInLocations:locations,schedules,quests:assignments,stories};
     config.version=crypto.createHash('sha256').update(JSON.stringify(config)).digest('hex'); return config;
 }

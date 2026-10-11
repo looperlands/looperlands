@@ -1,4 +1,5 @@
 const {createHash} = require('crypto');
+const {generate,refillTemplates} = require('./generation');
 const DAY = 86400000, HOUR = 3600000;
 const hash = value => createHash('sha256').update(JSON.stringify(value)).digest('hex');
 const formatters = new Map(), boundaryCache = new Map(), rotations = new Map();
@@ -53,7 +54,7 @@ function selected(mapId,schedule,index) {
     const cache=rotations.get(key);
     for (;cache.next<=index;cache.next++) {
         const seen=new Set(cache.history.flat());
-        const ranked=r.pool.map(q=>({id:q.id,score:-Math.log((parseInt(hash([mapId,schedule.id,cache.next,q.id]).slice(0,12),16)+1)/(0xffffffffffff+2))/q.weight})).sort((a,b)=>a.score-b.score || a.id.localeCompare(b.id));
+        const ranked=r.pool.map(q=>({id:q.id,score:-Math.log((parseInt(hash([mapId,schedule.id,cache.next,q.id,...(r.seed?[r.seed]:[])]).slice(0,12),16)+1)/(0xffffffffffff+2))/q.weight})).sort((a,b)=>a.score-b.score || a.id.localeCompare(b.id));
         const allowed=ranked.filter(q=>!seen.has(q.id));
         if (allowed.length<r.count && r.fallback==='allow-repeats') allowed.push(...ranked.filter(q=>seen.has(q.id)));
         const pick=allowed.slice(0,r.count).map(q=>q.id); cache.selections.set(cache.next,pick); cache.history.push(pick);
@@ -65,12 +66,17 @@ function occurrences(config,now=Date.now()) {
     const result=[];
     for (const schedule of config.schedules) for (const window of windows(schedule,now)) {
         const selection=selected(config.mapId,schedule,window.index);
-        for (const q of config.quests.filter(q=>q.scheduleId===schedule.id && (!selection || selection.includes(q.id)))) {
+        const templates=schedule.refill?refillTemplates(config,schedule,window):config.quests
+            .filter(q=>q.scheduleId===schedule.id && (!selection || selection.includes(q.id))).map(quest=>({quest}));
+        for (const {quest:q,refill} of templates) {
             const {index,...timing}=window, boardIds=config.boards.filter(b=>b.questIds.includes(q.id)).map(b=>b.id);
-            const recipientId=q.objectives.find(o=>o.eventType==='DELIVER_ITEMS')?.recipientId;
+            const resolved=generate(q,[config.mapId,schedule.id,timing.opensAt,...(refill?[refill.category,refill.index]:[])]);
+            const recipientId=resolved.objectives.find(o=>o.eventType==='DELIVER_ITEMS')?.recipientId;
             const recipient=recipientId?config.handInLocations.find(r=>r.id===recipientId):null;
-            result.push({id:hash([config.mapId,q.id,timing.opensAt]),questId:q.id,mapId:config.mapId,...timing,
-                snapshot:{...q,version:config.version,boardIds,recipient,timezone:schedule.timezone}});
+            // Slot identity stays fixed even if a later edit chooses another template.
+            const questId=refill?hash([config.mapId,schedule.id,refill.category,refill.index]):q.id;
+            result.push({id:hash([config.mapId,questId,timing.opensAt]),questId,mapId:config.mapId,...timing,
+                snapshot:{...resolved,version:config.version,boardIds,recipient,timezone:schedule.timezone,...(refill?{templateId:q.id,refill}:{})}});
         }
     }
     return result.sort((a,b)=>a.opensAt-b.opensAt || a.questId.localeCompare(b.questId));

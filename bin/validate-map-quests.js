@@ -14,6 +14,6 @@ else try {
     const nowArg=args.find(a=>a.startsWith('--now=')),now=nowArg?Date.parse(nowArg.slice(6)):Date.now();
     if(!Number.isFinite(now))throw new Error('Invalid --now timestamp');
     console.log(JSON.stringify({valid:true,mapId:config.mapId,version:config.version,...(args.includes('--resolved')?{config}:{}),
-        preview:occurrences(config,now).slice(0,100).map(o=>({id:o.id,questId:o.questId,opensAt:new Date(o.opensAt).toISOString(),acceptUntil:new Date(o.acceptUntil).toISOString(),endsAt:new Date(o.endsAt).toISOString(),rewards:o.snapshot.rewards}))},null,2));
+        preview:occurrences(config,now).slice(0,100).map(o=>({id:o.id,questId:o.questId,opensAt:new Date(o.opensAt).toISOString(),acceptUntil:new Date(o.acceptUntil).toISOString(),endsAt:new Date(o.endsAt).toISOString(),name:o.snapshot.name,objectives:o.snapshot.objectives,rewards:o.snapshot.rewards,...(o.snapshot.refill?{templateId:o.snapshot.templateId,refill:o.snapshot.refill}:{})}))},null,2));
     for(const q of config.quests)if(q.estimatedMinutes)console.error('Playtest effort estimate for '+q.id+': '+q.estimatedMinutes+' minutes; source availability and contention need live validation.');
 } catch(error){console.error(error.message);process.exitCode=1;}

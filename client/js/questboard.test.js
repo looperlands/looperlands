@@ -16,7 +16,7 @@ function load() {
     const axios = {post: jest.fn(), get: jest.fn()};
     vm.runInNewContext(fs.readFileSync(path.join(__dirname, 'questboard.js'), 'utf8'), {
         define: (dependencies, factory) => {Board = factory({main: 'Main map'});},
-        document: {createElement: element}, axios, Date, Map, Set,
+        document: {createElement: element}, axios, Date, Map, Set, Types: {getKindAsString:kind=>kind===21300014?'BOARHIDE':undefined},
         crypto: {randomUUID: jest.fn(() => 'request-12345678')},
     });
     return {Board, axios};
@@ -169,4 +169,18 @@ test('acceptance selects the new assignment after pin and refresh render older c
     expect(board.tab).toBe('mine');
     expect(board.selected).toBe('new-occurrence');
     expect(board.setPin).toHaveBeenCalledWith('new-attempt');
+});
+
+test('quest goods use a named sprite when the inventory provider returns a numeric image', () => {
+    const board = boardState(), frame = board.itemIcon({item:'21300014',image:21300014});
+    expect(frame.children[0].className).toBe('qb-item-sprite');
+    expect(frame.children[0].children[0].src).toBe('img/1/item-BOARHIDE.png');
+    expect(board.itemIcon({item:'42',image:'item-ore'}).children[0].children[0].src).toBe('img/1/item-ore.png');
+});
+
+test('per-Looper refill slots remain available when another Looper owns an attempt on the shared offer', () => {
+    const offer=occurrence(); offer.snapshot.refill={index:0,count:1}; offer.snapshot.policy={completionScope:'looper'};
+    const other=attempt({nftId:'other',occurrence:offer});
+    const board=boardState({data:{nftId:'current',occurrences:[offer],attempts:[other],inventory:{}}});
+    expect(board.rows()).toHaveLength(1); expect(board.rows()[0].attempt).toBeUndefined();
 });

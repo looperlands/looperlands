@@ -51,3 +51,8 @@ test('errors preserve domain conflicts and ambiguous failures encourage same req
 test('browser UUID request IDs are normalized to stable platform IDs on every retry',async()=>{const f=fixture();f.req.body.requestId='550e8400-e29b-41d4-a716-446655440000';await f.controller.accept(f.req,f.res);await f.controller.accept(f.req,f.res);const sent=f.platform.questBoard.mock.calls;expect(sent[0][1].requestId).toMatch(/^[a-f0-9]{64}$/);expect(sent[0]).toEqual(sent[1]);});
 
 test('platform business codes return clear player-facing conflicts',async()=>{const f=fixture();f.platform.questBoard.mockRejectedValue({response:{status:409,data:{code:'rewards_unavailable'}}});await f.controller.accept(f.req,f.res);expect(f.res.status).toHaveBeenCalledWith(409);expect(f.res.json).toHaveBeenCalledWith({code:'rewards_unavailable',error:'This quest needs more reward funding before it can accept new players.'});});
+
+test('generated slots bind acceptance to their frozen advertised template',async()=>{
+ const f=fixture();f.occurrence.questId='stable-slot';f.occurrence.snapshot.templateId='Q';await f.controller.accept(f.req,f.res);expect(f.platform.questBoard).toHaveBeenCalledTimes(1);
+ const g=fixture();g.occurrence.snapshot.templateId='unadvertised';await g.controller.accept(g.req,g.res);expect(g.res.status).toHaveBeenCalledWith(404);expect(g.platform.questBoard).not.toHaveBeenCalled();
+});

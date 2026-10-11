@@ -23,3 +23,7 @@
 /* Native 64px board artwork stays on an integral pixel grid in every layout. */
 .quest-boards .qb-header-art {width:64px;height:64px;}
 .quest-boards .qb-empty img {width:128px;height:128px;}
+
+/* Show one native item frame; never squeeze the whole animation strip into an icon. */
+.quest-boards .qb-item-sprite {display:block;width:32px;height:32px;overflow:hidden;flex-shrink:0;}
+.quest-boards .qb-item-sprite img {display:block;width:auto;height:32px;max-width:none;object-fit:initial;image-rendering:pixelated;}

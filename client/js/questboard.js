@@ -199,7 +199,7 @@ define(['mapnames'], function (mapNames) {
             event.stopImmediatePropagation();
         }
         rows() {
-            const attempts = this.data.attempts || [];
+            const attempts = (this.data.attempts || []).filter(attempt => this.mode !== 'board' || !attempt.occurrence?.snapshot?.refill || attempt.occurrence.snapshot.policy?.completionScope !== 'looper' || attempt.nftId === this.data.nftId);
             const occurrenceMap = new Map((this.data.occurrences || []).map(value => [value.id, value]));
             for (const attempt of attempts) if (attempt.occurrence) occurrenceMap.set(attempt.occurrence.id, attempt.occurrence);
             const rows = [...occurrenceMap.values()].map(occurrence => ({...occurrence, attempt: attempts.find(attempt => attempt.occurrenceId === occurrence.id), quest: occurrence.snapshot || {}}));
@@ -278,7 +278,6 @@ define(['mapnames'], function (mapNames) {
             const place = quest.recipient?.label || mapNames[row.mapId] || humanize(row.mapId || this.mapId);
             const destination = node('div'); destination.append(node('small', '', quest.recipient ? 'HAND-IN LOCATION' : 'WHERE IT COUNTS'), node('strong', '', place)); facts.append(destination);
             if (!row.story) {const timing = node('div'); timing.append(node('small', '', this.tab === 'schedule' ? 'OPENS' : 'DEADLINE'), node('strong', '', this.date(this.tab === 'schedule' ? row.opensAt : row.endsAt))); const timer = node('span', 'qb-muted', countdown(row.endsAt, this.now())); timer.dataset.deadline = row.endsAt; timing.append(timer); facts.append(timing);}
-            content.append(facts);
             content.append(node('h4', '', state.basket.length ? 'What’s needed' : 'Your objectives'));
             if (state.basket.length) {
                 content.append(node('p', 'qb-muted', 'Items can come from anywhere: your inventory, trading, loot, or any activity.'));
@@ -300,6 +299,7 @@ define(['mapnames'], function (mapNames) {
             }
             if ((quest.objectives || []).some(objective => objective.eventType !== 'DELIVER_ITEMS')) content.append(node('p', 'qb-muted', 'Your own activity counts after acceptance.' + (quest.ordered ? ' Complete these objectives in order.' : '')));
             if (row.story && !quest.objectives?.length) content.append(node('p', 'qb-muted', 'Follow the adventure in your story quest journal.'));
+            content.append(facts);
             content.append(node('h4', '', 'Your reward'));
             const rewards = node('div', 'qb-rewards');
             if (quest.rewards?.xp || quest.xpReward) {const xp = node('div', 'qb-reward'); xp.append(node('span', 'qb-xp-icon', 'XP'), node('strong', '', (quest.rewards?.xp || quest.xpReward) + ' experience')); rewards.append(xp);}
@@ -334,9 +334,16 @@ define(['mapnames'], function (mapNames) {
             footer.append(actions); detail.append(footer); return detail;
         }
         itemIcon(item) {
-            const frame = node('span', 'qb-item-icon'), image = node('img');
-            const id = String(item.item || ''); const name = /^\d+$/.test(id) && typeof Types !== 'undefined' ? Types.getKindAsString(Number(id)) : id;
-            if (/^[a-zA-Z0-9_-]+$/.test(name || '')) {image.src = 'img/1/' + (/^[a-zA-Z0-9_-]+$/.test(item.image || '') ? item.image : 'item-' + name) + '.png'; image.alt = ''; image.draggable = false; image.addEventListener('error', () => {if (!image.dataset.fallback) {image.dataset.fallback = 'true'; image.src = 'img/1/' + name + '.png';} else {image.hidden = true; frame.textContent = '·';}}); frame.append(image);}
+            const frame = node('span', 'qb-item-icon'), sprite = node('span', 'qb-item-sprite'), image = node('img');
+            const id = String(item.item || '');
+            const name = /^\d+$/.test(id) && typeof Types !== 'undefined' ? Types.getKindAsString(Number(id)) : id;
+            // Non-collectable quest goods may carry a numeric image from the inventory provider.
+            const imageName = /^[a-zA-Z0-9_-]+$/.test(item.image || '') && !/^\d+$/.test(item.image) ? item.image : 'item-' + name;
+            if (/^[a-zA-Z0-9_-]+$/.test(imageName)) {
+                image.src = 'img/1/' + imageName + '.png'; image.alt = ''; image.draggable = false;
+                image.addEventListener('error', () => {image.hidden = true; sprite.textContent = '?';});
+                sprite.append(image); frame.append(sprite);
+            }
             return frame;
         }
         actionHint(row, state) {

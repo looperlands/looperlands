@@ -15,7 +15,7 @@ The version 1 envelope has these sections:
 | `defaults` | Default policy for new board assignments; quest `policy` overrides it. |
 | `boards` | Physical bounds, presentation, enablement and advertised quest IDs. |
 | `handInLocations` | Fixed same-map objects or a reference to a configured board. |
-| `schedules` | Permanent, calendar recurrence, explicit windows and optional rotation. |
+| `schedules` | Permanent, calendar recurrence, explicit windows, weighted rotation or refill streams. |
 | `quests` | Legacy story definitions and new scheduled assignments. |
 
 When the JSON exists it replaces the map's legacy `server/js/quests/<mapId>.js` quest list. Copy the existing definitions into `quests` without changing IDs to preserve saved progress. A definition **without `scheduleId`** remains a legacy story quest and keeps its original engine behavior. A new board assignment must have `scheduleId`; it is stored separately from lifetime story flags. Maps without JSON use the original JavaScript module. Additional registered story modules (for example the Lantern Picnic scene) remain registered separately, and their IDs may be advertised. All story and board quest IDs must remain globally unique.
@@ -64,11 +64,104 @@ Optional schedule `rotation` selects from a curated pool:
 {"pool":[{"id":"road-patrol","weight":2},{"id":"workshop-help","weight":1}],"count":1,"avoidLast":1,"fallback":"allow-repeats"}
 ```
 
-Pool quests must name that schedule. Selection is deterministic across replicas/restarts, weighted without replacement for a window, and identical for players. `avoidLast` (0–30) excludes selected quests from previous windows when possible. `fallback` is `allow-repeats` (fill the selection from excluded quests if necessary) or `fewer` (publish fewer choices). Quest templates on the same schedule outside a configured pool are not selected. The platform retains already-published selections.
+An optional `seed` changes the deterministic future selection. Pool quests must name that schedule. Selection is deterministic across replicas/restarts, weighted without replacement for a window, and identical for players. `avoidLast` (0–30) excludes selected quests from previous windows when possible. `fallback` is `allow-repeats` (fill the selection from excluded quests if necessary) or `fewer` (publish fewer choices). Quest templates on the same schedule outside a configured pool are not selected. The platform retains already-published selections.
+
+## Generated quests and refill slots
+
+Categories describe presentation, not separate engines. **Adventures** are narrative or exploration tasks, **challenges** track personal actions, and **requests** ask for items. A scheduled quest can use any supported objectives in any category. Existing lifetime story quests stay separate and are never regenerated or counted as refill slots. `boards[].labels` can rename the categories.
+
+Use schedule `refill` to keep a fixed number of unfinished assignments per category:
+
+```json
+{
+  "refill": {
+    "counts": {"adventures": 1, "challenges": 2, "requests": 2},
+    "pool": [
+      {"id": "coast-patrol", "weight": 1},
+      {"id": "rat-patrol", "weight": 3},
+      {"id": "town-supplies", "weight": 2},
+      {"id": "ore-supplies", "weight": 1}
+    ],
+    "limitPerCategory": 10,
+    "avoidLast": 1,
+    "fallback": "allow-repeats",
+    "seed": "town-work-v1"
+  }
+}
+```
+
+`refill` and `rotation` are alternatives. Every pool entry must name this schedule. Each category with slots needs at least one enabled template. A board using a refill schedule must advertise its full pool; multiple boards can share that pool and its progress. Templates outside the pool are not offered by that schedule.
+
+| Rule | Behavior |
+| --- | --- |
+| `counts` | `adventures`, `challenges`, `requests`: 0–10 each; omitted categories are 0. At least one must be positive. |
+| `pool` | 1–100 unique template IDs, with integer `weight` 1–1000 (default 1). Larger weights are more likely. |
+| `limitPerCategory` | Total offers per enabled category per scheduled window, including initial slots, default 10; at most 50 and at least the largest slot count. This is a finite work budget. |
+| `avoidLast` | Avoid the preceding 0–30 **template selections within that category's current window**, default 1. Amounts/targets can still repeat by chance. |
+| `fallback` | `allow-repeats` fills the sequence when avoidance exhausts the pool; `fewer` stops the sequence early. |
+| `seed` | Optional ID, default `default`; controls future template choices. |
+
+Everyone receives the same generated sequence for a map, schedule, category and opening. Each wallet (or Looper with `completionScope:"looper"`) advances independently. Completing one offer reveals the next offer for that player; another player's completion cannot remove or replace your work. Acceptance moves a quest to **My quests** and continues occupying its slot. A ready but unclaimed reward, withdrawal or reacceptance does not reveal extra work. Only committed completion advances. When the category's work budget is exhausted, wait for the next scheduled window. Permanent schedules have one finite stream with no automatic reset.
+
+The preview shows each future window's starting slots. A new window starts its own sequence while earlier accepted contracts retain their original deadlines. `maxActiveRecurring` and platform reward/funding limits still apply separately. For example, five offered slots do not raise the default limit of three active recurring quests.
+
+Publication freezes the complete bounded sequence, including replacements. Stable slot identities do not include template choice, seed or quantities; edits and restarts cannot create a second allowance for a published slot. Removing or disabling a template stops new acceptance of its frozen offers; existing attempts remain claimable. At most 500 offers may be live/published per map; validation reserves room for overlapping windows and DST. Reduce `previewHours`, `limitPerCategory` or overlap if validation rejects the catalog size.
+
+### Vary the task within a template
+
+A quest's optional `generation` resolves to ordinary concrete objectives and rewards before publication. Without it, the authored quest stays fixed. All referenced targets/items still must exist in the game's catalog; generated hand-ins accept goods from any acquisition source.
+
+```json
+{
+  "generation": {
+    "seed": "patrol-v1",
+    "objectives": [{
+      "id": "hunt",
+      "amount": {"min": 3, "max": 9, "step": 2},
+      "targets": [
+        {"target": "RAT", "label": "rats", "weight": 3},
+        {"target": "BAT", "label": "bats", "weight": 1}
+      ]
+    }],
+    "rewards": {
+      "xp": {"base": 20, "perUnit": [{"objectiveId": "hunt", "xp": 10}], "max": 100}
+    }
+  }
+}
+```
+
+The template must already define objective `hunt`, its event type and a valid default target/amount. `generation.objectives` names existing unique objective IDs. Activity rules support an `amount` range and/or a weighted `targets` pool. Every candidate is validated against the objective's event type, registered action/stage, quantity rules and named scenes. For instance, a quarry output pool cannot invent an unregistered target. The base action/stage, spatial restrictions and recipient stay fixed.
+
+A range is `{min,max,step}` with positive integers; `step` defaults to 1 and `max` must be reachable. A positive integer is a fixed range. Amounts are at most 1,000,000. Target pools have 1–100 distinct entries, optional human-readable `label`, and `weight` 1–1000. Lore fields `name`, `description` and objective `label` can use `{hunt.amount}`, `{hunt.target}` (the selected display label) and `{reward.xp}`. Unknown placeholders or generated text beyond normal field limits fail validation. Text stays plain text.
+
+For a `DELIVER_ITEMS` objective, use an item basket rule instead of activity amount/targets:
+
+```json
+{
+  "id": "supplies",
+  "items": {
+    "count": {"min": 1, "max": 2},
+    "pool": [
+      {"item": "BOARHIDE", "weight": 3, "amount": {"min": 2, "max": 5}},
+      {"item": "ORE", "weight": 2, "amount": {"min": 2, "max": 6}}
+    ]
+  }
+}
+```
+
+`count` draws how many distinct item types to request, at most 20 and no more than the pool size. Selection is weighted without replacement. Each selected item's amount is drawn independently. Item IDs resolve to canonical inventory IDs and duplicates fail validation, even when written using different aliases.
+
+`generation.rewards.xp` calculates `min(max, base + sum(perUnit rates))`. `base`, `max` and each rate's `xp` are integers 0–1000; default base is 0 and cap is 1000. Each rate has `objectiveId` and `xp`, with optional `item` for a hand-in or `target` for an activity. Without a selector, it counts all requested units of that objective. For a hand-in, this means the sum of item quantities, not the basket's completion count of 1. A general rate and a specific rate add together; duplicate selectors are rejected. This supports per-item/per-target reward costs without executable formulas in JSON:
+
+```json
+{"xp":{"base":20,"perUnit":[{"objectiveId":"supplies","item":"BOARHIDE","xp":15},{"objectiveId":"supplies","item":"ORE","xp":10}],"max":180}}
+```
+
+`generation.rewards.items` can vary amounts of funded items already in the base reward, using `{item,amount:{min,max,step}}`. It retains that item's existing `fundingRef`; it cannot invent unfunded rewards. These rules also work with ordinary fixed, daily, weekly and rotating assignments without refill. The validation tool prints generated objective baskets, names and rewards, plus refill slot metadata, so an author can inspect several windows before publishing.
 
 ## Objectives and requirements
 
-A new assignment needs `id`, `name`, `category` (`adventures`, `challenges`, `requests`), `scheduleId`, `objectives` and optional `rewards`. Optional settings: `description`, `enabled`, `secret`, `requiredLevel`, `requiredQuest`, `estimatedMinutes`, `ordered`, and `policy`. Required level uses the active Looper's effective game level. `requiredQuest` currently refers to an existing **story** quest; recurring prerequisite chains are rejected. Secret locked offers are omitted from discovery. Earned attempts remain visible to their owner.
+A new assignment needs `id`, `name`, `category` (`adventures`, `challenges`, `requests`), `scheduleId`, `objectives` and optional `rewards`. Optional settings: `description`, `enabled`, `secret`, `requiredLevel`, `requiredQuest`, `estimatedMinutes`, `ordered`, `policy`, and `generation`. Required level uses the active Looper's effective game level. `requiredQuest` currently refers to an existing **story** quest; recurring prerequisite chains are rejected. Secret locked offers are omitted from discovery. Earned attempts remain visible to their owner.
 
 Each objective has a unique `id`, optional `label`, and one `eventType`. Counts are positive integers. For action events `measurement` defaults to `count`; `quantity` uses the authoritative quantity in the event. Accepted work progresses whether pinned or not. Events before acceptance and during withdrawal do not count.
 

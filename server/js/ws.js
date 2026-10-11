@@ -242,7 +242,11 @@ WS.socketIOServer = Server.extend({
                 if (description && description.length <= 80 && !/[<>\n]/.test(description)) return description;
                 return AltNames.getName(typeof kind === 'number' ? Types.getKindAsString(kind) || value : value) || String(value);
             },
-            itemImage: value => Collectables.getCollectableImageName(/^\d+$/.test(String(value)) ? Number(value) : value),
+            itemImage: value => {
+                const kind = /^\d+$/.test(String(value)) ? Number(value) : value;
+                const image = Collectables.getCollectableImageName(kind);
+                return typeof image === 'string' && !/^\d+$/.test(image) ? image : 'item-' + Types.getKindAsString(kind);
+            },
             settle: (context, operation) => dao.commitQuestBoardTransaction(context.identity.nftId, operation),
             applyReceipt: async (context, receipt) => {
                 for (const sessionId of cache.keys()) {
