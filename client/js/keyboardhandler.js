@@ -240,7 +240,8 @@ class KeyBoardHandler {
     }
 
     hasOpenPanel() {
-        return $('body').hasClass('settings') ||
+        return !!this.app.questBoard?.opened ||
+            $('body').hasClass('settings') ||
             $('body').hasClass('inventory') ||
             $('body').hasClass('credits') ||
             $('#chatbox').hasClass("active") ||

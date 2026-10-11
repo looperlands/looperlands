@@ -371,6 +371,12 @@ class LooperLandsPlatformClient {
         }
     }
 
+    async questBoard(action, payload) {
+        if (!['publish', 'state', 'accept', 'progress', 'settle', 'withdraw'].includes(action)) throw new Error('Invalid quest board action');
+        const response = await this.client.post('/api/game/quest-board/' + action, payload, {timeout: 15000});
+        return response.data;
+    }
+
     async storeActivity(activities) {
         const response = await this.client.post('/api/game/activity', activities, {timeout: 15000});
         return response.data;

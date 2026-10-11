@@ -1,6 +1,6 @@
 // The application registers map content before starting the engines.
 class WorldDefinitions {
-    constructor() {this.maps = new Map(); this.quests = []; this.listeners = new Set();}
+    constructor() {this.maps = new Map(); this.questBoards = new Map(); this.quests = []; this.listeners = new Set();}
     register(map, definition) {
         if (!map || !definition?.id) throw new Error('Map and definition ID are required');
         const entries = this.maps.get(map) || [];

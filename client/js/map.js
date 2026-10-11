@@ -526,8 +526,8 @@ define(['jquery', 'area'], function ($, Area) {
         },
 
         findNearestActionTileAround: function (x, y, r) {
-            let nearestAction = null;
-            let nearestDistance = r + 1;
+            let nearestAction = this.game?.app?.questBoard?.findAction(x, y, r) || null;
+            let nearestDistance = nearestAction ? Math.abs(nearestAction.gridX - x) + Math.abs(nearestAction.gridY - y) : r + 1;
 
             for (let i = x - r, max_i = x + r; i <= max_i; i += 1) {
                 for (let j = y - r, max_j = y + r; j <= max_j; j += 1) {

@@ -608,10 +608,17 @@ class DuckvilleTileActionsController {
     async commitAtomicAction(nftId, map, tileAction, plot, action, transactions, xp, requiredItems, message, world, context) {
         const requestId = createHash('sha256').update(JSON.stringify([nftId, map, tileAction.gridX, tileAction.gridY,
             context.revision, action, context.item])).digest('hex');
+        const occurredAt = this.now();
+        const actor = this.getPlayer(world, nftId);
+        const questActivity = actor?.walletId && world?.server?.questBoardProgress?.enabled ? {wallet: actor.walletId, event: {
+            id: createHash('sha256').update(JSON.stringify(['tile', requestId])).digest('hex'), occurredAt, mapId: map,
+            type: 'TILE_ACTION', action: tileAction.name, stage: action,
+            target: context.crop || plot?.crop || '*', quantity: context.quantity || 1, x: tileAction.gridX, y: tileAction.gridY
+        }} : undefined;
         const receipt = await this.dao.commitFarmTransaction({requestId, nftId, mapId: map, x: tileAction.gridX, y: tileAction.gridY,
             expectedRevision: context.revision, action, item: context.item, plot,
             items: transactions.map(({itemId, quantity}) => ({item: String(itemId), amount: quantity})),
-            xp, requiredItems, harvestAccess: context.harvestAccess || "owner"});
+            xp, requiredItems, harvestAccess: context.harvestAccess || "owner", ...(questActivity ? {questActivity} : {})});
         this.plotRevisions.set(this.getPlotKey(map, tileAction), receipt.revision);
         if (receipt.plot) this.setTileActionStage(map, tileAction, receipt.plot);
         else this.clearTileActionStage(map, tileAction);
@@ -635,8 +642,10 @@ class DuckvilleTileActionsController {
                 }));
             }
         }
-        return {...this.success(world, nftId, message), activity: {action: tileAction.name, stage: action,
-            target: context.crop || receipt.plot?.crop || '*', quantity: context.quantity || 1, x: tileAction.gridX, y: tileAction.gridY}};
+        return {...this.success(world, nftId, message), activity: receipt.questActivity?.event || {
+            id: createHash('sha256').update(JSON.stringify(['tile', requestId])).digest('hex'), occurredAt, replayed: receipt.replayed === true,
+            action: tileAction.name, stage: action, target: context.crop || receipt.plot?.crop || '*',
+            quantity: context.quantity || 1, x: tileAction.gridX, y: tileAction.gridY}};
     }
 
     publishPlot(map, tileAction, plot, world) {

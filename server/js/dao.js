@@ -299,6 +299,30 @@ const refreshInventoryItems = async function (items) {
   return inventoryWritePromise;
 };
 
+// Serialize atomic quest settlement with loot, gifts and production inventory.
+const commitQuestBoardTransaction = async function (nftId, operation) {
+  while (processingQueue || LOOT_EVENTS_QUEUE.length) {
+    if (await processLootEventQueue() === false) throw new Error('inventory_unavailable');
+  }
+  processingQueue = true;
+  inventoryWritePromise = (async () => {
+    const result = await operation();
+    if (result.receipt) {
+      const quantities = {};
+      for (const item of Object.keys(result.receipt.quantities || {})) {
+        // A replay may follow another spend. Never overwrite cache with an old receipt.
+        const current = await platformClient.getInventoryItem(nftId, item);
+        if (!Number.isSafeInteger(current?.amount)) throw new Error('quest_receipt_pending');
+        const pending = pendingQueue.filter(event => event.nftId === nftId && String(event.item) === item).reduce((sum, event) => sum + event.amount, 0);
+        quantities[item] = current.amount + pending;
+      }
+      result.receipt = {...result.receipt, quantities};
+    }
+    return result;
+  })().finally(finishInventoryWrite);
+  return inventoryWritePromise;
+};
+
 // Process a single transaction
 const saveLootEvent = async function (nftId, itemId, amount = 1) {          // Default amount to 1 if undefined
   if (processingQueue) {
@@ -761,6 +785,7 @@ module.exports = {
   transferResourceFromTo,
   transferItems,
   refreshInventoryItems,
+  commitQuestBoardTransaction,
   completePartnerTask,
   getPartnerTask,
   getInventory,

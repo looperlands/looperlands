@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "mapId": "main",
+  "defaults": {"maxActiveRecurring": 3, "completionScope": "wallet"},
+  "boards": [{
+    "id": "town-board", "label": "Town Quest Board",
+    "description": "A little work. A new adventure. Something worth bringing back.",
+    "bounds": {"x": 44, "y": 214, "width": 2, "height": 2},
+    "questIds": ["town-supplies", "coast-patrol", "rat-patrol"],
+    "showSchedule": true
+  }],
+  "handInLocations": [{
+    "id": "town-crate", "kind": "object", "label": "Town supply crate",
+    "bounds": {"x": 48, "y": 218, "width": 1, "height": 1}
+  }],
+  "schedules": [{
+    "id": "daily", "timezone": "Europe/Amsterdam",
+    "repeat": {"frequency": "daily"}, "opensAtLocalTime": "00:00",
+    "acceptanceWindowHours": 23, "completeAt": "nextOpening", "previewHours": 72
+  }],
+  "quests": [{
+    "id": "town-supplies", "name": "Supplies for the road", "category": "requests", "scheduleId": "daily",
+    "description": "The town needs sturdy hide and ore. Find, trade, or use your own stock, then bring the full bundle to the supply crate.",
+    "estimatedMinutes": 5,
+    "objectives": [{"id": "supplies", "label": "Bring the supply bundle", "eventType": "DELIVER_ITEMS", "recipientId": "town-crate", "items": [{"item": "BOARHIDE", "amount": 3}, {"item": "ORE", "amount": 2}]}],
+    "rewards": {"xp": 120, "items": [{"item": "M88NSEEDS", "amount": 2, "fundingRef": "quest-preview"}]}
+  }, {
+    "id": "coast-patrol", "name": "A breath of sea air", "category": "challenges", "scheduleId": "daily",
+    "description": "Take the southern road out of town and reach the beach. Claim your reward from your journal when you arrive.",
+    "estimatedMinutes": 2,
+    "objectives": [{"id": "beach", "label": "Reach the beach south of town", "eventType": "AREA_ENTERED", "target": "Beach", "amount": 1}],
+    "rewards": {"xp": 80}
+  }, {
+    "id": "rat-patrol", "name": "Keep the roads clear", "category": "challenges", "scheduleId": "daily",
+    "description": "Defeat one rat after accepting this challenge. Every adventurer can help.",
+    "estimatedMinutes": 3,
+    "objectives": [{"id": "rat", "label": "Defeat a rat", "eventType": "KILL_MOB", "target": "RAT", "amount": 1}],
+    "rewards": {"xp": 60}
+  }]
+}

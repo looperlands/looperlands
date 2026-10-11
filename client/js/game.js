@@ -7359,7 +7359,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             const nearestAction = self.map.findNearestActionTileAround(self.player.gridX, self.player.gridY, 1);
                             if (nearestAction) {
                                 const requestId = ++self.tileActionStageRequestId;
-                                const immediateStage = nearestAction.action === 'event_board' ? {name: 'View events'} : self.tileActions.getImmediateStage(nearestAction);
+                                const immediateStage = nearestAction.action === 'event_board' ? {name: 'View events'} : nearestAction.action === 'quest_board' ? {name: 'View quests'} : nearestAction.action === 'quest_hand_in' ? {name: 'Hand in items'} : self.tileActions.getImmediateStage(nearestAction);
                                 self.showTileActionBubble(nearestAction, immediateStage);
 
                                 self.getTileActionStage(nearestAction).then((actionStage) => {
@@ -8239,6 +8239,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         self.infoManager.clear();
                         self.app.socialChat?.disconnect();
                         self.app.eventBoard?.disconnect();
+                        self.app.questBoard?.disconnect();
                         self.conversationHold.stop(); self.app.closeChoicesPopup();
                         self.worldAmbience.clear();
                         WorldScenery.update(self.renderer, null, self);
@@ -8607,6 +8608,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
             getTileActionStage: function (action) {
                 if (action?.action === 'event_board') return Promise.resolve({name: 'View events'});
+                if (action?.action === 'quest_board') return Promise.resolve({name: 'View quests'});
+                if (action?.action === 'quest_hand_in') return Promise.resolve({name: 'Hand in items'});
                 return this.tileActions.findCurrentStage(action);
             },
 
@@ -8640,6 +8643,10 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
             },
 
             runTileAction: function (action) {
+                if (action?.action === 'quest_board' || action?.action === 'quest_hand_in') {
+                    this.app.questBoard?.interact(action);
+                    return;
+                }
                 if (action?.action === 'event_board') {
                     this.app.eventBoard?.open();
                     return;
@@ -9222,6 +9229,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
              * Processes game logic when the user triggers a click/touch event during the game.
              */
             click: function (pos) {
+                if (this.app.questBoard?.opened) return;
 
                 if ($('body').hasClass('inventory')
                     || $('body').hasClass('settings')
@@ -9235,6 +9243,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 if (pos === undefined) {
                     pos = this.getMouseGridPosition();
                 }
+                if (this.started && this.player && !this.player.isDead && this.app.questBoard?.clickAt(pos)) return;
 
                 let clickThrottle;
                 if (pos.keyboard) {
