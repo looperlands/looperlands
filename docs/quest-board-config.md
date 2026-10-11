@@ -2,7 +2,7 @@
 
 All authored Quest Board settings live in `server/js/quests/<mapId>.json`. No map export edit, database content editor, or farming-specific configuration is required to place a board, publish work, or set a recipient. `QUEST_BOARD_CONFIG_DIR` changes that directory for isolated local sessions. Player progress, frozen offers, inventory, funding and receipts live in the platform; they never write back to this JSON.
 
-See [the complete town example](examples/main.json) and [the feature design](quest-board-design.md). The town request accepts hide and ore from any source: existing stock, loot, gifts, purchases, trading, or a registered production action all count equally. Personal activity is a separate objective.
+See [Quest system additions](quest-system-additions.md) for the engine changes and their relationship to existing stories. [The complete town example](examples/main.json) shows the implemented schema; [the feature design](quest-board-design.md) records the broader design. The town request accepts hide and ore from any source: existing stock, loot, gifts, purchases, trading, or a registered production action all count equally. Personal activity is a separate objective.
 
 ## File format and migration
 
