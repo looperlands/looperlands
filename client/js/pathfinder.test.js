@@ -243,6 +243,53 @@ test('worker paths use straight diagonal steps across an open field', async () =
     expect(await pending).toEqual(Array.from({length: 6}, (_, i) => [i, i]));
 });
 
+test.each([[1, 1], [-1, 1], [1, -1], [-1, -1]])('following a diagonal target (%i,%i) approaches from a cardinal tile', async (dx, dy) => {
+    const {pathfinder, workers} = createPathfinder();
+    const grid = Array.from({length: 5}, () => Array(5).fill(0));
+    const target = entity(42, 2 + dx, 2 + dy);
+    grid[target.gridY][target.gridX] = target.id;
+    pathfinder.ignoreEntity(target);
+    const path = await pathfinder.findPath(grid, entity(7, 2, 2), target.gridX, target.gridY, true);
+
+    expect(path).toHaveLength(3);
+    const beside = path.at(-2);
+    expect(Math.abs(beside[0] - target.gridX) + Math.abs(beside[1] - target.gridY)).toBe(1);
+    expect(workers.every(worker => worker.requests.length === 0)).toBe(true);
+    expect(grid[target.gridY][target.gridX]).toBe(target.id);
+});
+
+test('a longer follow path retains diagonal travel and ends beside the target', async () => {
+    const {pathfinder, workers} = createPathfinder();
+    const grid = Array.from({length: 6}, () => Array(6).fill(0));
+    const pending = pathfinder.findPath(grid, entity(7, 0, 0), 5, 5, true);
+    await workers[0].complete();
+    const path = await pending;
+    expect(path.at(-1)).toEqual([5, 5]);
+    const beside = path.at(-2);
+    expect(Math.abs(beside[0] - 5) + Math.abs(beside[1] - 5)).toBe(1);
+    expect(path.slice(1).some((point, i) => point[0] !== path[i][0] && point[1] !== path[i][1])).toBe(true);
+});
+
+test('following takes a detour when the nearby cardinal approach tiles are blocked', async () => {
+    const {pathfinder, workers} = createPathfinder();
+    const grid = [[0, 0, 0, 0], [0, 0, 1, 0], [0, 1, 42, 0], [0, 0, 0, 0]];
+    pathfinder.ignoreEntity(entity(42, 2, 2));
+    const pending = pathfinder.findPath(grid, entity(7, 1, 1), 2, 2, true);
+    await workers[0].complete();
+    const path = await pending;
+    expect(path.length).toBeGreaterThan(3);
+    expect([[3, 2], [2, 3]]).toContainEqual(path.at(-2));
+});
+
+test('following returns no path if every cardinal approach tile is blocked', async () => {
+    const {pathfinder, workers} = createPathfinder();
+    const grid = [[0, 0, 0], [0, 1, 0], [1, 42, 1]];
+    pathfinder.ignoreEntity(entity(42, 1, 2));
+    const pending = pathfinder.findPath(grid, entity(7, 0, 0), 1, 2, true);
+    await workers[0].complete();
+    expect(await pending).toEqual([]);
+});
+
 test.each([[[[0, 1], [0, 0]]], [[[0, 0], [1, 0]]]])('a short diagonal routes around a blocked side tile', async grid => {
     const {pathfinder} = createPathfinder();
     const path = await pathfinder.findPath(grid, entity(7, 0, 0), 1, 1);

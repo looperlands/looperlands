@@ -72,7 +72,7 @@ function manhattan(start, end, f1, f2) {
     return f1(start.x - end.x) + f1(start.y - end.y);
 }
 
-function AStar(grid, start, end, f) {
+function AStar(grid, start, end, f, requireCardinalEnd = false) {
     var
         cols = grid[0].length,
         rows = grid.length,
@@ -118,7 +118,13 @@ function AStar(grid, start, end, f) {
             --length;
             next = successors(find, current.x, current.y, grid, rows, cols);
             for (i = 0, j = next.length; i < j; ++i) {
-                (adj = next[i]).p = current;
+                adj = next[i];
+                // Following removes the target tile, so its predecessor must be beside it.
+                if (requireCardinalEnd && adj.x === end.x && adj.y === end.y
+                    && adj.x !== current.x && adj.y !== current.y) {
+                    continue;
+                }
+                adj.p = current;
                 adj.f = adj.g = 0;
                 adj.v = adj.x + adj.y * cols;
                 if (!(adj.v in list)) {
@@ -139,7 +145,7 @@ function AStar(grid, start, end, f) {
 }
 
 self.onmessage = async function(e) {
-    const { requestId, grid, start, end, ignoredPositions = [] } = e.data;
+    const { requestId, grid, start, end, ignoredPositions = [], requireCardinalEnd = false } = e.data;
 
     try {
         ignoredPositions.forEach(([x, y]) => {
@@ -147,7 +153,7 @@ self.onmessage = async function(e) {
                 grid[y][x] = 0;
             }
         });
-        const path = AStar(grid, start, end, 'Euclidean');
+        const path = AStar(grid, start, end, 'Euclidean', requireCardinalEnd);
         self.postMessage({ requestId, path });
     } catch (error) {
         console.error(error);
