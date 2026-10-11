@@ -33,3 +33,12 @@
 
 .game-events .ev-identity {min-width:0;overflow-wrap:anywhere;}
 .game-events .ev-player-title {display:block;color:#c3acb7;font-size:12px;line-height:1.5;}
+
+/* Match the existing game panels with their original pixel artwork frame. */
+.game-events .ev-board {
+    border: 12px solid transparent;
+    border-image: url("../img/common/panel.png") 12 / 12px round;
+    image-rendering: pixelated;
+    background-clip: padding-box;
+    box-shadow: 0 18px 60px #0008;
+}

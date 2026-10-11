@@ -13,8 +13,15 @@ function buildActivityCatalog(types, stageDefinitions, maps = [], lakeDefinition
     const tileActions = [];
     for (const [map, definitions] of Object.entries(stageDefinitions)) {
         for (const [action, definition] of Object.entries(definitions)) {
-            const stages = ['prepare', 'plant', 'water', 'boost', 'harvest'].filter(stage => stage === 'plant' || stage === 'harvest' || definition[stage] || (stage === 'boost' && definition.careBoosts?.length));
-            tileActions.push({map, action, stages, targets: Object.entries(definition.crops || {}).map(([value,crop]) => ({value,label:crop.displayName || crop.name || value}))});
+            // A production controller may expose its successful-event capability
+            // explicitly; new mechanics do not inherit farming stage names.
+            if (definition.activity) {
+                tileActions.push({map, action, stages: definition.activity.stages || [], quantityStages: definition.activity.quantityStages || [],
+                    targets: (definition.activity.targets || []).map(target => typeof target === 'string' ? {value: target, label: target} : target)});
+            } else if (definition.crops) {
+                const stages = ['prepare', 'plant', 'water', 'boost', 'harvest'].filter(stage => stage === 'plant' || stage === 'harvest' || definition[stage] || (stage === 'boost' && definition.careBoosts?.length));
+                tileActions.push({map, action, stages, quantityStages: ['harvest'], targets: Object.entries(definition.crops).map(([value,crop]) => ({value,label:crop.displayName || crop.name || value}))});
+            }
         }
     }
     const fish = new Map(), lakes = new Map();

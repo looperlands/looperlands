@@ -37,6 +37,7 @@ class PlayerEventBroker {
             eventData = {};
         }
 
+        const durableProgress = player.server.server.questBoardProgress?.broker(player, eventType, eventData);
         eventData.player = player;
         eventData.playerData = playerCache;
         eventData.cache = PlayerEventBroker.cache;
@@ -53,7 +54,7 @@ class PlayerEventBroker {
         let eventId = eventType + ',' + sessionId;
         const key = eventData.playerData?.nftId || sessionId;
         const previous = PlayerEventBroker.pending.get(key) || Promise.resolve();
-        const next = previous.catch(() => {}).then(() => PlayerEventBroker.processEvent(eventId, eventData));
+        const next = Promise.all([previous.catch(() => {}), durableProgress]).then(() => PlayerEventBroker.processEvent(eventId, eventData));
         PlayerEventBroker.pending.set(key, next);
         return next.finally(() => {if (PlayerEventBroker.pending.get(key) === next) PlayerEventBroker.pending.delete(key);});
     }

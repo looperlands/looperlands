@@ -25,6 +25,12 @@ const chat = require("./chat.js");
 const { SocialChat } = require('./socialchat');
 const {EventEquipment, effectiveLevel, effectiveLevelInfo} = require('./eventequipment');
 const {EventBoardController} = require('./eventboardcontroller');
+const {QuestBoardController} = require('./questboardcontroller');
+const {QuestBoardService} = require('./questboard/service');
+const {QuestBoardProgress} = require('./questboard/progress');
+const {loadMapQuests} = require('./questboard/config');
+const {runtimeCatalog} = require('./questboard/catalog');
+const {definitions: worldDefinitions} = require('./worlddefinitions');
 const { ChatHistory, DEFAULT_RETENTION_DAYS } = require('./chathistory');
 const { NpcMemory } = require('./npcmemory');
 const path = require('path');
@@ -175,12 +181,19 @@ WS.socketIOServer = Server.extend({
 
         this.cache = cache;
         this.activity = new ActivityTracker(platformClient);
-        platformClient.beforeShutdown = () => this.activity.close();
+        const questCatalog = runtimeCatalog(tileActionsController.stageDefinitions, Object.keys(quests.questsByID));
+        for (const mapId of worldDefinitions.questBoards.keys()) {
+            worldDefinitions.questBoards.set(mapId, loadMapQuests(mapId, undefined, questCatalog).config);
+        }
+        this.questBoardService = new QuestBoardService(worldDefinitions.questBoards, platformClient);
+        this.questBoardProgress = new QuestBoardProgress(platformClient, {enabled: worldDefinitions.questBoards.size > 0});
+        this.questBoardService.start();
+        platformClient.beforeShutdown = async () => {this.questBoardService.close(); await Promise.all([this.activity.close(), this.questBoardProgress.close()]);};
         this.eventEquipment = new EventEquipment(platformClient);
-        process.once('beforeExit', () => this.activity.close());
+        process.once('beforeExit', () => platformClient.beforeShutdown());
         // Configured platform clients own shutdown and await beforeShutdown above.
         if (!platformClient.platformDefined) for (const signal of ['SIGTERM', 'SIGINT']) process.once(signal, async () => {
-            await this.activity.close();
+            await platformClient.beforeShutdown();
             process.kill(process.pid, signal);
         });
         this.npcMemory = new NpcMemory(process.env.NPC_MEMORY_FILE || path.resolve(__dirname, '../../data/chat/npcs/memory.json'));
@@ -220,6 +233,40 @@ WS.socketIOServer = Server.extend({
         app.get('/session/:sessionId/events', (req, res) => eventBoard.list(req, res));
         app.get('/session/:sessionId/events/live', (req, res) => eventBoard.list(req, res, true));
         app.post('/session/:sessionId/events/:eventId/:runId/:action', (req, res) => eventBoard.register(req, res));
+
+        const questBoard = new QuestBoardController(cache, () => self.worldsMap, this.questBoardService, {
+            progress: this.questBoardProgress, stories: quests, level: session => Formulas.level(session.xp),
+            itemLabel: value => {
+                const kind = /^\d+$/.test(String(value)) ? Number(value) : value;
+                const description = typeof kind === 'number' ? Properties.getInventoryDescription(kind) : '';
+                if (description && description.length <= 80 && !/[<>\n]/.test(description)) return description;
+                return AltNames.getName(typeof kind === 'number' ? Types.getKindAsString(kind) || value : value) || String(value);
+            },
+            itemImage: value => {
+                const kind = /^\d+$/.test(String(value)) ? Number(value) : value;
+                const image = Collectables.getCollectableImageName(kind);
+                return typeof image === 'string' && !/^\d+$/.test(image) ? image : 'item-' + Types.getKindAsString(kind);
+            },
+            settle: (context, operation) => dao.commitQuestBoardTransaction(context.identity.nftId, operation),
+            applyReceipt: async (context, receipt) => {
+                for (const sessionId of cache.keys()) {
+                    const session = cache.get(sessionId);
+                    if (session?.nftId !== context.identity.nftId) continue;
+                    session.gameData = session.gameData || {}; session.gameData.items = session.gameData.items || {};
+                    Object.assign(session.gameData.items, receipt.quantities); cache.set(sessionId, session);
+                }
+                try {await context.player.applyPersistedExperience(receipt.xp);}
+                catch (error) {console.error('[quest-board] committed XP refresh failed:', error.message);}
+            }
+        });
+        app.get('/session/:sessionId/quest-boards', (req, res) => questBoard.discovery(req, res));
+        app.get('/session/:sessionId/quest-board-journal', (req, res) => questBoard.list(req, res, true));
+        app.get('/session/:sessionId/quest-boards/:boardId', (req, res) => questBoard.list(req, res));
+        app.post('/session/:sessionId/quest-boards/:boardId/accept', (req, res) => questBoard.accept(req, res));
+        app.post('/session/:sessionId/quest-boards/:boardId/story', (req, res) => questBoard.story(req, res));
+        app.post('/session/:sessionId/quest-board-attempts/:attemptId/settle', (req, res) => questBoard.action(req, res, 'settle'));
+        app.post('/session/:sessionId/quest-board-attempts/:attemptId/withdraw', (req, res) => questBoard.action(req, res, 'withdraw'));
+
 
         platformClient.createOrUpdateGameServer(host, port, GAMESERVER_NAME);
 
@@ -1480,6 +1527,7 @@ WS.socketIOServer = Server.extend({
             }
             const result = await tileActionsController.executeStage(sessionData.nftId, body.map, body.tileAction, body.item, world, body.expectedStage, body.expectedRevision);
             if (result?.success && result.activity) {
+                await self.questBoardProgress.record(player, 'TILE_ACTION', {...result.activity, mapId: body.map});
                 try { self.activity.record(player, 'tile', result.activity); }
                 catch (error) { console.error('[activity] tile recording failed', error.message); }
             }

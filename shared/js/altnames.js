@@ -1,4 +1,5 @@
 const AltNames = {
+    BOARHIDE: 'Boar hide',
     skeleton2: 'greater skeleton',
     eye: 'evil eye',
     deathknight: 'death knight',

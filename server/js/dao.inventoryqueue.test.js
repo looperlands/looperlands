@@ -74,3 +74,23 @@ test('atomic farming shares the writer, holds later consumption and returns curr
     expect(client.commitFarmTransaction).toHaveBeenCalledWith(transaction);
     expect(client.storeInventoryTransaction.mock.calls.flat().flat().map(event => event.amount)).toEqual([1, -1]);
 });
+
+test('quest settlement shares inventory writer, includes pending deltas, and refreshes replay quantities', async () => {
+    let started, finish;
+    const running = new Promise(resolve => {started = resolve;}), pending = new Promise(resolve => {finish = resolve;});
+    const client = {storeInventoryTransaction: jest.fn(async () => true), getInventoryItem: jest.fn(async () => ({amount: 8}))};
+    const dao = loadDao(client);
+    await dao.saveLootEvent('avatar', '123', 1);
+    const operation = jest.fn(() => {started(); return pending;});
+    const settlement = dao.commitQuestBoardTransaction('avatar', operation); await running;
+    await dao.saveLootEvent('avatar', '123', -1);
+    finish({receipt: {quantities: {'123': 99}, replayed: true}});
+    expect((await settlement).receipt.quantities).toEqual({'123': 7});
+    expect(client.storeInventoryTransaction).toHaveBeenCalledTimes(1);
+    await dao.processLootEventQueue(); expect(client.storeInventoryTransaction.mock.calls[1][0]).toEqual([{nftId:'avatar',item:'123',amount:-1}]);
+});
+test('failed pending inventory writes prevent quest settlement', async () => {
+    const dao = loadDao({storeInventoryTransaction: jest.fn(async () => {throw new Error('offline');})});
+    await dao.saveLootEvent('avatar','123',-1); const operation=jest.fn();
+    await expect(dao.commitQuestBoardTransaction('avatar',operation)).rejects.toThrow('inventory_unavailable'); expect(operation).not.toHaveBeenCalled();
+});

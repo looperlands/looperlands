@@ -9,6 +9,7 @@ async function completeFishingCatch(player, success, bullseye, {lakes, messages,
     await player.playerEventBroker.lootEvent({kind: fish.name}, quantity);
     const activity = {target: String(fish.name), quantity, lake: fish.lakeName, rarity: lakes[fish.lakeName].fish[fish.name]};
     player.server.server.activity?.record(player, 'fishing', activity);
+    await player.server.server.questBoardProgress?.record(player, 'FISHING', activity);
     player.incrementNFTSpecialItemExperience(experience);
     player.handleExperience(experience);
     player.server.pushToPlayer(player, new messages.Kill(fish.name, experience));

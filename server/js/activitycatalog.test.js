@@ -35,3 +35,7 @@ test('fish and lake options derive from the real lake definitions and display na
   expect(catalog.prizeItems.some(entry=>entry.kind?.startsWith('NFT_'))).toBe(false);
   expect(catalog.prizeItems.some(entry=>entry.value==='cobguppy')).toBe(true);
  });
+test('generic production adapters declare successful stages and quantity targets without farm defaults',()=>{
+ const catalog=buildActivityCatalog(GameTypes,{mine:{quarry:{activity:{stages:['strike','extract'],quantityStages:['extract'],targets:['iron','copper']}}}});
+ expect(catalog.tileActions).toEqual([{map:'mine',action:'quarry',stages:['strike','extract'],quantityStages:['extract'],targets:[{value:'iron',label:'iron'},{value:'copper',label:'copper'}]}]);
+});

@@ -1,5 +1,7 @@
 # Configurable objectives in the existing quest engine
 
+This guide describes **legacy story quests**. For scheduled board assignments, the new `TILE_ACTION`, `FISHING` and plural `DELIVER_ITEMS` objectives, and atomic reward settlement, see [Quest system additions](quest-system-additions.md) and [Quest Board configuration](quest-board-config.md). Displaying a story quest on a board keeps the legacy behavior described here.
+
 New quests can declare an `objectives` array rather than a single event/target. Each objective has a stable `id`, a player-facing `label`, an `eventType`, a `target` and optional `amount`. Existing single-objective quest definitions retain their current behavior.
 
 Supported objective events:

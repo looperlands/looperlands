@@ -1,0 +1,353 @@
+{
+  "schemaVersion": 1,
+  "mapId": "main",
+  "defaults": {
+    "maxActiveRecurring": 3,
+    "completionScope": "wallet"
+  },
+  "boards": [
+    {
+      "id": "town-board",
+      "label": "Town Quest Board",
+      "description": "A little work. A new adventure. Something worth bringing back.",
+      "bounds": {
+        "x": 44,
+        "y": 214,
+        "width": 2,
+        "height": 2
+      },
+      "questIds": [
+        "town-supplies",
+        "ore-supplies",
+        "hide-supplies",
+        "coast-patrol",
+        "rat-patrol"
+      ],
+      "showSchedule": true
+    }
+  ],
+  "handInLocations": [
+    {
+      "id": "town-crate",
+      "kind": "object",
+      "label": "Town supply crate",
+      "bounds": {
+        "x": 48,
+        "y": 218,
+        "width": 1,
+        "height": 1
+      }
+    }
+  ],
+  "schedules": [
+    {
+      "id": "daily",
+      "timezone": "Europe/Amsterdam",
+      "repeat": {
+        "frequency": "daily"
+      },
+      "opensAtLocalTime": "00:00",
+      "acceptanceWindowHours": 23,
+      "completeAt": "nextOpening",
+      "previewHours": 72,
+      "refill": {
+        "counts": {
+          "adventures": 1,
+          "challenges": 1,
+          "requests": 1
+        },
+        "limitPerCategory": 6,
+        "avoidLast": 1,
+        "fallback": "allow-repeats",
+        "seed": "town-work-v1",
+        "pool": [
+          {
+            "id": "town-supplies",
+            "weight": 3
+          },
+          {
+            "id": "ore-supplies",
+            "weight": 1
+          },
+          {
+            "id": "hide-supplies",
+            "weight": 1
+          },
+          {
+            "id": "coast-patrol"
+          },
+          {
+            "id": "rat-patrol"
+          }
+        ]
+      }
+    }
+  ],
+  "quests": [
+    {
+      "id": "town-supplies",
+      "name": "Supplies for the road",
+      "category": "requests",
+      "scheduleId": "daily",
+      "description": "The town needs a changing bundle of sturdy materials. Find, trade, or use your own stock, then bring the listed goods to the supply crate. The reward is {reward.xp} XP and seeds.",
+      "estimatedMinutes": 5,
+      "objectives": [
+        {
+          "id": "supplies",
+          "label": "Bring the supply bundle",
+          "eventType": "DELIVER_ITEMS",
+          "recipientId": "town-crate",
+          "items": [
+            {
+              "item": "BOARHIDE",
+              "amount": 3
+            },
+            {
+              "item": "ORE",
+              "amount": 2
+            }
+          ]
+        }
+      ],
+      "rewards": {
+        "xp": 120,
+        "items": [
+          {
+            "item": "M88NSEEDS",
+            "amount": 2,
+            "fundingRef": "quest-preview"
+          }
+        ]
+      },
+      "generation": {
+        "objectives": [
+          {
+            "id": "supplies",
+            "items": {
+              "count": {
+                "min": 1,
+                "max": 2
+              },
+              "pool": [
+                {
+                  "item": "BOARHIDE",
+                  "weight": 3,
+                  "amount": {
+                    "min": 2,
+                    "max": 5
+                  }
+                },
+                {
+                  "item": "ORE",
+                  "weight": 2,
+                  "amount": {
+                    "min": 2,
+                    "max": 6
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "rewards": {
+          "xp": {
+            "base": 20,
+            "perUnit": [
+              {
+                "objectiveId": "supplies",
+                "item": "BOARHIDE",
+                "xp": 15
+              },
+              {
+                "objectiveId": "supplies",
+                "item": "ORE",
+                "xp": 10
+              }
+            ],
+            "max": 180
+          },
+          "items": [
+            {
+              "item": "M88NSEEDS",
+              "amount": {
+                "min": 1,
+                "max": 3
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "coast-patrol",
+      "name": "A breath of sea air",
+      "category": "adventures",
+      "scheduleId": "daily",
+      "description": "Take the southern road out of town and reach the beach. Claim your reward from your journal when you arrive.",
+      "estimatedMinutes": 2,
+      "objectives": [
+        {
+          "id": "beach",
+          "label": "Reach the beach south of town",
+          "eventType": "AREA_ENTERED",
+          "target": "Beach",
+          "amount": 1
+        }
+      ],
+      "rewards": {
+        "xp": 80
+      }
+    },
+    {
+      "id": "rat-patrol",
+      "name": "Clear {rat.amount} rats from the roads",
+      "category": "challenges",
+      "scheduleId": "daily",
+      "description": "Defeat {rat.amount} rats after accepting this challenge. Your own kills count; the reward is {reward.xp} XP.",
+      "estimatedMinutes": 3,
+      "objectives": [
+        {
+          "id": "rat",
+          "label": "Defeat {rat.amount} rats",
+          "eventType": "KILL_MOB",
+          "target": "RAT",
+          "amount": 1
+        }
+      ],
+      "rewards": {
+        "xp": 60
+      },
+      "generation": {
+        "objectives": [
+          {
+            "id": "rat",
+            "amount": {
+              "min": 3,
+              "max": 7
+            }
+          }
+        ],
+        "rewards": {
+          "xp": {
+            "base": 20,
+            "perUnit": [
+              {
+                "objectiveId": "rat",
+                "xp": 10
+              }
+            ],
+            "max": 100
+          }
+        }
+      }
+    },
+    {
+      "id": "ore-supplies",
+      "name": "Ore for the workshop",
+      "category": "requests",
+      "scheduleId": "daily",
+      "description": "Bring the listed materials to the town supply crate. Items from any source qualify. Earn {reward.xp} XP.",
+      "objectives": [
+        {
+          "id": "goods",
+          "eventType": "DELIVER_ITEMS",
+          "recipientId": "town-crate",
+          "items": [
+            {
+              "item": "ORE",
+              "amount": 2
+            }
+          ]
+        }
+      ],
+      "rewards": {
+        "xp": 20
+      },
+      "generation": {
+        "objectives": [
+          {
+            "id": "goods",
+            "items": {
+              "count": 1,
+              "pool": [
+                {
+                  "item": "ORE",
+                  "amount": {
+                    "min": 2,
+                    "max": 6
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "rewards": {
+          "xp": {
+            "base": 20,
+            "perUnit": [
+              {
+                "objectiveId": "goods",
+                "xp": 10
+              }
+            ],
+            "max": 180
+          }
+        }
+      }
+    },
+    {
+      "id": "hide-supplies",
+      "name": "Hide for the road crew",
+      "category": "requests",
+      "scheduleId": "daily",
+      "description": "Bring the listed materials to the town supply crate. Items from any source qualify. Earn {reward.xp} XP.",
+      "objectives": [
+        {
+          "id": "goods",
+          "eventType": "DELIVER_ITEMS",
+          "recipientId": "town-crate",
+          "items": [
+            {
+              "item": "BOARHIDE",
+              "amount": 3
+            }
+          ]
+        }
+      ],
+      "rewards": {
+        "xp": 20
+      },
+      "generation": {
+        "objectives": [
+          {
+            "id": "goods",
+            "items": {
+              "count": 1,
+              "pool": [
+                {
+                  "item": "BOARHIDE",
+                  "amount": {
+                    "min": 3,
+                    "max": 7
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "rewards": {
+          "xp": {
+            "base": 20,
+            "perUnit": [
+              {
+                "objectiveId": "goods",
+                "xp": 15
+              }
+            ],
+            "max": 180
+          }
+        }
+      }
+    }
+  ]
+}
