@@ -34,7 +34,7 @@ class Pathfinder {
         return worker;
     }
 
-    findPath(grid, entity, x, y) {
+    findPath(grid, entity, x, y, requireCardinalEnd = false) {
         return new Promise((resolve, reject) => {
             let requestId;
             try {
@@ -70,7 +70,7 @@ class Pathfinder {
                 if (Math.abs(dx) === 1 && Math.abs(dy) === 1) {
                     const horizontal = [x, start[1]], vertical = [start[0], y];
                     // A diagonal needs both adjacent tiles clear to avoid cutting corners.
-                    if (walkable(horizontal) && walkable(vertical)) {
+                    if (!requireCardinalEnd && walkable(horizontal) && walkable(vertical)) {
                         resolve([start, end]);
                         return;
                     }
@@ -87,7 +87,7 @@ class Pathfinder {
                 this.pendingRequests[requestId] = resolve;
                 const worker = this.getNextWorker();
                 // postMessage snapshots the grid; ignored cells are cleared only in that worker copy.
-                worker.postMessage({requestId, grid, start, end, ignoredPositions});
+                worker.postMessage({requestId, grid, start, end, ignoredPositions, requireCardinalEnd});
             } catch (error) {
                 delete this.pendingRequests[requestId];
                 this.clearIgnoreList();

@@ -7318,7 +7318,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                         }
 
                         self.player.forEachAttacker(function (attacker) {
-                            if (attacker.isAdjacent(attacker.target)) {
+                            if (attacker.canReachTarget()) {
                                 attacker.lookAtTarget();
                             } else {
                                 if (!(attacker instanceof Player)) {
@@ -7766,7 +7766,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                                                 self.registerEntityDualPosition(entity);
 
                                                 entity.forEachAttacker(function (attacker) {
-                                                    if (attacker.isAdjacent(attacker.target)) {
+                                                    if (attacker.canReachTarget()) {
                                                         attacker.lookAtTarget();
                                                     } else {
                                                         attacker.follow(entity);
@@ -9066,7 +9066,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                             });
                         }
 
-                        self.pathfinder.findPath(grid, character, x, y, false)
+                        self.pathfinder.findPath(grid, character, x, y, !!character.followingMode)
                             .then(foundPath => {
                                 path = foundPath;
                                 if (ignoreList) {
