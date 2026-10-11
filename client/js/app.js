@@ -1531,8 +1531,16 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
             shopPopup.find('#shop-popup-name').text(shopName);
 
             let shopInventoryQuery = "/shop/" + shopId + "/inventory";
-            axios.get(shopInventoryQuery).then(function(response) {
+            return Promise.all([
+                axios.get(shopInventoryQuery),
+                axios.get('/session/' + self.storage.sessionId + '/inventory')
+            ]).then(function([response, inventoryResponse]) {
                 let items = response.data;
+                const inventory = inventoryResponse.data;
+                const availableResource = resource => {
+                    const kind = Types.getKindFromString(resource);
+                    return Number(inventory.resources?.[kind] ?? inventory.items?.[kind]?.qty ?? 0);
+                };
                 shopPopup.find('#shop-popup-items').html('');
                 shopPopup.scrollTop(0);
                 items.forEach(function (item) {
@@ -1559,8 +1567,8 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
                         resourceEl.find('.amount').text(item.price[resource]);
                         itemEl.find('.price').append(resourceEl);
 
-                        // Find resource amount in player resource bar and check if player has enough
-                        if(parseInt($('#resources').find('#resource-' + Types.getKindFromString(resource)).find('.amount').text()) < parseInt(item.price[resource])) {
+                        // Shop prices can use both resources and collected inventory items.
+                        if(availableResource(resource) < Number(item.price[resource])) {
                             playerHasEnoughResources = false;
                         }
                     });
@@ -1605,7 +1613,7 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
                             const quantity = Number(quantityInput.val());
                             const valid = Number.isInteger(quantity) && quantity >= 1 && quantity <= 99;
                             const affordable = valid && Object.entries(item.price).every(([resource, price]) => {
-                                const available = Number($('#resources').find('#resource-' + Types.getKindFromString(resource)).find('.amount').text()) || 0;
+                                const available = availableResource(resource);
                                 return available >= Number(price) * quantity;
                             });
                             $('#shop-total').text(valid ? 'Total: ' + Object.entries(item.price).map(([resource, price]) => (Number(price) * quantity) + ' ' + resource).join(', ') : 'Choose a whole quantity from 1 to 99.');
@@ -1654,15 +1662,19 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
                 setTimeout(() => {
                     $('#shop-confirmation').addClass('visible');
                 }, 1000);
+            }).catch(function(error) {
+                console.error('Unable to load shop inventory', error);
+                self.game.showNotification('Unable to load the shop. Please try again.');
             });
         },
 
         purchaseShopItem: function(shopId, itemId, quantity = 1) {
             let self = this;
             let shopInventoryQuery = "/session/" + self.storage.sessionId + "/shop/" + shopId + "/buy/" + itemId + "?quantity=" + quantity;
-            axios.get(shopInventoryQuery)
+            return axios.get(shopInventoryQuery)
                 .then(function(response) {
                     self.initResourcesDisplay();
+                    self.openShop(shopId, $('#shop-popup-name').text());
                     self.game.audioManager.playSound("achievement");
                     self.game.showNotification("Purchase successful!");
                 })
