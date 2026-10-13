@@ -1,10 +1,10 @@
-define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile',
-        'warrior', 'gameclient', 'audio', 'updater', 'transition', 'combatfeedback', 'toolimpactfeedback', 'footstepfeedback',
+define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile',
+        'warrior', 'gameclient', 'audio', 'updater', 'transition', 'combatfeedback', 'toolimpactfeedback',
         'item', 'mob', 'npc', 'player', 'character', 'chest', 'mobs', 'exceptions', 'fieldeffect', 'config', 'float', 'projectile', 'tileactions',
         'worldambience', 'worldscenery', 'conversationhold', 'worldtime-worker', '../../shared/js/gametypes', '../../shared/js/altnames'],
 
-    function (InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, AnimatedTile,
-              Warrior, GameClient, AudioManager, Updater, Transition, CombatFeedback, ToolImpactFeedback, FootstepFeedback,
+    function (FootstepFeedback, InfoManager, BubbleManager, Renderer, Mapx, Animation, Sprite, AnimatedTile,
+              Warrior, GameClient, AudioManager, Updater, Transition, CombatFeedback, ToolImpactFeedback,
               Item, Mob, Npc, Player, Character, Chest, Mobs, Exceptions, Fieldeffect, Config, Float, Projectile, TileActions, WorldAmbience, WorldScenery, ConversationHold, WorldTime) {
         var Game = Class.extend({
             init: function (app) {
@@ -16,6 +16,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.scenePollingInterval = null;
                 this.playerPositionReady = false;
                 this.worldAmbience = new WorldAmbience();
+                this.footstepFeedback = new FootstepFeedback(this);
 
                 this.renderer = null;
                 this.updater = null;
@@ -80,7 +81,6 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.infoManager = new InfoManager(this);
                 this.combatFeedback = new CombatFeedback(this);
                 this.toolImpactFeedback = new ToolImpactFeedback(this);
-                this.footstepFeedback = new FootstepFeedback(this);
 
                 // zoning
                 this.currentZoning = null;
@@ -6302,8 +6302,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.tileStageRevisions = {};
                 this.combatFeedback.clear();
                 this.toolImpactFeedback.clear();
-                this.footstepFeedback?.clear();
                 this.infoManager.clear();
+                this.footstepFeedback?.clear();
 
                 if (this.map) this.map.stopStreamCheck();
                 if (this.audioManager) this.audioManager.playStreamMusic(null);
@@ -7021,11 +7021,11 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     // A second FPS gate skips alternate frames on 60 Hz displays.
                     this.updateCursorLogic();
                     this.updater.update();
+                    this.footstepFeedback?.render(this.renderer, this.currentTime);
                     if (this.canUseCenteredCamera()) {
                         this.renderer.camera.follow(this.player, this.currentTime);
                     }
                     this.toolImpactFeedback.render(this.renderer, this.currentTime);
-                    this.footstepFeedback?.render(this.renderer, this.currentTime);
                     this.renderer.renderFrame();
                     if (this.gamepadListener) {
                         this.gamepadListener.update();
@@ -7050,8 +7050,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                 this.isStopped = true;
                 this.combatFeedback.clear();
                 this.toolImpactFeedback.clear();
-                this.footstepFeedback?.clear();
                 this.infoManager.clear();
+                this.footstepFeedback?.clear();
             },
 
             entityIdExists: function (id) {
@@ -8240,8 +8240,8 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
                     self.client.onDisconnected(function (message) {
                         self.combatFeedback.clear();
                         self.toolImpactFeedback.clear();
-                        self.footstepFeedback?.clear();
                         self.infoManager.clear();
+                        self.footstepFeedback?.clear();
                         self.app.socialChat?.disconnect();
                         self.app.eventBoard?.disconnect();
                         self.conversationHold.stop(); self.app.closeChoicesPopup();
