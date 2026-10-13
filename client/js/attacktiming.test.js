@@ -1,0 +1,39 @@
+const fs = require('fs'), vm = require('vm');
+let profile, character;
+vm.runInNewContext(fs.readFileSync(require.resolve('./attacktiming'), 'utf8'), {
+    define: factory => { profile = factory(); },
+});
+vm.runInNewContext(fs.readFileSync(require.resolve('./character'), 'utf8'), {
+    define: (_, factory) => { character = factory({extend: methods => methods}, null, null, profile); },
+});
+test.each([3, 5, 8, 12])('shapes %s frames without changing the swing duration', length => {
+    const frames = profile(50, length);
+    expect(frames.reduce((sum, value) => sum + value, 0)).toBeCloseTo(50 * length);
+    expect(frames[Math.floor(length / 2)]).toBeLessThan(frames[0]);
+    expect(frames[length - 1]).toBeGreaterThan(frames[Math.floor(length / 2)]);
+});
+test('short animations and custom speed arrays keep their timing', () => {
+    const authored = [100, 20, 80];
+    expect(profile(authored, 3)).toBe(authored);
+    expect(profile(50, 2)).toBe(50);
+});
+function actor(authoredSpeed) {
+    return {orientation: 2, sprite: {animationData: {atk_down: {speed: authoredSpeed}}},
+        animations: {atk_down: {length: 5}}, hasAnimation: () => true, setAnimation: jest.fn()};
+}
+const Types = {Orientations: {LEFT: 1, DOWN: 2}, getOrientationAsString: () => 'down'};
+test('only a requested combat swing receives the profile; authored speeds win', () => {
+    let methods;
+    vm.runInNewContext(fs.readFileSync(require.resolve('./character'), 'utf8'), {
+        Types, _: {indexOf: (list, value) => list.indexOf(value)},
+        define: (_, factory) => { methods = factory({extend: value => value}, null, null, profile); },
+    });
+    const ordinary = actor();
+    methods.animate.call(ordinary, 'atk', 50, 1, undefined, true);
+    expect(ordinary.setAnimation.mock.calls[0][1]).toEqual(profile(50, 5));
+    const authored = actor([100, 10, 20, 40, 80]);
+    methods.animate.call(authored, 'atk', 50, 1, undefined, true);
+    expect(authored.setAnimation.mock.calls[0][1]).toBe(50);
+    methods.animate.call(ordinary, 'atk', 75, 1);
+    expect(ordinary.setAnimation.mock.calls[1][1]).toBe(75);
+});

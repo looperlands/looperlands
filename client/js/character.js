@@ -1,5 +1,5 @@
 
-define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
+define(['entity', 'transition', 'timer', 'attacktiming'], function(Entity, Transition, Timer, attackTiming) {
 
     var Character = Entity.extend({
         init: function(id, kind) {
@@ -69,7 +69,7 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
     	    return this.sprite.hasShadow !== undefined ? this.sprite.hasShadow : Types.hasShadow(this.kind);
     	},
 
-        animate: function(animation, speed, count, onEndCount) {
+        animate: function(animation, speed, count, onEndCount, shapeAttackTiming) {
             var oriented = ['atk', 'walk', 'idle'];
             o = this.orientation;
 
@@ -99,6 +99,10 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
                 }
             }
 
+            // Sprite-authored timing and non-combat actions retain their own pace.
+            if (shapeAttackTiming && this.sprite.animationData?.[animation]?.speed === undefined) {
+                speed = attackTiming(speed, this.animations[animation]?.length);
+            }
             this.setAnimation(animation, speed, count, onEndCount);
         },
 
@@ -125,7 +129,7 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
     	    this.animate("atk", this.atkSpeed, 1, function () {
                 self.animationLock = false;
                 self.idle();
-            });
+            }, true);
     	},
 	
     	walk: function(orientation) {
