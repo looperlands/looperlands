@@ -13,11 +13,12 @@ test('a pickup converges toward the moving player and expires without moving the
     const {feedback, game} = setup();
     const item = {x: 32, y: 48};
     feedback.add(item, 1000);
-    expect(feedback.getFrame(1000)[0]).toMatchObject({x: 34, y: 56, alpha: 1});
+    expect(feedback.getFrame(1000)[0]).toMatchObject({x: 30, y: 56, alpha: 1});
     game.player.x = 48;
-    expect(feedback.getFrame(1120)[0].x).toBe(51);
+    expect(feedback.getFrame(1120)[0].x).toBe(45);
     expect(item).toEqual({x: 32, y: 48});
-    expect(feedback.getFrame(1240)).toHaveLength(0);
+    expect(feedback.getFrame(1300).some(particle => particle.finish)).toBe(true);
+    expect(feedback.getFrame(1480)).toHaveLength(0);
 });
 test.each(['map', 'session', 'death', 'stop', 'disconnect', 'reduced', 'disabled'])('%s clears pickup trails', reason => {
     const {feedback, game, settings} = setup();
@@ -34,10 +35,10 @@ test.each(['map', 'session', 'death', 'stop', 'disconnect', 'reduced', 'disabled
 test('repeated pickups share a bounded budget and render in map pixels at every scale', () => {
     const {feedback} = setup();
     for (let index = 0; index < 50; index++) feedback.add({x: 32, y: 48}, 1000);
-    expect(feedback.getFrame(1000)).toHaveLength(64);
+    expect(feedback.getFrame(1000)).toHaveLength(128);
     const context = {fillRect: jest.fn()};
     extension.draw(context, [{x: 34, y: 56, alpha: 0.5}], {cameraX: 16, cameraY: 32, scale: 3});
-    expect(context.fillRect).toHaveBeenCalledWith(54, 72, 3, 3);
+    expect(context.fillRect).toHaveBeenCalledWith(54, 72, 6, 6);
 });
 
 test.each([false, true])('pickup particles only run after successful loot validation: rejected=%s', rejected => {
