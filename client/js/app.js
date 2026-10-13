@@ -1,4 +1,4 @@
-define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud'], function ($, Storage, SocialChat, EventBoard, ConsumableHud) {
+define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healthbarfeedback'], function ($, Storage, SocialChat, EventBoard, ConsumableHud, HealthBarFeedback) {
 
     var App = Class.extend({
         init: function () {
@@ -185,12 +185,15 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud'], funct
         },
 
         initHealthBar: function () {
+            this.healthBarFeedback?.dispose();
+            this.healthBarFeedback = new HealthBarFeedback(document.getElementById('hitpoints'),
+                document.getElementById('hitpoints-trail'));
             var scale = this.game.renderer.getScaleFactor(),
                 healthMaxWidth = $("#healthbar").width() - (12 * scale);
 
-            this.game.onPlayerHealthChange(function (hp, maxHp) {
-                var barWidth = Math.round((healthMaxWidth / maxHp) * (hp > 0 ? hp : 0));
-                $("#hitpoints").css('width', barWidth + "px");
+            this.game.onPlayerHealthChange((hp, maxHp) => {
+                const barWidth = maxHp > 0 ? Math.round(healthMaxWidth * Math.max(0, Math.min(1, hp / maxHp))) : 0;
+                this.healthBarFeedback.update(barWidth, maxHp, this.settings.getReducedMotion());
             });
 
             this.game.onPlayerHurt(this.blinkHealthBar.bind(this));
