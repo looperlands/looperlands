@@ -50,5 +50,15 @@ test('region names select materials and marks follow camera/scale', () => {
     expect(['Forest', 'Desert', 'Cave', 'Town'].map(Feedback.surfaceFor)).toEqual(['grass', 'sand', 'stone', 'ground']);
     const context = {fillRect: jest.fn()};
     extension.draw(context, [{x: 40, y: 62, surface: 'sand', progress: 0}], {cameraX: 16, cameraY: 32, scale: 3});
-    expect(context.fillRect).toHaveBeenNthCalledWith(1, 63, 90, 6, 3);
+    expect(context.fillRect).toHaveBeenNthCalledWith(1, 60, 90, 9, 6);
+});
+
+test.each(['Town', 'Forest'])('%s marks remain visible after the original faint marks would have expired', scene => {
+    const {feedback, game} = setup();
+    game.player.getScene = () => ({name: scene});
+    feedback.getFrame(1000);
+    game.player.x += 12;
+    feedback.getFrame(1100);
+    expect(feedback.getFrame(1450)).toHaveLength(1);
+    expect(feedback.getFrame(1600)).toHaveLength(0);
 });
