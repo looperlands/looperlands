@@ -41,7 +41,7 @@ define(function () {
                     this.game.audioManager?.playFootstep(surface);
                     if (!reduced && effects && surface !== 'stone') {
                         this.steps.push({x: player.x + 8, y: player.y + 14, startedAt: time,
-                            surface, lifetime: surface === 'sand' ? 650 : 500});
+                            surface, lifetime: surface === 'sand' ? 650 : 380});
                         if (this.steps.length > 24) this.steps.shift();
                     }
                 }
