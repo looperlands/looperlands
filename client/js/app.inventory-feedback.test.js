@@ -46,3 +46,45 @@ test.each([true, false])('consumption only acknowledges a confirmed result: cons
     await Promise.resolve();
     expect(elements.has('inventorybutton')).toBe(consumed);
 });
+
+test('consumption synchronizes server effects and announces a new XP boost in the existing status bar', async () => {
+    const {app, axios} = setup();
+    const effects = [{id: 'xp', label: '2x XP', expiresAt: 61000}];
+    app.game = {showNotification: jest.fn()};
+    app.consumableHud = {syncEffects: jest.fn().mockReturnValue([{...effects[0], duration: 60000}]), tick: jest.fn()};
+    app.refreshConsumableHud = jest.fn();
+    axios.get.mockResolvedValue({data: {consumed: true, items: [], effects, effectsUpdatedAt: 1000}});
+    await expect(app.consumeItem('78009300')).resolves.toBe(true);
+    expect(app.consumableHud.syncEffects).toHaveBeenCalledWith(effects, 1000);
+    expect(app.game.showNotification).toHaveBeenCalledWith('2x XP for 60s');
+});
+
+test('an old session consumption response cannot change effects or display a notification', async () => {
+    const {app, axios} = setup();
+    let resolve;
+    axios.get.mockReturnValue(new Promise(done => {resolve = done;}));
+    app.consumableHud = {syncEffects: jest.fn(), tick: jest.fn()};
+    app.game = {showNotification: jest.fn()};
+    const request = app.consumeItem('7');
+    app.storage.sessionId = 'two';
+    resolve({data: {consumed: true, effects: [{id: 'xp', label: '2x XP', expiresAt: 61000}], effectsUpdatedAt: 1000}});
+    await request;
+    expect(app.consumableHud.syncEffects).not.toHaveBeenCalled();
+    expect(app.game.showNotification).not.toHaveBeenCalled();
+});
+
+test('an inventory refresh restores effects but ignores a response from an old session', async () => {
+    const {app, axios} = setup();
+    const effects = [{id: 'xp', label: '2x XP', expiresAt: 61000}];
+    app.consumableHud = {sync: jest.fn(), syncEffects: jest.fn()};
+    axios.get.mockResolvedValue({data: {items: {}, effects, effectsUpdatedAt: 1000}});
+    await app.refreshConsumableHud();
+    expect(app.consumableHud.syncEffects).toHaveBeenCalledWith(effects, 1000);
+    let resolve;
+    axios.get.mockReturnValue(new Promise(done => {resolve = done;}));
+    const request = app.refreshConsumableHud();
+    app.storage.sessionId = 'two';
+    resolve({data: {effects: []}});
+    await request;
+    expect(app.consumableHud.syncEffects).toHaveBeenCalledTimes(1);
+});

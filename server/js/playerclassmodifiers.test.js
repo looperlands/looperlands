@@ -124,6 +124,22 @@ describe('PlayerClassModifiers', () => {
         });
     });
 
+    test('replacing a timed modifier preserves the new value until its own expiration', () => {
+        jest.useFakeTimers();
+        try {
+            playerClassModifiers.applyTemporaryModifierWithTimeout('xp', 4, 20000);
+            jest.advanceTimersByTime(10000);
+            playerClassModifiers.applyTemporaryModifierWithTimeout('xp', 2, 60000);
+            jest.advanceTimersByTime(10000);
+            expect(playerClassModifiers.getActiveTemporaryModifiers()).toEqual([
+                {name: 'xp', value: 2, expiresAt: Date.now() + 50000}
+            ]);
+            jest.advanceTimersByTime(50000);
+            expect(playerClassModifiers.getActiveTemporaryModifiers()).toEqual([]);
+            expect(playerClassModifiers.isModiferActive('xp')).toBe(false);
+        } finally {jest.useRealTimers();}
+    });
+
     describe('getAllModifiers', () => {
         it('should return all modifiers after loading data', async () => {
             await playerClassModifiers.getAllModifiers();

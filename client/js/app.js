@@ -1301,7 +1301,10 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healt
             }
             const session = this.storage.sessionId;
             return axios.get('/session/' + session + '/inventory').then(response => {
-                if (this.storage.sessionId === session) this.consumableHud.sync(response.data?.items || {});
+                if (this.storage.sessionId === session) {
+                    this.consumableHud.sync(response.data?.items || {});
+                    this.consumableHud.syncEffects(response.data?.effects, response.data?.effectsUpdatedAt);
+                }
             }).catch(error => console.error('Error while refreshing consumables', error));
         },
 
@@ -1500,6 +1503,12 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healt
                     }
                 }
                 if (response.data.consumed === true) _this.highlightInventoryChange(item);
+                const changedEffects = _this.consumableHud?.syncEffects(response.data.effects, response.data.effectsUpdatedAt) || [];
+                const newEffects = changedEffects.filter(effect => effect.id !== 'fish');
+                if (response.data.consumed === true && newEffects.length) {
+                    _this.game?.showNotification(newEffects.map(effect => effect.label + ' for ' +
+                        Math.ceil(effect.duration / 1000) + 's').join(' · '));
+                }
                 _this.consumableHud?.tick(Date.now());
                 _this.refreshConsumableHud();
                 return response.data.consumed;
