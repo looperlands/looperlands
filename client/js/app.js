@@ -1,4 +1,4 @@
-define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, SocialChat, EventBoard) {
+define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud'], function ($, Storage, SocialChat, EventBoard, ConsumableHud) {
 
     var App = Class.extend({
         init: function () {
@@ -58,6 +58,11 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
             this.game.sessionId = this.sessionId;
             this.socialChat = new SocialChat(this);
             this.eventBoard = new EventBoard(this);
+            this.consumableHud?.destroy();
+            if (typeof ConsumableHud === 'function') {
+                this.consumableHud = new ConsumableHud(this);
+                this.refreshConsumableHud();
+            }
         },
 
         center: function () {
@@ -935,6 +940,8 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
                 botsInventory = [];
 
             axios.get(inventoryQuery).then(function(response) {
+                _this.hideWindows();
+                _this.isInventoryVisible = true;
                 _this.inventoryToolTips = {};
                 if (response.data){
                     weaponInventory = response.data.inventory;
@@ -1089,6 +1096,7 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
                 }
 
                 $("#inventorycontent").html(inventoryHtml);
+                _this.consumableHud?.sync(consumablesInventory);
                 let inventorySlots = _this.settings.getInventorySlots();
 
                 if (inventorySlots) {
@@ -1132,6 +1140,7 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
                             let dropItem = parseInt(e.dataTransfer.getData("text/plain"));
                             inventorySlots[i] = dropItem;
                             _this.settings.setInventorySlots(inventorySlots);
+                            _this.consumableHud?.tick(Date.now());
                             let url = "img/3/" + consumablesInventory[dropItem].image + ".png";
                             $('#' + slotEl.id + ' .itemContainer').html('<img style="width: 32px; height: 32px; object-fit: cover; object-position: 100% 0; cursor: pointer;" src="' + url + '" />');
                         });
@@ -1165,9 +1174,7 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
                         let consume = function (e) {
                             let count = parseInt(document.getElementById("count_" + item).innerHTML);
                             if (count > 0){
-                                if (_this.consumeItem(item)){
-                                    document.getElementById("count_" + item).innerHTML = count - 1;
-                                }
+                                _this.consumeItem(item);
                             }
                             _this.hideInventory();
                             e.preventDefault();
@@ -1199,6 +1206,7 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
 
                             if (consumablesInventory[item].consumable) {
                                 consumeFunc(item);
+                                _this.markCooldownReady(item);
                             }
                         } else {
                             updateCdDisplay(item);
@@ -1264,7 +1272,6 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
                 })
 
 
-                _this.hideWindows();
                 $('body').addClass('inventory');
             }).catch(function(error) {
                 console.error(error);
@@ -1274,11 +1281,40 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
         },
 
         consumeSlot: function(slot) {
-            let inventorySlots = _this.settings.getInventorySlots();
+            let inventorySlots = this.settings.getInventorySlots();
             let item = inventorySlots[slot];
             let cooldown = this.cooldownMap[item] !== undefined ? this.cooldownMap[item] : 0;
-            if (item && new Date().getTime() >= cooldown) {
+            if (!this.game.player?.isDead && item && new Date().getTime() >= cooldown) {
                 this.consumeItem(String(item));
+            }
+        },
+
+        refreshConsumableHud: function (delay = 0) {
+            if (!this.consumableHud) return;
+            clearTimeout(this.consumableHudRefreshTimer);
+            if (delay) {
+                this.consumableHudRefreshTimer = setTimeout(() => this.refreshConsumableHud(), delay);
+                return;
+            }
+            const session = this.storage.sessionId;
+            return axios.get('/session/' + session + '/inventory').then(response => {
+                if (this.storage.sessionId === session) this.consumableHud.sync(response.data?.items || {});
+            }).catch(error => console.error('Error while refreshing consumables', error));
+        },
+
+        markCooldownReady: function (item) {
+            if (!this.isInventoryVisible || document.hidden) return;
+            const elements = [document.getElementById('item_' + item)];
+            (this.settings.getInventorySlots() || []).slice(0, 4).forEach((value, index) => {
+                if (String(value) === String(item)) {
+                    elements.push(document.getElementById('consumableSlot' + (index + 1))
+                        ?.querySelector('.itemContainer'));
+                }
+            });
+            for (const element of elements) {
+                if (!element) continue;
+                element.classList.add('cooldown-ready');
+                setTimeout(() => element.classList.remove('cooldown-ready'), 450);
             }
         },
 
@@ -1427,14 +1463,16 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
 
             let consumeQuery = "/session/" + _this.storage.sessionId + "/consumeItem/" + item;
 
-            axios.get(consumeQuery).then(function(response) {
-                let items = response.data.items;
+            return axios.get(consumeQuery).then(function(response) {
+                let items = response.data.items || [];
                 let cooldown = response.data.cooldown;
                 if (cooldown && items.length > 0) {
-                    for (i = 0; i < items.length; i++) {
+                    for (let i = 0; i < items.length; i++) {
                         _this.cooldownMap[items[i]] = cooldown;
                     }
                 }
+                _this.consumableHud?.tick(Date.now());
+                _this.refreshConsumableHud();
                 return response.data.consumed;
             }).catch(function (error) {
                 console.error("Error while consuming item", error);

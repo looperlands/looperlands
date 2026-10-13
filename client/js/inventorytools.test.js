@@ -25,7 +25,8 @@ test('inventory groups tagged items beside fishing rods without duplicate or equ
     const $ = selector => {
         if (!nodes.has(selector)) {
             let proxy;
-            proxy = new Proxy({length: 0}, {get: (target, key) => key === 'length' ? 0 : (...args) => {
+            proxy = new Proxy({length: 0}, {get: (target, key) => key === 'length' ? 0
+                : key === 'hasClass' ? () => false : (...args) => {
                 if (selector === '#inventorycontent' && key === 'html') html = args[0];
                 return proxy;
             }});

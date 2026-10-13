@@ -350,6 +350,65 @@ body.upscaled.game {background:#000;}
 #population span:nth-child(1) {color:#FCE045;}
 #population.visible {opacity:1;pointer-events:auto;}
 
+.cooldown-ready {
+    outline: 2px solid #ffd66b;
+    outline-offset: -3px;
+    animation: cooldown-ready-glint 450ms ease-out;
+}
+@keyframes cooldown-ready-glint {
+    from { outline-color: #fff2bf; }
+    to { outline-color: transparent; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .cooldown-ready { animation: none; }
+}
+
+#consumable-hud-anchor { position: relative; height: 0; z-index: 11; }
+#consumable-hud {
+    position: absolute;
+    right: 8px;
+    bottom: 6px;
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    max-width: calc(100% - 16px);
+    font: 14px GraphicPixel, sans-serif;
+    color: #ffe3a1;
+}
+#consumable-hud[hidden], #consumable-hud [hidden] { display: none; }
+.hud-consumables { display: flex; gap: 4px; }
+.hud-consumable {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    padding: 4px;
+    border: 2px solid #b99761;
+    border-radius: 2px;
+    overflow: hidden;
+    background: #341e28;
+    color: #ffe3a1;
+    font: inherit;
+    cursor: pointer;
+}
+.hud-consumable img { width: 32px; height: 32px; object-fit: cover; object-position: 100% 0; image-rendering: pixelated; }
+.hud-consumable:hover:not(:disabled) { border-color: #ffe3a1; }
+.hud-consumable:focus-visible { outline: 2px solid #fff2bf; outline-offset: 2px; }
+.hud-consumable:disabled { cursor: default; }
+.hud-consumable:disabled img { opacity: .65; }
+.hud-consumable.cooling img { opacity: 1; }
+.hud-key, .hud-count { position: absolute; z-index: 1; background: #341e28; font-size: 12px; line-height: 14px; padding: 0 2px; }
+.hud-key { top: -2px; left: -2px; }
+.hud-count { bottom: -2px; right: -2px; }
+.hud-cooldown { position: absolute; inset: 9px 0; text-align: center; padding: 3px 0; background: rgba(52, 30, 40, .7); color: #fff2bf; }
+.hud-effect { display: flex; align-items: center; gap: 6px; height: 44px; box-sizing: border-box; max-width: 180px; padding: 4px 8px; border: 2px solid #b99761; border-radius: 2px; background: #341e28; line-height: 16px; }
+.hud-effect-name { min-width: 0; }
+.hud-effect-timer { display: inline-flex; flex: none; white-space: pre; }
+.hud-effect-timer > span { display: inline-block; flex: none; width: 1ch; text-align: center; }
+@media (max-width: 480px) {
+    #consumable-hud { gap: 4px; }
+    .hud-effect { max-width: 110px; font-size: 12px; padding: 4px; }
+}
+
 #time {
     text-shadow: 0 0 2px black;
     position: absolute;

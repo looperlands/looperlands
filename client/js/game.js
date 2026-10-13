@@ -10571,6 +10571,7 @@ define(['infomanager', 'bubble', 'renderer', 'map', 'animation', 'sprite', 'tile
 
             updateBuffInfo: function (stat, percent, duration) {
                 let self = this;
+                this.app.consumableHud?.setEffect(stat, percent, duration);
                 clearInterval(self.buffTickInterval);
 
                 if (duration && duration > 0) { //expireTime === 0 means the buff got cancelled by the server
