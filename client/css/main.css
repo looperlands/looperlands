@@ -363,10 +363,11 @@ body.upscaled.game {background:#000;}
     .cooldown-ready { animation: none; }
 }
 
+#consumable-hud-anchor { position: relative; height: 0; z-index: 11; }
 #consumable-hud {
     position: absolute;
     right: 8px;
-    bottom: calc(100% + 6px);
+    bottom: 6px;
     display: flex;
     align-items: flex-end;
     gap: 6px;

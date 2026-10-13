@@ -8,6 +8,9 @@ define(function () {
             this.pending = new Set();
             const bar = document.getElementById('bar-container');
             if (!bar) return;
+            this.anchor = document.createElement('div');
+            this.anchor.id = 'consumable-hud-anchor';
+            bar.insertAdjacentElement('beforebegin', this.anchor);
             this.root = document.createElement('div');
             this.root.id = 'consumable-hud';
             this.root.setAttribute('aria-label', 'Consumables and active effect');
@@ -19,10 +22,10 @@ define(function () {
             this.slots.className = 'hud-consumables';
             this.effectLabel = document.createElement('div');
             this.effectLabel.className = 'hud-effect';
-            this.effectLabel.setAttribute('role', 'status');
+            this.effectLabel.setAttribute('aria-label', 'Active effect');
             this.root.appendChild(this.slots);
             this.root.appendChild(this.effectLabel);
-            bar.appendChild(this.root);
+            this.anchor.appendChild(this.root);
             this.buttons = new Map();
             this.tick(Date.now());
             this.interval = setInterval(() => this.tick(Date.now()), 250);
@@ -121,6 +124,7 @@ define(function () {
         destroy() {
             clearInterval(this.interval);
             this.root?.remove();
+            this.anchor?.remove();
         }
     }
     return ConsumableHud;

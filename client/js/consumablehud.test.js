@@ -20,6 +20,7 @@ function element() {
 function setup(slots = [7]) {
     let Hud;
     const bar = element();
+    bar.insertAdjacentElement = (_, anchor) => { bar.anchor = anchor; };
     const document = {hidden: false, getElementById: () => bar, createElement: element};
     vm.runInNewContext(fs.readFileSync(require.resolve('./consumablehud'), 'utf8'), {
         document, Date, setInterval, clearInterval, define: factory => { Hud = factory(); },
