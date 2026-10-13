@@ -1267,6 +1267,7 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
 
                 _this.hideWindows();
                 $('body').addClass('inventory');
+                _this.isInventoryVisible = true;
             }).catch(function(error) {
                 console.error(error);
             });
