@@ -187,8 +187,10 @@ define(['character', 'projectile', 'timer'], function (Character, Projectile, Ti
                         if (manual) {
                             progress = (self.manualMovementDistance(elapsed + progress * duration) - distance) / travelTime;
                         }
-                        c.x = Math.round(startX + dx * progress);
-                        c.y = Math.round(startY + dy * progress);
+                        // Keep world coordinates continuous; snap only after the
+                        // renderer subtracts the eased camera position.
+                        c.x = startX + dx * progress;
+                        c.y = startY + dy * progress;
                         c.hasMoved();
                     },
                     function () {

@@ -33,14 +33,22 @@ test.each([25, 30, 60, 120, 144])('easing reaches the same position after equal 
     }
     view.follow(target(32), 200);
     expect(view.followX).toBeCloseTo(32 * (1 - Math.exp(-200 / 70)), 8);
-    expect(view.x).toBe(30);
+    expect(view.x).toBeCloseTo(32 * (1 - Math.exp(-200 / 70)), 8);
 });
 
-test('fractional easing settles on the target instead of stalling one pixel short', () => {
+test('fractional easing converges on the target instead of stalling one pixel short', () => {
     const view = camera();
     view.follow(target(0), 0);
     for (let time = 16; time <= 800; time += 16) view.follow(target(16), time);
-    expect(view.x).toBe(16);
+    expect(view.x).toBeCloseTo(16, 3);
+});
+
+test('focus preserves a fractional actor position for one final screen-space snap', () => {
+    const view = camera();
+    view.lookAt(target(100.25, 80.75));
+    expect([view.x, view.y]).toEqual([100.25, 80.75]);
+    view.follow(target(100.5, 80.5), 0);
+    expect([view.x, view.y]).toEqual([100.5, 80.5]);
 });
 
 test('reversing direction starts following back immediately', () => {

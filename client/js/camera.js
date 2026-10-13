@@ -95,8 +95,8 @@ define(function() {
         lookAt: function(entity) {
             if (entity) {
                 var r = this.renderer,
-                    x = Math.round( entity.x - (Math.floor(this.gridW / 2) * r.tilesize) ),
-                    y = Math.round( entity.y - (Math.floor(this.gridH / 2) * r.tilesize) );
+                    x = entity.x - (Math.floor(this.gridW / 2) * r.tilesize),
+                    y = entity.y - (Math.floor(this.gridH / 2) * r.tilesize);
         
                 this.setPosition(x, y);
             }
@@ -120,14 +120,15 @@ define(function() {
                 this.followY = this.y;
             } else {
                 // Exponential easing depends on elapsed time rather than frame count.
-                // Keep fractional progress internally so rounding cannot stall the tail.
+                // Preserve fractional camera and actor positions until projection.
+                // Rounding them separately makes a steady walk shake by one art pixel.
                 var amount = 1 - Math.exp(-elapsed / this.followSmoothing),
                     x = this.followX + (targetX - this.followX) * amount,
                     y = this.followY + (targetY - this.followY) * amount;
-                this.setPosition(Math.round(x), Math.round(y));
+                this.setPosition(x, y);
                 // Bounds may clamp the rendered position: do not accumulate lag outside them.
-                this.followX = this.x === Math.round(x) ? x : this.x;
-                this.followY = this.y === Math.round(y) ? y : this.y;
+                this.followX = this.x;
+                this.followY = this.y;
             }
             this.followTargetX = targetX;
             this.followTargetY = targetY;
