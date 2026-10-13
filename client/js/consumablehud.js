@@ -100,7 +100,8 @@ define(function () {
                 const key = assigned.indexOf(id);
                 slot.key.textContent = key >= 0 ? String(key + 1) : '';
                 slot.count.textContent = String(item.qty || 0);
-                slot.timer.textContent = seconds ? String(seconds) + 's' : '';
+                slot.timer.textContent = seconds >= 60 ? Math.floor(seconds / 60) + ':' + String(seconds % 60).padStart(2, '0')
+                    : seconds ? String(seconds) + 's' : '';
                 slot.timer.hidden = !seconds;
                 slot.button.disabled = Boolean(seconds || !(Number(item.qty) > 0) || this.pending.has(id) || this.app.game?.player?.isDead);
                 slot.button.classList.toggle('cooling', seconds > 0);

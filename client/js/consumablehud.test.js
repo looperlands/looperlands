@@ -84,6 +84,12 @@ test('a consumed last item and death disable use; server quantity readback re-en
     hud.tick(1000);
     expect(hud.buttons.get('7').button.disabled).toBe(true);
 });
+test('long cooldowns fit a compact badge while quantities remain separate', () => {
+    const {hud} = setup();
+    hud.sync({7: {...pie, qty: 123, cooldown: 76000}});
+    expect(hud.buttons.get('7').timer.textContent).toBe('1:15');
+    expect(hud.buttons.get('7').count.textContent).toBe('123');
+});
 test('active effects have a visible countdown and clear on expiry or cancellation', () => {
     const {hud} = setup([]);
     hud.setEffect('attack', 10, 60000);
