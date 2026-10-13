@@ -36,7 +36,7 @@ test('stacking ends 200 ms after the initial hit even while hits keep arriving',
     const numbers = Object.values(info.infos);
     expect(numbers.map(number => number.value)).toEqual([15, 10, 5]);
     expect(numbers.map(number => number.initialX)).toEqual([28, 36, 24]);
-    info.update(2000);
+    info.update(1650);
     expect(Object.values(info.infos).map(number => number.value)).toEqual([10, 5]);
 });
 
@@ -91,25 +91,25 @@ test('combat text expires after a long frame gap and releases its lane state', (
 test.each([false, true])('reduced motion=%s preserves the readable hold and fade', reducedMotion => {
     const {info} = setup(reducedMotion);
     info.addDamageInfo('+5', 32, 48, 'healed', 1);
-    info.update(1500);
+    info.update(1325);
     const number = Object.values(info.infos)[0];
-    expect(number.y).toBe(reducedMotion ? 48 : 38);
-    expect(number.x).toBe(reducedMotion ? 28 : 24);
+    expect(number.y).toBe(reducedMotion ? 48 : 42.5);
+    expect(number.x).toBe(reducedMotion ? 28 : 26);
     expect(number.opacity).toBe(1);
     if (reducedMotion) {
         expect(number.rotation).toBe(0);
         expect(number.textScale).toBe(number.baseScale);
     }
     expect(number.fillColor).toBe('rgb(80, 255, 80)');
-    info.update(1825);
+    info.update(1503.75);
     expect(number.opacity).toBeCloseTo(0.25);
 });
 
 test('animation is independent of frame rate and larger amounts have bounded emphasis', () => {
     const direct = setup().info, stepped = setup().info;
     for (const manager of [direct, stepped]) manager.addDamageInfo(500, 32, 48, 'inflicted', 7);
-    for (let time = 1000; time < 1825; time += 16) stepped.update(time);
-    direct.update(1825); stepped.update(1825);
+    for (let time = 1000; time < 1520; time += 16) stepped.update(time);
+    direct.update(1520); stepped.update(1520);
     const a = Object.values(direct.infos)[0], b = Object.values(stepped.infos)[0];
     for (const key of ['x', 'y', 'textScale', 'rotation', 'opacity']) expect(a[key]).toBeCloseTo(b[key]);
     const {info} = setup();
