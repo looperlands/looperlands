@@ -99,14 +99,14 @@ test.each([true, false])('repeating sounds vary subtly on each play (Web Audio: 
     const sound = safari ? manager.soundEffects.hit1 : manager.getSound('hit1');
     if (safari) sound.play.mockReturnValueOnce(21).mockReturnValueOnce(22);
     manager.playSound('hit1');
-    if (safari) expect(sound.rate).toHaveBeenLastCalledWith(0.96, 21);
+    if (safari) expect(sound.rate).toHaveBeenLastCalledWith(0.92, 21);
     else {
-        expect(sound.playbackRate).toBe(0.96);
+        expect(sound.playbackRate).toBe(0.92);
         expect(sound.preservesPitch).toBe(false);
     }
     manager.playSound(6); // hit1, as sent by the server
-    if (safari) expect(sound.rate).toHaveBeenLastCalledWith(1.04, 22);
-    else expect(sound.playbackRate).toBe(1.04);
+    if (safari) expect(sound.rate).toHaveBeenLastCalledWith(1.08, 22);
+    else expect(sound.playbackRate).toBe(1.08);
     manager.playSound('achievement');
     expect(sandbox.Math.random).toHaveBeenCalledTimes(2);
     if (safari) expect(manager.soundEffects.achievement.rate).not.toHaveBeenCalled();
