@@ -569,6 +569,16 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                        }
                     }
                 }
+                if (entity instanceof Character) {
+                    const recoil = this.game.combatFeedback?.getOffset(entity, this.game.currentTime);
+                    if (recoil && (recoil.x || recoil.y)) {
+                        for (const draw of entityData.drawData) {
+                            if (draw.spriteName === 'shadow16' || draw.renderAbove) continue;
+                            draw.dx += recoil.x * this.scale * (entity.flipSpriteX ? -1 : 1);
+                            draw.dy += recoil.y * this.scale * (entity.flipSpriteY ? -1 : 1);
+                        }
+                    }
+                }
                 return [textData, entityData];
             },
     

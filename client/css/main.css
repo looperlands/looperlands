@@ -317,7 +317,12 @@ body.upscaled.game {background:#000;}
 
 #bar-container {background:url('../img/1/barsheet.png');image-rendering:-moz-crisp-edges;position:relative;width:100%;z-index:10;}
 #healthbar {background:url('../img/1/barsheet.png');image-rendering:-moz-crisp-edges;position:absolute;}
-#hitpoints {background:#d83939;-moz-transition:.5s width ease;-webkit-transition:.5s width ease;-o-transition:.5s width ease;-ms-transition:.5s width ease;transition:.5s width ease;}
+#hitpoints {background:#d83939;transition:none;}
+#bar-container #hitpoints-trail {background:#fff;border-color:#fff;z-index:9;pointer-events:none;transition:none;}
+#bar-container #hitpoints-trail.settling {transition:width 280ms ease-out;}
+@media (prefers-reduced-motion: reduce) {
+    #bar-container #hitpoints-trail.settling {transition:none;}
+}
 #hitpoints.white {-moz-animation:flash 0.5s linear 1;-webkit-animation:flash 0.5s linear 1;-o-animation:flash 0.5s linear 1;-ms-animation:flash 0.5s linear 1;animation:flash 0.5s linear 1;}
 #hitpoints.invincible {animation:invincible 0.3s steps(3, end) alternate infinite;-moz-animation:invincible 0.3s steps(3, end) alternate infinite;-webkit-animation:invincible 0.3s steps(3, end) alternate infinite;-o-animation:invincible 0.3s steps(3, end) alternate infinite;-ms-animation:invincible 0.3s steps(3, end) alternate infinite;}
 
@@ -349,6 +354,65 @@ body.upscaled.game {background:#000;}
 #population {background:url('../img/1/barsheet.png');border-radius: 10px 0 0 0; image-rendering:-moz-crisp-edges;position:absolute;font-family:'GraphicPixel';color:#fff;text-align:center;opacity:0;pointer-events:none;-moz-transition:0.2s opacity linear, 0.2s height ease;-webkit-transition:0.2s opacity linear, 0.2s height ease;-o-transition:0.2s opacity linear, 0.2s height ease;-ms-transition:0.2s opacity linear, 0.2s height ease;transition:0.2s opacity linear, 0.2s height ease;height:0;overflow:hidden;}
 #population span:nth-child(1) {color:#FCE045;}
 #population.visible {opacity:1;pointer-events:auto;}
+
+.cooldown-ready {
+    outline: 2px solid #ffd66b;
+    outline-offset: -3px;
+    animation: cooldown-ready-glint 450ms ease-out;
+}
+@keyframes cooldown-ready-glint {
+    from { outline-color: #fff2bf; }
+    to { outline-color: transparent; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .cooldown-ready { animation: none; }
+}
+
+#consumable-hud-anchor { position: relative; height: 0; z-index: 11; }
+#consumable-hud {
+    position: absolute;
+    right: 8px;
+    bottom: 6px;
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    max-width: calc(100% - 16px);
+    font: 14px GraphicPixel, sans-serif;
+    color: #ffe3a1;
+}
+#consumable-hud[hidden], #consumable-hud [hidden] { display: none; }
+.hud-consumables { display: flex; gap: 4px; }
+.hud-consumable {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    padding: 4px;
+    border: 2px solid #b99761;
+    border-radius: 2px;
+    overflow: hidden;
+    background: #341e28;
+    color: #ffe3a1;
+    font: inherit;
+    cursor: pointer;
+}
+.hud-consumable img { width: 32px; height: 32px; object-fit: cover; object-position: 100% 0; image-rendering: pixelated; }
+.hud-consumable:hover:not(:disabled) { border-color: #ffe3a1; }
+.hud-consumable:focus-visible { outline: 2px solid #fff2bf; outline-offset: 2px; }
+.hud-consumable:disabled { cursor: default; }
+.hud-consumable:disabled img { opacity: .65; }
+.hud-consumable.cooling img { opacity: 1; }
+.hud-key, .hud-count { position: absolute; z-index: 1; background: #341e28; font-size: 12px; line-height: 14px; padding: 0 2px; }
+.hud-key { top: -2px; left: -2px; }
+.hud-count { bottom: -2px; right: -2px; }
+.hud-cooldown { position: absolute; inset: 9px 0; text-align: center; padding: 3px 0; background: rgba(52, 30, 40, .7); color: #fff2bf; }
+.hud-effect { display: flex; align-items: center; gap: 6px; height: 44px; box-sizing: border-box; max-width: 180px; padding: 4px 8px; border: 2px solid #b99761; border-radius: 2px; background: #341e28; line-height: 16px; }
+.hud-effect-name { min-width: 0; }
+.hud-effect-timer { display: inline-flex; flex: none; white-space: pre; }
+.hud-effect-timer > span { display: inline-block; flex: none; width: 1ch; text-align: center; }
+@media (max-width: 480px) {
+    #consumable-hud { gap: 4px; }
+    .hud-effect { max-width: 110px; font-size: 12px; padding: 4px; }
+}
 
 #time {
     text-shadow: 0 0 2px black;
@@ -800,16 +864,16 @@ body.upscaled.game {background:#000;}
     left: calc(50% - 425px);
     opacity: 0;
     height:400px;
-    transition: ease-in all 0.2s;
+    transition: opacity 120ms ease-out;
     user-select: none;
     padding:0 25px;
-    transition-delay: 500ms;
+    transition-delay: 0ms;
 }
 body.inventory #inventory {
     pointer-events: all;
     z-index: 9999;
     opacity: 1;
-    transition: ease-in-out all 0.2s;
+    transition: opacity 180ms cubic-bezier(0.16, 1, 0.3, 1);
     transition-delay: 0ms;
 }
 
@@ -855,22 +919,22 @@ body.inventory #inventory {
 body .inventorySidebar {
     position: absolute;
     top: 21%;
-    left: calc(50% + 250px);
+    left: calc(50% + 360px);
     z-index: 9;
     background-color: #341e28 !important;
     width: 38px;
     padding: 15px;
     padding-left: 18px;
     height: 210px;
-    transition: cubic-bezier(0.18, 0.89, 0.32, 1.28) all 0.8s;
+    transition: opacity 120ms ease-out;
     transition-delay: 0ms;
     pointer-events: none;
     opacity: 0;
 }
 
 body.inventory .inventorySidebar {
-    transition-delay: 350ms;
-    transition-duration: 400ms;
+    transition: opacity 180ms cubic-bezier(0.16, 1, 0.3, 1);
+    transition-delay: 0ms;
     left: calc(50% + 360px);
     opacity: 1;
     pointer-events: auto;
@@ -960,11 +1024,17 @@ body.inventory .inventorySidebar {
     image-rendering: pixelated;
     border-image-width: 12px;
     font-family: 'GraphicPixel', arial, sans-serif;
-    transition: ease-in-out 500ms;
+    transition: opacity 180ms cubic-bezier(0.16, 1, 0.3, 1);
     opacity: 100;
 }
 
-.panel.hidden,.panelBorder.hidden { opacity: 0; pointer-events: none; transition: ease-in-out 500ms;}
+.panel.hidden,.panelBorder.hidden { opacity: 0; pointer-events: none; transition: opacity 120ms ease-out;}
+
+@media (prefers-reduced-motion: reduce) {
+    .panel, .panel.hidden, .panelBorder.hidden { transition: none; }
+    #inventory, body.inventory #inventory,
+    body .inventorySidebar, body.inventory .inventorySidebar { transition: none; }
+}
 
 .panel .panelTitle,
 .panelBorder .panelTitle{
@@ -1737,7 +1807,7 @@ footer div  {display:inline-block;}
     #bar-container {height:51px;top:-3px;background-size:1440px;}
 
     #healthbar {height:39px;background-position:0 -51px;width:306px;top:9px;background-size:1440px;z-index:20;}
-    #hitpoints {width:0px;height:21px;top:15px;left:33px;z-index:10; position:absolute; border-top: 3px solid #ea6767; border-bottom: 3px solid #a62828;}
+    #hitpoints, #hitpoints-trail {width:0px;height:21px;top:15px;left:33px;z-index:10; position:absolute; border-top: 3px solid #ea6767; border-bottom: 3px solid #a62828;}
     
     #fishingbar {width:72px;height:450px;}
     #bullseye {text-shadow: -1px -1px 3px #000, 1px -1px 3px #000, -1px 1px 3px #000, 1px 1px 3px #000;font-size:36px;}
@@ -2101,7 +2171,7 @@ footer div  {display:inline-block;}
     #bar-container {height:34px;top:-2px;background-size:960px;}
 
     #healthbar {height:26px;background-position:0 -34px;width:204px;top:6px;background-size:960px;z-index:20;}
-    #hitpoints {width:0px;height:20px;top:8px;left:22px;z-index:10;position:absolute;}
+    #hitpoints, #hitpoints-trail {width:0px;height:20px;top:8px;left:22px;z-index:10;position:absolute;}
 
     #fishingbar {width:48px;height:300px;}
     #bullseye {text-shadow: -1px -1px 2px #000, 1px -1px 2px #000, -1px 1px 2px #000, 1px 1px 2px #000;font-size:24px;}
@@ -2320,7 +2390,7 @@ footer div  {display:inline-block;}
     #bar-container {height:34px;top:-2px;background-size:960px;}
 
     #healthbar {height:26px;background-position:0 -34px;width:204px;top:6px;background-size:960px;z-index:20;}
-    #hitpoints {width:0px;height:16px;top:8px;left:22px;z-index:10;position:absolute;border-top: 3px solid #ea6767; border-bottom: 3px solid #a62828;}
+    #hitpoints, #hitpoints-trail {width:0px;height:16px;top:8px;left:22px;z-index:10;position:absolute;border-top: 3px solid #ea6767; border-bottom: 3px solid #a62828;}
 
     #fishingbar {width:48px;height:300px;}
     #bullseye {text-shadow: -1px -1px 2px #000, 1px -1px 2px #000, -1px 1px 2px #000, 1px 1px 2px #000;font-size:24px;}
@@ -2484,7 +2554,7 @@ footer div  {display:inline-block;}
     #bar-container {height:17px;top:-1px;background-size:480px;}
 
     #healthbar {height:13px;background-position:0 -17px;width:102px;top:3px;background-size:480px;z-index:20;}
-    #hitpoints {width:0px;height:5px;top:4px;left:11px;z-index:10;position:absolute;}
+    #hitpoints, #hitpoints-trail {width:0px;height:5px;top:4px;left:11px;z-index:10;position:absolute;}
 
     #fishingbar {width:24px;height:150px;}
     #bullseye {text-shadow: -1px -1px 1px #000, 1px -1px 1px #000, -1px 1px 1px #000, 1px 1px 1px #000;font-size:12px;}
@@ -2652,7 +2722,7 @@ footer div  {display:inline-block;}
     #bar-container {height:34px;top:-2px;background-size:960px;background-position:0 -96px;}
 
     #healthbar {height:26px;background-position:0 -34px;width:204px;top:6px;background-size:960px;z-index:20;}
-    #hitpoints {width:0px;height:16px;top:8px;left:22px;z-index:10;position:absolute;}
+    #hitpoints, #hitpoints-trail {width:0px;height:16px;top:8px;left:22px;z-index:10;position:absolute;}
 
     #fishingbar {width:48px;;height:300px;}
     #bullseye {text-shadow: -1px -1px 2px #000, 1px -1px 2px #000, -1px 1px 2px #000, 1px 1px 2px #000;font-size:24px;}

@@ -8,7 +8,8 @@
             context.fillStyle = particle.color;
             context.fillRect(Math.round((particle.x - view.cameraX) * view.scale),
                 Math.round((particle.y - view.cameraY) * view.scale),
-                particle.size * view.scale, particle.size * view.scale);
+                (particle.width ?? particle.size) * view.scale,
+                (particle.height ?? particle.size) * view.scale);
         }
     }
     return {layer: 'foreground', draw};

@@ -1108,13 +1108,37 @@ WS.socketIOServer = Server.extend({
         app.post("/session/:sessionId/newBot", async (req, res) => {
             const sessionId = req.params.sessionId;
             const sessionData = cache.get(sessionId);
+
+            if (!sessionData) {
+                console.error(`[newBot] Session not found: ${sessionId}`);
+                return res.status(404).send({});
+            }
+            
             let botNftId = req.body.botNftId;
             const dynamicNFTData = req.body.dynamicNFTData;
 
             let ownedBots = await dao.getBots(sessionData.walletId);
             let botInfo = ownedBots.find(bot => bot.nftId === botNftId);
             if (botInfo) {
-                let owner = self.worldsMap[sessionData.mapId].getPlayerById(sessionData.entityId);
+                const world = self.worldsMap[sessionData.mapId];
+
+                if (!world) {
+                    console.error(
+                        `[newBot] World not found: mapId=${sessionData.mapId}, sessionId=${sessionId}`
+                    );
+                    return res.status(404).send({});
+                }
+        
+                const owner = world.getPlayerById(sessionData.entityId);
+        
+                if (!owner) {
+                    console.error(
+                        `[newBot] Player not found in world: ` +
+                        `sessionId=${sessionId}, mapId=${sessionData.mapId}, entityId=${sessionData.entityId}`
+                    );
+                    return res.status(404).send({});
+                }
+
                 let newBot = await dao.newBot(
                     sessionData.mapId,
                     botNftId,
