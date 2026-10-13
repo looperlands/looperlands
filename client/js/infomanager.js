@@ -1,9 +1,9 @@
 
 define(function() {
-    const COMBAT_TEXT_DURATION = 1000;
+    const COMBAT_TEXT_DURATION = 650;
     const STACK_WINDOW = 200;
     const POP_DURATION = 160;
-    const FADE_START = 0.65;
+    const FADE_START = 0.55;
 
     var InfoManager = Class.extend({
         init: function(game) {
@@ -47,8 +47,8 @@ define(function() {
                 info.poppedAt = time;
                 info.initialX = info.x;
                 info.initialY = y - (lane % 4) * 16;
-                info.drift = [-8, 8, -12, 12][lane % 4];
-                info.lift = [30, 34, 32, 36][lane % 4];
+                info.drift = [-4, 4, -6, 6][lane % 4];
+                info.lift = [16, 18, 17, 19][lane % 4];
                 info.tilt = [-0.08, 0.08, -0.12, 0.12][lane % 4];
                 info.critical = critical === true;
                 info.reducedMotion = this.game.app.settings.getReducedMotion();
@@ -169,7 +169,7 @@ define(function() {
                 this.textScale = (this.baseScale || 1) * (this.reducedMotion ? 1 : pulse);
                 this.rotation = this.reducedMotion ? 0 : this.tilt * (1 - progress);
                 this.x = this.initialX + (this.reducedMotion ? 0 : this.drift * progress);
-                this.y = this.initialY - (this.reducedMotion ? 0 : this.lift * progress - 20 * progress * progress);
+                this.y = this.initialY - (this.reducedMotion ? 0 : this.lift * progress - 10 * progress * progress);
                 this.opacity = progress <= FADE_START ? 1 : Math.pow((1 - progress) / (1 - FADE_START), 2);
                 if (progress >= 1) this.destroy();
                 return;
