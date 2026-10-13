@@ -1359,7 +1359,10 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
                 icon.addEventListener('error', () => { icon.hidden = true; });
                 toast.appendChild(icon);
                 toast.appendChild(document.createElement('span'));
-                bar.appendChild(toast);
+                const anchor = document.createElement('div');
+                anchor.id = 'pickup-hud-anchor';
+                bar.insertAdjacentElement('beforebegin', anchor);
+                anchor.appendChild(toast);
             }
             const icon = toast.querySelector('img');
             icon.hidden = false;

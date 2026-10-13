@@ -27,13 +27,14 @@ test('closed inventory gets a pickup status and bag cue immediately, then hides 
     }
     doc.createElement = element;
     const bar = element();
+    bar.insertAdjacentElement = (_, anchor) => { bar.anchor = anchor; };
     elements.set('bar-container', bar);
     const get = doc.getElementById;
-    doc.getElementById = id => id === 'hud-pickup' ? bar.children[0] || null : get(id);
+    doc.getElementById = id => id === 'hud-pickup' ? bar.anchor?.children[0] || null : get(id);
     app.isInventoryVisible = false;
     app.refreshConsumableHud = jest.fn();
     app.acknowledgePickup({kind: 7, getSpriteName: () => 'item-pie', getLootMessage: () => 'You pick up a pie'});
-    const toast = bar.children[0];
+    const toast = bar.anchor.children[0];
     expect(toast.hidden).toBe(false);
     expect(toast.children[1].textContent).toBe('You pick up a pie');
     expect(toast.children[0].src).toBe('img/1/item-pie.png');
@@ -45,7 +46,7 @@ test('closed inventory gets a pickup status and bag cue immediately, then hides 
     app.acknowledgePickup({kind: 8, getLootMessage: () => '<b>Collected</b>', sprite: {filepath: 'existing.png'}});
     expect(toast.hidden).toBe(false);
     expect(toast.children[1].textContent).toBe('<b>Collected</b>');
-    expect(bar.children).toHaveLength(1);
+    expect(bar.anchor.children).toHaveLength(1);
 });
 test('background and missing-HUD pickups remain quiet', () => {
     const {app, doc, elements} = setup();

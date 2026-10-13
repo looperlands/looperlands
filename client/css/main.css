@@ -531,10 +531,11 @@ body.upscaled.game {background:#000;}
     border-radius: 15px;
 }
 
+#pickup-hud-anchor { position: relative; height: 0; z-index: 11; }
 #hud-pickup {
     position: absolute;
     right: 8px;
-    bottom: calc(100% + 56px);
+    bottom: 56px;
     display: flex;
     align-items: center;
     gap: 8px;
