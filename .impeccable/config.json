@@ -53,6 +53,33 @@
         ],
         "createdAt": "2026-10-07T21:58:46.918Z",
         "reason": "Agent review: the flagged raster surfaces are initially hidden game panels. The population visible class restores opacity to 1; the game class reveals the canvas after loading."
+      },
+      {
+        "rule": "overused-font",
+        "value": "arial",
+        "files": [
+          "bin/dialogue-preview.html"
+        ],
+        "createdAt": "2026-10-13T22:33:27.543Z",
+        "reason": "🤖 Agent review: the fixture reuses the existing GraphicPixel game font; Arial is an inherited fallback, not a new visual direction."
+      },
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "bin/dialogue-preview.html"
+        ],
+        "createdAt": "2026-10-13T22:33:27.623Z",
+        "reason": "🤖 Agent review: the reported #fishingtarget stripe is inherited CSS for the fishing catch zone; that component is absent from this dialogue fixture."
+      },
+      {
+        "rule": "organic-clip-path",
+        "value": "*",
+        "files": [
+          "bin/dialogue-preview.html"
+        ],
+        "createdAt": "2026-10-13T22:33:27.687Z",
+        "reason": "🤖 Agent review: the imported polygons form axis-aligned stepped rectangular pixel corners from the existing game styles, not organic contours."
       }
     ]
   }

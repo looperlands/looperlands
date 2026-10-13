@@ -1,11 +1,11 @@
 
-define(['jquery', 'timer'], function($, Timer) {
+define(['jquery', 'timer', 'dialoguetext'], function($, Timer, DialogueText) {
 
     var Bubble = Class.extend({
         init: function(id, element, time, showCheck) {
             this.id = id;
             this.element = element;
-            timeout = 5000;
+            var timeout = 5000;
             if (id === "global") {
                 timeout = 1000 * 60 * 15;
             }
@@ -14,6 +14,7 @@ define(['jquery', 'timer'], function($, Timer) {
         },
 
         isOver: function(time) {
+            if (this.dialogueText?.isTyping) return false;
             if(this.timer.isOver(time)) {
                 return true;
             }
@@ -21,6 +22,7 @@ define(['jquery', 'timer'], function($, Timer) {
         },
 
         destroy: function() {
+            this.dialogueText?.cancel();
             $(this.element).remove();
         },
 
@@ -42,7 +44,8 @@ define(['jquery', 'timer'], function($, Timer) {
             return null;
         },
 
-        create: function(id, message, time, showCheck) {
+        create: function(id, message, time, showCheck, presentation) {
+            this.bubbles[id]?.dialogueText?.cancel();
             if(this.bubbles[id]) {
                 this.bubbles[id].reset(time);
                 if (id === "global") {
@@ -63,6 +66,25 @@ define(['jquery', 'timer'], function($, Timer) {
             if (id === "global") {
                 const history = this.bubbles[id].element;
                 history.scrollTop(history[0].scrollHeight);
+            } else {
+                const bubble = this.bubbles[id];
+                bubble.element.removeClass('dialogue-bubble').find('.dialogue-ready-indicator').remove();
+                if (presentation?.dialogue) {
+                    bubble.element.addClass('dialogue-bubble');
+                    const paragraph = bubble.element.find('p')[0];
+                    const length = paragraph.textContent.length;
+                    const startedAt = Date.now();
+                    bubble.dialogueText = new DialogueText(paragraph, {
+                        onComplete: () => {
+                            bubble.reset(time + Date.now() - startedAt);
+                            bubble.timer.duration = Math.max(5000, Math.min(30000, length * 50));
+                            bubble.element.append('<span class="dialogue-ready-indicator" aria-hidden="true"></span>');
+                        }
+                    });
+                } else {
+                    bubble.dialogueText = null;
+                    bubble.timer.duration = 5000;
+                }
             }
         },
 

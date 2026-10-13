@@ -41,7 +41,7 @@ const dialogues = [
         resume_conditions: [resume('waiting', open(BASKET)), resume('report', open(BASKET), choice(FOUND)),
             resume('path', completed(BASKET)), resume('safe', completed(SAFETY)), resume('thanks', completed(INVITE))],
         nodes: {
-            welcome: {text: ['I am gathering supplies for tonight\'s lantern picnic. That is why I keep walking between my house and the market.',
+            welcome: {text: ['I am gathering supplies for tonight\'s <span class="dialogue-wave">lantern picnic</span>. That is why I keep walking between my house and the market.',
                 'Bstrat borrowed my basket. I need it for bread, but she may have a good reason. Would you ask her?'],
                 options: [option('I will help you sort out the basket.', 'accept'), option('Tell me about your rounds.', 'rounds'), option('Maybe later.', 'later')]},
             rounds: {text: ['First I check the market, then water the plants, then rest by the path.',
@@ -69,7 +69,7 @@ const dialogues = [
         nodes: {
             welcome: {text: ['I borrowed Adam\'s basket to carry blankets for tonight\'s picnic. I stop at the market to see who still needs an invitation.',
                 'If you want to help with the preparations, start by speaking to Ordinary Adam.']},
-            basket: {text: ['Adam sent you about his basket? I brought blankets in it. I did not realise he needed it for bread.',
+            basket: {text: ['Adam sent you about his <span class="dialogue-item">basket</span>? I brought blankets in it. I did not realise he needed it for bread.',
                 'What should we do?'], options: [option('Please return it after unpacking the blankets.', 'return'),
                     option('Share it: blankets first, bread afterwards.', 'share')]},
             return: {text: ['Fair enough. I will unpack the blankets and return the basket to Adam.',
@@ -95,7 +95,7 @@ const dialogues = [
             welcome: {text: ['I patrol the gate, the road and the market because the neighbours are preparing a picnic.',
                 'Adam and Bstrat still need to sort out the basket. Help Adam first; then I can give you a job on the path.']},
             offer: {text: ['Adam said you sorted out the basket. Next, we need a safe path for the neighbours.',
-                'Show me that you have defeated three rats, then report back. Rats you already defeated count; you do not need to repeat that work.'],
+                'Show me that you have defeated <span class="dialogue-danger dialogue-shake">three rats</span>, then report back. Rats you already defeated count; you do not need to repeat that work.'],
                 options: [option('I will help clear the path.', 'accept'), option('Why do you keep patrolling?', 'patrol'), option('I will come back later.', 'later')]},
             patrol: {text: 'I keep checking the gate while Adam checks supplies and Bstrat gathers neighbours. Even when you clear the path, someone still needs to watch the entrance.', goto: 'offer'},
             later: {text: 'All right. I will keep patrolling until you are ready.'},

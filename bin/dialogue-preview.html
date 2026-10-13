@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>LooperLands dialogue preview</title>
+    <link rel="stylesheet" href="/client/css/main.css?v=dialogue-4">
+    <link rel="stylesheet" href="/client/css/dialogue.css?v=dialogue-4">
+    <style>
+        html, body { margin: 0; min-height: 100%; background: #23211e; color: #f1e2c7; font: 16px system-ui, sans-serif; }
+        html, body { overflow: visible; }
+        main { max-width: 680px; margin: 32px auto; padding: 24px; background: #23211e; }
+        h1 { font: inherit; font-size: 24px; margin: 0 0 12px; }
+        p { margin: 12px 0; line-height: 1.5; }
+        nav { display: flex; gap: 8px; flex-wrap: wrap; }
+        nav button { font: inherit; padding: 10px 14px; color: #f1e2c7; background: #533643; border: 1px solid #b86f50; cursor: pointer; }
+        #fixture-status { margin-top: 18px; }
+        #bubbles { position: absolute; top: 65%; left: 12%; width: 76%; height: auto; overflow: visible; }
+        #bubbles .bubble { position: relative; max-width: 100%; }
+        @media (max-width: 600px) { main { margin: 16px; padding: 16px; } }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>LooperLands dialogue preview</h1>
+        <p>Try Enter to reveal the line, then Enter again to choose. Escape closes the conversation.</p>
+        <nav aria-label="Dialogue examples">
+            <button id="replay">Replay dialogue</button>
+            <button id="long-line">Long dialogue</button>
+            <button id="bubble-line">Speech bubble</button>
+        </nav>
+        <p id="fixture-status" role="status">Loading…</p>
+    </main>
+    <div id="dialogue-popup" class="panel hidden" role="dialog" aria-modal="true" aria-label="Conversation" aria-hidden="true">
+        <div class="header">
+            <div id="avatar" aria-hidden="true"></div>
+            <div class="dialogue-copy"><div id="dialogue-speaker"></div><div id="question" class="stroke"></div></div>
+        </div>
+        <div class="body">
+            <div class="dialogue-progress">
+                <button id="dialogue-reveal" type="button">Show full text</button>
+                <span id="dialogue-ready" hidden><span class="dialogue-ready-indicator" aria-hidden="true"></span>Choose a response</span>
+            </div>
+            <div id="choices"></div>
+        </div>
+        <button id="close-dialogue-popup" type="button" aria-label="Close conversation"></button>
+    </div>
+    <div id="bubbles"></div>
+    <script src="/client/js/lib/class.js"></script>
+    <script src="/client/js/lib/underscore.min.js"></script>
+    <script src="/client/js/lib/require-jquery.js"></script>
+    <script>
+        require.config({baseUrl: '/client/js', paths: {jquery: 'lib/require-jquery'}, urlArgs: 'preview=' + Date.now()});
+        require(['app', 'bubble'], function (App, BubbleManager) {
+            const app = Object.create(App.prototype);
+            const manager = new BubbleManager('#bubbles');
+            let choices = 0;
+            const status = document.getElementById('fixture-status');
+            app.game = {
+                conversationHold: {stop() {}},
+                getEntityById: () => ({name: 'Town Watch', normalSprite: {width: 25, height: 24, scale: 3,
+                    image: {src: '/client/img/3/guard.png', width: 150, height: 72}, animationData: {idle_down: {row: 0, length: 2}}}}),
+                makeChoice(id, choice) { choices++; status.textContent = 'Choices sent: ' + choices + ' · ' + choice; }
+            };
+            app.initResourcesDisplay = function () {};
+            const line = 'Welcome, traveler. The <span class="dialogue-danger dialogue-shake">rats</span> are back… Bring your <span class="dialogue-item">sword</span>, and meet me by the <span class="dialogue-wave">lanterns</span>.';
+            function show(text = line) {
+                status.textContent = 'Choices sent: ' + choices;
+                app.showChoicesPopup(1, {text, options: [
+                    {text: 'I will help clear the path.', goto: 'help'},
+                    {text: 'Tell me more about your patrol.', goto: 'patrol'},
+                    {text: 'I will come back later.', goto: 'later'}
+                ]});
+            }
+            document.getElementById('replay').addEventListener('click', () => {manager.clean(); show();});
+            document.getElementById('long-line').addEventListener('click', () => show([
+                'First I check the market, then water the plants, then rest by the path.',
+                'The basket, the path and the invitations are ready because of your help.<br><br>' + 'The neighbours can come safely now. '.repeat(12) + '<a href="#fixture-status">Read the patrol notes</a> 👩🏽‍🚀'
+            ]));
+            document.getElementById('bubble-line').addEventListener('click', () => {
+                app.closeChoicesPopup(); manager.clean();
+                manager.create('fixture-npc', line, performance.now(), null, {dialogue: true});
+            });
+            document.addEventListener('keydown', event => {
+                if (document.getElementById('dialogue-popup').classList.contains('active')) app.handleChoiceKeyboardInput(event);
+            });
+            setInterval(() => manager.update(performance.now()), 100);
+            show();
+        });
+    </script>
+</body>
+</html>

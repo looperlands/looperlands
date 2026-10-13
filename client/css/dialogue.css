@@ -1,111 +1,140 @@
-#dialogue-popup .body::-webkit-scrollbar {
-    width: 10px;
-    background-color: #533643;
-}
-
-#dialogue-popup .body::-webkit-scrollbar-thumb {
-    background-color: #b86f50;
-}
-
-#dialogue-popup .body::-webkit-scrollbar-thumb:hover {
-    background-color: #FCE045;
-}
-
-#dialogue-popup .body::-webkit-scrollbar-thumb:active {
-    background-color: #FCE045;
-}
-
-#close-dialogue-popup {
-    background-image: url(../img/2/spritesheet.png);
-    position: absolute;
-    cursor: pointer;
-    height: 32px;
-    width: 32px;
-    top: -4px;
-    right: -5px;
-    background-position: -708px -252px;
-}
-
-#close-dialogue-popup:hover {background-position: -740px -252px;}
-#close-dialogue-popup:active{background-position:-772px -252px;}
-
 #dialogue-popup {
     position: absolute;
-    top: 15%;       /* Override by specifying "top" in your characters dialogue.js  (optional) */
-    left: 25%;      /* Override by specifying "left" in your characters dialogue.js (optional) */
-    width: 45%;     /* Override by specifying "width" in your characters dialogue.js (optional) */
-    height: auto;   /* Override by specifying "height" in your characters dialogue.js (optional) */
+    top: 12%;
+    left: 50%;
+    width: min(620px, calc(100% - 32px));
+    max-width: calc(100% - 24px);
+    height: auto;
+    max-height: 80%;
+    overflow: auto;
+    z-index: 20;
     font-family: 'GraphicPixel', arial, sans-serif;
-    transition: opacity 180ms cubic-bezier(0.16, 1, 0.3, 1);
-    opacity: 100;
-    color: #b9b9b9;
-    box-shadow: 0 0 25px rgba(0,0,0,0.5);
-    transform: translateX(-50%)
+    font-size: 14px;
+    color: #f5e5c9;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .45);
+    opacity: 1;
+    transform: translateX(-50%);
+    transition: opacity 180ms ease-out;
+    scrollbar-color: #b86f50 #533643;
+    scrollbar-width: thin;
 }
 
 #dialogue-popup.hidden {
     pointer-events: none;
+    visibility: hidden;
     opacity: 0;
-    transition: opacity 120ms ease-out;
+    transition: opacity 100ms ease-out, visibility 100ms;
 }
-
-@media (prefers-reduced-motion: reduce) {
-    #dialogue-popup, #dialogue-popup.hidden { transition: none; }
-}
+#dialogue-popup::-webkit-scrollbar { width: 10px; background: #533643; }
+#dialogue-popup::-webkit-scrollbar-thumb { background: #b86f50; }
+#dialogue-popup::-webkit-scrollbar-thumb:hover { background: #fce045; }
 
 #dialogue-popup .header {
-    margin-bottom: 25px;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 26px 48px 0 26px;
+    margin: 0;
 }
-
-/* Optional Avatar */
 #dialogue-popup #avatar {
-    float: left;
+    flex: 0 0 60px;
     width: 60px;
-    aspect-ratio: 1;
-    background-image: url(../img/3/JOHNDOE.png);    /* Override by specifying "avatar" in your characters dialogue.js (required if you want to show an avatar) */
-    background-position: 0px 0px;                   /* Override by specifying "background_position" in your characters dialogue.js (optional, but used to properly position the portion of your avatar image that's shown) */
-    background-size: auto;                          /* Override by specifying "background_size" in your characters dialogue.js (optional, but can help properly position your avatar) */
-    margin-top: 25px;
-    margin-left: 25px;
-	margin-right: -5px;
-    border: 1px solid;
+    height: 60px;
+    margin-top: 4px;
+    background-repeat: no-repeat;
+    background-position: 0 0;
+    image-rendering: pixelated;
+    border: 1px solid #b86f50;
     border-radius: 4px;
     display: none;
+    transform-origin: bottom center;
 }
-
-#dialogue-popup .body{
-    padding: 0px 25px;
-    font-size:14px;
-    margin-bottom: 30px;
-}
-
-#dialogue-popup #question {
-    justify-content: center;
-    line-height: 1.4;
-    min-height: 60px;
-    padding: 25px 25px 0px;
-    display: flex;
-    flex-direction: column;
-    color: #FCE045;
-}
+#dialogue-popup #avatar.dialogue-speaking { animation: dialogue-portrait 180ms steps(2, end) infinite, dialogue-portrait-frame 140ms steps(1, end) infinite; }
+#dialogue-popup .dialogue-copy { flex: 1; min-width: 0; }
+#dialogue-speaker { margin-bottom: 10px; color: #fce045; font-size: 16px; }
+#dialogue-popup #question { display: block; min-height: 60px; padding: 0; line-height: 1.7; }
+#dialogue-popup .body { padding: 16px 26px 26px; margin: 0; font-size: inherit; }
+.dialogue-progress { min-height: 28px; margin-bottom: 12px; color: #e6c1a5; }
+.dialogue-progress [hidden] { display: none; }
 
 #dialogue-popup .choice {
-    padding: 7px 10px;
-    border: 1px solid;
+    display: block;
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 12px;
+    margin-top: 8px;
+    border: 1px solid #b86f50;
     border-radius: 4px;
-    margin-top: 10px;
+    background: rgba(0, 0, 0, .2);
+    color: inherit;
+    font: inherit;
+    line-height: 1.5;
+    text-align: left;
     cursor: pointer;
-    width: auto;
-    background: #00000033;
+    overflow-wrap: anywhere;
 }
-
-#dialogue-popup .choice:hover,
-#dialogue-popup .choice.selected {
-    background: #FCE04511;
-    color: #f7dc44;
+#dialogue-popup .choice:hover:enabled,
+#dialogue-popup .choice.selected:enabled { background: #533643; border-color: #fce045; color: #fce045; }
+#dialogue-popup .choice:disabled { cursor: default; color: #d0ad99; }
+#dialogue-popup button:focus-visible, #dialogue-popup a:focus-visible { outline: 2px solid #fce045; outline-offset: 3px; }
+#dialogue-popup ::selection, .dialogue-text ::selection { background: #fce045; color: #382733; }
+#dialogue-reveal { padding: 4px 0; border: 0; background: none; color: #fce045; font: inherit; text-decoration: underline; text-underline-offset: 4px; cursor: pointer; }
+#close-dialogue-popup {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 0;
+    background: url(../img/2/spritesheet.png) -708px -252px;
+    cursor: pointer;
 }
+#close-dialogue-popup:hover { background-position: -740px -252px; }
+#close-dialogue-popup:active { background-position: -772px -252px; }
 
-#dialogue-popup .choice.disabled {
-    pointer-events: none;
-    opacity: 0.6;
+.dialogue-text { overflow-wrap: anywhere; }
+.dialogue-word { display: inline-block; width: max-content; max-width: 100%; }
+.dialogue-space { white-space: pre-wrap; }
+.dialogue-glyph { visibility: hidden; }
+.dialogue-word .dialogue-glyph { display: inline-block; }
+.dialogue-glyph.revealed { visibility: visible; animation: dialogue-pop 110ms cubic-bezier(.16, 1, .3, 1) both; }
+.dialogue-shake .dialogue-glyph.revealed { animation: dialogue-pop 110ms ease-out both, dialogue-shake 130ms steps(2, end) infinite; animation-delay: 0ms, calc(var(--dialogue-index) * -37ms); }
+.dialogue-wave .dialogue-glyph.revealed { animation: dialogue-pop 110ms ease-out both, dialogue-wave 1000ms ease-in-out infinite; animation-delay: 0ms, calc(var(--dialogue-index) * -80ms); }
+.dialogue-instant .dialogue-glyph.revealed { animation-name: none; }
+.dialogue-instant .dialogue-shake .dialogue-glyph.revealed { animation: dialogue-shake 130ms steps(2, end) infinite; animation-delay: calc(var(--dialogue-index) * -37ms); }
+.dialogue-instant .dialogue-wave .dialogue-glyph.revealed { animation: dialogue-wave 1000ms ease-in-out infinite; animation-delay: calc(var(--dialogue-index) * -80ms); }
+.dialogue-item { color: #fce045; }
+.dialogue-danger { color: #ffa3a1; }
+.dialogue-wave { color: #b3d9ff; }
+
+/* Keep static text accessible so screen readers do not spell out animated letters. */
+.dialogue-accessible { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.dialogue-ready-indicator { display: inline-block; width: 0; height: 0; margin: 0 8px 0 2px; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 6px solid #fce045; animation: dialogue-continue 900ms ease-in-out infinite; }
+.dialogue-bubble .dialogue-ready-indicator { position: absolute; right: 8px; bottom: 5px; }
+.dialogue-bubble p { padding-bottom: 8px; font-size: 14px; line-height: 1.6; }
+#dialogue-popup.hidden .dialogue-glyph,
+#dialogue-popup.hidden .dialogue-ready-indicator { animation: none; }
+
+@keyframes dialogue-pop { from { transform: scale(.85); } to { transform: scale(1); } }
+@keyframes dialogue-portrait { 50% { transform: translateY(-2px) rotate(-1deg); } }
+@keyframes dialogue-portrait-frame { 0%, 100% { background-position: var(--dialogue-rest-position); } 50% { background-position: var(--dialogue-talking-position); } }
+@keyframes dialogue-shake { 25% { translate: 1px -1px; } 75% { translate: -1px 1px; } }
+@keyframes dialogue-wave { 25% { translate: 0 -2px; } 75% { translate: 0 2px; } }
+@keyframes dialogue-continue { 50% { transform: translateY(3px); } }
+
+@media (max-width: 600px) {
+    #dialogue-popup { top: 8%; width: calc(100% - 24px); max-height: 84%; font-size: 14px; }
+    #dialogue-popup .header { padding: 22px 44px 0 20px; gap: 12px; }
+    #dialogue-popup .body { padding: 16px 20px 22px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    #dialogue-popup, #dialogue-popup.hidden { transition-duration: 80ms; }
+    #dialogue-popup #avatar.dialogue-speaking,
+    .dialogue-glyph.revealed,
+    .dialogue-shake .dialogue-glyph.revealed,
+    .dialogue-wave .dialogue-glyph.revealed,
+    .dialogue-instant .dialogue-shake .dialogue-glyph.revealed,
+    .dialogue-instant .dialogue-wave .dialogue-glyph.revealed,
+    .dialogue-ready-indicator { animation: none; transform: none; }
 }

@@ -568,15 +568,22 @@ LooperLands (https://looperlands.io), initially conceived by BalksHamster and bu
 					<div id="close-new-achievement"></div>
 				</div>
 
-				<div id="dialogue-popup" class="panel hidden">
+				<div id="dialogue-popup" class="panel hidden" role="dialog" aria-modal="true" aria-label="Conversation" aria-hidden="true">
 					<div class="header">
-						<div id="avatar"></div>
-						<div id="question" class="stroke"></div>
+						<div id="avatar" aria-hidden="true"></div>
+						<div class="dialogue-copy">
+							<div id="dialogue-speaker"></div>
+							<div id="question" class="stroke"></div>
+						</div>
 					</div>
 					<div class="body">
+						<div class="dialogue-progress">
+							<button id="dialogue-reveal" type="button">Show full text</button>
+							<span id="dialogue-ready" hidden><span class="dialogue-ready-indicator" aria-hidden="true"></span>Choose a response</span>
+						</div>
 						<div id="choices"></div>
 					</div>
-					<div id="close-dialogue-popup"></div>
+					<button id="close-dialogue-popup" type="button" aria-label="Close conversation"></button>
 				</div>
 
 				<div id="selection-popup" class="panel hidden">
