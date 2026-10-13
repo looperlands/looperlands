@@ -90,3 +90,23 @@ test('worker keeps particles aligned across camera scrolling and scales', () => 
         expect(context.globalAlpha).toBe(0.5);
     }
 });
+
+test.each([['tool-watering-can', 1, 2], ['tool-shovel', 3, 2]])(
+    '%s gives its existing particles a distinct material shape', (sprite, width, height) => {
+        const {feedback, actor, animation, state} = setup();
+        feedback.startAction(actor, {...state, animationSprite: sprite}, animation);
+        animation.currentFrame.index = 3;
+        const particles = feedback.getFrame(1000);
+        expect(particles[0]).toMatchObject({width, height});
+        const context = {fillRect: jest.fn()};
+        extension.draw(context, particles, {cameraX: 160, cameraY: 320, scale: 3});
+        expect(context.fillRect).toHaveBeenCalledWith(24, 36, width * 3, height * 3);
+    });
+test('water falls sooner than a generic burst and expires on the existing budget', () => {
+    const {feedback, actor, animation, state} = setup();
+    feedback.startAction(actor, {...state, animationSprite: 'tool-watering-can'}, animation);
+    animation.currentFrame.index = 3;
+    feedback.getFrame(1000);
+    expect(feedback.getFrame(1200)[0].y).toBeGreaterThan(332);
+    expect(feedback.getFrame(1450)).toHaveLength(0);
+});

@@ -112,3 +112,29 @@ test('late damage for an already removed entity is ignored', () => {
     self.handler(7, 5);
     expect(self.combatFeedback.addImpact).not.toHaveBeenCalled();
 });
+
+test('confirmed recoil points away from the attacker and leaves world positions untouched', () => {
+    const {feedback, game, mob} = setup();
+    Object.assign(game.player, {x: 24, y: 64});
+    const position = {x: mob.x, y: mob.y};
+    feedback.addImpact(mob, 10, 1000);
+    expect(feedback.getOffset(mob, 1000)).toEqual({x: 2, y: 0});
+    expect(feedback.getOffset(mob, 1080)).toEqual({x: 1, y: 0});
+    expect(feedback.getOffset(mob, 1160)).toEqual({x: 0, y: 0});
+    expect({x: mob.x, y: mob.y}).toEqual(position);
+    Object.assign(game.player, {x: 40, y: 80});
+    feedback.addImpact(mob, 10, 1200);
+    expect(feedback.getOffset(mob, 1200)).toEqual({x: 0, y: -2});
+});
+test.each(['reduced', 'disabled', 'map', 'death', 'despawn', 'stop'])('recoil clears on %s', reason => {
+    const {feedback, game, mob, settings} = setup();
+    Object.assign(game.player, {x: 24, y: 64});
+    feedback.addImpact(mob, 10, 1000);
+    if (reason === 'reduced') settings.getReducedMotion = () => true;
+    if (reason === 'disabled') settings.getCombatEffectsEnabled = () => false;
+    if (reason === 'map') game.mapId = 'other';
+    if (reason === 'death') mob.isDead = true;
+    if (reason === 'despawn') delete game.entities[mob.id];
+    if (reason === 'stop') game.isStopped = true;
+    expect(feedback.getOffset(mob, 1010)).toEqual({x: 0, y: 0});
+});
