@@ -8520,6 +8520,7 @@ define(['footstepfeedback', 'infomanager', 'bubble', 'renderer', 'map', 'animati
                             if (!aboutToEquipWeaponButHasNFTWeapon) {
                                 this.player.loot(item);
                                 this.client.sendLoot(item); // Notify the server that this item has been looted
+                                this.app?.acknowledgePickup?.(item);
                                 this.pickupFeedback?.add(item, this.currentTime);
                                 this.removeItem(item);
                                 this.showNotification(item.getLootMessage());

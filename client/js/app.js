@@ -1365,6 +1365,29 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healt
             tooltipDiv.style.top = (itemScreenTop + item.offsetHeight + 10) + 'px';
         },
 
+        highlightInventoryChange: function (item) {
+            if (document.hidden) return;
+            const elements = [document.getElementById('inventorybutton')];
+            if (this.isInventoryVisible) {
+                elements.push(document.getElementById('item_' + item), document.getElementById('count_' + item));
+            }
+            for (const element of elements) {
+                if (!element) continue;
+                element.classList.add('inventory-changed');
+                clearTimeout(element.inventoryFeedbackTimer);
+                element.inventoryFeedbackTimer = setTimeout(() => {
+                    element.classList.remove('inventory-changed');
+                    delete element.inventoryFeedbackTimer;
+                }, 900);
+            }
+        },
+
+        acknowledgePickup: function (item) {
+            if (!item) return;
+            this.highlightInventoryChange(item.kind);
+            this.refreshConsumableHud?.(250);
+        },
+
         hideTooltip: function() {
             console.log('hide tooltip');
             const tooltipDiv = document.getElementById('tooltip');
@@ -1462,11 +1485,13 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healt
         },
 
         consumeItem: function (item) {
-            _this = this;
+            const _this = this;
+            const session = this.storage.sessionId;
 
             let consumeQuery = "/session/" + _this.storage.sessionId + "/consumeItem/" + item;
 
             return axios.get(consumeQuery).then(function(response) {
+                if (_this.storage.sessionId !== session) return;
                 let items = response.data.items || [];
                 let cooldown = response.data.cooldown;
                 if (cooldown && items.length > 0) {
@@ -1474,6 +1499,7 @@ define(['jquery', 'storage', 'socialchat', 'eventboard', 'consumablehud', 'healt
                         _this.cooldownMap[items[i]] = cooldown;
                     }
                 }
+                if (response.data.consumed === true) _this.highlightInventoryChange(item);
                 _this.consumableHud?.tick(Date.now());
                 _this.refreshConsumableHud();
                 return response.data.consumed;

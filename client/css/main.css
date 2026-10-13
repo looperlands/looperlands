@@ -425,6 +425,20 @@ body.upscaled.game {background:#000;}
     z-index: 2;
 }
 
+.item.inventory-changed, #inventorybutton.inventory-changed {
+    outline: 2px solid #ffd66b;
+    outline-offset: -3px;
+    animation: inventory-change-glint 900ms ease-out;
+}
+.itemCount.inventory-changed { color: #ffd66b; }
+@keyframes inventory-change-glint {
+    from { outline-color: #fff2bf; }
+    to { outline-color: transparent; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .inventory-changed { animation: none !important; }
+}
+
 #armor, #weapon {
     cursor: pointer;
 }
