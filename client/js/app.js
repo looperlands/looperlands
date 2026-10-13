@@ -1345,32 +1345,7 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
         },
 
         acknowledgePickup: function (item) {
-            if (document.hidden || !item) return;
-            const bar = document.getElementById('bar-container');
-            if (!bar) return;
-            let toast = document.getElementById('hud-pickup');
-            if (!toast) {
-                toast = document.createElement('div');
-                toast.id = 'hud-pickup';
-                toast.setAttribute('role', 'status');
-                toast.setAttribute('aria-live', 'polite');
-                const icon = document.createElement('img');
-                icon.alt = '';
-                icon.addEventListener('error', () => { icon.hidden = true; });
-                toast.appendChild(icon);
-                toast.appendChild(document.createElement('span'));
-                const anchor = document.createElement('div');
-                anchor.id = 'pickup-hud-anchor';
-                bar.insertAdjacentElement('beforebegin', anchor);
-                anchor.appendChild(toast);
-            }
-            const icon = toast.querySelector('img');
-            icon.hidden = false;
-            icon.src = item.sprite?.filepath || 'img/1/' + item.getSpriteName() + '.png';
-            toast.querySelector('span').textContent = item.getLootMessage() || 'Item collected';
-            toast.hidden = false;
-            clearTimeout(this.pickupToastTimer);
-            this.pickupToastTimer = setTimeout(() => { toast.hidden = true; }, 2400);
+            if (!item) return;
             this.highlightInventoryChange(item.kind);
             this.refreshConsumableHud?.(250);
         },
