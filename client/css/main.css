@@ -350,6 +350,19 @@ body.upscaled.game {background:#000;}
 #population span:nth-child(1) {color:#FCE045;}
 #population.visible {opacity:1;pointer-events:auto;}
 
+.cooldown-ready {
+    outline: 2px solid #ffd66b;
+    outline-offset: -3px;
+    animation: cooldown-ready-glint 450ms ease-out;
+}
+@keyframes cooldown-ready-glint {
+    from { outline-color: #fff2bf; }
+    to { outline-color: transparent; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .cooldown-ready { animation: none; }
+}
+
 #time {
     text-shadow: 0 0 2px black;
     position: absolute;

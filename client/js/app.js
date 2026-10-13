@@ -1199,6 +1199,7 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
 
                             if (consumablesInventory[item].consumable) {
                                 consumeFunc(item);
+                                _this.markCooldownReady(item);
                             }
                         } else {
                             updateCdDisplay(item);
@@ -1279,6 +1280,22 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
             let cooldown = this.cooldownMap[item] !== undefined ? this.cooldownMap[item] : 0;
             if (item && new Date().getTime() >= cooldown) {
                 this.consumeItem(String(item));
+            }
+        },
+
+        markCooldownReady: function (item) {
+            if (!this.isInventoryVisible || document.hidden) return;
+            const elements = [document.getElementById('item_' + item)];
+            (this.settings.getInventorySlots() || []).slice(0, 4).forEach((value, index) => {
+                if (String(value) === String(item)) {
+                    elements.push(document.getElementById('consumableSlot' + (index + 1))
+                        ?.querySelector('.itemContainer'));
+                }
+            });
+            for (const element of elements) {
+                if (!element) continue;
+                element.classList.add('cooldown-ready');
+                setTimeout(() => element.classList.remove('cooldown-ready'), 450);
             }
         },
 
