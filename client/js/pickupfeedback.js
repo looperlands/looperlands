@@ -1,6 +1,6 @@
 define(function () {
-    const DURATION = 480;
-    const OFFSETS = [[-10, 0], [10, 0], [0, -9], [0, 9], [-7, -6], [7, -6], [-7, 6], [7, 6]];
+    const DURATION = 400;
+    const OFFSETS = [[-8, 0], [8, 0], [-4, -6], [4, -6], [-4, 6], [4, 6]];
     class PickupFeedback {
         constructor(game) {
             this.game = game;
@@ -44,10 +44,10 @@ define(function () {
                 const particles = OFFSETS.map(([dx, dy]) => ({
                     x: Math.round(pickup.x + dx + (player.x + 8 - pickup.x - dx) * ease),
                     y: Math.round(pickup.y + dy + (player.y + 5 - pickup.y - dy) * ease),
-                    alpha: Math.max(0, 1 - progress / 0.7),
+                    alpha: Math.max(0, 1 - progress / 0.7) * 0.75,
                 }));
                 if (progress >= 0.55) particles.push({x: player.x + 8, y: player.y + 5,
-                    alpha: (1 - progress) / 0.45, finish: true, radius: 2 + Math.round((progress - 0.55) * 12)});
+                    alpha: (1 - progress) / 0.45 * 0.6, finish: true, radius: 1 + Math.round((progress - 0.55) * 6)});
                 return particles;
             });
         }
