@@ -1089,6 +1089,7 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
                 }
 
                 $("#inventorycontent").html(inventoryHtml);
+                _this.highlightInventoryChanges(consumablesInventory);
                 let inventorySlots = _this.settings.getInventorySlots();
 
                 if (inventorySlots) {
@@ -1326,6 +1327,36 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
             tooltipDiv.style.top = (itemScreenTop + item.offsetHeight + 10) + 'px';
         },
 
+        highlightInventoryChange: function (item) {
+            if (document.hidden) return;
+            const elements = [document.getElementById('inventorybutton')];
+            if (this.isInventoryVisible) {
+                elements.push(document.getElementById('item_' + item), document.getElementById('count_' + item));
+            }
+            for (const element of elements) {
+                if (!element) continue;
+                element.classList.add('inventory-changed');
+                clearTimeout(element.inventoryFeedbackTimer);
+                element.inventoryFeedbackTimer = setTimeout(() => {
+                    element.classList.remove('inventory-changed');
+                    delete element.inventoryFeedbackTimer;
+                }, 900);
+            }
+        },
+
+        highlightInventoryChanges: function (items) {
+            const session = this.storage.sessionId;
+            const previous = this.inventoryFeedbackSession === session ? this.inventoryFeedbackCounts : undefined;
+            const counts = Object.fromEntries(Object.entries(items || {})
+                .map(([item, value]) => [item, Number(value.qty) || 0]));
+            this.inventoryFeedbackSession = session;
+            this.inventoryFeedbackCounts = counts;
+            if (!previous) return;
+            for (const item of new Set([...Object.keys(previous), ...Object.keys(counts)])) {
+                if ((counts[item] || 0) !== (previous[item] || 0)) this.highlightInventoryChange(item);
+            }
+        },
+
         hideTooltip: function() {
             console.log('hide tooltip');
             const tooltipDiv = document.getElementById('tooltip');
@@ -1423,11 +1454,13 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
         },
 
         consumeItem: function (item) {
-            _this = this;
+            const _this = this;
+            const session = this.storage.sessionId;
 
             let consumeQuery = "/session/" + _this.storage.sessionId + "/consumeItem/" + item;
 
             axios.get(consumeQuery).then(function(response) {
+                if (_this.storage.sessionId !== session) return;
                 let items = response.data.items;
                 let cooldown = response.data.cooldown;
                 if (cooldown && items.length > 0) {
@@ -1435,6 +1468,7 @@ define(['jquery', 'storage', 'socialchat', 'eventboard'], function ($, Storage, 
                         _this.cooldownMap[items[i]] = cooldown;
                     }
                 }
+                if (response.data.consumed === true) _this.highlightInventoryChange(item);
                 return response.data.consumed;
             }).catch(function (error) {
                 console.error("Error while consuming item", error);
