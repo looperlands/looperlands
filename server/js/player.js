@@ -334,7 +334,7 @@ module.exports = Player = Character.extend({
 
                         //console.log(self.name, "Total level ", totalLevel, "Level", level, "Weapon level", self.getWeaponLevel(), "Active Trait", weaponTrait);
 
-                        function handleDamage(mob, totalLevel, multiplier) {
+                        function handleDamage(mob, totalLevel, multiplier, critical = false) {
                             let dmg = Formulas.dmg(totalLevel, mob.armorLevel);
                             dmg *= multiplier;
                             dmg = Math.round(dmg);
@@ -351,7 +351,7 @@ module.exports = Player = Character.extend({
                                 //console.log("Player "+self.id+" hit mob "+mob.id+" for "+dmg+" damage.", mob.type);
                                 const hate = dmg * self.playerClassModifiers.hate;
                                 self.server.handleMobHate(mob.id, self.id, hate);
-                                self.server.handleHurtEntity(mob, self, dmg);
+                                self.server.handleHurtEntity(mob, self, dmg, critical);
                             }
                             self.incrementNFTWeaponExperience(dmg);
                             return dmg;
@@ -388,7 +388,7 @@ module.exports = Player = Character.extend({
                                 }
                             }
                         } else if (weaponTrait === "crit") {
-                            handleDamage(mob, totalLevel, 3);
+                            handleDamage(mob, totalLevel, 3, true);
                         } else if (weaponTrait === "speed") {
                             handleDamage(mob, totalLevel, 1);
                             newAttackRate = BASE_ATTACK_RATE - Formulas.getSpeedTraitBonus(self.getWeaponLevel());

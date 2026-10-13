@@ -515,12 +515,12 @@ function clearTextCache() {
     labelCache.clear(); labelBytes = 0; textFrameKey = undefined;
 }
 
-function cachedLabel(text, fontSize, strokeSize, color, strokeColor) {
-    const key = JSON.stringify([text, fontSize, strokeSize, color, strokeColor, hasLoadedFont]);
+function cachedLabel(text, fontSize, strokeSize, color, strokeColor, fontWeight = 'normal') {
+    const key = JSON.stringify([text, fontSize, strokeSize, color, strokeColor, fontWeight, hasLoadedFont]);
     let label = labelCache.get(key);
     if (label) return label;
     const metricsCtx = contexes.text;
-    metricsCtx.font = `${fontSize}px GraphicPixel`;
+    metricsCtx.font = `${fontWeight} ${fontSize}px GraphicPixel`;
     const metrics = metricsCtx.measureText(text);
     const left = Math.max(0, metrics.actualBoundingBoxLeft || 0);
     const right = Math.max(metrics.width, metrics.actualBoundingBoxRight || 0);
@@ -531,6 +531,7 @@ function cachedLabel(text, fontSize, strokeSize, color, strokeColor) {
     const ctx = canvas.getContext('2d');
     ctx.font = metricsCtx.font; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
     ctx.strokeStyle = strokeColor; ctx.lineWidth = strokeSize;
+    ctx.lineJoin = fontWeight === 'bold' ? 'round' : 'miter';
     ctx.strokeText(text, left + pad, ascent + pad);
     ctx.fillStyle = color; ctx.fillText(text, left + pad, ascent + pad);
     label = {canvas, x: left + pad, y: ascent + pad, advance: metrics.width};
@@ -560,9 +561,19 @@ function drawText(renderData) {
         if (!text || !Number.isFinite(x) || !Number.isFinite(y)) continue;
         const fontSize = entry.title ? [0, 5, 10, 15][scale]
             : entry.fontSize || [0, 10, 13, 20][scale];
-        const label = cachedLabel(text, fontSize, scale === 3 ? 5 : 3, entry.color || 'white', entry.strokeColor || '#373737');
+        const label = cachedLabel(text, fontSize, scale === 3 ? 5 : 3, entry.color || 'white', entry.strokeColor || '#373737', entry.fontWeight || 'normal');
         ctx.globalAlpha = entry.globalAlpha ?? 1;
-        ctx.drawImage(label.canvas, x - label.x - (entry.centered ? label.advance / 2 : 0), y - label.y);
+        if (entry.textScale !== undefined || entry.rotation) {
+            // Transform the cached bitmap so animation never allocates a label per frame.
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(entry.rotation || 0);
+            ctx.scale(entry.textScale ?? 1, entry.textScale ?? 1);
+            ctx.drawImage(label.canvas, -label.x - (entry.centered ? label.advance / 2 : 0), -label.y);
+            ctx.restore();
+        } else {
+            ctx.drawImage(label.canvas, x - label.x - (entry.centered ? label.advance / 2 : 0), y - label.y);
+        }
     }
     ctx.restore();
 }

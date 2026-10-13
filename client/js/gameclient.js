@@ -409,7 +409,8 @@ define(['player', 'entityfactory', 'lib/bison', 'mob'], function(Player, EntityF
                 dmg = data[2];
         
             if(this.dmg_callback) {
-                this.dmg_callback(id, dmg);
+                if (data[3]?.critical === true) this.dmg_callback(id, dmg, true);
+                else this.dmg_callback(id, dmg);
             }
         },
     

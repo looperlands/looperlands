@@ -802,7 +802,7 @@ module.exports = World = cls.Class.extend({
         }
     },
 
-    handleHurtEntity: function (entity, attacker, damage) {
+    handleHurtEntity: function (entity, attacker, damage, critical = false) {
         var self = this;
 
         if (entity.type === 'player') {
@@ -811,7 +811,7 @@ module.exports = World = cls.Class.extend({
         }
 
         if (attacker.type === 'player') {
-            this.pushToPlayer(attacker, new Messages.Damage(entity, damage));
+            this.pushToPlayer(attacker, new Messages.Damage(entity, damage, critical));
         }
 
         // If the entity is about to die

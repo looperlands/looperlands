@@ -972,12 +972,7 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                 let combatTextData = [];
                 let self = this;
     
-                let fontSize;
-                if (this.scale === 2) {
-                    fontSize = 20;
-                } else if (this.scale === 3) {
-                    fontSize = 30;
-                }
+                const fontSize = 10 * this.scale;
     
                 this.game.infoManager.forEachInfo(function(info) {
                     let textData = {
@@ -991,6 +986,11 @@ define(['camera', 'item', 'character', 'player', 'timer', 'mob', 'npc', 'cursorc
                         "strokeColor": info.strokeColor,
                         "globalAlpha": info.opacity,
                         "fontSize": fontSize
+                    }
+                    if (info.combat) {
+                        textData.fontWeight = 'bold';
+                        textData.textScale = info.textScale;
+                        textData.rotation = info.rotation;
                     }
                     combatTextData.push(textData);
                 });
