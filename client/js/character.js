@@ -1,5 +1,5 @@
 
-define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
+define(['entity', 'transition', 'timer', 'attacktiming'], function(Entity, Transition, Timer, attackTiming) {
 
     var Character = Entity.extend({
         init: function(id, kind) {
@@ -69,7 +69,7 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
     	    return this.sprite.hasShadow !== undefined ? this.sprite.hasShadow : Types.hasShadow(this.kind);
     	},
 
-        animate: function(animation, speed, count, onEndCount) {
+        animate: function(animation, speed, count, onEndCount, shapeAttackTiming) {
             var oriented = ['atk', 'walk', 'idle'];
             o = this.orientation;
 
@@ -99,7 +99,16 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
                 }
             }
 
+            // Uniform sprite timing can be shaped too; custom per-frame beats stay intact.
+            const originalSpeed = this.sprite?.animationData?.[animation]?.speed ?? speed;
+            const combatSpeed = shapeAttackTiming ? attackTiming(originalSpeed, this.animations[animation]?.length) : originalSpeed;
+            const shapedCombatTiming = shapeAttackTiming && combatSpeed !== originalSpeed;
+            if (shapedCombatTiming) speed = combatSpeed;
             this.setAnimation(animation, speed, count, onEndCount);
+            // A prior cast may have populated Entity's cached animation speed.
+            if (shapedCombatTiming && this.currentAnimation?.name === animation) {
+                this.currentAnimation.setSpeed(speed);
+            }
         },
 
         turnTo: function(orientation) {
@@ -125,7 +134,7 @@ define(['entity', 'transition', 'timer'], function(Entity, Transition, Timer) {
     	    this.animate("atk", this.atkSpeed, 1, function () {
                 self.animationLock = false;
                 self.idle();
-            });
+            }, true);
     	},
 	
     	walk: function(orientation) {
