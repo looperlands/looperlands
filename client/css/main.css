@@ -363,6 +363,45 @@ body.upscaled.game {background:#000;}
     .cooldown-ready { animation: none; }
 }
 
+#consumable-hud {
+    position: absolute;
+    right: 8px;
+    bottom: calc(100% + 6px);
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    max-width: calc(100% - 16px);
+    font: 14px GraphicPixel, sans-serif;
+    color: #ffe3a1;
+}
+#consumable-hud[hidden], #consumable-hud [hidden] { display: none; }
+.hud-consumables { display: flex; gap: 4px; }
+.hud-consumable {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    padding: 4px;
+    border: 2px solid #b99761;
+    background: #341e28;
+    color: #ffe3a1;
+    font: inherit;
+    cursor: pointer;
+}
+.hud-consumable img { width: 32px; height: 32px; object-fit: cover; object-position: 100% 0; image-rendering: pixelated; }
+.hud-consumable:hover:not(:disabled) { border-color: #ffe3a1; }
+.hud-consumable:focus-visible { outline: 2px solid #fff2bf; outline-offset: 2px; }
+.hud-consumable:disabled { cursor: default; }
+.hud-consumable:disabled img { opacity: .45; }
+.hud-key, .hud-count { position: absolute; background: #341e28; font-size: 12px; line-height: 14px; padding: 0 2px; }
+.hud-key { top: -2px; left: -2px; }
+.hud-count { bottom: -2px; right: -2px; }
+.hud-cooldown { position: absolute; inset: 9px 0; text-align: center; padding: 3px 0; background: #341e28; color: #fff2bf; }
+.hud-effect { max-width: 180px; padding: 8px; border: 2px solid #b99761; background: #341e28; line-height: 18px; }
+@media (max-width: 480px) {
+    #consumable-hud { gap: 4px; }
+    .hud-effect { max-width: 110px; font-size: 12px; padding: 4px; }
+}
+
 #time {
     text-shadow: 0 0 2px black;
     position: absolute;
